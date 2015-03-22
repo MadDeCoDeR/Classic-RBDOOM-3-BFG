@@ -17,6 +17,9 @@ option(OPENAL
 
 option(FFMPEG
 		"Use FMPEG to render Bink videos" ON)
+		
+option(OCULUS
+		"Enable Oculus Rift support" ON)
 
 option(ONATIVE
 		"Optimize for the host CPU" OFF)
@@ -1308,6 +1311,29 @@ if(MSVC)
 		
 	endif()
 	
+	if(OCULUS)
+		add_definitions(-DUSE_OCULUS)
+	
+		message( STATUS "Building with Oculus Rift support..." )
+		
+		include_directories(libs/OculusSDK/LibOVR/Include)
+		include_directories(libs/OculusSDK/LibOVR/Src) 		#OVR_CAPI.h
+		
+		if(CMAKE_CL_64)
+			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/OculusSDK/LibOVR/x64/VS2013)
+			
+			set(OVR_LIBRARIES
+				ovr64
+				)
+		else()
+			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/OculusSDK/LibOVR/Win32/VS2013)
+			
+			set(OVR_LIBRARIES
+				ovr
+				)
+		endif()		
+	endif()
+	
 	if(USE_MFC_TOOLS)
 		
 		include_directories(libs/atlmfc/include)
@@ -1400,6 +1426,7 @@ if(MSVC)
 		wsock32.lib
 		${OpenAL_LIBRARIES}
 		${FFmpeg_LIBRARIES}
+		${OVR_LIBRARIES}
         ${ZLIB_LIBRARY}
         ${PNG_LIBRARY}
         ${JPEG_LIBRARY}
