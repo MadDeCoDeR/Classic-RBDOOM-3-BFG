@@ -106,6 +106,10 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 
 #include "../swf/SWF.h"
 
+// RB: VR subsystem
+#include "../vr/vr.h"
+// RB end
+
 // collision detection system
 #include "../cm/CollisionModel.h"
 

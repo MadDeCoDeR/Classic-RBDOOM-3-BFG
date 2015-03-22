@@ -607,6 +607,8 @@ file(GLOB UI_SOURCES ui/*.cpp)
 file(GLOB SWF_INCLUDES swf/*.h)
 file(GLOB SWF_SOURCES swf/*.cpp)
 
+file(GLOB VR_INCLUDES vr/*.h)
+file(GLOB VR_SOURCES vr/*.cpp)
 
 set(GAMED3XP_INCLUDES
 	d3xp/Achievements.h
@@ -1011,6 +1013,9 @@ source_group("ui" FILES ${UI_SOURCES})
 source_group("swf" FILES ${SWF_INCLUDES})
 source_group("swf" FILES ${SWF_SOURCES})
 
+source_group("vr" FILES ${VR_INCLUDES})
+source_group("vr" FILES ${VR_SOURCES})
+
 source_group("sys" FILES ${SYS_INCLUDES})
 source_group("sys" FILES ${SYS_SOURCES})
 
@@ -1312,24 +1317,28 @@ if(MSVC)
 	endif()
 	
 	if(OCULUS)
-		add_definitions(-DUSE_OCULUS)
-	
 		message( STATUS "Building with Oculus Rift support..." )
+		
+		add_definitions(-DUSE_OCULUS)
+		
+		list(APPEND RBDOOM3_INCLUDES ${VR_INCLUDES})
+		list(APPEND RBDOOM3_SOURCES ${VR_SOURCES})
 		
 		include_directories(libs/OculusSDK/LibOVR/Include)
 		include_directories(libs/OculusSDK/LibOVR/Src) 		#OVR_CAPI.h
 		
 		if(CMAKE_CL_64)
-			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/OculusSDK/LibOVR/x64/VS2013)
+			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/OculusSDK/LibOVR/Lib/x64/VS2013)
 			
 			set(OVR_LIBRARIES
-				ovr64
+				libovr64
 				)
 		else()
-			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/OculusSDK/LibOVR/Win32/VS2013)
+			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/OculusSDK/LibOVR/Lib/Win32/VS2013)
 			
 			set(OVR_LIBRARIES
-				ovr
+				libovrd
+				Ws2_32
 				)
 		endif()		
 	endif()

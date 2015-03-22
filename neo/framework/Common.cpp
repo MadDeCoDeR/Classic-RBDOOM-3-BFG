@@ -1263,6 +1263,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		// if any archived cvars are modified after this, we will trigger a writing of the config file
 		cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 		
+		// RB: must be done before the OpenGL context is created
+		vrSystem->Init();
+		
 		// init OpenGL, which will open a window and connect sound and input hardware
 		renderSystem->InitOpenGL();
 		
@@ -1535,6 +1538,10 @@ void idCommonLocal::Shutdown()
 	// shut down the sound system
 	printf( "soundSystem->Shutdown();\n" );
 	soundSystem->Shutdown();
+	
+	// RB: shut down the VR system
+	printf( "vrSystem->Shutdown();\n" );
+	vrSystem->Shutdown();
 	
 	// shut down the user command input code
 	printf( "usercmdGen->Shutdown();\n" );
