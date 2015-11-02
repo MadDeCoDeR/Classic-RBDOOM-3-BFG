@@ -463,7 +463,7 @@ void idSWFSprite::ReadJSON( rapidjson::Value& entry )
 	}
 }
 
-void idSWFSprite::WriteJSON( idFile* f, int characterID )
+void idSWFSprite::WriteJSON( idFile* f, idFile* luaFile, int characterID )
 {
 	f->WriteFloatString( "\t\t\t\"frameCount\": %i,\n", frameCount );
 	
@@ -512,7 +512,7 @@ void idSWFSprite::WriteJSON( idFile* f, int characterID )
 				//	WriteXML_PlaceObject2( command.stream, indentPrefix );
 				//	break;
 				
-#define HANDLE_SWF_TAG( x ) case Tag_##x: WriteJSON_##x( f, command.stream, characterID, i ); break;
+#define HANDLE_SWF_TAG( x ) case Tag_##x: WriteJSON_##x( f, luaFile, command.stream, characterID, i ); break;
 				HANDLE_SWF_TAG( PlaceObject2 );
 				HANDLE_SWF_TAG( PlaceObject3 );
 				HANDLE_SWF_TAG( RemoveObject2 );
@@ -541,7 +541,7 @@ void idSWFSprite::WriteJSON( idFile* f, int characterID )
 }
 // RB end
 
-void idSWFSprite::WriteJSON_PlaceObject2( idFile* file, idSWFBitStream& bitstream, int sourceCharacterID, int commandID, const char* indentPrefix )
+void idSWFSprite::WriteJSON_PlaceObject2( idFile* file, idFile* luaFile, idSWFBitStream& bitstream, int sourceCharacterID, int commandID, const char* indentPrefix )
 {
 	uint8 flags1 = bitstream.ReadU8();
 	int depth = bitstream.ReadU16();
@@ -618,7 +618,7 @@ void idSWFSprite::WriteJSON_PlaceObject2( idFile* file, idSWFBitStream& bitstrea
 }
 
 
-void idSWFSprite::WriteJSON_PlaceObject3( idFile* file, idSWFBitStream& bitstream, int sourceCharacterID, int commandID, const char* indentPrefix )
+void idSWFSprite::WriteJSON_PlaceObject3( idFile* file, idFile* luaFile, idSWFBitStream& bitstream, int sourceCharacterID, int commandID, const char* indentPrefix )
 {
 	uint8 flags1 = bitstream.ReadU8();
 	uint8 flags2 = bitstream.ReadU8();
@@ -710,14 +710,14 @@ void idSWFSprite::WriteJSON_PlaceObject3( idFile* file, idSWFBitStream& bitstrea
 	file->WriteFloatString( "\n\t\t\t\t}" );
 }
 
-void idSWFSprite::WriteJSON_RemoveObject2( idFile* file, idSWFBitStream& bitstream, int sourceCharacterID, int commandID, const char* indentPrefix )
+void idSWFSprite::WriteJSON_RemoveObject2( idFile* file, idFile* luaFile, idSWFBitStream& bitstream, int sourceCharacterID, int commandID, const char* indentPrefix )
 {
 	int depth = bitstream.ReadU16();
 	
 	file->WriteFloatString( "%s\t\t\t\t{\t\"type\": \"Tag_RemoveObject2\", \"depth\": %i }", ( commandID != 0 ) ? ",\n" : "", depth );
 }
 
-void idSWFSprite::WriteJSON_DoAction( idFile* file, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix )
+void idSWFSprite::WriteJSON_DoAction( idFile* file, idFile* luaFile, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix )
 {
 	idBase64 base64;
 	
@@ -744,7 +744,7 @@ void idSWFSprite::WriteJSON_DoAction( idFile* file, idSWFBitStream& bitstream, i
 	
 	file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoAction\", \"streamLength\": %i, \"stream\": \"%s\",\n\t\t\t\t\t\"luaCode\": %s\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", bitstream.Length(), base64.c_str(), quotedText.c_str() );
 	
-	//file->WriteFloatString( "%s\t<DoAction streamLength=\"%i\">%s</DoAction>\n", indentPrefix, bitstream.Length(), base64.c_str() );
+	luaFile->WriteFloatString( "\n%s\n", scriptText.c_str() );
 	
 	delete actionScript;
 	delete scriptObject;

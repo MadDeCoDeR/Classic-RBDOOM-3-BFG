@@ -33,11 +33,12 @@ If you have questions concerning this license or the applicable additional terms
 
 #pragma warning(disable: 4355) // 'this' : used in base member initializer list
 
-idCVar swf_loadBinary( "swf_loadBinary", "1", CVAR_INTEGER, "used to set whether to load binary swf from generated" );
+idCVar swf_loadBinary( "swf_loadBinary", "1", CVAR_BOOL, "used to set whether to load binary swf from generated" );
 // RB begin
 idCVar postLoadExportFlashAtlas( "postLoadExportFlashAtlas", "0", CVAR_INTEGER, "" );
 idCVar postLoadExportFlashToSWF( "postLoadExportFlashToSWF", "0", CVAR_INTEGER, "" );
 idCVar postLoadExportFlashToJSON( "postLoadExportFlashToJSON", "0", CVAR_INTEGER, "" );
+idCVar swf_exportLua( "swf_exportLua", "1", CVAR_BOOL, "" );
 // RB end
 
 int idSWF::mouseX = -1;

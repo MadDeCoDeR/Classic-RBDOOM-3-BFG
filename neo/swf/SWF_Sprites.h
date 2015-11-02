@@ -50,11 +50,11 @@ public:
 	// RB begin
 	void	ReadJSON( rapidjson::Value& entry );
 	
-	void	WriteJSON( idFile* f, int characterID );
-	void	WriteJSON_PlaceObject2( idFile* f, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix = "" );
-	void	WriteJSON_PlaceObject3( idFile* f, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix = "" );
-	void	WriteJSON_RemoveObject2( idFile* f, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix = "" );
-	void	WriteJSON_DoAction( idFile* f, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix = "" );
+	void	WriteJSON( idFile* f, idFile* luaFile, int characterID );
+	void	WriteJSON_PlaceObject2( idFile* f, idFile* luaFile, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix = "" );
+	void	WriteJSON_PlaceObject3( idFile* f, idFile* luaFile, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix = "" );
+	void	WriteJSON_RemoveObject2( idFile* f, idFile* luaFile, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix = "" );
+	void	WriteJSON_DoAction( idFile* f, idFile* luaFile, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix = "" );
 	
 	void	WriteSWF( idFile_SWF& f, int characterID );
 	

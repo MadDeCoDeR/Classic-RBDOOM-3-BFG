@@ -1233,7 +1233,7 @@ bool idSWF::LoadJSON( const char* filename )
 				for( int d = 0; d < shape->lineDraws.Num(); d++ )
 				{
 					idSWFShapeDrawLine& lineDraw = shape->lineDraws[d];
-					Value& jsonDraw = entry["lineDraw"][d];
+					Value& jsonDraw = entry["lineDraws"][d];
 					
 					Value& style = jsonDraw["style"];
 					lineDraw.style.startWidth = style["startWidth"].GetUint();
@@ -1412,6 +1412,15 @@ void idSWF::WriteJSON( const char* jsonFilename )
 	
 	idFileLocal file( fileSystem->OpenFileWrite( jsonFilename, "fs_basepath" ) );
 	if( file == NULL )
+	{
+		return;
+	}
+	
+	
+	idStr luaFileName = jsonFilename;
+	luaFileName.SetFileExtension( ".lua" );
+	idFileLocal luaFile( fileSystem->OpenFileWrite( luaFileName.c_str(), "fs_basepath" ) );
+	if( luaFile == NULL )
 	{
 		return;
 	}
@@ -1744,7 +1753,7 @@ void idSWF::WriteJSON( const char* jsonFilename )
 			
 			case SWF_DICT_SPRITE:
 			{
-				dictionary[i].sprite->WriteJSON( file, i );
+				dictionary[i].sprite->WriteJSON( file, luaFile, i );
 				break;
 			}
 			
@@ -1882,7 +1891,7 @@ void idSWF::WriteJSON( const char* jsonFilename )
 	file->WriteFloatString( "\t\t\t\"type\": \"SPRITE\",\n" );
 	file->WriteFloatString( "\t\t\t\"characterID\": %i,\n", dictionary.Num() );
 	file->WriteFloatString( "\t\t\t\"mainsprite\": true,\n" );
-	mainsprite->WriteJSON( file, dictionary.Num() );
+	mainsprite->WriteJSON( file, luaFile, dictionary.Num() );
 	file->WriteFloatString( "\t\t}\n" );
 	file->WriteFloatString( "\t]\n" );
 	file->WriteFloatString( "}\n" );
