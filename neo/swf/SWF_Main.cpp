@@ -369,6 +369,45 @@ idSWF::idSWF( const char* filename_, idSoundWorld* soundWorld_ )
 	globals->SetNative( "cropToFit", swfScriptVar_crop.Bind( this ) );
 	globals->SetNative( "crop", swfScriptVar_crop.Bind( this ) );
 	
+	
+	// RB: Lua
+	lua_State* L = luaState = lua_newstate( LuaAlloc, NULL );
+	if( L )
+	{
+		lua_atpanic( L, &LuaPanic );
+	}
+	
+	luaL_openlibs( L );
+	
+	//ID_TIME_T luaTimestamp;
+	idStr luaFileName = filename;
+	luaFileName.SetFileExtension( ".lua" );
+	
+	char* luaSrc;
+	
+	fileSystem->ReadFile( luaFileName, ( void** ) &luaSrc );
+	if( luaSrc != NULL )
+	{
+		int result = luaL_loadbuffer( L, luaSrc, strlen( luaSrc ), luaFileName );
+		if( result == LUA_ERRSYNTAX )
+		{
+			idLib::Error( "Compile of file %s failed: %s ", luaFileName.c_str(), lua_tostring( L, -1 ) );
+			lua_pop( L, 1 );
+		}
+		
+		fileSystem->FreeFile( luaSrc );
+		
+		if( lua_pcall( L, 0, 0, 0 ) )
+		{
+			idLib::Error( "Cannot pcall: %s", lua_tostring( L, -1 ) );
+			lua_pop( L, 1 );
+		}
+	}
+	
+	lua_printstack( L );
+	// RB end
+	
+	
 	// Do this to touch any external references (like sounds)
 	// But disable script warnings because many globals won't have been created yet
 	extern idCVar swf_debug;

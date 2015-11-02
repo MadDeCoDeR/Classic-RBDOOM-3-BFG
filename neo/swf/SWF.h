@@ -34,6 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "SWF_Bitstream.h"
 // RB begin
 #include "SWF_File.h"
+#include <lua.hpp>
 // RB end
 #include "SWF_ScriptVar.h"
 #include "SWF_Sprites.h"
@@ -530,6 +531,24 @@ public:
 	static const char* GetTagName( swfTag_t tag );
 	static const char* GetActionName( swfAction_t action );
 	
+	// RB: LUA INTEGRATION
+	static void*				LuaAlloc( void* ud, void* ptr, size_t osize, size_t nsize );
+	static int					LuaPanic( lua_State* L );
+	void						RegisterLuaGlobals( lua_State* L );
+	
+public:
+	bool						RunLuaFunction( const char* func, const char* fmt, ... );
+	
+	lua_State*					GetLuaState() const
+	{
+		return luaState;
+	}
+	
+private:
+	lua_State*					luaState;
+	// RB end
 };
+
+void lua_printstack( lua_State* L );
 
 #endif // !__SWF_H__

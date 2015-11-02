@@ -102,7 +102,8 @@ enum swfTag_t
 	Tag_DefineSceneAndFrameLabelData = 86,
 	Tag_DefineBinaryData = 87,
 	Tag_DefineFontName = 88,
-	Tag_StartSound2 = 89
+	Tag_StartSound2 = 89,
+	Tag_DoLua = 90, // RB
 };
 enum swfAction_t
 {

@@ -193,6 +193,7 @@ public:
 		uint32 dataLength;
 	};
 	idList< swfAction_t, TAG_SWF > actions;
+	idList< swfAction_t, TAG_SWF > luaActions;
 	
 	idSWFScriptFunction_Script* actionScript;
 	
@@ -232,6 +233,7 @@ public:
 	void					SwapDepths( int depth1, int depth2 );
 	
 	void					DoAction( idSWFBitStream& bitstream );
+	void					DoLua( idSWFBitStream& bitstream ); // RB
 	
 	idSWFSpriteInstance* 	FindChildSprite( const char* childName );
 	idSWFSpriteInstance* 	ResolveTarget( const char* targetName );

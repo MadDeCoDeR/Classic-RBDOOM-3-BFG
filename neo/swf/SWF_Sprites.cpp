@@ -459,7 +459,21 @@ void idSWFSprite::ReadJSON( rapidjson::Value& entry )
 			uint32 streamLength = file->Length() - 1; // skip trailing zero added by Decode()
 			commands[i].stream.Load( ( byte* ) static_cast<idFile_Memory*>( ( idFile* )file )->GetDataPtr(), streamLength, true );
 		}
-		
+		else if( type == "Tag_DoLua" )
+		{
+			commands[i].tag = Tag_DoLua;
+			
+			idFile_SWF file( new idFile_Memory() );
+			
+			idStr string = command["function"].GetString();
+			string.Append( '\0' );
+			int len = string.Length();
+			
+			file->Write( string.c_str(), len );
+			
+			uint32 streamLength = file->Length();// - 1; // skip trailing zero added by Decode()
+			commands[i].stream.Load( ( byte* ) static_cast<idFile_Memory*>( ( idFile* )file )->GetDataPtr(), streamLength, true );
+		}
 	}
 }
 
@@ -488,7 +502,6 @@ void idSWFSprite::WriteJSON( idFile* f, idFile* luaFile, int characterID )
 	}
 	
 	
-#if 1
 	idBase64 base64;
 	
 	f->WriteFloatString( "\t\t\t\"commands\":\n\t\t\t[\n" );
@@ -496,28 +509,17 @@ void idSWFSprite::WriteJSON( idFile* f, idFile* luaFile, int characterID )
 	{
 		idSWFSprite::swfSpriteCommand_t& command = commands[i];
 		
-		//base64.Encode( command.stream.Ptr(), command.stream.Length() );
-		//base64.Decode( src );
-		
-		//f->WriteFloatString( "%s\t<Command tag=\"%s\" streamLength=\"%i\">%s</Command>\n", indentPrefix, idSWF::GetTagName( commands[i].tag ), src.Length(), src.c_str() );
-		//f->WriteFloatString( "%s\t<Command tag=\"%s\" streamLength=\"%i\">%s</Command>\n", indentPrefix, idSWF::GetTagName( commands[i].tag ), commands[i].stream.Length(), base64.c_str() );
-		
-		//f->WriteFloatString( "%s\t<Command tag=\"%s\" streamLength=\"%i\">\n", indentPrefix, idSWF::GetTagName( command.tag ), command.stream.Length(), base64.c_str() );
-		//f->WriteFloatString( "%s\t\t<Stream>%s</Stream>\n", indentPrefix, base64.c_str() );
-		
 		command.stream.Rewind();
 		switch( command.tag )
 		{
-				//case Tag_PlaceObject2:
-				//	WriteXML_PlaceObject2( command.stream, indentPrefix );
-				//	break;
-				
+		
 #define HANDLE_SWF_TAG( x ) case Tag_##x: WriteJSON_##x( f, luaFile, command.stream, characterID, i ); break;
 				HANDLE_SWF_TAG( PlaceObject2 );
 				HANDLE_SWF_TAG( PlaceObject3 );
 				HANDLE_SWF_TAG( RemoveObject2 );
 				//HANDLE_SWF_TAG( StartSound );
 				HANDLE_SWF_TAG( DoAction );
+				HANDLE_SWF_TAG( DoLua );
 #undef HANDLE_SWF_TAG
 			default:
 				break;
@@ -526,6 +528,7 @@ void idSWFSprite::WriteJSON( idFile* f, idFile* luaFile, int characterID )
 	}
 	f->WriteFloatString( "\n\t\t\t]\n" );
 	
+	// RB: unused
 	if( doInitActions.Num() )
 	{
 		f->WriteFloatString( ",\n\t\t\t\"doInitActions\":\t\t\t[\n" );
@@ -537,7 +540,6 @@ void idSWFSprite::WriteJSON( idFile* f, idFile* luaFile, int characterID )
 		}
 		f->WriteFloatString( "\t\t\t]" );
 	}
-#endif
 }
 // RB end
 
@@ -742,17 +744,20 @@ void idSWFSprite::WriteJSON_DoAction( idFile* file, idFile* luaFile, idSWFBitStr
 	idStr scriptText = actionScript->CallToScript( scriptObject, idSWFParmList(), file->GetName(), characterID, commandID );
 	idStr quotedText = idStr::CStyleQuote( scriptText.c_str() );
 	
-	file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoAction\", \"streamLength\": %i, \"stream\": \"%s\",\n\t\t\t\t\t\"luaCode\": %s\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", bitstream.Length(), base64.c_str(), quotedText.c_str() );
-	
 	luaFile->WriteFloatString( "\n%s\n", scriptText.c_str() );
+	
+	//file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoAction\", \"streamLength\": %i, \"stream\": \"%s\",\n\t\t\t\t\t\"luaCode\": %s\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", bitstream.Length(), base64.c_str(), quotedText.c_str() );
+	
+	file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoLua\",\n\t\t\t\t\t\"function\": \"sprite%i_action%i\"\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", characterID, commandID );
 	
 	delete actionScript;
 	delete scriptObject;
 #endif
-	
-	
-	
-	
+}
+
+void idSWFSprite::WriteJSON_DoLua( idFile* file, idFile* luaFile, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix )
+{
+	file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoLua\",\n\t\t\t\t\t\"function\": \"sprite%i_action%i\"\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", characterID, commandID );
 }
 
 

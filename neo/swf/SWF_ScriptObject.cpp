@@ -523,6 +523,9 @@ idSWFScriptObject::GetVariable
 idSWFScriptObject::swfNamedVar_t* idSWFScriptObject::GetVariable( const char* name, bool create )
 {
 	int hash = idStr::Hash( name ) & ( VARIABLE_HASH_BUCKETS - 1 );
+	
+#if 1
+	// RB: FIXME crash
 	for( int i = variablesHash[hash]; i >= 0; i = variables[i].hashNext )
 	{
 		if( variables[i].name == name )
@@ -530,6 +533,15 @@ idSWFScriptObject::swfNamedVar_t* idSWFScriptObject::GetVariable( const char* na
 			return &variables[i];
 		}
 	}
+#else
+	for( int i = 0; i < variables.Num(); i++ )
+	{
+		if( variables[i].name == name )
+		{
+			return &variables[i];
+		}
+	}
+#endif
 	
 	if( prototype != NULL )
 	{

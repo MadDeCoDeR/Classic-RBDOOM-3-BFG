@@ -98,6 +98,12 @@ if(MSVC)
             COMPILE_FLAGS "/Yuprecompiled.h"
             OBJECT_DEPENDS "precompiled.pch"
             )
+			
+	include_directories(
+	.
+	../libs/lua/src
+	../libs/luawrapper
+	)
 
     add_library(idlib ${ID_SOURCES_ALL} ${ID_INCLUDES_ALL})
 else()
@@ -112,7 +118,11 @@ else()
 	endforeach()
 	endif()
 
-	include_directories(.)
+	include_directories(
+	.
+	../libs/lua/src
+	../libs/luawrapper
+	)
 	
 	if (USE_PRECOMPILED_HEADERS)
 	# precompiled magic for GCC/clang, adapted from https://gist.github.com/573926

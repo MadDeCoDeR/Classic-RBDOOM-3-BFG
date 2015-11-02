@@ -531,9 +531,6 @@ file(GLOB UI_SOURCES ui/*.cpp)
 file(GLOB SWF_INCLUDES swf/*.h)
 file(GLOB SWF_SOURCES swf/*.cpp)
 
-file(GLOB UI_LUA_INCLUDES ui-lua/*.h)
-file(GLOB UI_LUA_SOURCES ui-lua/*.cpp)
-
 set(LUA_INCLUDES
 	libs/lua/src/lapi.h
 	libs/lua/src/lauxlib.h
@@ -1041,9 +1038,6 @@ source_group("ui" FILES ${UI_SOURCES})
 
 source_group("swf" FILES ${SWF_INCLUDES})
 source_group("swf" FILES ${SWF_SOURCES})
-
-source_group("ui-lua" FILES ${UI_LUA_INCLUDES})
-source_group("ui-lua" FILES ${UI_LUA_SOURCES})
 
 source_group("libs\\lua" FILES ${LUA_INCLUDES})
 source_group("libs\\lua" FILES ${LUA_SOURCES})
