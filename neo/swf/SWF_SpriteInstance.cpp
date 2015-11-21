@@ -342,6 +342,8 @@ bool idSWFSpriteInstance::RunActions()
 	
 	// RB begin
 #if 1
+	idSWF::SetLuaSpriteInstance( this );
+	
 	lua_State* L = sprite->GetSWF()->GetLuaState();
 	for( int i = 0; i < luaActions.Num(); i++ )
 	{
@@ -356,17 +358,15 @@ bool idSWFSpriteInstance::RunActions()
 			// push self reference
 			luaW_push<idSWFSpriteInstance>( L, this );	// ... userdata function
 			
-			lua_printstack( L );
+			//lua_printstack( L );
 			
 			if( lua_pcall( L, 1, 0, NULL ) != 0 ) // ... userdata
 			{
 				idLib::Warning( "idSWFSpriteInstance::RunActions( %s ): error running function: %s\n", name, lua_tostring( L, -1 ) );
+				
+				// remove warning from stack
+				lua_pop( L, 1 ); // ...
 			}
-			
-			// remove sprite instance
-			//lua_pop( L, 1 ); // ...
-			
-			//lua_printstack( L );
 		}
 		else
 		{
@@ -374,7 +374,7 @@ bool idSWFSpriteInstance::RunActions()
 			lua_pop( L, 1 ); // ...
 		}
 		
-		lua_printstack( L );
+		//lua_printstack( L );
 	}
 	luaActions.SetNum( 0 );
 #endif
@@ -1820,6 +1820,55 @@ int idSWFSpriteInstance::Lua_stop( lua_State* L )
 	return 0;
 }
 
+int idSWFSpriteInstance::Lua_play( lua_State* L )
+{
+	idSWFSpriteInstance* sprite = luaW_check<idSWFSpriteInstance>( L, 1 );
+	if( sprite )
+	{
+		sprite->Play();
+	}
+	
+	return 0;
+}
+
+int idSWFSpriteInstance::Lua_gotoAndPlay( lua_State* L )
+{
+	idSWFSpriteInstance* sprite = luaW_check<idSWFSpriteInstance>( L, 1 );
+	if( sprite )
+	{
+		int args = lua_gettop( L );
+		
+		if( args > 1 )
+		{
+			sprite->actions.Clear();
+			sprite->luaActions.Clear(); // RB
+			
+			int frame = 0;
+			
+			if( lua_isstring( L, 2 ) )
+			{
+				const char* label = luaL_checkstring( L, 2 );
+				
+				frame = sprite->FindFrame( label );
+			}
+			else if( lua_isnumber( L, 2 ) )
+			{
+				frame = lua_tonumber( L, 2 );
+			}
+			
+			sprite->RunTo( frame );
+			sprite->Play();
+		}
+		else
+		{
+			idLib::Warning( "gotoAndPlay: expected 1 parameter" );
+		}
+	}
+	
+	return 0;
+}
+
+
 static const luaL_Reg Sprite_default[] =
 {
 //	{ "new",			idSWFSpriteInstance::Lua_new },
@@ -1838,6 +1887,8 @@ static const luaL_Reg Sprite_meta[] =
 	{ "__newindex",		idSWFSpriteInstance::Lua_newindex },
 	{ "__tostring",		idSWFSpriteInstance::Lua_tostring },
 	{ "stop",			idSWFSpriteInstance::Lua_stop },
+	{ "play",			idSWFSpriteInstance::Lua_play },
+	{ "gotoAndPlay",	idSWFSpriteInstance::Lua_gotoAndPlay },
 	
 	{NULL, NULL}
 };

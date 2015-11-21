@@ -3,7 +3,7 @@
 
 Doom 3 BFG Edition GPL Source Code
 Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company.
-Copyright (C) 2013 Robert Beckebans
+Copyright (C) 2013-2015 Robert Beckebans
 
 This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").
 
@@ -135,10 +135,7 @@ public:
 		inhibitControl = val;
 	}
 	
-	void SetGlobal( const char* name, const idSWFScriptVar& value )
-	{
-		globals->Set( name, value );
-	}
+	void SetGlobal( const char* name, const idSWFScriptVar& value ); // RB: added Lua hook
 	void SetGlobalNative( const char* name, idSWFScriptNativeVariable* native )
 	{
 		globals->SetNative( name, native );
@@ -534,17 +531,21 @@ public:
 	// RB: LUA INTEGRATION
 	static void*				LuaAlloc( void* ud, void* ptr, size_t osize, size_t nsize );
 	static int					LuaPanic( lua_State* L );
-	void						RegisterLuaGlobals( lua_State* L );
 	
 public:
-	bool						RunLuaFunction( const char* func, const char* fmt, ... );
-	
 	lua_State*					GetLuaState() const
 	{
 		return luaState;
 	}
 	
 private:
+	static int					LuaNativeScriptFunctionCall( lua_State* L );
+	static idSWFSpriteInstance* luaSpriteInstance;
+	static inline void			SetLuaSpriteInstance( idSWFSpriteInstance* spriteInstance )
+	{
+		luaSpriteInstance = spriteInstance;
+	}
+	
 	lua_State*					luaState;
 	// RB end
 };

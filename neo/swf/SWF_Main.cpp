@@ -44,6 +44,7 @@ idCVar swf_exportLua( "swf_exportLua", "1", CVAR_BOOL, "" );
 int idSWF::mouseX = -1;
 int idSWF::mouseY = -1;
 bool idSWF::isMouseInClientArea = false;
+idSWFSpriteInstance* idSWF::luaSpriteInstance = NULL;
 
 extern idCVar in_useJoystick;
 
@@ -323,6 +324,17 @@ idSWF::idSWF( const char* filename_, idSoundWorld* soundWorld_ )
 	}
 	// RB end
 	
+	// RB: Lua
+	lua_State* L = luaState = lua_newstate( LuaAlloc, NULL );
+	if( L )
+	{
+		lua_atpanic( L, &LuaPanic );
+	}
+	
+	luaL_openlibs( L );
+	idSWFSpriteInstance::LuaRegister_idSWFSpriteInstance( L );
+	
+	// RB: also use globals->Set to register functions into the Lua state
 	globals = idSWFScriptObject::Alloc();
 	globals->Set( "_global", globals );
 	
@@ -336,20 +348,20 @@ idSWF::idSWF( const char* filename_, idSoundWorld* soundWorld_ )
 	scriptFunction_shortcutKeys_clear.Call( shortcutKeys, idSWFParmList() );
 	globals->Set( "shortcutKeys", shortcutKeys );
 	
-	globals->Set( "deactivate", scriptFunction_deactivate.Bind( this ) );
-	globals->Set( "inhibitControl", scriptFunction_inhibitControl.Bind( this ) );
-	globals->Set( "useInhibit", scriptFunction_useInhibit.Bind( this ) );
-	globals->Set( "precacheSound", scriptFunction_precacheSound.Bind( this ) );
-	globals->Set( "playSound", scriptFunction_playSound.Bind( this ) );
-	globals->Set( "stopSounds", scriptFunction_stopSounds.Bind( this ) );
-	globals->Set( "getPlatform", scriptFunction_getPlatform.Bind( this ) );
-	globals->Set( "getTruePlatform", scriptFunction_getTruePlatform.Bind( this ) );
-	globals->Set( "getLocalString", scriptFunction_getLocalString.Bind( this ) );
-	globals->Set( "swapPS3Buttons", scriptFunction_swapPS3Buttons.Bind( this ) );
-	globals->Set( "_root", mainspriteInstance->scriptObject );
-	globals->Set( "strReplace", scriptFunction_strReplace.Bind( this ) );
-	globals->Set( "getCVarInteger", scriptFunction_getCVarInteger.Bind( this ) );
-	globals->Set( "setCVarInteger", scriptFunction_setCVarInteger.Bind( this ) );
+	SetGlobal( "deactivate", scriptFunction_deactivate.Bind( this ) );
+	SetGlobal( "inhibitControl", scriptFunction_inhibitControl.Bind( this ) );
+	SetGlobal( "useInhibit", scriptFunction_useInhibit.Bind( this ) );
+	SetGlobal( "precacheSound", scriptFunction_precacheSound.Bind( this ) );
+	SetGlobal( "playSound", scriptFunction_playSound.Bind( this ) );
+	SetGlobal( "stopSounds", scriptFunction_stopSounds.Bind( this ) );
+	SetGlobal( "getPlatform", scriptFunction_getPlatform.Bind( this ) );
+	SetGlobal( "getTruePlatform", scriptFunction_getTruePlatform.Bind( this ) );
+	SetGlobal( "getLocalString", scriptFunction_getLocalString.Bind( this ) );
+	SetGlobal( "swapPS3Buttons", scriptFunction_swapPS3Buttons.Bind( this ) );
+	SetGlobal( "_root", mainspriteInstance->scriptObject );
+	SetGlobal( "strReplace", scriptFunction_strReplace.Bind( this ) );
+	SetGlobal( "getCVarInteger", scriptFunction_getCVarInteger.Bind( this ) );
+	SetGlobal( "setCVarInteger", scriptFunction_setCVarInteger.Bind( this ) );
 	
 	globals->Set( "acos", scriptFunction_acos.Bind( this ) );
 	globals->Set( "cos", scriptFunction_cos.Bind( this ) );
@@ -370,18 +382,6 @@ idSWF::idSWF( const char* filename_, idSoundWorld* soundWorld_ )
 	globals->SetNative( "crop", swfScriptVar_crop.Bind( this ) );
 	
 	
-	// RB: Lua
-	lua_State* L = luaState = lua_newstate( LuaAlloc, NULL );
-	if( L )
-	{
-		lua_atpanic( L, &LuaPanic );
-	}
-	
-	luaL_openlibs( L );
-	idSWFSpriteInstance::LuaRegister_idSWFSpriteInstance( L );
-	
-	
-	//lua_setglobal( L, "stop" );
 	
 	//ID_TIME_T luaTimestamp;
 	idStr luaFileName = filename;
@@ -518,6 +518,39 @@ bool idSWF::InhibitControl()
 	}
 	return ( inhibitControl && useInhibtControl );
 }
+
+
+// RB begin
+void idSWF::SetGlobal( const char* name, const idSWFScriptVar& value )
+{
+	globals->Set( name, value );
+	
+	if( value.IsFunction() )
+	{
+		lua_State* L = luaState;
+		
+		lua_getglobal( L, name ); // ... ( function | nil )
+		
+		if( lua_isfunction( L, -1 ) )
+		{
+			// already added
+		}
+		else
+		{
+			// ... nil
+			lua_pop( L, 1 ); // ...
+			
+			// http://stackoverflow.com/questions/2907221/get-the-lua-command-when-a-c-function-is-called
+			
+			lua_pushstring( L, name );
+			lua_pushcclosure( L, LuaNativeScriptFunctionCall, 1 );
+			lua_setglobal( L, name );
+		}
+		
+		//lua_printstack( L );
+	}
+}
+// RB end
 
 /*
 ===================

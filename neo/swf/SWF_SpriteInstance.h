@@ -248,7 +248,10 @@ public:
 	static int				Lua_index( lua_State* L );
 	static int				Lua_newindex( lua_State* L );
 	static int				Lua_tostring( lua_State* L );
+	
 	static int				Lua_stop( lua_State* L );
+	static int				Lua_play( lua_State* L );
+	static int				Lua_gotoAndPlay( lua_State* L );
 	
 	static int				LuaRegister_idSWFSpriteInstance( lua_State* L );
 	// RB end
