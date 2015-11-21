@@ -3,6 +3,7 @@
 
 Doom 3 BFG Edition GPL Source Code
 Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company.
+Copyright (C) 2015 Robert Beckebans
 
 This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").
 
@@ -27,7 +28,10 @@ If you have questions concerning this license or the applicable additional terms
 */
 #pragma hdrstop
 #include "precompiled.h"
+
 #include <lua.hpp>
+#include <luawrapper.hpp>
+#include <luawrapperutil.hpp>
 
 idSWFScriptObject_SpriteInstancePrototype spriteInstanceScriptObjectPrototype;
 
@@ -343,27 +347,26 @@ bool idSWFSpriteInstance::RunActions()
 	{
 		const char* name = ( const char* ) luaActions[i].data;
 		
-		//lua_getfield( L, -1, name ); // ... userdata ( function | nil )
+		//lua_printstack( L );
 		
 		lua_getglobal( L, name ); // ... ( function | nil )
 		
 		if( lua_isfunction( L, -1 ) )
 		{
 			// push self reference
-			//luaW_push<idWindow>( luaState, desktop );	// ... userdata function userdata
+			luaW_push<idSWFSpriteInstance>( L, this );	// ... userdata function
 			
-			//lua_printstack( L );
+			lua_printstack( L );
 			
 			if( lua_pcall( L, 1, 0, NULL ) != 0 ) // ... userdata
 			{
 				idLib::Warning( "idSWFSpriteInstance::RunActions( %s ): error running function: %s\n", name, lua_tostring( L, -1 ) );
 			}
-			else
-			{
-				//lua_pop( L, 1 ); // ...
-			}
 			
-			lua_printstack( L );
+			// remove sprite instance
+			//lua_pop( L, 1 ); // ...
+			
+			//lua_printstack( L );
 		}
 		else
 		{
@@ -372,10 +375,6 @@ bool idSWFSpriteInstance::RunActions()
 		}
 		
 		lua_printstack( L );
-		
-		
-		//actionScript->SetData( luaActions[i].data, luaActions[i].dataLength );
-		//actionScript->Call( scriptObject, idSWFParmList() );
 	}
 	luaActions.SetNum( 0 );
 #endif
@@ -731,6 +730,7 @@ void idSWFSpriteInstance::PlayFrame( const idSWFParmList& parms )
 	if( parms.Num() > 0 )
 	{
 		actions.Clear();
+		luaActions.Clear(); // RB
 		RunTo( FindFrame( parms[0].ToString() ) );
 		Play();
 	}
@@ -1215,6 +1215,7 @@ SWF_SPRITE_FUNCTION_DEFINE( gotoAndPlay )
 	if( parms.Num() > 0 )
 	{
 		pThis->actions.Clear();
+		pThis->luaActions.Clear(); // RB
 		pThis->RunTo( pThis->FindFrame( parms[0].ToString() ) );
 		pThis->Play();
 	}
@@ -1706,4 +1707,144 @@ SWF_SPRITE_NATIVE_VAR_DEFINE_SET( onEnterFrame )
 {
 	SWF_SPRITE_PTHIS_SET( "onEnterFrame" );
 	pThis->onEnterFrame = value;
+}
+
+
+// LUA
+int idSWFSpriteInstance::Lua_gc( lua_State* L )
+{
+	idSWFSpriteInstance* sprite = luaW_check<idSWFSpriteInstance>( L, 1 );
+	idLib::Printf( "Lua says bye to sprite = %p\n", sprite );
+	
+	// RB: already freed by delete desktop
+//	delete window;
+
+	return 0;
+}
+
+int idSWFSpriteInstance::Lua_index( lua_State* L )
+{
+	idSWFSpriteInstance* sprite = luaW_check<idSWFSpriteInstance>( L, 1 );
+	if( sprite )
+	{
+		if( lua_isstring( L, 2 ) )
+		{
+			char		buf[MAX_STRING_CHARS];
+			
+			const char* field = luaL_checkstring( L, 2 );
+			
+			// TODO more fields
+			if( idStr::Cmp( field, "_name" ) == 0 )
+			{
+				sprintf( buf, "%s", sprite->name.c_str() );
+				lua_pushstring( L, buf );
+				return 1;
+			}
+			else if( idStr::Cmp( field, "_stereoDepth" ) == 0 )
+			{
+				lua_pushnumber( L, sprite->stereoDepth );
+				return 1;
+			}
+			else if( idStr::Cmp( field, "_visible" ) == 0 )
+			{
+				lua_pushboolean( L, sprite->isVisible );
+				return 1;
+			}
+		}
+	}
+	
+	return luaW_index<idSWFSpriteInstance>( L );
+}
+
+int idSWFSpriteInstance::Lua_newindex( lua_State* L )
+{
+	idSWFSpriteInstance* sprite = luaW_check<idSWFSpriteInstance>( L, 1 );
+	if( sprite )
+	{
+		if( lua_isstring( L, 2 ) )
+		{
+			const char* field = luaL_checkstring( L, 2 );
+			
+			// TODO more fields
+			if( idStr::Cmp( field, "_visible" ) == 0 )
+			{
+				int b;
+				if( lua_isboolean( L, 3 ) )
+				{
+					b = lua_toboolean( L, 3 );
+				}
+				else
+				{
+					b = luaL_checknumber( L, 3 );
+				}
+				sprite->isVisible = ( b != 0 );
+				if( sprite->isVisible )
+				{
+					for( idSWFSpriteInstance* p = sprite->parent; p != NULL; p = p->parent )
+					{
+						p->childrenRunning = true;
+					}
+				}
+				
+				return 0;
+			}
+		}
+	}
+	
+	return luaW_newindex<idSWFSpriteInstance>( L );
+}
+
+int idSWFSpriteInstance::Lua_tostring( lua_State* L )
+{
+	char		buf[MAX_STRING_CHARS];
+	
+	idSWFSpriteInstance* sprite = luaW_check<idSWFSpriteInstance>( L, 1 );
+	if( sprite )
+	{
+		sprintf( buf, "Sprite: name='%s' ", sprite->name.c_str() );
+		lua_pushstring( L, buf );
+		return 1;
+	}
+	
+	return 0;
+}
+
+int idSWFSpriteInstance::Lua_stop( lua_State* L )
+{
+	idSWFSpriteInstance* sprite = luaW_check<idSWFSpriteInstance>( L, 1 );
+	if( sprite )
+	{
+		sprite->Stop();
+	}
+	
+	return 0;
+}
+
+static const luaL_Reg Sprite_default[] =
+{
+//	{ "new",			idSWFSpriteInstance::Lua_new },
+//	{ "__postctor",		luaU_build<idSWFSpriteInstance> },
+//	{ "text",			idSWFSpriteInstance::Lua_text },
+	{NULL, NULL}
+};
+
+static const luaL_Reg Sprite_meta[] =
+{
+//	{ "__new",			idSWFSpriteInstance::Lua_new},
+//	{ "__postctor",		luaU_build<idSWFSpriteInstance> },
+//	{ "clone",			luaU_clone<idSWFSpriteInstance> },
+	{ "__gc",			idSWFSpriteInstance::Lua_gc},
+	{ "__index",		idSWFSpriteInstance::Lua_index },
+	{ "__newindex",		idSWFSpriteInstance::Lua_newindex },
+	{ "__tostring",		idSWFSpriteInstance::Lua_tostring },
+	{ "stop",			idSWFSpriteInstance::Lua_stop },
+	
+	{NULL, NULL}
+};
+
+int idSWFSpriteInstance::LuaRegister_idSWFSpriteInstance( lua_State* L )
+{
+	luaW_register<idSWFSpriteInstance>( L, "Sprite", Sprite_default, Sprite_meta );
+	
+	return 0;
 }

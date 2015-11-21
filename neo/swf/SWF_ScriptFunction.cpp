@@ -1802,7 +1802,7 @@ idStr idSWFScriptFunction_Script::ExportToScript( idSWFScriptObject* thisObject,
 
 	actionBlocks.Clear();
 	currentBlock = &actionBlocks.Alloc();
-	currentBlock->line = va( "function sprite%i_action%i()", characterID, actionID );
+	currentBlock->line = va( "function sprite%i_action%i( this )", characterID, actionID );
 	
 	//int indentLevel = 0;
 	//idStr indent;
@@ -1856,16 +1856,16 @@ idStr idSWFScriptFunction_Script::ExportToScript( idSWFScriptObject* thisObject,
 				callstackLevel--;
 				goto finish;
 			case Action_NextFrame:
-				AddLine( "nextFrame()" );
+				AddLine( "this:nextFrame()" );
 				break;
 			case Action_PrevFrame:
-				AddLine( "prevFrame()" );
+				AddLine( "this:prevFrame()" );
 				break;
 			case Action_Play:
-				AddLine( "play()" );
+				AddLine( "this:play()" );
 				break;
 			case Action_Stop:
-				AddLine( "stop()" );
+				AddLine( "this:stop()" );
 				break;
 			case Action_ToggleQuality:
 				break;
@@ -1876,19 +1876,19 @@ idStr idSWFScriptFunction_Script::ExportToScript( idSWFScriptObject* thisObject,
 				assert( recordLength == 2 );
 				int frameNum = bitstream.ReadU16() + 1;
 				
-				AddLine( va( "gotoAndPlay( %i )", frameNum ) );
+				AddLine( va( "this:gotoAndPlay( %i )", frameNum ) );
 				break;
 			}
 			case Action_SetTarget:
 			{
 				const char* targetName = ( const char* )bitstream.ReadData( recordLength );
-				AddLine( va( "setTarget( \"%s\" )", targetName ) );
+				AddLine( va( "this:setTarget( \"%s\" )", targetName ) );
 				break;
 			}
 			case Action_GoToLabel:
 			{
 				const char* targetName = ( const char* )bitstream.ReadData( recordLength );
-				AddLine( va( "gotoLabel( \"%s\" )", targetName ) );
+				AddLine( va( "this:gotoLabel( \"%s\" )", targetName ) );
 				break;
 			}
 			case Action_Push:
@@ -2162,11 +2162,11 @@ idStr idSWFScriptFunction_Script::ExportToScript( idSWFScriptObject* thisObject,
 			case Action_Trace:
 				if( stack.A().IsString() )
 				{
-					AddLine( va( "trace( \"%s\" )\n", stack.A().ToString().c_str() ) );
+					AddLine( va( "print( \"%s\" )\n", stack.A().ToString().c_str() ) );
 				}
 				else
 				{
-					AddLine( va( "trace( %s )\n", stack.A().ToString().c_str() ) );
+					AddLine( va( "print( %s )\n", stack.A().ToString().c_str() ) );
 				}
 				stack.Pop( 1 );
 				break;
@@ -2253,7 +2253,7 @@ idStr idSWFScriptFunction_Script::ExportToScript( idSWFScriptObject* thisObject,
 					idLib::PrintfIf( swf_debug.GetInteger() > 1, "SWF: NULL object for method %s\n", functionName.c_str() );
 				}
 				
-				idStr line = va( "%s.%s( ", stack.B().ToString().c_str(), functionName.c_str() );
+				idStr line = va( "%s:%s( ", stack.B().ToString().c_str(), functionName.c_str() );
 				
 				stack.Pop( 2 );
 				

@@ -1425,6 +1425,8 @@ void idSWF::WriteJSON( const char* jsonFilename )
 		return;
 	}
 	
+	luaFile->WriteFloatString( "function just_stop( this )\n\tthis:stop()\nend\n\n" );
+	
 	file->WriteFloatString( "{\n \t\"version\": %i,\n \t\"frameWidth\": %f,\n \t\"frameHeight\": %f,\n \t\"frameRate\": %i,\n", XSWF_VERSION, ( float )frameWidth, ( float )frameHeight, ( int )frameRate );
 	
 	file->WriteFloatString( "\t\"dict\":\n\t[\n" );

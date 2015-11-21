@@ -378,6 +378,10 @@ idSWF::idSWF( const char* filename_, idSoundWorld* soundWorld_ )
 	}
 	
 	luaL_openlibs( L );
+	idSWFSpriteInstance::LuaRegister_idSWFSpriteInstance( L );
+	
+	
+	//lua_setglobal( L, "stop" );
 	
 	//ID_TIME_T luaTimestamp;
 	idStr luaFileName = filename;

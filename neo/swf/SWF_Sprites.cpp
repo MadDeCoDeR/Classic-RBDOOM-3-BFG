@@ -728,36 +728,47 @@ void idSWFSprite::WriteJSON_DoAction( idFile* file, idFile* luaFile, idSWFBitStr
 #if 0
 	file->WriteFloatString( "%s\t\t\t\t{\t\"type\": \"Tag_DoAction\", \"streamLength\": %i, \"stream\": \"%s\" }", ( commandID != 0 ) ? ",\n" : "", bitstream.Length(), base64.c_str() );
 #else
-	idSWFScriptObject* scriptObject = idSWFScriptObject::Alloc();
-	scriptObject->SetPrototype( &spriteInstanceScriptObjectPrototype );
-//	scriptObject->SetSprite( this );
+	if( !idStr::Cmpn( base64.c_str(), "BwA=", 4 ) )
+	{
+		file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoLua\",\n\t\t\t\t\t\"function\": \"just_stop\"\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "" );
+	}
+	else
+	{
+		idSWFScriptObject* scriptObject = idSWFScriptObject::Alloc();
+		scriptObject->SetPrototype( &spriteInstanceScriptObjectPrototype );
+		//	scriptObject->SetSprite( this );
 	
-	idSWFScriptFunction_Script* actionScript = idSWFScriptFunction_Script::Alloc();
+		idSWFScriptFunction_Script* actionScript = idSWFScriptFunction_Script::Alloc();
 	
-	idList<idSWFScriptObject*, TAG_SWF> scope;
-	//scope.Append( swf->globals );
-	scope.Append( scriptObject );
-	actionScript->SetScope( scope );
-//	actionScript->SetDefaultSprite( this );
+		idList<idSWFScriptObject*, TAG_SWF> scope;
+		//scope.Append( swf->globals );
+		scope.Append( scriptObject );
+		actionScript->SetScope( scope );
+		//	actionScript->SetDefaultSprite( this );
 	
-	actionScript->SetData( bitstream.Ptr(), bitstream.Length() );
-	idStr scriptText = actionScript->CallToScript( scriptObject, idSWFParmList(), file->GetName(), characterID, commandID );
-	idStr quotedText = idStr::CStyleQuote( scriptText.c_str() );
+		actionScript->SetData( bitstream.Ptr(), bitstream.Length() );
+		idStr scriptText = actionScript->CallToScript( scriptObject, idSWFParmList(), file->GetName(), characterID, commandID );
+		idStr quotedText = idStr::CStyleQuote( scriptText.c_str() );
 	
-	luaFile->WriteFloatString( "\n%s\n", scriptText.c_str() );
+		luaFile->WriteFloatString( "\n%s\n", scriptText.c_str() );
 	
-	//file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoAction\", \"streamLength\": %i, \"stream\": \"%s\",\n\t\t\t\t\t\"luaCode\": %s\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", bitstream.Length(), base64.c_str(), quotedText.c_str() );
+		//file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoAction\", \"streamLength\": %i, \"stream\": \"%s\",\n\t\t\t\t\t\"luaCode\": %s\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", bitstream.Length(), base64.c_str(), quotedText.c_str() );
 	
-	file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoLua\",\n\t\t\t\t\t\"function\": \"sprite%i_action%i\"\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", characterID, commandID );
+		file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoLua\",\n\t\t\t\t\t\"function\": \"sprite%i_action%i\"\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", characterID, commandID );
 	
-	delete actionScript;
-	delete scriptObject;
+		delete actionScript;
+		delete scriptObject;
+	}
 #endif
 }
 
 void idSWFSprite::WriteJSON_DoLua( idFile* file, idFile* luaFile, idSWFBitStream& bitstream, int characterID, int commandID, const char* indentPrefix )
 {
-	file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoLua\",\n\t\t\t\t\t\"function\": \"sprite%i_action%i\"\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", characterID, commandID );
+	idStr str( ( const char* ) bitstream.Ptr(), 0, bitstream.Length() );
+	
+	file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoLua\",\n\t\t\t\t\t\"function\": \"%s\"\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", str.c_str() );
+	
+	//file->WriteFloatString( "%s\t\t\t\t{\n\t\t\t\t\t\"type\": \"Tag_DoLua\",\n\t\t\t\t\t\"function\": \"sprite%i_action%i\"\n\t\t\t\t}", ( commandID != 0 ) ? ",\n" : "", characterID, commandID );
 }
 
 
