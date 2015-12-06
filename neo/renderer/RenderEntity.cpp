@@ -3,6 +3,7 @@
 
 Doom 3 BFG Edition GPL Source Code
 Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company.
+Copyright (C) 2015 Robert Beckebans
 
 This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").
 
@@ -123,6 +124,38 @@ void idRenderLightLocal::ForceUpdate()
 {
 }
 int idRenderLightLocal::GetIndex()
+{
+	return index;
+}
+
+//======================================================================
+
+RenderEnvprobeLocal::RenderEnvprobeLocal()
+{
+	memset( &parms, 0, sizeof( parms ) );
+	
+	envprobeHasMoved		= false;
+	world					= NULL;
+	index					= 0;
+	areaNum					= 0;
+	lastModifiedFrameNum	= 0;
+	archived				= false;
+	references				= NULL;
+}
+
+void RenderEnvprobeLocal::FreeRenderEnvprobe()
+{
+}
+void RenderEnvprobeLocal::UpdateRenderEnvprobe( const renderEnvironmentProbe_t* ep, bool forceUpdate )
+{
+}
+void RenderEnvprobeLocal::GetRenderEnvprobe( renderEnvironmentProbe_t* ep )
+{
+}
+void RenderEnvprobeLocal::ForceUpdate()
+{
+}
+int RenderEnvprobeLocal::GetIndex()
 {
 	return index;
 }

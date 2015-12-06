@@ -3,6 +3,7 @@
 
 Doom 3 BFG Edition GPL Source Code
 Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company.
+Copyright (C) 2015 Robert Beckebans
 
 This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").
 
@@ -67,6 +68,7 @@ typedef struct portalArea_s
 	portal_t* 		portals;		// never changes after load
 	areaReference_t	entityRefs;		// head/tail of doubly linked list, may change
 	areaReference_t	lightRefs;		// head/tail of doubly linked list, may change
+	areaReference_t	envprobeRefs;	// head/tail of doubly linked list, may change
 } portalArea_t;
 
 
@@ -114,6 +116,13 @@ public:
 	virtual	void			UpdateLightDef( qhandle_t lightHandle, const renderLight_t* rlight );
 	virtual	void			FreeLightDef( qhandle_t lightHandle );
 	virtual const renderLight_t* GetRenderLight( qhandle_t lightHandle ) const;
+	
+	// RB: environment probes for IBL
+	virtual	qhandle_t		AddEnvprobeDef( const renderEnvironmentProbe_t* ep );
+	virtual	void			UpdateEnvprobeDef( qhandle_t envprobeHandle, const renderEnvironmentProbe_t* ep );
+	virtual	void			FreeEnvprobeDef( qhandle_t envprobeHandle );
+	virtual const renderEnvironmentProbe_t* GetRenderEnvprobe( qhandle_t envprobeHandle ) const;
+	// RB end
 	
 	virtual bool			CheckAreaForPortalSky( int areaNum );
 	
@@ -175,8 +184,9 @@ public:
 	
 	idList<idRenderModel*, TAG_MODEL>	localModels;
 	
-	idList<idRenderEntityLocal*, TAG_ENTITY>	entityDefs;
-	idList<idRenderLightLocal*, TAG_LIGHT>		lightDefs;
+	idList<idRenderEntityLocal*, TAG_ENTITY>		entityDefs;
+	idList<idRenderLightLocal*, TAG_LIGHT>			lightDefs;
+	idList<RenderEnvprobeLocal*, TAG_ENVPROBE>		envprobeDefs; // RB
 	
 	idBlockAlloc<areaReference_t, 1024> areaReferenceAllocator;
 	idBlockAlloc<idInteraction, 256>	interactionAllocator;
@@ -263,10 +273,13 @@ public:
 	void					WriteVisibleDefs( const viewDef_t* viewDef );
 	void					WriteFreeLight( qhandle_t handle );
 	void					WriteFreeEntity( qhandle_t handle );
+	void					WriteFreeEnvprobe( qhandle_t handle ); // RB
 	void					WriteRenderLight( qhandle_t handle, const renderLight_t* light );
 	void					WriteRenderEntity( qhandle_t handle, const renderEntity_t* ent );
+	void					WriteRenderEnvprobe( qhandle_t handle, const renderEnvironmentProbe_t* probe ); // RB
 	void					ReadRenderEntity();
 	void					ReadRenderLight();
+	void					ReadRenderEnvprobe(); // RB
 	
 	
 	//--------------------------
@@ -276,6 +289,7 @@ public:
 	
 	void					AddEntityRefToArea( idRenderEntityLocal* def, portalArea_t* area );
 	void					AddLightRefToArea( idRenderLightLocal* light, portalArea_t* area );
+	void					AddEnvprobeRefToArea( RenderEnvprobeLocal* probe, portalArea_t* area ); // RB
 	
 	void					RecurseProcBSP_r( modelTrace_t* results, int parentNodeNum, int nodeNum, float p1f, float p2f, const idVec3& p1, const idVec3& p2 ) const;
 	void					BoundsInAreas_r( int nodeNum, const idBounds& bounds, int* areas, int* numAreas, int maxAreas ) const;
@@ -286,6 +300,7 @@ public:
 	
 	void					PushFrustumIntoTree_r( idRenderEntityLocal* def, idRenderLightLocal* light, const frustumCorners_t& corners, int nodeNum );
 	void					PushFrustumIntoTree( idRenderEntityLocal* def, idRenderLightLocal* light, const idRenderMatrix& frustumTransform, const idBounds& frustumBounds );
+	void					PushEnvprobeIntoTree_r( RenderEnvprobeLocal* probe, int nodeNum ); // RB
 	
 	idRenderModelDecal* 	AllocDecal( qhandle_t newEntityHandle, int startTime );
 	idRenderModelOverlay* 	AllocOverlay( qhandle_t newEntityHandle, int startTime );

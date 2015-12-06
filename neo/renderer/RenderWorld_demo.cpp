@@ -801,3 +801,26 @@ void	idRenderWorldLocal::ReadRenderEntity()
 		common->Printf( "DC_UPDATE_ENTITYDEF: %i = %s\n", index, ent.hModel ? ent.hModel->Name() : "NULL" );
 	}
 }
+
+
+// RB begin
+void	idRenderWorldLocal::WriteFreeEnvprobe( qhandle_t handle )
+{
+
+	// only the main renderWorld writes stuff to demos, not the wipes or
+	// menu renders
+	if( this != common->RW() )
+	{
+		return;
+	}
+	
+	common->WriteDemo()->WriteInt( DS_RENDER );
+	common->WriteDemo()->WriteInt( DC_DELETE_ENVPROBEDEF );
+	common->WriteDemo()->WriteInt( handle );
+	
+	if( r_showDemo.GetBool() )
+	{
+		common->Printf( "write DC_DELETE_ENVPROBEDEF: %i\n", handle );
+	}
+}
+// RB end
