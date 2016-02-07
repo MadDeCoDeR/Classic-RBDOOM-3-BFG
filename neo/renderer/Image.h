@@ -205,6 +205,19 @@ public:
 	
 	static void			GetGeneratedName( idStr& _name, const textureUsage_t& _usage, const cubeFiles_t& _cube );
 	
+	// DG: added for imgui integration (to be used with ImGui::Image() etc)
+	void*		GetImGuiTextureID()
+	{
+		if( !IsLoaded() )
+		{
+			// load the image on demand here, which isn't our normal game operating mode
+			ActuallyLoadImage( true );
+		}
+		
+		return ( void* )( intptr_t )texnum;
+	}
+	// DG end
+	
 private:
 	friend class idImageManager;
 	
