@@ -211,11 +211,10 @@ bool		idRenderWorldLocal::ProcessDemoCommand( idDemoFile* readDemo, renderView_t
 			{
 				common->Printf( "DC_CROP_RENDER\n" );
 			}
-			int	size[3];
+			int	size[2];
 			readDemo->ReadInt( size[0] );
 			readDemo->ReadInt( size[1] );
-			readDemo->ReadInt( size[2] );
-			renderSystem->CropRenderSize( size[0], size[1] );
+			//renderSystem->CropRenderSize( size[0], size[1] );
 			break;
 			
 		case DC_UNCROP_RENDER:
@@ -223,7 +222,7 @@ bool		idRenderWorldLocal::ProcessDemoCommand( idDemoFile* readDemo, renderView_t
 			{
 				common->Printf( "DC_UNCROP\n" );
 			}
-			renderSystem->UnCrop();
+			//renderSystem->UnCrop();
 			break;
 			
 		case DC_GUI_MODEL:
@@ -327,7 +326,7 @@ void	idRenderWorldLocal::WriteVisibleDefs( const viewDef_t* viewDef )
 	{
 		idRenderEntityLocal* ent = viewEnt->entityDef;
 		
-		if( ent->archived )
+		if( ent == NULL || ent->archived )
 		{
 			// still up to date
 			continue;
@@ -342,7 +341,8 @@ void	idRenderWorldLocal::WriteVisibleDefs( const viewDef_t* viewDef )
 	{
 		idRenderLightLocal* light = viewLight->lightDef;
 		
-		if( light->archived )
+		// RB: FIXME remove ! from light->archived and fix the interaction table problems
+		if( light == NULL || !light->archived )
 		{
 			// still up to date
 			continue;

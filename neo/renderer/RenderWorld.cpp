@@ -968,6 +968,13 @@ void idRenderWorldLocal::RenderScene( const renderView_t* renderView )
 	tr.primaryRenderView = *renderView;
 	tr.primaryView = parms;
 	
+	// RB begin
+	//if( common->ReadDemo() && this != common->RW() && !generateAllInteractionsCalled )
+	//{
+	//	GenerateAllInteractions();
+	//}
+	// RB end
+	
 	// rendering this view may cause other views to be rendered
 	// for mirrors / portals / shadows / environment maps
 	// this will also cause any necessary entities and lights to be

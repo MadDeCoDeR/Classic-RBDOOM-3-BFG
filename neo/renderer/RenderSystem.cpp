@@ -739,6 +739,18 @@ void idRenderSystemLocal::SwapCommandBuffers_FinishRendering(
 		return;
 	}
 	
+	// RB: record demo support
+	if( common->WriteDemo() )
+	{
+		common->WriteDemo()->WriteInt( DS_RENDER );
+		common->WriteDemo()->WriteInt( DC_END_FRAME );
+		if( r_showDemo.GetBool() )
+		{
+			common->Printf( "write DC_END_FRAME\n" );
+		}
+	}
+	// RB end
+	
 	
 	// After coming back from an autoswap, we won't have anything to render
 	if( frameData->cmdHead->next != NULL )

@@ -293,8 +293,11 @@ void idCommonLocal::Draw()
 	}
 	else if( readDemo )
 	{
-		renderWorld->RenderScene( &currentDemoRenderView );
-		renderSystem->DrawDemoPics();
+		if( numDemoFrames > 1 && currentDemoRenderView.fov_x > 10.0f )
+		{
+			renderWorld->RenderScene( &currentDemoRenderView );
+			renderSystem->DrawDemoPics();
+		}
 	}
 	else if( mapSpawned )
 	{
@@ -539,6 +542,13 @@ void idCommonLocal::Frame()
 			
 			// this will call Draw, possibly multiple times if com_aviDemoSamples is > 1
 			renderSystem->TakeScreenshot( com_aviDemoWidth.GetInteger(), com_aviDemoHeight.GetInteger(), name, com_aviDemoSamples.GetInteger(), NULL, TGA );
+		}
+		
+		// RB: advance demos
+		if( readDemo )
+		{
+			AdvanceRenderDemo( false );
+			//return;
 		}
 		
 		//--------------------------------------------

@@ -442,6 +442,7 @@ void idCommonLocal::AdvanceRenderDemo( bool singleFrameOnly )
 				StartMenu();
 			}
 			return;
+			
 		case DS_RENDER:
 			if( renderWorld->ProcessDemoCommand( readDemo, &currentDemoRenderView, &demoTimeOffset ) )
 			{
@@ -449,9 +450,20 @@ void idCommonLocal::AdvanceRenderDemo( bool singleFrameOnly )
 				numDemoFrames++;
 			}
 			break;
+			
 		case DS_SOUND:
 			soundWorld->ProcessDemoCommand( readDemo );
 			break;
+			
+		// RB: DS_VERSION was not handled
+		case DS_VERSION:
+		{
+			int renderdemoVersion = 0;
+			readDemo->ReadInt( renderdemoVersion );
+			common->Printf( "reading a v%d render demo\n", renderdemoVersion );
+			break;
+		}
+		
 		default:
 			common->Error( "Bad render demo token" );
 	}
