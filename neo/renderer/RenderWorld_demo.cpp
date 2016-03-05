@@ -159,7 +159,7 @@ bool		idRenderWorldLocal::ProcessDemoCommand( idDemoFile* readDemo, renderView_t
 			
 			if( r_showDemo.GetBool() )
 			{
-				common->Printf( "DC_RENDERVIEW: %i\n", renderView->time );
+				common->Printf( "DC_RENDERVIEW: %i\n", renderView->time[1] );
 			}
 			
 			// possibly change the time offset if this is from a new map
@@ -183,6 +183,7 @@ bool		idRenderWorldLocal::ProcessDemoCommand( idDemoFile* readDemo, renderView_t
 			}
 			FreeEntityDef( h );
 			break;
+			
 		case DC_UPDATE_LIGHTDEF:
 			ReadRenderLight();
 			break;
@@ -248,6 +249,7 @@ bool		idRenderWorldLocal::ProcessDemoCommand( idDemoFile* readDemo, renderView_t
 			}
 			break;
 		}
+		
 		case DC_SET_PORTAL_STATE:
 		{
 			int		data[2];
@@ -258,10 +260,14 @@ bool		idRenderWorldLocal::ProcessDemoCommand( idDemoFile* readDemo, renderView_t
 			{
 				common->Printf( "DC_SET_PORTAL_STATE: %i %i\n", data[0], data[1] );
 			}
+			break;
 		}
 		
-		break;
 		case DC_END_FRAME:
+			if( r_showDemo.GetBool() )
+			{
+				common->Printf( "DC_END_FRAME\n" );
+			}
 			return true;
 			
 		default:
@@ -302,7 +308,7 @@ void	idRenderWorldLocal::WriteLoadMap()
 		
 	if( r_showDemo.GetBool() )
 	{
-		common->Printf( "write DC_DELETE_LIGHTDEF: %s\n", mapName.c_str() );
+		common->Printf( "write DC_LOADMAP: %s\n", mapName.c_str() );
 	}
 }
 

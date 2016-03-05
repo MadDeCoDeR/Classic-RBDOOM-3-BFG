@@ -150,7 +150,9 @@ public:
 	virtual void				Frame();
 	// DG: added possibility to *not* release mouse in UpdateScreen(), it fucks up the view angle for screenshots
 	virtual void				UpdateScreen( bool captureToImage, bool releaseMouse = true );
-	// DG end
+	// RB:
+	virtual void				UpdateScreenForRenderDemo();
+	
 	virtual void				UpdateLevelLoadPacifier();
 	virtual void				StartupVariable( const char* match );
 	virtual void				WriteConfigToFile( const char* filename );
@@ -477,6 +479,7 @@ private:
 	timeDemo_t			timeDemo;
 	int					timeDemoStartTime;
 	int					numDemoFrames;		// for timeDemo and demoShot
+	int					renderedDemoFrames;
 	int					demoTimeOffset;
 	renderView_t		currentDemoRenderView;
 	

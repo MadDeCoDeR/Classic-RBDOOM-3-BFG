@@ -293,10 +293,13 @@ void idCommonLocal::Draw()
 	}
 	else if( readDemo )
 	{
-		if( numDemoFrames > 1 && currentDemoRenderView.fov_x > 10.0f )
+		//if( numDemoFrames > 1 && currentDemoRenderView.fov_x > 10.0f )
+		if( ( renderedDemoFrames < numDemoFrames ) && currentDemoRenderView.fov_x > 10.0f )
 		{
 			renderWorld->RenderScene( &currentDemoRenderView );
 			renderSystem->DrawDemoPics();
+			
+			renderedDemoFrames++;
 		}
 	}
 	else if( mapSpawned )
@@ -385,6 +388,39 @@ void idCommonLocal::UpdateScreen( bool captureToImage, bool releaseMouse )
 	
 	insideUpdateScreen = false;
 }
+
+// RB begin
+void idCommonLocal::UpdateScreenForRenderDemo()
+{
+	if( insideUpdateScreen )
+	{
+		return;
+	}
+	insideUpdateScreen = true;
+	
+	// make sure the game / draw thread has completed
+	//gameThread.WaitForThread();
+	
+	const emptyCommand_t* cmd = renderSystem->SwapCommandBuffers_FinishCommandBuffers();
+	
+	// build all the draw commands without running a new game tic
+	Draw();
+	
+#if 1
+	renderSystem->RenderCommandBuffers( cmd );
+	renderSystem->SwapCommandBuffers_FinishRendering( &time_frontend, &time_backend, &time_shadows, &time_gpu );
+	
+#else
+	const emptyCommand_t* cmd = renderSystem->SwapCommandBuffers( &time_frontend, &time_backend, &time_shadows, &time_gpu );
+	
+	// get the GPU busy with new commands
+	renderSystem->RenderCommandBuffers( cmd );
+#endif
+	
+	insideUpdateScreen = false;
+}
+// RB end
+
 /*
 ================
 idCommonLocal::ProcessGameReturn

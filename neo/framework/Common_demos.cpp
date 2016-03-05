@@ -220,7 +220,8 @@ void idCommonLocal::StartPlayingRenderDemo( idStr demoName )
 	
 	AdvanceRenderDemo( true );
 	
-	numDemoFrames = 1;
+	numDemoFrames = 0;
+	renderedDemoFrames = 0;
 	
 	timeDemoStartTime = Sys_Milliseconds();
 }
@@ -236,23 +237,7 @@ void idCommonLocal::TimeRenderDemo( const char* demoName, bool twice, bool quit 
 	
 	StartPlayingRenderDemo( demo );
 	
-	if( twice && readDemo )
-	{
-		while( readDemo )
-		{
-			const bool captureToImage = false;
-			UpdateScreen( captureToImage );
-			AdvanceRenderDemo( true );
-		}
-		
-		StartPlayingRenderDemo( demo );
-	}
-	
-	
-	if( !readDemo )
-	{
-		return;
-	}
+	gameThread.WaitForThread();
 	
 	if( quit )
 	{
@@ -263,6 +248,14 @@ void idCommonLocal::TimeRenderDemo( const char* demoName, bool twice, bool quit 
 	{
 		timeDemo = TD_YES;
 	}
+	
+	while( readDemo )
+	{
+		UpdateScreenForRenderDemo();
+		AdvanceRenderDemo( true );
+	}
+	
+	//StartPlayingRenderDemo( demo );
 }
 
 

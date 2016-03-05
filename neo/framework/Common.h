@@ -219,6 +219,9 @@ public:
 	virtual void				UpdateScreen( bool captureToImage, bool releaseMouse = true ) = 0;
 	// DG end
 	
+	// RB
+	virtual void				UpdateScreenForRenderDemo() = 0;
+	
 	virtual void				UpdateLevelLoadPacifier() = 0;
 	
 	
