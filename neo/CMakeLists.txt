@@ -27,6 +27,9 @@ option(ONATIVE
 option(WINRT
 		"Build for Windows RT" OFF)
 		
+option(WINDOWS10
+		"Build for Windows 10" OFF)
+		
 option(USE_SYSTEM_ZLIB
                 "Use the system zlib instead of the bundled one" OFF)
 
@@ -193,12 +196,12 @@ elseif(MSVC)
                                        #-DUSE_OPENAL
 					-DUSE_EXCEPTIONS)
         ## Check for Version ##
-        if( WINRT ) # Windows RT
-                add_definitions(-DUSE_WINRT)
+        if( WINRT OR WINDOWS10 ) # Windows RT
+			add_definitions(-DUSE_WINRT)
         endif()
 
         if (USE_INTRINSICS)
-                add_definitions(-DUSE_INTRINSICS)
+			add_definitions(-DUSE_INTRINSICS)
         endif()
 					
 	if(NOT CMAKE_CL_64)
@@ -285,107 +288,7 @@ file(GLOB FRAMEWORK_ASYNC_INCLUDES framework/async/*.h)
 file(GLOB FRAMEWORK_ASYNC_SOURCES framework/async/*.cpp)
 
 file(GLOB RENDERER_INCLUDES renderer/*.h)
-	# renderer/AutoRender.h
-	# renderer/AutoRenderBink.h
-	# renderer/BinaryImage.h
-	# renderer/BinaryImageData.h
-	# renderer/BoundsTrack.h
-	# renderer/BufferObject.h
-	# renderer/Cinematic.h
-	# renderer/Font.h
-	# renderer/GLMatrix.h
-	# renderer/GLState.h
-	# renderer/GuiModel.h
-	# renderer/Image.h
-	# renderer/ImageOpts.h
-	# renderer/Interaction.h
-	# renderer/Material.h
-	# renderer/Model.h
-	# renderer/ModelDecal.h
-	# renderer/ModelManager.h
-	# renderer/ModelOverlay.h
-	# renderer/Model_ase.h
-	# #renderer/Model_ColladaHelper.h
-	# #renderer/Model_ColladaParser.h
-	# renderer/Model_local.h
-	# renderer/Model_lwo.h
-	# renderer/Model_ma.h
-	# renderer/Model_md3.h
-	# renderer/RenderLog.h
-	# renderer/RenderProgs.h
-	# renderer/RenderSystem.h
-	# renderer/RenderTexture.h
-	# renderer/RenderWorld.h
-	# renderer/RenderWorld_local.h
-	# renderer/ResolutionScale.h
-	# renderer/ScreenRect.h
-	# renderer/simplex.h
-	# renderer/tr_local.h
-	# renderer/VertexCache.h)
-
-
 file(GLOB RENDERER_SOURCES renderer/*.cpp)
-	# renderer/AutoRender.cpp
-	# renderer/Cinematic.cpp
-	# renderer/Framebuffer.cpp
-	# renderer/GLShader.cpp
-	# renderer/GuiModel.cpp
-	# renderer/Image_files.cpp
-	# renderer/Image_init.cpp
-	# renderer/Image_load.cpp
-	# renderer/Image_process.cpp
-	# renderer/Image_program.cpp
-	# renderer/Interaction.cpp
-	# renderer/Material.cpp
-	# renderer/Model.cpp
-	# renderer/ModelDecal.cpp
-	# renderer/ModelManager.cpp
-	# renderer/ModelOverlay.cpp
-	# renderer/Model_ase.cpp
-	# renderer/Model_beam.cpp
-	# #renderer/Model_ColladaParser.cpp
-	# renderer/Model_liquid.cpp
-	# renderer/Model_lwo.cpp
-	# renderer/Model_ma.cpp
-	# renderer/Model_md3.cpp
-	# renderer/Model_md5.cpp
-	# renderer/Model_prt.cpp
-	# renderer/Model_sprite.cpp
-	# renderer/RenderEntity.cpp
-	# renderer/RenderSystem.cpp
-	# renderer/RenderSystem_init.cpp
-	# renderer/RenderWorld.cpp
-	# renderer/RenderWorld_demo.cpp
-	# renderer/RenderWorld_load.cpp
-	# renderer/RenderWorld_portals.cpp
-	# renderer/VertexCache.cpp
-	# renderer/draw_arb.cpp
-	# renderer/draw_arb2.cpp
-	# renderer/draw_glsl.cpp
-	# renderer/draw_common.cpp
-	# renderer/draw_exp.cpp
-	# renderer/draw_nv10.cpp
-	# renderer/draw_nv20.cpp
-	# renderer/draw_r200.cpp
-	# renderer/tr_backend.cpp
-	# renderer/tr_deform.cpp
-	# renderer/tr_font.cpp
-	# renderer/tr_guisurf.cpp
-	# renderer/tr_light.cpp
-	# renderer/tr_lightrun.cpp
-	# renderer/tr_main.cpp
-	# renderer/tr_math.cpp
-	# renderer/tr_orderIndexes.cpp
-	# renderer/tr_polytope.cpp
-	# renderer/tr_render.cpp
-	# renderer/tr_rendertools.cpp
-	# renderer/tr_shadowbounds.cpp
-	# renderer/tr_stencilshadow.cpp
-	# renderer/tr_subview.cpp
-	# renderer/tr_trace.cpp
-	# renderer/tr_trisurf.cpp
-	# renderer/tr_turboshadow.cpp)
-	
 file(GLOB RENDERER_COLOR_INCLUDES renderer/Color/*.h)
 file(GLOB RENDERER_COLOR_SOURCES renderer/Color/*.cpp)
 file(GLOB RENDERER_DXT_INCLUDES renderer/DXT/*.h)
@@ -400,6 +303,7 @@ file(GLOB RENDERER_JOBS_STATICSHADOWVOLUME_INCLUDES renderer/jobs/staticshadowvo
 file(GLOB RENDERER_JOBS_STATICSHADOWVOLUME_SOURCES renderer/jobs/staticshadowvolume/*.cpp)
 file(GLOB RENDERER_OPENGL_INCLUDES renderer/OpenGL/*.h)
 file(GLOB RENDERER_OPENGL_SOURCES renderer/OpenGL/*.cpp)
+file(GLOB RENDERER_SMAA_INCLUDES renderer/SMAA/*.h)
 
 file(GLOB IRRXML_INCLUDES libs/irrxml/src/*.h)
 file(GLOB IRRXML_SOURCES libs/irrxml/src/*.cpp)
@@ -988,6 +892,8 @@ source_group("renderer\\jobs\\staticshadowvolume" FILES ${RENDERER_JOBS_STATICSH
 source_group("renderer\\OpenGL" FILES ${RENDERER_OPENGL_INCLUDES})
 source_group("renderer\\OpenGL" FILES ${RENDERER_OPENGL_SOURCES})
 
+source_group("renderer\\SMAA" FILES ${RENDERER_SMAA_INCLUDES})
+
 source_group("libs\\irrxml" FILES ${IRRXML_INCLUDES})
 source_group("libs\\irrxml" FILES ${IRRXML_SOURCES})
 
@@ -1150,7 +1056,8 @@ set(RBDOOM3_INCLUDES
 			${RENDERER_JOBS_PRELIGHTSHADOWVOLUME_INCLUDES}
 			${RENDERER_JOBS_STATICSHADOWVOLUME_INCLUDES}
 			${RENDERER_OPENGL_INCLUDES}
-			#${IRRXML_INCLUDES}
+			${RENDERER_SMAA_INCLUDES}
+			${IRRXML_INCLUDES}
 			${JPEG_INCLUDES}
 			${PNG_INCLUDES}
 			${ZLIB_INCLUDES}
@@ -1185,7 +1092,7 @@ set(RBDOOM3_SOURCES
 			${RENDERER_JOBS_PRELIGHTSHADOWVOLUME_SOURCES}
 			${RENDERER_JOBS_STATICSHADOWVOLUME_SOURCES}
 			${RENDERER_OPENGL_SOURCES}
-			#${IRRXML_SOURCES}
+			${IRRXML_SOURCES}
 			${JPEG_SOURCES}
 			${PNG_SOURCES}
 			${ZLIB_SOURCES}
@@ -1264,9 +1171,20 @@ if(MSVC)
 		# endif()
 		
 	# else()
+	
+	if(WINDOWS10)
+		set(DirectX_LIBRARIES
+			dinput8
+			dsound
+			dxguid
+			#dxerr
+			Xinput
+			xaudio2.lib
+			)
+	else()
 		find_package(DirectX REQUIRED)
 		include_directories(${DirectX_INCLUDE_DIR})
-	#endif()
+	endif()
 	
 	if(OPENAL)
 		add_definitions(-DUSE_OPENAL)
@@ -1427,7 +1345,7 @@ if(MSVC)
         ${PNG_LIBRARY}
         ${JPEG_LIBRARY}
         ${GLEW_LIBRARY}
-	${CMAKE_DL_LIBS}
+		${CMAKE_DL_LIBS}
 		)
 		
 	#CMAKE_BINARY_DIR

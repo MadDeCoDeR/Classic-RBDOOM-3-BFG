@@ -3,7 +3,8 @@
 
 Doom 3 BFG Edition GPL Source Code
 Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company.
-Copyright (C) 2012-2015 Robert Beckebans
+Copyright (C) 2014-2016 Robert Beckebans
+Copyright (C) 2014-2016 Kot in Action Creative Artel
 
 This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").
 
@@ -40,6 +41,12 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 // RB end
 
+// foresthale 2014-03-01: fixed custom screenshot resolution by doing a more direct render path
+#define BUGFIXEDSCREENSHOTRESOLUTION 1
+#ifdef BUGFIXEDSCREENSHOTRESOLUTION
+#include "../framework/Common_local.h"
+#endif
+
 // DeviceContext bypasses RenderSystem to work directly with this
 idGuiModel* tr_guiModel;
 
@@ -51,7 +58,7 @@ idCVar r_debugContext( "r_debugContext", "0", CVAR_RENDERER, "Enable various lev
 idCVar r_glDriver( "r_glDriver", "", CVAR_RENDERER, "\"opengl32\", etc." );
 idCVar r_skipIntelWorkarounds( "r_skipIntelWorkarounds", "0", CVAR_RENDERER | CVAR_BOOL, "skip workarounds for Intel driver bugs" );
 // RB: disabled 16x MSAA
-idCVar r_multiSamples( "r_multiSamples", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "number of antialiasing samples", 0, 8 );
+idCVar r_antiAliasing( "r_antiAliasing", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, " 0 = None\n 1 = SMAA 1x\n 2 = MSAA 2x\n 3 = MSAA 4x\n 4 = MSAA 8x\n", 0, ANTI_ALIASING_MSAA_8X );
 // RB end
 idCVar r_vidMode( "r_vidMode", "0", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_INTEGER, "fullscreen video mode number" );
 idCVar r_displayRefresh( "r_displayRefresh", "0", CVAR_RENDERER | CVAR_INTEGER | CVAR_NOCHEAT, "optional display refresh rate option for vid mode", 0.0f, 240.0f );
@@ -149,7 +156,7 @@ idCVar r_shadowPolygonFactor( "r_shadowPolygonFactor", "0", CVAR_RENDERER | CVAR
 idCVar r_subviewOnly( "r_subviewOnly", "0", CVAR_RENDERER | CVAR_BOOL, "1 = don't render main view, allowing subviews to be debugged" );
 idCVar r_testGamma( "r_testGamma", "0", CVAR_RENDERER | CVAR_FLOAT, "if > 0 draw a grid pattern to test gamma levels", 0, 195 );
 idCVar r_testGammaBias( "r_testGammaBias", "0", CVAR_RENDERER | CVAR_FLOAT, "if > 0 draw a grid pattern to test gamma levels" );
-idCVar r_lightScale( "r_lightScale", "3", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_FLOAT, "all light intensities are multiplied by this" );
+idCVar r_lightScale( "r_lightScale", "3", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_FLOAT, "all light intensities are multiplied by this", 0, 100 );
 idCVar r_flareSize( "r_flareSize", "1", CVAR_RENDERER | CVAR_FLOAT, "scale the flare deforms from the material def" );
 
 idCVar r_skipPrelightShadows( "r_skipPrelightShadows", "0", CVAR_RENDERER | CVAR_BOOL, "skip the dmap generated static shadow volumes" );
@@ -246,10 +253,12 @@ idCVar r_shadowMapSunDepthBiasScale( "r_shadowMapSunDepthBiasScale", "0.999991",
 
 // RB: HDR parameters
 idCVar r_useHDR( "r_useHDR", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "use high dynamic range rendering" );
-idCVar r_hdrMinLuminance( "r_hdrMinLuminance", "0.05", CVAR_RENDERER | CVAR_FLOAT, "" );
+idCVar r_hdrAutoExposure( "r_hdrAutoExposure", "1", CVAR_RENDERER | CVAR_BOOL, "EXPENSIVE: enables adapative HDR tone mapping otherwise the exposure is derived by r_exposure" );
+idCVar r_hdrMinLuminance( "r_hdrMinLuminance", "0.005", CVAR_RENDERER | CVAR_FLOAT, "" );
 idCVar r_hdrMaxLuminance( "r_hdrMaxLuminance", "300", CVAR_RENDERER | CVAR_FLOAT, "" );
-idCVar r_hdrKey( "r_hdrKey", "0.5", CVAR_RENDERER | CVAR_FLOAT, "mid-gray 0.5 in linear RGB space (without gamma curve applied)" );
-idCVar r_hdrContrastThreshold( "r_hdrContrastThreshold", "13", CVAR_RENDERER | CVAR_FLOAT, "all pixels brighter than this cause HDR bloom glares" );
+idCVar r_hdrKey( "r_hdrKey", "0.015", CVAR_RENDERER | CVAR_FLOAT, "magic exposure key that works well with Doom 3 maps" );
+idCVar r_hdrContrastDynamicThreshold( "r_hdrContrastDynamicThreshold", "2", CVAR_RENDERER | CVAR_FLOAT, "if auto exposure is on, all pixels brighter than this cause HDR bloom glares" );
+idCVar r_hdrContrastStaticThreshold( "r_hdrContrastStaticThreshold", "3", CVAR_RENDERER | CVAR_FLOAT, "if auto exposure is off, all pixels brighter than this cause HDR bloom glares" );
 idCVar r_hdrContrastOffset( "r_hdrContrastOffset", "100", CVAR_RENDERER | CVAR_FLOAT, "" );
 idCVar r_hdrGlarePasses( "r_hdrGlarePasses", "8", CVAR_RENDERER | CVAR_INTEGER, "how many times the bloom blur is rendered offscreen. number should be even" );
 idCVar r_hdrDebug( "r_hdrDebug", "0", CVAR_RENDERER | CVAR_FLOAT, "show scene luminance as heat map" );
@@ -258,11 +267,22 @@ idCVar r_ldrContrastThreshold( "r_ldrContrastThreshold", "1.1", CVAR_RENDERER | 
 idCVar r_ldrContrastOffset( "r_ldrContrastOffset", "3", CVAR_RENDERER | CVAR_FLOAT, "" );
 
 idCVar r_useFilmicPostProcessEffects( "r_useFilmicPostProcessEffects", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "apply several post process effects to mimic a filmic look" );
-idCVar r_forceAmbient( "r_forceAmbient", "0.3", CVAR_RENDERER | CVAR_FLOAT, "render additional ambient pass to make the game less dark", 0.0f, 0.4f );
+idCVar r_forceAmbient( "r_forceAmbient", "0.2", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_FLOAT, "render additional ambient pass to make the game less dark", 0.0f, 0.4f );
+
+idCVar r_useSSGI( "r_useSSGI", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "use screen space global illumination and reflections" );
+idCVar r_ssgiDebug( "r_ssgiDebug", "0", CVAR_RENDERER | CVAR_INTEGER, "" );
+idCVar r_ssgiFiltering( "r_ssgiFiltering", "1", CVAR_RENDERER | CVAR_BOOL, "" );
+
+idCVar r_useSSAO( "r_useSSAO", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "use screen space ambient occlusion to darken corners" );
+idCVar r_ssaoDebug( "r_ssaoDebug", "0", CVAR_RENDERER | CVAR_INTEGER, "" );
+idCVar r_ssaoFiltering( "r_ssaoFiltering", "1", CVAR_RENDERER | CVAR_BOOL, "" );
+idCVar r_useHierarchicalDepthBuffer( "r_useHierarchicalDepthBuffer", "1", CVAR_RENDERER | CVAR_BOOL, "" );
+
+idCVar r_exposure( "r_exposure", "0.5", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_FLOAT, "HDR exposure or LDR brightness [0.0 .. 1.0]", 0.0f, 1.0f );
 // RB end
 
 const char* fileExten[3] = { "tga", "png", "jpg" };
-const char* envDirection[6] = { "_nx", "_py", "_ny", "_pz", "_nz", "_px" };
+const char* envDirection[6] = { "_px", "_nx", "_py", "_ny", "_pz", "_nz" };
 const char* skyDirection[6] = { "_forward", "_back", "_left", "_right", "_up", "_down" };
 
 
@@ -730,7 +750,23 @@ void R_SetNewMode( const bool fullInit )
 			}
 		}
 		
-		parms.multiSamples = r_multiSamples.GetInteger();
+		switch( r_antiAliasing.GetInteger() )
+		{
+			case ANTI_ALIASING_MSAA_2X:
+				parms.multiSamples = 2;
+				break;
+			case ANTI_ALIASING_MSAA_4X:
+				parms.multiSamples = 4;
+				break;
+			case ANTI_ALIASING_MSAA_8X:
+				parms.multiSamples = 8;
+				break;
+				
+			default:
+				parms.multiSamples = 0;
+				break;
+		}
+		
 		if( i == 0 )
 		{
 			parms.stereo = ( stereoRender_enable.GetInteger() == STEREO3D_QUAD_BUFFER );
@@ -776,7 +812,7 @@ safeMode:
 		r_vidMode.SetInteger( 0 );
 		r_fullscreen.SetInteger( 1 );
 		r_displayRefresh.SetInteger( 0 );
-		r_multiSamples.SetInteger( 0 );
+		r_antiAliasing.SetInteger( 0 );
 	}
 }
 
@@ -1225,6 +1261,26 @@ void R_ReadTiledPixels( int width, int height, byte* buffer, renderView_t* ref =
 	int sysHeight = renderSystem->GetHeight();
 	byte* temp = ( byte* )R_StaticAlloc( ( sysWidth + 3 ) * sysHeight * 3 );
 	
+	// foresthale 2014-03-01: fixed custom screenshot resolution by doing a more direct render path
+#ifdef BUGFIXEDSCREENSHOTRESOLUTION
+	if( sysWidth > width )
+		sysWidth = width;
+		
+	if( sysHeight > height )
+		sysHeight = height;
+		
+	// make sure the game / draw thread has completed
+	//commonLocal.WaitGameThread();
+	
+	// discard anything currently on the list
+	tr.SwapCommandBuffers( NULL, NULL, NULL, NULL );
+	
+	int originalNativeWidth = glConfig.nativeScreenWidth;
+	int originalNativeHeight = glConfig.nativeScreenHeight;
+	glConfig.nativeScreenWidth = sysWidth;
+	glConfig.nativeScreenHeight = sysHeight;
+#endif
+	
 	// disable scissor, so we don't need to adjust all those rects
 	r_useScissor.SetBool( false );
 	
@@ -1232,17 +1288,42 @@ void R_ReadTiledPixels( int width, int height, byte* buffer, renderView_t* ref =
 	{
 		for( int yo = 0 ; yo < height ; yo += sysHeight )
 		{
+			// foresthale 2014-03-01: fixed custom screenshot resolution by doing a more direct render path
+#ifdef BUGFIXEDSCREENSHOTRESOLUTION
+			// discard anything currently on the list
+			tr.SwapCommandBuffers( NULL, NULL, NULL, NULL );
+			if( ref )
+			{
+				// ref is only used by envShot, Event_camShot, etc to grab screenshots of things in the world,
+				// so this omits the hud and other effects
+				tr.primaryWorld->RenderScene( ref );
+			}
+			else
+			{
+				// build all the draw commands without running a new game tic
+				commonLocal.Draw();
+			}
+			// this should exit right after vsync, with the GPU idle and ready to draw
+			const emptyCommand_t* cmd = tr.SwapCommandBuffers( NULL, NULL, NULL, NULL );
+			
+			// get the GPU busy with new commands
+			tr.RenderCommandBuffers( cmd );
+			
+			// discard anything currently on the list (this triggers SwapBuffers)
+			tr.SwapCommandBuffers( NULL, NULL, NULL, NULL );
+#else
+			// foresthale 2014-03-01: note: ref is always NULL in every call path to this function
 			if( ref )
 			{
 				// discard anything currently on the list
 				tr.SwapCommandBuffers( NULL, NULL, NULL, NULL );
-				
+			
 				// build commands to render the scene
 				tr.primaryWorld->RenderScene( ref );
-				
+			
 				// finish off these commands
 				const emptyCommand_t* cmd = tr.SwapCommandBuffers( NULL, NULL, NULL, NULL );
-				
+			
 				// issue the commands to the GPU
 				tr.RenderCommandBuffers( cmd );
 			}
@@ -1251,6 +1332,7 @@ void R_ReadTiledPixels( int width, int height, byte* buffer, renderView_t* ref =
 				const bool captureToImage = false;
 				common->UpdateScreen( captureToImage, false );
 			}
+#endif
 			
 			int w = sysWidth;
 			if( xo + w > width )
@@ -1275,6 +1357,15 @@ void R_ReadTiledPixels( int width, int height, byte* buffer, renderView_t* ref =
 			}
 		}
 	}
+	
+	// foresthale 2014-03-01: fixed custom screenshot resolution by doing a more direct render path
+#ifdef BUGFIXEDSCREENSHOTRESOLUTION
+	// discard anything currently on the list
+	tr.SwapCommandBuffers( NULL, NULL, NULL, NULL );
+	
+	glConfig.nativeScreenWidth = originalNativeWidth;
+	glConfig.nativeScreenHeight = originalNativeHeight;
+#endif
 	
 	r_useScissor.SetBool( true );
 	
@@ -1377,7 +1468,7 @@ void idRenderSystemLocal::TakeScreenshot( int width, int height, const char* fil
 	}
 	if( exten == PNG )
 	{
-		R_WritePNG( finalFileName, buffer, 3, width, height, false );
+		R_WritePNG( finalFileName, buffer, 3, width, height, false, "fs_basepath" );
 	}
 	else
 	{
@@ -1399,7 +1490,7 @@ void idRenderSystemLocal::TakeScreenshot( int width, int height, const char* fil
 			buffer[i + 2] = temp;
 		}
 		
-		fileSystem->WriteFile( finalFileName, buffer, c );
+		fileSystem->WriteFile( finalFileName, buffer, c, "fs_basepath" );
 	}
 	
 	R_StaticFree( buffer );
@@ -1592,7 +1683,7 @@ void R_EnvShot_f( const idCmdArgs& args )
 	idStr		fullname;
 	const char*	baseName;
 	int			i;
-	idMat3		axis[7], oldAxis;
+	idMat3		axis[6], oldAxis;
 	renderView_t	ref;
 	viewDef_t	primary;
 	int			blends;
@@ -1636,33 +1727,36 @@ void R_EnvShot_f( const idCmdArgs& args )
 	primary = *tr.primaryView;
 	
 	memset( &axis, 0, sizeof( axis ) );
-	axis[0][0][0] = 1; // this one gets ignored as it always come out wrong.
-	axis[0][1][2] = 1; // and so we repeat this axis as the last one.
+	
+	// +X
+	axis[0][0][0] = 1;
+	axis[0][1][2] = 1;
 	axis[0][2][1] = 1;
 	
+	// -X
 	axis[1][0][0] = -1;
 	axis[1][1][2] = -1;
 	axis[1][2][1] = 1;
 	
+	// +Y
 	axis[2][0][1] = 1;
 	axis[2][1][0] = -1;
 	axis[2][2][2] = -1;
 	
+	// -Y
 	axis[3][0][1] = -1;
 	axis[3][1][0] = -1;
 	axis[3][2][2] = 1;
 	
+	// +Z
 	axis[4][0][2] = 1;
 	axis[4][1][0] = -1;
 	axis[4][2][1] = 1;
 	
+	// -Z
 	axis[5][0][2] = -1;
 	axis[5][1][0] = 1;
 	axis[5][2][1] = 1;
-	
-	axis[6][0][0] = 1; // this is the repetition of the first axis
-	axis[6][1][2] = 1;
-	axis[6][2][1] = 1;
 	
 	// let's get the game window to a "size" resolution
 	if( ( res_w != size ) || ( res_h != size ) )
@@ -1672,25 +1766,17 @@ void R_EnvShot_f( const idCmdArgs& args )
 		R_SetNewMode( false ); // the same as "vid_restart"
 	} // FIXME that's a hack!!
 	
-	for( i = 0 ; i < 7 ; i++ )
+	// so we return to that axis and fov after the fact.
+	oldAxis = primary.renderView.viewaxis;
+	old_fov_x = primary.renderView.fov_x;
+	old_fov_y = primary.renderView.fov_y;
+	
+	for( i = 0 ; i < 6 ; i++ )
 	{
 	
 		ref = primary.renderView;
 		
-		if( i == 0 )
-		{
-			// so we return to that axis and fov after the fact.
-			oldAxis = ref.viewaxis;
-			old_fov_x = ref.fov_x;
-			old_fov_y = ref.fov_y;
-			//this is part of the hack
-			extension = "_wrong";
-		}
-		else
-		{
-			// this keeps being part of the hack
-			extension = envDirection[ i - 1 ]; //yes, indeed, this is totally part of the hack!
-		}
+		extension = envDirection[ i ];
 		
 		ref.fov_x = ref.fov_y = 90;
 		ref.viewaxis = axis[i];
@@ -1998,7 +2084,7 @@ void R_TransformCubemap( const char* orgDirection[6], const char* orgDir, const 
 		fullname.Format( "%s/%s/%s%s.%s", destDir, baseName, baseName, destDirection[i], fileExten [TGA] );
 		common->Printf( "writing %s\n", fullname.c_str() );
 		common->UpdateScreen( false );
-		R_WriteTGA( fullname, buffers[i], width, width );
+		R_WriteTGA( fullname, buffers[i], width, width, false, "fs_basepath" );
 	}
 	
 	for( i = 0 ; i < 6 ; i++ )

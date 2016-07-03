@@ -284,7 +284,7 @@ static void R_CheckCvars()
 		r_useSRGB.ClearModified();
 		if( glConfig.sRGBFramebufferAvailable )
 		{
-			if( r_useSRGB.GetBool() )
+			if( r_useSRGB.GetBool() && r_useSRGB.GetInteger() != 3 )
 			{
 				glEnable( GL_FRAMEBUFFER_SRGB );
 			}
@@ -295,15 +295,22 @@ static void R_CheckCvars()
 		}
 	}
 	
-	if( r_multiSamples.IsModified() )
+	if( r_antiAliasing.IsModified() )
 	{
-		if( r_multiSamples.GetInteger() > 0 )
+		switch( r_antiAliasing.GetInteger() )
 		{
-			glEnable( GL_MULTISAMPLE );
-		}
-		else
-		{
-			glDisable( GL_MULTISAMPLE );
+			case ANTI_ALIASING_MSAA_2X:
+			case ANTI_ALIASING_MSAA_4X:
+			case ANTI_ALIASING_MSAA_8X:
+				if( r_antiAliasing.GetInteger() > 0 )
+				{
+					glEnable( GL_MULTISAMPLE );
+				}
+				break;
+				
+			default:
+				glDisable( GL_MULTISAMPLE );
+				break;
 		}
 	}
 	
