@@ -522,9 +522,7 @@ static void RB_PrepareStageTexturing( const shaderStage_t* pStage,  const drawSu
 	}
 	else if( pStage->texture.texgen == TG_SKYBOX_CUBE )
 	{
-	
 		renderProgManager.BindShader_SkyBox();
-		
 	}
 	else if( pStage->texture.texgen == TG_WOBBLESKY_CUBE )
 	{
@@ -1052,6 +1050,9 @@ const int INTERACTION_TEXUNIT_DIFFUSE		= 3;
 const int INTERACTION_TEXUNIT_SPECULAR		= 4;
 const int INTERACTION_TEXUNIT_SHADOWMAPS	= 5;
 const int INTERACTION_TEXUNIT_JITTER		= 6;
+
+const int INTERACTION_TEXUNIT_AMBIENT_CUBE1 = 7;
+const int INTERACTION_TEXUNIT_SPECULAR_CUBE1 = 8;
 
 /*
 ==================
@@ -1902,6 +1903,23 @@ static void RB_AmbientPass( const drawSurf_t* const* drawSurfs, int numDrawSurfs
 			else
 #endif
 			{
+#if 1
+				// draw Quake 4 style ambient
+				if( drawSurf->jointCache )
+				{
+					renderProgManager.BindShader_ImageBasedLightingSkinned();
+				}
+				else
+				{
+					renderProgManager.BindShader_ImageBasedLighting();
+				}
+				
+				GL_SelectTexture( INTERACTION_TEXUNIT_AMBIENT_CUBE1 );
+				globalImages->defaultUACIrradianceCube->Bind();
+				
+				GL_SelectTexture( INTERACTION_TEXUNIT_SPECULAR_CUBE1 );
+				globalImages->defaultUACRadianceCube->Bind();
+#else
 				// draw Quake 4 style ambient
 				if( drawSurf->jointCache )
 				{
@@ -1911,6 +1929,7 @@ static void RB_AmbientPass( const drawSurf_t* const* drawSurfs, int numDrawSurfs
 				{
 					renderProgManager.BindShader_AmbientLighting();
 				}
+#endif
 			}
 		}
 		
@@ -2163,7 +2182,7 @@ static void RB_AmbientPass( const drawSurf_t* const* drawSurfs, int numDrawSurfs
 	}
 	
 	// unbind texture units
-	for( int i = 0; i < 7; i++ )
+	for( int i = 0; i < 9; i++ )
 	{
 		GL_SelectTexture( i );
 		globalImages->BindNull();
