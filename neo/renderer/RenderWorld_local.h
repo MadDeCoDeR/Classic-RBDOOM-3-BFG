@@ -3,7 +3,8 @@
 
 Doom 3 BFG Edition GPL Source Code
 Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company.
-Copyright (C) 2015 Robert Beckebans
+Copyright (C) 2014-2016 Robert Beckebans
+Copyright (C) 2014-2016 Kot in Action Creative Artel
 
 This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").
 
@@ -271,11 +272,15 @@ public:
 	void					WriteLoadMap();
 	void					WriteRenderView( const renderView_t* renderView );
 	void					WriteVisibleDefs( const viewDef_t* viewDef );
+	void					WriteFreeDecal( idDemoFile* f, qhandle_t handle );
+	void					WriteFreeOverlay( idDemoFile* f, qhandle_t handle );
 	void					WriteFreeLight( qhandle_t handle );
 	void					WriteFreeEntity( qhandle_t handle );
 	void					WriteFreeEnvprobe( qhandle_t handle ); // RB
-	void					WriteRenderLight( qhandle_t handle, const renderLight_t* light );
-	void					WriteRenderEntity( qhandle_t handle, const renderEntity_t* ent );
+	void					WriteRenderDecal( idDemoFile* f, qhandle_t handle );
+	void					WriteRenderOverlay( idDemoFile* f, qhandle_t handle );
+	void					WriteRenderLight( idDemoFile* f, qhandle_t handle, const renderLight_t* light );
+	void					WriteRenderEntity( idDemoFile* f, idRenderEntityLocal* entity );
 	void					WriteRenderEnvprobe( qhandle_t handle, const renderEnvironmentProbe_t* probe ); // RB
 	void					ReadRenderEntity();
 	void					ReadRenderLight();
