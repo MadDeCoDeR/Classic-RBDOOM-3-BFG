@@ -1,14 +1,7 @@
-    ____   ____   ____                           _____  ____   ______ ______
-   / __ \ / __ ) / __ \ ____   ____   ____ ___  |__  / / __ ) / ____// ____/
-  / /_/ // __  |/ / / // __ \ / __ \ / __ `__ \  /_ < / __  |/ /_   / / __  
- / _, _// /_/ // /_/ // /_/ // /_/ // / / / / /___/ // /_/ // __/  / /_/ /  
-/_/ |_|/_____//_____/ \____/ \____//_/ /_/ /_//____//_____//_/     \____/   
-_________________________________________
 
+Classic RBDOOM-3-BFG Readme - https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG
 
-RBDOOM-3-BFG Readme - https://github.com/RobertBeckebans/RBDOOM-3-BFG
-
-Thank you for downloading RBDOOM-3-BFG.
+Thank you for downloading Classic RBDOOM-3-BFG.
 
 
 
@@ -29,7 +22,7 @@ This file contains the following sections:
 	
 	4) GETTING THE SOURCE CODE
 
-	5) COMPILING ON WIN32 WITH VISUAL C++ 2013 EXPRESS EDITION
+	5) COMPILING ON WIN32 WITH VISUAL C++ 2013 EXPRESS EDITION OR NEWER VERSIONS
 
 	6) COMPILING ON GNU/LINUX
 	
@@ -123,35 +116,33 @@ ___________________________________
 
 This project's GitHub.net Git repository can be checked out through Git with the following instruction set: 
 
-	> git clone https://github.com/RobertBeckebans/RBDOOM-3-BFG.git
+	> git clone https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG.git
 
 If you don't want to use git, you can download the source as a zip file at
-	https://github.com/RobertBeckebans/RBDOOM-3-BFG/archive/master.zip
+	https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/archive/master.zip
 
 
 
 ___________________________________________________________________
 
-5) COMPILING ON WIN32 WITH VISUAL C++ 2013 EXPRESS EDITION
+5) COMPILING ON WIN32 WITH VISUAL C++ 2013 EXPRESS EDITION OR NEWER VERSIONS
 __________________________________________________________
 
-1. Download and install the Visual C++ 2013 Express Edition.
+1. Download and install the Visual C++ 2013 Express Edition or newer Versions of Visual Studio Community.
 
 2. Download the DirectX SDK (June 2010) here:
 	http://www.microsoft.com/en-us/download/details.aspx?id=6812
 
-3. Download and install the latest CMake.
+3. Download and install the latest CMake (recommended 3.8 for compile and run out of the box).
 
-4. Generate the VC13 projects using CMake by doubleclicking a matching configuration .bat file in the neo/ folder.
+4. Generate the VC projects using CMake by doubleclicking a matching configuration .bat file in the neo/ folder.
 
-5. Use the VC13 solution to compile what you need:
-	RBDOOM-3-BFG/build/RBDoom3BFG.sln
+5. Use the VC solution to compile  what you need:
+	Classic-RBDOOM-3-BFG/build/RBDoom3BFG.sln
 	
-6. Download ffmpeg-20151105-git-c878082-win32-shared.7z from ffmpeg.zeranoe.com/builds/win32/shared
- 	or
-	ffmpeg-20151105-git-c878082-win64-shared.7z from ffmpeg.zeranoe.com/builds/win64/shared
+6. Download the latest ffmpeg shared from https://ffmpeg.zeranoe.com/builds/ depending on the architecture you want to use
 
-7. Extract the FFmpeg DLLs to your current build directory under RBDOOM-3-BFG/build/
+7. Extract the FFmpeg DLLs to your current game directory 
 
 
 __________________________________
@@ -252,17 +243,10 @@ Anyway:
 	/path/to/Doom3BFG/
 	 ->	RBDoom3BFG (or RBDoom3BFG.exe on Windows)
 	 -> avcodec-55.dll
-	 -> avdevice-55.dll
-	 -> avfilter-4.dll
 	 -> avformat-55.dll
 	 -> avutil-52.dll
-	 -> postproc-52.dll
 	 -> swresample-0.dll
 	 -> swscale-2.dll
-	 ->	base/
-		 ->	classicmusic/
-		 ->	_common.crc
-		 ->	(etc)
 
 5. Run the game by executing the RBDoom3BFG executable.
 
@@ -339,13 +323,7 @@ ___________________________________________________
 10) KNOWN ISSUES
 __________________________________________
 
-- HDR does not work with old-school stencil shadows
-
-- MSAA anti-aliasing modes don't work with HDR: Use SMAA
-
-- Some lights cause shadow acne with shadow mapping
-
-- Some shadows might almost disappear due to the shadow filtering
+- Running DOOM or DOOM 2 with mods and then opening the other one might result on the executable to crash
 
 ___________________________________________________
 
@@ -358,7 +336,7 @@ We cannot fix anything if we do not know about the problems.
 
 The best way for telling us about a bug is by submitting a bug report at our GitHub bug tracker page:
 
-	https://github.com/RobertBeckebans/RBDOOM-3-BFG/issues?state=open
+	https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/issues?state=open
 
 The most important fact about this tracker is that we cannot simply forget to fix the bugs which are posted there. 
 It is also a great way to keep track of fixed stuff.
@@ -389,6 +367,7 @@ mod directory, you should first specify your mod directory adding the following 
 
 so it would end up looking like: RBDoom3BFG +set fs_game modDirectoryName
 
+Classic doom mods are enabled and can be used with the old "-file" parameter like this: RBDoom3BFG -file "classicmod.wad"
 
 IMPORTANT: RBDOOM-3-BFG does not support old Doom 3 modiciations that include sourcecode modifications in binary form (.dll)
 You can fork RBDOOM-3-BFG and create a new renamed binary that includes all required C++ game code modifications.
