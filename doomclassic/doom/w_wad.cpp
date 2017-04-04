@@ -121,7 +121,10 @@ ExtractFileBase
 // But: the reload feature is a fragile hack...
 
 const char*			reloadname;
-
+//GK : is it an IWAD file? (first file to load)
+bool iwad = false;
+//Replace??
+bool rep = false;
 
 void W_AddFile ( const char *filename)
 {
@@ -141,6 +144,7 @@ void W_AddFile ( const char *filename)
     }
 
     I_Printf (" adding %s\n",filename);
+	idLib::Printf(" adding %s\n", filename);
     startlump = numlumps;
 	
     if ( idStr::Icmp( filename+strlen(filename)-3 , "wad" ) )
@@ -193,10 +197,104 @@ void W_AddFile ( const char *filename)
 	filelump_t * filelumpPointer = &fileinfo[0];
 	for (i=startlump ; i<numlumps ; i++,lump_p++, filelumpPointer++)
 	{
-		lump_p->handle = handle;
-		lump_p->position = LONG(filelumpPointer->filepos);
-		lump_p->size = LONG(filelumpPointer->size);
-		strncpy (lump_p->name, filelumpPointer->name, 8);
+		//GK: replace lumps between "_START" and "_END" markers instead of append
+		if (!iwad) {	
+			 char check[6];
+			if (filelumpPointer->name[2] == '_') {
+				strncpy(check, filelumpPointer->name+2, 6);
+			}
+			else if (filelumpPointer->name[1] == '_') {
+				strncpy(check, filelumpPointer->name + 1, 6);
+			}
+			//GK: Names with 8 characters might have "trash" use Cmpn instead of Icmp
+			//ignore all the S,P and F markers (they causing troubles and making them doubles)
+			if (!idStr::Cmpn(check, "_START",6)){
+				rep = true;
+				i++;
+				if (i >= numlumps) {
+					break;
+				}
+				filelumpPointer++;
+				lump_p++;
+				for (int g = 0; g < 6; g++) {
+					check[g] = NULL;
+				}
+			}
+			if (filelumpPointer->name[2] == '_') {
+				strncpy(check, filelumpPointer->name + 2, 6);
+			}
+			else if (filelumpPointer->name[1] == '_') {
+				strncpy(check, filelumpPointer->name + 1, 6);
+			}
+			if (!idStr::Icmp(check, "_END")){
+				rep = false;
+				
+			}
+			
+			bool smark = false;
+			for (int u = 1; u < 4; u++) {
+				char ps[10];
+				sprintf(ps, "P%i_START", u);
+				char pe[10];
+				sprintf(pe, "P%i_END", u);
+				char fs[10];
+				sprintf(fs, "F%i_START", u);
+				char fe[10];
+				sprintf(fe, "F%i_END", u);
+				if (!idStr::Cmpn(filelumpPointer->name, ps, 8) || !idStr::Cmpn(filelumpPointer->name, pe, 6) || !idStr::Cmpn(filelumpPointer->name, fs, 8) || !idStr::Cmpn(filelumpPointer->name, fe, 6)) {
+					smark = true;
+					for (int g = 0; g < 6; g++) {
+						check[g] = NULL;
+					}
+				}
+			}
+			if (rep) {
+				if (!smark) {
+					
+					lumpinfo_t* tlump = &lumpinfo[0];
+					bool replaced = false;
+					for (int j = 0; j < numlumps; j++, tlump++) {
+						if (!idStr::Cmpn(filelumpPointer->name, tlump->name,8)) {
+							//idLib::Printf("Replacing lump %s\n", filelumpPointer->name); //for debug purposes
+							tlump->handle = handle;
+							tlump->position = LONG(filelumpPointer->filepos);
+							tlump->size = LONG(filelumpPointer->size);
+							replaced = true;
+						}
+
+					}
+					if (!replaced) {
+						//idLib::Printf("adding lump %s\n", filelumpPointer->name); //for debug purposes
+						lump_p->handle = handle;
+						lump_p->position = LONG(filelumpPointer->filepos);
+						lump_p->size = LONG(filelumpPointer->size);
+						strncpy(lump_p->name, filelumpPointer->name, 8);
+					}
+				}
+			}
+			else {
+				if (idStr::Icmp(check, "_END")){
+					//idLib::Printf("adding lump %s\n", filelumpPointer->name); //for debug purposes
+					lump_p->handle = handle;
+					lump_p->position = LONG(filelumpPointer->filepos);
+					lump_p->size = LONG(filelumpPointer->size);
+					strncpy(lump_p->name, filelumpPointer->name, 8);
+				}
+				else {
+					for (int g = 0; g < 6; g++) {
+						check[g] = NULL;
+					}
+				}
+			}
+			
+		}
+		else {
+			lump_p->handle = handle;
+			lump_p->position = LONG(filelumpPointer->filepos);
+			lump_p->size = LONG(filelumpPointer->size);
+			strncpy(lump_p->name, filelumpPointer->name, 8);
+		}
+		//GK end
 	}
 }
 
@@ -278,10 +376,11 @@ void W_InitMultipleFiles (const char** filenames)
 
 		// will be realloced as lumps are added
 		lumpinfo = NULL;
-
+		iwad = true;
 		for ( ; *filenames ; filenames++)
 		{
 			W_AddFile (*filenames);
+			iwad = false;
 		}
 		
 		if (!numlumps)
@@ -397,9 +496,10 @@ int W_GetNumForName ( const char* name)
     int	i;
 
     i = W_CheckNumForName ( name);
-    
-    if (i == -1)
+    //GK begin
+	if (i == -1 && idStr::Icmp("TITLEPIC", name)) //TITLEPIC might not exist
       I_Error ("W_GetNumForName: %s not found!", name);
+	//GK End
       
     return i;
 }
@@ -485,7 +585,13 @@ W_CacheLumpName
 ( const char*		name,
   int		tag )
 {
-    return W_CacheLumpNum (W_GetNumForName(name), tag);
+	//GK begin
+	int point = W_GetNumForName(name);
+	if (!idStr::Icmp("TITLEPIC", name) && point == -1) { //Handle no TITLEPIC lump from DOOM2.WAD
+		point = W_GetNumForName("INTERPIC");
+	}
+	//GK end
+    return W_CacheLumpNum (point, tag);
 }
 
 
