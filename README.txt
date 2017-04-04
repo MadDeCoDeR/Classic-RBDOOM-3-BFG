@@ -104,7 +104,7 @@ _______________________________
 ______________________
 
 
-See LICENSE.txt for the GNU GENERAL PUBLIC LICENSE
+See COPYING.txt for the GNU GENERAL PUBLIC LICENSE
 
 ADDITIONAL TERMS:  The Doom 3 BFG Edition GPL Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU GPL which accompanied the Doom 3 BFG Edition GPL Source Code.  If not, please request a copy in writing from id Software at id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
