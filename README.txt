@@ -144,6 +144,7 @@ __________________________________________________________
 
 7. Extract the FFmpeg DLLs to your current game directory 
 
+NOTE: The Working Directory has been set the default install directory of DOOM 3 BFG Edition on C: drive
 
 __________________________________
 
