@@ -32,6 +32,8 @@ _______________________________
 [cmake]
 -Add support for VISUAL STUDIO 2017
 
+-Set Configurations to only Debug.Release and Retail instead of the default ones from cmake
+
 -Add Working Directory for Visual Studio (require cmake 3.8 and later).
 
 -Set Start Up Project the RBDoom3BFG (instead of ALL_BUILD) for Visual Studio (require cmake 3.6 and later).
