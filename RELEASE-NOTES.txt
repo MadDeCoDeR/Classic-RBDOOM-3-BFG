@@ -2,7 +2,26 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 
 Thank you for downloading Classic RBDOOM-3-BFG.
 
+_______________________________________
 
+12 April 2017 - Classic RBDOOM-3-BFG 1.1.1
+_______________________________
+
+[classicdoom]
+-Add (partial) support for DeHacked/BEX patches
+
+-Add support for archived mods (.pk3 etc) 
+NOTE: the archieve must contain either .deh files or .wad files other type files might be ignored or cause the game to crash
+
+-Improved support for loading sprites and fats from pwads
+
+[cmake]
+-Add batches for winxp tools for visual studio 2015 & 2017
+
+[DOOM3BFG]
+-Classic parameters will lock the achievements
+
+-Changed game name in console label
 
 _______________________________________
 
