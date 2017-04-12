@@ -145,6 +145,9 @@ __________________________________________________________
 7. Extract the FFmpeg DLLs to your current game directory 
 
 NOTE: The Working Directory has been set the default install directory of DOOM 3 BFG Edition on C: drive
+NOTE 2: Compiling and running it under Visual Studio Debugger it also requires to run the game on windowed mode
+(VS Debugger + Fullscreen = not a good mix) so you must Right Click on RBDoom3BFG Solution in Solution Explorer go to Properties select
+Debugging and put on Command Arguments +set r_fullscreen "0"
 
 __________________________________
 
