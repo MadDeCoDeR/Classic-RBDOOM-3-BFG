@@ -41,6 +41,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../doomclassic/doom/doomlib.h"
 #include "../../doomclassic/doom/d_event.h"
 #include "../../doomclassic/doom/d_main.h"
+#include "../../doomclassic/doom/w_wad.h"
 #endif
 // RB end
 
@@ -219,7 +220,14 @@ idCommonLocal::Quit
 */
 void idCommonLocal::Quit()
 {
-
+	if (currentGame == DOOM_CLASSIC || currentGame == DOOM2_CLASSIC) {
+		//GK: Delete uncompressed files for classic DOOM mods AFTER un allocating them (since it is still in classic doom)
+		CleanUncompFiles(true);
+	}
+	else {
+		//GK: Delete uncompressed files for classic DOOM mods WITHOUT un allocating them
+		CleanUncompFiles(false);
+	}
 	// don't try to shutdown if we are in a recursive error
 	if( !com_errorEntered )
 	{
@@ -1990,9 +1998,12 @@ void idCommonLocal::PerformGameSwitch()
 		{
 			menuSoundWorld->UnPause();
 		}
+		//GK: Delete Uncompressed files from classic DOOM mods
+		CleanUncompFiles(false);
 	}
 	
 	currentGame = idealCurrentGame;
+	
 }
 
 #endif // #if defined(USE_DOOMCLASSIC)
