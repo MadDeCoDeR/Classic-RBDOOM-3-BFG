@@ -553,7 +553,6 @@ void R_InitSpriteLumps (void)
     {
 	if (!(i&63))
 	    I_Printf (".");
-
 	patch = (patch_t*)W_CacheLumpNum (::g->firstspritelump+i, PU_CACHE_SHARED);
 	::g->spritewidth[i] = SHORT(patch->width)<<FRACBITS;
 	::g->spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;

@@ -223,7 +223,8 @@ extern  wbstartstruct_t		wminfo;
 
 // LUT of ammunition limits for each kind.
 // This doubles with BackPack powerup item.
-const extern  int		maxammo[NUMAMMO];
+//GK:No more constant variable
+/*const*/ extern  int		maxammo[NUMAMMO];
 
 
 

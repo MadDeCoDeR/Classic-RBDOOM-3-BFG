@@ -113,6 +113,11 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 					o++;
 				}
 				localdargc = o;
+				//GK: For Debbug porposes
+				for (int k = 0; k < localdargc; k++) {
+					idLib::Printf(" %s", classicargv[k]);
+				}
+				idLib::Printf("\n");
 				DoomLib::InitGame(localdargc, classicargv);
 			}
 			else {

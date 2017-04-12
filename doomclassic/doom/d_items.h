@@ -47,8 +47,8 @@ typedef struct
     int		flashstate;
 
 } weaponinfo_t;
-
-extern  const weaponinfo_t    weaponinfo[NUMWEAPONS];
-
+//GK: No more constant variable
+extern  /*const*/ weaponinfo_t    weaponinfo[NUMWEAPONS];
+void resetWeapons();
 #endif
 

@@ -35,13 +35,14 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "globaldata.h"
 
-
+#include <stdio.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <string.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <vector>
+#include <fstream>
 
 #include "doomtype.h"
 #include "m_swap.h"
@@ -50,7 +51,12 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "idlib/precompiled.h"
 
+#include "d_deh.h"
 
+#include "libs\zlib\minizip\unzip.h"
+
+#define READ_SIZE 8192
+#define MAX_FILENAME 512
 //
 // GLOBALS
 //
@@ -58,6 +64,8 @@ If you have questions concerning this license or the applicable additional terms
 lumpinfo_t*	lumpinfo = NULL;
 int			numlumps;
 void**		lumpcache;
+std::vector<std::string> fname;
+bool OpenCompFile(const char* filename);
 
 
 
@@ -135,25 +143,36 @@ void W_AddFile ( const char *filename)
     int			length;
     int			startlump;
     std::vector<filelump_t>	fileinfo( 1 );
+
+	
     
     // open the file and add to directory
     if ( (handle = fileSystem->OpenFileRead(filename)) == 0)
     {
+		idLib::Printf(" couldn't open %s\n", filename);
 		I_Printf (" couldn't open %s\n",filename);
 		return;
     }
-
     I_Printf (" adding %s\n",filename);
 	idLib::Printf(" adding %s\n", filename);
     startlump = numlumps;
+
 	
     if ( idStr::Icmp( filename+strlen(filename)-3 , "wad" ) )
     {
-		// single lump file
-		fileinfo[0].filepos = 0;
-		fileinfo[0].size = 0;
-		ExtractFileBase (filename, fileinfo[0].name);
-		numlumps++;
+		//GK: when loading archives return instandly don't add it to the lump list
+			if (OpenCompFile(filename)) {
+				return;
+			}
+			else {
+				// single lump file
+				fileinfo[0].filepos = 0;
+				//GK: Allow to load "Wild" files
+				std::ifstream inf(filename, std::ifstream::ate | std::ifstream::binary);
+				fileinfo[0].size = inf.tellg();
+				ExtractFileBase(filename, fileinfo[0].name);
+				numlumps++;
+			}
     }
     else 
     {
@@ -193,22 +212,29 @@ void W_AddFile ( const char *filename)
 	lump_p = &lumpinfo[startlump];
 
 	::g->wadFileHandles[ ::g->numWadFiles++ ] = handle;
-
+	int reppos = 0;
+	int np = 0;
+	int op = 0;
 	filelump_t * filelumpPointer = &fileinfo[0];
 	for (i=startlump ; i<numlumps ; i++,lump_p++, filelumpPointer++)
 	{
 		//GK: replace lumps between "_START" and "_END" markers instead of append
 		if (!iwad) {	
 			 char check[6];
+			 char marker[8];
 			if (filelumpPointer->name[2] == '_') {
 				strncpy(check, filelumpPointer->name+2, 6);
+				strncpy(marker, filelumpPointer->name + 1, 7);
 			}
 			else if (filelumpPointer->name[1] == '_') {
 				strncpy(check, filelumpPointer->name + 1, 6);
+				strncpy(marker, filelumpPointer->name , 7);
 			}
 			//GK: Names with 8 characters might have "trash" use Cmpn instead of Icmp
 			//ignore all the S,P and F markers (they causing troubles and making them doubles)
 			if (!idStr::Cmpn(check, "_START",6)){
+				np = i;
+				op = W_CheckNumForName(marker);
 				rep = true;
 				i++;
 				if (i >= numlumps) {
@@ -216,6 +242,7 @@ void W_AddFile ( const char *filename)
 				}
 				filelumpPointer++;
 				lump_p++;
+				//reppos = i-1;
 				for (int g = 0; g < 6; g++) {
 					check[g] = NULL;
 				}
@@ -251,8 +278,9 @@ void W_AddFile ( const char *filename)
 			if (rep) {
 				if (!smark) {
 					
-					lumpinfo_t* tlump = &lumpinfo[0];
+					
 					bool replaced = false;
+					lumpinfo_t* tlump = &lumpinfo[0];
 					for (int j = 0; j < numlumps; j++, tlump++) {
 						if (!idStr::Cmpn(filelumpPointer->name, tlump->name,8)) {
 							//idLib::Printf("Replacing lump %s\n", filelumpPointer->name); //for debug purposes
@@ -260,15 +288,49 @@ void W_AddFile ( const char *filename)
 							tlump->position = LONG(filelumpPointer->filepos);
 							tlump->size = LONG(filelumpPointer->size);
 							replaced = true;
+							if (j > reppos) {
+								reppos = j;
+							}
+							//lumpinfo_t* fl= (lumpinfo_t*)malloc(numlumps * sizeof(lumpinfo_t));
+							//lumpinfo_t* sl= (lumpinfo_t*)malloc(numlumps * sizeof(lumpinfo_t));
 						}
 
 					}
 					if (!replaced) {
+						//GK:add aditional content in between the markers
+						lumpinfo_t* temlump = &lumpinfo[reppos+1];
+						lumpinfo_t* tl = (lumpinfo_t*)malloc(numlumps * sizeof(lumpinfo_t));
+						tl->handle = temlump->handle;
+						strncpy(tl->name,temlump->name,8);
+						tl->position = temlump->position;
+						tl->size = temlump->size;
+						lumpinfo_t* tl2 = (lumpinfo_t*)malloc(numlumps * sizeof(lumpinfo_t));
+						temlump++;
+						for (int k=reppos+2;k<numlumps;k++,temlump++){
+							tl2->handle = temlump->handle;
+							strncpy(tl2->name, temlump->name, 8);
+							tl2->position = temlump->position;
+							tl2->size = temlump->size;
+
+							temlump->handle = tl->handle;
+							strncpy(temlump->name, tl->name, 8);
+							temlump->position = tl->position;
+							temlump->size = tl->size;
+
+							tl->handle = tl2->handle;
+							strncpy(tl->name, tl2->name, 8);
+							tl->position = tl2->position;
+							tl->size = tl2->size;
+						}
+						free(tl);
+						free(tl2);
 						//idLib::Printf("adding lump %s\n", filelumpPointer->name); //for debug purposes
-						lump_p->handle = handle;
-						lump_p->position = LONG(filelumpPointer->filepos);
-						lump_p->size = LONG(filelumpPointer->size);
-						strncpy(lump_p->name, filelumpPointer->name, 8);
+						lumpinfo_t* lar = &lumpinfo[reppos+1];
+						/*lump_p*/lar->handle = handle;
+						/*lump_p*/lar->position = LONG(filelumpPointer->filepos);
+						/*lump_p*/lar->size = LONG(filelumpPointer->size);
+						strncpy(/*lump_p*/lar->name, filelumpPointer->name, 8);
+						reppos++;
 					}
 				}
 			}
@@ -279,6 +341,11 @@ void W_AddFile ( const char *filename)
 					lump_p->position = LONG(filelumpPointer->filepos);
 					lump_p->size = LONG(filelumpPointer->size);
 					strncpy(lump_p->name, filelumpPointer->name, 8);
+					//GK: Check if it is a .deh file
+					if ((!idStr::Cmpn(filelumpPointer->name, "DEHACKED", 8)) || (!idStr::Icmp(filename + strlen(filename) - 3, "deh")) ) {
+						//idLib::Printf("Adding DeHackeD file %s\n",filelumpPointer->name);
+						loaddeh(i);
+					}
 				}
 				else {
 					for (int g = 0; g < 6; g++) {
@@ -293,6 +360,7 @@ void W_AddFile ( const char *filename)
 			lump_p->position = LONG(filelumpPointer->filepos);
 			lump_p->size = LONG(filelumpPointer->size);
 			strncpy(lump_p->name, filelumpPointer->name, 8);
+
 		}
 		//GK end
 	}
@@ -599,5 +667,78 @@ void W_Profile (void)
 {
 }
 
+//GK: Open archive files extract it's content and load it as files for DOOM
+bool OpenCompFile(const char* filename) {
+	unzFile zip = unzOpen(filename);
+	if (zip != NULL) {
+		idLib::Printf("found compressed file\n");
+#ifdef _WIN32
+		CreateDirectory("base/pwads",NULL);
+#elif
+		mkdir("base/pwads");
+#endif
+		unz_global_info gi;
+		if (unzGetGlobalInfo(zip, &gi) == UNZ_OK) {
+			char rb[READ_SIZE];
+			for (int i = 0; i < gi.number_entry; i++) {
+				unz_file_info fi;
+				char* name = new char[MAX_FILENAME];
+				if (unzGetCurrentFileInfo(zip, &fi, name, MAX_FILENAME, NULL, 0, NULL, 0) == UNZ_OK) {
+					const size_t filename_length = strlen(name);
+					if (filename[filename_length - 1] != '/') {
+						if (unzOpenCurrentFile(zip) == UNZ_OK) {
+							char* path = new char[MAX_FILENAME];
+							sprintf(path, "%s%s", "base/pwads/", name);
+							std::FILE *out = fopen(path, "wb");
+							if (out != NULL) {
+								int buff = UNZ_OK;
+								do {
+									buff = unzReadCurrentFile(zip, rb, READ_SIZE);
+									if (buff > 0) {
+										fwrite(rb, buff, 1, out);
+									}
+								} while (buff > 0);
+								fclose(out);
+								unzCloseCurrentFile(zip);
+								fname.push_back(path);
+								char* pname = new char[MAX_FILENAME];
+								sprintf(pname, "/pwads/%s", name);
+								W_AddFile(pname);
 
+							}
+							if (i + 1 < gi.number_entry) {
+								unzGoToNextFile(zip);
+							}
+						}
+					}
+
+				}
+			}
+
+			unzClose(zip);
+			return true;
+		}
+	}
+		return false;
+}
+//GK: Delete uncompressed files.
+//Problem: It must free them in order to delete them. And still might left some files back
+void CleanUncompFiles(bool unalloc) {
+	if (unalloc) {
+		W_Shutdown();
+	}
+	for (int i = 0; i < fname.size(); i++) {
+		idLib::Printf("Deleting File %s\n", fname[i].c_str());
+		do {
+
+		} while (remove(fname[i].c_str()) == 0);
+
+	}
+#ifdef _WIN32
+	RemoveDirectory("base/pwads");
+#elif
+	rmdir("base/pwads");
+#endif
+		fname.clear();
+}
 

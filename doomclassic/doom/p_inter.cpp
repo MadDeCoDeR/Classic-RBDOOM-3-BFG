@@ -59,9 +59,15 @@ If you have questions concerning this license or the applicable additional terms
 
 // a weapon is found with two clip loads,
 // a big item has five clip loads
-const int	maxammo[NUMAMMO] = {200, 50, 300, 50};
-const int	clipammo[NUMAMMO] = {10, 4, 20, 1};
-
+/*const*/ int	maxammo[NUMAMMO] = {200, 50, 300, 50};
+/*const*/ int	clipammo[NUMAMMO] = {10, 4, 20, 1};
+//GK: Reset ammo values just in case they changed by using deHacked
+void ResetAmmo() {
+	int	tmaxammo[NUMAMMO] = { 200, 50, 300, 50 };
+	memcpy(maxammo, tmaxammo, sizeof(tmaxammo));
+    int	tclipammo[NUMAMMO] = { 10, 4, 20, 1 };
+	memcpy(clipammo, tclipammo, sizeof(tclipammo));
+}
 
 //
 // GET STUFF

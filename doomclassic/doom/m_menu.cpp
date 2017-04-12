@@ -73,6 +73,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "sys/sys_signin.h"
 #include "d3xp/Game_local.h"
 
+#include "info.h"
+#include "d_items.h"
+
 extern idCVar in_useJoystick;
 
 //
@@ -913,6 +916,7 @@ void M_QuitDOOM(int choice)
 
 void M_ExitGame(int choice)
 {
+	//CleanUncompFiles(true);
 	common->Quit();
 }
 
@@ -922,6 +926,12 @@ void M_CancelExit(int choice) {
 
 void M_GameSelection(int choice)
 {
+	resetValues();
+	resetWeapons();
+	ResetAmmo();
+	//ResetSfx(); //GK: More Headache than it's worth
+	//CleanUncompFiles(); //GK: A good practice would have been to delete the files after
+	//we change the game but W_Shutdown which must be called to free the files causes bugs and crashes
 	common->SwitchToGame( DOOM3_BFG );
 }
 

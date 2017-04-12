@@ -527,7 +527,8 @@ memcpy( ::g->NUMANIMS, temp_NUMANIMS, sizeof(temp_NUMANIMS) );
 	::g->NumAlloc = 0;
 // z_zone.constructs end // 
 // info constructs begin //
-	extern const state_t	tempStates[NUMSTATES];
+	//GK: No more constant variable
+	extern /*const*/ state_t	tempStates[NUMSTATES];
 	memcpy(::g->states, tempStates, sizeof(tempStates));
 // info constructs end //
 // p_local begin //

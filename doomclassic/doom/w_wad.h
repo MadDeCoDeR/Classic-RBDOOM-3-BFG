@@ -88,6 +88,6 @@ void*	W_CacheLumpName (const char* name, int tag);
 
 void	W_Shutdown();
 
-
+void CleanUncompFiles(bool unalloc);
 #endif
 

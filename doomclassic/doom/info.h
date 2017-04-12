@@ -1176,7 +1176,7 @@ typedef struct
   long			misc1, misc2;
 } state_t;
 
-extern const state_t	tempStates[NUMSTATES];
+extern /*const*/ state_t	tempStates[NUMSTATES];
 // RB: sprnames must be NULL-terminated
 extern const char * const sprnames[NUMSPRITES + 1];
 // RB end
@@ -1351,7 +1351,9 @@ typedef struct
 
 } mobjinfo_t;
 
-extern const mobjinfo_t mobjinfo[NUMMOBJTYPES];
+extern /*const*/ mobjinfo_t mobjinfo[NUMMOBJTYPES];
 
+void resetValues();
+actionf_p2 getFunc(char* func);
 #endif
 

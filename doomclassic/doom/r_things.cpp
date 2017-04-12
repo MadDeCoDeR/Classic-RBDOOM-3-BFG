@@ -217,7 +217,7 @@ void R_InitSpriteDefs (const char* const* namelist)
 		    rotation = lumpinfo[l].name[7] - '0';
 		    R_InstallSpriteLump (l, frame, rotation, true);
 		}
-	    }
+		}
 	}
 	
 	// check the frames that were found for completeness

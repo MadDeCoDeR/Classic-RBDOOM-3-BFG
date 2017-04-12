@@ -254,8 +254,8 @@ P_RadiusAttack
 //
 // P_INTER
 //
-extern const int		maxammo[NUMAMMO];
-extern const int		clipammo[NUMAMMO];
+extern /*const*/ int		maxammo[NUMAMMO];
+extern /*const*/ int		clipammo[NUMAMMO];
 
 void
 P_TouchSpecialThing
@@ -270,6 +270,7 @@ P_DamageMobj
   int		damage );
 
 
+void ResetAmmo();
 //
 // P_SPEC
 //
