@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "Game_local.h"
 #include "../../doomclassic/doom/doomdef.h"
+#include "../../doomclassic/doom/doomlib.h"
 
 idCVar achievements_Verbose( "achievements_Verbose", "1", CVAR_BOOL, "debug spam" );
 idCVar g_demoMode( "g_demoMode", "0", CVAR_INTEGER, "this is a demo" );
@@ -338,8 +339,8 @@ void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
 		return;
 	}
 	
-#ifdef ID_RETAIL
-	if( common->GetConsoleUsed() )
+#ifdef ID_RETAIL					//GK No achievments if we use classic parameters
+	if( common->GetConsoleUsed() || (classicargv[1] !=NULL && classicargv[1] != '\0'))
 	{
 		if( !cheatingDialogShown )
 		{
