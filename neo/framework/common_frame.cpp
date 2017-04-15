@@ -261,8 +261,9 @@ void idCommonLocal::Draw()
 		const float sysWidth = renderSystem->GetWidth() * renderSystem->GetPixelAspect();
 		const float sysHeight = renderSystem->GetHeight();
 		const float sysAspect = sysWidth / sysHeight;
-		const float doomAspect = 4.0f / 3.0f;
-		const float adjustment = sysAspect / doomAspect;
+		//GK:Keep the same aspect ratio on ALL Games allow to run classic DOOM on Widescreen Resolutions
+		//const float doomAspect = 4.0f / 3.0f;
+		const float adjustment = 1; //sysAspect / doomAspect;
 		const float barHeight = ( adjustment >= 1.0f ) ? 0.0f : ( 1.0f - adjustment ) * ( float )renderSystem->GetVirtualHeight() * 0.25f;
 		const float barWidth = ( adjustment <= 1.0f ) ? 0.0f : ( adjustment - 1.0f ) * ( float )renderSystem->GetVirtualWidth() * 0.25f;
 		if( barHeight > 0.0f )
