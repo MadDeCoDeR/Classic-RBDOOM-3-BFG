@@ -253,6 +253,7 @@ void R_RenderSegLoop (void)
 	    ::g->dc_yh = yh;
 	    ::g->dc_texturemid = ::g->rw_midtexturemid;
 	    ::g->dc_source = R_GetColumn(::g->midtexture,texturecolumn);
+		::g->texnum = ::g->midtexture; //GK: Store pointer not the value
 	    colfunc ( ::g->dc_colormap, ::g->dc_source );
 	    ::g->ceilingclip[::g->rw_x] = ::g->viewheight;
 	    ::g->floorclip[::g->rw_x] = -1;
@@ -275,6 +276,7 @@ void R_RenderSegLoop (void)
 				::g->dc_yh = mid;
 				::g->dc_texturemid = ::g->rw_toptexturemid;
 				::g->dc_source = R_GetColumn(::g->toptexture,texturecolumn);
+				::g->texnum = ::g->toptexture;
 				colfunc ( ::g->dc_colormap, ::g->dc_source );
 				::g->ceilingclip[::g->rw_x] = mid;
 			}
@@ -305,6 +307,7 @@ void R_RenderSegLoop (void)
 				::g->dc_texturemid = ::g->rw_bottomtexturemid;
 				::g->dc_source = R_GetColumn(::g->bottomtexture,
 							texturecolumn);
+				::g->texnum = ::g->bottomtexture;
 				colfunc ( ::g->dc_colormap, ::g->dc_source );
 				::g->floorclip[::g->rw_x] = mid;
 			}

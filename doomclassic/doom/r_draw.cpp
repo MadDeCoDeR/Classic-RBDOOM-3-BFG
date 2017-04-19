@@ -90,8 +90,9 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 	byte*		dest; 
 	fixed_t		frac;
 	fixed_t		fracstep;	 
-
-	count = ::g->dc_yh - ::g->dc_yl; 
+	int theght = (int) ::g->s_textureheight[::g->texnum] >> FRACBITS;
+	int mheight =theght -1;
+	count = ::g->dc_yh - ::g->dc_yl ; 
 
 	// Zero length, column does not exceed a pixel.
 	if (count >= 0) {
@@ -113,22 +114,53 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 		//  which is the only mapping to be done.
 		fracstep = ::g->dc_iscale; 
 		frac = ::g->dc_texturemid + (::g->dc_yl-::g->centery)*fracstep; 
+		if (theght & mheight) { // not a power of 2 -- killough
+			mheight++;
+			mheight <<= FRACBITS;
 
-		// Inner loop that does the actual texture mapping,
-		//  e.g. a DDA-lile scaling.
-		// This is as fast as it gets.
-		do 
+			if (frac < 0)
+				while ((frac += mheight) < 0);
+			else
+				while (frac >= mheight)
+					frac -= mheight;
+
+			// Inner loop that does the actual texture mapping,
+			//  e.g. a DDA-lile scaling.
+			// This is as fast as it gets.
+			do
+			{
+				// Re-map color indices from wall texture column
+				//  using a lighting/special effects LUT.
+
+				// heightmask is the Tutti-Frutti fix -- killough
+
+				const int truncated1 = frac >> FRACBITS;
+				//const int wrapped1 = truncated1 & mheight;
+
+				*dest = dc_colormap[dc_source[truncated1]];
+				dest += SCREENWIDTH;
+				if ((frac += fracstep) >= mheight)
+					frac -= mheight;
+				
+			} while (count--);
+		}
+		else
 		{
-			// Re-map color indices from wall texture column
-			//  using a lighting/special effects LUT.
-			const int truncated1 = frac >> FRACBITS;
-			const int wrapped1 = truncated1 & 127;
-
-			*dest = dc_colormap[dc_source[wrapped1]];
-
-			frac += fracstep;
-			dest += SCREENWIDTH; 
-		} while (count--);
+			//GK: for texture height which is power of 2 do the vanilla procedure (eliminate weird red bottom lines and game breaking bugs)
+			do//while ((count -= 2) >= 0)   // texture height is a power of 2 -- killough
+			{
+				const int truncated1 = frac >> FRACBITS;
+				const int wrapped1 = truncated1 & mheight;
+				*dest = dc_colormap[dc_source[wrapped1]];
+				dest += SCREENWIDTH;
+				frac += fracstep;
+				//*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
+				//dest += SCREENWIDTH;
+				//frac += fracstep;
+			} while (count--);
+			//if (count & 1)
+			//	*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
+		}
 	}
 } 
 

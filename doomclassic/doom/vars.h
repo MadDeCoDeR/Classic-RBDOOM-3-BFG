@@ -841,6 +841,7 @@ short**			s_texturecolumnlump;
 unsigned short**	s_texturecolumnofs;
 byte**			s_texturecomposite;
 int*			s_texturecompositesize;
+int texnum; //GK: Store pointer of current texture in order to take it's height for fixing the tutti-frutti bug
 // r_data end //
 // r_plane begin //
 visplane_t		visplanes[MAXVISPLANES]; 
