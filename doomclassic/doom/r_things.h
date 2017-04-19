@@ -33,8 +33,8 @@ If you have questions concerning this license or the applicable additional terms
 #ifdef __GNUG__
 #pragma interface
 #endif
-
-#define MAXVISSPRITES  	128
+//GK : Increase the number of things from 128 to 245760 (lets become NUTS)
+#define MAXVISSPRITES  	245760
 
 extern vissprite_t	vissprites[MAXVISSPRITES];
 extern vissprite_t*	vissprite_p;
