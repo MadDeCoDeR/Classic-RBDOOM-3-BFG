@@ -4,6 +4,22 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+19 April 2017 - Classic RBDOOM-3-BFG 1.1.2
+_______________________________
+
+[classicdoom]
+-Add widescreen resolution support (related to DOOM 3 BFG's resolution)
+
+-Small increase of FPS when using 120FPS
+
+-Fixed Medusa Effect (Using Boom's Source Code)
+
+-Fixed Tutti-frutti bug (Using Boom's Source Code)
+
+-Increase the maximum number of concurrent object rendered on screen (Just don't have many hopes for NUTS mod)
+
+_______________________________________
+
 12 April 2017 - Classic RBDOOM-3-BFG 1.1.1
 _______________________________
 
