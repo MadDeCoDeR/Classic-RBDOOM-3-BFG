@@ -4,7 +4,7 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
-19 April 2017 - Classic RBDOOM-3-BFG 1.1.2
+19 April 2017 - Classic RBDOOM-3-BFG 1.1.1 Hotfix
 _______________________________
 
 [classicdoom]
