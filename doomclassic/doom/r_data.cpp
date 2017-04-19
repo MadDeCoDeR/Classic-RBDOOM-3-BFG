@@ -52,6 +52,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <vector>
 
+//GK:Added some parts of boom's source code created by Lee Killough to fix Medusa effect
+//since it was causing the game to crash
+
 //
 // Graphics.
 // DOOM graphics for walls and ::g->sprites
@@ -118,12 +121,15 @@ If you have questions concerning this license or the applicable additional terms
 // Clip and draw a column
 //  from a patch into a cached post.
 //
+// Rewritten by Lee Killough for performance and to fix Medusa bug
+//
 void
 R_DrawColumnInCache
 ( postColumn_t*	patch,
   byte*			cache,
   int			originy,
-  int			cacheheight )
+  int			cacheheight,
+	byte* marks)
 {
     int		count;
     int		position;
@@ -147,8 +153,14 @@ R_DrawColumnInCache
 	if (position + count > cacheheight)
 	    count = cacheheight - position;
 
-	if (count > 0)
-	    memcpy (cache + position, source, count);
+	if (count > 0) {
+		memcpy(cache + position, source, count);
+		// killough 4/9/98: remember which cells in column have been drawn,
+		// so that column can later be converted into a series of posts, to
+		// fix the Medusa bug.
+
+		memset(marks + position, 0xff, count);
+	}
 		
 	patch = (postColumn_t *)(  (byte *)patch + patch->length + 4); 
     }
@@ -162,13 +174,15 @@ R_DrawColumnInCache
 //  the composite texture is created from the patches,
 //  and each column is cached.
 //
+// Rewritten by Lee Killough for performance and to fix Medusa bug
+// And Ported by George Kalampokis by rewriting some lines to fit c++ and restructures in this version
 void R_GenerateComposite (int texnum)
 {
     byte*			block;
     texture_t*		texture;
     texpatch_t*		patch;	
     patch_t*		realpatch;
-    int				x;
+//    int				x; //Not needed 
     int				x1;
     int				x2;
     int				i;
@@ -179,46 +193,84 @@ void R_GenerateComposite (int texnum)
     texture = ::g->s_textures[texnum];
 
     block = (byte*)DoomLib::Z_Malloc (::g->s_texturecompositesize[texnum],
-		      PU_CACHE_SHARED, 
+		      PU_STATIC_SHARED, 
 		      &::g->s_texturecomposite[texnum]);	
 
     collump = ::g->s_texturecolumnlump[texnum];
     colofs = ::g->s_texturecolumnofs[texnum];
-    
+	// killough 4/9/98: marks to identify transparent regions in merged textures
+	byte *marks =(byte*) calloc(texture->width, texture->height), *source;
     // Composite the columns together.
     patch = texture->patches;
 		
-    for (i=0 , patch = texture->patches;
-	 i<texture->patchcount;
-	 i++, patch++)
-    {
-	realpatch = (patch_t*)W_CacheLumpNum (patch->patch, PU_CACHE_SHARED);
-	x1 = patch->originx;
-	x2 = x1 + SHORT(realpatch->width);
-
-	if (x1<0)
-	    x = 0;
-	else
-	    x = x1;
-	
-	if (x2 > texture->width)
-	    x2 = texture->width;
-
-	for ( ; x<x2 ; x++)
+	for (i = texture->patchcount-1, patch = texture->patches;
+		i >=0;
+		i--, patch++)
 	{
-	    // Column does not have multiple patches?
-	    if (collump[x] >= 0)
-		continue;
-	    
-	    patchcol = (postColumn_t *)((byte *)realpatch
-				    + LONG(realpatch->columnofs[x-x1]));
-	    R_DrawColumnInCache (patchcol,
-				 block + colofs[x],
-				 patch->originy,
-				 texture->height);
+		realpatch = (patch_t*)W_CacheLumpNum(patch->patch, PU_CACHE_SHARED);
+		x1 = patch->originx;
+		x2 = x1 + SHORT(realpatch->width);
+		const int *cofs = realpatch->columnofs - x1;
+		if (x1 < 0)
+			x1 = 0;
+		//else
+		//	x = x1;
+
+		if (x2 > texture->width)
+			x2 = texture->width;
+
+		for (; x1 < x2; x1++)
+		{
+			// Column does not have multiple patches?
+		   // if (collump[x] >= 0)
+			//continue;
+			if (collump[x1] == -1) {      // Column has multiple patches?
+										// killough 1/25/98, 4/9/98: Fix medusa bug.
+				//GK: This version uses postColumn_t instead of column_t
+				patchcol = (postColumn_t *)((byte *)realpatch
+					+ LONG(cofs[x1]));
+				R_DrawColumnInCache(patchcol,
+					block + colofs[x1],
+					patch->originy,
+					texture->height,
+					marks + x1*texture->height);
+			}
+		}
 	}
-						
-    }
+	// killough 4/9/98: Next, convert multipatched columns into true columns,
+	// to fix Medusa bug while still allowing for transparent regions.
+
+	source =(byte*) malloc(texture->height);       // temporary column
+	for (i = 0; i < texture->width; i++)
+		if (collump[i] == -1)                 // process only multipatched columns
+		{
+			postColumn_t *col = (postColumn_t *)(block + colofs[i] - 3);  // cached column
+			const byte *mark = marks + i * texture->height;
+			int j = 0;
+
+			// save column in temporary so we can shuffle it around
+			memcpy(source, (byte *)col + 3, texture->height);
+
+			for (;;)  // reconstruct the column by scanning transparency marks
+			{
+				while (j < texture->height && !mark[j]) // skip transparent cells
+					j++;
+				if (j >= texture->height)           // if at end of column
+				{
+					col->topdelta = -1;             // end-of-column marker
+					break;
+				}
+				col->topdelta = j;                  // starting offset of post
+				for (col->length = 0; j < texture->height && mark[j]; j++)
+					col->length++;                    // count opaque cells
+													  // copy opaque cells from the temporary back into the column
+				memcpy((byte *)col + 3, source + col->topdelta, col->length);
+				col = (postColumn_t *)((byte *)col + col->length + 4); // next post
+			}
+		}
+	free(source);         // free temporary column
+	free(marks);          // free transparency marks						
+    
 }
 
 
@@ -226,6 +278,9 @@ void R_GenerateComposite (int texnum)
 //
 // R_GenerateLookup
 //
+// Rewritten by Lee Killough for performance and to fix Medusa bug
+//
+// And Ported by George Kalampokis by rewriting some lines to fit c++ and restructures in this version
 void R_GenerateLookup (int texnum)
 {
     texture_t*		texture;
@@ -251,57 +306,91 @@ void R_GenerateLookup (int texnum)
     //  that are covered by more than one patch.
     // Fill in the lump / offset, so columns
     //  with only a single patch are all done.
-    std::vector<byte> patchcount(texture->width, 0);
+   // std::vector<byte> patchcount(texture->width, 0);
     patch = texture->patches;
-		
-    for (i=0 , patch = texture->patches;
-	 i<texture->patchcount;
-	 i++, patch++)
-    {
-	realpatch = (patch_t*)W_CacheLumpNum (patch->patch, PU_CACHE_SHARED);
-	x1 = patch->originx;
-	x2 = x1 + SHORT(realpatch->width);
-	
-	if (x1 < 0)
-	    x = 0;
-	else
-	    x = x1;
+	//std::vector<unsigned short> posts(texture->width,0);
+	// killough 4/9/98: keep count of posts in addition to patches.
+	// Part of fix for medusa bug for multipatched 2s normals.
+	//GK: Give struct a name in c++ calloc must be cast in order to work and using (struct*) is not an option
+	struct ct{
+		unsigned short patches, posts;
+	} *count =(ct*) calloc(sizeof *count, texture->width);
+	{
+		//GK: Either keep the for loops or make them while loops both has the same result
+		for (i = texture->patchcount-1;
+			i >=0;
+			i--)
+		{
+			int pat = patch->patch;
+			realpatch = (patch_t*)W_CacheLumpNum(pat, PU_CACHE_SHARED);
+			x1 = patch++->originx;
+			x2 = x1 + SHORT(realpatch->width);
+			const int *cofs = realpatch->columnofs - x1;
+			x = x1;
+			if (x1 < 0)
+				x = 0;
 
-	if (x2 > texture->width)
-	    x2 = texture->width;
-	for ( ; x<x2 ; x++)
-	{
-	    patchcount[x]++;
-	    collump[x] = patch->patch;
-	    colofs[x] = LONG(realpatch->columnofs[x-x1])+3;
+
+			if (x2 > texture->width)
+				x2 = texture->width;
+			for (; x < x2; x++)
+			{
+				// killough 4/9/98: keep a count of the number of posts in column,
+				// to fix Medusa bug while allowing for transparent multipatches.
+
+				const postColumn_t *col = (postColumn_t*)((byte*)realpatch + LONG(cofs[x]));
+				for (; col->topdelta != 0xff; count[x].posts++)
+					col = (postColumn_t *)((byte *)col + col->length + 4);
+				count[x].patches++;
+				collump[x] = pat;
+				colofs[x] = LONG(cofs[x]) + 3;
+			}
+		}
 	}
-    }
-	
-    for (x=0 ; x<texture->width ; x++)
-    {
-	if (!patchcount[x])
 	{
-	    I_Printf ("R_GenerateLookup: column without a patch (%s)\n",
-		    texture->name);
-	    return;
+		int csize = 0;
+		int height = texture->height;
+		
+		for (x = texture->width-1; x >=0; x--)
+		{
+			if (!count[x].patches)
+			{
+				I_Printf("R_GenerateLookup: column without a patch (%s)\n",
+					texture->name);
+				return;
+			}
+			// I_Error ("R_GenerateLookup: column without a patch");
+
+			if (count[x].patches > 1 && x<texture->width)
+			{
+				// killough 1/25/98, 4/9/98:
+				//
+				// Fix Medusa bug, by adding room for column header
+				// and trailer bytes for each post in merged column.
+				// For now, just allocate conservatively 4 bytes
+				// per post per patch per column, since we don't
+				// yet know how many posts the merged column will
+				// require, and it's bounded above by this limit.
+
+				// Use the cached block.
+					collump[x] = -1; // mark lump as multipatched
+					colofs[x] = csize + 3; // three header bytes in a column
+					csize += 4* count[x].posts +1;  // 1 stop byte plus 4 bytes per post
+				
+
+			/*	if (csize > 0x10000 - texture->height)
+				{
+					I_Error("R_GenerateLookup: texture %i is >64k",
+						texnum);
+				}*/
+
+
+			}
+			csize += height; // height bytes of texture data
+		}
+		::g->s_texturecompositesize[texnum] = csize;
 	}
-	// I_Error ("R_GenerateLookup: column without a patch");
-	
-	if (patchcount[x] > 1)
-	{
-	    // Use the cached block.
-	    collump[x] = -1;	
-	    colofs[x] = ::g->s_texturecompositesize[texnum];
-	    
-	    if (::g->s_texturecompositesize[texnum] > 0x10000-texture->height)
-	    {
-		I_Error ("R_GenerateLookup: texture %i is >64k",
-			 texnum);
-	    }
-	    
-	    ::g->s_texturecompositesize[texnum] += texture->height;
-	}
-    }	
+	free(count);  // killough 4/9/98
 }
 
 
