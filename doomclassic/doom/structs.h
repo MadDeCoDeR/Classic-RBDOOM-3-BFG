@@ -134,7 +134,9 @@ typedef enum
     newgame = 0,
     options,
     loadgame,
-    savegame,    
+    savegame,
+	//GK:Re-enable the "Read This!" option
+	readthis,
     quitdoom,
     main_end
 } main_e;

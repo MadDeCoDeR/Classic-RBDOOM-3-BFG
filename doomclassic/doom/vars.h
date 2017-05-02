@@ -355,8 +355,9 @@ char	endstring[160];
 short		itemOn;			// menu item skull is on
 short		skullAnimCounter;	// skull animation counter
 short		whichSkull;		// which skull to draw
-menu_t*	currentMenu;                          
-menuitem_t MainMenu[5];
+menu_t*	currentMenu; 
+//GK:Re-enable "Read This!" option
+menuitem_t MainMenu[6];
 menu_t  QuitDef;
 menuitem_t QuitMenu[3];
 menu_t  MainDef;
@@ -376,6 +377,11 @@ menuitem_t LoadExpMenu[2];
 menu_t  LoadExpDef;
 menuitem_t SaveMenu[6];
 menu_t  SaveDef;
+//GK:Re-enable "Read This!" option
+menuitem_t ReadMenu1[1];
+menu_t ReadDef1;
+menuitem_t ReadMenu2[1];
+menu_t ReadDef2;
 char    tempstring[80];
 int     epi;
 int     exp;
