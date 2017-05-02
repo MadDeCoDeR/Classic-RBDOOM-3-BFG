@@ -75,6 +75,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "info.h"
 #include "d_items.h"
+#include "f_finale.h"
 
 extern idCVar in_useJoystick;
 
@@ -98,7 +99,7 @@ extern idCVar in_useJoystick;
 
 // timed message = no input from user
 
-
+int mh = 0;
 
 const char gammamsg[5][26] =
 {
@@ -194,9 +195,20 @@ void M_StartMessage(const char *string,messageRoutine_t routine,qboolean input);
 void M_StopMessage(void);
 void M_ClearMenus (void);
 
-
-
-
+void M_DrawExtraReadThis(int choice);
+void M_DrawErt(void);
+//GK: Support for additional HELP lumps
+menuitem_t etrareadthis[1] = {
+	{ 1,"", M_FinishReadThis,'0' }
+};
+menu_t extradef = {
+	1,
+	&::g->MainDef,
+	etrareadthis,
+	M_DrawErt,
+	280,185,
+	0
+};
 //
 // DOOM MENU
 //
@@ -416,8 +428,9 @@ void M_DoSave(int slot)
 //
 // Locally used constants, shortcuts.
 //
-extern const char* mapnames[];
-extern const char* mapnames2[];
+//GK:Remember no CONSTANTS
+extern /*const*/ char* mapnames[];
+extern /*const*/ char* mapnames2[];
 void M_SaveSelect(int choice)
 {
 	const char* s;
@@ -555,15 +568,29 @@ void M_DrawReadThis1(void)
 	case shareware:
 	case registered:
 	case retail:
-		V_DrawPatchDirect (0,0,0,(patch_t*)W_CacheLumpName("HELP1",PU_CACHE_SHARED));
+			V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP1", PU_CACHE_SHARED));
 		break;
 	default:
 		break;
 	}
 	return;
 }
+//GK:Read this for specific additional modded help pages
+void M_DrawExtraReadThis(int choice) {
+	choice = 0;
+	M_SetupNextMenu(&extradef);
+}
 
-
+void M_DrawErt(void) {
+	::g->inhelpscreens = true;
+	if (W_GetNumForName("HELP02") > -1) {
+		V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP02", PU_CACHE_SHARED));
+	}
+	mh = 0;
+	::g->ReadMenu2[0].routine = M_FinishReadThis;
+	return;
+}
+//GK end
 
 //
 // Read This Menus - optional second page.
@@ -574,6 +601,19 @@ void M_DrawReadThis2(void)
 	switch ( ::g->gamemode )
 	{
 	case retail:
+		//GK: In case we use mod that uses additional HELP lumps
+			if (W_GetNumForName("HELP2") > -1) {
+				V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP2", PU_CACHE_SHARED));
+			}
+			else if (W_GetNumForName("HELP01") > -1) {
+				V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP01", PU_CACHE_SHARED));
+				mh = 1;
+
+			}
+			else {
+				V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("CREDIT", PU_CACHE_SHARED));
+			}
+		break;
 	case commercial:
 		// This hack keeps us from having to change menus.
 		V_DrawPatchDirect (0,0,0,(patch_t*)W_CacheLumpName("CREDIT",PU_CACHE_SHARED));
@@ -584,6 +624,9 @@ void M_DrawReadThis2(void)
 		break;
 	default:
 		break;
+	}
+	if (mh == 1) {
+		::g->ReadMenu2[0].routine = M_DrawExtraReadThis;
 	}
 	return;
 }
@@ -875,18 +918,20 @@ void M_EndGame(int choice)
 
 
 
-
+//GK:Re use the Read this! menu
 //
 // M_ReadThis
 //
 void M_ReadThis(int choice)
 {
-
+	choice = 0;
+	M_SetupNextMenu(&::g->ReadDef1);
 }
 
 void M_ReadThis2(int choice)
 {
-
+	choice = 0;
+	M_SetupNextMenu(&::g->ReadDef2);
 }
 
 void M_FinishReadThis(int choice)
@@ -929,6 +974,10 @@ void M_GameSelection(int choice)
 	resetValues();
 	resetWeapons();
 	ResetAmmo();
+	resetMapNames();
+	resetEndings();
+	resetTexts();
+	resetSprnames();
 	//ResetSfx(); //GK: More Headache than it's worth
 	//CleanUncompFiles(); //GK: A good practice would have been to delete the files after
 	//we change the game but W_Shutdown which must be called to free the files causes bugs and crashes
@@ -1434,7 +1483,8 @@ qboolean M_Responder (event_t* ev)
 	// Pop-up menu?
 	if (!::g->menuactive)
 	{
-		if (ch == KEY_ESCAPE && ( ::g->gamestate == GS_LEVEL || ::g->gamestate == GS_INTERMISSION || ::g->gamestate == GS_FINALE  ) )
+		//GK : Re-enable pop up main menu
+		if (ch == KEY_ESCAPE /*&& ( ::g->gamestate == GS_LEVEL || ::g->gamestate == GS_INTERMISSION || ::g->gamestate == GS_FINALE  )*/ )
 		{
 			M_StartControlPanel ();
 
@@ -1505,6 +1555,12 @@ qboolean M_Responder (event_t* ev)
 		return true;
 
 	case KEY_ESCAPE:
+		//GK : Re-enable pop up main menu
+		::g->currentMenu->lastOn = ::g->itemOn;
+		M_ClearMenus();
+		S_StartSound(NULL, sfx_swtchn);
+		return true;
+
 	case KEY_BACKSPACE:
 		::g->currentMenu->lastOn = ::g->itemOn;
 		if (::g->currentMenu->prevMenu)
@@ -1620,11 +1676,12 @@ void M_Drawer (void)
 			(patch_t*)W_CacheLumpName(::g->currentMenu->menuitems[i].name ,PU_CACHE_SHARED));
 		::g->md_y += LINEHEIGHT;
 	}
-
-
-	// DRAW SKULL
-	V_DrawPatchDirect(::g->md_x + SKULLXOFF,::g->currentMenu->y - 5 + ::g->itemOn*LINEHEIGHT, 0,
-		(patch_t*)W_CacheLumpName(skullName[::g->whichSkull],PU_CACHE_SHARED));
+	//GK: Remove the skull while showing the Read This!
+	if (!::g->inhelpscreens) {
+		// DRAW SKULL
+		V_DrawPatchDirect(::g->md_x + SKULLXOFF, ::g->currentMenu->y - 5 + ::g->itemOn*LINEHEIGHT, 0,
+			(patch_t*)W_CacheLumpName(skullName[::g->whichSkull], PU_CACHE_SHARED));
+	}
 }
 
 
@@ -1671,7 +1728,7 @@ void M_Init (void)
 {	
 
 	::g->currentMenu = &::g->MainDef;
-	::g->menuactive = 1;
+	::g->menuactive = 0;
 	::g->itemOn = ::g->currentMenu->lastOn;
 	::g->whichSkull = 0;
 	::g->skullAnimCounter = 10;

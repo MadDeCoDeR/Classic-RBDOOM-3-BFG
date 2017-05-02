@@ -126,15 +126,15 @@ menu_t  temp_QuitDef = {
 	g_accept			// lastOn
 };
 memcpy( &::g->QuitDef, &temp_QuitDef, sizeof(temp_QuitDef) );
-
-menuitem_t temp_MainMenu[5]=
+//GK: Re-enable the Read This! option
+menuitem_t temp_MainMenu[6]=
 {
 	{1,"M_NGAME",M_NewGame,'n'},
 	{1,"M_OPTION",M_Options,'o'},
 	{1,"M_LOADG",M_LoadGame,'l'},
 	{1,"M_SAVEG",M_SaveGame,'m'},
 	// Another hickup with Special edition.
-	//{1,"M_RDTHIS",M_ReadThis,'r'},
+	{1,"M_RDTHIS",M_ReadThis,'r'},
 	{1,"M_QUITG",M_QuitDOOM,'q'}
 };
 memcpy( &::g->MainMenu, temp_MainMenu, sizeof(temp_MainMenu) );
@@ -286,6 +286,35 @@ menu_t  temp_SaveDef = {
 		0
 };
 memcpy( &::g->SaveDef, &temp_SaveDef, sizeof(temp_SaveDef) );
+//GK: Re-enable the Read This! option
+menuitem_t temp_ReadMenu1[1] = {
+	{1,"", M_ReadThis2,'0'}
+};
+memcpy( ::g->ReadMenu1, temp_ReadMenu1, sizeof(temp_ReadMenu1) );
+menu_t  temp_ReadDef1 = {
+	read1_end,
+		&::g->MainDef,
+		::g->ReadMenu1,
+		M_DrawReadThis1,
+		280,185,
+		0
+};
+memcpy( &::g->ReadDef1, &temp_ReadDef1, sizeof(temp_ReadDef1) );
+
+menuitem_t temp_ReadMenu2[1] = {
+	{ 1,"", M_FinishReadThis,'0' }
+};
+memcpy(::g->ReadMenu2, temp_ReadMenu2, sizeof(temp_ReadMenu2));
+menu_t  temp_ReadDef2 = {
+	read2_end,
+	&::g->MainDef,
+	::g->ReadMenu2,
+	M_DrawReadThis2,
+	280,185,
+	0
+};
+memcpy(&::g->ReadDef2, &temp_ReadDef2, sizeof(temp_ReadDef2));
+
 int     temp_quitsounds[8] = {
 	sfx_pldeth,
 		sfx_dmpain,
