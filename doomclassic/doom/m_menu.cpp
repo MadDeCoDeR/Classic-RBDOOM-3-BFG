@@ -1750,7 +1750,8 @@ void M_Init (void)
 		//  kept this hack for educational purposes.
 		//::g->MainMenu[readthis] = ::g->MainMenu[quitdoom];
 		//::g->MainDef.numitems--;
-		::g->MainDef.y += 8;
+		//GK:Not needed
+		//::g->MainDef.y += 8;
 		::g->NewDef.prevMenu = &::g->MainDef;
 		//::g->ReadDef1.routine = M_DrawReadThis1;
 		//::g->ReadDef1.x = 330;
