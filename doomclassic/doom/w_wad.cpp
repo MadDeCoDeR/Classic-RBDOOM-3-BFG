@@ -216,6 +216,7 @@ void W_AddFile ( const char *filename)
 	int np = 0;
 	int op = 0;
 	filelump_t * filelumpPointer = &fileinfo[0];
+	rep = false;
 	for (i=startlump ; i<numlumps ; i++,lump_p++, filelumpPointer++)
 	{
 		//GK: replace lumps between "_START" and "_END" markers instead of append
@@ -224,11 +225,18 @@ void W_AddFile ( const char *filename)
 			 char marker[8];
 			if (filelumpPointer->name[2] == '_') {
 				strncpy(check, filelumpPointer->name+2, 6);
-				strncpy(marker, filelumpPointer->name + 1, 7);
+				if (filelumpPointer->name[1] != filelumpPointer->name[0]) {
+					strncpy(marker, filelumpPointer->name, 7);
+				}
+				else {
+					strncpy(marker, filelumpPointer->name + 1, 7);
+					marker[7] = '\0';
+				}
 			}
 			else if (filelumpPointer->name[1] == '_') {
 				strncpy(check, filelumpPointer->name + 1, 6);
 				strncpy(marker, filelumpPointer->name , 7);
+				marker[7] = '\0';
 			}
 			//GK: Names with 8 characters might have "trash" use Cmpn instead of Icmp
 			//ignore all the S,P and F markers (they causing troubles and making them doubles)
@@ -242,7 +250,7 @@ void W_AddFile ( const char *filename)
 				}
 				filelumpPointer++;
 				lump_p++;
-				//reppos = i-1;
+				reppos = op;
 				for (int g = 0; g < 6; g++) {
 					check[g] = NULL;
 				}
@@ -253,7 +261,7 @@ void W_AddFile ( const char *filename)
 			else if (filelumpPointer->name[1] == '_') {
 				strncpy(check, filelumpPointer->name + 1, 6);
 			}
-			if (!idStr::Icmp(check, "_END")){
+			if (!idStr::Cmpn(check, "_END",4)){
 				rep = false;
 				
 			}
@@ -291,12 +299,17 @@ void W_AddFile ( const char *filename)
 							if (j > reppos) {
 								reppos = j;
 							}
+							break;
 							//lumpinfo_t* fl= (lumpinfo_t*)malloc(numlumps * sizeof(lumpinfo_t));
 							//lumpinfo_t* sl= (lumpinfo_t*)malloc(numlumps * sizeof(lumpinfo_t));
 						}
-
+						/*if (!replaced) {
+							if (j > reppos) {
+								reppos = j;
+							}
+						}*/
 					}
-					if (!replaced) {
+					if (!replaced ) {
 						//GK:add aditional content in between the markers
 						lumpinfo_t* temlump = &lumpinfo[reppos+1];
 						lumpinfo_t* tl = (lumpinfo_t*)malloc(numlumps * sizeof(lumpinfo_t));
@@ -335,7 +348,7 @@ void W_AddFile ( const char *filename)
 				}
 			}
 			else {
-				if (idStr::Icmp(check, "_END")){
+				if (idStr::Cmpn(check, "_END",4)){
 					//idLib::Printf("adding lump %s\n", filelumpPointer->name); //for debug purposes
 					lump_p->handle = handle;
 					lump_p->position = LONG(filelumpPointer->filepos);
@@ -443,6 +456,8 @@ void W_InitMultipleFiles (const char** filenames)
 		numlumps = 0;
 
 		// will be realloced as lumps are added
+		
+		free(lumpinfo);
 		lumpinfo = NULL;
 		iwad = true;
 		for ( ; *filenames ; filenames++)
@@ -450,7 +465,7 @@ void W_InitMultipleFiles (const char** filenames)
 			W_AddFile (*filenames);
 			iwad = false;
 		}
-		
+		//iwad = true;
 		if (!numlumps)
 			I_Error ("W_InitMultipleFiles: no files found");
 
@@ -565,7 +580,7 @@ int W_GetNumForName ( const char* name)
 
     i = W_CheckNumForName ( name);
     //GK begin
-	if (i == -1 && idStr::Icmp("TITLEPIC", name)) //TITLEPIC might not exist
+	if (i == -1 && idStr::Icmp("TITLEPIC", name) && idStr::Icmp("HELP2", name) && idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name)) //TITLEPIC might not exist
       I_Error ("W_GetNumForName: %s not found!", name);
 	//GK End
       
@@ -607,12 +622,15 @@ W_ReadLump
     l = lumpinfo+lump;
 	
 	handle = l->handle;
-	
-	handle->Seek( l->position, FS_SEEK_SET );
-	c = handle->Read( dest, l->size );
+	//idLib::Printf("Reading %s from %s\n", l->name, handle->GetName());
+	//if (handle->GetName() != NULL && handle->GetName() != "" && handle->GetName() != " ") {
+		handle->Seek(l->position, FS_SEEK_SET);
+		
+		c = handle->Read(dest, l->size);
 
-    if (c < l->size)
-		I_Error ("W_ReadLump: only read %i of %i on lump %i",  c,l->size,lump);	
+		if (c < l->size)
+			I_Error("W_ReadLump: only read %i of %i on lump %i", c, l->size, lump);
+	//}
 }
 
 
