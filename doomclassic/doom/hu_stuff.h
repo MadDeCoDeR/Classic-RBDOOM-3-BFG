@@ -53,8 +53,10 @@ If you have questions concerning this license or the applicable additional terms
 
 //
 // HEADS UP TEXT
-//
-
+//GK: Keep mapnames as externals for DeHackeD text editor
+extern char* mapnames[];
+extern char* mapnames2[];
+void resetMapNames();
 void HU_Init(void);
 void HU_Start(void);
 

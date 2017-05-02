@@ -28,7 +28,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifndef __D_ENGLSH__
 #define __D_ENGLSH__
-
 //
 //	Printed strings for translation
 //
@@ -83,48 +82,48 @@ If you have questions concerning this license or the applicable additional terms
 
 //
 //	P_inter.C
-//
-#define GOTARMOR	"Picked up the armor."
-#define GOTMEGA	"Picked up the MegaArmor!"
-#define GOTHTHBONUS	"Picked up a health bonus."
-#define GOTARMBONUS	"Picked up an armor bonus."
-#define GOTSTIM	"Picked up a stimpack."
-#define GOTMEDINEED	"Picked up a medikit that you REALLY need!"
-#define GOTMEDIKIT	"Picked up a medikit."
-#define GOTSUPER	"Supercharge!"
+//GK: Make Defines external variables in order to be used for DeHackeD text editor
+extern char* GOTARMOR;
+extern char* GOTMEGA;
+extern char* GOTHTHBONUS;
+extern char* GOTARMBONUS;
+extern char* GOTSTIM;
+extern char* GOTMEDINEED;
+extern char* GOTMEDIKIT;
+extern char* GOTSUPER;
 
-#define GOTBLUECARD	"Picked up a blue keycard."
-#define GOTYELWCARD	"Picked up a yellow keycard."
-#define GOTREDCARD	"Picked up a red keycard."
-#define GOTBLUESKUL	"Picked up a blue skull key."
-#define GOTYELWSKUL	"Picked up a yellow skull key."
-#define GOTREDSKULL	"Picked up a red skull key."
+extern char* GOTBLUECARD;
+extern char* GOTYELWCARD;
+extern char* GOTREDCARD;
+extern char* GOTBLUESKUL;
+extern char* GOTYELWSKUL;
+extern char* GOTREDSKULL;
 
-#define GOTINVUL	"Invulnerability!"
-#define GOTBERSERK	"Berserk!"
-#define GOTINVIS	"Partial Invisibility"
-#define GOTSUIT	"Radiation Shielding Suit"
-#define GOTMAP	"Computer Area Map"
-#define GOTVISOR	"Light Amplification Visor"
-#define GOTMSPHERE	"MegaSphere!"
+extern char* GOTINVUL;
+extern char* GOTBERSERK;
+extern char* GOTINVIS;
+extern char* GOTSUIT;
+extern char* GOTMAP;
+extern char* GOTVISOR;
+extern char* GOTMSPHERE;
 
-#define GOTCLIP	"Picked up a clip."
-#define GOTCLIPBOX	"Picked up a box of bullets."
-#define GOTROCKET	"Picked up a rocket."
-#define GOTROCKBOX	"Picked up a box of rockets."
-#define GOTCELL	"Picked up an energy cell."
-#define GOTCELLBOX	"Picked up an energy cell pack."
-#define GOTSHELLS	"Picked up 4 shotgun shells."
-#define GOTSHELLBOX	"Picked up a box of shotgun shells."
-#define GOTBACKPACK	"Picked up a backpack full of ammo!"
+extern char* GOTCLIP;
+extern char* GOTCLIPBOX;
+extern char* GOTROCKET;
+extern char* GOTROCKBOX;
+extern char* GOTCELL;
+extern char* GOTCELLBOX;
+extern char* GOTSHELLS;
+extern char* GOTSHELLBOX;
+extern char* GOTBACKPACK;
 
-#define GOTBFG9000	"You got the BFG9000!  Oh, yes."
-#define GOTCHAINGUN	"You got the chaingun!"
-#define GOTCHAINSAW	"A chainsaw!  Find some meat!"
-#define GOTLAUNCHER	"You got the rocket launcher!"
-#define GOTPLASMA	"You got the plasma gun!"
-#define GOTSHOTGUN	"You got the shotgun!"
-#define GOTSHOTGUN2	"You got the super shotgun!"
+extern char* GOTBFG9000;
+extern char* GOTCHAINGUN;
+extern char* GOTCHAINSAW;
+extern char* GOTLAUNCHER;
+extern char* GOTPLASMA;
+extern char* GOTSHOTGUN;
+extern char* GOTSHOTGUN2;
 //GK begin
 #define GOTSECRET	"You found A Secret!"
 //GK End
@@ -461,24 +460,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // After level 11, put this:
 
-#define C2TEXT \
-"YOU HAVE WON! YOUR VICTORY HAS ENABLED\n" \
-"HUMANKIND TO EVACUATE EARTH AND ESCAPE\n"\
-"THE NIGHTMARE.  NOW YOU ARE THE ONLY\n"\
-"HUMAN LEFT ON THE FACE OF THE PLANET.\n"\
-"CANNIBAL MUTATIONS, CARNIVOROUS ALIENS,\n"\
-"AND EVIL SPIRITS ARE YOUR ONLY NEIGHBORS.\n"\
-"YOU SIT BACK AND WAIT FOR DEATH, CONTENT\n"\
-"THAT YOU HAVE SAVED YOUR SPECIES.\n"\
-"\n"\
-"BUT THEN, EARTH CONTROL BEAMS DOWN A\n"\
-"MESSAGE FROM SPACE: \"SENSORS HAVE LOCATED\n"\
-"THE SOURCE OF THE ALIEN INVASION. IF YOU\n"\
-"GO THERE, YOU MAY BE ABLE TO BLOCK THEIR\n"\
-"ENTRY.  THE ALIEN BASE IS IN THE HEART OF\n"\
-"YOUR OWN HOME CITY, NOT FAR FROM THE\n"\
-"STARPORT.\" SLOWLY AND PAINFULLY YOU GET\n"\
-"UP AND RETURN TO THE FRAY."
+extern char* C2TEXT; 
 
 
 // After level 20, put this:
@@ -704,24 +686,24 @@ If you have questions concerning this license or the applicable additional terms
 //
 // Character cast strings F_FINALE.C
 //
-#define CC_ZOMBIE	"ZOMBIEMAN"
-#define CC_SHOTGUN	"SHOTGUN GUY"
-#define CC_HEAVY	"HEAVY WEAPON DUDE"
-#define CC_IMP	"IMP"
-#define CC_DEMON	"DEMON"
-#define CC_LOST	"LOST SOUL"
-#define CC_CACO	"CACODEMON"
-#define CC_HELL	"HELL KNIGHT"
-#define CC_BARON	"BARON OF HELL"
-#define CC_ARACH	"ARACHNOTRON"
-#define CC_PAIN	"PAIN ELEMENTAL"
-#define CC_REVEN	"REVENANT"
-#define CC_MANCU	"MANCUBUS"
-#define CC_ARCH	"ARCH-VILE"
-#define CC_SPIDER	"THE SPIDER MASTERMIND"
-#define CC_CYBER	"THE CYBERDEMON"
-#define CC_HERO	"OUR HERO"
+extern char* CC_ZOMBIE;
+extern char* CC_SHOTGUN;
+extern char* CC_HEAVY;
+extern char* CC_IMP;
+extern char* CC_DEMON;
+extern char* CC_LOST;
+extern char* CC_CACO;
+extern char* CC_HELL;
+extern char* CC_BARON;
+extern char* CC_ARACH;
+extern char* CC_PAIN;
+extern char* CC_REVEN;
+extern char* CC_MANCU;
+extern char* CC_ARCH;
+extern char* CC_SPIDER;
+extern char* CC_CYBER;
+extern char* CC_HERO;
 
-
+void resetTexts();
 #endif
 

@@ -542,7 +542,8 @@ void D_DoomMain (void)
 	IdentifyVersion ();
 	//GK: Find the position of -doom,-doom2 and -both
 	M_initParam();
-
+	//GK: fix for Dehacked pointer editor
+	init_states();
 	setbuf (stdout, NULL);
 	::g->modifiedgame = false;
 

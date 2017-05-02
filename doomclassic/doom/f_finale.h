@@ -35,7 +35,22 @@ If you have questions concerning this license or the applicable additional terms
 //
 // FINALE
 //
+//GK: Use this for editing Endings
+extern char*	e1text;
+extern char*	e2text;
+extern char*	e3text;
+extern char*	e4text;
 
+extern char*	c1text;
+extern char*	c2text;
+extern char*	c3text;
+extern char*	c4text;
+extern char*	c5text;
+extern char*	c6text;
+extern char*	c7text;
+extern char*	c8Text;
+
+void resetEndings();
 // Called by main loop.
 qboolean F_Responder (event_t* ev);
 

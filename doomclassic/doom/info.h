@@ -1177,8 +1177,13 @@ typedef struct
 } state_t;
 
 extern /*const*/ state_t	tempStates[NUMSTATES];
+extern /*const*/ state_t	origStates[NUMSTATES];
+extern bool inited;
+void init_states();
 // RB: sprnames must be NULL-terminated
-extern const char * const sprnames[NUMSPRITES + 1];
+//GK:For DeHackeD Text Editor
+extern /*const*/ char * /*const*/ sprnames[NUMSPRITES + 1];
+void resetSprnames();
 // RB end
 
 typedef enum {

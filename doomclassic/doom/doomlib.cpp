@@ -382,6 +382,14 @@ fixed_t GetViewY()
 }
 
 void DoomLib::Shutdown() {
+	//GK: Reset Dehacked patches also here just in case
+	resetValues();
+	resetWeapons();
+	ResetAmmo();
+	resetMapNames();
+	//resetEndings();
+	resetTexts();
+	resetSprnames();
 	//D_QuitNetGame ();
 	I_ShutdownSound();
 	I_ShutdownGraphics();

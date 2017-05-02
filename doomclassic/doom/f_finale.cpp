@@ -58,20 +58,36 @@ If you have questions concerning this license or the applicable additional terms
 //  0 = text, 1 = art screen, 2 = character cast
 
 
+//GK: No constants
+/*const*/ char*	e1text = E1TEXT;
+/*const*/ char*	e2text = E2TEXT;
+/*const*/ char*	e3text = E3TEXT;
+/*const*/ char*	e4text = E4TEXT;
 
-const char*	e1text = E1TEXT;
-const char*	e2text = E2TEXT;
-const char*	e3text = E3TEXT;
-const char*	e4text = E4TEXT;
+/*const*/ char*	c1text = C1TEXT;
+/*const*/ char*	c2text = C2TEXT;
+/*const*/ char*	c3text = C3TEXT;
+/*const*/ char*	c4text = C4TEXT;
+/*const*/ char*	c5text = C5TEXT;
+/*const*/ char*	c6text = C6TEXT;
+/*const*/ char* c7text = C7TEXT;
+/*const*/ char* c8Text = C8TEXT;
 
-const char*	c1text = C1TEXT;
-const char*	c2text = C2TEXT;
-const char*	c3text = C3TEXT;
-const char*	c4text = C4TEXT;
-const char*	c5text = C5TEXT;
-const char*	c6text = C6TEXT;
-const char* c7text = C7TEXT;
-const char* c8Text = C8TEXT;
+void resetEndings() {
+	e1text = E1TEXT;
+	e2text = E2TEXT;
+    e3text = E3TEXT;
+    e4text = E4TEXT;
+
+	c1text = C1TEXT;
+    c2text = C2TEXT;
+	c3text = C3TEXT;
+	c4text = C4TEXT;
+	c5text = C5TEXT;
+	c6text = C6TEXT;
+	c7text = C7TEXT;
+	c8Text = C8TEXT;
+}
 
 const char*	p1text = P1TEXT;
 const char*	p2text = P2TEXT;

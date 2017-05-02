@@ -44,6 +44,7 @@
 
 #include "d_items.h"
 #include "sounds.h"
+#include "f_finale.h"
 
 void parsetext(char* text);
 std::vector<std::string> getlines(char* text);
@@ -54,17 +55,163 @@ void setWeapon(int pos, char* varname, int varval);
 void setPointer(int pos, char* varname, int varval);
 void setCptr( char* varname, char* varfunc);
 void setAmmo(int pos, char* varname, int varval);
+void setText(std::vector<std::string>lines,int i,int il, int nl);
 //More Headache than it's worth
 //void setSound(int pos, char* varname, int varval);
 
+typedef struct {
+	char** var;
+	char* name;
+}dehstr;
+
+dehstr strval[] = {
+	{&GOTARMOR,"GOTARMOR"},
+	{ &GOTMEGA,"GOTMEGA" },
+	{ &GOTHTHBONUS,"GOTHTHBONUS" },
+	{ &GOTARMBONUS,"GOTARMBONUS" },
+	{ &GOTSTIM,"GOTSTIM" },
+	{ &GOTMEDINEED,"GOTMEDINEED" },
+	{ &GOTMEDIKIT,"GOTMEDIKIT" },
+	{ &GOTSUPER,"GOTSUPER" },
+	{ &GOTBLUECARD,"GOTBLUECARD" },
+	{ &GOTYELWCARD,"GOTYELWCARD" },
+	{ &GOTREDCARD,"GOTREDCARD" },
+	{ &GOTBLUESKUL,"GOTBLUESKUL" },
+	{ &GOTYELWSKUL,"GOTYELWSKUL" },
+	{ &GOTREDSKULL,"GOTREDSKULL" },
+	{ &GOTINVUL,"GOTINVUL" },
+	{ &GOTBERSERK,"GOTBERSERK" },
+	{ &GOTINVIS,"GOTINVIS" },
+	{ &GOTSUIT,"GOTSUIT" },
+	{ &GOTMAP,"GOTMAP" },
+	{ &GOTVISOR,"GOTVISOR" },
+	{ &GOTMSPHERE,"GOTMSPHERE" },
+	{ &GOTCLIP,"GOTCLIP" },
+	{ &GOTCLIPBOX,"GOTCLIPBOX" },
+	{ &GOTROCKET,"GOTROCKET" },
+	{ &GOTROCKBOX,"GOTROCKBOX" },
+	{ &GOTCELL,"GOTCELL" },
+	{ &GOTCELLBOX,"GOTCELLBOX" },
+	{ &GOTSHELLS,"GOTSHELLS" },
+	{ &GOTSHELLBOX,"GOTSHELLBOX" },
+	{ &GOTBACKPACK,"GOTBACKPACK" },
+	{ &GOTBFG9000,"GOTBFG9000" },
+	{ &GOTCHAINGUN,"GOTCHAINGUN" },
+	{ &GOTCHAINSAW,"GOTCHAINSAW" },
+	{ &GOTLAUNCHER,"GOTLAUNCHER" },
+	{ &GOTPLASMA,"GOTPLASMA" },
+	{ &GOTSHOTGUN,"GOTSHOTGUN" },
+	{ &GOTSHOTGUN2,"GOTSHOTGUN2" },
+	{ &mapnames[0],"HUSTR_E1M1" },
+	{ &mapnames[1],"HUSTR_E1M2" },
+	{ &mapnames[2],"HUSTR_E1M3" },
+	{ &mapnames[3],"HUSTR_E1M4" },
+	{ &mapnames[4],"HUSTR_E1M5" },
+	{ &mapnames[5],"HUSTR_E1M6" },
+	{ &mapnames[6],"HUSTR_E1M7" },
+	{ &mapnames[7],"HUSTR_E1M8" },
+	{ &mapnames[8],"HUSTR_E1M9" },
+	{ &mapnames[9],"HUSTR_E2M1" },
+	{ &mapnames[10],"HUSTR_E2M2" },
+	{ &mapnames[11],"HUSTR_E2M3" },
+	{ &mapnames[12],"HUSTR_E2M4" },
+	{ &mapnames[13],"HUSTR_E2M5" },
+	{ &mapnames[14],"HUSTR_E2M6" },
+	{ &mapnames[15],"HUSTR_E2M7" },
+	{ &mapnames[16],"HUSTR_E2M8" },
+	{ &mapnames[17],"HUSTR_E2M9" },
+	{ &mapnames[18],"HUSTR_E3M1" },
+	{ &mapnames[19],"HUSTR_E3M2" },
+	{ &mapnames[20],"HUSTR_E3M3" },
+	{ &mapnames[21],"HUSTR_E3M4" },
+	{ &mapnames[22],"HUSTR_E3M5" },
+	{ &mapnames[23],"HUSTR_E3M6" },
+	{ &mapnames[24],"HUSTR_E3M7" },
+	{ &mapnames[25],"HUSTR_E3M8" },
+	{ &mapnames[26],"HUSTR_E3M9" },
+	{ &mapnames[27],"HUSTR_E4M1" },
+	{ &mapnames[28],"HUSTR_E4M2" },
+	{ &mapnames[29],"HUSTR_E4M3" },
+	{ &mapnames[30],"HUSTR_E4M4" },
+	{ &mapnames[31],"HUSTR_E4M5" },
+	{ &mapnames[32],"HUSTR_E4M6" },
+	{ &mapnames[33],"HUSTR_E4M7" },
+	{ &mapnames[34],"HUSTR_E4M8" },
+	{ &mapnames[35],"HUSTR_E4M9" },
+    { &mapnames2[0],"HUSTR_1" },
+	{ &mapnames2[1],"HUSTR_2" },
+	{ &mapnames2[2],"HUSTR_3" },
+	{ &mapnames2[3],"HUSTR_4" },
+	{ &mapnames2[4],"HUSTR_5" },
+	{ &mapnames2[5],"HUSTR_6" },
+	{ &mapnames2[6],"HUSTR_7" },
+	{ &mapnames2[7],"HUSTR_8" },
+	{ &mapnames2[8],"HUSTR_9" },
+	{ &mapnames2[9],"HUSTR_10" },
+	{ &mapnames2[10],"HUSTR_11" },
+	{ &mapnames2[11],"HUSTR_12" },
+	{ &mapnames2[12],"HUSTR_13" },
+	{ &mapnames2[13],"HUSTR_14" },
+	{ &mapnames2[14],"HUSTR_15" },
+	{ &mapnames2[15],"HUSTR_16" },
+	{ &mapnames2[16],"HUSTR_17" },
+	{ &mapnames2[17],"HUSTR_18" },
+	{ &mapnames2[18],"HUSTR_19" },
+	{ &mapnames2[19],"HUSTR_20" },
+	{ &mapnames2[20],"HUSTR_21" },
+	{ &mapnames2[21],"HUSTR_22" },
+	{ &mapnames2[22],"HUSTR_23" },
+	{ &mapnames2[23],"HUSTR_24" },
+	{ &mapnames2[24],"HUSTR_25" },
+	{ &mapnames2[25],"HUSTR_26" },
+	{ &mapnames2[26],"HUSTR_27" },
+	{ &mapnames2[27],"HUSTR_28" },
+	{ &mapnames2[28],"HUSTR_29" },
+	{ &mapnames2[29],"HUSTR_30" },
+	{ &mapnames2[30],"HUSTR_31" },
+	{ &mapnames2[31],"HUSTR_32" },
+	{ &mapnames2[32],"HUSTR_33" },
+	{&e1text,"E1TEXT"},
+	{ &e2text,"E2TEXT" },
+	{ &e3text,"E3TEXT" },
+	{ &e4text,"E4TEXT" },
+	{&c1text,"C1TEXT"},
+	{&c2text,"C2TEXT"},
+	{ &c3text,"C3TEXT" },
+	{ &c4text,"C4TEXT" },
+	{ &c5text,"C5TEXT" },
+	{ &c6text,"C6TEXT" },
+	{ &c7text,"C7TEXT" },
+	{ &c8Text,"C8TEXT" },
+	{ &CC_ZOMBIE,"CC_ZOMBIE" },
+	{ &CC_SHOTGUN,"CC_SHOTGUN" },
+	{ &CC_HEAVY,"CC_HEAVY" }, 
+	{ &CC_IMP,"CC_IMP" },
+	{ &CC_DEMON,"CC_DEMON" },
+	{ &CC_LOST,"CC_LOST" },
+	{ &CC_CACO,"CC_CACO" },
+	{ &CC_HELL,"CC_HELL" },
+	{ &CC_BARON,"CC_BARON" },
+	{ &CC_ARACH,"CC_ARACH" },
+	{ &CC_ARACH,"CC_ARACH" },
+	{ &CC_PAIN,"CC_PAIN" },
+	{ &CC_REVEN,"CC_REVEN" },
+	{ &CC_MANCU,"CC_MANCU" },
+	{ &CC_ARCH,"CC_ARCH" },
+	{ &CC_SPIDER,"CC_SPIDER" },
+	{ &CC_CYBER,"CC_CYBER" },
+	{ &CC_HERO,"CC_HERO" }
+};
+
 void loaddeh(int lump) {
 	char* text = (char*)malloc(W_LumpLength(lump)+2);
-
+	idLib::Printf("Applying DeHackeD patch ...\n");
 	W_ReadLump(lump, text);
+	
 	//idLib::Printf("%s", text);
 	parsetext(text);
-		
 	free(text);
+	idLib::Printf("DeHackeD patch succesfully applied\n");
 }
 
 void parsetext(char* text) {
@@ -80,25 +227,25 @@ void parsetext(char* text) {
 		//idLib::Printf("%s\n", linedtext[i].c_str());
 		if ((linedtext[i].find(eq) != std::string::npos) && state != 3 && state != 0) {
 			varname = strtok(strdup(linedtext[i].c_str()), "=");
-			char* tv3 = strtok(NULL, "=");
-			if (tv3 != NULL) {
+			std::string tv3 = strtok(NULL, "=");
+			if (!tv3.empty()) {
 				if (state != 6) {
-					varval = atoi(tv3);
+					varval = atoi(tv3.c_str());
 				}
 				else {
-					varfunc = tv3;
+					varfunc =strdup( tv3.c_str());
 				}
 			}
 			//idLib::Printf("%s = %i\n", varname, varval);
 			if (state == 1) {
-				setThing(statepos, varname, varval);
+				setThing(statepos-1, varname, varval);
 			}
 			if (state == 2) {
-				setFrame(statepos+1, varname, varval);
+				setFrame(statepos, varname, varval);
 				memcpy(::g->states, tempStates, sizeof(tempStates));
 			}
 			if (state == 4) {
-				setWeapon(statepos + 1, varname, varval);
+				setWeapon(statepos , varname, varval);
 				//memcpy(::g->states, tempStates, sizeof(tempStates));
 			}
 			if (state == 5) {
@@ -110,7 +257,7 @@ void parsetext(char* text) {
 				memcpy(::g->states, tempStates, sizeof(tempStates));
 			}
 			if (state == 7) {
-				setAmmo(statepos+1, varname, varval);
+				setAmmo(statepos, varname, varval);
 			}
 			//More Headache than it's worth
 			/*
@@ -121,17 +268,15 @@ void parsetext(char* text) {
 		}
 		else {
 			if (linedtext[i].length() > 1) {
-				varname = strtok(strdup(linedtext[i].c_str()), " ");
+				char* tst = strtok(strdup(linedtext[i].c_str()), " ");
 				char* tval = strtok(NULL, " ");
-				//if (state != 3) {
-					if (tval != NULL) {
+					if (tst != NULL && tval != NULL) {
 
-						//if (idStr::Cmpn(varname, "[", 1)) {
-						//	if ((idStr::Icmp(varname, "Patch") && idStr::Icmp(varname, "ID")) && state != 3 && state !=6) {
-						statepos = atoi(tval) - 1;
-						state = checkstate(varname);
+						statepos = atoi(tval);
+						state = checkstate(tst);
 						if (state == 1) {
-							if (statepos >= NUMMOBJTYPES) {
+							int tpos = statepos - 1;
+							if (tpos >= NUMMOBJTYPES) {
 								I_Error("No such Thing found");
 							}
 						}
@@ -141,7 +286,9 @@ void parsetext(char* text) {
 							}
 						}
 						if (state == 3) {
+							statepos = statepos + 1;
 							varval2 = atoi(strtok(NULL, " "));
+							setText(linedtext, i + 1, statepos, varval2);
 						}
 						if (state == 4) {
 							if (statepos >= NUMWEAPONS) {
@@ -151,15 +298,13 @@ void parsetext(char* text) {
 						if (state == 5) {
 							char* tv = strtok(NULL, " ");
 							if (tv != NULL) {
-								char* tv2 = strtok(NULL, " ");
-								if (tv2 != NULL) {
-									char* tv3 = (char*)malloc(strlen(tv2) + 1);
-									for (int h = 0; h < strlen(tv2) - 1; h++) {
-										tv3[h] = tv2[h];
-									}
-									statepos = atoi(tv3);
+								std::string tv2 = strtok(NULL, " ");
+								if (!tv2.empty()) {
+									statepos = atoi(tv2.substr(0,strlen(tv2.c_str())-1).c_str());
+									
 									if (statepos >= NUMSTATES) {
-										I_Error("No such Frame found");
+										idLib::Printf("%i\n", statepos);
+										I_Error("No such codeptr found");
 									}
 								}
 							}
@@ -180,27 +325,14 @@ void parsetext(char* text) {
 
 					}
 					else {
-						int tstate = checkstate(varname);
+						if (tst != NULL){
+						int tstate = checkstate(tst);
 						if (tstate != 0) {
 							state = tstate;
 						}
-					//}
+					}
 				}
 			}
-			/*else {
-				if (state == 3) {
-					if (linedtext[i+1].length() > 1) {
-						if(checkstate(strtok(strdup(linedtext[i + 1].c_str()), " ")) != 0)
-						state = 0;
-					}
-					else {
-						state = 3;
-					}
-				}
-				else {
-					state = 0;
-				}
-			}*/
 		}
 	}
 	}
@@ -209,11 +341,11 @@ void parsetext(char* text) {
 std::vector<std::string> getlines(char* text) {
 	std::vector<std::string> lines;
 	int size = strlen(text);
-	for (int i = 0; i < size - 7; i++ ) {
+	for (int i = 0; i < size /*- 7*/; i++ ) {
 		std::string letter = "";
 		qboolean ignore = false;
 		while (text[i] != '\n') {
-			if (text[i] == '#')
+			if (text[i] == '#' && text[i-3]!='I' && text[i-2]!='D')
 				ignore = true;
 
 			if (!ignore) {
@@ -221,7 +353,7 @@ std::vector<std::string> getlines(char* text) {
 					letter += text[i];
 				}
 			}
-			if (i < size - 7) {
+			if (i < size /*- 7*/) {
 				i++;
 			}
 			else {
@@ -237,26 +369,28 @@ std::vector<std::string> getlines(char* text) {
 }
 
 int checkstate(char* text) {
-	if (!idStr::Icmp(text, "Thing")) {
-		return 1;
-	}
-	if (!idStr::Icmp(text, "Frame")) {
-		return 2;
-	}
-	if (!idStr::Icmp(text, "Text")) {
-		return 3;
-	}
-	if (!idStr::Icmp(text, "Weapon")) {
-		return 4;
-	}
-	if (!idStr::Icmp(text, "Pointer")) {
-		return 5;
-	}
-	if (!idStr::Icmp(text, "[CODEPTR]")) {
-		return 6;
-	}
-	if (!idStr::Icmp(text, "Ammo")) {
-		return 7;
+	if (text != NULL) {
+		if (!idStr::Icmp(text, "Thing")) {
+			return 1;
+		}
+		if (!idStr::Icmp(text, "Frame")) {
+			return 2;
+		}
+		if (!idStr::Icmp(text, "Text")) {
+			return 3;
+		}
+		if (!idStr::Icmp(text, "Weapon")) {
+			return 4;
+		}
+		if (!idStr::Icmp(text, "Pointer")) {
+			return 5;
+		}
+		if (!idStr::Icmp(text, "[CODEPTR]")) {
+			return 6;
+		}
+		if (!idStr::Icmp(text, "Ammo")) {
+			return 7;
+		}
 	}
 	//More Headache than it's worth
 	/*
@@ -360,6 +494,9 @@ void setThing(int pos, char* varname, int varval) {
 			mobjinfo[pos].raisestate = varval;
 		}
 	}
+	else if (!idStr::Icmp(varname, "ID # ")) {
+		mobjinfo[pos].doomednum = varval;
+	}
 }
 
 void setFrame(int pos, char* varname, int varval) {
@@ -395,12 +532,12 @@ void setWeapon(int pos, char* varname, int varval) {
 	}
 	else if (!idStr::Icmp(varname, "Select frame ")) {
 		if (varval < NUMSTATES) {
-			weaponinfo[pos].upstate = varval;
+			weaponinfo[pos].downstate = varval;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Deselect frame ")) {
 		if (varval < NUMSTATES) {
-			weaponinfo[pos].downstate = varval;
+			weaponinfo[pos].upstate = varval;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Bobbing frame ")) {
@@ -423,7 +560,7 @@ void setWeapon(int pos, char* varname, int varval) {
 void setPointer(int pos, char* varname, int varval) {
 	if (!idStr::Icmp(varname, "Codep Frame ")) {
 		if (varval < NUMSTATES) {
-			tempStates[pos].action = tempStates[varval].action;
+			tempStates[pos].action = origStates[varval].action;
 		}
 	}
 }
@@ -481,3 +618,100 @@ void setAmmo(int pos, char* varname, int varval) {
 		S_sfx[pos].lumpnum = varval;
 	}*/
 //}
+
+void setText(std::vector<std::string>lines, int i,int il,int nl) {
+	int op = i;
+	int size = 0;
+	int psize = 0;
+	int nsize = 0;
+	std::string newline;
+	char* tst = strtok(strdup(lines[i].c_str()), " ");
+	//Dealing better with the memory
+	char* ntxt=new char[nl];
+	strcpy(ntxt, "");
+	char* otxt = new char[il];
+	while (checkstate(tst) == 0 && i<lines.size()) {
+		newline = lines[i] + "\n";
+		//if (size + strlen(newline.c_str()) <= il) {
+		//idLib::Printf("%s\n", lines[i].c_str());
+			size += strlen(newline.c_str());
+			char* ltxt = strdup(newline.c_str());
+			if (size <= il) {
+				if (i == op) {
+					strcpy(otxt, newline.c_str());
+				}
+				else {
+					strcat(otxt, newline.c_str());
+				}
+			}
+			else {
+				if (strlen(ltxt) > il) {
+					for (int o = 0; o < il - 1; o++) {
+						otxt[o] = ltxt[o];
+					}
+					otxt[il - 1] = '\0';
+					//strncpy(otxt, ltxt, il - 1);
+					//strcat(otxt, "\0");
+					strcpy(ntxt, ltxt + il - 1);
+					/*int r = 0;
+					for (int h = il-1; h < strlen(ltxt); h++,r++) {
+						ntxt[r] = ltxt[h];
+					}*/
+					//ntxt[r - 1] = '\0';
+					nsize += strlen(ltxt+il-1);
+					//ntxt[strlen(ltxt)] = '\0';
+				}
+				else if (psize < il && psize + strlen(ltxt) > il) {
+					int p = 0;
+					for (int o = psize; o < il - 1; o++, p++) {
+						otxt[o] = ltxt[p];
+					}
+					otxt[il - 1] = '\0';
+					strcpy(ntxt, ltxt+p);
+					nsize += strlen(ltxt + p);
+				}
+				else {
+					strcat(ntxt, newline.c_str());
+					nsize+= strlen(newline.c_str());
+				}
+			}
+		i++;
+		if (i < lines.size()) {
+			tst = strtok(strdup(lines[i].c_str()), " ");
+		}
+		psize = size;
+	}
+	if (nsize < nl) {
+		ntxt[nsize] = '\0';
+	}
+	else {
+		ntxt[nl] = '\0';
+	}
+	//idLib::Printf("Replacing: %s with %s size %i\n", otxt, ntxt,nsize);
+	int arrsz = sizeof(strval) / sizeof(*strval);
+	if (otxt != nullptr) {
+		bool replaced = false;
+		for (int j = 0; j < arrsz; j++) {
+
+			if (!idStr::Icmp(otxt, *strval[j].var)) {
+				*strval[j].var=ntxt;
+				replaced = true;
+				//free(ntxt);
+				break;
+			}
+		}
+		if (!replaced) {
+			for (int m = 0; m < NUMSPRITES; m++) {
+				if (!idStr::Icmp(otxt, sprnames[m])) {
+					sprnames[m] = ntxt;
+					break;
+				}
+			}
+		}
+	}
+	//free(otxt);
+	
+	//free(ntxt);
+	//free(otxt);
+	return;
+}

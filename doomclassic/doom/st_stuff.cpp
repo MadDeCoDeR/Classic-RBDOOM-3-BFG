@@ -352,8 +352,8 @@ cheatseq_t	cheat_clev = cheatseq_t( cheat_clev_seq, 0 );
 cheatseq_t	cheat_mypos = cheatseq_t( cheat_mypos_seq, 0 );
 
 
-// 
-const extern char*	mapnames[];
+// GK:For DeHackeD Text Editor
+/*const*/ extern char*	mapnames[];
 
 
 //

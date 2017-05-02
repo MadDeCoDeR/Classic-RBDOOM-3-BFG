@@ -92,7 +92,7 @@ const char*	const player_names[] =
 // The actual names can be found in DStrings.h.
 //
 
-const char*	mapnames[] =
+/*const*/ char*	mapnames[] =
 {
 
 	HUSTR_E1M1,
@@ -146,7 +146,7 @@ const char*	mapnames[] =
 		"NEWLEVEL"
 };
 
-const char*	mapnames2[] =
+/*const*/ char*	mapnames2[] =
 {
 	HUSTR_1,
 		HUSTR_2,
@@ -185,7 +185,102 @@ const char*	mapnames2[] =
 		HUSTR_33
 
 };
+void resetMapNames() {
+	/*const*/ char*	tmapnames[] =
+	{
 
+		HUSTR_E1M1,
+		HUSTR_E1M2,
+		HUSTR_E1M3,
+		HUSTR_E1M4,
+		HUSTR_E1M5,
+		HUSTR_E1M6,
+		HUSTR_E1M7,
+		HUSTR_E1M8,
+		HUSTR_E1M9,
+
+		HUSTR_E2M1,
+		HUSTR_E2M2,
+		HUSTR_E2M3,
+		HUSTR_E2M4,
+		HUSTR_E2M5,
+		HUSTR_E2M6,
+		HUSTR_E2M7,
+		HUSTR_E2M8,
+		HUSTR_E2M9,
+
+		HUSTR_E3M1,
+		HUSTR_E3M2,
+		HUSTR_E3M3,
+		HUSTR_E3M4,
+		HUSTR_E3M5,
+		HUSTR_E3M6,
+		HUSTR_E3M7,
+		HUSTR_E3M8,
+		HUSTR_E3M9,
+
+		HUSTR_E4M1,
+		HUSTR_E4M2,
+		HUSTR_E4M3,
+		HUSTR_E4M4,
+		HUSTR_E4M5,
+		HUSTR_E4M6,
+		HUSTR_E4M7,
+		HUSTR_E4M8,
+		HUSTR_E4M9,
+
+		"NEWLEVEL",
+		"NEWLEVEL",
+		"NEWLEVEL",
+		"NEWLEVEL",
+		"NEWLEVEL",
+		"NEWLEVEL",
+		"NEWLEVEL",
+		"NEWLEVEL",
+		"NEWLEVEL"
+	};
+	memcpy(mapnames, tmapnames, sizeof(tmapnames));
+	/*const*/ char*	tmapnames2[] =
+	{
+		HUSTR_1,
+		HUSTR_2,
+		HUSTR_3,
+		HUSTR_4,
+		HUSTR_5,
+		HUSTR_6,
+		HUSTR_7,
+		HUSTR_8,
+		HUSTR_9,
+		HUSTR_10,
+		HUSTR_11,
+
+		HUSTR_12,
+		HUSTR_13,
+		HUSTR_14,
+		HUSTR_15,
+		HUSTR_16,
+		HUSTR_17,
+		HUSTR_18,
+		HUSTR_19,
+		HUSTR_20,
+
+		HUSTR_21,
+		HUSTR_22,
+		HUSTR_23,
+		HUSTR_24,
+		HUSTR_25,
+		HUSTR_26,
+		HUSTR_27,
+		HUSTR_28,
+		HUSTR_29,
+		HUSTR_30,
+		HUSTR_31,
+		HUSTR_32,
+		HUSTR_33
+
+	};
+	memcpy(mapnames2, tmapnames2, sizeof(tmapnames2));
+}
 
 const char*	mapnamesp[] =
 {
@@ -373,6 +468,9 @@ void HU_Start(void)
 		s = HU_TITLE;
 		break;
 	case commercial:
+		//GK:Use the mapnames2 instead of DOOM2_mapnames
+		s = HU_TITLE2;
+		break;
 	default:
 		if( DoomLib::expansionSelected == 5 ) {
 			int map = ::g->gamemap;
@@ -523,13 +621,14 @@ qboolean HU_Responder(event_t *ev)
 
 	if (!::g->chat_on)
 	{
-		if (ev->data1 == HU_MSGREFRESH)
+		//GK : Disable the message show when pressing enter
+		/*if (ev->data1 == HU_MSGREFRESH)
 		{
 			::g->message_on = true;
 			::g->message_counter = HU_MSGTIMEOUT;
 			eatkey = true;
 		}
-		else if (::g->netgame && ev->data1 == HU_INPUTTOGGLE)
+		else*/ if (::g->netgame && ev->data1 == HU_INPUTTOGGLE)
 		{
 			eatkey = ::g->chat_on = true;
 			HUlib_resetIText(&::g->w_chat);
