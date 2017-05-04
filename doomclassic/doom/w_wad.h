@@ -61,10 +61,14 @@ typedef struct
 //
 typedef struct
 {
-    char	name[8];
+	//GK: Fix for "trash" chararcters 
+	//p.s. : Don't try this on filelump_t
+    char	name[9];
     idFile *	handle;
     int		position;
     int		size;
+	//GK: Know when an item is null (malloc does not let nulls even if the entry has nothing)
+	bool null;
 } lumpinfo_t;
 
 
