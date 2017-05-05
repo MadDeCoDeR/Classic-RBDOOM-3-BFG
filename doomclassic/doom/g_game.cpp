@@ -1479,7 +1479,13 @@ qboolean G_DoLoadGame ()
 			return false;				// bad version
 		}
 	}
-	::g->save_p += strlen(tlab)-2; 
+	//GK: In case the save file has no mods
+	if (hm) {
+		::g->save_p += strlen(tlab) - 2;
+	}
+	else {
+		::g->save_p += VERSIONSIZE;
+	}
 
 	::g->gameskill = (skill_t)*::g->save_p++; 
 	::g->gameepisode = *::g->save_p++; 
