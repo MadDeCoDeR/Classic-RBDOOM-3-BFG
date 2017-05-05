@@ -191,7 +191,8 @@ void M_WriteText(int x, int y, const char *string);
 int  M_StringWidth(const char *string);
 int  M_StringHeight(const char *string);
 void M_StartControlPanel(void);
-void M_StartMessage(const char *string,messageRoutine_t routine,qboolean input);
+//GK:Use it and in other places
+//void M_StartMessage(const char *string,messageRoutine_t routine,qboolean input);
 void M_StopMessage(void);
 void M_ClearMenus (void);
 

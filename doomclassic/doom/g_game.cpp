@@ -739,8 +739,11 @@ void G_Ticker (void)
 		case ga_loadgame: 
 			G_DoLoadGame ();
 			break; 
-		case ga_savegame: 
-			G_DoSaveGame (); 
+		case ga_savegame:
+			//GK: Show "Game saved" after saving
+			if (G_DoSaveGame()) {
+				::g->plyr->message = GGSAVED;
+			}
 			break; 
 		case ga_playdemo: 
 			G_DoPlayDemo (); 
@@ -1392,7 +1395,7 @@ qboolean G_DoLoadGame ()
 { 
 	int		i; 
 	int		a,b,c;
-	char	vcheck[VERSIONSIZE]; 
+	char	vcheck[256]; 
 
 	loadingGame = true;
 
@@ -1417,14 +1420,66 @@ qboolean G_DoLoadGame ()
 	// skip the description field 
 	memset (vcheck,0,sizeof(vcheck)); 
 	sprintf (vcheck,"version %i",VERSION); 
+	//GK:Check if the save file uses mods
+	char* tlab = (char*)::g->save_p;
+	bool hm = false;
 	if (strcmp ((char *)::g->save_p, vcheck)) {
-		loadingGame = false;
-		waitingForWipe = false;
+		
+		char* clab= new char[19];
+		strncpy(clab, tlab, 18);
+		clab[18] = '\0';
+		sprintf(vcheck, "version %i files ", VERSION);
+		bool ok = false;
+		if (!strcmp(clab, vcheck)) {
+			hm = true;
+			const char * fnames = tlab + 18;
+			char* file = strtok(strdup(fnames), ",");
+			std::vector<std::string>filelist;
+			while (file) {
+				filelist.push_back(file);
+				file = strtok(NULL, ",");
+			}
+			for (int mf = 0; mf < filelist.size()-1; mf++) {
+				for (int f = 1; f < 20; f++) {
+					if (wadfiles[f] != NULL) {
+						char* fname = strtok(strdup(wadfiles[f]), "\\");
+						while (fname) {
+							char* tname = strtok(NULL, "\\");
+							if (tname) {
+								fname = tname;
+							}
+							else {
+								break;
+							}
+						}
 
-		return false;				// bad version
+						if (!strcmp(filelist[mf].c_str(), fname)) {
+							ok = true;
+							break;
+						}
+						else {
+							ok = false;
+						}
+
+
+					}
+					else {
+						break;
+					}
+				}
+			}
+		}
+		if (!ok) {
+			loadingGame = false;
+			waitingForWipe = false;
+			if (hm) {
+				//GK:If the game does not using the mods of the save file show this message
+				M_StartMessage("Missing Mod Files!\n\npress any button", NULL, false);
+			}
+			return false;				// bad version
+		}
 	}
-
-	::g->save_p += VERSIONSIZE; 
+	::g->save_p += strlen(tlab)-2; 
 
 	::g->gameskill = (skill_t)*::g->save_p++; 
 	::g->gameepisode = *::g->save_p++; 
@@ -1486,7 +1541,7 @@ G_SaveGame
 qboolean G_DoSaveGame (void) 
 { 
 	char	name[100]; 
-	char	name2[VERSIONSIZE]; 
+	char	name2[256]; 
 	char*	description; 
 	int		length; 
 	int		i; 
@@ -1515,9 +1570,34 @@ qboolean G_DoSaveGame (void)
 	::g->save_p += SAVESTRINGSIZE; 
 
 	memset (name2,0,sizeof(name2)); 
-	sprintf (name2,"version %i",VERSION); 
-	memcpy (::g->save_p, name2, VERSIONSIZE); 
-	::g->save_p += VERSIONSIZE; 
+	//GK: if the game uses mods store their names on the save file header
+	if (M_CheckParm("-file")) {
+		sprintf(name2, "version %i files ", VERSION);
+		for (int f=1; f<20; f++) {
+			if (wadfiles[f] != NULL) {
+				char* fname = strtok(strdup(wadfiles[f]), "\\");
+				while (fname) {
+					char* tname = strtok(NULL, "\\");
+					if (tname) {
+						fname = tname;
+					}
+					else {
+						break;
+					}
+				}
+				strcat(name2, fname);
+				strcat(name2, ",");
+			}
+			else {
+				break;
+			}
+		}
+	}
+	else {
+		sprintf(name2, "version %i", VERSION);
+	}
+	memcpy (::g->save_p, name2, strlen(name2));
+	::g->save_p += strlen(name2); 
 
 	*::g->save_p++ = ::g->gameskill; 
 	*::g->save_p++ = ::g->gameepisode; 
