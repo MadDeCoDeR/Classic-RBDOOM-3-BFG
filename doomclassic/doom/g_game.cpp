@@ -1423,9 +1423,11 @@ qboolean G_DoLoadGame ()
 	//GK:Check if the save file uses mods
 	char* tlab = (char*)::g->save_p;
 	bool hm = false;
+	char* clab = new char[19];
+	std::vector<std::string>filelist;
 	if (strcmp ((char *)::g->save_p, vcheck)) {
 		
-		char* clab= new char[19];
+		
 		strncpy(clab, tlab, 18);
 		clab[18] = '\0';
 		sprintf(vcheck, "version %i files ", VERSION);
@@ -1434,7 +1436,7 @@ qboolean G_DoLoadGame ()
 			hm = true;
 			const char * fnames = tlab + 18;
 			char* file = strtok(strdup(fnames), ",");
-			std::vector<std::string>filelist;
+			
 			while (file) {
 				filelist.push_back(file);
 				file = strtok(NULL, ",");
@@ -1481,7 +1483,13 @@ qboolean G_DoLoadGame ()
 	}
 	//GK: In case the save file has no mods
 	if (hm) {
-		::g->save_p += strlen(tlab) - 2;
+		char* tla = new char[256];
+		strcpy(tla, clab);
+		for (int mf = 0; mf < filelist.size() - 1; mf++) {
+			strcat(tla, filelist[mf].c_str());
+			strcat(tla, ",");
+		}
+		::g->save_p += strlen(tla);
 	}
 	else {
 		::g->save_p += VERSIONSIZE;
