@@ -2,6 +2,26 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 
 Thank you for downloading Classic RBDOOM-3-BFG.
 
+
+_______________________________________
+
+8 May 2017 - Classic RBDOOM-3-BFG 1.1.2
+_______________________________
+
+[classicdoom]
+-Add back Read This! option (for both 1 and 2)
+
+-Added Dehacked Text editor (not the BEX one)
+
+-Fixed and Improved file loading for mods
+
+-Mod check on save files
+
+[cmake]
+-Fixed compatibility issue with mingw and newer versions of cmake
+
+-Add properly the Retail build for mingw and linux (UNTESTED)
+
 _______________________________________
 
 19 April 2017 - Classic RBDOOM-3-BFG 1.1.1 Hotfix
