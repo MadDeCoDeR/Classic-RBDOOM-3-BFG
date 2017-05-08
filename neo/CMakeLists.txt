@@ -110,38 +110,38 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
 		add_definitions(-march=native)
 	endif()
 
-	if(NOT SET_UP_CONFIGURATIONS_DONE)
-    set(SET_UP_CONFIGURATIONS_DONE 1)
-
-    #GK: Use 3 configurations Debug,Release and Retail
-    if(CMAKE_CONFIGURATION_TYPES) 
-        set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Retail" CACHE STRING "" FORCE) 
-    else()
-        if(NOT CMAKE_BUILD_TYPE)
-            message("Defaulting to release build.")
-            set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
-        endif()
-        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY HELPSTRING "Choose the type of build")
-        
-        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;Retail")
-    endif()
+	
 	
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D_DEBUG -O0 -ggdb -fno-strict-aliasing ${my_warn_flags}")
 	#set(CMAKE_C_FLAGS_DEBUGALL "${CMAKE_C_FLAGS_DEBUGALL} -g -ggdb -D_DEBUG -fno-strict-aliasing ${my_warn_flags}")
 	#set(CMAKE_C_FLAGS_PROFILE "${CMAKE_C_FLAGS_PROFILE} -g -ggdb -D_DEBUG -O1 -fno-omit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
-	#set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -g -O3 -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
+	set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -g -O3 -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
 	#set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -Os -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
-	set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RELEASE} -DID_RETAIL -O3 -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
+	set(CMAKE_C_FLAGS_RETAIL "-DID_RETAIL ${CMAKE_C_FLAGS_RELEASE} -O3 -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}" CACHE STRING "" FORCE)
 	
 	set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
 	#set(CMAKE_CXX_FLAGS_DEBUGALL ${CMAKE_C_FLAGS_DEBUGALL})
 	#set(CMAKE_CXX_FLAGS_PROFILE ${CMAKE_C_FLAGS_PROFILE})
 	set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE})
-	#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO})
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO ${CMAKE_C_FLAGS_RELWITHDEBINFO})
 	#set(CMAKE_CXX_FLAGS_MINSIZEREL ${CMAKE_C_FLAGS_MINSIZEREL})
-	set(CMAKE_CXX_FLAGS_RETAIL "${CMAKE_C_FLAGS_RELEASE} -DID_RETAIL")
-endif()
+	set(CMAKE_CXX_FLAGS_RETAIL ${CMAKE_C_FLAGS_RETAIL}  CACHE STRING "" FORCE)
+	
+	SET( CMAKE_EXE_LINKER_FLAGS_RETAIL "" CACHE STRING "" FORCE)
+	
+	SET( CMAKE_SHARED_LINKER_FLAGS_RETAIL "" CACHE STRING "" FORCE)
+	#GK: Add the Retail build for linux and mingw
+	MARK_AS_ADVANCED(
+    CMAKE_CXX_FLAGS_RETAIL
+    CMAKE_C_FLAGS_RETAIL
+    CMAKE_EXE_LINKER_FLAGS_RETAIL
+    CMAKE_SHARED_LINKER_FLAGS_RETAIL )
+	
+	SET( CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
+    "Choose the type of build, options are: None Debug Release RelWithDebInfo Retail."
+    FORCE )
+#endif()
 elseif(MSVC)
 	
 	# Multiprocessor support for compiling
@@ -192,14 +192,6 @@ elseif(MSVC)
     #GK: Use 3 configurations Debug,Release and Retail
     if(CMAKE_CONFIGURATION_TYPES) 
         set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Retail" CACHE STRING "" FORCE) 
-    else()
-        if(NOT CMAKE_BUILD_TYPE)
-            message("Defaulting to release build.")
-            set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
-        endif()
-        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY HELPSTRING "Choose the type of build")
-        
-        set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;Retail")
     endif()
 		set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /D _DEBUG /MP /MTd")
 		set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MP /Oi /Oy /MT")
@@ -1499,7 +1491,8 @@ else()
 			LIST(APPEND _compiler_FLAGS " -I${item}")
 		ENDFOREACH(item)
 	endif()
-		
+	#GK: fix for mingw and recent versions of cmake
+		cmake_policy(SET CMP0059 NEW)
 	GET_DIRECTORY_PROPERTY(_directory_flags DEFINITIONS)
 	LIST(APPEND _compiler_FLAGS ${_directory_flags})
 	SEPARATE_ARGUMENTS(_compiler_FLAGS)

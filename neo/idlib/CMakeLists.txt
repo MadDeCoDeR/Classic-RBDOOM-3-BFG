@@ -123,7 +123,8 @@ else()
 		LIST(APPEND _compiler_FLAGS " -I${item}")
 	ENDFOREACH(item)
 	endif()
-
+#GK: fix for mingw and recent versions of cmake
+cmake_policy(SET CMP0059 NEW)
 	GET_DIRECTORY_PROPERTY(_directory_flags DEFINITIONS)
 	LIST(APPEND _compiler_FLAGS ${_directory_flags})
 	
