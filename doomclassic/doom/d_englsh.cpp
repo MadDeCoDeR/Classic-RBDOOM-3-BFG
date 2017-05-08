@@ -25,6 +25,7 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
+#include "precompiled.h"
 #include "d_englsh.h"
 //GK:Use string values as varibles for DeHackeD string Editor
 char* GOTARMOR	= "Picked up the armor.";
