@@ -570,6 +570,11 @@ void M_DrawReadThis1(void)
 	case registered:
 	case retail:
 			V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP1", PU_CACHE_SHARED));
+			//GK: For ultimate DOOM check if we are using mod that add additional HELP lumps. If not then instantly close "Read This!" 
+			if (W_GetNumForName("HELP2") <= -1 && W_GetNumForName("HELP01") <= -1) {
+				mh = -1;
+				::g->ReadMenu1[0].routine = M_FinishReadThis;
+			}
 		break;
 	default:
 		break;
@@ -606,13 +611,17 @@ void M_DrawReadThis2(void)
 			if (W_GetNumForName("HELP2") > -1) {
 				V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP2", PU_CACHE_SHARED));
 			}
-			else if (W_GetNumForName("HELP01") > -1) {
-				V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP01", PU_CACHE_SHARED));
-				mh = 1;
+			else
+			{
+				if (W_GetNumForName("HELP01") > -1) {
+					V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP01", PU_CACHE_SHARED));
+					mh = 1;
 
-			}
-			else {
-				V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("CREDIT", PU_CACHE_SHARED));
+				}
+				//GK: No need
+				/*else {
+					//V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("CREDIT", PU_CACHE_SHARED));
+				}*/
 			}
 		break;
 	case commercial:
@@ -938,6 +947,9 @@ void M_ReadThis2(int choice)
 void M_FinishReadThis(int choice)
 {
 	choice = 0;
+	if (mh == -1) {
+		::g->ReadMenu1[0].routine = M_ReadThis2;
+	}
 	M_SetupNextMenu(&::g->MainDef);
 }
 
