@@ -265,6 +265,10 @@ Anyway:
 
 7. If you run into bugs, please report them, see 11)
 
+Additionally for the Final DOOM wad you must legally own the (either aquired from retail,steam or GOG)
+and then copy the two WADs on the <your DOOM 3 BFG Directory>\base\wads.
+Otherwise the game wont let you play this expansions (because there are no files dah)
+
 ___________________________________________________
 
 8) OVERALL CHANGES
