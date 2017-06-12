@@ -144,6 +144,10 @@ __________________________________________________________
 
 7. Extract the FFmpeg DLLs to your current game directory 
 
+8. Download the compability wad from https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/releases/tag/pwad
+
+9. Extract the wad to your current game directory in the base\wads
+
 NOTE: The Working Directory has been set the default install directory of DOOM 3 BFG Edition on C: drive
 NOTE 2: Compiling and running it under Visual Studio Debugger it also requires to run the game on windowed mode
 (VS Debugger + Fullscreen = not a good mix) so you must Right Click on RBDoom3BFG Solution in Solution Explorer go to Properties select
@@ -183,14 +187,17 @@ _________________________
 	
 	SDL2 has better input support (especially in the console) and better 
 	support for multiple displays (especially in fullscreen mode).
+	
+2. Download the compability wad from https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/releases/tag/pwad
 
+3. Extract the wad to your current game directory in the base\wads
 
-2. Generate the Makefiles using CMake:
+4. Generate the Makefiles using CMake:
 
 	> cd neo/
 	> ./cmake-eclipse-linux-profile.sh
 	
-3. Compile RBDOOM-3-BFG targets with
+5. Compile RBDOOM-3-BFG targets with
 
 	> cd ../build
 	> make
