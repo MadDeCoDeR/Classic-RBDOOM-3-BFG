@@ -468,8 +468,24 @@ void HU_Start(void)
 		s = HU_TITLE;
 		break;
 	case commercial:
-		//GK:Use the mapnames2 instead of DOOM2_mapnames
-		s = HU_TITLE2;
+		//GK: Show properly on automap the level name based on expansion
+		if (DoomLib::expansionSelected == doom2) {
+			//GK:Use the mapnames2 instead of DOOM2_mapnames
+			s = HU_TITLE2;
+		}
+		else {
+			if (DoomLib::expansionSelected == 5) {
+				int map = ::g->gamemap;
+				if (::g->gamemap > 9) {
+					map = 0;
+				}
+
+				s = DoomLib::GetCurrentExpansion()->mapNames[map - 1];
+			}
+			else {
+				s = DoomLib::GetCurrentExpansion()->mapNames[::g->gamemap - 1];
+			}
+		}
 		break;
 	default:
 		if( DoomLib::expansionSelected == 5 ) {

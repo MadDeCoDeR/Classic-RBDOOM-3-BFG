@@ -184,27 +184,76 @@ void F_StartFinale (void)
 				{
 				  case 6:
 					finaleflat = "SLIME16";
-					finaletext = c1text;
+					//GK: Show properly Evilution and Plutonia finale texts
+					if (::g->gamemission == pack_tnt) {
+						finaletext = t1text;
+					}
+					else if (::g->gamemission == pack_plut) {
+						finaletext = p1text;
+					}
+					else {
+						finaletext = c1text;
+					}
 					break;
 				  case 11:
 					finaleflat = "RROCK14";
-					finaletext = c2text;
+					if (::g->gamemission == pack_tnt) {
+						finaletext = t2text;
+					}
+					else if (::g->gamemission == pack_plut) {
+						finaletext = p2text;
+					}
+					else {
+						finaletext = c2text;
+					}
 					break;
 				  case 20:
 					finaleflat = "RROCK07";
-					finaletext = c3text;
+					if (::g->gamemission == pack_tnt) {
+						finaletext = t3text;
+					}
+					else if (::g->gamemission == pack_plut) {
+						finaletext = p3text;
+					}
+					else {
+						finaletext = c3text;
+					}
 					break;
 				  case 30:
 					finaleflat = "RROCK17";
-					finaletext = c4text;
+					if (::g->gamemission == pack_tnt) {
+						finaletext = t4text;
+					}
+					else if (::g->gamemission == pack_plut) {
+						finaletext = p4text;
+					}
+					else {
+						finaletext = c4text;
+					}
 					break;
 				  case 15:
 					finaleflat = "RROCK13";
-					finaletext = c5text;
+					if (::g->gamemission == pack_tnt) {
+						finaletext = t5text;
+					}
+					else if (::g->gamemission == pack_plut) {
+						finaletext = p5text;
+					}
+					else {
+						finaletext = c5text;
+					}
 					break;
 				  case 31:
 					finaleflat = "RROCK19";
-					finaletext = c6text;
+					if (::g->gamemission == pack_tnt) {
+						finaletext = t6text;
+					}
+					else if (::g->gamemission == pack_plut) {
+						finaletext = p6text;
+					}
+					else {
+						finaletext = c6text;
+					}
 					break;
 				  default:
 					// Ouch.

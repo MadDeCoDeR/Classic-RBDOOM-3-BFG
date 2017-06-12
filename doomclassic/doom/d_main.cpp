@@ -540,6 +540,10 @@ void D_DoomMain (void)
 	FindResponseFile ();
 
 	IdentifyVersion ();
+	//GK: New pwad for compatibility with Evilution and Plutonia (only for DOOM II)
+	if (::g->gamemode == commercial) {
+		D_AddFile("wads/ua.wad");
+	}
 	//GK: Find the position of -doom,-doom2 and -both
 	M_initParam();
 	//GK: fix for Dehacked pointer editor

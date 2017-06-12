@@ -159,6 +159,8 @@ typedef enum
 {
 	ex1,
 	ex2,
+	ex3,
+	ex4,
 	ex_end
 } expansions_e;
 typedef enum

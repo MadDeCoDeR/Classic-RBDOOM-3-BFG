@@ -280,8 +280,14 @@ void M_ReadSaveStrings(void)
 		} else {
 			if( DoomLib::idealExpansion == doom2 ) {
 				sprintf(name,"DOOM2\\%s%d.dsg",  SAVEGAMENAME,i );
-			} else {
+			} else if ( DoomLib::idealExpansion == pack_nerve){
 				sprintf(name,"DOOM2_NRFTL\\%s%d.dsg",  SAVEGAMENAME,i );
+			}
+			else if (DoomLib::idealExpansion == pack_tnt) {
+				sprintf(name, "DOOM2_TNT\\%s%d.dsg", SAVEGAMENAME, i);
+			}
+			else if (DoomLib::idealExpansion == pack_plut) {
+				sprintf(name, "DOOM2_PLUT\\%s%d.dsg", SAVEGAMENAME, i);
 			}
 			
 		}
@@ -347,8 +353,13 @@ void M_LoadSelect(int choice)
 		G_LoadGame ( ::g->savegamepaths[ choice ] );
 	} else {
 		strcpy( DoomLib::loadGamePath, ::g->savegamepaths[ choice ] );
-		DoomLib::SetCurrentExpansion( DoomLib::idealExpansion );
-		DoomLib::skipToLoad = true;
+		if (G_CheckSave(DoomLib::loadGamePath)) {
+			DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
+			DoomLib::skipToLoad = true;
+		}
+		else {
+			M_SetupNextMenu(&::g->MainDef);
+		}
 	}
 	M_ClearMenus ();
 }
@@ -357,15 +368,40 @@ void M_LoadSelect(int choice)
 void M_LoadExpansion(int choice)
 {
 	::g->exp = choice;
-
+	bool procced = true;
 	if( choice == 0 ) {
 		DoomLib::SetIdealExpansion( doom2 );
-	}else {
+	}else if (choice == 1){
 		DoomLib::SetIdealExpansion( pack_nerve );
 	}
-
-	M_SetupNextMenu(&::g->LoadDef);
-	M_ReadSaveStrings();
+	//GK: Before the expansion loads check if it is exist. Otherwise drop back to main menu
+	else if (choice == 2) {
+		if (FILE *file = fopen("base/wads/TNT.WAD", "r")) {
+			fclose(file);
+			DoomLib::SetIdealExpansion(pack_tnt);
+		}
+		else {
+			procced = false;
+			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+		}
+	}
+	else if (choice == 3) {
+		if (FILE *file = fopen("base/wads/PLUTONIA.WAD", "r")) {
+			fclose(file);
+			DoomLib::SetIdealExpansion(pack_plut);
+		}
+		else {
+			procced = false;
+			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+		}
+	}
+	if (procced) {
+		M_SetupNextMenu(&::g->LoadDef);
+		M_ReadSaveStrings();
+	}
+	else {
+		M_SetupNextMenu(&::g->MainDef);
+	}
 }
 
 //
@@ -434,7 +470,9 @@ extern /*const*/ char* mapnames[];
 extern /*const*/ char* mapnames2[];
 void M_SaveSelect(int choice)
 {
-	const char* s;
+	//GK: show modded level names on save files
+	/*const*/ char* s=new char[256];
+	char* mapname;
 	const ExpansionData* exp = DoomLib::GetCurrentExpansion();
 
 	switch ( ::g->gamemode )
@@ -442,11 +480,36 @@ void M_SaveSelect(int choice)
 	case shareware:
 	case registered:
 	case retail:
-		s = (exp->mapNames[(::g->gameepisode-1)*9+::g->gamemap-1]);
+		s = (/*exp->*/mapnames[(::g->gameepisode-1)*9+::g->gamemap-1]);
 		break;
 	case commercial:
+		if (DoomLib::expansionSelected == doom2) {
+			char* ts;
+			mapname = new char[256];
+			strcpy(mapname, mapnames2[::g->gamemap - 1]);
+			ts = strtok(mapname, " ");
+			//s = (/*exp->*/mapnames2[::g->gamemap-1]);
+			ts = strtok(NULL, " ");
+			strcpy(s, ts);
+			while (true) {
+				ts = strtok(NULL, " ");
+				if (ts != NULL) {
+					strcat(s, " ");
+
+					strcat(s, ts);
+				}
+				else {
+					break;
+				}
+
+			}
+		}
+		else {
+			s = strdup(exp->mapNames[::g->gamemap - 1]);
+		}
+		break;
 	default:
-		s = (exp->mapNames[::g->gamemap-1]);
+		s = strdup(exp->mapNames[::g->gamemap-1]);
 		break;
 	}
 
@@ -791,14 +854,40 @@ void M_Episode(int choice)
 void M_Expansion(int choice)
 {
 	::g->exp = choice;
-
+	bool procced = true;
 	if( choice == 0 ) {
 		DoomLib::SetIdealExpansion( doom2 );
-	}else {
+	}else if (choice == 1){
 		DoomLib::SetIdealExpansion( pack_nerve );
 	}
-
-	M_SetupNextMenu(&::g->NewDef);
+	else if (choice == 2) {
+		char* s = "base/wads/TNT.WAD";
+		if (FILE *file = fopen(s, "r")) {
+			fclose(file);
+			DoomLib::SetIdealExpansion(pack_tnt);
+		}
+		else {
+			procced = false;
+			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+		}
+	}
+	else if (choice == 3) {
+		char* s ="base/wads/PLUTONIA.WAD";
+		if (FILE *file = fopen(s, "r")) {
+			fclose(file);
+			DoomLib::SetIdealExpansion(pack_plut);
+		}
+		else {
+			procced = false;
+			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+		}
+	}
+	if (procced) {
+		M_SetupNextMenu(&::g->NewDef);
+	}
+	else {
+		M_SetupNextMenu(&::g->MainDef);
+	}
 }
 
 //
