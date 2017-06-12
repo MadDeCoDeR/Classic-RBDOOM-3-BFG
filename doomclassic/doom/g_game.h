@@ -52,6 +52,8 @@ void G_DeferedPlayDemo (const char* demo);
 // calls P_SetupLevel or W_EnterWorld.
 void G_LoadGame (char* name);
 
+qboolean G_CheckSave(char* name);
+
 qboolean G_DoLoadGame ();
 
 // Called by M_Responder.

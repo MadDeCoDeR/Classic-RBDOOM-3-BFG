@@ -1390,6 +1390,78 @@ void G_LoadGame (char* name)
 	strcpy (::g->savename, name); 
 	::g->gameaction = ga_loadgame; 
 } 
+//GK: Fix for DOOM II modded saves checking
+qboolean G_CheckSave(char* name) {
+	strcpy(::g->savename, name);
+	char	vcheck[256];
+	M_ReadFile(::g->savename, &::g->savebuffer);
+	::g->save_p = ::g->savebuffer + SAVESTRINGSIZE;
+	memset(vcheck, 0, sizeof(vcheck));
+	sprintf(vcheck, "version %i", VERSION);
+	char* tlab = (char*)::g->save_p;
+	bool hm = false;
+	char* clab = new char[19];
+	std::vector<std::string>filelist;
+	if (strcmp((char *)::g->save_p, vcheck)) {
+
+
+		strncpy(clab, tlab, 18);
+		clab[18] = '\0';
+		sprintf(vcheck, "version %i files ", VERSION);
+		bool ok = false;
+		if (!strcmp(clab, vcheck)) {
+			hm = true;
+			const char * fnames = tlab + 18;
+			char* file = strtok(strdup(fnames), ",");
+
+			while (file) {
+				filelist.push_back(file);
+				file = strtok(NULL, ",");
+			}
+			for (int mf = 0; mf < filelist.size() - 1; mf++) {
+				for (int f = 1; f < 20; f++) {
+					if (wadfiles[f] != NULL) {
+						char* fname = strtok(strdup(wadfiles[f]), "\\");
+						while (fname) {
+							char* tname = strtok(NULL, "\\");
+							if (tname) {
+								fname = tname;
+							}
+							else {
+								break;
+							}
+						}
+
+						if (!strcmp(filelist[mf].c_str(), fname)) {
+							ok = true;
+							break;
+						}
+						else {
+							ok = false;
+						}
+
+
+					}
+					else {
+						break;
+					}
+				}
+			}
+		}
+		if (!ok) {
+			loadingGame = false;
+			waitingForWipe = false;
+			if (hm) {
+				//GK:If the game does not using the mods of the save file show this message
+				M_StartMessage("Missing Mod Files!\n\npress any button", NULL, false);
+			}
+			return false;				// bad version
+		}
+		else {
+			return true;
+		}
+	}
+}
 
 qboolean G_DoLoadGame () 
 { 
@@ -1570,10 +1642,18 @@ qboolean G_DoSaveGame (void)
 	if( common->GetCurrentGame() == DOOM_CLASSIC ) {
 		sprintf(name,"DOOM\\%s%d.dsg", SAVEGAMENAME,::g->savegameslot );
 	} else {
-		if( DoomLib::expansionSelected == doom2 ) {
-			sprintf(name,"DOOM2\\%s%d.dsg", SAVEGAMENAME,::g->savegameslot );
-		} else {
-			sprintf(name,"DOOM2_NRFTL\\%s%d.dsg", SAVEGAMENAME,::g->savegameslot );
+		//GK: Add save directories for Evilution and Plutonia expansions
+		if (DoomLib::idealExpansion == doom2) {
+			sprintf(name, "DOOM2\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
+		}
+		else if (DoomLib::idealExpansion == pack_nerve) {
+			sprintf(name, "DOOM2_NRFTL\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
+		}
+		else if (DoomLib::idealExpansion == pack_tnt) {
+			sprintf(name, "DOOM2_TNT\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
+		}
+		else if (DoomLib::idealExpansion == pack_plut) {
+			sprintf(name, "DOOM2_PLUT\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
 		}
 
 	}
