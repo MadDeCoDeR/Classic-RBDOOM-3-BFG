@@ -2,6 +2,16 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 
 Thank you for downloading Classic RBDOOM-3-BFG.
 
+_______________________________________
+
+12 June 2017 - Classic RBDOOM-3-BFG 1.1.3
+_______________________________
+
+[classicdoom]
+-Add TNT:Evilution and Plutonia as expansions for DOOM II
+
+-Fixed DOOM II modded saves check 
+
 
 _______________________________________
 
