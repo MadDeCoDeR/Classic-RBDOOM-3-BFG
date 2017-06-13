@@ -1398,11 +1398,16 @@ qboolean G_CheckSave(char* name) {
 	::g->save_p = ::g->savebuffer + SAVESTRINGSIZE;
 	memset(vcheck, 0, sizeof(vcheck));
 	sprintf(vcheck, "version %i", VERSION);
-	char* tlab = (char*)::g->save_p;
+	char tlab[256];
+	strcpy(tlab,(char*)::g->save_p);
+	//GK: Make sure it is either version 111 or version 111 files
+	if (tlab[11] != ' ') {
+		tlab [11] = '\0';
+	}
 	bool hm = false;
 	char* clab = new char[19];
 	std::vector<std::string>filelist;
-	if (strcmp((char *)::g->save_p, vcheck)) {
+	if (strcmp(tlab, vcheck)) {
 
 
 		strncpy(clab, tlab, 18);
@@ -1461,6 +1466,9 @@ qboolean G_CheckSave(char* name) {
 			return true;
 		}
 	}
+	else {
+		return true;
+	}
 }
 
 qboolean G_DoLoadGame () 
@@ -1493,11 +1501,15 @@ qboolean G_DoLoadGame ()
 	memset (vcheck,0,sizeof(vcheck)); 
 	sprintf (vcheck,"version %i",VERSION); 
 	//GK:Check if the save file uses mods
-	char* tlab = (char*)::g->save_p;
+	char tlab[256];
+	strcpy(tlab, (char*)::g->save_p);
+	if (tlab[11] != ' ') {
+		tlab[11] = '\0';
+	}
 	bool hm = false;
 	char* clab = new char[19];
 	std::vector<std::string>filelist;
-	if (strcmp ((char *)::g->save_p, vcheck)) {
+	if (strcmp (tlab, vcheck)) {
 		
 		
 		strncpy(clab, tlab, 18);
@@ -1564,7 +1576,7 @@ qboolean G_DoLoadGame ()
 		::g->save_p += strlen(tla);
 	}
 	else {
-		::g->save_p += VERSIONSIZE;
+		::g->save_p += strlen(tlab);
 	}
 
 	::g->gameskill = (skill_t)*::g->save_p++; 
@@ -1627,7 +1639,7 @@ G_SaveGame
 qboolean G_DoSaveGame (void) 
 { 
 	char	name[100]; 
-	char	name2[256]; 
+	char*	name2; 
 	char*	description; 
 	int		length; 
 	int		i; 
@@ -1663,9 +1675,11 @@ qboolean G_DoSaveGame (void)
 	memcpy (::g->save_p, description, SAVESTRINGSIZE); 
 	::g->save_p += SAVESTRINGSIZE; 
 
-	memset (name2,0,sizeof(name2)); 
+	 
 	//GK: if the game uses mods store their names on the save file header
 	if (M_CheckParm("-file")) {
+		name2 = new char[256];
+		memset(name2, 0, sizeof(name2));
 		sprintf(name2, "version %i files ", VERSION);
 		for (int f=1; f<20; f++) {
 			if (wadfiles[f] != NULL) {
@@ -1688,6 +1702,9 @@ qboolean G_DoSaveGame (void)
 		}
 	}
 	else {
+		//GK: allow unmodded saves
+		name2 = new char[VERSIONSIZE];
+		memset(name2, 0, sizeof(name2));
 		sprintf(name2, "version %i", VERSION);
 	}
 	memcpy (::g->save_p, name2, strlen(name2));
