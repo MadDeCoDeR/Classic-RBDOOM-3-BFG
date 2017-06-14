@@ -1210,7 +1210,7 @@ void G_DoCompleted (void)
 	if ( ::g->gamemode == commercial)
 	{
 		if (::g->secretexit) {
-			if ( ::g->gamemission == doom2 ) {
+			if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut ) {
 				switch(::g->gamemap)
 				{
 					case 15: ::g->wminfo.next = 30; break;
@@ -1223,7 +1223,7 @@ void G_DoCompleted (void)
 			}
 		}
 		else {
-			if ( ::g->gamemission == doom2 ) {
+			if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut ) {
 				switch(::g->gamemap)
 				{
 					case 31:
