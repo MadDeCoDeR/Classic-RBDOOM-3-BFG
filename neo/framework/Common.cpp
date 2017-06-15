@@ -36,6 +36,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../sound/sound.h"
 
+
 // RB begin
 #if defined(USE_DOOMCLASSIC)
 #include "../../doomclassic/doom/doomlib.h"
@@ -93,6 +94,8 @@ idCVar net_inviteOnly( "net_inviteOnly", "1", CVAR_BOOL | CVAR_ARCHIVE, "whether
 // DG: add cvar for pause
 idCVar com_pause( "com_pause", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "set to 1 to pause game, to 0 to unpause again" );
 // DG end
+
+idCVar com_game_mode("com_game_mode", "0", CVAR_INTEGER | CVAR_SYSTEM | CVAR_NOCHEAT, "Set which game to run 1: DOOM 2:DOOM2 3:DOOM3");
 
 extern idCVar g_demoMode;
 
@@ -292,6 +295,7 @@ void idCommonLocal::ParseCommandLine( int argc, const char* const* argv )
 #endif
 			// RB end
 		}
+		
 		else if( argv[ i ][ 0 ] == '+' )
 		{
 			com_numConsoleLines++;
@@ -1483,7 +1487,15 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 				}
 			}
 		}
-		
+		if (com_game_mode.GetInteger() == 1) {
+			SwitchToGame(DOOM_CLASSIC);
+		}
+		else if (com_game_mode.GetInteger() == 2) {
+			SwitchToGame(DOOM2_CLASSIC);
+		}
+		else if (com_game_mode.GetInteger() == 3) { //GK: TODO FIND A WAY TO OPEN DOOM3 ON BOOT
+			//SwitchToGame(DOOM3_BFG);
+		}
 		Printf( "--- Common Initialization Complete ---\n" );
 		
 		idLib::Printf( "QA Timing IIS: %06dms\n", Sys_Milliseconds() );
