@@ -133,6 +133,7 @@ const char*			reloadname;
 bool iwad = false;
 //Replace??
 bool rep = false;
+bool relp = false;
 
 void W_AddFile ( const char *filename)
 {
@@ -168,10 +169,18 @@ void W_AddFile ( const char *filename)
 				// single lump file
 				fileinfo[0].filepos = 0;
 				//GK: Allow to load "Wild" files
-				std::ifstream inf(filename, std::ifstream::ate | std::ifstream::binary);
+				char* fname = new char[256];
+				if(relp){
+					sprintf(fname, "./base%s", filename);
+				}
+				else {
+					strcpy(fname, filename);
+				}
+				std::ifstream inf(fname, std::ifstream::ate | std::ifstream::binary);
 				fileinfo[0].size = inf.tellg();
 				ExtractFileBase(filename, fileinfo[0].name);
 				numlumps++;
+				relp = false;
 			}
     }
     else 
@@ -711,6 +720,7 @@ void W_Profile (void)
 
 //GK: Open archive files extract it's content and load it as files for DOOM
 bool OpenCompFile(const char* filename) {
+	idLib::Printf("Checking %s for compressed file\n",filename);
 	unzFile zip = unzOpen(filename);
 	if (zip != NULL) {
 		idLib::Printf("found compressed file\n");
@@ -744,7 +754,13 @@ bool OpenCompFile(const char* filename) {
 								unzCloseCurrentFile(zip);
 								fname.push_back(path);
 								char* pname = new char[MAX_FILENAME];
-								sprintf(pname, "/pwads/%s", name);
+								if (idStr::Icmp(name + strlen(name) - 3, "wad")) {
+									sprintf(pname, "/pwads/%s", name);
+									relp = true;
+								}
+								else {
+									sprintf(pname, "/pwads/%s", name);
+								}
 								W_AddFile(pname);
 
 							}
