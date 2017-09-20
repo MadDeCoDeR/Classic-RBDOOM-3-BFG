@@ -36,6 +36,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "globaldata.h"
 
 #include <stdio.h>
+#include <string>
 #include <ctype.h>
 #include <sys/types.h>
 #include <string.h>
@@ -43,6 +44,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <sys/stat.h>
 #include <vector>
 #include <fstream>
+#include <iostream>
 
 #include "doomtype.h"
 #include "m_swap.h"
@@ -65,6 +67,7 @@ lumpinfo_t*	lumpinfo = NULL;
 int			numlumps;
 void**		lumpcache;
 std::vector<std::string> fname;
+std::vector<std::string> foldername;
 bool OpenCompFile(const char* filename);
 
 
@@ -134,6 +137,7 @@ bool iwad = false;
 //Replace??
 bool rep = false;
 bool relp = false;
+bool inzip = false;
 
 void W_AddFile ( const char *filename)
 {
@@ -163,6 +167,8 @@ void W_AddFile ( const char *filename)
     {
 		//GK: when loading archives return instandly don't add it to the lump list
 			if (OpenCompFile(filename)) {
+				//handle=nullptr;
+				fileSystem->CloseFile(handle);
 				return;
 			}
 			else {
@@ -172,6 +178,7 @@ void W_AddFile ( const char *filename)
 				char* fname = new char[256];
 				if(relp){
 					sprintf(fname, "./base%s", filename);
+					
 				}
 				else {
 					strcpy(fname, filename);
@@ -181,6 +188,7 @@ void W_AddFile ( const char *filename)
 				ExtractFileBase(filename, fileinfo[0].name);
 				numlumps++;
 				relp = false;
+				idLib::Printf("Added %s succesfully!\n", fname);
 			}
     }
     else 
@@ -720,8 +728,18 @@ void W_Profile (void)
 
 //GK: Open archive files extract it's content and load it as files for DOOM
 bool OpenCompFile(const char* filename) {
-	idLib::Printf("Checking %s for compressed file\n",filename);
-	unzFile zip = unzOpen(filename);
+	char* maindir = new char[MAX_FILENAME];
+	char* senddir = new char[MAX_FILENAME];
+	senddir = "/pwads/";
+	char* fdir = new char[MAX_FILENAME];
+	if (inzip) {
+			sprintf(fdir, "%s%s", "base", filename);
+	}
+	else {
+		strcpy(fdir, filename);
+	}
+	idLib::Printf("Checking %s for compressed file\n",fdir);
+	unzFile zip = unzOpen(fdir);
 	if (zip != NULL) {
 		idLib::Printf("found compressed file\n");
 #ifdef _WIN32
@@ -736,8 +754,9 @@ bool OpenCompFile(const char* filename) {
 				unz_file_info fi;
 				char* name = new char[MAX_FILENAME];
 				if (unzGetCurrentFileInfo(zip, &fi, name, MAX_FILENAME, NULL, 0, NULL, 0) == UNZ_OK) {
+					//idLib::Printf("%s\n", name);
 					const size_t filename_length = strlen(name);
-					if (filename[filename_length - 1] != '/') {
+					if (name[filename_length - 1] != '/') {
 						if (unzOpenCurrentFile(zip) == UNZ_OK) {
 							char* path = new char[MAX_FILENAME];
 							sprintf(path, "%s%s", "base/pwads/", name);
@@ -754,13 +773,11 @@ bool OpenCompFile(const char* filename) {
 								unzCloseCurrentFile(zip);
 								fname.push_back(path);
 								char* pname = new char[MAX_FILENAME];
+								sprintf(pname, "%s%s",senddir, name);
 								if (idStr::Icmp(name + strlen(name) - 3, "wad")) {
-									sprintf(pname, "/pwads/%s", name);
 									relp = true;
 								}
-								else {
-									sprintf(pname, "/pwads/%s", name);
-								}
+								inzip = true;
 								W_AddFile(pname);
 
 							}
@@ -769,11 +786,28 @@ bool OpenCompFile(const char* filename) {
 							}
 						}
 					}
+					else {
+						//GK: If it found directory inside the archieve create it
+						strcpy(maindir, "base/pwads/");
+						//idLib::Printf("found directory\n");
+						strcat(maindir, name);
+						//idLib::Printf("%s\n", maindir);
+							#ifdef _WIN32
+													CreateDirectory(maindir, NULL);
+							#elif
+													mkdir(maindir);
+							#endif
+						foldername.push_back(maindir);
+						if (i + 1 < gi.number_entry) {
+							unzGoToNextFile(zip);
+						}
+					}
 
 				}
 			}
 
 			unzClose(zip);
+			inzip = false;
 			return true;
 		}
 	}
@@ -792,11 +826,251 @@ void CleanUncompFiles(bool unalloc) {
 		} while (remove(fname[i].c_str()) == 0);
 
 	}
+	for (int i = 0; i < foldername.size(); i++) {
+		idLib::Printf("Deleting Directory %s\n", foldername[i].c_str());
+#ifdef _WIN32
+		RemoveDirectory(foldername[i].c_str());
+#elif
+		rmdir(foldername[i].c_str());
+#endif
+
+}
 #ifdef _WIN32
 	RemoveDirectory("base/pwads");
 #elif
 	rmdir("base/pwads");
 #endif
 		fname.clear();
+		foldername.clear();
 }
+//GK: Check for either the wad a folder or a zip file that contains ALL the Master Levels
+void MakeMaster_Wad() {
+	struct stat info;
+	if (FILE *f = fopen("base/wads/MASTERLEVELS.wad", "r")) {
+		fclose(f);
+		return;
+	}
+	if (FILE *f = fopen("base/wads/master.zip", "r")) {
+		uncompressMaster();
+		fclose(f);
+	}
+	if (stat("base/wads/master/", &info) != 0)
+		return;
+	else if (info.st_mode & S_IFDIR){
+		idLib::Printf("Found Directry\n");
+		MasterList();
+		return;
+	}
+}
+//GK: In case of zip file
+void uncompressMaster() {
+	char* sdir = "base/wads/master.zip";
+	char* ddir = "base/wads/master/";
+	unzFile zip = unzOpen(sdir);
+	if (zip != NULL) {
+		idLib::Printf("found compressed file\n");
+#ifdef _WIN32
+		CreateDirectory(ddir, NULL);
+#elif
+		mkdir(ddir);
+#endif
+		unz_global_info gi;
+		if (unzGetGlobalInfo(zip, &gi) == UNZ_OK) {
+			char rb[READ_SIZE];
+			for (int i = 0; i < gi.number_entry; i++) {
+				unz_file_info fi;
+				char* name = new char[MAX_FILENAME];
+				if (unzGetCurrentFileInfo(zip, &fi, name, MAX_FILENAME, NULL, 0, NULL, 0) == UNZ_OK) {
+					//idLib::Printf("%s\n", name);
+					const size_t filename_length = strlen(name);
+					if (name[filename_length - 1] != '/') {
+						if (unzOpenCurrentFile(zip) == UNZ_OK) {
+							char* path = new char[MAX_FILENAME];
+							sprintf(path, "%s%s", ddir, name);
+							std::FILE *out = fopen(path, "wb");
+							if (out != NULL) {
+								int buff = UNZ_OK;
+								do {
+									buff = unzReadCurrentFile(zip, rb, READ_SIZE);
+									if (buff > 0) {
+										fwrite(rb, buff, 1, out);
+									}
+								} while (buff > 0);
+								fclose(out);
+								unzCloseCurrentFile(zip);
+								fname.push_back(path);
+								char* pname = new char[MAX_FILENAME];
+								sprintf(pname, "%s%s", ddir, name);
 
+							}
+							if (i + 1 < gi.number_entry) {
+								unzGoToNextFile(zip);
+							}
+						}
+					}
+
+				}
+			}
+
+			unzClose(zip);
+			inzip = false;
+			//MasterList();
+			return;
+		}
+	}
+	return;
+}
+//GK:Open all the wads and copy and rename their contents into one WAD file
+void MasterList() {
+	char* masterlist[] = { "ATTACK.WAD",
+		"CANYON.WAD",
+		"CATWALK.WAD",
+		"COMBINE.WAD",
+		"FISTULA.WAD",
+		"GARRISON.WAD",
+		"MANOR.WAD",
+		"PARADOX.WAD",
+		"SUBSPACE.WAD",
+		"SUBTERRA.WAD",
+		"TTRAP.WAD",
+		"VIRGIL.WAD",
+		"MINOS.WAD",
+		"BLOODSEA.WAD",
+		"MEPHISTO.WAD",
+		"NESSUS.WAD",
+		"GERYON.WAD",
+		"VESPERAS.WAD",
+		"BLACKTWR.WAD",
+		"TEETH.WAD" };
+	wadinfo_t		header;
+	lumpinfo_t*		lump ;
+	lumpinfo_t*		lumpnfo = NULL;
+	idFile *		handle;
+	int			length;
+	int			startlump;
+	int nlps =0;
+	int cl = 0;
+	std::vector<filelump_t>	fileinfo(1);
+	int count = 1;
+	char* filename = new char[MAX_FILENAME];
+	char* dir = "base\\wads\\master\\*.wad";
+	WIN32_FIND_DATA ffd;
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+	std::vector <int> fofs;
+	int offs=12;
+	char* buffer =new char[512];
+	std::ofstream of("base//wads//MASTERLEVELS.wad",std::ios::binary);
+	of.write("PWAD",4);
+	hFind = FindFirstFile(dir, &ffd);
+	do {
+		sprintf(filename, "wads/master/%s", masterlist[cl]);
+		idLib::Printf("%s\n", filename);
+		// open the file and add to directory
+		if ((handle = fileSystem->OpenFileRead(filename)) == 0)
+		{
+			return;
+		}
+		startlump = nlps;
+
+
+		if (idStr::Icmp(filename + strlen(filename) - 3, "wad"))
+		{
+		}
+		else
+		{
+			// WAD file
+			handle->Read(&header, sizeof(header));
+			if (idStr::Cmpn(header.identification, "IWAD", 4))
+			{
+				// Homebrew levels?
+				if (idStr::Cmpn(header.identification, "PWAD", 4))
+				{
+					I_Error("Wad file %s doesn't have IWAD "
+						"or PWAD id\n", filename);
+				}
+
+				// ???modifiedgame = true;		
+			}
+			header.numlumps = LONG(header.numlumps);
+			header.infotableofs = LONG(header.infotableofs);
+			length = header.numlumps * sizeof(filelump_t);
+			fileinfo.resize(header.numlumps);
+			handle->Seek(header.infotableofs, FS_SEEK_SET);
+			handle->Read(&fileinfo[0], length);
+			nlps += header.numlumps;
+			if (lumpnfo == NULL) {
+				lumpnfo = (lumpinfo_t*)malloc(nlps * sizeof(lumpinfo_t));
+			}
+			else {
+				lumpnfo = (lumpinfo_t*)realloc(lumpnfo, nlps * sizeof(lumpinfo_t));
+			}
+
+			if (!lumpnfo)
+				I_Error("Couldn't realloc lumpinfo");
+
+			lump = &lumpnfo[startlump];
+			
+			filelump_t * filelumpPointer = &fileinfo[0];
+			rep = false;
+			
+			for (int i = startlump; i < nlps; i++, lump++, filelumpPointer++)
+			{
+					lump->handle = handle;
+					lump->position = LONG(filelumpPointer->filepos);
+					lump->size = LONG(filelumpPointer->size);
+					fofs.push_back(offs);
+					offs += lump->size;
+					strncpy(lump->name, filelumpPointer->name, 8);
+					lump->name[8] = '\0';
+					if (!idStr::Cmpn(lump->name, "MAP", 3)) {
+						char * tm = new char[6];
+						if (count < 10) {
+							sprintf(tm, "MAP0%i\0", count);
+							strcpy(lump->name, tm);
+						}
+						else {
+							sprintf(tm, "MAP%i\0", count);
+							strcpy(lump->name, tm);
+						}
+						count++;
+					}
+					lump->null = false;
+				}
+			}
+		cl++;
+	} while (FindNextFile(hFind, &ffd) != 0);
+	lump = &lumpnfo[0];
+	of.write(reinterpret_cast<char*>(&nlps), 4);
+	of.write(reinterpret_cast<char*>(&offs), 4);
+	//GK:The more the better
+	buffer = new char[offs];
+	try {
+		for (int i = 0; i < nlps; i++, lump++) {
+
+			handle = lump->handle;
+			handle->Seek(lump->position, FS_SEEK_SET);
+			int c = handle->Read(buffer, lump->size);
+			if (idStr::Cmpn(buffer, "WARNING", 7)) {
+				of.write(buffer, lump->size);
+			}
+		}
+	}
+	catch (HANDLE e) {
+
+	}
+
+	lump = &lumpnfo[0];
+
+	for (int i = 0; i < nlps; i++, lump++) {
+
+			of.write(reinterpret_cast<char*>(&fofs[i]), 4);
+			of.write(reinterpret_cast<char*>(&lump->size), 4);
+			of.write(lump->name, 8);
+	}
+	lump = nullptr;
+	lumpnfo = nullptr;
+	delete[] buffer;
+	of.flush();
+	//GK: Nothing to see here (or close in that mater)
+	return;
+}

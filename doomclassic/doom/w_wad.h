@@ -34,7 +34,9 @@ If you have questions concerning this license or the applicable additional terms
 #pragma interface
 #endif
 
-
+#include <sys/types.h>
+#include <sys/stat.h>
+//
 //
 // TYPES
 //
@@ -72,6 +74,7 @@ typedef struct
 } lumpinfo_t;
 
 
+
 extern	void**		lumpcache;
 extern	lumpinfo_t*	lumpinfo;
 extern	int		numlumps;
@@ -93,5 +96,9 @@ void*	W_CacheLumpName (const char* name, int tag);
 void	W_Shutdown();
 
 void CleanUncompFiles(bool unalloc);
+
+void MakeMaster_Wad();
+void uncompressMaster();
+void MasterList();
 #endif
 

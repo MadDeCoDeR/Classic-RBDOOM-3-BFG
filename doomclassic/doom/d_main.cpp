@@ -540,9 +540,14 @@ void D_DoomMain (void)
 	FindResponseFile ();
 
 	IdentifyVersion ();
+	//GK: New pwad for compatibility with the original DOOM And DOOMII IWADs
+	D_AddFile("wads/newopt.wad");
 	//GK: New pwad for compatibility with Evilution and Plutonia (only for DOOM II)
 	if (::g->gamemode == commercial) {
 		D_AddFile("wads/ua.wad");
+	}
+	if (::g->gamemission == pack_master) {
+		D_AddFile("wads/mlbls.wad");
 	}
 	//GK: Find the position of -doom,-doom2 and -both
 	M_initParam();
@@ -825,6 +830,8 @@ void D_DoomMain (void)
 
 	I_Printf ("D_CheckNetGame: Checking network game status.\n");
 	D_CheckNetGame ();
+	//GK: Check if there is either a folder or a zip that is called "master" and create the MASTERLEVELS.wad
+	MakeMaster_Wad();
 }
 
 bool D_DoomMainPoll(void)
