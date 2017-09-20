@@ -72,6 +72,7 @@ If you have questions concerning this license or the applicable additional terms
 /*const*/ char*	c6text = C6TEXT;
 /*const*/ char* c7text = C7TEXT;
 /*const*/ char* c8Text = C8TEXT;
+/*const*/ char* c9Text = C9TEXT;
 
 void resetEndings() {
 	e1text = E1TEXT;
@@ -86,7 +87,8 @@ void resetEndings() {
 	c5text = C5TEXT;
 	c6text = C6TEXT;
 	c7text = C7TEXT;
-	c8Text = C8TEXT;
+	c8Text = C8TEXT; 
+	c9Text = C9TEXT;
 }
 
 const char*	p1text = P1TEXT;
@@ -130,7 +132,7 @@ void F_StartFinale (void)
 	else if ( ::g->gamemission == pack_nerve && ::g->gamemap == 8 ) {
 		endOfMission = true;
 	}
-	else if ( ::g->gamemission == pack_master && ::g->gamemap == 21 ) {
+	else if (::g->gamemission == pack_master && ((::g->gamemap == 20 && !::g->secretexit) || ::g->gamemap == 21)) {
 		endOfMission = true;
 	}
 
@@ -262,9 +264,13 @@ void F_StartFinale (void)
 			} else if( ::g->gamemission == pack_master ) {
 				switch (::g->gamemap)
 				{
-					case 21:
+					case 20:
 						finaleflat = "SLIME16";
 						finaletext = c8Text;
+						break;
+					case 21:
+						finaleflat = "SLIME16";
+						finaletext = c9Text;
 						break;
 				}
 			} else if ( ::g->gamemission == pack_nerve ) {
@@ -333,7 +339,10 @@ void F_Ticker (void)
 				}
 
 			} else if(  ::g->gamemission == pack_master ) {
-				if( :: g->gamemap == 21 ) {
+				if (::g->gamemap == 20 && !::g->secretexit) {
+					F_StartCast();
+					castStarted = true;
+				}else if( :: g->gamemap == 21 ) {
 					F_StartCast ();
 					castStarted = true;
 				}

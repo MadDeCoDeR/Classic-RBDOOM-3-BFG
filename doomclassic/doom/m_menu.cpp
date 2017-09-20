@@ -289,6 +289,9 @@ void M_ReadSaveStrings(void)
 			else if (DoomLib::idealExpansion == pack_plut) {
 				sprintf(name, "DOOM2_PLUT\\%s%d.dsg", SAVEGAMENAME, i);
 			}
+			else if (DoomLib::idealExpansion == pack_master) {
+				sprintf(name, "DOOM2_MASTER\\%s%d.dsg", SAVEGAMENAME, i);
+			}
 			
 		}
 
@@ -389,6 +392,16 @@ void M_LoadExpansion(int choice)
 		if (FILE *file = fopen("base/wads/PLUTONIA.WAD", "r")) {
 			fclose(file);
 			DoomLib::SetIdealExpansion(pack_plut);
+		}
+		else {
+			procced = false;
+			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+		}
+	}
+	else if (choice == 4) {
+		if (FILE *file = fopen("base/wads/MASTERLEVELS.WAD", "r")) {
+			fclose(file);
+			DoomLib::SetIdealExpansion(pack_master);
 		}
 		else {
 			procced = false;
@@ -876,6 +889,17 @@ void M_Expansion(int choice)
 		if (FILE *file = fopen(s, "r")) {
 			fclose(file);
 			DoomLib::SetIdealExpansion(pack_plut);
+		}
+		else {
+			procced = false;
+			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+		}
+	}
+	else if (choice == 4) {
+		char* s = "base/wads/MASTERLEVELS.WAD";
+		if (FILE *file = fopen(s, "r")) {
+			fclose(file);
+			DoomLib::SetIdealExpansion(pack_master);
 		}
 		else {
 			procced = false;

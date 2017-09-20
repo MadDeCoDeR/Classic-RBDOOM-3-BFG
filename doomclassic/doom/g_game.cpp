@@ -1221,6 +1221,9 @@ void G_DoCompleted (void)
 				// DHM - Nerve :: Secret level is always level 9 on extra Doom2 missions
 				::g->wminfo.next = 8;
 			}
+			else if (::g->gamemission == pack_master) {
+				::g->wminfo.next = 20;
+			}
 		}
 		else {
 			if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut ) {
@@ -1240,6 +1243,7 @@ void G_DoCompleted (void)
 						::g->wminfo.next = ::g->gamemap;
 						break;
 				}
+			
 			} else {
 				::g->wminfo.next = ::g->gamemap;
 			}
@@ -1343,7 +1347,7 @@ void G_WorldDone (void)
 			}
 		}
 		else if ( ::g->gamemission == pack_master ) {
-			if ( ::g->gamemap == 21 ) {
+			if ( (::g->gamemap == 20 && !::g->secretexit) || ::g->gamemap == 21 ) {
 				F_StartFinale();
 			}
 		}
@@ -1666,6 +1670,9 @@ qboolean G_DoSaveGame (void)
 		}
 		else if (DoomLib::idealExpansion == pack_plut) {
 			sprintf(name, "DOOM2_PLUT\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
+		}
+		else if (DoomLib::idealExpansion == pack_master) {
+			sprintf(name, "DOOM2_MASTER\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
 		}
 
 	}

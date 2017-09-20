@@ -49,6 +49,7 @@ extern char*	c5text;
 extern char*	c6text;
 extern char*	c7text;
 extern char*	c8Text;
+extern char*	c9Text;
 
 void resetEndings();
 // Called by main loop.
