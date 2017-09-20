@@ -661,6 +661,20 @@ ST_Responder (event_t* ev)
 
 			if (map < 1)
 				return false;
+			//GK: Handles cases where you put map number greater than the available
+			if (::g->gamemode == commercial) {
+				if (::g->gamemission == pack_nerve) {
+					if (map > 9)
+						return false;
+				}
+				if (::g->gamemission == pack_master) {
+					if (map > 21)
+						return false;
+				}
+				if (map > 32) {
+					return false;
+				}
+			}
 
 			// Ohmygod - this is not going to work.
 			if ((::g->gamemode == retail)
