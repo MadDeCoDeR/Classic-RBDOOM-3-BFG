@@ -2,6 +2,35 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 
 Thank you for downloading Classic RBDOOM-3-BFG.
 
+
+_______________________________________
+
+12 June 2017 - Classic RBDOOM-3-BFG 1.1.4
+_______________________________
+
+[classicdoom]
+-Add Master Levels as expansions for DOOM II
+
+-Fixed DOOM II modded saves check 
+
+-Add parameter "+set com_game_mode" to open instandly DOOM or DOOM II
+  1 for DOOM
+  2 for DOOM II
+
+-Improved loading mods from archieves(zip,pk3,etc)
+
+-Various Bug Fixes
+
+-Added two new compatibility pwads (for Master Levels and in order to be able to use the original DOOM and DOOM II IWADS)
+
+
+NOTE: In order to play the Master Levels you must put the folder with the pwads on <DOOM 3 BFG Directory>\base\wads and 
+remname the folder with the Master Levels to "master"
+
+NOTE2: The pwads with this Release DOES NOT contain any content that will allow you to play Final DOOM or the Master Levels without OWNING 
+them in first place.
+
+
 _______________________________________
 
 12 June 2017 - Classic RBDOOM-3-BFG 1.1.3
