@@ -2,7 +2,19 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 
 Thank you for downloading Classic RBDOOM-3-BFG.
 
+_______________________________________
 
+09 December 2017 - Classic RBDOOM-3-BFG 1.1.4 Launcher Update
+_______________________________
+
+[classicdoom]
+-Added new Parameter "-exp" in order to warp straight to the desired expansion.
+
+-Add sub Parameter "ex" for the file parameter in order to specify for which expansion is the specific mod.
+
+[DOOM3BFG]
+
+-Now the parameter "com_game_mode" will boot straight to DOOM 3 if you give it value 3
 _______________________________________
 
 12 June 2017 - Classic RBDOOM-3-BFG 1.1.4
