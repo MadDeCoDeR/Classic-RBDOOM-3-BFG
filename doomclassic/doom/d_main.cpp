@@ -680,6 +680,7 @@ void D_DoomMain (void)
 			idLib::Printf("Loading %d\n", DoomLib::idealExpansion);
 			idLib::Printf("Loading %d\n", DoomLib::expansionSelected);
 			DoomLib::skipToNew = true;
+			//GK: Re init wad files to apply the change
 			IdentifyVersion();
 			D_AddFile("wads/newopt.wad");
 			//GK: New pwad for compatibility with Evilution and Plutonia (only for DOOM II)
@@ -706,6 +707,7 @@ void D_DoomMain (void)
 		if (q > p) {
 			np = M_CheckParm("-file",true);
 		}
+		//GK: Game crashing bugfix (still need work)
 		if (::g->gamemode == commercial) {
 			resetValues();
 			resetWeapons();
@@ -776,6 +778,7 @@ void D_DoomMain (void)
 					}
 				}
 				else {
+					//GK: In case of DOOM I ignore the "ex" filter
 					if (!idStr::Icmp("ex", ::g->myargv[np])) {
 						np = np + 2;
 						D_AddFile(::g->myargv[np]);
