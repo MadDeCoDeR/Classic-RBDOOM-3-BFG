@@ -625,6 +625,72 @@ void D_DoomMain (void)
 	// add any files specified on the command line with -file ::g->wadfile
 	// to the wad list
 	//
+	// get skill / episode / map from defaults
+	::g->startskill = sk_medium;
+	::g->startepisode = 1;
+	::g->startmap = 1;
+	::g->autostart = false;
+	if (::g->gamemode == commercial) {
+		p = M_CheckParm("-exp");
+		if (p)
+		{
+			::g->exp = ::g->myargv[p + 1][0] - '0';
+			char* s1 = "base/wads/TNT.WAD";
+			char* s2 = "base/wads/PLUTONIA.WAD";
+			char* s3 = "base/wads/MASTERLEVELS.WAD";
+			switch (::g->exp) {
+			case 1:
+				DoomLib::SetIdealExpansion(doom2);
+				break;
+			case 2:
+				DoomLib::SetIdealExpansion(pack_nerve);
+				break;
+			case 3:
+				
+				if (FILE *file = fopen(s1, "r")) {
+					fclose(file);
+					DoomLib::SetIdealExpansion(pack_tnt);
+				}
+				else {
+					DoomLib::SetIdealExpansion(doom2);
+				}
+				break;
+			case 4:
+				
+				if (FILE *file = fopen(s2, "r")) {
+					fclose(file);
+					DoomLib::SetIdealExpansion(pack_plut);
+				}
+				else {
+					DoomLib::SetIdealExpansion(doom2);
+				}
+				break;
+			case 5:
+				
+				if (FILE *file = fopen(s3, "r")) {
+					fclose(file);
+					DoomLib::SetIdealExpansion(pack_master);
+				}
+				else {
+					DoomLib::SetIdealExpansion(doom2);
+				}
+				break;
+			}
+			DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
+			idLib::Printf("Loading %d\n", DoomLib::idealExpansion);
+			idLib::Printf("Loading %d\n", DoomLib::expansionSelected);
+			DoomLib::skipToNew = true;
+			IdentifyVersion();
+			D_AddFile("wads/newopt.wad");
+			//GK: New pwad for compatibility with Evilution and Plutonia (only for DOOM II)
+			if (::g->gamemode == commercial) {
+				D_AddFile("wads/ua.wad");
+			}
+			if (::g->gamemission == pack_master) {
+				D_AddFile("wads/mlbls.wad");
+			}
+		}
+	}
 	p = M_CheckParm ("-file");
 	if (p)
 	{
@@ -640,16 +706,85 @@ void D_DoomMain (void)
 		if (q > p) {
 			np = M_CheckParm("-file",true);
 		}
+		if (::g->gamemode == commercial) {
+			resetValues();
+			resetWeapons();
+			ResetAmmo();
+			resetMapNames();
+			resetEndings();
+			resetTexts();
+			resetSprnames();
+		}
 		//GK End
 		// the parms after p are ::g->wadfile/lump names,
 		// until end of parms or another - preceded parm
 		::g->modifiedgame = true;            // homebrew levels
-		while (++p != ::g->myargc && ::g->myargv[p][0] != '-')
-			D_AddFile (::g->myargv[p]);
+		char* arg = "0";
+		while (++p != ::g->myargc && ::g->myargv[p][0] != '-') {
+			if (::g->gamemode == commercial) {
+				if (!idStr::Icmp("ex", ::g->myargv[p])) {
+						
+					p++;
+					arg = ::g->myargv[p];
+					if (atoi(arg) == ::g->gamemission) {
+						p++;
+						D_AddFile(::g->myargv[p]);
+					}
+				}
+				else {
+					if (atoi(arg) != 0) {
+						if (atoi(arg) == ::g->gamemission) {
+							D_AddFile(::g->myargv[p]);
+						}
+					}
+					else {
+						D_AddFile(::g->myargv[p]);
+					}
+				}
+			}
+			else {
+				if (!idStr::Icmp("ex", ::g->myargv[p])) {
+					p = p + 2;
+					D_AddFile(::g->myargv[p]);
+				}
+				else {
+					D_AddFile(::g->myargv[p]);
+				}
+			}
+		}		
 		//GK begin
 		if (np>0)
-			while (++np != ::g->myargc && ::g->myargv[np][0] != '-')
-				D_AddFile(::g->myargv[np]);
+			while (++np != ::g->myargc && ::g->myargv[np][0] != '-') {
+				if (::g->gamemode == commercial) {
+					if (!idStr::Icmp("ex", ::g->myargv[np])) {
+						np++;
+						arg = ::g->myargv[np];
+						if (atoi(arg) == ::g->gamemission) {
+							np++;
+							D_AddFile(::g->myargv[np]);
+						}
+					}
+					else {
+						if (atoi(arg) != 0) {
+							if (atoi(arg) == ::g->gamemission) {
+								D_AddFile(::g->myargv[np]);
+							}
+						}
+						else {
+							D_AddFile(::g->myargv[np]);
+						}
+					}
+				}
+				else {
+					if (!idStr::Icmp("ex", ::g->myargv[np])) {
+						np = np + 2;
+						D_AddFile(::g->myargv[np]);
+					}
+					else {
+						D_AddFile(::g->myargv[np]);
+					}
+				}
+			}
 		//GK End
 	}
 
@@ -665,11 +800,6 @@ void D_DoomMain (void)
 		I_Printf("Playing demo %s.lmp.\n",::g->myargv[p+1]);
 	}
 
-	// get skill / episode / map from defaults
-	::g->startskill = sk_medium;
-	::g->startepisode = 1;
-	::g->startmap = 1;
-	::g->autostart = false;
 
 	if ( DoomLib::matchParms.gameEpisode != GAME_EPISODE_UNKNOWN ) {
 		::g->startepisode = DoomLib::matchParms.gameEpisode;
@@ -734,7 +864,7 @@ void D_DoomMain (void)
 		}
 		::g->autostart = true;
 	}
-
+	
 	I_Printf ("Z_Init: Init zone memory allocation daemon. \n");
 	Z_Init ();
 
