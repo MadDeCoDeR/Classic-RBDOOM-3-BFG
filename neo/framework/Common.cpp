@@ -1493,8 +1493,8 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		else if (com_game_mode.GetInteger() == 2) {
 			SwitchToGame(DOOM2_CLASSIC);
 		}
-		else if (com_game_mode.GetInteger() == 3) { //GK: TODO FIND A WAY TO OPEN DOOM3 ON BOOT
-			//SwitchToGame(DOOM3_BFG);
+		else if (com_game_mode.GetInteger() == 3) {
+			session->GetSignInManager().RegisterLocalUser(0);
 		}
 		Printf( "--- Common Initialization Complete ---\n" );
 		
