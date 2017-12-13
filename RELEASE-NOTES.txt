@@ -4,6 +4,17 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+13 December 2017 - Classic RBDOOM-3-BFG 1.1.4 Hotfix
+_______________________________
+
+[classicdoom]
+-fixed an issue with DOOM II after using the "-exp" and "-warp" parameters the game was unable to start new game on DOOM II
+
+[Launcher]
+
+-Various Bug Fixes
+_______________________________________
+
 09 December 2017 - Classic RBDOOM-3-BFG 1.1.4 Launcher Update
 _______________________________
 

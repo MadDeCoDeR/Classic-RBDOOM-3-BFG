@@ -95,6 +95,8 @@ bool D_PollNetworkStart();
 void D_ProcessEvents (void);
 void D_DoAdvanceDemo (void);
 
+bool initonce = false;
+
 const char*		wadfiles[MAXWADFILES] =
 {
 	0
@@ -531,15 +533,15 @@ void FindResponseFile (void)
 // D_DoomMain
 //
 
-void D_DoomMain (void)
+void D_DoomMain(void)
 {
 	int             p;
 	char                    file[256];
 
 
-	FindResponseFile ();
+	FindResponseFile();
 
-	IdentifyVersion ();
+	IdentifyVersion();
 	//GK: New pwad for compatibility with the original DOOM And DOOMII IWADs
 	D_AddFile("wads/newopt.wad");
 	//GK: New pwad for compatibility with Evilution and Plutonia (only for DOOM II)
@@ -553,7 +555,7 @@ void D_DoomMain (void)
 	M_initParam();
 	//GK: fix for Dehacked pointer editor
 	init_states();
-	setbuf (stdout, NULL);
+	setbuf(stdout, NULL);
 	::g->modifiedgame = false;
 
 	// TODO: Networking
@@ -562,66 +564,69 @@ void D_DoomMain (void)
 	//GK begin
 	::g->classiccheats = M_CheckParm("-classich");
 	//GK End
-	::g->nomonsters = M_CheckParm ("-nomonsters") || isDeathmatch;
-	::g->respawnparm = M_CheckParm ("-respawn");
-	::g->fastparm = M_CheckParm ("-fast");
-	::g->devparm = M_CheckParm ("-devparm");
-	if (M_CheckParm ("-altdeath") || isDeathmatch)
-		::g->deathmatch = 2;
-	else if (M_CheckParm ("-deathmatch"))
-		::g->deathmatch = 1;
-
-	switch ( ::g->gamemode )
+	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+		::g->nomonsters = M_CheckParm("-nomonsters") || isDeathmatch;
+		::g->respawnparm = M_CheckParm("-respawn");
+	}
+	::g->fastparm = M_CheckParm("-fast");
+	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+		::g->devparm = M_CheckParm("-devparm");
+		if (M_CheckParm("-altdeath") || isDeathmatch)
+			::g->deathmatch = 2;
+		else if (M_CheckParm("-deathmatch"))
+			::g->deathmatch = 1;
+	}
+	switch (::g->gamemode)
 	{
 	case retail:
-		sprintf (::g->title,
+		sprintf(::g->title,
 			"                         "
 			"The Ultimate DOOM Startup v%i.%i"
 			"                           ",
-			VERSION/100,VERSION%100);
+			VERSION / 100, VERSION % 100);
 		break;
 	case shareware:
-		sprintf (::g->title,
+		sprintf(::g->title,
 			"                            "
 			"DOOM Shareware Startup v%i.%i"
 			"                           ",
-			VERSION/100,VERSION%100);
+			VERSION / 100, VERSION % 100);
 		break;
 	case registered:
-		sprintf (::g->title,
+		sprintf(::g->title,
 			"                            "
 			"DOOM Registered Startup v%i.%i"
 			"                           ",
-			VERSION/100,VERSION%100);
+			VERSION / 100, VERSION % 100);
 		break;
 	case commercial:
-		sprintf (::g->title,
+		sprintf(::g->title,
 			"                         "
 			"DOOM 2: Hell on Earth v%i.%i"
 			"                           ",
-			VERSION/100,VERSION%100);
+			VERSION / 100, VERSION % 100);
 		break;
 	default:
-		sprintf (::g->title,
+		sprintf(::g->title,
 			"                     "
 			"Public DOOM - v%i.%i"
 			"                           ",
-			VERSION/100,VERSION%100);
+			VERSION / 100, VERSION % 100);
 		break;
 	}
 
-	I_Printf ("%s\n",::g->title);
+	I_Printf("%s\n", ::g->title);
 
 	if (::g->devparm)
 		I_Printf(D_DEVSTR);
-
-	if (M_CheckParm("-cdrom"))
-	{
-		I_Printf(D_CDROM);
-//c++		mkdir("c:\\doomdata",0);
-		strcpy (::g->basedefault,"c:/doomdata/default.cfg");
-	}	
-
+	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+		if (M_CheckParm("-cdrom"))
+		{
+			I_Printf(D_CDROM);
+			//c++		mkdir("c:\\doomdata",0);
+			strcpy(::g->basedefault, "c:/doomdata/default.cfg");
+		}
+	}
 	// add any files specified on the command line with -file ::g->wadfile
 	// to the wad list
 	//
@@ -630,7 +635,7 @@ void D_DoomMain (void)
 	::g->startepisode = 1;
 	::g->startmap = 1;
 	::g->autostart = false;
-	if (::g->gamemode == commercial) {
+	if (::g->gamemode == commercial && !initonce) {
 		p = M_CheckParm("-exp");
 		if (p)
 		{
@@ -646,7 +651,7 @@ void D_DoomMain (void)
 				DoomLib::SetIdealExpansion(pack_nerve);
 				break;
 			case 3:
-				
+
 				if (FILE *file = fopen(s1, "r")) {
 					fclose(file);
 					DoomLib::SetIdealExpansion(pack_tnt);
@@ -656,7 +661,7 @@ void D_DoomMain (void)
 				}
 				break;
 			case 4:
-				
+
 				if (FILE *file = fopen(s2, "r")) {
 					fclose(file);
 					DoomLib::SetIdealExpansion(pack_plut);
@@ -666,7 +671,7 @@ void D_DoomMain (void)
 				}
 				break;
 			case 5:
-				
+
 				if (FILE *file = fopen(s3, "r")) {
 					fclose(file);
 					DoomLib::SetIdealExpansion(pack_master);
@@ -817,23 +822,23 @@ void D_DoomMain (void)
 	if ( DoomLib::matchParms.gameSkill != -1) {
 		::g->startskill = (skill_t)DoomLib::matchParms.gameSkill;
 	}
+	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+		// get skill / episode / map from cmdline
+		p = M_CheckParm("-skill");
+		if (p && p < ::g->myargc - 1)
+		{
+			::g->startskill = (skill_t)(::g->myargv[p + 1][0] - '1');
+			::g->autostart = true;
+		}
 
-	// get skill / episode / map from cmdline
-	p = M_CheckParm ("-skill");
-	if (p && p < ::g->myargc-1)
-	{
-		::g->startskill = (skill_t)(::g->myargv[p+1][0]-'1');
-		::g->autostart = true;
+		p = M_CheckParm("-episode");
+		if (p && p < ::g->myargc - 1)
+		{
+			::g->startepisode = ::g->myargv[p + 1][0] - '0';
+			::g->startmap = 1;
+			::g->autostart = true;
+		}
 	}
-
-	p = M_CheckParm ("-episode");
-	if (p && p < ::g->myargc-1)
-	{
-		::g->startepisode = ::g->myargv[p+1][0]-'0';
-		::g->startmap = 1;
-		::g->autostart = true;
-	}
-
 	/*p = M_CheckParm ("-timer");
 	if (p && p < ::g->myargc-1 && ::g->deathmatch)
 	{*/
@@ -854,20 +859,20 @@ void D_DoomMain (void)
 	p = M_CheckParm ("-avg");
 	if (p && p < ::g->myargc-1 && ::g->deathmatch)
 		I_Printf("Austin Virtual Gaming: Levels will end after 20 minutes\n");
-
-	p = M_CheckParm ("-warp");
-	if (p && p < ::g->myargc-1)
-	{
-		if (::g->gamemode == commercial)
-			::g->startmap = atoi (::g->myargv[p+1]);
-		else
+	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+		p = M_CheckParm("-warp");
+		if (p && p < ::g->myargc - 1)
 		{
-			::g->startepisode = ::g->myargv[p+1][0]-'0';
-			::g->startmap = ::g->myargv[p+2][0]-'0';
+			if (::g->gamemode == commercial)
+				::g->startmap = atoi(::g->myargv[p + 1]);
+			else
+			{
+				::g->startepisode = ::g->myargv[p + 1][0] - '0';
+				::g->startmap = ::g->myargv[p + 2][0] - '0';
+			}
+			::g->autostart = true;
 		}
-		::g->autostart = true;
 	}
-	
 	I_Printf ("Z_Init: Init zone memory allocation daemon. \n");
 	Z_Init ();
 
@@ -965,6 +970,9 @@ void D_DoomMain (void)
 	D_CheckNetGame ();
 	//GK: Check if there is either a folder or a zip that is called "master" and create the MASTERLEVELS.wad
 	MakeMaster_Wad();
+	if (::g->gamemode == commercial && !initonce) {
+		initonce =true;
+	}
 }
 
 bool D_DoomMainPoll(void)

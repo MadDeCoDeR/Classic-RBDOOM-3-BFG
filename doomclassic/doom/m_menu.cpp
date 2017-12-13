@@ -1107,6 +1107,7 @@ void M_GameSelection(int choice)
 	//ResetSfx(); //GK: More Headache than it's worth
 	//CleanUncompFiles(); //GK: A good practice would have been to delete the files after
 	//we change the game but W_Shutdown which must be called to free the files causes bugs and crashes
+	initonce = false;
 	common->SwitchToGame( DOOM3_BFG );
 }
 

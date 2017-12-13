@@ -70,6 +70,7 @@ void D_StartTitle (void);
 #define X_OK	0x02
 #define W_OK	0x04
 int access(char* name, int val);
+extern bool initonce;
 
 
 #endif
