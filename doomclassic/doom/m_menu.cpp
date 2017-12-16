@@ -831,13 +831,13 @@ void M_VerifyNightmare(int ch)
 
 void M_ChooseSkill(int choice)
 {
-	/*
+	
 	if (choice == nightmare)
 	{
 		M_StartMessage(NIGHTMARE,M_VerifyNightmare,true);
 		return;
 	}
-	*/
+	
 	if ( ::g->gamemode != commercial ) {
 		static int startLevel = 1;
 		G_DeferedInitNew((skill_t)choice,::g->epi+1, startLevel);

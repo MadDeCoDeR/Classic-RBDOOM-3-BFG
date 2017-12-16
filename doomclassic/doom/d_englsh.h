@@ -42,7 +42,7 @@ If you have questions concerning this license or the applicable additional terms
 //	M_Menu.C
 //
 #define PRESSKEY 	"press any button."
-#define PRESSYN 	"press y or n."
+#define PRESSYN 	"press Enter or Esc."
 #define QUITMSG	"are you sure you want to\nquit this great game?"
 #define LOADNET 	"you can't do load while in a net game!\n\n"PRESSKEY
 #define QLOADNET	"you can't quickload during a netgame!\n\n"PRESSKEY
