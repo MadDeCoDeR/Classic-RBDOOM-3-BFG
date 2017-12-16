@@ -540,22 +540,23 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->mus_playing=0;
 // s_sound.constructs end // 
 //  wi_stuff.constructs begin // 
-int temp_NUMANIMS[NUMEPISODES] = {
-    sizeof(epsd0animinfo)/sizeof(anim_t),
-    sizeof(epsd1animinfo)/sizeof(anim_t),
-    sizeof(epsd2animinfo)/sizeof(anim_t)
-};
-memcpy( ::g->NUMANIMS, temp_NUMANIMS, sizeof(temp_NUMANIMS) );
 	::g->snl_pointeron = false;
 	extern const anim_t temp_epsd0animinfo[10];
 	extern const anim_t temp_epsd1animinfo[9];
 	extern const anim_t temp_epsd2animinfo[6];
-	memcpy(::g->epsd0animinfo, temp_epsd0animinfo, sizeof(temp_epsd0animinfo));
+	//GK: No longer nedded here
+	/*memcpy(::g->epsd0animinfo, temp_epsd0animinfo, sizeof(temp_epsd0animinfo));
 	memcpy(::g->epsd1animinfo, temp_epsd1animinfo, sizeof(temp_epsd1animinfo));
 	memcpy(::g->epsd2animinfo, temp_epsd2animinfo, sizeof(temp_epsd2animinfo));
+	int temp_NUMANIMS[NUMEPISODES] = {
+		sizeof(::g->epsd0animinfo) / sizeof(anim_t),
+		sizeof(::g->epsd1animinfo) / sizeof(anim_t),
+		sizeof(::g->epsd2animinfo) / sizeof(anim_t)
+	};
+	memcpy(::g->NUMANIMS, temp_NUMANIMS, sizeof(temp_NUMANIMS));
 	wi_stuff_anims[0] = ::g->epsd0animinfo;
 	wi_stuff_anims[1] = ::g->epsd1animinfo;
-	wi_stuff_anims[2] = ::g->epsd2animinfo;
+	wi_stuff_anims[2] = ::g->epsd2animinfo;*/
 // wi_stuff.constructs end // 
 //  z_zone.constructs begin // 
 	::g->zones[NUM_ZONES] = NULL;

@@ -383,8 +383,8 @@ void WI_initAnimatedBack(void)
 	a->ctr = -1;
 
 	// specify the next time to draw it
-	if (a->type == ANIM_ALWAYS)
-	    a->nexttic = ::g->bcnt + 1 + (M_Random()%a->period);
+	if (a->type == ANIM_ALWAYS) 
+		a->nexttic = ::g->bcnt + 1 + (M_Random()%a->period);
 	else if (a->type == ANIM_RANDOM)
 	    a->nexttic = ::g->bcnt + 1 + a->data2+(M_Random()%a->data1);
 	else if (a->type == ANIM_LEVEL)
@@ -408,7 +408,7 @@ void WI_updateAnimatedBack(void)
     for (i=0;i < ::g->NUMANIMS[::g->wbs->epsd];i++)
     {
 		 a = &::g->wi_stuff_anims[::g->wbs->epsd][i];
-
+		 
 	if (::g->bcnt == a->nexttic)
 	{
 	    switch (a->type)
@@ -450,7 +450,7 @@ void WI_drawAnimatedBack(void)
     int			i;
     anim_t*		a;
 
-    if (commercial)
+    if (::g->gamemode == commercial) //GK : Actually check this
 	return;
 
     if (::g->wbs->epsd > 2)
@@ -459,11 +459,9 @@ void WI_drawAnimatedBack(void)
     for (i=0 ; i < ::g->NUMANIMS[::g->wbs->epsd] ; i++)
     {
 		 a = &::g->wi_stuff_anims[::g->wbs->epsd][i];
-
-	if (a->ctr >= 0)
-	    V_DrawPatch(a->loc.x, a->loc.y, FB, a->p[a->ctr]);
+		 if (a->ctr >= 0)
+			 V_DrawPatch(a->loc.x, a->loc.y, FB, a->p[a->ctr]);
     }
-
 }
 
 //
@@ -1566,6 +1564,19 @@ void WI_loadData(void)
 	
 		if (::g->wbs->epsd < 3)
 		{
+			//GK : Initialize here (cause why not ;) )
+			memcpy(::g->epsd0animinfo, temp_epsd0animinfo, sizeof(temp_epsd0animinfo));
+			memcpy(::g->epsd1animinfo, temp_epsd1animinfo, sizeof(temp_epsd1animinfo));
+			memcpy(::g->epsd2animinfo, temp_epsd2animinfo, sizeof(temp_epsd2animinfo));
+			int temp_NUMANIMS[NUMEPISODES] = {
+				sizeof(temp_epsd0animinfo) / sizeof(anim_t),
+				sizeof(temp_epsd1animinfo) / sizeof(anim_t),
+				sizeof(temp_epsd2animinfo) / sizeof(anim_t)
+			};
+			memcpy(::g->NUMANIMS, temp_NUMANIMS, sizeof(temp_NUMANIMS));
+			::g->wi_stuff_anims[0] = ::g->epsd0animinfo;
+			::g->wi_stuff_anims[1] = ::g->epsd1animinfo;
+			::g->wi_stuff_anims[2] = ::g->epsd2animinfo;
 			for (j=0;j < ::g->NUMANIMS[::g->wbs->epsd];j++)
 			{
 				a = &::g->wi_stuff_anims[::g->wbs->epsd][j];
