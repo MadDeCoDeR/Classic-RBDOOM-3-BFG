@@ -2,6 +2,18 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 
 Thank you for downloading Classic RBDOOM-3-BFG.
 
+
+_______________________________________
+
+13 December 2017 - Classic RBDOOM-3-BFG 1.1.5
+_______________________________
+
+[classicdoom]
+-Restore Nightmare Difficulty confirmation message
+
+-Restore the functionality of "-fast" parameter
+
+-Restore Ultimate DOOM intermission animations (Ep 2 towers also shown)
 _______________________________________
 
 13 December 2017 - Classic RBDOOM-3-BFG 1.1.4 Hotfix
