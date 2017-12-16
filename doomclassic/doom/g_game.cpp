@@ -1847,6 +1847,23 @@ G_InitNew
 	else
 		::g->respawnmonsters = false;
 
+	//GK: Use original source code for the fast parameter
+	if (::g->fastparm || (skill == sk_nightmare && ::g->gameskill != sk_nightmare))
+	{
+		for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
+			::g->states[i].tics >>= 1;
+		mobjinfo[MT_BRUISERSHOT].speed = 20 * FRACUNIT;
+		mobjinfo[MT_HEADSHOT].speed = 20 * FRACUNIT;
+		mobjinfo[MT_TROOPSHOT].speed = 20 * FRACUNIT;
+	}
+	else if (skill != sk_nightmare && ::g->gameskill == sk_nightmare)
+	{
+		for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
+			::g->states[i].tics <<= 1;
+		mobjinfo[MT_BRUISERSHOT].speed = 15 * FRACUNIT;
+		mobjinfo[MT_HEADSHOT].speed = 10 * FRACUNIT;
+		mobjinfo[MT_TROOPSHOT].speed = 10 * FRACUNIT;
+	}
 	// force ::g->players to be initialized upon first level load         
 	for (i=0 ; i<MAXPLAYERS ; i++) 
 		::g->players[i].playerstate = PST_REBORN; 
