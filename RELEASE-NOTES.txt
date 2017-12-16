@@ -5,7 +5,7 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
-13 December 2017 - Classic RBDOOM-3-BFG 1.1.5
+16 December 2017 - Classic RBDOOM-3-BFG 1.1.5
 _______________________________
 
 [classicdoom]
