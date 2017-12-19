@@ -34,8 +34,8 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar achievements_Verbose( "achievements_Verbose", "1", CVAR_BOOL, "debug spam" );
 idCVar g_demoMode( "g_demoMode", "0", CVAR_INTEGER, "this is a demo" );
-
-bool idAchievementManager::cheatingDialogShown = false;
+//GK: Bypass the warning
+bool idAchievementManager::cheatingDialogShown = true;
 
 const struct achievementInfo_t
 {
