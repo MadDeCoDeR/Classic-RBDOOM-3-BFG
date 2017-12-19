@@ -121,7 +121,8 @@ idCommonLocal	commonLocal;
 idCommon* 		common = &commonLocal;
 
 // RB: defaulted this to 1 because we don't have a sound for the intro .bik video
-idCVar com_skipIntroVideos( "com_skipIntroVideos", "1", CVAR_BOOL , "skips intro videos" );
+//GK : defaulted back to 0 the audio plays again (not perfectly but it will do for now)
+idCVar com_skipIntroVideos( "com_skipIntroVideos", "0", CVAR_BOOL , "skips intro videos" );
 
 // For doom classic
 struct Globals;

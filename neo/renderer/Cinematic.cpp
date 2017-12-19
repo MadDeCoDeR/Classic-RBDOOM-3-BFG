@@ -30,8 +30,15 @@ If you have questions concerning this license or the applicable additional terms
 
 #pragma hdrstop
 #include "precompiled.h"
-
-
+//GK: Include Sound local header for audio playback
+#include <../sound/snd_local.h>
+//GK:Also init variables for XAudio2
+#ifdef _MSC_VER
+WAVEFORMATEX voiceFormat = { 0 };
+IXAudio2SourceVoice*	pMusicSourceVoice1;
+XAUDIO2_BUFFER Packet = { 0 };
+WAVEFORMATEXTENSIBLE exvoice = { 0 };
+#endif
 extern idCVar s_noSound;
 
 #define JPEG_INTERNALS
@@ -85,11 +92,14 @@ private:
 
 #if defined(USE_FFMPEG)
 	int						video_stream_index;
+	int						audio_stream_index; //GK: Make extra indexer for audio
 	AVFormatContext*		fmt_ctx;
 	AVFrame*				frame;
 	AVFrame*				frame2;
+	AVFrame*				frame3; //GK: make extra frame for audio
 	AVCodec*				dec;
 	AVCodecContext*			dec_ctx;
+	AVCodecContext*			dec_ctx2;
 	SwsContext*				img_convert_ctx;
 	bool					hasFrame;
 	long					framePos;
@@ -215,7 +225,7 @@ void idCinematic::InitCinematic()
 	avcodec_register_all();
 	av_register_all();
 #endif
-	
+
 	// Carl: Doom 3 ROQ:
 	float t_ub, t_vr, t_ug, t_vg;
 	int i;
@@ -389,17 +399,20 @@ idCinematicLocal::idCinematicLocal()
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(55,28,1)
 	frame = av_frame_alloc();
 	frame2 = av_frame_alloc();
+	frame3 = av_frame_alloc();
 #else
 	frame = avcodec_alloc_frame();
 	frame2 = avcodec_alloc_frame();
 #endif // LIBAVCODEC_VERSION_INT
 	dec_ctx = NULL;
+	dec_ctx2 = NULL;
 	fmt_ctx = NULL;
 	video_stream_index = -1;
+	audio_stream_index = -1;
 	img_convert_ctx = NULL;
 	hasFrame = false;
 #endif
-	
+
 	// Carl: Original Doom 3 RoQ files:
 	image = NULL;
 	status = FMV_EOF;
@@ -427,7 +440,7 @@ idCinematicLocal::~idCinematicLocal
 idCinematicLocal::~idCinematicLocal()
 {
 	Close();
-	
+
 	// Carl: Original Doom 3 RoQ files:
 	Mem_Free( qStatus[0] );
 	qStatus[0] = NULL;
@@ -456,7 +469,15 @@ idCinematicLocal::~idCinematicLocal()
 		sws_freeContext( img_convert_ctx );
 	}
 #endif
-	
+	//GK: Properly close local XAudio2 voice
+#ifdef _MSC_VER
+	if (pMusicSourceVoice1) {
+		pMusicSourceVoice1->Stop();
+		pMusicSourceVoice1->FlushSourceBuffers();
+		pMusicSourceVoice1->DestroyVoice();
+		pMusicSourceVoice1 = NULL;
+	}
+#endif
 	delete img;
 	img = NULL;
 }
@@ -470,6 +491,7 @@ idCinematicLocal::InitFromFFMPEGFile
 bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 {
 	int ret;
+	int ret2;
 	looping = amilooping;
 	startTime = 0;
 	isRoQ = false;
@@ -529,7 +551,38 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		common->Warning( "idCinematic: Cannot open video decoder for: '%s', %d\n", qpath, looping );
 		return false;
 	}
-	
+	//GK:Begin
+	//After the video decoder is open then try to open audio decoder since it will re-bind the main decoder from video to audio
+	ret2 = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
+	if (ret2 >= 0) { //Make audio optional (only intro video has audio no other)
+		audio_stream_index = ret2;
+		dec_ctx2 = fmt_ctx->streams[audio_stream_index]->codec;
+		if ((ret2 = avcodec_open2(dec_ctx2, dec, NULL)) < 0)
+		{
+			common->Warning("idCinematic: Cannot open audio decoder for: '%s', %d\n", qpath, looping);
+			//return false;
+		}
+#ifdef _MSC_VER
+		voiceFormat.wFormatTag = WAVE_FORMAT_EXTENSIBLE; //Use extensible wave format in order to handle properly the audio
+		voiceFormat.nChannels = dec_ctx2->channels; //fixed
+		voiceFormat.nSamplesPerSec = dec_ctx2->sample_rate; //fixed
+		voiceFormat.wBitsPerSample = 32; //fixed
+		voiceFormat.nBlockAlign = voiceFormat.nChannels * voiceFormat.wBitsPerSample/8; //fixed
+		voiceFormat.nAvgBytesPerSec = voiceFormat.nSamplesPerSec * voiceFormat.nBlockAlign; //fixed
+		voiceFormat.cbSize = 22; //fixed
+		exvoice.Format = voiceFormat; //fixed
+		exvoice.dwChannelMask = SPEAKER_FRONT_CENTER; //The audio support only mono sound (don't try to change this)
+		exvoice.Samples.wValidBitsPerSample = 0; //Must be less than 32(better 0 for best soud results)
+		exvoice.Samples.wReserved = 0;
+		exvoice.Samples.wSamplesPerBlock =  voiceFormat.nSamplesPerSec; //same as sample rate
+		exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT; //This format plays well (and with the debugger)
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice1, (WAVEFORMATEX*)&exvoice, XAUDIO2_VOICE_USEFILTER |  XAUDIO2_VOICE_MUSIC);//Use the XAudio2 that the game has initialized instead of making your own
+#endif
+	}
+	else {
+		common->Warning("idCinematic: Cannot find an audio stream in: '%s', %d\n", qpath, looping);
+	}
+	//GK:End
 	CIN_WIDTH = dec_ctx->width;
 	CIN_HEIGHT = dec_ctx->height;
 	/** Calculate Duration in seconds
@@ -942,6 +995,8 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 	while( framePos < desiredFrame )
 	{
 		int frameFinished = 0;
+		//GK: Separate frame finisher for audio in order to not have the video lagging
+		int frameFinished1 = 0;
 		
 		// Do a single frame by getting packets until we have a full frame
 		while( !frameFinished )
@@ -976,6 +1031,34 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 				// Decode video frame
 				avcodec_decode_video2( dec_ctx, frame, &frameFinished, &packet );
 			}
+			//GK:Begin
+			else if (packet.stream_index == audio_stream_index) {//Check if it found any audio data
+				avcodec_decode_audio4(dec_ctx2, frame3, &frameFinished1, &packet);
+				if (frameFinished1) {
+#ifdef _MSC_VER
+					//Store the data to XAudio2 buffer
+					Packet.Flags = XAUDIO2_END_OF_STREAM;
+					Packet.AudioBytes = frame3->linesize[0];
+					Packet.pAudioData = (BYTE*)frame3->extended_data[0];
+					Packet.PlayBegin = 0;
+					Packet.PlayLength = 0;
+					Packet.LoopBegin = 0;
+					Packet.LoopLength = 0;
+					Packet.LoopCount = 0;
+					Packet.pContext = NULL;
+					HRESULT hr;
+					if (FAILED(hr = pMusicSourceVoice1->SubmitSourceBuffer(&Packet))) {
+						int fail = 1;
+					}
+
+					// Play the source voice
+					if (FAILED(hr = pMusicSourceVoice1->Start(0))) {
+						int fail = 1;
+					}
+#endif
+				}
+			}
+			//GK:End
 			// Free the packet that was allocated by av_read_frame
 			av_free_packet( &packet );
 		}
