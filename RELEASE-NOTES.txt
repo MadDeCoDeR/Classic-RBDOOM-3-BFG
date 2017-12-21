@@ -2,7 +2,20 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 
 Thank you for downloading Classic RBDOOM-3-BFG.
 
+_______________________________________
 
+21 December 2017 - Classic RBDOOM-3-BFG 1.1.5 Update
+_______________________________
+
+[DOOM3BFG]
+-Restore the audio of the Intro cutscene
+
+-The message "Achievments are disabled" will no longer shown
+
+[Launcher]
+-Improved the mod selection for DOOM 3
+
+-Added Skip Intro option
 _______________________________________
 
 16 December 2017 - Classic RBDOOM-3-BFG 1.1.5
