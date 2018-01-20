@@ -1594,9 +1594,9 @@ void A_BossDeath (mobj_t* mo, void * )
 		
     if ( ::g->gamemode == commercial)
     {
-	if (::g->gamemap != 7)
+	if (::g->gamemap != 7 && ( ::g->gamemission == pack_master && ::g->gamemap != 15 && ::g->gamemap != 14 && ::g->gamemap != 16)) // GK: Fix for Master Levels
 	    return;
-		
+
 	if ((mo->type != MT_FATSO)
 	    && (mo->type != MT_BABY))
 	    return;
@@ -1686,7 +1686,7 @@ void A_BossDeath (mobj_t* mo, void * )
     // victory!
     if ( ::g->gamemode == commercial)
     {
-	if (::g->gamemap == 7)
+	if (::g->gamemap == 7 || (::g->gamemission == pack_master && ::g->gamemap == 15) || (::g->gamemission == pack_master && ::g->gamemap == 14) || (::g->gamemission == pack_master && ::g->gamemap == 16)) // GK: Take in account the 14th ,15th and 16th levels on master Levels Expansion since they are using MAP07 special logic
 	{
 	    if (mo->type == MT_FATSO)
 	    {
