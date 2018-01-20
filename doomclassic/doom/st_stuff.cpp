@@ -1564,6 +1564,12 @@ CONSOLE_COMMAND_SHIP( idclev, "warp to next level", 0 ) {
 
 		if( map > 32 ) {
 			map = 1;
+		}else
+		if (::g->gamemission == pack_nerve && map > 9) {
+			map = 1;
+		}
+		else if(::g->gamemission == pack_master && map > 21){
+			map = 1;
 		}
 	}
 	else
@@ -1601,6 +1607,13 @@ CONSOLE_COMMAND_SHIP( idclev, "warp to next level", 0 ) {
 		&& (( epsd > 1) || (map > 34)))
 		return;
 
+	if ((::g->gamemission == pack_nerve)
+		&& ((epsd > 1) || (map > 9)))
+		return;
+
+	if ((::g->gamemission == pack_master)
+		&& ((epsd > 1) || (map > 21)))
+		return;
 	// So be it.
 	::g->plyr->message = STSTR_CLEV;
 	G_DeferedInitNew(::g->gameskill, epsd, map);
