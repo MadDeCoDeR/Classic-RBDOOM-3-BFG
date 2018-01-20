@@ -4,6 +4,26 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+17 January 2018 - Classic RBDOOM-3-BFG 1.1.666
+_______________________________
+
+[DOOM3BFG]
+
+-Slight improvement on intro audio
+
+[classicdoom]
+
+-Fixed Critical issue with Master Levels Expansion (Preventing you to progress)
+
+-Added Aspect Ratio option that allow you to switch between the original and the widescreen aspects
+
+-Improvements and stabilty patches for mod loading on  DOOM II expansions
+
+-Added a reward if you finish all the Master Levels in "Hurt me Plenty" or higher difficulty (including the secret level)
+
+-Fixed secret not triggering on Master Levels map "nessus" (Works only on the expansion)
+_______________________________________
+
 21 December 2017 - Classic RBDOOM-3-BFG 1.1.5 Update
 _______________________________
 
