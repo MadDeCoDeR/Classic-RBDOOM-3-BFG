@@ -48,6 +48,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "Main.h"
 #include "d3xp/Game_local.h"
+#include "../framework/Common_local.h"
 
 // ?
 //#include "doomstat.h"
@@ -271,6 +272,9 @@ void F_StartFinale (void)
 					case 21:
 						finaleflat = "SLIME16";
 						finaletext = c9Text;
+						if (::g->gameskill >= 2) { //GK: No reward for "Cry babies"
+							doomit.SetInteger(1); // GK: Reward the player for finishing all the Master Levels by enabling the doom-it level selction for master levels
+						}
 						break;
 				}
 			} else if ( ::g->gamemission == pack_nerve ) {

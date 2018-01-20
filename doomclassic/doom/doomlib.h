@@ -144,6 +144,10 @@ namespace DoomLib
 	extern bool					skipToNew;
 	extern int					chosenSkill;
 	extern int					chosenEpisode;
+	extern bool					use_doomit;
+	extern int					selection;
+
+	extern char*				otherfiles[5][20];
 
 	extern idMatchParameters	matchParms;
 

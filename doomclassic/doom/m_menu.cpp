@@ -72,6 +72,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "sys/sys_session.h"
 #include "sys/sys_signin.h"
 #include "d3xp/Game_local.h"
+#include "../framework/Common_local.h" //GK: Include it also here in order to pass through the aspect ratio parameter
 
 #include "info.h"
 #include "d_items.h"
@@ -156,6 +157,7 @@ void M_CancelExit(int choice);
 void M_ChangeMessages(int choice);
 void M_ChangeGPad(int choice);
 void M_FullScreen(int choice);
+void M_Aspect(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
@@ -163,6 +165,8 @@ void M_ChangeDetail(int choice);
 void M_SizeDisplay(int choice);
 void M_StartGame(int choice);
 void M_Sound(int choice);
+void M_MasterSelect(int choice);
+void M_Doom_IT(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
@@ -181,6 +185,8 @@ void M_DrawOptions(void);
 void M_DrawSound(void);
 void M_DrawLoad(void);
 void M_DrawSave(void);
+void M_DrawMaster(void);
+void M_DrawDoomIT(void);
 
 void M_DrawSaveLoadBorder(int x,int y);
 void M_SetupNextMenu(menu_t *menudef);
@@ -210,6 +216,8 @@ menu_t extradef = {
 	280,185,
 	0
 };
+idCVar doomit("doomit","0",CVAR_GAME|CVAR_ARCHIVE|CVAR_NOCHEAT|CVAR_INTEGER|CVAR_ROM,"0 = no DOOM-IT, 1 = DOOM-IT");
+int state = 0;
 //
 // DOOM MENU
 //
@@ -900,17 +908,81 @@ void M_Expansion(int choice)
 		if (FILE *file = fopen(s, "r")) {
 			fclose(file);
 			DoomLib::SetIdealExpansion(pack_master);
+			if (doomit.GetInteger() == 1) {
+				DoomLib::use_doomit = true;
+				state = 0;
+				M_SetupNextMenu(&::g->MasterDef);
+			}
 		}
 		else {
 			procced = false;
 			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
 		}
 	}
-	if (procced) {
-		M_SetupNextMenu(&::g->NewDef);
+	if (!DoomLib::use_doomit) {
+		if (procced) {
+			M_SetupNextMenu(&::g->NewDef);
+		}
+		else {
+			M_SetupNextMenu(&::g->MainDef);
+		}
+	}
+}
+
+void M_MasterSelect(int choice) {
+	if (choice == 0) {
+		if (state == 0) {
+			DoomLib::use_doomit = false;
+			M_SetupNextMenu(&::g->NewDef);
+		}
+		else {
+			state=2;
+			M_SetupNextMenu(&::g->DOOMITDef);
+		}
 	}
 	else {
-		M_SetupNextMenu(&::g->MainDef);
+		if (state == 0) {
+			state=3;
+			M_SetupNextMenu(&::g->MasterDef);
+		}
+		else {
+			state=1;
+			M_SetupNextMenu(&::g->DOOMITDef);
+		}
+	}
+}
+
+void M_DrawMaster(void) {
+	for (int i = 0; i < master_end; i++) {
+		if (state == 0) {
+			M_WriteText(::g->MasterDef.x, ::g->MasterDef.y + LINEHEIGHT * i, MASTER[i]);
+		}
+		else {
+			M_WriteText(::g->MasterDef.x, ::g->MasterDef.y + LINEHEIGHT * i, M2[i]);
+		}
+	}
+}
+
+void M_Doom_IT(int choice) {
+	DoomLib::use_doomit = true;
+	if (state == 2) {
+		DoomLib::selection = choice + 1;
+	}
+	else {
+		DoomLib::selection = choice + 11;
+	}
+	state = 0;
+	M_SetupNextMenu(&::g->NewDef);
+}
+
+void M_DrawDoomIT(void) {
+	for (int i = 0; i < doomit_end/2; i++) {
+		if (state == 2) {
+			M_WriteText(::g->DOOMITDef.x, ::g->DOOMITDef.y + LINEHEIGHT * i, masterlist[i]);
+		}
+		else {
+			M_WriteText(::g->DOOMITDef.x, ::g->DOOMITDef.y + LINEHEIGHT * i, masterlist[i+10]);
+		}
 	}
 }
 
@@ -919,7 +991,7 @@ void M_Expansion(int choice)
 //
 char    detailNames[2][9]	= 
 {
-"M_GDHIGH","M_GDLOW"
+"M_GDLOW","M_DETAIL" //GK: Use unique values for aspect ratio
 };
 
 char	msgNames[2][9]		= 
@@ -944,6 +1016,7 @@ void M_DrawOptions(void)
 	//	(patch_t*)W_CacheLumpName(detailNames[::g->detailLevel],PU_CACHE_SHARED));
 
 	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : 0;
+	int aspect = r_aspect.GetInteger() >= 1 ? 1 : 0;
 
 	V_DrawPatchDirect (::g->OptionsDef.x + 150,::g->OptionsDef.y+LINEHEIGHT*endgame,0,
 		(patch_t*)W_CacheLumpName(msgNames[fullscreenOnOff],PU_CACHE_SHARED));
@@ -953,7 +1026,10 @@ void M_DrawOptions(void)
 
 	V_DrawPatchDirect (::g->OptionsDef.x + 120,::g->OptionsDef.y+LINEHEIGHT*messages,0,
 		(patch_t*)W_CacheLumpName(msgNames[m_show_messages.GetInteger()],PU_CACHE_SHARED));
-
+	//GK:begin
+	V_DrawPatchDirect(::g->OptionsDef.x + 165, ::g->OptionsDef.y + LINEHEIGHT * detail, 0,
+		(patch_t*)W_CacheLumpName(detailNames[aspect], PU_CACHE_SHARED));
+	//GK:End
 	extern idCVar in_mouseSpeed;
 	const int roundedMouseSpeed = M_GetMouseSpeedForMenu( in_mouseSpeed.GetFloat() );
 
@@ -1008,6 +1084,11 @@ void M_FullScreen( int choice ) {
 	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
 }
 
+void M_Aspect(int choice) {
+	//GK: Similar to fullscreen but with the aspect parameter
+	r_aspect.SetInteger(r_aspect.GetInteger() ? 0 : 1);
+	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
+}
 //
 // M_EndGame
 //

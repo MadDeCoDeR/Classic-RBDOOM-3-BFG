@@ -169,3 +169,27 @@ void resetTexts() {
 	 CC_CYBER = "THE CYBERDEMON";
 	 CC_HERO = "OUR HERO";
 }
+
+char* MASTER[] = { "All Maps","Select Map" };
+char* masterlist[] = { "ATTACK.WAD",
+"CANYON.WAD",
+"CATWALK.WAD",
+"COMBINE.WAD",
+"FISTULA.WAD",
+"GARRISON.WAD",
+"MANOR.WAD",
+"PARADOX.WAD",
+"SUBSPACE.WAD",
+"SUBTERRA.WAD",
+"TTRAP.WAD",
+"VIRGIL.WAD",
+"MINOS.WAD",
+"BLOODSEA.WAD",
+"MEPHISTO.WAD",
+"NESSUS.WAD",
+"GERYON.WAD",
+"VESPERAS.WAD",
+"BLACKTWR.WAD",
+"TEETH.WAD" };
+
+char* M2[] = { "1-10","11-20" };

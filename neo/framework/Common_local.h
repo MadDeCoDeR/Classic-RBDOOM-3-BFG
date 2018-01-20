@@ -37,7 +37,8 @@ static const int initialBaseTicksPerSec = initialHz * initialBaseTicks;
 
 static const int LOAD_TIP_CHANGE_INTERVAL = 12000;
 static const int LOAD_TIP_COUNT = 26;
-
+extern idCVar r_aspect;						// 0 = original, 1 = strecthed
+extern idCVar doomit;
 class idGameThread : public idSysThread
 {
 public:

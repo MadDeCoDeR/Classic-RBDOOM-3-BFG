@@ -159,6 +159,9 @@ namespace DoomLib
 	bool							skipToNew = false;
 	int								chosenSkill = 0;
 	int								chosenEpisode = 1;
+	bool							use_doomit = false;
+	int								selection = -1;
+	char*							otherfiles[5][20];
 
 	idMatchParameters				matchParms;
 

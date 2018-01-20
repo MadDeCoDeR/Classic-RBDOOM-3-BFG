@@ -58,15 +58,17 @@ typedef unsigned int dword;
 #define WIDTH				( ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER )
 #define HEIGHT				( ORIGINAL_HEIGHT * GLOBAL_IMAGE_SCALER )
 
-#define TEXTUREWIDTH		WIDTH
-#define TEXTUREHEIGHT		HEIGHT
+//GK: Toying around with un-used values (in hopes to figure out how to perform aspect ratio correction)
 
-#define	BASE_WIDTH			WIDTH
+#define TEXTUREWIDTH		ORIGINAL_WIDTH
+#define TEXTUREHEIGHT		ORIGINAL_HEIGHT
+
+#define	BASE_WIDTH			ORIGINAL_WIDTH
 #define SCREENWIDTH			WIDTH
 #define SCREENHEIGHT		HEIGHT
 
-#define MAXWIDTH			1120
-#define MAXHEIGHT			832
+#define MAXWIDTH			1920
+#define MAXHEIGHT			1080
 
 // DG: provide MAXINT seems to be available on MSVC but not MinGW,
 // so use the standard defines from limits.h

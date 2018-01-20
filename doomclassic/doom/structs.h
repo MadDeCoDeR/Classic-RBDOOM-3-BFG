@@ -178,7 +178,7 @@ typedef enum
 	endgame,
 	scrnsize,
 	messages,
-	//detail,	
+	detail,	//GK: Use this value for aspect ratio option
 	option_empty1,
 	mousesens,
 	option_empty2,
@@ -213,6 +213,36 @@ typedef enum
 	load6,
 	load_end
 } load_e;
+typedef enum
+{
+	all,
+	sel_doom,
+	master_end
+} master_e;
+typedef enum
+{
+	wad1,
+	wad2,
+	wad3,
+	wad4,
+	wad5,
+	wad6,
+	wad7,
+	wad8,
+	wad9,
+	wad10,
+	wad11,
+	wad12,
+	wad13,
+	wad14,
+	wad15,
+	wad16,
+	wad17,
+	wad18,
+	wad19,
+	wad20,
+	doomit_end
+};
 // m_menu.structs end // 
 //  m_misc.structs begin // 
 struct default_t

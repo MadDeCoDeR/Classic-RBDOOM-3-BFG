@@ -219,13 +219,14 @@ menu_t  temp_NewDef = {
 		hurtme		// lastOn
 };
 memcpy( &::g->NewDef, &temp_NewDef, sizeof(temp_NewDef) );
-menuitem_t temp_OptionsMenu[8] = {
+menuitem_t temp_OptionsMenu[9] = {
 	{1,"M_GDHIGH",	M_FullScreen,'f'},
 	{1,"M_SCRNSZ",	M_ChangeGPad,'m'},
 	{1,"M_MESSG",	M_ChangeMessages,'m'},
 	//{1,"M_DETAIL",	M_ChangeDetail,'g'},
 	//{2,"M_SCRNSZ",	M_SizeDisplay,'s'},
-	{-1,"",0},
+	{1,"M_ASP",M_Aspect,'m'},//GK: Allow the player to switch aspect ratio
+    { -1,"",0 },
 	{2,"M_MSENS",	M_ChangeSensitivity,'m'},
 	{-1,"",0},
 	{1,"M_SVOL",	M_Sound,'s'}
@@ -292,6 +293,55 @@ menu_t  temp_SaveDef = {
 		0
 };
 memcpy( &::g->SaveDef, &temp_SaveDef, sizeof(temp_SaveDef) );
+//Gk: Begin
+menuitem_t temp_MasterMenu[2] = {
+	{ 1,"", M_MasterSelect,'a' },
+    { 1,"", M_MasterSelect,'d' }
+};
+memcpy(::g->MasterMenu, temp_MasterMenu, sizeof(temp_MasterMenu));
+menu_t  temp_MasterDef = {
+	master_end,
+	&::g->ExpDef,
+	::g->MasterMenu,
+	M_DrawMaster,
+	80,54,
+	0
+};
+memcpy(&::g->MasterDef, &temp_MasterDef, sizeof(temp_MasterDef));
+menuitem_t temp_DoomitMenu[10] = {
+	{ 1,"", M_Doom_IT,'1' },
+{ 1,"", M_Doom_IT,'2' },
+{ 1,"", M_Doom_IT,'3' },
+{ 1,"", M_Doom_IT,'4' },
+{ 1,"", M_Doom_IT,'5' },
+{ 1,"", M_Doom_IT,'6' },
+{ 1,"", M_Doom_IT,'7' },
+{ 1,"", M_Doom_IT,'8' },
+{ 1,"", M_Doom_IT,'9' },
+{ 1,"", M_Doom_IT,'10' }/*,
+{ 1,"", M_Doom_IT,'11' },
+{ 1,"", M_Doom_IT,'12' },
+{ 1,"", M_Doom_IT,'13' },
+{ 1,"", M_Doom_IT,'14' },
+{ 1,"", M_Doom_IT,'15' },
+{ 1,"", M_Doom_IT,'16' },
+{ 1,"", M_Doom_IT,'17' },
+{ 1,"", M_Doom_IT,'18' },
+{ 1,"", M_Doom_IT,'19' },
+{ 1,"", M_Doom_IT,'20' }*/
+
+};
+memcpy(::g->DOOMIT, temp_DoomitMenu, sizeof(temp_DoomitMenu));
+menu_t  temp_DoomitDef = {
+	doomit_end/2,
+	&::g->MasterDef,
+	::g->DOOMIT,
+	M_DrawDoomIT,
+	100,30,
+	0
+};
+memcpy(&::g->DOOMITDef, &temp_DoomitDef, sizeof(temp_DoomitDef));
+//Gk:End
 //GK: Re-enable the Read This! option
 menuitem_t temp_ReadMenu1[1] = {
 	{1,"", M_ReadThis2,'0'}
