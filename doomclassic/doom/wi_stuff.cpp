@@ -1538,7 +1538,7 @@ void WI_loadData(void)
 	{
 		::g->NUMCMAPS = 32;
 		::g->lnames = (patch_t **) DoomLib::Z_Malloc(sizeof(patch_t*) * ::g->NUMCMAPS, PU_LEVEL_SHARED, 0);
-		for (i=0 ; i < ::g->NUMCMAPS ; i++)
+		for (i=0 ; i < ::g->NUMCMAPS+1 ; i++) //GK: The stupidiest game crashing bug in the world
 		{								
 			sprintf(name, "CWILV%2.2d", i);
 			::g->lnames[i] = (patch_t*)W_CacheLumpName(name, PU_LEVEL_SHARED);
@@ -1754,7 +1754,7 @@ void WI_initVariables(wbstartstruct_t* wbstartstruct)
 
 void WI_Start(wbstartstruct_t* wbstartstruct)
 {
-
+	
     WI_initVariables(wbstartstruct);
     WI_loadData();
 

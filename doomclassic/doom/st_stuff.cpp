@@ -671,7 +671,7 @@ ST_Responder (event_t* ev)
 					if (map > 21)
 						return false;
 				}
-				if (map > 32) {
+				if (map > 33) {
 					return false;
 				}
 			}
@@ -1562,7 +1562,7 @@ CONSOLE_COMMAND_SHIP( idclev, "warp to next level", 0 ) {
 			return;
 		}
 
-		if( map > 32 ) {
+		if( map > 33 ) {
 			map = 1;
 		}else
 		if (::g->gamemission == pack_nerve && map > 9) {

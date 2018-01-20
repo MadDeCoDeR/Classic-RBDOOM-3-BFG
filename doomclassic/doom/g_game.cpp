@@ -529,7 +529,7 @@ void G_DoLoadLevel ()
 	int             i; 
 
 	M_ClearRandom();
-
+	
 	// Set the sky map.
 	// First thing, we have a dummy sky texture name,
 	//  a flat. The data is in the WAD only because
@@ -1213,6 +1213,7 @@ void G_DoCompleted (void)
 			if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut ) {
 				switch(::g->gamemap)
 				{
+				    case 2:  if (::g->gamemission == doom2) { ::g->wminfo.next = 32; }break; //GK: Enable the access to the xbox exclusive secret level
 					case 15: ::g->wminfo.next = 30; break;
 					case 31: ::g->wminfo.next = 31; break;
 				}
@@ -1231,6 +1232,7 @@ void G_DoCompleted (void)
 				{
 					case 31:
 					case 32: ::g->wminfo.next = 15; break;
+					case 33: ::g->wminfo.next = 2; break;
 					default: ::g->wminfo.next = ::g->gamemap;
 				}
 			}
