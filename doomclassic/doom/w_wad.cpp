@@ -56,6 +56,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "d_deh.h"
 
 #include "libs\zlib\minizip\unzip.h"
+#include "f_finale.h"
 
 #define READ_SIZE 8192
 #define MAX_FILENAME 512
@@ -470,6 +471,17 @@ void W_FreeWadFiles() {
 	}
 	::g->numWadFiles = 0;
 	extraWad = 0;
+	//GK: Game crashing bugfix (still need work)
+	if (::g->gamemode == commercial) {
+		resetValues();
+		resetWeapons();
+		ResetAmmo();
+		resetMapNames();
+		resetEndings();
+		resetTexts();
+		resetSprnames();
+	}
+	//GK End
 }
 
 
@@ -922,26 +934,7 @@ void uncompressMaster() {
 }
 //GK:Open all the wads and copy and rename their contents into one WAD file
 void MasterList() {
-	char* masterlist[] = { "ATTACK.WAD",
-		"CANYON.WAD",
-		"CATWALK.WAD",
-		"COMBINE.WAD",
-		"FISTULA.WAD",
-		"GARRISON.WAD",
-		"MANOR.WAD",
-		"PARADOX.WAD",
-		"SUBSPACE.WAD",
-		"SUBTERRA.WAD",
-		"TTRAP.WAD",
-		"VIRGIL.WAD",
-		"MINOS.WAD",
-		"BLOODSEA.WAD",
-		"MEPHISTO.WAD",
-		"NESSUS.WAD",
-		"GERYON.WAD",
-		"VESPERAS.WAD",
-		"BLACKTWR.WAD",
-		"TEETH.WAD" };
+	
 	wadinfo_t		header;
 	lumpinfo_t*		lump ;
 	lumpinfo_t*		lumpnfo = NULL;

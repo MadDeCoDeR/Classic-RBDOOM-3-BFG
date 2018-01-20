@@ -840,31 +840,31 @@ void R_DrawViewBorder (void)
 	int		ofs;
 	int		i; 
 
-	if (::g->scaledviewwidth == SCREENWIDTH) 
+	if (::g->scaledviewwidth == SCREENWIDTH)
 		return; 
 
 	top = ((SCREENHEIGHT-SBARHEIGHT)-::g->viewheight)/2; 
-	side = (SCREENWIDTH-::g->scaledviewwidth)/2; 
+	side = (SCREENWIDTH-::g->scaledviewwidth)/2;
 
 	// copy top and one line of left side 
-	R_VideoErase (0, top*SCREENWIDTH+side); 
+	R_VideoErase (0, top*SCREENWIDTH+side);
 
 	// copy one line of right side and bottom 
-	ofs = (::g->viewheight+top)*SCREENWIDTH-side; 
-	R_VideoErase (ofs, top*SCREENWIDTH+side); 
+	ofs = (::g->viewheight+top)*SCREENWIDTH-side;
+	R_VideoErase (ofs, top*SCREENWIDTH+side);
 
 	// copy ::g->sides using wraparound 
-	ofs = top*SCREENWIDTH + SCREENWIDTH-side; 
+	ofs = top*SCREENWIDTH + SCREENWIDTH-side;
 	side <<= 1;
 
 	for (i=1 ; i < ::g->viewheight ; i++) 
 	{ 
 		R_VideoErase (ofs, side); 
-		ofs += SCREENWIDTH; 
+		ofs += SCREENWIDTH;
 	} 
 
 	// ? 
-	V_MarkRect (0,0,SCREENWIDTH, SCREENHEIGHT-SBARHEIGHT); 
+	V_MarkRect (0,0,SCREENWIDTH, SCREENHEIGHT-SBARHEIGHT);
 } 
 
 

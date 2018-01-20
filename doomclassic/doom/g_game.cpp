@@ -1442,11 +1442,45 @@ qboolean G_CheckSave(char* name) {
 						}
 
 						if (!strcmp(filelist[mf].c_str(), fname)) {
-							ok = true;
-							break;
+							if (DoomLib::expansionSelected == ::g->gamemission) {
+								ok = true;
+								break;
+							}
+							else {
+								ok = false;
+								break;
+							}
 						}
 						else {
 							ok = false;
+							for (int i = 0; i < 5; i++) {
+								for (int j = 0; j < 20; j++) {
+									if (i+1 != ::g->gamemission) {
+										if (DoomLib::otherfiles[i][j] != NULL) {
+											if (!strcmp(filelist[mf].c_str(), DoomLib::otherfiles[i][j])) {
+												ok = true;
+												break;
+											}
+											else {
+												ok = false;
+											}
+										}
+										else {
+											if (j == 0) {
+												ok = false;
+											}
+											break;
+										}
+									}
+									else {
+										break;
+									}
+								}
+								if (ok)
+									break;
+							}
+							
+							//ok = false;
 						}
 
 
@@ -1544,11 +1578,45 @@ qboolean G_DoLoadGame ()
 						}
 
 						if (!strcmp(filelist[mf].c_str(), fname)) {
-							ok = true;
-							break;
+							if (DoomLib::expansionSelected == ::g->gamemission) {
+								ok = true;
+								break;
+							}
+							else {
+								ok = false;
+								break;
+							}
 						}
 						else {
 							ok = false;
+							for (int i = 0; i < 5; i++) {
+								for (int j = 0; j < 20; j++) {
+									if (i+1 != ::g->gamemission) {
+										if (DoomLib::otherfiles[i][j] != NULL) {
+											if (!strcmp(filelist[mf].c_str(), DoomLib::otherfiles[i][j])) {
+												ok = true;
+												break;
+											}
+											else {
+												ok = false;
+											}
+										}
+										else {
+											if (j == 0) {
+												ok = false;
+											}
+											break;
+										}
+									}
+									else {
+										break;
+									}
+								}
+								if (ok)
+									break;
+							}
+							
+								//ok = false;
 						}
 
 
