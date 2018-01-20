@@ -22,6 +22,8 @@ _______________________________
 -Added a reward if you finish all the Master Levels in "Hurt me Plenty" or higher difficulty (including the secret level)
 
 -Fixed secret not triggering on Master Levels map "nessus" (Works only on the expansion)
+
+-Fixed "idclev" cheat on console crashing the game when entering wrong level number in "No Rest For The Living" and "Master Levels" Expansions
 _______________________________________
 
 21 December 2017 - Classic RBDOOM-3-BFG 1.1.5 Update
