@@ -4,6 +4,14 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+21 January 2018 - Classic RBDOOM-3-BFG 1.1.666 hotfix
+_______________________________
+
+[classicdoom]
+
+-Fixed Critical issue that prevent to finish ANY level while playing Final DOOM or using the original DOOM II IWAD
+_______________________________________
+
 20 January 2018 - Classic RBDOOM-3-BFG 1.1.666
 _______________________________
 
