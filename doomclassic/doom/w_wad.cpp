@@ -150,7 +150,7 @@ void W_AddFile ( const char *filename)
     int			startlump;
     std::vector<filelump_t>	fileinfo( 1 );
 
-	
+	::g->isbfg = true;
     
     // open the file and add to directory
     if ( (handle = fileSystem->OpenFileRead(filename)) == 0)
@@ -419,6 +419,10 @@ void W_AddFile ( const char *filename)
 		}
 		//GK end
 	}
+	int point = W_GetNumForName("CWILV32");
+	if (point == -1) {
+		::g->isbfg = false;
+	}
 }
 
 
@@ -633,7 +637,7 @@ int W_GetNumForName ( const char* name)
 
     i = W_CheckNumForName ( name);
     //GK begin
-	if (i == -1 && idStr::Icmp("TITLEPIC", name) && idStr::Icmp("HELP2", name) && idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name)) //TITLEPIC might not exist
+	if (i == -1 && idStr::Icmp("TITLEPIC", name) && idStr::Icmp("HELP2", name) && idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name) && idStr::Icmp("CWILV32",name)) //TITLEPIC might not exist
       I_Error ("W_GetNumForName: %s not found!", name);
 	//GK End
       

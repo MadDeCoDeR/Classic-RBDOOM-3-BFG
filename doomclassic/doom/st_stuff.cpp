@@ -673,6 +673,8 @@ ST_Responder (event_t* ev)
 				}
 				if (map > 33) {
 					return false;
+				}else if (!::g->isbfg && map > 32) {
+					return false;
 				}
 			}
 
@@ -1569,6 +1571,9 @@ CONSOLE_COMMAND_SHIP( idclev, "warp to next level", 0 ) {
 			map = 1;
 		}
 		else if(::g->gamemission == pack_master && map > 21){
+			map = 1;
+		}
+		else if (!::g->isbfg && map > 32) {
 			map = 1;
 		}
 	}

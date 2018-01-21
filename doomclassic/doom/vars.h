@@ -916,7 +916,7 @@ patch_t* wistuff_bp[MAXPLAYERS];
 
  // Name graphics of each level (centered)
 patch_t** lnames;
-
+bool isbfg;
 const char*		spritename;
 
 
