@@ -874,6 +874,7 @@ void M_Episode(int choice)
 
 void M_Expansion(int choice)
 {
+	DoomLib::use_doomit = false;
 	::g->exp = choice;
 	bool procced = true;
 	if( choice == 0 ) {
