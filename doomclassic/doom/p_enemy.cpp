@@ -1594,10 +1594,14 @@ void A_BossDeath (mobj_t* mo, void * )
 		
     if ( ::g->gamemode == commercial)
     {
-	if (::g->gamemap != 7 && ( ::g->gamemission == pack_master && ::g->gamemap != 15 && ::g->gamemap != 14 && ::g->gamemap != 16)) // GK: Fix for Master Levels
-	    return;
-	if (::g->gamemap == 33)
-		return;
+		if (::g->gamemission == pack_master)
+			if (::g->gamemap != 14 && ::g->gamemap != 15 && ::g->gamemap != 16)// GK: Fix for Master Levels
+				return;
+
+		if (::g->gamemission != pack_master)
+			if (::g->gamemap != 7) 
+				return;
+
 	idLib::Printf("%d %d\n", ::g->gamemission, ::g->gamemap);
 	if ((mo->type != MT_FATSO)
 	    && (mo->type != MT_BABY))
