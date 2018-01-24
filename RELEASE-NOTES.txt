@@ -4,6 +4,16 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+24 January 2018 - Classic RBDOOM-3-BFG 1.1.666.2
+_______________________________
+
+[classicdoom]
+
+-Fix a bug with miniboss logic triggering in wrong maps
+
+-Fix a bug with Master Levels "special" menu
+_______________________________________
+
 21 January 2018 - Classic RBDOOM-3-BFG 1.1.666 hotfix
 _______________________________
 
