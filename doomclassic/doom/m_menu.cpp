@@ -77,6 +77,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "info.h"
 #include "d_items.h"
 #include "f_finale.h"
+#include "g_game.h"
 
 extern idCVar in_useJoystick;
 
@@ -363,6 +364,7 @@ void M_LoadSelect(int choice)
 	if( ::g->gamemode != commercial ) {
 		G_LoadGame ( ::g->savegamepaths[ choice ] );
 	} else {
+		DoomLib::use_doomit = false;
 		strcpy( DoomLib::loadGamePath, ::g->savegamepaths[ choice ] );
 		if (G_CheckSave(DoomLib::loadGamePath)) {
 			DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
@@ -851,6 +853,10 @@ void M_ChooseSkill(int choice)
 		G_DeferedInitNew((skill_t)choice,::g->epi+1, startLevel);
 		M_ClearMenus ();
 	} else {
+		if (DoomLib::idealExpansion == pack_master && state == 0)
+			DoomLib::use_doomit = false;
+		if (DoomLib::idealExpansion != pack_master)
+			DoomLib::use_doomit = false;
 		DoomLib::SetCurrentExpansion( DoomLib::idealExpansion );
 		DoomLib::skipToNew = true;
 		DoomLib::chosenSkill = choice;
@@ -874,7 +880,6 @@ void M_Episode(int choice)
 
 void M_Expansion(int choice)
 {
-	DoomLib::use_doomit = false;
 	::g->exp = choice;
 	bool procced = true;
 	if( choice == 0 ) {
@@ -920,20 +925,26 @@ void M_Expansion(int choice)
 			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
 		}
 	}
-	if (!DoomLib::use_doomit) {
 		if (procced) {
-			M_SetupNextMenu(&::g->NewDef);
+			if (choice == 4 && !DoomLib::use_doomit) {
+				M_SetupNextMenu(&::g->NewDef);
+			}
+			else if (choice != 4) {
+				M_SetupNextMenu(&::g->NewDef);
+			}
+			else if (choice == 4 && DoomLib::use_doomit && doomit.GetInteger() == 0) {
+				M_SetupNextMenu(&::g->NewDef);
+			}
 		}
 		else {
 			M_SetupNextMenu(&::g->MainDef);
 		}
-	}
 }
 
 void M_MasterSelect(int choice) {
 	if (choice == 0) {
 		if (state == 0) {
-			DoomLib::use_doomit = false;
+			//DoomLib::use_doomit = false;
 			M_SetupNextMenu(&::g->NewDef);
 		}
 		else {
@@ -972,7 +983,7 @@ void M_Doom_IT(int choice) {
 	else {
 		DoomLib::selection = choice + 11;
 	}
-	state = 0;
+	//state = 0;
 	M_SetupNextMenu(&::g->NewDef);
 }
 
@@ -1179,6 +1190,7 @@ void M_CancelExit(int choice) {
 
 void M_GameSelection(int choice)
 {
+	idLib::Printf("Reseting Dehacked Patches...\n");
 	resetValues();
 	resetWeapons();
 	ResetAmmo();
@@ -1186,6 +1198,8 @@ void M_GameSelection(int choice)
 	resetEndings();
 	resetTexts();
 	resetSprnames();
+	ResetPars();
+	idLib::Printf("Reset Completed!!\n");
 	//ResetSfx(); //GK: More Headache than it's worth
 	//CleanUncompFiles(); //GK: A good practice would have been to delete the files after
 	//we change the game but W_Shutdown which must be called to free the files causes bugs and crashes
