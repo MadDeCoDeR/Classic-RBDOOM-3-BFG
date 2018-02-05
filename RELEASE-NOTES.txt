@@ -33,6 +33,18 @@ _______________________________
 
 -Optimized the generation of MASTERLEVELS.WAD
 
+[DOOM3BFG]
+
+-Improve Intro audio
+
+[Launcher]
+
+-Added default values for all the drop down options
+
+-Added support for Extended Dehacked Files (.bex)
+
+-Added level 33 on DOOM 2's warp option
+
 _______________________________________
 
 24 January 2018 - Classic RBDOOM-3-BFG 1.1.666.2
