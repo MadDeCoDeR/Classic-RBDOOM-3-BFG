@@ -492,6 +492,7 @@ EV_VerticalDoor
 	if ((::g->gamemission == pack_master && ::g->gamemap == 16) && door->sector->special == 9) {
 		player->secretcount++;
 		//GK send message when secret found
+		S_StartSound(player->mo,sfx_getpow);
 		::g->plyr->message = GOTSECRET;
 		door->sector->special = 0;
 	}

@@ -1033,6 +1033,7 @@ void P_PlayerInSpecialSector (player_t* player)
 		player->secretcount++;
 		//GK send message when secret found
 		::g->plyr->message = GOTSECRET;
+		S_StartSound(player->mo, sfx_getpow);
 		sector->special = 0;
 
 
