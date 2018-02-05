@@ -541,13 +541,49 @@ void G_DoLoadLevel ()
 	// depending on the current episode, and the game version.
 	if ( ::g->gamemode == commercial )
 	{
-		::g->skytexture = R_TextureNumForName ("SKY3");
+		if (::g->gamemission != pack_master) {
+			::g->skytexture = R_TextureNumForName("SKY3");
 
-		if (::g->gamemap < 12) {
-			::g->skytexture = R_TextureNumForName ("SKY1");
+			if (::g->gamemap < 12) {
+				::g->skytexture = R_TextureNumForName("SKY1");
+			}
+			else if (::g->gamemap < 21) {
+				::g->skytexture = R_TextureNumForName("SKY2");
+			}
 		}
-		else if (::g->gamemap < 21) {
-			::g->skytexture = R_TextureNumForName ("SKY2");
+		else {
+			if (::g->gamemap > 18) {
+				::g->skytexture = R_TextureNumForName("SKY3");
+			}
+			else {
+				::g->skytexture = R_TextureNumForName("SKY1");
+				switch (::g->gamemap) {
+				case 4:
+					::g->skytexture = R_TextureNumForName("STAR1");
+					break;
+				case 7:
+					::g->skytexture = R_TextureNumForName("STAR2");
+					break;
+				case 11:
+					::g->skytexture = R_TextureNumForName("STAR2");
+					break;
+				case 12:
+					::g->skytexture = R_TextureNumForName("STAR3");
+					break;
+				case 13:
+					::g->skytexture = R_TextureNumForName("STAR3");
+					break;
+				case 16:
+					::g->skytexture = R_TextureNumForName("STAR3");
+					break;
+				case 17:
+					::g->skytexture = R_TextureNumForName("STAR3");
+					break;
+				case 18:
+					::g->skytexture = R_TextureNumForName("STAR3");
+					break;
+				}
+			}
 		}
 	}
 
@@ -1122,7 +1158,7 @@ void G_ScreenShot (void)
 
 // DHM - Nerve :: Added episode 4 par times
 // DOOM Par Times
-const int pars[5][10] = 
+/*const*/ int pars[5][10] = 
 { 
 	{0}, 
 	{0,30,75,120,90,165,180,180,30,165},
@@ -1132,13 +1168,34 @@ const int pars[5][10] =
 }; 
 
 // DOOM II Par Times
-const int cpars[32] =
+/*const*/ int cpars[33] =
 {
 	30,90,120,120,90,150,120,120,270,90,		//  1-10
 	210,150,150,150,210,150,420,150,210,150,	// 11-20
 	240,150,180,150,150,300,330,420,300,180,	// 21-30
-	120,30										// 31-32
+	120,30,240									// 31-33
 };
+
+void ResetPars(void) {
+	 int tpars[5][10] =
+	{
+		{ 0 },
+	{ 0,30,75,120,90,165,180,180,30,165 },
+	{ 0,90,90,90,120,90,360,240,30,170 },
+	{ 0,90,45,90,150,90,90,165,30,135 },
+	{ 0,165,255,135,150,180,390,135,360,180 }
+	};
+	memcpy(pars, tpars, sizeof(tpars));
+
+	int tcpars[33] =
+	{
+		30,90,120,120,90,150,120,120,270,90,		//  1-10
+		210,150,150,150,210,150,420,150,210,150,	// 11-20
+		240,150,180,150,150,300,330,420,300,180,	// 21-30
+		120,30,240									// 31-33
+	};
+	memcpy(cpars, tcpars, sizeof(tcpars));
+}
 
 
 //
@@ -1213,7 +1270,7 @@ void G_DoCompleted (void)
 			if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut ) {
 				switch(::g->gamemap)
 				{
-				    case 2:  if (::g->gamemission == doom2) { ::g->wminfo.next = 32; }break; //GK: Enable the access to the xbox exclusive secret level
+				    case 2:  if (::g->isbfg) { ::g->wminfo.next = 32; }break; //GK: Enable the access to the xbox exclusive secret level
 					case 15: ::g->wminfo.next = 30; break;
 					case 31: ::g->wminfo.next = 31; break;
 				}
@@ -1349,7 +1406,20 @@ void G_WorldDone (void)
 			}
 		}
 		else if ( ::g->gamemission == pack_master ) {
-			if ( (::g->gamemap == 20 && !::g->secretexit) || ::g->gamemap == 21 ) {
+			
+			if (DoomLib::use_doomit) {
+				if (!::g->secretexit) {
+					
+					//::g->currentMenu->lastOn = ::g->itemOn;
+					//M_ClearMenus();
+					DoomLib::SetCurrentExpansion(doom2);
+					DoomLib::use_doomit = false;
+					D_StartTitle();
+					return;
+				}
+				
+			}
+			if ((::g->gamemap == 20 && !::g->secretexit) || ::g->gamemap == 21) {
 				F_StartFinale();
 			}
 		}

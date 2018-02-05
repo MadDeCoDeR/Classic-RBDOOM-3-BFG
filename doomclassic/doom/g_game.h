@@ -81,6 +81,10 @@ void G_ScreenShot (void);
 #define MAXDEMOSIZE		512 * 1024
 #define SAVEGAMESIZE	256 * 1024 + MAXDEMOSIZE
 
+extern int pars[5][10];
+extern int cpars[33];
+
+void ResetPars(void);
 
 #endif
 
