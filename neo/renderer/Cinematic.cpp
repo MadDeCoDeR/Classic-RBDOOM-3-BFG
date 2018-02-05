@@ -566,11 +566,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		voiceFormat.wFormatTag = WAVE_FORMAT_EXTENSIBLE; //Use extensible wave format in order to handle properly the audio
 		voiceFormat.nChannels = dec_ctx2->channels; //fixed
 		voiceFormat.nSamplesPerSec = dec_ctx2->sample_rate; //fixed
-#ifdef _DEBUG
 		voiceFormat.wBitsPerSample = 32; //fixed
-#else
-		voiceFormat.wBitsPerSample = 32; //fixed
-#endif
 		voiceFormat.nBlockAlign = voiceFormat.nChannels * voiceFormat.wBitsPerSample/8; //fixed
 		voiceFormat.nAvgBytesPerSec = voiceFormat.nSamplesPerSec * voiceFormat.nBlockAlign; //fixed
 		voiceFormat.cbSize = 22; //fixed
