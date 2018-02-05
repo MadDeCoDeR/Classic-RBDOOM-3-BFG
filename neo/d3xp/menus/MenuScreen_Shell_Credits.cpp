@@ -65,6 +65,11 @@ void idMenuScreen_Shell_Credits::SetupCreditList()
 	
 	
 	creditList.Clear();
+	creditList.Append(creditInfo_t(3, "CLASSIC RBDOOM 3 BFG EDITION"));
+	creditList.Append(creditInfo_t());
+	creditList.Append(creditInfo_t(1, "Lead Programmer"));
+	creditList.Append(creditInfo_t(0, "George Kalampokis - Doomclassic updates,Bink audio support"));
+	creditList.Append(creditInfo_t());
 	creditList.Append( creditInfo_t( 3,	"RBDOOM 3 BFG EDITION"	) );
 	creditList.Append( creditInfo_t() );
 	creditList.Append( creditInfo_t( 1,	"Lead Programmer"	) );

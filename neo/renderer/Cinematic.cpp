@@ -569,14 +569,14 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 #ifdef _DEBUG
 		voiceFormat.wBitsPerSample = 32; //fixed
 #else
-		voiceFormat.wBitsPerSample = 38; //fixed
+		voiceFormat.wBitsPerSample = 32; //fixed
 #endif
 		voiceFormat.nBlockAlign = voiceFormat.nChannels * voiceFormat.wBitsPerSample/8; //fixed
 		voiceFormat.nAvgBytesPerSec = voiceFormat.nSamplesPerSec * voiceFormat.nBlockAlign; //fixed
 		voiceFormat.cbSize = 22; //fixed
 		exvoice.Format = voiceFormat; //fixed
 		exvoice.dwChannelMask = SPEAKER_FRONT_CENTER; //The audio support only mono sound (don't try to change this)
-		exvoice.Samples.wValidBitsPerSample = 0; //Must be less than 32(better 0 for best soud results)
+		exvoice.Samples.wValidBitsPerSample = 32; //Must be less than 32(better 0 for best soud results)
 		exvoice.Samples.wReserved = 0;
 #ifdef _DEBUG
 		exvoice.Samples.wSamplesPerBlock = 32;//voiceFormat.nSamplesPerSec; //same as sample rate

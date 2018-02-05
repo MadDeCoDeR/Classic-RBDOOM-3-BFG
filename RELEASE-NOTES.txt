@@ -4,6 +4,37 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+05 February 2018 - Classic RBDOOM-3-BFG 1.1.7
+_______________________________
+
+[classicdoom]
+
+-Prevent to get Master Levels "reward" if player is cheating
+
+-Fixed Master Levels Sky Textures
+
+-Added Par time for the level "Betray" (4mins)
+
+-Added the remaining BEX editors (PARS and STRINGS)
+
+-Optimizations and clean ups for the deh editor
+
+-Added Classic Parameter value checking (no more crashing if you put wrong value on a parameter)
+
+-Further improvmets over the Master Levels "special" menu
+
+-Added a sound effect every time you finding a secret
+
+-Fixed the "Wall wiggle" bug
+
+-Fixed wrong Entering Level message on intermissions of No Rest For The Living and Master Levels
+
+-Added support for Extented Dehacked Files (.bex)
+
+-Optimized the generation of MASTERLEVELS.WAD
+
+_______________________________________
+
 24 January 2018 - Classic RBDOOM-3-BFG 1.1.666.2
 _______________________________
 

@@ -242,7 +242,7 @@ typedef enum
 	wad19,
 	wad20,
 	doomit_end
-};
+}doom_it_e;
 // m_menu.structs end // 
 //  m_misc.structs begin // 
 struct default_t
