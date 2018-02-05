@@ -680,6 +680,9 @@ void D_DoomMain(void)
 					DoomLib::SetIdealExpansion(doom2);
 				}
 				break;
+			default:
+				DoomLib::SetIdealExpansion(doom2);
+				break;
 			}
 			DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
 			idLib::Printf("Loading %d\n", DoomLib::idealExpansion);
@@ -723,6 +726,9 @@ void D_DoomMain(void)
 				if (!idStr::Icmp("ex", ::g->myargv[p])) {
 					p++;
 					arg = ::g->myargv[p];
+					if (atoi(arg) <= 0 || atoi(arg) > 5) {
+						arg = "1";
+					}
 					if (atoi(arg) == ::g->gamemission) {
 						p++;
 						D_AddFile(::g->myargv[p]);
@@ -785,6 +791,8 @@ void D_DoomMain(void)
 					if (!idStr::Icmp("ex", ::g->myargv[np])) {
 						np++;
 						arg = ::g->myargv[np];
+						if (atoi(arg) <= 0 || atoi(arg) > 5)
+							arg = "1";
 						if (atoi(arg) == ::g->gamemission) {
 							np++;
 							D_AddFile(::g->myargv[np]);
@@ -876,6 +884,8 @@ void D_DoomMain(void)
 		if (p && p < ::g->myargc - 1)
 		{
 			::g->startskill = (skill_t)(::g->myargv[p + 1][0] - '1');
+			if (::g->startskill < sk_baby || ::g->startskill > sk_nightmare)
+				::g->startskill = sk_medium;
 			::g->autostart = true;
 		}
 
@@ -883,6 +893,8 @@ void D_DoomMain(void)
 		if (p && p < ::g->myargc - 1)
 		{
 			::g->startepisode = ::g->myargv[p + 1][0] - '0';
+			if (::g->startepisode <= 0 || ::g->startepisode > 4)
+				::g->startepisode = 1;
 			::g->startmap = 1;
 			::g->autostart = true;
 		}
@@ -911,12 +923,48 @@ void D_DoomMain(void)
 		p = M_CheckParm("-warp");
 		if (p && p < ::g->myargc - 1)
 		{
-			if (::g->gamemode == commercial)
-				::g->startmap = atoi(::g->myargv[p + 1]);
+			int level = atoi(::g->myargv[p + 1]);
+			int episode = ::g->myargv[p + 1][0] - '0';
+			int map = 1;
+			if (strlen(::g->myargv[p + 1]) > 1) {
+				map = ::g->myargv[p + 1][1] - '0';
+			}
+			else {
+				int cp = p + 2;
+				if (cp < ::g->myargc) {
+					map = ::g->myargv[p + 2][0] - '0';
+				}
+			}
+			
+			if (::g->gamemode == commercial) {
+				::g->startmap = level;
+				if (::g->gamemission == pack_master) {
+					DoomLib::use_doomit = true;
+					if (level <= 0 || level > 21) {
+						::g->startmap = 1;
+					}
+				}else
+				if (::g->gamemission == pack_nerve) {
+					if (level <= 0 || level > 9) {
+						::g->startmap = 1;
+					}
+				}
+				else
+				{
+						if (level <= 0 || level > 33) {
+							::g->startmap = 1;
+						}
+					
+				}
+			}
 			else
 			{
-				::g->startepisode = ::g->myargv[p + 1][0] - '0';
-				::g->startmap = ::g->myargv[p + 2][0] - '0';
+					::g->startepisode = episode;
+					if (episode <= 0 || episode> 4)
+						::g->startepisode = 1;
+					::g->startmap = map;
+					if (map <= 0 || map > 9)
+						::g->startmap = 1;
 			}
 			::g->autostart = true;
 		}
@@ -1017,7 +1065,9 @@ void D_DoomMain(void)
 	I_Printf ("D_CheckNetGame: Checking network game status.\n");
 	D_CheckNetGame ();
 	//GK: Check if there is either a folder or a zip that is called "master" and create the MASTERLEVELS.wad
-	MakeMaster_Wad();
+	if (::g->gamemode == commercial)
+	    MakeMaster_Wad();
+
 	if (::g->gamemode == commercial && !initonce) {
 		initonce =true;
 	}
