@@ -273,7 +273,9 @@ void F_StartFinale (void)
 						finaleflat = "SLIME16";
 						finaletext = c9Text;
 						if (::g->gameskill >= 2) { //GK: No reward for "Cry babies"
-							doomit.SetInteger(1); // GK: Reward the player for finishing all the Master Levels by enabling the doom-it level selction for master levels
+							if (com_allowConsole.GetInteger() == 0 && !::g->classiccheats) {
+								doomit.SetInteger(1); // GK: Reward the player for finishing all the Master Levels by enabling the doom-it level selction for master levels
+							}
 						}
 						break;
 				}
