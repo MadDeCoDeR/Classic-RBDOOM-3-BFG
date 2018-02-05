@@ -678,6 +678,37 @@ void WI_drawShowNextLoc(void)
 	    WI_drawOnLnode(::g->wbs->next, ::g->yah); 
     }
 
+	if (::g->gamemode == commercial) {
+		if (::g->gamemission == pack_nerve ) {
+			if (::g->wbs->next != 8 || ::g->secretexit) {
+				WI_drawEL();
+				return;
+			}
+			else {
+				return;
+			}
+		}
+		if (::g->gamemission == pack_master) {
+			if (!DoomLib::use_doomit) {
+				if ((::g->wbs->next != 20 && ::g->wbs->next != 21) || ::g->secretexit) {
+					WI_drawEL();
+					return;
+				}
+				else {
+					return;
+				}
+			}
+			else {
+				if (::g->secretexit) {
+					WI_drawEL();
+					return;
+				}
+				else {
+					return;
+				}
+			}
+		}
+	}
     // draws which level you are entering..
     if ( (::g->gamemode != commercial)
 	 || ::g->wbs->next != 30)
