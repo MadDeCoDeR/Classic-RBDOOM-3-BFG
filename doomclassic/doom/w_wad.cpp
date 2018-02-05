@@ -57,6 +57,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "libs\zlib\minizip\unzip.h"
 #include "f_finale.h"
+#include "g_game.h"
 
 #define READ_SIZE 8192
 #define MAX_FILENAME 512
@@ -396,7 +397,7 @@ void W_AddFile ( const char *filename)
 					lump_p->name[8] = '\0';
 					lump_p->null = false;
 					//GK: Check if it is a .deh file
-					if ((!idStr::Cmpn(filelumpPointer->name, "DEHACKED", 8)) || (!idStr::Icmp(filename + strlen(filename) - 3, "deh")) ) {
+					if ((!idStr::Cmpn(filelumpPointer->name, "DEHACKED", 8)) || (!idStr::Icmp(filename + strlen(filename) - 3, "deh")) || (!idStr::Icmp(filename + strlen(filename) - 3, "bex"))) {
 						//idLib::Printf("Adding DeHackeD file %s\n",filelumpPointer->name);
 						loaddeh(i);
 					}
@@ -419,8 +420,13 @@ void W_AddFile ( const char *filename)
 		}
 		//GK end
 	}
-	int point = W_GetNumForName("CWILV32");
+	int point = W_GetNumForName("MAP33");
 	if (point == -1) {
+		if (::g->autostart) {
+			if (::g->startmap > 32) {
+				::g->startmap = 1;
+			}
+		}
 		::g->isbfg = false;
 	}
 }
@@ -477,6 +483,7 @@ void W_FreeWadFiles() {
 	extraWad = 0;
 	//GK: Game crashing bugfix (still need work)
 	if (::g->gamemode == commercial) {
+		idLib::Printf("Reseting Dehacked Patches...\n");
 		resetValues();
 		resetWeapons();
 		ResetAmmo();
@@ -484,6 +491,8 @@ void W_FreeWadFiles() {
 		resetEndings();
 		resetTexts();
 		resetSprnames();
+		ResetPars();
+		idLib::Printf("Reset Completed!!\n");
 	}
 	//GK End
 }
@@ -637,7 +646,7 @@ int W_GetNumForName ( const char* name)
 
     i = W_CheckNumForName ( name);
     //GK begin
-	if (i == -1 && idStr::Icmp("TITLEPIC", name) && idStr::Icmp("HELP2", name) && idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name) && idStr::Icmp("CWILV32",name)) //TITLEPIC might not exist
+	if (i == -1 && idStr::Icmp("TITLEPIC", name) && idStr::Icmp("HELP2", name) && idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name) && idStr::Icmp("MAP33",name) && idStr::Icmp("CWILV32", name)) //TITLEPIC might not exist
       I_Error ("W_GetNumForName: %s not found!", name);
 	//GK End
       
@@ -947,8 +956,11 @@ void MasterList() {
 	int			startlump;
 	int nlps =0;
 	int cl = 0;
+	int remlmp = 0;
+	bool pushit = true;
 	std::vector<filelump_t>	fileinfo(1);
 	int count = 1;
+	int count2 = 1;
 	char* filename = new char[MAX_FILENAME];
 	char* dir = "base\\wads\\master\\*.wad";
 	WIN32_FIND_DATA ffd;
@@ -1012,11 +1024,55 @@ void MasterList() {
 			
 			for (int i = startlump; i < nlps; i++, lump++, filelumpPointer++)
 			{
+				    lump->null = false;
 					lump->handle = handle;
 					lump->position = LONG(filelumpPointer->filepos);
 					lump->size = LONG(filelumpPointer->size);
-					fofs.push_back(offs);
-					offs += lump->size;
+					if (pushit)
+					    fofs.push_back(offs);
+
+					if (idStr::Cmpn(filelumpPointer->name, "TEXTURE1", 8) && idStr::Cmpn(filelumpPointer->name, "PNAMES", 6) && idStr::Cmpn(filelumpPointer->name, "PP_START", 8) && idStr::Cmpn(filelumpPointer->name, "PP_END", 7))
+					{
+						if (count2 >= 4) 
+						{
+							if (idStr::Cmpn(filelumpPointer->name, "RSKY1", 5)) 
+							{
+								offs += lump->size;
+								pushit = true;
+							}
+							else
+							{
+								lump->null = true;
+								remlmp++;
+								pushit = false;
+							}
+						}
+						else if (count2 > 2) 
+						{
+							if (idStr::Cmpn(filelumpPointer->name, "STARS", 5)) 
+							{
+								offs += lump->size;
+								pushit = true;
+							}
+							else
+							{
+								lump->null = true;
+								remlmp++;
+								pushit = false;
+							}
+						}
+						else 
+						{
+							offs += lump->size;
+							pushit = true;
+						}
+					}
+					else
+					{
+						lump->null = true;
+						remlmp++;
+						pushit = false;
+					}
 					strncpy(lump->name, filelumpPointer->name, 8);
 					lump->name[8] = '\0';
 					if (!idStr::Cmpn(lump->name, "MAP", 3)) {
@@ -1031,24 +1087,44 @@ void MasterList() {
 						}
 						count++;
 					}
-					lump->null = false;
+					if (!idStr::Cmpn(lump->name, "RSKY", 4)) {
+						if (count2 < 4) {
+						char * tm = new char[6];
+						sprintf(tm, "STAR%i\0", count2);
+						strcpy(lump->name, tm);
+						count2++;
+					}
+					}
+					if (!idStr::Cmp(lump->name, "STARS")) {
+						if (count2 == 2) {
+							char * tm = new char[6];
+							sprintf(tm, "STAR%i\0", count2);
+							strcpy(lump->name, tm);
+							count2++;
+						}
+					}
+					
+				
 				}
 			}
 		cl++;
 	} while (FindNextFile(hFind, &ffd) != 0);
 	lump = &lumpnfo[0];
+	nlps = nlps - remlmp;
 	of.write(reinterpret_cast<char*>(&nlps), 4);
 	of.write(reinterpret_cast<char*>(&offs), 4);
 	//GK:The more the better
 	buffer = new char[offs];
 	try {
-		for (int i = 0; i < nlps; i++, lump++) {
+		for (int i = 0; i < nlps+remlmp; i++, lump++) {
 
 			handle = lump->handle;
 			handle->Seek(lump->position, FS_SEEK_SET);
 			int c = handle->Read(buffer, lump->size);
-			if (idStr::Cmpn(buffer, "WARNING", 7)) {
-				of.write(buffer, lump->size);
+			if (!lump->null) {
+				if (idStr::Cmpn(buffer, "WARNING", 7)) {
+					of.write(buffer, lump->size);
+				}
 			}
 		}
 	}
@@ -1058,11 +1134,13 @@ void MasterList() {
 
 	lump = &lumpnfo[0];
 
-	for (int i = 0; i < nlps; i++, lump++) {
-
+	for (int i = 0; i < nlps; lump++) {
+		if (!lump->null) {
 			of.write(reinterpret_cast<char*>(&fofs[i]), 4);
 			of.write(reinterpret_cast<char*>(&lump->size), 4);
 			of.write(lump->name, 8);
+			i++;
+		}
 	}
 	lump = nullptr;
 	lumpnfo = nullptr;
