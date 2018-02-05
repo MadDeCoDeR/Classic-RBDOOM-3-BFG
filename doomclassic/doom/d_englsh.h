@@ -133,12 +133,12 @@ extern char* M2[2];
 //
 // P_Doors.C
 //
-#define PD_BLUEO	"You need a blue key to activate this object"
-#define PD_REDO	"You need a red key to activate this object"
-#define PD_YELLOWO	"You need a yellow key to activate this object"
-#define PD_BLUEK	"You need a blue key to open this door"
-#define PD_REDK	"You need a red key to open this door"
-#define PD_YELLOWK	"You need a yellow key to open this door"
+extern char* PD_BLUEO;
+extern char* PD_REDO;
+extern char* PD_YELLOWO;
+extern char* PD_BLUEK;
+extern char* PD_REDK;
+extern char* PD_YELLOWK;
 
 //
 //	G_game.C

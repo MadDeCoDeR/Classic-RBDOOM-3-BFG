@@ -62,7 +62,7 @@ If you have questions concerning this license or the applicable additional terms
 };
 // RB end
 void resetSprnames() {
-	/*const*/ char * /*const*/ tsprnames[NUMSPRITES + 1] = {
+	char * tsprnames[NUMSPRITES + 1] = {
 		"TROO","SHTG","PUNG","PISG","PISF","SHTF","SHT2","CHGG","CHGF","MISG",
 		"MISF","SAWG","PLSG","PLSF","BFGG","BFGF","BLUD","PUFF","BAL1","BAL2",
 		"PLSS","PLSE","MISL","BFS1","BFE1","BFE2","TFOG","IFOG","PLAY","POSS",
@@ -76,88 +76,90 @@ void resetSprnames() {
 		"POL3","POL1","POL6","GOR2","GOR3","GOR4","GOR5","SMIT","COL1","COL2",
 		"COL3","COL4","CAND","CBRA","COL6","TRE1","TRE2","ELEC","CEYE","FSKU",
 		"COL5","TBLU","TGRN","TRED","SMBT","SMGT","SMRT","HDB1","HDB2","HDB3",
-		"HDB4","HDB5","HDB6","POB1","POB2","BRS1","TLMP","TLP2", (/*const*/ char*)NULL
+		"HDB4","HDB5","HDB6","POB1","POB2","BRS1","TLMP","TLP2", (char*)NULL
 	};
 	memcpy(sprnames, tsprnames, sizeof(tsprnames));
 }
+
 extern "C"
 {
-// Doesn't work with g++, needs actionf_p1
-void  A_Light0( void *p1, void *p2 );
-void A_WeaponReady( void *p1, void *p2 );
-void A_Lower( void *p1, void *p2 );
-void A_Raise( void *p1, void *p2 );
-void A_Punch( void *p1, void *p2 );
-void A_ReFire( void *p1, void *p2 );
-void A_FirePistol( void *p1, void *p2 );
-void A_Light1( void *p1, void *p2 );
-void A_FireShotgun( void *p1, void *p2 );
-void A_Light2( void *p1, void *p2 );
-void A_FireShotgun2( void *p1, void *p2 );
-void A_CheckReload( void *p1, void *p2 );
-void A_OpenShotgun2( void *p1, void *p2 );
-void A_LoadShotgun2( void *p1, void *p2 );
-void A_CloseShotgun2( void *p1, void *p2 );
-void A_FireCGun( void *p1, void *p2 );
-void A_GunFlash( void *p1, void *p2 );
-void A_FireMissile( void *p1, void *p2 );
-void A_Saw( void *p1, void *p2 );
-void A_FirePlasma( void *p1, void *p2 );
-void A_BFGsound( void *p1, void *p2 );
-void A_FireBFG( void *p1, void *p2 );
-void A_BFGSpray( void *p1, void *p2 );
-void A_Explode( void *p1, void *p2 );
-void A_Pain( void *p1, void *p2 );
-void A_PlayerScream( void *p1, void *p2 );
-void A_Fall( void *p1, void *p2 );
-void A_XScream( void *p1, void *p2 );
-void A_Look( void *p1, void *p2 );
-void A_Chase( void *p1, void *p2 );
-void A_FaceTarget( void *p1, void *p2 );
-void A_PosAttack( void *p1, void *p2 );
-void A_Scream( void *p1, void *p2 );
-void A_SPosAttack( void *p1, void *p2 );
-void A_VileChase( void *p1, void *p2 );
-void A_VileStart( void *p1, void *p2 );
-void A_VileTarget( void *p1, void *p2 );
-void A_VileAttack( void *p1, void *p2 );
-void A_StartFire( void *p1, void *p2 );
-void A_Fire( void *p1, void *p2 );
-void A_FireCrackle( void *p1, void *p2 );
-void A_Tracer( void *p1, void *p2 );
-void A_SkelWhoosh( void *p1, void *p2 );
-void A_SkelFist( void *p1, void *p2 );
-void A_SkelMissile( void *p1, void *p2 );
-void A_FatRaise( void *p1, void *p2 );
-void A_FatAttack1( void *p1, void *p2 );
-void A_FatAttack2( void *p1, void *p2 );
-void A_FatAttack3( void *p1, void *p2 );
-void A_BossDeath( void *p1, void *p2 );
-void A_CPosAttack( void *p1, void *p2 );
-void A_CPosRefire( void *p1, void *p2 );
-void A_TroopAttack( void *p1, void *p2 );
-void A_SargAttack( void *p1, void *p2 );
-void A_HeadAttack( void *p1, void *p2 );
-void A_BruisAttack( void *p1, void *p2 );
-void A_SkullAttack( void *p1, void *p2 );
-void A_Metal( void *p1, void *p2 );
-void A_SpidRefire( void *p1, void *p2 );
-void A_BabyMetal( void *p1, void *p2 );
-void A_BspiAttack( void *p1, void *p2 );
-void A_Hoof( void *p1, void *p2 );
-void A_CyberAttack( void *p1, void *p2 );
-void A_PainAttack( void *p1, void *p2 );
-void A_PainDie( void *p1, void *p2 );
-void A_KeenDie( void *p1, void *p2 );
-void A_BrainPain( void *p1, void *p2 );
-void A_BrainScream( void *p1, void *p2 );
-void A_BrainDie( void *p1, void *p2 );
-void A_BrainAwake( void *p1, void *p2 );
-void A_BrainSpit( void *p1, void *p2 );
-void A_SpawnSound( void *p1, void *p2 );
-void A_SpawnFly( void *p1, void *p2 );
-void A_BrainExplode( void *p1, void *p2 );
+	// Doesn't work with g++, needs actionf_p1
+	void  A_Light0(void *p1, void *p2);
+	void A_WeaponReady(void *p1, void *p2);
+	void A_Lower(void *p1, void *p2);
+	void A_Raise(void *p1, void *p2);
+	void A_Punch(void *p1, void *p2);
+	void A_ReFire(void *p1, void *p2);
+	void A_FirePistol(void *p1, void *p2);
+	void A_Light1(void *p1, void *p2);
+	void A_FireShotgun(void *p1, void *p2);
+	void A_Light2(void *p1, void *p2);
+	void A_FireShotgun2(void *p1, void *p2);
+	void A_CheckReload(void *p1, void *p2);
+	void A_OpenShotgun2(void *p1, void *p2);
+	void A_LoadShotgun2(void *p1, void *p2);
+	void A_CloseShotgun2(void *p1, void *p2);
+	void A_FireCGun(void *p1, void *p2);
+	void A_GunFlash(void *p1, void *p2);
+	void A_FireMissile(void *p1, void *p2);
+	void A_Saw(void *p1, void *p2);
+	void A_FirePlasma(void *p1, void *p2);
+	void A_BFGsound(void *p1, void *p2);
+	void A_FireBFG(void *p1, void *p2);
+	void A_BFGSpray(void *p1, void *p2);
+	void A_Explode(void *p1, void *p2);
+	void A_Pain(void *p1, void *p2);
+	void A_PlayerScream(void *p1, void *p2);
+	void A_Fall(void *p1, void *p2);
+	void A_XScream(void *p1, void *p2);
+	void A_Look(void *p1, void *p2);
+	void A_Chase(void *p1, void *p2);
+	void A_FaceTarget(void *p1, void *p2);
+	void A_PosAttack(void *p1, void *p2);
+	void A_Scream(void *p1, void *p2);
+	void A_SPosAttack(void *p1, void *p2);
+	void A_VileChase(void *p1, void *p2);
+	void A_VileStart(void *p1, void *p2);
+	void A_VileTarget(void *p1, void *p2);
+	void A_VileAttack(void *p1, void *p2);
+	void A_StartFire(void *p1, void *p2);
+	void A_Fire(void *p1, void *p2);
+	void A_FireCrackle(void *p1, void *p2);
+	void A_Tracer(void *p1, void *p2);
+	void A_SkelWhoosh(void *p1, void *p2);
+	void A_SkelFist(void *p1, void *p2);
+	void A_SkelMissile(void *p1, void *p2);
+	void A_FatRaise(void *p1, void *p2);
+	void A_FatAttack1(void *p1, void *p2);
+	void A_FatAttack2(void *p1, void *p2);
+	void A_FatAttack3(void *p1, void *p2);
+	void A_BossDeath(void *p1, void *p2);
+	void A_CPosAttack(void *p1, void *p2);
+	void A_CPosRefire(void *p1, void *p2);
+	void A_TroopAttack(void *p1, void *p2);
+	void A_SargAttack(void *p1, void *p2);
+	void A_HeadAttack(void *p1, void *p2);
+	void A_BruisAttack(void *p1, void *p2);
+	void A_SkullAttack(void *p1, void *p2);
+	void A_Metal(void *p1, void *p2);
+	void A_SpidRefire(void *p1, void *p2);
+	void A_BabyMetal(void *p1, void *p2);
+	void A_BspiAttack(void *p1, void *p2);
+	void A_Hoof(void *p1, void *p2);
+	void A_CyberAttack(void *p1, void *p2);
+	void A_PainAttack(void *p1, void *p2);
+	void A_PainDie(void *p1, void *p2);
+	void A_KeenDie(void *p1, void *p2);
+	void A_BrainPain(void *p1, void *p2);
+	void A_BrainScream(void *p1, void *p2);
+	void A_BrainDie(void *p1, void *p2);
+	void A_BrainAwake(void *p1, void *p2);
+	void A_BrainSpit(void *p1, void *p2);
+	void A_SpawnSound(void *p1, void *p2);
+	void A_SpawnFly(void *p1, void *p2);
+	void A_BrainExplode(void *p1, void *p2);
 };
+
 
 /*const*/ state_t	tempStates[NUMSTATES] = { 
 	{SPR_TROO,0,-1,{NULL},S_NULL,0,0},	// S_NULL
@@ -4704,8 +4706,8 @@ void init_states() {
 
 //GK: Reset values just in case dehacked is used
 void resetValues() {
-	idLib::Printf("Reseting Values\n");
-	/*const*/ mobjinfo_t tmobjinfo[NUMMOBJTYPES] = {
+	//idLib::Printf("Reseting Values\n");
+	mobjinfo_t tmobjinfo[NUMMOBJTYPES] = {
 
 		{		// MT_PLAYER
 			-1,		// doomednum
@@ -8270,7 +8272,7 @@ void resetValues() {
 		}
 	};
 	memcpy(mobjinfo, tmobjinfo, sizeof(tmobjinfo));
-	/*const*/ state_t	ttempStates[NUMSTATES] = {
+	state_t	ttempStates[NUMSTATES] = {
 		{ SPR_TROO,0,-1,{ NULL },S_NULL,0,0 },	// S_NULL
 		{ SPR_SHTG,4,0,{ (actionf_p2)A_Light0 },S_NULL,0,0 },	// S_LIGHTDONE
 		{ SPR_PUNG,0,1,{ (actionf_p2)A_WeaponReady },S_PUNCH,0,0 },	// S_PUNCH
@@ -9241,230 +9243,96 @@ void resetValues() {
 	};
 	memcpy(tempStates, ttempStates, sizeof(ttempStates));
 }
-//GK: Parse Code ptrs names
+
+typedef struct {
+	char* name;
+	actionf_p2 func;
+}dehcptr;
+
+dehcptr cptrval[] = {
+	{ "NULL",NULL },
+{ "Light0",(actionf_p2)A_Light0 },
+{ "WeaponReady",(actionf_p2)A_WeaponReady },
+{ "Lower",(actionf_p2)A_Lower },
+{ "Raise",(actionf_p2)A_Raise },
+{ "Punch",(actionf_p2)A_Punch },
+{ "ReFire",(actionf_p2)A_ReFire },
+{ "FirePistol",(actionf_p2)A_FirePistol },
+{ "Light1",(actionf_p2)A_Light1 },
+{ "FireShotgun",(actionf_p2)A_FireShotgun },
+{ "Light2",(actionf_p2)A_Light2 },
+{ "FireShotgun2",(actionf_p2)A_FireShotgun2 },
+{ "CheckReload",(actionf_p2)A_CheckReload },
+{ "OpenShotgun2",(actionf_p2)A_OpenShotgun2 },
+{ "LoadShotgun2",(actionf_p2)A_LoadShotgun2 },
+{ "CloseShotgun2",(actionf_p2)A_CloseShotgun2 },
+{ "FireCGun",(actionf_p2)A_FireCGun },
+{ "GunFlash",(actionf_p2)A_GunFlash },
+{ "FireMissile",(actionf_p2)A_FireMissile },
+{ "Saw",(actionf_p2)A_Saw },
+{ "FirePlasma",(actionf_p2)A_FirePlasma },
+{ "BFGsound",(actionf_p2)A_BFGsound },
+{ "FireBFG",(actionf_p2)A_FireBFG },
+{ "BFGSpray",(actionf_p2)A_BFGSpray },
+{ "Explode",(actionf_p2)A_Explode },
+{ "Pain",(actionf_p2)A_Pain },
+{ "PlayerScream",(actionf_p2)A_PlayerScream },
+{ "Fall",(actionf_p2)A_Fall },
+{ "XScream",(actionf_p2)A_XScream },
+{ "Look",(actionf_p2)A_Look },
+{ "Chase",(actionf_p2)A_Chase },
+{ "FaceTarget",(actionf_p2)A_FaceTarget },
+{ "PosAttack",(actionf_p2)A_PosAttack },
+{ "Scream",(actionf_p2)A_Scream },
+{ "VileChase",(actionf_p2)A_VileChase },
+{ "VileStart",(actionf_p2)A_VileStart },
+{ "VileTarget",(actionf_p2)A_VileTarget },
+{ "VileAttack",(actionf_p2)A_VileAttack },
+{ "StartFire",(actionf_p2)A_StartFire },
+{ "Fire",(actionf_p2)A_Fire },
+{ "FireCrackle",(actionf_p2)A_FireCrackle },
+{ "Tracer",(actionf_p2)A_Tracer },
+{ "SkelWhoosh",(actionf_p2)A_SkelWhoosh },
+{ "SkelFist",(actionf_p2)A_SkelFist },
+{ "SkelMissile",(actionf_p2)A_SkelMissile },
+{ "FatRaise",(actionf_p2)A_FatRaise },
+{ "FatAttack1",(actionf_p2)A_FatAttack1 },
+{ "FatAttack2",(actionf_p2)A_FatAttack2 },
+{ "FatAttack3",(actionf_p2)A_FatAttack3 },
+{ "BossDeath",(actionf_p2)A_BossDeath },
+{ "CPosAttack",(actionf_p2)A_CPosAttack },
+{ "CPosRefire",(actionf_p2)A_CPosRefire },
+{ "TroopAttack",(actionf_p2)A_TroopAttack },
+{ "SargAttack",(actionf_p2)A_SargAttack },
+{ "HeadAttack",(actionf_p2)A_HeadAttack },
+{ "BruisAttack",(actionf_p2)A_BruisAttack },
+{ "SkullAttack",(actionf_p2)A_SkullAttack },
+{ "Metal",(actionf_p2)A_Metal },
+{ "SPosAttack",(actionf_p2)A_SPosAttack },
+{ "SpidRefire",(actionf_p2)A_SpidRefire },
+{ "BabyMetal",(actionf_p2)A_BabyMetal },
+{ "BspiAttack",(actionf_p2)A_BspiAttack },
+{ "Hoof",(actionf_p2)A_Hoof },
+{ "CyberAttack",(actionf_p2)A_CyberAttack },
+{ "PainAttack",(actionf_p2)A_PainAttack },
+{ "PainDie",(actionf_p2)A_PainDie },
+{ "KeenDie",(actionf_p2)A_KeenDie },
+{ "BrainPain",(actionf_p2)A_BrainPain },
+{ "BrainScream",(actionf_p2)A_BrainScream },
+{ "BrainDie",(actionf_p2)A_BrainDie },
+{ "BrainAwake",(actionf_p2)A_BrainAwake },
+{ "BrainSpit",(actionf_p2)A_BrainSpit },
+{ "SpawnSound",(actionf_p2)A_SpawnSound },
+{ "SpawnFly",(actionf_p2)A_SpawnFly },
+{ "BrainExplode",(actionf_p2)A_BrainExplode }
+};
+
 actionf_p2 getFunc(char* func) {
-	char* fname = new char[32];
-	sprintf(fname, "A_%s", func);
-	if (!idStr::Icmp(fname, "A_ Light0")) {
-		return (actionf_p2)A_Light0;
-	}
-	else if (!idStr::Icmp(fname, "A_ WeaponReady")) {
-		return (actionf_p2)A_WeaponReady;
-	}
-	else if (!idStr::Icmp(fname, "A_ Lower")) {
-		return (actionf_p2)A_Lower;
-	}
-	else if (!idStr::Icmp(fname, "A_ Raise")) {
-		return (actionf_p2)A_Raise;
-	}
-	else if (!idStr::Icmp(fname, "A_ Punch")) {
-		return (actionf_p2)A_Punch;
-	}
-	else if (!idStr::Icmp(fname, "A_ ReFire")) {
-		return (actionf_p2)A_ReFire;
-	}
-	else if (!idStr::Icmp(fname, "A_ FirePistol")) {
-		return (actionf_p2)A_FirePistol;
-	}
-	else if (!idStr::Icmp(fname, "A_ Light1")) {
-		return (actionf_p2)A_Light1;
-	}
-	else if (!idStr::Icmp(fname, "A_ FireShotgun")) {
-		return (actionf_p2)A_FireShotgun;
-	}
-	else if (!idStr::Icmp(fname, "A_ Light2")) {
-		return (actionf_p2)A_Light2;
-	}
-	else if (!idStr::Icmp(fname, "A_ FireShotgun2")) {
-		return (actionf_p2)A_FireShotgun2;
-	}
-	else if (!idStr::Icmp(fname, "A_ CheckReload")) {
-		return (actionf_p2)A_CheckReload;
-	}
-	else if (!idStr::Icmp(fname, "A_ OpenShotgun2")) {
-		return (actionf_p2)A_OpenShotgun2;
-	}
-	else if (!idStr::Icmp(fname, "A_ LoadShotgun2")) {
-		return (actionf_p2)A_LoadShotgun2;
-	}
-	else if (!idStr::Icmp(fname, "A_ CloseShotgun2")) {
-		return (actionf_p2)A_CloseShotgun2;
-	}
-	else if (!idStr::Icmp(fname, "A_ FireCGun")) {
-		return (actionf_p2)A_FireCGun;
-	}
-	else if (!idStr::Icmp(fname, "A_ GunFlash")) {
-		return (actionf_p2)A_GunFlash;
-	}
-	else if (!idStr::Icmp(fname, "A_ FireMissile")) {
-		return (actionf_p2)A_FireMissile;
-	}
-	else if (!idStr::Icmp(fname, "A_ Saw")) {
-		return (actionf_p2)A_Saw;
-	}
-	else if (!idStr::Icmp(fname, "A_ FirePlasma")) {
-		return (actionf_p2)A_FirePlasma;
-	}
-	else if (!idStr::Icmp(fname, "A_ BFGsound")) {
-		return (actionf_p2)A_BFGsound;
-	}
-	else if (!idStr::Icmp(fname, "A_ FireBFG")) {
-		return (actionf_p2)A_FireBFG;
-	}
-	else if (!idStr::Icmp(fname, "A_ BFGSpray")) {
-		return (actionf_p2)A_BFGSpray;
-	}
-	else if (!idStr::Icmp(fname, "A_ Explode")) {
-		return (actionf_p2)A_Explode;
-	}
-	else if (!idStr::Icmp(fname, "A_ Pain")) {
-		return (actionf_p2)A_Pain;
-	}
-	else if (!idStr::Icmp(fname, "A_ PlayerScream")) {
-		return (actionf_p2)A_PlayerScream;
-	}
-	else if (!idStr::Icmp(fname, "A_ Fall")) {
-		return (actionf_p2)A_Fall;
-	}
-	else if (!idStr::Icmp(fname, "A_ XScream")) {
-		return (actionf_p2)A_XScream;
-	}
-	else if (!idStr::Icmp(fname, "A_ Look")) {
-		return (actionf_p2)A_Look;
-	}
-	else if (!idStr::Icmp(fname, "A_ Chase")) {
-		return (actionf_p2)A_Chase;
-	}
-	else if (!idStr::Icmp(fname, "A_ FaceTarget")) {
-		return (actionf_p2)A_FaceTarget;
-	}
-	else if (!idStr::Icmp(fname, "A_ PosAttack")) {
-		return (actionf_p2)A_PosAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ Scream")) {
-		return (actionf_p2)A_Scream;
-	}
-	else if (!idStr::Icmp(fname, "A_ VileChase")) {
-		return (actionf_p2)A_VileChase;
-	}
-	else if (!idStr::Icmp(fname, "A_ VileStart")) {
-		return (actionf_p2)A_VileStart;
-	}
-	else if (!idStr::Icmp(fname, "A_ VileTarget")) {
-		return (actionf_p2)A_VileTarget;
-	}
-	else if (!idStr::Icmp(fname, "A_ VileAttack")) {
-		return (actionf_p2)A_VileAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ StartFire")) {
-		return (actionf_p2)A_StartFire;
-	}
-	else if (!idStr::Icmp(fname, "A_ Fire")) {
-		return (actionf_p2)A_Fire;
-	}
-	else if (!idStr::Icmp(fname, "A_ FireCrackle")) {
-		return (actionf_p2)A_FireCrackle;
-	}
-	else if (!idStr::Icmp(fname, "A_ Tracer")) {
-		return (actionf_p2)A_Tracer;
-	}
-	else if (!idStr::Icmp(fname, "A_ SkelWhoosh")) {
-		return (actionf_p2)A_SkelWhoosh;
-	}
-	else if (!idStr::Icmp(fname, "A_ SkelFist")) {
-		return (actionf_p2)A_SkelFist;
-	}
-	else if (!idStr::Icmp(fname, "A_ SkelMissile")) {
-		return (actionf_p2)A_SkelMissile;
-	}
-	else if (!idStr::Icmp(fname, "A_ FatRaise")) {
-		return (actionf_p2)A_FatRaise;
-	}
-	else if (!idStr::Icmp(fname, "A_ FatAttack1")) {
-		return (actionf_p2)A_FatAttack1;
-	}
-	else if (!idStr::Icmp(fname, "A_ FatAttack2")) {
-		return (actionf_p2)A_FatAttack2;
-	}
-	else if (!idStr::Icmp(fname, "A_ FatAttack3")) {
-		return (actionf_p2)A_FatAttack3;
-	}
-	else if (!idStr::Icmp(fname, "A_ BossDeath")) {
-		return (actionf_p2)A_BossDeath;
-	}
-	else if (!idStr::Icmp(fname, "A_ CPosAttack")) {
-		return (actionf_p2)A_CPosAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ CPosRefire")) {
-		return (actionf_p2)A_CPosRefire;
-	}
-	else if (!idStr::Icmp(fname, "A_ TroopAttack")) {
-		return (actionf_p2)A_TroopAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ SargAttack")) {
-		return (actionf_p2)A_SargAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ HeadAttack")) {
-		return (actionf_p2)A_HeadAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ BruisAttack")) {
-		return (actionf_p2)A_BruisAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ SkullAttack")) {
-		return (actionf_p2)A_SkullAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ Metal")) {
-		return (actionf_p2)A_Metal;
-	}
-	else if (!idStr::Icmp(fname, "A_ SPosAttack")) {
-		return (actionf_p2)A_SPosAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ SpidRefire")) {
-		return (actionf_p2)A_SpidRefire;
-	}
-	else if (!idStr::Icmp(fname, "A_ BabyMetal")) {
-		return (actionf_p2)A_BabyMetal;
-	}
-	else if (!idStr::Icmp(fname, "A_ BspiAttack")) {
-		return (actionf_p2)A_BspiAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ Hoof")) {
-		return (actionf_p2)A_Hoof;
-	}
-	else if (!idStr::Icmp(fname, "A_ CyberAttack")) {
-		return (actionf_p2)A_CyberAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ PainAttack")) {
-		return (actionf_p2)A_PainAttack;
-	}
-	else if (!idStr::Icmp(fname, "A_ PainDie")) {
-		return (actionf_p2)A_PainDie;
-	}
-	else if (!idStr::Icmp(fname, "A_ KeenDie")) {
-		return (actionf_p2)A_KeenDie;
-	}
-	else if (!idStr::Icmp(fname, "A_ BrainPain")) {
-		return (actionf_p2)A_BrainPain;
-	}
-	else if (!idStr::Icmp(fname, "A_ BrainScream")) {
-		return (actionf_p2)A_BrainScream;
-	}
-	else if (!idStr::Icmp(fname, "A_ BrainDie")) {
-		return (actionf_p2)A_BrainDie;
-	}
-	else if (!idStr::Icmp(fname, "A_ BrainAwake")) {
-		return (actionf_p2)A_BrainAwake;
-	}
-	else if (!idStr::Icmp(fname, "A_ BrainSpit")) {
-		return (actionf_p2)A_BrainSpit;
-	}
-	else if (!idStr::Icmp(fname, "A_ SpawnSound")) {
-		return (actionf_p2)A_SpawnSound;
-	}
-	else if (!idStr::Icmp(fname, "A_ SpawnFly")) {
-		return (actionf_p2)A_SpawnFly;
-	}
-	else if (!idStr::Icmp(fname, "A_ BrainExplode")) {
-		return (actionf_p2)A_BrainExplode;
-	}
+	int size = sizeof(cptrval)/ sizeof(*cptrval);
+	for (int i = 0; i < size; i++) {
+		if (!idStr::Icmp(func, cptrval[i].name)) {
+			return cptrval[i].func;
+		}
+	}
+	return NULL;
 }

@@ -45,6 +45,7 @@
 #include "d_items.h"
 #include "sounds.h"
 #include "f_finale.h"
+#include "g_game.h"
 
 void parsetext(char* text);
 std::vector<std::string> getlines(char* text);
@@ -56,6 +57,8 @@ void setPointer(int pos, char* varname, int varval);
 void setCptr( char* varname, char* varfunc);
 void setAmmo(int pos, char* varname, int varval);
 void setText(std::vector<std::string>lines,int i,int il, int nl);
+void setPars(int pos, int val1, int val2=-1);
+void setBText(char* varname, char* text);
 //More Headache than it's worth
 //void setSound(int pos, char* varname, int varval);
 
@@ -200,8 +203,15 @@ dehstr strval[] = {
 	{ &CC_ARCH,"CC_ARCH" },
 	{ &CC_SPIDER,"CC_SPIDER" },
 	{ &CC_CYBER,"CC_CYBER" },
-	{ &CC_HERO,"CC_HERO" }
+	{ &CC_HERO,"CC_HERO" },
+	{&PD_BLUEO ,"PD_BLUEO"},
+	{&PD_REDO,"PD_REDO"},
+	{ &PD_YELLOWO,"PD_YELLOWO" },
+	{ &PD_BLUEK,"PD_BLUEK" },
+	{ &PD_REDK,"PD_REDK" },
+	{ &PD_YELLOWK,"PD_YELLOWK" }
 };
+
 
 void loaddeh(int lump) {
 	char* text = (char*)malloc(W_LumpLength(lump)+2);
@@ -221,15 +231,16 @@ void parsetext(char* text) {
 	char* varfunc;
 	int statepos;
 	int varval;
-	int varval2;
+	int varval2 = -1;
 	char eq = '=';
 	for (int i = 0; i < linedtext.size(); i++) {
+		varval2 = -1;
 		//idLib::Printf("%s\n", linedtext[i].c_str());
 		if ((linedtext[i].find(eq) != std::string::npos) && state != 3 && state != 0) {
 			varname = strtok(strdup(linedtext[i].c_str()), "=");
 			std::string tv3 = strtok(NULL, "=");
 			if (!tv3.empty()) {
-				if (state != 6) {
+				if (state != 6 && state != 9) {
 					varval = atoi(tv3.c_str());
 				}
 				else {
@@ -237,27 +248,31 @@ void parsetext(char* text) {
 				}
 			}
 			//idLib::Printf("%s = %i\n", varname, varval);
-			if (state == 1) {
-				setThing(statepos-1, varname, varval);
-			}
-			if (state == 2) {
+			switch (state) {
+			case 1:
+				setThing(statepos - 1, varname, varval);
+				break;
+			case 2:
 				setFrame(statepos, varname, varval);
 				memcpy(::g->states, tempStates, sizeof(tempStates));
-			}
-			if (state == 4) {
-				setWeapon(statepos , varname, varval);
-				//memcpy(::g->states, tempStates, sizeof(tempStates));
-			}
-			if (state == 5) {
+				break;
+			case 4:
+				setWeapon(statepos, varname, varval);
+				break;
+			case 5:
 				setPointer(statepos, varname, varval);
 				memcpy(::g->states, tempStates, sizeof(tempStates));
-			}
-			if (state == 6) {
+				break;
+			case 6:
 				setCptr(varname, varfunc);
 				memcpy(::g->states, tempStates, sizeof(tempStates));
-			}
-			if (state == 7) {
+				break;
+			case 7:
 				setAmmo(statepos, varname, varval);
+				break;
+			case 9:
+				setBText(varname, varfunc);
+				break;
 			}
 			//More Headache than it's worth
 			/*
@@ -274,45 +289,86 @@ void parsetext(char* text) {
 
 						statepos = atoi(tval);
 						state = checkstate(tst);
-						if (state == 1) {
-							int tpos = statepos - 1;
+						int tpos = -1;
+						char* tv;
+						switch (state) {
+						case 1:
+							tpos = statepos - 1;
 							if (tpos >= NUMMOBJTYPES) {
 								I_Error("No such Thing found");
 							}
-						}
-						if (state == 2) {
+							break;
+						case 2:
 							if (statepos >= NUMSTATES) {
 								I_Error("No such Frame found");
 							}
-						}
-						if (state == 3) {
+							break;
+						case 3:
 							statepos = statepos + 1;
 							varval2 = atoi(strtok(NULL, " "));
 							setText(linedtext, i + 1, statepos, varval2);
-						}
-						if (state == 4) {
+							break;
+						case 4:
 							if (statepos >= NUMWEAPONS) {
 								I_Error("No such Weapon found");
 							}
-						}
-						if (state == 5) {
-							char* tv = strtok(NULL, " ");
+							break;
+						case 5:
+							tv = strtok(NULL, " ");
 							if (tv != NULL) {
-								std::string tv2 = strtok(NULL, " ");
-								if (!tv2.empty()) {
-									statepos = atoi(tv2.substr(0,strlen(tv2.c_str())-1).c_str());
-									
+								char* tv2 = strtok(NULL, " ");
+								if (tv2!=NULL) {
+									tv2[strlen(tv2) - 1] = '\0';
+									statepos = atoi(tv2);
+
 									if (statepos >= NUMSTATES) {
 										idLib::Printf("%i\n", statepos);
 										I_Error("No such codeptr found");
 									}
 								}
 							}
-						}
-						if (state == 7) {
+							break;
+						case 7:
 							if (statepos >= NUMAMMO) {
 								I_Error("No such Ammo found");
 							}
+							break;
+						case 8:
+							tval = strtok(NULL, " ");
+							if (tval != NULL) {
+								varval = atoi(tval);
+							}
+							tval = strtok(NULL, " ");
+							if (tval != NULL) {
+								varval2 = atoi(tval);
+
+							}
+							if (varval2 == -1) {
+								if (::g->gamemode == commercial) {
+									if (statepos > 0 && statepos <= 33) {
+										setPars(statepos, varval);
+									}
+									else {
+										I_Error("No map found");
+									}
+								}
+							}
+							else {
+								if (::g->gamemode == retail) {
+									if (statepos > 0 && statepos <= 4) {
+										if (varval > 0 && varval <= 9) {
+											setPars(statepos, varval, varval2);
+										}
+										else {
+											I_Error("No level found");
+										}
+									}
+									else {
+										I_Error("No episode found");
+									}
+								}
+							}
+							break;
 						}
 						//More Headache than it's worth
 						/*
@@ -390,6 +446,12 @@ int checkstate(char* text) {
 		}
 		if (!idStr::Icmp(text, "Ammo")) {
 			return 7;
+		}
+		if (!idStr::Icmp(text, "par")) {
+			return 8;
+		}
+		if (!idStr::Icmp(text, "[STRINGS]")) {
+			return 9;
 		}
 	}
 	//More Headache than it's worth
@@ -568,16 +630,12 @@ void setPointer(int pos, char* varname, int varval) {
 void setCptr(char* varname, char* varfunc) {
 	char* name = strtok(varname, " ");
 	char* tp = strtok(NULL, " ");
+	varfunc++;
 	if (tp != NULL) {
 		int pos = atoi(tp);
 		if (strlen(name) > 1 && strlen(varfunc) > 1) {
 			if (!idStr::Icmp(name, "FRAME") && pos < NUMSTATES) {
-				if (idStr::Icmp(varfunc, " NULL")) {
-					tempStates[pos].action = getFunc(varfunc);
-				}
-				else {
-					tempStates[pos].action = NULL;
-				}
+				tempStates[pos].action = getFunc(varfunc);
 			}
 		}
 	}
@@ -714,4 +772,25 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 	//free(ntxt);
 	//free(otxt);
 	return;
+}
+
+void setPars(int pos, int val, int val2) {
+	if (val2 == -1) {
+		cpars[pos-1] = val;
+	}
+	else {
+		pars[pos][val] = val2;
+	}
+}
+
+void setBText(char* varname, char* text) {
+	int arrsz = sizeof(strval) / sizeof(*strval);
+	text++;
+	varname[strlen(varname) - 1] = '\0';
+	for (int i = 0; i < arrsz; i++) {
+		if (!idStr::Icmp(varname, strval[i].name)) {
+			*strval[i].var = text;
+			break;
+		}
+	}
 }

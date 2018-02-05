@@ -186,7 +186,7 @@ const char*	const player_names[] =
 
 };
 void resetMapNames() {
-	/*const*/ char*	tmapnames[] =
+	char*	tmapnames[] =
 	{
 
 		HUSTR_E1M1,
@@ -240,7 +240,7 @@ void resetMapNames() {
 		"NEWLEVEL"
 	};
 	memcpy(mapnames, tmapnames, sizeof(tmapnames));
-	/*const*/ char*	tmapnames2[] =
+	char*	tmapnames2[] =
 	{
 		HUSTR_1,
 		HUSTR_2,
@@ -479,11 +479,14 @@ void HU_Start(void)
 				if (::g->gamemap > 9) {
 					map = 0;
 				}
-
-				s = DoomLib::GetCurrentExpansion()->mapNames[map - 1];
+				char ts[512];
+				sprintf(ts, "level %s", DoomLib::GetCurrentExpansion()->mapNames[map - 1]);
+				s = (const char*)ts;
 			}
 			else {
-				s = DoomLib::GetCurrentExpansion()->mapNames[::g->gamemap - 1];
+				char ts[512];
+				sprintf(ts, "level %s", DoomLib::GetCurrentExpansion()->mapNames[::g->gamemap - 1]);
+				s = (const char*)ts;
 			}
 		}
 		break;

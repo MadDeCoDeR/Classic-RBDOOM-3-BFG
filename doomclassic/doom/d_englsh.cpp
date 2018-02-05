@@ -107,6 +107,12 @@ char* CC_ARCH = "ARCH-VILE";
 char* CC_SPIDER = "THE SPIDER MASTERMIND";
 char* CC_CYBER = "THE CYBERDEMON";
 char* CC_HERO = "OUR HERO";
+char* PD_BLUEO = "You need a blue key to activate this object";
+char* PD_REDO = "You need a red key to activate this object";
+char* PD_YELLOWO = "You need a yellow key to activate this object";
+char* PD_BLUEK = "You need a blue key to open this door";
+char* PD_REDK = "You need a red key to open this door";
+char* PD_YELLOWK = "You need a yellow key to open this door";
 
 void resetTexts() {
 	GOTARMOR = "Picked up the armor.";
@@ -168,6 +174,13 @@ void resetTexts() {
 	 CC_SPIDER = "THE SPIDER MASTERMIND";
 	 CC_CYBER = "THE CYBERDEMON";
 	 CC_HERO = "OUR HERO";
+
+	 PD_BLUEO = "You need a blue key to activate this object";
+	 PD_REDO = "You need a red key to activate this object";
+	 PD_YELLOWO = "You need a yellow key to activate this object";
+	 PD_BLUEK = "You need a blue key to open this door";
+	 PD_REDK = "You need a red key to open this door";
+	 PD_YELLOWK = "You need a yellow key to open this door";
 }
 
 char* MASTER[] = { "All Maps","Select Map" };
