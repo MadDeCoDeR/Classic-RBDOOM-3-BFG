@@ -1494,92 +1494,94 @@ qboolean G_CheckSave(char* name) {
 			hm = true;
 			const char * fnames = tlab + 18;
 			char* file = strtok(strdup(fnames), ",");
-
+			int sc = 0;
 			while (file) {
 				filelist.push_back(file);
+				if (idStr::Icmpn(file, "wads", 4)) {
+					sc++;
+				}
 				file = strtok(NULL, ",");
 			}
-			int sc = filelist.size()-3;
-			if (DoomLib::idealExpansion == 5) {
-				sc = sc - 1;
-			}
-			else if (DoomLib::idealExpansion == 4) {
-				sc = sc - 2;
-			}
+			sc = sc - 1;
 			int ac = 0;
 			bool movetonext;
-			for (int mf = 0; mf < filelist.size() - 1; mf++) {
-				for (int f = 1; f < 20; f++) {
-					movetonext = false;
-					if (wadfiles[f] != NULL) {
-						char* fname = strtok(strdup(wadfiles[f]), "\\");
-						if (DoomLib::idealExpansion == ::g->gamemission) {
-							if (idStr::Icmpn(fname, "wads", 4)) {
-								while (fname) {
-									char* tname = strtok(NULL, "\\");
-									if (tname) {
-										fname = tname;
+			if (sc > 0) {
+				for (int mf = 0; mf < filelist.size() - 1; mf++) {
+					for (int f = 1; f < 20; f++) {
+						movetonext = false;
+						if (wadfiles[f] != NULL) {
+							char* fname = strtok(strdup(wadfiles[f]), "\\");
+							if (DoomLib::idealExpansion == ::g->gamemission) {
+								if (idStr::Icmpn(fname, "wads", 4)) {
+									while (fname) {
+										char* tname = strtok(NULL, "\\");
+										if (tname) {
+											fname = tname;
+										}
+										else {
+											break;
+										}
 									}
-									else {
-										break;
-									}
-								}
 
 
-								if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
+									if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
 										ac++;
 										if (ac == sc) {
 											ok = true;
 										}
 										break;
+									}
+
+
 								}
-
-
 							}
-						}
-						else {
+							else {
 
-							for (int i = 1; i < 6; i++) {
-								for (int j = 0; j < 20; j++) {
-									if (DoomLib::idealExpansion == i) {
-										if (DoomLib::otherfiles[i - 1][j] != NULL) {
-											if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[i - 1][j])) {
-												ac++;
-												movetonext = true;
-												if (ac == sc) {
+								for (int i = 1; i < 6; i++) {
+									for (int j = 0; j < 20; j++) {
+										if (DoomLib::idealExpansion == i) {
+											if (DoomLib::otherfiles[i - 1][j] != NULL) {
+												if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[i - 1][j])) {
+													ac++;
+													movetonext = true;
+													if (ac == sc) {
+														ok = true;
+													}
+													break;
+												}
+												//else {
+
+												//}
+											}
+											else {
+												if (j == 0) {
 													ok = true;
 												}
 												break;
 											}
-											//else {
-
-											//}
 										}
 										else {
-											//if (j == 0) {
-
-											//}
 											break;
 										}
 									}
-									else {
+									if (ok)
 										break;
-									}
 								}
-								if (ok)
-									break;
-							}
 
-							//ok = false;
+								//ok = false;
+							}
+							if (movetonext) {
+								break;
+							}
 						}
-						if (movetonext) {
+						else {
 							break;
 						}
 					}
-					else {
-						break;
-					}
 				}
+			}
+			else {
+				ok = true;
 			}
 			
 		}
@@ -1650,92 +1652,94 @@ qboolean G_DoLoadGame ()
 			hm = true;
 			const char * fnames = tlab + 18;
 			char* file = strtok(strdup(fnames), ",");
-			
+			int sc = 0;
 			while (file) {
 				filelist.push_back(file);
+				if (idStr::Icmpn(file, "wads", 4)) {
+					sc++;
+				}
 				file = strtok(NULL, ",");
 			}
-			int sc = filelist.size()-3;
-			if (DoomLib::idealExpansion == 5) {
-				sc = sc - 1;
-			}
-			else if (DoomLib::idealExpansion == 4) {
-				sc = sc - 2;
-			}
+			sc = sc - 1;
 			int ac = 0;
 			bool movetonext;
-			for (int mf = 0; mf < filelist.size() - 1; mf++) {
-				for (int f = 1; f < 20; f++) {
-					movetonext = false;
-					if (wadfiles[f] != NULL) {
-						char* fname = strtok(strdup(wadfiles[f]), "\\");
-						if (DoomLib::idealExpansion == ::g->gamemission) {
-							if (idStr::Icmpn(fname, "wads", 4)) {
-								while (fname) {
-									char* tname = strtok(NULL, "\\");
-									if (tname) {
-										fname = tname;
+			if (sc > 0) {
+				for (int mf = 0; mf < filelist.size() - 1; mf++) {
+					for (int f = 1; f < 20; f++) {
+						movetonext = false;
+						if (wadfiles[f] != NULL) {
+							char* fname = strtok(strdup(wadfiles[f]), "\\");
+							if (DoomLib::idealExpansion == ::g->gamemission) {
+								if (idStr::Icmpn(fname, "wads", 4)) {
+									while (fname) {
+										char* tname = strtok(NULL, "\\");
+										if (tname) {
+											fname = tname;
+										}
+										else {
+											break;
+										}
 									}
-									else {
+
+
+									if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
+										ac++;
+										if (ac == sc) {
+											ok = true;
+										}
 										break;
 									}
+
+
 								}
-
-
-								if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
-									ac++;
-									if (ac == sc) {
-										ok = true;
-									}
-									break;
-								}
-
-
 							}
-						}
-						else {
+							else {
 
-							for (int i = 1; i < 6; i++) {
-								for (int j = 0; j < 20; j++) {
-									if (DoomLib::idealExpansion == i) {
-										if (DoomLib::otherfiles[i - 1][j] != NULL) {
-											if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[i - 1][j])) {
-												ac++;
-												movetonext = true;
-												if (ac == sc) {
+								for (int i = 1; i < 6; i++) {
+									for (int j = 0; j < 20; j++) {
+										if (DoomLib::idealExpansion == i) {
+											if (DoomLib::otherfiles[i - 1][j] != NULL) {
+												if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[i - 1][j])) {
+													ac++;
+													movetonext = true;
+													if (ac == sc) {
+														ok = true;
+													}
+													break;
+												}
+												//else {
+
+												//}
+											}
+											else {
+												if (j == 0) {
 													ok = true;
 												}
 												break;
 											}
-											//else {
-
-											//}
 										}
 										else {
-											//if (j == 0) {
-
-											//}
 											break;
 										}
 									}
-									else {
+									if (ok)
 										break;
-									}
 								}
-								if (ok)
-									break;
-							}
 
-							//ok = false;
+								//ok = false;
+							}
+							if (movetonext) {
+								break;
+							}
 						}
-						if (movetonext) {
+						else {
 							break;
 						}
 					}
-					else {
-						break;
-					}
 				}
+			}
+			else {
+				ok = true;
 			}
 		}
 		if (!ok) {
