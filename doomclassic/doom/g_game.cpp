@@ -1554,9 +1554,9 @@ qboolean G_CheckSave(char* name) {
 												//}
 											}
 											else {
-												if (j == 0) {
+												/*if (j == 0) {
 													ok = true;
-												}
+												}*/
 												break;
 											}
 										}
@@ -1712,9 +1712,9 @@ qboolean G_DoLoadGame ()
 												//}
 											}
 											else {
-												if (j == 0) {
+											/*	if (j == 0) {
 													ok = true;
-												}
+												}*/
 												break;
 											}
 										}
