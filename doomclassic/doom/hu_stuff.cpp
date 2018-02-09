@@ -185,6 +185,82 @@ const char*	const player_names[] =
 		HUSTR_33
 
 };
+/*const*/ char*	mapnamesp[] =
+{
+	PHUSTR_1,
+	PHUSTR_2,
+	PHUSTR_3,
+	PHUSTR_4,
+	PHUSTR_5,
+	PHUSTR_6,
+	PHUSTR_7,
+	PHUSTR_8,
+	PHUSTR_9,
+	PHUSTR_10,
+	PHUSTR_11,
+
+	PHUSTR_12,
+	PHUSTR_13,
+	PHUSTR_14,
+	PHUSTR_15,
+	PHUSTR_16,
+	PHUSTR_17,
+	PHUSTR_18,
+	PHUSTR_19,
+	PHUSTR_20,
+
+	PHUSTR_21,
+	PHUSTR_22,
+	PHUSTR_23,
+	PHUSTR_24,
+	PHUSTR_25,
+	PHUSTR_26,
+	PHUSTR_27,
+	PHUSTR_28,
+	PHUSTR_29,
+	PHUSTR_30,
+	PHUSTR_31,
+	PHUSTR_32
+};
+// TNT WAD map names.
+/*const*/ char *mapnamest[] =
+{
+	THUSTR_1,
+	THUSTR_2,
+	THUSTR_3,
+	THUSTR_4,
+	THUSTR_5,
+	THUSTR_6,
+	THUSTR_7,
+	THUSTR_8,
+	THUSTR_9,
+	THUSTR_10,
+	THUSTR_11,
+
+	THUSTR_12,
+	THUSTR_13,
+	THUSTR_14,
+	THUSTR_15,
+	THUSTR_16,
+	THUSTR_17,
+	THUSTR_18,
+	THUSTR_19,
+	THUSTR_20,
+
+	THUSTR_21,
+	THUSTR_22,
+	THUSTR_23,
+	THUSTR_24,
+	THUSTR_25,
+	THUSTR_26,
+	THUSTR_27,
+	THUSTR_28,
+	THUSTR_29,
+	THUSTR_30,
+	THUSTR_31,
+	THUSTR_32
+};
+
 void resetMapNames() {
 	char*	tmapnames[] =
 	{
@@ -280,11 +356,9 @@ void resetMapNames() {
 
 	};
 	memcpy(mapnames2, tmapnames2, sizeof(tmapnames2));
-}
-
-const char*	mapnamesp[] =
-{
-	PHUSTR_1,
+	/*const*/ char*	tmapnamesp[] =
+	{
+		PHUSTR_1,
 		PHUSTR_2,
 		PHUSTR_3,
 		PHUSTR_4,
@@ -318,12 +392,12 @@ const char*	mapnamesp[] =
 		PHUSTR_30,
 		PHUSTR_31,
 		PHUSTR_32
-};
-
+	};
+	memcpy(mapnamesp, tmapnamesp, sizeof(tmapnamesp));
 	// TNT WAD map names.
-const char *mapnamest[] =
-{
-	THUSTR_1,
+	/*const*/ char *tmapnamest[] =
+	{
+		THUSTR_1,
 		THUSTR_2,
 		THUSTR_3,
 		THUSTR_4,
@@ -357,7 +431,12 @@ const char *mapnamest[] =
 		THUSTR_30,
 		THUSTR_31,
 		THUSTR_32
-};
+	};
+	memcpy(mapnamest, tmapnamest, sizeof(tmapnamest));
+}
+
+
+
 
 
 const char*	shiftxform;
@@ -472,6 +551,12 @@ void HU_Start(void)
 		if (DoomLib::expansionSelected == doom2) {
 			//GK:Use the mapnames2 instead of DOOM2_mapnames
 			s = HU_TITLE2;
+		}
+		else if (DoomLib::expansionSelected == pack_tnt) {
+			s = HU_TITLET;
+		}
+		else if (DoomLib::expansionSelected == pack_plut) {
+			s = HU_TITLEP;
 		}
 		else {
 			if (DoomLib::expansionSelected == 5) {

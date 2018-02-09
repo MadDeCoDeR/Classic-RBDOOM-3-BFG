@@ -51,7 +51,24 @@ extern char*	c7text;
 extern char*	c8Text;
 extern char*	c9Text;
 
+extern char*	p1text;
+extern char*	p2text;
+extern char*	p3text;
+extern char*	p4text;
+extern char*	p5text;
+extern char*	p6text;
+
+extern char*	t1text;
+extern char*	t2text;
+extern char*	t3text;
+extern char*	t4text;
+extern char*	t5text;
+extern char*	t6text;
+
+extern char* finaleflat[];
+
 void resetEndings();
+void ResetFinalflat();
 // Called by main loop.
 qboolean F_Responder (event_t* ev);
 

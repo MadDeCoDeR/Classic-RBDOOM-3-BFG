@@ -75,6 +75,20 @@ If you have questions concerning this license or the applicable additional terms
 /*const*/ char* c8Text = C8TEXT;
 /*const*/ char* c9Text = C9TEXT;
 
+/*const*/ char*	p1text = P1TEXT;
+/*const*/ char*	p2text = P2TEXT;
+/*const*/ char*	p3text = P3TEXT;
+/*const*/ char*	p4text = P4TEXT;
+/*const*/ char*	p5text = P5TEXT;
+/*const*/ char*	p6text = P6TEXT;
+
+/*const*/ char*	t1text = T1TEXT;
+/*const*/ char*	t2text = T2TEXT;
+/*const*/ char*	t3text = T3TEXT;
+/*const*/ char*	t4text = T4TEXT;
+/*const*/ char*	t5text = T5TEXT;
+/*const*/ char*	t6text = T6TEXT;
+
 void resetEndings() {
 	e1text = E1TEXT;
 	e2text = E2TEXT;
@@ -90,24 +104,58 @@ void resetEndings() {
 	c7text = C7TEXT;
 	c8Text = C8TEXT; 
 	c9Text = C9TEXT;
+
+	p1text = P1TEXT;
+	p2text = P2TEXT;
+	p3text = P3TEXT;
+	p4text = P4TEXT;
+	p5text = P5TEXT;
+	p6text = P6TEXT;
+
+	t1text = T1TEXT;
+	t2text = T2TEXT;
+	t3text = T3TEXT;
+	t4text = T4TEXT;
+	t5text = T5TEXT;
+	t6text = T6TEXT;
 }
 
-const char*	p1text = P1TEXT;
-const char*	p2text = P2TEXT;
-const char*	p3text = P3TEXT;
-const char*	p4text = P4TEXT;
-const char*	p5text = P5TEXT;
-const char*	p6text = P6TEXT;
 
-const char*	t1text = T1TEXT;
-const char*	t2text = T2TEXT;
-const char*	t3text = T3TEXT;
-const char*	t4text = T4TEXT;
-const char*	t5text = T5TEXT;
-const char*	t6text = T6TEXT;
 
 const char*	finaletext;
-const char*	finaleflat;
+int flatind = -1;
+/*const*/ char*	finaleflat[] = {
+	{"FLOOR4_8"},
+{ "SFLR6_1" },
+{ "MFLR8_4" },
+{ "MFLR8_3" },
+{ "SLIME16" },
+{ "RROCK14" },
+{ "RROCK07" },
+{ "RROCK17" },
+{ "RROCK13" },
+{ "RROCK19" },
+{"F_SKY1"}
+
+};
+
+void ResetFinalflat() {
+	/*const*/ char*	tfinaleflat[] = {
+		{ "FLOOR4_8" },
+	{ "SFLR6_1" },
+	{ "MFLR8_4" },
+	{ "MFLR8_3" },
+	{ "SLIME16" },
+	{ "RROCK14" },
+	{ "RROCK07" },
+	{ "RROCK17" },
+	{ "RROCK13" },
+	{ "RROCK19" },
+	{ "F_SKY1" }
+
+	};
+	memcpy(finaleflat, tfinaleflat, sizeof(tfinaleflat));
+}
 
 void	F_StartCast (void);
 void	F_CastTicker (void);
@@ -155,19 +203,19 @@ void F_StartFinale (void)
 			switch (::g->gameepisode)
 			{
 			  case 1:
-				finaleflat = "FLOOR4_8";
+				flatind=0;
 				finaletext = e1text;
 				break;
 			  case 2:
-				finaleflat = "SFLR6_1";
+				flatind=1;
 				finaletext = e2text;
 				break;
 			  case 3:
-				finaleflat = "MFLR8_4";
+				flatind=2;
 				finaletext = e3text;
 				break;
 			  case 4:
-				finaleflat = "MFLR8_3";
+				flatind=3;
 				finaletext = e4text;
 				break;
 			  default:
@@ -186,7 +234,7 @@ void F_StartFinale (void)
 				switch (::g->gamemap)
 				{
 				  case 6:
-					finaleflat = "SLIME16";
+					flatind=4;
 					//GK: Show properly Evilution and Plutonia finale texts
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t1text;
@@ -199,7 +247,7 @@ void F_StartFinale (void)
 					}
 					break;
 				  case 11:
-					finaleflat = "RROCK14";
+					flatind=5;
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t2text;
 					}
@@ -211,7 +259,7 @@ void F_StartFinale (void)
 					}
 					break;
 				  case 20:
-					finaleflat = "RROCK07";
+					flatind=6;
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t3text;
 					}
@@ -223,7 +271,7 @@ void F_StartFinale (void)
 					}
 					break;
 				  case 30:
-					finaleflat = "RROCK17";
+					flatind=7;
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t4text;
 					}
@@ -235,7 +283,7 @@ void F_StartFinale (void)
 					}
 					break;
 				  case 15:
-					finaleflat = "RROCK13";
+					flatind=8;
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t5text;
 					}
@@ -247,7 +295,7 @@ void F_StartFinale (void)
 					}
 					break;
 				  case 31:
-					finaleflat = "RROCK19";
+					flatind=9;
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t6text;
 					}
@@ -266,11 +314,11 @@ void F_StartFinale (void)
 				switch (::g->gamemap)
 				{
 					case 20:
-						finaleflat = "SLIME16";
+						flatind=4;
 						finaletext = c8Text;
 						break;
 					case 21:
-						finaleflat = "SLIME16";
+						flatind=4;
 						finaletext = c9Text;
 						if (::g->gameskill >= 2) { //GK: No reward for "Cry babies"
 							if (com_allowConsole.GetInteger() == 0 && !::g->classiccheats) {
@@ -282,7 +330,7 @@ void F_StartFinale (void)
 			} else if ( ::g->gamemission == pack_nerve ) {
 				switch( ::g->gamemap ){
 					case 8:
-						finaleflat = "SLIME16";
+						flatind=4;
 						finaletext = c7text;
 						break;
 				}
@@ -294,7 +342,7 @@ void F_StartFinale (void)
 		// Indeterminate.
 		default:
 			S_ChangeMusic(mus_read_m, true);
-			finaleflat = "F_SKY1"; // Not used anywhere else.
+			flatind=10; // Not used anywhere else.
 			finaletext = c1text;  // FIXME - other text, music?
 			break;
 	}
@@ -427,7 +475,7 @@ void F_TextWrite (void)
 	}
 
     // erase the entire screen to a tiled background
-    src = (byte*)W_CacheLumpName ( finaleflat , PU_CACHE_SHARED);
+    src = (byte*)W_CacheLumpName ( finaleflat[flatind] , PU_CACHE_SHARED);
     dest = ::g->screens[0];
 	
     for (y=0 ; y<SCREENHEIGHT ; y++)

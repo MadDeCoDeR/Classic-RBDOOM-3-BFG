@@ -209,7 +209,84 @@ dehstr strval[] = {
 	{ &PD_YELLOWO,"PD_YELLOWO" },
 	{ &PD_BLUEK,"PD_BLUEK" },
 	{ &PD_REDK,"PD_REDK" },
-	{ &PD_YELLOWK,"PD_YELLOWK" }
+	{ &PD_YELLOWK,"PD_YELLOWK" },
+	{ &mapnamesp[0],"PHUSTR_1" },
+	{ &mapnamesp[1],"PHUSTR_2" },
+	{ &mapnamesp[2],"PHUSTR_3" },
+	{ &mapnamesp[3],"PHUSTR_4" },
+	{ &mapnamesp[4],"PHUSTR_5" },
+	{ &mapnamesp[5],"PHUSTR_6" },
+	{ &mapnamesp[6],"PHUSTR_7" },
+	{ &mapnamesp[7],"PHUSTR_8" },
+	{ &mapnamesp[8],"PHUSTR_9" },
+	{ &mapnamesp[9],"PHUSTR_10" },
+	{ &mapnamesp[10],"PHUSTR_11" },
+	{ &mapnamesp[11],"PHUSTR_12" },
+	{ &mapnamesp[12],"PHUSTR_13" },
+	{ &mapnamesp[13],"PHUSTR_14" },
+	{ &mapnamesp[14],"PHUSTR_15" },
+	{ &mapnamesp[15],"PHUSTR_16" },
+	{ &mapnamesp[16],"PHUSTR_17" },
+	{ &mapnamesp[17],"PHUSTR_18" },
+	{ &mapnamesp[18],"PHUSTR_19" },
+	{ &mapnamesp[19],"PHUSTR_20" },
+	{ &mapnamesp[20],"PHUSTR_21" },
+	{ &mapnamesp[21],"PHUSTR_22" },
+	{ &mapnamesp[22],"PHUSTR_23" },
+	{ &mapnamesp[23],"PHUSTR_24" },
+	{ &mapnamesp[24],"PHUSTR_25" },
+	{ &mapnamesp[25],"PHUSTR_26" },
+	{ &mapnamesp[26],"PHUSTR_27" },
+	{ &mapnamesp[27],"PHUSTR_28" },
+	{ &mapnamesp[28],"PHUSTR_29" },
+	{ &mapnamesp[29],"PHUSTR_30" },
+	{ &mapnamesp[30],"PHUSTR_31" },
+	{ &mapnamesp[31],"PHUSTR_32" },
+	{ &mapnamest[0],"THUSTR_1" },
+	{ &mapnamest[1],"THUSTR_2" },
+	{ &mapnamest[2],"THUSTR_3" },
+	{ &mapnamest[3],"THUSTR_4" },
+	{ &mapnamest[4],"THUSTR_5" },
+	{ &mapnamest[5],"THUSTR_6" },
+	{ &mapnamest[6],"THUSTR_7" },
+	{ &mapnamest[7],"THUSTR_8" },
+	{ &mapnamest[8],"THUSTR_9" },
+	{ &mapnamest[9],"THUSTR_10" },
+	{ &mapnamest[10],"THUSTR_11" },
+	{ &mapnamest[11],"THUSTR_12" },
+	{ &mapnamest[12],"THUSTR_13" },
+	{ &mapnamest[13],"THUSTR_14" },
+	{ &mapnamest[14],"THUSTR_15" },
+	{ &mapnamest[15],"THUSTR_16" },
+	{ &mapnamest[16],"THUSTR_17" },
+	{ &mapnamest[17],"THUSTR_18" },
+	{ &mapnamest[18],"THUSTR_19" },
+	{ &mapnamest[19],"THUSTR_20" },
+	{ &mapnamest[20],"THUSTR_21" },
+	{ &mapnamest[21],"THUSTR_22" },
+	{ &mapnamest[22],"THUSTR_23" },
+	{ &mapnamest[23],"THUSTR_24" },
+	{ &mapnamest[24],"THUSTR_25" },
+	{ &mapnamest[25],"THUSTR_26" },
+	{ &mapnamest[26],"THUSTR_27" },
+	{ &mapnamest[27],"THUSTR_28" },
+	{ &mapnamest[28],"THUSTR_29" },
+	{ &mapnamest[29],"THUSTR_30" },
+	{ &mapnamest[30],"THUSTR_31" },
+	{ &mapnamest[31],"THUSTR_32" },
+	{ &p1text,"P1TEXT" },
+	{ &p2text,"P2TEXT" },
+	{ &p3text,"P3TEXT" },
+	{ &p4text,"P4TEXT" },
+	{ &p5text,"P5TEXT" },
+	{ &p6text,"P6TEXT" },
+	{ &t1text,"T1TEXT" },
+	{ &t2text,"T2TEXT" },
+	{ &t3text,"T3TEXT" },
+	{ &t4text,"T4TEXT" },
+	{ &t5text,"T5TEXT" },
+	{ &t6text,"T6TEXT" },
+
 };
 
 
@@ -467,97 +544,120 @@ void setThing(int pos, char* varname, int varval) {
 	if (!idStr::Icmp(varname, "Initial frame ")) {
 		if (varval < NUMSTATES) {
 			mobjinfo[pos].spawnstate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Hit points ")) {
 		mobjinfo[pos].spawnhealth = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "First moving frame ")) {
 		if (varval < NUMSTATES) {
 			mobjinfo[pos].seestate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Alert sound ")) {
 		if (varval < NUMSFX) {
 			mobjinfo[pos].seesound = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Reaction time ")) {
 		mobjinfo[pos].reactiontime = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Attack sound ")) {
 		if (varval < NUMSFX) {
 			mobjinfo[pos].attacksound = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Injury frame ")) {
 		if (varval < NUMSTATES) {
 			mobjinfo[pos].painstate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Pain chance ")) {
 		mobjinfo[pos].painchance = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Pain sound ")) {
 		if (varval < NUMSFX) {
 			mobjinfo[pos].painsound = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Close attack frame ")) {
 		if (varval < NUMSTATES) {
 			mobjinfo[pos].meleestate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Far attack frame ")) {
 		if (varval < NUMSTATES) {
 			mobjinfo[pos].missilestate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Death frame ")) {
 		if (varval < NUMSTATES) {
 			mobjinfo[pos].deathstate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Exploding frame ")) {
 		if (varval < NUMSTATES) {
 			mobjinfo[pos].xdeathstate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Death sound ")) {
 		if (varval < NUMSFX) {
 			mobjinfo[pos].deathsound = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Speed ")) {
 		mobjinfo[pos].speed = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Width ")) {
 		mobjinfo[pos].radius = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Height ")) {
 		mobjinfo[pos].height = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Mass ")) {
 		mobjinfo[pos].mass = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Missle damage ")) {
 		mobjinfo[pos].damage = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Action sound ")) {
 		if (varval < NUMSFX) {
 			mobjinfo[pos].activesound = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Bits ")) {
 		mobjinfo[pos].flags = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Respawn frame ")) {
 		if (varval < NUMSTATES) {
 			mobjinfo[pos].raisestate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "ID # ")) {
 		mobjinfo[pos].doomednum = varval;
+		return;
 	}
 }
 
@@ -565,24 +665,30 @@ void setFrame(int pos, char* varname, int varval) {
 	if (!idStr::Icmp(varname, "Sprite number ")) {
 		if (varval < NUMSPRITES) {
 			tempStates[pos].sprite = static_cast<spritenum_t> (varval);
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Sprite subnumber ")) {
 		tempStates[pos].frame = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Next frame ")) {
 		if (varval < NUMSTATES) {
 			tempStates[pos].nextstate = static_cast<statenum_t> (varval);
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Duration ")) {
 		tempStates[pos].tics = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Unknown 1 ")) {
 		tempStates[pos].misc1 = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Unknown 2 ")) {
 		tempStates[pos].misc2 = varval;
+		return;
 	}
 }
 
@@ -590,31 +696,37 @@ void setWeapon(int pos, char* varname, int varval) {
 	if (!idStr::Icmp(varname, "Ammo type ")) {
 		if (varval < NUMAMMO) {
 			weaponinfo[pos].ammo = static_cast<ammotype_t>(varval);
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Select frame ")) {
 		if (varval < NUMSTATES) {
 			weaponinfo[pos].downstate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Deselect frame ")) {
 		if (varval < NUMSTATES) {
 			weaponinfo[pos].upstate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Bobbing frame ")) {
 		if (varval < NUMSTATES) {
 			weaponinfo[pos].readystate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Shooting frame ")) {
 		if (varval < NUMSTATES) {
 			weaponinfo[pos].atkstate = varval;
+			return;
 		}
 	}
 	else if (!idStr::Icmp(varname, "Firing frame ")) {
 		if (varval < NUMSTATES) {
 			weaponinfo[pos].flashstate = varval;
+			return;
 		}
 	}
 }
@@ -644,9 +756,11 @@ void setCptr(char* varname, char* varfunc) {
 void setAmmo(int pos, char* varname, int varval) {
 	if (!idStr::Icmp(varname, "Max Ammo ")) {
 		maxammo[pos] = varval;
+		return;
 	}
 	else if (!idStr::Icmp(varname, "Per Ammo ")) {
 		clipammo[pos] = varval;
+		return;
 	}
 }
 //More Headache than it's worth
@@ -748,24 +862,31 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 	//idLib::Printf("Replacing: %s with %s size %i\n", otxt, ntxt,nsize);
 	int arrsz = sizeof(strval) / sizeof(*strval);
 	if (otxt != nullptr) {
-		bool replaced = false;
 		for (int j = 0; j < arrsz; j++) {
 
 			if (!idStr::Icmp(otxt, *strval[j].var)) {
 				*strval[j].var=ntxt;
-				replaced = true;
-				//free(ntxt);
-				break;
+				return;
 			}
 		}
-		if (!replaced) {
 			for (int m = 0; m < NUMSPRITES; m++) {
 				if (!idStr::Icmp(otxt, sprnames[m])) {
 					sprnames[m] = ntxt;
-					break;
+					return;
 				}
 			}
-		}
+			for (int m = 0; m < 11; m++) {
+				if (!idStr::Icmp(otxt, finaleflat[m])) {
+					finaleflat[m] = ntxt;
+					return;
+				}
+			}
+			for (int m = 1; m < NUMMUSIC; m++) {
+				if (!idStr::Icmp(otxt, ::g->S_music[m].name)) {
+					::g->S_music[m].name = ntxt;
+					return;
+				}
+			}
 	}
 	//free(otxt);
 	
@@ -777,9 +898,11 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 void setPars(int pos, int val, int val2) {
 	if (val2 == -1) {
 		cpars[pos-1] = val;
+		return;
 	}
 	else {
 		pars[pos][val] = val2;
+		return;
 	}
 }
 
@@ -790,7 +913,7 @@ void setBText(char* varname, char* text) {
 	for (int i = 0; i < arrsz; i++) {
 		if (!idStr::Icmp(varname, strval[i].name)) {
 			*strval[i].var = text;
-			break;
+			return;
 		}
 	}
 }

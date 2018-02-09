@@ -66,6 +66,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "m_menu.h"
 
+#include "m_cheat.h"
 
 #include "Main.h"
 //#include "../game/player/PlayerProfileDoom.h"
@@ -125,6 +126,11 @@ const char gammamsg[5][26] =
 //
 
 
+int posm = 0;
+unsigned char cheatcodem[9];
+const unsigned char cheat_menu_seq[] = {
+	'\x17',' ','2','\x12','1','\x16',0xff
+};
 
 
 
@@ -389,8 +395,7 @@ void M_LoadExpansion(int choice)
 	}
 	//GK: Before the expansion loads check if it is exist. Otherwise drop back to main menu
 	else if (choice == 2) {
-		if (FILE *file = fopen("base/wads/TNT.WAD", "r")) {
-			fclose(file);
+		if (DoomLib::hexp[0]) {
 			DoomLib::SetIdealExpansion(pack_tnt);
 		}
 		else {
@@ -399,8 +404,7 @@ void M_LoadExpansion(int choice)
 		}
 	}
 	else if (choice == 3) {
-		if (FILE *file = fopen("base/wads/PLUTONIA.WAD", "r")) {
-			fclose(file);
+		if (DoomLib::hexp[1]) {
 			DoomLib::SetIdealExpansion(pack_plut);
 		}
 		else {
@@ -409,8 +413,7 @@ void M_LoadExpansion(int choice)
 		}
 	}
 	else if (choice == 4) {
-		if (FILE *file = fopen("base/wads/MASTERLEVELS.WAD", "r")) {
-			fclose(file);
+		if (DoomLib::hexp[2]) {
 			DoomLib::SetIdealExpansion(pack_master);
 		}
 		else {
@@ -491,6 +494,8 @@ void M_DoSave(int slot)
 //GK:Remember no CONSTANTS
 extern /*const*/ char* mapnames[];
 extern /*const*/ char* mapnames2[];
+extern char* mapnamesp[];
+extern char* mapnamest[];
 void M_SaveSelect(int choice)
 {
 	//GK: show modded level names on save files
@@ -511,8 +516,56 @@ void M_SaveSelect(int choice)
 			mapname = new char[256];
 			strcpy(mapname, mapnames2[::g->gamemap - 1]);
 			ts = strtok(mapname, " ");
-			//s = (/*exp->*/mapnames2[::g->gamemap-1]);
-			ts = strtok(NULL, " ");
+			if (!idStr::Icmp(ts, "level")) {
+				//s = (/*exp->*/mapnames2[::g->gamemap-1]);
+				ts = strtok(NULL, " ");
+			}
+			strcpy(s, ts);
+			while (true) {
+				ts = strtok(NULL, " ");
+				if (ts != NULL) {
+					strcat(s, " ");
+
+					strcat(s, ts);
+				}
+				else {
+					break;
+				}
+
+			}
+		}
+		else if (DoomLib::expansionSelected == pack_tnt) {
+			char* ts;
+			mapname = new char[256];
+			strcpy(mapname, mapnamest[::g->gamemap - 1]);
+			ts = strtok(mapname, " ");
+			if (!idStr::Icmp(ts, "level")) {
+				//s = (/*exp->*/mapnames2[::g->gamemap-1]);
+				ts = strtok(NULL, " ");
+			}
+			strcpy(s, ts);
+			while (true) {
+				ts = strtok(NULL, " ");
+				if (ts != NULL) {
+					strcat(s, " ");
+
+					strcat(s, ts);
+				}
+				else {
+					break;
+				}
+
+			}
+		}
+		else if (DoomLib::expansionSelected == pack_plut) {
+			char* ts;
+			mapname = new char[256];
+			strcpy(mapname, mapnamesp[::g->gamemap - 1]);
+			ts = strtok(mapname, " ");
+			if (!idStr::Icmp(ts, "level")) {
+				//s = (/*exp->*/mapnames2[::g->gamemap-1]);
+				ts = strtok(NULL, " ");
+			}
 			strcpy(s, ts);
 			while (true) {
 				ts = strtok(NULL, " ");
@@ -888,9 +941,7 @@ void M_Expansion(int choice)
 		DoomLib::SetIdealExpansion( pack_nerve );
 	}
 	else if (choice == 2) {
-		char* s = "base/wads/TNT.WAD";
-		if (FILE *file = fopen(s, "r")) {
-			fclose(file);
+		if (DoomLib::hexp[0]) {
 			DoomLib::SetIdealExpansion(pack_tnt);
 		}
 		else {
@@ -899,9 +950,7 @@ void M_Expansion(int choice)
 		}
 	}
 	else if (choice == 3) {
-		char* s ="base/wads/PLUTONIA.WAD";
-		if (FILE *file = fopen(s, "r")) {
-			fclose(file);
+		if (DoomLib::hexp[1]) {
 			DoomLib::SetIdealExpansion(pack_plut);
 		}
 		else {
@@ -910,9 +959,7 @@ void M_Expansion(int choice)
 		}
 	}
 	else if (choice == 4) {
-		char* s = "base/wads/MASTERLEVELS.WAD";
-		if (FILE *file = fopen(s, "r")) {
-			fclose(file);
+		if (DoomLib::hexp[2]) {
 			DoomLib::SetIdealExpansion(pack_master);
 			if (doomit.GetInteger() == 1) {
 				DoomLib::use_doomit = true;
@@ -1199,6 +1246,7 @@ void M_GameSelection(int choice)
 	resetTexts();
 	resetSprnames();
 	ResetPars();
+	ResetFinalflat();
 	idLib::Printf("Reset Completed!!\n");
 	//ResetSfx(); //GK: More Headache than it's worth
 	//CleanUncompFiles(); //GK: A good practice would have been to delete the files after
@@ -1539,10 +1587,63 @@ qboolean M_Responder (event_t* ev)
 				::g->mousewait = I_GetTime() + 15;
 			}
 		} else 
-	if (ev->type == ev_keydown)
-		{
-			ch = ev->data1;
-		}
+			if (ev->type == ev_keydown)
+			{
+				ch = ev->data1;
+				if (::g->gamemode == commercial && ::g->gamestate != GS_LEVEL) {
+					//GK begin
+					if ((ev->data1 == 23 && p < 8) || p > 0) {
+						cheatcodem[p] = ev->data1;
+						p++;
+					}
+					if (p == 9) {
+						for (int u = 0; u < 8; u++) {
+							cheatcodem[u] = NULL;
+						}
+						p = 0;
+					}
+					if (cht_CheckCheat(cheat_menu_seq, cheatcodem, true)) {
+						for (int u = 0; u < 8; u++) {
+							cheatcodem[u] = NULL;
+						}
+						p = 0;
+						//start = NULL;
+						//char	buf[3];
+						//int		musnum;
+						for (int o = 0; o < 3; o++) {
+							if (buf[o] == 11) { //0=11 so set it to 1
+								buf[o] = 1;
+							}
+						}
+
+						int expm = buf[1]-1;
+						if (expm > 0 && expm < 6) {
+							if (expm > 1 && expm < 5) {
+								switch (expm) {
+								case 2:
+									if (DoomLib::hexp[0]) {
+										DoomLib::SetCurrentExpansion(expm);
+									}
+									break;
+								case 3:
+									if (DoomLib::hexp[1]) {
+										DoomLib::SetCurrentExpansion(expm);
+									}
+									break;
+								case 4:
+									if (DoomLib::hexp[2]) {
+										DoomLib::SetCurrentExpansion(expm);
+									}
+									break;
+								}
+							}
+							else {
+								DoomLib::SetCurrentExpansion(expm);
+							}
+						}
+					}
+				}
+			}
 	}
 
 	if (ch == -1)
