@@ -1499,8 +1499,12 @@ qboolean G_CheckSave(char* name) {
 				filelist.push_back(file);
 				file = strtok(NULL, ",");
 			}
+			int sc = filelist.size()-1;
+			int ac = 0;
+			bool movetonext;
 			for (int mf = 0; mf < filelist.size() - 1; mf++) {
 				for (int f = 1; f < 20; f++) {
+					movetonext = false;
 					if (wadfiles[f] != NULL) {
 						char* fname = strtok(strdup(wadfiles[f]), "\\");
 						while (fname) {
@@ -1515,32 +1519,39 @@ qboolean G_CheckSave(char* name) {
 
 						if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
 							if (DoomLib::expansionSelected == ::g->gamemission) {
-								ok = true;
+								ac++;
+								if (ac == sc) {
+									ok = true;
+								}
 								break;
 							}
 							else {
-								ok = false;
+								
 								break;
 							}
 						}
 						else {
-							ok = false;
+							
 							for (int i = 0; i < 5; i++) {
 								for (int j = 0; j < 20; j++) {
 									if (i+1 != ::g->gamemission) {
 										if (DoomLib::otherfiles[i][j] != NULL) {
 											if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[i][j])) {
-												ok = true;
+												ac++;
+												movetonext = true;
+												if (ac == sc) {
+													ok = true;
+												}
 												break;
 											}
-											else {
-												ok = false;
-											}
+											//else {
+												
+											//}
 										}
 										else {
-											if (j == 0) {
-												ok = false;
-											}
+											//if (j == 0) {
+												
+											//}
 											break;
 										}
 									}
@@ -1554,7 +1565,9 @@ qboolean G_CheckSave(char* name) {
 							
 							//ok = false;
 						}
-
+						if (movetonext) {
+							break;
+						}
 
 					}
 					else {
@@ -1562,6 +1575,7 @@ qboolean G_CheckSave(char* name) {
 					}
 				}
 			}
+			
 		}
 		if (!ok) {
 			loadingGame = false;
@@ -1635,8 +1649,12 @@ qboolean G_DoLoadGame ()
 				filelist.push_back(file);
 				file = strtok(NULL, ",");
 			}
+			int sc = filelist.size()-1;
+			int ac = 0;
+			bool movetonext;
 			for (int mf = 0; mf < filelist.size()-1; mf++) {
 				for (int f = 1; f < 20; f++) {
+					movetonext = false;
 					if (wadfiles[f] != NULL) {
 						char* fname = strtok(strdup(wadfiles[f]), "\\");
 						while (fname) {
@@ -1651,32 +1669,39 @@ qboolean G_DoLoadGame ()
 
 						if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
 							if (DoomLib::expansionSelected == ::g->gamemission) {
-								ok = true;
+								ac++;
+								if (ac == sc) {
+									ok = true;
+								}
 								break;
 							}
 							else {
-								ok = false;
+								
 								break;
 							}
 						}
 						else {
-							ok = false;
+							
 							for (int i = 0; i < 5; i++) {
 								for (int j = 0; j < 20; j++) {
 									if (i+1 != ::g->gamemission) {
 										if (DoomLib::otherfiles[i][j] != NULL) {
 											if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[i][j])) {
-												ok = true;
+												ac++;
+												movetonext = true;
+												if (ac == sc) {
+													ok = true;
+												}
 												break;
 											}
-											else {
-												ok = false;
-											}
+											//else {
+												
+											//}
 										}
 										else {
-											if (j == 0) {
+											/*if (j == 0) {
 												ok = false;
-											}
+											}*/
 											break;
 										}
 									}
@@ -1690,7 +1715,9 @@ qboolean G_DoLoadGame ()
 							
 								//ok = false;
 						}
-
+						if (movetonext) {
+							break;
+						}
 
 					}
 					else {
