@@ -4,6 +4,31 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+09 February 2018 - Classic RBDOOM-3-BFG 1.1.7.1
+_______________________________
+
+[classicdoom]
+
+-Optimize expansion checking
+
+-Optimize Dehacked editor
+
+-Added more texts for Text Editor
+
+-Added Final DOOM map names and finale scripts to dehacked text editor
+
+-BFG Edition option labels will no longer change with mods
+
+-Improved Save file checking
+
+-Added Support for stand MiDi files
+
+
+[Launcher]
+
+-Optimize argument parsing
+_______________________________________
+
 05 February 2018 - Classic RBDOOM-3-BFG 1.1.7
 _______________________________
 
