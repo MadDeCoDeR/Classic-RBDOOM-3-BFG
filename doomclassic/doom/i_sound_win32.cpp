@@ -908,8 +908,10 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 	unsigned char * musFile = static_cast< unsigned char * >( W_CacheLumpName( lumpName.c_str(), PU_STATIC_SHARED ) );
 
 	int length = 0;
+	//GK: Capture it's return value and use it to determine if the file is mus or not
 	int res = Mus2Midi( musFile, midiConversionBuffer, &length );
 	if (res == 0) {
+		//GK:if not mus file load it raw
 		doomMusic = Timidity_LoadSongMem(musFile, W_LumpLength(W_CheckNumForName(lumpName.c_str())));
 	}
 	else {
