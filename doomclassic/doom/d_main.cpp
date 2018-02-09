@@ -542,8 +542,6 @@ void D_DoomMain(void)
 	FindResponseFile();
 
 	IdentifyVersion();
-	//GK: New pwad for compatibility with the original DOOM And DOOMII IWADs
-	D_AddFile("wads/newopt.wad");
 	//GK: New pwad for compatibility with Evilution and Plutonia (only for DOOM II)
 	if (::g->gamemode == commercial) {
 		D_AddFile("wads/ua.wad");
@@ -640,9 +638,6 @@ void D_DoomMain(void)
 		if (p)
 		{
 			::g->exp = ::g->myargv[p + 1][0] - '0';
-			char* s1 = "base/wads/TNT.WAD";
-			char* s2 = "base/wads/PLUTONIA.WAD";
-			char* s3 = "base/wads/MASTERLEVELS.WAD";
 			switch (::g->exp) {
 			case 1:
 				DoomLib::SetIdealExpansion(doom2);
@@ -652,8 +647,7 @@ void D_DoomMain(void)
 				break;
 			case 3:
 
-				if (FILE *file = fopen(s1, "r")) {
-					fclose(file);
+				if (DoomLib::hexp[0]) {
 					DoomLib::SetIdealExpansion(pack_tnt);
 				}
 				else {
@@ -662,8 +656,7 @@ void D_DoomMain(void)
 				break;
 			case 4:
 
-				if (FILE *file = fopen(s2, "r")) {
-					fclose(file);
+				if (DoomLib::hexp[1]) {
 					DoomLib::SetIdealExpansion(pack_plut);
 				}
 				else {
@@ -672,8 +665,7 @@ void D_DoomMain(void)
 				break;
 			case 5:
 
-				if (FILE *file = fopen(s3, "r")) {
-					fclose(file);
+				if (DoomLib::hexp[2]) {
 					DoomLib::SetIdealExpansion(pack_master);
 				}
 				else {
@@ -690,7 +682,7 @@ void D_DoomMain(void)
 			DoomLib::skipToNew = true;
 			//GK: Re init wad files to apply the change
 			IdentifyVersion();
-			D_AddFile("wads/newopt.wad");
+			//D_AddFile("wads/newopt.wad");
 			//GK: New pwad for compatibility with Evilution and Plutonia (only for DOOM II)
 			if (::g->gamemode == commercial) {
 				D_AddFile("wads/ua.wad");
@@ -851,7 +843,8 @@ void D_DoomMain(void)
 			}
 		//GK End
 	}
-
+	//GK: New pwad for compatibility with the original DOOM And DOOMII IWADs
+	D_AddFile("wads/newopt.wad");
 	p = M_CheckParm ("-playdemo");
 
 	if (!p)
