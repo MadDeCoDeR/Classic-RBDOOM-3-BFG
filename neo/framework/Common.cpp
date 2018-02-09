@@ -1458,6 +1458,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		// RB begin
 #if defined(USE_DOOMCLASSIC)
 		// Initialize support for Doom classic.
+		W_CheckExp();
 		doomClassicMaterial = declManager->FindMaterial( "_doomClassic" );
 		idImage* image = globalImages->GetImage( "_doomClassic" );
 		if( image != NULL )

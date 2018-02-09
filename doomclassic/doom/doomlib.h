@@ -145,6 +145,7 @@ namespace DoomLib
 	extern int					chosenSkill;
 	extern int					chosenEpisode;
 	extern bool					use_doomit;
+	extern bool					hexp[3];
 	extern int					selection;
 
 	extern char*				otherfiles[5][20];

@@ -160,6 +160,7 @@ namespace DoomLib
 	int								chosenSkill = 0;
 	int								chosenEpisode = 1;
 	bool							use_doomit = false;
+	bool							hexp[3];
 	int								selection = -1;
 	char*							otherfiles[5][20];
 

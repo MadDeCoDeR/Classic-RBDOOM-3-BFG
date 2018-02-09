@@ -400,6 +400,7 @@ void W_AddFile ( const char *filename)
 					if ((!idStr::Cmpn(filelumpPointer->name, "DEHACKED", 8)) || (!idStr::Icmp(filename + strlen(filename) - 3, "deh")) || (!idStr::Icmp(filename + strlen(filename) - 3, "bex"))) {
 						//idLib::Printf("Adding DeHackeD file %s\n",filelumpPointer->name);
 						loaddeh(i);
+						
 					}
 				}
 				else {
@@ -492,6 +493,7 @@ void W_FreeWadFiles() {
 		resetTexts();
 		resetSprnames();
 		ResetPars();
+		ResetFinalflat();
 		idLib::Printf("Reset Completed!!\n");
 	}
 	//GK End
@@ -884,6 +886,7 @@ void MakeMaster_Wad() {
 	else if (info.st_mode & S_IFDIR){
 		idLib::Printf("Found Directry\n");
 		MasterList();
+		DoomLib::hexp[2] = true;
 		return;
 	}
 }
@@ -1148,4 +1151,19 @@ void MasterList() {
 	of.flush();
 	//GK: Nothing to see here (or close in that mater)
 	return;
+}
+
+void W_CheckExp() {
+	if (FILE *file = fopen("base/wads/TNT.WAD", "r")) {
+		fclose(file);
+		DoomLib::hexp[0] = true;
+	}
+	if (FILE *file = fopen("base/wads/PLUTONIA.WAD", "r")) {
+		fclose(file);
+		DoomLib::hexp[1] = true;
+	}
+	if (FILE *file = fopen("base/wads/MASTERLEVELS.WAD", "r")) {
+		fclose(file);
+		DoomLib::hexp[2] = true;
+	}
 }

@@ -100,5 +100,6 @@ void CleanUncompFiles(bool unalloc);
 void MakeMaster_Wad();
 void uncompressMaster();
 void MasterList();
+void W_CheckExp();
 #endif
 
