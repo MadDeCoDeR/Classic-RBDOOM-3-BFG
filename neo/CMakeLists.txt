@@ -1262,6 +1262,7 @@ if(MSVC)
 			include_directories(libs/ffmpeg-win64/include/libavformat)
 			include_directories(libs/ffmpeg-win64/include/libavdevice)
 			include_directories(libs/ffmpeg-win64/include/libavcodec)
+			include_directories(libs/ffmpeg-win64/include/libswresample)
 			
 			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg-win64/lib)
 		else()
@@ -1270,6 +1271,7 @@ if(MSVC)
 			include_directories(libs/ffmpeg-win32/include/libavformat)
 			include_directories(libs/ffmpeg-win32/include/libavdevice)
 			include_directories(libs/ffmpeg-win32/include/libavcodec)
+			include_directories(libs/ffmpeg-win32/include/libswresample)
 			
 			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg-win32/lib)
 		endif()
@@ -1278,7 +1280,8 @@ if(MSVC)
 				avcodec
 				avformat
 				avutil
-				swscale)
+				swscale
+				swresample)
 		
 	endif()
 	
