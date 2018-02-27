@@ -156,6 +156,9 @@ void W_AddFile ( const char *filename)
     // open the file and add to directory
     if ( (handle = fileSystem->OpenFileRead(filename)) == 0)
     {
+		if (!idStr::Icmp(filename, "wads/DOOM.wad") || !idStr::Icmp(filename, "wads/DOOM2.wad") || !idStr::Icmp(filename, "wads/NERVE.wad") || !idStr::Icmp(filename, "wads/newopt.wad") || !idStr::Icmp(filename, "wads/ua.wad") || !idStr::Icmp(filename, "wads/mlbls.wad")) {
+			common->FatalError("Doom Classic Error : Unable to load %s", filename);
+		}
 		idLib::Printf(" couldn't open %s\n", filename);
 		I_Printf (" couldn't open %s\n",filename);
 		return;
@@ -885,8 +888,9 @@ void MakeMaster_Wad() {
 		return;
 	else if (info.st_mode & S_IFDIR){
 		idLib::Printf("Found Directry\n");
-		MasterList();
 		DoomLib::hexp[2] = true;
+		MasterList();
+		
 		return;
 	}
 }
@@ -980,6 +984,10 @@ void MasterList() {
 		// open the file and add to directory
 		if ((handle = fileSystem->OpenFileRead(filename)) == 0)
 		{
+			idLib::Printf("Doom Classic Error : Master Levels generation failed\n");
+			of.close();
+			DoomLib::hexp[2] = false;
+			remove("base//wads//MASTERLEVELS.wad");
 			return;
 		}
 		startlump = nlps;
