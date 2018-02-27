@@ -33,6 +33,8 @@ If you have questions concerning this license or the applicable additional terms
 
 static const int NUM_GAME_SELECTIONS_VISIBLE = 5;
 extern idCVar g_demoMode;
+extern idCVar in_joylayout;
+const idMaterial* joy1, *joy2;
 
 namespace
 {
@@ -107,6 +109,13 @@ void idMenuScreen_Shell_PressStart::Initialize( idMenuHandler* data )
 	doomCover = declManager->FindMaterial( "guis/assets/mainmenu/doom_cover.tga" );
 	doom2Cover = declManager->FindMaterial( "guis/assets/mainmenu/doom2_cover.tga" );
 	doom3Cover = declManager->FindMaterial( "guis/assets/mainmenu/doom3_cover.tga" );
+	if (in_joylayout.GetBool()) {
+		
+		joy1 = declManager->FindMaterial("guis/assets/hud/controller/ps3/cross");
+		
+		joy2 = declManager->FindMaterial("guis/assets/hud/controller/ps3/circle");
+		renderSystem->LoadLevelImages();
+	}
 	
 	startButton = new idMenuWidget_Button();
 	startButton->SetSpritePath( GetSpritePath(), "info", "btnStart" );

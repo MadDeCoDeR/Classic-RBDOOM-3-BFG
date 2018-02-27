@@ -45,7 +45,7 @@ int idSWF::mouseY = -1;
 bool idSWF::isMouseInClientArea = false;
 
 extern idCVar in_useJoystick;
-
+extern idCVar in_joylayout;
 
 
 /*
@@ -85,13 +85,17 @@ idSWF::idSWF( const char* filename_, idSoundWorld* soundWorld_ )
 	
 	for( int index = 0; index < tooltipButtonImage.Num(); index++ )
 	{
-		if( ( tooltipButtonImage[index].xbImage != NULL ) && ( tooltipButtonImage[index].xbImage[0] != '\0' ) )
-		{
-			declManager->FindMaterial( tooltipButtonImage[index].xbImage );
+		if (!in_joylayout.GetBool()) {
+			if ((tooltipButtonImage[index].xbImage != NULL) && (tooltipButtonImage[index].xbImage[0] != '\0'))
+			{
+				declManager->FindMaterial(tooltipButtonImage[index].xbImage);
+			}
 		}
-		if( ( tooltipButtonImage[index].psImage != NULL ) && ( tooltipButtonImage[index].psImage[0] != '\0' ) )
-		{
-			declManager->FindMaterial( tooltipButtonImage[index].psImage );
+		else {
+			if ((tooltipButtonImage[index].psImage != NULL) && (tooltipButtonImage[index].psImage[0] != '\0'))
+			{
+				declManager->FindMaterial(tooltipButtonImage[index].psImage);
+			}
 		}
 	}
 	

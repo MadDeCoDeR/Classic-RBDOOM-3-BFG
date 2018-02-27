@@ -33,6 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../renderer/GuiModel.h"
 
 extern idCVar in_useJoystick;
+extern idCVar in_joylayout;
 
 // bypass rendersystem to directly work on guiModel
 extern idGuiModel* tr_guiModel;
@@ -67,14 +68,18 @@ void idDeviceContext::Init()
 	colorNone = idVec4( 0, 0, 0, 0 );
 	cursorImages[CURSOR_ARROW] = declManager->FindMaterial( "ui/assets/guicursor_arrow.tga" );
 	cursorImages[CURSOR_HAND] = declManager->FindMaterial( "ui/assets/guicursor_hand.tga" );
-	cursorImages[CURSOR_HAND_JOY1] = declManager->FindMaterial( "ui/assets/guicursor_hand_cross.tga" );
-	cursorImages[CURSOR_HAND_JOY2] = declManager->FindMaterial( "ui/assets/guicursor_hand_circle.tga" );
-	cursorImages[CURSOR_HAND_JOY3] = declManager->FindMaterial( "ui/assets/guicursor_hand_square.tga" );
-	cursorImages[CURSOR_HAND_JOY4] = declManager->FindMaterial( "ui/assets/guicursor_hand_triangle.tga" );
-	cursorImages[CURSOR_HAND_JOY1] = declManager->FindMaterial( "ui/assets/guicursor_hand_a.tga" );
-	cursorImages[CURSOR_HAND_JOY2] = declManager->FindMaterial( "ui/assets/guicursor_hand_b.tga" );
-	cursorImages[CURSOR_HAND_JOY3] = declManager->FindMaterial( "ui/assets/guicursor_hand_x.tga" );
-	cursorImages[CURSOR_HAND_JOY4] = declManager->FindMaterial( "ui/assets/guicursor_hand_y.tga" );
+	if (in_joylayout.GetBool()) {
+		cursorImages[CURSOR_HAND_JOY1] = declManager->FindMaterial("ui/assets/guicursor_hand_cross.tga");
+		cursorImages[CURSOR_HAND_JOY2] = declManager->FindMaterial("ui/assets/guicursor_hand_circle.tga");
+		cursorImages[CURSOR_HAND_JOY3] = declManager->FindMaterial("ui/assets/guicursor_hand_square.tga");
+		cursorImages[CURSOR_HAND_JOY4] = declManager->FindMaterial("ui/assets/guicursor_hand_triangle.tga");
+	}
+	else {
+		cursorImages[CURSOR_HAND_JOY1] = declManager->FindMaterial("ui/assets/guicursor_hand_a.tga");
+		cursorImages[CURSOR_HAND_JOY2] = declManager->FindMaterial("ui/assets/guicursor_hand_b.tga");
+		cursorImages[CURSOR_HAND_JOY3] = declManager->FindMaterial("ui/assets/guicursor_hand_x.tga");
+		cursorImages[CURSOR_HAND_JOY4] = declManager->FindMaterial("ui/assets/guicursor_hand_y.tga");
+	}
 	scrollBarImages[SCROLLBAR_HBACK] = declManager->FindMaterial( "ui/assets/scrollbarh.tga" );
 	scrollBarImages[SCROLLBAR_VBACK] = declManager->FindMaterial( "ui/assets/scrollbarv.tga" );
 	scrollBarImages[SCROLLBAR_THUMB] = declManager->FindMaterial( "ui/assets/scrollbar_thumb.tga" );

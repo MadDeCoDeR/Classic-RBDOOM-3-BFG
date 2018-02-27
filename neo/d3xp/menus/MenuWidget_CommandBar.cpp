@@ -47,7 +47,7 @@ COMMANDBAR
 		txt_info (Text)
 ================================================================================================
 */
-
+extern idCVar in_joylayout;
 static const char* const BUTTON_NAMES[] =
 {
 	"joy1",
@@ -123,10 +123,21 @@ void idMenuWidget_CommandBar::Update()
 	{
 		const char* const buttonName = BUTTON_NAMES[ buttonOrder[ i ] ];
 		
-		idSWFSpriteInstance* const buttonSprite = GetSprite()->GetScriptObject()->GetSprite( buttonName );
+		idSWFSpriteInstance* const buttonSprite = GetSprite()->GetScriptObject()->GetSprite(buttonName);
 		if( buttonSprite == NULL )
 		{
 			continue;
+		}
+		if (in_joylayout.GetBool()) {
+			if (!idStr::Icmp(buttonName, "joy1")) {
+				buttonSprite->materialOverride=joy1;
+			}
+			else if (!idStr::Icmp(buttonName, "joy2")) {
+				buttonSprite->materialOverride=joy2;
+			}
+			buttonSprite->materialHeight = 40;
+			buttonSprite->materialWidth = 30;
+
 		}
 		idSWFTextInstance* const buttonText = buttonSprite->GetScriptObject()->GetText( "txt_info" );
 		if( buttonText == NULL )

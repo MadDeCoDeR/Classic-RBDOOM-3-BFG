@@ -49,6 +49,7 @@ idCVar swf_show( "swf_show", "0", CVAR_INTEGER, "" );
 extern idCVar swf_textStrokeSize;
 extern idCVar swf_textStrokeSizeGlyphSpacer;
 extern idCVar in_useJoystick;
+extern idCVar in_joylayout;
 
 #define ALPHA_EPSILON	0.001f
 
@@ -1867,8 +1868,12 @@ void idSWF::FindTooltipIcons( idStr* text )
 			tooltipIcon_t icon;
 			icon.startIndex = index;
 			icon.endIndex = index + idStr::Length( tooltipButtonImage[count].key );
-			
-			icon.material = declManager->FindMaterial( tooltipButtonImage[count].xbImage );
+			if (!in_joylayout.GetBool()) {
+				icon.material = declManager->FindMaterial(tooltipButtonImage[count].xbImage);
+			}
+			else {
+				icon.material = declManager->FindMaterial(tooltipButtonImage[count].psImage);
+			}
 			
 			if( icon.material )
 			{

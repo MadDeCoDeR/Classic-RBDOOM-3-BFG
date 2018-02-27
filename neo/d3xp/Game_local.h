@@ -933,4 +933,7 @@ const int	CINEMATIC_SKIP_DELAY	= SEC2MS( 2.0f );
 #include "script/Script_Interpreter.h"
 #include "script/Script_Thread.h"
 
+extern const idMaterial* joy1;
+extern const idMaterial* joy2;
+
 #endif	/* !__GAME_LOCAL_H__ */

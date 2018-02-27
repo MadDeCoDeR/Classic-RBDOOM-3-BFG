@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 const static int NUM_LAYOUT_OPTIONS = 1;
 
 const static int MAX_CONTROLLER_CONFIGS = 2;
-
+extern idCVar in_joylayout;
 typedef struct
 {
 	const char* textField;
@@ -194,8 +194,8 @@ void idMenuScreen_Shell_ControllerLayout::ShowScreen( const mainMenuTransition_t
 		
 		if( layout360 != NULL && layoutPS3 != NULL )
 		{
-			layout360->SetVisible( true );
-			layoutPS3->SetVisible( false );
+			layout360->SetVisible( !in_joylayout.GetBool() );
+			layoutPS3->SetVisible( in_joylayout.GetBool() );
 		}
 	}
 	
