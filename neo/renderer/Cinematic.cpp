@@ -34,10 +34,9 @@ If you have questions concerning this license or the applicable additional terms
 #include <../sound/snd_local.h>
 //GK:Also init variables for XAudio2
 #ifdef _MSC_VER
-WAVEFORMATEX voiceFormat = { 0 };
+WAVEFORMATEX voiceFormatcine = { 0 };
 IXAudio2SourceVoice*	pMusicSourceVoice1;
 XAUDIO2_BUFFER Packet = { 0 };
-WAVEFORMATEXTENSIBLE exvoice = { 0 };
 #endif
 extern idCVar s_noSound;
 
@@ -70,6 +69,7 @@ extern "C"
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
+#include <libswresample/swresample.h>
 }
 #endif
 
@@ -103,7 +103,8 @@ private:
 	SwsContext*				img_convert_ctx;
 	bool					hasFrame;
 	long					framePos;
-	
+	AVSampleFormat dst_smp;
+	SwrContext* swr_ctx;
 	cinData_t				ImageForTimeFFMPEG( int milliseconds );
 	bool					InitFromFFMPEGFile( const char* qpath, bool looping );
 	void					FFMPEGReset();
@@ -562,25 +563,19 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 			common->Warning("idCinematic: Cannot open audio decoder for: '%s', %d\n", qpath, looping);
 			//return false;
 		}
+		dst_smp = static_cast<AVSampleFormat> (dec_ctx2->sample_fmt - 5);
+		swr_ctx = swr_alloc_set_opts(NULL, dec_ctx2->channel_layout, dst_smp, dec_ctx2->sample_rate, dec_ctx2->channel_layout, dec_ctx2->sample_fmt, dec_ctx2->sample_rate, 0, NULL);
+		int res = swr_init(swr_ctx);
 #ifdef _MSC_VER
-		voiceFormat.wFormatTag = WAVE_FORMAT_EXTENSIBLE; //Use extensible wave format in order to handle properly the audio
-		voiceFormat.nChannels = dec_ctx2->channels; //fixed
-		voiceFormat.nSamplesPerSec = dec_ctx2->sample_rate; //fixed
-		voiceFormat.wBitsPerSample = 32; //fixed
-		voiceFormat.nBlockAlign = voiceFormat.nChannels * voiceFormat.wBitsPerSample/8; //fixed
-		voiceFormat.nAvgBytesPerSec = voiceFormat.nSamplesPerSec * voiceFormat.nBlockAlign; //fixed
-		voiceFormat.cbSize = 22; //fixed
-		exvoice.Format = voiceFormat; //fixed
-		exvoice.dwChannelMask = SPEAKER_FRONT_CENTER; //The audio support only mono sound (don't try to change this)
-		exvoice.Samples.wValidBitsPerSample = 32; //Must be less than 32(better 0 for best soud results)
-		exvoice.Samples.wReserved = 0;
-#ifdef _DEBUG
-		exvoice.Samples.wSamplesPerBlock = 32;//voiceFormat.nSamplesPerSec; //same as sample rate
-#else
-		exvoice.Samples.wSamplesPerBlock = voiceFormat.nSamplesPerSec; //same as sample rate
-#endif
-		exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT; //This format plays well (and with the debugger)
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice1, (WAVEFORMATEX*)&exvoice, XAUDIO2_VOICE_USEFILTER |  XAUDIO2_VOICE_MUSIC);//Use the XAudio2 that the game has initialized instead of making your own
+		int format_byte = 4;
+		voiceFormatcine.wFormatTag = WAVE_FORMAT_IEEE_FLOAT; //Use extensible wave format in order to handle properly the audio
+		voiceFormatcine.nChannels = dec_ctx2->channels; //fixed
+		voiceFormatcine.nSamplesPerSec = dec_ctx2->sample_rate; //fixed
+		voiceFormatcine.wBitsPerSample = format_byte*8; //fixed
+		voiceFormatcine.nBlockAlign = format_byte* voiceFormatcine.nChannels; //fixed
+		voiceFormatcine.nAvgBytesPerSec = voiceFormatcine.nSamplesPerSec * voiceFormatcine.nBlockAlign; //fixed
+		voiceFormatcine.cbSize = 0; //fixed
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice1, (WAVEFORMATEX*)&voiceFormatcine, XAUDIO2_VOICE_USEFILTER |  XAUDIO2_VOICE_MUSIC);//Use the XAudio2 that the game has initialized instead of making your own
 #endif
 	}
 	else {
@@ -1003,7 +998,7 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 		int frameFinished1 = 0;
 		
 		// Do a single frame by getting packets until we have a full frame
-		while( !frameFinished )
+		while( !frameFinished)
 		{
 			// if we got to the end or failed
 			if( av_read_frame( fmt_ctx, &packet ) < 0 )
@@ -1037,13 +1032,29 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 			}
 			//GK:Begin
 			else if (packet.stream_index == audio_stream_index) {//Check if it found any audio data
+				frame3 = av_frame_alloc();
+				frameFinished1 = 0;
 				avcodec_decode_audio4(dec_ctx2, frame3, &frameFinished1, &packet);
+				uint8_t** tBuffer2 = NULL;
+				int  bufflinesize;
 				if (frameFinished1) {
+					int num_bytes = 0;
+					av_samples_alloc_array_and_samples(&tBuffer2,
+							&bufflinesize,
+							frame3->channels,
+							av_rescale_rnd(frame3->nb_samples, frame3->sample_rate, frame3->sample_rate, AV_ROUND_UP),
+							dst_smp,
+							0);
+
+					int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame3->extended_data, frame3->nb_samples);
+					num_bytes = av_samples_get_buffer_size(&bufflinesize, frame3->channels,
+							res, dst_smp, 1);
+					
 #ifdef _MSC_VER
 					//Store the data to XAudio2 buffer
 					Packet.Flags = XAUDIO2_END_OF_STREAM;
-					Packet.AudioBytes = frame3->linesize[0];
-					Packet.pAudioData = (BYTE*)frame3->extended_data[0];
+					Packet.AudioBytes = num_bytes;
+					Packet.pAudioData = (BYTE*)tBuffer2[0];
 					Packet.PlayBegin = 0;
 					Packet.PlayLength = 0;
 					Packet.LoopBegin = 0;
@@ -1059,6 +1070,7 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 					if (FAILED(hr = pMusicSourceVoice1->Start(0))) {
 						int fail = 1;
 					}
+					av_frame_free(&frame3);
 #endif
 				}
 			}
@@ -1067,7 +1079,9 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 			av_free_packet( &packet );
 		}
 		
-		framePos++;
+
+			framePos++;
+		
 	}
 	
 	// We have reached the desired frame
