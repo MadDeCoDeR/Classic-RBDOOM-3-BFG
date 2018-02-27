@@ -4,6 +4,38 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+27 February 2018 - Classic RBDOOM-3-BFG 1.1.8
+_______________________________
+
+[classicdoom]
+
+-Expanded the support for audio files (mp3,ogg etc)
+
+-Added option to delete save files
+
+-Aditional file checkup in order to prevent CTDs
+
+-Increased and slightly improved memory
+
+-Confirmation messages will show proper button names based on input
+
+[DOOM3BFG]
+
+-Fixed intro audio quality
+
+-Added new parameter "in_joylayout" that allow you to switch between xbox360 and ps3 controller layout
+
+[cmake]
+
+-Updated CMakeList in order to include the remaining ffmpeg library (swresample)
+
+[Launcher]
+
+-Added option to change controller layout
+
+-Adeed textboxes that allow you to add more parameters
+_______________________________________
+
 09 February 2018 - Classic RBDOOM-3-BFG 1.1.7.1
 _______________________________
 
