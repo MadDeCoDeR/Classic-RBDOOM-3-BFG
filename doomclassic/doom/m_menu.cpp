@@ -81,7 +81,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "g_game.h"
 
 extern idCVar in_useJoystick;
-
+extern idCVar in_joylayout;
 //
 // defaulted values
 //
@@ -338,6 +338,17 @@ void M_DrawLoad(void)
 		M_DrawSaveLoadBorder(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i);
 		M_WriteText(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i,::g->savegamestrings[i]);
 	}
+	if (!in_useJoystick.GetBool()) {
+		M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODEL);
+	}
+	else {
+		if (!in_joylayout.GetBool()) {
+			M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODEL);
+		}
+		else {
+			M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODELX);
+		}
+	}
 }
 
 
@@ -360,6 +371,13 @@ void M_DrawSaveLoadBorder(int x,int y)
 	V_DrawPatchDirect (x,y+7,0,(patch_t*)W_CacheLumpName("M_LSRGHT",PU_CACHE_SHARED));
 }
 
+void M_DeleteSelected(int ch) {
+	if (ch != KEY_ENTER)
+		return;
+	fileSystem->RemoveFile(::g->savegamepaths[::g->itemOn]);
+	M_SetupNextMenu(&::g->LoadDef);
+	M_ReadSaveStrings();
+}
 
 
 //
@@ -388,38 +406,41 @@ void M_LoadExpansion(int choice)
 {
 	::g->exp = choice;
 	bool procced = true;
-	if( choice == 0 ) {
+	switch( choice ) {
+	case 0:
 		DoomLib::SetIdealExpansion( doom2 );
-	}else if (choice == 1){
+		break;
+	case 1:
 		DoomLib::SetIdealExpansion( pack_nerve );
-	}
+		break;
 	//GK: Before the expansion loads check if it is exist. Otherwise drop back to main menu
-	else if (choice == 2) {
+	case 2:
 		if (DoomLib::hexp[0]) {
 			DoomLib::SetIdealExpansion(pack_tnt);
 		}
 		else {
 			procced = false;
-			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+			M_StartMessage(EXPROMT, NULL, false);
 		}
-	}
-	else if (choice == 3) {
+		break;
+	case 3:
 		if (DoomLib::hexp[1]) {
 			DoomLib::SetIdealExpansion(pack_plut);
 		}
 		else {
 			procced = false;
-			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+			M_StartMessage(EXPROMT, NULL, false);
 		}
-	}
-	else if (choice == 4) {
+		break;
+	case 4:
 		if (DoomLib::hexp[2]) {
 			DoomLib::SetIdealExpansion(pack_master);
 		}
 		else {
 			procced = false;
-			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+			M_StartMessage(EXPROMT, NULL, false);
 		}
+		break;
 	}
 	if (procced) {
 		M_SetupNextMenu(&::g->LoadDef);
@@ -888,8 +909,22 @@ void M_VerifyNightmare(int ch)
 	if (ch != KEY_ENTER)
 		return;
 
-	G_DeferedInitNew((skill_t)nightmare,::g->epi+1, 1);
-	M_ClearMenus ();
+	if (::g->gamemode != commercial) {
+		static int startLevel = 1;
+		G_DeferedInitNew((skill_t)nightmare, ::g->epi + 1, startLevel);
+		
+	}
+	else {
+		if (DoomLib::idealExpansion == pack_master && state == 0)
+			DoomLib::use_doomit = false;
+		if (DoomLib::idealExpansion != pack_master)
+			DoomLib::use_doomit = false;
+		DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
+		DoomLib::skipToNew = true;
+		DoomLib::chosenSkill = nightmare;
+		DoomLib::chosenEpisode = ::g->epi + 1;
+	}
+	M_ClearMenus();
 }
 
 void M_ChooseSkill(int choice)
@@ -897,7 +932,17 @@ void M_ChooseSkill(int choice)
 	
 	if (choice == nightmare)
 	{
-		M_StartMessage(NIGHTMARE,M_VerifyNightmare,true);
+		if (!in_useJoystick.GetBool()) {
+			M_StartMessage(NIGHTMARE, M_VerifyNightmare, true);
+		}
+		else {
+			if (!in_joylayout.GetBool()) {
+				M_StartMessage(NIGHTMAREGP, M_VerifyNightmare, true);
+			}
+			else {
+				M_StartMessage(NIGHTMAREGPX, M_VerifyNightmare, true);
+			}
+		}
 		return;
 	}
 	
@@ -946,7 +991,7 @@ void M_Expansion(int choice)
 		}
 		else {
 			procced = false;
-			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+			M_StartMessage(EXPROMT, NULL, false);
 		}
 	}
 	else if (choice == 3) {
@@ -955,7 +1000,7 @@ void M_Expansion(int choice)
 		}
 		else {
 			procced = false;
-			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+			M_StartMessage(EXPROMT, NULL, false);
 		}
 	}
 	else if (choice == 4) {
@@ -969,7 +1014,7 @@ void M_Expansion(int choice)
 		}
 		else {
 			procced = false;
-			M_StartMessage("Missing Expansion!\n\npress any button", NULL, false);
+			M_StartMessage(EXPROMT, NULL, false);
 		}
 	}
 		if (procced) {
@@ -1532,16 +1577,22 @@ qboolean M_Responder (event_t* ev)
 			::g->joywait = I_GetTime() + 2;
 		}
 
-		if (ev->data1&1)
+		if (ev->data1 & 1)
 		{
 			ch = KEY_ENTER;
 			::g->joywait = I_GetTime() + 5;
 		}
-		if (ev->data1&2)
+		if (ev->data1 & 2)
 		{
 			ch = KEY_BACKSPACE;
 			::g->joywait = I_GetTime() + 5;
 		}
+		if (ev->data1 & 3)
+		{
+			ch = 45;
+			::g->joywait = I_GetTime() + 5;
+		}
+	
 	}
 	else
 	{
@@ -1590,6 +1641,13 @@ qboolean M_Responder (event_t* ev)
 			if (ev->type == ev_keydown)
 			{
 				ch = ev->data1;
+				if (in_useJoystick.GetBool()) {
+					if (::g->currentMenu == &::g->LoadDef) {
+						if (ev->data1 == 15) {
+							ch = 45;
+						}
+					}
+				}
 				if (::g->gamemode == commercial && ::g->gamestate != GS_LEVEL) {
 					//GK begin
 					if ((ev->data1 == 23 && p < 8) || p > 0) {
@@ -1643,6 +1701,7 @@ qboolean M_Responder (event_t* ev)
 						}
 					}
 				}
+				
 			}
 	}
 
@@ -1819,6 +1878,25 @@ qboolean M_Responder (event_t* ev)
 		return false;
 	}
 
+	if (::g->currentMenu == &::g->LoadDef) {
+		if (ch == 45) {
+			idFile* handle = fileSystem->OpenFileRead(::g->savegamepaths[::g->itemOn], false);
+			if (handle != NULL) {
+				fileSystem->CloseFile(handle);
+				if (!in_useJoystick.GetBool()) {
+					M_StartMessage(DELSAV, M_DeleteSelected, true);
+				}
+				else {
+					if (!in_joylayout.GetBool()) {
+						M_StartMessage(DELSAVGP, M_DeleteSelected, true);
+					}
+					else {
+						M_StartMessage(DELSAVGPX, M_DeleteSelected, true);
+					}
+				}
+			}
+		}
+	}
 	// Keys usable within menu
 	switch (ch)
 	{

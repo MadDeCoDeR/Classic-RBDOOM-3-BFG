@@ -43,6 +43,8 @@ If you have questions concerning this license or the applicable additional terms
 //
 #define PRESSKEY 	"press any button."
 #define PRESSYN 	"press Enter or Esc."
+#define PRESSAB 	"press A or B."
+#define PRESSXO 	"press X or O."
 #define QUITMSG	"are you sure you want to\nquit this great game?"
 #define LOADNET 	"you can't do load while in a net game!\n\n"PRESSKEY
 #define QLOADNET	"you can't quickload during a netgame!\n\n"PRESSKEY
@@ -50,6 +52,10 @@ If you have questions concerning this license or the applicable additional terms
 #define SAVEDEAD 	"you can't save if you aren't playing!\n\n"PRESSKEY
 #define QSPROMPT 	"quicksave over your game named\n\n'%s'?\n\n"PRESSYN
 #define QLPROMPT	"do you want to quickload the game named\n\n'%s'?\n\n"PRESSYN
+#define DELSAV		"Are you sure you want to\ndelete this save file?\n\n"PRESSYN
+#define DELSAVGP	"Are you sure you want to\ndelete this save file?\n\n"PRESSAB
+#define DELSAVGPX	"Are you sure you want to\ndelete this save file?\n\n"PRESSXO
+#define EXPROMT		"Missing Expansion File!\n\n"PRESSKEY
 
 #define NEWGAME	\
 "you can't start a new game\n"\
@@ -58,6 +64,12 @@ If you have questions concerning this license or the applicable additional terms
 #define NIGHTMARE	\
 "are you sure? this skill level\n"\
 "isn't even remotely fair.\n\n"PRESSYN
+#define NIGHTMAREGP	\
+"are you sure? this skill level\n"\
+"isn't even remotely fair.\n\n"PRESSAB
+#define NIGHTMAREGPX	\
+"are you sure? this skill level\n"\
+"isn't even remotely fair.\n\n"PRESSXO
 
 #define SWSTRING	\
 "this is the shareware version of doom.\n\n"\
@@ -79,6 +91,8 @@ If you have questions concerning this license or the applicable additional terms
 #define GAMMALVL4	"Gamma correction level 4"
 //#define EMPTYSTRING	"empty slot"
 #define EMPTYSTRING	"---"
+#define XTODEL		"press X to Delete save file"
+#define XTODELX		"press square to Delete save file"
 
 //
 //	P_inter.C
