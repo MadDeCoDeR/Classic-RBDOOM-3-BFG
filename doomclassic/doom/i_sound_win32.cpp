@@ -54,7 +54,13 @@ If you have questions concerning this license or the applicable additional terms
 #include "doomdef.h"
 #include "../timidity/timidity.h"
 #include "../timidity/controls.h"
-
+extern "C"
+{
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavformat/avio.h>
+#include <libswresample/swresample.h>
+}
 #include "sound/snd_local.h"
 
 #ifdef _MSC_VER // DG: xaudio can only be used with MSVC
@@ -79,6 +85,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifdef _MSC_VER // DG: xaudio can only be used with MSVC
 IXAudio2SourceVoice*	pMusicSourceVoice;
+
 #endif
 
 MidiSong*				doomMusic;
@@ -905,14 +912,16 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 	idStr lumpName = "d_";
 	lumpName += static_cast< const char * >( songname );
 
-	unsigned char * musFile = static_cast< unsigned char * >( W_CacheLumpName( lumpName.c_str(), PU_STATIC_SHARED ) );
-
+	unsigned char * musFile = static_cast< unsigned char * >( W_CacheLumpName( lumpName.c_str(), PU_CACHE_SHARED ) );
+	Z_Free(lumpcache[W_GetNumForName(lumpName.c_str())]);
+	Z_FreeMemory();
 	int length = 0;
 	//GK: Capture it's return value and use it to determine if the file is mus or not
-	int res = Mus2Midi( musFile, midiConversionBuffer, &length );
+	int res = Mus2Midi(musFile, midiConversionBuffer, &length);
+	int mus_size = W_LumpLength(W_CheckNumForName(lumpName.c_str()));
 	if (res == 0) {
 		//GK:if not mus file load it raw
-		doomMusic = Timidity_LoadSongMem(musFile, W_LumpLength(W_CheckNumForName(lumpName.c_str())));
+		doomMusic = Timidity_LoadSongMem(musFile, mus_size);
 	}
 	else {
 		doomMusic = Timidity_LoadSongMem(midiConversionBuffer, length);
@@ -921,6 +930,29 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 	if ( doomMusic ) {
 		musicBuffer = (byte *)malloc( MIDI_CHANNELS * MIDI_FORMAT_BYTES * doomMusic->samples );
 		totalBufferSize = doomMusic->samples * MIDI_CHANNELS * MIDI_FORMAT_BYTES;
+		// Create Source voice
+#ifdef _MSC_VER
+		if (pMusicSourceVoice) {
+			pMusicSourceVoice->Stop();
+			pMusicSourceVoice->FlushSourceBuffers();
+			pMusicSourceVoice->DestroyVoice();
+			pMusicSourceVoice = NULL;
+		}
+#endif
+		WAVEFORMATEX voiceFormat = { 0 };
+		voiceFormat.wFormatTag = WAVE_FORMAT_PCM;
+		voiceFormat.nChannels = 2;
+		voiceFormat.nSamplesPerSec = MIDI_RATE;
+		voiceFormat.nAvgBytesPerSec = MIDI_RATE * MIDI_FORMAT_BYTES * 2;
+		voiceFormat.nBlockAlign = MIDI_FORMAT_BYTES * 2;
+		voiceFormat.wBitsPerSample = MIDI_FORMAT_BYTES * 8;
+		voiceFormat.cbSize = 0;
+
+		// RB: XAUDIO2_VOICE_MUSIC not available on Windows 8 SDK
+		//#if !defined(USE_WINRT) //(_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat, XAUDIO2_VOICE_MUSIC);
+		//#endif
+		// RB end
 
 		Timidity_Start( doomMusic );
 
@@ -935,6 +967,155 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 
 		Timidity_Stop();
 		Timidity_FreeSong( doomMusic );
+	}
+	else {
+		int ret = 0;
+		int avindx = 0;
+		AVFormatContext*		fmt_ctx = avformat_alloc_context();
+		AVCodec*				dec;
+		AVCodecContext*			dec_ctx;
+		AVPacket packet;
+		SwrContext* swr_ctx;
+		unsigned char *avio_ctx_buffer = NULL;
+		av_register_all();
+		avio_ctx_buffer = static_cast<unsigned char *>(av_malloc((size_t)mus_size));
+		memcpy(avio_ctx_buffer, musFile, mus_size);
+		AVIOContext *avio_ctx = avio_alloc_context(avio_ctx_buffer, mus_size, 0, NULL, NULL, NULL, NULL);
+		fmt_ctx->pb = avio_ctx;
+		avformat_open_input(&fmt_ctx, "", NULL, NULL);
+		
+		if ((ret = avformat_find_stream_info(fmt_ctx, NULL)) < 0)
+		{
+			return false;
+		}
+		ret = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
+		avindx = ret;
+		dec_ctx = fmt_ctx->streams[avindx]->codec;
+		dec = avcodec_find_decoder(dec_ctx->codec_id);
+		if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0)
+		{
+
+			return false;
+		}
+		bool hasplanar = false;
+		AVSampleFormat dst_smp;
+		if (dec_ctx->sample_fmt >= 5) {
+			dst_smp =static_cast<AVSampleFormat> (dec_ctx->sample_fmt - 5);
+			swr_ctx = swr_alloc_set_opts(NULL, dec_ctx->channel_layout, dst_smp, dec_ctx->sample_rate, dec_ctx->channel_layout, dec_ctx->sample_fmt,dec_ctx->sample_rate,0,NULL);
+			int res = swr_init(swr_ctx);
+			hasplanar = true;
+		}
+#ifdef _MSC_VER
+		if (pMusicSourceVoice) {
+			pMusicSourceVoice->Stop();
+			pMusicSourceVoice->FlushSourceBuffers();
+			pMusicSourceVoice->DestroyVoice();
+			pMusicSourceVoice = NULL;
+		}
+#endif
+		WAVEFORMATEX voiceFormat = { 0 };
+		int format_byte = 0;
+		bool use_ext = false;
+		if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8P) {
+			format_byte = 1;
+		}
+		else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16P) {
+			format_byte = 2;
+		}
+		else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32P) {
+			format_byte = 4;
+		}
+		else {
+			//return false;
+			format_byte = 4;
+			use_ext = true;
+		}
+		if (!use_ext) {
+			voiceFormat.wFormatTag = WAVE_FORMAT_PCM;
+		}
+		else {
+			voiceFormat.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+		}
+		if (!hasplanar) {
+			if (dec_ctx->sample_rate > 22050) {
+				voiceFormat.nSamplesPerSec = MIDI_RATE;
+			}
+			else {
+				voiceFormat.nSamplesPerSec = dec_ctx->sample_rate;
+			}
+		}
+		else {
+			voiceFormat.nSamplesPerSec = dec_ctx->sample_rate;
+		}
+		voiceFormat.nAvgBytesPerSec = voiceFormat.nSamplesPerSec * format_byte * 2;
+		voiceFormat.nChannels = dec_ctx->channels;
+		voiceFormat.nBlockAlign = format_byte * 2;
+		voiceFormat.wBitsPerSample = format_byte * 8;
+		voiceFormat.cbSize = 0;
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat, XAUDIO2_VOICE_MUSIC);
+		av_init_packet(&packet);
+		AVFrame *frame;
+		int frameFinished = 0;
+		int offset = 0;
+		int num_bytes = 0;
+		int bufferoffset = format_byte * 10;
+		byte* tBuffer = (byte *)malloc(2*mus_size*bufferoffset);
+		uint8_t** tBuffer2=NULL;
+		int  bufflinesize;
+		
+		while (av_read_frame(fmt_ctx, &packet) >= 0) {
+			if (packet.stream_index == avindx) {
+					frame = av_frame_alloc();
+					frameFinished = 0;
+					avcodec_decode_audio4(dec_ctx, frame, &frameFinished, &packet);
+					if (frameFinished) {
+						
+						if (hasplanar) {
+							av_samples_alloc_array_and_samples(&tBuffer2,
+								&bufflinesize,
+								voiceFormat.nChannels,
+								av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
+								dst_smp,
+								0);
+							
+							int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame->extended_data, frame->nb_samples);
+							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
+								res, dst_smp, 1);
+							memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
+							//memcpy(tBuffer2 + offset, frame->extended_data[1], num_bytes);
+							offset += num_bytes;
+							tBuffer2 = NULL;
+							}
+						else {
+							memcpy(tBuffer + offset, frame->extended_data[0], num_bytes);
+							offset += num_bytes;
+						}
+						
+						
+						
+					}
+					av_frame_free(&frame);
+					free(frame);
+			}
+			
+			av_free_packet(&packet);
+		}
+		totalBufferSize = offset;
+		musicBuffer= (byte *)malloc(offset);
+		memcpy(musicBuffer, tBuffer, offset);
+		free(tBuffer);
+		tBuffer = NULL;
+		swr_free(&swr_ctx);
+		
+		avcodec_close(dec_ctx);
+		//avformat_free_context(fmt_ctx);
+		av_free(fmt_ctx->pb);
+		avformat_close_input(&fmt_ctx);
+		
+	    
+		av_free(avio_ctx->buffer);
+		av_freep(avio_ctx);
+		
 	}
 
 	musicReady = true;
