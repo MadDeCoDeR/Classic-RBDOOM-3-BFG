@@ -76,7 +76,7 @@ void *I_ZoneBase( int *size )
 {
 	enum
 	{
-		HEAP_SIZE = 15 * 1024 * 1024			// SMF - was 10 * 1024 * 1024
+		HEAP_SIZE = 25 * 1024 * 1024			// SMF - was 10 * 1024 * 1024
 	};
 	*size = HEAP_SIZE;
 	return malloc( HEAP_SIZE );
@@ -137,12 +137,12 @@ void Z_Free (void* ptr)
 	// clear the user's mark
 	*block->user = 0;
     }
-
+	
     // mark as free
     block->user = NULL;	
     block->tag = 0;
     block->id = 0;
-	
+
     other = block->prev;
 
     if (!other->user)

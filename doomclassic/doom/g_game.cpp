@@ -529,7 +529,14 @@ void G_DoLoadLevel ()
 	int             i; 
 
 	M_ClearRandom();
-	
+	if (lumpcache != NULL) {
+		for (int i = 0; i < numlumps; i++) {
+			if (lumpcache[i]) {
+				Z_Free(lumpcache[i]);
+			}
+		}
+	}
+	Z_FreeMemory();
 	// Set the sky map.
 	// First thing, we have a dummy sky texture name,
 	//  a flat. The data is in the WAD only because
