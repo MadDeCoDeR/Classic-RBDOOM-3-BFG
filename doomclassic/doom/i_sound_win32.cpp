@@ -975,7 +975,7 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 		AVCodec*				dec;
 		AVCodecContext*			dec_ctx;
 		AVPacket packet;
-		SwrContext* swr_ctx;
+		SwrContext* swr_ctx = NULL;
 		unsigned char *avio_ctx_buffer = NULL;
 		av_register_all();
 		avio_ctx_buffer = static_cast<unsigned char *>(av_malloc((size_t)mus_size));
@@ -1036,17 +1036,8 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 		else {
 			voiceFormat.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
 		}
-		if (!hasplanar) {
-			if (dec_ctx->sample_rate > 22050) {
-				voiceFormat.nSamplesPerSec = MIDI_RATE;
-			}
-			else {
-				voiceFormat.nSamplesPerSec = dec_ctx->sample_rate;
-			}
-		}
-		else {
-			voiceFormat.nSamplesPerSec = dec_ctx->sample_rate;
-		}
+
+		voiceFormat.nSamplesPerSec = dec_ctx->sample_rate;
 		voiceFormat.nAvgBytesPerSec = voiceFormat.nSamplesPerSec * format_byte * 2;
 		voiceFormat.nChannels = dec_ctx->channels;
 		voiceFormat.nBlockAlign = format_byte * 2;
@@ -1082,11 +1073,13 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
 								res, dst_smp, 1);
 							memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
-							//memcpy(tBuffer2 + offset, frame->extended_data[1], num_bytes);
+
 							offset += num_bytes;
-							tBuffer2 = NULL;
+							av_freep(&tBuffer2[0]);
+
 							}
 						else {
+							num_bytes = frame->linesize[0];
 							memcpy(tBuffer + offset, frame->extended_data[0], num_bytes);
 							offset += num_bytes;
 						}
@@ -1105,10 +1098,12 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 		memcpy(musicBuffer, tBuffer, offset);
 		free(tBuffer);
 		tBuffer = NULL;
-		swr_free(&swr_ctx);
+		if (swr_ctx != NULL) {
+			swr_free(&swr_ctx);
+		}
 		
 		avcodec_close(dec_ctx);
-		//avformat_free_context(fmt_ctx);
+
 		av_free(fmt_ctx->pb);
 		avformat_close_input(&fmt_ctx);
 		
