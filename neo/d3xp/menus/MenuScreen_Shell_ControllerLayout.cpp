@@ -146,8 +146,12 @@ void idMenuScreen_Shell_ControllerLayout::Update()
 		if( menuData != NULL )
 		{
 			idSWFSpriteInstance* layout = NULL;
-			
-			layout = GetSprite()->GetScriptObject()->GetNestedSprite( "info", "controlInfo", "layout360" );
+			if (!in_joylayout.GetBool()) {
+				layout = GetSprite()->GetScriptObject()->GetNestedSprite("info", "controlInfo", "layout360");
+			}
+			else {
+				layout = GetSprite()->GetScriptObject()->GetNestedSprite("info", "controlInfo", "layoutPS3");
+			}
 			
 			if( layout != NULL )
 			{
@@ -157,7 +161,12 @@ void idMenuScreen_Shell_ControllerLayout::Update()
 				}
 				else
 				{
-					layout->StopFrame( menuData->GetPlatform( true ) + 1 );
+					if (!in_joylayout.GetBool()) {
+						layout->StopFrame(menuData->GetPlatform(true) + 1);
+					}
+					else {
+						layout->StopFrame(menuData->GetPlatform(true) + 2);
+					}
 				}
 			}
 		}

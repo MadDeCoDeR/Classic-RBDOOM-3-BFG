@@ -128,17 +128,6 @@ void idMenuWidget_CommandBar::Update()
 		{
 			continue;
 		}
-		if (in_joylayout.GetBool()) {
-			if (!idStr::Icmp(buttonName, "joy1")) {
-				buttonSprite->materialOverride=joy1;
-			}
-			else if (!idStr::Icmp(buttonName, "joy2")) {
-				buttonSprite->materialOverride=joy2;
-			}
-			buttonSprite->materialHeight = 40;
-			buttonSprite->materialWidth = 30;
-
-		}
 		idSWFTextInstance* const buttonText = buttonSprite->GetScriptObject()->GetText( "txt_info" );
 		if( buttonText == NULL )
 		{
@@ -193,7 +182,12 @@ void idMenuWidget_CommandBar::Update()
 			else
 			{
 				imageSprite->SetVisible( true );
-				imageSprite->StopFrame( menuData->GetPlatform() + 1 );
+				if (!in_joylayout.GetBool()) {
+					imageSprite->StopFrame(menuData->GetPlatform() + 1);
+				}
+				else {
+					imageSprite->StopFrame(menuData->GetPlatform() + 2);
+				}
 				buttonSprite->SetVisible( true );
 				buttonSprite->SetXPos( xPos );
 				buttonText->SetText( buttons[ i ].label );

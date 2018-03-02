@@ -28,7 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 #include "precompiled.h"
 #include "../Game_local.h"
-
+extern idCVar in_joylayout;
 idMenuScreen::idMenuScreen()
 {
 	menuGUI = NULL;
@@ -261,7 +261,12 @@ void idMenuScreen::UpdateCmds()
 			
 			if( btnTabNext->GetSprite() != NULL && menuData != NULL )
 			{
-				btnTabNext->GetSprite()->StopFrame( menuData->GetPlatform() + 1 );
+				if (!in_joylayout.GetBool()) {
+					btnTabNext->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
+				}
+				else {
+					btnTabNext->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
+				}
 			}
 			
 		}
@@ -275,7 +280,12 @@ void idMenuScreen::UpdateCmds()
 			
 			if( btnTabPrev->GetSprite() != NULL && menuData != NULL )
 			{
-				btnTabPrev->GetSprite()->StopFrame( menuData->GetPlatform() + 1 );
+				if (!in_joylayout.GetBool()) {
+					btnTabPrev->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
+				}
+				else {
+					btnTabPrev->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
+				}
 			}
 		}
 	}

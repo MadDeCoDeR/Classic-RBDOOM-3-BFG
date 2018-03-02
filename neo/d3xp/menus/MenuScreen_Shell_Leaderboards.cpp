@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 const static int NUM_LEADERBOARD_ITEMS = 16;
 const int MAX_STAT_LISTINGS = 16;
 static const int MAX_ROWS_PER_BLOCK = 50;
-
+extern idCVar in_joylayout;
 idMenuScreen_Shell_Leaderboards::~idMenuScreen_Shell_Leaderboards()
 {
 	if( lbCache != NULL )
@@ -315,7 +315,12 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 					
 					if( btnTabNext->GetSprite() != NULL && menuData != NULL )
 					{
-						btnTabNext->GetSprite()->StopFrame( menuData->GetPlatform() + 1 );
+						if (!in_joylayout.GetBool()) {
+							btnTabNext->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
+						}
+						else {
+							btnTabNext->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
+						}
 					}
 					
 				}
@@ -329,7 +334,12 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 					
 					if( btnTabPrev->GetSprite() != NULL && menuData != NULL )
 					{
-						btnTabPrev->GetSprite()->StopFrame( menuData->GetPlatform() + 1 );
+						if (!in_joylayout.GetBool()) {
+							btnTabPrev->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
+						}
+						else {
+							btnTabPrev->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
+						}
 					}
 				}
 				
@@ -342,7 +352,12 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 					
 					if( btnDwn->GetSprite() != NULL && menuData != NULL )
 					{
-						btnDwn->GetSprite()->StopFrame( menuData->GetPlatform() + 1 );
+						if (!in_joylayout.GetBool()) {
+							btnDwn->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
+						}
+						else {
+							btnDwn->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
+						}
 					}
 					
 				}
@@ -356,7 +371,12 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 					
 					if( btnUp->GetSprite() != NULL && menuData != NULL )
 					{
-						btnUp->GetSprite()->StopFrame( menuData->GetPlatform() + 1 );
+						if (!in_joylayout.GetBool()) {
+							btnUp->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
+						}
+						else {
+							btnUp->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
+						}
 					}
 				}
 				
@@ -385,7 +405,12 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 			else
 			{
 				btnImg->SetVisible( true );
-				btnImg->StopFrame( platform + 1 );
+				if (!in_joylayout.GetBool()) {
+					btnImg->StopFrame(platform + 1);
+				}
+				else {
+					btnImg->StopFrame(platform + 2);
+				}
 			}
 		}
 	}
@@ -403,7 +428,12 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 			else
 			{
 				btnImg->SetVisible( true );
-				btnImg->StopFrame( platform + 1 );
+				if (!in_joylayout.GetBool()) {
+					btnImg->StopFrame(platform + 1);
+				}
+				else {
+					btnImg->StopFrame(platform + 2);
+				}
 			}
 		}
 	}
@@ -421,7 +451,12 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 			else
 			{
 				btnImg->SetVisible( true );
-				btnImg->StopFrame( platform + 1 );
+				if (!in_joylayout.GetBool()) {
+					btnImg->StopFrame(platform + 1);
+				}
+				else {
+					btnImg->StopFrame(platform + 2);
+				}
 			}
 		}
 	}
@@ -439,7 +474,12 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 			else
 			{
 				btnImg->SetVisible( true );
-				btnImg->StopFrame( platform + 1 );
+				if (!in_joylayout.GetBool()) {
+					btnImg->StopFrame(platform + 1);
+				}
+				else {
+					btnImg->StopFrame(platform + 2);
+				}
 			}
 		}
 	}
