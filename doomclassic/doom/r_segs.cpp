@@ -355,8 +355,8 @@ R_StoreWallRange
     int			lightnum;
 
     // don't overflow and crash
-    if (::g->ds_p == &::g->drawsegs[MAXDRAWSEGS])
-	return;		
+	if (::g->ds_p == &::g->drawsegs[MAXDRAWSEGS])
+		return;
 		
 #ifdef RANGECHECK
     if (start >=::g->viewwidth || start > stop)
