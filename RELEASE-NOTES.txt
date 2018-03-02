@@ -4,6 +4,20 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+02 March 2018 - Classic RBDOOM-3-BFG 1.1.8.1
+_______________________________
+
+[classicdoom]
+
+-fixed memory leak and improved ffmpeg decoding/demuxing
+
+-Raise Classic DOOM virtual memory
+
+[DOOM3BFG]
+
+-Improved Dualshock layout
+_______________________________________
+
 27 February 2018 - Classic RBDOOM-3-BFG 1.1.8
 _______________________________
 
