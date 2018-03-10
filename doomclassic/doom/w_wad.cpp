@@ -145,6 +145,11 @@ void W_AddFile ( const char *filename)
 {
     wadinfo_t		header;
     lumpinfo_t*		lump_p;
+	lumpinfo_t*		tlump;
+	lumpinfo_t*		temlump;
+	lumpinfo_t*		tl;
+	lumpinfo_t*		lar;
+	lumpinfo_t*		all_lump;
     int		i;
     idFile *		handle;
     int			length;
@@ -164,7 +169,7 @@ void W_AddFile ( const char *filename)
 		return;
     }
     I_Printf (" adding %s\n",filename);
-	idLib::Printf(" adding %s\n", filename);
+	
     startlump = numlumps;
 
 	
@@ -173,6 +178,7 @@ void W_AddFile ( const char *filename)
 		//GK: when loading archives return instandly don't add it to the lump list
 			if (OpenCompFile(filename)) {
 				//handle=nullptr;
+				idLib::Printf(" adding %s\n", filename);
 				fileSystem->CloseFile(handle);
 				return;
 			}
@@ -193,11 +199,12 @@ void W_AddFile ( const char *filename)
 				ExtractFileBase(filename, fileinfo[0].name);
 				numlumps++;
 				relp = false;
-				idLib::Printf("Added %s succesfully!\n", fname);
+			//	idLib::Printf("Added %s succesfully!\n", fname);
 			}
     }
     else 
     {
+		idLib::Printf(" adding %s\n", filename);
 		// WAD file
 		handle->Read( &header, sizeof( header ) );
 		if ( idStr::Cmpn( header.identification,"IWAD",4 ) )
@@ -224,8 +231,31 @@ void W_AddFile ( const char *filename)
 	// Fill in lumpinfo
 	if (lumpinfo == NULL) {
 		lumpinfo = (lumpinfo_t*)malloc( numlumps*sizeof(lumpinfo_t) );
+		//GK:Init some values and don't let null value in chance
+		all_lump = &lumpinfo[startlump];
+		for (int i = startlump; i < numlumps;i++ , all_lump++) {
+			strcpy(all_lump->name, "");
+			all_lump->null = true;
+		}
 	} else {
-		lumpinfo = (lumpinfo_t*)realloc( lumpinfo, numlumps*sizeof(lumpinfo_t) );
+		if (iwad) { //GK: Who knows better safe than sorry
+			free(&lumpinfo);
+			lumpinfo = NULL;
+			lumpinfo = (lumpinfo_t*)malloc(numlumps*sizeof(lumpinfo_t));
+			all_lump = &lumpinfo[startlump];
+			for (int i = startlump; i < numlumps; i++, all_lump++) {
+				strcpy(all_lump->name, "");
+				all_lump->null = true;
+			}
+		}
+		else {
+			lumpinfo = (lumpinfo_t*)realloc(lumpinfo, numlumps * sizeof(lumpinfo_t));
+			all_lump = &lumpinfo[startlump];
+			for (int i = startlump; i < numlumps; i++, all_lump++) {
+				strcpy(all_lump->name, "");
+				all_lump->null = true;
+			}
+		}
 	}
 
 	if (!lumpinfo)
@@ -234,164 +264,184 @@ void W_AddFile ( const char *filename)
 	lump_p = &lumpinfo[startlump];
 
 	::g->wadFileHandles[ ::g->numWadFiles++ ] = handle;
+	int epos = 0;
 	int reppos = 0;
-	int np = 0;
 	int op = 0;
 	//GK: Know where the "_END" marker is on iwad list in order to reduce the loop
 	int ep = 0;
 	filelump_t * filelumpPointer = &fileinfo[0];
 	rep = false;
+	bool sprite = false;
 	for (i=startlump ; i<numlumps ; i++,lump_p++, filelumpPointer++)
 	{
 		//GK: replace lumps between "_START" and "_END" markers instead of append
 		if (!iwad) {	
-			 char check[6];
-			 char marker[8];
+			 char marker[9];
 			 char end [7];
-			if (filelumpPointer->name[2] == '_') {
-				strncpy(check, filelumpPointer->name+2, 6);
-				if (filelumpPointer->name[1] != filelumpPointer->name[0]) {
-					strncpy(marker, filelumpPointer->name, 7);
-					strncpy(end,filelumpPointer->name,2);
-					end[2] = '\0';
-					strcat(end, "_END");
-				}
-				else {
-					strncpy(marker, filelumpPointer->name + 1, 7);
+			if (!idStr::Icmpn(filelumpPointer->name+2,"_START",6)) {
+				if (filelumpPointer->name[0] == filelumpPointer->name[1]) { //GK:In case of SS,FF or PP
+					strncpy(marker, filelumpPointer->name+1, 7);
 					marker[7] = '\0';
 					strncpy(end, filelumpPointer->name, 1);
 					end[1] = '\0';
 					strcat(end, "_END");
 					end[5] = '\0';
 				}
+				else {
+					strncpy(marker, filelumpPointer->name,8);
+					marker[8] = '\0';
+					strncpy(end, filelumpPointer->name, 2);
+					end[2] = '\0';
+					strcat(end, "_END");
+				}
+				op = W_CheckNumForName(marker);
+				if (op >= 0) {
+					ep = W_CheckNumForName(end);
+					if (!idStr::Icmp(marker, "S_START")) {
+						sprite = true;
+					}
+					rep = true;
+					reppos = op;
+					continue;
+				}
+				else { //GK: New list?
+					rep = false;
+				}
 			}
-			else if (filelumpPointer->name[1] == '_') {
-				strncpy(check, filelumpPointer->name + 1, 6);
+			else if (!idStr::Icmpn(filelumpPointer->name + 1, "_START", 6)) {
 				strncpy(marker, filelumpPointer->name , 7);
 				marker[7] = '\0';
 				strncpy(end, filelumpPointer->name, 1);
 				end[1] = '\0';
 				strcat(end, "_END");
 				end[5] = '\0';
-			}
-			
-			//GK: Names with 8 characters might have "trash" use Cmpn instead of Icmp
-			//ignore all the S,P and F markers (they causing troubles and making them doubles)
-			if (!idStr::Cmpn(check, "_START",6)){
-				np = i;
 				op = W_CheckNumForName(marker);
-				ep = W_CheckNumForName(end);
-				rep = true;
-				i++;
-				if (i >= numlumps) {
-					break;
-				}
-				filelumpPointer++;
-				lump_p++;
-				reppos = op;
-				for (int g = 0; g < 6; g++) {
-					check[g] = NULL;
-				}
-			}
-			if (filelumpPointer->name[2] == '_') {
-				strncpy(check, filelumpPointer->name + 2, 6);
-			}
-			else if (filelumpPointer->name[1] == '_') {
-				strncpy(check, filelumpPointer->name + 1, 6);
-			}
-			if (!idStr::Cmpn(check, "_END",4)){
-				rep = false;
-				
-			}
-			
-			bool smark = false;
-			for (int u = 1; u < 4; u++) {
-				char ps[10];
-				sprintf(ps, "P%i_START", u);
-				char pe[10];
-				sprintf(pe, "P%i_END", u);
-				char fs[10];
-				sprintf(fs, "F%i_START", u);
-				char fe[10];
-				sprintf(fe, "F%i_END", u);
-				if (!idStr::Cmpn(filelumpPointer->name, ps, 8) || !idStr::Cmpn(filelumpPointer->name, pe, 6) || !idStr::Cmpn(filelumpPointer->name, fs, 8) || !idStr::Cmpn(filelumpPointer->name, fe, 6)) {
-					smark = true;
-					for (int g = 0; g < 6; g++) {
-						check[g] = NULL;
+				if (op >= 0) {
+					ep = W_CheckNumForName(end);
+					if (!idStr::Icmp(marker, "S_START")) {
+						sprite = true;
 					}
+					rep = true;
+					continue;
+				}
+				else { //GK: New list?
+					rep = false;
 				}
 			}
+			if (!idStr::Icmpn(filelumpPointer->name + 2, "_END", 4) && rep) {
+				rep = false;
+				sprite = false;
+				continue;
+			}
+			else if (!idStr::Icmpn(filelumpPointer->name + 1, "_END", 4) && rep) {
+				rep = false;
+				sprite = false;
+				continue;
+			}
+
 			if (rep) {
-				if (!smark) {
-
-
 					bool replaced = false;
-					lumpinfo_t* tlump = &lumpinfo[op];
+					tlump = &lumpinfo[op];
 					for (int j = op; j < ep; j++, tlump++) {
-						if (!idStr::Cmpn(filelumpPointer->name, tlump->name, 8)) {
-							//idLib::Printf("Replacing lump %s\n", filelumpPointer->name); //for debug purposes
-							tlump->handle = handle;
-							tlump->position = LONG(filelumpPointer->filepos);
-							tlump->size = LONG(filelumpPointer->size);
-							replaced = true;
-							if (j > reppos) {
-								reppos = j;
+						if (!sprite) {
+							if (!idStr::Cmpn(filelumpPointer->name, tlump->name, 8)) {
+								//idLib::Printf("Replacing lump %s\n", filelumpPointer->name); //for debug purposes
+								tlump->handle = handle;
+								tlump->position = LONG(filelumpPointer->filepos);
+								tlump->size = LONG(filelumpPointer->size);
+								replaced = true;
+								if (j > reppos) {
+									reppos = j;
+								}
+								break;
 							}
-							break;
-							//lumpinfo_t* fl= (lumpinfo_t*)malloc(numlumps * sizeof(lumpinfo_t));
-							//lumpinfo_t* sl= (lumpinfo_t*)malloc(numlumps * sizeof(lumpinfo_t));
+						}
+						else {
+							//GK: Lookup sprite animation frames in case of the modded one having scrambled frame name and rotation
+							bool ok = false;
+							if (!idStr::Icmpn(filelumpPointer->name, tlump->name, 4)) {
+								if (!idStr::Icmpn(filelumpPointer->name + 4, tlump->name + 4, 2)) {
+									if (strlen(filelumpPointer->name) > 6 && strlen(tlump->name) > 6) {
+										if (!idStr::Icmpn(filelumpPointer->name + 6, tlump->name + 6, 2)) {
+											ok = true;
+										}
+									}
+									else {
+										if (strlen(tlump->name) > 6) {
+											strcpy(tlump->name, filelumpPointer->name);
+										}
+										ok = true;
+									}
+								}
+								else {
+									if (strlen(filelumpPointer->name) > 6 && strlen(tlump->name) > 6) {
+										if (!idStr::Icmpn(filelumpPointer->name + 4, tlump->name + 6, 2)) {
+											if (!idStr::Icmpn(filelumpPointer->name + 6, tlump->name + 4, 2)) {
+												ok = true;
+												strcpy(tlump->name, filelumpPointer->name);
+											}
+										}
+									}
+									else {
+										int rot = atoi(filelumpPointer->name + 5);
+										if (rot < 1) {
+											char tn[8];
+											strcpy(tn,filelumpPointer->name);
+											tn[5] = '1';
+											if (!idStr::Icmpn(tn + 4, tlump->name + 4, 2)) {
+												ok = true;
+											}
+										}
+									}
+								}
+								if (ok) {
+									//idLib::Printf("Replacing lump %s\n", filelumpPointer->name); //for debug purposes
+									tlump->handle = handle;
+									tlump->position = LONG(filelumpPointer->filepos);
+									tlump->size = LONG(filelumpPointer->size);
+									replaced = true;
+									if (j > reppos) {
+										reppos = j;
+									}
+									break;
+								}
+							}
 						}
 					}
 					if (!replaced) {
 						//GK:add aditional content in between the markers
-						lumpinfo_t* temlump = &lumpinfo[reppos + 1];
-						lumpinfo_t* tl = (lumpinfo_t*)malloc(numlumps * sizeof(lumpinfo_t));
-						tl->handle = temlump->handle;
-						strncpy(tl->name, temlump->name, 8);
-						tl->position = temlump->position;
-						tl->size = temlump->size;
-						tl->null = temlump->null;
-						lumpinfo_t* tl2 = (lumpinfo_t*)malloc(numlumps * sizeof(lumpinfo_t));
-						temlump++;
-						for (int k = reppos + 2; k < numlumps; k++, temlump++) {
-							tl2->handle = temlump->handle;
-							strncpy(tl2->name, temlump->name, 8);
-							tl2->position = temlump->position;
-							tl2->size = temlump->size;
-							tl2->null = temlump->null;
-
-							temlump->handle = tl->handle;
-							strncpy(temlump->name, tl->name, 8);
-							temlump->position = tl->position;
-							temlump->size = tl->size;
-							temlump->null = tl->null;
-							if (tl2->null) {
+						temlump = &lumpinfo[reppos + 1];
+						epos = 0;
+						for (int k = reppos + 1; k < numlumps; k++, temlump++) {
+							if (temlump->null) {
+								epos = k;
 								break;
 							}
-
-							tl->handle = tl2->handle;
-							strncpy(tl->name, tl2->name, 8);
-							tl->position = tl2->position;
-							tl->size = tl2->size;
-							tl->null = tl2->null;
 						}
-						free(tl);
-						free(tl2);
-						//idLib::Printf("adding lump between markers %s\n", filelumpPointer->name); //for debug purposes
-						lumpinfo_t* lar = &lumpinfo[reppos + 1];
-						/*lump_p*/lar->handle = handle;
-						/*lump_p*/lar->position = LONG(filelumpPointer->filepos);
-						/*lump_p*/lar->size = LONG(filelumpPointer->size);
-						strncpy(/*lump_p*/lar->name, filelumpPointer->name, 8);
-						lar->name[8] = '\0';
-						lar->null = false;
-						reppos++;
-						ep++;
+						if (epos > 0) {
+							tl = &lumpinfo[epos - 1];
+							//GK:Actually make right shift of the lumpinfo array
+							for (int k = epos; k > reppos + 1; --k, --temlump,--tl) {
+								temlump->handle = tl->handle;
+								temlump->position = tl->position;
+								temlump->size = tl->size;
+								strncpy(temlump->name, tl->name, 8);
+								temlump->null = tl->null;
+							}
+							//idLib::Printf("adding lump between markers %s\n", filelumpPointer->name); //for debug purposes
+							lar = &lumpinfo[reppos + 1];
+							lar->handle = handle;
+							lar->position = LONG(filelumpPointer->filepos);
+							lar->size = LONG(filelumpPointer->size);
+							strncpy(lar->name, filelumpPointer->name, 8);
+							lar->name[8] = '\0';
+							lar->null = false;
+							reppos++;
+							ep++;
+						}
 					}
-				}
 			}
 			else {
-				if (idStr::Cmpn(check, "_END",4) && !smark){
 					//idLib::Printf("adding lump %s\n", filelumpPointer->name); //for debug purposes
 					lump_p->handle = handle;
 					lump_p->position = LONG(filelumpPointer->filepos);
@@ -405,12 +455,6 @@ void W_AddFile ( const char *filename)
 						loaddeh(i);
 						
 					}
-				}
-				else {
-					for (int g = 0; g < 6; g++) {
-						check[g] = NULL;
-					}
-				}
 			}
 			
 		}
@@ -695,13 +739,15 @@ W_ReadLump
 	handle = l->handle;
 	//idLib::Printf("Reading %s from %s\n", l->name, handle->GetName());
 	//if (handle->GetName() != NULL && handle->GetName() != "" && handle->GetName() != " ") {
-		handle->Seek(l->position, FS_SEEK_SET);
-		
+		int r=handle->Seek(l->position, FS_SEEK_SET);
+		//GK: Additional checkups has never been bad
+		if (r == -1) {
+			common->FatalError("W_ReadLump: Failed to find %s on %s", l->name, l->handle->GetName());
+		}
 		c = handle->Read(dest, l->size);
 
 		if (c < l->size)
 			I_Error("W_ReadLump: only read %i of %i on lump %i", c, l->size, lump);
-	//}
 }
 
 
@@ -768,10 +814,10 @@ bool OpenCompFile(const char* filename) {
 	else {
 		strcpy(fdir, filename);
 	}
-	idLib::Printf("Checking %s for compressed file\n",fdir);
+	//idLib::Printf("Checking %s for compressed file\n",fdir);
 	unzFile zip = unzOpen(fdir);
 	if (zip != NULL) {
-		idLib::Printf("found compressed file\n");
+		//idLib::Printf("found compressed file\n");
 #ifdef _WIN32
 		CreateDirectory("base/pwads",NULL);
 #elif
@@ -850,14 +896,14 @@ void CleanUncompFiles(bool unalloc) {
 		W_Shutdown();
 	}
 	for (int i = 0; i < fname.size(); i++) {
-		idLib::Printf("Deleting File %s\n", fname[i].c_str());
+		//idLib::Printf("Deleting File %s\n", fname[i].c_str());
 		do {
 
 		} while (remove(fname[i].c_str()) == 0);
 
 	}
 	for (int i = 0; i < foldername.size(); i++) {
-		idLib::Printf("Deleting Directory %s\n", foldername[i].c_str());
+		//idLib::Printf("Deleting Directory %s\n", foldername[i].c_str());
 #ifdef _WIN32
 		RemoveDirectory(foldername[i].c_str());
 #elif

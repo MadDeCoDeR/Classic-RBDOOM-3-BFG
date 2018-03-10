@@ -203,10 +203,10 @@ void R_InitSpriteDefs (const char* const* namelist)
 	    {
 		frame = lumpinfo[l].name[4] - 'A';
 		rotation = lumpinfo[l].name[5] - '0';
-
-		if (::g->modifiedgame)
-		    patched = W_GetNumForName (lumpinfo[l].name);
-		else
+		//GK: modified sprites are literally replacing vanilla ones here so this checkup is useless
+		//if (::g->modifiedgame)
+		//    patched = W_GetNumForName (lumpinfo[l].name);
+		//else
 		    patched = l;
 
 		R_InstallSpriteLump (patched, frame, rotation, false);
