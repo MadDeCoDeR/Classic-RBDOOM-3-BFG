@@ -4,6 +4,31 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+10 March 2018 - Classic RBDOOM-3-BFG 1.1.8.2
+_______________________________
+
+[classicdoom]
+
+- Nerve and master expansions will use modded level names
+
+- Increase the maximum number of wad files classic doom can read
+
+- Various bug fixes and improvments
+
+[DOOM3BFG]
+
+- Improved controller support
+
+- Remove the "Gamepad" option in all 3 games
+
+[cmake]
+
+-Reduced the number of cmake vs batch files
+
+-Cmake vs batch files show more simplyfied output
+
+_______________________________________
+
 02 March 2018 - Classic RBDOOM-3-BFG 1.1.8.1
 _______________________________
 
