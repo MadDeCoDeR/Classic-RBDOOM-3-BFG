@@ -274,8 +274,8 @@ void idMenuScreen_Shell_Bindings::UpdateBindingDisplay()
 			keyBindings_t bind = idKeyInput::KeyBindingsFromBinding( keyboardBinds[i].bind, false, true );
 			
 			idStr bindings;
-			
-			if( !bind.gamepad.IsEmpty() && in_useJoystick.GetBool() )
+										//GK: from now on this idcvar will no longer hold back controller input
+			if( !bind.gamepad.IsEmpty() /*&& in_useJoystick.GetBool()*/ )
 			{
 				idStrList joyBinds;
 				int start = 0;

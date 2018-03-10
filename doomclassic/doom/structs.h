@@ -176,7 +176,7 @@ typedef enum
 typedef enum
 {
 	endgame,
-	scrnsize,
+	//scrnsize, //GK: Not needed anymore
 	messages,
 	detail,	//GK: Use this value for aspect ratio option
 	option_empty1,

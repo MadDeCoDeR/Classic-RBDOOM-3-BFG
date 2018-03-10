@@ -91,7 +91,8 @@ void idMenuScreen_Shell_Controls::Initialize( idMenuHandler* data )
 	control->RegisterEventObserver( helpWidget );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_GAMEPAD );
 	options->AddChild( control );
-	
+	//GK: Not needed anymore
+	/*
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TOGGLE );
 	control->SetLabel( "#str_swf_gamepad_enabled" );	// Gamepad Enabled
@@ -100,7 +101,7 @@ void idMenuScreen_Shell_Controls::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_GAMEPAD_ENABLED );
 	control->RegisterEventObserver( helpWidget );
 	options->AddChild( control );
-	
+	*/
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TOGGLE );
 	control->SetLabel( "#str_swf_invert_mouse" );	// Invert Mouse

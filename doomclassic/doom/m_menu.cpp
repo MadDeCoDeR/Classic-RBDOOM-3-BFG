@@ -602,7 +602,33 @@ void M_SaveSelect(int choice)
 			}
 		}
 		else {
-			s = strdup(exp->mapNames[::g->gamemap - 1]);
+			//GK: Give the modified level name instead
+			if (::g->modifiedtext) {
+				char* ts;
+				mapname = new char[256];
+				strcpy(mapname, mapnames2[::g->gamemap - 1]);
+				ts = strtok(mapname, " ");
+				if (!idStr::Icmp(ts, "level")) {
+					//s = (/*exp->*/mapnames2[::g->gamemap-1]);
+					ts = strtok(NULL, " ");
+				}
+				strcpy(s, ts);
+				while (true) {
+					ts = strtok(NULL, " ");
+					if (ts != NULL) {
+						strcat(s, " ");
+
+						strcat(s, ts);
+					}
+					else {
+						break;
+					}
+
+				}
+			}
+			else {
+				s = strdup(exp->mapNames[::g->gamemap - 1]);
+			}
 		}
 		break;
 	default:
@@ -1124,10 +1150,10 @@ void M_DrawOptions(void)
 
 	V_DrawPatchDirect (::g->OptionsDef.x + 150,::g->OptionsDef.y+LINEHEIGHT*endgame,0,
 		(patch_t*)W_CacheLumpName(msgNames[fullscreenOnOff],PU_CACHE_SHARED));
-
-	V_DrawPatchDirect (::g->OptionsDef.x + 120,::g->OptionsDef.y+LINEHEIGHT*scrnsize,0,
+	//GK: Not needed anymore
+	/*V_DrawPatchDirect (::g->OptionsDef.x + 120,::g->OptionsDef.y+LINEHEIGHT*scrnsize,0,
 		(patch_t*)W_CacheLumpName(msgNames[in_useJoystick.GetInteger()],PU_CACHE_SHARED));
-
+		*/
 	V_DrawPatchDirect (::g->OptionsDef.x + 120,::g->OptionsDef.y+LINEHEIGHT*messages,0,
 		(patch_t*)W_CacheLumpName(msgNames[m_show_messages.GetInteger()],PU_CACHE_SHARED));
 	//GK:begin

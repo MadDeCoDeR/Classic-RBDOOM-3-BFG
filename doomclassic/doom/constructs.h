@@ -219,9 +219,9 @@ menu_t  temp_NewDef = {
 		hurtme		// lastOn
 };
 memcpy( &::g->NewDef, &temp_NewDef, sizeof(temp_NewDef) );
-menuitem_t temp_OptionsMenu[9] = {
+menuitem_t temp_OptionsMenu[8] = {
 	{1,"M_GDHIGH",	M_FullScreen,'f'},
-	{1,"M_SCRNSZ",	M_ChangeGPad,'m'},
+	//{1,"M_SCRNSZ",	M_ChangeGPad,'m'}, //GK: Not nedded anymore
 	{1,"M_MESSG",	M_ChangeMessages,'m'},
 	//{1,"M_DETAIL",	M_ChangeDetail,'g'},
 	//{2,"M_SCRNSZ",	M_SizeDisplay,'s'},
