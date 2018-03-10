@@ -1,6 +1,22 @@
+@ECHO OFF
+@ECHO --------------------------------------------------------------------------------
+@ECHO 		  	CLASSIC RBDOOM 3 BFG EDITION
+@ECHO			   VS 2013 PROJECT GENERATION FOR x86
+@ECHO				        OPEN AL
+@ECHO --------------------------------------------------------------------------------
 cd ..
-del /s /q build
-mkdir build
-cd build
-cmake -G "Visual Studio 12" -DCMAKE_INSTALL_PREFIX=../bin/win8-32 -DOPENAL=ON ../neo
+del /s /q buildAL >NUL 2>&1
+mkdir buildAL >NUL 2>&1
+cd buildAL
+@ECHO Generating files
+cmake -G "Visual Studio 12" -DCMAKE_INSTALL_PREFIX=../bin/win8-32 -DOPENAL=ON ../neo >NUL 2>&1
+if ERRORLEVEL == 1 goto ERROR
 pause
+exit
+
+:ERROR
+@ECHO ERROR Generating files
+cd ..
+rmdir /Q /S buildAL
+pause
+exit
