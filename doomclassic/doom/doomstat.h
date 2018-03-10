@@ -63,7 +63,10 @@ extern int	gamemission;
 
 // Set if homebrew PWAD stuff has been added.
 extern  qboolean	modifiedgame;
-
+//GK: Detect modified level names and finale texts for nerve and master levels
+extern  qboolean	modifiedtext;
+extern  qboolean	modftext;
+extern  int			modind;
 
 // -------------------------------------------
 // Language.
@@ -85,6 +88,8 @@ extern  qboolean		autostart;
 extern  skill_t         gameskill;
 extern  int		gameepisode;
 extern  int		gamemap;
+//GK: Allow nerve to have secret level entrance in any level
+extern  int		prevmap;
 
 // Nightmare mode flag, single player.
 extern  qboolean         respawnmonsters;

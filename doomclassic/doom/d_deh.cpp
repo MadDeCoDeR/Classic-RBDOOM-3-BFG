@@ -294,7 +294,7 @@ void loaddeh(int lump) {
 	char* text = (char*)malloc(W_LumpLength(lump)+2);
 	idLib::Printf("Applying DeHackeD patch ...\n");
 	W_ReadLump(lump, text);
-	
+
 	//idLib::Printf("%s", text);
 	parsetext(text);
 	free(text);
@@ -865,6 +865,18 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 		for (int j = 0; j < arrsz; j++) {
 
 			if (!idStr::Icmp(otxt, *strval[j].var)) {
+				if (::g->gamemission == pack_nerve || ::g->gamemission == pack_master) {
+					if (!idStr::Icmpn(strval[j].name, "HU", 2) || (!idStr::Icmpn(strval[j].name, "E", 1) && idStr::Icmpn(strval[j].name + 1, "E", 1)) || (!idStr::Icmpn(strval[j].name, "C", 1) && idStr::Icmpn(strval[j].name + 1, "C", 1))) {
+						::g->modifiedtext = true;
+						if (::g->gamemode == commercial && (!idStr::Icmpn(strval[j].name, "E", 1) && idStr::Icmpn(strval[j].name + 1, "E", 1))) {
+							::g->modind =strval[j].name[1] - '0';
+						}
+						if (::g->gamemode == commercial && (!idStr::Icmpn(strval[j].name, "C", 1) && idStr::Icmpn(strval[j].name + 1, "C", 1))) {
+							::g->modftext = true;
+						}
+					}
+					
+				}
 				*strval[j].var=ntxt;
 				return;
 			}

@@ -230,11 +230,10 @@ void F_StartFinale (void)
 		{
 			S_ChangeMusic(mus_read_m, true);
 
-			if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut ) {
 				switch (::g->gamemap)
 				{
-				  case 6:
-					flatind=4;
+				case 6:
+					flatind = 4;
 					//GK: Show properly Evilution and Plutonia finale texts
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t1text;
@@ -242,32 +241,72 @@ void F_StartFinale (void)
 					else if (::g->gamemission == pack_plut) {
 						finaletext = p1text;
 					}
-					else {
+					else if (::g->gamemission == doom2 || ::g->modftext){
 						finaletext = c1text;
 					}
 					break;
-				  case 11:
-					flatind=5;
+					//GK: Insert nerve and master levels cases here for simplicity
+				case 8:
+					if (::g->gamemission == pack_nerve && ::g->modind<=0) {
+						flatind = 4;
+						finaletext = c7text;
+					}
+					else if (::g->gamemission == pack_nerve && ::g->modind>0) {
+						flatind = ::g->modind -1;
+						switch (::g->modind) {
+						case 1:
+							finaletext = e1text;
+							break;
+						case 2:
+							finaletext = e2text;
+							break;
+						case 3:
+							finaletext = e3text;
+							break;
+						case 4:
+							finaletext = e4text;
+							break;
+						}
+					}
+						break;
+				case 11:
+					flatind = 5;
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t2text;
 					}
 					else if (::g->gamemission == pack_plut) {
 						finaletext = p2text;
 					}
-					else {
+					else if (::g->gamemission == doom2 || ::g->modftext) {
 						finaletext = c2text;
 					}
 					break;
-				  case 20:
-					flatind=6;
+				case 20:
+					flatind = 6;
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t3text;
 					}
 					else if (::g->gamemission == pack_plut) {
 						finaletext = p3text;
 					}
-					else {
+					else if (::g->gamemission == pack_master) {
+						flatind = 4;
+						finaletext = c8Text;
+					}
+					else if (::g->gamemission == doom2 || ::g->modftext) {
 						finaletext = c3text;
+					}
+					break;
+				case 21:
+					if (::g->gamemission == pack_master) {
+					flatind = 4;
+					finaletext = c9Text;
+					if (::g->gameskill >= 2) { //GK: No reward for "Cry babies"
+						if (com_allowConsole.GetInteger() == 0 && !::g->classiccheats) {
+							doomit.SetInteger(1); // GK: Reward the player for finishing all the Master Levels by enabling the doom-it level selction for master levels
+						}
+					}
+					
 					}
 					break;
 				  case 30:
@@ -278,7 +317,7 @@ void F_StartFinale (void)
 					else if (::g->gamemission == pack_plut) {
 						finaletext = p4text;
 					}
-					else {
+					else if (::g->gamemission == doom2 || ::g->modftext) {
 						finaletext = c4text;
 					}
 					break;
@@ -290,7 +329,7 @@ void F_StartFinale (void)
 					else if (::g->gamemission == pack_plut) {
 						finaletext = p5text;
 					}
-					else {
+					else if (::g->gamemission == doom2 || ::g->modftext) {
 						finaletext = c5text;
 					}
 					break;
@@ -302,7 +341,7 @@ void F_StartFinale (void)
 					else if (::g->gamemission == pack_plut) {
 						finaletext = p6text;
 					}
-					else {
+					else if (::g->gamemission == doom2 || ::g->modftext) {
 						finaletext = c6text;
 					}
 					break;
@@ -310,34 +349,9 @@ void F_StartFinale (void)
 					// Ouch.
 					break;
 				}
-			} else if( ::g->gamemission == pack_master ) {
-				switch (::g->gamemap)
-				{
-					case 20:
-						flatind=4;
-						finaletext = c8Text;
-						break;
-					case 21:
-						flatind=4;
-						finaletext = c9Text;
-						if (::g->gameskill >= 2) { //GK: No reward for "Cry babies"
-							if (com_allowConsole.GetInteger() == 0 && !::g->classiccheats) {
-								doomit.SetInteger(1); // GK: Reward the player for finishing all the Master Levels by enabling the doom-it level selction for master levels
-							}
-						}
-						break;
-				}
-			} else if ( ::g->gamemission == pack_nerve ) {
-				switch( ::g->gamemap ){
-					case 8:
-						flatind=4;
-						finaletext = c7text;
-						break;
-				}
-			}
 		
 			break;
-		}	
+		}
 
 		// Indeterminate.
 		default:

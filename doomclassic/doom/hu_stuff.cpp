@@ -564,14 +564,26 @@ void HU_Start(void)
 				if (::g->gamemap > 9) {
 					map = 0;
 				}
-				char ts[512];
-				sprintf(ts, "level %s", DoomLib::GetCurrentExpansion()->mapNames[map - 1]);
-				s = (const char*)ts;
+				//GK: Give modified level name even on nerve and master
+				if (!::g->modifiedtext) {
+					char ts[512];
+					sprintf(ts, "level %s", DoomLib::GetCurrentExpansion()->mapNames[map - 1]);
+					s = (const char*)ts;
+				}
+				else {
+					s= HU_TITLE2;
+				}
+				
 			}
 			else {
-				char ts[512];
-				sprintf(ts, "level %s", DoomLib::GetCurrentExpansion()->mapNames[::g->gamemap - 1]);
-				s = (const char*)ts;
+				if (!::g->modifiedtext) {
+					char ts[512];
+					sprintf(ts, "level %s", DoomLib::GetCurrentExpansion()->mapNames[::g->gamemap - 1]);
+					s = (const char*)ts;
+				}
+				else {
+					s = HU_TITLE2;
+				}
 			}
 		}
 		break;
@@ -581,10 +593,19 @@ void HU_Start(void)
 			if( ::g->gamemap > 9 ) {
 				map = 0;
 			} 
-
-			s = DoomLib::GetCurrentExpansion()->mapNames[ map - 1 ];
+			if (!::g->modifiedtext) {
+				s = DoomLib::GetCurrentExpansion()->mapNames[map - 1];
+			}
+			else {
+				s = HU_TITLE2;
+			}
 		} else {
-			s = DoomLib::GetCurrentExpansion()->mapNames[ ::g->gamemap - 1 ];
+			if (!::g->modifiedtext) {
+				s = DoomLib::GetCurrentExpansion()->mapNames[::g->gamemap - 1];
+			}
+			else {
+				s = HU_TITLE2;
+			}
 		}
 
 		

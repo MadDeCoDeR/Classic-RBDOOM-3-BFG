@@ -92,6 +92,9 @@ GameMode_t gamemode ;
 int	gamemission ;
 Language_t   language ;
 qboolean	modifiedgame;
+qboolean	modifiedtext;
+int			modind;
+qboolean	modftext;
 // doomstat.vars end // 
 //  d_main.vars begin // 
 qboolean		devparm;	// started game with -devparm
@@ -189,6 +192,7 @@ skill_t         gameskill;
 qboolean		respawnmonsters;
 int             gameepisode; 
 int             gamemap; 
+int				prevmap;
 qboolean         paused; 
 qboolean         sendpause;             	// send a pause event next tic 
 qboolean         sendsave;             	// send a save event next tic 
@@ -367,7 +371,7 @@ menuitem_t ExpansionMenu[5];
 menu_t  ExpDef;
 menuitem_t NewGameMenu[5];
 menu_t  NewDef;
-menuitem_t OptionsMenu[9];
+menuitem_t OptionsMenu[8];
 menu_t  OptionsDef;
 menuitem_t SoundMenu[4];
 menu_t  SoundDef;

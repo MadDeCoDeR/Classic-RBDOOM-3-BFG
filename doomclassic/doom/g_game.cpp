@@ -1284,6 +1284,7 @@ void G_DoCompleted (void)
 			} else if( ::g->gamemission == pack_nerve ) {
 
 				// DHM - Nerve :: Secret level is always level 9 on extra Doom2 missions
+				::g->prevmap = ::g->gamemap;
 				::g->wminfo.next = 8;
 			}
 			else if (::g->gamemission == pack_master) {
@@ -1303,7 +1304,7 @@ void G_DoCompleted (void)
 			else if( ::g->gamemission == pack_nerve) {
 				switch(::g->gamemap)
 				{	case 9:
-						::g->wminfo.next = 4;
+						::g->wminfo.next = ::g->prevmap;
 						break;
 					default:
 						::g->wminfo.next = ::g->gamemap;
@@ -1392,31 +1393,12 @@ void G_WorldDone (void)
 
 	if ( ::g->gamemode == commercial )
 	{
-		if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut  ) {
-			switch (::g->gamemap)
-			{
-			case 15:
-			case 31:
-				if (!::g->secretexit)
-					break;
-			case 6:
-			case 11:
-			case 20:
-			case 30:
-				F_StartFinale ();
-				break;
-			}
-		}
-		else if ( ::g->gamemission == pack_nerve ) {
-			if ( ::g->gamemap == 8 ) {
-				F_StartFinale();
-			}
-		}
-		else if ( ::g->gamemission == pack_master ) {
-			
+
+		if (::g->gamemission == pack_master) {
+
 			if (DoomLib::use_doomit) {
 				if (!::g->secretexit) {
-					
+
 					//::g->currentMenu->lastOn = ::g->itemOn;
 					//M_ClearMenus();
 					DoomLib::SetCurrentExpansion(doom2);
@@ -1424,18 +1406,39 @@ void G_WorldDone (void)
 					D_StartTitle();
 					return;
 				}
-				
-			}
-			if ((::g->gamemap == 20 && !::g->secretexit) || ::g->gamemap == 21) {
-				F_StartFinale();
+
 			}
 		}
-		else {
-			// DHM - NERVE :: Downloadable content needs to set these up if different than initial extended episode
-			if ( ::g->gamemap == 8 ) {
-				F_StartFinale();
+		//if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut || ((::g->gamemission == pack_nerve || ::g->gamemission == pack_master) && ::g->modifiedtext)) {
+			switch (::g->gamemap)
+			{
+			case 15:
+				if (::g->gamemission == pack_master && !::g->modftext)
+					break;
+			case 31:
+				if (!::g->secretexit)
+					break;
+			case 6:
+				if ((::g->gamemission == pack_nerve || ::g->gamemission == pack_master) && !::g->modftext)
+					break;
+			case 11:
+				if ( ::g->gamemission == pack_master && !::g->modftext)
+					break;
+			case 20:
+				if (::g->gamemission == pack_master && ::g->secretexit)
+					break;
+			case 30:
+				F_StartFinale ();
+				break;
+			case 8:
+				if (::g->gamemission == pack_nerve)
+					F_StartFinale();
+				break;
+			case 21:
+				if (::g->gamemission == pack_master)
+					F_StartFinale();
+				break;
 			}
-		}
 	}
 } 
 
@@ -1514,83 +1517,64 @@ qboolean G_CheckSave(char* name) {
 			bool movetonext;
 			if (sc > 0) {
 				for (int mf = 0; mf < filelist.size() - 1; mf++) {
-					for (int f = 1; f < 20; f++) {
+					//GK: Simplifing moded save checking
+					int f = 1;
+					while (wadfiles[f] != NULL) {
 						movetonext = false;
-						if (wadfiles[f] != NULL) {
-							char* fname = strtok(strdup(wadfiles[f]), "\\");
-							if (DoomLib::idealExpansion == ::g->gamemission) {
-								if (idStr::Icmpn(fname, "wads", 4)) {
-									while (fname) {
-										char* tname = strtok(NULL, "\\");
-										if (tname) {
-											fname = tname;
-										}
-										else {
-											break;
-										}
+
+						char* fname = strtok(strdup(wadfiles[f]), "\\");
+						if (DoomLib::idealExpansion == ::g->gamemission) {
+							if (idStr::Icmpn(fname, "wads", 4)) {
+								while (fname) {
+									char* tname = strtok(NULL, "\\");
+									if (tname) {
+										fname = tname;
 									}
-
-
-									if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
-										ac++;
-										if (ac == sc) {
-											ok = true;
-										}
+									else {
 										break;
 									}
-
-
 								}
+
+
+								if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
+									ac++;
+									if (ac == sc) {
+										ok = true;
+									}
+									break;
+								}
+
 							}
 							else {
-
-								for (int i = 1; i < 6; i++) {
-									for (int j = 0; j < 20; j++) {
-										if (DoomLib::idealExpansion == i) {
-											if (DoomLib::otherfiles[i - 1][j] != NULL) {
-												if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[i - 1][j])) {
-													ac++;
-													movetonext = true;
-													if (ac == sc) {
-														ok = true;
-													}
-													break;
-												}
-												//else {
-
-												//}
-											}
-											else {
-												/*if (j == 0) {
-													ok = true;
-												}*/
-												break;
-											}
-										}
-										else {
-											break;
-										}
-									}
-									if (ok)
-										break;
-								}
-
-								//ok = false;
-							}
-							if (movetonext) {
-								break;
+								f++;
+								continue;
 							}
 						}
 						else {
-							break;
+							int o = 0;
+							while (DoomLib::otherfiles[DoomLib::idealExpansion - 1][o] != NULL) {
+								if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[DoomLib::idealExpansion - 1][o])) {
+									ac++;
+									movetonext = true;
+									if (ac == sc)
+										ok = true;
+
+									break;
+								}
+								o++;
+							}
+							if (movetonext)
+								break;
 						}
+						f++;
 					}
+					if (ok)
+						break;
 				}
 			}
 			else {
 				ok = true;
 			}
-			
 		}
 		if (!ok) {
 			loadingGame = false;
@@ -1672,9 +1656,10 @@ qboolean G_DoLoadGame ()
 			bool movetonext;
 			if (sc > 0) {
 				for (int mf = 0; mf < filelist.size() - 1; mf++) {
-					for (int f = 1; f < 20; f++) {
+					int f = 1;
+					while (wadfiles[f] != NULL) {
 						movetonext = false;
-						if (wadfiles[f] != NULL) {
+
 							char* fname = strtok(strdup(wadfiles[f]), "\\");
 							if (DoomLib::idealExpansion == ::g->gamemission) {
 								if (idStr::Icmpn(fname, "wads", 4)) {
@@ -1697,52 +1682,32 @@ qboolean G_DoLoadGame ()
 										break;
 									}
 
-
+								}
+								else {
+									f++;
+									continue;
 								}
 							}
 							else {
+								int o = 0;
+								while (DoomLib::otherfiles[DoomLib::idealExpansion - 1][o] != NULL) {
+									if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[DoomLib::idealExpansion - 1][o])) {
+										ac++;
+										movetonext = true;
+										if (ac == sc)
+											ok = true;
 
-								for (int i = 1; i < 6; i++) {
-									for (int j = 0; j < 20; j++) {
-										if (DoomLib::idealExpansion == i) {
-											if (DoomLib::otherfiles[i - 1][j] != NULL) {
-												if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[i - 1][j])) {
-													ac++;
-													movetonext = true;
-													if (ac == sc) {
-														ok = true;
-													}
-													break;
-												}
-												//else {
-
-												//}
-											}
-											else {
-											/*	if (j == 0) {
-													ok = true;
-												}*/
-												break;
-											}
-										}
-										else {
-											break;
-										}
-									}
-									if (ok)
 										break;
+									}
+									o++;
 								}
-
-								//ok = false;
+								if (movetonext)
+									break;
 							}
-							if (movetonext) {
-								break;
-							}
-						}
-						else {
-							break;
-						}
+							f++;
 					}
+					if (ok)
+						break;
 				}
 			}
 			else {

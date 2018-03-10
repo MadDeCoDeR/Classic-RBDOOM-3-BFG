@@ -542,6 +542,9 @@ void D_DoomMain(void)
 	FindResponseFile();
 
 	IdentifyVersion();
+	::g->modifiedtext = false;
+	::g->modftext = false;
+	::g->modind = 0;
 	//GK: New pwad for compatibility with Evilution and Plutonia (only for DOOM II)
 	if (::g->gamemode == commercial) {
 		D_AddFile("wads/ua.wad");
