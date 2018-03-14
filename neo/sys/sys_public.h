@@ -632,7 +632,6 @@ const char* 	Sys_DefaultSavePath();
 
 // know early if we are performing a fatal error shutdown so the error message doesn't get lost
 void			Sys_SetFatalError( const char* error );
-void			Sys_joyinit();//GK: Init the controller idividualy
 
 // Execute the specified process and wait until it's done, calling workFn every waitMS milliseconds.
 // If showOutput == true, std IO from the executed process will be output to the console.

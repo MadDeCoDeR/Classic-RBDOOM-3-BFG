@@ -51,7 +51,7 @@ bool IN_StartupKeyboard()
 	bool    bImmediate;
 	bool    bDisableWindowsKey;
 	DWORD   dwCoopFlags;
-	
+		
 	if( !win32.g_pdi )
 	{
 		common->Printf( "keyboard: DirectInput has not been started\n" );
@@ -725,9 +725,6 @@ int Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] )
 //	Joystick Input Handling
 //=====================================================================================
 
-void Sys_joyinit() { //GK: Re-nit the controller
-	win32.g_Joystick.Init();
-}
 
 void Sys_SetRumble( int device, int low, int hi )
 {
@@ -763,7 +760,7 @@ void JoystickSamplingThread( void* data )
 {
 	static int prevTime = 0;
 	static uint64 nextCheck[MAX_JOYSTICKS] = { 0 };
-	const uint64 waitTime = 25000000; // poll every 25 seconds to see if a controller was connected
+	const uint64 waitTime = 5000;// 000; // poll every 5 seconds to see if a controller was connected
 	while( 1 )
 	{
 		// hopefully we see close to 4000 usec each loop
@@ -790,7 +787,7 @@ void JoystickSamplingThread( void* data )
 				{
 					// XInputGetState might block... for a _really_ long time..
 					validData[i] = XInputGetState( i, &joyData[i] ) == ERROR_SUCCESS;
-
+					
 					// allow an immediate data poll if the input device is connected else
 					// wait for some time to see if another device was reconnected.
 					// Checking input state infrequently for newly connected devices prevents
@@ -801,7 +798,7 @@ void JoystickSamplingThread( void* data )
 					}
 					else
 					{
-						nextCheck[i] = waitTime; //GK: Make the checks frequent in order to detect a new controller
+						nextCheck[i] = now + waitTime;
 					}
 				}
 			}
@@ -812,28 +809,38 @@ void JoystickSamplingThread( void* data )
 			for( int i = 0 ; i < MAX_JOYSTICKS ; i++ )
 			{
 				controllerState_t* cs = &win32.g_Joystick.controllers[i];
-				
-				if( !validData[i] )
+
+				if (!validData[i])
 				{
+					if (idLib::joystick) {
+						//GK: Disable controller layout if the controller is disconnected
+						idLib::joystick=false;
+					}
 					cs->valid = false;
 					continue;
 				}
-				cs->valid = true;
-				
-				XINPUT_STATE& current = joyData[i];
-				
-				cs->current = current;
-				
-				// Switch from using cs->current to current to reduce chance of Load-Hit-Store on consoles
-				
-				threadPacket[threadCount & 255] = current.dwPacketNumber;
+				else {
+					if (!idLib::joystick) {
+						//GK: Enable controller layout if the controller is connected
+						idLib::joystick = true;
+					}
+					cs->valid = true;
+
+					XINPUT_STATE& current = joyData[i];
+
+					cs->current = current;
+
+					// Switch from using cs->current to current to reduce chance of Load-Hit-Store on consoles
+
+					threadPacket[threadCount & 255] = current.dwPacketNumber;
 #if 0
-				if( xis.dwPacketNumber == oldXis[ inputDeviceNum ].dwPacketNumber )
-				{
-					return numEvents;
+					if (xis.dwPacketNumber == oldXis[inputDeviceNum].dwPacketNumber)
+					{
+						return numEvents;
 				}
 #endif
-				cs->buttonBits |= current.Gamepad.wButtons;
+					cs->buttonBits |= current.Gamepad.wButtons;
+			}
 			}
 		}
 
