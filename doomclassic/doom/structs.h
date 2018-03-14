@@ -363,8 +363,8 @@ typedef struct
 //  r_bsp.structs begin // 
 typedef	struct
 {
-    int	first;
-    int last;
+    short	first;
+    short last;
     
 } cliprange_t;
 // r_bsp.structs end // 

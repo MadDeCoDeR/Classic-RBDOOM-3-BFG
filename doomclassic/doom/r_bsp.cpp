@@ -109,16 +109,19 @@ R_ClipSolidWallSegment
 	    // Post is entirely visible (above start),
 	    //  so insert a new clippost.
 	    R_StoreWallRange (first, last);
-	    next = ::g->newend;
+
+		// 1/11/98 killough: performance tuning using fast memmove
+		memmove(start + 1, start, (++::g->newend - start) * sizeof(*start));
+		/*next = ::g->newend;
 	    ::g->newend++;
 	    
 	    while (next != start)
 	    {
 		*next = *(next-1);
 		next--;
-	    }
-	    next->first = first;
-	    next->last = last;
+	    }*/
+	    start->first = first;
+	    start->last = last;
 	    return;
 	}
 		
@@ -232,10 +235,10 @@ R_ClipPassWallSegment
 //
 void R_ClearClipSegs (void)
 {
-    ::g->solidsegs[0].first = -0x7fffffff;
+	::g->solidsegs[0].first = -0x7fff;// ffff;
     ::g->solidsegs[0].last = -1;
     ::g->solidsegs[1].first = ::g->viewwidth;
-    ::g->solidsegs[1].last = 0x7fffffff;
+	::g->solidsegs[1].last = 0x7fff;// ffff;
     ::g->newend = ::g->solidsegs+2;
 }
 
@@ -303,7 +306,7 @@ void R_AddLine (seg_t*	line)
     x2 = ::g->viewangletox[angle2];
 
     // Does not cross a pixel?
-    if (x1 == x2)
+    if (x1 >= x2)
 		return;				
 	
     ::g->backsector = line->backsector;

@@ -239,7 +239,7 @@ If you have questions concerning this license or the applicable additional terms
 #define ANG5   	(ANG90/18)
 // p_user.defs end // 
 //  r_bsp.defs begin // 
-#define MAXSEGS		32
+#define MAXSEGS		(MAXWIDTH/2+1)
 // r_bsp.defs end // 
 //  r_draw.defs begin // 
 //#define MAXWIDTH			1120

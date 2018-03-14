@@ -67,8 +67,8 @@ typedef unsigned int dword;
 #define SCREENWIDTH			WIDTH
 #define SCREENHEIGHT		HEIGHT
 
-#define MAXWIDTH			1920
-#define MAXHEIGHT			1080
+#define MAXWIDTH			1120
+#define MAXHEIGHT			832
 
 // DG: provide MAXINT seems to be available on MSVC but not MinGW,
 // so use the standard defines from limits.h
