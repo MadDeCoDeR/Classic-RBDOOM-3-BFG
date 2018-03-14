@@ -80,7 +80,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "f_finale.h"
 #include "g_game.h"
 
-extern idCVar in_useJoystick;
+
 extern idCVar in_joylayout;
 //
 // defaulted values
@@ -338,7 +338,7 @@ void M_DrawLoad(void)
 		M_DrawSaveLoadBorder(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i);
 		M_WriteText(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i,::g->savegamestrings[i]);
 	}
-	if (!in_useJoystick.GetBool()) {
+	if (!idLib::joystick) {
 		M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODEL);
 	}
 	else {
@@ -958,7 +958,7 @@ void M_ChooseSkill(int choice)
 	
 	if (choice == nightmare)
 	{
-		if (!in_useJoystick.GetBool()) {
+		if (!idLib::joystick) {
 			M_StartMessage(NIGHTMARE, M_VerifyNightmare, true);
 		}
 		else {
@@ -1200,7 +1200,7 @@ void M_ChangeGPad(int choice)
 {
 	// warning: unused parameter `int choice'
 	choice = 0;
-	in_useJoystick.SetBool( !in_useJoystick.GetBool() );
+	idLib::joystick= !idLib::joystick ;
 
 	::g->message_dontfuckwithme = true;
 }
@@ -1667,7 +1667,7 @@ qboolean M_Responder (event_t* ev)
 			if (ev->type == ev_keydown)
 			{
 				ch = ev->data1;
-				if (in_useJoystick.GetBool()) {
+				if (idLib::joystick) {
 					if (::g->currentMenu == &::g->LoadDef) {
 						if (ev->data1 == 15) {
 							ch = 45;
@@ -1909,7 +1909,7 @@ qboolean M_Responder (event_t* ev)
 			idFile* handle = fileSystem->OpenFileRead(::g->savegamepaths[::g->itemOn], false);
 			if (handle != NULL) {
 				fileSystem->CloseFile(handle);
-				if (!in_useJoystick.GetBool()) {
+				if (!idLib::joystick) {
 					M_StartMessage(DELSAV, M_DeleteSelected, true);
 				}
 				else {

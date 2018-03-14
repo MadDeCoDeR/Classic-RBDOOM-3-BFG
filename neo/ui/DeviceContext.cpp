@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "DeviceContext.h"
 #include "../renderer/GuiModel.h"
 
-extern idCVar in_useJoystick;
+
 extern idCVar in_joylayout;
 
 // bypass rendersystem to directly work on guiModel
@@ -539,7 +539,7 @@ void idDeviceContext::SetCursor( int n )
 		keyBindings_t binds = idKeyInput::KeyBindingsFromBinding( "_use", true );
 		
 		keyNum_t keyNum = K_NONE;
-		if( in_useJoystick.GetBool() )
+		if( idLib::joystick )
 		{
 			keyNum = idKeyInput::StringToKeyNum( binds.gamepad.c_str() );
 		}

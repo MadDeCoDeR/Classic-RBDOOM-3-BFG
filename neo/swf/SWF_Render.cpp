@@ -48,7 +48,7 @@ idCVar swf_show( "swf_show", "0", CVAR_INTEGER, "" );
 
 extern idCVar swf_textStrokeSize;
 extern idCVar swf_textStrokeSizeGlyphSpacer;
-extern idCVar in_useJoystick;
+
 extern idCVar in_joylayout;
 
 #define ALPHA_EPSILON	0.001f
@@ -1832,7 +1832,7 @@ void idSWF::FindTooltipIcons( idStr* text )
 			gamepad.Append( bind.gamepad );
 			gamepad.Append( ">" );
 			
-			if( !in_useJoystick.GetBool() )
+			if( !idLib::joystick )
 			{
 			
 				if( !bind.mouse.IsEmpty() )

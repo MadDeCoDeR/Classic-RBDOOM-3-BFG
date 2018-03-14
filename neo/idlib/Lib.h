@@ -57,7 +57,9 @@ public:
 	static class idCVarSystem* 	cvarSystem;
 	static class idFileSystem* 	fileSystem;
 	static int					frameNumber;
-	
+	//enables/disables the gamepad for PC use
+	static bool					joystick;
+
 	static void					Init();
 	static void					ShutDown();
 	

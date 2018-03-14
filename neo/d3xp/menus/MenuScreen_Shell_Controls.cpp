@@ -346,7 +346,7 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 
 extern idCVar in_mouseInvertLook;
 extern idCVar in_mouseSpeed;
-extern idCVar in_useJoystick;
+
 
 /*
 ========================
@@ -369,7 +369,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::LoadData()
 	fields[ CONTROLS_FIELD_INVERT_MOUSE ].SetBool( in_mouseInvertLook.GetBool() );
 	float mouseSpeed = ( ( in_mouseSpeed.GetFloat() - 0.25f ) / ( 4.0f - 0.25 ) ) * 100.0f;
 	fields[ CONTROLS_FIELD_MOUSE_SENS ].SetFloat( mouseSpeed );
-	fields[ CONTROLS_FIELD_GAMEPAD_ENABLED ].SetBool( in_useJoystick.GetBool() );
+	fields[ CONTROLS_FIELD_GAMEPAD_ENABLED ].SetBool( idLib::joystick );
 	
 	originalFields = fields;
 }
@@ -385,7 +385,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::CommitData()
 	in_mouseInvertLook.SetBool( fields[ CONTROLS_FIELD_INVERT_MOUSE ].ToBool() );
 	float mouseSpeed = 0.25f + ( ( 4.0f - 0.25 ) * ( fields[ CONTROLS_FIELD_MOUSE_SENS ].ToFloat() / 100.0f ) );
 	in_mouseSpeed.SetFloat( mouseSpeed );
-	in_useJoystick.SetBool( fields[ CONTROLS_FIELD_GAMEPAD_ENABLED ].ToBool() );
+	idLib::joystick = fields[ CONTROLS_FIELD_GAMEPAD_ENABLED ].ToBool() ;
 	
 	cvarSystem->SetModifiedFlags( CVAR_ARCHIVE );
 	

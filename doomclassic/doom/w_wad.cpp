@@ -382,16 +382,25 @@ void W_AddFile ( const char *filename)
 											}
 										}
 									}
-									else {
+									else if (strlen(filelumpPointer->name) <= 6 && strlen(tlump->name) <= 6){
 										int rot = atoi(filelumpPointer->name + 5);
 										if (rot < 1) {
 											char tn[8];
-											strcpy(tn,filelumpPointer->name);
+											strcpy(tn, filelumpPointer->name);
 											tn[5] = '1';
 											if (!idStr::Icmpn(tn + 4, tlump->name + 4, 2)) {
 												ok = true;
 											}
 										}
+											else {
+												char tn[8];
+												strcpy(tn, filelumpPointer->name);
+												tn[5] = '0';
+												if (!idStr::Icmpn(tn + 4, tlump->name + 4, 2)) {
+													strcpy(tlump->name, filelumpPointer->name);
+													ok = true;
+												}
+											}
 									}
 								}
 								if (ok) {

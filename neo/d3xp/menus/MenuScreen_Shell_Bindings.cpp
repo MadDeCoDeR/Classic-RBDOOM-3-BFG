@@ -251,7 +251,7 @@ void idMenuScreen_Shell_Bindings::HideScreen( const mainMenuTransition_t transit
 	idMenuScreen::HideScreen( transitionType );
 }
 
-extern idCVar in_useJoystick;
+
 
 /*
 ========================
@@ -275,7 +275,7 @@ void idMenuScreen_Shell_Bindings::UpdateBindingDisplay()
 			
 			idStr bindings;
 										//GK: from now on this idcvar will no longer hold back controller input
-			if( !bind.gamepad.IsEmpty() /*&& in_useJoystick.GetBool()*/ )
+			if( !bind.gamepad.IsEmpty() && idLib::joystick )
 			{
 				idStrList joyBinds;
 				int start = 0;

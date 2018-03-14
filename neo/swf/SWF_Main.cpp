@@ -44,7 +44,7 @@ int idSWF::mouseX = -1;
 int idSWF::mouseY = -1;
 bool idSWF::isMouseInClientArea = false;
 
-extern idCVar in_useJoystick;
+
 extern idCVar in_joylayout;
 
 
@@ -679,7 +679,7 @@ int	idSWF::GetPlatform()
 {
 
 
-	if( in_useJoystick.GetBool() || forceNonPCPlatform )
+	if( idLib::joystick || forceNonPCPlatform )
 	{
 		forceNonPCPlatform = false;
 		return 0;

@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../Game_local.h"
 
 extern idCVar pm_stamina;
-extern idCVar in_useJoystick;
+
 extern idCVar flashlight_batteryDrainTimeMS;
 
 /*
@@ -800,7 +800,7 @@ void idMenuScreen_HUD::UpdateCursorState()
 					if( txtAction )
 					{
 					
-						if( !in_useJoystick.GetBool() )
+						if( !idLib::joystick )
 						{
 							txtAction->tooltip = true;
 							keyBindings_t bind = idKeyInput::KeyBindingsFromBinding( "_use", true );
@@ -862,7 +862,7 @@ void idMenuScreen_HUD::UpdateCursorState()
 					
 					if( txtPrompt )
 					{
-						if( in_useJoystick.GetBool() )
+						if( idLib::joystick )
 						{
 							txtPrompt->tooltip = true;
 							txtPrompt->SetText( "_use" );

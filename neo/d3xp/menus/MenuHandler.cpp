@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../Game_local.h"
 
-extern idCVar in_useJoystick;
+
 
 /*
 ================================================
@@ -123,7 +123,7 @@ idMenuHandler::GetPlatform
 int idMenuHandler::GetPlatform( bool realPlatform )
 {
 
-	if( platform == 2 && in_useJoystick.GetBool() && !realPlatform )
+	if( platform == 2 && idLib::joystick && !realPlatform )
 	{
 		return 0;
 	}
