@@ -1030,20 +1030,45 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 			format_byte = 4;
 			use_ext = true;
 		}
-		if (!use_ext) {
-			voiceFormat.wFormatTag = WAVE_FORMAT_PCM;
-		}
-		else {
-			voiceFormat.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
-		}
-
+		WAVEFORMATEXTENSIBLE exvoice = { 0 };
+		voiceFormat.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
 		voiceFormat.nSamplesPerSec = dec_ctx->sample_rate;
 		voiceFormat.nAvgBytesPerSec = voiceFormat.nSamplesPerSec * format_byte * 2;
 		voiceFormat.nChannels = dec_ctx->channels;
 		voiceFormat.nBlockAlign = format_byte * 2;
 		voiceFormat.wBitsPerSample = format_byte * 8;
-		voiceFormat.cbSize = 0;
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat, XAUDIO2_VOICE_MUSIC);
+		voiceFormat.cbSize = 22;
+		exvoice.Format = voiceFormat;
+		switch (voiceFormat.nChannels) {
+		case 1:
+			exvoice.dwChannelMask = SPEAKER_MONO;
+			break;
+		case 2:
+			exvoice.dwChannelMask = SPEAKER_STEREO;
+			break;
+		case 4:
+			exvoice.dwChannelMask = SPEAKER_QUAD;
+			break;
+		case 5:
+			exvoice.dwChannelMask = SPEAKER_5POINT1_SURROUND;
+			break;
+		case 7:
+			exvoice.dwChannelMask = SPEAKER_7POINT1_SURROUND;
+			break;
+		default:
+			exvoice.dwChannelMask = SPEAKER_MONO;
+			break;
+		}
+		exvoice.Samples.wReserved = 0;
+		exvoice.Samples.wSamplesPerBlock = voiceFormat.wBitsPerSample;
+		exvoice.Samples.wValidBitsPerSample = voiceFormat.wBitsPerSample;
+		if (!use_ext) {
+			exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
+		}
+		else {
+			exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
+		}
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (WAVEFORMATEX *)&exvoice, XAUDIO2_VOICE_MUSIC);
 		av_init_packet(&packet);
 		AVFrame *frame;
 		int frameFinished = 0;

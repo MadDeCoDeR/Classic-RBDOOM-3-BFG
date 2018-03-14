@@ -568,14 +568,21 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		int res = swr_init(swr_ctx);
 #ifdef _MSC_VER
 		int format_byte = 4;
-		voiceFormatcine.wFormatTag = WAVE_FORMAT_IEEE_FLOAT; //Use extensible wave format in order to handle properly the audio
+		WAVEFORMATEXTENSIBLE exvoice = { 0 };
+		voiceFormatcine.wFormatTag = WAVE_FORMAT_EXTENSIBLE; //Use extensible wave format in order to handle properly the audio
 		voiceFormatcine.nChannels = dec_ctx2->channels; //fixed
 		voiceFormatcine.nSamplesPerSec = dec_ctx2->sample_rate; //fixed
 		voiceFormatcine.wBitsPerSample = format_byte*8; //fixed
 		voiceFormatcine.nBlockAlign = format_byte* voiceFormatcine.nChannels; //fixed
 		voiceFormatcine.nAvgBytesPerSec = voiceFormatcine.nSamplesPerSec * voiceFormatcine.nBlockAlign; //fixed
-		voiceFormatcine.cbSize = 0; //fixed
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice1, (WAVEFORMATEX*)&voiceFormatcine, XAUDIO2_VOICE_USEFILTER |  XAUDIO2_VOICE_MUSIC);//Use the XAudio2 that the game has initialized instead of making your own
+		voiceFormatcine.cbSize = 22; //fixed
+		exvoice.Format = voiceFormatcine;
+		exvoice.dwChannelMask = SPEAKER_MONO;
+		exvoice.Samples.wReserved = 0;
+		exvoice.Samples.wValidBitsPerSample = voiceFormatcine.wBitsPerSample;
+		exvoice.Samples.wSamplesPerBlock = voiceFormatcine.wBitsPerSample;
+		exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice1, (WAVEFORMATEX*)&exvoice, XAUDIO2_VOICE_USEFILTER |  XAUDIO2_VOICE_MUSIC);//Use the XAudio2 that the game has initialized instead of making your own
 #endif
 	}
 	else {
