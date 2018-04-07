@@ -135,7 +135,8 @@ int flatind = -1;
 { "RROCK17" },
 { "RROCK13" },
 { "RROCK19" },
-{"F_SKY1"}
+{"F_SKY1"},
+{"BOSSBACK"} //GK:Make even the cast background modifiable by dehacked
 
 };
 
@@ -151,7 +152,8 @@ void ResetFinalflat() {
 	{ "RROCK17" },
 	{ "RROCK13" },
 	{ "RROCK19" },
-	{ "F_SKY1" }
+	{ "F_SKY1" },
+	{ "BOSSBACK" }
 
 	};
 	memcpy(finaleflat, tfinaleflat, sizeof(tfinaleflat));
@@ -527,6 +529,10 @@ void F_TextWrite (void)
 	    cy += 11;
 	    continue;
 	}
+	//GK:For improved text parsing from the BEX text editor it replace the \\n with \n and \b and so it ignores the \b character
+	if (c == '\b') {
+		continue;
+	}
 		
 	c = toupper(c) - HU_FONTSTART;
 	if (c < 0 || c> HU_FONTSIZE)
@@ -549,26 +555,26 @@ void F_TextWrite (void)
 // Casting by id Software.
 //   in order of appearance
 //
-
+//GK:Make sure the modified names of the monsters are shown
 castinfo_t	castorder[] = 
 {
-    {CC_ZOMBIE, MT_POSSESSED},
-    {CC_SHOTGUN, MT_SHOTGUY},
-    {CC_HEAVY, MT_CHAINGUY},
-    {CC_IMP, MT_TROOP},
-    {CC_DEMON, MT_SERGEANT},
-    {CC_LOST, MT_SKULL},
-    {CC_CACO, MT_HEAD},
-    {CC_HELL, MT_KNIGHT},
-    {CC_BARON, MT_BRUISER},
-    {CC_ARACH, MT_BABY},
-    {CC_PAIN, MT_PAIN},
-    {CC_REVEN, MT_UNDEAD},
-    {CC_MANCU, MT_FATSO},
-    {CC_ARCH, MT_VILE},
-    {CC_SPIDER, MT_SPIDER},
-    {CC_CYBER, MT_CYBORG},
-    {CC_HERO, MT_PLAYER},
+    {&CC_ZOMBIE, MT_POSSESSED},
+    {&CC_SHOTGUN, MT_SHOTGUY},
+    {&CC_HEAVY, MT_CHAINGUY},
+    {&CC_IMP, MT_TROOP},
+    {&CC_DEMON, MT_SERGEANT},
+    {&CC_LOST, MT_SKULL},
+    {&CC_CACO, MT_HEAD},
+    {&CC_HELL, MT_KNIGHT},
+    {&CC_BARON, MT_BRUISER},
+    {&CC_ARACH, MT_BABY},
+    {&CC_PAIN, MT_PAIN},
+    {&CC_REVEN, MT_UNDEAD},
+    {&CC_MANCU, MT_FATSO},
+    {&CC_ARCH, MT_VILE},
+    {&CC_SPIDER, MT_SPIDER},
+    {&CC_CYBER, MT_CYBORG},
+    {&CC_HERO, MT_PLAYER},
 
     {NULL,(mobjtype_t)0}
 };
@@ -799,12 +805,12 @@ void F_CastDrawer (void)
     patch_t*		patch;
     
     // erase the entire screen to a background
-    V_DrawPatch (0,0,0, (patch_t*)W_CacheLumpName ("BOSSBACK", PU_CACHE_SHARED));
+    V_DrawPatch (0,0,0, (patch_t*)W_CacheLumpName (finaleflat[11], PU_CACHE_SHARED));
 
-    F_CastPrint (castorder[::g->castnum].name);
+    F_CastPrint (*castorder[::g->castnum].name);
     
     // draw the current frame in the middle of the screen
-    sprdef = &::g->sprites[::g->caststate->sprite];
+    sprdef = ::g->sprites[::g->caststate->sprite];
     sprframe = &sprdef->spriteframes[ ::g->caststate->frame & FF_FRAMEMASK];
     lump = sprframe->lump[0];
     flip = (qboolean)sprframe->flip[0];

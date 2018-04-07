@@ -30,4 +30,11 @@
 
 void loaddeh(int lump);
 
+typedef struct {
+	char* name;
+	int bit;
+}dehbits;
+
+
+
 #endif

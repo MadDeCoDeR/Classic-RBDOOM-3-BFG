@@ -59,6 +59,8 @@ void setAmmo(int pos, char* varname, int varval);
 void setText(std::vector<std::string>lines,int i,int il, int nl);
 void setPars(int pos, int val1, int val2=-1);
 void setBText(char* varname, char* text);
+int Generateflags(char* text);
+int Getflag(char* text);
 //More Headache than it's worth
 //void setSound(int pos, char* varname, int varval);
 
@@ -286,19 +288,116 @@ dehstr strval[] = {
 	{ &t4text,"T4TEXT" },
 	{ &t5text,"T5TEXT" },
 	{ &t6text,"T6TEXT" },
+	{&finaleflat[0],"BGFLATE1" },
+	{ &finaleflat[1],"BGFLATE2" },
+	{ &finaleflat[2],"BGFLATE3" },
+	{ &finaleflat[3],"BGFLATE4" },
+	{ &finaleflat[4],"BGFLAT06" },
+	{ &finaleflat[5],"BGFLAT11" },
+	{ &finaleflat[6],"BGFLAT20" },
+	{ &finaleflat[7],"BGFLAT30" },
+	{ &finaleflat[8],"BGFLAT15" },
+	{ &finaleflat[9],"BGFLAT31" },
+	{ &finaleflat[11],"BGCASTCALL" },
 
+};
+
+dehbits mobfl[] = {
+	{ "SPECIAL",MF_SPECIAL },
+	// Blocks.
+{ "SOLID",MF_SOLID },
+// Can be hit.
+{ "SHOOTABLE",MF_SHOOTABLE },
+// Don't use the sector links (invisible but touchable).
+{ "NOSECTOR",MF_NOSECTOR },
+// Don't use the blocklinks (inert but displayable)
+{ "NOBLOCKMAP",MF_NOBLOCKMAP },
+
+// Not to be activated by sound, deaf monster.
+{ "AMBUSH",MF_AMBUSH },
+// Will try to attack right back.
+{ "JUSTHIT",MF_JUSTHIT },
+// Will take at least one step before attacking.
+{ "JUSTATTACKED",MF_JUSTATTACKED },
+// On level spawning (initial position),
+//  hang from ceiling instead of stand on floor.
+{ "SPAWNCEILING",MF_SPAWNCEILING },
+// Don't apply gravity (every tic),
+//  that is, object will float, keeping current height
+//  or changing it actively.
+{ "NOGRAVITY",MF_NOGRAVITY },
+
+// Movement flags.
+// This allows jumps from high places.
+{ "DROPOFF",MF_DROPOFF },
+// For players, will pick up items.
+{ "PICKUP",MF_PICKUP },
+// Player cheat. ???
+{ "NOCLIP",MF_NOCLIP },
+// Player: keep info about sliding along walls.
+{ "SLIDE",MF_SLIDE },
+// Allow moves to any height, no gravity.
+// For active floaters, e.g. cacodemons, pain elementals.
+{ "FLOAT",MF_FLOAT },
+// Don't cross lines
+//   ??? or look at heights on teleport.
+{ "TELEPORT",MF_TELEPORT },
+// Don't hit same species, explode on block.
+// Player missiles as well as fireballs of various kinds.
+{ "MISSILE",MF_MISSILE },
+// Dropped by a demon, not level spawned.
+// E.g. ammo clips dropped by dying former humans.
+{ "DROPPED",MF_DROPPED },
+// Use fuzzy draw (shadow demons or spectres),
+//  temporary player invisibility powerup.
+{ "SHADOW",MF_SHADOW },
+// Flag: don't bleed when shot (use puff),
+//  barrels and shootable furniture shall not bleed.
+{ "NOBLOOD",MF_NOBLOOD },
+// Don't stop moving halfway off a step,
+//  that is, have dead bodies slide down all the way.
+{ "CORPSE",MF_CORPSE },
+// Floating to a height for a move, ???
+//  don't auto float to target's height.
+{ "INFLOAT",MF_INFLOAT },
+
+// On kill, count this enemy object
+//  towards intermission kill total.
+// Happy gathering.
+{ "COUNTKILL",MF_COUNTKILL },
+
+// On picking up, count this item object
+//  towards intermission item total.
+{ "COUNTITEM",MF_COUNTITEM },
+
+// Special handling: skull in flight.
+// Neither a cacodemon nor a missile.
+{ "SKULLFLY",MF_SKULLFLY },
+
+// Don't spawn this object
+//  in death match mode (e.g. key cards).
+{ "NOTDMATCH",MF_NOTDMATCH },
+
+// Player sprites in multiplayer modes are modified
+//  using an internal color lookup table for re-indexing.
+// If 0x4 0x8 or 0xc,
+//  use a translation table for player colormaps
+{ "TRANSLATION",MF_TRANSLATION },
+// Hmm ???.
+{ "TRANSSHIFT",MF_TRANSSHIFT }
 };
 
 
 void loaddeh(int lump) {
-	char* text = (char*)malloc(W_LumpLength(lump)+2);
-	idLib::Printf("Applying DeHackeD patch ...\n");
+	char* text = (char*)malloc(W_LumpLength(lump)+1);
+	text[W_LumpLength(lump)] = '\0';
+	I_Printf("Applying DeHackeD patch ...\n");
 	W_ReadLump(lump, text);
 
 	//idLib::Printf("%s", text);
 	parsetext(text);
 	free(text);
-	idLib::Printf("DeHackeD patch succesfully applied\n");
+	I_Printf("DeHackeD patch succesfully applied\n");
 }
 
 void parsetext(char* text) {
@@ -319,6 +418,9 @@ void parsetext(char* text) {
 			if (!tv3.empty()) {
 				if (state != 6 && state != 9) {
 					varval = atoi(tv3.c_str());
+					if (state == 1 && !idStr::Icmp(varname, "Bits ") && varval == 0) {
+						varval = Generateflags(strdup(tv3.c_str()));
+					}
 				}
 				else {
 					varfunc =strdup( tv3.c_str());
@@ -887,7 +989,7 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 					return;
 				}
 			}
-			for (int m = 0; m < 11; m++) {
+			for (int m = 0; m < 12; m++) {
 				if (!idStr::Icmp(otxt, finaleflat[m])) {
 					finaleflat[m] = ntxt;
 					return;
@@ -921,11 +1023,40 @@ void setPars(int pos, int val, int val2) {
 void setBText(char* varname, char* text) {
 	int arrsz = sizeof(strval) / sizeof(*strval);
 	text++;
+	std::string ttext =text;
+	for (int i = 0; i < ttext.size(); i++) {
+		if (ttext[i] == '\\' && ttext[i+1] == 'n') {
+			ttext[i] = '\n';
+			ttext[i + 1] = '\b';
+		}
+	}
 	varname[strlen(varname) - 1] = '\0';
 	for (int i = 0; i < arrsz; i++) {
 		if (!idStr::Icmp(varname, strval[i].name)) {
-			*strval[i].var = text;
+			*strval[i].var = strdup(ttext.c_str());
 			return;
 		}
 	}
+}
+
+int Generateflags(char* text) {
+	char*ttext = text + 1;
+	char* tst = strtok(strdup(ttext), "+");
+	int flags= Getflag(tst);
+	tst = strtok(NULL, "+");
+	while (tst != NULL) {
+		flags=flags|Getflag(tst);
+		tst = strtok(NULL, "+");
+	}
+	return flags;
+}
+
+int Getflag(char* text) {
+	int size = sizeof(mobfl) / sizeof(*mobfl);
+	for (int i = 0; i < size; i++) {
+		if (!idStr::Icmp(text, mobfl[i].name)) {
+			return mobfl[i].bit;
+		}
+	}
+	return 0;
 }

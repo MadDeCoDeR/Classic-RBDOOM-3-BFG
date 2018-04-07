@@ -53,7 +53,7 @@ typedef struct
 //  f_finale.structs begin // 
 typedef struct
 {
-    const char		*name;
+    char		**name;
     mobjtype_t	type;
 } castinfo_t;
 // f_finale.structs end // 
