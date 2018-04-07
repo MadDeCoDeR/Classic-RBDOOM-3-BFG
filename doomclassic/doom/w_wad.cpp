@@ -164,7 +164,6 @@ void W_AddFile ( const char *filename)
 		if (!idStr::Icmp(filename, "wads/DOOM.wad") || !idStr::Icmp(filename, "wads/DOOM2.wad") || !idStr::Icmp(filename, "wads/NERVE.wad") || !idStr::Icmp(filename, "wads/newopt.wad") || !idStr::Icmp(filename, "wads/ua.wad") || !idStr::Icmp(filename, "wads/mlbls.wad")) {
 			common->FatalError("Doom Classic Error : Unable to load %s", filename);
 		}
-		idLib::Printf(" couldn't open %s\n", filename);
 		I_Printf (" couldn't open %s\n",filename);
 		return;
     }
@@ -178,7 +177,6 @@ void W_AddFile ( const char *filename)
 		//GK: when loading archives return instandly don't add it to the lump list
 			if (OpenCompFile(filename)) {
 				//handle=nullptr;
-				idLib::Printf(" adding %s\n", filename);
 				fileSystem->CloseFile(handle);
 				return;
 			}
@@ -204,7 +202,6 @@ void W_AddFile ( const char *filename)
     }
     else 
     {
-		idLib::Printf(" adding %s\n", filename);
 		// WAD file
 		handle->Read( &header, sizeof( header ) );
 		if ( idStr::Cmpn( header.identification,"IWAD",4 ) )
@@ -1229,4 +1226,70 @@ void W_CheckExp() {
 		fclose(file);
 		DoomLib::hexp[2] = true;
 	}
+}
+//GK:Do here the modded save check
+bool W_CheckMods(int sc, std::vector<std::string> filelist) {
+	bool ok = false;
+	int ac = 0;
+	bool movetonext;
+	if (sc > 0) {
+		for (int mf = 0; mf < filelist.size() - 1; mf++) {
+			int f = 1;
+			while (wadfiles[f] != NULL) {
+				movetonext = false;
+
+				char* fname = strtok(strdup(wadfiles[f]), "\\");
+				if (DoomLib::idealExpansion == ::g->gamemission) {
+					if (idStr::Icmpn(fname, "wads", 4)) {
+						while (fname) {
+							char* tname = strtok(NULL, "\\");
+							if (tname) {
+								fname = tname;
+							}
+							else {
+								break;
+							}
+						}
+
+
+						if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
+							ac++;
+							if (ac == sc) {
+								ok = true;
+							}
+							break;
+						}
+
+					}
+					else {
+						f++;
+						continue;
+					}
+				}
+				else {
+					int o = 0;
+					while (DoomLib::otherfiles[DoomLib::idealExpansion - 1][o] != NULL) {
+						if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[DoomLib::idealExpansion - 1][o])) {
+							ac++;
+							movetonext = true;
+							if (ac == sc)
+								ok = true;
+
+							break;
+						}
+						o++;
+					}
+					if (movetonext)
+						break;
+				}
+				f++;
+			}
+			if (ok)
+				break;
+		}
+	}
+	else {
+		ok = true;
+	}
+	return ok;
 }

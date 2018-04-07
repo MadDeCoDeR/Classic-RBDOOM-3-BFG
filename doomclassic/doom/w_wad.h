@@ -36,6 +36,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <vector>
 //
 //
 // TYPES
@@ -101,5 +102,6 @@ void MakeMaster_Wad();
 void uncompressMaster();
 void MasterList();
 void W_CheckExp();
+bool W_CheckMods(int sc,std::vector<std::string> filelist);
 #endif
 
