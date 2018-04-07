@@ -4,6 +4,33 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+07 April 2018 - Classic RBDOOM-3-BFG 1.1.9
+_______________________________
+
+[classicdoom]
+
+- Enable Classic Doom Multiplayer
+
+- Improved dehacked's BEX support
+
+- Removed and increased various static limits
+
+- Fixed various graphical issues
+
+- Fixed MAP 33 "Betray" teleporter bug
+
+- Optimize modded save file checking
+
+[cmake]
+
+- Fixed performance issue for classic Doom on debug build and added support for classic doom multiplayer
+
+[launcher]
+
+- Added support for Classic Doom Multiplayer
+
+_______________________________________
+
 14 March 2018 - Classic RBDOOM-3-BFG 1.1.8.2 rev. 2
 _______________________________
 
