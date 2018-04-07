@@ -77,6 +77,11 @@ EV_Teleport
 
     
     tag = line->tag;
+	if (::g->gamemission == doom2 && ::g->gamemap == 33) {//GK: A small hack in order to fix doom 2 Map 33 bug.
+		if (line->tag == 0) {
+			tag = 41;
+		}
+	}
     for (i = 0; i < ::g->numsectors; i++)
     {
 	if (::g->sectors[ i ].tag == tag )
