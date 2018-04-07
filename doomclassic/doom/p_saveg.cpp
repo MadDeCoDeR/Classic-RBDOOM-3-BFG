@@ -361,11 +361,11 @@ void P_ArchiveThinkers (void)
 
 		if (th->function.acv == (actionf_v)NULL)
 		{
-			for (i = 0; i < MAXCEILINGS;i++)
+			for (i = 0; i < ::g->cellind;i++)
 				if (::g->activeceilings[i] == (ceiling_t *)th)
 					break;
 
-			if (i<MAXCEILINGS)
+			if (i<::g->cellind)
 			{
 				*::g->save_p++ = tc_ceiling;
 				PADSAVEP();
@@ -821,11 +821,11 @@ void P_ArchiveSpecials (void)
     {
 	if (th->function.acv == (actionf_v)NULL)
 	{
-	    for (i = 0; i < MAXCEILINGS;i++)
+	    for (i = 0; i < ::g->cellind;i++)
 		if (::g->activeceilings[i] == (ceiling_t *)th)
 		    break;
 	    
-	    if (i<MAXCEILINGS)
+	    if (i<::g->cellind)
 	    {
 		*::g->save_p++ = tc_ceiling;
 		PADSAVEP();

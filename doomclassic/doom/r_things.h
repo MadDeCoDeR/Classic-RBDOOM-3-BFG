@@ -34,16 +34,16 @@ If you have questions concerning this license or the applicable additional terms
 #pragma interface
 #endif
 //GK : Increase the number of things from 128 to 245760 (lets become NUTS)
-#define MAXVISSPRITES  	245760
+//#define MAXVISSPRITES  	245760
 
-extern vissprite_t	vissprites[MAXVISSPRITES];
-extern vissprite_t*	vissprite_p;
+extern std::vector<vissprite_t*>	vissprites;
+//extern vissprite_t*	vissprite_p;
 extern vissprite_t	vsprsortedhead;
 
 // Constant arrays used for psprite clipping
 //  and initializing clipping.
-extern short		negonearray[SCREENWIDTH];
-extern short		screenheightarray[SCREENWIDTH];
+extern short		negonearray[MAXWIDTH];
+extern short		screenheightarray[MAXWIDTH];
 
 // vars for R_DrawMaskedColumn
 extern short*		mfloorclip;

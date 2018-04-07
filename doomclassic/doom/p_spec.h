@@ -247,7 +247,7 @@ typedef struct
 #define MAXSWITCHES		50
 
  // 4 players, 4 buttons each at once, max.
-#define MAXBUTTONS		16
+#define MAXBUTTONS		32 //GK:using indexed vectors sometimes it's like playing with fire so in some cases just increase the limit
 
  // 1 second, in ticks. 
 #define BUTTONTIME      TICRATE             
@@ -312,7 +312,7 @@ typedef struct
 #define MAXPLATS		30
 
 
-extern plat_t*	activeplats[MAXPLATS];
+extern std::vector <plat_t*>		activeplats;
 
 void    T_PlatRaise(plat_t*	plat);
 
@@ -523,7 +523,7 @@ typedef struct
 #define CEILWAIT		150
 #define MAXCEILINGS		30
 
-extern ceiling_t*	activeceilings[MAXCEILINGS];
+extern std::vector <ceiling_t*>	activeceilings;
 
 int
 EV_DoCeiling

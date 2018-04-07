@@ -255,16 +255,13 @@ EV_DoCeiling
 //
 void P_AddActiveCeiling(ceiling_t* c)
 {
-    int		i;
-    
-    for (i = 0; i < MAXCEILINGS;i++)
-    {
-	if (::g->activeceilings[i] == NULL)
-	{
-	    ::g->activeceilings[i] = c;
-	    return;
+   //GK:From now on it uses indexed vectors (for now until and if I found something better)
+	if (::g->cellind >= ::g->activeceilings.size()) {
+		::g->activeceilings.push_back(c);
 	}
-    }
+	else {
+		::g->activeceilings[::g->cellind] = c;
+	}
 }
 
 
@@ -276,13 +273,14 @@ void P_RemoveActiveCeiling(ceiling_t* c)
 {
     int		i;
 	
-    for (i = 0;i < MAXCEILINGS;i++)
+    for (i = 0;i < ::g->cellind;i++)
     {
 	if (::g->activeceilings[i] == c)
 	{
 	    ::g->activeceilings[i]->sector->specialdata = NULL;
 	    P_RemoveThinker (&::g->activeceilings[i]->thinker);
 	    ::g->activeceilings[i] = NULL;
+		//::g->cellind = ::g->cellind - 1;
 	    break;
 	}
     }
@@ -297,7 +295,7 @@ void P_ActivateInStasisCeiling(line_t* line)
 {
     int		i;
 	
-    for (i = 0;i < MAXCEILINGS;i++)
+    for (i = 0;i < ::g->cellind;i++)
     {
 	if (::g->activeceilings[i]
 	    && (::g->activeceilings[i]->tag == line->tag)
@@ -322,7 +320,7 @@ int	EV_CeilingCrushStop(line_t	*line)
     int		rtn;
 	
     rtn = 0;
-    for (i = 0;i < MAXCEILINGS;i++)
+    for (i = 0;i < ::g->cellind;i++)
     {
 	if (::g->activeceilings[i]
 	    && (::g->activeceilings[i]->tag == line->tag)

@@ -47,6 +47,8 @@ If you have questions concerning this license or the applicable additional terms
 // Gives an estimation of distance (not exact)
 //
 
+void AddNewIntercept();
+
 fixed_t
 P_AproxDistance
 ( fixed_t	dx,
@@ -473,7 +475,7 @@ P_BlockLinesIterator
   qboolean(*func)(line_t*) )
 {
     int			offset;
-    short*		list;
+    long*		list;
     line_t*		ld;
 	
     if (x<0
@@ -593,10 +595,12 @@ PIT_AddLineIntercepts (line_t* ld)
     }
     
 	
-    ::g->intercept_p->frac = frac;
-    ::g->intercept_p->isaline = true;
-    ::g->intercept_p->d.line = ld;
-    ::g->intercept_p++;
+    ::g->intercepts[::g->interind-1]->frac = frac;
+    ::g->intercepts[::g->interind-1]->isaline = true;
+    ::g->intercepts[::g->interind-1]->d.line = ld;
+	
+	AddNewIntercept();
+    //::g->intercept_p++;
 
     return true;	// continue
 }
@@ -658,11 +662,10 @@ qboolean PIT_AddThingIntercepts (mobj_t* thing)
     if (frac < 0)
 	return true;		// behind source
 
-    ::g->intercept_p->frac = frac;
-    ::g->intercept_p->isaline = false;
-    ::g->intercept_p->d.thing = thing;
-    ::g->intercept_p++;
-
+    ::g->intercepts[::g->interind-1]->frac = frac;
+    ::g->intercepts[::g->interind-1]->isaline = false;
+    ::g->intercepts[::g->interind-1]->d.thing = thing;
+	AddNewIntercept();
     return true;		// keep going
 }
 
@@ -682,15 +685,16 @@ P_TraverseIntercepts
     intercept_t*	scan;
     intercept_t*	in;
 	
-    count = ::g->intercept_p - ::g->intercepts;
+    count = ::g->interind-1;
     
     in = 0;			// shut up compiler warning
 	
     while (count--)
     {
 	dist = MAXINT;
-	for (scan = ::g->intercepts ; scan < ::g->intercept_p ; scan++)
+	for (int i = 0 ; i < ::g->interind-1; i++)
 	{
+		scan = ::g->intercepts[i];
 	    if (scan->frac < dist)
 	    {
 		dist = scan->frac;
@@ -765,7 +769,15 @@ P_PathTraverse
     ::g->earlyout = flags & PT_EARLYOUT;
 		
     ::g->validcount++;
-    ::g->intercept_p = ::g->intercepts;
+    //::g->intercept_p = ::g->intercepts;
+
+	//::g->intercepts.clear();
+	::g->interind = 0;
+	//intercept_t* tint = new intercept_t();
+	if (::g->intercepts.empty()) {
+		::g->intercepts.push_back(new intercept_t());
+	}
+	::g->interind++;
 	
     if ( ((x1-::g->bmaporgx)&(MAPBLOCKSIZE-1)) == 0)
 	x1 += FRACUNIT;	// don't side exactly on a line
@@ -873,5 +885,16 @@ P_PathTraverse
 }
 
 
-
+void AddNewIntercept() {
+	if (::g->interind >= ::g->intercepts.size()) {
+		::g->intercepts.push_back(new intercept_t());
+	}
+	else {
+		::g->intercepts[::g->interind]->d.line = NULL;
+		::g->intercepts[::g->interind]->d.thing = NULL;
+		::g->intercepts[::g->interind]->frac = 0;
+		::g->intercepts[::g->interind]->isaline = false;
+	}
+	::g->interind++;
+}
 

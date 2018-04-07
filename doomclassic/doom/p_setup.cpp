@@ -493,14 +493,24 @@ void P_LoadBlockMap (int lump)
 	if (!lumpcache[lump]) {			// SMF - solution for double endian conversion issue
 		firstTime = true;
 	}
+	//GK:Remove blockmap limit
+	short* bl;
+	bl = (short*)W_CacheLumpNum (lump,PU_LEVEL_SHARED); // ALAN: This is initialized somewhere else as shared...
 
-	::g->blockmaplump = (short*)W_CacheLumpNum (lump,PU_LEVEL_SHARED); // ALAN: This is initialized somewhere else as shared...
-	::g->blockmap = ::g->blockmaplump+4;
+	
 	count = W_LumpLength (lump)/2;
 
 	if ( firstTime ) {				// SMF
-		for (i=0 ; i<count ; i++)
-			::g->blockmaplump[i] = SHORT(::g->blockmaplump[i]);
+		::g->blockmaplump = (long*)Z_Malloc(sizeof(*::g->blockmaplump)*count, PU_LEVEL, 0);
+		::g->blockmaplump[0] = SHORT(bl[0]);
+		::g->blockmaplump[1] = SHORT(bl[1]);
+		::g->blockmaplump[2] = (long)(SHORT(bl[2])) & 0xffff;
+		::g->blockmaplump[3] = (long)(SHORT(bl[3])) & 0xffff;
+		for (i = 0; i < count; i++) {
+			short t = SHORT(bl[i]);
+			::g->blockmaplump[i] = t == -1 ? -1l : (long)t & 0xffff;
+		}
+		Z_Free(bl);
 	}
 
 	::g->bmaporgx = ( ::g->blockmaplump[0] )<<FRACBITS;
@@ -512,6 +522,7 @@ void P_LoadBlockMap (int lump)
 	count = sizeof(*::g->blocklinks)* ::g->bmapwidth*::g->bmapheight;
 	::g->blocklinks = (mobj_t**)Z_Malloc (count,PU_LEVEL, 0);
 	memset (::g->blocklinks, 0, count);
+	::g->blockmap = ::g->blockmaplump + 4;
 }
 
 

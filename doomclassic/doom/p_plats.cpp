@@ -263,7 +263,7 @@ void P_ActivateInStasis(int tag)
 {
     int		i;
 	
-    for (i = 0;i < MAXPLATS;i++)
+    for (i = 0;i < ::g->platind;i++)
 	if (::g->activeplats[i]
 	    && (::g->activeplats[i])->tag == tag
 	    && (::g->activeplats[i])->status == in_stasis)
@@ -278,7 +278,7 @@ void EV_StopPlat(line_t* line)
 {
     int		j;
 	
-    for (j = 0;j < MAXPLATS;j++)
+    for (j = 0;j < ::g->platind;j++)
 	if (::g->activeplats[j]
 	    && ((::g->activeplats[j])->status != in_stasis)
 	    && ((::g->activeplats[j])->tag == line->tag))
@@ -293,25 +293,26 @@ void P_AddActivePlat(plat_t* plat)
 {
     int		i;
     
-    for (i = 0;i < MAXPLATS;i++)
-	if (::g->activeplats[i] == NULL)
-	{
-	    ::g->activeplats[i] = plat;
-	    return;
+   
+	if (::g->platind >= ::g->activeplats.size()) {
+		::g->activeplats.push_back(plat);
 	}
-    I_Error ("P_AddActivePlat: no more plats!");
+	else {
+		::g->activeplats[::g->platind] = plat;
+	}
+	::g->platind++;
 }
 
 void P_RemoveActivePlat(plat_t* plat)
 {
     int		i;
-    for (i = 0;i < MAXPLATS;i++)
+    for (i = 0;i < ::g->platind;i++)
 	if (plat == ::g->activeplats[i])
 	{
-	    (::g->activeplats[i])->sector->specialdata = NULL;
-	    P_RemoveThinker(&(::g->activeplats[i])->thinker);
-	    ::g->activeplats[i] = NULL;
-	    
+		(::g->activeplats[i])->sector->specialdata = NULL;
+		P_RemoveThinker(&(::g->activeplats[i])->thinker);
+		::g->activeplats[i] = NULL;
+		//::g->platind = ::g->platind - 1;
 	    return;
 	}
     I_Error ("P_RemoveActivePlat: can't find plat!");

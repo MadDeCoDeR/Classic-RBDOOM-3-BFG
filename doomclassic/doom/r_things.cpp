@@ -179,7 +179,12 @@ void R_InitSpriteDefs (const char* const* namelist)
     if (!::g->numsprites)
 	return;
 		
-    ::g->sprites = (spritedef_t*)DoomLib::Z_Malloc(::g->numsprites *sizeof(*::g->sprites), PU_STATIC, NULL);
+	//::g->sprites.clear();
+	::g->sprind = 0;
+	if (::g->sprites.empty()) {
+		::g->sprites.push_back(new spritedef_t());// = (spritedef_t*)DoomLib::Z_Malloc(::g->numsprites * sizeof(*::g->sprites), PU_STATIC, NULL);
+	}
+	::g->sprind++;
 	
     start = ::g->firstspritelump-1;
     end = ::g->lastspritelump+1;
@@ -223,7 +228,11 @@ void R_InitSpriteDefs (const char* const* namelist)
 	// check the frames that were found for completeness
 	if (::g->maxframe == -1)
 	{
-	    ::g->sprites[i].numframes = 0;
+	    ::g->sprites[i]->numframes = 0;
+		if (::g->sprind >= ::g->sprites.size()) {
+			::g->sprites.push_back(new spritedef_t());
+		}
+		::g->sprind++;
 	    continue;
 	}
 		
@@ -255,10 +264,15 @@ void R_InitSpriteDefs (const char* const* namelist)
 	}
 	
 	// allocate space for the frames present and copy ::g->sprtemp to it
-	::g->sprites[i].numframes = ::g->maxframe;
-	::g->sprites[i].spriteframes = 
-	    (spriteframe_t*)DoomLib::Z_Malloc (::g->maxframe * sizeof(spriteframe_t), PU_STATIC, NULL);
-	memcpy (::g->sprites[i].spriteframes, ::g->sprtemp, ::g->maxframe*sizeof(spriteframe_t));
+		::g->sprites[i]->numframes = ::g->maxframe;
+		::g->sprites[i]->spriteframes =
+			(spriteframe_t*)DoomLib::Z_Malloc(::g->maxframe * sizeof(spriteframe_t), PU_STATIC, NULL);
+		memcpy(::g->sprites[i]->spriteframes, ::g->sprtemp, ::g->maxframe * sizeof(spriteframe_t));
+	
+	if (::g->sprind >= ::g->sprites.size()) {
+		::g->sprites.push_back(new spritedef_t());
+	}
+	::g->sprind++;
     }
 
 }
@@ -280,7 +294,7 @@ void R_InitSprites (const char* const* namelist)
 {
     int		i;
 	
-    for (i=0 ; i<SCREENWIDTH ; i++)
+    for (i=0 ; i<MAXWIDTH ; i++)
     {
 	::g->negonearray[i] = -1;
     }
@@ -296,7 +310,13 @@ void R_InitSprites (const char* const* namelist)
 //
 void R_ClearSprites (void)
 {
-    ::g->vissprite_p = ::g->vissprites;
+	//::g->vissprites.clear();
+	::g->visspriteind = 0;
+	if (::g->vissprites.empty()) {
+		::g->vissprites.push_back(new vissprite_t());
+	}
+	::g->visspriteind++;
+    //::g->vissprite_p = ::g->vissprites;
 }
 
 
@@ -306,11 +326,32 @@ void R_ClearSprites (void)
 
 vissprite_t* R_NewVisSprite (void)
 {
-    if (::g->vissprite_p == &::g->vissprites[MAXVISSPRITES])
-	return &::g->overflowsprite;
-    
-    ::g->vissprite_p++;
-    return ::g->vissprite_p-1;
+    //if (::g->vissprite_p == &::g->vissprites[MAXVISSPRITES])
+	//return &::g->overflowsprite;
+	
+	if (::g->visspriteind >= ::g->vissprites.size()) {
+		::g->vissprites.push_back(new vissprite_t());
+	}
+	else {
+		::g->vissprites[::g->visspriteind]->colormap = 0;
+		::g->vissprites[::g->visspriteind]->gx = 0;
+		::g->vissprites[::g->visspriteind]->gy = 0;
+		::g->vissprites[::g->visspriteind]->gz = 0;
+		::g->vissprites[::g->visspriteind]->gzt = 0;
+		::g->vissprites[::g->visspriteind]->mobjflags = 0;
+		::g->vissprites[::g->visspriteind]->next = ::g->vissprites[::g->visspriteind];
+		::g->vissprites[::g->visspriteind]->prev = ::g->vissprites[::g->visspriteind-1];
+		::g->vissprites[::g->visspriteind]->patch = 0;
+		::g->vissprites[::g->visspriteind]->scale = 0;
+		::g->vissprites[::g->visspriteind]->startfrac = 0;
+		::g->vissprites[::g->visspriteind]->suck = 0;
+		::g->vissprites[::g->visspriteind]->texturemid = 0;
+		::g->vissprites[::g->visspriteind]->x1 = 0;
+		::g->vissprites[::g->visspriteind]->x2 = 0;
+		::g->vissprites[::g->visspriteind]->xiscale = 0;
+	}
+	
+    return ::g->vissprites[::g->visspriteind-1];
 }
 
 
@@ -346,7 +387,7 @@ void R_DrawMaskedColumn (postColumn_t* column)
 	if (::g->dc_yl <= ::g->mceilingclip[::g->dc_x])
 	    ::g->dc_yl = ::g->mceilingclip[::g->dc_x]+1;
 
-	if (::g->dc_yl <= ::g->dc_yh)
+	if (::g->dc_yl <= ::g->dc_yh && ::g->dc_yh < ::g->viewheight)
 	{
 	    ::g->dc_source = (byte *)column + 3;
 	    ::g->dc_texturemid = basetexturemid - (column->topdelta<<FRACBITS);
@@ -381,7 +422,7 @@ R_DrawVisSprite
 	
 	
     patch = (patch_t*)W_CacheLumpNum (vis->patch+::g->firstspritelump, PU_CACHE_SHARED);
-
+	::g->texnum = -1;  //GK:Make sure tutti fruti fix will not apply on this (eliminate spriteception bug(feature))
     ::g->dc_colormap = vis->colormap;
     
     if (!::g->dc_colormap)
@@ -484,11 +525,19 @@ void R_ProjectSprite (mobj_t* thing)
     
     // decide which patch to use for sprite relative to player
 #ifdef RANGECHECK
-    if (thing->sprite >= ::g->numsprites)
+    if (thing->sprite >= ::g->sprind)
 	I_Error ("R_ProjectSprite: invalid sprite number %i ",
 		 thing->sprite);
 #endif
-    sprdef = &::g->sprites[thing->sprite];
+	//GK:Sanity check
+	int ind = 0;
+	if (thing->sprite >= ::g->sprind) {
+		ind = ::g->sprind-1;
+	}
+	else {
+		ind = thing->sprite;
+	}
+    sprdef = ::g->sprites[ind];
 #ifdef RANGECHECK
     if ( (thing->frame&FF_FRAMEMASK) >= sprdef->numframes )
 	I_Error ("R_ProjectSprite: invalid sprite frame %i : %i ",
@@ -528,6 +577,7 @@ void R_ProjectSprite (mobj_t* thing)
     
     // store information in a vissprite
     vis = R_NewVisSprite ();
+	::g->visspriteind++;
     vis->mobjflags = thing->flags;
     vis->scale = xscale << ::g->detailshift;
     vis->gx = thing->x;
@@ -637,11 +687,19 @@ void R_DrawPSprite (pspdef_t* psp)
     
     // decide which patch to use
 #ifdef RANGECHECK
-    if ( psp->state->sprite >= ::g->numsprites)
+    if ( psp->state->sprite >= ::g->sprind)
 	I_Error ("R_ProjectSprite: invalid sprite number %i ",
 		 psp->state->sprite);
 #endif
-    sprdef = &::g->sprites[psp->state->sprite];
+	//GK:Sanity check
+	int index = 0;
+	if (psp->state->sprite >= ::g->sprind) {
+		index = ::g->sprind-1;
+	}
+	else {
+		index = psp->state->sprite;
+	}
+		sprdef = ::g->sprites[index];
 #ifdef RANGECHECK
     if ( (psp->state->frame & FF_FRAMEMASK)  >= sprdef->numframes)
 	I_Error ("R_ProjectSprite: invalid sprite frame %i : %i ",
@@ -772,23 +830,34 @@ void R_SortVisSprites (void)
     vissprite_t		unsorted;
     fixed_t		bestscale;
 
-    count = ::g->vissprite_p - ::g->vissprites;
+    count = ::g->visspriteind;
 	
     unsorted.next = unsorted.prev = &unsorted;
 
     if (!count)
 	return;
 		
-    for (ds=::g->vissprites ; ds < ::g->vissprite_p ; ds++)
+    for (int i=0 ; i < ::g->visspriteind ; i++)
     {
-	ds->next = ds+1;
-	ds->prev = ds-1;
+		//GK:use the actual vector instead of a temp array
+		if (i < ::g->visspriteind -1) {
+			::g->vissprites[i]->next= ::g->vissprites[i + 1];
+		}
+		else {
+			::g->vissprites[i]->next = ::g->vissprites[i];
+		}
+	if (i > 0) {
+		::g->vissprites[i]->prev = ::g->vissprites[i - 1];
+	}
+	else {
+		::g->vissprites[i]->prev = ::g->vissprites[i];
+	}
     }
     
-    ::g->vissprites[0].prev = &unsorted;
-    unsorted.next = &::g->vissprites[0];
-    (::g->vissprite_p-1)->next = &unsorted;
-    unsorted.prev = ::g->vissprite_p-1;
+    ::g->vissprites[0]->prev = &unsorted;
+    unsorted.next = &*::g->vissprites[0];
+	::g->vissprites[::g->visspriteind-1]->next = &unsorted;
+    unsorted.prev = ::g->vissprites[::g->visspriteind-1];
     
     // pull the ::g->vissprites out by scale
     //best = 0;		// shut up the compiler warning
@@ -821,8 +890,8 @@ void R_SortVisSprites (void)
 void R_DrawSprite (vissprite_t* spr)
 {
     drawseg_t*		ds;
-    short		clipbot[SCREENWIDTH];
-    short		cliptop[SCREENWIDTH];
+    short		clipbot[MAXWIDTH];
+    short		cliptop[MAXWIDTH];
     int			x;
     int			r1;
     int			r2;
@@ -941,7 +1010,7 @@ void R_DrawMasked (void)
 	
     R_SortVisSprites ();
 
-    if (::g->vissprite_p > ::g->vissprites)
+    if (::g->visspriteind>1) //GK:Does it add a new *Feature* ?
     {
 	// draw all ::g->vissprites back to front
 	for (spr = ::g->vsprsortedhead.next ;

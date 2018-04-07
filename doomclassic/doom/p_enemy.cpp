@@ -256,7 +256,7 @@ qboolean P_Move (mobj_t*	actor)
     fixed_t	tryx;
     fixed_t	tryy;
     
-    line_t*	ld;
+   // line_t*	ld;
     
     // warning: 'catch', 'throw', and 'try'
     // are all C++ reserved words
@@ -296,11 +296,10 @@ qboolean P_Move (mobj_t*	actor)
 	good = false;
 	while (::g->numspechit--)
 	{
-	    ld = ::g->spechit[::g->numspechit];
 	    // if the special is not a door
 	    // that can be opened,
 	    // return false
-	    if (P_UseSpecialLine (actor, ld,0))
+	    if (P_UseSpecialLine (actor, ::g->spechit[::g->numspechit],0))
 		good = true;
 	}
 	return good;

@@ -845,9 +845,9 @@ void R_PrecacheLevel (void)
 	if (!spritepresent[i])
 	    continue;
 
-	for (j=0 ; j < ::g->sprites[i].numframes ; j++)
+	for (j=0 ; j < ::g->sprites[i]->numframes ; j++)
 	{
-	    sf = &::g->sprites[i].spriteframes[j];
+	    sf = &::g->sprites[i]->spriteframes[j];
 	    for (k=0 ; k<8 ; k++)
 	    {
 		lump = ::g->firstspritelump + sf->lump[k];

@@ -42,7 +42,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "r_sky.h"
 
 
-
+void AddNewVisplane();
 
 //
 // opening
@@ -106,7 +106,7 @@ R_MapPlane
     unsigned	index;
 	
 //#ifdef RANGECHECK
-    if ( x2 < x1 || x1<0 || x2>=::g->viewwidth || y>::g->viewheight )
+    if ( x2 < x1 || x1<0 || x2>=::g->viewwidth || y>=::g->viewheight ) //GK:Sanity check
     {
 		//I_Error ("R_MapPlane: %i, %i at %i",x1,x2,y);
 		return;
@@ -142,8 +142,14 @@ R_MapPlane
 	
 	if (index >= MAXLIGHTZ )
 	    index = MAXLIGHTZ-1;
+	//GK:Sanity check
+	if (::g->planezlight >= LIGHTLEVELS)
+		::g->planezlight = LIGHTLEVELS - 1;
 
-	::g->ds_colormap = ::g->planezlight[index];
+	if (::g->planezlight < 0)
+		::g->planezlight = 0;
+
+	::g->ds_colormap = ::g->zlight[::g->planezlight][index];
     }
 	
     ::g->ds_y = y;
@@ -179,8 +185,14 @@ void R_ClearPlanes (void)
 	::g->floorclip[i] = ::g->viewheight;
 	::g->ceilingclip[i] = -1;
     }
-
-	::g->lastvisplane = ::g->visplanes;
+	//GK:Reset indexed vector
+	::g->planeind = 0;
+	//visplane_t* tplane = new visplane_t();
+	if (::g->visplanes.empty()) {
+		::g->visplanes.push_back(new visplane_t());
+	}
+	::g->planeind++;
+	//::g->lastvisplane = ::g->visplanes;
     ::g->lastopening = ::g->openings;
 
     // texture calculation
@@ -208,24 +220,25 @@ visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel ) {
 		height = 0;			// all skys map together
 		lightlevel = 0;
 	}
-	
-	for (check=::g->visplanes; check < ::g->lastvisplane; check++) {
-		if (height == check->height && picnum == check->picnum && lightlevel == check->lightlevel) {
-			break;
+		for (int i = 0; i < ::g->planeind; i++) {
+			check = ::g->visplanes[i];
+			if (height == check->height && picnum == check->picnum && lightlevel == check->lightlevel) {
+				break;
+			}
 		}
-	}
 
-	if (check < ::g->lastvisplane)
-		return check;
-		
+		if (check != ::g->visplanes[::g->planeind-1])
+			return check;
+
     //if (::g->lastvisplane - ::g->visplanes == MAXVISPLANES)
 		//I_Error ("R_FindPlane: no more visplanes");
-	if ( ::g->lastvisplane - ::g->visplanes == MAXVISPLANES ) {
-		check = ::g->visplanes;
-		return check;
-	}
+	//if ( ) {
+		//check = ::g->visplanes[0];
+		//return check;
+	//}
 		
-    ::g->lastvisplane++;
+   // ::g->lastvisplane++;
+		AddNewVisplane();
 
     check->height = height;
     check->picnum = picnum;
@@ -289,16 +302,16 @@ R_CheckPlane
 		return pl;		
 	}
 	
-	if ( ::g->lastvisplane - ::g->visplanes == MAXVISPLANES ) {
+	/*if ( ::g->lastvisplane - ::g->visplanes == MAXVISPLANES ) {
 		return pl;
-	}
-
+	}*/
+	//visplane_t* tplane = new visplane_t();
     // make a new visplane
-    ::g->lastvisplane->height = pl->height;
-    ::g->lastvisplane->picnum = pl->picnum;
-    ::g->lastvisplane->lightlevel = pl->lightlevel;
-    
-    pl = ::g->lastvisplane++;
+	::g->visplanes[::g->planeind-1]->height = pl->height;
+	::g->visplanes[::g->planeind - 1]->picnum = pl->picnum;
+	::g->visplanes[::g->planeind - 1]->lightlevel = pl->lightlevel;
+	pl = ::g->visplanes[::g->planeind - 1];
+	AddNewVisplane();
     pl->minx = start;
     pl->maxx = stop;
 
@@ -319,26 +332,52 @@ R_MakeSpans
   int		t2,
   int		b2 )
 {
-    while (t1 < t2 && t1<=b1)
-    {
-	R_MapPlane (t1,::g->spanstart[t1],x-1);
-	t1++;
+	//GK:Sanity check
+	int tt1, tt2, tb1, tb2;
+	if (t1 >= SCREENHEIGHT) {
+		tt1 = SCREENHEIGHT - 1;
+	}
+	else {
+		tt1 = t1;
+	}
+	if (b1 >= SCREENHEIGHT) {
+		tb1 = SCREENHEIGHT - 1;
+	}
+	else {
+		tb1 = b1;
+	}
+	if (t2 >= SCREENHEIGHT) {
+		tt2 = SCREENHEIGHT - 1;
+	}
+	else {
+		tt2 = t2;
+	}
+	if (b2 >= SCREENHEIGHT) {
+		tb2 = SCREENHEIGHT - 1;
+	}
+	else {
+		tb2 = b2;
+	}
+    while (tt1 < tt2 && tt1<=tb1)
+    {	
+	R_MapPlane (tt1,::g->spanstart[tt1],x-1);
+	tt1++;
     }
-    while (b1 > b2 && b1>=t1)
+    while (tb1 > tb2 && tb1>=tt1)
     {
-	R_MapPlane (b1,::g->spanstart[b1],x-1);
-	b1--;
+	R_MapPlane (tb1,::g->spanstart[tb1],x-1);
+	tb1--;
     }
 	
-    while (t2 < t1 && t2<=b2)
+    while (tt2 < tt1 && tt2<=tb2)
     {
-	::g->spanstart[t2] = x;
-	t2++;
+	::g->spanstart[tt2] = x;
+	tt2++;
     }
-    while (b2 > b1 && b2>=t2)
+    while (tb2 > tb1 && tb2>=tt2)
     {
-	::g->spanstart[b2] = x;
-	b2--;
+	::g->spanstart[tb2] = x;
+	tb2--;
     }
 }
 
@@ -350,34 +389,35 @@ R_MakeSpans
 //
 void R_DrawPlanes (void)
 {
-    visplane_t*		pl;
+    //visplane_t*		pl;
     int			light;
     int			x;
     int			stop;
     int			angle;
 				
 #ifdef RANGECHECK
-    if (::g->ds_p - ::g->drawsegs > MAXDRAWSEGS)
+  /*  if (::g->ds_p - ::g->drawsegs > MAXDRAWSEGS)
 	I_Error ("R_DrawPlanes: ::g->drawsegs overflow (%i)",
-		 ::g->ds_p - ::g->drawsegs);
+		 ::g->ds_p - ::g->drawsegs);*/
     
-    if (::g->lastvisplane - ::g->visplanes > MAXVISPLANES)
+   /* if (::g->lastvisplane - ::g->visplanes > MAXVISPLANES)
 	I_Error ("R_DrawPlanes: visplane overflow (%i)",
-		 ::g->lastvisplane - ::g->visplanes);
+		 ::g->lastvisplane - ::g->visplanes);*/
     
     if (::g->lastopening - ::g->openings > MAXOPENINGS)
 	I_Error ("R_DrawPlanes: opening overflow (%i)",
 		 ::g->lastopening - ::g->openings);
 #endif
 
-    for (pl = ::g->visplanes ; pl < ::g->lastvisplane ; pl++)
+    for (int i = 0; i < ::g->planeind-1; i++)
     {
-	if (pl->minx > pl->maxx)
+		//pl = ::g->visplanes[i];
+	if (::g->visplanes[i]->minx > ::g->visplanes[i]->maxx)
 	    continue;
 
 	
 	// sky flat
-	if (pl->picnum == ::g->skyflatnum)
+	if (::g->visplanes[i]->picnum == ::g->skyflatnum)
 	{
 	    ::g->dc_iscale = ::g->pspriteiscale>>::g->detailshift;
 	    
@@ -387,10 +427,10 @@ void R_DrawPlanes (void)
 	    //  by INVUL inverse mapping.
 	    ::g->dc_colormap = ::g->colormaps;
 	    ::g->dc_texturemid = ::g->skytexturemid;
-	    for (x=pl->minx ; x <= pl->maxx ; x++)
+	    for (x= ::g->visplanes[i]->minx ; x <= ::g->visplanes[i]->maxx ; x++)
 	    {
-		::g->dc_yl = pl->top[x];
-		::g->dc_yh = pl->bottom[x];
+		::g->dc_yl = ::g->visplanes[i]->top[x];
+		::g->dc_yh = ::g->visplanes[i]->bottom[x];
 
 		if (::g->dc_yl <= ::g->dc_yh)
 		{
@@ -398,6 +438,7 @@ void R_DrawPlanes (void)
 		    angle = (GetViewAngle() + ::g->xtoviewangle[x])>>ANGLETOSKYSHIFT;
 		    ::g->dc_x = x;
 		    ::g->dc_source = R_GetColumn(::g->skytexture, angle);
+			::g->texnum = -1; //GK:Make sure tutti fruti fix will not apply on this (eliminate spriteception bug(feature))
 		    colfunc ( ::g->dc_colormap, ::g->dc_source );
 		}
 	    }
@@ -406,11 +447,11 @@ void R_DrawPlanes (void)
 	
 	// regular flat
 	::g->ds_source = (byte*)W_CacheLumpNum(::g->firstflat +
-				   ::g->flattranslation[pl->picnum],
+				   ::g->flattranslation[::g->visplanes[i]->picnum],
 				   PU_CACHE_SHARED);
 	
-	::g->planeheight = abs(pl->height-::g->viewz);
-	light = (pl->lightlevel >> LIGHTSEGSHIFT)+::g->extralight;
+	::g->planeheight = abs(::g->visplanes[i]->height-::g->viewz);
+	light = (::g->visplanes[i]->lightlevel >> LIGHTSEGSHIFT)+::g->extralight;
 
 	if (light >= LIGHTLEVELS)
 	    light = LIGHTLEVELS-1;
@@ -418,20 +459,44 @@ void R_DrawPlanes (void)
 	if (light < 0)
 	    light = 0;
 
-	::g->planezlight = ::g->zlight[light];
+		::g->planezlight=light;
 
-	pl->top[pl->maxx+1] = 0xffff;
-	pl->top[pl->minx-1] = 0xffff;
+		::g->visplanes[i]->top[::g->visplanes[i]->maxx+1] = 0xffff;
+		::g->visplanes[i]->top[::g->visplanes[i]->minx-1] = 0xffff;
 		
-	stop = pl->maxx + 1;
+	stop = ::g->visplanes[i]->maxx + 1;
 
-	for (x=pl->minx ; x<= stop ; x++)
+	for (x= ::g->visplanes[i]->minx ; x<= stop ; x++)
 	{
-	    R_MakeSpans(x,pl->top[x-1],
-			pl->bottom[x-1],
-			pl->top[x],
-			pl->bottom[x]);
+	    R_MakeSpans(x, ::g->visplanes[i]->top[x-1],
+			::g->visplanes[i]->bottom[x-1],
+			::g->visplanes[i]->top[x],
+			::g->visplanes[i]->bottom[x]);
 	}
     }
 }
 
+void AddNewVisplane() {
+	if (::g->planeind >= ::g->visplanes.size()) {
+		::g->visplanes.push_back(new visplane_t());
+	}
+	else {
+		::g->visplanes[::g->planeind]->height = 0;
+		::g->visplanes[::g->planeind]->picnum = 0;
+		::g->visplanes[::g->planeind]->lightlevel = 0;
+		::g->visplanes[::g->planeind]->minx = 0;
+		::g->visplanes[::g->planeind]->maxx = 0;
+		std::fill(::g->visplanes[::g->planeind]->bottom, ::g->visplanes[::g->planeind]->bottom + SCREENWIDTH, 0);
+		::g->visplanes[::g->planeind]->nervePad1 = 0;
+		::g->visplanes[::g->planeind]->nervePad2 = 0;
+		::g->visplanes[::g->planeind]->nervePad3 = 0;
+		::g->visplanes[::g->planeind]->nervePad4 = 0;
+		::g->visplanes[::g->planeind]->nervePad5 = 0;
+		::g->visplanes[::g->planeind]->pad1 = 0;
+		::g->visplanes[::g->planeind]->pad2 = 0;
+		::g->visplanes[::g->planeind]->pad3 = 0;
+		::g->visplanes[::g->planeind]->pad4 = 0;
+		std::fill(::g->visplanes[::g->planeind]->top, ::g->visplanes[::g->planeind]->top + SCREENWIDTH, 0);
+	}
+	::g->planeind++;
+}

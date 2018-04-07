@@ -305,9 +305,11 @@ InputEvent mouseEvents[2];
 InputEvent joyEvents[18];
 // i_input.vars end // 
 //  i_net_xbox.vars begin // 
-int			sendsocket;
-int			insocket;
-//struct	sockaddr_in	sendaddress[MAXNETNODES];
+//GK:Revive anything Network Related
+SOCKET		sendsocket;
+SOCKET			insocket;
+struct	sockaddr_in	sendaddress[MAXNETNODES];
+int     dmtime;
 // i_net_xbox.vars end // 
 //  i_system.vars begin // 
 int	mb_used ;
@@ -421,7 +423,9 @@ int	rndindex ;
 int	prndindex ;
 // m_random.vars end // 
 //  p_ceilng.vars begin // 
-ceiling_t*	activeceilings[MAXCEILINGS];
+//GK:From now on it uses indexed vectors (for now until and if I found something better)
+std::vector <ceiling_t*>	activeceilings;
+long cellind=0;
 // p_ceilng.vars end // 
 //  p_enemy.vars begin // 
 mobj_t*		soundtarget;
@@ -446,8 +450,9 @@ fixed_t		tmfloorz;
 fixed_t		tmceilingz;
 fixed_t		tmdropoffz;
 line_t*		ceilingline;
-line_t*		spechit[MAXSPECIALCROSS];
-int		numspechit;
+//GK:From now on it uses indexed vectors (for now until and if I found something better)
+std::vector<line_t*>		spechit;
+long		numspechit;
 fixed_t		bestslidefrac;
 fixed_t		secondslidefrac;
 line_t*		bestslideline;
@@ -473,8 +478,10 @@ fixed_t opentop;
 fixed_t openbottom;
 fixed_t openrange;
 fixed_t	lowfloor;
-intercept_t	intercepts[MAXINTERCEPTS];
-intercept_t*	intercept_p;
+//GK:From now on it uses indexed vectors (for now until and if I found something better)
+long	interind;
+std::vector<intercept_t*>	intercepts;
+//intercept_t*	intercept_p;
 divline_t 	trace;
 qboolean 	earlyout;
 int		ptflags;
@@ -487,7 +494,9 @@ int		iquehead;
 int		iquetail;
 // p_mobj.vars end // 
 //  p_plats.vars begin // 
-plat_t*		activeplats[MAXPLATS];
+//GK:From now on it uses indexed vectors (for now until and if I found something better)
+std::vector <plat_t*>		activeplats;
+long platind = 0;
 // p_plats.vars end // 
 //  p_pspr.vars begin // 
 fixed_t		swingx;
@@ -498,24 +507,24 @@ fixed_t		bulletslope;
 byte*		save_p;
 // p_saveg.vars end // 
 //  p_setup.vars begin // 
-int		numvertexes;
+long		numvertexes;
 vertex_t*	vertexes;
-int		numsegs;
+long		numsegs;
 seg_t*		segs;
-int		numsectors;
+long		numsectors;
 sector_t*	sectors;
-int		numsubsectors;
+long		numsubsectors;
 subsector_t*	subsectors;
-int		numnodes;
+long		numnodes;
 node_t*		nodes;
-int		numlines;
+long		numlines;
 line_t*		lines;
-int		numsides;
+long		numsides;
 side_t*		sides;
-int		bmapwidth;
-int		bmapheight;	// size in mapblocks
-short*		blockmap;	// int for larger maps
-short*		blockmaplump;		
+long		bmapwidth;
+long		bmapheight;	// size in mapblocks
+long*		blockmap;	// int for larger maps
+long*		blockmaplump;		
 fixed_t		bmaporgx;
 fixed_t		bmaporgy;
 mobj_t**	blocklinks;		
@@ -538,8 +547,10 @@ anim_t2*		lastanim;
 qboolean		levelTimer;
 int		levelTimeCount;
 int		levelFragCount;
-short		numlinespecials;
-line_t*		linespeciallist[MAXLINEANIMS];
+//GK:From now on it uses indexed vectors (for now until and if I found something better)
+long		numlinespecials;
+long		linespecind;
+std::vector<line_t*>		linespeciallist;
 // p_spec.vars end // 
 //  p_switch.vars begin // 
 int		switchlist[MAXSWITCHES * 2];
@@ -659,7 +670,7 @@ short			floorclip[SCREENWIDTH];
 short			ceilingclip[SCREENWIDTH];
 int			spanstart[SCREENHEIGHT];
 int			spanstop[SCREENHEIGHT];
-lighttable_t**		planezlight;
+int		planezlight;
 fixed_t			planeheight;
 fixed_t			yslope[SCREENHEIGHT];
 fixed_t			distscale[SCREENWIDTH];
@@ -714,14 +725,17 @@ int			skytexturemid;
 fixed_t		pspritescale;
 fixed_t		pspriteiscale;
 lighttable_t**	spritelights;
-short		negonearray[SCREENWIDTH];
-short		screenheightarray[SCREENWIDTH];
-spritedef_t*	sprites;
-int		numsprites;
+short		negonearray[MAXWIDTH];
+short		screenheightarray[MAXWIDTH];
+//GK:From now on it uses indexed vectors (for now until and if I found something better)
+long		sprind;
+std::vector<spritedef_t*>	sprites;
+long		numsprites;
 spriteframe_t	sprtemp[29];
 int		maxframe;
-vissprite_t	vissprites[MAXVISSPRITES];
-vissprite_t*	vissprite_p;
+long    visspriteind;
+std::vector<vissprite_t*>	vissprites;
+//vissprite_t*	vissprite_p;
 int		newvissprite;
 vissprite_t	overflowsprite;
 short*		mfloorclip;
@@ -858,8 +872,10 @@ int*			s_texturecompositesize;
 int texnum; //GK: Store pointer of current texture in order to take it's height for fixing the tutti-frutti bug
 // r_data end //
 // r_plane begin //
-visplane_t		visplanes[MAXVISPLANES]; 
-visplane_t*		lastvisplane; 
+//GK:From now on it uses indexed vectors (for now until and if I found something better)
+std::vector<visplane_t*>		visplanes; 
+long			planeind;
+//visplane_t*		lastvisplane; 
 visplane_t*		floorplane; 
 visplane_t*		ceilingplane; 
 // r_plane end //
