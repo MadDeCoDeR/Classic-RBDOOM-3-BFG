@@ -91,7 +91,18 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 	fixed_t		frac;
 	fixed_t		fracstep;	 
 	int theght = (int) ::g->s_textureheight[::g->texnum] >> FRACBITS;
-	int mheight =theght -1;
+	int mheight = theght - 1;
+	//GK:Sanity check
+	if (::g->dc_yh >= SCREENHEIGHT) {
+		::g->dc_yh = SCREENHEIGHT - 1;
+	}
+	
+	if (::g->dc_yl < 0) {
+		::g->dc_yl = 0;
+	}else
+	if (::g->dc_yl >= ::g->viewheight) {
+		::g->dc_yl = ::g->viewheight - 1;
+	}
 	count = ::g->dc_yh - ::g->dc_yl ; 
 
 	// Zero length, column does not exceed a pixel.
@@ -150,8 +161,15 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 			do//while ((count -= 2) >= 0)   // texture height is a power of 2 -- killough
 			{
 				const int truncated1 = frac >> FRACBITS;
-				const int wrapped1 = truncated1 & mheight;
-				*dest = dc_colormap[dc_source[wrapped1]];
+				//GK:in case of things and skies DON'T APPLY anything related to tutti fruti fix
+				if (::g->texnum == -1) {
+					const int wrapped1 = truncated1 & 127;
+					*dest = dc_colormap[dc_source[wrapped1]];
+				}
+				else {
+					const int wrapped1 = truncated1 & mheight;
+					*dest = dc_colormap[dc_source[wrapped1]];
+				}
 				dest += SCREENWIDTH;
 				frac += fracstep;
 				//*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
@@ -393,7 +411,7 @@ void R_DrawTranslatedColumn ( lighttable_t * dc_colormap,
 	byte*		dest; 
 	fixed_t		frac;
 	fixed_t		fracstep;	 
-
+	
 	count = ::g->dc_yh - ::g->dc_yl; 
 	if (count < 0) 
 		return; 
@@ -537,7 +555,7 @@ void R_DrawSpan ( fixed_t xfrac,
 	}
 	//	::g->dscount++; 
 #endif 
-
+	
 	dest = ::g->ylookup[::g->ds_y] + ::g->columnofs[::g->ds_x1];
 
 	// We do not check for zero spans here?
@@ -670,7 +688,7 @@ void R_DrawSpanLow ( fixed_t xfrac,
 	// Blocky mode, need to multiply by 2.
 	::g->ds_x1 <<= 1;
 	::g->ds_x2 <<= 1;
-
+	
 	dest = ::g->ylookup[::g->ds_y] + ::g->columnofs[::g->ds_x1];
 
 

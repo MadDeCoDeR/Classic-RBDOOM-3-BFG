@@ -58,10 +58,9 @@ typedef unsigned int dword;
 #define WIDTH				( ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER )
 #define HEIGHT				( ORIGINAL_HEIGHT * GLOBAL_IMAGE_SCALER )
 
-//GK: Toying around with un-used values (in hopes to figure out how to perform aspect ratio correction)
 
-#define TEXTUREWIDTH		ORIGINAL_WIDTH
-#define TEXTUREHEIGHT		ORIGINAL_HEIGHT
+#define TEXTUREWIDTH		WIDTH
+#define TEXTUREHEIGHT		HEIGHT
 
 #define	BASE_WIDTH			ORIGINAL_WIDTH
 #define SCREENWIDTH			WIDTH

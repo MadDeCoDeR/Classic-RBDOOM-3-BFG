@@ -1088,9 +1088,9 @@ void ST_Drawer (qboolean fullscreen, qboolean refresh)
 	ST_doPaletteStuff();
 
 	// If just after ST_Start(), refresh all
-	if (::g->st_firsttime) ST_doRefresh();
+	 ST_doRefresh(); //GK:Keep refreshing the status bar background in order to prevent graphical artifacts on it
 	// Otherwise, update as little as possible
-	else ST_diffDraw();
+	 ST_diffDraw();
 }
 
 void ST_loadGraphics(void)
