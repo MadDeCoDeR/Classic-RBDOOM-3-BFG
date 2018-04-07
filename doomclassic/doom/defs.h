@@ -143,7 +143,7 @@ If you have questions concerning this license or the applicable additional terms
 // hu_stuff.defs end // 
 //  i_net.defs begin // 
 // SMF
-/*
+//GK:Re-enable all the network related stuff
 #define ntohl(x) \
         ((unsigned long int)((((unsigned long int)(x) & 0x000000ffU) << 24) | \
                              (((unsigned long int)(x) & 0x0000ff00U) <<  8) | \
@@ -152,7 +152,7 @@ If you have questions concerning this license or the applicable additional terms
 #define ntohs(x) \
         ((unsigned short int)((((unsigned short int)(x) & 0x00ff) << 8) | \
                               (((unsigned short int)(x) & 0xff00) >> 8))) \
-#define htonl(x) ntohl(x)
+//#define htonl(x) ntohl(x) //GK:Except this one windows hate this one
 #define htons(x) ntohs(x)
 // i_net.defs end // 
 //  i_net_xbox.defs begin // 
@@ -167,13 +167,12 @@ If you have questions concerning this license or the applicable additional terms
 
 #define htonl(x) ntohl(x)
 #define htons(x) ntohs(x)
-*/	  
 
 #define IPPORT_USERRESERVED	5000
 // i_net_xbox.defs end // 
 //  i_sound_xbox.defs begin // 
 #define SAMPLECOUNT		512
-#define NUM_SOUNDBUFFERS		64
+#define NUM_SOUNDBUFFERS		1280 //GK:More sounds more fun (and ear rape)
 #define BUFMUL                  4
 #define MIXBUFFERSIZE		(SAMPLECOUNT*BUFMUL)
 // i_sound_xbox.defs end // 
@@ -197,7 +196,7 @@ If you have questions concerning this license or the applicable additional terms
 #define LINEHEIGHT		16
 // m_menu.defs end // 
 //  p_enemy.defs begin // 
-#define MAXSPECIALCROSS	8
+//#define MAXSPECIALCROSS	8 //GK: No nedded anymore
 #define	FATSPREAD	(ANG90/8)
 #define	SKULLSPEED		(20*FRACUNIT)
 // p_enemy.defs end // 
@@ -205,7 +204,7 @@ If you have questions concerning this license or the applicable additional terms
 #define BONUSADD	6
 // p_inter.defs end // 
 //  p_map.defs begin // 
-#define MAXSPECIALCROSS		8
+//#define MAXSPECIALCROSS		8 //GK: No nedded anymore
 // p_map.defs end // 
 //  p_mobj.defs begin // 
 #define STOPSPEED		0x1000
@@ -225,9 +224,9 @@ If you have questions concerning this license or the applicable additional terms
 #define MAX_DEATHMATCH_STARTS	10
 // p_setup.defs end // 
 //  p_spec.defs begin // 
-#define MAXANIMS                32
-#define MAXLINEANIMS            64
-#define MAX_ADJOINING_SECTORS    	20
+#define MAXANIMS                1280 //GK: For now just increased it
+//#define MAXLINEANIMS            64 //GK: No nedded anymore
+//#define MAX_ADJOINING_SECTORS    	20 //GK: No nedded anymore
 // p_spec.defs end // 
 //  p_user.defs begin // 
 #define INVERSECOLORMAP		32
@@ -254,8 +253,8 @@ If you have questions concerning this license or the applicable additional terms
 // r_main.defs end // 
 //  r_plane.defs begin // 
 //#define MAXVISPLANES	128
-#define MAXVISPLANES	384
-#define MAXOPENINGS	SCREENWIDTH*64
+//#define MAXVISPLANES	384 //GK: No nedded anymore
+#define MAXOPENINGS	SCREENWIDTH*256 //GK: For now just increased it
 // r_plane.defs end // 
 //  r_segs.defs begin // 
 #define HEIGHTBITS		12

@@ -1299,6 +1299,10 @@ void M_QuitDOOM(int choice)
 void M_ExitGame(int choice)
 {
 	//CleanUncompFiles(true);
+	//GK:logout properly from the netgame
+	if (::g->netgame) {
+		DoomLib::Interface.QuitCurrentGame();
+	}
 	common->Quit();
 }
 
@@ -1319,10 +1323,15 @@ void M_GameSelection(int choice)
 	ResetPars();
 	ResetFinalflat();
 	idLib::Printf("Reset Completed!!\n");
+	memset(DoomLib::otherfiles,0,5*20);//GK:Reset this for better checking
 	//ResetSfx(); //GK: More Headache than it's worth
 	//CleanUncompFiles(); //GK: A good practice would have been to delete the files after
 	//we change the game but W_Shutdown which must be called to free the files causes bugs and crashes
 	initonce = false;
+	//GK:logout properly from the netgame
+	if (::g->netgame) {
+		DoomLib::Interface.QuitCurrentGame();
+	}
 	common->SwitchToGame( DOOM3_BFG );
 }
 
@@ -2178,8 +2187,8 @@ void M_Init (void)
 		//  kept this hack for educational purposes.
 		//::g->MainMenu[readthis] = ::g->MainMenu[quitdoom];
 		//::g->MainDef.numitems--;
-		//GK:Not needed
-		//::g->MainDef.y += 8;
+
+		::g->MainDef.y += 8;
 		::g->NewDef.prevMenu = &::g->MainDef;
 		//::g->ReadDef1.routine = M_DrawReadThis1;
 		//::g->ReadDef1.x = 330;

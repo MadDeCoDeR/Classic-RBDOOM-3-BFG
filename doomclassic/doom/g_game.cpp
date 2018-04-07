@@ -991,7 +991,7 @@ void G_PlayerReborn (int player)
 	// DHM - Nerve :: restore cards in multiplayer
 	// TODO: Networking
 #ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING
-	if ( common->IsMultiplayer() || gameLocal->IsSplitscreen() || (::g->demoplayback && ::g->netdemo) ) {
+	if ( common->IsMultiplayer() || /*gameLocal->IsSplitscreen() ||*/ (::g->demoplayback && ::g->netdemo) ) { //GK:No splitscreen
 		if ( hasMapPowerup ) {
 			::g->players[player].powers[pw_allmap] = 1;
 		}
@@ -1513,68 +1513,7 @@ qboolean G_CheckSave(char* name) {
 				file = strtok(NULL, ",");
 			}
 			sc = sc - 1;
-			int ac = 0;
-			bool movetonext;
-			if (sc > 0) {
-				for (int mf = 0; mf < filelist.size() - 1; mf++) {
-					//GK: Simplifing moded save checking
-					int f = 1;
-					while (wadfiles[f] != NULL) {
-						movetonext = false;
-
-						char* fname = strtok(strdup(wadfiles[f]), "\\");
-						if (DoomLib::idealExpansion == ::g->gamemission) {
-							if (idStr::Icmpn(fname, "wads", 4)) {
-								while (fname) {
-									char* tname = strtok(NULL, "\\");
-									if (tname) {
-										fname = tname;
-									}
-									else {
-										break;
-									}
-								}
-
-
-								if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
-									ac++;
-									if (ac == sc) {
-										ok = true;
-									}
-									break;
-								}
-
-							}
-							else {
-								f++;
-								continue;
-							}
-						}
-						else {
-							int o = 0;
-							while (DoomLib::otherfiles[DoomLib::idealExpansion - 1][o] != NULL) {
-								if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[DoomLib::idealExpansion - 1][o])) {
-									ac++;
-									movetonext = true;
-									if (ac == sc)
-										ok = true;
-
-									break;
-								}
-								o++;
-							}
-							if (movetonext)
-								break;
-						}
-						f++;
-					}
-					if (ok)
-						break;
-				}
-			}
-			else {
-				ok = true;
-			}
+			ok = W_CheckMods(sc, filelist);
 		}
 		if (!ok) {
 			loadingGame = false;
@@ -1652,67 +1591,7 @@ qboolean G_DoLoadGame ()
 				file = strtok(NULL, ",");
 			}
 			sc = sc - 1;
-			int ac = 0;
-			bool movetonext;
-			if (sc > 0) {
-				for (int mf = 0; mf < filelist.size() - 1; mf++) {
-					int f = 1;
-					while (wadfiles[f] != NULL) {
-						movetonext = false;
-
-							char* fname = strtok(strdup(wadfiles[f]), "\\");
-							if (DoomLib::idealExpansion == ::g->gamemission) {
-								if (idStr::Icmpn(fname, "wads", 4)) {
-									while (fname) {
-										char* tname = strtok(NULL, "\\");
-										if (tname) {
-											fname = tname;
-										}
-										else {
-											break;
-										}
-									}
-
-
-									if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
-										ac++;
-										if (ac == sc) {
-											ok = true;
-										}
-										break;
-									}
-
-								}
-								else {
-									f++;
-									continue;
-								}
-							}
-							else {
-								int o = 0;
-								while (DoomLib::otherfiles[DoomLib::idealExpansion - 1][o] != NULL) {
-									if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[DoomLib::idealExpansion - 1][o])) {
-										ac++;
-										movetonext = true;
-										if (ac == sc)
-											ok = true;
-
-										break;
-									}
-									o++;
-								}
-								if (movetonext)
-									break;
-							}
-							f++;
-					}
-					if (ok)
-						break;
-				}
-			}
-			else {
-				ok = true;
-			}
+			ok = W_CheckMods(sc, filelist);
 		}
 		if (!ok) {
 			loadingGame = false;
@@ -2229,7 +2108,7 @@ void G_DoPlayDemo (void)
 
 	// TODO: Networking
 #if ID_ENABLE_DOOM_CLASSIC_NETWORKING
-	if ( gameLocal->IsSplitscreen() && DoomLib::GetPlayer() > 0 ) {
+	if ( /*gameLocal->IsSplitscreen() &&*/ DoomLib::GetPlayer() > 0 ) {
 		return;
 	}
 #endif

@@ -130,7 +130,7 @@ HSendPacket
 {
 	::g->netbuffer->checksum = NetbufferChecksum () | flags;
 
-	if (!node)
+	if (!::g->netgame || node == ::g->consoleplayer) //GK:Before it was expecting the local player to be the node 0 now it expects to be the proper player
 	{
 		::g->reboundstore = *::g->netbuffer;
 		::g->reboundpacket = true;
@@ -178,7 +178,7 @@ qboolean HGetPacket (void)
 	if (::g->reboundpacket)
 	{
 		*::g->netbuffer = ::g->reboundstore;
-		::g->doomcom.remotenode = 0;
+		::g->doomcom.remotenode = ::g->consoleplayer; //GK:Expect to be the player in the right slot
 		::g->reboundpacket = false;
 		return true;
 	}
@@ -205,7 +205,7 @@ qboolean HGetPacket (void)
 	// ALAN NETWORKING -- this fails a lot on 4 player split debug!!
 	// TODO: Networking
 #ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING
-	if ( !gameLocal->IsSplitscreen() && NetbufferChecksum() != (::g->netbuffer->checksum&NCMD_CHECKSUM) )
+	if ( /*!gameLocal->IsSplitscreen() &&*/ NetbufferChecksum() != (::g->netbuffer->checksum&NCMD_CHECKSUM) ) //GK:No splitscreen
 	{
 		if (::g->debugfile) {
 			fprintf (::g->debugfile,"bad packet checksum\n");
@@ -385,7 +385,7 @@ void NetUpdate ( idUserCmdMgr * userCmdMgr )
 	}
 
 
-	::g->netbuffer->player = ::g->consoleplayer;
+	::g->netbuffer->player = ::g->doomcom.consoleplayer; //GK:Just in case
 
 	// build new ticcmds for console player
 	gameticdiv = ::g->gametic/::g->ticdup;
@@ -448,20 +448,20 @@ listen:
 //
 // CheckAbort
 //
-void CheckAbort (void)
+void CheckAbort(void)
 {
 	// DHM - Time starts at 0 tics when starting a multiplayer game, so we can
 	// check for timeouts easily.  If we're still waiting after N seconds, abort.
-	if ( I_GetTime() > NET_TIMEOUT ) {
+	if (I_GetTime() > NET_TIMEOUT) {
 		// TOOD: Show error & leave net game.
-		printf( "NET GAME TIMED OUT!\n" );
+		I_Printf("NET GAME TIMED OUT! %d\n", I_GetTime());
 		//gameLocal->showFatalErrorMessage( XuiLookupStringTable(globalStrings,L"Timed out waiting for match start.") );
 
 
 		D_QuitNetGame();
 
 		session->QuitMatch();
-		common->Dialog().AddDialog( GDM_OPPONENT_CONNECTION_LOST, DIALOG_ACCEPT, NULL, NULL, false );
+		common->Dialog().AddDialog(GDM_OPPONENT_CONNECTION_LOST, DIALOG_ACCEPT, NULL, NULL, false);
 	}
 }
 
@@ -482,7 +482,7 @@ bool D_ArbitrateNetStart (void)
 			return false;
 		if (::g->netbuffer->checksum & NCMD_SETUP)
 		{
-			printf( "Received setup info\n" );
+			I_Printf( "Received setup info\n" );
 
 			if (::g->netbuffer->player != VERSION)
 				I_Error ("Different DOOM versions cannot play a net game!");
@@ -606,10 +606,10 @@ void D_QuitNetGame (void)
 		return;
 
 	// send a quit packet to the other nodes
-	::g->netbuffer->player = ::g->consoleplayer;
+	::g->netbuffer->player = ::g->doomcom.consoleplayer;
 	::g->netbuffer->numtics = 0;
 
-	for ( i=1; i < ::g->doomcom.numnodes; i++ ) {
+	for ( i=0; i < ::g->doomcom.numnodes; i++ ) {
 		if ( ::g->nodeingame[i] ) {
 			HSendPacket( i, NCMD_EXIT );
 		}
@@ -707,7 +707,7 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 	{	
 		// ideally ::g->nettics[0] should be 1 - 3 tics above ::g->trt_lowtic
 		// if we are consistantly slower, speed up time
-		for (i=0 ; i<MAXPLAYERS ; i++) {
+		for (i=0 ; i<::g->doomcom.numnodes ; i++) { //GK:Optimize by using the number of nodes instead of maxplayers
 			if (::g->playeringame[i]) {
 				break;
 			}
@@ -717,13 +717,14 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 			// the key player does not adapt
 		}
 		else {
-			if (::g->nettics[0] <= ::g->nettics[::g->nodeforplayer[i]])	{
+			//GK:Network optimization by stop assuming the the local player is always the node 0
+			if (::g->nettics[::g->nodeforplayer[::g->consoleplayer]] <= ::g->nettics[::g->nodeforplayer[i]])	{
 				::g->gametime--;
 				//OutputDebugString("-");
 			}
 
 			::g->frameskip[::g->frameon&3] = (::g->oldnettics > ::g->nettics[::g->nodeforplayer[i]]);
-			::g->oldnettics = ::g->nettics[0];
+			::g->oldnettics = ::g->nettics[::g->nodeforplayer[::g->consoleplayer]];
 
 			if (::g->frameskip[0] && ::g->frameskip[1] && ::g->frameskip[2] && ::g->frameskip[3]) {
 				::g->skiptics = 1;
@@ -755,8 +756,8 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 
 #ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING
 #ifndef __PS3__
-					gameLocal->showFatalErrorMessage( XuiLookupStringTable(globalStrings,L"You have been disconnected from the match.") );
-					gameLocal->Interface.QuitCurrentGame();
+					//session->showFatalErrorMessage( XuiLookupStringTable(globalStrings,L"You have been disconnected from the match.") );
+					DoomLib::Interface.QuitCurrentGame(); //GK:Proper exit
 #endif
 #endif
 				} else {
@@ -814,7 +815,7 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 				int			j;
 
 				buf = (::g->gametic/::g->ticdup)%BACKUPTICS; 
-				for (j=0 ; j<MAXPLAYERS ; j++)
+				for (j=0 ; j<::g->doomcom.numnodes ; j++) //GK:Optimize by using the number of nodes instead of maxplayers
 				{
 					cmd = &::g->netcmds[j][buf];
 					if (cmd->buttons & BT_SPECIAL)

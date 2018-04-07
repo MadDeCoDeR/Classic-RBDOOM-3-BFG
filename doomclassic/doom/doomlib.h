@@ -89,13 +89,11 @@ struct ExpansionData {
 
 };
 
-
+extern bool useTech5Packets;
 
 namespace DoomLib
 {
-	//typedef int ( *RecvFunc)( char* buff, DWORD *numRecv );
-	//typedef int ( *SendFunc)( const char* buff, DWORD size, sockaddr_in *target, int toNode );
-	//typedef int ( *SendRemoteFunc)();
+	
 
 	void InitGlobals( void *ptr = NULL );
 	void InitGame( int argc, char ** argv );
@@ -108,7 +106,7 @@ namespace DoomLib
 	void Draw();
 	void Shutdown();
 
-	//void SetNetworking( RecvFunc rf, SendFunc sf, SendRemoteFunc sendRemote );
+	void SetNetworking( RecvFunc rf, SendFunc sf, SendRemoteFunc sendRemote ); //GK:Reveve dead code
 	
 	void SetPlayer( int id );
 	int GetPlayer();

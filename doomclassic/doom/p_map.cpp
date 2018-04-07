@@ -228,9 +228,16 @@ qboolean PIT_CheckLine (line_t* ld)
 	::g->tmdropoffz = ::g->lowfloor;
 
     // if contacted a special line, add it to the list
-    if (ld->special && ::g->numspechit < MAXSPECIALCROSS )
+    if (ld->special /*&& ::g->numspechit < MAXSPECIALCROSS*/ )
     {
-	::g->spechit[::g->numspechit] = ld;
+		//GK:From now on it uses indexed vectors (for now until and if I found something better)
+		if (::g->numspechit >= ::g->spechit.size()) {
+			//::g->specind = 0;
+			::g->spechit.push_back(ld);
+		}
+		else {
+			::g->spechit[::g->numspechit] = ld;
+		}
 	::g->numspechit++;
     }
 
@@ -448,7 +455,7 @@ P_TryMove
     fixed_t	oldy;
     int		side;
     int		oldside;
-    line_t*	ld;
+   // line_t*	ld;
 
     ::g->floatok = false;
     if (!P_CheckPosition (thing, x, y))
@@ -493,13 +500,13 @@ P_TryMove
 		while (::g->numspechit--)
 		{
 			// see if the line was crossed
-			ld = ::g->spechit[::g->numspechit];
-			side = P_PointOnLineSide (thing->x, thing->y, ld);
-			oldside = P_PointOnLineSide (oldx, oldy, ld);
+			//ld = ::g->spechit[::g->numspechit];
+			side = P_PointOnLineSide (thing->x, thing->y, ::g->spechit[::g->numspechit]);
+			oldside = P_PointOnLineSide (oldx, oldy, ::g->spechit[::g->numspechit]);
 			if (side != oldside)
 			{
-			if (ld->special)
-				P_CrossSpecialLine (ld-::g->lines, oldside, thing);
+			if (::g->spechit[::g->numspechit]->special)
+				P_CrossSpecialLine (::g->spechit[::g->numspechit] -::g->lines, oldside, thing);
 			}
 		}
     }
@@ -989,7 +996,7 @@ qboolean PTR_ShootTraverse (intercept_t* in)
 
 	// check for friendly fire.
 #ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING
-	if( th  && gameLocal->GetMatchParms().GetGameType() != GAME_TYPE_PVP ) {
+	if( th  && !::g->deathmatch ) {
 		player_t * hitPlayer = th->player;
 
 		if( hitPlayer ) {
@@ -999,7 +1006,7 @@ qboolean PTR_ShootTraverse (intercept_t* in)
 			if( sourceObject ) {
 				player_t* sourcePlayer = sourceObject->player;
 
-				if( sourcePlayer != NULL && sourcePlayer != hitPlayer  && !gameLocal->GetMatchParms().AllowFriendlyFire() ) {
+				if( sourcePlayer != NULL && sourcePlayer != hitPlayer ) {
 					return true;
 				}
 			}

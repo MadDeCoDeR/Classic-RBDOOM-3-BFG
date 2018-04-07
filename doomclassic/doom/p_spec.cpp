@@ -317,7 +317,7 @@ P_FindNextHighestFloor
 	fixed_t		height = currentheight;
 
 
-	fixed_t		heightlist[MAX_ADJOINING_SECTORS];		
+	std::vector<fixed_t>		heightlist;		
 
 	for (i=0, h=0 ;i < sec->linecount ; i++)
 	{
@@ -327,15 +327,16 @@ P_FindNextHighestFloor
 		if (!other)
 			continue;
 
-		if (other->floorheight > height)
-			heightlist[h++] = other->floorheight;
-
-		// Check for overflow. Exit.
-		if ( h >= MAX_ADJOINING_SECTORS )
-		{
-			I_PrintfE("Sector with more than 20 adjoining sectors\n" );
-			break;
+		if (other->floorheight > height) {
+			if (h >= heightlist.size()) {
+				heightlist.push_back(other->floorheight);
+				h++;
+			}
+			else {
+				heightlist[h++] = other->floorheight;
+			}
 		}
+
 	}
 
 	// Find lowest height in list
@@ -1112,7 +1113,7 @@ void P_UpdateSpecials (void)
 	anim_t2*	anim;
 	int		pic;
 	int		i;
-	line_t*	line;
+	//line_t*	line;
 
 
 	//	LEVEL TIMER
@@ -1157,12 +1158,12 @@ void P_UpdateSpecials (void)
 	//	ANIMATE LINE SPECIALS
 	for (i = 0; i < ::g->numlinespecials; i++)
 	{
-		line = ::g->linespeciallist[i];
-		switch(line->special)
+	//	line = ::g->linespeciallist[i];
+		switch(::g->linespeciallist[i]->special)
 		{
 		case 48:
 			// EFFECT FIRSTCOL SCROLL +
-			::g->sides[line->sidenum[0]].textureoffset += FRACUNIT;
+			::g->sides[::g->linespeciallist[i]->sidenum[0]].textureoffset += FRACUNIT;
 			break;
 		}
 	}
@@ -1298,38 +1299,45 @@ void P_SpawnSpecials (void)
 		::g->levelTimer = true;
 		::g->levelTimeCount = 20 * 60 * TICRATE;
 	}
-
-	//i = M_CheckParm("-timer");
-	//if (i && ::g->deathmatch)
-#ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING
-	const int timeLimit = session->GetActingGameStateLobbyBase().GetMatchParms().gameTimeLimit;
-#else
-	const int timeLimit = 0;
-#endif
-	if (timeLimit != 0 && g->deathmatch)
-	{
-		int	time;
-		//time = atoi(::g->myargv[i+1]) * 60 * 35;
-		time = timeLimit * 60 * TICRATE;
+	//GK:Revive network related stuff
+	i = M_CheckParm("-timer");
+	if (i && ::g->deathmatch) {
+		::g->dmtime = atoi(::g->myargv[i + 1]) * 60 * TICRATE;
 		::g->levelTimer = true;
-		::g->levelTimeCount = time;
+		::g->levelTimeCount = ::g->dmtime;
 	}
-
-	//i = M_CheckParm("-fraglimit");
-	//if (i && ::g->deathmatch)
+	else {
 #ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING
-	const int fragLimit = gameLocal->GetMatchParms().GetScoreLimit();
+		const int timeLimit = 60;
 #else
-	const int fragLimit = 0;
+		const int timeLimit = 0;
 #endif
-	if (fragLimit != 0 && ::g->deathmatch)
-	{
-		//::g->levelFragCount = atoi(::g->myargv[i+1]);
-		::g->levelFragCount = fragLimit;
-	} else {
-		::g->levelFragCount = 0;
+		if (timeLimit != 0 && g->deathmatch)
+		{
+			::g->dmtime = timeLimit * 60 * TICRATE;
+			::g->levelTimer = true;
+			::g->levelTimeCount = ::g->dmtime;
+		}
 	}
-
+	i = M_CheckParm("-fraglimit");
+	if (i && ::g->deathmatch) {
+		::g->levelFragCount = atoi(::g->myargv[i + 1]);
+	}
+	else {
+#ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING
+		const int fragLimit = 10;
+#else
+		const int fragLimit = 0;
+#endif
+		if (fragLimit != 0 && ::g->deathmatch)
+		{
+			//::g->levelFragCount = atoi(::g->myargv[i+1]);
+			::g->levelFragCount = fragLimit;
+		}
+		else {
+			::g->levelFragCount = 0;
+		}
+	}
 	//	Init special SECTORs.
 	sector = ::g->sectors;
 	for (i=0 ; i < ::g->numsectors ; i++, sector++)
@@ -1404,7 +1412,13 @@ void P_SpawnSpecials (void)
 		{
 		case 48:
 			// EFFECT FIRSTCOL SCROLL+
-			::g->linespeciallist[::g->numlinespecials] = &::g->lines[i];
+			if (::g->numlinespecials >= ::g->linespeciallist.size()) {
+				//::g->linespeciallist.clear();
+				::g->linespeciallist.push_back(&::g->lines[i]);
+			}
+			else {
+				::g->linespeciallist[::g->numlinespecials] = &::g->lines[i];
+			}
 			::g->numlinespecials++;
 			break;
 		}
@@ -1412,11 +1426,16 @@ void P_SpawnSpecials (void)
 
 
 	//	Init other misc stuff
-	for (i = 0;i < MAXCEILINGS;i++)
-		::g->activeceilings[i] = NULL;
-
-	for (i = 0;i < MAXPLATS;i++)
-		::g->activeplats[i] = NULL;
+	::g->cellind = 0;
+	if (::g->cellind >= ::g->activeceilings.size()) {
+		::g->activeceilings.push_back(new ceiling_t());
+	}
+	::g->cellind++;
+	::g->platind = 0;
+	if (::g->platind >= ::g->activeplats.size()) {
+		::g->activeplats.push_back(new plat_t());
+	}
+	::g->platind++;
 
 	for (i = 0;i < MAXBUTTONS;i++)
 		memset(&::g->buttonlist[i],0,sizeof(button_t));

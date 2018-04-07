@@ -481,7 +481,7 @@ void S_StartMusic(int m_id)
 void S_ChangeMusic ( int			musicnum, int			looping )
 {
 #ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING
-	if (gameLocal->IsSplitscreen() && DoomLib::GetPlayer() > 0 )
+	if (/*gameLocal->IsSplitscreen() &&*/ DoomLib::GetPlayer() > 0 ) //GK:No splitscreen
 	{
 		// we aren't the key player... we have no control over music
 		return;

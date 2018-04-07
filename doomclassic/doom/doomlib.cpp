@@ -48,6 +48,7 @@ idCVar m_inDemoMode( "m_inDemoMode", "1", CVAR_INTEGER, "in demo mode", 0, 1 );
 bool	globalNetworking	= false;
 bool	globalPauseTime		= false;
 int		PLAYERCOUNT			= 1;
+typedef int socklen_t;
 
 #ifdef _DEBUG
 bool	debugOutput			= true;
@@ -140,10 +141,10 @@ namespace DoomLib
 	int currentplayer = -1;
 
 	Globals *globaldata[4];
-
-	//RecvFunc Recv;
-	//SendFunc Send;
-	//SendRemoteFunc SendRemote;
+	//GK:They're now on use (I think)
+	RecvFunc Recv;
+	SendFunc Send;
+	SendRemoteFunc SendRemote;
 
 
 	bool							Active = true;
@@ -431,7 +432,7 @@ void DoomLib::SetPlayer( int id )
 	}
 }
 
-#if 0
+#if 1 //GK:Revival of the un-implemented
 void DoomLib::SetNetworking( RecvFunc rf, SendFunc sf, SendRemoteFunc sendRemote )
 {
 	Recv = rf;
@@ -511,10 +512,10 @@ int DoomLib::PlayerIndexToRemoteNode( int index ) {
 }
 
 void I_Error (const char *error, ...);
-extern bool useTech5Packets;
+bool useTech5Packets;
 
 void DoomLib::PollNetwork() {
-#if 0
+#if 1
 	if ( !useTech5Packets ) {
 
 		if ( !globalNetworking ) {
@@ -527,20 +528,20 @@ void DoomLib::PollNetwork() {
 		doomdata_t		sw;
 
 		while(1) {
-			int receivedSize = recvfrom( ::g->insocket, &sw, sizeof( doomdata_t ), MSG_DONTWAIT, &fromaddress, &fromlen );
+			int receivedSize = recvfrom( ::g->insocket,(char *) &sw, sizeof( doomdata_t ), MSG_PEEK, &fromaddress, &fromlen ); //GK:Convert to char array and put another flag in order to deal with compatibility issues
 			//c = WSARecvFrom(::g->insocket, &buffer, 1, &num_recieved, &flags, (struct sockaddr*)&fromaddress, &fromlen, 0, 0);
 
 			if ( receivedSize < 0 )
 			{
-				int err = sys_net_errno;
-				if (err != SYS_NET_EWOULDBLOCK ) {
+				int err = WSAGetLastError();  //GK:We're using winsocks from now on
+				if (err != WSAEINPROGRESS) {
 					I_Error ("GetPacket: %d", err );
 					//I_Printf ("GetPacket: %s",strerror(errno));
 				}
 				return;
 			}
 
-			printf( "RECEIVED PACKET!!\n" );
+			common->Printf( "RECEIVED PACKET!!\n" );
 
 			int source;
 			int dest;

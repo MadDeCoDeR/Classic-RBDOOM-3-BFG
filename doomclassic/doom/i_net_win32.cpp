@@ -51,6 +51,9 @@ If you have questions concerning this license or the applicable additional terms
 void	NetSend (void);
 qboolean NetListen (void);
 
+typedef ULONG in_addr_t;
+extern bool globalNetworking;
+
 namespace {
 	bool IsValidSocket( int socketDescriptor );
 	int GetLastSocketError();
@@ -63,8 +66,13 @@ namespace {
 	between WinSock (used on Xbox) and BSD sockets, which the PS3 follows more closely.
 	========================
 	*/
-	bool IsValidSocket( int socketDescriptor ) {
-		return false;
+	bool IsValidSocket( SOCKET socketDescriptor ) { //GK:Make proper check up using winsocks
+		int optval;
+		int optlen = sizeof(int);
+		if (getsockopt(socketDescriptor, SOL_SOCKET, SO_ERROR, (char *)&optval, &optlen) != 0) {
+			return false;
+		}
+		return true;
 	}
 
 	/*
@@ -73,19 +81,18 @@ namespace {
 	========================
 	*/
 	int GetLastSocketError() {
-		return 0;
+		return WSAGetLastError();
 	}
 }
 
 //
 // NETWORKING
 //
-int	DOOMPORT = 1002;	// DHM - Nerve :: On original XBox, ports 1000 - 1255 saved you a byte on every packet.  360 too?
-
-
+int	DOOMPORT = 6666; //GK:Use this port because why not?	// DHM - Nerve :: On original XBox, ports 1000 - 1255 saved you a byte on every packet.  360 too?
+WSADATA windata; //GK:winsock related stuff
 unsigned long GetServerIP() {
-	//return ::g->sendaddress[::g->doomcom.consoleplayer].sin_addr.s_addr;
-	return 0;
+	return ::g->sendaddress[::g->doomcom.consoleplayer].sin_addr.s_addr;
+	//return 0;
 }
 
 void	(*netget) (void);
@@ -95,51 +102,164 @@ void	(*netsend) (void);
 //
 // UDPsocket
 //
-int UDPsocket (void)
+SOCKET UDPsocket (void) //GK:return SOCKET instead of int
 {
-	//int	s;
+	SOCKET	s;
 
 	// allocate a socket
-	//s = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	//if ( !IsValidSocket( s ) ) {
-	//	int err = GetLastSocketError();
-	//	I_Error( "can't create socket, error %d", err );
-	//}
+	s = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if ( !IsValidSocket( s ) ) {
+		int err = GetLastSocketError();
+		//GK:Show proper error message
+		char msgbuf[256];
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+		I_Error( "can't create socket, error %s", msgbuf );
+	}
 
-	//return s;
-	return 0;
+	return s;
+	//return 0;
 }
+
 
 //
 // BindToLocalPort
 //
-void BindToLocalPort( int	s, int	port )
+void BindToLocalPort( SOCKET	s, int	port )//GK:Restored source code from the vanilla DOOM source code
 {
+	int			v;
+	struct sockaddr_in	address;
 
+	memset(&address, 0, sizeof(address));
+	address.sin_family = AF_INET;
+	address.sin_addr.s_addr = INADDR_ANY;
+	address.sin_port = port;
+
+	v = bind(s, (SOCKADDR *)&address, sizeof(address));
+	if (v == SOCKET_ERROR) {
+		int err = GetLastSocketError();
+		char msgbuf[256];
+		FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+		I_Error("BindToPort: bind: %s", msgbuf);
+	}
 }
 
 
 //
 // PacketSend
 //
-void PacketSend (void)
+void PacketSend (void)//GK:Restored source code from the vanilla DOOM source code
 {
+	int		c;
+	doomdata_t	sw;
 
+	// byte swap
+	sw.checksum = htonl(::g->netbuffer->checksum);
+	sw.player = ::g->netbuffer->player;
+	sw.retransmitfrom = ::g->netbuffer->retransmitfrom;
+	sw.starttic = ::g->netbuffer->starttic;
+	sw.numtics = ::g->netbuffer->numtics;
+	for (c = 0; c< ::g->netbuffer->numtics; c++)
+	{
+		sw.cmds[c].forwardmove = ::g->netbuffer->cmds[c].forwardmove;
+		sw.cmds[c].sidemove = ::g->netbuffer->cmds[c].sidemove;
+		sw.cmds[c].angleturn = htons(::g->netbuffer->cmds[c].angleturn);
+		sw.cmds[c].consistancy = htons(::g->netbuffer->cmds[c].consistancy);
+		//sw.cmds[c].chatchar = netbuffer->cmds[c].chatchar;
+		sw.cmds[c].buttons = ::g->netbuffer->cmds[c].buttons;
+	}
+
+	//printf ("sending %i\n",gametic);		
+	c = sendto(::g->sendsocket, (char *)&sw, ::g->doomcom.datalength
+		, 0, (SOCKADDR *)&::g->sendaddress[::g->doomcom.remotenode]
+		, sizeof(::g->sendaddress[::g->doomcom.remotenode]));
+
+	if (c == SOCKET_ERROR) {
+		int err = GetLastSocketError();
+		char msgbuf[256];
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+		I_Error("SendPacket error: %s", msgbuf);
+	}
 }
 
 
 //
 // PacketGet
 //
-void PacketGet (void)
+void PacketGet (void)//GK:Restored source code from the vanilla DOOM source code
 {
+	int			i;
+	int			c;
+	struct sockaddr_in	fromaddress;
+	int			fromlen;
+	doomdata_t		sw;
 
+	fromlen = sizeof(fromaddress);
+	c = recvfrom(::g->insocket, (char*)&sw, sizeof(sw), 0
+		, (struct sockaddr *)&fromaddress, &fromlen);
+	//GK:do similar to vanilla check ups using winsock
+	if (c == SOCKET_ERROR)
+	{
+		int err = GetLastSocketError();
+		char msgbuf[256];
+		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+		if (err != WSAEWOULDBLOCK)
+			I_Error("GetPacket: %s", msgbuf);
+		::g->doomcom.remotenode = -1;		// no packet
+		return;
+	}
+
+	{
+		static int first = 1;
+		if (first)
+			I_Printf("len=%d:p=[0x%x 0x%x] \n", c, *(int*)&sw, *((int*)&sw + 1));
+		first = 0;
+	}
+
+	// find remote node number
+	for (i = 0; i<::g->doomcom.numnodes; i++)
+		if (fromaddress.sin_addr.s_addr == ::g->sendaddress[i].sin_addr.s_addr)
+			break;
+
+	if (i == ::g->doomcom.numnodes)
+	{
+		// packet is not from one of the players (new game broadcast)
+		::g->doomcom.remotenode = -1;		// no packet
+		return;
+	}
+
+	::g->doomcom.remotenode = i;			// good packet from a game player
+	::g->doomcom.datalength = c;
+
+	// byte swap
+	::g->netbuffer->checksum = ntohl(sw.checksum);
+	::g->netbuffer->player = sw.player;
+	::g->netbuffer->retransmitfrom = sw.retransmitfrom;
+	::g->netbuffer->starttic = sw.starttic;
+	::g->netbuffer->numtics = sw.numtics;
+
+	for (c = 0; c < ::g->netbuffer->numtics; c++)
+	{
+		::g->netbuffer->cmds[c].forwardmove = sw.cmds[c].forwardmove;
+		::g->netbuffer->cmds[c].sidemove = sw.cmds[c].sidemove;
+		::g->netbuffer->cmds[c].angleturn = ntohs(sw.cmds[c].angleturn);
+		::g->netbuffer->cmds[c].consistancy = ntohs(sw.cmds[c].consistancy);
+		//netbuffer->cmds[c].chatchar = sw.cmds[c].chatchar;
+		::g->netbuffer->cmds[c].buttons = sw.cmds[c].buttons;
+	}
 }
 
-static int I_TrySetupNetwork(void)
+static int I_TrySetupNetwork(void) //GK:Manualy init winsock
 {
-	// DHM - Moved to Session
-	return 1;
+	int r;
+	r = WSAStartup(MAKEWORD(1, 1), &windata);
+	if (r != NO_ERROR) {
+		I_Printf("Winsock Error:%d\n", r);
+		return 0;
+	}
+	else {
+		return 1;
+	}
+
 }
 
 //
@@ -147,11 +267,11 @@ static int I_TrySetupNetwork(void)
 //
 void I_InitNetwork (void)
 {
-	//qboolean		trueval = true;
+	qboolean		trueval = true;
 	int			i;
 	int			p;
-	//int a = 0;
-	//    struct hostent*	hostentry;	// host information entry
+	int a = 0;
+	    struct hostent*	hostentry;	// host information entry
 
 	memset (&::g->doomcom, 0, sizeof(::g->doomcom) );
 
@@ -209,6 +329,10 @@ void I_InitNetwork (void)
 		::g->doomcom.numnodes = 0;
 		for (; i < ::g->myargc; ++i)
 		{
+			//GK: Make sure it doesn't getting other parameters as ip addresses
+			if (::g->myargv[i][0] == '-' || ::g->myargv[i][0] == '+')
+				break;
+
 			::g->sendaddress[::g->doomcom.numnodes].sin_family = AF_INET;
 			::g->sendaddress[::g->doomcom.numnodes].sin_port = htons(DOOMPORT);
 			
@@ -233,7 +357,7 @@ void I_InitNetwork (void)
 			if ( ipAddress == INADDR_NONE ) {
 				I_Error( "Invalid IP Address: %s\n", ipOnly.c_str() );
 				session->QuitMatch();
-				common->AddDialog( GDM_OPPONENT_CONNECTION_LOST, DIALOG_ACCEPT, NULL, NULL, false );
+				common->Dialog().AddDialog( GDM_OPPONENT_CONNECTION_LOST, DIALOG_ACCEPT, NULL, NULL, false );
 			}
 			::g->sendaddress[::g->doomcom.numnodes].sin_addr.s_addr = ipAddress;
 			::g->doomcom.numnodes++;
@@ -241,6 +365,21 @@ void I_InitNetwork (void)
 		
 		::g->doomcom.id = DOOMCOM_ID;
 		::g->doomcom.numplayers = ::g->doomcom.numnodes;
+		//GK:Init and bind sockets
+		::g->insocket = UDPsocket();
+		int socbuff = 1;
+		setsockopt(::g->insocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&socbuff, sizeof(socbuff)); //GK:Does it work ???
+		BindToLocalPort(::g->insocket, htons(DOOMPORT));
+		unsigned long nonblocking = 1;
+		int r=ioctlsocket(::g->insocket, FIONBIO,&nonblocking);
+		if (r == SOCKET_ERROR) {
+			int err = GetLastSocketError();
+			char msgbuf[256];
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+			I_Error("Socket Error:%d\n", msgbuf);
+		}
+		::g->sendsocket = UDPsocket();
+
 	}
 
 	if ( globalNetworking ) {
@@ -249,8 +388,8 @@ void I_InitNetwork (void)
 		BindToLocalPort (::g->insocket,htons(DOOMPORT));
 		
 		// PS3 call to enable non-blocking mode
-		int nonblocking = 1; // Non-zero is nonblocking mode.
-		setsockopt( ::g->insocket, SOL_SOCKET, SO_NBIO, &nonblocking, sizeof(nonblocking));
+		unsigned long nonblocking = 1; // Non-zero is nonblocking mode.
+		ioctlsocket(::g->insocket, FIONBIO, &nonblocking); //GK:set this mode properly
 
 		::g->sendsocket = UDPsocket ();
 
@@ -264,17 +403,17 @@ void I_ShutdownNetwork() {
 	
 }
 
-void I_NetCmd (void)
+void I_NetCmd (void) //GK:Revie Netcode
 {
-	//if (::g->doomcom.command == CMD_SEND)
-	//{
-	//	netsend ();
-	//}
-	//else if (::g->doomcom.command == CMD_GET)
-	//{
-	//	netget ();
-	//}
-	//else
-	//	I_Error ("Bad net cmd: %i\n",::g->doomcom.command);
+	if (::g->doomcom.command == CMD_SEND)
+	{
+		netsend ();
+	}
+	else if (::g->doomcom.command == CMD_GET)
+	{
+		netget ();
+	}
+	else
+		I_Error ("Bad net cmd: %i\n",::g->doomcom.command);
 }
 

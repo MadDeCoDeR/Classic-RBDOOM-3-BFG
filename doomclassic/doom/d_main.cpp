@@ -545,6 +545,9 @@ void D_DoomMain(void)
 	::g->modifiedtext = false;
 	::g->modftext = false;
 	::g->modind = 0;
+	if (::g->gamemode == retail) { //GK:Dealing with an issue about moded save files
+		DoomLib::SetIdealExpansion(doom);
+	}
 	//GK: New pwad for compatibility with Evilution and Plutonia (only for DOOM II)
 	if (::g->gamemode == commercial) {
 		D_AddFile("wads/ua.wad");
@@ -559,24 +562,26 @@ void D_DoomMain(void)
 	setbuf(stdout, NULL);
 	::g->modifiedgame = false;
 
-	// TODO: Networking
-	//const bool isDeathmatch = gameLocal->GetMatchParms().GetGameType() == GAME_TYPE_PVP;
-	const bool isDeathmatch = false;
+	// TODO: Networking GK:NOT NEEDED
+	//const bool isDeathmatch = session->GetActingGameStateLobbyBase().GetMatchParms().gameMode == GAME_MODE_PVP;
+	//const bool isDeathmatch = false;
 	//GK begin
-	::g->classiccheats = M_CheckParm("-classich");
-	//GK End
-	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
-		::g->nomonsters = M_CheckParm("-nomonsters") || isDeathmatch;
-		::g->respawnparm = M_CheckParm("-respawn");
-	}
-	::g->fastparm = M_CheckParm("-fast");
+	//GK: Check here for deathmatch
 	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
 		::g->devparm = M_CheckParm("-devparm");
-		if (M_CheckParm("-altdeath") || isDeathmatch)
+		if (M_CheckParm("-altdeath"))
 			::g->deathmatch = 2;
 		else if (M_CheckParm("-deathmatch"))
 			::g->deathmatch = 1;
 	}
+	::g->classiccheats = M_CheckParm("-classich");
+	//GK End
+	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+		::g->nomonsters = M_CheckParm("-nomonsters") || ::g->deathmatch;
+		::g->respawnparm = M_CheckParm("-respawn");
+	}
+	::g->fastparm = M_CheckParm("-fast");
+	
 	switch (::g->gamemode)
 	{
 	case retail:
@@ -895,23 +900,23 @@ void D_DoomMain(void)
 			::g->autostart = true;
 		}
 	}
-	/*p = M_CheckParm ("-timer");
-	if (p && p < ::g->myargc-1 && ::g->deathmatch)
-	{*/
-	// TODO: Networking
-	//const int timeLimit = gameLocal->GetMatchParms().GetTimeLimit();
-	const int timeLimit = 0;
-	if (timeLimit != 0 && ::g->deathmatch) 
+	//GK:Re-enable Network Related stuff
+	p = M_CheckParm ("-timer");
+	if (p && p < ::g->myargc - 1 && ::g->deathmatch)
 	{
-		int     time;
-		//time = atoi(::g->myargv[p+1]);
-		time = timeLimit;
-		I_Printf("Levels will end after %d minute",time);
-		if (time>1)
-			I_Printf("s");
-		I_Printf(".\n");
+		
+			::g->dmtime = atoi(::g->myargv[p+1]);
+			//time = timeLimit;
+			I_Printf("Levels will end after %d minute", time);
+			if (::g->dmtime > 1)
+				I_Printf("s");
+			I_Printf(".\n");
 	}
-
+	else {
+		// GK:Give by default 1min
+		const int timeLimit = 60;
+		::g->dmtime = timeLimit;
+	}
 	p = M_CheckParm ("-avg");
 	if (p && p < ::g->myargc-1 && ::g->deathmatch)
 		I_Printf("Austin Virtual Gaming: Levels will end after 20 minutes\n");

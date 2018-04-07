@@ -37,6 +37,10 @@ If you have questions concerning this license or the applicable additional terms
 class idUserCmdMgr;
 //GK : Use extern to communicate between DOOM 3 BFG and classic DOOM
 extern char* classicargv[32];
+//GK:Keep this definitions here
+typedef int(*RecvFunc)(char* buff, DWORD *numRecv);
+typedef int(*SendFunc)(const char* buff, DWORD size, sockaddr_in *target, int toNode);
+typedef int(*SendRemoteFunc)();
 class DoomInterface
 {
 public:
@@ -55,7 +59,7 @@ public:
 	//void InitGraphics( int player = -1, int width = TEXTUREWIDTH, int height = TEXTUREHEIGHT, D3DCOLOR *pBuffer = NULL, D3DCOLOR *pBuffer2 = NULL );
 	void SetPostGlobalsCallback( NoParamCallback cb );
 #ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING
-	void SetNetworking( DoomLib::RecvFunc recv, DoomLib::SendFunc send, DoomLib::SendRemoteFunc sendRemote );
+	void SetNetworking( RecvFunc recv, SendFunc send, SendRemoteFunc sendRemote ); //GK:General fixes for Networking
 #endif
 	int GetNumPlayers() const;
 

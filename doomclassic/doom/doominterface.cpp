@@ -87,7 +87,7 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 	if ( multiplayer ) {
 		// Force online games to 1 local player for now.
 		// TODO: We should support local splitscreen and online.
-		numplayers = 1;
+		numplayers = 4;//GK:HASBEENDONE Networking
 	}
 
 	// Start up DooM Classic
@@ -243,6 +243,7 @@ void DoomInterface::QuitCurrentGame() {
 		DoomLib::SetPlayer( i );
 
 		if(::g->netgame) {
+			WSACleanup(); //GK: Keep your house and your Network clean
 			// Shut down networking
 			D_QuitNetGame();
 		}
@@ -298,7 +299,7 @@ int DoomInterface::GetNumPlayers() const {
 }
 
 #ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING
-void DoomInterface::SetNetworking( DoomLib::RecvFunc recv, DoomLib::SendFunc send, DoomLib::SendRemoteFunc sendRemote ) {
+void DoomInterface::SetNetworking( RecvFunc recv, SendFunc send, SendRemoteFunc sendRemote ) { //GK:General fixes for Networking
 	DoomLib::SetNetworking( recv, send, sendRemote );
 }
 #endif
