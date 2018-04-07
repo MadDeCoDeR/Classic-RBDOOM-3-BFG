@@ -193,13 +193,14 @@ elseif(MSVC)
     if(CMAKE_CONFIGURATION_TYPES) 
         set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Retail" CACHE STRING "" FORCE) 
     endif()
-		set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /D _DEBUG /MP /MTd")
+	#GK: Fixe performance isse on classic doom for the debug build
+		set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /D _DEBUG /MP /Ob2 /Oi /Oy /MTd")
 		set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MP /Oi /Oy /MT")
 		#set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MP /Oi /MTd")
 		#set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
 		set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MT")
 		
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /MTd")
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /Ob2 /Oi /Oy /MTd")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /Oi /Oy /MT")
 		#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MP /MTd")
 		#set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
@@ -1149,7 +1150,8 @@ set(RBDOOM3_SOURCES
 			)
 
 add_definitions(-DUSE_DOOMCLASSIC)
-
+#GK:Enable Classic Doom multi player
+add_definitions(-DID_ENABLE_DOOM_CLASSIC_NETWORKING)
 add_definitions(-D__DOOM__
 				#-DBUILD_FREETYPE
 				#-DFT2_BUILD_LIBRARY
@@ -1382,6 +1384,7 @@ if(MSVC)
 		iphlpapi
 		winmm
 		wsock32.lib
+		Ws2_32.lib
 		${OpenAL_LIBRARIES}
 		${FFmpeg_LIBRARIES}
         ${ZLIB_LIBRARY}
@@ -1561,5 +1564,5 @@ else()
 	    ${CMAKE_DL_LIBS}
 			)
 	endif()
-    
+	
 endif()
