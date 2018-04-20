@@ -188,7 +188,7 @@ void R_GenerateComposite (int texnum)
     int				i;
     postColumn_t*	patchcol;
     short*			collump;
-    unsigned short*	colofs;
+    unsigned *	colofs;// killough 4/9/98: make 32-bit
 	
     texture = ::g->s_textures[texnum];
 
@@ -291,7 +291,7 @@ void R_GenerateLookup (int texnum)
     int			x2;
     int			i;
     short*		collump;
-    unsigned short*	colofs;
+    unsigned*	colofs;// killough 4/9/98: make 32-bit
 	
     texture = ::g->s_textures[texnum];
 
@@ -505,7 +505,7 @@ void R_InitTextures (void)
 
 		::g->s_textures = (texture_t**)DoomLib::Z_Malloc (::g->s_numtextures*sizeof(texture_t*), PU_STATIC_SHARED, 0);
 		::g->s_texturecolumnlump = (short**)DoomLib::Z_Malloc (::g->s_numtextures*sizeof(short*), PU_STATIC_SHARED, 0);
-		::g->s_texturecolumnofs = (unsigned short**)DoomLib::Z_Malloc (::g->s_numtextures*sizeof(unsigned short*), PU_STATIC_SHARED, 0);
+		::g->s_texturecolumnofs = (unsigned**)DoomLib::Z_Malloc (::g->s_numtextures*sizeof(unsigned*), PU_STATIC_SHARED, 0);
 		::g->s_texturewidthmask = (int*)DoomLib::Z_Malloc (::g->s_numtextures*4, PU_STATIC_SHARED, 0);
 		::g->s_textureheight = (fixed_t*)DoomLib::Z_Malloc (::g->s_numtextures*4, PU_STATIC_SHARED, 0);
 		::g->s_texturecomposite = (byte**)DoomLib::Z_Malloc (::g->s_numtextures*sizeof(byte*), PU_STATIC_SHARED, 0);
@@ -568,7 +568,7 @@ void R_InitTextures (void)
 				}
 			}		
 			::g->s_texturecolumnlump[i] = (short*)DoomLib::Z_Malloc (texture->width*2, PU_STATIC_SHARED,0);
-			::g->s_texturecolumnofs[i] = (unsigned short*)DoomLib::Z_Malloc (texture->width*2, PU_STATIC_SHARED,0);
+			::g->s_texturecolumnofs[i] = (unsigned*)DoomLib::Z_Malloc (texture->width*sizeof(unsigned), PU_STATIC_SHARED,0);//GK:Use sizeof(unsigned) for better stability
 
 			j = 1;
 			while (j*2 <= texture->width)
@@ -635,6 +635,7 @@ void R_InitSpriteLumps (void)
     
     ::g->numspritelumps = ::g->lastspritelump - ::g->firstspritelump + 1;
     ::g->spritewidth = (fixed_t*)DoomLib::Z_Malloc (::g->numspritelumps*4, PU_STATIC, 0);
+	::g->spriteheight.resize(::g->numspritelumps);
     ::g->spriteoffset = (fixed_t*)DoomLib::Z_Malloc (::g->numspritelumps*4, PU_STATIC, 0);
     ::g->spritetopoffset = (fixed_t*)DoomLib::Z_Malloc (::g->numspritelumps*4, PU_STATIC, 0);
 	
@@ -643,6 +644,7 @@ void R_InitSpriteLumps (void)
 	if (!(i&63))
 	    I_Printf (".");
 	patch = (patch_t*)W_CacheLumpNum (::g->firstspritelump+i, PU_CACHE_SHARED);
+	::g->spriteheight[i] = SHORT(patch->height);//GK:Get the sprite height
 	::g->spritewidth[i] = SHORT(patch->width)<<FRACBITS;
 	::g->spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;
 	::g->spritetopoffset[i] = SHORT(patch->topoffset)<<FRACBITS;

@@ -422,8 +422,9 @@ R_DrawVisSprite
 	
 	
     patch = (patch_t*)W_CacheLumpNum (vis->patch+::g->firstspritelump, PU_CACHE_SHARED);
-	::g->texnum = -1;  //GK:Make sure tutti fruti fix will not apply on this (eliminate spriteception bug(feature))
+	::g->texnum = vis->patch;  //GK:Get the pointer to the sprite in order to get it's height
     ::g->dc_colormap = vis->colormap;
+	::g->usesprite = true;//GK:SPRITE
     
     if (!::g->dc_colormap)
     {
@@ -454,7 +455,7 @@ R_DrawVisSprite
 			       LONG(patch->columnofs[texturecolumn]));
 	R_DrawMaskedColumn (column);
     }
-
+	
     colfunc = basecolfunc;
 }
 

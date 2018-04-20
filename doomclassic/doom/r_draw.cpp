@@ -89,9 +89,18 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 	int			count; 
 	byte*		dest; 
 	fixed_t		frac;
-	fixed_t		fracstep;	 
-	int theght = (int) ::g->s_textureheight[::g->texnum] >> FRACBITS;
-	int mheight = theght - 1;
+	fixed_t		fracstep;
+	int theght = 1; //GK:Get the height of EVERYTHING
+	int mheight = 0;
+	if (::g->usesprite) {
+		theght = ::g->spriteheight[::g->texnum];
+		mheight = theght - 1;
+	}
+	else {
+		theght = ::g->s_textures[::g->texnum]->height;
+		mheight = ::g->s_textures[::g->texnum]->height - 1;
+	}
+	
 	//GK:Sanity check
 	if (::g->dc_yh >= SCREENHEIGHT) {
 		::g->dc_yh = SCREENHEIGHT - 1;
@@ -161,15 +170,9 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 			do//while ((count -= 2) >= 0)   // texture height is a power of 2 -- killough
 			{
 				const int truncated1 = frac >> FRACBITS;
-				//GK:in case of things and skies DON'T APPLY anything related to tutti fruti fix
-				if (::g->texnum == -1) {
-					const int wrapped1 = truncated1 & 127;
-					*dest = dc_colormap[dc_source[wrapped1]];
-				}
-				else {
-					const int wrapped1 = truncated1 & mheight;
-					*dest = dc_colormap[dc_source[wrapped1]];
-				}
+				//GK:Now that it has the right height use the mheight and no more the 127
+				const int wrapped1 = truncated1 & mheight;
+				*dest = dc_colormap[dc_source[wrapped1]];
 				dest += SCREENWIDTH;
 				frac += fracstep;
 				//*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
