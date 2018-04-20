@@ -557,6 +557,12 @@ void G_DoLoadLevel ()
 			else if (::g->gamemap < 21) {
 				::g->skytexture = R_TextureNumForName("SKY2");
 			}
+
+			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+				if (::g->maps[::g->gamemap-1].sky != NULL) {
+					::g->skytexture = R_TextureNumForName(::g->maps[::g->gamemap-1].sky);
+				}
+			}
 		}
 		else {
 			if (::g->gamemap > 18) {
@@ -593,7 +599,12 @@ void G_DoLoadLevel ()
 			}
 		}
 	}
-
+	if (::g->s_textures[::g->skytexture]->height >= 200) {//GK:Tall skies support
+		::g->skytexturemid = 200 * FRACUNIT;
+	}
+	else {
+		::g->skytexturemid = 100 * FRACUNIT;
+	}
 	::g->levelstarttic = ::g->gametic;        // for time calculation
 
 	if (::g->wipegamestate == GS_LEVEL) {
@@ -1290,6 +1301,12 @@ void G_DoCompleted (void)
 			else if (::g->gamemission == pack_master) {
 				::g->wminfo.next = 20;
 			}
+			else if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+					if (::g->maps[::g->gamemap-1].secretmap) {
+						::g->wminfo.next = ::g->maps[::g->gamemap-1].secretmap-1;
+					}
+				
+			}
 		}
 		else {
 			if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut ) {
@@ -1311,7 +1328,14 @@ void G_DoCompleted (void)
 						break;
 				}
 			
-			} else {
+			}
+			else if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+				if (::g->maps[::g->gamemap - 1].nextmap < ::g->mapmax)
+					::g->wminfo.next = ::g->maps[::g->gamemap - 1].nextmap;
+				else
+					::g->wminfo.next = 0;
+			}
+			else {
 				::g->wminfo.next = ::g->gamemap;
 			}
 		}
@@ -1407,6 +1431,11 @@ void G_WorldDone (void)
 					return;
 				}
 
+			}
+		}
+		if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+			if (::g->gamemap == ::g->endmap || ::g->maps[::g->gamemap-1].cluster != ::g->maps[::g->wminfo.next].cluster || ::g->maps[::g->gamemap - 1].ftext != NULL) {
+				F_StartFinale();
 			}
 		}
 		//if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut || ((::g->gamemission == pack_nerve || ::g->gamemission == pack_master) && ::g->modifiedtext)) {
@@ -1693,6 +1722,10 @@ qboolean G_DoSaveGame (void)
 		sprintf(name,"DOOM\\%s%d.dsg", SAVEGAMENAME,::g->savegameslot );
 	} else {
 		//GK: Add save directories for Evilution and Plutonia expansions
+	if (::g->gamemission == pack_custom && ::g->savedir != NULL) { //GK: Custom expansion related stuff
+		sprintf(name, "%s\\%s%d.dsg", ::g->savedir, SAVEGAMENAME, ::g->savegameslot);
+	}
+	else
 		if (DoomLib::idealExpansion == doom2) {
 			sprintf(name, "DOOM2\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
 		}
@@ -1708,7 +1741,7 @@ qboolean G_DoSaveGame (void)
 		else if (DoomLib::idealExpansion == pack_master) {
 			sprintf(name, "DOOM2_MASTER\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
 		}
-
+		
 	}
 
 	::g->save_p = ::g->savebuffer = ::g->screens[1];

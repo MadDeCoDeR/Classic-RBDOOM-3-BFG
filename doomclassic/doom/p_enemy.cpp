@@ -1590,12 +1590,24 @@ void A_BossDeath (mobj_t* mo, void * )
     mobj_t*	mo2;
     line_t	junk;
     int		i;
+	bool ok = false; //GK:Oversimplyfication for the if case on map 07's logic
 		
     if ( ::g->gamemode == commercial)
     {
+		if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
+			if (!::g->maps[::g->gamemap-1].miniboss) {
+				return;
+			}
+			else {
+				ok = true;
+			}
+		}
+
 		if (::g->gamemission == pack_master)
 			if (::g->gamemap != 14 && ::g->gamemap != 15 && ::g->gamemap != 16)// GK: Fix for Master Levels
 				return;
+			else
+				ok = true;
 
 		if (::g->gamemission != pack_master)
 			if (::g->gamemap != 7) 
@@ -1691,7 +1703,7 @@ void A_BossDeath (mobj_t* mo, void * )
     // victory!
     if ( ::g->gamemode == commercial)
     {
-	if (::g->gamemap == 7 || (::g->gamemission == pack_master && ::g->gamemap == 15) || (::g->gamemission == pack_master && ::g->gamemap == 14) || (::g->gamemission == pack_master && ::g->gamemap == 16)) // GK: Take in account the 14th ,15th and 16th levels on master Levels Expansion since they are using MAP07 special logic
+	if (::g->gamemap == 7 || ok) // GK: Take in account the 14th ,15th and 16th levels on master Levels Expansion since they are using MAP07 special logic
 	{
 	    if (mo->type == MT_FATSO)
 	    {

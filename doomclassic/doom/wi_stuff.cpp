@@ -708,6 +708,15 @@ void WI_drawShowNextLoc(void)
 				}
 			}
 		}
+		if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
+			if (::g->wbs->next != ::g->endmap || ::g->secretexit) {
+				WI_drawEL();
+				return;
+			}
+			else {
+				return;
+			}
+		}
 	}
     // draws which level you are entering..
     if ( (::g->gamemode != commercial)
@@ -1501,8 +1510,14 @@ void WI_Ticker(void)
     if (::g->bcnt == 1)
     {
 	// intermission music
-  	if ( ::g->gamemode == commercial )
-	  S_ChangeMusic(mus_dm2int, true);
+		if (::g->gamemode == commercial) { //GK:Custom expansion related stuff
+			if (::g->gamemission == pack_custom) {
+				S_ChangeMusic(::g->intermusic, true);
+			}
+			else {
+				S_ChangeMusic(mus_dm2int, true);
+			}
+		}
 	else
 	  S_ChangeMusic(mus_inter, true); 
     }
@@ -1567,7 +1582,12 @@ void WI_loadData(void)
 
 	if (::g->gamemode == commercial)
 	{
-		::g->NUMCMAPS = 32;
+		if(::g->gamemission == pack_custom){ //GK:Custom expansion related stuff
+			::g->NUMCMAPS = ::g->mapmax-1; //GK:UNLIMITED MAPS
+		}
+		else {
+			::g->NUMCMAPS = 32;
+		}
 		::g->lnames = (patch_t **) DoomLib::Z_Malloc(sizeof(patch_t*) * ::g->NUMCMAPS, PU_LEVEL_SHARED, 0);
 		for (i=0 ; i < ::g->NUMCMAPS+1 ; i++) //GK: The stupidiest game crashing bug in the world
 		{								

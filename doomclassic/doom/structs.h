@@ -337,6 +337,8 @@ typedef enum
     tc_flash,
     tc_strobe,
     tc_glow,
+	tc_elevator,    //jff 2/22/98 new elevator type thinker                 
+	tc_scroll,      // killough 3/7/98: new scroll effect thinker
     tc_endspecials,
 	tc_fire
 
@@ -523,3 +525,24 @@ typedef struct
     
 } memzone_t;
 // z_zone.structs end // 
+
+typedef struct {//GK:Store information for the custom expansion maps
+	int secretmap = 0;
+	int nextmap = 0;
+	bool miniboss;
+	int fflat;
+	char* ftext;
+	char* sky;
+	char* lumpname;
+	int cluster;
+	int fmusic;
+	int music;
+}map_t;
+
+typedef struct {//GK:Store information for the custom expansion clusters
+	int fflat;
+	char* ftex;
+	int fmusic;
+	char* ftext;
+	int textpr;
+}cluster_t;

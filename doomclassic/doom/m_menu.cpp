@@ -293,6 +293,10 @@ void M_ReadSaveStrings(void)
 		if( common->GetCurrentGame() == DOOM_CLASSIC ) {
 			sprintf(name,"DOOM\\%s%d.dsg",  SAVEGAMENAME,i );
 		} else {
+			if (::g->gamemission == pack_custom && ::g->savedir) { //GK: Custom expansion related stuff
+				sprintf(name, "%s\\%s%d.dsg", ::g->savedir, SAVEGAMENAME, i);
+			}
+			else
 			if( DoomLib::idealExpansion == doom2 ) {
 				sprintf(name,"DOOM2\\%s%d.dsg",  SAVEGAMENAME,i );
 			} else if ( DoomLib::idealExpansion == pack_nerve){
@@ -307,6 +311,7 @@ void M_ReadSaveStrings(void)
 			else if (DoomLib::idealExpansion == pack_master) {
 				sprintf(name, "DOOM2_MASTER\\%s%d.dsg", SAVEGAMENAME, i);
 			}
+			
 			
 		}
 

@@ -95,6 +95,15 @@ qboolean	modifiedgame;
 qboolean	modifiedtext;
 int			modind;
 qboolean	modftext;
+//GK:Custom expansion related variables
+int mapmax; //GK:Maximum number of maps (breaking the 33 maps limit)
+char* savedir; //GK:Custom save directory (unlimited saves)
+int endmap; //GK:final map (after that throw the credits)
+std::vector<map_t> maps; //GK:information fo each map
+int mapind; //GK:Indexed vector indexer (you can't trust a vector with pointers these days)
+std::vector<cluster_t> clusters; //GK:information for each cluster
+int clusterind;//GK:Indexed vector indexer (you can't trust a vector with pointers these days)
+int intermusic; //GK:Intermission music
 // doomstat.vars end // 
 //  d_main.vars begin // 
 qboolean		devparm;	// started game with -devparm
@@ -472,6 +481,8 @@ mobj_t*		bombspot;
 int		bombdamage;
 qboolean		crushchange;
 qboolean		nofit;
+// Temporary holder for thing_sectorlist threads
+msecnode_t* sector_list = NULL;                             // phares 3/16/98
 // p_map.vars end // 
 //  p_maputl.vars begin // 
 fixed_t opentop;
@@ -588,6 +599,7 @@ int		lastspritelump;
 int		numspritelumps;
 int*		flattranslation;
 int*		texturetranslation;
+std::vector<int>	spriteheight;
 fixed_t*	spritewidth;	
 fixed_t*	spriteoffset;
 fixed_t*	spritetopoffset;
@@ -595,6 +607,7 @@ lighttable_t	*colormaps;
 int		flatmemory;
 int		texturememory;
 int		spritememory;
+qboolean usesprite;
 // r_data.vars end // 
 //  r_draw.vars begin // 
 byte*		viewimage; 
@@ -866,7 +879,7 @@ int*			s_texturewidthmask;
 // needed for texture pegging 
 fixed_t*		s_textureheight;
 short**			s_texturecolumnlump;
-unsigned short**	s_texturecolumnofs;
+unsigned**	s_texturecolumnofs;
 byte**			s_texturecomposite;
 int*			s_texturecompositesize;
 int texnum; //GK: Store pointer of current texture in order to take it's height for fixing the tutti-frutti bug

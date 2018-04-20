@@ -185,7 +185,10 @@ void S_Start(void)
 	if (::g->gamemode == commercial) {
 		
 		mnum = mus_runnin + ::g->gamemap - 1;
-		
+		if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
+			if(::g->maps[::g->gamemap-1].music)
+				mnum = ::g->maps[::g->gamemap-1].music;
+		}
 		/*
 		Is this necessary?
 		

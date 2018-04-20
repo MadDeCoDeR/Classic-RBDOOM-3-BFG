@@ -1,0 +1,106 @@
+EXPINFO Documentation
+------------------
+Table of Contents
+------------------
+1. What is EXPINFO?
+2. How to use it?
+3. Can I use MAPINFO?
+4. EXPINFO structure
+5. EXPINFO parameters
+6. Compatibility mode
+
+----------------------
+1. WHAT IS EXPINFO?
+----------------------
+
+EXPINFO is a script extension similar to MAPINFO that allow you to set various map/expansion related modifications.
+Unlike MAPINFO EXPINFO is more abstract and alot easier to write.
+EXPINFO can be used ONLY on DOOM II and it's expansions.
+
+-----------------
+2.HOW TO USE IT?
+-----------------
+
+EXPINFO can be loaded as a lump like MAPINFO. Also you can load an external file with the .dlc extension.
+
+----------------------
+3. CAN I USE MAPINFO?
+----------------------
+
+Yes, but it will run under EXPINFO's compatibility mode. Which means that MAPINFO support 
+(for now) is only available on DOOM II and still NOT ALL the MAPINFO parameters are supported.
+
+---------------------
+4. EXPINFO STRUCTURE
+---------------------
+
+The EXPINFO structure goes like that:
+
+EXP #General info about the expansion
+max_maps = 33
+final_map = 30
+save_dir = MYMOD
+
+MAP 09 #seting MAP09 special parameters
+miniboss = true
+sky_tex = SKY3
+
+----------------------
+5. EXPINFO PARAMETERS
+----------------------
+
+EXP : header for seting expansion general info
+
+max_maps <numeric>: Maximum amount of maps (limit to 99 maps)
+
+final_map <numeric>: The map which the game will end with (after completing it)
+
+save_dir <text>: Set custom save directory (allowing your mod to have it's own savefiles)
+
+MAP xx : header for seting map specific info (the xx indicates the map number)
+
+miniboss : Set if you want the specific map to use MAP07's special miniboss logic
+
+sky_tex <text>: Set map's sky texture (by using it's texture name)
+
+final_flat <numeric>: Set exit level message background
+
+final_text <text>: Set exit level message
+
+final_music <text>: Set exit level message music
+
+secret_map <numeric>: Set the secret map (in case the map has a secret exit)
+
+next_map <numeric>: Set the next map (if you don't want to be the exact next one )
+
+----------------------
+6. COMPATIBILITY MODE
+----------------------
+
+As stated above EXPINFO can also support MAPINFO through compatibility mode.
+
+The supported MAPINFO structure is the following:
+
+map MAP01 "mapname"
+sky1 SKY2
+next MAP02
+secretnext MAP02
+
+And it supports the following parameters:
+
+sky1 , next , secretnext , map07special , par , music , next , secretnext , cluster
+
+Also it support MAPINFO cluster.
+
+Supported structure:
+
+clusterdef 1
+flat RROCK16
+music D_READ_M
+entertext lookup C1TEXT
+
+Supported parameters:
+
+flat , music , entertext , exittext
+
+Also support the parameter intermusic

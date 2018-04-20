@@ -123,6 +123,7 @@ void resetEndings() {
 
 
 const char*	finaletext;
+char* flt;//GK:use this to retrive custom expansion finale flat name
 int flatind = -1;
 /*const*/ char*	finaleflat[] = {
 	{"FLOOR4_8"},
@@ -186,6 +187,11 @@ void F_StartFinale (void)
 	else if (::g->gamemission == pack_master && ((::g->gamemap == 20 && !::g->secretexit) || ::g->gamemap == 21)) {
 		endOfMission = true;
 	}
+	else if (::g->gamemission == pack_custom ) { //GK: Custom expansion related stuff
+		if (::g->gamemap == ::g->endmap) {
+			endOfMission = true;
+		}
+	}
 
 	localCalculateAchievements( endOfMission );
 
@@ -230,7 +236,78 @@ void F_StartFinale (void)
 		// DOOM II and missions packs with E1, M34
 		case commercial:
 		{
-			S_ChangeMusic(mus_read_m, true);
+			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+				if (::g->maps[::g->gamemap - 1].ftext != NULL) {
+					S_ChangeMusic(::g->maps[::g->gamemap - 1].fmusic, true);
+					flt = finaleflat[::g->maps[::g->gamemap - 1].fflat];
+					finaletext = ::g->maps[::g->gamemap - 1].ftext;
+				}
+				else {
+					int c2 = 0;
+					int c1 = ::g->maps[::g->gamemap - 1].cluster - 1;
+					if (::g->wminfo.next < ::g->maps.size()) {
+						c2 = ::g->maps[::g->wminfo.next].cluster - 1;
+					}
+					int c3 = ::g->maps[::g->endmap - 1].cluster - 1;
+					//GK: just something for the lols
+					char* fooltext = "CONGURATUATIONS!!!\n\r\nTHE fish king salutes\nyou while chariots of\nboard games gallop on the\nbeautiful rad \"in\nmulticolor\" sky...\n\r\nIf you expected something\nbetter for reaching the final\nmap of this custom expansion\nyou have bigger\nhalutinations than me...";
+					if (::g->clusters.size() > 0 && c1 >=0) {
+						if (::g->clusters[c1].textpr >= ::g->clusters[c2].textpr) {
+							S_ChangeMusic(::g->clusters[c1].fmusic, true);
+							if (::g->clusters[c1].fflat < 0) {
+								flt = ::g->clusters[c1].ftex;
+							}
+							else {
+								flt = finaleflat[::g->clusters[c1].fflat]; // Not used anywhere else.
+							}
+							if (::g->clusters[c1].ftext != NULL) {
+								finaletext = ::g->clusters[c1].ftext; 
+							}
+							else {
+								finaletext = fooltext; //GK: NO finale text found??
+							}
+						}
+						else {
+							S_ChangeMusic(::g->clusters[c2].fmusic, true);
+							if (::g->clusters[c2].fflat < 0) {
+								flt = ::g->clusters[c2].ftex;
+							}
+							else {
+								flt = finaleflat[::g->clusters[c2].fflat]; // Not used anywhere else.
+							}
+							if (::g->clusters[c2].ftext != NULL) {
+							finaletext = ::g->clusters[c2].ftext;
+							}
+							else {
+								finaletext = fooltext; //GK: NO finale text found??
+							}
+						}
+						if (::g->gamemap == ::g->endmap) {
+							S_ChangeMusic(::g->clusters[c3].fmusic, true);
+							if (::g->clusters[c3].fflat < 0) {
+								flt = ::g->clusters[c3].ftex;
+							}
+							else {
+								flt = finaleflat[::g->clusters[c3].fflat]; // Not used anywhere else.
+							}
+							if (::g->clusters[c3].ftext != NULL) {
+							finaletext = ::g->clusters[c3].ftext; 
+							}
+							else {
+								finaletext = fooltext; //GK: NO finale text found??
+							}
+						
+						}
+					}
+					else {//GK: NO finale??
+						S_ChangeMusic(mus_read_m, true);
+						flt = finaleflat[10]; // Not used anywhere else.
+						finaletext = fooltext;   //GK: NO finale text found??
+					}
+				}
+			}
+			else {
+				S_ChangeMusic(mus_read_m, true);
 
 				switch (::g->gamemap)
 				{
@@ -243,17 +320,17 @@ void F_StartFinale (void)
 					else if (::g->gamemission == pack_plut) {
 						finaletext = p1text;
 					}
-					else if (::g->gamemission == doom2 || ::g->modftext){
+					else if (::g->gamemission == doom2 || ::g->modftext) {
 						finaletext = c1text;
 					}
 					break;
 					//GK: Insert nerve and master levels cases here for simplicity
 				case 8:
-					if (::g->gamemission == pack_nerve && ::g->modind<=0) {
+					if (::g->gamemission == pack_nerve && ::g->modind <= 0) {
 						flatind = 4;
 						finaletext = c7text;
 					}
-					else if (::g->gamemission == pack_nerve && ::g->modind>0) {
+					else if (::g->gamemission == pack_nerve && ::g->modind > 0) {
 						flatind = ::g->modind -1;
 						switch (::g->modind) {
 						case 1:
@@ -270,7 +347,7 @@ void F_StartFinale (void)
 							break;
 						}
 					}
-						break;
+					break;
 				case 11:
 					flatind = 5;
 					if (::g->gamemission == pack_tnt) {
@@ -301,18 +378,18 @@ void F_StartFinale (void)
 					break;
 				case 21:
 					if (::g->gamemission == pack_master) {
-					flatind = 4;
-					finaletext = c9Text;
-					if (::g->gameskill >= 2) { //GK: No reward for "Cry babies"
-						if (com_allowConsole.GetInteger() == 0 && !::g->classiccheats) {
-							doomit.SetInteger(1); // GK: Reward the player for finishing all the Master Levels by enabling the doom-it level selction for master levels
+						flatind = 4;
+						finaletext = c9Text;
+						if (::g->gameskill >= 2) { //GK: No reward for "Cry babies"
+							if (com_allowConsole.GetInteger() == 0 && !::g->classiccheats) {
+								doomit.SetInteger(1); // GK: Reward the player for finishing all the Master Levels by enabling the doom-it level selction for master levels
+							}
 						}
-					}
-					
+
 					}
 					break;
-				  case 30:
-					flatind=7;
+				case 30:
+					flatind = 7;
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t4text;
 					}
@@ -323,8 +400,8 @@ void F_StartFinale (void)
 						finaletext = c4text;
 					}
 					break;
-				  case 15:
-					flatind=8;
+				case 15:
+					flatind = 8;
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t5text;
 					}
@@ -335,8 +412,8 @@ void F_StartFinale (void)
 						finaletext = c5text;
 					}
 					break;
-				  case 31:
-					flatind=9;
+				case 31:
+					flatind = 9;
 					if (::g->gamemission == pack_tnt) {
 						finaletext = t6text;
 					}
@@ -347,11 +424,11 @@ void F_StartFinale (void)
 						finaletext = c6text;
 					}
 					break;
-				  default:
+				default:
 					// Ouch.
 					break;
 				}
-		
+			}
 			break;
 		}
 
@@ -423,7 +500,13 @@ void F_Ticker (void)
 					castStarted = true;
 				}
 
-			} 
+			}
+			else if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+				if (::g->gamemap == ::g->endmap) {
+					F_StartCast();
+					castStarted = true;
+				}
+			}
 
 			if( castStarted == false ) {
 				::g->gameaction = ga_worlddone;
@@ -491,7 +574,12 @@ void F_TextWrite (void)
 	}
 
     // erase the entire screen to a tiled background
-    src = (byte*)W_CacheLumpName ( finaleflat[flatind] , PU_CACHE_SHARED);
+	if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+		src = (byte*)W_CacheLumpName(flt, PU_CACHE_SHARED);
+	}
+	else {
+		src = (byte*)W_CacheLumpName(finaleflat[flatind], PU_CACHE_SHARED);
+	}
     dest = ::g->screens[0];
 	
     for (y=0 ; y<SCREENHEIGHT ; y++)
