@@ -4,6 +4,21 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+20 April 2018 - Classic RBDOOM-3-BFG 1.1.9.5
+_______________________________
+
+[classicdoom]
+
+- Various bug fixes
+
+- Added support for larger sprites and textures
+
+-Add support for generalized linedefs and scrollers (by using BOOM's source code)
+
+- Add support for EXPINFO and MAPINFO (look documentation)
+
+_______________________________________
+
 07 April 2018 - Classic RBDOOM-3-BFG 1.1.9
 _______________________________
 
