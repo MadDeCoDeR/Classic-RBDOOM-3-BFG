@@ -225,7 +225,7 @@ void EV_StartLightStrobing(line_t*	line)
     while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
     {
 	sec = &::g->sectors[secnum];
-	if (sec->specialdata)
+	if (P_SectorActive(lighting_special,sec))
 	    continue;
 	
 	P_SpawnStrobeFlash (sec,SLOWDARK, 0);

@@ -412,12 +412,31 @@ P_SetThingPosition (mobj_t* thing)
 	sec = ss->sector;
 	
 	thing->sprev = NULL;
+	if (!sec)
+		return;
+
 	thing->snext = sec->thinglist;
 
 	if (sec->thinglist)
 	    sec->thinglist->sprev = thing;
 
 	sec->thinglist = thing;
+	// phares 3/16/98
+	//
+	// If sector_list isn't NULL, it has a collection of sector
+	// nodes that were just removed from this Thing.
+
+	// Collect the sectors the object will live in by looking at
+	// the existing sector_list and adding new nodes and deleting
+	// obsolete ones.
+
+	// When a node is deleted, its sector links (the links starting
+	// at sector_t->touching_thinglist) are broken. When a node is
+	// added, new sector links are created.
+
+	P_CreateSecNodeList(thing, thing->x, thing->y);
+	thing->touching_sectorlist = ::g->sector_list; // Attach to Thing's mobj_t
+	::g->sector_list = NULL; // clear for next time
     }
 
     

@@ -75,6 +75,7 @@ void T_MoveCeiling (ceiling_t* ceiling)
 	    switch(ceiling->type)
 	    {
 	      case silentCrushAndRaise:
+		  case genSilentCrusher:
 		break;
 	      default:
 		S_StartSound( &ceiling->sector->soundorg,
@@ -89,12 +90,26 @@ void T_MoveCeiling (ceiling_t* ceiling)
 	    switch(ceiling->type)
 	    {
 	      case raiseToHighest:
+		  case genCeiling:
 		P_RemoveActiveCeiling(ceiling);
 		break;
+
+		// movers with texture change, change the texture then get removed
+		  case genCeilingChgT:
+		  case genCeilingChg0:
+			  ceiling->sector->special = ceiling->newspecial;
+			  //jff 3/14/98 transfer old special field as well
+			  ceiling->sector->oldspecial = ceiling->oldspecial;
+		  case genCeilingChg:
+			  ceiling->sector->ceilingpic = ceiling->texture;
+			  P_RemoveActiveCeiling(ceiling);
+			  break;
 		
 	      case silentCrushAndRaise:
 		S_StartSound( &ceiling->sector->soundorg,
 			     sfx_pstop);
+		  case genSilentCrusher:
+		  case genCrusher:
 	      case fastCrushAndRaise:
 	      case crushAndRaise:
 		ceiling->direction = -1;
@@ -118,7 +133,9 @@ void T_MoveCeiling (ceiling_t* ceiling)
 	{
 	    switch(ceiling->type)
 	    {
-	      case silentCrushAndRaise: break;
+	      case silentCrushAndRaise:
+		  case genSilentCrusher:
+			  break;
 	      default:
 		S_StartSound( &ceiling->sector->soundorg,
 			     sfx_stnmov);
@@ -138,8 +155,29 @@ void T_MoveCeiling (ceiling_t* ceiling)
 		ceiling->direction = 1;
 		break;
 
+		// 02/09/98 jff change slow crushers' speed back to normal
+		// start back up
+		  case genSilentCrusher:
+		  case genCrusher:
+			  if (ceiling->oldspeed<CEILSPEED * 3)
+				  ceiling->speed = ceiling->oldspeed;
+			  ceiling->direction = 1; //jff 2/22/98 make it go back up!
+			  break;
+
+			  // in the case of ceiling mover/changer, change the texture
+			  // then remove the active ceiling
+		  case genCeilingChgT:
+		  case genCeilingChg0:
+			  ceiling->sector->special = ceiling->newspecial;
+			  //jff add to fix bug in special transfers from changes
+			  ceiling->sector->oldspecial = ceiling->oldspecial;
+		  case genCeilingChg:
+			  ceiling->sector->ceilingpic = ceiling->texture;
+			  P_RemoveActiveCeiling(ceiling);
+			  break;
 	      case lowerAndCrush:
 	      case lowerToFloor:
+		  case genCeiling:
 		P_RemoveActiveCeiling(ceiling);
 		break;
 
@@ -153,6 +191,12 @@ void T_MoveCeiling (ceiling_t* ceiling)
 	    {
 		switch(ceiling->type)
 		{
+			//jff 02/08/98 slow down slow crushers on obstacle
+		case genCrusher:
+		case genSilentCrusher:
+			if (ceiling->oldspeed < CEILSPEED * 3)
+				ceiling->speed = CEILSPEED / 8;
+			break;
 		  case silentCrushAndRaise:
 		  case crushAndRaise:
 		  case lowerAndCrush:
@@ -200,14 +244,14 @@ EV_DoCeiling
     while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
     {
 	sec = &::g->sectors[secnum];
-	if (sec->specialdata)
+	if (P_SectorActive(ceiling_special, sec))
 	    continue;
 	
 	// new door thinker
 	rtn = 1;
 	ceiling = (ceiling_t*)DoomLib::Z_Malloc(sizeof(*ceiling), PU_LEVEL, 0);
 	P_AddThinker (&ceiling->thinker);
-	sec->specialdata = ceiling;
+	sec->ceilingdata = ceiling;
 	ceiling->thinker.function.acp1 = (actionf_p1)T_MoveCeiling;
 	ceiling->sector = sec;
 	ceiling->crush = false;
@@ -277,7 +321,7 @@ void P_RemoveActiveCeiling(ceiling_t* c)
     {
 	if (::g->activeceilings[i] == c)
 	{
-	    ::g->activeceilings[i]->sector->specialdata = NULL;
+	    ::g->activeceilings[i]->sector->ceilingdata = NULL;
 	    P_RemoveThinker (&::g->activeceilings[i]->thinker);
 	    ::g->activeceilings[i] = NULL;
 		//::g->cellind = ::g->cellind - 1;
@@ -291,9 +335,10 @@ void P_RemoveActiveCeiling(ceiling_t* c)
 //
 // Restart a ceiling that's in-stasis
 //
-void P_ActivateInStasisCeiling(line_t* line)
+int P_ActivateInStasisCeiling(line_t* line)
 {
     int		i;
+	int j = 0;
 	
     for (i = 0;i < ::g->cellind;i++)
     {
@@ -304,8 +349,10 @@ void P_ActivateInStasisCeiling(line_t* line)
 	    ::g->activeceilings[i]->direction = ::g->activeceilings[i]->olddirection;
 	    ::g->activeceilings[i]->thinker.function.acp1
 	      = (actionf_p1)T_MoveCeiling;
+		j = 1;
 	}
     }
+	return j;
 }
 
 

@@ -126,11 +126,32 @@ typedef	struct
     // list of mobjs in sector
     mobj_t*	thinglist;
 
-    // thinker_t for reversable actions
-    void*	specialdata;
-
+      // thinker_t for reversable actions
+  void *floordata;    // jff 2/22/98 make thinkers on
+  void *ceilingdata;  // floors, ceilings, lighting,
+  void *lightingdata; // independent of one another
+  short oldspecial;      //jff 2/16/98 remembers if sector WAS secret (automap)
     int			linecount;
     struct line_s**	lines;	// [linecount] size
+
+	// jff 2/26/98 lockout machinery for stairbuilding
+	int stairlock;   // -2 on first locked -1 after thinker done 0 normally
+	int prevsec;     // -1 or number of sector for previous step
+	int nextsec;     // -1 or number of next step sector
+
+	// killough 3/7/98: floor and ceiling texture offsets
+	fixed_t   floor_xoffs, floor_yoffs;
+	fixed_t ceiling_xoffs, ceiling_yoffs;
+
+	// killough 3/7/98: support flat heights drawn at another sector's heights
+	int heightsec;    // other sector, or -1 if no other sector
+
+	// killough 4/11/98: support for lightlevels coming from another sector
+	int floorlightsec, ceilinglightsec;
+
+	// list of mobjs that are at least partially in the sector
+    // thinglist is a subset of touching_thinglist
+	struct msecnode_s *touching_thinglist;               // phares 3/14/98 
     
 } sector_t;
 
@@ -211,10 +232,22 @@ typedef struct line_s
     int		validcount;
 
     // thinker_t for reversable actions
-    void*	specialdata;		
+    void*	specialdata;	
+	int tranlump;          // killough 4/11/98: translucency filter, -1 == none
+
+	int firsttag, nexttag;  // killough 4/17/98: improves searches for tags.
 } line_t;
 
-
+typedef struct msecnode_s
+{
+	sector_t          *m_sector; // a sector containing this object
+	struct mobj_t     *m_thing;  // this object
+	struct msecnode_s *m_tprev;  // prev msecnode_t for this thing
+	struct msecnode_s *m_tnext;  // next msecnode_t for this thing
+	struct msecnode_s *m_sprev;  // prev msecnode_t for this sector
+	struct msecnode_s *m_snext;  // next msecnode_t for this sector
+	boolean visited; // killough 4/4/98, 4/7/98: used in search algorithms
+} msecnode_t;
 
 
 //
@@ -465,7 +498,7 @@ typedef struct
   int			lightlevel;
   int			minx;
   int			maxx;
- 
+  fixed_t xoffs, yoffs;         // killough 2/28/98: Support scrolling flats
   // leave pads for [minx-1]/[maxx+1]
   int			nervePad1;
   int			nervePad2;

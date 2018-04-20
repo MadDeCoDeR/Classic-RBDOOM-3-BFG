@@ -49,7 +49,8 @@ If you have questions concerning this license or the applicable additional terms
 //
 // CHANGE THE TEXTURE OF A WALL SWITCH TO ITS OPPOSITE
 //
-const switchlist_t alphSwitchList[] =
+//GK:From now on this will be a temp vanilla list just in case there is no SWITCHES lump loaded
+switchlist_t tSwitchList[] =
 {
     // Doom shareware episode 1 switches
     {"SW1BRCOM",	"SW2BRCOM",	1},
@@ -110,6 +111,11 @@ void P_InitSwitchList(void)
     int		i;
     int		index;
     int		episode;
+	switchlist_t* alphSwitchList;
+	alphSwitchList = (switchlist_t *)W_CacheLumpName("SWITCHES", PU_STATIC); 
+	if (!alphSwitchList) {//GK:Check if SWITCHES lump exist. If not then load the vanilla list
+		alphSwitchList = tSwitchList;
+	}
 	
     episode = 1;
 
@@ -117,8 +123,7 @@ void P_InitSwitchList(void)
 		episode = 2;
     else if ( ::g->gamemode == commercial )
 	    episode = 3;
-		
-    for (index = 0,i = 0;i < MAXSWITCHES;i++)
+    for (index = 0,i = 0;;i++)
     {
 		if (!alphSwitchList[i].episode)
 		{
@@ -296,7 +301,7 @@ P_UseSpecialLine
 	}
     }
 
-    
+	
     // Switches that other things can activate.
     if (!thing->player)
     {
@@ -310,6 +315,10 @@ P_UseSpecialLine
 	  case 32:	// MANUAL BLUE
 	  case 33:	// MANUAL RED
 	  case 34:	// MANUAL YELLOW
+				//jff 3/5/98 add ability to use teleporters for monsters
+	  case 195:       // switch teleporters
+	  case 174:
+	  case 210:       // silent switch teleporters
 	    break;
 	    
 	  default:
@@ -317,6 +326,108 @@ P_UseSpecialLine
 	    break;
 	}
     }
+
+	//jff 02/04/98 add check here for generalized floor/ceil mover
+	{
+		// pointer to line function is NULL by default, set non-null if
+		// line special is push or switch generalized linedef type
+		int(*linefunc)(line_t *line) = NULL;
+
+		// check each range of generalized linedefs
+		if ((unsigned)line->special >= GenFloorBase)
+		{
+			if (!thing->player)
+				if ((line->special & FloorChange) || !(line->special & FloorModel))
+					return false; // FloorModel is "Allow Monsters" if FloorChange is 0
+			if (!line->tag && ((line->special & 6) != 6)) //jff 2/27/98 all non-manual
+				return false;                         // generalized types require tag
+			linefunc = EV_DoGenFloor;
+		}
+		else if ((unsigned)line->special >= GenCeilingBase)
+		{
+			if (!thing->player)
+				if ((line->special & CeilingChange) || !(line->special & CeilingModel))
+					return false;   // CeilingModel is "Allow Monsters" if CeilingChange is 0
+			if (!line->tag && ((line->special & 6) != 6)) //jff 2/27/98 all non-manual
+				return false;                         // generalized types require tag
+			linefunc = EV_DoGenCeiling;
+		}
+		else if ((unsigned)line->special >= GenDoorBase)
+		{
+			if (!thing->player)
+			{
+				if (!(line->special & DoorMonster))
+					return false;   // monsters disallowed from this door
+				if (line->flags & ML_SECRET) // they can't open secret doors either
+					return false;
+			}
+			if (!line->tag && ((line->special & 6) != 6)) //jff 3/2/98 all non-manual
+				return false;                         // generalized types require tag
+			linefunc = EV_DoGenDoor;
+		}
+		else if ((unsigned)line->special >= GenLockedBase)
+		{
+			if (!thing->player)
+				return false;   // monsters disallowed from unlocking doors
+			if (!P_CanUnlockGenDoor(line, thing->player))
+				return false;
+			if (!line->tag && ((line->special & 6) != 6)) //jff 2/27/98 all non-manual
+				return false;                         // generalized types require tag
+
+			linefunc = EV_DoGenLockedDoor;
+		}
+		else if ((unsigned)line->special >= GenLiftBase)
+		{
+			if (!thing->player)
+				if (!(line->special & LiftMonster))
+					return false; // monsters disallowed
+			if (!line->tag && ((line->special & 6) != 6)) //jff 2/27/98 all non-manual
+				return false;                         // generalized types require tag
+			linefunc = EV_DoGenLift;
+		}
+		else if ((unsigned)line->special >= GenStairsBase)
+		{
+			if (!thing->player)
+				if (!(line->special & StairMonster))
+					return false; // monsters disallowed
+			if (!line->tag && ((line->special & 6) != 6)) //jff 2/27/98 all non-manual
+				return false;                         // generalized types require tag
+			linefunc = EV_DoGenStairs;
+		}
+		else if ((unsigned)line->special >= GenCrusherBase)
+		{
+			if (!thing->player)
+				if (!(line->special & CrusherMonster))
+					return false; // monsters disallowed
+			if (!line->tag && ((line->special & 6) != 6)) //jff 2/27/98 all non-manual
+				return false;                         // generalized types require tag
+			linefunc = EV_DoGenCrusher;
+		}
+
+		if (linefunc)
+			switch ((line->special & TriggerType) >> TriggerTypeShift)
+			{
+			case PushOnce:
+				if (!side)
+					if (linefunc(line))
+						line->special = 0;
+				return true;
+			case PushMany:
+				if (!side)
+					linefunc(line);
+				return true;
+			case SwitchOnce:
+				if (linefunc(line))
+					P_ChangeSwitchTexture(line, 0);
+				return true;
+			case SwitchMany:
+				if (linefunc(line))
+					P_ChangeSwitchTexture(line, 1);
+				return true;
+			default:  // if not a switch/push type, do nothing here
+				return false;
+			}
+	}
 
     
     // do something  
@@ -514,6 +625,435 @@ P_UseSpecialLine
 	if (EV_DoFloor(line,raiseFloor512))
 	    P_ChangeSwitchTexture(line,0);
 	break;
+
+	// killough 1/31/98: factored out compatibility check;
+	// added inner switch, relaxed check to demo_compatibility
+
+	  default:
+			  switch (line->special)
+			  {
+				  //jff 1/29/98 added linedef types to fill all functions out so that
+				  // all possess SR, S1, WR, W1 types
+
+			  case 158:
+				  // Raise Floor to shortest lower texture
+				  // 158 S1  EV_DoFloor(raiseToTexture), CSW(0)
+				  if (EV_DoFloor(line, raiseToTexture))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 159:
+				  // Raise Floor to shortest lower texture
+				  // 159 S1  EV_DoFloor(lowerAndChange)
+				  if (EV_DoFloor(line, lowerAndChange))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 160:
+				  // Raise Floor 24 and change
+				  // 160 S1  EV_DoFloor(raiseFloor24AndChange)
+				  if (EV_DoFloor(line, raiseFloor24AndChange))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 161:
+				  // Raise Floor 24
+				  // 161 S1  EV_DoFloor(raiseFloor24)
+				  if (EV_DoFloor(line, raiseFloor24))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 162:
+				  // Moving floor min n to max n
+				  // 162 S1  EV_DoPlat(perpetualRaise,0)
+				  if (EV_DoPlat(line, perpetualRaise, 0))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 163:
+				  // Stop Moving floor
+				  // 163 S1  EV_DoPlat(perpetualRaise,0)
+				  EV_StopPlat(line);
+				  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 164:
+				  // Start fast crusher
+				  // 164 S1  EV_DoCeiling(fastCrushAndRaise)
+				  if (EV_DoCeiling(line, fastCrushAndRaise))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 165:
+				  // Start slow silent crusher
+				  // 165 S1  EV_DoCeiling(silentCrushAndRaise)
+				  if (EV_DoCeiling(line, silentCrushAndRaise))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 166:
+				  // Raise ceiling, Lower floor
+				  // 166 S1 EV_DoCeiling(raiseToHighest), EV_DoFloor(lowerFloortoLowest)
+				  if (EV_DoCeiling(line, raiseToHighest) ||
+					  EV_DoFloor(line, lowerFloorToLowest))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 167:
+				  // Lower floor and Crush
+				  // 167 S1 EV_DoCeiling(lowerAndCrush)
+				  if (EV_DoCeiling(line, lowerAndCrush))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 168:
+				  // Stop crusher
+				  // 168 S1 EV_CeilingCrushStop()
+				  if (EV_CeilingCrushStop(line))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 169:
+				  // Lights to brightest neighbor sector
+				  // 169 S1  EV_LightTurnOn(0)
+				  EV_LightTurnOn(line, 0);
+				  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 170:
+				  // Lights to near dark
+				  // 170 S1  EV_LightTurnOn(35)
+				  EV_LightTurnOn(line, 35);
+				  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 171:
+				  // Lights on full
+				  // 171 S1  EV_LightTurnOn(255)
+				  EV_LightTurnOn(line, 255);
+				  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 172:
+				  // Start Lights Strobing
+				  // 172 S1  EV_StartLightStrobing()
+				  EV_StartLightStrobing(line);
+				  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 173:
+				  // Lights to Dimmest Near
+				  // 173 S1  EV_TurnTagLightsOff()
+				  EV_TurnTagLightsOff(line);
+				  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 174:
+				  // Teleport
+				  // 174 S1  EV_Teleport(side,thing)
+				  if (EV_Teleport(line, side, thing))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 175:
+				  // Close Door, Open in 30 secs
+				  // 175 S1  EV_DoDoor(close30ThenOpen)
+				  if (EV_DoDoor(line, close30ThenOpen))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 189: //jff 3/15/98 create texture change no motion type
+						// Texture Change Only (Trigger)
+						// 189 S1 Change Texture/Type Only
+				  if (EV_DoChange(line, trigChangeOnly))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 203:
+				  // Lower ceiling to lowest surrounding ceiling
+				  // 203 S1 EV_DoCeiling(lowerToLowest)
+				  if (EV_DoCeiling(line, lowerToLowest))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 204:
+				  // Lower ceiling to highest surrounding floor
+				  // 204 S1 EV_DoCeiling(lowerToMaxFloor)
+				  if (EV_DoCeiling(line, lowerToMaxFloor))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 209:
+				  // killough 1/31/98: silent teleporter
+				  //jff 209 S1 SilentTeleport 
+				  if (EV_SilentTeleport(line, side, thing))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 241: //jff 3/15/98 create texture change no motion type
+						// Texture Change Only (Numeric)
+						// 241 S1 Change Texture/Type Only
+				  if (EV_DoChange(line, numChangeOnly))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 221:
+				  // Lower floor to next lowest floor
+				  // 221 S1 Lower Floor To Nearest Floor
+				  if (EV_DoFloor(line, lowerFloorToNearest))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 229:
+				  // Raise elevator next floor
+				  // 229 S1 Raise Elevator next floor
+				  if (EV_DoElevator(line, elevateUp))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 233:
+				  // Lower elevator next floor
+				  // 233 S1 Lower Elevator next floor
+				  if (EV_DoElevator(line, elevateDown))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+			  case 237:
+				  // Elevator to current floor
+				  // 237 S1 Elevator to current floor
+				  if (EV_DoElevator(line, elevateCurrent))
+					  P_ChangeSwitchTexture(line, 0);
+				  break;
+
+
+				  // jff 1/29/98 end of added S1 linedef types
+
+				  //jff 1/29/98 added linedef types to fill all functions out so that
+				  // all possess SR, S1, WR, W1 types
+
+			  case 78: //jff 3/15/98 create texture change no motion type
+					   // Texture Change Only (Numeric)
+					   // 78 SR Change Texture/Type Only
+				  if (EV_DoChange(line, numChangeOnly))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 176:
+				  // Raise Floor to shortest lower texture
+				  // 176 SR  EV_DoFloor(raiseToTexture), CSW(1)
+				  if (EV_DoFloor(line, raiseToTexture))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 177:
+				  // Raise Floor to shortest lower texture
+				  // 177 SR  EV_DoFloor(lowerAndChange)
+				  if (EV_DoFloor(line, lowerAndChange))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 178:
+				  // Raise Floor 512
+				  // 178 SR  EV_DoFloor(raiseFloor512)
+				  if (EV_DoFloor(line, raiseFloor512))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 179:
+				  // Raise Floor 24 and change
+				  // 179 SR  EV_DoFloor(raiseFloor24AndChange)
+				  if (EV_DoFloor(line, raiseFloor24AndChange))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 180:
+				  // Raise Floor 24
+				  // 180 SR  EV_DoFloor(raiseFloor24)
+				  if (EV_DoFloor(line, raiseFloor24))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 181:
+				  // Moving floor min n to max n
+				  // 181 SR  EV_DoPlat(perpetualRaise,0)
+
+				  EV_DoPlat(line, perpetualRaise, 0);
+				  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 182:
+				  // Stop Moving floor
+				  // 182 SR  EV_DoPlat(perpetualRaise,0)
+				  EV_StopPlat(line);
+				  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 183:
+				  // Start fast crusher
+				  // 183 SR  EV_DoCeiling(fastCrushAndRaise)
+				  if (EV_DoCeiling(line, fastCrushAndRaise))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 184:
+				  // Start slow crusher
+				  // 184 SR  EV_DoCeiling(crushAndRaise)
+				  if (EV_DoCeiling(line, crushAndRaise))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 185:
+				  // Start slow silent crusher
+				  // 185 SR  EV_DoCeiling(silentCrushAndRaise)
+				  if (EV_DoCeiling(line, silentCrushAndRaise))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 186:
+				  // Raise ceiling, Lower floor
+				  // 186 SR EV_DoCeiling(raiseToHighest), EV_DoFloor(lowerFloortoLowest)
+				  if (EV_DoCeiling(line, raiseToHighest) ||
+					  EV_DoFloor(line, lowerFloorToLowest))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 187:
+				  // Lower floor and Crush
+				  // 187 SR EV_DoCeiling(lowerAndCrush)
+				  if (EV_DoCeiling(line, lowerAndCrush))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 188:
+				  // Stop crusher
+				  // 188 SR EV_CeilingCrushStop()
+				  if (EV_CeilingCrushStop(line))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 190: //jff 3/15/98 create texture change no motion type
+						// Texture Change Only (Trigger)
+						// 190 SR Change Texture/Type Only
+				  if (EV_DoChange(line, trigChangeOnly))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 191:
+				  // Lower Pillar, Raise Donut
+				  // 191 SR  EV_DoDonut()
+				  if (EV_DoDonut(line))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 192:
+				  // Lights to brightest neighbor sector
+				  // 192 SR  EV_LightTurnOn(0)
+				  EV_LightTurnOn(line, 0);
+				  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 193:
+				  // Start Lights Strobing
+				  // 193 SR  EV_StartLightStrobing()
+				  EV_StartLightStrobing(line);
+				  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 194:
+				  // Lights to Dimmest Near
+				  // 194 SR  EV_TurnTagLightsOff()
+				  EV_TurnTagLightsOff(line);
+				  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 195:
+				  // Teleport
+				  // 195 SR  EV_Teleport(side,thing)
+				  if (EV_Teleport(line, side, thing))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 196:
+				  // Close Door, Open in 30 secs
+				  // 196 SR  EV_DoDoor(close30ThenOpen)
+				  if (EV_DoDoor(line, close30ThenOpen))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 205:
+				  // Lower ceiling to lowest surrounding ceiling
+				  // 205 SR EV_DoCeiling(lowerToLowest)
+				  if (EV_DoCeiling(line, lowerToLowest))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 206:
+				  // Lower ceiling to highest surrounding floor
+				  // 206 SR EV_DoCeiling(lowerToMaxFloor)
+				  if (EV_DoCeiling(line, lowerToMaxFloor))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 210:
+				  // killough 1/31/98: silent teleporter
+				  //jff 210 SR SilentTeleport 
+				  if (EV_SilentTeleport(line, side, thing))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 211: //jff 3/14/98 create instant toggle floor type
+						// Toggle Floor Between C and F Instantly
+						// 211 SR Toggle Floor Instant
+				  if (EV_DoPlat(line, toggleUpDn, 0))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 222:
+				  // Lower floor to next lowest floor
+				  // 222 SR Lower Floor To Nearest Floor
+				  if (EV_DoFloor(line, lowerFloorToNearest))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 230:
+				  // Raise elevator next floor
+				  // 230 SR Raise Elevator next floor
+				  if (EV_DoElevator(line, elevateUp))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 234:
+				  // Lower elevator next floor
+				  // 234 SR Lower Elevator next floor
+				  if (EV_DoElevator(line, elevateDown))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 238:
+				  // Elevator to current floor
+				  // 238 SR Elevator to current floor
+				  if (EV_DoElevator(line, elevateCurrent))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 258:
+				  // Build stairs, step 8
+				  // 258 SR EV_BuildStairs(build8)
+				  if (EV_BuildStairs(line, build8))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+			  case 259:
+				  // Build stairs, step 16
+				  // 259 SR EV_BuildStairs(turbo16)
+				  if (EV_BuildStairs(line, turbo16))
+					  P_ChangeSwitchTexture(line, 1);
+				  break;
+
+				  // 1/29/98 jff end of added SR linedef types
+
+			  }
+		  break;
 	
 	// BUTTONS
       case 42:

@@ -503,6 +503,7 @@ P_SpawnMobj
 	mobj->height = info->height;
 	mobj->flags = info->flags;
 	mobj->health = info->spawnhealth;
+	mobj->touching_sectorlist = NULL; // NULL head of sector list // phares 3/13/98
 
 	if (::g->gameskill != sk_nightmare)
 		mobj->reactiontime = info->reactiontime;
@@ -519,17 +520,18 @@ P_SpawnMobj
 
 	// set subsector and/or block links
 	P_SetThingPosition (mobj);
+	if (mobj->subsector->sector) {
+		mobj->floorz = mobj->subsector->sector->floorheight;
+		mobj->ceilingz = mobj->subsector->sector->ceilingheight;
 
-	mobj->floorz = mobj->subsector->sector->floorheight;
-	mobj->ceilingz = mobj->subsector->sector->ceilingheight;
+		if (z == ONFLOORZ)
+			mobj->z = mobj->floorz;
+		else if (z == ONCEILINGZ)
+			mobj->z = mobj->ceilingz - mobj->info->height;
+		else
+			mobj->z = z;
 
-	if (z == ONFLOORZ)
-		mobj->z = mobj->floorz;
-	else if (z == ONCEILINGZ)
-		mobj->z = mobj->ceilingz - mobj->info->height;
-	else 
-		mobj->z = z;
-
+	}
 	mobj->thinker.function.acp1 = (actionf_p1)P_MobjThinker;
 
 	P_AddThinker (&mobj->thinker);

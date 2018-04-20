@@ -213,7 +213,7 @@ void R_ClearPlanes (void)
 //
 // R_FindPlane
 //
-visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel ) {
+visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel,fixed_t xoffs,fixed_t yoffs ) {
     visplane_t*	check;
 	
     if (picnum == ::g->skyflatnum) {
@@ -222,7 +222,7 @@ visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel ) {
 	}
 		for (int i = 0; i < ::g->planeind; i++) {
 			check = ::g->visplanes[i];
-			if (height == check->height && picnum == check->picnum && lightlevel == check->lightlevel) {
+			if (height == check->height && picnum == check->picnum && lightlevel == check->lightlevel && xoffs == check->xoffs && check->yoffs) {
 				break;
 			}
 		}
@@ -245,6 +245,8 @@ visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel ) {
     check->lightlevel = lightlevel;
     check->minx = SCREENWIDTH;
     check->maxx = -1;
+	check->xoffs = xoffs;
+	check->yoffs = yoffs;
 
     memset(check->top,0xff,sizeof(check->top));
 
@@ -427,6 +429,10 @@ void R_DrawPlanes (void)
 	    //  by INVUL inverse mapping.
 	    ::g->dc_colormap = ::g->colormaps;
 	    ::g->dc_texturemid = ::g->skytexturemid;
+		int ttmid = 100 * FRACUNIT;
+		if (::g->skytexturemid > ttmid) { //GK:Tall skies support
+			::g->dc_iscale = ::g->dc_iscale *2.0f;
+		}
 	    for (x= ::g->visplanes[i]->minx ; x <= ::g->visplanes[i]->maxx ; x++)
 	    {
 		::g->dc_yl = ::g->visplanes[i]->top[x];
@@ -438,7 +444,8 @@ void R_DrawPlanes (void)
 		    angle = (GetViewAngle() + ::g->xtoviewangle[x])>>ANGLETOSKYSHIFT;
 		    ::g->dc_x = x;
 		    ::g->dc_source = R_GetColumn(::g->skytexture, angle);
-			::g->texnum = -1; //GK:Make sure tutti fruti fix will not apply on this (eliminate spriteception bug(feature))
+			::g->texnum = ::g->skytexture; //GK:Get sky texture's height for use in R_DrawColumn
+			::g->usesprite = false;
 		    colfunc ( ::g->dc_colormap, ::g->dc_source );
 		}
 	    }

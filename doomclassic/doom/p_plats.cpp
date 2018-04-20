@@ -94,11 +94,9 @@ void T_PlatRaise(plat_t* plat)
 		{
 		  case blazeDWUS:
 		  case downWaitUpStay:
-		    P_RemoveActivePlat(plat);
-		    break;
-		    
 		  case raiseAndChange:
 		  case raiseToNearestAndChange:
+		  case genLift:
 		    P_RemoveActivePlat(plat);
 		    break;
 		    
@@ -169,7 +167,7 @@ EV_DoPlat
     {
 	sec = &::g->sectors[secnum];
 
-	if (sec->specialdata)
+	if (P_SectorActive(floor_special,sec))
 	    continue;
 	
 	// Find lowest & highest floors around sector
@@ -179,7 +177,7 @@ EV_DoPlat
 		
 	plat->type = type;
 	plat->sector = sec;
-	plat->sector->specialdata = plat;
+	plat->sector->floordata = plat;
 	plat->thinker.function.acp1 = (actionf_p1) T_PlatRaise;
 	plat->crush = false;
 	plat->tag = line->tag;
@@ -309,7 +307,7 @@ void P_RemoveActivePlat(plat_t* plat)
     for (i = 0;i < ::g->platind;i++)
 	if (plat == ::g->activeplats[i])
 	{
-		(::g->activeplats[i])->sector->specialdata = NULL;
+		(::g->activeplats[i])->sector->floordata = NULL;
 		P_RemoveThinker(&(::g->activeplats[i])->thinker);
 		::g->activeplats[i] = NULL;
 		//::g->platind = ::g->platind - 1;

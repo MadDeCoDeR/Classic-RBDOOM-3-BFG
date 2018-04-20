@@ -224,6 +224,8 @@ qboolean P_ChangeSector (sector_t* sector, qboolean crunch);
 
 extern mobj_t*	linetarget;	// who got hit (or NULL)
 
+void    P_CreateSecNodeList(mobj_t*, fixed_t, fixed_t);       // phares 3/14/98
+
 fixed_t
 P_AimLineAttack
 ( mobj_t*	t1,

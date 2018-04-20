@@ -113,6 +113,16 @@ char* PD_YELLOWO = "You need a yellow key to activate this object";
 char* PD_BLUEK = "You need a blue key to open this door";
 char* PD_REDK = "You need a red key to open this door";
 char* PD_YELLOWK = "You need a yellow key to open this door";
+//GK:Add these text from BOOM for generalized switches
+char* PD_BLUEC = "You need a blue card to open this door";
+char* PD_REDC = "You need a red card to open this door";
+char* PD_YELLOWC = "You need a yellow card to open this door";
+char* PD_BLUES = "You need a blue skull to open this door";
+char* PD_REDS = "You need a red skull to open this door";
+char* PD_YELLOWS = "You need a yellow skull to open this door";
+char* PD_ANY = "You need any key to open this door";
+char* PD_ALL3 = "You need all 3 keys to open this door";
+char* PD_ALL6 = "You need all 6 keys to open this door";
 
 void resetTexts() {
 	GOTARMOR = "Picked up the armor.";

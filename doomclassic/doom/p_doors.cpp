@@ -68,22 +68,30 @@ void T_VerticalDoor (vldoor_t* door)
 	    switch(door->type)
 	    {
 	      case blazeRaise:
+		  case genBlazeRaise:
 		door->direction = -1; // time to go back down
 		S_StartSound( &door->sector->soundorg,
 			     sfx_bdcls);
 		break;
 		
 	      case normal:
+		  case genRaise:
 		door->direction = -1; // time to go back down
 		S_StartSound( &door->sector->soundorg,
 			     sfx_dorcls);
 		break;
 		
 	      case close30ThenOpen:
+		  case genCdO:
 		door->direction = 1;
 		S_StartSound( &door->sector->soundorg,
 			     sfx_doropn);
 		break;
+
+		  case genBlazeCdO:
+			  door->direction = 1;  // time to go back up
+			  S_StartSound((mobj_t *)&door->sector->soundorg, sfx_bdopn);
+			  break;
 		
 	      default:
 		break;
@@ -122,7 +130,9 @@ void T_VerticalDoor (vldoor_t* door)
 	    {
 	      case blazeRaise:
 	      case blazeClose:
-		door->sector->specialdata = NULL;
+		  case genBlazeRaise:
+		  case genBlazeClose:
+		door->sector->ceilingdata = NULL;
 		P_RemoveThinker (&door->thinker);  // unlink and free
 		S_StartSound( &door->sector->soundorg,
 			     sfx_bdcls);
@@ -130,7 +140,9 @@ void T_VerticalDoor (vldoor_t* door)
 		
 	      case normal:
 	      case closed:
-		door->sector->specialdata = NULL;
+		  case genRaise:
+		  case genClose:
+		door->sector->ceilingdata = NULL;
 		P_RemoveThinker (&door->thinker);  // unlink and free
 		break;
 		
@@ -138,15 +150,43 @@ void T_VerticalDoor (vldoor_t* door)
 		door->direction = 0;
 		door->topcountdown = TICRATE*30;
 		break;
+
+		  case genCdO:
+		  case genBlazeCdO:
+			  door->direction = 0;
+			  door->topcountdown = door->topwait; // jff 5/8/98 insert delay
+			  break;
 		
 	      default:
 		break;
 	    }
+		//GK:It's just for the lights plus it causes various crashes
+		/*if ( door->line && door->line->tag)
+		{
+			if (door->line->special > GenLockedBase &&
+				(door->line->special & 6) == 6)       //jff 3/9/98 all manual doors
+				EV_TurnTagLightsOff(door->line);
+			else
+				switch (door->line->special)
+				{
+				case 1: case 31:
+				case 26:
+				case 27: case 28:
+				case 32: case 33:
+				case 34: case 117:
+				case 118:
+					EV_TurnTagLightsOff(door->line);
+				default:
+					break;
+				}
+		}*/
 	}
 	else if (res == crushed)
 	{
 	    switch(door->type)
 	    {
+		case genClose:
+		case genBlazeClose:
 	      case blazeClose:
 	      case closed:		// DO NOT GO BACK UP!
 		break;
@@ -165,7 +205,9 @@ void T_VerticalDoor (vldoor_t* door)
 	res = T_MovePlane(door->sector,
 			  door->speed,
 			  door->topheight,
-			  false,1,door->direction);
+			  false,
+			  1,
+			  door->direction);
 	
 	if (res == pastdest)
 	{
@@ -173,6 +215,8 @@ void T_VerticalDoor (vldoor_t* door)
 	    {
 	      case blazeRaise:
 	      case normal:
+		  case genRaise:
+		  case genBlazeRaise:
 		door->direction = 0; // wait at top
 		door->topcountdown = door->topwait;
 		break;
@@ -180,13 +224,39 @@ void T_VerticalDoor (vldoor_t* door)
 	      case close30ThenOpen:
 	      case blazeOpen:
 	      case opened:
-		door->sector->specialdata = NULL;
+		  case genBlazeOpen:
+		  case genOpen:
+		  case genCdO:
+		  case genBlazeCdO:
+		door->sector->ceilingdata = NULL;
 		P_RemoveThinker (&door->thinker);  // unlink and free
 		break;
 		
 	      default:
 		break;
 	    }
+		//GK:It's just for the lights plus it causes various crashes
+		/*
+		//jff 1/31/98 turn lighting on in tagged sectors of manual doors
+		if ( door->line && door->line->tag)
+		{
+			if (door->line->special > GenLockedBase &&
+				(door->line->special & 6) == 6)     //jff 3/9/98 all manual doors
+				EV_LightTurnOn(door->line, 0);
+			else
+				switch (door->line->special)
+				{
+				case 1: case 31:
+				case 26:
+				case 27: case 28:
+				case 32: case 33:
+				case 34: case 117:
+				case 118:
+					EV_LightTurnOn(door->line, 0);
+				default:
+					break;
+				}
+		}*/
 	}
 	break;
     }
@@ -273,7 +343,7 @@ EV_DoDoor
     while ((secnum = P_FindSectorFromLineTag(line,secnum)) >= 0)
     {
 	sec = &::g->sectors[secnum];
-	if (sec->specialdata)
+	if (P_SectorActive(ceiling_special, sec))
 	    continue;
 		
 	
@@ -281,7 +351,7 @@ EV_DoDoor
 	rtn = 1;
 	door = (vldoor_t*)DoomLib::Z_Malloc(sizeof(*door), PU_LEVEL, 0);
 	P_AddThinker (&door->thinker);
-	sec->specialdata = door;
+	sec->ceilingdata = door;
 
 	door->thinker.function.acp1 = (actionf_p1) T_VerticalDoor;
 	door->sector = sec;
@@ -414,9 +484,9 @@ EV_VerticalDoor
     sec = ::g->sides[ line->sidenum[side^1]] .sector;
     secnum = sec-::g->sectors;
 
-    if (sec->specialdata)
+    if (P_SectorActive(ceiling_special, sec))
     {
-	door = (vldoor_t*)sec->specialdata;
+	door = (vldoor_t*)sec->ceilingdata;
 	switch(line->special)
 	{
 	  case	1: // ONLY FOR "RAISE" DOORS, NOT "OPEN"s
@@ -461,12 +531,13 @@ EV_VerticalDoor
     // new door thinker
     door = (vldoor_t*)DoomLib::Z_Malloc(sizeof(*door), PU_LEVEL, 0);
     P_AddThinker (&door->thinker);
-    sec->specialdata = door;
+    sec->ceilingdata = door;
     door->thinker.function.acp1 = (actionf_p1) T_VerticalDoor;
     door->sector = sec;
     door->direction = 1;
     door->speed = VDOORSPEED;
     door->topwait = VDOORWAIT;
+	door->line = line; // jff 1/31/98 remember line that triggered us
 
     switch(line->special)
     {
@@ -522,7 +593,7 @@ void P_SpawnDoorCloseIn30 (sector_t* sec)
 
     P_AddThinker (&door->thinker);
 
-    sec->specialdata = door;
+    sec->ceilingdata = door;
     sec->special = 0;
 
     door->thinker.function.acp1 = (actionf_p1)T_VerticalDoor;
@@ -547,7 +618,7 @@ P_SpawnDoorRaiseIn5Mins
     
     P_AddThinker (&door->thinker);
 
-    sec->specialdata = door;
+    sec->ceilingdata = door;
     sec->special = 0;
 
     door->thinker.function.acp1 = (actionf_p1)T_VerticalDoor;

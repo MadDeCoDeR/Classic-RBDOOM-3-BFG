@@ -150,10 +150,19 @@ extern char* M2[2];
 extern char* PD_BLUEO;
 extern char* PD_REDO;
 extern char* PD_YELLOWO;
+extern char* PD_BLUEC;
+extern char* PD_REDC;
+extern char* PD_YELLOWC;
+extern char* PD_BLUES;
+extern char* PD_REDS;
+extern char* PD_YELLOWS;
 extern char* PD_BLUEK;
 extern char* PD_REDK;
 extern char* PD_YELLOWK;
 
+extern char* PD_ANY;
+extern char* PD_ALL3;
+extern char* PD_ALL6;
 //
 //	G_game.C
 //

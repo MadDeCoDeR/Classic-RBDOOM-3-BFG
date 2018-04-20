@@ -497,7 +497,9 @@ void R_Subsector (int num)
     {
 		::g->floorplane = R_FindPlane (::g->frontsector->floorheight,
 					::g->frontsector->floorpic,
-					::g->frontsector->lightlevel);
+					::g->frontsector->lightlevel,
+			::g->frontsector->floor_xoffs,
+			::g->frontsector->floor_yoffs); //GK:just some generalized linedef stuff
     }
     else
 		::g->floorplane = NULL;
@@ -507,12 +509,12 @@ void R_Subsector (int num)
     {
 		 ::g->ceilingplane = R_FindPlane (::g->frontsector->ceilingheight,
 						::g->frontsector->ceilingpic,
-						::g->frontsector->lightlevel);
+						::g->frontsector->lightlevel, ::g->frontsector->ceiling_xoffs, ::g->frontsector->ceiling_yoffs);
     }
     else
 		::g->ceilingplane = NULL;
 		
-    R_AddSprites (::g->frontsector);	
+    R_AddSprites (sub->sector);	
 
     while (count--)
     {

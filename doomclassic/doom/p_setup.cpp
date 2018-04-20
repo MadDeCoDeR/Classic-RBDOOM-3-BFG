@@ -240,6 +240,7 @@ void P_LoadSectors (int lump)
 		ss->special = SHORT(ms->special);
 		ss->tag = SHORT(ms->tag);
 		ss->thinglist = NULL;
+		ss->touching_thinglist = NULL;            // phares 3/14/98
 	}
 
 	Z_Free(data);
@@ -550,6 +551,8 @@ void P_GroupLines (void)
 	ss = ::g->subsectors;
 	for (i=0 ; i < ::g->numsubsectors ; i++, ss++)
 	{
+		if(ss->firstline<0)
+			break;
 		seg = &::g->segs[ss->firstline];
 		ss->sector = seg->sidedef->sector;
 	}
@@ -670,6 +673,10 @@ P_SetupLevel
 			sprintf (lumpname,"map0%i", map);
 		else
 			sprintf (lumpname,"map%i", map);
+
+		if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
+			sprintf(lumpname, "%s", ::g->maps[map-1].lumpname);
+		}
 	}
 	else
 	{

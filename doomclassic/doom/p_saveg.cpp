@@ -192,7 +192,10 @@ void P_UnArchiveWorld (void)
 	sec->lightlevel = *get++;
 	sec->special = *get++;		// needed?
 	sec->tag = *get++;		// needed?
-	sec->specialdata = 0;
+	//GK: and thats why the old save files will no longer work
+	sec->ceilingdata = 0; //jff 2/22/98 now three thinker fields, not two
+	sec->floordata = 0;
+	sec->lightingdata = 0;
 	sec->soundtarget = 0;
     }
     
@@ -694,7 +697,7 @@ void P_UnArchiveThinkers (void)
 			memcpy (ceiling, ::g->save_p, sizeof(*ceiling));
 			::g->save_p += sizeof(*ceiling);
 			ceiling->sector = &::g->sectors[(intptr_t)ceiling->sector];
-			ceiling->sector->specialdata = ceiling;
+			ceiling->sector->ceilingdata = ceiling;
 
 			if (ceiling->thinker.function.acp1)
 				ceiling->thinker.function.acp1 = (actionf_p1)T_MoveCeiling;
@@ -709,7 +712,7 @@ void P_UnArchiveThinkers (void)
 			memcpy (door, ::g->save_p, sizeof(*door));
 			::g->save_p += sizeof(*door);
 			door->sector = &::g->sectors[(intptr_t)door->sector];
-			door->sector->specialdata = door;
+			door->sector->ceilingdata = door;
 			door->thinker.function.acp1 = (actionf_p1)T_VerticalDoor;
 			P_AddThinker (&door->thinker);
 			break;
@@ -720,7 +723,7 @@ void P_UnArchiveThinkers (void)
 			memcpy (floor, ::g->save_p, sizeof(*floor));
 			::g->save_p += sizeof(*floor);
 			floor->sector = &::g->sectors[(intptr_t)floor->sector];
-			floor->sector->specialdata = floor;
+			floor->sector->floordata = floor;
 			floor->thinker.function.acp1 = (actionf_p1)T_MoveFloor;
 			P_AddThinker (&floor->thinker);
 			break;
@@ -731,7 +734,7 @@ void P_UnArchiveThinkers (void)
 			memcpy (plat, ::g->save_p, sizeof(*plat));
 			::g->save_p += sizeof(*plat);
 			plat->sector = &::g->sectors[(intptr_t)plat->sector];
-			plat->sector->specialdata = plat;
+			plat->sector->floordata = plat;
 
 			if (plat->thinker.function.acp1)
 				plat->thinker.function.acp1 = (actionf_p1)T_PlatRaise;
@@ -814,6 +817,8 @@ void P_ArchiveSpecials (void)
     lightflash_t*	flash;
     strobe_t*		strobe;
     glow_t*		glow;
+	elevator_t* elevator;
+	scroll_t* scroll;
     int			i;
 	
     // save off the current thinkers
@@ -913,6 +918,28 @@ void P_ArchiveSpecials (void)
 	    glow->sector = (sector_t *)(glow->sector - ::g->sectors);
 	    continue;
 	}
+	//GK:BOOM's elevator and scroller related stuff
+	if (th->function.acp1 == (actionf_p1)T_MoveElevator)
+	{
+		*::g->save_p++ = tc_elevator;
+		PADSAVEP();
+		elevator = (elevator_t *)::g->save_p;
+		memcpy(elevator, th, sizeof(*elevator));
+		::g->save_p += sizeof(*elevator);
+		elevator->sector = (sector_t *)(elevator->sector - ::g->sectors);
+		continue;
+	}
+
+	if (th->function.acp1 == (actionf_p1)T_Scroll)
+	{
+		*::g->save_p++ = tc_scroll;
+		PADSAVEP();
+		scroll = (scroll_t *)::g->save_p;
+		memcpy(scroll, th, sizeof(*scroll));
+		::g->save_p += sizeof(*scroll);
+		continue;
+	}
+
     }
 	
     // add a terminating marker
@@ -934,6 +961,8 @@ void P_UnArchiveSpecials (void)
     lightflash_t*	flash;
     strobe_t*		strobe;
     glow_t*		glow;
+	elevator_t* elevator;
+	scroll_t* scroll;
 
     // read in saved thinkers
     while (1)
@@ -950,7 +979,7 @@ void P_UnArchiveSpecials (void)
 	    memcpy (ceiling, ::g->save_p, sizeof(*ceiling));
 	    ::g->save_p += sizeof(*ceiling);
 	    ceiling->sector = &::g->sectors[(intptr_t)ceiling->sector];
-	    ceiling->sector->specialdata = ceiling;
+	    ceiling->sector->ceilingdata = ceiling;
 
 	    if (ceiling->thinker.function.acp1)
 		ceiling->thinker.function.acp1 = (actionf_p1)T_MoveCeiling;
@@ -965,7 +994,7 @@ void P_UnArchiveSpecials (void)
 	    memcpy (door, ::g->save_p, sizeof(*door));
 	    ::g->save_p += sizeof(*door);
 	    door->sector = &::g->sectors[(intptr_t)door->sector];
-	    door->sector->specialdata = door;
+	    door->sector->ceilingdata = door;
 	    door->thinker.function.acp1 = (actionf_p1)T_VerticalDoor;
 	    P_AddThinker (&door->thinker);
 	    break;
@@ -976,7 +1005,7 @@ void P_UnArchiveSpecials (void)
 	    memcpy (floor, ::g->save_p, sizeof(*floor));
 	    ::g->save_p += sizeof(*floor);
 	    floor->sector = &::g->sectors[(intptr_t)floor->sector];
-	    floor->sector->specialdata = floor;
+	    floor->sector->floordata = floor;
 	    floor->thinker.function.acp1 = (actionf_p1)T_MoveFloor;
 	    P_AddThinker (&floor->thinker);
 	    break;
@@ -987,7 +1016,7 @@ void P_UnArchiveSpecials (void)
 	    memcpy (plat, ::g->save_p, sizeof(*plat));
 	    ::g->save_p += sizeof(*plat);
 	    plat->sector = &::g->sectors[(intptr_t)plat->sector];
-	    plat->sector->specialdata = plat;
+	    plat->sector->floordata = plat;
 
 	    if (plat->thinker.function.acp1)
 		plat->thinker.function.acp1 = (actionf_p1)T_PlatRaise;
@@ -1025,6 +1054,25 @@ void P_UnArchiveSpecials (void)
 	    glow->thinker.function.acp1 = (actionf_p1)T_Glow;
 	    P_AddThinker (&glow->thinker);
 	    break;
+		//GK:BOOM's elevator and scroller related stuff
+	  case tc_elevator:
+		  PADSAVEP();
+		  elevator = (elevator_t*)DoomLib::Z_Malloc(sizeof(*elevator), PU_LEVEL, NULL);
+		  memcpy(elevator, ::g->save_p, sizeof(*elevator));
+		  ::g->save_p += sizeof(*elevator);
+		  elevator->sector = &::g->sectors[(intptr_t)elevator->sector];
+		  elevator->thinker.function.acp1 = (actionf_p1)T_MoveElevator;
+		  P_AddThinker(&elevator->thinker);
+		  break;
+
+	  case tc_scroll:
+		  PADSAVEP();
+		  scroll = (scroll_t*)DoomLib::Z_Malloc(sizeof(*scroll), PU_LEVEL, NULL);
+		  memcpy(scroll, ::g->save_p, sizeof(*scroll));
+		  ::g->save_p += sizeof(*scroll);
+		  scroll->thinker.function.acp1 = (actionf_p1)T_Scroll;
+		  P_AddThinker(&scroll->thinker);
+		  break;
 				
 	  default:
 	    I_Error ("P_UnarchiveSpecials:Unknown tclass %i "
