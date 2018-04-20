@@ -164,6 +164,7 @@ namespace DoomLib
 	bool							hexp[3];
 	int								selection = -1;
 	char*							otherfiles[5][20];
+	char*							generalfiles[20]; //GK:Keep track of global mods for save file checks
 
 	idMatchParameters				matchParms;
 

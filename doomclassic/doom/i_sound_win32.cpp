@@ -514,8 +514,8 @@ void I_UpdateSound() {
 		}
 
 		sound->m_pSourceVoice->GetState( &state );
-
-		if ( state.BuffersQueued > 0 ) {
+		//GK:Sanity Check ???
+		if ( state.BuffersQueued > 0  && ::g->players[sound->player].mo) {
 			mobj_t *playerObj = ::g->players[ sound->player ].mo;
 
 			// Update Listener Orientation and Position

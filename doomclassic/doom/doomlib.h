@@ -147,6 +147,7 @@ namespace DoomLib
 	extern int					selection;
 
 	extern char*				otherfiles[5][20];
+	extern char*				generalfiles[20]; //GK:Keep track of global mods for save file checks
 
 	extern idMatchParameters	matchParms;
 

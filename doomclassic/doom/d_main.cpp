@@ -703,6 +703,7 @@ void D_DoomMain(void)
 	p = M_CheckParm ("-file");
 	if (p)
 	{
+		qboolean isgen = false;
 		//GK: Check if it is having double -file parameter for both and for specific games
 		int q = -1;
 		if (::g->gamemode == retail) {
@@ -713,48 +714,47 @@ void D_DoomMain(void)
 		}
 		int np = 0;
 		if (q > p) {
+			isgen = true;
 			np = M_CheckParm("-file",true);
 		}
 		memset(DoomLib::otherfiles, 0, sizeof(DoomLib::otherfiles));
+		memset(DoomLib::generalfiles, 0, sizeof(DoomLib::generalfiles));
 		int count[5] = {0,0,0,0,0};
+		int c = 0;
 		// the parms after p are ::g->wadfile/lump names,
 		// until end of parms or another - preceded parm
 		::g->modifiedgame = true;            // homebrew levels
 		char* arg = "0";
 		while (++p != ::g->myargc && ::g->myargv[p][0] != '-') {
 			if (::g->gamemode == commercial) {
-				if (!idStr::Icmp("ex", ::g->myargv[p])) {
-					p++;
-					arg = ::g->myargv[p];
-					if (atoi(arg) <= 0 || atoi(arg) > 5) {
-						arg = "1";
-					}
-					if (atoi(arg) == ::g->gamemission) {
-						p++;
-						D_AddFile(::g->myargv[p]);
-					}
-					else {
-						p++;
-						char* fname = strtok(strdup(::g->myargv[p]), "\\");
-						while (fname) {
-							char* tname = strtok(NULL, "\\");
-							if (tname) {
-								fname = tname;
-							}
-							else {
-								break;
-							}
+				if (isgen) { //GK:Usually the first "-file" parameter MAY include global mods not the second
+					D_AddFile(::g->myargv[p]);
+					c++;
+					char* fname = strtok(strdup(::g->myargv[p]), "\\");
+					while (fname) {
+						char* tname = strtok(NULL, "\\");
+						if (tname) {
+							fname = tname;
 						}
-						DoomLib::otherfiles[atoi(arg)-1][count[atoi(arg)-1]] = fname;
-						count[atoi(arg)-1]++;
+						else {
+							break;
+						}
 					}
+					DoomLib::generalfiles[c-1] = fname;
 				}
 				else {
-					if (atoi(arg) != 0) {
-						if (atoi(arg) == ::g->gamemission) {
+					if (!idStr::Icmp("ex", ::g->myargv[p])) {
+						p++;
+						arg = ::g->myargv[p];
+						if (atoi(arg) <= 0 || atoi(arg) > 5) {
+							arg = "1";
+						}
+						if (atoi(arg) == DoomLib::expansionSelected) { //GK:No longer using ::g->gamemission here since the custom expansion addition might cause issues
+							p++;
 							D_AddFile(::g->myargv[p]);
 						}
 						else {
+							p++;
 							char* fname = strtok(strdup(::g->myargv[p]), "\\");
 							while (fname) {
 								char* tname = strtok(NULL, "\\");
@@ -765,12 +765,33 @@ void D_DoomMain(void)
 									break;
 								}
 							}
-							DoomLib::otherfiles[atoi(arg)-1][count[atoi(arg)-1]] = fname;
-							count[atoi(arg)-1]++;
+							DoomLib::otherfiles[atoi(arg) - 1][count[atoi(arg) - 1]] = fname;
+							count[atoi(arg) - 1]++;
 						}
 					}
 					else {
-						D_AddFile(::g->myargv[p]);
+						if (atoi(arg) != 0) {
+							if (atoi(arg) == DoomLib::expansionSelected) {//GK:No longer using ::g->gamemission here since the custom expansion addition might cause issues
+								D_AddFile(::g->myargv[p]);
+							}
+							else {
+								char* fname = strtok(strdup(::g->myargv[p]), "\\");
+								while (fname) {
+									char* tname = strtok(NULL, "\\");
+									if (tname) {
+										fname = tname;
+									}
+									else {
+										break;
+									}
+								}
+								DoomLib::otherfiles[atoi(arg) - 1][count[atoi(arg) - 1]] = fname;
+								count[atoi(arg) - 1]++;
+							}
+						}
+						else {
+							D_AddFile(::g->myargv[p]);
+						}
 					}
 				}
 			}
@@ -793,7 +814,7 @@ void D_DoomMain(void)
 						arg = ::g->myargv[np];
 						if (atoi(arg) <= 0 || atoi(arg) > 5)
 							arg = "1";
-						if (atoi(arg) == ::g->gamemission) {
+						if (atoi(arg) == DoomLib::expansionSelected) {//GK:No longer using ::g->gamemission here since the custom expansion addition might cause issues
 							np++;
 							D_AddFile(::g->myargv[np]);
 						}
@@ -815,7 +836,7 @@ void D_DoomMain(void)
 					}
 					else {
 						if (atoi(arg) != 0) {
-							if (atoi(arg) == ::g->gamemission) {
+							if (atoi(arg) == DoomLib::expansionSelected) {//GK:No longer using ::g->gamemission here since the custom expansion addition might cause issues
 								D_AddFile(::g->myargv[np]);
 							}
 							else {

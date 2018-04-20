@@ -54,6 +54,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "idlib/precompiled.h"
 
 #include "d_deh.h"
+#include "d_exp.h"
 
 #include "libs\zlib\minizip\unzip.h"
 #include "f_finale.h"
@@ -71,6 +72,7 @@ void**		lumpcache;
 std::vector<std::string> fname;
 std::vector<std::string> foldername;
 bool OpenCompFile(const char* filename);
+void W_RemoveLump(int lump);
 
 
 
@@ -341,7 +343,7 @@ void W_AddFile ( const char *filename)
 					tlump = &lumpinfo[op];
 					for (int j = op; j < ep; j++, tlump++) {
 						if (!sprite) {
-							if (!idStr::Cmpn(filelumpPointer->name, tlump->name, 8)) {
+							if (!idStr::Icmpn(filelumpPointer->name, tlump->name, 8)) {
 								//idLib::Printf("Replacing lump %s\n", filelumpPointer->name); //for debug purposes
 								tlump->handle = handle;
 								tlump->position = LONG(filelumpPointer->filepos);
@@ -362,6 +364,10 @@ void W_AddFile ( const char *filename)
 										if (!idStr::Icmpn(filelumpPointer->name + 6, tlump->name + 6, 2)) {
 											ok = true;
 										}
+										else {//GK:Silly me forget some if case senarios
+											strcpy(tlump->name, filelumpPointer->name);
+											ok = true;
+										}
 									}
 									else {
 										if (strlen(tlump->name) > 6) {
@@ -371,24 +377,32 @@ void W_AddFile ( const char *filename)
 									}
 								}
 								else {
-									if (strlen(filelumpPointer->name) > 6 && strlen(tlump->name) > 6) {
-										if (!idStr::Icmpn(filelumpPointer->name + 4, tlump->name + 6, 2)) {
-											if (!idStr::Icmpn(filelumpPointer->name + 6, tlump->name + 4, 2)) {
-												ok = true;
-												strcpy(tlump->name, filelumpPointer->name);
+										if (strlen(filelumpPointer->name) > 6 && strlen(tlump->name) > 6) {
+											if (!idStr::Icmpn(filelumpPointer->name + 4, tlump->name + 6, 2)) {
+												if (!idStr::Icmpn(filelumpPointer->name + 6, tlump->name + 4, 2)) {
+													ok = true;
+													strcpy(tlump->name, filelumpPointer->name);
+												}
 											}
 										}
-									}
-									else if (strlen(filelumpPointer->name) <= 6 && strlen(tlump->name) <= 6){
-										int rot = atoi(filelumpPointer->name + 5);
-										if (rot < 1) {
-											char tn[8];
-											strcpy(tn, filelumpPointer->name);
-											tn[5] = '1';
-											if (!idStr::Icmpn(tn + 4, tlump->name + 4, 2)) {
-												ok = true;
+										else if (strlen(filelumpPointer->name) <= 6 && strlen(tlump->name) <= 6) {//GK:Silly me forget some if case senarios
+											int rot = atoi(filelumpPointer->name + 5);
+											if (rot < 1) {
+												char tn[8];
+													strcpy(tn, tlump->name);
+													tn[5] = '0';
+													if (!idStr::Icmpn(tn + 4, filelumpPointer->name + 4, 2)) {//GK:Silly me forget some if case senarios
+														ok = true;
+														strcpy(tlump->name, filelumpPointer->name);
+														lumpinfo_t* ttlump = &lumpinfo[j + 1];
+														while (!idStr::Icmpn(ttlump->name, filelumpPointer->name, 5)) {
+															W_RemoveLump(j);
+															ttlump = &lumpinfo[j + 1];
+															//tpos++;
+														}
+													}
+												
 											}
-										}
 											else {
 												char tn[8];
 												strcpy(tn, filelumpPointer->name);
@@ -398,8 +412,25 @@ void W_AddFile ( const char *filename)
 													ok = true;
 												}
 											}
+										}
+									else {//GK:Silly me forget some if case senarios
+										char tn[9];
+										strcpy(tn, tlump->name);
+										tn[5] = '0';
+										tn[8] = '\0';
+										if (!idStr::Icmpn(tn + 4, filelumpPointer->name + 4, 2)) {
+											strcpy(tlump->name, filelumpPointer->name);
+											ok = true;
+											lumpinfo_t* ttlump = &lumpinfo[j+1];
+											while (!idStr::Icmpn(ttlump->name, filelumpPointer->name, 5)) {
+												W_RemoveLump(j);
+												ttlump = &lumpinfo[j + 1];
+												//tpos++;
+											}
+										}
 									}
 								}
+							}
 								if (ok) {
 									//idLib::Printf("Replacing lump %s\n", filelumpPointer->name); //for debug purposes
 									tlump->handle = handle;
@@ -411,7 +442,6 @@ void W_AddFile ( const char *filename)
 									}
 									break;
 								}
-							}
 						}
 					}
 					if (!replaced) {
@@ -460,6 +490,11 @@ void W_AddFile ( const char *filename)
 						//idLib::Printf("Adding DeHackeD file %s\n",filelumpPointer->name);
 						loaddeh(i);
 						
+					}
+					//GK: if you find either MAPINFO lump of EXPINFO lump change to custom expansion and set it's data (from these two lumps)
+					if (!idStr::Cmpn(filelumpPointer->name, "EXPINFO", 7) || !idStr::Cmpn(filelumpPointer->name, "MAPINFO", 7) || (!idStr::Icmp(filename + strlen(filename) - 3, "dlc"))) {
+						::g->gamemission = pack_custom;
+						EX_add(i);
 					}
 			}
 			
@@ -701,7 +736,7 @@ int W_GetNumForName ( const char* name)
 
     i = W_CheckNumForName ( name);
     //GK begin
-	if (i == -1 && idStr::Icmp("TITLEPIC", name) && idStr::Icmp("HELP2", name) && idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name) && idStr::Icmp("MAP33",name) && idStr::Icmp("CWILV32", name)) //TITLEPIC might not exist
+	if (i == -1 && idStr::Icmp("TITLEPIC", name) && idStr::Icmp("HELP2", name) && idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name) && idStr::Icmp("MAP33",name) && idStr::Icmp("CWILV32", name) && idStr::Icmp("SWITCHES", name)) //TITLEPIC might not exist
       I_Error ("W_GetNumForName: %s not found!", name);
 	//GK End
       
@@ -798,6 +833,10 @@ W_CacheLumpName
 	int point = W_GetNumForName(name);
 	if (!idStr::Icmp("TITLEPIC", name) && point == -1) { //Handle no TITLEPIC lump from DOOM2.WAD
 		point = W_GetNumForName("INTERPIC");
+	}
+
+	if (!idStr::Icmp("SWITCHES", name) && point == -1) { //Handle no SWITCHES lump
+		return NULL;
 	}
 	//GK end
     return W_CacheLumpNum (point, tag);
@@ -1239,7 +1278,7 @@ bool W_CheckMods(int sc, std::vector<std::string> filelist) {
 				movetonext = false;
 
 				char* fname = strtok(strdup(wadfiles[f]), "\\");
-				if (DoomLib::idealExpansion == ::g->gamemission) {
+				if (DoomLib::idealExpansion == DoomLib::expansionSelected) { //GK:No longer using ::g->gamemission here since the custom expansion addition might cause issues
 					if (idStr::Icmpn(fname, "wads", 4)) {
 						while (fname) {
 							char* tname = strtok(NULL, "\\");
@@ -1268,6 +1307,18 @@ bool W_CheckMods(int sc, std::vector<std::string> filelist) {
 				}
 				else {
 					int o = 0;
+					int n = 0;
+					while (DoomLib::generalfiles[n] != NULL) { //GK:Check for global mods
+						if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::generalfiles[n])) {
+							ac++;
+							movetonext = true;
+							if (ac == sc)
+								ok = true;
+
+							break;
+						}
+						n++;
+					}
 					while (DoomLib::otherfiles[DoomLib::idealExpansion - 1][o] != NULL) {
 						if (!idStr::Icmp(filelist[mf].c_str(), DoomLib::otherfiles[DoomLib::idealExpansion - 1][o])) {
 							ac++;
@@ -1292,4 +1343,32 @@ bool W_CheckMods(int sc, std::vector<std::string> filelist) {
 		ok = true;
 	}
 	return ok;
+}
+
+//GK:delete unwanted content in between the markers
+void W_RemoveLump(int lump) {
+	lumpinfo_t* temlump ,*tl;
+	int epos;
+
+	
+	temlump = &lumpinfo[lump + 1];
+	epos = 0;
+	for (int k = lump + 1; k < numlumps; k++, temlump++) {
+		if (temlump->null) {
+			epos = k;
+			break;
+		}
+	}
+	if (epos > 0) {
+		temlump = &lumpinfo[lump + 1];
+		tl = &lumpinfo[lump + 2];
+		//GK:Actually make left shift of the lumpinfo array
+		for (int k = lump + 1; k <= epos; k++, temlump++, tl++) {
+			temlump->handle = tl->handle;
+			temlump->position = tl->position;
+			temlump->size = tl->size;
+			strncpy(temlump->name, tl->name, 8);
+			temlump->null = tl->null;
+		}
+	}
 }
