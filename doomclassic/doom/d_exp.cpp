@@ -194,9 +194,6 @@ void parseexptext(char* text) {
 							else {
 								setMAPINT(val1, varname, val3);
 							}
-							if (!idStr::Icmp(varname, "map07special")) {
-								setMAPINT(val1, varname, val3);
-							}
 					break;
 				case 3:
 					varval = t;
@@ -262,14 +259,16 @@ void setEXP(char* name, int value) {
 		if (!::g->mapind || ::g->mapind <= ::g->maps.size()) {
 			::g->maps.resize(::g->mapmax);
 			::g->mapind = ::g->mapmax;
+		}
 			for (int i = 0; i < ::g->mapmax; i++) {
+				char* tname = new char[6];
 				if (i + 1 < 10)
-					sprintf(::g->maps[i].lumpname, "MAP0%i", i + 1);
+					sprintf(tname, "MAP0%i", i + 1);
 				else
-					sprintf(::g->maps[i].lumpname, "MAP%i", i + 1);
+					sprintf(tname, "MAP%i", i + 1);
+				::g->maps[i].lumpname = tname;
 				::g->maps[i].nextmap = i + 1;
 			}
-		}
 		return;
 	}
 	if (!idStr::Icmp(name, "final_map")) {
@@ -285,14 +284,12 @@ void setSAVEDIR( char* value) {
 void setMAPINT(int pos,char* name, int value) {
 	if (!idStr::Icmp(name, "secret_map")) {
 		::g->maps[pos].secretmap = value;
-		::g->maps[value].nextmap = pos+1;
+		::g->maps[value-1].nextmap = pos+1;
 	}
 	if (!idStr::Icmp(name, "next_map")) {
-		::g->maps[pos].nextmap = value;
+		::g->maps[pos].nextmap = value-1;
 	}
-	if (!idStr::Icmp(name, "miniboss") || !idStr::Icmp(name, "map07special")) {
-		::g->maps[pos].miniboss = true;
-	}
+	
 	if (!idStr::Icmp(name, "cluster")) {
 		::g->maps[pos].cluster = value;
 	}
@@ -302,6 +299,9 @@ void setMAPINT(int pos,char* name, int value) {
 }
 
 void setMAPSTR(int pos, char* name, char* value) {
+	if (!idStr::Icmp(name, "miniboss") || !idStr::Icmp(name, "map07special")) {
+		::g->maps[pos].miniboss = true;
+	}
 	if(!idStr::Icmp(name,"final_flat")){
 		for (int i = 0; i < 12; i++) {
 			if (!idStr::Icmp(finaleflat[i], value)) {
@@ -422,10 +422,12 @@ void initMAPS(std::vector<std::string> lines) {
 					if(strlen(t)>2)
 						::g->maps[map - 1].lumpname = t;
 					else {
+						char* tname = new char[6];
 						if(map<10)
-						sprintf(::g->maps[map - 1].lumpname,"MAP0%i",map);
+						sprintf(tname,"MAP0%i\0",map);
 						else
-							sprintf(::g->maps[map - 1].lumpname, "MAP%i", map);
+							sprintf(tname, "MAP%i\0", map);
+						::g->maps[map - 1].lumpname = tname;
 					}
 					::g->maps[map - 1].nextmap = map;
 				}
@@ -469,7 +471,7 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 		}
 		if (option != NULL) {
 			if (!idStr::Icmp(option, "lookup")) {
-				for (int i = 0; i < 12; i++) {
+				for (int i = 0; i < 24; i++) {
 					if (!idStr::Icmp(strval[i].name, value)) {
 						::g->clusters[pos].ftext = *strval[i].var;
 						return;

@@ -1438,7 +1438,8 @@ void G_WorldDone (void)
 				F_StartFinale();
 			}
 		}
-		//if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut || ((::g->gamemission == pack_nerve || ::g->gamemission == pack_master) && ::g->modifiedtext)) {
+		else {
+			//if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut || ((::g->gamemission == pack_nerve || ::g->gamemission == pack_master) && ::g->modifiedtext)) {
 			switch (::g->gamemap)
 			{
 			case 15:
@@ -1451,13 +1452,13 @@ void G_WorldDone (void)
 				if ((::g->gamemission == pack_nerve || ::g->gamemission == pack_master) && !::g->modftext)
 					break;
 			case 11:
-				if ( ::g->gamemission == pack_master && !::g->modftext)
+				if (::g->gamemission == pack_master && !::g->modftext)
 					break;
 			case 20:
 				if (::g->gamemission == pack_master && ::g->secretexit)
 					break;
 			case 30:
-				F_StartFinale ();
+				F_StartFinale();
 				break;
 			case 8:
 				if (::g->gamemission == pack_nerve)
@@ -1468,6 +1469,7 @@ void G_WorldDone (void)
 					F_StartFinale();
 				break;
 			}
+		}
 	}
 } 
 
