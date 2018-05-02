@@ -158,15 +158,15 @@ void P_LoadSegs (int lump)
 		li = ::g->segs;
 		for (i=0 ; i < ::g->numsegs ; i++, li++, ml++)
 		{
-			li->v1 = &::g->vertexes[SHORT(ml->v1)];
-			li->v2 = &::g->vertexes[SHORT(ml->v2)];
+			li->v1 = &::g->vertexes[SHORT(ml->v1) & 0xffff];
+			li->v2 = &::g->vertexes[SHORT(ml->v2) & 0xffff];
 
 			li->angle = (SHORT(ml->angle))<<16;
 			li->offset = (SHORT(ml->offset))<<16;
-			psetup_linedef = SHORT(ml->linedef);
+			psetup_linedef = SHORT(ml->linedef) & 0xffff;
 			ldef = &::g->lines[psetup_linedef];
 			li->linedef = ldef;
-			side = SHORT(ml->side);
+			side = SHORT(ml->side) & 0xffff;
 			li->sidedef = &::g->sides[ldef->sidenum[side]];
 			li->frontsector = ::g->sides[ldef->sidenum[side]].sector;
 			if (ldef-> flags & ML_TWOSIDED)
@@ -202,8 +202,8 @@ void P_LoadSubsectors (int lump)
 
 		for (i=0 ; i < ::g->numsubsectors ; i++, ss++, ms++)
 		{
-			ss->numlines = SHORT(ms->numsegs);
-			ss->firstline = SHORT(ms->firstseg);
+			ss->numlines = (int)ms->numsegs & 0xffff;
+			ss->firstline = (int)ms->firstseg & 0xffff;
 		}
 
 		Z_Free(data);
@@ -391,8 +391,8 @@ void P_LoadLineDefs (int lump)
 			ld->flags = SHORT(mld->flags);
 			ld->special = SHORT(mld->special);
 			ld->tag = SHORT(mld->tag);
-			v1 = ld->v1 = &::g->vertexes[SHORT(mld->v1)];
-			v2 = ld->v2 = &::g->vertexes[SHORT(mld->v2)];
+			v1 = ld->v1 = &::g->vertexes[SHORT(mld->v1) & 0xffff];
+			v2 = ld->v2 = &::g->vertexes[SHORT(mld->v2) & 0xffff];
 			ld->dx = v2->x - v1->x;
 			ld->dy = v2->y - v1->y;
 
@@ -430,13 +430,12 @@ void P_LoadLineDefs (int lump)
 				ld->bbox[BOXTOP] = v1->y;
 			}
 
-			ld->sidenum[0] = SHORT(mld->sidenum[0]);
-			ld->sidenum[1] = SHORT(mld->sidenum[1]);
-
-			if (ld->sidenum[0] != -1)
+			ld->sidenum[0] = (int)mld->sidenum[0] == -1 ? -1l : (int)mld->sidenum[0] & 0xffff;
+			ld->sidenum[1] = (int)mld->sidenum[1] == -1 ? -1l : (int)mld->sidenum[1] & 0xffff;
+		//	if (ld->sidenum[0] != -1)
 				ld->frontsector = ::g->sides[ld->sidenum[0]].sector;
-			else
-				ld->frontsector = 0;
+		//	else
+		//		ld->frontsector = 0;
 
 			if (ld->sidenum[1] != -1)
 				ld->backsector = ::g->sides[ld->sidenum[1]].sector;
@@ -474,7 +473,7 @@ void P_LoadSideDefs (int lump)
 			sd->toptexture = R_TextureNumForName(msd->toptexture);
 			sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
 			sd->midtexture = R_TextureNumForName(msd->midtexture);
-			sd->sector = &::g->sectors[SHORT(msd->sector)];
+			sd->sector = &::g->sectors[SHORT(msd->sector) & 0xffff];
 		}
 
 		Z_Free(data);

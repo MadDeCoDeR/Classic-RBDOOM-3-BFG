@@ -214,7 +214,7 @@ typedef struct line_s
 
     // Visual appearance: SideDefs.
     //  sidenum[1] will be -1 if one sided
-    short	sidenum[2];			
+    long	sidenum[2];			
 
     // Neat. Another bounding box, for the extent
     //  of the LineDef.
@@ -260,8 +260,8 @@ typedef struct msecnode_s
 typedef struct subsector_s
 {
     sector_t*	sector;
-    short	numlines;
-    short	firstline;
+    long	numlines;
+    long	firstline;
     
 } subsector_t;
 
