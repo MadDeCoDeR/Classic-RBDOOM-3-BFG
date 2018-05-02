@@ -1441,7 +1441,10 @@ void G_WorldDone (void)
 					}
 				}
 				else {
-					F_StartFinale();
+					if (::g->maps[::g->gamemap - 1].ftext != NULL && (::g->secretexit && !::g->maps[::g->gamemap - 1].fsecret)) {}
+					else {
+						F_StartFinale();
+					}
 				}
 			}
 		}
