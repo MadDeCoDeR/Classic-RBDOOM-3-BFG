@@ -76,7 +76,7 @@ void *I_ZoneBase( int *size )
 {
 	enum
 	{
-		HEAP_SIZE = 250 * 1024 * 1024			// SMF - was 10 * 1024 * 1024
+		HEAP_SIZE = 64 * 1024 * 1024			// SMF - was 10 * 1024 * 1024
 	};
 	*size = HEAP_SIZE;
 	return malloc( HEAP_SIZE );
@@ -181,7 +181,7 @@ void Z_Free (void* ptr)
 
 void*
 Z_Malloc
-( int		size,
+( uint		size,
   int		tag,
   void*		user )
 {

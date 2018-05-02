@@ -168,7 +168,7 @@ namespace DoomLib
 
 	idMatchParameters				matchParms;
 
-	void * (*Z_Malloc)( int size, int tag, void* user ) = NULL;
+	void * (*Z_Malloc)( uint size, int tag, void* user ) = NULL;
 	void 	(*Z_FreeTag)(int lowtag );
 
 	idArray< idSysMutex, 4 >		playerScreenMutexes;
