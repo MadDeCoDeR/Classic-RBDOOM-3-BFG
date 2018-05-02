@@ -97,8 +97,8 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 		mheight = theght - 1;
 	}
 	else {
-		theght = ::g->s_textures[::g->texnum]->height;
-		mheight = ::g->s_textures[::g->texnum]->height - 1;
+		theght = ::g->s_textureheight[::g->texnum]>>FRACBITS;
+		mheight = theght - 1;
 	}
 	
 	//GK:Sanity check

@@ -69,7 +69,7 @@ typedef struct
     char	name[9];
     idFile *	handle;
     int		position;
-    int		size;
+    long		size;
 	//GK: Know when an item is null (malloc does not let nulls even if the entry has nothing)
 	bool null;
 } lumpinfo_t;

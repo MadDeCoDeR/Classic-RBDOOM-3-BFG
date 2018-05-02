@@ -287,21 +287,24 @@ void W_AddFile ( const char *filename)
 					end[5] = '\0';
 				}
 				else {
-					strncpy(marker, filelumpPointer->name,8);
+					/*strncpy(marker, filelumpPointer->name,8); //GK:Ignore F1,P1 like markers
 					marker[8] = '\0';
 					strncpy(end, filelumpPointer->name, 2);
 					end[2] = '\0';
-					strcat(end, "_END");
+					strcat(end, "_END");*/
+					continue;
 				}
 				op = W_CheckNumForName(marker);
 				if (op >= 0) {
 					ep = W_CheckNumForName(end);
 					if (!idStr::Icmp(marker, "S_START")) {
 						sprite = true;
+						
 					}
-					rep = true;
-					reppos = op;
-					continue;
+						rep = true;
+						reppos = op;
+						continue;
+					
 				}
 				else { //GK: New list?
 					rep = false;
@@ -320,16 +323,20 @@ void W_AddFile ( const char *filename)
 					if (!idStr::Icmp(marker, "S_START")) {
 						sprite = true;
 					}
-					rep = true;
-					continue;
+						rep = true;
+						reppos = op;
+						continue;
+					
 				}
 				else { //GK: New list?
 					rep = false;
 				}
 			}
 			if (!idStr::Icmpn(filelumpPointer->name + 2, "_END", 4) && rep) {
-				rep = false;
-				sprite = false;
+				if (filelumpPointer->name[0] == filelumpPointer->name[1]) {
+					rep = false;
+					sprite = false;
+				}
 				continue;
 			}
 			else if (!idStr::Icmpn(filelumpPointer->name + 1, "_END", 4) && rep) {
@@ -340,8 +347,8 @@ void W_AddFile ( const char *filename)
 
 			if (rep) {
 					bool replaced = false;
-					tlump = &lumpinfo[op];
-					for (int j = op; j < ep; j++, tlump++) {
+					tlump = lumpinfo + ep;
+					for (int j = ep; j > op; j--, tlump--) {
 						if (!sprite) {
 							if (!idStr::Icmpn(filelumpPointer->name, tlump->name, 8)) {
 								//idLib::Printf("Replacing lump %s\n", filelumpPointer->name); //for debug purposes
@@ -491,10 +498,12 @@ void W_AddFile ( const char *filename)
 						loaddeh(i);
 						
 					}
-					//GK: if you find either MAPINFO lump of EXPINFO lump change to custom expansion and set it's data (from these two lumps)
-					if (!idStr::Cmpn(filelumpPointer->name, "EXPINFO", 7) || !idStr::Cmpn(filelumpPointer->name, "MAPINFO", 7) || (!idStr::Icmp(filename + strlen(filename) - 3, "dlc"))) {
-						::g->gamemission = pack_custom;
-						EX_add(i);
+					if (::g->gamemode == commercial) {
+						//GK: if you find either MAPINFO lump of EXPINFO lump change to custom expansion and set it's data (from these two lumps)
+						if (!idStr::Cmpn(filelumpPointer->name, "EXPINFO", 7) || !idStr::Cmpn(filelumpPointer->name, "MAPINFO", 7) || (!idStr::Icmp(filename + strlen(filename) - 3, "dlc"))) {
+							::g->gamemission = pack_custom;
+							EX_add(i);
+						}
 					}
 			}
 			
