@@ -63,9 +63,11 @@ miniboss : Set if you want the specific map to use MAP07's special miniboss logi
 
 sky_tex <text>: Set map's sky texture (by using it's texture name)
 
-final_flat <numeric>: Set exit level message background
+secret_final : Set if you want the exit message to be shown ONLY if you go through the secret exit
 
-final_text <text>: Set exit level message
+final_flat <text>: Set exit level message background
+
+final_text <text>: Set exit level message by referencing to value's name
 
 final_music <text>: Set exit level message music
 
