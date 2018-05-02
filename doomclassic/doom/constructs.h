@@ -572,6 +572,7 @@ musicinfo_t temp_S_music[80] = {
     { "dm2int", 0 } 
 };
 memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
+::g->totalmus = 68;
 // sounds.constructs end // 
 //  st_stuff.constructs begin // 
 	::g->veryfirsttime = 1;

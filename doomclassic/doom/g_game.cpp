@@ -1435,7 +1435,14 @@ void G_WorldDone (void)
 		}
 		if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
 			if (::g->gamemap == ::g->endmap || ::g->maps[::g->gamemap-1].cluster != ::g->maps[::g->wminfo.next].cluster || ::g->maps[::g->gamemap - 1].ftext != NULL) {
-				F_StartFinale();
+				if (::g->maps[::g->gamemap - 1].ftext != NULL && ::g->maps[::g->gamemap - 1].fsecret) {
+					if(::g->secretexit){
+						F_StartFinale();
+					}
+				}
+				else {
+					F_StartFinale();
+				}
 			}
 		}
 		else {
@@ -1809,8 +1816,8 @@ qboolean G_DoSaveGame (void)
 	*::g->save_p++ = 0x1d;		// ::g->consistancy marker 
 
 	length = ::g->save_p - ::g->savebuffer; 
-	if (length > SAVEGAMESIZE) 
-		I_Error ("Savegame buffer overrun");
+//	if (length > SAVEGAMESIZE) 
+//		I_Error ("Savegame buffer overrun");
 
 	::g->savebufferSize = length;
 	

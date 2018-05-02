@@ -674,7 +674,9 @@ ST_Responder (event_t* ev)
 				if (::g->gamemission == pack_custom) {//GK:Custom expansion related stuff
 					if(map > ::g->mapmax)
 						return false;
-
+					while (!::g->maps[map - 1].lumpname) {
+						map++;
+					}
 					::g->prevmap = map;
 				}
 
@@ -1583,6 +1585,9 @@ CONSOLE_COMMAND_SHIP( idclev, "warp to next level", 0 ) {
 			if (::g->gamemission == pack_custom) {//GK:Custom expansion related stuff
 				if(map > ::g->mapmax)
 					map = 1;
+				while (!::g->maps[map - 1].lumpname) {
+					map++;
+				}
 				::g->prevmap = map;
 			}
 		else if (!::g->isbfg && map > 32) {
@@ -1631,9 +1636,9 @@ CONSOLE_COMMAND_SHIP( idclev, "warp to next level", 0 ) {
 	if ((::g->gamemission == pack_master)
 		&& ((epsd > 1) || (map > 21)))
 		return;
-	if ((::g->gamemission == pack_custom)//GK:Custom expansion related stuff
+	/*if ((::g->gamemission == pack_custom)//GK:Custom expansion related stuff
 		&& ((epsd > 1) || (map > ::g->mapmax)))
-		return;
+		return;*/
 	// So be it.
 	::g->plyr->message = STSTR_CLEV;
 	G_DeferedInitNew(::g->gameskill, epsd, map);

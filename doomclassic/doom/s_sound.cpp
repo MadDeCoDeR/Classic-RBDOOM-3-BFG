@@ -494,7 +494,7 @@ void S_ChangeMusic ( int			musicnum, int			looping )
 	musicinfo_t*	music = NULL;
 
 	if ( (musicnum <= mus_None)
-		|| (musicnum >= NUMMUSIC) )
+		|| (musicnum >= ::g->totalmus) )
 	{
 		I_Error("Bad music number %d", musicnum);
 	}

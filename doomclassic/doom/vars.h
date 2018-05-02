@@ -759,6 +759,7 @@ vissprite_t	vsprsortedhead;
 // r_things.vars end // 
 //  sounds.vars begin // 
 musicinfo_t S_music[80];
+int totalmus = 68;
 // sounds.vars end // 
 //  st_lib.vars begin // 
 patch_t*		sttminus;

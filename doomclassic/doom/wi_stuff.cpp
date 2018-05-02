@@ -1583,14 +1583,14 @@ void WI_loadData(void)
 	if (::g->gamemode == commercial)
 	{
 		if(::g->gamemission == pack_custom){ //GK:Custom expansion related stuff
-			::g->NUMCMAPS = ::g->mapmax-1; //GK:UNLIMITED MAPS
+			::g->NUMCMAPS = ::g->maps.size()-1; //GK:UNLIMITED MAPS
 		}
 		else {
 			::g->NUMCMAPS = 32;
 		}
 		::g->lnames = (patch_t **) DoomLib::Z_Malloc(sizeof(patch_t*) * ::g->NUMCMAPS, PU_LEVEL_SHARED, 0);
 		for (i=0 ; i < ::g->NUMCMAPS+1 ; i++) //GK: The stupidiest game crashing bug in the world
-		{								
+		{
 			sprintf(name, "CWILV%2.2d", i);
 			::g->lnames[i] = (patch_t*)W_CacheLumpName(name, PU_LEVEL_SHARED);
 		}					
@@ -1725,7 +1725,7 @@ void WI_loadData(void)
 
 void WI_unloadData(void)
 {
-	Z_FreeTags( PU_LEVEL_SHARED, PU_LEVEL_SHARED );
+	Z_FreeTags(PU_MUSIC_SHARED, PU_LEVSPEC_SHARED);
 	// HACK ALERT - reset these to help stability? they are used for consistency checking
 	for (int i=0 ; i<MAXPLAYERS ; i++)
 	{

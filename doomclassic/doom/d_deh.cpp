@@ -411,7 +411,7 @@ void parsetext(char* text) {
 	char eq = '=';
 	for (int i = 0; i < linedtext.size(); i++) {
 		varval2 = -1;
-		//idLib::Printf("%s\n", linedtext[i].c_str());
+		//I_Printf("%s\n", linedtext[i].c_str());
 		if ((linedtext[i].find(eq) != std::string::npos) && state != 3 && state != 0) {
 			varname = strtok(strdup(linedtext[i].c_str()), "=");
 			std::string tv3 = strtok(NULL, "=");

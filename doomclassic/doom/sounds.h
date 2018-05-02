@@ -97,7 +97,7 @@ extern sfxinfo_t	S_sfx[];
 //void ResetSfx();
 // the complete set of music
 extern musicinfo_t	S_music[];
-
+extern int totalmus;
 //
 // Identifiers for all music in game.
 //

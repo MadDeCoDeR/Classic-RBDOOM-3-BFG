@@ -537,6 +537,7 @@ typedef struct {//GK:Store information for the custom expansion maps
 	int cluster;
 	int fmusic;
 	int music;
+	bool fsecret;
 }map_t;
 
 typedef struct {//GK:Store information for the custom expansion clusters

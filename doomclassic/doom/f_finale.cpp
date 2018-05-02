@@ -252,34 +252,36 @@ void F_StartFinale (void)
 					//GK: just something for the lols
 					char* fooltext = "CONGURATUATIONS!!!\n\r\nTHE fish king salutes\nyou while chariots of\nboard games gallop on the\nbeautiful rad \"in\nmulticolor\" sky...\n\r\nIf you expected something\nbetter for reaching the final\nmap of this custom expansion\nyou have bigger\nhalutinations than me...";
 					if (::g->clusters.size() > 0 && c1 >=0) {
-						if (::g->clusters[c1].textpr >= ::g->clusters[c2].textpr) {
-							S_ChangeMusic(::g->clusters[c1].fmusic, true);
-							if (::g->clusters[c1].fflat < 0) {
-								flt = ::g->clusters[c1].ftex;
+						if (c2 >= 0) {
+							if (::g->clusters[c1].textpr >= ::g->clusters[c2].textpr) {
+								S_ChangeMusic(::g->clusters[c1].fmusic, true);
+								if (::g->clusters[c1].fflat < 0) {
+									flt = ::g->clusters[c1].ftex;
+								}
+								else {
+									flt = finaleflat[::g->clusters[c1].fflat]; // Not used anywhere else.
+								}
+								if (::g->clusters[c1].ftext != NULL) {
+									finaletext = ::g->clusters[c1].ftext;
+								}
+								else {
+									finaletext = fooltext; //GK: NO finale text found??
+								}
 							}
 							else {
-								flt = finaleflat[::g->clusters[c1].fflat]; // Not used anywhere else.
-							}
-							if (::g->clusters[c1].ftext != NULL) {
-								finaletext = ::g->clusters[c1].ftext; 
-							}
-							else {
-								finaletext = fooltext; //GK: NO finale text found??
-							}
-						}
-						else {
-							S_ChangeMusic(::g->clusters[c2].fmusic, true);
-							if (::g->clusters[c2].fflat < 0) {
-								flt = ::g->clusters[c2].ftex;
-							}
-							else {
-								flt = finaleflat[::g->clusters[c2].fflat]; // Not used anywhere else.
-							}
-							if (::g->clusters[c2].ftext != NULL) {
-							finaletext = ::g->clusters[c2].ftext;
-							}
-							else {
-								finaletext = fooltext; //GK: NO finale text found??
+								S_ChangeMusic(::g->clusters[c2].fmusic, true);
+								if (::g->clusters[c2].fflat < 0) {
+									flt = ::g->clusters[c2].ftex;
+								}
+								else {
+									flt = finaleflat[::g->clusters[c2].fflat]; // Not used anywhere else.
+								}
+								if (::g->clusters[c2].ftext != NULL) {
+									finaletext = ::g->clusters[c2].ftext;
+								}
+								else {
+									finaletext = fooltext; //GK: NO finale text found??
+								}
 							}
 						}
 						if (::g->gamemap == ::g->endmap) {

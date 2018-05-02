@@ -98,6 +98,9 @@ void EX_add(int lump) {
 	I_Printf("Applying Expansion Info ...\n");
 	W_ReadLump(lump, text);
 	::g->mapmax = 33;
+	if (!::g->maps.empty()) {
+		::g->maps.clear();
+	}
 	::g->maps.resize(1);
 	::g->endmap = 30;
 	::g->savedir = NULL;
@@ -256,7 +259,7 @@ int checkexpstate(char* text) {
 void setEXP(char* name, int value) {
 	if (!idStr::Icmp(name, "max_maps")) {
 		::g->mapmax = value;
-		if (!::g->mapind || ::g->mapind <= ::g->maps.size()) {
+		if (!::g->mapind || ::g->mapind >= ::g->maps.size()) {
 			::g->maps.resize(::g->mapmax);
 			::g->mapind = ::g->mapmax;
 		}
@@ -302,6 +305,9 @@ void setMAPSTR(int pos, char* name, char* value) {
 	if (!idStr::Icmp(name, "miniboss") || !idStr::Icmp(name, "map07special")) {
 		::g->maps[pos].miniboss = true;
 	}
+	if (!idStr::Icmp(name, "secret_final")) {
+		::g->maps[pos].fsecret = true;
+	}
 	if(!idStr::Icmp(name,"final_flat")){
 		for (int i = 0; i < 12; i++) {
 			if (!idStr::Icmp(finaleflat[i], value)) {
@@ -311,7 +317,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 		}
 	}
 	if (!idStr::Icmp(name, "final_text")) {
-		for (int i = 0; i < 12; i++) {
+		for (int i = 0; i < 24; i++) {
 			if (!idStr::Icmp(strval[i].name, value)) {
 				::g->maps[pos].ftext = *strval[i].var;
 				return;
@@ -323,6 +329,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 		for (int i = 1; i < 80; i++) {
 			char* musname = value + 2;
 			if (::g->S_music[i].name == NULL) {
+				::g->totalmus++;
 				::g->S_music[i].name = musname;
 				::g->maps[pos].fmusic = i;
 				return;
@@ -340,6 +347,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 			char* musname = value + 2;
 			if (::g->S_music[i].name == NULL) {
 				::g->S_music[i].name = musname;
+				::g->totalmus++;
 				::g->maps[pos].fmusic = i;
 				return;
 			}
@@ -352,6 +360,9 @@ void setMAPSTR(int pos, char* name, char* value) {
 
 	if (!idStr::Icmp(name, "next")) {
 		for (int i = 0; i < ::g->maps.size(); i++) {
+			if (!::g->maps[i].lumpname) {
+				continue;
+			}
 			if (!idStr::Icmp(value, ::g->maps[i].lumpname)) {
 				::g->maps[pos].nextmap = i;
 				return;
@@ -363,7 +374,10 @@ void setMAPSTR(int pos, char* name, char* value) {
 		}
 	}
 	if (!idStr::Icmp(name, "secretnext")) {
-		for (int i = 0; i < ::g->maps.size(); i++) {
+		for (int i = pos; i < ::g->maps.size(); i++) {
+			if (!::g->maps[i].lumpname) {
+				continue;
+			}
 			if (!idStr::Icmp(value, ::g->maps[i].lumpname)) {
 				if (::g->maps[pos].nextmap != i) {
 					::g->maps[pos].secretmap = i+1;
@@ -398,14 +412,21 @@ void initMAPS(std::vector<std::string> lines) {
 			t = strtok(NULL, " ");
 			if (t != NULL) {
 				if (!idStr::Icmpn(t, "MAP", 3)) {
-					map = atoi(t + 3);
+					int tmap = atoi(t + 3);
+					if (tmap - 1 != map) {
+						::g->endmap = map;
+						map++;
+					}
+					else {
+						map = tmap;
+						::g->endmap = map;
+					}
 					::g->mapmax = map;
-					::g->endmap = map;
 					::g->mapind = map;
-					if (map >= ::g->maps.size())
-						::g->maps.resize(map);
-					::g->maps[map - 1].lumpname = t;
-					::g->maps[map-1].nextmap = map;
+					if (tmap >= ::g->maps.size())
+						::g->maps.resize(tmap);
+					::g->maps[tmap - 1].lumpname = t;
+					::g->maps[tmap-1].nextmap = map;
 				}
 				else {
 					if (strlen(t) > 2)
@@ -438,6 +459,12 @@ void initMAPS(std::vector<std::string> lines) {
 
 void setCluster(int pos, char* name, char*value, char* option, int linepos, std::vector<std::string> lines) {
 	if (!idStr::Icmp(name, "flat")) {
+		if (value[0] == '\"') {
+			value++;
+		}
+		if (value[sizeof(value) - 1] == '\"') {
+			value[sizeof(value) - 1] = '\0';
+		}
 		for (int i = 0; i < 12; i++) {
 			if (!idStr::Icmp(finaleflat[i], value)) {
 				::g->clusters[pos].fflat = i;
@@ -448,10 +475,20 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 		return;
 	}
 	if (!idStr::Icmp(name, "music")) {
+		int c = 0;
+		while (value[c] != '_') {
+			c++;
+		}
+		c++;
+		char* musname = value + c;
+		if (musname[sizeof(musname) - 2] == '\"') {
+			musname[sizeof(musname) - 2] = '\0';
+		}
 		for (int i = 1; i < 80; i++) {
-			char* musname = value + 2;
+			
 			if (::g->S_music[i].name == NULL) {
 				::g->S_music[i].name = musname;
+				::g->totalmus++;
 				::g->maps[pos].fmusic = i;
 				return;
 			}
@@ -471,12 +508,22 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 		}
 		if (option != NULL) {
 			if (!idStr::Icmp(option, "lookup")) {
+				if (value[0] == '\"') {
+					value++;
+				}
+				if (value[sizeof(value) - 2] == '\"') {
+					value[sizeof(value) - 2] = '\0';
+				}
+				if (value[0] == 'X') {
+					value[0] = 'C';
+				}
 				for (int i = 0; i < 24; i++) {
 					if (!idStr::Icmp(strval[i].name, value)) {
 						::g->clusters[pos].ftext = *strval[i].var;
 						return;
 					}
 				}
+				
 			}
 		}
 		else {
@@ -540,6 +587,7 @@ void setExpData(char* name, char* value) {
 		for (int i = 1; i < 80; i++) {
 			char* musname = value + 2;
 			if (::g->S_music[i].name == NULL) {
+				::g->totalmus++;
 				::g->S_music[i].name = musname;
 				::g->intermusic = i;
 				return;
