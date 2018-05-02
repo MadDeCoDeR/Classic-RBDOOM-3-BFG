@@ -4,6 +4,23 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+02 May 2018 - Classic RBDOOM-3-BFG 1.1.9.6
+_______________________________
+
+[classicdoom]
+
+- Updates and bugfixes for EXPINFO
+
+- Decreased the size of Classic Doom's virtual memory
+
+- Improve support for large maps
+
+- Improved loading of flats and planes from mods
+
+- Updated EXPINFO Documentation
+
+_______________________________________
+
 20 April 2018 - Classic RBDOOM-3-BFG 1.1.9.5
 _______________________________
 
