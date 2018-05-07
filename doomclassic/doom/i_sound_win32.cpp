@@ -1033,9 +1033,9 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 		WAVEFORMATEXTENSIBLE exvoice = { 0 };
 		voiceFormat.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
 		voiceFormat.nSamplesPerSec = dec_ctx->sample_rate;
-		voiceFormat.nAvgBytesPerSec = voiceFormat.nSamplesPerSec * format_byte * 2;
 		voiceFormat.nChannels = dec_ctx->channels;
-		voiceFormat.nBlockAlign = format_byte * 2;
+		voiceFormat.nAvgBytesPerSec = voiceFormat.nSamplesPerSec * format_byte * voiceFormat.nChannels;
+		voiceFormat.nBlockAlign = format_byte * voiceFormat.nChannels;
 		voiceFormat.wBitsPerSample = format_byte * 8;
 		voiceFormat.cbSize = 22;
 		exvoice.Format = voiceFormat;
