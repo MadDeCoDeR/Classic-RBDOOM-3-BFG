@@ -561,7 +561,7 @@ void idSoundWorldLocal::Update()
 				idSoundChannel* chan = emitter->channels[k];
 				float	min = chan->parms.minDistance;
 				float	max = chan->parms.maxDistance;
-				const char* defaulted = chan->leadinSample->IsDefault() ? " *DEFAULTED*" : "";
+				const char* defaulted = chan->leadinSample->IsDefault() && !chan->leadinSample->useavi ? " *DEFAULTED*" : "";
 				idStr text;
 				text.Format( "%s (%i %i/%i)%s", chan->soundShader->GetName(), idMath::Ftoi( emitter->spatializedDistance ), idMath::Ftoi( min ), idMath::Ftoi( max ), defaulted );
 				renderWorld->DrawText( text, textPos, 0.1f, idVec4( 1, 0, 0, 1 ), listener.axis, 1, lifetime );

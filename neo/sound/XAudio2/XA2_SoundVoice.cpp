@@ -198,7 +198,7 @@ void idSoundVoice_XAudio2::Start( int offsetMS, int ssFlags )
 		return;
 	}
 	
-	if( leadinSample->IsDefault() )
+	if( leadinSample->IsDefault() && !leadinSample->useavi) //GK: I kinda have no idea how to get the timestamp using FFMPEG and so I'm using the useavi in order to actually play the audio
 	{
 		idLib::Warning( "Starting defaulted sound sample %s", leadinSample->GetName() );
 	}

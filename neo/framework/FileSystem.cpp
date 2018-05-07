@@ -909,7 +909,7 @@ void idFileSystemLocal::AddFonts( idStrList& files )
 
 const char* excludeExtensions[] =
 {
-	".idxma", ".idmsf", ".idwav", ".xma", ".msf", ".wav", ".resource"
+	".idxma", ".idmsf", ".idwav", ".xma", ".msf", ".wav", ".resource",".ogg"
 };
 const int numExcludeExtensions = sizeof( excludeExtensions ) / sizeof( excludeExtensions[ 0 ] );
 
@@ -950,7 +950,7 @@ bool idFileSystemLocal::IsSoundSample( const idStr& resName ) const
 {
 	idStrStatic< 32 > ext;
 	resName.ExtractFileExtension( ext );
-	if( ( ext.Icmp( "idxma" ) == 0 ) || ( ext.Icmp( "idwav" ) == 0 ) || ( ext.Icmp( "idmsf" ) == 0 ) || ( ext.Icmp( "xma" ) == 0 ) || ( ext.Icmp( "wav" ) == 0 ) || ( ext.Icmp( "msf" ) == 0 ) || ( ext.Icmp( "msadpcm" ) == 0 ) )
+	if( ( ext.Icmp( "idxma" ) == 0 ) || ( ext.Icmp( "idwav" ) == 0 ) || ( ext.Icmp( "idmsf" ) == 0 ) || ( ext.Icmp( "xma" ) == 0 ) || ( ext.Icmp( "wav" ) == 0 ) || ( ext.Icmp( "msf" ) == 0 ) || ( ext.Icmp( "msadpcm" ) == 0 ) || (ext.Icmp("ogg") == 0) || (ext.Icmp("mp3") == 0) || (ext.Icmp("flac") == 0))
 	{
 		return true;
 	}

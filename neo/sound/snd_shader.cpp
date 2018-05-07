@@ -456,7 +456,7 @@ bool idSoundShader::HasDefaultSound() const
 {
 	for( int i = 0; i < entries.Num(); i++ )
 	{
-		if( entries[i] && entries[i]->IsDefault() )
+		if( entries[i] && entries[i]->IsDefault() && !entries[i]->useavi)
 		{
 			return true;
 		}

@@ -102,6 +102,7 @@ public:
 		FORMAT_UNKNOWN		= 0x0000,
 		FORMAT_PCM			= 0x0001,
 		FORMAT_ADPCM		= 0x0002,
+		FORMAT_FLOAT		= 0x0003, //GK:Add support for Float point audio samples
 		FORMAT_XMA2			= 0x0166,
 		FORMAT_EXTENSIBLE	= 0xFFFF,
 	};
