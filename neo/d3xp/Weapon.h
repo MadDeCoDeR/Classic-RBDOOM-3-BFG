@@ -223,6 +223,7 @@ public:
 	}
 	
 	friend class idPlayer;
+	bool					lightOn; //GK:Keep it public for use on PDA
 private:
 	// script control
 	idScriptBool			WEAPON_ATTACK;
@@ -306,7 +307,6 @@ private:
 	idVec3					flashColor;
 	int						muzzleFlashEnd;
 	int						flashTime;
-	bool					lightOn;
 	bool					silent_fire;
 	bool					allowDrop;
 	

@@ -1266,7 +1266,7 @@ const idDecl* idDeclManagerLocal::FindType( declType_t type, const char* name, b
 		name = "_emptyName";
 		//common->Warning( "idDeclManager::FindType: empty %s name", GetDeclType( (int)type )->typeName.c_str() );
 	}
-	
+
 	decl = FindTypeWithoutParsing( type, name, makeDefault );
 	if( !decl )
 	{
@@ -1278,12 +1278,13 @@ const idDecl* idDeclManagerLocal::FindType( declType_t type, const char* name, b
 	// if it hasn't been parsed yet, parse it now
 	if( decl->declState == DS_UNPARSED )
 	{
-		if( !idLib::IsMainThread() )
+		//GK: Let's hope I didn't break anything important with that
+		/*if( !idLib::IsMainThread() )
 		{
 			// we can't load images from a background thread on OpenGL,
 			// the renderer on the main thread should parse it if needed
 			idLib::Error( "Attempted to load %s decl '%s' from game thread!", GetDeclNameFromType( type ), name );
-		}
+		}*/
 		decl->ParseLocal();
 	}
 	

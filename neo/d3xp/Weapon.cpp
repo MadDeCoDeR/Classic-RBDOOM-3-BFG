@@ -41,6 +41,7 @@ If you have questions concerning this license or the applicable additional terms
 //
 // event defs
 //
+extern idCVar flashlight_old;
 const idEventDef EV_Weapon_Clear( "<clear>" );
 const idEventDef EV_Weapon_GetOwner( "getOwner", NULL, 'e' );
 const idEventDef EV_Weapon_Next( "nextWeapon" );
@@ -3819,13 +3820,15 @@ idWeapon::Event_Flashlight
 void idWeapon::Event_Flashlight( int enable )
 {
 	if( enable )
-	{
+	{//GK: DONT CHANGE THIS
 		lightOn = true;
 		MuzzleFlashLight();
 	}
 	else
 	{
-		lightOn = false;
+		if (!flashlight_old.GetInteger()) { //GK: Make sure that you can't close the flashlight with the flashlight toogle button
+			lightOn = false;
+		}
 		muzzleFlashEnd = 0;
 	}
 }

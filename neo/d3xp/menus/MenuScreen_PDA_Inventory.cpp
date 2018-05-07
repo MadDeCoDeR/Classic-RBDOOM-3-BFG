@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../Game_local.h"
 
 static const int NUM_INVENTORY_ITEMS_VISIBLE = 9;
+extern idCVar flashlight_old;
 
 /*
 ========================
@@ -199,6 +200,11 @@ bool idMenuScreen_PDA_Inventory::IsVisibleWeapon( int index )
 	
 	if( player->GetInventory().weapons & ( 1 << index ) )
 	{
+		//GK: HACK for the def of the orginal Doom 3 Flashlight
+		idStr name = player->spawnArgs.GetString(va("def_weapon%d", index));
+		if (!idStr::Icmp(name,"weapon_flashlight") && flashlight_old.GetInteger()) {
+			return true;
+		}
 		return player->spawnArgs.GetBool( va( "weapon%d_visible", index ) );
 	}
 	
@@ -327,13 +333,19 @@ void idMenuScreen_PDA_Inventory::EquipWeapon()
 		{
 			int slot = player->SlotForWeapon( weap );
 			player->SetPreviousWeapon( slot );
+			//GK: A small logic HACK for the orginal Doom 3 Flashlight
+			if (!idStr::Icmp("weapon_flashlight", weap) && flashlight_old.GetInteger()) {
+				player->flashlight.GetEntity()->lightOn = true;
+			}
+			else {
+				player->flashlight.GetEntity()->lightOn = false;
+			}
 			break;
 		}
 		validIndex++;
 	}
 	
 	player->TogglePDA();
-	
 }
 
 /*
