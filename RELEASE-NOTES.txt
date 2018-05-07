@@ -4,6 +4,29 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+07 May 2018 - Classic RBDOOM-3-BFG 1.1.9.7
+_______________________________
+
+[classicdoom]
+
+- Improve Support for non-midi files
+
+[DOOM3BFG]
+
+- Add support for ogg audio files
+
+- Added a new CVar "flashlight_old" that allow you to change the flashlight behaviour.
+(WARNING: If you change the flashlight behaviour you must start a new game. If you want to keep using save files you had keep it to BFG).
+
+[Launcher]
+
+- Added option to set the flashlight mode.
+
+Also this Release comes with an extra tool called pk4toBFG which allowing you to extract 1 or more .pk4 files to a folder.
+
+
+_______________________________________
+
 02 May 2018 - Classic RBDOOM-3-BFG 1.1.9.6
 _______________________________
 
