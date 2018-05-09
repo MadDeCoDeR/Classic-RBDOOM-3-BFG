@@ -3826,9 +3826,7 @@ void idWeapon::Event_Flashlight( int enable )
 	}
 	else
 	{
-		if (!flashlight_old.GetInteger()) { //GK: Make sure that you can't close the flashlight with the flashlight toogle button
-			lightOn = false;
-		}
+		lightOn = false;
 		muzzleFlashEnd = 0;
 	}
 }

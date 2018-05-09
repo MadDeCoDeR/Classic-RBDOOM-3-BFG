@@ -5966,6 +5966,9 @@ void idPlayer::UpdateFlashlight()
 				if (flashlight_old.GetInteger() && idealWeapon != weapon_flashlight && flashlightBattery >0) {//GK: don't waste the battery without flashlight
 					flashlightBattery = flashlight_batteryDrainTimeMS.GetInteger();
 				}
+				if (flashlight_old.GetInteger() == 1 && flashlightBattery != flashlight_batteryDrainTimeMS.GetInteger()) {//GK: Well aparently the original flashlight had no battery
+					flashlightBattery = flashlight_batteryDrainTimeMS.GetInteger();
+				}
 			}
 			
 		}
@@ -7658,12 +7661,21 @@ void idPlayer::PerformImpulse( int impulse )
 		{
 			if( flashlight.IsValid() )
 			{
-				if( flashlight.GetEntity()->lightOn )
+				if (flashlight.GetEntity()->lightOn && flashlight_old.GetInteger() && currentWeapon != weapon_flashlight) {//GK: Small fix
+					flashlight.GetEntity()->lightOn = false;
+				}
+				if( flashlight.GetEntity()->lightOn)
 				{
+					if (flashlight_old.GetInteger()) {//GK: Change weapon when the flashlight is toogled and we are using the old flashlight
+						SelectWeapon(previousWeapon, false);
+					}
 					FlashlightOff();
 				}
 				else if( !spectating && weaponEnabled && !hiddenWeapon && !gameLocal.world->spawnArgs.GetBool( "no_Weapons" ) )
 				{
+					if (flashlight_old.GetInteger()) {
+						SelectWeapon(weapon_flashlight, false);
+					}
 					FlashlightOn();
 				}
 			}
