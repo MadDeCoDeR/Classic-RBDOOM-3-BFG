@@ -245,7 +245,7 @@ If you have questions concerning this license or the applicable additional terms
 //#define MAXHEIGHT			832
 #define SBARHEIGHT		32 * GLOBAL_IMAGE_SCALER
 #define FUZZTABLE		50 
-#define FUZZOFF	(SCREENWIDTH)
+#define FUZZOFF	(BASE_WIDTH)
 // r_draw.defs end // 
 //  r_main.defs begin // 
 #define FIELDOFVIEW		2048	
@@ -254,7 +254,7 @@ If you have questions concerning this license or the applicable additional terms
 //  r_plane.defs begin // 
 //#define MAXVISPLANES	128
 //#define MAXVISPLANES	384 //GK: No nedded anymore
-#define MAXOPENINGS	SCREENWIDTH*256 //GK: For now just increased it
+#define MAXOPENINGS	BASE_WIDTH*256 //GK: For now just increased it
 // r_plane.defs end // 
 //  r_segs.defs begin // 
 #define HEIGHTBITS		12
@@ -381,7 +381,7 @@ If you have questions concerning this license or the applicable additional terms
 #define ST_MAPWIDTH	\
 	(strlen(mapnames[(::g->gameepisode-1)*9+(::g->gamemap-1)]))
 #define ST_MAPTITLEX \
-	(SCREENWIDTH - ST_MAPWIDTH * ST_CHATFONTWIDTH)
+	(::g->SCREENWIDTH - ST_MAPWIDTH * ST_CHATFONTWIDTH)
 #define ST_MAPTITLEY		0
 #define ST_MAPHEIGHT		1
 // st_stuff.defs end // 

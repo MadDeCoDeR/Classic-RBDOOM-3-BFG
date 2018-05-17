@@ -77,7 +77,7 @@ If you have questions concerning this license or the applicable additional terms
 //#include "../Main/PlayerProfile.h"
 //#include "../Main/PSN/PS3_Session.h"
 #include "d3xp/Game_local.h"
-
+extern idCVar r_aspectcorrect;
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -165,7 +165,7 @@ void D_Wipe()
 	if (tics != 0)
 	{
 		::g->wipestart = nowtime;
-		::g->wipedone = wipe_ScreenWipe( 0, 0, SCREENWIDTH, SCREENHEIGHT, tics );
+		::g->wipedone = wipe_ScreenWipe( 0, 0, ::g->SCREENWIDTH, SCREENHEIGHT, tics );
 
 		// DHM - Nerve :: Demo recording :: Stop large hitch on first frame after the wipe
 		if ( ::g->wipedone ) {
@@ -186,7 +186,7 @@ void D_Display (void)
 		return;                    // for comparative timing / profiling
 
 	redrawsbar = false;
-
+	int scaler = GLOBAL_IMAGE_SCALER - (::g->ASPECT_IMAGE_SCALER-GLOBAL_IMAGE_SCALER);//GK: Calculate image scaling based on aspect ratio
 	// change the view size if needed
 	if (::g->setsizeneeded)
 	{
@@ -199,7 +199,7 @@ void D_Display (void)
 	if (::g->gamestate != ::g->wipegamestate)
 	{
 		::g->wipe = true;
-		wipe_StartScreen(0, 0, SCREENWIDTH, SCREENHEIGHT);
+		wipe_StartScreen(0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
 	}
 	else
 		::g->wipe = false;
@@ -215,12 +215,13 @@ void D_Display (void)
 			break;
 		if (::g->automapactive)
 			AM_Drawer ();
-		if (::g->wipe || (::g->viewheight != 200 * GLOBAL_IMAGE_SCALER && ::g->fullscreen) )
+		
+		if (::g->wipe || (::g->viewheight != 200 * scaler && ::g->fullscreen) )
 			redrawsbar = true;
 		if (::g->inhelpscreensstate && !::g->inhelpscreens)
 			redrawsbar = true;              // just put away the help screen
-		ST_Drawer ( ::g->viewheight == 200 * GLOBAL_IMAGE_SCALER, redrawsbar );
-		::g->fullscreen = ::g->viewheight == 200 * GLOBAL_IMAGE_SCALER;
+		ST_Drawer ( ::g->viewheight == 200 * scaler, redrawsbar );
+		::g->fullscreen = ::g->viewheight == 200 * scaler;
 		break;
 
 	case GS_INTERMISSION:
@@ -300,7 +301,7 @@ void D_Display (void)
 	}
 
 	// \ update
-	wipe_EndScreen(0, 0, SCREENWIDTH, SCREENHEIGHT);
+	wipe_EndScreen(0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
 
 	::g->wipestart = I_GetTime () - 1;
 
@@ -537,8 +538,17 @@ void D_DoomMain(void)
 {
 	int             p;
 	char                    file[256];
+	//GK: Calculate x-axis image scale and Rendering width
+	if (r_aspectcorrect.GetBool()) {
+		::g->ASPECT_IMAGE_SCALER = 4;
+	}
+	else {
+		::g->ASPECT_IMAGE_SCALER = 3;
+	}
 
-
+	::g->SCREENWIDTH = ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER;
+	::g->finit_width = ::g->SCREENWIDTH; //GK: Set here the auto-map width
+	//GK: End
 	FindResponseFile();
 
 	IdentifyVersion();

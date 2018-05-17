@@ -1317,7 +1317,7 @@ void M_CancelExit(int choice) {
 
 void M_GameSelection(int choice)
 {
-	idLib::Printf("Reseting Dehacked Patches...\n");
+	I_Printf("Reseting Dehacked Patches...\n");
 	resetValues();
 	resetWeapons();
 	ResetAmmo();
@@ -1327,7 +1327,7 @@ void M_GameSelection(int choice)
 	resetSprnames();
 	ResetPars();
 	ResetFinalflat();
-	idLib::Printf("Reset Completed!!\n");
+	I_Printf("Reset Completed!!\n");
 	memset(DoomLib::otherfiles,0,5*20);//GK:Reset this for better checking
 	//ResetSfx(); //GK: More Headache than it's worth
 	//CleanUncompFiles(); //GK: A good practice would have been to delete the files after
@@ -1570,7 +1570,7 @@ M_WriteText
 		}
 
 		w = SHORT (::g->hu_font[c]->width);
-		if (cx+w > SCREENWIDTH)
+		if (cx+w > ::g->SCREENWIDTH)
 			break;
 		V_DrawPatchDirect(cx, cy, 0, ::g->hu_font[c]);
 		cx+=w;

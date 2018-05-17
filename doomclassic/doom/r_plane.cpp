@@ -243,7 +243,7 @@ visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel,fixed_t xoff
     check->height = height;
     check->picnum = picnum;
     check->lightlevel = lightlevel;
-    check->minx = SCREENWIDTH;
+    check->minx = ::g->SCREENWIDTH;
     check->maxx = -1;
 	check->xoffs = xoffs;
 	check->yoffs = yoffs;
@@ -493,7 +493,7 @@ void AddNewVisplane() {
 		::g->visplanes[::g->planeind]->lightlevel = 0;
 		::g->visplanes[::g->planeind]->minx = 0;
 		::g->visplanes[::g->planeind]->maxx = 0;
-		std::fill(::g->visplanes[::g->planeind]->bottom, ::g->visplanes[::g->planeind]->bottom + SCREENWIDTH, 0);
+		std::fill(::g->visplanes[::g->planeind]->bottom, ::g->visplanes[::g->planeind]->bottom + ::g->SCREENWIDTH, 0);
 		::g->visplanes[::g->planeind]->nervePad1 = 0;
 		::g->visplanes[::g->planeind]->nervePad2 = 0;
 		::g->visplanes[::g->planeind]->nervePad3 = 0;
@@ -503,7 +503,7 @@ void AddNewVisplane() {
 		::g->visplanes[::g->planeind]->pad2 = 0;
 		::g->visplanes[::g->planeind]->pad3 = 0;
 		::g->visplanes[::g->planeind]->pad4 = 0;
-		std::fill(::g->visplanes[::g->planeind]->top, ::g->visplanes[::g->planeind]->top + SCREENWIDTH, 0);
+		std::fill(::g->visplanes[::g->planeind]->top, ::g->visplanes[::g->planeind]->top + ::g->SCREENWIDTH, 0);
 	}
 	::g->planeind++;
 }

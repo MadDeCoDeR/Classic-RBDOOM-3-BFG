@@ -126,6 +126,7 @@ idCVar com_skipIntroVideos( "com_skipIntroVideos", "0", CVAR_BOOL , "skips intro
 
 // For doom classic
 struct Globals;
+extern idCVar r_aspectcorrect; //GK: And that is why you can't have cool stuff in the game
 
 /*
 ==================
@@ -258,11 +259,11 @@ doom set test blah + map test
 ============================================================================
 */
 
-#define		MAX_CONSOLE_LINES	32
+#define		MAX_CONSOLE_LINES	128 //GK: MORE WORDS
 int			com_numConsoleLines;
 idCmdArgs	com_consoleLines[MAX_CONSOLE_LINES];
 //GK begin
-char* classicargv[32];
+char* classicargv[128];
 //GK end
 
 /*
@@ -1466,7 +1467,15 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			idImageOpts opts;
 			opts.format = FMT_RGBA8;
 			opts.colorFormat = CFM_DEFAULT;
-			opts.width = DOOMCLASSIC_RENDERWIDTH;
+			//GK: The classic Doom's aspect ratio is relying on this resolution too
+			//otherwise be ready for some really weird stuff
+			if (!r_aspectcorrect.GetBool()) {
+				opts.width = DOOMCLASSIC_RENDERWIDTH;
+			}
+			else {
+				opts.width = DOOMCLASSIC_RENDERWIDTH_CORRECT;
+			}
+			//GK: End
 			opts.height = DOOMCLASSIC_RENDERHEIGHT;
 			opts.numLevels = 1;
 			image->AllocImage( opts, TF_LINEAR, TR_REPEAT );

@@ -665,7 +665,7 @@ player_t*		viewplayer;
 int			detailshift;	
 angle_t			clipangle;
 int			viewangletox[FINEANGLES/2];
-angle_t			xtoviewangle[SCREENWIDTH+1];
+angle_t			xtoviewangle[BASE_WIDTH+1];
 lighttable_t*		scalelight[LIGHTLEVELS][MAXLIGHTSCALE];
 lighttable_t*		scalelightfixed[MAXLIGHTSCALE];
 lighttable_t*		zlight[LIGHTLEVELS][MAXLIGHTZ];
@@ -679,14 +679,14 @@ planefunction_t		floorfunc;
 planefunction_t		ceilingfunc;
 short			openings[MAXOPENINGS];
 short*			lastopening;
-short			floorclip[SCREENWIDTH];
-short			ceilingclip[SCREENWIDTH];
+short			floorclip[BASE_WIDTH];
+short			ceilingclip[BASE_WIDTH];
 int			spanstart[SCREENHEIGHT];
 int			spanstop[SCREENHEIGHT];
 int		planezlight;
 fixed_t			planeheight;
 fixed_t			yslope[SCREENHEIGHT];
-fixed_t			distscale[SCREENWIDTH];
+fixed_t			distscale[BASE_WIDTH];
 fixed_t			basexscale;
 fixed_t			baseyscale;
 fixed_t			cachedheight[SCREENHEIGHT];
@@ -952,5 +952,7 @@ patch_t* wistuff_bp[MAXPLAYERS];
 patch_t** lnames;
 bool isbfg;
 const char*		spritename;
-
-
+//GK: Aspect ratio image scaler and screenwidth are keept
+//as global variables since they get calculated based on the r_aspectcorrect CVar
+int ASPECT_IMAGE_SCALER;
+int SCREENWIDTH;

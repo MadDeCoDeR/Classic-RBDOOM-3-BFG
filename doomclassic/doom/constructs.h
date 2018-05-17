@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 	::g->grid = 0;
 	::g->leveljuststarted = 1; 	// kluge until AM_LevelInit() is called
 	::g->automapactive = false;
-	::g->finit_width = SCREENWIDTH;
+	//::g->finit_width = BASE_WIDTH;
 	::g->finit_height = SCREENHEIGHT - (32 * GLOBAL_IMAGE_SCALER);
 	::g->scale_mtof = (fixed_t)INITSCALEMTOF;
 	::g->markpointnum = 0; // next point to be assigned

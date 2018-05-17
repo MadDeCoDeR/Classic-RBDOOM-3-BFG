@@ -184,20 +184,20 @@ V_CopyRect
     V_MarkRect (destx, desty, width, height); 
 
 	// SMF - rewritten for scaling
-	srcx *= GLOBAL_IMAGE_SCALER;
+	srcx *= ::g->ASPECT_IMAGE_SCALER; //GK: For x-axis use the aspect image scaler and not the global
 	srcy *= GLOBAL_IMAGE_SCALER;
-	destx *= GLOBAL_IMAGE_SCALER;
+	destx *= ::g->ASPECT_IMAGE_SCALER;
 	desty *= GLOBAL_IMAGE_SCALER;
-	width *= GLOBAL_IMAGE_SCALER;
+	width *= ::g->ASPECT_IMAGE_SCALER;
 	height *= GLOBAL_IMAGE_SCALER;
 
-	src = ::g->screens[srcscrn] + srcy * SCREENWIDTH + srcx; 
-	dest = ::g->screens[destscrn] + desty * SCREENWIDTH + destx; 
+	src = ::g->screens[srcscrn] + srcy * ::g->SCREENWIDTH + srcx;
+	dest = ::g->screens[destscrn] + desty * ::g->SCREENWIDTH + destx;
 
 	for ( ; height>0 ; height--) { 
 		memcpy(dest, src, width); 
-		src += SCREENWIDTH; 
-		dest += SCREENWIDTH; 
+		src += ::g->SCREENWIDTH;
+		dest += ::g->SCREENWIDTH;
 	} 
 } 
  
@@ -259,13 +259,13 @@ V_DrawPatch
 
 			while (count--) {
 				int scaledx, scaledy;
-				scaledx = destx * GLOBAL_IMAGE_SCALER;
+				scaledx = destx * ::g->ASPECT_IMAGE_SCALER;
 				scaledy = desty * GLOBAL_IMAGE_SCALER;
 				byte src = *source++;
 
 				for ( int i = 0; i < GLOBAL_IMAGE_SCALER; i++ ) {
-					for ( int j = 0; j < GLOBAL_IMAGE_SCALER; j++ ) {
-						::g->screens[scrn][( scaledx + j ) + ( scaledy + i ) * SCREENWIDTH] = src;
+					for ( int j = 0; j < ::g->ASPECT_IMAGE_SCALER; j++ ) {
+						::g->screens[scrn][( scaledx + j ) + ( scaledy + i ) * ::g->SCREENWIDTH] = src;
 					}
 				}
 
@@ -335,13 +335,13 @@ V_DrawPatchFlipped
 			while (count--) 
 			{
 				int scaledx, scaledy;
-				scaledx = destx * GLOBAL_IMAGE_SCALER;
+				scaledx = destx * ::g->ASPECT_IMAGE_SCALER;
 				scaledy = desty * GLOBAL_IMAGE_SCALER;
 				byte src = *source++;
 
 				for ( int i = 0; i < GLOBAL_IMAGE_SCALER; i++ ) {
-					for ( int j = 0; j < GLOBAL_IMAGE_SCALER; j++ ) {
-						::g->screens[scrn][( scaledx + j ) + ( scaledy + i ) * SCREENWIDTH] = src;
+					for ( int j = 0; j < ::g->ASPECT_IMAGE_SCALER; j++ ) {
+						::g->screens[scrn][( scaledx + j ) + ( scaledy + i ) * ::g->SCREENWIDTH] = src;
 					}
 				}
 
@@ -439,7 +439,7 @@ V_DrawBlock
 	 
 #ifdef RANGECHECK 
     if (x<0
-	||x+width >SCREENWIDTH
+	||x+width >::g->SCREENWIDTH
 	|| y<0
 	|| y+height>SCREENHEIGHT
 	|| (unsigned)scrn>4 )
@@ -450,13 +450,13 @@ V_DrawBlock
  
     V_MarkRect (x, y, width, height); 
  
-    dest = ::g->screens[scrn] + y*SCREENWIDTH+x; 
+    dest = ::g->screens[scrn] + y* ::g->SCREENWIDTH+x;
 
     while (height--) 
     { 
 	memcpy(dest, src, width); 
 	src += width; 
-	dest += SCREENWIDTH; 
+	dest += ::g->SCREENWIDTH;
     } 
 } 
  
@@ -479,7 +479,7 @@ V_GetBlock
 	 
 #ifdef RANGECHECK 
     if (x<0
-	||x+width >SCREENWIDTH
+	||x+width >::g->SCREENWIDTH
 	|| y<0
 	|| y+height>SCREENHEIGHT
 	|| (unsigned)scrn>4 )
@@ -488,12 +488,12 @@ V_GetBlock
     }
 #endif 
  
-    src = ::g->screens[scrn] + y*SCREENWIDTH+x; 
+    src = ::g->screens[scrn] + y* ::g->SCREENWIDTH+x;
 
     while (height--) 
     { 
 	memcpy(dest, src, width); 
-	src += SCREENWIDTH; 
+	src += ::g->SCREENWIDTH;
 	dest += width; 
     } 
 } 
@@ -511,9 +511,9 @@ void V_Init (void)
 
     // stick these in low dos memory on PCs
 
-    base = (byte*)DoomLib::Z_Malloc(SCREENWIDTH*SCREENHEIGHT*4, PU_STATIC, 0);
+    base = (byte*)DoomLib::Z_Malloc(::g->SCREENWIDTH*SCREENHEIGHT*4, PU_STATIC, 0);
 
     for (i=0 ; i<4 ; i++)
-		::g->screens[i] = base + i*SCREENWIDTH*SCREENHEIGHT;
+		::g->screens[i] = base + i* ::g->SCREENWIDTH*SCREENHEIGHT;
 }
 

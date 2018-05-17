@@ -146,7 +146,7 @@ void I_FinishUpdate (void)
 //
 void I_ReadScreen (byte* scr)
 {
-    memcpy(scr, ::g->screens[0], SCREENWIDTH*SCREENHEIGHT);
+    memcpy(scr, ::g->screens[0], ::g->SCREENWIDTH*SCREENHEIGHT);
 }
 
 inline unsigned int I_PackColor( unsigned int a, unsigned int r, unsigned int g, unsigned int b ) {

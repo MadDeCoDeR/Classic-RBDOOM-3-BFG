@@ -270,8 +270,8 @@ void localCalculateAchievements(bool epComplete)
 
 void WI_slamBackground(void)
 {
-    memcpy(::g->screens[0], ::g->screens[1], SCREENWIDTH * SCREENHEIGHT);
-    V_MarkRect (0, 0, SCREENWIDTH, SCREENHEIGHT);
+    memcpy(::g->screens[0], ::g->screens[1], ::g->SCREENWIDTH * SCREENHEIGHT);
+    V_MarkRect (0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
 }
 
 // The ticker is used to detect keys
@@ -338,7 +338,7 @@ WI_drawOnLnode
 	bottom = top + SHORT(c[i]->height);
 
 	if (left >= 0
-	    && right < SCREENWIDTH
+	    && right < ::g->SCREENWIDTH
 	    && top >= 0
 	    && bottom < SCREENHEIGHT)
 	{

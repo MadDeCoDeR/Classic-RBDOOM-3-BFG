@@ -81,7 +81,7 @@ idCVar timescale( "timescale", "1", CVAR_SYSTEM | CVAR_FLOAT, "Number of game fr
 
 
 extern idCVar in_joystickRumble;
-
+extern idCVar r_aspectcorrect; //GK: also here
 /*
 ===============
 idGameThread::Run
@@ -915,8 +915,11 @@ void idCommonLocal::RunDoomClassicFrame()
 		DoomLib::Interface.Startup( 1, false );
 		DoomLib::expansionDirty = false;
 	}
-	
-	
+	//GK: begin
+	int w = DOOMCLASSIC_RENDERWIDTH;
+	if (r_aspectcorrect.GetBool()) {
+		w = DOOMCLASSIC_RENDERWIDTH_CORRECT;
+	}
 	if( DoomLib::Interface.Frame( doomTics, &userCmdMgr ) )
 	{
 		Globals* data = ( Globals* )DoomLib::GetGlobalData( 0 );
@@ -927,16 +930,16 @@ void idCommonLocal::RunDoomClassicFrame()
 		// Do the palette lookup.
 		for( int row = 0; row < DOOMCLASSIC_RENDERHEIGHT; ++row )
 		{
-			for( int column = 0; column < DOOMCLASSIC_RENDERWIDTH; ++column )
+			for( int column = 0; column < w; ++column )
 			{
-				const int doomScreenPixelIndex = row * DOOMCLASSIC_RENDERWIDTH + column;
+				const int doomScreenPixelIndex = row * w + column;
 				const byte paletteIndex = data->screens[0][doomScreenPixelIndex];
 				const unsigned int paletteColor = palette[paletteIndex];
 				const byte red = ( paletteColor & 0xFF000000 ) >> 24;
 				const byte green = ( paletteColor & 0x00FF0000 ) >> 16;
 				const byte blue = ( paletteColor & 0x0000FF00 ) >> 8;
 				
-				const int imageDataPixelIndex = row * DOOMCLASSIC_RENDERWIDTH * DOOMCLASSIC_BYTES_PER_PIXEL + column * DOOMCLASSIC_BYTES_PER_PIXEL;
+				const int imageDataPixelIndex = row * w * DOOMCLASSIC_BYTES_PER_PIXEL + column * DOOMCLASSIC_BYTES_PER_PIXEL;
 				doomClassicImageData[imageDataPixelIndex]		= red;
 				doomClassicImageData[imageDataPixelIndex + 1]	= green;
 				doomClassicImageData[imageDataPixelIndex + 2]	= blue;
@@ -944,8 +947,8 @@ void idCommonLocal::RunDoomClassicFrame()
 			}
 		}
 	}
-	
-	renderSystem->UploadImage( "_doomClassic", doomClassicImageData.Ptr(), DOOMCLASSIC_RENDERWIDTH, DOOMCLASSIC_RENDERHEIGHT );
+	//GK: End
+	renderSystem->UploadImage( "_doomClassic", doomClassicImageData.Ptr(), w, DOOMCLASSIC_RENDERHEIGHT );
 	doomTics++;
 }
 

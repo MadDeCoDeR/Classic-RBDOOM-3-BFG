@@ -586,19 +586,19 @@ void F_TextWrite (void)
 	
     for (y=0 ; y<SCREENHEIGHT ; y++)
     {
-	for (x=0 ; x<SCREENWIDTH/64 ; x++)
+	for (x=0 ; x<::g->SCREENWIDTH/64 ; x++)
 	{
 	    memcpy (dest, src+((y&63)<<6), 64);
 	    dest += 64;
 	}
-	if (SCREENWIDTH&63)
+	if (::g->SCREENWIDTH&63)
 	{
-	    memcpy (dest, src+((y&63)<<6), SCREENWIDTH&63);
-	    dest += (SCREENWIDTH&63);
+	    memcpy (dest, src+((y&63)<<6), ::g->SCREENWIDTH&63);
+	    dest += (::g->SCREENWIDTH&63);
 	}
     }
 
-    V_MarkRect (0, 0, SCREENWIDTH, SCREENHEIGHT);
+    V_MarkRect (0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
     
     // draw some of the text onto the screen
     cx = 10;
@@ -632,7 +632,7 @@ void F_TextWrite (void)
 	}
 		
 	w = SHORT (::g->hu_font[c]->width);
-	if (cx+w > SCREENWIDTH)
+	if (cx+w > ::g->SCREENWIDTH)
 	    break;
 	V_DrawPatch(cx, cy, 0, ::g->hu_font[c]);
 	cx+=w;
@@ -937,13 +937,13 @@ F_DrawPatchCol( int x, patch_t* patch, int col ) {
 		while (count--)
 		{
 			int scaledx, scaledy;
-			scaledx = destx * GLOBAL_IMAGE_SCALER;
+			scaledx = destx * ::g->ASPECT_IMAGE_SCALER;
 			scaledy = desty * GLOBAL_IMAGE_SCALER;
 			byte src = *source++;
 
 			for ( int i = 0; i < GLOBAL_IMAGE_SCALER; i++ ) {
-				for ( int j = 0; j < GLOBAL_IMAGE_SCALER; j++ ) {
-					::g->screens[0][( scaledx + j ) + ( scaledy + i ) * SCREENWIDTH] = src;
+				for ( int j = 0; j < ::g->ASPECT_IMAGE_SCALER; j++ ) {
+					::g->screens[0][( scaledx + j ) + ( scaledy + i ) * ::g->SCREENWIDTH] = src;
 				}
 			}
 
@@ -969,7 +969,7 @@ void F_BunnyScroll (void)
     p1 = (patch_t*)W_CacheLumpName ("PFUB2", PU_LEVEL_SHARED);
     p2 = (patch_t*)W_CacheLumpName ("PFUB1", PU_LEVEL_SHARED);
 
-    V_MarkRect (0, 0, SCREENWIDTH, SCREENHEIGHT);
+    V_MarkRect (0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
 	
     scrolled = 320 - (::g->finalecount-230)/2;
     if (scrolled > 320)

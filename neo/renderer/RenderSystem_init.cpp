@@ -280,8 +280,11 @@ idCVar r_useHierarchicalDepthBuffer( "r_useHierarchicalDepthBuffer", "1", CVAR_R
 
 idCVar r_exposure( "r_exposure", "0.5", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_FLOAT, "HDR exposure or LDR brightness [0.0 .. 1.0]", 0.0f, 1.0f );
 // RB end
-
+//GK begin
 idCVar r_aspect("r_aspect", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "0 = original, 1 = streched"); //GK: Special cvar for classic DOOM aspect ratio
+idCVar r_aspectcorrect("r_aspectcorrect", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL|CVAR_INIT, "0 = original, 1 = corrected"); //GK: Special cvar for classic DOOM aspect ratio correction
+idCVar r_aspectratio("r_aspectratio", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "change FOV aspect ratio 0 = 4:3, 1 = resolution based"); //GK: Special cvar for DOOM 3 aspect ratio
+//GK end
 const char* fileExten[3] = { "tga", "png", "jpg" };
 const char* envDirection[6] = { "_px", "_nx", "_py", "_ny", "_pz", "_nz" };
 const char* skyDirection[6] = { "_forward", "_back", "_left", "_right", "_up", "_down" };

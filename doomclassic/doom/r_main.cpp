@@ -618,7 +618,7 @@ void R_InitLightTables (void)
 		nocollide_startmap = ((LIGHTLEVELS-1-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
 		for (j=0 ; j<MAXLIGHTZ ; j++)
 		{
-			scale = FixedDiv ((SCREENWIDTH/2*FRACUNIT), (j+1)<<LIGHTZSHIFT);
+			scale = FixedDiv ((::g->SCREENWIDTH/2*FRACUNIT), (j+1)<<LIGHTZSHIFT);
 			scale >>= LIGHTSCALESHIFT;
 			level = nocollide_startmap - scale/DISTMAP;
 
@@ -680,13 +680,16 @@ void R_ExecuteSetViewSize (void)
 	}
 
 	// SMF - temp
-	::g->scaledviewwidth *= GLOBAL_IMAGE_SCALER;
+	::g->scaledviewwidth *= ::g->ASPECT_IMAGE_SCALER;
 	::g->viewheight *= GLOBAL_IMAGE_SCALER;
 
 	::g->detailshift = ::g->setdetail;
 	::g->viewwidth = ::g->scaledviewwidth>>::g->detailshift;
-
-	::g->centery = ::g->viewheight/2;
+	//GK:Re-calculate the viewheight in case we want aspect ratio correction but dont apply it everywhere
+	int nh = ::g->viewheight / GLOBAL_IMAGE_SCALER;
+	nh = nh * (GLOBAL_IMAGE_SCALER - (::g->ASPECT_IMAGE_SCALER-GLOBAL_IMAGE_SCALER));
+	::g->centery = nh/2;
+	//GK: End
 	::g->centerx = ::g->viewwidth/2;
 	::g->centerxfrac = ::g->centerx<<FRACBITS;
 	::g->centeryfrac = ::g->centery<<FRACBITS;
@@ -722,7 +725,7 @@ void R_ExecuteSetViewSize (void)
 	// planes
 	for (i=0 ; i < ::g->viewheight ; i++)
 	{
-		dy = ((i-::g->viewheight/2)<<FRACBITS)+FRACUNIT/2;
+		dy = ((i-nh/2)<<FRACBITS)+FRACUNIT/2;//GK: Use the aspect height in order to not get moving floors and ceilings
 		dy = abs(dy);
 		::g->yslope[i] = FixedDiv ( (::g->viewwidth << ::g->detailshift)/2*FRACUNIT, dy);
 	}
@@ -740,7 +743,7 @@ void R_ExecuteSetViewSize (void)
 		nocollide_startmap = ((LIGHTLEVELS-1-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
 		for (j=0 ; j<MAXLIGHTSCALE ; j++)
 		{
-			level = nocollide_startmap - j*SCREENWIDTH/(::g->viewwidth << ::g->detailshift)/DISTMAP;
+			level = nocollide_startmap - j* ::g->SCREENWIDTH/(::g->viewwidth << ::g->detailshift)/DISTMAP;
 
 			if (level < 0)
 				level = 0;

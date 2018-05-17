@@ -119,7 +119,7 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 		//return; 
 
 	#ifdef RANGECHECK 
-		if ((unsigned)::g->dc_x >= SCREENWIDTH
+		if ((unsigned)::g->dc_x >= ::g->SCREENWIDTH
 			|| ::g->dc_yl < 0
 			|| ::g->dc_yh >= SCREENHEIGHT) 
 			I_Error ("R_DrawColumn: %i to %i at %i", ::g->dc_yl, ::g->dc_yh, ::g->dc_x); 
@@ -158,7 +158,7 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 				//const int wrapped1 = truncated1 & mheight;
 
 				*dest = dc_colormap[dc_source[truncated1]];
-				dest += SCREENWIDTH;
+				dest += ::g->SCREENWIDTH;
 				if ((frac += fracstep) >= mheight)
 					frac -= mheight;
 				
@@ -173,7 +173,7 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 				//GK:Now that it has the right height use the mheight and no more the 127
 				const int wrapped1 = truncated1 & mheight;
 				*dest = dc_colormap[dc_source[wrapped1]];
-				dest += SCREENWIDTH;
+				dest += ::g->SCREENWIDTH;
 				frac += fracstep;
 				//*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
 				//dest += SCREENWIDTH;
@@ -262,7 +262,7 @@ void R_DrawColumnLow ( lighttable_t * dc_colormap,
 		return; 
 
 #ifdef RANGECHECK 
-	if ((unsigned)::g->dc_x >= SCREENWIDTH
+	if ((unsigned)::g->dc_x >= ::g->SCREENWIDTH
 		|| ::g->dc_yl < 0
 		|| ::g->dc_yh >= SCREENHEIGHT)
 	{
@@ -284,8 +284,8 @@ void R_DrawColumnLow ( lighttable_t * dc_colormap,
 	{
 		// Hack. Does not work corretly.
 		*dest2 = *dest = ::g->dc_colormap[::g->dc_source[(frac>>FRACBITS)&127]];
-		dest += SCREENWIDTH;
-		dest2 += SCREENWIDTH;
+		dest += ::g->SCREENWIDTH;
+		dest2 += ::g->SCREENWIDTH;
 		frac += fracstep; 
 
 	} while (count--);
@@ -332,7 +332,7 @@ void R_DrawFuzzColumn ( lighttable_t * dc_colormap,
 
 
 #ifdef RANGECHECK 
-	if ((unsigned)::g->dc_x >= SCREENWIDTH
+	if ((unsigned)::g->dc_x >= ::g->SCREENWIDTH
 		|| ::g->dc_yl < 0 || ::g->dc_yh >= SCREENHEIGHT)
 	{
 		I_Error ("R_DrawFuzzColumn: %i to %i at %i",
@@ -388,7 +388,7 @@ void R_DrawFuzzColumn ( lighttable_t * dc_colormap,
 		if (++::g->fuzzpos == FUZZTABLE) 
 			::g->fuzzpos = 0;
 
-		dest += SCREENWIDTH;
+		dest += ::g->SCREENWIDTH;
 
 		frac += fracstep; 
 	} while (count--); 
@@ -420,7 +420,7 @@ void R_DrawTranslatedColumn ( lighttable_t * dc_colormap,
 		return; 
 
 #ifdef RANGECHECK 
-	if ((unsigned)::g->dc_x >= SCREENWIDTH
+	if ((unsigned)::g->dc_x >= ::g->SCREENWIDTH
 		|| ::g->dc_yl < 0
 		|| ::g->dc_yh >= SCREENHEIGHT)
 	{
@@ -466,7 +466,7 @@ void R_DrawTranslatedColumn ( lighttable_t * dc_colormap,
 		// Thus the "green" ramp of the player 0 sprite
 		//  is mapped to gray, red, black/indigo. 
 		*dest = dc_colormap[::g->dc_translation[dc_source[frac>>FRACBITS]]];
-		dest += SCREENWIDTH;
+		dest += ::g->SCREENWIDTH;
 
 		frac += fracstep; 
 	} while (count--); 
@@ -550,7 +550,7 @@ void R_DrawSpan ( fixed_t xfrac,
 #ifdef RANGECHECK
 	if (::g->ds_x2 < ::g->ds_x1
 		|| ::g->ds_x1<0
-		|| ::g->ds_x2>=SCREENWIDTH  
+		|| ::g->ds_x2>= ::g->SCREENWIDTH
 		|| (unsigned)::g->ds_y>SCREENHEIGHT)
 	{
 		I_Error( "R_DrawSpan: %i to %i at %i",
@@ -679,7 +679,7 @@ void R_DrawSpanLow ( fixed_t xfrac,
 #ifdef RANGECHECK 
 	if (::g->ds_x2 < ::g->ds_x1
 		|| ::g->ds_x1<0
-		|| ::g->ds_x2>=SCREENWIDTH  
+		|| ::g->ds_x2>= ::g->SCREENWIDTH
 		|| (unsigned)::g->ds_y>SCREENHEIGHT)
 	{
 		I_Error( "R_DrawSpan: %i to %i at %i",
@@ -727,21 +727,21 @@ R_InitBuffer
 	// Handle resize,
 	//  e.g. smaller view windows
 	//  with border and/or status bar.
-	::g->viewwindowx = (SCREENWIDTH-width) >> 1; 
+	::g->viewwindowx = (::g->SCREENWIDTH-width) >> 1;
 
 	// Column offset. For windows.
 	for (i=0 ; i<width ; i++) 
 		::g->columnofs[i] = ::g->viewwindowx + i;
 
 	// Samw with base row offset.
-	if (width == SCREENWIDTH) 
+	if (width == ::g->SCREENWIDTH)
 		::g->viewwindowy = 0; 
 	else 
 		::g->viewwindowy = (SCREENHEIGHT-SBARHEIGHT-height) >> 1; 
 
 	// Preclaculate all row offsets.
 	for (i=0 ; i<height ; i++) 
-		::g->ylookup[i] = ::g->screens[0] + (i+::g->viewwindowy)*SCREENWIDTH; 
+		::g->ylookup[i] = ::g->screens[0] + (i+::g->viewwindowy)*::g->SCREENWIDTH;
 } 
 
 
@@ -769,7 +769,7 @@ void R_FillBackScreen (void)
 
 	char*	name;
 
-	if (::g->scaledviewwidth == SCREENWIDTH)
+	if (::g->scaledviewwidth == ::g->SCREENWIDTH)
 		return;
 
 	if ( ::g->gamemode == commercial)
@@ -781,14 +781,14 @@ void R_FillBackScreen (void)
 	dest = ::g->screens[1]; 
 
 	for (y=0 ; y<SCREENHEIGHT-SBARHEIGHT ; y++) { 
-		for (x=0 ; x<SCREENWIDTH/64 ; x++) 	{ 
+		for (x=0 ; x<::g->SCREENWIDTH/64 ; x++) 	{
 			memcpy(dest, src+((y&63)<<6), 64); 
 			dest += 64; 
 		} 
-		if (SCREENWIDTH&63) 
+		if (::g->SCREENWIDTH&63)
 		{ 
-			memcpy(dest, src+((y&63)<<6), SCREENWIDTH&63); 
-			dest += (SCREENWIDTH&63); 
+			memcpy(dest, src+((y&63)<<6), ::g->SCREENWIDTH&63);
+			dest += (::g->SCREENWIDTH&63);
 		} 
 	} 
 
@@ -861,31 +861,31 @@ void R_DrawViewBorder (void)
 	int		ofs;
 	int		i; 
 
-	if (::g->scaledviewwidth == SCREENWIDTH)
+	if (::g->scaledviewwidth == ::g->SCREENWIDTH)
 		return; 
 
 	top = ((SCREENHEIGHT-SBARHEIGHT)-::g->viewheight)/2; 
-	side = (SCREENWIDTH-::g->scaledviewwidth)/2;
+	side = (::g->SCREENWIDTH-::g->scaledviewwidth)/2;
 
 	// copy top and one line of left side 
-	R_VideoErase (0, top*SCREENWIDTH+side);
+	R_VideoErase (0, top*::g->SCREENWIDTH+side);
 
 	// copy one line of right side and bottom 
-	ofs = (::g->viewheight+top)*SCREENWIDTH-side;
-	R_VideoErase (ofs, top*SCREENWIDTH+side);
+	ofs = (::g->viewheight+top)*::g->SCREENWIDTH-side;
+	R_VideoErase (ofs, top*::g->SCREENWIDTH+side);
 
 	// copy ::g->sides using wraparound 
-	ofs = top*SCREENWIDTH + SCREENWIDTH-side;
+	ofs = top* ::g->SCREENWIDTH + ::g->SCREENWIDTH-side;
 	side <<= 1;
 
 	for (i=1 ; i < ::g->viewheight ; i++) 
 	{ 
 		R_VideoErase (ofs, side); 
-		ofs += SCREENWIDTH;
+		ofs += ::g->SCREENWIDTH;
 	} 
 
 	// ? 
-	V_MarkRect (0,0,SCREENWIDTH, SCREENHEIGHT-SBARHEIGHT);
+	V_MarkRect (0,0, ::g->SCREENWIDTH, SCREENHEIGHT-SBARHEIGHT);
 } 
 
 
