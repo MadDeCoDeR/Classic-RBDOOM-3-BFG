@@ -493,7 +493,11 @@ ST_Responder (event_t* ev)
 				start = NULL;
 				::g->plyr->armorpoints = 200;
 				::g->plyr->armortype = 2;
-
+				//GK: Give the Backpack with the kfa cheat
+				::g->plyr->backpack = true;
+				for (i = 0; i<NUMAMMO; i++)
+					::g->plyr->maxammo[i] *= 2;
+				//GK: End
 				for (i = 0; i<NUMWEAPONS; i++)
 					::g->plyr->weaponowned[i] = true;
 
@@ -1420,8 +1424,8 @@ void ST_Init (void)
 {
 	::g->veryfirsttime = 0;
 	ST_loadData();
-	::g->screens[4] = (byte *) DoomLib::Z_Malloc( SCREENWIDTH * SCREENHEIGHT /*ST_WIDTH*ST_HEIGHT*/, PU_STATIC, 0);
-	memset( ::g->screens[4], 0, SCREENWIDTH * SCREENHEIGHT );
+	::g->screens[4] = (byte *) DoomLib::Z_Malloc(::g->SCREENWIDTH * SCREENHEIGHT /*ST_WIDTH*ST_HEIGHT*/, PU_STATIC, 0);
+	memset( ::g->screens[4], 0, ::g->SCREENWIDTH * SCREENHEIGHT );
 }
 
 
@@ -1491,7 +1495,11 @@ CONSOLE_COMMAND_SHIP( idkfa, "cheat for key full ammo", 0 ) {
 	int i = 0;
 	::g->plyr->armorpoints = 200;
 	::g->plyr->armortype = 2;
-
+	//GK: Give the Backpack with the kfa cheat
+	::g->plyr->backpack = true;
+	for (i = 0; i<NUMAMMO; i++)
+		::g->plyr->maxammo[i] *= 2;
+	//GK: End
 	for (i=0;i<NUMWEAPONS;i++)
 		::g->plyr->weaponowned[i] = true;
 
