@@ -1414,6 +1414,12 @@ void idMenuHandler_Shell::StartGame( int index )
 	{
 		cmdSystem->AppendCommandText( va( "map %s %d\n", "game/le_enpro1", 2 ) );
 	}
+	//GK: Get the start map string and use it for starting a new game with the custom expansion
+	else if (index == 3)
+	{
+		cmdSystem->AppendCommandText(va("map %s %d\n", idLocalization::GetString("#str_swf_start_map"),3) );
+	}
+	//GK: End
 }
 
 static const int NUM_DOOM_INTRO_LINES = 7;

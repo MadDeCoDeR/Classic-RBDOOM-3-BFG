@@ -59,6 +59,8 @@ public:
 	static int					frameNumber;
 	//enables/disables the gamepad for PC use
 	static bool					joystick;
+	//Use custom expansion on Doom 3
+	static bool					usecustom;
 
 	static void					Init();
 	static void					ShutDown();

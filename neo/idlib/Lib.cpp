@@ -44,6 +44,7 @@ idFileSystem* 	idLib::fileSystem	= NULL;
 int				idLib::frameNumber	= 0;
 bool			idLib::mainThreadInitialized = 0;
 bool			idLib::joystick = 0;
+bool			idLib::usecustom = 0;
 ID_TLS			idLib::isMainThread = 0;
 
 char idException::error[2048];

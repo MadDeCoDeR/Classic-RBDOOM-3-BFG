@@ -197,7 +197,13 @@ void idMenuScreen_Shell_Difficulty::ShowScreen( const mainMenuTransition_t trans
 	{
 		nightmareUnlocked = g_leNightmare.GetBool();
 	}
-	
+	//GK: Always have available the Nightmare difficulty on custom expansions
+	else if (type == 3)
+	{
+		nightmareUnlocked = true;
+	}
+	//GK: End
+
 	int skill = Max( 0, g_skill.GetInteger() );
 	if( !nightmareUnlocked )
 	{
@@ -330,6 +336,12 @@ bool idMenuScreen_Shell_Difficulty::HandleAction( idWidgetAction& action, const 
 				{
 					shellMgr->ShowLEIntro();
 				}
+				//GK: Just start a new game without intro
+				else if (type == 3)
+				{
+					shellMgr->StartGame(3);
+				}
+				//GK: End
 			}
 			
 			return true;

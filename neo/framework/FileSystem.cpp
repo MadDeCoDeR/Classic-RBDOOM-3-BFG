@@ -1800,6 +1800,19 @@ const char* idFileSystemLocal::OSPathToRelativePath( const char* OSPath )
 	if( fs_game.GetString()[0] != 0 )
 	{
 		basePaths.Append( fs_game.GetString() );
+		//GK: Make sure the mod we load has custom maps and strings before we even consider it an expansion
+		char* mapath = new char[256];
+		sprintf(mapath, "%s/maps", fs_game.GetString());
+		char* mapath2 = new char[256];
+		sprintf(mapath2, "%s/strings", fs_game.GetString());
+		struct stat info;
+		struct stat info2;
+		stat(mapath, &info);
+		stat(mapath2, &info2);
+		if (info.st_mode & S_IFDIR && info2.st_mode & S_IFDIR) {
+			idLib::usecustom = true;
+		}
+		//GK: End
 	}
 	if( fs_game_base.GetString()[0] != 0 )
 	{
