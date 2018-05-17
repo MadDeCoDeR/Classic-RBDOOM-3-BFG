@@ -4,6 +4,37 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+17 May 2018 - Classic RBDOOM-3-BFG 1.1.9.8
+_______________________________
+
+[classicdoom]
+
+- Added aspect ratio correction
+
+- Vastly improved loading time for compressed files (.zip,.pk3)
+
+- Added the option throught the parameter "cl_messages" to set the maximum number of message lines (real max is 4)
+
+- Get the backpack using cheats
+
+[DOOM3BFG]
+
+- Extended the maximum number of availabe parameters that can be used (on both engines)
+
+- Mods can be shown as expansions (see MOD2EXP.txt for more info)
+
+- Added forced aspect ratio option (4:3) and removed the soft shadows option (use the launcher instead)
+
+- Added support for non-16bit wav file (I hope)
+
+[Launcher]
+
+- Renamed the shadow mapping option to "Soft Shadows".
+
+- Added two new option on the tab DOOM I & II which allowing you to set the maximum number of message lines and activate aspect ratio correction
+
+_______________________________________
+
 07 May 2018 - Classic RBDOOM-3-BFG 1.1.9.7
 _______________________________
 

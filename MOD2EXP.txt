@@ -1,0 +1,9 @@
+In order to make your Doom 3 mod an expansion follow these steps:
+
+1. copy paste the english.lang file (and it's folder) from the base directory to your mod directory
+
+2. Open the english.lang file (mostly recommented notepad++) and add on it's end two new strings:
+#str_swf_custom_game: The name of your mod
+#str_swf_start_map: The first map to be loaded
+
+3. And thats it. Have fun !!!
