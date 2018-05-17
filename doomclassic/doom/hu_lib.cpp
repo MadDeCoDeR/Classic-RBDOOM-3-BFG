@@ -42,6 +42,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // qboolean : whether the screen is always erased
 
+patch_t** genfont; //GK: Keep the font for messages global
 
 void HUlib_init(void)
 {
@@ -121,7 +122,7 @@ HUlib_drawTextLine
 	    && c <= '_')
 	{
 	    w = SHORT(l->f[c - l->sc]->width);
-	    if (x+w > SCREENWIDTH)
+	    if (x+w > ::g->SCREENWIDTH)
 		break;
 	    V_DrawPatchDirect(x, l->y, FG, l->f[c - l->sc]);
 	    x += w;
@@ -129,14 +130,14 @@ HUlib_drawTextLine
 	else
 	{
 	    x += 4;
-	    if (x >= SCREENWIDTH)
+	    if (x >= ::g->SCREENWIDTH)
 		break;
 	}
     }
 
     // draw the cursor if requested
     if (drawcursor
-	&& x + SHORT(l->f['_' - l->sc]->width) <= SCREENWIDTH)
+	&& x + SHORT(l->f['_' - l->sc]->width) <= ::g->SCREENWIDTH)
     {
 	V_DrawPatchDirect(x, l->y, FG, l->f['_' - l->sc]);
     }
@@ -144,7 +145,7 @@ HUlib_drawTextLine
 
 
 // sorta called by HU_Erase and just better darn get things straight
-void HUlib_eraseTextLine(hu_textline_t* l)
+bool HUlib_eraseTextLine(hu_textline_t* l)
 {
     int			lh;
     int			y;
@@ -153,15 +154,16 @@ void HUlib_eraseTextLine(hu_textline_t* l)
     // Only erases when NOT in automap and the screen is reduced,
     // and the text must either need updating or refreshing
     // (because of a recent change back from the automap)
-
+	bool erased = false;
     if (!::g->automapactive &&
 	::g->viewwindowx && l->needsupdate)
     {
+		erased = true;
 	lh = SHORT(l->f[0]->height) + 1;
-	for (y=l->y,yoffset=y*SCREENWIDTH ; y<l->y+lh ; y++,yoffset+=SCREENWIDTH)
+	for (y=l->y,yoffset=y* ::g->SCREENWIDTH ; y<l->y+lh ; y++,yoffset+= ::g->SCREENWIDTH)
 	{
 	    if (y < ::g->viewwindowy || y >= ::g->viewwindowy + ::g->viewheight)
-		R_VideoErase(yoffset, SCREENWIDTH); // erase entire line
+		R_VideoErase(yoffset, ::g->SCREENWIDTH); // erase entire line
 	    else
 	    {
 		R_VideoErase(yoffset, ::g->viewwindowx); // erase left border
@@ -173,7 +175,7 @@ void HUlib_eraseTextLine(hu_textline_t* l)
 
     ::g->lastautomapactive = ::g->automapactive;
     if (l->needsupdate) l->needsupdate--;
-
+	return erased;
 }
 
 void
@@ -193,9 +195,10 @@ HUlib_initSText
     s->on = on;
     s->laston = true;
     s->cl = 0;
+	genfont = font;
     for (i=0;i<h;i++)
 	HUlib_initTextLine(&s->l[i],
-			   x, y - i*(SHORT(font[0]->height)+1),
+			   x, y,
 			   font, startchar);
 
 }
@@ -206,13 +209,24 @@ void HUlib_addLineToSText(hu_stext_t* s)
     int i;
 
     // add a clear line
-    if (++s->cl == s->h)
-	s->cl = 0;
-    HUlib_clearTextLine(&s->l[s->cl]);
+	//GK: Check if it is out of the line limit and remove the oldest message
+	if (++s->cl > s->h) {
+		s->cl = s->h;
+		for (int i = 0; i < s->h-1; i++)
+			s->l[i] = s->l[i + 1];
+	}
+
+    HUlib_clearTextLine(&s->l[s->cl-1]);
 
     // everything needs updating
-    for (i=0 ; i<s->h ; i++)
-	s->l[i].needsupdate = 4;
+	for (i = 0; i < s->cl; i++)
+		s->l[i].y = 0;
+
+	for (i = 0; i < s->cl; i++)
+		s->l[i].y = s->l[i].y + (s->cl - 1 - i) * (SHORT(genfont[0]->height) + 1);
+
+		s->l[s->cl-1].needsupdate = 4; //Doesn't seems to work as expected
+		//GK: End
 
 }
 
@@ -225,10 +239,10 @@ HUlib_addMessageToSText
     HUlib_addLineToSText(s);
     if (prefix)
 	while (*prefix)
-	    HUlib_addCharToTextLine(&s->l[s->cl], *(prefix++));
+	    HUlib_addCharToTextLine(&s->l[s->cl-1], *(prefix++));
 
     while (*msg)
-	HUlib_addCharToTextLine(&s->l[s->cl], *(msg++));
+	HUlib_addCharToTextLine(&s->l[s->cl-1], *(msg++));
 }
 
 void HUlib_drawSText(hu_stext_t* s)
@@ -236,15 +250,17 @@ void HUlib_drawSText(hu_stext_t* s)
     int i, idx;
     hu_textline_t *l;
 
-    if (!*s->on)
-	return; // if not on, don't draw
+	if (!*s->on) {
+		s->cl = 0; //GK: No longer rendering and therefor no lines sould stay
+		return; // if not on, don't draw
+	}
 
     // draw everything
-    for (i=0 ; i<s->h ; i++)
+    for (i=0 ; i<s->cl ; i++)
     {
-	idx = s->cl - i;
+	idx = i;
 	if (idx < 0)
-	    idx += s->h; // handle queue of ::g->lines
+	    idx += s->cl; // handle queue of ::g->lines
 	
 	l = &s->l[idx];
 
@@ -261,9 +277,13 @@ void HUlib_eraseSText(hu_stext_t* s)
 
     for (i=0 ; i<s->h ; i++)
     {
-	if (s->laston && !*s->on)
-	    s->l[i].needsupdate = 4;
-	HUlib_eraseTextLine(&s->l[i]);
+		if (s->laston && !*s->on) {
+			s->l[i].needsupdate = 4;
+
+			if (HUlib_eraseTextLine(&s->l[i]) && s->cl > 1) {
+				s->cl--;//GK: Reduce the number of lines
+			}
+		}
     }
     s->laston = *s->on;
 

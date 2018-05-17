@@ -120,7 +120,7 @@ qboolean HUlib_delCharFromTextLine(hu_textline_t *t);
 void	HUlib_drawTextLine(hu_textline_t *l, qboolean drawcursor);
 
 // erases text line
-void	HUlib_eraseTextLine(hu_textline_t *l); 
+bool	HUlib_eraseTextLine(hu_textline_t *l); 
 
 
 //

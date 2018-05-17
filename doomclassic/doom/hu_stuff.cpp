@@ -438,7 +438,7 @@ void resetMapNames() {
 
 
 
-
+idCVar cl_messages("cl_messages", "1", CVAR_INIT | CVAR_INTEGER | CVAR_ARCHIVE, "Set how many messages will be shown", 1, 4);
 const char*	shiftxform;
 
 const char english_shiftxform[] =
@@ -529,7 +529,7 @@ void HU_Start(void)
 
 	// create the message widget
 	HUlib_initSText(&::g->w_message,
-		HU_MSGX, HU_MSGY, HU_MSGHEIGHT,
+		HU_MSGX, HU_MSGY, cl_messages.GetInteger(),
 		::g->hu_font,
 		HU_FONTSTART, &::g->message_on);
 
