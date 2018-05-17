@@ -521,13 +521,13 @@ bool idSoundSample_XAudio2::LoadWav( const idStr& filename )
 	
 	if( format.basic.formatTag == idWaveFile::FORMAT_PCM || format.basic.formatTag == idWaveFile::FORMAT_EXTENSIBLE )
 	{
-	
-		if( format.basic.bitsPerSample != 16 )
+	//GK: I guess it can now play non 16-bit wav files
+		/*if( format.basic.bitsPerSample != 16 )
 		{
 			idLib::Warning( "LoadWav( %s ) : %s", filename.c_str(), "Not a 16 bit PCM wav file" );
 			MakeDefault();
 			return false;
-		}
+		}*/
 		
 		playBegin = 0;
 		playLength = ( totalBufferSize ) / format.basic.blockSize;
