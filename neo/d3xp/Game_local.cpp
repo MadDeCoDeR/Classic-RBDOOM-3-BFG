@@ -72,7 +72,7 @@ const char* idGameLocal::sufaceTypeNames[ MAX_SURFACE_TYPES ] =
 };
 
 idCVar net_usercmd_timing_debug( "net_usercmd_timing_debug", "0", CVAR_BOOL, "Print messages about usercmd timing." );
-
+extern idCVar r_aspectratio; //GK: The only place where it's nedded
 
 // List of all defs used by the player that will stay on the fast timeline
 static const char* fastEntityList[] =
@@ -3059,14 +3059,36 @@ void idGameLocal::CalcFov( float base_fov, float& fov_x, float& fov_y ) const
 	}
 	
 	// Calculate the fov_y based on an ideal aspect ratio
+	//GK: Just in case
+	/*if (r_aspectratio.GetBool()) {
+		temp_ratio_x = 16.0f;
+		temp_ratio_y = 9.0f;
+	}
+	else {
+		temp_ratio_x = 4.0f;
+		temp_ratio_y = 3.0f;
+	}*/
 	const float ideal_ratio_x = 16.0f;
 	const float ideal_ratio_y = 9.0f;
 	const float tanHalfX = idMath::Tan( DEG2RAD( base_fov * 0.5f ) );
 	fov_y = 2.0f * RAD2DEG( idMath::ATan( ideal_ratio_y * tanHalfX, ideal_ratio_x ) );
 	
 	// Then calculate fov_x based on the true aspect ratio
-	const float ratio_x = width * renderSystem->GetPixelAspect();
-	const float ratio_y = height;
+	//GK: Either calulate the x-ratio with the resolution
+	//or use a fixed one (4:3)
+	float temp_ratio_x;
+	float temp_ratio_y;
+	if (r_aspectratio.GetBool()) {
+		temp_ratio_x = width * renderSystem->GetPixelAspect();
+		temp_ratio_y = height;
+	}
+	else {
+		temp_ratio_x = 4.0f;
+		temp_ratio_y = 3.0f;
+	}
+	const float ratio_x = temp_ratio_x;
+	const float ratio_y = temp_ratio_y;
+	//GK: End
 	const float tanHalfY = idMath::Tan( DEG2RAD( fov_y * 0.5f ) );
 	fov_x = 2.0f * RAD2DEG( idMath::ATan( ratio_x * tanHalfY, ratio_y ) );
 }

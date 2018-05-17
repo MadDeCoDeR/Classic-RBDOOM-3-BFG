@@ -38,6 +38,7 @@ extern idCVar r_swapInterval;
 extern idCVar s_volume_dB;
 extern idCVar r_exposure; // RB: use this to control HDR exposure or brightness in LDR mode
 extern idCVar r_lightScale;
+extern idCVar r_aspectratio; //GK: use forced aspect ratio
 
 /*
 ========================
@@ -79,7 +80,15 @@ void idMenuScreen_Shell_SystemOptions::Initialize( idMenuHandler* data )
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN );
 	options->AddChild( control );
-	
+	//GK: Begin
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TEXT);
+	control->SetLabel("Aspect Ratio");
+	control->SetDataSource(&systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_ASPECTRATIO);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_ASPECTRATIO);
+	options->AddChild(control);
+	//GK: End
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
 	control->SetLabel( "#str_swf_framerate" );
@@ -112,14 +121,14 @@ void idMenuScreen_Shell_SystemOptions::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_MOTIONBLUR );
 	options->AddChild( control );
 	
-	// RB begin
-	control = new( TAG_SWF ) idMenuWidget_ControlButton();
+	// RB begin //GK: Some option had to be sacrificed and since it's available on the launcher and requires restart then it's the perfect candinate
+	/*control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
 	control->SetLabel( "Soft Shadows" );
 	control->SetDataSource( &systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_SHADOWMAPPING );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_SHADOWMAPPING );
-	options->AddChild( control );
+	options->AddChild( control );*/
 	
 	/*control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_BAR );
@@ -492,6 +501,15 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 {
 	switch( fieldIndex )
 	{
+		//GK: BEgin
+	case SYSTEM_FIELD_ASPECTRATIO:
+	{
+		static const int numValues = 2;
+		static const int values[numValues] = { 0, 1 };
+		r_aspectratio.SetInteger(AdjustOption(r_aspectratio.GetInteger(), values, numValues, adjustAmount));
+		break;
+	}
+	//GK: End
 		case SYSTEM_FIELD_FRAMERATE:
 		{
 			static const int numValues = 2;
@@ -598,6 +616,17 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 				return va( "%4i x %4i @ %dhz", modeList[vidmode].width, modeList[vidmode].height, modeList[vidmode].displayHz );
 			}
 		}
+		//GK: Begin
+		case SYSTEM_FIELD_ASPECTRATIO:
+			if (r_aspectratio.GetInteger())
+			{
+				return "Dynamic";
+			}
+			else
+			{
+				return "4:3";
+			}
+			//GK: End
 		case SYSTEM_FIELD_FRAMERATE:
 			return va( "%d FPS", com_engineHz.GetInteger() );
 		case SYSTEM_FIELD_VSYNC:
