@@ -78,7 +78,7 @@ public:
 	const char* const* 	GetArgs( int* argc );
 	
 private:
-	static const int		MAX_COMMAND_ARGS = 64;
+	static const int		MAX_COMMAND_ARGS = 256; //GK: ULIMITED ARGUMENTS (Not really)
 	static const int		MAX_COMMAND_STRING = 2 * MAX_STRING_CHARS;
 	
 	int						argc;								// number of arguments
