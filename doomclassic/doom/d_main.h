@@ -37,7 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 
 extern const char*		extraWad;
 
-#define MAXWADFILES             20000 //GK: The more the better (especially when it comes to zip files)
+#define MAXWADFILES             200000 //GK: The more the better (especially when it comes to zip files)
 extern const char*		wadfiles[MAXWADFILES];
 
 void D_AddExtraWadFile( const char *file );

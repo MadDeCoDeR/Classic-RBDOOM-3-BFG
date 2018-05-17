@@ -71,6 +71,13 @@ int			numlumps;
 void**		lumpcache;
 std::vector<std::string> fname;
 std::vector<std::string> foldername;
+//GK: Keep information retrieved from .zip and .pk3 files
+//inside those variables
+std::vector<filelump_t> zipfileinfo (1);
+std::vector<unz_file_pos> zippos(1);
+int zipind = 0;
+std::vector<std::string>wadsinzip;
+//GK: End
 bool OpenCompFile(const char* filename);
 void W_RemoveLump(int lump);
 
@@ -179,8 +186,11 @@ void W_AddFile ( const char *filename)
 		//GK: when loading archives return instandly don't add it to the lump list
 			if (OpenCompFile(filename)) {
 				//handle=nullptr;
-				fileSystem->CloseFile(handle);
-				return;
+				//fileSystem->CloseFile(handle);
+				//return;
+				//GK: Give the list of files that has been found inside the .zip,.pk3 file
+				//to the lumpinfo list
+				fileinfo = zipfileinfo;
 			}
 			else {
 				// single lump file
@@ -401,10 +411,14 @@ void W_AddFile ( const char *filename)
 													if (!idStr::Icmpn(tn + 4, filelumpPointer->name + 4, 2)) {//GK:Silly me forget some if case senarios
 														ok = true;
 														strcpy(tlump->name, filelumpPointer->name);
-														lumpinfo_t* ttlump = &lumpinfo[j + 1];
+														//GK: Since the replacement loop starts from the end
+														//then look previous entries for frame rotations
+														int k = 1;
+														lumpinfo_t* ttlump = &lumpinfo[j - k];
 														while (!idStr::Icmpn(ttlump->name, filelumpPointer->name, 5)) {
-															W_RemoveLump(j);
-															ttlump = &lumpinfo[j + 1];
+															W_RemoveLump(j- (k-1));
+															k++;
+															ttlump = &lumpinfo[j - k];
 															//tpos++;
 														}
 													}
@@ -428,10 +442,14 @@ void W_AddFile ( const char *filename)
 										if (!idStr::Icmpn(tn + 4, filelumpPointer->name + 4, 2)) {
 											strcpy(tlump->name, filelumpPointer->name);
 											ok = true;
-											lumpinfo_t* ttlump = &lumpinfo[j+1];
+											int k = 1;
+											//GK: Since the replacement loop starts from the end
+											//then look previous entries for frame rotations
+											lumpinfo_t* ttlump = &lumpinfo[j-k];
 											while (!idStr::Icmpn(ttlump->name, filelumpPointer->name, 5)) {
-												W_RemoveLump(j);
-												ttlump = &lumpinfo[j + 1];
+												W_RemoveLump(j-(k-1));
+												k++;
+												ttlump = &lumpinfo[j - k];
 												//tpos++;
 											}
 										}
@@ -579,9 +597,17 @@ void W_FreeWadFiles() {
 	}
 	::g->numWadFiles = 0;
 	extraWad = 0;
+	//GK: Clear the file position array that we retrive from multiple 
+	//.zip,.pk3 files
+	if (zippos.size() > 1) {
+		zipind = 0;
+		zippos.clear();
+		zippos.resize(1);
+	}
+	//GK: End
 	//GK: Game crashing bugfix (still need work)
 	if (::g->gamemode == commercial) {
-		idLib::Printf("Reseting Dehacked Patches...\n");
+		I_Printf("Reseting Dehacked Patches...\n");
 		resetValues();
 		resetWeapons();
 		ResetAmmo();
@@ -591,7 +617,7 @@ void W_FreeWadFiles() {
 		resetSprnames();
 		ResetPars();
 		ResetFinalflat();
-		idLib::Printf("Reset Completed!!\n");
+		I_Printf("Reset Completed!!\n");
 	}
 	//GK End
 }
@@ -630,6 +656,20 @@ void W_InitMultipleFiles (const char** filenames)
 			W_AddFile (*filenames);
 			iwad = false;
 		}
+		//GK: It doesn't like doing recursive calls
+		// and then adding the file that make them.
+		//So we load the founded .wad files later
+		for (int i = 0; i < wadsinzip.size(); i++) {
+			inzip = true;
+			W_AddFile(wadsinzip[i].c_str());
+			iwad = false;
+		}
+		if (wadsinzip.size() > 0) {
+			inzip = false;
+			W_AddFile("wads/newopt.wad");
+			wadsinzip.clear();
+		}
+		//GK: End
 		//iwad = true;
 		if (!numlumps)
 			I_Error ("W_InitMultipleFiles: no files found");
@@ -789,12 +829,34 @@ W_ReadLump
 	handle = l->handle;
 	//idLib::Printf("Reading %s from %s\n", l->name, handle->GetName());
 	//if (handle->GetName() != NULL && handle->GetName() != "" && handle->GetName() != " ") {
-		int r=handle->Seek(l->position, FS_SEEK_SET);
+	//GK: Check if the "wild" file is a zip file
+	unzFile zip = NULL;
+	if (idStr::Icmp(handle->GetName() + strlen(handle->GetName()) - 3, "wad")) {
+		zip = unzOpen(handle->GetFullPath());
+	}
+	//GK: End
+	if (zip == NULL) {
+		int r = handle->Seek(l->position, FS_SEEK_SET);
 		//GK: Additional checkups has never been bad
 		if (r == -1) {
 			common->FatalError("W_ReadLump: Failed to find %s on %s", l->name, l->handle->GetName());
 		}
 		c = handle->Read(dest, l->size);
+	}
+	//GK: Open and load to the returning buffer the desired file
+	//from the zip file
+	else {
+		unzGoToFilePos(zip, &zippos[l->position]); //GK: This is where zippos is saving the day
+		if (unzOpenCurrentFile(zip) == UNZ_OK) {
+			c = unzReadCurrentFile(zip, dest, l->size);
+			unzCloseCurrentFile(zip);
+		}
+		else {
+			c = 0;
+		}
+		unzClose(zip);
+	}
+	//GK: End
 
 		if (c < l->size)
 			I_Error("W_ReadLump: only read %i of %i on lump %i", c, l->size, lump);
@@ -862,6 +924,8 @@ bool OpenCompFile(const char* filename) {
 	char* senddir = new char[MAX_FILENAME];
 	senddir = "/pwads/";
 	char* fdir = new char[MAX_FILENAME];
+	zipfileinfo.clear();
+	zipfileinfo.resize(1);
 	if (inzip) {
 			sprintf(fdir, "%s%s", "base", filename);
 	}
@@ -880,6 +944,11 @@ bool OpenCompFile(const char* filename) {
 		unz_global_info gi;
 		if (unzGetGlobalInfo(zip, &gi) == UNZ_OK) {
 			char rb[READ_SIZE];
+			int indoffset = zipind;
+			zipind += gi.number_entry;
+			zipfileinfo.resize(gi.number_entry);
+			zippos.resize(zipind);
+			numlumps += gi.number_entry;
 			for (int i = 0; i < gi.number_entry; i++) {
 				unz_file_info fi;
 				char* name = new char[MAX_FILENAME];
@@ -887,35 +956,85 @@ bool OpenCompFile(const char* filename) {
 					//idLib::Printf("%s\n", name);
 					const size_t filename_length = strlen(name);
 					if (name[filename_length - 1] != '/') {
-						if (unzOpenCurrentFile(zip) == UNZ_OK) {
-							char* path = new char[MAX_FILENAME];
-							sprintf(path, "%s%s", "base/pwads/", name);
-							std::FILE *out = fopen(path, "wb");
-							if (out != NULL) {
-								int buff = UNZ_OK;
-								do {
-									buff = unzReadCurrentFile(zip, rb, READ_SIZE);
-									if (buff > 0) {
-										fwrite(rb, buff, 1, out);
+						if (!idStr::Icmp(name+filename_length - 3, "wad")) {
+							if (unzOpenCurrentFile(zip) == UNZ_OK) {
+								zipfileinfo.resize(zipfileinfo.size() - 1);
+								char* path = new char[MAX_FILENAME];
+								sprintf(path, "%s%s", "base/pwads/", name);
+								std::FILE *out = fopen(path, "wb");
+								if (out != NULL) {
+									int buff = UNZ_OK;
+									do {
+										buff = unzReadCurrentFile(zip, rb, READ_SIZE);
+										if (buff > 0) {
+											fwrite(rb, buff, 1, out);
+										}
+									} while (buff > 0);
+									fclose(out);
+									unzCloseCurrentFile(zip);
+									fname.push_back(path);
+									char* pname = new char[MAX_FILENAME];
+									sprintf(pname, "%s%s", senddir, name);
+									if (idStr::Icmp(name + strlen(name) - 3, "wad")) {
+										relp = true;
 									}
-								} while (buff > 0);
-								fclose(out);
-								unzCloseCurrentFile(zip);
-								fname.push_back(path);
-								char* pname = new char[MAX_FILENAME];
-								sprintf(pname, "%s%s",senddir, name);
-								if (idStr::Icmp(name + strlen(name) - 3, "wad")) {
-									relp = true;
-								}
-								inzip = true;
-								W_AddFile(pname);
+									inzip = true;
+									//W_AddFile(pname);
+									wadsinzip.push_back(pname);//GK: Just store the file path for now
 
+								}
+								if (i + 1 < gi.number_entry) {
+									unzGoToNextFile(zip);
+								}
 							}
+						}
+						//GK: No wad file DONT extract
+						else {
+							//GK: Trim the filename from the path
+							char* t = strtok(name, "/");
+							char* tn = new char[512];
+							while (t != NULL) {
+								tn = t;
+								t = strtok(NULL, "/");
+							}
+							//GK: And also keep the file extension
+							char* fex = new char[5];
+							t = strtok(tn, ".");
+							while (t != NULL) {
+								fex = t;
+								t = strtok(NULL, ".");
+								
+							}
+							//GK: Give fake name based on the file extension
+							if (!idStr::Icmp(fex, "deh")) {
+								strcpy(zipfileinfo[i].name, "DEHACKED");
+							}
+							else if (!idStr::Icmp(fex, "dlc")) {
+								strcpy(zipfileinfo[i].name, "EXPINFO\0");
+							}
+							else {
+								strcpy(zipfileinfo[i].name, tn);
+								for (int j = 7; j >= 0; j--) {
+									if (zipfileinfo[i].name[j] == '.') {
+										zipfileinfo[i].name[j] = '\0';
+										break;
+									}
+								}
+								//GK: Make sure the name is always upper case
+								for (int j = 0; j < 8; j++) {
+									zipfileinfo[i].name[j] = toupper(zipfileinfo[i].name[j]);
+								}
+							}
+							int j = indoffset + i;
+							unzGetFilePos(zip, &zippos[j]);//GK: this is important DONT MESS WITH IT
+							zipfileinfo[i].filepos = j;//GK: Keep the zippos position here
+							zipfileinfo[i].size = fi.uncompressed_size;
 							if (i + 1 < gi.number_entry) {
 								unzGoToNextFile(zip);
 							}
 						}
 					}
+					//GK: End
 					else {
 						//GK: If it found directory inside the archieve create it
 						strcpy(maindir, "base/pwads/");
@@ -1369,10 +1488,11 @@ void W_RemoveLump(int lump) {
 		}
 	}
 	if (epos > 0) {
-		temlump = &lumpinfo[lump + 1];
-		tl = &lumpinfo[lump + 2];
+		//GK: Start from the exact previous file
+		temlump = &lumpinfo[lump - 1];
+		tl = &lumpinfo[lump];
 		//GK:Actually make left shift of the lumpinfo array
-		for (int k = lump + 1; k <= epos; k++, temlump++, tl++) {
+		for (int k = lump - 1; k <= epos; k++, temlump++, tl++) {
 			temlump->handle = tl->handle;
 			temlump->position = tl->position;
 			temlump->size = tl->size;
