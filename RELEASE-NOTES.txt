@@ -2,6 +2,30 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 
 Thank you for downloading Classic RBDOOM-3-BFG.
 
+
+_______________________________________
+
+17 May 2018 - Classic RBDOOM-3-BFG 1.1.10
+_______________________________
+
+[classicdoom]
+
+- Restored Linux support
+
+- Fixes and improvments for aspect ratio correction
+
+- Removed slime trails (by using MBF's source code)
+
+- Fixed an issue with backpack obtained from cheats
+
+- Added support for sprites inside compress files (.pk3,.zip)
+
+[DOOM3BFG]
+
+- Restored Linux support
+
+- Updated OpenAL library and added support for ogg,flac,mp3 and bink audio formats(On all 3 games)
+
 _______________________________________
 
 17 May 2018 - Classic RBDOOM-3-BFG 1.1.9.8

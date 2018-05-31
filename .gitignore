@@ -37,3 +37,4 @@ neo/.kdev4
 neo/neo.kdev4
 /mgwbuild
 /neo/libs/ffmpeg-win64/.vs
+/Microsoft.VCToolsVersion.14.13.props
