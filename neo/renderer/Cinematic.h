@@ -41,6 +41,9 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
+#ifdef USE_OPENAL
+void			InitCinematicAudio();
+#endif
 // cinematic states
 typedef enum
 {
@@ -72,7 +75,7 @@ class idCinematic
 public:
 	// initialize cinematic play back data
 	static void			InitCinematic();
-	
+
 	// shutdown cinematic play back data
 	static void			ShutdownCinematic();
 	

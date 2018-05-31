@@ -33,10 +33,21 @@ If you have questions concerning this license or the applicable additional terms
 //GK: Include Sound local header for audio playback
 #include <../sound/snd_local.h>
 //GK:Also init variables for XAudio2
-#ifdef _MSC_VER
+#ifndef USE_OPENAL
 WAVEFORMATEX voiceFormatcine = { 0 };
 IXAudio2SourceVoice*	pMusicSourceVoice1;
 XAUDIO2_BUFFER Packet = { 0 };
+#else //GK: Add audio support for OpenAL
+#define NUM_BUFFERS 3
+static ALuint		alMusicSourceVoicecin;
+static ALuint		alMusicBuffercin[NUM_BUFFERS];
+ALenum av_sample_cin;
+int av_rate_cin;
+int alcount;
+bool trigger;
+uint8_t* tBuffer;
+int file_size;
+int offset;
 #endif
 extern idCVar s_noSound;
 
@@ -471,12 +482,22 @@ idCinematicLocal::~idCinematicLocal()
 	}
 #endif
 	//GK: Properly close local XAudio2 voice
-#ifdef _MSC_VER
+#ifndef USE_OPENAL
 	if (pMusicSourceVoice1) {
 		pMusicSourceVoice1->Stop();
 		pMusicSourceVoice1->FlushSourceBuffers();
 		pMusicSourceVoice1->DestroyVoice();
 		pMusicSourceVoice1 = NULL;
+	}
+#else
+	if (alMusicSourceVoicecin) {
+		alSourceStop(alMusicSourceVoicecin);
+		alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
+		alDeleteSources(1, &alMusicSourceVoicecin);
+}
+
+	if (alMusicBuffercin) {
+		alDeleteBuffers(NUM_BUFFERS, &alMusicBuffercin[0]);
 	}
 #endif
 	delete img;
@@ -504,6 +525,9 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 	if( testFile )
 	{
 		fullpath = testFile->GetFullPath();
+#ifdef USE_OPENAL
+		file_size = testFile->Length();
+#endif
 		fileSystem->CloseFile( testFile );
 	}
 	// RB: case sensitivity HACK for Linux
@@ -516,6 +540,9 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		if( testFile )
 		{
 			fullpath = testFile->GetFullPath();
+#ifdef USE_OPENAL
+			file_size = testFile->Length();
+#endif
 			fileSystem->CloseFile( testFile );
 		}
 		else
@@ -566,7 +593,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		dst_smp = static_cast<AVSampleFormat> (dec_ctx2->sample_fmt - 5);
 		swr_ctx = swr_alloc_set_opts(NULL, dec_ctx2->channel_layout, dst_smp, dec_ctx2->sample_rate, dec_ctx2->channel_layout, dec_ctx2->sample_fmt, dec_ctx2->sample_rate, 0, NULL);
 		int res = swr_init(swr_ctx);
-#ifdef _MSC_VER
+#ifndef USE_OPENAL
 		int format_byte = 4;
 		WAVEFORMATEXTENSIBLE exvoice = { 0 };
 		voiceFormatcine.wFormatTag = WAVE_FORMAT_EXTENSIBLE; //Use extensible wave format in order to handle properly the audio
@@ -583,6 +610,13 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		exvoice.Samples.wSamplesPerBlock = voiceFormatcine.wBitsPerSample;
 		exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
 		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice1, (WAVEFORMATEX*)&exvoice, XAUDIO2_VOICE_USEFILTER |  XAUDIO2_VOICE_MUSIC);//Use the XAudio2 that the game has initialized instead of making your own
+#else //GK: Yep while in xaudio2 require so many line in OpenAL it require quite less
+		av_rate_cin = dec_ctx2->sample_rate;
+		av_sample_cin = AL_FORMAT_MONO_FLOAT32;
+		alSourceRewind(alMusicSourceVoicecin);
+		alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
+		alcount = 0;
+		trigger = true;
 #endif
 	}
 	else {
@@ -950,7 +984,7 @@ idCinematicLocal::ImageForTimeFFMPEG
 cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 {
 	cinData_t	cinData;
-	
+	int i = 0;
 	if( thisTime <= 0 )
 	{
 		thisTime = Sys_Milliseconds();
@@ -1057,7 +1091,7 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 					num_bytes = av_samples_get_buffer_size(&bufflinesize, frame3->channels,
 							res, dst_smp, 1);
 					
-#ifdef _MSC_VER
+#ifndef USE_OPENAL
 					//Store the data to XAudio2 buffer
 					Packet.Flags = XAUDIO2_END_OF_STREAM;
 					Packet.AudioBytes = num_bytes;
@@ -1077,6 +1111,42 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 					if (FAILED(hr = pMusicSourceVoice1->Start(0))) {
 						int fail = 1;
 					}
+					av_frame_free(&frame3);
+#else //GK: But also it requires better coding DX
+					ALint val1,val2;
+					
+					alGetSourcei(alMusicSourceVoicecin, AL_SOURCE_STATE, &val1);
+					if (!trigger) {
+						alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &val2);
+						if (val2 > 0) {
+							alSourceUnqueueBuffers(alMusicSourceVoicecin, val2, &alMusicBuffercin[0]);
+							if (val2 == NUM_BUFFERS) {
+								trigger = true;
+							}
+						}
+					}
+					else {
+						val2 = NUM_BUFFERS;
+					}
+					if (!tBuffer) {
+						tBuffer = (uint8_t*)malloc(file_size * sizeof(uint8_t*));
+					}
+					memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
+					offset += num_bytes;
+					alcount = 0;
+						alBufferData(alMusicBuffercin[alcount], av_sample_cin, tBuffer, offset, av_rate_cin);
+						alcount++;
+						if (val2> 0) {
+							alSourceQueueBuffers(alMusicSourceVoicecin, alcount, alMusicBuffercin);
+							if (alcount == 1) {
+								trigger = false;
+							}
+							alSourcePlay(alMusicSourceVoicecin);
+							alcount = 0;
+							offset = 0;
+							free(tBuffer);
+							tBuffer = NULL;
+						}
 					av_frame_free(&frame3);
 #endif
 				}
@@ -2649,3 +2719,14 @@ int idSndWindow::AnimationLength()
 {
 	return -1;
 }
+
+#ifdef USE_OPENAL //GK: Init OpenAL stuff here
+void			InitCinematicAudio() {
+	alGenSources(1, &alMusicSourceVoicecin);
+
+	alSource3i(alMusicSourceVoicecin, AL_POSITION, 0, 0, -1);
+	alSourcei(alMusicSourceVoicecin, AL_SOURCE_RELATIVE, AL_TRUE);
+	alSourcei(alMusicSourceVoicecin, AL_ROLLOFF_FACTOR, 0);
+	alGenBuffers(NUM_BUFFERS, &alMusicBuffercin[0]);
+}
+#endif

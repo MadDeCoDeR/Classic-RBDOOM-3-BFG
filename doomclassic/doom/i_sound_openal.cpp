@@ -55,7 +55,13 @@ If you have questions concerning this license or the applicable additional terms
 #include "doomdef.h"
 #include "libs/timidity/timidity.h"
 #include "libs/timidity/controls.h"
-
+extern "C"
+{
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavformat/avio.h>
+#include <libswresample/swresample.h>
+}
 #include "sound/snd_local.h"
 
 #pragma warning ( disable : 4244 )
@@ -75,6 +81,10 @@ ALuint		alMusicBuffer;
 MidiSong*	doomMusic;
 byte*		musicBuffer;
 int		totalBufferSize;
+
+ALenum av_sample;
+int av_rate;
+bool use_avi;
 
 bool		waitingForMusic;
 bool		musicReady;
@@ -582,7 +592,7 @@ sound channels.
 void I_InitSoundHardware( int numOutputChannels_, int channelMask )
 {
 	::numOutputChannels = numOutputChannels_;
-	
+	I_InitMusic(); //GK: Just to be sure that music will play
 	// Initialize source voices
 	for ( int i = 0; i < NUM_SOUNDBUFFERS; i++ ) {
 		I_InitSoundChannel( i, numOutputChannels );
@@ -593,8 +603,7 @@ void I_InitSoundHardware( int numOutputChannels_, int channelMask )
 		alGenBuffers( (ALuint)1, &alBuffers[i] );
 	}
 	
-	I_InitMusic();
-	
+		
 	soundHardwareInitialized = true;
 }
 
@@ -799,17 +808,30 @@ namespace {
 I_LoadSong
 ======================
 */
-void I_LoadSong( const char * songname )
+bool I_LoadSong( const char * songname )
 {
 	idStr lumpName = "d_";
 	lumpName += static_cast< const char * >( songname );
+	if (alMusicBuffer) {
+		alDeleteBuffers(1, &alMusicBuffer);
+	}
+	alGenBuffers((ALuint)1, &alMusicBuffer);
 	
 	unsigned char * musFile = static_cast< unsigned char * >( W_CacheLumpName( lumpName.c_str(), PU_STATIC_SHARED ) );
+	Z_Free(lumpcache[W_GetNumForName(lumpName.c_str())]);
+	Z_FreeMemory();
 	
 	int length = 0;
-	Mus2Midi( musFile, midiConversionBuffer, &length );
-	
-	doomMusic = Timidity_LoadSongMem( midiConversionBuffer, length );
+	//GK: Capture it's return value and use it to determine if the file is mus or not
+	int res = Mus2Midi(musFile, midiConversionBuffer, &length);
+	int mus_size = W_LumpLength(W_CheckNumForName(lumpName.c_str()));
+	if (res == 0) {
+		//GK:if not mus file load it raw
+		doomMusic = Timidity_LoadSongMem(musFile, mus_size);
+	}
+	else {
+		doomMusic = Timidity_LoadSongMem(midiConversionBuffer, length);
+	}
 	
 	if ( doomMusic ) {
 		musicBuffer = (byte *)malloc( MIDI_CHANNELS * MIDI_FORMAT_BYTES * doomMusic->samples );
@@ -827,9 +849,162 @@ void I_LoadSong( const char * songname )
 		
 		Timidity_Stop();
 		Timidity_FreeSong( doomMusic );
+		use_avi = false;
 	}
+	else {
+			int ret = 0;
+			int avindx = 0;
+			AVFormatContext*		fmt_ctx = avformat_alloc_context();
+			AVCodec*				dec;
+			AVCodecContext*			dec_ctx;
+			AVPacket packet;
+			SwrContext* swr_ctx = NULL;
+			unsigned char *avio_ctx_buffer = NULL;
+			av_register_all();
+			avio_ctx_buffer = static_cast<unsigned char *>(av_malloc((size_t)mus_size));
+			memcpy(avio_ctx_buffer, musFile, mus_size);
+			AVIOContext *avio_ctx = avio_alloc_context(avio_ctx_buffer, mus_size, 0, NULL, NULL, NULL, NULL);
+			fmt_ctx->pb = avio_ctx;
+			avformat_open_input(&fmt_ctx, "", NULL, NULL);
+
+			if ((ret = avformat_find_stream_info(fmt_ctx, NULL)) < 0)
+			{
+				return false;
+			}
+			ret = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
+			avindx = ret;
+			dec_ctx = fmt_ctx->streams[avindx]->codec;
+			dec = avcodec_find_decoder(dec_ctx->codec_id);
+			if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0)
+			{
+
+				return false;
+			}
+			bool hasplanar = false;
+			AVSampleFormat dst_smp;
+			if (dec_ctx->sample_fmt >= 5) {
+				dst_smp = static_cast<AVSampleFormat> (dec_ctx->sample_fmt - 5);
+				swr_ctx = swr_alloc_set_opts(NULL, dec_ctx->channel_layout, dst_smp, dec_ctx->sample_rate, dec_ctx->channel_layout, dec_ctx->sample_fmt, dec_ctx->sample_rate, 0, NULL);
+				int res = swr_init(swr_ctx);
+				hasplanar = true;
+			}
+			int format_byte = 0;
+			bool use_ext = false;
+			if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8P) {
+				format_byte = 1;
+			}
+			else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16P) {
+				format_byte = 2;
+			}
+			else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32P) {
+				format_byte = 4;
+			}
+			else {
+				//return false;
+				format_byte = 4;
+				use_ext = true;
+			}
+			av_rate = dec_ctx->sample_rate;
+			switch (format_byte) {
+			case 1:
+				if (dec_ctx->channels == 2) {
+					av_sample = AL_FORMAT_STEREO8;
+				}
+				else {
+					av_sample = AL_FORMAT_MONO8;
+				}
+				break;
+			case 2:
+				if (dec_ctx->channels == 2) {
+					av_sample = AL_FORMAT_STEREO16;
+				}
+				else {
+					av_sample = AL_FORMAT_MONO16;
+				}
+				break;
+			case 4:
+				if (dec_ctx->channels == 2) {
+					av_sample = AL_FORMAT_STEREO_FLOAT32;
+				}
+				else {
+					av_sample = AL_FORMAT_MONO_FLOAT32;
+				}
+				break;
+			}
+			av_init_packet(&packet);
+			AVFrame *frame;
+			int frameFinished = 0;
+			int offset = 0;
+			int num_bytes = 0;
+			int bufferoffset = format_byte * 10;
+			byte* tBuffer = (byte *)malloc(2 * mus_size*bufferoffset);
+			uint8_t** tBuffer2 = NULL;
+			int  bufflinesize;
+
+			while (av_read_frame(fmt_ctx, &packet) >= 0) {
+				if (packet.stream_index == avindx) {
+					frame = av_frame_alloc();
+					frameFinished = 0;
+					avcodec_decode_audio4(dec_ctx, frame, &frameFinished, &packet);
+					if (frameFinished) {
+
+						if (hasplanar) {
+							av_samples_alloc_array_and_samples(&tBuffer2,
+								&bufflinesize,
+								frame->channels,
+								av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
+								dst_smp,
+								0);
+
+							int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame->extended_data, frame->nb_samples);
+							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
+								res, dst_smp, 1);
+							memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
+
+							offset += num_bytes;
+							av_freep(&tBuffer2[0]);
+
+						}
+						else {
+							num_bytes = frame->linesize[0];
+							while (!tBuffer) {
+								tBuffer = (byte *)calloc( mus_size,sizeof(byte*));
+							}
+							memcpy(tBuffer + offset, frame->extended_data[0], num_bytes);
+							offset += num_bytes;
+						}
+
+
+
+					}
+					av_frame_free(&frame);
+					free(frame);
+				}
+
+				av_free_packet(&packet);
+			}
+			totalBufferSize = offset;
+			musicBuffer = (byte *)malloc(offset);
+			memcpy(musicBuffer, tBuffer, offset);
+			free(tBuffer);
+			tBuffer = NULL;
+			if (swr_ctx != NULL) {
+				swr_free(&swr_ctx);
+			}
+
+			avcodec_close(dec_ctx);
+
+			av_free(fmt_ctx->pb);
+			avformat_close_input(&fmt_ctx);
+
+
+			av_free(avio_ctx->buffer);
+			av_freep(avio_ctx);
+			use_avi = true;
+		}
 	
 	musicReady = true;
+	return true;
 }
 
 /*
@@ -880,7 +1055,12 @@ void I_UpdateMusic( void )
 		if ( musicReady && alMusicSourceVoice ) {
 			if ( musicBuffer ) {
 				alSourcei( alMusicSourceVoice, AL_BUFFER, 0 );
-				alBufferData( alMusicBuffer, MIDI_SAMPLETYPE, musicBuffer, totalBufferSize, MIDI_RATE );
+				if (!use_avi) {
+					alBufferData(alMusicBuffer, MIDI_SAMPLETYPE, musicBuffer, totalBufferSize, MIDI_RATE);
+				}
+				else {
+					alBufferData(alMusicBuffer, av_sample, musicBuffer, totalBufferSize, av_rate);
+				}
 				alSourcei( alMusicSourceVoice, AL_BUFFER, alMusicBuffer );
 				alSourcePlay( alMusicSourceVoice );
 			}

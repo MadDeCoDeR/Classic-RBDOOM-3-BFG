@@ -172,7 +172,11 @@ If you have questions concerning this license or the applicable additional terms
 // i_net_xbox.defs end // 
 //  i_sound_xbox.defs begin // 
 #define SAMPLECOUNT		512
+#ifndef USE_OPENAL
 #define NUM_SOUNDBUFFERS		1280 //GK:More sounds more fun (and ear rape)
+#else
+#define NUM_SOUNDBUFFERS		128 //GK:OpenAL has a limited amount of voices so don't go total wacko with it
+#endif
 #define BUFMUL                  4
 #define MIXBUFFERSIZE		(SAMPLECOUNT*BUFMUL)
 // i_sound_xbox.defs end // 
@@ -245,7 +249,7 @@ If you have questions concerning this license or the applicable additional terms
 //#define MAXHEIGHT			832
 #define SBARHEIGHT		32 * GLOBAL_IMAGE_SCALER
 #define FUZZTABLE		50 
-#define FUZZOFF	(BASE_WIDTH)
+#define FUZZOFF	(::g->SCREENWIDTH) //GK: If the aspect ratio correction is off with the BASE_WIDTH it was making specters moving paintings
 // r_draw.defs end // 
 //  r_main.defs begin // 
 #define FIELDOFVIEW		2048	

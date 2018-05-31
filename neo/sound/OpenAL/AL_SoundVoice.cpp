@@ -261,7 +261,7 @@ void idSoundVoice_OpenAL::Start( int offsetMS, int ssFlags )
 		return;
 	}
 	
-	if( leadinSample->IsDefault() )
+	if( leadinSample->IsDefault() && !leadinSample->useavi) //GK: I kinda have no idea how to get the timestamp using FFMPEG and so I'm using the useavi in order to actually play the audio
 	{
 		idLib::Warning( "Starting defaulted sound sample %s", leadinSample->GetName() );
 	}
@@ -398,12 +398,29 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 		{
 			finishedbuffers = 3;
 		}
-		
+		//GK: Just make sure we don't get 0 buffers because it's result on silent audio
+		if (!openalStreamingBuffer[0] && !openalStreamingBuffer[1] && !openalStreamingBuffer[2]) {
+			alGenBuffers(3, &openalStreamingBuffer[0]);
+		}
 		ALenum format;
 		
-		if( sample->format.basic.formatTag == idWaveFile::FORMAT_PCM )
+		if( sample->format.basic.formatTag == idWaveFile::FORMAT_PCM || sample->format.basic.formatTag == idWaveFile::FORMAT_FLOAT)
 		{
 			format = sample->NumChannels() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+			if (sample->useavi) { //GK: Decode FFMPEG audio sample
+				int format_byte = sample->format.basic.bitsPerSample;
+				switch (format_byte) {
+				case 8:
+					format = sample->NumChannels() == 1 ? AL_FORMAT_MONO8 : AL_FORMAT_STEREO8;
+					break;
+				case 16:
+					format = sample->NumChannels() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+					break;
+				case 32:
+					format = sample->NumChannels() == 1 ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32;
+					break;
+				}
+			}
 		}
 		else if( sample->format.basic.formatTag == idWaveFile::FORMAT_ADPCM )
 		{
@@ -419,6 +436,9 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 		}
 		
 		int rate = sample->SampleRate(); /*44100*/
+		if (sample->useavi) {
+			rate = sample->format.basic.samplesPerSec;
+		}
 		
 		for( int j = 0; j < finishedbuffers && j < 1; j++ )
 		{

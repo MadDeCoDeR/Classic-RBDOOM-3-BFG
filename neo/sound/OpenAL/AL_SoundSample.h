@@ -39,6 +39,7 @@ class idSoundSample_OpenAL
 {
 public:
 	idSoundSample_OpenAL();
+	bool useavi = false; //GK:Keep track on whenever we are about to load non wav audio files
 	
 	// Loads and initializes the resource based on the name.
 	virtual void	 LoadResource();
@@ -157,6 +158,7 @@ protected:
 	~idSoundSample_OpenAL();
 	
 	bool			LoadWav( const idStr& name );
+	bool			LoadAll(const idStr& name);
 	bool			LoadAmplitude( const idStr& name );
 	void			WriteAllSamples( const idStr& sampleName );
 	bool			LoadGeneratedSample( const idStr& name );

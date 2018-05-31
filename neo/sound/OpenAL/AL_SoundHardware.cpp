@@ -31,6 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../snd_local.h"
 #include "../../../doomclassic/doom/i_sound.h"
+#include "../renderer/Cinematic.h"
 
 idCVar s_showLevelMeter( "s_showLevelMeter", "0", CVAR_BOOL | CVAR_ARCHIVE, "Show VU meter" );
 idCVar s_meterTopTime( "s_meterTopTime", "1000", CVAR_INTEGER | CVAR_ARCHIVE, "How long (in milliseconds) peaks are displayed on the VU meter" );
@@ -157,6 +158,22 @@ void listDevices_f( const idCmdArgs& args )
 	idSoundHardware_OpenAL::PrintALCInfo( ( ALCdevice* )soundSystem->GetOpenALDevice() );
 }
 
+static void list_audio_devices(const ALCchar *devices)  //GK: Why not ?
+{
+	const ALCchar *device = devices, *next = devices + 1;
+	size_t len = 0;
+
+	common->Printf( "Devices list:\n");
+	common->Printf( "----------\n");
+	while (device && *device != '\0' && next && *next != '\0') {
+		common->Printf( "%s\n", device);
+		len = strlen(device);
+		device += (len + 1);
+		next += (len + 2);
+	}
+	common->Printf( "----------\n");
+}
+
 /*
 ========================
 idSoundHardware_OpenAL::Init
@@ -165,6 +182,11 @@ idSoundHardware_OpenAL::Init
 void idSoundHardware_OpenAL::Init()
 {
 	cmdSystem->AddCommand( "listDevices", listDevices_f, 0, "Lists the connected sound devices", NULL );
+	ALboolean enumeration;
+	enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
+	if (enumeration == AL_TRUE) {
+		list_audio_devices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
+	}
 	
 	common->Printf( "Setup OpenAL device and context... " );
 	
@@ -199,8 +221,9 @@ void idSoundHardware_OpenAL::Init()
 	// ---------------------
 	// Initialize the Doom classic sound system.
 	// ---------------------
+	InitCinematicAudio(); //GK: Make sure the cinematic voices are the first to be initialized
 	I_InitSoundHardware( voices.Max(), 0 );
-	
+
 	// ---------------------
 	// Create VU Meter Effect
 	// ---------------------
