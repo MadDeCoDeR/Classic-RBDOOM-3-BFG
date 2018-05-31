@@ -684,12 +684,11 @@ void R_ExecuteSetViewSize (void)
 	::g->viewheight *= GLOBAL_IMAGE_SCALER;
 
 	::g->detailshift = ::g->setdetail;
-	::g->viewwidth = ::g->scaledviewwidth>>::g->detailshift;
-	//GK:Re-calculate the viewheight in case we want aspect ratio correction but dont apply it everywhere
-	int nh = ::g->viewheight / GLOBAL_IMAGE_SCALER;
-	nh = nh * (GLOBAL_IMAGE_SCALER - (::g->ASPECT_IMAGE_SCALER-GLOBAL_IMAGE_SCALER));
-	::g->centery = nh/2;
+	::g->viewwidth = ::g->scaledviewwidth >>::g->detailshift;
+	int ow = (ORIGINAL_WIDTH*GLOBAL_IMAGE_SCALER) >> ::g->detailshift; //GK: Keep the original width for the player sprite scale
 	//GK: End
+
+	::g->centery = ::g->viewheight/2;
 	::g->centerx = ::g->viewwidth/2;
 	::g->centerxfrac = ::g->centerx<<FRACBITS;
 	::g->centeryfrac = ::g->centery<<FRACBITS;
@@ -715,8 +714,8 @@ void R_ExecuteSetViewSize (void)
 	R_InitTextureMapping ();
 
 	// psprite scales
-	::g->pspritescale = FRACUNIT*::g->viewwidth/ORIGINAL_WIDTH;
-	::g->pspriteiscale = FRACUNIT*ORIGINAL_WIDTH/::g->viewwidth;
+	::g->pspritescale = FRACUNIT*ow/ORIGINAL_WIDTH;
+	::g->pspriteiscale = FRACUNIT*ORIGINAL_WIDTH/ow;
 
 	// thing clipping
 	for (i=0 ; i < ::g->viewwidth ; i++)
@@ -725,7 +724,7 @@ void R_ExecuteSetViewSize (void)
 	// planes
 	for (i=0 ; i < ::g->viewheight ; i++)
 	{
-		dy = ((i-nh/2)<<FRACBITS)+FRACUNIT/2;//GK: Use the aspect height in order to not get moving floors and ceilings
+		dy = ((i- ::g->viewheight /2)<<FRACBITS)+FRACUNIT/2;
 		dy = abs(dy);
 		::g->yslope[i] = FixedDiv ( (::g->viewwidth << ::g->detailshift)/2*FRACUNIT, dy);
 	}
