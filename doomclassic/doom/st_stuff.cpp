@@ -494,9 +494,12 @@ ST_Responder (event_t* ev)
 				::g->plyr->armorpoints = 200;
 				::g->plyr->armortype = 2;
 				//GK: Give the Backpack with the kfa cheat
-				::g->plyr->backpack = true;
-				for (i = 0; i<NUMAMMO; i++)
-					::g->plyr->maxammo[i] *= 2;
+				if (!::g->plyr->backpack) { //GK: That was something I forgot to look for
+					for (i = 0; i < NUMAMMO; i++) {
+						::g->plyr->maxammo[i] *= 2;
+					}
+					::g->plyr->backpack = true;
+				}
 				//GK: End
 				for (i = 0; i<NUMWEAPONS; i++)
 					::g->plyr->weaponowned[i] = true;
@@ -1118,7 +1121,8 @@ void ST_loadGraphics(void)
 	int		j;
 	int		facenum;
 
-	char	namebuf[9];
+	char	namebuf[10]; //GK: Linux gcc 7 is too paranoid and see error where they don't exist
+	namebuf[9] = '\0';
 
 	// Load the numbers, tall and short
 	for (i=0;i<10;i++)
@@ -1496,9 +1500,12 @@ CONSOLE_COMMAND_SHIP( idkfa, "cheat for key full ammo", 0 ) {
 	::g->plyr->armorpoints = 200;
 	::g->plyr->armortype = 2;
 	//GK: Give the Backpack with the kfa cheat
-	::g->plyr->backpack = true;
-	for (i = 0; i<NUMAMMO; i++)
-		::g->plyr->maxammo[i] *= 2;
+	if (!::g->plyr->backpack) {//GK: That was something I forgot to look for
+		for (i = 0; i < NUMAMMO; i++) {
+			::g->plyr->maxammo[i] *= 2;
+		}
+		::g->plyr->backpack = true;
+	}
 	//GK: End
 	for (i=0;i<NUMWEAPONS;i++)
 		::g->plyr->weaponowned[i] = true;
