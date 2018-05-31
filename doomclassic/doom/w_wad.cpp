@@ -56,9 +56,14 @@ If you have questions concerning this license or the applicable additional terms
 #include "d_deh.h"
 #include "d_exp.h"
 
-#include "libs\zlib\minizip\unzip.h"
+#include "libs/zlib/minizip/unzip.h" //GK: Linux doesn't like the use of \ for file paths
 #include "f_finale.h"
 #include "g_game.h"
+
+#ifndef _WIN32
+#include <dirent.h>
+#include <unistd.h>
+#endif
 
 #define READ_SIZE 8192
 #define MAX_FILENAME 512
@@ -164,6 +169,7 @@ void W_AddFile ( const char *filename)
     int			length;
     int			startlump;
     std::vector<filelump_t>	fileinfo( 1 );
+	char tn[9];
 
 	::g->isbfg = true;
     
@@ -347,12 +353,24 @@ void W_AddFile ( const char *filename)
 					rep = false;
 					sprite = false;
 				}
-				continue;
+				int n = i + 1; //GK: just in case stop the loop if the _END lump is the final
+				if (n == numlumps) {
+					break;
+				}
+				else {
+					continue;
+				}
 			}
 			else if (!idStr::Icmpn(filelumpPointer->name + 1, "_END", 4) && rep) {
 				rep = false;
 				sprite = false;
-				continue;
+				int n = i + 1; //GK: just in case stop the loop if the _END lump is the final
+				if (n == numlumps) {
+					break;
+				}
+				else {
+					continue;
+				}
 			}
 
 			if (rep) {
@@ -405,7 +423,7 @@ void W_AddFile ( const char *filename)
 										else if (strlen(filelumpPointer->name) <= 6 && strlen(tlump->name) <= 6) {//GK:Silly me forget some if case senarios
 											int rot = atoi(filelumpPointer->name + 5);
 											if (rot < 1) {
-												char tn[8];
+												
 													strcpy(tn, tlump->name);
 													tn[5] = '0';
 													if (!idStr::Icmpn(tn + 4, filelumpPointer->name + 4, 2)) {//GK:Silly me forget some if case senarios
@@ -425,7 +443,7 @@ void W_AddFile ( const char *filename)
 												
 											}
 											else {
-												char tn[8];
+										//		char tn[8];
 												strcpy(tn, filelumpPointer->name);
 												tn[5] = '0';
 												if (!idStr::Icmpn(tn + 4, tlump->name + 4, 2)) {
@@ -435,7 +453,7 @@ void W_AddFile ( const char *filename)
 											}
 										}
 									else {//GK:Silly me forget some if case senarios
-										char tn[9];
+									//	char tn[9];
 										strcpy(tn, tlump->name);
 										tn[5] = '0';
 										tn[8] = '\0';
@@ -655,21 +673,19 @@ void W_InitMultipleFiles (const char** filenames)
 		{
 			W_AddFile (*filenames);
 			iwad = false;
-		}
-		//GK: It doesn't like doing recursive calls
-		// and then adding the file that make them.
-		//So we load the founded .wad files later
-		for (int i = 0; i < wadsinzip.size(); i++) {
-			inzip = true;
-			W_AddFile(wadsinzip[i].c_str());
-			iwad = false;
-		}
-		if (wadsinzip.size() > 0) {
+			//GK: It doesn't like doing recursive calls
+			// and then adding the file that make them.
+			//So we load the founded .wad files later
+			for (int i = 0; i < wadsinzip.size(); i++) {
+				inzip = true;
+				W_AddFile(wadsinzip[i].c_str());
+				iwad = false;
+			}
+			if (wadsinzip.size() > 0) {
+				wadsinzip.clear();
+			}
 			inzip = false;
-			W_AddFile("wads/newopt.wad");
-			wadsinzip.clear();
 		}
-		//GK: End
 		//iwad = true;
 		if (!numlumps)
 			I_Error ("W_InitMultipleFiles: no files found");
@@ -938,16 +954,19 @@ bool OpenCompFile(const char* filename) {
 		//idLib::Printf("found compressed file\n");
 #ifdef _WIN32
 		CreateDirectory("base/pwads",NULL);
-#elif
-		mkdir("base/pwads");
+#else
+		mkdir("base/pwads", S_IRWXU);
 #endif
 		unz_global_info gi;
 		if (unzGetGlobalInfo(zip, &gi) == UNZ_OK) {
 			char rb[READ_SIZE];
+			qboolean usesprite = false;
+			qboolean usegraphic = false; //GK: TODO Find out how to translate GRAPHICS folder to FLAT or PLANE flag
 			int indoffset = zipind;
 			zipind += gi.number_entry;
-			zipfileinfo.resize(gi.number_entry);
-			zippos.resize(zipind);
+			zipfileinfo.resize(gi.number_entry+10); //GK:Give a little bit more for flags
+			int k = 0; //GK: Use internal counter for stability
+			zippos.resize(zipind+10);
 			numlumps += gi.number_entry;
 			for (int i = 0; i < gi.number_entry; i++) {
 				unz_file_info fi;
@@ -993,9 +1012,26 @@ bool OpenCompFile(const char* filename) {
 							//GK: Trim the filename from the path
 							char* t = strtok(name, "/");
 							char* tn = new char[512];
+							qboolean insprite = false;
 							while (t != NULL) {
+								if (!usesprite && !idStr::Icmp(t, "SPRITES")) { //GK: Set S_START Flag if we entered a SPRITES folder
+									strcpy(zipfileinfo[k].name, "S_START\0");
+									zipfileinfo[k].filepos = k;
+									insprite = true;
+									usesprite = true;
+									k++;
+								}
+								if (!insprite && !idStr::Icmp(t, "SPRITES")) {
+									insprite = true;
+								}
 								tn = t;
 								t = strtok(NULL, "/");
+							}
+							if (usesprite && !insprite) { //GK: And set a S_END flag once we exit the folder
+								strcpy(zipfileinfo[k].name, "S_END\0");
+								zipfileinfo[k].filepos = k;
+								usesprite = false;
+								k++;
 							}
 							//GK: And also keep the file extension
 							char* fex = new char[5];
@@ -1007,28 +1043,29 @@ bool OpenCompFile(const char* filename) {
 							}
 							//GK: Give fake name based on the file extension
 							if (!idStr::Icmp(fex, "deh")) {
-								strcpy(zipfileinfo[i].name, "DEHACKED");
+								strcpy(zipfileinfo[k].name, "DEHACKED");
 							}
 							else if (!idStr::Icmp(fex, "dlc")) {
-								strcpy(zipfileinfo[i].name, "EXPINFO\0");
+								strcpy(zipfileinfo[k].name, "EXPINFO\0");
 							}
 							else {
-								strcpy(zipfileinfo[i].name, tn);
+								strcpy(zipfileinfo[k].name, tn);
 								for (int j = 7; j >= 0; j--) {
-									if (zipfileinfo[i].name[j] == '.') {
-										zipfileinfo[i].name[j] = '\0';
+									if (zipfileinfo[k].name[j] == '.') {
+										zipfileinfo[k].name[j] = '\0';
 										break;
 									}
 								}
 								//GK: Make sure the name is always upper case
 								for (int j = 0; j < 8; j++) {
-									zipfileinfo[i].name[j] = toupper(zipfileinfo[i].name[j]);
+									zipfileinfo[k].name[j] = toupper(zipfileinfo[k].name[j]);
 								}
 							}
-							int j = indoffset + i;
+							int j = indoffset + k;
 							unzGetFilePos(zip, &zippos[j]);//GK: this is important DONT MESS WITH IT
-							zipfileinfo[i].filepos = j;//GK: Keep the zippos position here
-							zipfileinfo[i].size = fi.uncompressed_size;
+							zipfileinfo[k].filepos = j;//GK: Keep the zippos position here
+							zipfileinfo[k].size = fi.uncompressed_size;
+							k++;
 							if (i + 1 < gi.number_entry) {
 								unzGoToNextFile(zip);
 							}
@@ -1040,11 +1077,17 @@ bool OpenCompFile(const char* filename) {
 						strcpy(maindir, "base/pwads/");
 						//idLib::Printf("found directory\n");
 						strcat(maindir, name);
+						if (!idStr::Icmp(name, "SPRITES/")) {
+							strcpy(zipfileinfo[k].name, "S_START\0");
+							zipfileinfo[k].filepos = k;
+							usesprite = true;
+							k++;
+						}
 						//idLib::Printf("%s\n", maindir);
 							#ifdef _WIN32
 													CreateDirectory(maindir, NULL);
-							#elif
-													mkdir(maindir);
+							#else
+													mkdir(maindir, S_IRWXU);
 							#endif
 						foldername.push_back(maindir);
 						if (i + 1 < gi.number_entry) {
@@ -1054,7 +1097,20 @@ bool OpenCompFile(const char* filename) {
 
 				}
 			}
-
+			if (usesprite) {
+				strcpy(zipfileinfo[k].name, "S_END\0");
+				zipfileinfo[k].filepos = k;
+				usesprite = false;
+			}
+			while(1) { //GK: Remove unused entries
+				int y = zipfileinfo.size() - 1;
+				if (!idStr::Icmp(zipfileinfo[y].name, "")) {
+					zipfileinfo.pop_back();
+				}
+				else {
+					break;
+				}
+			}
 			unzClose(zip);
 			inzip = false;
 			return true;
@@ -1079,14 +1135,14 @@ void CleanUncompFiles(bool unalloc) {
 		//idLib::Printf("Deleting Directory %s\n", foldername[i].c_str());
 #ifdef _WIN32
 		RemoveDirectory(foldername[i].c_str());
-#elif
+#else
 		rmdir(foldername[i].c_str());
 #endif
 
 }
 #ifdef _WIN32
 	RemoveDirectory("base/pwads");
-#elif
+#else
 	rmdir("base/pwads");
 #endif
 		fname.clear();
@@ -1122,8 +1178,8 @@ void uncompressMaster() {
 		idLib::Printf("found compressed file\n");
 #ifdef _WIN32
 		CreateDirectory(ddir, NULL);
-#elif
-		mkdir(ddir);
+#else
+		mkdir(ddir, S_IRWXU);
 #endif
 		unz_global_info gi;
 		if (unzGetGlobalInfo(zip, &gi) == UNZ_OK) {
@@ -1173,14 +1229,14 @@ void uncompressMaster() {
 }
 //GK:Open all the wads and copy and rename their contents into one WAD file
 void MasterList() {
-	
+
 	wadinfo_t		header;
-	lumpinfo_t*		lump ;
+	lumpinfo_t*		lump;
 	lumpinfo_t*		lumpnfo = NULL;
 	idFile *		handle;
 	int			length;
 	int			startlump;
-	int nlps =0;
+	int nlps = 0;
 	int cl = 0;
 	int remlmp = 0;
 	bool pushit = true;
@@ -1189,14 +1245,23 @@ void MasterList() {
 	int count2 = 1;
 	char* filename = new char[MAX_FILENAME];
 	char* dir = "base\\wads\\master\\*.wad";
+#ifdef _WIN32
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind = INVALID_HANDLE_VALUE;
+#else
+	DIR           *dirp;
+	struct dirent *directory;
+#endif
 	std::vector <int> fofs;
-	int offs=12;
-	char* buffer =new char[512];
-	std::ofstream of("base//wads//MASTERLEVELS.wad",std::ios::binary);
-	of.write("PWAD",4);
+	int offs = 12;
+	char* buffer = new char[512];
+	std::ofstream of("base//wads//MASTERLEVELS.wad", std::ios::binary);
+	of.write("PWAD", 4);
+#ifdef _WIN32
 	hFind = FindFirstFile(dir, &ffd);
+#else
+	dirp = opendir(dir);
+#endif
 	do {
 		sprintf(filename, "wads/master/%s", masterlist[cl]);
 		idLib::Printf("%s\n", filename);
@@ -1248,97 +1313,106 @@ void MasterList() {
 				I_Error("Couldn't realloc lumpinfo");
 
 			lump = &lumpnfo[startlump];
-			
+
 			filelump_t * filelumpPointer = &fileinfo[0];
 			rep = false;
-			
+
 			for (int i = startlump; i < nlps; i++, lump++, filelumpPointer++)
 			{
-				    lump->null = false;
-					lump->handle = handle;
-					lump->position = LONG(filelumpPointer->filepos);
-					lump->size = LONG(filelumpPointer->size);
-					if (pushit)
-					    fofs.push_back(offs);
+				lump->null = false;
+				lump->handle = handle;
+				lump->position = LONG(filelumpPointer->filepos);
+				lump->size = LONG(filelumpPointer->size);
+				if (pushit)
+					fofs.push_back(offs);
 
-					if (idStr::Cmpn(filelumpPointer->name, "TEXTURE1", 8) && idStr::Cmpn(filelumpPointer->name, "PNAMES", 6) && idStr::Cmpn(filelumpPointer->name, "PP_START", 8) && idStr::Cmpn(filelumpPointer->name, "PP_END", 7))
+				if (idStr::Cmpn(filelumpPointer->name, "TEXTURE1", 8) && idStr::Cmpn(filelumpPointer->name, "PNAMES", 6) && idStr::Cmpn(filelumpPointer->name, "PP_START", 8) && idStr::Cmpn(filelumpPointer->name, "PP_END", 7))
+				{
+					if (count2 >= 4)
 					{
-						if (count2 >= 4) 
-						{
-							if (idStr::Cmpn(filelumpPointer->name, "RSKY1", 5)) 
-							{
-								offs += lump->size;
-								pushit = true;
-							}
-							else
-							{
-								lump->null = true;
-								remlmp++;
-								pushit = false;
-							}
-						}
-						else if (count2 > 2) 
-						{
-							if (idStr::Cmpn(filelumpPointer->name, "STARS", 5)) 
-							{
-								offs += lump->size;
-								pushit = true;
-							}
-							else
-							{
-								lump->null = true;
-								remlmp++;
-								pushit = false;
-							}
-						}
-						else 
+						if (idStr::Cmpn(filelumpPointer->name, "RSKY1", 5))
 						{
 							offs += lump->size;
 							pushit = true;
 						}
+						else
+						{
+							lump->null = true;
+							remlmp++;
+							pushit = false;
+						}
+					}
+					else if (count2 > 2)
+					{
+						if (idStr::Cmpn(filelumpPointer->name, "STARS", 5))
+						{
+							offs += lump->size;
+							pushit = true;
+						}
+						else
+						{
+							lump->null = true;
+							remlmp++;
+							pushit = false;
+						}
 					}
 					else
 					{
-						lump->null = true;
-						remlmp++;
-						pushit = false;
+						offs += lump->size;
+						pushit = true;
 					}
-					strncpy(lump->name, filelumpPointer->name, 8);
-					lump->name[8] = '\0';
-					if (!idStr::Cmpn(lump->name, "MAP", 3)) {
-						char * tm = new char[6];
-						if (count < 10) {
-							sprintf(tm, "MAP0%i\0", count);
-							strcpy(lump->name, tm);
-						}
-						else {
-							sprintf(tm, "MAP%i\0", count);
-							strcpy(lump->name, tm);
-						}
-						count++;
+				}
+				else
+				{
+					lump->null = true;
+					remlmp++;
+					pushit = false;
+				}
+				strncpy(lump->name, filelumpPointer->name, 8);
+				lump->name[8] = '\0';
+				if (!idStr::Cmpn(lump->name, "MAP", 3)) {
+					char * tm = new char[6];
+					if (count < 10) {
+						sprintf(tm, "MAP0%i", count);
+						tm[5] = '\0';
+						strcpy(lump->name, tm);
 					}
-					if (!idStr::Cmpn(lump->name, "RSKY", 4)) {
-						if (count2 < 4) {
+					else {
+						sprintf(tm, "MAP%i", count);
+						tm[5] = '\0';
+						strcpy(lump->name, tm);
+					}
+					count++;
+				}
+				if (!idStr::Cmpn(lump->name, "RSKY", 4)) {
+					if (count2 < 4) {
 						char * tm = new char[6];
-						sprintf(tm, "STAR%i\0", count2);
+						sprintf(tm, "STAR%i", count2);
+						tm[5] = '\0';
 						strcpy(lump->name, tm);
 						count2++;
 					}
-					}
-					if (!idStr::Cmp(lump->name, "STARS")) {
-						if (count2 == 2) {
-							char * tm = new char[6];
-							sprintf(tm, "STAR%i\0", count2);
-							strcpy(lump->name, tm);
-							count2++;
-						}
-					}
-					
-				
 				}
+				if (!idStr::Cmp(lump->name, "STARS")) {
+					if (count2 == 2) {
+						char * tm = new char[6];
+						sprintf(tm, "STAR%i", count2);
+						tm[5] = '\0';
+						strcpy(lump->name, tm);
+						count2++;
+					}
+				}
+
+
 			}
+		}
 		cl++;
+#ifdef _WIN32
 	} while (FindNextFile(hFind, &ffd) != 0);
+#else
+	}while ((directory = readdir(dirp)) != NULL);
+	closedir(dirp);
+#endif
 	lump = &lumpnfo[0];
 	nlps = nlps - remlmp;
 	of.write(reinterpret_cast<char*>(&nlps), 4);
@@ -1358,7 +1432,7 @@ void MasterList() {
 			}
 		}
 	}
-	catch (HANDLE e) {
+	catch (int e) {
 
 	}
 
