@@ -615,6 +615,83 @@ void P_GroupLines (void)
 
 }
 
+//
+// killough 10/98
+//
+// Remove slime trails.
+//
+// Slime trails are inherent to Doom's coordinate system -- i.e. there is
+// nothing that a node builder can do to prevent slime trails ALL of the time,
+// because it's a product of the integer coordinate system, and just because
+// two lines pass through exact integer coordinates, doesn't necessarily mean
+// that they will intersect at integer coordinates. Thus we must allow for
+// fractional coordinates if we are to be able to split segs with node lines,
+// as a node builder must do when creating a BSP tree.
+//
+// A wad file does not allow fractional coordinates, so node builders are out
+// of luck except that they can try to limit the number of splits (they might
+// also be able to detect the degree of roundoff error and try to avoid splits
+// with a high degree of roundoff error). But we can use fractional coordinates
+// here, inside the engine. It's like the difference between square inches and
+// square miles, in terms of granularity.
+//
+// For each vertex of every seg, check to see whether it's also a vertex of
+// the linedef associated with the seg (i.e, it's an endpoint). If it's not
+// an endpoint, and it wasn't already moved, move the vertex towards the
+// linedef by projecting it using the law of cosines. Formula:
+//
+//      2        2                         2        2
+//    dx  x0 + dy  x1 + dx dy (y0 - y1)  dy  y0 + dx  y1 + dx dy (x0 - x1)
+//   {---------------------------------, ---------------------------------}
+//                  2     2                            2     2
+//                dx  + dy                           dx  + dy
+//
+// (x0,y0) is the vertex being moved, and (x1,y1)-(x1+dx,y1+dy) is the
+// reference linedef.
+//
+// Segs corresponding to orthogonal linedefs (exactly vertical or horizontal
+// linedefs), which comprise at least half of all linedefs in most wads, don't
+// need to be considered, because they almost never contribute to slime trails
+// (because then any roundoff error is parallel to the linedef, which doesn't
+// cause slime). Skipping simple orthogonal lines lets the code finish quicker.
+//
+// Please note: This section of code is not interchangable with TeamTNT's
+// code which attempts to fix the same problem.
+//
+// Firelines (TM) is a Rezistered Trademark of MBF Productions
+//
+
+void P_RemoveSlimeTrails(void)                // killough 10/98
+{
+	byte *hit =(byte*) calloc(1, ::g->numvertexes);         // Hitlist for vertices
+	int i;
+	for (i = 0; i<::g->numsegs; i++)                   // Go through each seg
+	{
+		const line_t *l = ::g->segs[i].linedef;      // The parent linedef
+		if (l->dx && l->dy)                     // We can ignore orthogonal lines
+		{
+			vertex_t *v = ::g->segs[i].v1;
+			do
+				if (!hit[v - ::g->vertexes])           // If we haven't processed vertex
+				{
+					hit[v - ::g->vertexes] = 1;        // Mark this vertex as processed
+					if (v != l->v1 && v != l->v2) // Exclude endpoints of linedefs
+					{ // Project the vertex back onto the parent linedef
+						int64_t dx2 = (l->dx >> FRACBITS) * (l->dx >> FRACBITS);
+						int64_t dy2 = (l->dy >> FRACBITS) * (l->dy >> FRACBITS);
+						int64_t dxy = (l->dx >> FRACBITS) * (l->dy >> FRACBITS);
+						int64_t s = dx2 + dy2;
+						int x0 = v->x, y0 = v->y, x1 = l->v1->x, y1 = l->v1->y;
+						v->x = (fixed_t)((dx2 * x0 + dy2 * x1 + dxy * (y0 - y1)) / s);
+						v->y = (fixed_t)((dy2 * y0 + dx2 * y1 + dxy * (x0 - x1)) / s);
+					}
+				}  // Obfuscated C contest entry:   :)
+			while ((v != ::g->segs[i].v2) && (v = ::g->segs[i].v2));
+		}
+	}
+	free(hit);
+}
+
 
 //
 // P_SetupLevel
@@ -704,6 +781,8 @@ P_SetupLevel
 	::g->rejectmatrix = (byte*)W_CacheLumpNum (lumpnum+ML_REJECT,PU_LEVEL);
 
 	P_GroupLines ();
+
+	P_RemoveSlimeTrails();    // killough 10/98: remove slime trails from wad
 
 	::g->bodyqueslot = 0;
 	::g->deathmatch_p = ::g->deathmatchstarts;
