@@ -64,7 +64,7 @@ typedef struct {
 	char* name;
 }fstr;
 
-fstr strval[] = {
+fstr mval[] = {
 
 { &e1text,"E1TEXT" },
 { &e2text,"E2TEXT" },
@@ -319,8 +319,8 @@ void setMAPSTR(int pos, char* name, char* value) {
 	}
 	if (!idStr::Icmp(name, "final_text")) {
 		for (int i = 0; i < 24; i++) {
-			if (!idStr::Icmp(strval[i].name, value)) {
-				::g->maps[pos].ftext = *strval[i].var;
+			if (!idStr::Icmp(mval[i].name, value)) {
+				::g->maps[pos].ftext = *mval[i].var;
 				return;
 			}
 		}
@@ -445,10 +445,14 @@ void initMAPS(std::vector<std::string> lines) {
 						::g->maps[map - 1].lumpname = t;
 					else {
 						char* tname = new char[6];
-						if(map<10)
-						sprintf(tname,"MAP0%i\0",map);
-						else
-							sprintf(tname, "MAP%i\0", map);
+						if (map < 10) {
+							sprintf(tname, "MAP0%i", map);
+							tname[5] = '\0';
+						}
+						else {
+							sprintf(tname, "MAP%i", map);
+							tname[5] = '\0';
+						}
 						::g->maps[map - 1].lumpname = tname;
 					}
 					::g->maps[map - 1].nextmap = map;
@@ -531,8 +535,8 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 					value[0] = 'C';
 				}
 				for (int i = 0; i < 24; i++) {
-					if (!idStr::Icmp(strval[i].name, value)) {
-						::g->clusters[pos].ftext = *strval[i].var;
+					if (!idStr::Icmp(mval[i].name, value)) {
+						::g->clusters[pos].ftext = *mval[i].var;
 						return;
 					}
 				}

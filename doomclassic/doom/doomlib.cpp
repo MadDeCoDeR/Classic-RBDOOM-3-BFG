@@ -48,7 +48,10 @@ idCVar m_inDemoMode( "m_inDemoMode", "1", CVAR_INTEGER, "in demo mode", 0, 1 );
 bool	globalNetworking	= false;
 bool	globalPauseTime		= false;
 int		PLAYERCOUNT			= 1;
+#ifdef _WINDOWS //GK: Linux already have that
 typedef int socklen_t;
+#endif
+
 
 #ifdef _DEBUG
 bool	debugOutput			= true;
@@ -525,7 +528,9 @@ void DoomLib::PollNetwork() {
 
 		int			c;
 		struct sockaddr	fromaddress;
+
 		socklen_t		fromlen;
+
 		doomdata_t		sw;
 
 		while(1) {
@@ -534,11 +539,13 @@ void DoomLib::PollNetwork() {
 
 			if ( receivedSize < 0 )
 			{
+#ifdef _WINDOWS //GK: WSA is windows exclusive
 				int err = WSAGetLastError();  //GK:We're using winsocks from now on
 				if (err != WSAEINPROGRESS) {
 					I_Error ("GetPacket: %d", err );
 					//I_Printf ("GetPacket: %s",strerror(errno));
 				}
+#endif
 				return;
 			}
 

@@ -1916,7 +1916,7 @@ void P_SpawnSpecials (void)
 	}
 
 	P_SpawnScrollers(); // killough 3/7/98: Add generalized scrollers
-	for (i = 0; i<::g->numlines; i++)
+	for (i = 0; i< ::g->numlines; i++)
 		switch (::g->lines[i].special)
 		{
 			int s, sec;
@@ -2131,7 +2131,7 @@ static void P_SpawnScrollers(void)
 	int i;
 	line_t *l = ::g->lines;
 
-	for (i = 0; i<::g->numlines; i++, l++)
+	for (i = 0; i< ::g->numlines; i++, l++)
 	{
 		fixed_t dx = l->dx >> SCROLL_SHIFT;  // direction and speed of scrolling
 		fixed_t dy = l->dy >> SCROLL_SHIFT;
@@ -2225,11 +2225,11 @@ int P_SectorActive(special_e t, sector_t *sec)
 		switch (t)             // return whether thinker of same type is active
 		{
 		case floor_special:
-			return (int)sec->floordata;
+			return *((int*)&sec->floordata); //GK: Dealing with linux idiosicracies
 		case ceiling_special:
-			return (int)sec->ceilingdata;
+			return *((int*)&sec->ceilingdata);
 		case lighting_special:
-			return (int)sec->lightingdata;
+			return *((int*)&sec->lightingdata);
 		}
 	return 1; // don't know which special, must be active, shouldn't be here
 }
@@ -2496,7 +2496,7 @@ fixed_t P_FindShortestUpperAround(int secnum)
 // jff 02/05/98 routine added to test for unlockability of
 //  generalized locked doors
 //
-boolean P_CanUnlockGenDoor
+qboolean P_CanUnlockGenDoor
 (line_t* line,
 	player_t* player)
 {

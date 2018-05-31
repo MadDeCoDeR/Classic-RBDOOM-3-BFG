@@ -3,6 +3,7 @@
 
 Doom 3 BFG Edition GPL Source Code
 Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 2018 George Kalampokis
 
 This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
@@ -34,8 +35,13 @@ If you have questions concerning this license or the applicable additional terms
 #include <string.h>
 #include <stdio.h>
 #include <string>
-
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <errno.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <sys/ioctl.h>
 
 #include "i_system.h"
 #include "d_event.h"
@@ -44,6 +50,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "doomstat.h"
 
+#ifdef __GNUG__
+#pragma implementation "i_net.h"
+#endif
 #include "i_net.h"
 
 #include "doomlib.h"
@@ -51,11 +60,11 @@ If you have questions concerning this license or the applicable additional terms
 void	NetSend (void);
 qboolean NetListen (void);
 
-typedef ULONG in_addr_t;
+//typedef unsigned long in_addr_t;
 extern bool globalNetworking;
 
 namespace {
-	bool IsValidSocket( SOCKET socketDescriptor );
+	bool IsValidSocket( int socketDescriptor );
 	int GetLastSocketError();
 
 
@@ -66,10 +75,8 @@ namespace {
 	between WinSock (used on Xbox) and BSD sockets, which the PS3 follows more closely.
 	========================
 	*/
-	bool IsValidSocket( SOCKET socketDescriptor ) { //GK:Make proper check up using winsocks
-		int optval;
-		int optlen = sizeof(int);
-		if (getsockopt(socketDescriptor, SOL_SOCKET, SO_ERROR, (char *)&optval, &optlen) != 0) {
+	bool IsValidSocket( int socketDescriptor ) { //GK:Make proper check up using winsocks
+		if (socketDescriptor < 0) {
 			return false;
 		}
 		return true;
@@ -81,7 +88,7 @@ namespace {
 	========================
 	*/
 	int GetLastSocketError() {
-		return WSAGetLastError();
+		return errno;
 	}
 }
 
@@ -89,7 +96,7 @@ namespace {
 // NETWORKING
 //
 int	DOOMPORT = 6666; //GK:Use this port because why not?	// DHM - Nerve :: On original XBox, ports 1000 - 1255 saved you a byte on every packet.  360 too?
-WSADATA windata; //GK:winsock related stuff
+
 unsigned long GetServerIP() {
 	return ::g->sendaddress[::g->doomcom.consoleplayer].sin_addr.s_addr;
 	//return 0;
@@ -102,18 +109,15 @@ void	(*netsend) (void);
 //
 // UDPsocket
 //
-SOCKET UDPsocket (void) //GK:return SOCKET instead of int
+int UDPsocket (void) //GK:return SOCKET instead of int
 {
-	SOCKET	s;
+	int	s;
 
 	// allocate a socket
 	s = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if ( !IsValidSocket( s ) ) {
 		int err = GetLastSocketError();
-		//GK:Show proper error message
-		char msgbuf[256];
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
-		I_Error( "can't create socket, error %s", msgbuf );
+		I_Error( "can't create socket, error %s", strerror(err) );
 	}
 
 	return s;
@@ -124,7 +128,7 @@ SOCKET UDPsocket (void) //GK:return SOCKET instead of int
 //
 // BindToLocalPort
 //
-void BindToLocalPort( SOCKET	s, int	port )//GK:Restored source code from the vanilla DOOM source code
+void BindToLocalPort( int	s, int	port )//GK:Restored source code from the vanilla DOOM source code
 {
 	int			v;
 	struct sockaddr_in	address;
@@ -134,12 +138,10 @@ void BindToLocalPort( SOCKET	s, int	port )//GK:Restored source code from the van
 	address.sin_addr.s_addr = INADDR_ANY;
 	address.sin_port = port;
 
-	v = bind(s, (SOCKADDR *)&address, sizeof(address));
-	if (v == SOCKET_ERROR) {
+	v = bind(s, (struct sockaddr *)&address, sizeof(address));
+	if (v < 0) {
 		int err = GetLastSocketError();
-		char msgbuf[256];
-		FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
-		I_Error("BindToPort: bind: %s", msgbuf);
+		I_Error("BindToPort: bind: %s", strerror(err));
 	}
 }
 
@@ -170,14 +172,12 @@ void PacketSend (void)//GK:Restored source code from the vanilla DOOM source cod
 
 	//printf ("sending %i\n",gametic);		
 	c = sendto(::g->sendsocket, (char *)&sw, ::g->doomcom.datalength
-		, 0, (SOCKADDR *)&::g->sendaddress[::g->doomcom.remotenode]
+		, 0, (struct sockaddr *)&::g->sendaddress[::g->doomcom.remotenode]
 		, sizeof(::g->sendaddress[::g->doomcom.remotenode]));
 
-	if (c == SOCKET_ERROR) {
+	if (c < 0) {
 		int err = GetLastSocketError();
-		char msgbuf[256];
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
-		I_Error("SendPacket error: %s", msgbuf);
+		I_Error("SendPacket error: %s", strerror(err));
 	}
 }
 
@@ -195,15 +195,13 @@ void PacketGet (void)//GK:Restored source code from the vanilla DOOM source code
 
 	fromlen = sizeof(fromaddress);
 	c = recvfrom(::g->insocket, (char*)&sw, sizeof(sw), 0
-		, (struct sockaddr *)&fromaddress, &fromlen);
+		, (struct sockaddr *)&fromaddress,(socklen_t*) &fromlen);
 	//GK:do similar to vanilla check ups using winsock
-	if (c == SOCKET_ERROR)
+	if (c < 0)
 	{
 		int err = GetLastSocketError();
-		char msgbuf[256];
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
-		if (err != WSAEWOULDBLOCK)
-			I_Error("GetPacket: %s", msgbuf);
+		if (err != EWOULDBLOCK)
+			I_Error("GetPacket: %s", strerror(err));
 		::g->doomcom.remotenode = -1;		// no packet
 		return;
 	}
@@ -250,16 +248,7 @@ void PacketGet (void)//GK:Restored source code from the vanilla DOOM source code
 
 static int I_TrySetupNetwork(void) //GK:Manualy init winsock
 {
-	int r;
-	r = WSAStartup(MAKEWORD(1, 1), &windata);
-	if (r != NO_ERROR) {
-		I_Printf("Winsock Error:%d\n", r);
-		return 0;
-	}
-	else {
 		return 1;
-	}
-
 }
 
 //
@@ -371,13 +360,7 @@ void I_InitNetwork (void)
 		setsockopt(::g->insocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&socbuff, sizeof(socbuff)); //GK:Does it work ???
 		BindToLocalPort(::g->insocket, htons(DOOMPORT));
 		unsigned long nonblocking = 1;
-		int r=ioctlsocket(::g->insocket, FIONBIO,&nonblocking);
-		if (r == SOCKET_ERROR) {
-			int err = GetLastSocketError();
-			char msgbuf[256];
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
-			I_Error("Socket Error:%d\n", msgbuf);
-		}
+		ioctl(::g->insocket, FIONBIO,&nonblocking);
 		::g->sendsocket = UDPsocket();
 
 	}
@@ -389,7 +372,7 @@ void I_InitNetwork (void)
 		
 		// PS3 call to enable non-blocking mode
 		unsigned long nonblocking = 1; // Non-zero is nonblocking mode.
-		ioctlsocket(::g->insocket, FIONBIO, &nonblocking); //GK:set this mode properly
+		ioctl(::g->insocket, FIONBIO, &nonblocking); //GK:set this mode properly
 
 		::g->sendsocket = UDPsocket ();
 

@@ -1,0 +1,10 @@
++set r_aspectcorrect  <0,1>: Enable classic DOOM's aspect correction
++set flashlight_old <0,1,2>: Change the flashlight mode on Doom 3. 0=BFG, 1=Original, 2=BFGMix
++set com_game_mode  <1,2,3>: Open the desired game right after the splash screen
++set cl_messages  <1,2,3,4>: Set the number of message lines to be shown on classic DOOM
++set in_joylayout	  <0,1>: Set controller layout. 0=XBOX360, 1=PS3
+-classich				   : Use cheat codes on classic DOOM games without the console
+-doom,doom2,both		   : Set which parameters will be used for each game. (In order to stop it use any of the other two)
+-file ex <1,2,3,4,5>	   : Allowing you to load specific mods per Doom 2's expansions (the ex is ignored on Doom 1). 1=Doom2, 2=TNT, 3=Plutonia, 4=Master Levels, 5=No Rest For The Living
+-exp		    <1,2,3,4,5>: Start a new game on the desired Doom 2 expansion (it can be used also with the -warp). The numeric values are the same as above.
+-net <playerslot-1> <p1-IP> <p2-IP> <p3-IP> <p4-IP> : The player slot must be decided by the whole group

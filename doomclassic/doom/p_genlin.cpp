@@ -61,7 +61,7 @@ int EV_DoGenFloor
 {
   int                   secnum;
   int                   rtn;
-  boolean               manual;
+  qboolean               manual; //GK: Linux doesn't have boolean (I guess it has bool)
   sector_t*             sec;
   floormove_t*          floor;
   unsigned              value = (unsigned)line->special - GenFloorBase;
@@ -263,7 +263,7 @@ int EV_DoGenCeiling
 {
   int                   secnum;
   int                   rtn;
-  boolean               manual;
+  qboolean               manual;
   fixed_t               targheight;
   sector_t*             sec;
   ceiling_t*            ceiling;
@@ -468,7 +468,7 @@ int EV_DoGenLift
   plat_t*         plat;
   int             secnum;
   int             rtn;
-  boolean         manual;
+  qboolean         manual;
   sector_t*       sec;
   unsigned        value = (unsigned)line->special - GenLiftBase;
 
@@ -622,7 +622,7 @@ int EV_DoGenStairs
   int                   texture;
   int                   ok;
   int                   rtn;
-  boolean               manual;
+  qboolean               manual;
     
   sector_t*             sec;
   sector_t*             tsec;
@@ -813,7 +813,7 @@ int EV_DoGenCrusher
 {
   int                   secnum;
   int                   rtn;
-  boolean               manual;
+  qboolean               manual;
   sector_t*             sec;
   ceiling_t*            ceiling;
   unsigned              value = (unsigned)line->special - GenCrusherBase;
@@ -911,7 +911,7 @@ int EV_DoGenLockedDoor
   int   secnum,rtn;
   sector_t* sec;
   vldoor_t* door;
-  boolean manual;
+  qboolean manual;
   unsigned  value = (unsigned)line->special - GenLockedBase;
 
   // parse the bit fields in the line's special type
@@ -1012,7 +1012,7 @@ int EV_DoGenDoor
 {
   int   secnum,rtn;
   sector_t* sec;
-  boolean   manual;
+  qboolean   manual;
   vldoor_t* door;
   unsigned  value = (unsigned)line->special - GenDoorBase;
 
@@ -1199,5 +1199,3 @@ manual_door:
 //
 //
 //----------------------------------------------------------------------------
-          
-

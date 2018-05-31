@@ -125,37 +125,35 @@ void resetEndings() {
 const char*	finaletext;
 char* flt;//GK:use this to retrive custom expansion finale flat name
 int flatind = -1;
-/*const*/ char*	finaleflat[] = {
-	{"FLOOR4_8"},
-{ "SFLR6_1" },
-{ "MFLR8_4" },
-{ "MFLR8_3" },
-{ "SLIME16" },
-{ "RROCK14" },
-{ "RROCK07" },
-{ "RROCK17" },
-{ "RROCK13" },
-{ "RROCK19" },
-{"F_SKY1"},
-{"BOSSBACK"} //GK:Make even the cast background modifiable by dehacked
-
+/*const*/ char*	finaleflat[] = { //GK: Linux got issue with brackets inside brackets for char**
+	"FLOOR4_8",
+ "SFLR6_1" ,
+ "MFLR8_4" ,
+ "MFLR8_3" ,
+ "SLIME16" ,
+ "RROCK14" ,
+ "RROCK07" ,
+ "RROCK17" ,
+ "RROCK13" ,
+ "RROCK19" ,
+"F_SKY1",
+"BOSSBACK" //GK:Make even the cast background modifiable by dehacked
 };
 
 void ResetFinalflat() {
 	/*const*/ char*	tfinaleflat[] = {
-		{ "FLOOR4_8" },
-	{ "SFLR6_1" },
-	{ "MFLR8_4" },
-	{ "MFLR8_3" },
-	{ "SLIME16" },
-	{ "RROCK14" },
-	{ "RROCK07" },
-	{ "RROCK17" },
-	{ "RROCK13" },
-	{ "RROCK19" },
-	{ "F_SKY1" },
-	{ "BOSSBACK" }
-
+		 "FLOOR4_8" ,
+	 "SFLR6_1" ,
+	 "MFLR8_4" ,
+	 "MFLR8_3" ,
+	 "SLIME16" ,
+	 "RROCK14" ,
+	 "RROCK07" ,
+	 "RROCK17" ,
+	 "RROCK13" ,
+	 "RROCK19" ,
+	 "F_SKY1" ,
+	 "BOSSBACK" 
 	};
 	memcpy(finaleflat, tfinaleflat, sizeof(tfinaleflat));
 }
@@ -586,7 +584,7 @@ void F_TextWrite (void)
 	
     for (y=0 ; y<SCREENHEIGHT ; y++)
     {
-	for (x=0 ; x<::g->SCREENWIDTH/64 ; x++)
+	for (x=0 ; x< ::g->SCREENWIDTH/64 ; x++)
 	{
 	    memcpy (dest, src+((y&63)<<6), 64);
 	    dest += 64;

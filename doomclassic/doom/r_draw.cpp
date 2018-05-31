@@ -781,7 +781,7 @@ void R_FillBackScreen (void)
 	dest = ::g->screens[1]; 
 
 	for (y=0 ; y<SCREENHEIGHT-SBARHEIGHT ; y++) { 
-		for (x=0 ; x<::g->SCREENWIDTH/64 ; x++) 	{
+		for (x=0 ; x< ::g->SCREENWIDTH/64 ; x++) 	{
 			memcpy(dest, src+((y&63)<<6), 64); 
 			dest += 64; 
 		} 

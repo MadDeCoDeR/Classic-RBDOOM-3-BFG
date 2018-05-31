@@ -619,7 +619,7 @@ int EV_DoGenDoor
 int EV_DoGenLockedDoor
 (line_t* line);
 
-boolean P_CanUnlockGenDoor
+qboolean P_CanUnlockGenDoor
 (line_t* line,
 	player_t* player);
 
@@ -1045,7 +1045,7 @@ int EV_SilentLineTeleport
 (line_t* line,
 	int side,
 	mobj_t* thing,
-	boolean reverse);
+	qboolean reverse);
 
 int P_FindLineFromLineTag
 (const line_t *line,

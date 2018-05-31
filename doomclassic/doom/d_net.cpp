@@ -554,6 +554,16 @@ void D_CheckNetGame (void)
 
 	// I_InitNetwork sets ::g->doomcom and ::g->netgame
 	I_InitNetwork ();
+#if 0 //GK: Just in case
+	memset(&::g->doomcom, 0, sizeof(::g->doomcom));
+	::g->doomcom.ticdup = 1;
+	::g->doomcom.extratics = 0;
+	::g->netgame = false;
+	::g->doomcom.id = DOOMCOM_ID;
+	::g->doomcom.numplayers = ::g->doomcom.numnodes = 1;
+	::g->doomcom.deathmatch = false;
+	::g->doomcom.consoleplayer = 0;
+#endif
 #ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING
 	if (::g->doomcom.id != DOOMCOM_ID)
 		I_Error ("Doomcom buffer invalid!");
@@ -707,7 +717,7 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 	{	
 		// ideally ::g->nettics[0] should be 1 - 3 tics above ::g->trt_lowtic
 		// if we are consistantly slower, speed up time
-		for (i=0 ; i<::g->doomcom.numnodes ; i++) { //GK:Optimize by using the number of nodes instead of maxplayers
+		for (i=0 ; i< ::g->doomcom.numnodes ; i++) { //GK:Optimize by using the number of nodes instead of maxplayers
 			if (::g->playeringame[i]) {
 				break;
 			}
@@ -815,7 +825,7 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 				int			j;
 
 				buf = (::g->gametic/::g->ticdup)%BACKUPTICS; 
-				for (j=0 ; j<::g->doomcom.numnodes ; j++) //GK:Optimize by using the number of nodes instead of maxplayers
+				for (j=0 ; j< ::g->doomcom.numnodes ; j++) //GK:Optimize by using the number of nodes instead of maxplayers
 				{
 					cmd = &::g->netcmds[j][buf];
 					if (cmd->buttons & BT_SPECIAL)

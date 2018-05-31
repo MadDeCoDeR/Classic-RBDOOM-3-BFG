@@ -97,7 +97,11 @@ public:
 	{
 		buffer[ 0 ] = '\0';
 		SetStaticBuffer( buffer, _size_ );
+#ifndef _WINDOWS
+		idStr::operator=((const char*) b ); //GK: Linux gcc 7 paranoia strikes again
+#else
 		idStr::operator=( b );
+#endif
 	}
 	
 	ID_INLINE	explicit idStrStatic( const char c ) :
@@ -105,7 +109,11 @@ public:
 	{
 		buffer[ 0 ] = '\0';
 		SetStaticBuffer( buffer, _size_ );
+#ifndef _WINDOWS
+		idStr::operator=((const char*)c);
+#else
 		idStr::operator=( c );
+#endif
 	}
 	
 	ID_INLINE	explicit idStrStatic( const int i ) :
@@ -113,7 +121,11 @@ public:
 	{
 		buffer[ 0 ] = '\0';
 		SetStaticBuffer( buffer, _size_ );
+#ifndef _WINDOWS
+		idStr::operator=((const char*)i);
+#else
 		idStr::operator=( i );
+#endif
 	}
 	
 	ID_INLINE	explicit idStrStatic( const unsigned u ) :
@@ -121,7 +133,11 @@ public:
 	{
 		buffer[ 0 ] = '\0';
 		SetStaticBuffer( buffer, _size_ );
+#ifndef _WINDOWS
+		idStr::operator=((const char*)u);
+#else
 		idStr::operator=( u );
+#endif
 	}
 	
 	ID_INLINE	explicit idStrStatic( const float f ) :
@@ -129,7 +145,11 @@ public:
 	{
 		buffer[ 0 ] = '\0';
 		SetStaticBuffer( buffer, _size_ );
+#ifndef _WINDOWS
+		idStr::operator=((const char*)f);
+#else
 		idStr::operator=( f );
+#endif
 	}
 	
 private:

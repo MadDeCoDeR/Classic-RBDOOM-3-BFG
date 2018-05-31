@@ -340,7 +340,7 @@ void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
 	}
 	
 #ifdef ID_RETAIL					//GK No achievments if we use classic parameters
-	if( common->GetConsoleUsed() || (classicargv[1] !=NULL && classicargv[1] != '\0'))
+	if( common->GetConsoleUsed() || (classicargv[1] !=NULL && classicargv[1] != "\0"))
 	{
 		if( !cheatingDialogShown )
 		{

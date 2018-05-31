@@ -318,7 +318,7 @@ menuitem_t temp_DoomitMenu[10] = {
 { 1,"", M_Doom_IT,'7' },
 { 1,"", M_Doom_IT,'8' },
 { 1,"", M_Doom_IT,'9' },
-{ 1,"", M_Doom_IT,'10' }/*,
+{ 1,"", M_Doom_IT,'0' }/*, //GK: Linux only accepts 0-9 as numbers to chars
 { 1,"", M_Doom_IT,'11' },
 { 1,"", M_Doom_IT,'12' },
 { 1,"", M_Doom_IT,'13' },
@@ -485,16 +485,6 @@ int temp_checkcoord[12][4] = {
 memcpy( ::g->checkcoord, temp_checkcoord, sizeof(temp_checkcoord) );
 // r_bsp.constructs end // 
 //  r_draw.constructs begin // 
-int temp_fuzzoffset[FUZZTABLE] = {
-	FUZZOFF,-FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
-		FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
-		FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,
-		FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
-		FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,
-		FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,
-		FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF 
-}; 
-memcpy( ::g->fuzzoffset, temp_fuzzoffset, sizeof(temp_fuzzoffset) );
 	::g->fuzzpos = 0; 
 // r_draw.constructs end // 
 //  r_main.constructs begin // 

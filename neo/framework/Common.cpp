@@ -94,9 +94,9 @@ idCVar net_inviteOnly( "net_inviteOnly", "1", CVAR_BOOL | CVAR_ARCHIVE, "whether
 // DG: add cvar for pause
 idCVar com_pause( "com_pause", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "set to 1 to pause game, to 0 to unpause again" );
 // DG end
-
+//GK: com_game_mode
 idCVar com_game_mode("com_game_mode", "0", CVAR_INTEGER | CVAR_SYSTEM | CVAR_NOCHEAT, "Set which game to run 1: DOOM 2:DOOM2 3:DOOM3");
-
+//GK End
 extern idCVar g_demoMode;
 
 idCVar com_engineHz( "com_engineHz", "60", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the engine runs at", 10.0f, 1024.0f );

@@ -437,8 +437,9 @@ void resetMapNames() {
 
 
 
-
+//GK: cl_messages
 idCVar cl_messages("cl_messages", "1", CVAR_INIT | CVAR_INTEGER | CVAR_ARCHIVE, "Set how many messages will be shown", 1, 4);
+//GK End
 const char*	shiftxform;
 
 const char english_shiftxform[] =

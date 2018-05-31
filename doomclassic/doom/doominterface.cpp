@@ -107,9 +107,9 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 			DoomLib::InitGame(mpArgc[i], mpArgVPtr[i] );
 		} else {
 			//GK begin
-			if (classicargv[1] != NULL && classicargv[1] != '\0') {
+			if (classicargv[1] != NULL && classicargv[1] != "\0") { //GK: Linux getting some things really seriously
 				int o = 0;
-				while (classicargv[o] != NULL && classicargv[o] != '\0') {
+				while (classicargv[o] != NULL && classicargv[o] != "\0") {
 					o++;
 				}
 				localdargc = o;
@@ -243,9 +243,12 @@ void DoomInterface::QuitCurrentGame() {
 		DoomLib::SetPlayer( i );
 
 		if(::g->netgame) {
+#ifdef _WINDOWS //GK:WSA is windows exclusive
 			WSACleanup(); //GK: Keep your house and your Network clean
+#endif
 			// Shut down networking
 			D_QuitNetGame();
+
 		}
 
 		G_CheckDemoStatus();

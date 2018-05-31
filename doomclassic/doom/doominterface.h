@@ -33,13 +33,23 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <vector>
 #include <string>
+#ifndef _WINDOWS //GK: Use these headers here in order to properly init SendFunc on linux
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h> 
+#endif
 
 class idUserCmdMgr;
 //GK : Use extern to communicate between DOOM 3 BFG and classic DOOM
 extern char* classicargv[128];
 //GK:Keep this definitions here
+#ifdef _WINDOWS
 typedef int(*RecvFunc)(char* buff, DWORD *numRecv);
 typedef int(*SendFunc)(const char* buff, DWORD size, sockaddr_in *target, int toNode);
+#else //GK:No DWORD on linux
+typedef int(*RecvFunc)(char* buff, unsigned long *numRecv);
+typedef int(*SendFunc)(const char* buff, unsigned long size, sockaddr_in *target, int toNode);
+#endif
 typedef int(*SendRemoteFunc)();
 class DoomInterface
 {

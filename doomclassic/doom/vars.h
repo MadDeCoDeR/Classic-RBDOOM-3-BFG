@@ -315,8 +315,13 @@ InputEvent joyEvents[18];
 // i_input.vars end // 
 //  i_net_xbox.vars begin // 
 //GK:Revive anything Network Related
+#ifdef _WINDOWS
 SOCKET		sendsocket;
 SOCKET			insocket;
+#else
+int		sendsocket;
+int			insocket;
+#endif
 struct	sockaddr_in	sendaddress[MAXNETNODES];
 int     dmtime;
 // i_net_xbox.vars end // 

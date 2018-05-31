@@ -368,7 +368,7 @@ void P_ArchiveThinkers (void)
 				if (::g->activeceilings[i] == (ceiling_t *)th)
 					break;
 
-			if (i<::g->cellind)
+			if (i< ::g->cellind)
 			{
 				*::g->save_p++ = tc_ceiling;
 				PADSAVEP();
@@ -830,7 +830,7 @@ void P_ArchiveSpecials (void)
 		if (::g->activeceilings[i] == (ceiling_t *)th)
 		    break;
 	    
-	    if (i<::g->cellind)
+	    if (i< ::g->cellind)
 	    {
 		*::g->save_p++ = tc_ceiling;
 		PADSAVEP();
