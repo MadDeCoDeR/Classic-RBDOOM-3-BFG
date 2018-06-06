@@ -575,8 +575,13 @@ bool			idSoundSample_OpenAL::LoadAll(const idStr& name) { //GK:Decode and Demux 
 
 	av_free(avio_ctx->buffer);
 	av_freep(avio_ctx);
-	av_free(fmt_ctx->pb);
-	avformat_close_input(&fmt_ctx);
+#ifdef _WINDOWS
+			av_free(fmt_ctx->pb);
+			avformat_close_input(&fmt_ctx);
+#else
+			avformat_close_input(&fmt_ctx);
+			avformat_free_context(fmt_ctx);
+#endif
 
 
 

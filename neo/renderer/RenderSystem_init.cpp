@@ -393,8 +393,8 @@ static void R_CheckPortableExtensions()
 		glConfig.vendor = VENDOR_INTEL;
 	}
 	
-	// RB: Mesa support
-	if( idStr::Icmpn( glConfig.renderer_string, "Mesa", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "X.org", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "Gallium", 7 ) == 0 )
+	// RB: Mesa support																																											//GK: Add support for VMWare gpu
+	if( idStr::Icmpn( glConfig.renderer_string, "Mesa", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "X.org", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "Gallium", 7 ) == 0 || idStr::Icmpn(glConfig.renderer_string, "SVGA3D", 6) == 0)
 	{
 		if( glConfig.driverType == GLDRV_OPENGL32_CORE_PROFILE )
 		{
@@ -429,7 +429,7 @@ static void R_CheckPortableExtensions()
 	}
 	else
 	{
-		glConfig.textureCompressionAvailable = GLEW_ARB_texture_compression != 0 && GLEW_EXT_texture_compression_s3tc != 0;
+		glConfig.textureCompressionAvailable = GLEW_ARB_texture_compression != 0 || GLEW_EXT_texture_compression_s3tc != 0;
 	}
 	// GL_EXT_texture_filter_anisotropic
 	glConfig.anisotropicFilterAvailable = GLEW_EXT_texture_filter_anisotropic != 0;

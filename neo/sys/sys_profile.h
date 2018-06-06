@@ -62,7 +62,13 @@ private:
 	void				OnSaveSettingsCompleted( idSaveLoadParms* parms );
 	
 private:
+#ifndef _WINDOWS
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 	std::auto_ptr< idSaveGameProcessorSaveProfile >	profileSaveProcessor;
+#ifndef _WINDOWS
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 	std::auto_ptr< idSaveGameProcessorLoadProfile >	profileLoadProcessor;
 	
 	idLocalUser* 						user;					// reference passed in

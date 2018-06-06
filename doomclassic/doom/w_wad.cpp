@@ -190,7 +190,11 @@ void W_AddFile ( const char *filename)
     if ( idStr::Icmp( filename+strlen(filename)-3 , "wad" ) )
     {
 		//GK: when loading archives return instandly don't add it to the lump list
+#ifdef _WINDOWS
 			if (OpenCompFile(filename)) {
+#else //GK: Use the absolute path on linux because minizip might refuse to open it otherwise
+			if (OpenCompFile(handle->GetFullPath())) {
+#endif
 				//handle=nullptr;
 				//fileSystem->CloseFile(handle);
 				//return;
@@ -955,12 +959,12 @@ bool OpenCompFile(const char* filename) {
 #ifdef _WIN32
 		CreateDirectory("base/pwads",NULL);
 #else
-		mkdir("base/pwads", S_IRWXU);
+		mkdir("base/pwads/", S_IRWXU);
 #endif
 		unz_global_info gi;
 		if (unzGetGlobalInfo(zip, &gi) == UNZ_OK) {
 			char rb[READ_SIZE];
-			qboolean usesprite = false;
+			qboolean usesprites = false;
 			qboolean usegraphic = false; //GK: TODO Find out how to translate GRAPHICS folder to FLAT or PLANE flag
 			int indoffset = zipind;
 			zipind += gi.number_entry;
@@ -1014,11 +1018,11 @@ bool OpenCompFile(const char* filename) {
 							char* tn = new char[512];
 							qboolean insprite = false;
 							while (t != NULL) {
-								if (!usesprite && !idStr::Icmp(t, "SPRITES")) { //GK: Set S_START Flag if we entered a SPRITES folder
+								if (!usesprites && !idStr::Icmp(t, "SPRITES")) { //GK: Set S_START Flag if we entered a SPRITES folder
 									strcpy(zipfileinfo[k].name, "S_START\0");
 									zipfileinfo[k].filepos = k;
 									insprite = true;
-									usesprite = true;
+									usesprites = true;
 									k++;
 								}
 								if (!insprite && !idStr::Icmp(t, "SPRITES")) {
@@ -1027,10 +1031,10 @@ bool OpenCompFile(const char* filename) {
 								tn = t;
 								t = strtok(NULL, "/");
 							}
-							if (usesprite && !insprite) { //GK: And set a S_END flag once we exit the folder
+							if (usesprites && !insprite) { //GK: And set a S_END flag once we exit the folder
 								strcpy(zipfileinfo[k].name, "S_END\0");
 								zipfileinfo[k].filepos = k;
-								usesprite = false;
+								usesprites = false;
 								k++;
 							}
 							//GK: And also keep the file extension
@@ -1080,7 +1084,7 @@ bool OpenCompFile(const char* filename) {
 						if (!idStr::Icmp(name, "SPRITES/")) {
 							strcpy(zipfileinfo[k].name, "S_START\0");
 							zipfileinfo[k].filepos = k;
-							usesprite = true;
+							usesprites = true;
 							k++;
 						}
 						//idLib::Printf("%s\n", maindir);
@@ -1097,10 +1101,10 @@ bool OpenCompFile(const char* filename) {
 
 				}
 			}
-			if (usesprite) {
+			if (usesprites) {
 				strcpy(zipfileinfo[k].name, "S_END\0");
 				zipfileinfo[k].filepos = k;
-				usesprite = false;
+				usesprites = false;
 			}
 			while(1) { //GK: Remove unused entries
 				int y = zipfileinfo.size() - 1;
@@ -1244,7 +1248,11 @@ void MasterList() {
 	int count = 1;
 	int count2 = 1;
 	char* filename = new char[MAX_FILENAME];
+#ifdef _WIN32
 	char* dir = "base\\wads\\master\\*.wad";
+#else
+	char* dir = "base/wads/master/"; //GK: Otherwise it will crash once it will try to open them
+#endif
 #ifdef _WIN32
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind = INVALID_HANDLE_VALUE;
@@ -1410,7 +1418,7 @@ void MasterList() {
 #ifdef _WIN32
 	} while (FindNextFile(hFind, &ffd) != 0);
 #else
-	}while ((directory = readdir(dirp)) != NULL);
+	}while ((directory = readdir(dirp)) != NULL && cl<20); //GK: Make sure there is no leak
 	closedir(dirp);
 #endif
 	lump = &lumpnfo[0];

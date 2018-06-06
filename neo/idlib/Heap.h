@@ -29,6 +29,9 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __HEAP_H__
 #define __HEAP_H__
 
+#ifndef _WINDOWS //GK: Silence gcc 7 from warnings
+#pragma GCC diagnostic ignored "-Wdeprecated"
+#endif
 /*
 ===============================================================================
 

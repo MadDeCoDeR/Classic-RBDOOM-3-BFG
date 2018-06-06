@@ -993,9 +993,14 @@ bool I_LoadSong( const char * songname )
 			}
 
 			avcodec_close(dec_ctx);
-
+#ifdef _WINDOWS
 			av_free(fmt_ctx->pb);
 			avformat_close_input(&fmt_ctx);
+#else
+			//GK: Let it leak let it leak because linux thing that it freeing twiice
+			avformat_close_input(&fmt_ctx);
+			avformat_free_context(fmt_ctx);
+#endif
 
 
 			av_free(avio_ctx->buffer);
