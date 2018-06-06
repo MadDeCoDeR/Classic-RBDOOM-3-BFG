@@ -126,8 +126,8 @@ const char gammamsg[5][26] =
 //
 
 
-int posm = 0;
-unsigned char cheatcodem[9];
+
+
 const unsigned char cheat_menu_seq[] = {
 	'\x17',' ','2','\x12','1','\x16',0xff
 };
@@ -1690,24 +1690,12 @@ qboolean M_Responder (event_t* ev)
 				}
 				if (::g->gamemode == commercial && ::g->gamestate != GS_LEVEL) {
 					//GK begin
-					if ((ev->data1 == 23 && p < 8) || p > 0) {
-						cheatcodem[p] = ev->data1;
-						p++;
-					}
-					if (p == 9) {
-						for (int u = 0; u < 8; u++) {
-							cheatcodem[u] = NULL;
-						}
-						p = 0;
-					}
-					if (cht_CheckCheat(cheat_menu_seq, cheatcodem, true)) {
-						for (int u = 0; u < 8; u++) {
-							cheatcodem[u] = NULL;
-						}
-						p = 0;
-						//start = NULL;
-						//char	buf[3];
-						//int		musnum;
+					//GK: Using an improved cheat system that no longer relies on time limits
+						::g->cheat[::g->cheatind] = ev->data1;
+						::g->cheatind++;
+						::g->markfordelete = 0;
+					if (cht_CheckCheat(cheat_menu_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete, true)) {
+						::g->markfordelete = 0;
 						for (int o = 0; o < 3; o++) {
 							if (buf[o] == 11) { //0=11 so set it to 1
 								buf[o] = 1;
@@ -1739,6 +1727,12 @@ qboolean M_Responder (event_t* ev)
 								DoomLib::SetCurrentExpansion(expm);
 							}
 						}
+					}
+					if (!::g->markfordelete || ::g->cheatind>=14) {
+						for (int u = 0; u < 14; u++) {
+							::g->cheat[u] = NULL;
+						}
+						::g->cheatind = 0;
 					}
 				}
 				

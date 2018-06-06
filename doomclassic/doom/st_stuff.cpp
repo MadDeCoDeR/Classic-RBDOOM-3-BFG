@@ -326,10 +326,7 @@ const unsigned char	cheat_mypos_seq[] =
 	//0xb2, 0x26, 0xb6, 0xba, 0x2a, 0xf6, 0xea, 0xff	// idmypos
 };
 //GK begin
-unsigned char cheat[14];
-int p = 0;
 char buf[3];
-clock_t start;
 //GK End
 
 // Now what?
@@ -411,47 +408,14 @@ ST_Responder (event_t* ev)
 			// if (::g->gameskill != sk_nightmare) {
 
 			//GK store cheat sequence
-			if ((ev->data1 == 23 && p<14) || p>0) {
-				if (start == NULL) {
-					cheat[p] = ev->data1;
-					p++;
-				}
-				else {
-					if (((clock() - start) / CLOCKS_PER_SEC) < CHEAT_TIME) {
-						cheat[p] = ev->data1;
-						p++;
-					}
-					else {
-						//Reset cheat sequence
-						for (int u = 0; u < 14; u++) {
-							cheat[u] = NULL;
-						}
-						p = 0;
-						start = NULL;
-						cheat[p] = ev->data1;
-						p++;
-					}
-				}
-			}
-			if (ev->data1 == 23 && p == 1) {
-				start = clock();
-			}
-			//Reset cheat sequence
-			if (p >= 14) {
-				for (int u = 0; u < 14; u++) {
-					cheat[u] = NULL;
-				}
-				p = 0;
-				start = NULL;
-			}
+			//GK: Using an improved cheat system that no longer relies on time limits
+					::g->cheat[::g->cheatind] = ev->data1;
+					::g->cheatind++;
+					::g->markfordelete = 0;
 			// 'dqd' cheat for toggleable god mode
-			if (cht_CheckCheat(cheat_god_seq, cheat))
+			if (cht_CheckCheat(cheat_god_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete))
 			{
-				for (int u = 0; u < 14; u++) {
-					cheat[u] = NULL;
-				}
-				p = 0;
-				start = NULL;
+				::g->markfordelete = 0;
 				::g->plyr->cheats ^= CF_GODMODE;
 				if (::g->plyr->cheats & CF_GODMODE)
 				{
@@ -465,13 +429,9 @@ ST_Responder (event_t* ev)
 					::g->plyr->message = STSTR_DQDOFF;
 			}
 			// 'fa' cheat for killer fucking arsenal
-			else if (cht_CheckCheat(cheat_ammonokey_seq, cheat))
+			else if (cht_CheckCheat(cheat_ammonokey_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete))
 			{
-				for (int u = 0; u < 14; u++) {
-					cheat[u] = NULL;
-				}
-				p = 0;
-				start = NULL;
+				::g->markfordelete = 0;
 				::g->plyr->armorpoints = 200;
 				::g->plyr->armortype = 2;
 
@@ -484,13 +444,9 @@ ST_Responder (event_t* ev)
 				::g->plyr->message = STSTR_FAADDED;
 			}
 			// 'kfa' cheat for key full ammo
-			else if (cht_CheckCheat(cheat_ammo_seq, cheat))
+			else if (cht_CheckCheat(cheat_ammo_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete))
 			{
-				for (int u = 0; u < 14; u++) {
-					cheat[u] = NULL;
-				}
-				p = 0;
-				start = NULL;
+				::g->markfordelete = 0;
 				::g->plyr->armorpoints = 200;
 				::g->plyr->armortype = 2;
 				//GK: Give the Backpack with the kfa cheat
@@ -513,13 +469,9 @@ ST_Responder (event_t* ev)
 				::g->plyr->message = STSTR_KFAADDED;
 			}
 			// 'mus' cheat for changing music
-			else if (cht_CheckCheat(cheat_mus_seq, cheat, true))
+			else if (cht_CheckCheat(cheat_mus_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete, true))
 			{
-				for (int u = 0; u < 14; u++) {
-					cheat[u] = NULL;
-				}
-				p = 0;
-				start = NULL;
+				::g->markfordelete = 0;
 				//char	buf[3];
 				int		musnum;
 				for (int o = 0; o < 3; o++) {
@@ -553,14 +505,10 @@ ST_Responder (event_t* ev)
 			}
 			// Simplified, accepting both "noclip" and "idspispopd".
 			// no clipping mode cheat
-			else if (cht_CheckCheat(cheat_noclip_seq, cheat)
-				|| cht_CheckCheat(cheat_commercial_noclip_seq, cheat))
+			else if (cht_CheckCheat(cheat_noclip_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete)
+				|| cht_CheckCheat(cheat_commercial_noclip_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete))
 			{
-				for (int u = 0; u < 14; u++) {
-					cheat[u] = NULL;
-				}
-				p = 0;
-				start = NULL;
+				::g->markfordelete = 0;
 				::g->plyr->cheats ^= CF_NOCLIP;
 
 				if (::g->plyr->cheats & CF_NOCLIP)
@@ -571,13 +519,9 @@ ST_Responder (event_t* ev)
 			// 'behold?' power-up cheats
 			for (i = 0; i<6; i++)
 			{
-				if (cht_CheckCheat(cheat_powerup_seq[i], cheat))
+				if (cht_CheckCheat(cheat_powerup_seq[i], ::g->cheat, ::g->cheatind, ::g->markfordelete))
 				{
-					for (int u = 0; u < 14; u++) {
-						cheat[u] = NULL;
-					}
-					p = 0;
-					start = NULL;
+					::g->markfordelete = 0;
 					if (!::g->plyr->powers[i])
 						P_GivePower(::g->plyr, i);
 					else if (i != pw_strength)
@@ -590,35 +534,23 @@ ST_Responder (event_t* ev)
 			}
 
 			// 'behold' power-up menu
-			if (cht_CheckCheat(cheat_powerup_seq[6], cheat))
+			if (cht_CheckCheat(cheat_powerup_seq[6], ::g->cheat, ::g->cheatind, ::g->markfordelete))
 			{
-				if (((clock() - start) / CLOCKS_PER_SEC) >= CHEAT_TIME) {
-					for (int u = 0; u < 14; u++) {
-						cheat[u] = NULL;
-					}
-					p = 0;
-					start = NULL;
-				}
+				::g->markfordelete = 0;
 				::g->plyr->message = STSTR_BEHOLD;
 			}
 			// 'choppers' invulnerability & chainsaw
-			else if (cht_CheckCheat(cheat_choppers_seq, cheat))
+			else if (cht_CheckCheat(cheat_choppers_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete))
 			{
-				for (int u = 0; u < 14; u++) {
-					cheat[u] = NULL;
-				}
-				p = 0;
+				::g->markfordelete = 0;
 				::g->plyr->weaponowned[wp_chainsaw] = true;
 				::g->plyr->powers[pw_invulnerability] = true;
 				::g->plyr->message = STSTR_CHOPPERS;
 			}
 			// 'mypos' for player position
-			else if (cht_CheckCheat(cheat_mypos_seq, cheat))
+			else if (cht_CheckCheat(cheat_mypos_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete))
 			{
-				for (int u = 0; u < 14; u++) {
-					cheat[u] = NULL;
-				}
-				p = 0;
+				::g->markfordelete = 0;
 				static char	buf[ST_MSGWIDTH];
 				sprintf(buf, "ang=0x%x;x,y=(0x%x,0x%x)",
 					::g->players[::g->consoleplayer].mo->angle,
@@ -630,13 +562,9 @@ ST_Responder (event_t* ev)
 
 		// 'clev' change-level cheat
 		// ALAN NETWORKING
-		if (cht_CheckCheat(cheat_clev_seq, cheat, true)) // cht_CheckCheat(&cheat_clev, ev->data1))
+		if (cht_CheckCheat(cheat_clev_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete, true)) // cht_CheckCheat(&cheat_clev, ev->data1))
 		{
-			for (int u = 0; u < 14; u++) {
-				cheat[u] = NULL;
-			}
-			p = 0;
-			start = NULL;
+			::g->markfordelete = 0;
 			//char		buf[3];
 			int		epsd;
 			int		map;
@@ -716,6 +644,12 @@ ST_Responder (event_t* ev)
 			G_DeferedInitNew(::g->gameskill, epsd, map);
 		}
 		//GK end
+		if (!::g->markfordelete || ::g->cheatind>=14) {
+			for (int u = 0; u < 14; u++) {
+				::g->cheat[u] = NULL;
+			}
+			::g->cheatind = 0;
+		}
 	}
 	return false;
 }

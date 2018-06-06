@@ -685,7 +685,7 @@ void R_ExecuteSetViewSize (void)
 
 	::g->detailshift = ::g->setdetail;
 	::g->viewwidth = ::g->scaledviewwidth >>::g->detailshift;
-	int ow = (ORIGINAL_WIDTH*GLOBAL_IMAGE_SCALER) >> ::g->detailshift; //GK: Keep the original width for the player sprite scale
+	::g->ow = (ORIGINAL_WIDTH*GLOBAL_IMAGE_SCALER) >> ::g->detailshift; //GK: Keep the original width for the player sprite scale
 	//GK: End
 
 	::g->centery = ::g->viewheight/2;
@@ -714,8 +714,8 @@ void R_ExecuteSetViewSize (void)
 	R_InitTextureMapping ();
 
 	// psprite scales
-	::g->pspritescale = FRACUNIT*ow/ORIGINAL_WIDTH;
-	::g->pspriteiscale = FRACUNIT*ORIGINAL_WIDTH/ow;
+	::g->pspritescale = FRACUNIT*::g->ow/ORIGINAL_WIDTH;
+	::g->pspriteiscale = FRACUNIT*ORIGINAL_WIDTH/::g->ow;
 
 	// thing clipping
 	for (i=0 ; i < ::g->viewwidth ; i++)

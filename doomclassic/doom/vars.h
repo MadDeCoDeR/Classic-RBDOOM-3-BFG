@@ -81,6 +81,11 @@ int bigstate;
 char buffer[20];
 int nexttic ;
 int litelevelscnt ;
+//GK: Auto map cheat code sequence related stuff
+unsigned char amcheat[5];
+int ammarkfordelete;
+int amcheatind;
+//GK: End
 // am_map.vars end // 
 //  doomlib.vars begin // 
 fixed_t realoffset;
@@ -678,6 +683,7 @@ int			extralight;
 qboolean		setsizeneeded;
 int		setblocks;
 int		setdetail;
+int ow; //GK: Make it global cause why not
 // r_main.vars end // 
 //  r_plane.vars begin // 
 planefunction_t		floorfunc;
@@ -819,6 +825,11 @@ int	priority ;
 int	largeammo ;
 int st_palette ;
 qboolean	st_stopped ;
+//GK: Cheat code sequence related stuff
+unsigned char cheat[14];
+int markfordelete; //GK: The name might fool you but this is a voting variable which count how many cheats want the sequence. If none want it then it flushes it
+int cheatind;
+//GK: End
 // st_stuff.vars end // 
 //  s_sound.vars begin // 
 channel_t*	channels;

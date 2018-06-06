@@ -46,6 +46,8 @@ int
 cht_CheckCheat
 (const unsigned char*	cht,
 	unsigned char*		key,
+	int					ind,
+	int&			   vote,
 	bool buffer)
 {
 	if (!::g->classiccheats) {
@@ -53,9 +55,11 @@ cht_CheckCheat
 	}
 	int i = 0;
 	int rc = 0;
+	int score = 0; //GK: This score count the similarity of the current input with the cheat code
 	while (cht[i] != 0xff) {
 		if (cht[i] == key[i]) {
 			rc = 1;
+			score++;
 		}
 		else {
 			rc = 0;
@@ -66,14 +70,28 @@ cht_CheckCheat
 	if (rc) {
 
 		if (buffer) {
-			if (p >= i + 2) {
+			if (ind >= i + 2) {
 				for (int j = 0; j < 3; j++) {
 					buf[j] = key[i + j];
 				}
 			}
-			else {
+			else if (ind >= i + 1) {
+				if (score == ind-1) { //GK: Only one number missing vote it up
+					vote++;
+				}
 				return 0;
 			}
+			else {
+				if (score == ind) { //GK: Only some numbers missing vote it up
+					vote ++;
+				}
+				return 0;
+			}
+		}
+	}
+	else {
+		if (score == ind) { //GK: Close enough vote it up
+			vote++;
 		}
 	}
 	return rc;

@@ -181,8 +181,6 @@ const unsigned char cheat_amap_seq[] =
 };
 cheatseq_t cheat_amap = cheatseq_t(cheat_amap_seq, 0);
 
-unsigned char cheatcode[5];
-int pos = 0;
 //GK End
 //extern byte ::g->screens[][SCREENWIDTH*SCREENHEIGHT];
 
@@ -585,26 +583,25 @@ AM_Responder
 			rc = false;
 		}
 		//GK begin
-		if ((ev->data1 == 23 && pos<5) || pos>0) {
-			cheatcode[pos] = ev->data1;
-			pos++;
-		}
-		if (pos >= 5) {
-			for (int u = 0; u < 5; u++) {
-				cheatcode[u] = NULL;
-			}
-			pos = 0;
-		}
-		if (!::g->deathmatch && cht_CheckCheat(cheat_amap_seq, cheatcode))
+		//GK: Using an improved cheat system that no longer relies on time limits
+			::g->amcheat[::g->amcheatind] = ev->data1;
+			::g->amcheatind++;
+			::g->ammarkfordelete = 0;
+		
+		if (!::g->deathmatch && cht_CheckCheat(cheat_amap_seq, ::g->amcheat, ::g->amcheatind, ::g->ammarkfordelete))
 		{
-			for (int u = 0; u < 5; u++) {
-				cheatcode[u] = NULL;
-			}
-			pos = 0;
-			//GK end
+			::g->ammarkfordelete = 0;
+			
 			rc = false;
 			::g->cheating = (::g->cheating+1) % 3;
 		}
+		if (!::g->ammarkfordelete || ::g->amcheatind >= 5) {
+			for (int u = 0; u < 5; u++) {
+				::g->amcheat[u] = NULL;
+			}
+			::g->amcheatind = 0;
+		}
+		//GK end
 	}
 
 	else if (ev->type == ev_keyup)

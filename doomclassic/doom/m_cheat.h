@@ -55,6 +55,8 @@ int
 cht_CheckCheat
 (const unsigned char*	cht,
 	unsigned char*		key,
+	int					ind, //GK: Pass the cheat's indexer
+	int&			   vote, //and vote value since auto map accept cheats in the same time with the game
 	bool buffer = false);
 
 /*void
@@ -63,8 +65,6 @@ cht_GetParam
 char*			buffer );*/
 
 extern char buf[3];
-extern int p;
-#define CHEAT_TIME 5
 
 #endif
 
