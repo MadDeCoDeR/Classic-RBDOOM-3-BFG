@@ -3,9 +3,29 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 Thank you for downloading Classic RBDOOM-3-BFG.
 
 
+
 _______________________________________
 
-17 May 2018 - Classic RBDOOM-3-BFG 1.1.10
+06 June 2018 - Classic RBDOOM-3-BFG 1.1.10u1
+_______________________________
+
+[classicdoom]
+
+- Improved Classic Doom cheat codes
+
+- Fixed various issue on linux systems
+
+[DOOM3BFG]
+
+- Fixed various issue on linux systems
+
+- Updated FFMPEG
+
+- Update to GLEW 2.1.0
+
+_______________________________________
+
+31 May 2018 - Classic RBDOOM-3-BFG 1.1.10
 _______________________________
 
 [classicdoom]

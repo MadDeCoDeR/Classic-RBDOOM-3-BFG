@@ -195,7 +195,7 @@ _________________________
 4. Generate the Makefiles using CMake:
 
 	> cd neo/
-	> ./cmake-eclipse-linux-profile.sh
+	> ./cmake-linux-profile.sh(recommended retail profile)
 	
 5. Compile RBDOOM-3-BFG targets with
 
@@ -233,6 +233,9 @@ Then you can download Doom 3 BFG with
 When it's done you should have the normal windows installation of Doom 3 BFG in ./doom3bfg/ and the needed files in ./doom3bfg/base/
 That number is the "AppID" of Doom 3 BFG; if you wanna use this to get the data of other games you own, you can look up the AppID at https://steamdb.info/
 
+Additionally in Ubuntu you can open the RBDoom3BFG file with the text editor and add the missing paths on it and save it as .desktop.
+This will give you a desktop shortcut for Ubuntu. (NOTE: I don't know if other operating systems support this file)
+
 NOTE that we've previously recommended using download_depot in the Steam console to install the game data. That turned out to be unreliable and result in broken, unusable game data. So use SteamCMD instead, as described above.
 
 Anyway:
@@ -253,11 +256,11 @@ Anyway:
    Your own Doom 3 BFG directory now should look like:
 	/path/to/Doom3BFG/
 	 ->	RBDoom3BFG (or RBDoom3BFG.exe on Windows)
-	 -> avcodec-55.dll
-	 -> avformat-55.dll
-	 -> avutil-52.dll
-	 -> swresample-0.dll
-	 -> swscale-2.dll
+	 -> avcodec-58.dll
+	 -> avformat-58.dll
+	 -> avutil-56.dll
+	 -> swresample-3.dll
+	 -> swscale-5.dll
 
 5. Run the game by executing the RBDoom3BFG executable.
 
@@ -265,8 +268,10 @@ Anyway:
 
 7. If you run into bugs, please report them, see 11)
 
-Additionally for the Final DOOM wad you must legally own the (either aquired from retail,steam or GOG)
-and then copy the two WADs on the <your DOOM 3 BFG Directory>\base\wads.
+Additionally for the Final DOOM wads you must legally own them (either aquired from retail,steam or GOG)
+and then copy the two WADs on the /path/to/Doom3BFG/base/wads.
+And for the Master Levels you must legally own them (either aquired from retail,steam or GOG),
+make a folder named "master" on /path/to/Doom3BFG/base/wads and copy all the 20 wad files on this folder.
 Otherwise the game wont let you play this expansions (because there are no files dah)
 
 ___________________________________________________
@@ -332,13 +337,15 @@ r_useSSAO [0 .. 1] - Use Screen Space Ambient Occlusion to darken the corners in
 	
 r_useFilmicPostProcessEffects [0 or 1] - Apply several post process effects to mimic a filmic look"
 
+See also the New-Parameters.txt for additional parameters
+
 
 ___________________________________________________
 
 10) KNOWN ISSUES
 __________________________________________
 
-- Running DOOM or DOOM 2 with mods and then opening the other one might result on the executable to crash
+- If you find any please report it
 
 ___________________________________________________
 
