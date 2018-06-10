@@ -1157,6 +1157,7 @@ void MakeMaster_Wad() {
 	struct stat info;
 	if (FILE *f = fopen("base/wads/MASTERLEVELS.wad", "r")) {
 		fclose(f);
+		DoomLib::hexp[2] = true;
 		return;
 	}
 	if (FILE *f = fopen("base/wads/master.zip", "r")) {

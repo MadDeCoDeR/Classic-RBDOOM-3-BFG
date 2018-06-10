@@ -1107,7 +1107,7 @@ void D_DoomMain(void)
 	I_Printf ("D_CheckNetGame: Checking network game status.\n");
 	D_CheckNetGame ();
 	//GK: Check if there is either a folder or a zip that is called "master" and create the MASTERLEVELS.wad
-	if (::g->gamemode == commercial)
+	if (::g->gamemode == commercial && !DoomLib::hexp[2])
 	    MakeMaster_Wad();
 
 	if (::g->gamemode == commercial && !initonce) {
