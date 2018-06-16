@@ -6,6 +6,7 @@ Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 Copyright (C) 2012 dhewg (dhewm3)
 Copyright (C) 2012 Robert Beckebans
 Copyright (C) 2013 Daniel Gibson
+Copyright (C) 2018 George Kalampokis
 
 This file is part of the Doom 3 GPL Source Code ("Doom 3 Source Code").
 
@@ -39,6 +40,9 @@ If you have questions concerning this license or the applicable additional terms
 // DG end
 
 #include <SDL.h>
+#if !SDL_VERSION_ATLEAST(2, 0, 0)
+#include "SDL_thread.h"
+#endif
 
 #include "renderer/tr_local.h"
 #include "sdl_local.h"
@@ -67,12 +71,21 @@ If you have questions concerning this license or the applicable additional terms
 // DG end
 #endif
 
+static const int MAX_JOYSTICKS = 1; //GK: This thing still works only on PC right?
+
 // DG: those are needed for moving/resizing windows
 extern idCVar r_windowX;
 extern idCVar r_windowY;
 extern idCVar r_windowWidth;
 extern idCVar r_windowHeight;
 // DG end
+//GK: This function will run as a thread in order to capture when a joystick is connected or disconnected
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+void JoystickSamplingThread( void* data );
+#else
+int JoystickSamplingThread( void* data ); //GK: SDL 1.2 require the thread to have an int as return value
+#endif
+//GK End
 
 const char* kbdNames[] =
 {
@@ -133,6 +146,10 @@ struct joystick_poll_t
 };
 static idList<joystick_poll_t> joystick_polls;
 SDL_Joystick* joy = NULL;
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+static SDL_GameController* gcontroller = NULL; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
+static SDL_Haptic *haptic = NULL; //GK: Joystick rumble support
+#endif
 int SDL_joystick_has_hat = 0;
 bool buttonStates[K_LAST_KEY];	// For keeping track of button up/down events
 
@@ -649,84 +666,14 @@ void Sys_InitInput()
 	SDL_EnableKeyRepeat( SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL );
 #endif
 	in_keyboard.SetModified();
-	
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-	// GameController
-	if( SDL_Init( SDL_INIT_GAMECONTROLLER ) )
-		common->Printf( "Sys_InitInput: SDL_INIT_GAMECONTROLLER error: %s\n", SDL_GetError() );
-		
-	SDL_GameController* controller = NULL;
-	for( int i = 0; i < SDL_NumJoysticks(); ++i )
-	{
-		if( SDL_IsGameController( i ) )
-		{
-			controller = SDL_GameControllerOpen( i );
-			if( controller )
-			{
-				common->Printf( "GameController %i name: %s\n", i, SDL_GameControllerName( controller ) );
-				common->Printf( "GameController %i is mapped as \"%s\".\n", i, SDL_GameControllerMapping( controller ) );
-			}
-			else
-			{
-				common->Printf( "Could not open gamecontroller %i: %s\n", i, SDL_GetError() );
-			}
-			
-		}
-	}
-#else
-	// WM0110: Initialise SDL Joystick
-	common->Printf( "Sys_InitInput: Joystick subsystem init\n" );
-	if( SDL_Init( SDL_INIT_JOYSTICK ) )
-	{
-		common->Printf( "Sys_InitInput: Joystic Init ERROR!\n" );
-	}
-	
-	numJoysticks = SDL_NumJoysticks();
-	common->Printf( "Sys_InitInput: Joystic - Found %i joysticks\n", numJoysticks );
-#if !SDL_VERSION_ATLEAST(2, 0, 0)
-	for( i = 0; i < numJoysticks; i++ )
-		common->Printf( " Joystick %i name '%s'\n", i, SDL_JoystickName( i ) );
-#endif
-	
-	// Open first available joystick and use it
-	if( SDL_NumJoysticks() > 0 )
-	{
-		joy = SDL_JoystickOpen( 0 );
-	
-		if( joy )
-		{
-			int num_hats;
-	
-			num_hats = SDL_JoystickNumHats( joy );
-			common->Printf( "Opened Joystick number 0\n" );
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-			common->Printf( "Name: %s\n", SDL_JoystickName( joy ) );
-#else
-			common->Printf( "Name: %s\n", SDL_JoystickName( 0 ) );
-#endif
-			common->Printf( "Number of Axes: %d\n", SDL_JoystickNumAxes( joy ) );
-			common->Printf( "Number of Buttons: %d\n", SDL_JoystickNumButtons( joy ) );
-			common->Printf( "Number of Hats: %d\n", num_hats );
-			common->Printf( "Number of Balls: %d\n", SDL_JoystickNumBalls( joy ) );
-	
-			SDL_joystick_has_hat = 0;
-			if( num_hats )
-			{
-				SDL_joystick_has_hat = 1;
-			}
-		}
-		else
-		{
-			joy = NULL;
-			common->Printf( "Couldn't open Joystick 0\n" );
-		}
-	}
-	else
-	{
-		joy = NULL;
-	}
-	// WM0110
-#endif
+	//GK: Insted of initializing only once the joystick run a thread that will allow the dynamic connection/disconnection of it
+	#if SDL_VERSION_ATLEAST(2, 0, 0)
+	SDL_CreateThread((SDL_ThreadFunction)JoystickSamplingThread,"Joystic",NULL);
+	#else
+	SDL_CreateThread(JoystickSamplingThread,NULL);
+	#endif
+	//GK:End
+
 }
 
 /*
@@ -1842,8 +1789,31 @@ void Sys_SetClipboardData( const char* string )
 
 void Sys_SetRumble( int device, int low, int hi )
 {
-	// TODO;
-	// SDL 2.0 required (SDL Haptic subsystem)
+	//GK: This is the code for the rumble effect by using SDL_Haptic.
+	//Unfortunately it doesn't work (at least on PS3 Controller) but also it doesn't affect the game's performance (Remember NO SDL_Delay)
+	#if SDL_VERSION_ATLEAST(2, 0, 0)
+	if(haptic){ //GK: Make sure the rumble code will run ONLY if the SDL_Haptic device is already initialized
+	
+	SDL_HapticEffect effect;
+ 	int effect_id;
+	
+	SDL_memset( &effect, 0, sizeof(SDL_HapticEffect) );
+	//GK: SDL2 has support for left-right motor rumble
+	effect.type=SDL_HAPTIC_LEFTRIGHT;
+	effect.leftright.small_magnitude = low;
+	effect.leftright.large_magnitude = hi;
+	effect.leftright.length = 5000;
+
+	effect_id = SDL_HapticNewEffect( haptic, &effect );
+
+	 SDL_HapticRunEffect( haptic, effect_id, 1 );
+
+	 //SDL_HapticDestroyEffect( haptic, effect_id ); //GK:Does it need to be freed?
+	}
+	   
+
+	#endif
+	//GK End
 }
 
 int Sys_PollJoystickInputEvents( int deviceNum )
@@ -1876,4 +1846,183 @@ void Sys_EndJoystickInputEvents()
 	// Empty the joystick event container. This is called after
 	// all joystick events have been read using Sys_ReturnJoystickInputEvent()
 	joystick_polls.SetNum( 0 );
+}
+//GK: This is the controller state detection thread. It can check whenever a controller is connected or not.
+//Most of the console outputs have been disabled since this thread runs from the begining of the game and never stops.
+static int	threadTimeDeltas[256];
+static int	threadPacket[256];
+static int	threadCount;
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+void JoystickSamplingThread(void* data){
+#else
+int JoystickSamplingThread(void* data){
+#endif
+
+	static int prevTime = 0;
+	static uint64 nextCheck[MAX_JOYSTICKS] = { 0 };
+	const uint64 waitTime = 5000;// 000; // poll every 5 seconds to see if a controller was connected
+	while(1){
+		int	now = Sys_Microseconds();
+		int	delta;
+		if( prevTime == 0 )
+		{
+			delta = 4000;
+		}
+		else
+		{
+			delta = now - prevTime;
+		}
+		prevTime = now;
+		threadTimeDeltas[threadCount & 255] = delta;
+		threadCount++;
+		if(now>=nextCheck[0]){ //GK: Similar to the windows thread
+	#if SDL_VERSION_ATLEAST(2, 0, 0)
+	// GameController
+	if( SDL_Init( SDL_INIT_GAMECONTROLLER ) ){
+		common->Printf( "Sys_InitInput: SDL_INIT_GAMECONTROLLER error: %s\n", SDL_GetError() );
+		continue;
+	}
+	if( SDL_Init( SDL_INIT_HAPTIC ) )
+		common->Printf( "Sys_InitInput: SDL_INIT_HAPTIC error: %s\n", SDL_GetError() );
+		
+	SDL_GameController* controller = NULL;
+	for( int i = 0; i < MAX_JOYSTICKS; ++i )
+	{
+		if( SDL_IsGameController( i ) )
+		{
+			controller = SDL_GameControllerOpen( i );
+			if( controller )
+			{
+				
+				if (!idLib::joystick) {
+						//GK: Enable controller layout if the controller is connected
+						idLib::joystick = true;
+					}
+					nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
+					gcontroller=controller;
+					if (!haptic){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
+					haptic = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller)); //GK: Make sure it mounted to the right controller
+	if(haptic){
+		if(SDL_HapticRumbleInit( haptic ) < 0){
+			common->Printf("Failed to rumble\n");
+		}
+	if ((SDL_HapticQuery(haptic) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
+  		SDL_HapticClose(haptic);
+	}
+	}else{
+		common->Printf("Failed to initialize rumble\n");
+	}
+			}
+					continue;
+				//common->Printf( "GameController %i name: %s\n", i, SDL_GameControllerName( controller ) );
+				//common->Printf( "GameController %i is mapped as \"%s\".\n", i, SDL_GameControllerMapping( controller ) );
+			}
+			else
+			{
+				//common->Printf( "Could not open gamecontroller %i: %s\n", i, SDL_GetError() );
+			}
+			
+		}else{
+			if (idLib::joystick) {
+						//GK: Disable controller layout if the controller is disconnected
+						idLib::joystick=false;
+					}
+					if(haptic){
+						SDL_HapticClose(haptic);
+					}
+					if(gcontroller){
+						SDL_GameControllerClose(gcontroller);
+					}
+					gcontroller=NULL;
+					nextCheck[0] = now + waitTime;
+					continue;
+		}
+	}
+#else
+	// WM0110: Initialise SDL Joystick
+	//common->Printf( "Sys_InitInput: Joystick subsystem init\n" );
+	if( SDL_Init( SDL_INIT_JOYSTICK ) )
+	{
+		common->Printf( "Sys_InitInput: Joystic Init ERROR!\n" );
+		continue;
+	}
+	
+	int numJoysticks = SDL_NumJoysticks();
+	//common->Printf( "Sys_InitInput: Joystic - Found %i joysticks\n", numJoysticks );
+#if !SDL_VERSION_ATLEAST(2, 0, 0)
+	for( i = 0; i < numJoysticks; i++ )
+		//common->Printf( " Joystick %i name '%s'\n", i, SDL_JoystickName( i ) );
+#endif
+	
+	// Open first available joystick and use it
+	if( SDL_NumJoysticks() > 0 )
+	{
+		joy = SDL_JoystickOpen( 0 );
+	
+		if( joy )
+		{
+			if (!idLib::joystick) {
+						//GK: Enable controller layout if the controller is connected
+						idLib::joystick = true;
+					}
+					nextCheck[0]=0;
+			int num_hats;
+	
+			num_hats = SDL_JoystickNumHats( joy );
+			//common->Printf( "Opened Joystick number 0\n" );
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+			//common->Printf( "Name: %s\n", SDL_JoystickName( joy ) );
+#else
+			//common->Printf( "Name: %s\n", SDL_JoystickName( 0 ) );
+#endif
+			//common->Printf( "Number of Axes: %d\n", SDL_JoystickNumAxes( joy ) );
+			//common->Printf( "Number of Buttons: %d\n", SDL_JoystickNumButtons( joy ) );
+			//common->Printf( "Number of Hats: %d\n", num_hats );
+			//common->Printf( "Number of Balls: %d\n", SDL_JoystickNumBalls( joy ) );
+	
+			SDL_joystick_has_hat = 0;
+			if( num_hats )
+			{
+				SDL_joystick_has_hat = 1;
+			}
+		}
+		else
+		{
+			if (idLib::joystick) {
+						//GK: Disable controller layout if the controller is disconnected
+						idLib::joystick=false;
+					}
+					nextCheck[0] = now + waitTime;
+					if( joy )
+	{
+		//common->Printf( "Sys_ShutdownInput: closing SDL joystick.\n" );
+		SDL_JoystickClose( joy );
+	}
+			joy = NULL;
+			//common->Printf( "Couldn't open Joystick 0\n" );
+		}
+	}
+	else
+	{
+		if (idLib::joystick) {
+						//GK: Disable controller layout if the controller is disconnected
+						idLib::joystick=false;
+					}
+		nextCheck[0] = now + waitTime;
+		if( joy )
+		{
+		 //common->Printf( "Sys_ShutdownInput: closing SDL joystick.\n" );
+		 SDL_JoystickClose( joy );
+		}
+		joy = NULL;
+	}
+	// WM0110
+#endif
+		}else{
+			continue;
+		}
+	}
+	#if !SDL_VERSION_ATLEAST(2, 0, 0)
+	return 0; //GK: Don't forget SDL 1.2 require to return int value despite the fact that never does
+	#endif
 }
