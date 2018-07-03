@@ -1790,7 +1790,8 @@ void Sys_SetClipboardData( const char* string )
 void Sys_SetRumble( int device, int low, int hi )
 {
 	//GK: This is the code for the rumble effect by using SDL_Haptic.
-	//Unfortunately it doesn't work (at least on PS3 Controller) but also it doesn't affect the game's performance (Remember NO SDL_Delay)
+	//It doesn't affect the game's performance (Remember NO SDL_Delay)
+
 	#if SDL_VERSION_ATLEAST(2, 0, 0)
 	if(haptic){ //GK: Make sure the rumble code will run ONLY if the SDL_Haptic device is already initialized
 	
@@ -1802,18 +1803,25 @@ void Sys_SetRumble( int device, int low, int hi )
 	effect.type=SDL_HAPTIC_LEFTRIGHT;
 	effect.leftright.small_magnitude = low;
 	effect.leftright.large_magnitude = hi;
-	effect.leftright.length = 5000;
-
+	effect.leftright.length = 1000;
+	//GK:Ps3 controller fix
+	if(SDL_HapticNumEffectsPlaying(haptic) >= SDL_HapticNumEffects(haptic)){
+		SDL_HapticDestroyEffect(haptic,0);
+	}
+	//GK:End of fix
 	effect_id = SDL_HapticNewEffect( haptic, &effect );
+	if(effect_id < 0){
+		common->Printf("%s\n",SDL_GetError());
+		return;
+	}
 
-	 SDL_HapticRunEffect( haptic, effect_id, 1 );
-
-	 //SDL_HapticDestroyEffect( haptic, effect_id ); //GK:Does it need to be freed?
+	 if(SDL_HapticRunEffect( haptic, effect_id, 1 )<0){
+		 common->Printf("%s\n",SDL_GetError());
+	 }
 	}
 	   
 
 	#endif
-	//GK End
 }
 
 int Sys_PollJoystickInputEvents( int deviceNum )
@@ -1904,13 +1912,14 @@ int JoystickSamplingThread(void* data){
 					haptic = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller)); //GK: Make sure it mounted to the right controller
 	if(haptic){
 		if(SDL_HapticRumbleInit( haptic ) < 0){
-			common->Printf("Failed to rumble\n");
+			//common->Printf("Failed to rumble\n");
 		}
 	if ((SDL_HapticQuery(haptic) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
   		SDL_HapticClose(haptic);
+		  haptic = NULL;
+		 // common->Printf("Failed to find rumble effect\n");
 	}
-	}else{
-		common->Printf("Failed to initialize rumble\n");
+	common->Printf("Found haptic Device %d\n",SDL_HapticNumEffects(haptic));
 	}
 			}
 					continue;
@@ -1929,6 +1938,7 @@ int JoystickSamplingThread(void* data){
 					}
 					if(haptic){
 						SDL_HapticClose(haptic);
+						haptic = NULL;
 					}
 					if(gcontroller){
 						SDL_GameControllerClose(gcontroller);
