@@ -628,6 +628,7 @@ void W_FreeWadFiles() {
 	}
 	//GK: End
 	//GK: Game crashing bugfix (still need work)
+	::g->cpind = 0;
 	if (::g->gamemode == commercial) {
 		I_Printf("Reseting Dehacked Patches...\n");
 		resetValues();
@@ -1583,4 +1584,9 @@ void W_RemoveLump(int lump) {
 			temlump->null = tl->null;
 		}
 	}
+}
+
+char* W_GetNameForNum(int lump) {
+	lumpinfo_t* l = lumpinfo + lump;
+	return l->name;
 }
