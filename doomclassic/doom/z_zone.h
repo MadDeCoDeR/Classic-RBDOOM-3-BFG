@@ -63,7 +63,7 @@ If you have questions concerning this license or the applicable additional terms
 bool Z_IsStatic( int tag );
 
 void	Z_Init (void);
-void*	Z_Malloc (uint size, int tag, void *ptr);
+void*	Z_Malloc (int size, int tag, void *ptr);
 void    Z_Free (void *ptr);
 void    Z_FreeTag(int lowtag );
 void    Z_FreeTags(int lowtag, int hightag );

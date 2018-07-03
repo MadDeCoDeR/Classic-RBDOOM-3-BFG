@@ -914,7 +914,7 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 
 	unsigned char * musFile = static_cast< unsigned char * >( W_CacheLumpName( lumpName.c_str(), PU_CACHE_SHARED ) );
 	Z_Free(lumpcache[W_GetNumForName(lumpName.c_str())]);
-	Z_FreeMemory();
+	//Z_FreeMemory();
 	int length = 0;
 	//GK: Capture it's return value and use it to determine if the file is mus or not
 	int res = Mus2Midi(musFile, midiConversionBuffer, &length);
