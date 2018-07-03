@@ -6,6 +6,24 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+03 July 2018 - Classic RBDOOM-3-BFG 1.1.10.2
+_______________________________
+
+[classicdoom]
+
+- Added PNG support for doom graphics (doom Gfx)
+
+- Improved the stability of Classic Doom's z-memory (I hope)
+
+- Optimize and improve the mod exclusivity system
+
+[DOOM3BFG]
+
+- Fixed controller vibration system for SDL* 
+
+*it should work with any compatible controller, for example a PS3 Controller
+_______________________________________
+
 06 June 2018 - Classic RBDOOM-3-BFG 1.1.10u1
 _______________________________
 
