@@ -42,7 +42,7 @@ extern const char*		wadfiles[MAXWADFILES];
 
 void D_AddExtraWadFile( const char *file );
 void D_AddFile ( const char *file);
-
+char* D_ExtractFileName(const char* file);
 
 
 //

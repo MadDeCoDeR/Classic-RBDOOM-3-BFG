@@ -32,23 +32,39 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <string.h>
 
-int doomp = -1;
-int doom2p = -1;
-int both = -1;
+typedef struct  {
+	int exp;
+	int pos;
+}argpos;
+
+argpos dpos[3];
 //GK:Exclusive parameters per game
 void M_initParam() {
 	int		i;
-
+	for (int j = 0; j < 3; j++) {
+		dpos[j].pos = -1;
+	}
+	int o = 2;
 	for (i = 0; i < ::g->myargc; i++)
 	{
-		if (!idStr::Icmp("-doom", ::g->myargv[i]))
-			doomp = i;
+		if (!idStr::Icmp("-doom", ::g->myargv[i])) {
+			dpos[o].pos = i;
+			dpos[o].exp = retail;
+			o--;
+			continue;
+		}
 
-		if (!idStr::Icmp("-doom2", ::g->myargv[i]))
-			doom2p = i;
+		if (!idStr::Icmp("-doom2", ::g->myargv[i])) {
+			dpos[o].pos = i;
+			dpos[o].exp = commercial;
+			o--;
+			continue;
+		}
 
-		if (!idStr::Icmp("-both", ::g->myargv[i]))
-			both = i;
+		if (!idStr::Icmp("-both", ::g->myargv[i])) {
+			dpos[o].pos = i;
+			o--;
+		}
 	}
 
 }
@@ -65,72 +81,46 @@ void M_initParam() {
 int M_CheckParm (const char *check,bool offset)
 {
     int		i;
-
+	int c = 0;
     for (i = 1; i < ::g->myargc; i++)
     {
 		if (!idStr::Icmp(check, ::g->myargv[i])) {
+			if (offset && !c) {
+					c++;
+					continue;
+			}
 			//GK begin
-			if (!offset) {
-				if (doomp == -1 && doom2p == -1) {
+			int p = 0;
+			for (int j = 0; j < 3; j++) {
+				if (dpos[j].pos == -1)
+					continue;
+				int res = i - dpos[j].pos;
+				if (res == 0)
 					return i;
-				}
-				else {
-					if (i == doomp || i == doom2p) {
-						return i;
-					}
-					if (i < doomp && i < doom2p) {
-						return i;
+
+				if (res > 0) {
+					if (dpos[j].exp == ::g->gamemode || !dpos[j].exp) {
+						p = i;
+						break;
 					}
 					else {
-						if (doomp == -1 && i < doom2p) {
-							return i;
-						}
-						if (doom2p == -1 && i < doomp) {
-							return i;
-						}
-						if (both > -1 && i > both) {
-							if (both > doomp && both > doom2p) {
-								return i;
-							}
-							else if (both > doomp && i < doom2p) {
-								return i;
-							}
-							else if (both > doom2p && i < doomp) {
-								return i;
-							}
-						}
+						p = -1;
+						break;
 					}
 				}
 			}
-				if (::g->gamemode == retail && i > doomp) {
-					if (doomp < doom2p && doomp < both && i < doom2p && i < both) {
-						return i;
-					}
-					else if (doomp > doom2p && doomp>both) {
-						return i;
-					}
-					else if (doomp>both && i < doom2p) {
-						return i;
-					}
-					else if (doomp>doom2p && i < both) {
-						return i;
-					}
-				}
-				if (::g->gamemode == commercial && i > doom2p) {
-					if (doom2p < doomp && doom2p < both && i < doomp && i < both) {
-						return i;
-					}
-					else if (doom2p > doomp && doom2p>both) {
-						return i;
-					}
-					else if (doom2p>both && i < doomp) {
-						return i;
-					}
-					else if (doom2p>doomp && i < both) {
-						return i;
-					}
-
-				}
+			if (p > 0) {
+				return p;
+			}
+			else if (p==-1){
+				continue;
+			}
+			if (!offset) {
+				return i;
+			}
+			else {
+				continue;
+			}
 
 			}
 		}

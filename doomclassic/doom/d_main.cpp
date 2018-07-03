@@ -377,7 +377,7 @@ void D_PageTicker (void)
 //
 void D_PageDrawer (void)
 {
-	V_DrawPatch (0,0, 0, (patch_t*)W_CacheLumpName(::g->pagename, PU_CACHE_SHARED));
+	V_DrawPatch (0,0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName(::g->pagename, PU_CACHE_SHARED), W_GetNumForName(::g->pagename)));
 }
 
 
@@ -575,6 +575,8 @@ void D_DoomMain(void)
 	if (::g->gamemission == pack_master) {
 		D_AddFile("wads/mlbls.wad");
 	}
+	//GK: New pwad for compatibility with the original DOOM And DOOMII IWADs
+	D_AddFile("wads/newopt.wad");
 	//GK: Find the position of -doom,-doom2 and -both
 	M_initParam();
 	//GK: fix for Dehacked pointer editor
@@ -724,19 +726,34 @@ void D_DoomMain(void)
 	if (p)
 	{
 		qboolean isgen = false;
+		int pos[2];
+		pos[0] = p;
 		//GK: Check if it is having double -file parameter for both and for specific games
 		int q = -1;
+		int qt = -1;
+		int q1= M_CheckParm("-doom");
+		int q2= M_CheckParm("-doom2");
 		if (::g->gamemode == retail) {
-			q = M_CheckParm("-doom");
+			q = q1;
+			qt = q1;
 		}
 		else if (::g->gamemode == commercial) {
-			q = M_CheckParm("-doom2");
+			q = q2;
+			qt = q2;
 		}
-		int np = 0;
+		int np = -1;
 		if (q > p) {
 			isgen = true;
 			np = M_CheckParm("-file",true);
 		}
+		else if (q > -1 && p > q) {
+			q = M_CheckParm("-both");
+			if (q > p) {
+				isgen = true;
+				np = M_CheckParm("-file", true);
+			}
+		}
+		pos[1] = np;
 		memset(DoomLib::otherfiles, 0, sizeof(DoomLib::otherfiles));
 		memset(DoomLib::generalfiles, 0, sizeof(DoomLib::generalfiles));
 		int count[5] = {0,0,0,0,0};
@@ -744,156 +761,40 @@ void D_DoomMain(void)
 		// the parms after p are ::g->wadfile/lump names,
 		// until end of parms or another - preceded parm
 		::g->modifiedgame = true;            // homebrew levels
-		char* arg = "0";
-		while (++p != ::g->myargc && ::g->myargv[p][0] != '-') {
-			if (::g->gamemode == commercial) {
-				if (isgen) { //GK:Usually the first "-file" parameter MAY include global mods not the second
-					D_AddFile(::g->myargv[p]);
-					c++;
-					char* fname = strtok(strdup(::g->myargv[p]), "\\");
-					while (fname) {
-						char* tname = strtok(NULL, "\\");
-						if (tname) {
-							fname = tname;
-						}
-						else {
-							break;
-						}
-					}
-					DoomLib::generalfiles[c-1] = fname;
-				}
-				else {
-					if (!idStr::Icmp("ex", ::g->myargv[p])) {
-						p++;
-						arg = ::g->myargv[p];
-						if (atoi(arg) <= 0 || atoi(arg) > 5) {
-							arg = "1";
-						}
-						if (atoi(arg) == DoomLib::expansionSelected) { //GK:No longer using ::g->gamemission here since the custom expansion addition might cause issues
-							p++;
-							D_AddFile(::g->myargv[p]);
-						}
-						else {
-							p++;
-							char* fname = strtok(strdup(::g->myargv[p]), "\\");
-							while (fname) {
-								char* tname = strtok(NULL, "\\");
-								if (tname) {
-									fname = tname;
-								}
-								else {
-									break;
-								}
-							}
-							DoomLib::otherfiles[atoi(arg) - 1][count[atoi(arg) - 1]] = fname;
-							count[atoi(arg) - 1]++;
-						}
-					}
-					else {
-						if (atoi(arg) != 0) {
-							if (atoi(arg) == DoomLib::expansionSelected) {//GK:No longer using ::g->gamemission here since the custom expansion addition might cause issues
-								D_AddFile(::g->myargv[p]);
-							}
-							else {
-								char* fname = strtok(strdup(::g->myargv[p]), "\\");
-								while (fname) {
-									char* tname = strtok(NULL, "\\");
-									if (tname) {
-										fname = tname;
-									}
-									else {
-										break;
-									}
-								}
-								DoomLib::otherfiles[atoi(arg) - 1][count[atoi(arg) - 1]] = fname;
-								count[atoi(arg) - 1]++;
-							}
-						}
-						else {
-							D_AddFile(::g->myargv[p]);
-						}
-					}
-				}
-			}
-			else {
-				if (!idStr::Icmp("ex", ::g->myargv[p])) {
-					p = p + 2;
-					D_AddFile(::g->myargv[p]);
-				}
-				else {
-					D_AddFile(::g->myargv[p]);
-				}
-			}
-		}		
-		//GK begin
-		if (np>0)
-			while (++np != ::g->myargc && ::g->myargv[np][0] != '-') {
+		
+		for (int i = 0; i < 2; i++) {
+			int arg = 0;
+			if (pos[i] == -1)
+				continue;
+			while (++pos[i] != ::g->myargc && ::g->myargv[pos[i]][0] != '-') {
 				if (::g->gamemode == commercial) {
-					if (!idStr::Icmp("ex", ::g->myargv[np])) {
-						np++;
-						arg = ::g->myargv[np];
-						if (atoi(arg) <= 0 || atoi(arg) > 5)
-							arg = "1";
-						if (atoi(arg) == DoomLib::expansionSelected) {//GK:No longer using ::g->gamemission here since the custom expansion addition might cause issues
-							np++;
-							D_AddFile(::g->myargv[np]);
-						}
-						else {
-							np++;
-							char* fname = strtok(strdup(::g->myargv[np]), "\\");
-							while (fname) {
-								char* tname = strtok(NULL, "\\");
-								if (tname) {
-									fname = tname;
-								}
-								else {
-									break;
-								}
-							}
-							DoomLib::otherfiles[atoi(arg)-1][count[atoi(arg)-1]] = fname;
-							count[atoi(arg)-1]++;
-						}
+					if (!idStr::Icmp("ex", ::g->myargv[pos[i]])) {
+						pos[i]++;
+						arg = atoi(::g->myargv[pos[i]]);
+						pos[i]++;
 					}
-					else {
-						if (atoi(arg) != 0) {
-							if (atoi(arg) == DoomLib::expansionSelected) {//GK:No longer using ::g->gamemission here since the custom expansion addition might cause issues
-								D_AddFile(::g->myargv[np]);
-							}
-							else {
-								char* fname = strtok(strdup(::g->myargv[np]), "\\");
-								while (fname) {
-									char* tname = strtok(NULL, "\\");
-									if (tname) {
-										fname = tname;
-									}
-									else {
-										break;
-									}
-								}
-								DoomLib::otherfiles[atoi(arg)-1][count[atoi(arg)-1]] = fname;
-								count[atoi(arg)-1]++;
-							}
+					if(arg){
+						if (arg == DoomLib::expansionSelected) {
+							D_AddFile(::g->myargv[pos[i]]);
+							continue;
 						}
 						else {
-							D_AddFile(::g->myargv[np]);
+							DoomLib::otherfiles[arg - 1][count[arg - 1]] = D_ExtractFileName(::g->myargv[pos[i]]);
+							count[arg - 1]++;
+							continue;
 						}
 					}
 				}
-				else {
-					//GK: In case of DOOM I ignore the "ex" filter
-					if (!idStr::Icmp("ex", ::g->myargv[np])) {
-						np = np + 2;
-						D_AddFile(::g->myargv[np]);
-					}
-					else {
-						D_AddFile(::g->myargv[np]);
+				if (isgen) {
+					if (qt > pos[i] || pos[i]>M_CheckParm("-both")) {
+						DoomLib::generalfiles[c] = D_ExtractFileName(::g->myargv[pos[i]]);
+						c++;
 					}
 				}
+				D_AddFile(::g->myargv[pos[i]]);
 			}
-		//GK End
+		}
 	}
-	//GK: New pwad for compatibility with the original DOOM And DOOMII IWADs
-	D_AddFile("wads/newopt.wad");
 	p = M_CheckParm ("-playdemo");
 
 	if (!p)
@@ -1179,4 +1080,16 @@ bool D_DoomMainPoll(void)
 	return true;
 }
 
-
+char* D_ExtractFileName(const char* file) {
+	char* fname = strtok(strdup(file), "\\");
+	while (fname) {
+		char* tname = strtok(NULL, "\\");
+		if (tname) {
+			fname = tname;
+		}
+		else {
+			break;
+		}
+	}
+	return fname;
+}
