@@ -1062,25 +1062,25 @@ void ST_loadGraphics(void)
 	for (i=0;i<10;i++)
 	{
 		sprintf(namebuf, "STTNUM%d", i);
-		::g->tallnum[i] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC_SHARED);
+		::g->tallnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
 
 		sprintf(namebuf, "STYSNUM%d", i);
-		::g->shortnum[i] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC_SHARED);
+		::g->shortnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
 	}
 
 	// Load percent key.
 	//Note: why not load STMINUS here, too?
-	::g->tallpercent = (patch_t *) W_CacheLumpName("STTPRCNT", PU_STATIC_SHARED);
+	::g->tallpercent = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STTPRCNT", PU_STATIC_SHARED), W_GetNumForName("STTPRCNT"));
 
 	// key cards
 	for (i=0;i<NUMCARDS;i++)
 	{
 		sprintf(namebuf, "STKEYS%d", i);
-		::g->keys[i] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC_SHARED);
+		::g->keys[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
 	}
 
 	// ::g->arms background
-	::g->armsbg = (patch_t *) W_CacheLumpName("STARMS", PU_STATIC_SHARED);
+	::g->armsbg = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STARMS", PU_STATIC_SHARED), W_GetNumForName("STARMS"));
 
 	// ::g->arms ownership widgets
 	for (i=0;i<6;i++)
@@ -1088,7 +1088,7 @@ void ST_loadGraphics(void)
 		sprintf(namebuf, "STGNUM%d", i+2);
 
 		// gray #
-		::g->arms[i][0] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC_SHARED);
+		::g->arms[i][0] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
 
 		// yellow #
 		::g->arms[i][1] = ::g->shortnum[i+2]; 
@@ -1096,10 +1096,10 @@ void ST_loadGraphics(void)
 
 	// face backgrounds for different color ::g->players
 	sprintf(namebuf, "STFB%d", ::g->consoleplayer);
-	::g->faceback = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC_SHARED);
+	::g->faceback = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
 
 	// status bar background bits
-	::g->sbar = (patch_t *) W_CacheLumpName("STBAR", PU_STATIC_SHARED);
+	::g->sbar = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STBAR", PU_STATIC_SHARED), W_GetNumForName("STBAR"));
 
 	// face states
 	facenum = 0;
@@ -1108,21 +1108,21 @@ void ST_loadGraphics(void)
 		for (j=0;j<ST_NUMSTRAIGHTFACES;j++)
 		{
 			sprintf(namebuf, "STFST%d%d", i, j);
-			::g->faces[facenum++] = (patch_t*)W_CacheLumpName(namebuf, PU_STATIC_SHARED);
+			::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
 		}
 		sprintf(namebuf, "STFTR%d0", i);	// turn right
-		::g->faces[facenum++] = (patch_t*)W_CacheLumpName(namebuf, PU_STATIC_SHARED);
+		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
 		sprintf(namebuf, "STFTL%d0", i);	// turn left
-		::g->faces[facenum++] = (patch_t*)W_CacheLumpName(namebuf, PU_STATIC_SHARED);
+		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
 		sprintf(namebuf, "STFOUCH%d", i);	// ouch!
-		::g->faces[facenum++] = (patch_t*)W_CacheLumpName(namebuf, PU_STATIC_SHARED);
+		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
 		sprintf(namebuf, "STFEVL%d", i);	// evil grin ;)
-		::g->faces[facenum++] = (patch_t*)W_CacheLumpName(namebuf, PU_STATIC_SHARED);
+		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
 		sprintf(namebuf, "STFKILL%d", i);	// pissed off
-		::g->faces[facenum++] = (patch_t*)W_CacheLumpName(namebuf, PU_STATIC_SHARED);
+		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
 	}
-	::g->faces[facenum++] = (patch_t*)W_CacheLumpName("STFGOD0", PU_STATIC_SHARED);
-	::g->faces[facenum++] = (patch_t*)W_CacheLumpName("STFDEAD0", PU_STATIC_SHARED);
+	::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName("STFGOD0", PU_STATIC_SHARED), W_GetNumForName("STFGOD0"));
+	::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName("STFDEAD0", PU_STATIC_SHARED), W_GetNumForName("STFDEAD0"));
 
 }
 

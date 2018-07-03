@@ -421,7 +421,8 @@ R_DrawVisSprite
     patch_t*		patch;
 	
 	
-    patch = (patch_t*)W_CacheLumpNum (vis->patch+::g->firstspritelump, PU_CACHE_SHARED);
+   // patch = /*(patch_t*)*/img2lmp(W_CacheLumpNum (vis->patch+::g->firstspritelump, PU_CACHE_SHARED));
+	patch = img2lmp(W_CacheLumpNum(vis->patch + ::g->firstspritelump, PU_CACHE_SHARED),vis->patch + ::g->firstspritelump);
 	::g->texnum = vis->patch;  //GK:Get the pointer to the sprite in order to get it's height
     ::g->dc_colormap = vis->colormap;
 	::g->usesprite = true;//GK:SPRITE
@@ -451,8 +452,8 @@ R_DrawVisSprite
 	if (texturecolumn < 0 || texturecolumn >= SHORT(patch->width))
 	    I_Error ("R_DrawSpriteRange: bad texturecolumn");
 #endif
-	column = (postColumn_t *) ((byte *)patch +
-			       LONG(patch->columnofs[texturecolumn]));
+		column = (postColumn_t *) ((byte *)patch +
+			LONG(patch->columnofs[texturecolumn]));
 	R_DrawMaskedColumn (column);
     }
 	

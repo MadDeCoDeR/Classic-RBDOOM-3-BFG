@@ -182,5 +182,7 @@ void R_Init (void);
 // Called by M_Responder.
 void R_SetViewSize (int blocks, int detail);
 
+patch_t* img2lmp(void* buff,int lump);
+
 #endif
 

@@ -893,7 +893,7 @@ void F_CastDrawer (void)
     patch_t*		patch;
     
     // erase the entire screen to a background
-    V_DrawPatch (0,0,0, (patch_t*)W_CacheLumpName (finaleflat[11], PU_CACHE_SHARED));
+    V_DrawPatch (0,0,0, /*(patch_t*)*/img2lmp(W_CacheLumpName (finaleflat[11], PU_CACHE_SHARED), W_GetNumForName(finaleflat[11])));
 
     F_CastPrint (*castorder[::g->castnum].name);
     
@@ -903,7 +903,7 @@ void F_CastDrawer (void)
     lump = sprframe->lump[0];
     flip = (qboolean)sprframe->flip[0];
 			
-    patch = (patch_t*)W_CacheLumpNum (lump+::g->firstspritelump, PU_CACHE_SHARED);
+    patch =  /*(patch_t*)*/img2lmp(W_CacheLumpNum (lump+::g->firstspritelump, PU_CACHE_SHARED),lump + ::g->firstspritelump);
     if (flip)
 		V_DrawPatchFlipped (160,170,0,patch);
     else
@@ -920,7 +920,7 @@ F_DrawPatchCol( int x, patch_t* patch, int col ) {
     byte*			source;
     int				count;
 	
-    column = (postColumn_t *)((byte *)patch + LONG(patch->columnofs[col]));
+	column = (postColumn_t *)((byte *)patch + LONG(patch->columnofs[col]));
 
 	int destx = x;
 	int desty = 0;
@@ -964,8 +964,8 @@ void F_BunnyScroll (void)
     char	name[10];
     int		stage;
 		
-    p1 = (patch_t*)W_CacheLumpName ("PFUB2", PU_LEVEL_SHARED);
-    p2 = (patch_t*)W_CacheLumpName ("PFUB1", PU_LEVEL_SHARED);
+    p1 =  /*(patch_t*)*/img2lmp(W_CacheLumpName ("PFUB2", PU_LEVEL_SHARED), W_GetNumForName("PFUB2"));
+    p2 =  /*(patch_t*)*/img2lmp(W_CacheLumpName ("PFUB1", PU_LEVEL_SHARED), W_GetNumForName("PFUB1"));
 
     V_MarkRect (0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
 	
@@ -988,7 +988,7 @@ void F_BunnyScroll (void)
     if (::g->finalecount < 1180)
     {
 	V_DrawPatch ((ORIGINAL_WIDTH-13*8)/2,
-		     (ORIGINAL_HEIGHT-8*8)/2,0, (patch_t*)W_CacheLumpName ("END0",PU_CACHE_SHARED));
+		     (ORIGINAL_HEIGHT-8*8)/2,0,  /*(patch_t*)*/img2lmp(W_CacheLumpName ("END0",PU_CACHE_SHARED), W_GetNumForName("END0")));
 	::g->laststage = 0;
 	return;
     }
@@ -1003,7 +1003,7 @@ void F_BunnyScroll (void)
     }
 	
     sprintf (name,"END%i",stage);
-    V_DrawPatch ((ORIGINAL_WIDTH-13*8)/2, (ORIGINAL_HEIGHT-8*8)/2,0, (patch_t*)W_CacheLumpName (name,PU_CACHE_SHARED));
+    V_DrawPatch ((ORIGINAL_WIDTH-13*8)/2, (ORIGINAL_HEIGHT-8*8)/2,0,  /*(patch_t*)*/img2lmp(W_CacheLumpName (name,PU_CACHE_SHARED), W_GetNumForName(name)));
 }
 
 
@@ -1027,21 +1027,21 @@ void F_Drawer (void)
 	  case 1:
 	    if ( ::g->gamemode == retail )
 	      V_DrawPatch (0,0,0,
-			 (patch_t*)W_CacheLumpName("CREDIT",PU_CACHE_SHARED));
+			  /*(patch_t*)*/img2lmp(W_CacheLumpName("CREDIT",PU_CACHE_SHARED), W_GetNumForName("CREDIT")));
 	    else
 	      V_DrawPatch (0,0,0,
-			 (patch_t*)W_CacheLumpName("HELP2",PU_CACHE_SHARED));
+			  /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP2",PU_CACHE_SHARED), W_GetNumForName("HELP2")));
 	    break;
 	  case 2:
 	    V_DrawPatch(0,0,0,
-			(patch_t*)W_CacheLumpName("VICTORY2",PU_CACHE_SHARED));
+			/*(patch_t*)*/img2lmp(W_CacheLumpName("VICTORY2",PU_CACHE_SHARED), W_GetNumForName("VICTORY2")));
 	    break;
 	  case 3:
 	    F_BunnyScroll ();
 	    break;
 	  case 4:
 	    V_DrawPatch (0,0,0,
-			 (patch_t*)W_CacheLumpName("ENDPIC",PU_CACHE_SHARED));
+			 /*(patch_t*)*/img2lmp(W_CacheLumpName("ENDPIC",PU_CACHE_SHARED), W_GetNumForName("ENDPIC")));
 	    break;
 	}
     }

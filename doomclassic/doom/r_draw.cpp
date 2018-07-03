@@ -797,31 +797,31 @@ void R_FillBackScreen (void)
 	windowx = ::g->viewwindowx / GLOBAL_IMAGE_SCALER;
 	windowy = ::g->viewwindowy / GLOBAL_IMAGE_SCALER;
 
-	patch = (patch_t*)W_CacheLumpName ("brdr_t",PU_CACHE_SHARED);
+	patch = /*(patch_t*)*/img2lmp(W_CacheLumpName ("brdr_t",PU_CACHE_SHARED), W_GetNumForName("brdr_t"));
 	for (x=0 ; x<width ; x+=8) {
 		V_DrawPatch (windowx+x,windowy-8,1,patch);
 	}
 
-	patch = (patch_t*)W_CacheLumpName ("brdr_b",PU_CACHE_SHARED);
+	patch = /*(patch_t*)*/img2lmp(W_CacheLumpName ("brdr_b",PU_CACHE_SHARED), W_GetNumForName("brdr_b"));
 	for (x=0 ; x<width ; x+=8) {
 		V_DrawPatch (windowx+x,windowy+height,1,patch);
 	}
 
-	patch = (patch_t*)W_CacheLumpName ("brdr_l",PU_CACHE_SHARED);
+	patch = /*(patch_t*)*/img2lmp(W_CacheLumpName ("brdr_l",PU_CACHE_SHARED), W_GetNumForName("brdr_l"));
 	for (y=0 ; y<height ; y+=8) {
 		V_DrawPatch (windowx-8,windowy+y,1,patch);
 	}
 
-	patch = (patch_t*)W_CacheLumpName ("brdr_r",PU_CACHE_SHARED);
+	patch = /*(patch_t*)*/img2lmp(W_CacheLumpName ("brdr_r",PU_CACHE_SHARED), W_GetNumForName("brdr_r"));
 	for (y=0 ; y<height ; y+=8) {
 		V_DrawPatch (windowx+width,windowy+y,1,patch);
 	}
 
 	// Draw beveled edge. 
-	V_DrawPatch(windowx-8, windowy-8, 1, (patch_t*)W_CacheLumpName ("brdr_tl",PU_CACHE_SHARED));
-	V_DrawPatch(windowx+width, windowy-8, 1, (patch_t*)W_CacheLumpName ("brdr_tr",PU_CACHE_SHARED));
-	V_DrawPatch(windowx-8, windowy+height, 1, (patch_t*)W_CacheLumpName ("brdr_bl",PU_CACHE_SHARED));
-	V_DrawPatch (windowx+width, windowy+height, 1, (patch_t*)W_CacheLumpName ("brdr_br",PU_CACHE_SHARED));
+	V_DrawPatch(windowx-8, windowy-8, 1, /*(patch_t*)*/img2lmp(W_CacheLumpName ("brdr_tl",PU_CACHE_SHARED), W_GetNumForName("brdr_tl")));
+	V_DrawPatch(windowx+width, windowy-8, 1, /*(patch_t*)*/img2lmp(W_CacheLumpName ("brdr_tr",PU_CACHE_SHARED), W_GetNumForName("brdr_tr")));
+	V_DrawPatch(windowx-8, windowy+height, 1, /*(patch_t*)*/img2lmp(W_CacheLumpName ("brdr_bl",PU_CACHE_SHARED), W_GetNumForName("brdr_bl")));
+	V_DrawPatch (windowx+width, windowy+height, 1, /*(patch_t*)*/img2lmp(W_CacheLumpName ("brdr_br",PU_CACHE_SHARED), W_GetNumForName("brdr_br")));
 } 
 
 

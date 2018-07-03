@@ -337,7 +337,7 @@ void M_DrawLoad(void)
 {
 	int             i;
 
-	V_DrawPatchDirect (72,28,0,(patch_t*)W_CacheLumpName("M_LOADG",PU_CACHE_SHARED));
+	V_DrawPatchDirect (72,28,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LOADG",PU_CACHE_SHARED), W_GetNumForName("M_LOADG")));
 	for (i = 0;i < load_end; i++)
 	{
 		M_DrawSaveLoadBorder(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i);
@@ -365,15 +365,15 @@ void M_DrawSaveLoadBorder(int x,int y)
 {
 	int             i;
 
-	V_DrawPatchDirect (x-8,y+7,0,(patch_t*)W_CacheLumpName("M_LSLEFT",PU_CACHE_SHARED));
+	V_DrawPatchDirect (x-8,y+7,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LSLEFT",PU_CACHE_SHARED), W_GetNumForName("M_LSLEFT")));
 
 	for (i = 0;i < 28;i++)
 	{
-		V_DrawPatchDirect (x,y+7,0,(patch_t*)W_CacheLumpName("M_LSCNTR",PU_CACHE_SHARED));
+		V_DrawPatchDirect (x,y+7,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LSCNTR",PU_CACHE_SHARED), W_GetNumForName("M_LSCNTR")));
 		x += 8;
 	}
 
-	V_DrawPatchDirect (x,y+7,0,(patch_t*)W_CacheLumpName("M_LSRGHT",PU_CACHE_SHARED));
+	V_DrawPatchDirect (x,y+7,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LSRGHT",PU_CACHE_SHARED), W_GetNumForName("M_LSRGHT")));
 }
 
 void M_DeleteSelected(int ch) {
@@ -484,7 +484,7 @@ void M_DrawSave(void)
 {
 	int             i;
 
-	V_DrawPatchDirect (72,28,0,(patch_t*)W_CacheLumpName("M_SAVEG",PU_CACHE_SHARED));
+	V_DrawPatchDirect (72,28,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SAVEG",PU_CACHE_SHARED), W_GetNumForName("M_SAVEG")));
 	for (i = 0;i < load_end; i++)
 	{
 		M_DrawSaveLoadBorder(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i);
@@ -755,12 +755,12 @@ void M_DrawReadThis1(void)
 	switch ( ::g->gamemode )
 	{
 	case commercial:
-		V_DrawPatchDirect (0,0,0,(patch_t*)W_CacheLumpName("HELP",PU_CACHE_SHARED));
+		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("HELP",PU_CACHE_SHARED), W_GetNumForName("HELP")));
 		break;
 	case shareware:
 	case registered:
 	case retail:
-			V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP1", PU_CACHE_SHARED));
+			V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP1", PU_CACHE_SHARED), W_GetNumForName("HELP1")));
 			//GK: For ultimate DOOM check if we are using mod that add additional HELP lumps. If not then instantly close "Read This!" 
 			if (W_GetNumForName("HELP2") <= -1 && W_GetNumForName("HELP01") <= -1) {
 				mh = -1;
@@ -781,7 +781,7 @@ void M_DrawExtraReadThis(int choice) {
 void M_DrawErt(void) {
 	::g->inhelpscreens = true;
 	if (W_GetNumForName("HELP02") > -1) {
-		V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP02", PU_CACHE_SHARED));
+		V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP02", PU_CACHE_SHARED), W_GetNumForName("HELP02")));
 	}
 	mh = 0;
 	::g->ReadMenu2[0].routine = M_FinishReadThis;
@@ -800,28 +800,28 @@ void M_DrawReadThis2(void)
 	case retail:
 		//GK: In case we use mod that uses additional HELP lumps
 			if (W_GetNumForName("HELP2") > -1) {
-				V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP2", PU_CACHE_SHARED));
+				V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP2", PU_CACHE_SHARED), W_GetNumForName("HELP2")));
 			}
 			else
 			{
 				if (W_GetNumForName("HELP01") > -1) {
-					V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("HELP01", PU_CACHE_SHARED));
+					V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP01", PU_CACHE_SHARED), W_GetNumForName("HELP01")));
 					mh = 1;
 
 				}
 				//GK: No need
 				/*else {
-					//V_DrawPatchDirect(0, 0, 0, (patch_t*)W_CacheLumpName("CREDIT", PU_CACHE_SHARED));
+					//V_DrawPatchDirect(0, 0, 0, (patch_t*)img2lmp(W_CacheLumpName("CREDIT", PU_CACHE_SHARED));
 				}*/
 			}
 		break;
 	case commercial:
 		// This hack keeps us from having to change menus.
-		V_DrawPatchDirect (0,0,0,(patch_t*)W_CacheLumpName("CREDIT",PU_CACHE_SHARED));
+		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("CREDIT",PU_CACHE_SHARED), W_GetNumForName("CREDIT")));
 		break;
 	case shareware:
 	case registered:
-		V_DrawPatchDirect (0,0,0,(patch_t*)W_CacheLumpName("HELP2",PU_CACHE_SHARED));
+		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("HELP2",PU_CACHE_SHARED), W_GetNumForName("HELP2")));
 		break;
 	default:
 		break;
@@ -838,7 +838,7 @@ void M_DrawReadThis2(void)
 //
 void M_DrawSound(void)
 {
-	V_DrawPatchDirect (60,38,0,(patch_t*)W_CacheLumpName("M_SVOL",PU_CACHE_SHARED));
+	V_DrawPatchDirect (60,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SVOL",PU_CACHE_SHARED), W_GetNumForName("M_SVOL")));
 
 	M_DrawThermo( ::g->SoundDef.x,::g->SoundDef.y+LINEHEIGHT*(sfx_vol+1),
 		16, s_volume_sound.GetInteger() );
@@ -890,14 +890,14 @@ void M_MusicVol(int choice)
 //
 void M_DrawMainMenu(void)
 {
-	V_DrawPatchDirect (94,2,0,(patch_t*)W_CacheLumpName("M_DOOM",PU_CACHE_SHARED));
+	V_DrawPatchDirect (94,2,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_DOOM",PU_CACHE_SHARED), W_GetNumForName("M_DOOM")));
 }
 
 //
 // M_DrawQuit
 //
 void M_DrawQuit(void) {
-	V_DrawPatchDirect (54,38,0,(patch_t*)W_CacheLumpName("M_EXITO",PU_CACHE_SHARED));
+	V_DrawPatchDirect (54,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_EXITO",PU_CACHE_SHARED), W_GetNumForName("M_EXITO")));
 }
 
 
@@ -907,8 +907,8 @@ void M_DrawQuit(void) {
 //
 void M_DrawNewGame(void)
 {
-	V_DrawPatchDirect (96,14,0,(patch_t*)W_CacheLumpName("M_NEWG",PU_CACHE_SHARED));
-	V_DrawPatchDirect (54,38,0,(patch_t*)W_CacheLumpName("M_SKILL",PU_CACHE_SHARED));
+	V_DrawPatchDirect (96,14,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_NEWG",PU_CACHE_SHARED), W_GetNumForName("M_NEWG")));
+	V_DrawPatchDirect (54,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SKILL",PU_CACHE_SHARED), W_GetNumForName("M_SKILL")));
 }
 
 void M_NewGame(int choice)
@@ -932,7 +932,7 @@ void M_NewGame(int choice)
 
 void M_DrawEpisode(void)
 {
-	V_DrawPatchDirect (54,38,0,(patch_t*)W_CacheLumpName("M_EPISOD",PU_CACHE_SHARED));
+	V_DrawPatchDirect (54,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_EPISOD",PU_CACHE_SHARED), W_GetNumForName("M_EPISOD")));
 }
 
 void M_VerifyNightmare(int ch)
@@ -1145,7 +1145,7 @@ int M_GetMouseSpeedForMenu( float cvarValue ) {
 
 void M_DrawOptions(void)
 {
-	V_DrawPatchDirect (108,15,0,(patch_t*)W_CacheLumpName("M_OPTTTL",PU_CACHE_SHARED));
+	V_DrawPatchDirect (108,15,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_OPTTTL",PU_CACHE_SHARED), W_GetNumForName("M_OPTTTL")));
 
 	//V_DrawPatchDirect (::g->OptionsDef.x + 175,::g->OptionsDef.y+LINEHEIGHT*detail,0,
 	//	(patch_t*)W_CacheLumpName(detailNames[::g->detailLevel],PU_CACHE_SHARED));
@@ -1154,16 +1154,16 @@ void M_DrawOptions(void)
 	int aspect = r_aspect.GetInteger() >= 1 ? 1 : 0;
 
 	V_DrawPatchDirect (::g->OptionsDef.x + 150,::g->OptionsDef.y+LINEHEIGHT*endgame,0,
-		(patch_t*)W_CacheLumpName(msgNames[fullscreenOnOff],PU_CACHE_SHARED));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[fullscreenOnOff],PU_CACHE_SHARED), W_GetNumForName(msgNames[fullscreenOnOff])));
 	//GK: Not needed anymore
 	/*V_DrawPatchDirect (::g->OptionsDef.x + 120,::g->OptionsDef.y+LINEHEIGHT*scrnsize,0,
 		(patch_t*)W_CacheLumpName(msgNames[in_useJoystick.GetInteger()],PU_CACHE_SHARED));
 		*/
 	V_DrawPatchDirect (::g->OptionsDef.x + 120,::g->OptionsDef.y+LINEHEIGHT*messages,0,
-		(patch_t*)W_CacheLumpName(msgNames[m_show_messages.GetInteger()],PU_CACHE_SHARED));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[m_show_messages.GetInteger()],PU_CACHE_SHARED), W_GetNumForName(msgNames[m_show_messages.GetInteger()])));
 	//GK:begin
 	V_DrawPatchDirect(::g->OptionsDef.x + 165, ::g->OptionsDef.y + LINEHEIGHT * detail, 0,
-		(patch_t*)W_CacheLumpName(detailNames[aspect], PU_CACHE_SHARED));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect])));
 	//GK:End
 	extern idCVar in_mouseSpeed;
 	const int roundedMouseSpeed = M_GetMouseSpeedForMenu( in_mouseSpeed.GetFloat() );
@@ -1318,6 +1318,7 @@ void M_CancelExit(int choice) {
 void M_GameSelection(int choice)
 {
 	I_Printf("Reseting Dehacked Patches...\n");
+	::g->cpind = 0;
 	resetValues();
 	resetWeapons();
 	ResetAmmo();
@@ -1430,17 +1431,17 @@ M_DrawThermo
 	int		i;
 
 	xx = x;
-	V_DrawPatchDirect (xx,y,0,(patch_t*)W_CacheLumpName("M_THERML",PU_CACHE_SHARED));
+	V_DrawPatchDirect (xx,y,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERML",PU_CACHE_SHARED), W_GetNumForName("M_THERML")));
 	xx += 8;
 	for (i=0;i<thermWidth;i++)
 	{
-		V_DrawPatchDirect (xx,y,0,(patch_t*)W_CacheLumpName("M_THERMM",PU_CACHE_SHARED));
+		V_DrawPatchDirect (xx,y,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERMM",PU_CACHE_SHARED), W_GetNumForName("M_THERMM")));
 		xx += 8;
 	}
-	V_DrawPatchDirect (xx,y,0,(patch_t*)W_CacheLumpName("M_THERMR",PU_CACHE_SHARED));
+	V_DrawPatchDirect (xx,y,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERMR",PU_CACHE_SHARED), W_GetNumForName("M_THERMR")));
 
 	V_DrawPatchDirect ((x+8) + thermDot*8,y,
-		0,(patch_t*)W_CacheLumpName("M_THERMO",PU_CACHE_SHARED));
+		0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERMO",PU_CACHE_SHARED), W_GetNumForName("M_THERMO")));
 }
 
 
@@ -1451,7 +1452,7 @@ M_DrawEmptyCell
  int		item )
 {
 	V_DrawPatchDirect (menu->x - 10,        menu->y+item*LINEHEIGHT - 1, 0,
-		(patch_t*)W_CacheLumpName("M_CELL1",PU_CACHE_SHARED));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName("M_CELL1",PU_CACHE_SHARED), W_GetNumForName("M_CELL1")));
 }
 
 void
@@ -1460,7 +1461,7 @@ M_DrawSelCell
  int		item )
 {
 	V_DrawPatchDirect (menu->x - 10,        menu->y+item*LINEHEIGHT - 1, 0,
-		(patch_t*)W_CacheLumpName("M_CELL2",PU_CACHE_SHARED));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName("M_CELL2",PU_CACHE_SHARED), W_GetNumForName("M_CELL2")));
 }
 
 
@@ -2109,14 +2110,14 @@ void M_Drawer (void)
 	{
 		if (::g->currentMenu->menuitems[i].name[0])
 			V_DrawPatchDirect (::g->md_x,::g->md_y,0,
-			(patch_t*)W_CacheLumpName(::g->currentMenu->menuitems[i].name ,PU_CACHE_SHARED));
+				/*(patch_t*)*/img2lmp(W_CacheLumpName(::g->currentMenu->menuitems[i].name ,PU_CACHE_SHARED), W_GetNumForName(::g->currentMenu->menuitems[i].name)));
 		::g->md_y += LINEHEIGHT;
 	}
 	//GK: Remove the skull while showing the Read This!
 	if (!::g->inhelpscreens) {
 		// DRAW SKULL
 		V_DrawPatchDirect(::g->md_x + SKULLXOFF, ::g->currentMenu->y - 5 + ::g->itemOn*LINEHEIGHT, 0,
-			(patch_t*)W_CacheLumpName(skullName[::g->whichSkull], PU_CACHE_SHARED));
+			/*(patch_t*)*/img2lmp(W_CacheLumpName(skullName[::g->whichSkull], PU_CACHE_SHARED), W_GetNumForName(skullName[::g->whichSkull])));
 	}
 }
 

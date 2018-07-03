@@ -207,7 +207,7 @@ void R_GenerateComposite (int texnum)
 		i >=0;
 		i--, patch++)
 	{
-		realpatch = (patch_t*)W_CacheLumpNum(patch->patch, PU_CACHE_SHARED);
+		realpatch = /*(patch_t*)*/img2lmp(W_CacheLumpNum(patch->patch, PU_CACHE_SHARED),patch->patch);
 		x1 = patch->originx;
 		x2 = x1 + SHORT(realpatch->width);
 		const int *cofs = realpatch->columnofs - x1;
@@ -228,7 +228,7 @@ void R_GenerateComposite (int texnum)
 										// killough 1/25/98, 4/9/98: Fix medusa bug.
 				//GK: This version uses postColumn_t instead of column_t
 				patchcol = (postColumn_t *)((byte *)realpatch
-					+ LONG(cofs[x1]));
+						+ LONG(cofs[x1]));
 				R_DrawColumnInCache(patchcol,
 					block + colofs[x1],
 					patch->originy,
@@ -266,8 +266,8 @@ void R_GenerateComposite (int texnum)
 													  // copy opaque cells from the temporary back into the column
 				memcpy((byte *)col + 3, source + col->topdelta, col->length);
 				col = (postColumn_t *)((byte *)col + col->length + 4); // next post
+				}
 			}
-		}
 	free(source);         // free temporary column
 	free(marks);          // free transparency marks						
     
@@ -322,7 +322,7 @@ void R_GenerateLookup (int texnum)
 			i--)
 		{
 			int pat = patch->patch;
-			realpatch = (patch_t*)W_CacheLumpNum(pat, PU_CACHE_SHARED);
+			realpatch = /*(patch_t*)*/img2lmp(W_CacheLumpNum(pat, PU_CACHE_SHARED), pat);
 			x1 = patch++->originx;
 			x2 = x1 + SHORT(realpatch->width);
 			const int *cofs = realpatch->columnofs - x1;
@@ -339,8 +339,8 @@ void R_GenerateLookup (int texnum)
 				// to fix Medusa bug while allowing for transparent multipatches.
 
 				const postColumn_t *col = (postColumn_t*)((byte*)realpatch + LONG(cofs[x]));
-				for (; col->topdelta != 0xff; count[x].posts++)
-					col = (postColumn_t *)((byte *)col + col->length + 4);
+				for (; col->topdelta != 0xff; count[x].posts++) 
+						col = (postColumn_t *)((byte *)col + col->length + 4);
 				count[x].patches++;
 				collump[x] = pat;
 				colofs[x] = LONG(cofs[x]) + 3;
@@ -643,7 +643,7 @@ void R_InitSpriteLumps (void)
     {
 	if (!(i&63))
 	    I_Printf (".");
-	patch = (patch_t*)W_CacheLumpNum (::g->firstspritelump+i, PU_CACHE_SHARED);
+	patch = /*(patch_t*)*/img2lmp(W_CacheLumpNum (::g->firstspritelump+i, PU_CACHE_SHARED),::g->firstspritelump + i);
 	::g->spriteheight[i] = SHORT(patch->height);//GK:Get the sprite height
 	::g->spritewidth[i] = SHORT(patch->width)<<FRACBITS;
 	::g->spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;

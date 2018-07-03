@@ -503,7 +503,7 @@ void HU_Init(void)
 	for (i=0;i<HU_FONTSIZE;i++)
 	{
 		sprintf(buffer, "STCFN%.3d", j++);
-		::g->hu_font[i] = (patch_t *) W_CacheLumpName(buffer, PU_STATIC_SHARED);
+		::g->hu_font[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(buffer, PU_STATIC_SHARED), W_GetNumForName(buffer));
 	}
 
 }

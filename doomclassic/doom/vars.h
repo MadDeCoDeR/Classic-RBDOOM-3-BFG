@@ -972,3 +972,8 @@ const char*		spritename;
 //as global variables since they get calculated based on the r_aspectcorrect CVar
 int ASPECT_IMAGE_SCALER;
 int SCREENWIDTH;
+//img2lmp starts
+std::vector<patch_t*>cpatch;
+int cpind;
+std::vector<int> cmap;
+//img2lmp ends
