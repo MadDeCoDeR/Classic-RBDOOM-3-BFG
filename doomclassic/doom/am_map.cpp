@@ -464,9 +464,9 @@ void AM_Start (void)
 
 	if (!::g->stopped) AM_Stop();
 	::g->stopped = false;
+	AM_LevelInit(); //GK: Re-init even in the same level the auto map for aspect correction
 	if (::g->lastlevel != ::g->gamemap || ::g->lastepisode != ::g->gameepisode)
 	{
-		AM_LevelInit();
 		::g->lastlevel = ::g->gamemap;
 		::g->lastepisode = ::g->gameepisode;
 	}

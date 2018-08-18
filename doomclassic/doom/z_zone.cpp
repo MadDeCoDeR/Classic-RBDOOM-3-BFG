@@ -76,7 +76,7 @@ void *I_ZoneBase( int *size )
 {
 	enum
 	{
-		HEAP_SIZE = 125 * 1024 * 1024			// SMF - was 10 * 1024 * 1024
+		HEAP_SIZE = 150 * 1024 * 1024			// SMF - was 10 * 1024 * 1024
 	};
 	*size = HEAP_SIZE;
 	return malloc( HEAP_SIZE );
@@ -88,12 +88,12 @@ void *I_ZoneBase( int *size )
 void Z_Init (void)
 {
     memblock_t*	block;
-    int		size;
+    //int		size;
 
-    ::g->mainzone = (memzone_t *)I_ZoneBase (&size);
+    ::g->mainzone = (memzone_t *)I_ZoneBase (&::g->zonesize);
 
-	memset( ::g->mainzone, 0, size );
-	::g->mainzone->size = size;
+	memset( ::g->mainzone, 0, ::g->zonesize);
+	::g->mainzone->size = ::g->zonesize;
 
     // set the entire zone to one free block
     ::g->mainzone->blocklist.next =
@@ -172,6 +172,117 @@ void Z_Free (void* ptr)
 }
 
 
+//GK: Expirimental z-memory reallocation (dont worry it is never in use)
+void
+Z_Realloc
+(int newsize) {
+	memblock_t*	block;
+	//memzone_t* newzone;
+	memblock_t* oldblock= (memblock_t *)malloc(::g->zonesize-sizeof(memzone_t));
+	memset(oldblock, 0, (::g->zonesize- sizeof(memzone_t)));
+	int ns = ::g->zonesize + newsize;
+	memblock_t* rover = ::g->mainzone->rover->next;
+	memblock_t* start = rover;
+	int offset = 0;
+	int preoffs = 0;
+	int cs = sizeof(memblock_t);
+	int ps = cs;
+	do
+	{
+		memcpy(oldblock+offset, rover, cs);
+		if (rover->user && rover->user != (void**)2) {
+			void* data = *rover->user;
+			*(void **)(oldblock + offset)->user = (void *)((byte *)(oldblock + offset) + sizeof(memblock_t));
+			//memcpy(*(oldblock + offset)->user, data, rover->size+sizeof(memblock_t));
+		}
+		offset += cs;
+		preoffs = offset - (cs);
+		(oldblock + preoffs)->next = &(oldblock + offset)[0];
+		int prevoffs = (preoffs - (ps));
+		if (preoffs > 0) {
+			(oldblock + preoffs)->prev = &(oldblock + prevoffs)[0];
+		}
+		//oldblock = oldblock->next;
+		rover = rover->next;
+		ps = cs;
+		if (!rover->user || rover->user == (void**)2) {
+			cs = sizeof(memblock_t);
+		}
+		else {
+			cs = rover->size+sizeof(memblock_t);
+		}
+	} while (rover != start);
+	oldblock->prev = &(oldblock + preoffs)[0];
+	(oldblock + preoffs)->next = &oldblock[0];
+	free(::g->mainzone);
+	::g->mainzone =(memzone_t*)malloc(ns );
+	//newzone = (memzone_t*)&(::g->mainzone + ::g->zonesize)[0];
+	memset(::g->mainzone, 0, ns);
+
+	::g->mainzone->blocklist.next =
+		::g->mainzone->blocklist.prev =
+		block = (memblock_t *)((byte *)::g->mainzone + sizeof(memzone_t));
+
+	::g->mainzone->blocklist.user = (void **)::g->mainzone;
+	::g->mainzone->blocklist.tag = PU_STATIC;
+	::g->mainzone->rover = block;
+
+	block->prev = block->next = &::g->mainzone->blocklist;
+
+	// NULL indicates a free block.
+	block->user = NULL;
+
+	block->size = ::g->mainzone->size - sizeof(memzone_t);
+
+	start = oldblock;
+	offset = 0;
+	preoffs = 0;
+	cs= sizeof(memblock_t);
+	ps = cs;
+	do
+	{
+		memcpy(::g->mainzone->rover + offset, oldblock, cs);
+		offset += cs;
+		preoffs = offset - (cs);
+		(::g->mainzone->rover + preoffs)->next = &(::g->mainzone->rover + offset)[0];
+		int prevoffs = (preoffs - (ps));
+		if (preoffs > 0) {
+			(::g->mainzone->rover + preoffs)->prev = &(::g->mainzone->rover + prevoffs)[0];
+		}
+		//oldblock = oldblock->next;
+		oldblock = oldblock->next;
+		ps = cs;
+		if (!oldblock->user || oldblock->user == (void**)2) {
+			cs = sizeof(memblock_t);
+		}
+		else {
+			cs = oldblock->size + sizeof(memblock_t);
+		}
+	} while (oldblock != start);
+	::g->mainzone->rover->prev = &(::g->mainzone->rover + preoffs)[0];
+	(::g->mainzone->rover + preoffs)->next = &::g->mainzone->rover[0];
+	::g->mainzone->size = ns;
+	//::g->mainzone->rover = ::g->mainzone->rover->prev;
+	//::g->mainzone->rover = oldblock;
+	::g->mainzone->rover = ::g->mainzone->rover->prev;
+	::g->mainzone->rover->size += newsize;
+	// set the entire zone to one free block
+	/*newzone->blocklist.next =
+		newzone->blocklist.prev =
+		block = (memblock_t *)((byte *)newzone + sizeof(memzone_t));
+
+	newzone->blocklist.user = (void **)::g->mainzone;
+	newzone->blocklist.tag = PU_STATIC;
+	newzone->rover = block;
+
+	block->prev = block->next = &newzone->blocklist;
+
+	// NULL indicates a free block.
+	block->user = NULL;
+
+	block->size = newzone->size - sizeof(memzone_t);*/
+	::g->zonesize = ns;
+}
 
 //
 // Z_Malloc
@@ -219,6 +330,11 @@ Z_Malloc
 		{
 			// scanned all the way around the list
 			I_Error ("Z_Malloc: failed on allocation of %i bytes", size);
+			/*Z_Realloc(size); //TODO: Find out how to make z-memory dynamiclly resizeable
+			base = ::g->mainzone->rover;
+			rover = base;
+			//rover = rover->prev;
+			continue;*/
 		}
 	
 		if (rover->user)

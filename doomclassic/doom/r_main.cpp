@@ -897,3 +897,27 @@ void R_RenderPlayerView (player_t* player)
 	NetUpdate ( NULL );				
 }
 
+
+void R_Initwidth() {
+	//GK: Calculate x-axis image scale and Rendering width
+	if (r_aspectcorrect.GetBool()) {
+		::g->ASPECT_IMAGE_SCALER = 4;
+	}
+	else {
+		::g->ASPECT_IMAGE_SCALER = 3;
+	}
+
+	::g->SCREENWIDTH = ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER;
+	::g->finit_width = ::g->SCREENWIDTH; //GK: Set here the auto-map width
+	int temp_fuzzoffset[FUZZTABLE] = { //GK: Init fuzztable here since FUZZOFF is relying on SCREENWIDTH
+		FUZZOFF,-FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
+		FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
+		FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,
+		FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
+		FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,
+		FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,
+		FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF
+	};
+	memcpy(::g->fuzzoffset, temp_fuzzoffset, sizeof(temp_fuzzoffset));
+	//GK: End
+}

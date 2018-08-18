@@ -80,7 +80,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "f_finale.h"
 #include "g_game.h"
 
+#include "am_map.h"
 
+extern idCVar cl_messages;
 extern idCVar in_joylayout;
 //
 // defaulted values
@@ -133,6 +135,7 @@ const unsigned char cheat_menu_seq[] = {
 };
 
 
+static int optoffs = 0; //GK: use for dynamicly adding/removing the number of message lines thermo from the menu 
 
 // graphic name of skulls
 // warning: initializer-string for array of chars is too long
@@ -1124,9 +1127,9 @@ void M_DrawDoomIT(void) {
 //
 // M_Options
 //
-char    detailNames[2][9]	= 
+char    detailNames[3][9]	= 
 {
-"M_GDLOW","M_DETAIL" //GK: Use unique values for aspect ratio
+"M_GDLOW","M_DETAIL","M_DISOPT" //GK: Use unique values for aspect ratio
 };
 
 char	msgNames[2][9]		= 
@@ -1152,6 +1155,8 @@ void M_DrawOptions(void)
 
 	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : 0;
 	int aspect = r_aspect.GetInteger() >= 1 ? 1 : 0;
+	int correct = r_aspectcorrect.GetInteger();
+	int asoffset = 165 - (6 * correct); //GK: The word "correct" is larger than the others and therefor it requires different x offset
 
 	V_DrawPatchDirect (::g->OptionsDef.x + 150,::g->OptionsDef.y+LINEHEIGHT*endgame,0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[fullscreenOnOff],PU_CACHE_SHARED), W_GetNumForName(msgNames[fullscreenOnOff])));
@@ -1162,13 +1167,21 @@ void M_DrawOptions(void)
 	V_DrawPatchDirect (::g->OptionsDef.x + 120,::g->OptionsDef.y+LINEHEIGHT*messages,0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[m_show_messages.GetInteger()],PU_CACHE_SHARED), W_GetNumForName(msgNames[m_show_messages.GetInteger()])));
 	//GK:begin
-	V_DrawPatchDirect(::g->OptionsDef.x + 165, ::g->OptionsDef.y + LINEHEIGHT * detail, 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect])));
+	if (m_show_messages.GetInteger()) {
+		optoffs = 1;
+		const int clmessages=cl_messages.GetInteger()-1;
+		M_DrawThermo(::g->OptionsDef.x, ::g->OptionsDef.y + LINEHEIGHT * (messages + optoffs), 4, clmessages);
+	}
+	else {
+		optoffs = 0;
+	}
+	V_DrawPatchDirect(::g->OptionsDef.x + asoffset, ::g->OptionsDef.y + LINEHEIGHT * (detail+optoffs), 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect+correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect+correct])));
 	//GK:End
 	extern idCVar in_mouseSpeed;
 	const int roundedMouseSpeed = M_GetMouseSpeedForMenu( in_mouseSpeed.GetFloat() );
 
-	M_DrawThermo( ::g->OptionsDef.x, ::g->OptionsDef.y + LINEHEIGHT * ( mousesens + 1 ), 16, roundedMouseSpeed );
+	M_DrawThermo( ::g->OptionsDef.x, ::g->OptionsDef.y + LINEHEIGHT * ( mousesens + 1+optoffs ), 16, roundedMouseSpeed );
 
 	//M_DrawThermo(::g->OptionsDef.x,::g->OptionsDef.y+LINEHEIGHT*(scrnsize+1),
 	//	9,::g->screenSize);
@@ -1187,15 +1200,47 @@ void M_Options(int choice)
 void M_ChangeMessages(int choice)
 {
 	// warning: unused parameter `int choice'
-	choice = 0;
-	m_show_messages.SetBool( !m_show_messages.GetBool() );
+	//choice = 0;
+	bool sm = m_show_messages.GetBool();
+	if (!sm) {
+		m_show_messages.SetBool(!m_show_messages.GetBool());
+	}
+	else if (cl_messages.GetInteger() == 1 && choice ==0){
+		m_show_messages.SetBool(!m_show_messages.GetBool());
+	}
+
+	if (sm != m_show_messages.GetBool()) {
 
 	if (!m_show_messages.GetBool())
 		::g->players[::g->consoleplayer].message = MSGOFF;
 	else
 		::g->players[::g->consoleplayer].message = MSGON ;
 
+
 	::g->message_dontfuckwithme = true;
+	}
+	if (m_show_messages.GetBool()) {
+		int clmess = cl_messages.GetInteger();
+		if (sm) {
+			switch (choice) { //GK: Put on use the 'choice' parameter
+			case 0:
+				if (clmess > 1) {
+					clmess--;
+				}
+				break;
+			case 1:
+				if (clmess < 4) {
+					clmess++;
+				}
+				break;
+			}
+		}
+		cl_messages.SetInteger(clmess);
+		HUlib_initSText(&::g->w_message,
+			HU_MSGX, HU_MSGY, cl_messages.GetInteger(),
+			::g->hu_font,
+			HU_FONTSTART, &::g->message_on);
+	}
 }
 
 //
@@ -1221,7 +1266,18 @@ void M_FullScreen( int choice ) {
 
 void M_Aspect(int choice) {
 	//GK: Similar to fullscreen but with the aspect parameter
-	r_aspect.SetInteger(r_aspect.GetInteger() ? 0 : 1);
+	if (r_aspect.GetInteger() && !r_aspectcorrect.GetBool()) {
+		r_aspectcorrect.SetBool(true);
+	}
+	else {
+		r_aspect.SetInteger(r_aspect.GetInteger() ? 0 : 1);
+		r_aspectcorrect.SetBool(false);
+	}
+	R_Initwidth(); //GK: Restart the classic Doom renderer
+	R_Init();
+	if (::g->automapactive) {
+		AM_Start();
+	}
 	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 }
 //
@@ -1330,7 +1386,7 @@ void M_GameSelection(int choice)
 	ResetFinalflat();
 	I_Printf("Reset Completed!!\n");
 	memset(DoomLib::otherfiles,0,5*20);//GK:Reset this for better checking
-	//ResetSfx(); //GK: More Headache than it's worth
+	
 	//CleanUncompFiles(); //GK: A good practice would have been to delete the files after
 	//we change the game but W_Shutdown which must be called to free the files causes bugs and crashes
 	initonce = false;
@@ -2111,12 +2167,21 @@ void M_Drawer (void)
 		if (::g->currentMenu->menuitems[i].name[0])
 			V_DrawPatchDirect (::g->md_x,::g->md_y,0,
 				/*(patch_t*)*/img2lmp(W_CacheLumpName(::g->currentMenu->menuitems[i].name ,PU_CACHE_SHARED), W_GetNumForName(::g->currentMenu->menuitems[i].name)));
-		::g->md_y += LINEHEIGHT;
+		if (::g->currentMenu == &::g->OptionsDef && i == messages) { //GK: This is where the real dynamic menu rendering happens
+			::g->md_y += LINEHEIGHT+(optoffs*LINEHEIGHT);
+		}
+		else {
+			::g->md_y += LINEHEIGHT;
+		}
 	}
 	//GK: Remove the skull while showing the Read This!
 	if (!::g->inhelpscreens) {
 		// DRAW SKULL
-		V_DrawPatchDirect(::g->md_x + SKULLXOFF, ::g->currentMenu->y - 5 + ::g->itemOn*LINEHEIGHT, 0,
+		int lineoffs = ::g->itemOn*LINEHEIGHT;
+		if (::g->currentMenu == &::g->OptionsDef && ::g->itemOn > messages) {
+			lineoffs += (optoffs*LINEHEIGHT);
+		}
+		V_DrawPatchDirect(::g->md_x + SKULLXOFF, ::g->currentMenu->y - 5 + lineoffs, 0,
 			/*(patch_t*)*/img2lmp(W_CacheLumpName(skullName[::g->whichSkull], PU_CACHE_SHARED), W_GetNumForName(skullName[::g->whichSkull])));
 	}
 }

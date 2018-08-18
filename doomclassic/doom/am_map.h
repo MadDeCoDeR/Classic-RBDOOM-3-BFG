@@ -49,7 +49,7 @@ void AM_Drawer (void);
 // if the level is completed while it is up.
 void AM_Stop (void);
 
-
+void AM_Start(void); //GK: Restart auto map when aspect ratio is changed
 
 #endif
 

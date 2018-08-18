@@ -63,7 +63,7 @@ extern int		validcount;
 extern int		linecount;
 extern int		loopcount;
 
-
+extern idCVar r_aspectcorrect;
 //
 // Lighting LUT.
 // Used for z-depth cuing per column/row,
@@ -183,6 +183,8 @@ void R_Init (void);
 void R_SetViewSize (int blocks, int detail);
 
 patch_t* img2lmp(void* buff,int lump);
+
+void R_Initwidth(); //GK: Allow the width setup to be called and from other files
 
 #endif
 

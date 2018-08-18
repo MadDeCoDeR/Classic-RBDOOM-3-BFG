@@ -77,7 +77,6 @@ If you have questions concerning this license or the applicable additional terms
 //#include "../Main/PlayerProfile.h"
 //#include "../Main/PSN/PS3_Session.h"
 #include "d3xp/Game_local.h"
-extern idCVar r_aspectcorrect;
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -538,27 +537,7 @@ void D_DoomMain(void)
 {
 	int             p;
 	char                    file[256];
-	//GK: Calculate x-axis image scale and Rendering width
-	if (r_aspectcorrect.GetBool()) {
-		::g->ASPECT_IMAGE_SCALER = 4;
-	}
-	else {
-		::g->ASPECT_IMAGE_SCALER = 3;
-	}
-
-	::g->SCREENWIDTH = ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER;
-	::g->finit_width = ::g->SCREENWIDTH; //GK: Set here the auto-map width
-	int temp_fuzzoffset[FUZZTABLE] = { //GK: Init fuzztable here since FUZZOFF is relying on SCREENWIDTH
-		FUZZOFF,-FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
-		FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
-		FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,
-		FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
-		FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,
-		FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,
-		FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF
-	};
-	memcpy(::g->fuzzoffset, temp_fuzzoffset, sizeof(temp_fuzzoffset));
-	//GK: End
+	R_Initwidth(); //GK: Simplyfied
 	FindResponseFile();
 
 	IdentifyVersion();
