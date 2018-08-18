@@ -55,14 +55,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "doomdef.h"
 #include "libs/timidity/timidity.h"
 #include "libs/timidity/controls.h"
-extern "C"
-{
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavformat/avio.h>
-#include <libswresample/swresample.h>
-}
 #include "sound/snd_local.h"
+#include "sound/AVD.h"
 
 #pragma warning ( disable : 4244 )
 
@@ -109,6 +103,8 @@ typedef struct tagActiveSound_t {
 	int player;
 	bool localSound;
 	mobj_t *originator;
+	int rate; //GK: Keep record of rate and sample for link sfx
+	ALenum sample;
 } activeSound_t;
 
 // cheap little struct to hold a sound
@@ -167,10 +163,10 @@ void* getsfx ( const char* sfxname, int* len )
 	char                name[20];
 	int                 sfxlump;
 	//float               scale = 1.0f;
-	
+
 	// Get the sound data from the WAD
 	sprintf( name, "ds%s", sfxname );
-	
+
 	// Scale down the plasma gun, it clips
 	//if ( strcmp( sfxname, "plasma" ) == 0 ) {
 	//	scale = 0.75f;
@@ -178,21 +174,29 @@ void* getsfx ( const char* sfxname, int* len )
 	//if ( strcmp( sfxname, "itemup" ) == 0 ) {
 	//	scale = 1.333f;
 	//}
-	
+
 	// If sound requested is not found in current WAD, use pistol as default
 	if ( W_CheckNumForName( name ) == -1 )
 		sfxlump = W_GetNumForName( "dspistol" );
 	else
 		sfxlump = W_GetNumForName( name );
-	
+
 	// Sound lump headers are 8 bytes.
 	const int SOUND_LUMP_HEADER_SIZE_IN_BYTES = 8;
-	
+
 	size = W_LumpLength( sfxlump ) - SOUND_LUMP_HEADER_SIZE_IN_BYTES;
-	
+
 	sfx = (unsigned char*)W_CacheLumpNum( sfxlump, PU_CACHE_SHARED );
-	const unsigned char * sfxSampleStart = sfx + SOUND_LUMP_HEADER_SIZE_IN_BYTES;
-	
+	byte h = sfx[0];
+	/*const*/ unsigned char * sfxSampleStart = sfx + SOUND_LUMP_HEADER_SIZE_IN_BYTES;
+	if (h != 3) { //GK: Remember the magic number
+		sfxSampleStart = sfx;
+		DecodeALAudio(&sfxSampleStart, &size, &av_rate, &av_sample);
+	}
+	else {
+		av_rate = SFX_RATE;
+		av_sample = SFX_SAMPLETYPE;
+	}
 	// Allocate from zone memory.
 	//sfxmem = (float*)DoomLib::Z_Malloc( size*(sizeof(float)), PU_SOUND_SHARED, 0 );
 	sfxmem = (unsigned char*)malloc( size * sizeof(unsigned char) );
@@ -311,14 +315,14 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 		i = oldestnum;
 		sound = &activeSounds[i];
 	}
-	
+	sound = &activeSounds[id]; //GK: use the coresponding channel of this sfx
 	alSourceStop( sound->alSourceVoice );
 	
 	// Attach the source voice to the correct buffer
-	if ( sound->id != id ) {
+	//if ( sound->id != id ) { //GK: Why ???
 		alSourcei( sound->alSourceVoice, AL_BUFFER, 0 );
 		alSourcei( sound->alSourceVoice, AL_BUFFER, alBuffers[id] );
-	}
+	//}
 	
 	// Set the source voice volume
 	alSourcef( sound->alSourceVoice, AL_GAIN, x_SoundVolume );
@@ -570,14 +574,17 @@ void I_ShutdownSound( void )
 		
 		// Free allocated sound memory
 		for ( i = 1; i < NUMSFX; i++ ) {
+			alDeleteBuffers(1, &alBuffers[i]); //GK: Restart the AL buffers in order to clear them from previous sfx
+			alGenBuffers(1, &alBuffers[i]);
 			if ( S_sfx[i].data && !(S_sfx[i].link) ) {
 				free( S_sfx[i].data );
+				lengths[i] = 0;
 			}
 		}
 	}
 	
 	I_StopSong( 0 );
-	
+	ResetSfx(); //GK: At last I found where I can reset the dehacked sound editor without screwing over the game
 	S_initialized = 0;
 }
 
@@ -686,13 +693,18 @@ void I_InitSound()
 			if ( !S_sfx[i].link ) {
 				// Load data from WAD file.
 				S_sfx[i].data = getsfx( S_sfx[i].name, &lengths[i] );
+				activeSounds[i].rate = av_rate;
+				activeSounds[i].sample = av_sample;
 			} else {
 				// Previously loaded already?
 				S_sfx[i].data = S_sfx[i].link->data;
-				lengths[i] = lengths[ (S_sfx[i].link-S_sfx) / sizeof(sfxinfo_t) ];
+				int pointer = (S_sfx[i].link-S_sfx) / sizeof(sfxinfo_t);
+				lengths[i] = lengths[pointer]; //GK: Get Linked sfx rate, sample and length
+				av_rate = activeSounds[pointer].rate;
+				av_sample = activeSounds[pointer].sample;
 			}
 			if ( S_sfx[i].data ) {
-				alBufferData( alBuffers[i], SFX_SAMPLETYPE, (byte*)S_sfx[i].data, lengths[i], SFX_RATE );
+				alBufferData( alBuffers[i], av_sample, (byte*)S_sfx[i].data, lengths[i], av_rate );
 			}
 		}
 		
@@ -852,160 +864,12 @@ bool I_LoadSong( const char * songname )
 		use_avi = false;
 	}
 	else {
-			int ret = 0;
-			int avindx = 0;
-			AVFormatContext*		fmt_ctx = avformat_alloc_context();
-			AVCodec*				dec;
-			AVCodecContext*			dec_ctx;
-			AVPacket packet;
-			SwrContext* swr_ctx = NULL;
-			unsigned char *avio_ctx_buffer = NULL;
-			av_register_all();
-			avio_ctx_buffer = static_cast<unsigned char *>(av_malloc((size_t)mus_size));
-			memcpy(avio_ctx_buffer, musFile, mus_size);
-			AVIOContext *avio_ctx = avio_alloc_context(avio_ctx_buffer, mus_size, 0, NULL, NULL, NULL, NULL);
-			fmt_ctx->pb = avio_ctx;
-			avformat_open_input(&fmt_ctx, "", NULL, NULL);
-
-			if ((ret = avformat_find_stream_info(fmt_ctx, NULL)) < 0)
-			{
-				return false;
+			
+			use_avi = DecodeALAudio(&musFile,&mus_size,&av_rate,&av_sample); //GK: Simplified
+			if (use_avi) {
+				totalBufferSize = mus_size;
+				musicBuffer = musFile;
 			}
-			ret = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
-			avindx = ret;
-			dec_ctx = fmt_ctx->streams[avindx]->codec;
-			dec = avcodec_find_decoder(dec_ctx->codec_id);
-			if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0)
-			{
-
-				return false;
-			}
-			bool hasplanar = false;
-			AVSampleFormat dst_smp;
-			if (dec_ctx->sample_fmt >= 5) {
-				dst_smp = static_cast<AVSampleFormat> (dec_ctx->sample_fmt - 5);
-				swr_ctx = swr_alloc_set_opts(NULL, dec_ctx->channel_layout, dst_smp, dec_ctx->sample_rate, dec_ctx->channel_layout, dec_ctx->sample_fmt, dec_ctx->sample_rate, 0, NULL);
-				int res = swr_init(swr_ctx);
-				hasplanar = true;
-			}
-			int format_byte = 0;
-			bool use_ext = false;
-			if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8P) {
-				format_byte = 1;
-			}
-			else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16P) {
-				format_byte = 2;
-			}
-			else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32P) {
-				format_byte = 4;
-			}
-			else {
-				//return false;
-				format_byte = 4;
-				use_ext = true;
-			}
-			av_rate = dec_ctx->sample_rate;
-			switch (format_byte) {
-			case 1:
-				if (dec_ctx->channels == 2) {
-					av_sample = AL_FORMAT_STEREO8;
-				}
-				else {
-					av_sample = AL_FORMAT_MONO8;
-				}
-				break;
-			case 2:
-				if (dec_ctx->channels == 2) {
-					av_sample = AL_FORMAT_STEREO16;
-				}
-				else {
-					av_sample = AL_FORMAT_MONO16;
-				}
-				break;
-			case 4:
-				if (dec_ctx->channels == 2) {
-					av_sample = AL_FORMAT_STEREO_FLOAT32;
-				}
-				else {
-					av_sample = AL_FORMAT_MONO_FLOAT32;
-				}
-				break;
-			}
-			av_init_packet(&packet);
-			AVFrame *frame;
-			int frameFinished = 0;
-			int offset = 0;
-			int num_bytes = 0;
-			int bufferoffset = format_byte * 10;
-			byte* tBuffer = (byte *)malloc(2 * mus_size*bufferoffset);
-			uint8_t** tBuffer2 = NULL;
-			int  bufflinesize;
-
-			while (av_read_frame(fmt_ctx, &packet) >= 0) {
-				if (packet.stream_index == avindx) {
-					frame = av_frame_alloc();
-					frameFinished = 0;
-					avcodec_decode_audio4(dec_ctx, frame, &frameFinished, &packet);
-					if (frameFinished) {
-
-						if (hasplanar) {
-							av_samples_alloc_array_and_samples(&tBuffer2,
-								&bufflinesize,
-								frame->channels,
-								av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
-								dst_smp,
-								0);
-
-							int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame->extended_data, frame->nb_samples);
-							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
-								res, dst_smp, 1);
-							memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
-
-							offset += num_bytes;
-							av_freep(&tBuffer2[0]);
-
-						}
-						else {
-							num_bytes = frame->linesize[0];
-							while (!tBuffer) {
-								tBuffer = (byte *)calloc( mus_size,sizeof(byte*));
-							}
-							memcpy(tBuffer + offset, frame->extended_data[0], num_bytes);
-							offset += num_bytes;
-						}
-
-
-
-					}
-					av_frame_free(&frame);
-					free(frame);
-				}
-
-				av_free_packet(&packet);
-			}
-			totalBufferSize = offset;
-			musicBuffer = (byte *)malloc(offset);
-			memcpy(musicBuffer, tBuffer, offset);
-			free(tBuffer);
-			tBuffer = NULL;
-			if (swr_ctx != NULL) {
-				swr_free(&swr_ctx);
-			}
-
-			avcodec_close(dec_ctx);
-#ifdef _WINDOWS
-			av_free(fmt_ctx->pb);
-			avformat_close_input(&fmt_ctx);
-#else
-			//GK: Let it leak let it leak because linux thing that it freeing twiice
-			avformat_close_input(&fmt_ctx);
-			avformat_free_context(fmt_ctx);
-#endif
-
-
-			av_free(avio_ctx->buffer);
-			av_freep(avio_ctx);
-			use_avi = true;
 		}
 	
 	musicReady = true;

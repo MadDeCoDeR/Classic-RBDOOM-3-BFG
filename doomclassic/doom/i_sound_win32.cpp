@@ -54,14 +54,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "doomdef.h"
 #include "../timidity/timidity.h"
 #include "../timidity/controls.h"
-extern "C"
-{
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavformat/avio.h>
-#include <libswresample/swresample.h>
-}
 #include "sound/snd_local.h"
+#include "sound/AVD.h"
 
 #ifdef _MSC_VER // DG: xaudio can only be used with MSVC
 #include <xaudio2.h>
@@ -165,7 +159,7 @@ getsfx
 // This function loads the sound data from the WAD lump,
 //  for single sound.
 //
-void* getsfx ( const char* sfxname, int* len )
+void* getsfx ( const char* sfxname, int* len, int sfxind ) //GK: Keep track which sfx is loaded
 {
 	unsigned char*      sfx;
 	unsigned char*	    sfxmem;
@@ -198,8 +192,44 @@ void* getsfx ( const char* sfxname, int* len )
 	size = W_LumpLength( sfxlump ) - SOUND_LUMP_HEADER_SIZE_IN_BYTES;
 
 	sfx = (unsigned char*)W_CacheLumpNum( sfxlump, PU_CACHE_SHARED );
-	const unsigned char * sfxSampleStart = sfx + SOUND_LUMP_HEADER_SIZE_IN_BYTES;
+	byte h = sfx[0];
+	/*const*/ unsigned char * sfxSampleStart = sfx + SOUND_LUMP_HEADER_SIZE_IN_BYTES;
+	if (activeSounds[sfxind].m_pSourceVoice) { //GK: Close the channel before re-initializing it
+		activeSounds[sfxind].m_pSourceVoice->Stop();
+		activeSounds[sfxind].m_pSourceVoice->FlushSourceBuffers();
+		activeSounds[sfxind].m_pSourceVoice->DestroyVoice();
+		activeSounds[sfxind].m_pSourceVoice = NULL;
+	}
+	if (h != 3) { //GK: Remeber the magic number is 3
+		sfxSampleStart = sfx;
+		
+		if (DecodeXAudio(&sfxSampleStart, &size,&activeSounds[sfxind].m_pSourceVoice,false)) {
+			XAUDIO2_VOICE_DETAILS details;
+			activeSounds[sfxind].m_pSourceVoice->GetVoiceDetails(&details);
+			activeSounds[sfxind].m_Emitter.ChannelCount = details.InputChannels;
+			activeSounds[sfxind].m_DSPSettings.SrcChannelCount = details.InputChannels;
+			sfxmem = (unsigned char*)malloc(size * sizeof(unsigned char));
+			sfxmem = sfxSampleStart;
+			*len = size;
+			Z_Free(sfx);
+			return (void *)(sfxmem);
+		}
+	}
+	else {
+		// Create Source voice
+		WAVEFORMATEX voiceFormat = { 0 };
+		voiceFormat.wFormatTag = WAVE_FORMAT_PCM;
+		voiceFormat.nChannels = 1;
+		voiceFormat.nSamplesPerSec = 11025;
+		voiceFormat.nAvgBytesPerSec = 11025;
+		voiceFormat.nBlockAlign = 1;
+		voiceFormat.wBitsPerSample = 8;
+		voiceFormat.cbSize = 0;
 
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&activeSounds[sfxind].m_pSourceVoice, (WAVEFORMATEX *)&voiceFormat);
+		activeSounds[sfxind].m_Emitter.ChannelCount = 1;
+		activeSounds[sfxind].m_DSPSettings.SrcChannelCount = 1;
+	}
 	// Allocate from zone memory.
 	//sfxmem = (float*)DoomLib::Z_Malloc( size*(sizeof(float)), PU_SOUND_SHARED, 0 );
 	sfxmem = (unsigned char*)malloc( size * sizeof(unsigned char) );
@@ -316,7 +346,7 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 		i = oldestnum;
 		sound = &activeSounds[i];
 	}
-
+	sound = &activeSounds[id]; //GK: Use the channel that coresponds to that sfx
 	// stop the sound with a FlushPackets
 	sound->m_pSourceVoice->Stop();
 	sound->m_pSourceVoice->FlushSourceBuffers();
@@ -325,6 +355,9 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 	XAUDIO2_BUFFER Packet = { 0 };
 	Packet.Flags = XAUDIO2_END_OF_STREAM;
 	Packet.AudioBytes = lengths[id];
+	if (!S_sfx[id].data) { //GK: Sanity check ???
+		return id;
+	}
 	Packet.pAudioData = (BYTE*)S_sfx[id].data;
 	Packet.PlayBegin = 0;
 	Packet.PlayLength = 0;
@@ -352,12 +385,12 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 		X3DAudioCalculate( X3DAudioInstance, &doom_Listener, &sound->m_Emitter, dwCalculateFlags, &sound->m_DSPSettings );
 
 		// Pan the voice according to X3DAudio calculation
-		sound->m_pSourceVoice->SetOutputMatrix( NULL, 1, numOutputChannels, sound->m_DSPSettings.pMatrixCoefficients );
+		sound->m_pSourceVoice->SetOutputMatrix( NULL, sound->m_DSPSettings.SrcChannelCount, numOutputChannels, sound->m_DSPSettings.pMatrixCoefficients );
 
 		sound->localSound = false;
 	} else {
 		// Local(or Global) sound, fixed speaker volumes
-		sound->m_pSourceVoice->SetOutputMatrix( NULL, 1, numOutputChannels, localSoundVolumeEntries );
+		sound->m_pSourceVoice->SetOutputMatrix( NULL, sound->m_DSPSettings.SrcChannelCount, numOutputChannels, localSoundVolumeEntries );
 
 		sound->localSound = true;
 	}
@@ -545,7 +578,7 @@ void I_UpdateSound() {
 			X3DAudioCalculate( X3DAudioInstance, &doom_Listener, &sound->m_Emitter, dwCalculateFlags, &sound->m_DSPSettings );
 
 			// Pan the voice according to X3DAudio calculation
-			sound->m_pSourceVoice->SetOutputMatrix( NULL, 1, numOutputChannels, sound->m_DSPSettings.pMatrixCoefficients );
+			sound->m_pSourceVoice->SetOutputMatrix( NULL, sound->m_DSPSettings.SrcChannelCount, numOutputChannels, sound->m_DSPSettings.pMatrixCoefficients );
 		}
 	}
 }
@@ -587,12 +620,13 @@ void I_ShutdownSound(void) {
 			if ( S_sfx[i].data && !(S_sfx[i].link) ) {
 				//Z_Free( S_sfx[i].data );
 				free( S_sfx[i].data );
+				lengths[i] = 0;
 			}
 		}
 	}
 
 	I_StopSong( 0 );
-
+	ResetSfx(); //GK: At last I found where I can reset the dehacked sound editor without screwing over the game
 	S_initialized = 0;
 	// Done.
 	return;
@@ -614,7 +648,6 @@ void I_InitSoundHardware( int numOutputChannels_, int channelMask ) {
 	//  to speaker positions, defined as per WAVEFORMATEXTENSIBLE.dwChannelMask
 	//  SpeedOfSound - not used by doomclassic
 	X3DAudioInitialize( channelMask, 340.29f, X3DAudioInstance );
-
 	for ( int i = 0; i < NUM_SOUNDBUFFERS; ++i ) {
 		// Initialize source voices
 		I_InitSoundChannel( i, numOutputChannels );
@@ -646,12 +679,12 @@ void I_ShutdownSoundHardware() {
 			continue;
 		}
 
-		if ( sound->m_pSourceVoice ) {
-			sound->m_pSourceVoice->Stop();
-			sound->m_pSourceVoice->FlushSourceBuffers();
-			sound->m_pSourceVoice->DestroyVoice();
-			sound->m_pSourceVoice = NULL;
-		}
+			if ( sound->m_pSourceVoice ) {
+				sound->m_pSourceVoice->Stop();
+				sound->m_pSourceVoice->FlushSourceBuffers();
+				sound->m_pSourceVoice->DestroyVoice();
+				sound->m_pSourceVoice = NULL;
+			}
 
 		if ( sound->m_DSPSettings.pMatrixCoefficients ) {
 			delete [] sound->m_DSPSettings.pMatrixCoefficients;
@@ -714,18 +747,19 @@ void I_InitSoundChannel( int channel, int numOutputChannels_ ) {
 	soundchannel->m_DSPSettings.SrcChannelCount     = 1;
 	soundchannel->m_DSPSettings.DstChannelCount     = numOutputChannels_;
 	soundchannel->m_DSPSettings.pMatrixCoefficients = new FLOAT[ numOutputChannels_ ];
+	if (soundchannel->m_DSPSettings.SrcChannelCount < 2) { //GK: Sanity check ???
+		// Create Source voice
+		WAVEFORMATEX voiceFormat = {0};
+		voiceFormat.wFormatTag = WAVE_FORMAT_PCM;
+		voiceFormat.nChannels = 1;
+		voiceFormat.nSamplesPerSec = 11025;
+		voiceFormat.nAvgBytesPerSec = 11025;
+		voiceFormat.nBlockAlign = 1;
+		voiceFormat.wBitsPerSample = 8;
+		voiceFormat.cbSize = 0;
 
-	// Create Source voice
-	WAVEFORMATEX voiceFormat = {0};
-	voiceFormat.wFormatTag = WAVE_FORMAT_PCM;
-	voiceFormat.nChannels = 1;
-    voiceFormat.nSamplesPerSec = 11025;
-    voiceFormat.nAvgBytesPerSec = 11025;
-    voiceFormat.nBlockAlign = 1;
-    voiceFormat.wBitsPerSample = 8;
-    voiceFormat.cbSize = 0;
-
-	soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice( &soundchannel->m_pSourceVoice, (WAVEFORMATEX *)&voiceFormat );
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice( &soundchannel->m_pSourceVoice, (WAVEFORMATEX *)&voiceFormat );
+	}
 }
 
 /*
@@ -762,13 +796,14 @@ void I_InitSound() {
 			if (!S_sfx[i].link)
 			{
 				// Load data from WAD file.
-				S_sfx[i].data = getsfx( S_sfx[i].name, &lengths[i] );
+				S_sfx[i].data = getsfx( S_sfx[i].name, &lengths[i],i );
 			}	
 			else
 			{
 				// Previously loaded already?
 				S_sfx[i].data = S_sfx[i].link->data;
 				lengths[i] = lengths[(S_sfx[i].link - S_sfx)/sizeof(sfxinfo_t)];
+				memcpy(activeSounds[i].m_pSourceVoice, activeSounds[(S_sfx[i].link - S_sfx) / sizeof(sfxinfo_t)].m_pSourceVoice,sizeof(IXAudio2SourceVoice)); //GK: Make sure we also get the right channel
 			}
 		}
 
@@ -927,18 +962,19 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 		doomMusic = Timidity_LoadSongMem(midiConversionBuffer, length);
 	}
 
+#ifdef _MSC_VER
+	if (pMusicSourceVoice) {
+		pMusicSourceVoice->Stop();
+		pMusicSourceVoice->FlushSourceBuffers();
+		pMusicSourceVoice->DestroyVoice();
+		pMusicSourceVoice = NULL;
+	}
+#endif
+
 	if ( doomMusic ) {
 		musicBuffer = (byte *)malloc( MIDI_CHANNELS * MIDI_FORMAT_BYTES * doomMusic->samples );
 		totalBufferSize = doomMusic->samples * MIDI_CHANNELS * MIDI_FORMAT_BYTES;
 		// Create Source voice
-#ifdef _MSC_VER
-		if (pMusicSourceVoice) {
-			pMusicSourceVoice->Stop();
-			pMusicSourceVoice->FlushSourceBuffers();
-			pMusicSourceVoice->DestroyVoice();
-			pMusicSourceVoice = NULL;
-		}
-#endif
 		WAVEFORMATEX voiceFormat = { 0 };
 		voiceFormat.wFormatTag = WAVE_FORMAT_PCM;
 		voiceFormat.nChannels = 2;
@@ -969,175 +1005,14 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 		Timidity_FreeSong( doomMusic );
 	}
 	else {
-		int ret = 0;
-		int avindx = 0;
-		AVFormatContext*		fmt_ctx = avformat_alloc_context();
-		AVCodec*				dec;
-		AVCodecContext*			dec_ctx;
-		AVPacket packet;
-		SwrContext* swr_ctx = NULL;
-		unsigned char *avio_ctx_buffer = NULL;
-		av_register_all();
-		avio_ctx_buffer = static_cast<unsigned char *>(av_malloc((size_t)mus_size));
-		memcpy(avio_ctx_buffer, musFile, mus_size);
-		AVIOContext *avio_ctx = avio_alloc_context(avio_ctx_buffer, mus_size, 0, NULL, NULL, NULL, NULL);
-		fmt_ctx->pb = avio_ctx;
-		avformat_open_input(&fmt_ctx, "", NULL, NULL);
-		
-		if ((ret = avformat_find_stream_info(fmt_ctx, NULL)) < 0)
-		{
-			return false;
-		}
-		ret = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
-		avindx = ret;
-		dec_ctx = fmt_ctx->streams[avindx]->codec;
-		dec = avcodec_find_decoder(dec_ctx->codec_id);
-		if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0)
-		{
-
-			return false;
-		}
-		bool hasplanar = false;
-		AVSampleFormat dst_smp;
-		if (dec_ctx->sample_fmt >= 5) {
-			dst_smp =static_cast<AVSampleFormat> (dec_ctx->sample_fmt - 5);
-			swr_ctx = swr_alloc_set_opts(NULL, dec_ctx->channel_layout, dst_smp, dec_ctx->sample_rate, dec_ctx->channel_layout, dec_ctx->sample_fmt,dec_ctx->sample_rate,0,NULL);
-			int res = swr_init(swr_ctx);
-			hasplanar = true;
-		}
-#ifdef _MSC_VER
-		if (pMusicSourceVoice) {
-			pMusicSourceVoice->Stop();
-			pMusicSourceVoice->FlushSourceBuffers();
-			pMusicSourceVoice->DestroyVoice();
-			pMusicSourceVoice = NULL;
-		}
-#endif
-		WAVEFORMATEX voiceFormat = { 0 };
-		int format_byte = 0;
-		bool use_ext = false;
-		if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8P) {
-			format_byte = 1;
-		}
-		else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16P) {
-			format_byte = 2;
-		}
-		else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32P) {
-			format_byte = 4;
+		if (DecodeXAudio(&musFile, &mus_size, &pMusicSourceVoice,true)) { //GK: More simplified
+			musicBuffer = musFile;
+			totalBufferSize = mus_size;
 		}
 		else {
-			//return false;
-			format_byte = 4;
-			use_ext = true;
+			return false;
 		}
-		WAVEFORMATEXTENSIBLE exvoice = { 0 };
-		voiceFormat.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-		voiceFormat.nSamplesPerSec = dec_ctx->sample_rate;
-		voiceFormat.nChannels = dec_ctx->channels;
-		voiceFormat.nAvgBytesPerSec = voiceFormat.nSamplesPerSec * format_byte * voiceFormat.nChannels;
-		voiceFormat.nBlockAlign = format_byte * voiceFormat.nChannels;
-		voiceFormat.wBitsPerSample = format_byte * 8;
-		voiceFormat.cbSize = 22;
-		exvoice.Format = voiceFormat;
-		switch (voiceFormat.nChannels) {
-		case 1:
-			exvoice.dwChannelMask = SPEAKER_MONO;
-			break;
-		case 2:
-			exvoice.dwChannelMask = SPEAKER_STEREO;
-			break;
-		case 4:
-			exvoice.dwChannelMask = SPEAKER_QUAD;
-			break;
-		case 5:
-			exvoice.dwChannelMask = SPEAKER_5POINT1_SURROUND;
-			break;
-		case 7:
-			exvoice.dwChannelMask = SPEAKER_7POINT1_SURROUND;
-			break;
-		default:
-			exvoice.dwChannelMask = SPEAKER_MONO;
-			break;
-		}
-		exvoice.Samples.wReserved = 0;
-		exvoice.Samples.wSamplesPerBlock = voiceFormat.wBitsPerSample;
-		exvoice.Samples.wValidBitsPerSample = voiceFormat.wBitsPerSample;
-		if (!use_ext) {
-			exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
-		}
-		else {
-			exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
-		}
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (WAVEFORMATEX *)&exvoice, XAUDIO2_VOICE_MUSIC);
-		av_init_packet(&packet);
-		AVFrame *frame;
-		int frameFinished = 0;
-		int offset = 0;
-		int num_bytes = 0;
-		int bufferoffset = format_byte * 10;
-		byte* tBuffer = (byte *)malloc(2*mus_size*bufferoffset);
-		uint8_t** tBuffer2=NULL;
-		int  bufflinesize;
-		
-		while (av_read_frame(fmt_ctx, &packet) >= 0) {
-			if (packet.stream_index == avindx) {
-					frame = av_frame_alloc();
-					frameFinished = 0;
-					avcodec_decode_audio4(dec_ctx, frame, &frameFinished, &packet);
-					if (frameFinished) {
-						
-						if (hasplanar) {
-							av_samples_alloc_array_and_samples(&tBuffer2,
-								&bufflinesize,
-								voiceFormat.nChannels,
-								av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
-								dst_smp,
-								0);
-							
-							int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame->extended_data, frame->nb_samples);
-							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
-								res, dst_smp, 1);
-							memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
-
-							offset += num_bytes;
-							av_freep(&tBuffer2[0]);
-
-							}
-						else {
-							num_bytes = frame->linesize[0];
-							memcpy(tBuffer + offset, frame->extended_data[0], num_bytes);
-							offset += num_bytes;
-						}
-						
-						
-						
-					}
-					av_frame_free(&frame);
-					free(frame);
-			}
-			
-			av_free_packet(&packet);
-		}
-		totalBufferSize = offset;
-		musicBuffer= (byte *)malloc(offset);
-		memcpy(musicBuffer, tBuffer, offset);
-		free(tBuffer);
-		tBuffer = NULL;
-		if (swr_ctx != NULL) {
-			swr_free(&swr_ctx);
-		}
-		
-		avcodec_close(dec_ctx);
-
-		av_free(fmt_ctx->pb);
-		avformat_close_input(&fmt_ctx);
-		
-	    
-		av_free(avio_ctx->buffer);
-		av_freep(avio_ctx);
-		
 	}
-
 	musicReady = true;
 
 	return ERROR_SUCCESS;
