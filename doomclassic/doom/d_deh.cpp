@@ -62,7 +62,8 @@ void setBText(char* varname, char* text);
 int Generateflags(char* text);
 int Getflag(char* text);
 //More Headache than it's worth
-//void setSound(int pos, char* varname, int varval);
+void setSound(int pos, char* varname, int varval); //And is back and working
+void setMisc(char* varname, int varval);
 
 typedef struct {
 	char** var;
@@ -452,13 +453,16 @@ void parsetext(char* text) {
 			case 9:
 				setBText(varname, varfunc);
 				break;
+				//More Headache than it's worth
+			case 10:
+				setSound(statepos, varname, varval);
+				break;
+			case 11:
+				setMisc( varname, varval);
+				break;
 			}
-			//More Headache than it's worth
-			/*
-			if (state == 8) {
-				setSound(statepos + 1, varname, varval);
-			}
-			*/
+			
+			
 		}
 		else {
 			if (linedtext[i].length() > 1) {
@@ -548,16 +552,14 @@ void parsetext(char* text) {
 								}
 							}
 							break;
-						}
-						//More Headache than it's worth
-						/*
-						if (state == 8) {
+							//More Headache than it's worth
+						case 10:
 							if (statepos >= NUMSFX) {
 								I_Error("No such Sound found");
 							}
+							break;
 						}
-						*/
-
+						
 					}
 					else {
 						if (tst != NULL){
@@ -632,147 +634,104 @@ int checkstate(char* text) {
 		if (!idStr::Icmp(text, "[STRINGS]")) {
 			return 9;
 		}
+		//More Headache than it's worth
+		if (!idStr::Icmp(text, "Sound")) {
+		return 10;
+		}
+		if (!idStr::Icmp(text, "Misc")) {
+			return 11;
+		}
 	}
-	//More Headache than it's worth
-	/*
-	if (!idStr::Icmp(text, "Sound")) {
-		return 8;
-	}
-	*/
+	
 	return 0;
 }
+//GK: Use iteration tables in order to avoid multiple if case senarios
+char* ttable[23] = {
+	"Initial frame ",
+	"Hit points ",
+	"First moving frame ",
+	"Alert sound ",
+	"Reaction time ",
+	"Attack sound ",
+	"Injury frame ",
+	"Pain chance ",
+	"Pain sound ",
+	"Close attack frame ",
+	"Far attack frame ",
+	"Death frame ",
+	"Exploding frame ",
+	"Death sound ",
+	"Speed ",
+	"Width ",
+	"Height ",
+	"Mass ",
+	"Missle damage ",
+	"Action sound ",
+	"Bits ",
+	"Respawn frame ",
+	"ID # "
+};
 
 void setThing(int pos, char* varname, int varval) {
-	if (!idStr::Icmp(varname, "Initial frame ")) {
-		if (varval < NUMSTATES) {
-			mobjinfo[pos].spawnstate = varval;
-			return;
+	typedef struct {
+		int* var;
+		int limit;
+	}Tvars_t;
+	//GK: This works (suprisingly)
+	Tvars_t tvars[23] = {
+		{&mobjinfo[pos].spawnstate,NUMSTATES},
+		{&mobjinfo[pos].spawnhealth,MAXINT},
+		{&mobjinfo[pos].seestate,NUMSTATES},
+		{&mobjinfo[pos].seesound,NUMSFX},
+		{&mobjinfo[pos].reactiontime,MAXINT},
+		{&mobjinfo[pos].attacksound,NUMSFX},
+		{&mobjinfo[pos].painstate,NUMSTATES},
+		{&mobjinfo[pos].painchance,MAXINT},
+		{&mobjinfo[pos].painsound,NUMSFX},
+		{&mobjinfo[pos].meleestate,NUMSTATES},
+		{&mobjinfo[pos].missilestate,NUMSTATES},
+		{&mobjinfo[pos].deathstate,NUMSTATES},
+		{&mobjinfo[pos].xdeathstate,NUMSTATES},
+		{&mobjinfo[pos].deathsound,NUMSFX},
+		{&mobjinfo[pos].speed,MAXINT},
+		{&mobjinfo[pos].radius,MAXINT},
+		{&mobjinfo[pos].height,MAXINT},
+		{&mobjinfo[pos].mass,MAXINT},
+		{&mobjinfo[pos].damage,MAXINT},
+		{&mobjinfo[pos].activesound,NUMSFX},
+		{&mobjinfo[pos].flags,MAXINT},
+		{&mobjinfo[pos].raisestate,NUMSTATES},
+		{&mobjinfo[pos].doomednum,MAXINT},
+	};
+	for (int i = 0; i < 23; i++) {
+		if (!idStr::Icmp(varname, ttable[i])) {
+			if (varval < tvars[i].limit) {
+				*tvars[i].var = varval;
+				return;
+			}
 		}
-	}
-	else if (!idStr::Icmp(varname, "Hit points ")) {
-		mobjinfo[pos].spawnhealth = varval;
-		return;
-	}
-	else if (!idStr::Icmp(varname, "First moving frame ")) {
-		if (varval < NUMSTATES) {
-			mobjinfo[pos].seestate = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Alert sound ")) {
-		if (varval < NUMSFX) {
-			mobjinfo[pos].seesound = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Reaction time ")) {
-		mobjinfo[pos].reactiontime = varval;
-		return;
-	}
-	else if (!idStr::Icmp(varname, "Attack sound ")) {
-		if (varval < NUMSFX) {
-			mobjinfo[pos].attacksound = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Injury frame ")) {
-		if (varval < NUMSTATES) {
-			mobjinfo[pos].painstate = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Pain chance ")) {
-		mobjinfo[pos].painchance = varval;
-		return;
-	}
-	else if (!idStr::Icmp(varname, "Pain sound ")) {
-		if (varval < NUMSFX) {
-			mobjinfo[pos].painsound = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Close attack frame ")) {
-		if (varval < NUMSTATES) {
-			mobjinfo[pos].meleestate = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Far attack frame ")) {
-		if (varval < NUMSTATES) {
-			mobjinfo[pos].missilestate = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Death frame ")) {
-		if (varval < NUMSTATES) {
-			mobjinfo[pos].deathstate = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Exploding frame ")) {
-		if (varval < NUMSTATES) {
-			mobjinfo[pos].xdeathstate = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Death sound ")) {
-		if (varval < NUMSFX) {
-			mobjinfo[pos].deathsound = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Speed ")) {
-		mobjinfo[pos].speed = varval;
-		return;
-	}
-	else if (!idStr::Icmp(varname, "Width ")) {
-		mobjinfo[pos].radius = varval;
-		return;
-	}
-	else if (!idStr::Icmp(varname, "Height ")) {
-		mobjinfo[pos].height = varval;
-		return;
-	}
-	else if (!idStr::Icmp(varname, "Mass ")) {
-		mobjinfo[pos].mass = varval;
-		return;
-	}
-	else if (!idStr::Icmp(varname, "Missle damage ")) {
-		mobjinfo[pos].damage = varval;
-		return;
-	}
-	else if (!idStr::Icmp(varname, "Action sound ")) {
-		if (varval < NUMSFX) {
-			mobjinfo[pos].activesound = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Bits ")) {
-		mobjinfo[pos].flags = varval;
-		return;
-	}
-	else if (!idStr::Icmp(varname, "Respawn frame ")) {
-		if (varval < NUMSTATES) {
-			mobjinfo[pos].raisestate = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "ID # ")) {
-		mobjinfo[pos].doomednum = varval;
-		return;
 	}
 }
+//GK: Use iteration tables in order to avoid multiple if case senarios
+char* ftable[4] = {
+	"Sprite subnumber ",
+	"Duration ",
+	"Unknown 1 ",
+	"Unknown 2 "
+};
 
 void setFrame(int pos, char* varname, int varval) {
+	long* fvars[4] = {
+		&tempStates[pos].frame,
+		&tempStates[pos].tics,
+		&tempStates[pos].misc1,
+		&tempStates[pos].misc2
+	};
 	if (!idStr::Icmp(varname, "Sprite number ")) {
 		if (varval < NUMSPRITES) {
 			tempStates[pos].sprite = static_cast<spritenum_t> (varval);
 			return;
 		}
-	}
-	else if (!idStr::Icmp(varname, "Sprite subnumber ")) {
-		tempStates[pos].frame = varval;
-		return;
 	}
 	else if (!idStr::Icmp(varname, "Next frame ")) {
 		if (varval < NUMSTATES) {
@@ -780,55 +739,42 @@ void setFrame(int pos, char* varname, int varval) {
 			return;
 		}
 	}
-	else if (!idStr::Icmp(varname, "Duration ")) {
-		tempStates[pos].tics = varval;
-		return;
-	}
-	else if (!idStr::Icmp(varname, "Unknown 1 ")) {
-		tempStates[pos].misc1 = varval;
-		return;
-	}
-	else if (!idStr::Icmp(varname, "Unknown 2 ")) {
-		tempStates[pos].misc2 = varval;
-		return;
+	for (int i = 0; i < 4; i++) {
+		if (!idStr::Icmp(varname, ftable[i])) {
+			*fvars[i] = varval;
+			return;
+		}
 	}
 }
 
+char* wtable[5] = {
+	"Select frame ",
+	"Deselect frame ",
+	"Bobbing frame ",
+	"Shooting frame ",
+	"Firing frame "
+};
+
 void setWeapon(int pos, char* varname, int varval) {
+	int* wvars[5] = {
+		&weaponinfo[pos].downstate,
+		&weaponinfo[pos].upstate,
+		&weaponinfo[pos].readystate,
+		&weaponinfo[pos].atkstate,
+		&weaponinfo[pos].flashstate
+	};
 	if (!idStr::Icmp(varname, "Ammo type ")) {
 		if (varval < NUMAMMO) {
 			weaponinfo[pos].ammo = static_cast<ammotype_t>(varval);
 			return;
 		}
 	}
-	else if (!idStr::Icmp(varname, "Select frame ")) {
-		if (varval < NUMSTATES) {
-			weaponinfo[pos].downstate = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Deselect frame ")) {
-		if (varval < NUMSTATES) {
-			weaponinfo[pos].upstate = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Bobbing frame ")) {
-		if (varval < NUMSTATES) {
-			weaponinfo[pos].readystate = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Shooting frame ")) {
-		if (varval < NUMSTATES) {
-			weaponinfo[pos].atkstate = varval;
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Firing frame ")) {
-		if (varval < NUMSTATES) {
-			weaponinfo[pos].flashstate = varval;
-			return;
+	for (int i = 0; i < 5; i++) {
+		if (!idStr::Icmp(varname, wtable[i])) {
+			if (varval < NUMSTATES) {
+				*wvars[i] = varval;
+				return;
+			}
 		}
 	}
 }
@@ -866,32 +812,35 @@ void setAmmo(int pos, char* varname, int varval) {
 	}
 }
 //More Headache than it's worth
-//void setSound(int pos, char* varname, int varval) {
-//	if (!idStr::Icmp(varname, "Zero/One ")) {
-//		S_sfx[pos].singularity = varval;
-//	}
-//	else if (!idStr::Icmp(varname, "Value ")) {
-//		S_sfx[pos].priority = varval;
-//	}
-	/*else if (!idStr::Icmp(varname, "Zero 1 ")) {
-		S_sfx[pos].link = &S_sfx[varval];
-	}
-	else if (!idStr::Icmp(varname, "Neg. One 1 ")) {
-		S_sfx[pos].pitch = varval;
-	}
-	else if (!idStr::Icmp(varname, "Neg. One 2 ")) {
-		S_sfx[pos].volume = varval;
-	}
-	else if (!idStr::Icmp(varname, "Zero 4 ")) {
-		//S_sfx[pos].data = (void*)varval;
-	}
-	else if (!idStr::Icmp(varname, "Zero 2 ")) {
-		S_sfx[pos].usefulness = varval;
-	}
-	else if (!idStr::Icmp(varname, "Zero 3 ")) {
-		S_sfx[pos].lumpnum = varval;
+char* Soundtable[6] = { //Textoffset, Zero 1 and Zero 4 are wildcards you don't wanna play with
+	"Zero/One ",
+	"Value ",
+	"Neg. One 1 ",
+	"Neg. One 2 ",
+	"Zero 2 ",
+	"Zero 3 "
+};
+void setSound(int pos, char* varname, int varval) {
+	int* svars[6] = {
+		&S_sfx[pos].singularity,
+		&S_sfx[pos].priority,
+		&S_sfx[pos].usefulness,
+		&S_sfx[pos].lumpnum,
+		&S_sfx[pos].pitch,
+		&S_sfx[pos].volume
+	};
+	/*if (!idStr::Icmp(varname, "Zero 1 ")) {
+		S_sfx[pos].link = (sfxinfo_t*)varval;
+		return;
 	}*/
-//}
+	for (int i = 0; i < 6; i++) {
+		if (!idStr::Icmp(varname, Soundtable[i])) {
+			*svars[i] = varval;
+			return;
+		}
+	}
+	
+}
 
 void setText(std::vector<std::string>lines, int i,int il,int nl) {
 	int op = i;
@@ -1001,6 +950,12 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 					return;
 				}
 			}
+			for (int m = 1; m < NUMSFX; m++) {
+				if (!idStr::Icmp(otxt, S_sfx[m].name)) {
+					S_sfx[m].name = ntxt;
+					return;
+				}
+			}
 	}
 	//free(otxt);
 	
@@ -1059,4 +1014,48 @@ int Getflag(char* text) {
 		}
 	}
 	return 0;
+}
+
+char* misctable[15] = { //It's not more than the Things editor but still so many repetive values
+	"Initial Health ",
+	"Max Health ",
+	"Initial Bullets ",
+	"Max Armor ",
+	"Green Armor Class ",
+	"Blue Armor Class ",
+	"Max Soulsphere ",
+	"Soulsphere Health ",
+	"Megasphere Health ",
+	"God Mode Health ",
+	"IDFA Armor ",
+	"IDFA Armor Class ",
+	"IDKFA Armor ",
+	"IDKFA Armor Class ",
+	"BFG Cells/Shot "
+};
+
+void setMisc(char* varname, int varval) {
+	int *miscvars[15] = {
+	&::g->ihealth,
+	&::g->mhealth,
+	&::g->iammo,
+	&::g->marmor,
+	&::g->gart,
+	&::g->bart,
+	&::g->msoul,
+	&::g->psoul,
+	&::g->pmega,
+	&::g->ghealth,
+	&::g->farmor,
+	&::g->fart,
+	&::g->kfarmor,
+	&::g->kfart,
+	&::g->BFGCELL
+	};
+	for (int i = 0; i < 15; i++) {
+		if (!idStr::Icmp(varname, misctable[i])) {
+			*miscvars[i] = varval;
+			return;
+		}
+	}
 }

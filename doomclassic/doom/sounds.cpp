@@ -159,7 +159,6 @@ sfxinfo_t S_sfx[128] =
 };
 //GK: More Headache than it's worth
 //GK: DeHackeD change it and it must reset
-/*
 void ResetSfx() {
 	sfxinfo_t tS_sfx[128] =
 	{
@@ -277,4 +276,3 @@ void ResetSfx() {
 	};
 	memcpy(S_sfx, tS_sfx, sizeof(tS_sfx));
 }
-*/

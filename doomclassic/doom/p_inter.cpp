@@ -61,6 +61,10 @@ If you have questions concerning this license or the applicable additional terms
 // a big item has five clip loads
 /*const*/ int	maxammo[NUMAMMO] = {200, 50, 300, 50};
 /*const*/ int	clipammo[NUMAMMO] = {10, 4, 20, 1};
+void
+P_KillMobj
+(mobj_t*	source,
+	mobj_t*	target); //GK: Allow soulsphere to kill you
 //GK: Reset ammo values just in case they changed by using deHacked
 void ResetAmmo() {
 	int	tmaxammo[NUMAMMO] = { 200, 50, 300, 50 };
@@ -265,7 +269,7 @@ P_GiveArmor
 {
 	int		hits;
 
-	hits = armortype*100;
+	hits = armortype*(::g->marmor/2);
 	if (player->armorpoints >= hits)
 		return false;	// don't pick up
 
@@ -391,13 +395,13 @@ P_TouchSpecialThing
 	{
 		// armor
 	case SPR_ARM1:
-		if (!P_GiveArmor (player, 1))
+		if (!P_GiveArmor (player, ::g->gart))
 			return;
 		player->message = GOTARMOR;
 		break;
 
 	case SPR_ARM2:
-		if (!P_GiveArmor (player, 2))
+		if (!P_GiveArmor (player, ::g->bart))
 			return;
 		player->message = GOTMEGA;
 		break;
@@ -405,25 +409,28 @@ P_TouchSpecialThing
 		// bonus items
 	case SPR_BON1:
 		player->health++;		// can go over 100%
-		if (player->health > 200)
-			player->health = 200;
+		if (player->health > ::g->mhealth)
+			player->health = ::g->mhealth;
 		player->mo->health = player->health;
 		player->message = GOTHTHBONUS;
 		break;
 
 	case SPR_BON2:
 		player->armorpoints++;		// can go over 100%
-		if (player->armorpoints > 200)
-			player->armorpoints = 200;
+		if (player->armorpoints > ::g->marmor)
+			player->armorpoints = ::g->marmor;
 		if (!player->armortype)
-			player->armortype = 1;
+			player->armortype = ::g->gart;
 		player->message = GOTARMBONUS;
 		break;
 
 	case SPR_SOUL:
-		player->health += 100;
-		if (player->health > 200)
-			player->health = 200;
+		player->health += ::g->psoul;
+		if (player->health <= 0) {
+			P_KillMobj(NULL, player->mo);
+		}
+		if (player->health > ::g->msoul)
+			player->health = ::g->msoul;
 		player->mo->health = player->health;
 		player->message = GOTSUPER;
 		sound = sfx_getpow;
@@ -432,9 +439,9 @@ P_TouchSpecialThing
 	case SPR_MEGA:
 		if (::g->gamemode != commercial)
 			return;
-		player->health = 200;
+		player->health = ::g->pmega;
 		player->mo->health = player->health;
-		P_GiveArmor (player,2);
+		P_GiveArmor (player, ::g->bart);
 		player->message = GOTMSPHERE;
 		sound = sfx_getpow;
 		break;
@@ -738,7 +745,7 @@ idPlayerProfile * IsOnlineDeathmatchWithLocalProfile() {
 void
 P_KillMobj
 ( mobj_t*	source,
- mobj_t*	target )
+	mobj_t*	target )
 {
 	mobjtype_t	item;
 	mobj_t*	mo;
@@ -755,7 +762,7 @@ P_KillMobj
 	{
 		// count for intermission
 		if (target->flags & MF_COUNTKILL)
-			source->player->killcount++;	
+			source->player->killcount++;
 
 		if (target->player) {
 			source->player->frags[target->player-::g->players]++;
@@ -774,20 +781,20 @@ P_KillMobj
 
 		if ( source->player->readyweapon == wp_fist && target->type == MT_CYBORG && !common->IsMultiplayer() ) {
 			switch( DoomLib::GetGameSKU() ) {
-				case GAME_SKU_DOOM2_BFG: {
-					// Removing trophies for DOOM and DOOM II BFG due to point limit.
-					//gameLocal->UnlockAchievement( Doom2BFG_Trophies::YOU_HAVE_HUGE_GUTS_KILL_CYBERDEMON_WITH_FISTS );
-					break;
-				}
-				case GAME_SKU_DCC: {
-					// Not for PC.
-					//session->GetAchievementSystem().AchievementUnlock( session->GetSignInManager().GetMasterLocalUser(), DOOM_ACHIEVEMENT_KILL_CYBER_DEMON_WITH_FISTS );
-					break;
-				}
-				default: {
-					// No unlocks for other SKUs.
-					break;
-				}
+			case GAME_SKU_DOOM2_BFG: {
+				// Removing trophies for DOOM and DOOM II BFG due to point limit.
+				//gameLocal->UnlockAchievement( Doom2BFG_Trophies::YOU_HAVE_HUGE_GUTS_KILL_CYBERDEMON_WITH_FISTS );
+				break;
+			}
+			case GAME_SKU_DCC: {
+				// Not for PC.
+				//session->GetAchievementSystem().AchievementUnlock( session->GetSignInManager().GetMasterLocalUser(), DOOM_ACHIEVEMENT_KILL_CYBER_DEMON_WITH_FISTS );
+				break;
+			}
+			default: {
+				// No unlocks for other SKUs.
+				break;
+			}
 			}
 		}
 
@@ -796,20 +803,20 @@ P_KillMobj
 			source->player->chainsawKills++;
 			if ( source->player->chainsawKills == 20 ) {
 				switch( DoomLib::GetGameSKU() ) {
-					case GAME_SKU_DOOM2_BFG: {
-						// Removing trophies for DOOM and DOOM II BFG due to point limit.
-						//gameLocal->UnlockAchievement( Doom2BFG_Trophies::GREAT_COMMUNICATOR_20_CHAINSAW_KILLS );
-						break;
-					}
-					case GAME_SKU_DCC: {
-						// Not for PC.
-						//gameLocal->UnlockAchievement( DOOM_ACHIEVEMENT_20KILLS_CHAINSAW );
-						break;
-					}
-					default: {
-						// No unlocks for other SKUs.
-						break;
-					}
+				case GAME_SKU_DOOM2_BFG: {
+					// Removing trophies for DOOM and DOOM II BFG due to point limit.
+					//gameLocal->UnlockAchievement( Doom2BFG_Trophies::GREAT_COMMUNICATOR_20_CHAINSAW_KILLS );
+					break;
+				}
+				case GAME_SKU_DCC: {
+					// Not for PC.
+					//gameLocal->UnlockAchievement( DOOM_ACHIEVEMENT_20KILLS_CHAINSAW );
+					break;
+				}
+				default: {
+					// No unlocks for other SKUs.
+					break;
+				}
 				}
 			}
 		}
@@ -820,21 +827,21 @@ P_KillMobj
 			idLib::Printf( "Player has %d berserk kills\n", source->player->berserkKills );
 			if ( source->player->berserkKills == 20 ) {
 				switch( DoomLib::GetGameSKU() ) {
-					case GAME_SKU_DOOM2_BFG: {
-						// Removing trophies for DOOM and DOOM II BFG due to point limit.
-						//gameLocal->UnlockAchievement( Doom2BFG_Trophies::MAN_AND_A_HALF_20_BERSERK_KILLS );
-						break;
-					}
-					case GAME_SKU_DCC: {
-						// Not for PC.
-						//gameLocal->UnlockAchievement( DOOM_ACHIEVEMENT_20KILLS_BERSERKER );
-						break;
-					}
-					default: {
-						// No unlocks for other SKUs.
-						break;
-					}
-				}				
+				case GAME_SKU_DOOM2_BFG: {
+					// Removing trophies for DOOM and DOOM II BFG due to point limit.
+					//gameLocal->UnlockAchievement( Doom2BFG_Trophies::MAN_AND_A_HALF_20_BERSERK_KILLS );
+					break;
+				}
+				case GAME_SKU_DCC: {
+					// Not for PC.
+					//gameLocal->UnlockAchievement( DOOM_ACHIEVEMENT_20KILLS_BERSERKER );
+					break;
+				}
+				default: {
+					// No unlocks for other SKUs.
+					break;
+				}
+				}
 			}
 		}
 	}
@@ -848,7 +855,7 @@ P_KillMobj
 	if (target->player)
 	{
 		// count environment kills against you
-		if (!source)	
+		if (!source)
 			target->player->frags[target->player-::g->players]++;
 
 		target->flags &= ~MF_SOLID;
@@ -856,7 +863,7 @@ P_KillMobj
 		P_DropWeapon (target->player);
 
 		if (target->player == &::g->players[::g->consoleplayer]
-		&& ::g->automapactive)
+			&& ::g->automapactive)
 		{
 			// don't die in auto map,
 			// switch view prior to dying
@@ -865,7 +872,7 @@ P_KillMobj
 
 	}
 
-	if (target->health < -target->info->spawnhealth 
+	if (target->health < -target->info->spawnhealth
 		&& target->info->xdeathstate)
 	{
 		P_SetMobjState (target, (statenum_t)target->info->xdeathstate);
@@ -1016,7 +1023,7 @@ P_DamageMobj
 
 		if (player->armortype)
 		{
-			if (player->armortype == 1)
+			if (player->armortype == ::g->gart)
 				saved = damage/3;
 			else
 				saved = damage/2;

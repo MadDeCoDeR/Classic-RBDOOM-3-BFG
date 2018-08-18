@@ -28,6 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // the all-important zone //
 memzone_t*	mainzone;
+int zonesize;
 
 idFile *	wadFileHandles[MAXWADFILES];
 int		numWadFiles;
@@ -829,6 +830,21 @@ qboolean	st_stopped ;
 unsigned char cheat[14];
 int markfordelete; //GK: The name might fool you but this is a voting variable which count how many cheats want the sequence. If none want it then it flushes it
 int cheatind;
+int ihealth;
+int mhealth;
+int iammo;
+int marmor;
+int gart;
+int bart;
+int msoul;
+int psoul;
+int pmega;
+int ghealth;
+int farmor;
+int fart; //GK: This armor type stings xD
+int kfarmor;
+int kfart;
+int BFGCELL;
 //GK: End
 // st_stuff.vars end // 
 //  s_sound.vars begin // 

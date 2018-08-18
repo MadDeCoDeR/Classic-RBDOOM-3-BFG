@@ -702,8 +702,8 @@ void P_SpawnPlayer (mapthing_t* mthing)
 
 	// Give him everything is Give All is on.
 	if( p->cheats & CF_GIVEALL ) {
-		 p->armorpoints = 200;
-		 p->armortype = 2;
+		 p->armorpoints = ::g->marmor;
+		 p->armortype = ::g->bart;
 
 		int i;
 		for (i=0;i<NUMWEAPONS;i++)

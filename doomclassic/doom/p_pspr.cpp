@@ -212,7 +212,7 @@ qboolean P_CheckAmmo (player_t* player)
 
 	// Minimal amount for one shot varies.
 	if (player->readyweapon == wp_bfg)
-		count = BFGCELLS;
+		count = ::g->BFGCELL;
 	else if (player->readyweapon == wp_supershotgun)
 		count = 2;	// Double barrel.
 	else
@@ -628,7 +628,7 @@ A_FireBFG
  pspdef_t*	psp ) 
 {
 	if( (player->cheats & CF_INFAMMO) == false ) {
-		player->ammo[weaponinfo[player->readyweapon].ammo] -= BFGCELLS;
+		player->ammo[weaponinfo[player->readyweapon].ammo] -= ::g->BFGCELL;
 	}
 
 	P_SpawnPlayerMissile (player->mo, MT_BFG);

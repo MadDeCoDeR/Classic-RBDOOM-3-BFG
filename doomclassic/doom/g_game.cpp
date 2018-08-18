@@ -1016,11 +1016,11 @@ void G_PlayerReborn (int player)
 
 	p->usedown = p->attackdown = true;	// don't do anything immediately
 	p->playerstate = PST_LIVE;
-	p->health = MAXHEALTH;
+	p->health = ::g->ihealth;
 	p->readyweapon = p->pendingweapon = wp_pistol;
 	p->weaponowned[wp_fist] = true;
 	p->weaponowned[wp_pistol] = true;
-	p->ammo[am_clip] = 50;
+	p->ammo[am_clip] = ::g->iammo;
 	// TODO: PC
 #if 0
 	p->cheats = gameLocal->cheats;

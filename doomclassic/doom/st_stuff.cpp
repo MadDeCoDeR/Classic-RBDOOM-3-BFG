@@ -420,9 +420,9 @@ ST_Responder (event_t* ev)
 				if (::g->plyr->cheats & CF_GODMODE)
 				{
 					if (::g->plyr->mo)
-						::g->plyr->mo->health = 100;
+						::g->plyr->mo->health = ::g->ghealth;
 
-					::g->plyr->health = 100;
+					::g->plyr->health = ::g->ghealth;
 					::g->plyr->message = STSTR_DQDON;
 				}
 				else
@@ -432,8 +432,8 @@ ST_Responder (event_t* ev)
 			else if (cht_CheckCheat(cheat_ammonokey_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete))
 			{
 				::g->markfordelete = 0;
-				::g->plyr->armorpoints = 200;
-				::g->plyr->armortype = 2;
+				::g->plyr->armorpoints = ::g->farmor;
+				::g->plyr->armortype = ::g->fart;
 
 				for (i = 0; i<NUMWEAPONS; i++)
 					::g->plyr->weaponowned[i] = true;
@@ -447,8 +447,8 @@ ST_Responder (event_t* ev)
 			else if (cht_CheckCheat(cheat_ammo_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete))
 			{
 				::g->markfordelete = 0;
-				::g->plyr->armorpoints = 200;
-				::g->plyr->armortype = 2;
+				::g->plyr->armorpoints = ::g->kfarmor;
+				::g->plyr->armortype = ::g->kfart;
 				//GK: Give the Backpack with the kfa cheat
 				if (!::g->plyr->backpack) { //GK: That was something I forgot to look for
 					for (i = 0; i < NUMAMMO; i++) {
@@ -1382,9 +1382,9 @@ CONSOLE_COMMAND_SHIP( idqd, "cheat for toggleable god mode", 0 ) {
 	if (::g->plyr->cheats & CF_GODMODE)
 	{
 		if (::g->plyr->mo)
-			::g->plyr->mo->health = 100;
+			::g->plyr->mo->health = ::g->ghealth;
 
-		::g->plyr->health = 100;
+		::g->plyr->health = ::g->ghealth;
 		::g->plyr->message = STSTR_DQDON;
 	}
 	else 
@@ -1405,8 +1405,8 @@ CONSOLE_COMMAND_SHIP( idfa, "cheat for killer fucking arsenal", 0 ) {
 	}
 
 	int i = 0;
-	::g->plyr->armorpoints = 200;
-	::g->plyr->armortype = 2;
+	::g->plyr->armorpoints = ::g->farmor;
+	::g->plyr->armortype = ::g->fart;
 
 	for (i=0;i<NUMWEAPONS;i++)
 		::g->plyr->weaponowned[i] = true;
@@ -1431,8 +1431,8 @@ CONSOLE_COMMAND_SHIP( idkfa, "cheat for key full ammo", 0 ) {
 	}
 
 	int i = 0;
-	::g->plyr->armorpoints = 200;
-	::g->plyr->armortype = 2;
+	::g->plyr->armorpoints = ::g->kfarmor;
+	::g->plyr->armortype = ::g->kfart;
 	//GK: Give the Backpack with the kfa cheat
 	if (!::g->plyr->backpack) {//GK: That was something I forgot to look for
 		for (i = 0; i < NUMAMMO; i++) {

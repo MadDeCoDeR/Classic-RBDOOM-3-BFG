@@ -222,7 +222,7 @@ memcpy( &::g->NewDef, &temp_NewDef, sizeof(temp_NewDef) );
 menuitem_t temp_OptionsMenu[8] = {
 	{1,"M_GDHIGH",	M_FullScreen,'f'},
 	//{1,"M_SCRNSZ",	M_ChangeGPad,'m'}, //GK: Not nedded anymore
-	{1,"M_MESSG",	M_ChangeMessages,'m'},
+	{2,"M_MESSG",	M_ChangeMessages,'m'},
 	//{1,"M_DETAIL",	M_ChangeDetail,'g'},
 	//{2,"M_SCRNSZ",	M_SizeDisplay,'s'},
 	{1,"M_ASP",M_Aspect,'m'},//GK: Allow the player to switch aspect ratio
@@ -576,6 +576,21 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->largeammo = 1994; // means "n/a"
 	::g->st_palette = 0;
 	::g->st_stopped = true;
+	::g->ihealth = 100; //GK: The holy grail of reseting values changed by Dehacked
+	::g->mhealth = 200;
+	::g->iammo = 50;
+	::g->marmor = 200;
+	::g->gart = 1;
+	::g->bart = 2;
+	::g->msoul = 200;
+	::g->psoul = 100;
+	::g->pmega = 200;
+	::g->ghealth = 100;
+	::g->farmor = 200;
+	::g->fart = 2;
+	::g->kfarmor = 200;
+	::g->kfart = 2;
+	::g->BFGCELL = 40;
 // st_stuff.constructs end // 
 //  s_sound.constructs begin //
 	::g->mus_playing=0;

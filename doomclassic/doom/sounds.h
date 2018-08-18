@@ -94,7 +94,7 @@ typedef struct
 
 // the complete set of sound effects
 extern sfxinfo_t	S_sfx[];
-//void ResetSfx();
+void ResetSfx(); //GK: And it's back
 // the complete set of music
 extern musicinfo_t	S_music[];
 extern int totalmus;

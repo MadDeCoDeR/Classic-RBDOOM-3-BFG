@@ -61,9 +61,9 @@ static bool Cheat_God() {
 	if (::g->plyr->cheats & CF_GODMODE)
 	{
 		if (::g->plyr->mo)
-			::g->plyr->mo->health = 100;
+			::g->plyr->mo->health = ::g->ghealth;
 
-		::g->plyr->health = 100;
+		::g->plyr->health = ::g->ghealth;
 		::g->plyr->message = STSTR_DQDON;
 	}
 	else 
@@ -86,8 +86,8 @@ static bool Cheat_GiveAll() {
 		return false;
 	}
 
-	::g->plyr->armorpoints = 200;
-	::g->plyr->armortype = 2;
+	::g->plyr->armorpoints = ::g->kfarmor;
+	::g->plyr->armortype = ::g->kfart;
 
 	int i;
 	for (i=0;i<NUMWEAPONS;i++)
@@ -107,8 +107,8 @@ static bool Cheat_GiveAmmo() {
 	if( PLAYERCOUNT != 1 || ::g->netgame ) {
 		return false;
 	}
-	::g->plyr->armorpoints = 200;
-	::g->plyr->armortype = 2;
+	::g->plyr->armorpoints = ::g->farmor;
+	::g->plyr->armortype = ::g->fart;
 
 	int i;
 	for (i=0;i<NUMWEAPONS;i++)
