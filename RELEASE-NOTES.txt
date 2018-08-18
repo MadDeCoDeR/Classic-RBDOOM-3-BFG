@@ -3,6 +3,20 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 Thank you for downloading Classic RBDOOM-3-BFG.
 
 
+_______________________________________
+
+18 August 2018 - Classic RBDOOM-3-BFG 1.1.10.8
+_______________________________
+
+[classicdoom]
+
+- Make aspect ratio correction and number of message lines options available on the in-game menu
+
+- Added support for non-doom sfx files (both xaudio and openAL)
+
+- Added DehackeD's Sound and Misc Editors
+
+- Increased the wait time when connecting to net game
 
 _______________________________________
 
