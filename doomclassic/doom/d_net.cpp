@@ -452,7 +452,7 @@ void CheckAbort(void)
 {
 	// DHM - Time starts at 0 tics when starting a multiplayer game, so we can
 	// check for timeouts easily.  If we're still waiting after N seconds, abort.
-	if (I_GetTime() > NET_TIMEOUT) {
+	if (I_GetTime() > NET_TIMEOUT*10) { //GK: Give more time to wait (but dont remove it because the game will freeze)
 		// TOOD: Show error & leave net game.
 		I_Printf("NET GAME TIMED OUT! %d\n", I_GetTime());
 		//gameLocal->showFatalErrorMessage( XuiLookupStringTable(globalStrings,L"Timed out waiting for match start.") );
