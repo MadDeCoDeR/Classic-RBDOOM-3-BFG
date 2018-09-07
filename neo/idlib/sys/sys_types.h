@@ -90,7 +90,7 @@ template<class T> T	Min( T x, T y )
 
 
 class idFile;
-
+#if !defined _MSC_VER || (_MSC_VER <= 1913) //GK: Visual Studio 2017 version 15.7 and later REALLY hates the idNullPtr
 struct idNullPtr
 {
 	// one pointer member initialized to zero so you can pass NULL as a vararg
@@ -120,6 +120,7 @@ struct idNullPtr
 // C99 Standard
 #ifndef nullptr
 #define nullptr	idNullPtr()
+#endif
 #endif
 
 #ifndef BIT

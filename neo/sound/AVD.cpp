@@ -21,6 +21,9 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+#pragma hdrstop
+#include "precompiled.h"
+
 #include <../neo/sound/AVD.h>
 
 #ifndef USE_OPENAL
