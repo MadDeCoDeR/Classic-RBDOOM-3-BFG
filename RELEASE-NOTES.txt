@@ -2,7 +2,26 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 
 Thank you for downloading Classic RBDOOM-3-BFG.
 
+_______________________________________
 
+07 September 2018 - Classic RBDOOM-3-BFG 1.1.10.9
+_______________________________
+
+[classicdoom]
+
+- Added the PWADs on the source code files
+
+- Added option to change the lighting (Real Light)
+
+- Added JPEG support for Doom graphics (Doom GFX)
+
+- Added the missing Palette colors for image conversions
+
+[DOOM3BFG]
+
+- Fixed compilation issues with newer versions of Visula Studio 2017
+
+- Improved linux cmake scripts
 _______________________________________
 
 18 August 2018 - Classic RBDOOM-3-BFG 1.1.10.8

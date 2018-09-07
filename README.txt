@@ -144,10 +144,6 @@ __________________________________________________________
 
 7. Extract the FFmpeg DLLs to your current game directory 
 
-8. Download the compability wad from https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/releases/tag/pwad
-
-9. Extract the wad to your current game directory in the base\wads
-
 NOTE: The Working Directory has been set the default install directory of DOOM 3 BFG Edition on C: drive
 NOTE 2: Compiling and running it under Visual Studio Debugger it also requires to run the game on windowed mode
 (VS Debugger + Fullscreen = not a good mix) so you must Right Click on RBDoom3BFG Solution in Solution Explorer go to Properties select
@@ -188,16 +184,13 @@ _________________________
 	SDL2 has better input support (especially in the console) and better 
 	support for multiple displays (especially in fullscreen mode).
 	
-2. Download the compability wad from https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/releases/tag/pwad
 
-3. Extract the wad to your current game directory in the base\wads
-
-4. Generate the Makefiles using CMake:
+2. Generate the Makefiles using CMake:
 
 	> cd neo/
 	> ./cmake-linux-profile.sh(recommended retail profile)
 	
-5. Compile RBDOOM-3-BFG targets with
+3. Compile RBDOOM-3-BFG targets with
 
 	> cd ../build
 	> make
@@ -261,12 +254,15 @@ Anyway:
 	 -> avutil-56.dll
 	 -> swresample-3.dll
 	 -> swscale-5.dll
+	 
+5. Copy paste the base\wads directory from the source code directory to the base directory on your own 
+   Doom 3 BFG directory (/path/to/Doom3BFG).
 
-5. Run the game by executing the RBDoom3BFG executable.
+6. Run the game by executing the RBDoom3BFG executable.
 
-6. Enjoy
+7. Enjoy
 
-7. If you run into bugs, please report them, see 11)
+8. If you run into bugs, please report them, see 11)
 
 Additionally for the Final DOOM wads you must legally own them (either aquired from retail,steam or GOG)
 and then copy the two WADs on the /path/to/Doom3BFG/base/wads.
