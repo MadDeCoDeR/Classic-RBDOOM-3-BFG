@@ -31,6 +31,8 @@
 #include "m_swap.h"
 #include "libs/png/png.h"
 #include "i_video.h"
+#include <jpeglib.h>
+#include <jerror.h>
 #ifdef _DEBUG
 #include <iostream>
 #include <fstream>
@@ -48,7 +50,8 @@ void InitColorMap() {
 		}
 		int size = (255<<16) + (255<<8) + (255) + 1;
 		::g->cmap.resize(size);
-		for (int i = 0; i < 255; i++) {
+		int psize = W_LumpLength(W_GetNumForName("PLAYPAL"))/3;
+		for (int i = 0; i < psize; i++) {
 			unsigned char* dpixel = pallete + (i * 3);
 			int index = (dpixel[0]<<16) + (dpixel[1]<<8) + (dpixel[2]) + 0;
 			::g->cmap[index] = i;
@@ -58,6 +61,13 @@ void InitColorMap() {
 
 bool checkpng(unsigned char* buff) {
 	return !png_sig_cmp((png_bytep)buff, 0, 8);
+}
+
+bool checkjpeg(unsigned char* buff) {
+	if (buff[0] == 255 && buff[1] == 216) {
+		return true;
+	}
+	return false;
 }
 
 void ReadDataFromInputStream(png_structp png_ptr, png_bytep outBytes,
@@ -295,6 +305,158 @@ patch_t* PNG2lmp(unsigned char* buffer) {
 	return patch;
 }
 
+patch_t* JPEG2lmp(unsigned char* buffer) {
+	struct jpeg_decompress_struct cinfo;
+	struct jpeg_error_mgr jerr;
+	/* More stuff */
+	png_bytep *rows;		/* Output row buffer */
+	int row_stride;		/* physical row width in output buffer */
+	cinfo.err = jpeg_std_error(&jerr);
+	/* Now we can initialize the JPEG decompression object. */
+	jpeg_create_decompress(&cinfo);
+	/* Step 2: specify data source (eg, a file) */
+
+#ifdef USE_NEWER_JPEG
+	jpeg_mem_src(&cinfo, fbuffer, len);
+#else
+	jpeg_stdio_src(&cinfo, buffer);
+#endif
+
+	jpeg_read_header(&cinfo, true);
+	jpeg_start_decompress(&cinfo);
+	row_stride = cinfo.output_width * cinfo.output_components;
+	int w = cinfo.output_width;
+	int h = cinfo.output_height;
+	x = 0;
+	y = 0;
+	int headoffs = (w * sizeof(int)) + (4 * sizeof(short));
+	patch_t* patch = (patch_t*)malloc(headoffs);
+	patch->width = w;
+	patch->height = h;
+	patch->leftoffset = x;
+	patch->topoffset = y;
+	patch->columnofs[0] = headoffs;
+	rows = (png_bytep*)malloc(patch->height * sizeof(png_bytep));
+	for (int i = 0; i < patch->height; i++) {
+		rows[i] = (png_bytep)malloc(row_stride);
+	}
+	int r = 0;
+	while (cinfo.output_scanline < cinfo.output_height) {
+		jpeg_read_scanlines(&cinfo,&rows[r], 1);
+		r++;
+	}
+		int oc = 0;
+		bool sc = false;
+		int pc = 0;
+		int offset = 4;
+		postColumn_t* tpat;
+		int eh = 0;
+		int posc = 0;
+		int imagesize = headoffs;
+		int* offsets = (int*)malloc(patch->width * sizeof(int));
+		unsigned char** post = (unsigned char**)malloc(patch->height * sizeof(byte*));
+		for (int i = 0; i < patch->height; i++) {
+			post[i] = (unsigned char*)malloc(4);
+		}
+		for (int i = 0; i < patch->width; i++) {
+			sc = false;
+			pc = 0;
+			offset = 3;
+			eh = 0;
+			posc = 0;
+			for (int j = 0; j < patch->height; j++) {
+				png_byte* pixel = &(rows[j][i * 4]);
+				{
+					byte dpix = GetColorMap(pixel);
+					if (!sc) {
+						post[posc][0] = j;
+						post[posc][1] = pc;
+						post[posc][2] = dpix;
+						sc = true;
+						eh = 0;
+					}
+					pc++;
+					post[posc][1] = pc;
+					post[posc] = (unsigned char*)realloc(post[posc], 4 + pc);
+					post[posc][offset] = dpix;
+					offset++;
+
+				}
+			}
+			if (sc || eh != patch->height) {
+				if (sc) {
+					pc++;
+					post[posc] = (unsigned char*)realloc(post[posc], 4 + pc);
+					post[posc][offset] = post[posc][offset - 1];
+					offset++;
+					offsets[posc] = offset;
+					posc++;
+				}
+				offset = 0;
+				for (int o = 0; o < posc; o++) {
+					imagesize += offsets[o];
+					patch = (patch_t*)realloc(patch, imagesize);
+					if (o == posc - 1) {
+						imagesize++;
+						patch = (patch_t*)realloc(patch, imagesize);
+					}
+				}
+				tpat = (postColumn_t*) &((byte*)patch + LONG(patch->columnofs[oc]))[0];
+				int offs = 0;
+				for (int o = 0; o < posc; o++) {
+					if (o > 0) {
+						tpat = (postColumn_t*)&((byte*)tpat + tpat->length + 4)[0];
+					}
+					memcpy(tpat, post[o], offsets[o]);
+					offset += offsets[o];
+				}
+				tpat = (postColumn_t*)&((byte*)tpat + tpat->length + 4)[0];
+				tpat->topdelta = 255;
+				offset++;
+				oc++;
+				if (oc < patch->width) {
+					patch->columnofs[oc] = patch->columnofs[oc - 1] + offset;
+				}
+			}
+			else if (eh == patch->height) {
+				post[posc][0] = (unsigned char)255;
+				offset = 1;
+				imagesize++;
+				patch = (patch_t*)realloc(patch, imagesize);
+				tpat = (postColumn_t*) &((byte*)patch + LONG(patch->columnofs[oc]))[0];
+				memcpy(tpat, post[posc], offset);
+				oc++;
+				if (oc < patch->width) {
+					patch->columnofs[oc] = patch->columnofs[oc - 1] + offset;
+				}
+			}
+		}
+		free(post);
+		jpeg_finish_decompress(&cinfo);
+		jpeg_destroy_decompress(&cinfo);
+
+		::g->cpind = 1;
+		if (::g->cpatch.size() < flmp) {
+			::g->cpatch.resize(flmp);
+		}
+		::g->cpatch[flmp - 1] = patch;
+#ifdef _DEBUG
+		char* ddir = "base//lmps//";
+#ifdef _WIN32
+		CreateDirectory(ddir, NULL);
+#else
+		mkdir(ddir, S_IRWXU);
+#endif
+		std::string name = W_GetNameForNum(flmp);
+		std::string filename = "base//lmps//" + name + ".lmp";
+		std::ofstream of(filename.c_str(), std::ios::binary);
+		of.write((char*)patch, imagesize);
+		of.flush();
+#endif
+
+		return patch;
+}
+
 patch_t* GetPreloaded() {
 	if (::g->cpatch.size() >= flmp) {
 		if (::g->cpatch[flmp-1] != NULL) {
@@ -306,9 +468,11 @@ patch_t* GetPreloaded() {
 
 patch_t* img2lmp(void* buff,int lump) {
 	bool is_png;
+	bool is_jpeg;
 	flmp = lump;
 	unsigned char* imgbuf = reinterpret_cast<unsigned char*>(buff);
 	is_png = checkpng(imgbuf);
+	is_jpeg = checkjpeg(imgbuf);
 	if (is_png) {
 		patch_t* patch = NULL;
 		if (::g->cpind) {
@@ -320,6 +484,19 @@ patch_t* img2lmp(void* buff,int lump) {
 		else {
 			InitColorMap();
 			return PNG2lmp(imgbuf);
+		}
+	}
+	else if (is_jpeg) {
+		patch_t* patch = NULL;
+		if (::g->cpind) {
+			patch = GetPreloaded();
+		}
+		if (patch != NULL) {
+			return patch;
+		}
+		else {
+			InitColorMap();
+			return JPEG2lmp(imgbuf);
 		}
 	}
 	return (patch_t *)buff;
