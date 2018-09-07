@@ -6,5 +6,5 @@
 -classich				   : Use cheat codes on classic DOOM games without the console
 -doom,doom2,both		   : Set which parameters will be used for each game. (In order to stop it use any of the other two)
 -file ex <1,2,3,4,5>	   : Allowing you to load specific mods per Doom 2's expansions (the ex is ignored on Doom 1). 1=Doom2, 2=TNT, 3=Plutonia, 4=Master Levels, 5=No Rest For The Living
--exp		    <1,2,3,4,5>: Start a new game on the desired Doom 2 expansion (it can be used also with the -warp). The numeric values are the same as above.
+-exp		    <1,2,3,4,5>: Start a new game on the desired Doom 2 expansion (it can be used also with the -warp). The numeric values are similar as above with number 5 being number 2.
 -net <playerslot-1> <p1-IP> <p2-IP> <p3-IP> <p4-IP> : The player slot must be decided by the whole group
