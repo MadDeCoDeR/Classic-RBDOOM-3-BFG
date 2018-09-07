@@ -610,15 +610,26 @@ void R_InitLightTables (void)
 	int		level;
 	int		nocollide_startmap; 	
 	int		scale;
+	//GK: Just changing these value result in better lighting who knew
+	if (r_clight.GetBool()) {
+		::g->reallightlevels = 15;
+		::g->reallightscale = 18;
+		::g->LIGHTZSHIFT = 26;
+	}
+	else {
+		::g->reallightlevels = LIGHTLEVELS;
+		::g->reallightscale = MAXLIGHTSCALE;
+		::g->LIGHTZSHIFT = 20;
+	}
 
 	// Calculate the light levels to use
 	//  for each level / distance combination.
-	for (i=0 ; i< LIGHTLEVELS ; i++)
+	for (i=0 ; i< ::g->reallightlevels; i++)
 	{
-		nocollide_startmap = ((LIGHTLEVELS-1-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
+		nocollide_startmap = ((::g->reallightlevels -1-i)*2)*NUMCOLORMAPS/ ::g->reallightlevels;
 		for (j=0 ; j<MAXLIGHTZ ; j++)
 		{
-			scale = FixedDiv ((::g->SCREENWIDTH/2*FRACUNIT), (j+1)<<LIGHTZSHIFT);
+			scale = FixedDiv ((::g->SCREENWIDTH/2*FRACUNIT), (j+1)<<::g->LIGHTZSHIFT);
 			scale >>= LIGHTSCALESHIFT;
 			level = nocollide_startmap - scale/DISTMAP;
 
@@ -737,10 +748,10 @@ void R_ExecuteSetViewSize (void)
 
 	// Calculate the light levels to use
 	//  for each level / scale combination.
-	for (i=0 ; i< LIGHTLEVELS ; i++)
+	for (i=0 ; i< ::g->reallightlevels; i++)
 	{
-		nocollide_startmap = ((LIGHTLEVELS-1-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
-		for (j=0 ; j<MAXLIGHTSCALE ; j++)
+		nocollide_startmap = ((::g->reallightlevels -1-i)*2)*NUMCOLORMAPS/ ::g->reallightlevels;
+		for (j=0 ; j<::g->reallightscale ; j++)
 		{
 			level = nocollide_startmap - j* ::g->SCREENWIDTH/(::g->viewwidth << ::g->detailshift)/DISTMAP;
 
@@ -848,7 +859,7 @@ void R_SetupFrame (player_t* player)
 
 		::g->walllights = ::g->scalelightfixed;
 
-		for (i=0 ; i<MAXLIGHTSCALE ; i++)
+		for (i=0 ; i< ::g->reallightscale; i++)
 			::g->scalelightfixed[i] = ::g->fixedcolormap;
 	}
 	else

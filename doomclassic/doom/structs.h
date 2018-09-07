@@ -179,6 +179,7 @@ typedef enum
 	//scrnsize, //GK: Not needed anymore
 	messages,
 	detail,	//GK: Use this value for aspect ratio option
+	light, //GK: Use this value for light modes
 	option_empty1,
 	mousesens,
 	option_empty2,

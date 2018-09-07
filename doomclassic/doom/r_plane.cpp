@@ -138,13 +138,13 @@ R_MapPlane
 	::g->ds_colormap = ::g->fixedcolormap;
     else
     {
-	index = distance >> LIGHTZSHIFT;
+	index = distance >> ::g->LIGHTZSHIFT;
 	
 	if (index >= MAXLIGHTZ )
 	    index = MAXLIGHTZ-1;
 	//GK:Sanity check
-	if (::g->planezlight >= LIGHTLEVELS)
-		::g->planezlight = LIGHTLEVELS - 1;
+	if (::g->planezlight >= ::g->reallightlevels)
+		::g->planezlight = ::g->reallightlevels - 1;
 
 	if (::g->planezlight < 0)
 		::g->planezlight = 0;
@@ -460,8 +460,8 @@ void R_DrawPlanes (void)
 	::g->planeheight = abs(::g->visplanes[i]->height-::g->viewz);
 	light = (::g->visplanes[i]->lightlevel >> LIGHTSEGSHIFT)+::g->extralight;
 
-	if (light >= LIGHTLEVELS)
-	    light = LIGHTLEVELS-1;
+	if (light >= ::g->reallightlevels)
+	    light = ::g->reallightlevels -1;
 
 	if (light < 0)
 	    light = 0;

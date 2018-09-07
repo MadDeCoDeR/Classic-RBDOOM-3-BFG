@@ -99,8 +99,8 @@ R_RenderMaskedSegRange
 
     if (lightnum < 0)		
 	::g->walllights = ::g->scalelight[0];
-    else if (lightnum >= LIGHTLEVELS)
-	::g->walllights = ::g->scalelight[LIGHTLEVELS-1];
+    else if (lightnum >= ::g->reallightlevels)
+	::g->walllights = ::g->scalelight[::g->reallightlevels -1];
     else
 	::g->walllights = ::g->scalelight[lightnum];
 
@@ -139,8 +139,8 @@ R_RenderMaskedSegRange
 	    {
 		index = ::g->spryscale>>LIGHTSCALESHIFT;
 
-		if (index >=  MAXLIGHTSCALE )
-		    index = MAXLIGHTSCALE-1;
+		if (index >= ::g->reallightscale)
+		    index = ::g->reallightscale -1;
 
 		::g->dc_colormap = ::g->walllights[index];
 	    }
@@ -238,8 +238,8 @@ void R_RenderSegLoop (void)
 	    // calculate lighting
 	    index = ::g->rw_scale>>LIGHTSCALESHIFT;
 
-	    if (index >=  MAXLIGHTSCALE )
-			index = MAXLIGHTSCALE-1;
+	    if (index >= ::g->reallightscale)
+			index = ::g->reallightscale -1;
 
 	    ::g->dc_colormap = ::g->walllights[index];
 	    ::g->dc_x = ::g->rw_x;
@@ -632,8 +632,8 @@ R_StoreWallRange
 
 			if (lightnum < 0)		
 			::g->walllights = ::g->scalelight[0];
-			else if (lightnum >= LIGHTLEVELS)
-			::g->walllights = ::g->scalelight[LIGHTLEVELS-1];
+			else if (lightnum >= ::g->reallightlevels)
+			::g->walllights = ::g->scalelight[::g->reallightlevels -1];
 			else
 			::g->walllights = ::g->scalelight[lightnum];
 		}

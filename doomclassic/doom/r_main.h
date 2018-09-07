@@ -64,6 +64,7 @@ extern int		linecount;
 extern int		loopcount;
 
 extern idCVar r_aspectcorrect;
+extern idCVar r_clight;
 //
 // Lighting LUT.
 // Used for z-depth cuing per column/row,
@@ -78,7 +79,7 @@ extern idCVar r_aspectcorrect;
 #define MAXLIGHTSCALE		48
 #define LIGHTSCALESHIFT		12
 #define MAXLIGHTZ	       128
-#define LIGHTZSHIFT		20
+//#define LIGHTZSHIFT		20 //GK: Not used anymore
 
 extern lighttable_t*	scalelight[LIGHTLEVELS][MAXLIGHTSCALE];
 extern lighttable_t*	scalelightfixed[MAXLIGHTSCALE];

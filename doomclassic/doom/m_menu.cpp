@@ -168,6 +168,7 @@ void M_ChangeMessages(int choice);
 void M_ChangeGPad(int choice);
 void M_FullScreen(int choice);
 void M_Aspect(int choice);
+void M_Light(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
@@ -1157,6 +1158,7 @@ void M_DrawOptions(void)
 	int aspect = r_aspect.GetInteger() >= 1 ? 1 : 0;
 	int correct = r_aspectcorrect.GetInteger();
 	int asoffset = 165 - (6 * correct); //GK: The word "correct" is larger than the others and therefor it requires different x offset
+	int reallight = r_clight.GetInteger();
 
 	V_DrawPatchDirect (::g->OptionsDef.x + 150,::g->OptionsDef.y+LINEHEIGHT*endgame,0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[fullscreenOnOff],PU_CACHE_SHARED), W_GetNumForName(msgNames[fullscreenOnOff])));
@@ -1177,6 +1179,8 @@ void M_DrawOptions(void)
 	}
 	V_DrawPatchDirect(::g->OptionsDef.x + asoffset, ::g->OptionsDef.y + LINEHEIGHT * (detail+optoffs), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect+correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect+correct])));
+	V_DrawPatchDirect(::g->OptionsDef.x + 135, ::g->OptionsDef.y + LINEHEIGHT * (light + optoffs), 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[reallight], PU_CACHE_SHARED), W_GetNumForName(msgNames[reallight])));
 	//GK:End
 	extern idCVar in_mouseSpeed;
 	const int roundedMouseSpeed = M_GetMouseSpeedForMenu( in_mouseSpeed.GetFloat() );
@@ -1279,6 +1283,11 @@ void M_Aspect(int choice) {
 		AM_Start();
 	}
 	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
+}
+
+void M_Light(int choice) {
+	r_clight.SetInteger(r_clight.GetInteger() ? 0 : 1);
+	R_Init(); //GK: Re-init the renderer to apply the new light mode
 }
 //
 // M_EndGame
@@ -1745,7 +1754,7 @@ qboolean M_Responder (event_t* ev)
 						}
 					}
 				}
-				if (::g->gamemode == commercial && ::g->gamestate != GS_LEVEL) {
+				if (::g->gamemode == commercial && (::g->gamestate == GS_DEMOSCREEN || ::g->demoplayback)) { //GK: Make sure it works ONLY on the main menu
 					//GK begin
 					//GK: Using an improved cheat system that no longer relies on time limits
 						::g->cheat[::g->cheatind] = ev->data1;

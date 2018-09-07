@@ -219,13 +219,14 @@ menu_t  temp_NewDef = {
 		hurtme		// lastOn
 };
 memcpy( &::g->NewDef, &temp_NewDef, sizeof(temp_NewDef) );
-menuitem_t temp_OptionsMenu[8] = {
+menuitem_t temp_OptionsMenu[9] = {
 	{1,"M_GDHIGH",	M_FullScreen,'f'},
 	//{1,"M_SCRNSZ",	M_ChangeGPad,'m'}, //GK: Not nedded anymore
 	{2,"M_MESSG",	M_ChangeMessages,'m'},
 	//{1,"M_DETAIL",	M_ChangeDetail,'g'},
 	//{2,"M_SCRNSZ",	M_SizeDisplay,'s'},
 	{1,"M_ASP",M_Aspect,'m'},//GK: Allow the player to switch aspect ratio
+	{1,"M_LGT",M_Light,'l'},//GK: Allow the player to switch lighting mode
     { -1,"",0 },
 	{2,"M_MSENS",	M_ChangeSensitivity,'m'},
 	{-1,"",0},

@@ -628,8 +628,8 @@ void R_ProjectSprite (mobj_t* thing)
 	// diminished light
 	index = xscale>>(LIGHTSCALESHIFT-::g->detailshift);
 
-	if (index >= MAXLIGHTSCALE) 
-	    index = MAXLIGHTSCALE-1;
+	if (index >= ::g->reallightscale)
+	    index = ::g->reallightscale -1;
 
 	vis->colormap = ::g->spritelights[index];
     }	
@@ -661,8 +661,8 @@ void R_AddSprites (sector_t* sec)
 
     if (lightnum < 0)		
 	::g->spritelights = ::g->scalelight[0];
-    else if (lightnum >= LIGHTLEVELS)
-	::g->spritelights = ::g->scalelight[LIGHTLEVELS-1];
+    else if (lightnum >= ::g->reallightlevels)
+	::g->spritelights = ::g->scalelight[::g->reallightlevels -1];
     else
 	::g->spritelights = ::g->scalelight[lightnum];
 
@@ -772,7 +772,7 @@ void R_DrawPSprite (pspdef_t* psp)
     else
     {
 	// local light
-	vis->colormap = ::g->spritelights[MAXLIGHTSCALE-1];
+	vis->colormap = ::g->spritelights[::g->reallightscale -1];
     }
 	
     R_DrawVisSprite (vis, vis->x1, vis->x2);
@@ -796,8 +796,8 @@ void R_DrawPlayerSprites (void)
 
     if (lightnum < 0)		
 	::g->spritelights = ::g->scalelight[0];
-    else if (lightnum >= LIGHTLEVELS)
-	::g->spritelights = ::g->scalelight[LIGHTLEVELS-1];
+    else if (lightnum >= ::g->reallightlevels)
+	::g->spritelights = ::g->scalelight[::g->reallightlevels -1];
     else
 	::g->spritelights = ::g->scalelight[lightnum];
     

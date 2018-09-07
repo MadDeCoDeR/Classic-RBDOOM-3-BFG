@@ -56,6 +56,7 @@ void M_ChangeMessages(int choice);
 void M_ChangeGPad(int choice);
 void M_FullScreen(int choice);
 void M_Aspect(int choice);
+void M_Light(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);

@@ -393,7 +393,7 @@ menuitem_t ExpansionMenu[5];
 menu_t  ExpDef;
 menuitem_t NewGameMenu[5];
 menu_t  NewDef;
-menuitem_t OptionsMenu[8];
+menuitem_t OptionsMenu[9];
 menu_t  OptionsDef;
 menuitem_t SoundMenu[4];
 menu_t  SoundDef;
@@ -925,6 +925,12 @@ long			planeind;
 visplane_t*		floorplane; 
 visplane_t*		ceilingplane; 
 // r_plane end //
+
+// r_main begin //GK: Allowing to change constant on the go
+int reallightlevels;
+int reallightscale;
+int LIGHTZSHIFT;
+// r_main end //
 
 // wi_stuff
 // background (map of levels).
