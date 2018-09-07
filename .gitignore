@@ -26,7 +26,10 @@ base/maps/
 base/sound/
 base/strings/
 base/video/
-base/wads/
+base/wads/*
+!base/wads/mlbls.wad
+!base/wads/ua.wad
+!base/wads/newopt.wad
 
 GPATH
 GRTAGS
