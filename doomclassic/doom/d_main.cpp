@@ -691,7 +691,7 @@ void D_DoomMain(void)
 			DoomLib::skipToNew = true;
 			//GK: Re init wad files to apply the change
 			IdentifyVersion();
-			//D_AddFile("wads/newopt.wad");
+			D_AddFile("wads/newopt.wad");
 			//GK: New pwad for compatibility with Evilution and Plutonia (only for DOOM II)
 			if (::g->gamemode == commercial) {
 				D_AddFile("wads/ua.wad");
