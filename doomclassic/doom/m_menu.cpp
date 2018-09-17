@@ -84,6 +84,7 @@ If you have questions concerning this license or the applicable additional terms
 
 extern idCVar cl_messages;
 extern idCVar in_joylayout;
+extern idCVar in_alwaysRunCl;
 //
 // defaulted values
 //
@@ -164,6 +165,7 @@ void M_QuitDOOM(int choice);
 void M_ExitGame(int choice);
 void M_GameSelection(int choice);
 void M_CancelExit(int choice);
+void M_Alwaysrun(int choice);
 void M_ChangeMessages(int choice);
 void M_ChangeGPad(int choice);
 void M_FullScreen(int choice);
@@ -176,6 +178,7 @@ void M_ChangeDetail(int choice);
 void M_SizeDisplay(int choice);
 void M_StartGame(int choice);
 void M_Sound(int choice);
+void M_Video(int choice);
 void M_MasterSelect(int choice);
 void M_Doom_IT(int choice);
 
@@ -194,6 +197,7 @@ void M_DrawNewGame(void);
 void M_DrawEpisode(void);
 void M_DrawOptions(void);
 void M_DrawSound(void);
+void M_DrawVideo(void);
 void M_DrawLoad(void);
 void M_DrawSave(void);
 void M_DrawMaster(void);
@@ -851,6 +855,43 @@ void M_DrawSound(void)
 		16, s_volume_midi.GetInteger() );
 }
 
+char    detailNames[3][9] =
+{
+"M_GDLOW","M_DETAIL","M_DISOPT" //GK: Use unique values for aspect ratio
+};
+
+char	msgNames[2][9] =
+{
+"M_MSGOFF","M_MSGON"
+};
+//GK:Begin
+//
+// Change aspect Ratio & lighting
+//
+void M_DrawVideo(void)
+{
+	V_DrawPatchDirect(60, 38, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_VID", PU_CACHE_SHARED), W_GetNumForName("M_VID")));
+
+	int aspect = r_aspect.GetInteger() >= 1 ? 1 : 0;
+	int correct = r_aspectcorrect.GetInteger();
+	int asoffset = 165 - (6 * correct); //GK: The word "correct" is larger than the others and therefor it requires different x offset
+	int reallight = r_clight.GetInteger();
+	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : 0;
+
+
+	V_DrawPatchDirect(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * endgame, 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[fullscreenOnOff], PU_CACHE_SHARED), W_GetNumForName(msgNames[fullscreenOnOff])));
+	V_DrawPatchDirect(::g->VideoDef.x + asoffset, ::g->VideoDef.y + LINEHEIGHT * (detail), 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])));
+	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light), 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[reallight], PU_CACHE_SHARED), W_GetNumForName(msgNames[reallight])));
+}
+
+void M_Video(int choice)
+{
+	M_SetupNextMenu(&::g->VideoDef);
+}
+//GK: End
 void M_Sound(int choice)
 {
 	M_SetupNextMenu(&::g->SoundDef);
@@ -1128,15 +1169,7 @@ void M_DrawDoomIT(void) {
 //
 // M_Options
 //
-char    detailNames[3][9]	= 
-{
-"M_GDLOW","M_DETAIL","M_DISOPT" //GK: Use unique values for aspect ratio
-};
 
-char	msgNames[2][9]		= 
-{
-"M_MSGOFF","M_MSGON"
-};
 
 int M_GetMouseSpeedForMenu( float cvarValue ) {
 	const float shiftedMouseSpeed = cvarValue - 0.25f;
@@ -1153,19 +1186,7 @@ void M_DrawOptions(void)
 
 	//V_DrawPatchDirect (::g->OptionsDef.x + 175,::g->OptionsDef.y+LINEHEIGHT*detail,0,
 	//	(patch_t*)W_CacheLumpName(detailNames[::g->detailLevel],PU_CACHE_SHARED));
-
-	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : 0;
-	int aspect = r_aspect.GetInteger() >= 1 ? 1 : 0;
-	int correct = r_aspectcorrect.GetInteger();
-	int asoffset = 165 - (6 * correct); //GK: The word "correct" is larger than the others and therefor it requires different x offset
-	int reallight = r_clight.GetInteger();
-
-	V_DrawPatchDirect (::g->OptionsDef.x + 150,::g->OptionsDef.y+LINEHEIGHT*endgame,0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[fullscreenOnOff],PU_CACHE_SHARED), W_GetNumForName(msgNames[fullscreenOnOff])));
-	//GK: Not needed anymore
-	/*V_DrawPatchDirect (::g->OptionsDef.x + 120,::g->OptionsDef.y+LINEHEIGHT*scrnsize,0,
-		(patch_t*)W_CacheLumpName(msgNames[in_useJoystick.GetInteger()],PU_CACHE_SHARED));
-		*/
+		
 	V_DrawPatchDirect (::g->OptionsDef.x + 120,::g->OptionsDef.y+LINEHEIGHT*messages,0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[m_show_messages.GetInteger()],PU_CACHE_SHARED), W_GetNumForName(msgNames[m_show_messages.GetInteger()])));
 	//GK:begin
@@ -1177,10 +1198,10 @@ void M_DrawOptions(void)
 	else {
 		optoffs = 0;
 	}
-	V_DrawPatchDirect(::g->OptionsDef.x + asoffset, ::g->OptionsDef.y + LINEHEIGHT * (detail+optoffs), 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect+correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect+correct])));
-	V_DrawPatchDirect(::g->OptionsDef.x + 135, ::g->OptionsDef.y + LINEHEIGHT * (light + optoffs), 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[reallight], PU_CACHE_SHARED), W_GetNumForName(msgNames[reallight])));
+
+	V_DrawPatchDirect(::g->OptionsDef.x + 120, ::g->OptionsDef.y + LINEHEIGHT * (scrnsize+optoffs), 0,
+		(patch_t*)W_CacheLumpName(msgNames[in_alwaysRunCl.GetBool()], PU_CACHE_SHARED));
+	
 	//GK:End
 	extern idCVar in_mouseSpeed;
 	const int roundedMouseSpeed = M_GetMouseSpeedForMenu( in_mouseSpeed.GetFloat() );
@@ -1258,7 +1279,16 @@ void M_ChangeGPad(int choice)
 
 	::g->message_dontfuckwithme = true;
 }
+//GK:Begin
+//
+//      Toggle Always Run
+//
+void M_Alwaysrun(int choice) {
 
+	in_alwaysRunCl.SetBool(in_alwaysRunCl.GetBool() ? 0 : 1);
+	//cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
+}
+//GK:End
 //
 //      Toggle Fullscreen
 //

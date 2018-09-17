@@ -219,14 +219,13 @@ menu_t  temp_NewDef = {
 		hurtme		// lastOn
 };
 memcpy( &::g->NewDef, &temp_NewDef, sizeof(temp_NewDef) );
-menuitem_t temp_OptionsMenu[9] = {
-	{1,"M_GDHIGH",	M_FullScreen,'f'},
+menuitem_t temp_OptionsMenu[8] = {
+	{1,"M_VID",	M_Video,'v'},
 	//{1,"M_SCRNSZ",	M_ChangeGPad,'m'}, //GK: Not nedded anymore
 	{2,"M_MESSG",	M_ChangeMessages,'m'},
 	//{1,"M_DETAIL",	M_ChangeDetail,'g'},
 	//{2,"M_SCRNSZ",	M_SizeDisplay,'s'},
-	{1,"M_ASP",M_Aspect,'m'},//GK: Allow the player to switch aspect ratio
-	{1,"M_LGT",M_Light,'l'},//GK: Allow the player to switch lighting mode
+	{1,"M_AR",M_Alwaysrun,'a'},
     { -1,"",0 },
 	{2,"M_MSENS",	M_ChangeSensitivity,'m'},
 	{-1,"",0},
@@ -242,6 +241,21 @@ menu_t  temp_OptionsDef = {
 		0
 };
 memcpy( &::g->OptionsDef, &temp_OptionsDef, sizeof(temp_OptionsDef) );
+menuitem_t temp_VideoMenu[3] = {
+	{1,"M_GDHIGH",	M_FullScreen,'f'},
+	{1,"M_ASP",M_Aspect,'m'},//GK: Allow the player to switch aspect ratio
+	{1,"M_LGT",M_Light,'l'}//GK: Allow the player to switch lighting mode
+};
+memcpy(::g->VideoMenu, temp_VideoMenu, sizeof(temp_VideoMenu));
+menu_t  temp_VideoDef = {
+	video_end,
+		&::g->OptionsDef,
+		::g->VideoMenu,
+		M_DrawVideo,
+		60,64,
+		0
+};
+memcpy(&::g->VideoDef, &temp_VideoDef, sizeof(temp_VideoDef));
 menuitem_t temp_SoundMenu[4] = {
 	{2,"M_SFXVOL",M_SfxVol,'s'},
 	{-1,"",0},

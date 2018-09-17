@@ -175,11 +175,9 @@ typedef enum
 } newgame_e;
 typedef enum
 {
-	endgame,
-	//scrnsize, //GK: Not needed anymore
+	video,
 	messages,
-	detail,	//GK: Use this value for aspect ratio option
-	light, //GK: Use this value for light modes
+	scrnsize, //GK: autorun
 	option_empty1,
 	mousesens,
 	option_empty2,
@@ -204,6 +202,13 @@ typedef enum
 	sfx_empty2,
 	sound_end
 } sound_e;
+typedef enum
+{
+	endgame,
+	detail,	//GK: Use this value for aspect ratio option
+	light, //GK: Use this value for light modes
+	video_end
+} video_e;
 typedef enum
 {
 	load1,
@@ -539,6 +544,9 @@ typedef struct {//GK:Store information for the custom expansion maps
 	int fmusic;
 	int music;
 	bool fsecret;
+	bool cspecls;
+	int otel;
+	bool dsecret;
 }map_t;
 
 typedef struct {//GK:Store information for the custom expansion clusters

@@ -84,6 +84,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 extern bool waitingForWipe;
+extern idCVar in_alwaysRunCl;
 
 bool	loadingGame = false;
 
@@ -171,12 +172,13 @@ bool IsPlayerRunning( const usercmd_t & command ) {
 	bool autorun = false;
 
 
-	// TODO: PC
-#if 0
-	if( user ) {
-		idPlayerProfileDoom * profile = static_cast< idPlayerProfileDoom * >( user->GetProfile() );
+	// GK DONE: PC
+#if 1
+	if( user) {
+		//idPlayerProfileDoom * profile = static_cast< idPlayerProfileDoom * >( user->GetProfile() );
 
-		if( profile && profile->GetAlwaysRun() ) {
+		//if( profile && profile->GetAlwaysRun() ) {
+		if (in_alwaysRunCl.GetBool()){
 			autorun = true;
 		}
 	}

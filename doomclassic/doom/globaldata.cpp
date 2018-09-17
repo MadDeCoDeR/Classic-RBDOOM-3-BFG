@@ -52,6 +52,7 @@ void M_ExitGame(int choice);
 void M_GameSelection(int choice);
 void M_CancelExit(int choice);
 
+void M_Alwaysrun(int choice);
 void M_ChangeMessages(int choice);
 void M_ChangeGPad(int choice);
 void M_FullScreen(int choice);
@@ -64,6 +65,7 @@ void M_ChangeDetail(int choice);
 void M_SizeDisplay(int choice);
 void M_StartGame(int choice);
 void M_Sound(int choice);
+void M_Video(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
@@ -80,6 +82,7 @@ void M_DrawNewGame(void);
 void M_DrawEpisode(void);
 void M_DrawOptions(void);
 void M_DrawSound(void);
+void M_DrawVideo(void);
 void M_DrawLoad(void);
 void M_DrawSave(void);
 void M_DrawMaster(void);
