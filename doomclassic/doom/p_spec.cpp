@@ -478,6 +478,39 @@ P_CrossSpecialLine
 	int		ok;
 
 	line = &::g->lines[linenum];
+	//GK: Bug fix for Doom 2 Map 15 Just in case the sector is inaccessible check if the player passes through any of it's lines (if they are special)
+	if (thing->player) {
+		bool hs = false;
+		switch (::g->gamemission){
+		case pack_custom:
+			if (::g->maps[::g->gamemap-1].cspecls) {
+				switch (line->frontsector->special) {
+				case 9:
+					hs = true;
+					break;
+				}
+			}
+				break;
+		case doom2:
+			switch (::g->gamemap) {
+			case 15:
+				switch (line->frontsector->special) {
+				case 9:
+					hs = true;
+					break;
+				}
+				break;
+			}
+			break;
+		}
+		if (hs) {
+			thing->player->secretcount++;
+			//GK send message when secret found
+			S_StartSound(thing->player->mo, sfx_getpow);
+			::g->plyr->message = GOTSECRET;
+			line->frontsector->special = 0;
+		}
+	}
 
 	//	Triggers that other things can activate
 	if (!thing->player)
