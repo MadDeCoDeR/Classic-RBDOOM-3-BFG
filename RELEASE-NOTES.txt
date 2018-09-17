@@ -4,6 +4,28 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+17 September 2018 - Classic RBDOOM-3-BFG 1.1.10.10
+_______________________________
+
+[classicdoom]
+
+- Reorganized graphical options
+
+- Added Option to toggle Always Run
+
+- Bugfixes and Optimizations
+
+- Fixed Doom 2 Map 15's inaccessible secret
+
+- Added Map exclusive fixes to EXPINFO
+
+[DOOM3BFG]
+
+- Fixed a double flashlight model bug when using the original flashlight
+
+- reduced bluish tint for FilmicPostProcess (special thanks to TheVoodoo)
+_______________________________________
+
 07 September 2018 - Classic RBDOOM-3-BFG 1.1.10.9
 _______________________________
 
