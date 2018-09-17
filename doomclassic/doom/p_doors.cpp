@@ -560,7 +560,7 @@ EV_VerticalDoor
 	door->type = blazeRaise;
 	door->speed = VDOORSPEED*4;
 	//GK: A small hack in order to get the secret count on nessus level on Master Levels Expansion (Note : It's kinda exclusive. If you load NESSUS.WAD this hack wont work. Better not risk it)
-	if ((::g->gamemission == pack_master && ::g->gamemap == 16) && door->sector->special == 9) {
+	if (((::g->gamemission == pack_custom && ::g->maps[::g->gamemap-1].dsecret) ||(::g->gamemission == pack_master && ::g->gamemap == 16)) && door->sector->special == 9) {
 		player->secretcount++;
 		//GK send message when secret found
 		S_StartSound(player->mo,sfx_getpow);

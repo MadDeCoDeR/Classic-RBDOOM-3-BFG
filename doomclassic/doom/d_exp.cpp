@@ -245,14 +245,15 @@ std::vector<std::string> getexplines(char* text) {
 }
 
 int checkexpstate(char* text) {
-	if (!idStr::Icmp(text, "EXP")) {
-		return 1;
-	}
-	if (!idStr::Icmp(text, "MAP")) {
-		return 2;
-	}
-	if (!idStr::Icmp(text, "clusterdef")) {
-		return 3;
+	char* extable[3] = {
+		"EXP",
+		"MAP",
+		"clusterdef"
+	};
+	for (int i = 0; i < 3; i++) {
+		if (!idStr::Icmp(text, extable[i])) {
+			return i+1;
+		}
 	}
 	return 0;
 }
@@ -299,6 +300,12 @@ void setMAPINT(int pos,char* name, int value) {
 	}
 	if (!idStr::Icmp(name, "par")) {
 		cpars[pos - 1] = value;
+	}
+
+
+	if (!idStr::Icmp(name, "0teleport")) {
+		::g->maps[pos].otel = value;
+		return;
 	}
 }
 
@@ -400,7 +407,19 @@ void setMAPSTR(int pos, char* name, char* value) {
 
 	if (!idStr::Icmp(name, "sky_tex") || !idStr::Icmp(name, "sky1")) {
 		::g->maps[pos].sky = value;
+		return;
 	}
+
+	if (!idStr::Icmp(name, "doorsecret")) {
+		::g->maps[pos].dsecret = true;
+		return;
+	}
+
+	if (!idStr::Icmp(name, "cspeclsecret")) {
+		::g->maps[pos].cspecls = true;
+		return;
+	}
+
 }
 
 void initMAPS(std::vector<std::string> lines) {

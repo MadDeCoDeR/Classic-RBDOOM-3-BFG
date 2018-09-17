@@ -77,9 +77,14 @@ EV_Teleport
 
     
     tag = line->tag;
-	if (::g->gamemission == doom2 && ::g->gamemap == 33) {//GK: A small hack in order to fix doom 2 Map 33 bug.
+	if (::g->gamemission == doom2 && ::g->gamemap == 33 ) {//GK: A small hack in order to fix doom 2 Map 33 bug.
 		if (line->tag == 0) {
 			tag = 41;
+		}
+	}
+	if (::g->gamemission == pack_custom && ::g->maps[::g->gamemap - 1].otel) {
+		if (line->tag == 0) {
+			tag = ::g->maps[::g->gamemap - 1].otel;
 		}
 	}
     for (i = 0; i < ::g->numsectors; i++)

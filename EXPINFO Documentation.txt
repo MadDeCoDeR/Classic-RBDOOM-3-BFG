@@ -41,7 +41,7 @@ max_maps = 33
 final_map = 30
 save_dir = MYMOD
 
-MAP 09 #seting MAP09 special parameters
+MAP 09 #setting MAP09 special parameters
 miniboss = true
 sky_tex = SKY3
 
@@ -74,6 +74,12 @@ final_music <text>: Set exit level message music
 secret_map <numeric>: Set the secret map (in case the map has a secret exit)
 
 next_map <numeric>: Set the next map (if you don't want to be the exact next one )
+
+0teleport <numeric>: Set the sector id override for telepoters that teleport you to sector with id = 0
+
+doorsecret: Force the secret event to be triggered when opening a door that is a secret sector
+
+cspeclsecret: Force the secret event to be triggered when crossing a special line which's front sector is a secret
 
 ----------------------
 6. COMPATIBILITY MODE
