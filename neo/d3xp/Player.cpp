@@ -6016,45 +6016,53 @@ void idPlayer::UpdateFlashlight()
 		idAnimatedEntity* worldModel = flashlight.GetEntity()->GetWorldModel();
 		if (!flashlight_old.GetInteger()) {
 			worldModel->BindToJoint(this, "Chest", true);
+
+			// Don't interpolate the flashlight world model in mp, let it bind like normal.
+			worldModel->SetUseClientInterpolation(false);
 		}
-		// Don't interpolate the flashlight world model in mp, let it bind like normal.
-		worldModel->SetUseClientInterpolation( false );
 		
 		assert( flashlight.GetEntity()->IsLinked() );
 	}
 	
 	// this positions the third person flashlight model! (as seen in the mirror)
 	idAnimatedEntity* worldModel = flashlight.GetEntity()->GetWorldModel();
-	static const idVec3 fl_pos = idVec3( 3.0f, 9.0f, 2.0f );
-	worldModel->GetPhysics()->SetOrigin( fl_pos );
-	static float fl_pitch = 0.0f;
-	static float fl_yaw = 0.0f;
-	static float fl_roll = 0.0f;
-	static idAngles ang = ang_zero;
-	ang.Set( fl_pitch, fl_yaw, fl_roll );
-	worldModel->GetPhysics()->SetAxis( ang.ToMat3() );
-	
-	if( flashlight.GetEntity()->lightOn )
-	{
-		if( ( flashlightBattery < flashlight_batteryChargeTimeMS.GetInteger() / 2 ) && ( gameLocal.random.RandomFloat() < flashlight_batteryFlickerPercent.GetFloat() ) )
+	if (!flashlight_old.GetInteger()) { //GK: No legacy no care
+		static const idVec3 fl_pos = idVec3(3.0f, 9.0f, 2.0f);
+		worldModel->GetPhysics()->SetOrigin(fl_pos);
+		static float fl_pitch = 0.0f;
+		static float fl_yaw = 0.0f;
+		static float fl_roll = 0.0f;
+		static idAngles ang = ang_zero;
+		ang.Set(fl_pitch, fl_yaw, fl_roll);
+		worldModel->GetPhysics()->SetAxis(ang.ToMat3());
+	}
+	else {
+		worldModel->Hide(); //GK: This time make sure there is NO second flashlight model rendered
+	}
+	if (!flashlight_old.GetInteger()) {
+		if (flashlight.GetEntity()->lightOn)
 		{
-			flashlight.GetEntity()->RemoveMuzzleFlashlight();
-		}
-		else
-		{
-			flashlight.GetEntity()->MuzzleFlashLight();
+			if ((flashlightBattery < flashlight_batteryChargeTimeMS.GetInteger() / 2) && (gameLocal.random.RandomFloat() < flashlight_batteryFlickerPercent.GetFloat()))
+			{
+				flashlight.GetEntity()->RemoveMuzzleFlashlight();
+			}
+			else
+			{
+				flashlight.GetEntity()->MuzzleFlashLight();
+			}
 		}
 	}
 	
 	flashlight.GetEntity()->PresentWeapon( true );
-	
-	if( gameLocal.world->spawnArgs.GetBool( "no_Weapons" ) || gameLocal.inCinematic || spectating || fl.hidden )
-	{
-		worldModel->Hide();
-	}
-	else
-	{
-		worldModel->Show();
+	if (!flashlight_old.GetInteger()) { //GK: Not legacy no care
+		if (gameLocal.world->spawnArgs.GetBool("no_Weapons") || gameLocal.inCinematic || spectating || fl.hidden)
+		{
+			worldModel->Hide();
+		}
+		else
+		{
+			worldModel->Show();
+		}
 	}
 }
 
