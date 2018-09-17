@@ -606,40 +606,24 @@ std::vector<std::string> getlines(char* text) {
 }
 
 int checkstate(char* text) {
+	char* stable[11] = {
+		"Thing",
+		"Frame",
+		"Text",
+		"Weapon",
+		"Pointer",
+		"[CODEPTR]",
+		"Ammo",
+		"par",
+		"[STRINGS]",
+		"Sound",
+		"Misc"
+	};
 	if (text != NULL) {
-		if (!idStr::Icmp(text, "Thing")) {
-			return 1;
-		}
-		if (!idStr::Icmp(text, "Frame")) {
-			return 2;
-		}
-		if (!idStr::Icmp(text, "Text")) {
-			return 3;
-		}
-		if (!idStr::Icmp(text, "Weapon")) {
-			return 4;
-		}
-		if (!idStr::Icmp(text, "Pointer")) {
-			return 5;
-		}
-		if (!idStr::Icmp(text, "[CODEPTR]")) {
-			return 6;
-		}
-		if (!idStr::Icmp(text, "Ammo")) {
-			return 7;
-		}
-		if (!idStr::Icmp(text, "par")) {
-			return 8;
-		}
-		if (!idStr::Icmp(text, "[STRINGS]")) {
-			return 9;
-		}
-		//More Headache than it's worth
-		if (!idStr::Icmp(text, "Sound")) {
-		return 10;
-		}
-		if (!idStr::Icmp(text, "Misc")) {
-			return 11;
+		for (int i = 0; i < 11; i++) {
+			if (!idStr::Icmp(text, stable[i])) {
+				return i+1;
+			}
 		}
 	}
 	
