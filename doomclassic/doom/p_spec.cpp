@@ -489,12 +489,24 @@ P_CrossSpecialLine
 					hs = true;
 					break;
 				}
+				switch (line->backsector->special) {
+				case 9:
+					hs = true;
+					break;
+				}
 			}
 				break;
 		case doom2:
 			switch (::g->gamemap) {
 			case 15:
 				switch (line->frontsector->special) {
+				case 9:
+					hs = true;
+					break;
+				}
+				break;
+			case 27: //GK: Similar to MAP15 on Doom II but this time is the back sector
+				switch (line->backsector->special) {
 				case 9:
 					hs = true;
 					break;
