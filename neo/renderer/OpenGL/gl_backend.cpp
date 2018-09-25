@@ -371,7 +371,7 @@ void RB_StereoRenderExecuteBackEndCommands( const emptyCommand_t* const allCmds 
 	switch( renderSystem->GetStereo3DMode() )
 	{
 		case STEREO3D_QUAD_BUFFER:
-			glDrawBuffer( GL_BACK_RIGHT );
+		//	glDrawBuffer( GL_BACK_RIGHT ); //GK: Is it needed?
 			GL_SelectTexture( 0 );
 			stereoRenderImages[1]->Bind();
 			GL_SelectTexture( 1 );
