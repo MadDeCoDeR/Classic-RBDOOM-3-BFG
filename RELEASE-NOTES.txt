@@ -4,6 +4,32 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+25 September 2018 - Classic RBDOOM-3-BFG 1.1.11
+_______________________________
+
+[classicdoom]
+
+- Added Udmf support (see udmf_CRBD.txt for further instructions)
+
+- Fixed the bugged secret on Doom 2 MAP 27
+
+- Fixed the bugged secrets of E4M3 and E4M7
+
+- Updated EXPINFO in order to support the new fixes
+
+- The next weapon and previous weapon buttons can now be pressed and holded (unlike before which was requiring to press them for every weapon)
+
+[DOOM3BFG]
+
+- The next weapon and previous weapon buttons can now be pressed and holded (unlike before which was requiring to press them for every weapon)
+
+- Fixed an OpenGL error with the quad buffer stereoscopic 3D
+
+- Allow to skip the intro texts on Doom 3 and it's expansions
+
+- increased decal limit (special thanks to TheVoodoo)
+_______________________________________
+
 17 September 2018 - Classic RBDOOM-3-BFG 1.1.10.10
 _______________________________
 
