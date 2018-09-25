@@ -1,0 +1,43 @@
+===============================================================================
+Universal Doom Map Format Instructions for Classic RBDoom 3 BFG Edition - 24/09/2018
+	
+===============================================================================
+
+This document is meant to give you instructions about using the Universal Doom
+Map Format with the Classic Doom Engine v1.11 inside Doom 3 BFG Edition.
+
+===============================================================================
+
+=======================================
+I. Format capabilities
+=======================================
+
+	The Format capabilities are the same as
+	specified by the Doom namespace identifier.
+	
+	Even through the namespace identifier
+	is NOT used here.
+	
+	And neither the "user_" type of 
+	identifiers are used.
+	
+=======================================
+II. Use in archive Files
+=======================================
+
+	Similar the standard specification the TEXTMAP
+	needs to be between the MAP header and the ENDMAP
+	marker.
+	
+	Additionally between the TEXTMAP and the ENDMAP is
+	required to have the following lump files:
+	SEGS,
+	SSECTORS,
+	NODES,
+	REJECT,
+	BLOCKMAP.
+	
+	If any of this files is missing the map will either
+	fail to load or if it load it will be broken and 
+	unplayable.
+	

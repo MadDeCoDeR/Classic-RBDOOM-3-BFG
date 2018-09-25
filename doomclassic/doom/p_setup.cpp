@@ -49,6 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "doomstat.h"
 
+#include "d_udmf.h"
 
 void	P_SpawnMapThing (mapthing_t*	mthing);
 
@@ -766,19 +767,68 @@ P_SetupLevel
 	lumpnum = W_GetNumForName (lumpname);
 
 	::g->leveltime = 0;
+	bool isudmf = false;
+	//GK: Check if the map is udmf
+	if (!idStr::Icmp(W_GetNameForNum(lumpnum + 1), "TEXTMAP")) {
+		isudmf = true;
+		LoadUdmf(lumpnum + 1);
+		typedef void(*loadaction)(int);
+		typedef struct {
+			char* name;
+			loadaction func;
+		}loaddata;
+		//GK: Check if other map lumps are present between the TEXTMAP and the ENDMAP lumps
+		loaddata ld[9] = {
+			{"THINGS",P_LoadThings},
+			{"LINEDEFS",P_LoadLineDefs},
+			{"SIDEDEFS",P_LoadSideDefs},
+			{"VERTEXES",P_LoadVertexes},
+			{"SEGS",P_LoadSegs},
+			{"SSECTORS",P_LoadSubsectors},
+			{"NODES",P_LoadNodes},
+			{"SECTORS",P_LoadSectors},
+			{"BLOCKMAP",P_LoadBlockMap}
+		};
+		int i = 2;
+		int j = 1;
+		while (idStr::Icmp(W_GetNameForNum(lumpnum + i), "ENDMAP")) {
+			i++;
+		}
+		//GK: Get them from the end to the start for better stability
+		while (idStr::Icmp(W_GetNameForNum(lumpnum+i - j), "TEXTMAP")) {
+			bool cont = false;
+			for (int k = 0; k < 9; k++) {
+				if (!idStr::Icmp(W_GetNameForNum(lumpnum+i - j), ld[k].name)) {
+					ld[k].func(lumpnum+i-j);
+					j++;
+					cont = true;
+					break;
+				}
+			}
+			if (cont)
+				continue;
 
-	// note: most of this ordering is important	
-	P_LoadBlockMap (lumpnum+ML_BLOCKMAP);
-	P_LoadVertexes (lumpnum+ML_VERTEXES);
-	P_LoadSectors (lumpnum+ML_SECTORS);
-	P_LoadSideDefs (lumpnum+ML_SIDEDEFS);
+			if (!idStr::Icmp(W_GetNameForNum(lumpnum+i - j), "REJECT"))
+				::g->rejectmatrix = (byte*)W_CacheLumpNum(lumpnum + ML_REJECT, PU_LEVEL);
 
-	P_LoadLineDefs (lumpnum+ML_LINEDEFS);
-	P_LoadSubsectors (lumpnum+ML_SSECTORS);
-	P_LoadNodes (lumpnum+ML_NODES);
-	P_LoadSegs (lumpnum+ML_SEGS);
+			j++;
+		}
+	}
+	else {
 
-	::g->rejectmatrix = (byte*)W_CacheLumpNum (lumpnum+ML_REJECT,PU_LEVEL);
+		// note: most of this ordering is important	
+		P_LoadBlockMap(lumpnum + ML_BLOCKMAP);
+		P_LoadVertexes(lumpnum + ML_VERTEXES);
+		P_LoadSectors(lumpnum + ML_SECTORS);
+		P_LoadSideDefs(lumpnum + ML_SIDEDEFS);
+
+		P_LoadLineDefs(lumpnum + ML_LINEDEFS);
+		P_LoadSubsectors(lumpnum + ML_SSECTORS);
+		P_LoadNodes(lumpnum + ML_NODES);
+		P_LoadSegs(lumpnum + ML_SEGS);
+
+		::g->rejectmatrix = (byte*)W_CacheLumpNum(lumpnum + ML_REJECT, PU_LEVEL);
+	}
 
 	P_GroupLines ();
 
@@ -786,7 +836,15 @@ P_SetupLevel
 
 	::g->bodyqueslot = 0;
 	::g->deathmatch_p = ::g->deathmatchstarts;
-	P_LoadThings (lumpnum+ML_THINGS);
+	if (!isudmf) {
+		P_LoadThings(lumpnum + ML_THINGS);
+	}
+	else {
+		//GK: In udmf we store the mapthings in memory and spawning them later
+		for (int o = 0; o < ::g->nummapthings; o++) {
+			P_SpawnMapThing(&::g->mapthings[o]);
+		}
+	}
 
 	// if ::g->deathmatch, randomly spawn the active ::g->players
 	if (::g->deathmatch)
