@@ -1552,6 +1552,7 @@ idPlayer::idPlayer():
 	landChange				= 0;
 	landTime				= 0;
 	
+	tweap					= -1;
 	currentWeapon			= -1;
 	previousWeapon			= -1;
 	weaponSwitchTime		=  0;
@@ -1715,12 +1716,14 @@ void idPlayer::SetupWeaponEntity()
 		// get rid of old weapon
 		weapon.GetEntity()->Clear();
 		currentWeapon = -1;
+		tweap = -1;
 	}
 	else if( !common->IsClient() )
 	{
 		weapon = static_cast<idWeapon*>( gameLocal.SpawnEntityType( idWeapon::Type, NULL ) );
 		weapon.GetEntity()->SetOwner( this );
 		currentWeapon = -1;
+		tweap = -1;
 		
 		// flashlight
 		flashlight = static_cast<idWeapon*>( gameLocal.SpawnEntityType( idWeapon::Type, NULL ) );
@@ -1756,6 +1759,7 @@ void idPlayer::Init()
 	
 	currentWeapon			= -1;
 	idealWeapon				= -1;
+	tweap					= -1;
 	previousWeapon			= -1;
 	weaponSwitchTime		= 0;
 	weaponEnabled			= true;
@@ -1839,6 +1843,7 @@ void idPlayer::Init()
 	SetupWeaponEntity();
 	currentWeapon = -1;
 	previousWeapon = -1;
+	tweap = -1;
 	
 	heartRate = BASE_HEARTRATE;
 	AdjustHeartRate( BASE_HEARTRATE, 0.0f, 0.0f, true );
@@ -2743,6 +2748,7 @@ void idPlayer::Restore( idRestoreGame* savefile )
 	savefile->ReadInt( landTime );
 	
 	savefile->ReadInt( currentWeapon );
+	tweap = currentWeapon;
 	
 	int savedIdealWeapon = -1;
 	savefile->ReadInt( savedIdealWeapon );
@@ -3254,6 +3260,7 @@ void idPlayer::SavePersistantInfo()
 	inventory.GetPersistantData( playerInfo );
 	playerInfo.SetInt( "health", health );
 	playerInfo.SetInt( "current_weapon", currentWeapon );
+	tweap = currentWeapon;
 	playerInfo.SetInt( "playedTime", playedTimeSecs );
 	
 	achievementManager.SavePersistentData( playerInfo );
@@ -3278,6 +3285,7 @@ void idPlayer::RestorePersistantInfo()
 	inventory.RestoreInventory( this, spawnArgs );
 	health = spawnArgs.GetInt( "health", "100" );
 	idealWeapon = spawnArgs.GetInt( "current_weapon", "1" );
+	tweap= spawnArgs.GetInt("current_weapon", "1");
 	
 	playedTimeSecs = spawnArgs.GetInt( "playedTime" );
 	
@@ -5612,6 +5620,7 @@ void idPlayer::Weapon_Combat()
 			assert( common->IsClient() );
 			
 			currentWeapon = idealWeapon.Get();
+			tweap = currentWeapon;
 			weaponGone = false;
 			animPrefix = spawnArgs.GetString( va( "def_weapon%d", currentWeapon ) );
 			weapon.GetEntity()->GetWeaponDef( animPrefix, inventory.GetClipAmmoForWeapon( currentWeapon ) );
@@ -5643,6 +5652,7 @@ void idPlayer::Weapon_Combat()
 					previousWeapon = currentWeapon;
 				}
 				currentWeapon = idealWeapon.Get();
+				tweap = currentWeapon;
 				weaponGone = false;
 				animPrefix = spawnArgs.GetString( va( "def_weapon%d", currentWeapon ) );
 				weapon.GetEntity()->GetWeaponDef( animPrefix, inventory.GetClipAmmoForWeapon( currentWeapon ) );
@@ -7649,22 +7659,6 @@ void idPlayer::PerformImpulse( int impulse )
 			Reload();
 			break;
 		}
-		case IMPULSE_14:
-		{
-			if( !isIntroMap )
-			{
-				NextWeapon();
-			}
-			break;
-		}
-		case IMPULSE_15:
-		{
-			if( !isIntroMap )
-			{
-				PrevWeapon();
-			}
-			break;
-		}
 		case IMPULSE_16:
 		{
 			if( flashlight.IsValid() )
@@ -7810,6 +7804,54 @@ void idPlayer::EvaluateControls()
 				gameLocal.sessionCommand = "died";
 			}
 		}
+	}
+	//GK: Custom made weapon cycle algorithm in order to handle press and hold events
+	bool isIntroMap = (idStr::FindText(gameLocal.GetMapFileName(), "mars_city1") >= 0);
+	if (usercmd.buttons & BUTTON_PREVWEAP && tweap == currentWeapon)
+	{
+		if (!isIntroMap)
+		{
+			if (tweap == MAX_WEAPONS-1) {
+				tweap = 0;
+			}
+			{
+				tweap++;
+				int HW = inventory.weapons & (1 << tweap);
+				const char* weap = spawnArgs.GetString(va("def_weapon%d", tweap));
+				while (HW == 0 || !idStr::Icmp(weap,"weapon_PDA")) {
+					if (tweap == MAX_WEAPONS - 1) {
+						tweap = -1;
+					}
+					tweap++;
+					HW = inventory.weapons & (1 << tweap);
+					weap = spawnArgs.GetString(va("def_weapon%d", tweap));
+				}
+			}
+		}
+	}
+	if (usercmd.buttons & BUTTON_NEXTWEAP && tweap == currentWeapon)
+	{
+		if (!isIntroMap)
+		{
+			if (tweap == 0) {
+				tweap = MAX_WEAPONS - 1;
+			}
+			{
+				tweap--;
+				const char* weap = spawnArgs.GetString(va("def_weapon%d", tweap));
+				int HW = inventory.weapons & (1 << tweap);
+				while (HW == 0 || !idStr::Icmp(weap, "weapon_PDA")){
+					tweap--;
+					HW = inventory.weapons & (1 << tweap);
+					weap = spawnArgs.GetString(va("def_weapon%d", tweap));
+				}
+			}
+		}
+	}
+
+	if (tweap != currentWeapon) {
+		SelectWeapon(tweap, false);
+		tweap = currentWeapon;
 	}
 	
 	if( usercmd.impulseSequence != oldImpulseSequence )
@@ -11435,6 +11477,54 @@ void idPlayer::ClientThink( const int curTime, const float fraction, const bool 
 	
 	// clear the ik before we do anything else so the skeleton doesn't get updated twice
 	walkIK.ClearJointMods();
+	//GK: Custom made weapon cycle algorithm in order to handle press and hold events
+	bool isIntroMap = (idStr::FindText(gameLocal.GetMapFileName(), "mars_city1") >= 0);
+	if (usercmd.buttons & BUTTON_PREVWEAP && tweap == currentWeapon)
+	{
+		if (!isIntroMap)
+		{
+			if (tweap == MAX_WEAPONS - 1) {
+				tweap = 0;
+			}
+			{
+				tweap++;
+				int HW = inventory.weapons & (1 << tweap);
+				const char* weap = spawnArgs.GetString(va("def_weapon%d", tweap));
+				while (HW == 0 || !idStr::Icmp(weap, "weapon_PDA")) {
+					if (tweap == MAX_WEAPONS - 1) {
+						tweap = -1;
+					}
+					tweap++;
+					HW = inventory.weapons & (1 << tweap);
+					weap = spawnArgs.GetString(va("def_weapon%d", tweap));
+				}
+			}
+		}
+	}
+	if (usercmd.buttons & BUTTON_NEXTWEAP && tweap == currentWeapon)
+	{
+		if (!isIntroMap)
+		{
+			if (tweap == 0) {
+				tweap = MAX_WEAPONS - 1;
+			}
+			{
+				tweap--;
+				const char* weap = spawnArgs.GetString(va("def_weapon%d", tweap));
+				int HW = inventory.weapons & (1 << tweap);
+				while (HW == 0 || !idStr::Icmp(weap, "weapon_PDA")) {
+					tweap--;
+					HW = inventory.weapons & (1 << tweap);
+					weap = spawnArgs.GetString(va("def_weapon%d", tweap));
+				}
+			}
+		}
+	}
+
+	if (tweap != currentWeapon) {
+		SelectWeapon(tweap, false);
+		tweap = currentWeapon;
+	}
 	
 	if( gameLocal.isNewFrame )
 	{

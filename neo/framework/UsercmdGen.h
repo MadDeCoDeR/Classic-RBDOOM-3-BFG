@@ -48,6 +48,9 @@ const int BUTTON_USE			= BIT( 4 );
 const int BUTTON_JUMP			= BIT( 5 );
 const int BUTTON_CROUCH			= BIT( 6 );
 const int BUTTON_CHATTING		= BIT( 7 );
+//GK: Two new bits for cycling weapons
+const int BUTTON_NEXTWEAP       = BIT( 8 );
+const int BUTTON_PREVWEAP		= BIT( 9 );
 
 // usercmd_t->impulse commands
 const int IMPULSE_0				= 0;			// weap 0
@@ -103,7 +106,7 @@ public:
 	short		angles[3];						// view angles
 	signed char	forwardmove;					// forward/backward movement
 	signed char	rightmove;						// left/right movement
-	byte		buttons;						// buttons
+	short		buttons;						// buttons //GK: just and only because I put two new bytes now the buttons from byte is short
 	int			clientGameMilliseconds;			// time this usercmd was sent from the client
 	int			serverGameMilliseconds;			// interpolated server time this was applied on
 	uint16		fireCount;						// number of times we've fired

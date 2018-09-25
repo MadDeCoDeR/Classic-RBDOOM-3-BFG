@@ -1093,6 +1093,14 @@ void idUsercmdGenLocal::CmdButtons()
 	{
 		cmd.buttons |= BUTTON_CROUCH;
 	}
+	//GK: From now on next weapon and previous weapon events 
+	//are similar to other events that allowing you to press and hold the button
+	if (ButtonState(UB_IMPULSE14)) {
+		cmd.buttons |= BUTTON_PREVWEAP;
+	}
+	if (ButtonState(UB_IMPULSE15)) {
+		cmd.buttons |= BUTTON_NEXTWEAP;
+	}
 }
 
 /*
@@ -1320,8 +1328,8 @@ void idUsercmdGenLocal::Key( int keyNum, bool down )
 	{
 		buttonState[ action ]++;
 		if( !Inhibited() )
-		{
-			if( action >= UB_IMPULSE0 && action <= UB_IMPULSE31 )
+		{//GK: Make sure impulse 14 and impulse 15 are NOT recorded as impulse events
+			if( (action >= UB_IMPULSE0 && action <= UB_IMPULSE31) && action != 30 && action != 31 )
 			{
 				cmd.impulse = action - UB_IMPULSE0;
 				cmd.impulseSequence++;

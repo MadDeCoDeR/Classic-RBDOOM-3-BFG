@@ -200,16 +200,14 @@ bool IsPlayerRunning( const usercmd_t & command ) {
 G_PerformImpulse
 ========================
 */
-void G_PerformImpulse( const int impulse, ticcmd_t* cmd ) {
+int G_PerformImpulse( const int impulse, ticcmd_t* cmd ) {
 
-	if( impulse == IMPULSE_15 ) {
-		cmd->buttons |= BT_CHANGE; 
-		cmd->nextPrevWeapon = 1 ; 
-	} else if( impulse == IMPULSE_14 ) {
-		cmd->buttons |= BT_CHANGE; 
-		cmd->nextPrevWeapon = 2 ; 
+	if( impulse & BUTTON_NEXTWEAP ) {
+		return 1;
+	} else if( impulse & BUTTON_PREVWEAP ) {
+		return 2;
 	}  
-
+	return 0;
 }
 
 /*
@@ -336,11 +334,17 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 #endif
 
 			// Try to read any impulses that have happened.
-			static int oldImpulseSequence = 0;
-			if( oldImpulseSequence != curTech5Command.impulseSequence ) {
-				G_PerformImpulse( curTech5Command.impulse, cmd );
-			}
-			oldImpulseSequence = curTech5Command.impulseSequence;
+//			static int oldImpulseSequence = 0;
+			int cimpulse = 0;
+			//I_Printf("Impulse seq %d", curTech5Command.impulseSequence);
+//			if( oldImpulseSequence != curTech5Command.impulseSequence ) {
+				cimpulse=G_PerformImpulse( curTech5Command.buttons, cmd );
+				if (cimpulse > 0) { //GK: Weapon change event happend
+					cmd->buttons |= BT_CHANGE;
+					cmd->nextPrevWeapon = cimpulse;
+				}
+//			}
+//			oldImpulseSequence = curTech5Command.impulseSequence;
 
 			// weapon toggle
 			for (i=0 ; i<NUMWEAPONS-1 ; i++) 

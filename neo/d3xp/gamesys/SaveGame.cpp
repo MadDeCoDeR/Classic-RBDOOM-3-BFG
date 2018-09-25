@@ -797,7 +797,7 @@ idSaveGame::WriteUsercmd
 */
 void idSaveGame::WriteUsercmd( const usercmd_t& usercmd )
 {
-	WriteByte( usercmd.buttons );
+	WriteShort( usercmd.buttons ); //GK: Just add two new buttons to press and hold they said it will be better they say
 	WriteSignedChar( usercmd.forwardmove );
 	WriteSignedChar( usercmd.rightmove );
 	WriteShort( usercmd.angles[0] );
@@ -1691,7 +1691,15 @@ idRestoreGame::ReadUsercmd
 */
 void idRestoreGame::ReadUsercmd( usercmd_t& usercmd )
 {
-	ReadByte( usercmd.buttons );
+	//GK: At least here I can make old saves compatible
+	if (version < BUILD_NUMBER) {
+		byte button = 0;
+		ReadByte(button);
+		usercmd.buttons = button;
+	}
+	else {
+		ReadShort(usercmd.buttons);
+	}
 	ReadSignedChar( usercmd.forwardmove );
 	ReadSignedChar( usercmd.rightmove );
 	ReadShort( usercmd.angles[0] );
