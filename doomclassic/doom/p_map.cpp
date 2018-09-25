@@ -264,7 +264,15 @@ qboolean PIT_CheckThing (mobj_t* thing)
 	// didn't hit it
 	return true;	
     }
-    
+	if (::g->tmthing->player) {//GK: trigger secret by touching an object inside the secret sector (map exclusive)
+		if (((::g->gamemission == pack_custom && ::g->maps[::g->gamemap].tsecret) || (::g->gamemission == doom && ::g->gameepisode == 4 && (::g->gamemap == 3 || ::g->gamemap == 7 ))) && thing->subsector->sector->special == 9) {
+			::g->tmthing->player->secretcount++;
+			//GK send message when secret found
+			S_StartSound(::g->tmthing->player->mo, sfx_getpow);
+			::g->plyr->message = GOTSECRET;
+			thing->subsector->sector->special = 0;
+		}
+	}
     // don't clip against self
     if (thing == ::g->tmthing)
 	return true;
