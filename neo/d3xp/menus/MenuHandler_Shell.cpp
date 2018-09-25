@@ -1515,7 +1515,27 @@ void idMenuHandler_Shell::ShowDoomIntro()
 						{
 							return idSWFScriptVar();
 						}
-						
+						// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
+						int numKeyEvents = Sys_PollKeyboardInputEvents();
+						if (numKeyEvents > 0)
+						{
+							for (int i = 0; i < numKeyEvents; i++)
+							{
+								int key;
+								bool state;
+
+								if (Sys_ReturnKeyboardInputEvent(i, key, state))
+								{
+									if (key == K_ESCAPE && state == true)
+									{
+										shell->StartGame(0);
+									}
+									break;
+								}
+							}
+
+							Sys_EndKeyboardInputEvents();
+						}
 						if( !generating )
 						{
 							generating = true;
@@ -1710,6 +1730,28 @@ void idMenuHandler_Shell::ShowROEIntro()
 							return idSWFScriptVar();
 						}
 						
+						// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
+						int numKeyEvents = Sys_PollKeyboardInputEvents();
+						if (numKeyEvents > 0)
+						{
+							for (int i = 0; i < numKeyEvents; i++)
+							{
+								int key;
+								bool state;
+
+								if (Sys_ReturnKeyboardInputEvent(i, key, state))
+								{
+									if (key == K_ESCAPE && state == true)
+									{
+										shell->StartGame(1);
+									}
+									break;
+								}
+							}
+
+							Sys_EndKeyboardInputEvents();
+						}
+
 						if( !generating )
 						{
 							generating = true;
@@ -1865,6 +1907,28 @@ void idMenuHandler_Shell::ShowLEIntro()
 					if( txtVal == NULL )
 					{
 						return idSWFScriptVar();
+					}
+
+					// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
+					int numKeyEvents = Sys_PollKeyboardInputEvents();
+					if (numKeyEvents > 0)
+					{
+						for (int i = 0; i < numKeyEvents; i++)
+						{
+							int key;
+							bool state;
+
+							if (Sys_ReturnKeyboardInputEvent(i, key, state))
+							{
+								if (key == K_ESCAPE && state == true)
+								{
+									shell->StartGame(2);
+								}
+								break;
+							}
+						}
+
+						Sys_EndKeyboardInputEvents();
 					}
 					
 					if( !generating )
