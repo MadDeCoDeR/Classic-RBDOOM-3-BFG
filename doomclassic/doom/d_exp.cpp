@@ -415,6 +415,11 @@ void setMAPSTR(int pos, char* name, char* value) {
 		return;
 	}
 
+	if (!idStr::Icmp(name, "thingsecret")) {
+		::g->maps[pos].tsecret = true;
+		return;
+	}
+
 	if (!idStr::Icmp(name, "cspeclsecret")) {
 		::g->maps[pos].cspecls = true;
 		return;

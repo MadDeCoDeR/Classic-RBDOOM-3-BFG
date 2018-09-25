@@ -79,7 +79,9 @@ next_map <numeric>: Set the next map (if you don't want to be the exact next one
 
 doorsecret: Force the secret event to be triggered when opening a door that is a secret sector
 
-cspeclsecret: Force the secret event to be triggered when crossing a special line which's front sector is a secret
+cspeclsecret: Force the secret event to be triggered when crossing a special line which's front or back sector is a secret
+
+thingsecret: Force the secret event to be triggered when touching an item that is on a secret sector
 
 ----------------------
 6. COMPATIBILITY MODE

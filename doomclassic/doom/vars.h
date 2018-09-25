@@ -545,6 +545,8 @@ long		numlines;
 line_t*		lines;
 long		numsides;
 side_t*		sides;
+long		nummapthings;
+mapthing_t*		mapthings; //GK: For udmf is better to store them too
 long		bmapwidth;
 long		bmapheight;	// size in mapblocks
 long*		blockmap;	// int for larger maps

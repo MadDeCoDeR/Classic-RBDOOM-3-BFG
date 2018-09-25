@@ -547,6 +547,7 @@ typedef struct {//GK:Store information for the custom expansion maps
 	bool cspecls;
 	int otel;
 	bool dsecret;
+	bool tsecret;
 }map_t;
 
 typedef struct {//GK:Store information for the custom expansion clusters
