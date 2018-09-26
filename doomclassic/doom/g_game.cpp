@@ -342,6 +342,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 				if (cimpulse > 0) { //GK: Weapon change event happend
 					cmd->buttons |= BT_CHANGE;
 					cmd->nextPrevWeapon = cimpulse;
+					P_PlayerThink(&::g->players[::g->consoleplayer]);
 				}
 //			}
 //			oldImpulseSequence = curTech5Command.impulseSequence;

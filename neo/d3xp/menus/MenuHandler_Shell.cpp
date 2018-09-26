@@ -1516,6 +1516,7 @@ void idMenuHandler_Shell::ShowDoomIntro()
 							return idSWFScriptVar();
 						}
 						// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
+						bool escapeEvent = false;
 						int numKeyEvents = Sys_PollKeyboardInputEvents();
 						if (numKeyEvents > 0)
 						{
@@ -1528,13 +1529,65 @@ void idMenuHandler_Shell::ShowDoomIntro()
 								{
 									if (key == K_ESCAPE && state == true)
 									{
-										shell->StartGame(0);
+										escapeEvent = true;
 									}
 									break;
 								}
 							}
 
 							Sys_EndKeyboardInputEvents();
+						}
+						int	mouseEvents[MAX_MOUSE_EVENTS][2];
+						int numMouseEvents = Sys_PollMouseInputEvents(mouseEvents);
+						if (numMouseEvents > 0)
+						{
+							for (int i = 0; i < numMouseEvents; i++)
+							{
+								int action = mouseEvents[i][0];
+								switch (action)
+								{
+								case M_ACTION1:
+								case M_ACTION2:
+								case M_ACTION3:
+								case M_ACTION4:
+								case M_ACTION5:
+								case M_ACTION6:
+								case M_ACTION7:
+								case M_ACTION8:
+									escapeEvent = true;
+									break;
+
+								default:	// some other undefined button
+									break;
+								}
+							}
+						}
+
+						int numJoystickEvents = Sys_PollJoystickInputEvents(0);
+						if (numJoystickEvents > 0)
+						{
+							for (int i = 0; i < numJoystickEvents; i++)
+							{
+								int action;
+								int value;
+
+								if (Sys_ReturnJoystickInputEvent(i, action, value))
+								{
+									if (action >= J_ACTION1 && action <= J_ACTION_MAX)
+									{
+										if (value != 0)
+										{
+											escapeEvent = true;
+											break;
+										}
+									}
+								}
+							}
+
+							Sys_EndJoystickInputEvents();
+						}
+						if (escapeEvent) {
+							shell->StartGame(0);
 						}
 						if( !generating )
 						{
@@ -1731,6 +1784,7 @@ void idMenuHandler_Shell::ShowROEIntro()
 						}
 						
 						// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
+						bool escapeEvent = false;
 						int numKeyEvents = Sys_PollKeyboardInputEvents();
 						if (numKeyEvents > 0)
 						{
@@ -1743,13 +1797,65 @@ void idMenuHandler_Shell::ShowROEIntro()
 								{
 									if (key == K_ESCAPE && state == true)
 									{
-										shell->StartGame(1);
+										escapeEvent = true;
 									}
 									break;
 								}
 							}
 
 							Sys_EndKeyboardInputEvents();
+						}
+						int	mouseEvents[MAX_MOUSE_EVENTS][2];
+						int numMouseEvents = Sys_PollMouseInputEvents(mouseEvents);
+						if (numMouseEvents > 0)
+						{
+							for (int i = 0; i < numMouseEvents; i++)
+							{
+								int action = mouseEvents[i][0];
+								switch (action)
+								{
+								case M_ACTION1:
+								case M_ACTION2:
+								case M_ACTION3:
+								case M_ACTION4:
+								case M_ACTION5:
+								case M_ACTION6:
+								case M_ACTION7:
+								case M_ACTION8:
+									escapeEvent = true;
+									break;
+
+								default:	// some other undefined button
+									break;
+								}
+							}
+						}
+
+						int numJoystickEvents = Sys_PollJoystickInputEvents(0);
+						if (numJoystickEvents > 0)
+						{
+							for (int i = 0; i < numJoystickEvents; i++)
+							{
+								int action;
+								int value;
+
+								if (Sys_ReturnJoystickInputEvent(i, action, value))
+								{
+									if (action >= J_ACTION1 && action <= J_ACTION_MAX)
+									{
+										if (value != 0)
+										{
+											escapeEvent = true;
+											break;
+										}
+									}
+								}
+							}
+
+							Sys_EndJoystickInputEvents();
+						}
+						if (escapeEvent) {
+							shell->StartGame(1);
 						}
 
 						if( !generating )
@@ -1910,6 +2016,7 @@ void idMenuHandler_Shell::ShowLEIntro()
 					}
 
 					// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
+					bool escapeEvent = false;
 					int numKeyEvents = Sys_PollKeyboardInputEvents();
 					if (numKeyEvents > 0)
 					{
@@ -1922,13 +2029,65 @@ void idMenuHandler_Shell::ShowLEIntro()
 							{
 								if (key == K_ESCAPE && state == true)
 								{
-									shell->StartGame(2);
+									escapeEvent = true;
 								}
 								break;
 							}
 						}
 
 						Sys_EndKeyboardInputEvents();
+					}
+					int	mouseEvents[MAX_MOUSE_EVENTS][2];
+					int numMouseEvents = Sys_PollMouseInputEvents(mouseEvents);
+					if (numMouseEvents > 0)
+					{
+						for (int i = 0; i < numMouseEvents; i++)
+						{
+							int action = mouseEvents[i][0];
+							switch (action)
+							{
+							case M_ACTION1:
+							case M_ACTION2:
+							case M_ACTION3:
+							case M_ACTION4:
+							case M_ACTION5:
+							case M_ACTION6:
+							case M_ACTION7:
+							case M_ACTION8:
+								escapeEvent = true;
+								break;
+
+							default:	// some other undefined button
+								break;
+							}
+						}
+					}
+
+					int numJoystickEvents = Sys_PollJoystickInputEvents(0);
+					if (numJoystickEvents > 0)
+					{
+						for (int i = 0; i < numJoystickEvents; i++)
+						{
+							int action;
+							int value;
+
+							if (Sys_ReturnJoystickInputEvent(i, action, value))
+							{
+								if (action >= J_ACTION1 && action <= J_ACTION_MAX)
+								{
+									if (value != 0)
+									{
+										escapeEvent = true;
+										break;
+									}
+								}
+							}
+						}
+
+						Sys_EndJoystickInputEvents();
+					}
+					if (escapeEvent) {
+						shell->StartGame(2);
 					}
 					
 					if( !generating )
