@@ -30,6 +30,7 @@
 #include "p_local.h"
 #include "m_bbox.h"
 #include "d_udmf.h"
+#include "m_swap.h"
 
 long numlinedefs;
 long numthings;
