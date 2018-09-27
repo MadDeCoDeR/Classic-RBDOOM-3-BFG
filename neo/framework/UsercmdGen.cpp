@@ -1097,9 +1097,13 @@ void idUsercmdGenLocal::CmdButtons()
 	//are similar to other events that allowing you to press and hold the button
 	if (ButtonState(UB_IMPULSE14)) {
 		cmd.buttons |= BUTTON_PREVWEAP;
+		Key(302, false);
+		Key(303, false);
 	}
 	if (ButtonState(UB_IMPULSE15)) {
 		cmd.buttons |= BUTTON_NEXTWEAP;
+		Key(302, false);
+		Key(303, false);
 	}
 }
 
@@ -1402,7 +1406,7 @@ void idUsercmdGenLocal::Mouse()
 				while( value-- > 0 )
 				{
 					Key( key, true );
-					Key( key, false );
+				//	Key( key, false );
 					mouseButton = key;
 					mouseDown = true;
 				}

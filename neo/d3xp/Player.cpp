@@ -5133,11 +5133,13 @@ void idPlayer::NextBestWeapon()
 	UpdateHudWeapon();
 	//GK: A small logic HACK for the orginal Doom 3 Flashlight
 	weap = spawnArgs.GetString(va("def_weapon%d", w));
-	if (!idStr::Icmp("weapon_flashlight", weap) && flashlight_old.GetInteger()) {
-		flashlight.GetEntity()->lightOn = true;
-	}
-	else {
-		flashlight.GetEntity()->lightOn = false;
+	if (flashlight_old.GetInteger()) {
+		if (!idStr::Icmp("weapon_flashlight", weap)) {
+			flashlight.GetEntity()->lightOn = true;
+		}
+		else {
+			flashlight.GetEntity()->lightOn = false;
+		}
 	}
 }
 
@@ -5203,13 +5205,16 @@ void idPlayer::NextWeapon()
 		UpdateHudWeapon();
 		//GK: A small logic HACK for the orginal Doom 3 Flashlight
 		const char* weap = spawnArgs.GetString(va("def_weapon%d", w));
-		if (!idStr::Icmp("weapon_flashlight", weap) && flashlight_old.GetInteger()) {
-			flashlight.GetEntity()->lightOn = true;
-		}
-		else {
-			flashlight.GetEntity()->lightOn = false;
+		if (flashlight_old.GetInteger()) {
+			if (!idStr::Icmp("weapon_flashlight", weap)) {
+				flashlight.GetEntity()->lightOn = true;
+			}
+			else {
+				flashlight.GetEntity()->lightOn = false;
+			}
 		}
 	}
+
 }
 
 /*
@@ -5276,11 +5281,13 @@ void idPlayer::PrevWeapon()
 		UpdateHudWeapon();
 		//GK: A small logic HACK for the orginal Doom 3 Flashlight
 		const char* weap = spawnArgs.GetString(va("def_weapon%d", w));
-		if (!idStr::Icmp("weapon_flashlight", weap) && flashlight_old.GetInteger()) {
-			flashlight.GetEntity()->lightOn = true;
-		}
-		else {
-			flashlight.GetEntity()->lightOn = false;
+		if (flashlight_old.GetInteger()) {
+			if (!idStr::Icmp("weapon_flashlight", weap)) {
+				flashlight.GetEntity()->lightOn = true;
+			}
+			else {
+				flashlight.GetEntity()->lightOn = false;
+			}
 		}
 	}
 }
