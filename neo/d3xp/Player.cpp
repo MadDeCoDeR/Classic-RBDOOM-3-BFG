@@ -7809,11 +7809,13 @@ void idPlayer::EvaluateControls()
 		}
 	}
 	//GK: Custom made weapon cycle algorithm in order to handle press and hold events
+	int npw = 0;
 	bool isIntroMap = (idStr::FindText(gameLocal.GetMapFileName(), "mars_city1") >= 0);
 	if (usercmd.buttons & BUTTON_NEXTWEAP && tweap == currentWeapon)
 	{
 		if (!isIntroMap)
 		{
+			npw = 1;
 			if (tweap == MAX_WEAPONS-1) {
 				tweap = 0;
 			}
@@ -7836,6 +7838,7 @@ void idPlayer::EvaluateControls()
 	{
 		if (!isIntroMap)
 		{
+			npw = 2;
 			if (tweap == 0) {
 				tweap = MAX_WEAPONS - 1;
 			}
@@ -7855,7 +7858,7 @@ void idPlayer::EvaluateControls()
 		}
 	}
 
-	if (currentWeapon == 0 && tweap != currentWeapon) {
+	/*if (currentWeapon == 0 && tweap != currentWeapon) {
 		const char* weap = spawnArgs.GetString(va("def_weapon%d", tweap));
 		int HW = inventory.weapons & (1 << tweap);
 		switch (tweap) {
@@ -7891,16 +7894,21 @@ void idPlayer::EvaluateControls()
 		SelectWeapon(tweap, false);
 		//currentWeapon=tweap;
 	}
-	else {
+	else*/ {
 
-		if (tweap > currentWeapon) {
-			NextWeapon();
+		if (tweap != currentWeapon) {
+			if (npw == 1) {
+				PrevWeapon();
+			}
+			else if (npw == 2) {
+				NextWeapon();
+			}
 			//tweap = currentWeapon;
 		}
-		if (tweap < currentWeapon) {
+		/*if (tweap < currentWeapon) {
 			PrevWeapon();
 			//tweap = currentWeapon;
-		}
+		}*/
 	}
 	
 	if( usercmd.impulseSequence != oldImpulseSequence )
@@ -11527,11 +11535,13 @@ void idPlayer::ClientThink( const int curTime, const float fraction, const bool 
 	// clear the ik before we do anything else so the skeleton doesn't get updated twice
 	walkIK.ClearJointMods();
 	//GK: Custom made weapon cycle algorithm in order to handle press and hold events
+	int npw = 0;
 	bool isIntroMap = (idStr::FindText(gameLocal.GetMapFileName(), "mars_city1") >= 0);
 	if (usercmd.buttons & BUTTON_NEXTWEAP && tweap == currentWeapon)
 	{
 		if (!isIntroMap)
 		{
+			npw = 1;
 			if (tweap == MAX_WEAPONS - 1) {
 				tweap = 0;
 			}
@@ -11554,6 +11564,7 @@ void idPlayer::ClientThink( const int curTime, const float fraction, const bool 
 	{
 		if (!isIntroMap)
 		{
+			npw = 2;
 			if (tweap == 0) {
 				tweap = MAX_WEAPONS - 1;
 			}
@@ -11573,7 +11584,7 @@ void idPlayer::ClientThink( const int curTime, const float fraction, const bool 
 		}
 	}
 
-	if (currentWeapon == 0 && tweap != currentWeapon) {
+	/*if (currentWeapon == 0 && tweap != currentWeapon) {
 		const char* weap = spawnArgs.GetString(va("def_weapon%d", tweap));
 		int HW = inventory.weapons & (1 << tweap);
 		switch (tweap) {
@@ -11609,16 +11620,22 @@ void idPlayer::ClientThink( const int curTime, const float fraction, const bool 
 		SelectWeapon(tweap, false);
 		//currentWeapon=tweap;
 	}
-	else {
+	else*/ {
 
-		if (tweap > currentWeapon) {
-			NextWeapon();
+		if (tweap != currentWeapon) {
+			if (npw == 1) {
+				PrevWeapon();
+			}
+			else if (npw == 2) {
+
+				NextWeapon();
+			}
 			//tweap = currentWeapon;
 		}
-		if (tweap < currentWeapon) {
+		/*if (tweap < currentWeapon) {
 			PrevWeapon();
 			//tweap = currentWeapon;
-		}
+		}*/
 	}
 	
 	if( gameLocal.isNewFrame )
