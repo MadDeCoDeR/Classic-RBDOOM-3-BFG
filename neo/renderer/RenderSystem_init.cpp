@@ -2795,6 +2795,15 @@ void idRenderSystemLocal::Init()
 	guiModel = new( TAG_RENDER ) idGuiModel;
 	guiModel->Clear();
 	tr_guiModel = guiModel;	// for DeviceContext fast path
+
+	if (glConfig.nativeScreenWidth == 1280 && glConfig.nativeScreenHeight == 1470)
+	{
+		glConfig.stereo3Dmode = STEREO3D_HDMI_720;
+	}
+	else
+	{
+		glConfig.stereo3Dmode = GetStereoScopicRenderingMode();
+	}
 	
 	globalImages->Init();
 	
