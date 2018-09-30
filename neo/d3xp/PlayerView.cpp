@@ -472,7 +472,7 @@ void idPlayerView::SingleView( const renderView_t* view, idMenuHandler_HUD* hudM
 	}
 	
 	// draw screen blobs
-	if( !pm_thirdPerson.GetBool() && !g_skipViewEffects.GetBool() )
+	if( /*!pm_thirdPerson.GetBool() &&*/ !g_skipViewEffects.GetBool() )
 	{
 		if( !player->spectating )
 		{
