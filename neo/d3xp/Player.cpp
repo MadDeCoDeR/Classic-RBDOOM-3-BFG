@@ -58,6 +58,8 @@ idCVar pm_clientInterpolation_Divergence( "pm_clientInterpolation_Divergence", "
 
 idCVar pm_clientAuthoritative_minSpeedSquared( "pm_clientAuthoritative_minSpeedSquared", "1000.0f", CVAR_FLOAT, "" );
 
+idCVar pm_cursor("pm_cursor", "1", CVAR_GAME | CVAR_BOOL|CVAR_ARCHIVE, "Enable/disable Crosshair");
+
 extern idCVar g_demoMode;
 
 /*
@@ -1519,6 +1521,7 @@ idPlayer::idPlayer():
 	forceScoreBoard			= false;
 	forceRespawn			= false;
 	spectating				= false;
+	istps					= false;
 	spectator				= 0;
 	wantSpectate			= true;
 	
@@ -1897,14 +1900,26 @@ void idPlayer::Init()
 	{
 		SetModel( value );
 	}
+
+	if (istps && !pm_thirdPerson.GetBool()) {
+		pm_thirdPerson.SetBool(true);
+		istps = false;
+	}
 	
 	if( hud )
 	{
 		hud->SetCursorState( this, CURSOR_TALK, 0 );
-		hud->SetCursorState( this, CURSOR_IN_COMBAT, 1 );
+		if (pm_cursor.GetBool()) {
+			hud->SetCursorState(this, CURSOR_IN_COMBAT, 1);
+			hud->SetCursorState(this, CURSOR_NONE, 0);
+		}
+		else {
+			hud->SetCursorState(this, CURSOR_IN_COMBAT, 0);
+			hud->SetCursorState(this, CURSOR_NONE, 1);
+		}
 		hud->SetCursorState( this, CURSOR_ITEM, 0 );
 		hud->SetCursorState( this, CURSOR_GRABBER, 0 );
-		hud->SetCursorState( this, CURSOR_NONE, 0 );
+		
 		hud->UpdateCursorState();
 	}
 	
@@ -3262,6 +3277,7 @@ void idPlayer::SavePersistantInfo()
 	playerInfo.SetInt( "current_weapon", currentWeapon );
 	tweap = currentWeapon;
 	playerInfo.SetInt( "playedTime", playedTimeSecs );
+	playerInfo.SetBool("istps", istps);
 	
 	achievementManager.SavePersistentData( playerInfo );
 }
@@ -3288,6 +3304,8 @@ void idPlayer::RestorePersistantInfo()
 	tweap= spawnArgs.GetInt("current_weapon", "1");
 	
 	playedTimeSecs = spawnArgs.GetInt( "playedTime" );
+
+	istps = spawnArgs.GetBool("istps");
 	
 	achievementManager.RestorePersistentData( spawnArgs );
 }
@@ -3607,6 +3625,10 @@ void idPlayer::DrawHUD( idMenuHandler_HUD* _hudManager )
 	// weapon targeting crosshair
 	if( !GuiActive() )
 	{
+		if (istps) {
+			pm_thirdPerson.SetBool(true);
+			istps = false;
+		}
 		// don't show the 2D crosshair in stereo rendering, use the
 		// laser sight model instead
 		if( _hudManager && _hudManager->GetHud() )
@@ -3614,7 +3636,7 @@ void idPlayer::DrawHUD( idMenuHandler_HUD* _hudManager )
 		
 			idMenuScreen_HUD* hud = _hudManager->GetHud();
 			
-			if( weapon.GetEntity()->ShowCrosshair() && !IsGameStereoRendered() )
+			if( weapon.GetEntity()->ShowCrosshair() && !IsGameStereoRendered() && pm_cursor.GetBool())
 			{
 				if( weapon.GetEntity()->GetGrabberState() == 1 || weapon.GetEntity()->GetGrabberState() == 2 )
 				{
@@ -3643,6 +3665,10 @@ void idPlayer::DrawHUD( idMenuHandler_HUD* _hudManager )
 		
 		hud->SetCursorState( this, CURSOR_NONE, 1 );
 		hud->UpdateCursorState();
+		if (pm_thirdPerson.GetBool()) {
+			pm_thirdPerson.SetBool(false);
+			istps = true;
+		}
 	}
 }
 
@@ -10704,6 +10730,7 @@ void idPlayer::GetViewPos( idVec3& origin, idMat3& axis ) const
 	}
 	else
 	{
+
 		origin = GetEyePosition() + viewBob;
 		angles = viewAngles + viewBobAngles + playerView.AngleOffset();
 		
@@ -10714,7 +10741,12 @@ void idPlayer::GetViewPos( idVec3& origin, idMat3& axis ) const
 		origin += gravityVector * g_viewNodalZ.GetFloat();
 		
 		// adjust the origin based on the camera nodal distance (eye distance from neck)
-		origin += axis[0] * g_viewNodalX.GetFloat() + axis[2] * g_viewNodalZ.GetFloat();
+		if (pm_thirdPerson.GetBool()) {
+			origin += axis[0] * g_viewNodalX.GetFloat() + axis[1]*8 + axis[2] * g_viewNodalZ.GetFloat();
+		}
+		else {
+			origin += axis[0] * g_viewNodalX.GetFloat() + axis[2] * g_viewNodalZ.GetFloat();
+		}
 	}
 }
 

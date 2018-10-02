@@ -394,6 +394,7 @@ public:
 	bool					forceScoreBoard;
 	bool					forceRespawn;
 	bool					spectating;
+	bool					istps;
 	int						lastSpectateTeleport;
 	bool					lastHitToggle;
 	bool					wantSpectate;		// from userInfo
