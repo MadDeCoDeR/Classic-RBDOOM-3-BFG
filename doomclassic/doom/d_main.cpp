@@ -248,7 +248,7 @@ void D_Display (void)
 
 	// clean up border stuff
 	if (::g->gamestate != ::g->oldgamestate && ::g->gamestate != GS_LEVEL)
-		I_SetPalette ((byte*)W_CacheLumpName ("PLAYPAL",PU_CACHE_SHARED));
+		I_SetPalette ((byte*)W_CacheLumpName ("PLAYPAL",PU_CACHE_SHARED), W_LumpLength(W_GetNumForName("PLAYPAL")));
 
 	// see if the border needs to be initially drawn
 	if (::g->gamestate == GS_LEVEL && ::g->oldgamestate != GS_LEVEL)

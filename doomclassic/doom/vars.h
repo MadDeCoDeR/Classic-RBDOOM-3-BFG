@@ -338,7 +338,7 @@ int current_time ;
 // i_system.vars end // 
 //  i_video_xbox.vars begin // 
 
-unsigned int	XColorMap[256];
+unsigned int	XColorMap[(255 << 16) + (255 << 8) + (255) + 1];
 unsigned int *ImageBuff;
 unsigned int *ImageBuffs[2];
 

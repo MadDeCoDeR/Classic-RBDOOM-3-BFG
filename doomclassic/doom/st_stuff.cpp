@@ -970,7 +970,7 @@ void ST_doPaletteStuff(void)
 	{
 		::g->st_palette = palette;
 		pal = (byte *) W_CacheLumpNum (::g->lu_palette, PU_CACHE_SHARED)+palette*768;
-		I_SetPalette (pal);
+		I_SetPalette (pal, W_LumpLength(::g->lu_palette));
 	}
 
 }
@@ -1353,7 +1353,7 @@ void ST_Stop (void)
 	if (::g->st_stopped)
 		return;
 
-	I_SetPalette ((byte*)W_CacheLumpNum ((int)::g->lu_palette, PU_CACHE_SHARED));
+	I_SetPalette ((byte*)W_CacheLumpNum ((int)::g->lu_palette, PU_CACHE_SHARED), W_LumpLength(::g->lu_palette));
 
 	::g->st_stopped = true;
 }

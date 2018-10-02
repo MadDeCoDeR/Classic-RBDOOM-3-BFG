@@ -163,13 +163,13 @@ inline unsigned int I_PackColor( unsigned int a, unsigned int r, unsigned int g,
 //
 // I_SetPalette
 //
-void I_SetPalette (byte* palette)
+void I_SetPalette (byte* palette,int palsize)
 {
 
 	int i;
-
+	int maxcolors = palsize/3;
 	// set the X colormap entries
-	for (i=0 ; i<256 ; i++)
+	for (i=0 ; i<maxcolors ; i++)
 	{
 		int r,b,g;
 		r = gammatable[::g->usegamma][*palette++];
