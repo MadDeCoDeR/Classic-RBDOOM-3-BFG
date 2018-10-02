@@ -4,7 +4,7 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
-25 September 2018 - Classic RBDOOM-3-BFG 1.1.11
+25 September 2018(02/10/2018) - Classic RBDOOM-3-BFG 1.1.11
 _______________________________
 
 [classicdoom]
@@ -19,6 +19,8 @@ _______________________________
 
 - The next weapon and previous weapon buttons can now be pressed and holded (unlike before which was requiring to press them for every weapon)
 
+- Classic Doom games will load all the Pallete Colors
+
 [DOOM3BFG]
 
 - The next weapon and previous weapon buttons can now be pressed and holded (unlike before which was requiring to press them for every weapon)
@@ -28,6 +30,14 @@ _______________________________
 - Allow to skip the intro texts on Doom 3 and it's expansions
 
 - increased decal limit (special thanks to TheVoodoo)
+
+- Added Hud Display on the Third Person View
+
+- Realign the camera in third Person View
+
+- Automatically switch to first Person View when the player is using computers
+
+- Added the option to hide the Crosshair
 _______________________________________
 
 17 September 2018 - Classic RBDOOM-3-BFG 1.1.10.10
