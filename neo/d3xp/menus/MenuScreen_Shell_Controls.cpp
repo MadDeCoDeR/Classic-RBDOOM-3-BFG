@@ -31,11 +31,13 @@ If you have questions concerning this license or the applicable additional terms
 
 const static int NUM_CONTROLS_OPTIONS = 8;
 
+extern idCVar pm_cursor;
+
 enum contorlsMenuCmds_t
 {
 	CONTROLS_CMD_BINDINGS,
 	CONTROLS_CMD_GAMEPAD,
-	CONTROLS_CMD_GAMEPAD_ENABLED,
+	CONTROLS_CMD_CROSSHAIR,
 	CONTROLS_CMD_INVERT,
 	CONTROLS_CMD_MOUSE_SENS
 };
@@ -92,16 +94,16 @@ void idMenuScreen_Shell_Controls::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_GAMEPAD );
 	options->AddChild( control );
 	//GK: Not needed anymore
-	/*
+	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TOGGLE );
-	control->SetLabel( "#str_swf_gamepad_enabled" );	// Gamepad Enabled
-	control->SetDataSource( &controlData, idMenuDataSource_ControlSettings::CONTROLS_FIELD_GAMEPAD_ENABLED );
+	control->SetLabel( "Crosshair" );	// Gamepad Enabled
+	control->SetDataSource( &controlData, idMenuDataSource_ControlSettings::CONTROLS_FIELD_CROSSHAIR );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_GAMEPAD_ENABLED );
+	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_CROSSHAIR );
 	control->RegisterEventObserver( helpWidget );
 	options->AddChild( control );
-	*/
+	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TOGGLE );
 	control->SetLabel( "#str_swf_invert_mouse" );	// Invert Mouse
@@ -303,9 +305,9 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 					}
 					break;
 				}
-				case CONTROLS_CMD_GAMEPAD_ENABLED:
+				case CONTROLS_CMD_CROSSHAIR:
 				{
-					controlData.AdjustField( idMenuDataSource_ControlSettings::CONTROLS_FIELD_GAMEPAD_ENABLED, 1 );
+					controlData.AdjustField( idMenuDataSource_ControlSettings::CONTROLS_FIELD_CROSSHAIR, 1 );
 					if( options != NULL )
 					{
 						options->Update();
@@ -369,7 +371,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::LoadData()
 	fields[ CONTROLS_FIELD_INVERT_MOUSE ].SetBool( in_mouseInvertLook.GetBool() );
 	float mouseSpeed = ( ( in_mouseSpeed.GetFloat() - 0.25f ) / ( 4.0f - 0.25 ) ) * 100.0f;
 	fields[ CONTROLS_FIELD_MOUSE_SENS ].SetFloat( mouseSpeed );
-	fields[ CONTROLS_FIELD_GAMEPAD_ENABLED ].SetBool( idLib::joystick );
+	fields[ CONTROLS_FIELD_CROSSHAIR ].SetBool( pm_cursor.GetBool() );
 	
 	originalFields = fields;
 }
@@ -385,7 +387,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::CommitData()
 	in_mouseInvertLook.SetBool( fields[ CONTROLS_FIELD_INVERT_MOUSE ].ToBool() );
 	float mouseSpeed = 0.25f + ( ( 4.0f - 0.25 ) * ( fields[ CONTROLS_FIELD_MOUSE_SENS ].ToFloat() / 100.0f ) );
 	in_mouseSpeed.SetFloat( mouseSpeed );
-	idLib::joystick = fields[ CONTROLS_FIELD_GAMEPAD_ENABLED ].ToBool() ;
+	pm_cursor.SetBool(fields[ CONTROLS_FIELD_CROSSHAIR ].ToBool() );
 	
 	cvarSystem->SetModifiedFlags( CVAR_ARCHIVE );
 	
@@ -400,7 +402,7 @@ idMenuScreen_Shell_Controls::idMenuDataSource_AudioSettings::AdjustField
 */
 void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::AdjustField( const int fieldIndex, const int adjustAmount )
 {
-	if( fieldIndex == CONTROLS_FIELD_INVERT_MOUSE || fieldIndex == CONTROLS_FIELD_GAMEPAD_ENABLED )
+	if( fieldIndex == CONTROLS_FIELD_INVERT_MOUSE || fieldIndex == CONTROLS_FIELD_CROSSHAIR )
 	{
 		fields[ fieldIndex ].SetBool( !fields[ fieldIndex ].ToBool() );
 	}
@@ -429,7 +431,7 @@ bool idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::IsDataChange
 		return true;
 	}
 	
-	if( fields[ CONTROLS_FIELD_GAMEPAD_ENABLED ].ToFloat() != originalFields[ CONTROLS_FIELD_GAMEPAD_ENABLED ].ToFloat() )
+	if( fields[ CONTROLS_FIELD_CROSSHAIR ].ToFloat() != originalFields[ CONTROLS_FIELD_CROSSHAIR ].ToFloat() )
 	{
 		return true;
 	}
