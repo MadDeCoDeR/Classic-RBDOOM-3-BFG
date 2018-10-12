@@ -10742,7 +10742,7 @@ void idPlayer::GetViewPos( idVec3& origin, idMat3& axis ) const
 		
 		// adjust the origin based on the camera nodal distance (eye distance from neck)
 		if (pm_thirdPerson.GetBool()) {
-			origin += axis[0] * g_viewNodalX.GetFloat() + axis[1]*8 + axis[2] * g_viewNodalZ.GetFloat();
+			origin += axis[0] * g_viewNodalX.GetFloat() + axis[1]*pm_thirdPersonXOff.GetFloat() + axis[2] * g_viewNodalZ.GetFloat();
 		}
 		else {
 			origin += axis[0] * g_viewNodalX.GetFloat() + axis[2] * g_viewNodalZ.GetFloat();
