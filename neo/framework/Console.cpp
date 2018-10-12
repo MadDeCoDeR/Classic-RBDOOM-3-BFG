@@ -31,6 +31,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "ConsoleHistory.h"
 #include "../renderer/ResolutionScale.h"
 #include "Common_local.h"
+#include "../../doomclassic/doom/doomlib.h"
+#include "../../doomclassic/doom/globaldata.h"
 
 #define	CON_TEXTSIZE			0x30000
 #define	NUM_CON_TIMES			4
@@ -314,6 +316,32 @@ idConsoleLocal::DrawMemoryUsage
 */
 float idConsoleLocal::DrawMemoryUsage( float y )
 {
+	Globals* data = (Globals*)DoomLib::GetGlobalData(0);
+	if (data != NULL) {
+		int inuse;
+		if (com_showMemoryUsage.GetInteger() == 2) {
+			inuse = data->NumAlloc;
+		}
+		else {
+			inuse = data->NumAlloc-data->CacheAlloc;
+		}
+		inuse = ((inuse) / 1024);
+		int total = (data->zonesize / 1024);
+		int nintprec = ((data->zonesize / 1024) / 1024)*0.9;
+		int inusemb = inuse / 1024;
+		idStr timeStr;
+		
+		if (com_showMemoryUsage.GetInteger() == 2) {
+			timeStr.Format("%sZM+C: %4.2f/%d",inusemb>nintprec?S_COLOR_RED:"", inuse / 1024.0f, total / 1024);
+		}
+		else {
+			timeStr.Format("%sZM: %4.2f/%d", inusemb> nintprec ? S_COLOR_RED : "", inuse / 1024.0f, total / 1024);
+		}
+		int w = timeStr.LengthWithoutColors() * BIGCHAR_WIDTH;
+
+		renderSystem->DrawBigStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, timeStr.c_str(), colorWhite, false);
+		y += BIGCHAR_HEIGHT + 4;
+	}
 	return y;
 }
 

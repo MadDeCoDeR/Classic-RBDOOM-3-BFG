@@ -80,7 +80,7 @@ idCVar com_speeds( "com_speeds", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "s
 // DG: support "com_showFPS 2" for fps-only view like in classic doom3 => make it CVAR_INTEGER
 idCVar com_showFPS( "com_showFPS", "0", CVAR_INTEGER | CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_NOCHEAT, "show frames rendered per second. 0: off 1: default bfg values, 2: only show FPS (classic view)" );
 // DG end
-idCVar com_showMemoryUsage( "com_showMemoryUsage", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "show total and per frame memory usage" );
+idCVar com_showMemoryUsage( "com_showMemoryUsage", "0", CVAR_INTEGER| CVAR_SYSTEM | CVAR_NOCHEAT | CVAR_ARCHIVE, "show total and per frame memory usage" );
 idCVar com_updateLoadSize( "com_updateLoadSize", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "update the load size after loading a map" );
 
 idCVar com_productionMode( "com_productionMode", "0", CVAR_SYSTEM | CVAR_BOOL, "0 - no special behavior, 1 - building a production build, 2 - running a production build" );
@@ -266,6 +266,17 @@ idCmdArgs	com_consoleLines[MAX_CONSOLE_LINES];
 char* classicargv[128];
 //GK end
 
+bool isnumber(char* arg) {
+	int m = strlen(arg);
+	bool isint = true;
+	for (int i = 0; i < m; i++) {
+		if (!isdigit(arg[i])) {
+			isint = false;
+			break;
+		}
+	}
+	return isint;
+}
 /*
 ==================
 idCommonLocal::ParseCommandLine
@@ -304,7 +315,7 @@ void idCommonLocal::ParseCommandLine( int argc, const char* const* argv )
 			com_consoleLines[ com_numConsoleLines - 1 ].AppendArg( argv[ i ] + 1 );
 		}
 		//GK begin
-		else if (argv[i][0] == '-') {
+		else if (argv[i][0] == '-' && !isnumber(strdup(argv[i]+1))) {
 
 			while (i<argc && argv[i][0] != '+') {
 				classicargv[j] = strdup(argv[i]);
