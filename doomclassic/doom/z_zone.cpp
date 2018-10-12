@@ -43,8 +43,8 @@ If you have questions concerning this license or the applicable additional terms
 //
 // It is of no value to free a cachable block,
 //  because it will get overwritten automatically if needed.
-// 
- 
+//
+
 #define ZONEID	0x1d4a11
 
 
@@ -74,10 +74,10 @@ void Z_ClearZone (memzone_t* zone)
 
 void *I_ZoneBase( int *size )
 {
-	enum
-	{
-		HEAP_SIZE = 150 * 1024 * 1024			// SMF - was 10 * 1024 * 1024
-	};
+	//enum
+	//{
+	int HEAP_SIZE = ::g->zmem * 1024 * 1024;		// SMF - was 10 * 1024 * 1024
+	//};
 	*size = HEAP_SIZE;
 	return malloc( HEAP_SIZE );
 }
@@ -112,7 +112,7 @@ void Z_Init (void)
     block->size = ::g->mainzone->size - sizeof(memzone_t);
 }
 
-int NumAlloc = 0;
+//int NumAlloc = 0;
 
 //
 // Z_Free
@@ -123,8 +123,16 @@ void Z_Free (void* ptr)
     memblock_t*		other;
 
 	block = (memblock_t *) ( (byte *)ptr - sizeof(memblock_t));
+#ifdef RANGECHECK
+	if (block->size > ::g->NumAlloc)
+		I_Error("Z_Free: Trying to free %i on tag %d", block->size, block->tag);
+#endif
 
-	NumAlloc -= block->size;
+	::g->NumAlloc -= block->size;
+
+	if (block->tag == PU_CACHE ){
+		::g->CacheAlloc -= block->size;
+	}
 
     if (block->id != ZONEID)
 	I_Error ("Z_Free: freed a pointer without ZONEID");
@@ -173,7 +181,7 @@ void Z_Free (void* ptr)
 
 
 //GK: Expirimental z-memory reallocation (dont worry it is never in use)
-void
+/*void
 Z_Realloc
 (int newsize) {
 	memblock_t*	block;
@@ -280,9 +288,9 @@ Z_Realloc
 	// NULL indicates a free block.
 	block->user = NULL;
 
-	block->size = newzone->size - sizeof(memzone_t);*/
+	block->size = newzone->size - sizeof(memzone_t);
 	::g->zonesize = ns;
-}
+}*/
 
 //
 // Z_Malloc
@@ -302,7 +310,14 @@ Z_Malloc
     memblock_t* rover;
     memblock_t* newblock;
     memblock_t*	base;
-	NumAlloc += size;
+#ifdef RANGECHECK
+	if (size < 0 || size > ::g->zonesize)
+		I_Error("Z_Malloc: Trying to allocate %i on tag %d", size, tag);
+#endif
+		::g->NumAlloc += size;
+		if (tag == PU_CACHE) {
+			::g->CacheAlloc += size;
+		}
     	
 	size = (size + 3) & ~3;
     
@@ -428,7 +443,10 @@ Z_FreeTags
 	// free block?
 	if (!block->user)
 	    continue;
-	
+
+	if (block->size > ::g->NumAlloc) //GK: Don't allow to free blocks with iregular sizes
+		continue;
+
 	if (block->tag >= lowtag && block->tag <= hightag)
 	    Z_Free ( (byte *)block+sizeof(memblock_t));
     }
@@ -577,6 +595,9 @@ int Z_FreeMemory (void)
 	 block != &::g->mainzone->blocklist;
 	 block = block->next)
     {
+		if (!block) {
+			continue;
+		}
 	if (!block->user || block->tag >= PU_PURGELEVEL)
 	    free += block->size;
     }

@@ -81,8 +81,11 @@ void P_AddThinker (thinker_t* thinker)
 //
 void P_RemoveThinker (thinker_t* thinker)
 {
-  // FIXME: NOP.
-  thinker->function.acv = (actionf_v)(-1);
+  // FIXED?:Now the unallocation will be instant.
+	thinker->function.acv = (actionf_v)(-1);
+	thinker->next->prev = thinker->prev;
+	thinker->prev->next = thinker->next;
+	Z_Free(thinker);
 }
 
 
@@ -107,14 +110,14 @@ void P_RunThinkers (void)
     currentthinker = ::g->thinkercap.next;
     while (currentthinker != &::g->thinkercap)
     {
-		 if ( currentthinker->function.acv == (actionf_v)(-1) )
+	/*	 if ( currentthinker->function.acv == (actionf_v)(-1) )
 		 {
 			 // time to remove it
 			 currentthinker->next->prev = currentthinker->prev;
 			 currentthinker->prev->next = currentthinker->next;
 			 Z_Free(currentthinker);
 		 }
-		 else
+		 else*/
 		 {
 			 if (currentthinker->function.acp1)
 				 currentthinker->function.acp1 ((mobj_t*)currentthinker);
@@ -157,6 +160,12 @@ void P_Ticker (void)
 		if (::g->playeringame[i]) {
 		    P_PlayerThink (&::g->players[i]);
 		}
+	}
+	//GK: In case the Z-Memory is about to get full crear the cache
+	int tenprec = ((::g->zonesize/1024)/1024) *0.9;
+	int inuse = ((::g->NumAlloc)/1024)/1024;
+	if (inuse > tenprec) {
+		Z_FreeTags(PU_CACHE,PU_CACHE);
 	}
 
     P_RunThinkers ();

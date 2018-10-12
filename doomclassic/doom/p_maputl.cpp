@@ -361,6 +361,21 @@ void P_UnsetThingPosition (mobj_t* thing)
 	else
 	    thing->subsector->sector->thinglist = thing->snext;
     }
+	// phares 3/14/98
+		//
+		// Save the sector list pointed to by touching_sectorlist.
+		// In P_SetThingPosition, we'll keep any nodes that represent
+		// sectors the Thing still touches. We'll add new ones then, and
+		// delete any nodes for sectors the Thing has vacated. Then we'll
+		// put it back into touching_sectorlist. It's done this way to
+		// avoid a lot of deleting/creating for nodes, when most of the
+		// time you just get back what you deleted anyway.
+		//
+		// If this Thing is being removed entirely, then the calling
+		// routine will clear out the nodes in sector_list.
+
+	::g->sector_list = thing->touching_sectorlist;
+	thing->touching_sectorlist = NULL; //to be restored by P_SetThingPosition
 	
     if ( ! (thing->flags & MF_NOBLOCKMAP) )
     {
@@ -434,9 +449,9 @@ P_SetThingPosition (mobj_t* thing)
 	// at sector_t->touching_thinglist) are broken. When a node is
 	// added, new sector links are created.
 
-	P_CreateSecNodeList(thing, thing->x, thing->y);
-	thing->touching_sectorlist = ::g->sector_list; // Attach to Thing's mobj_t
-	::g->sector_list = NULL; // clear for next time
+		P_CreateSecNodeList(thing, thing->x, thing->y);
+		thing->touching_sectorlist = ::g->sector_list; // Attach to Thing's mobj_t
+		::g->sector_list = NULL; // clear for next time
     }
 
     
@@ -794,7 +809,7 @@ P_PathTraverse
 	::g->interind = 0;
 	//intercept_t* tint = new intercept_t();
 	if (::g->intercepts.empty()) {
-		::g->intercepts.push_back(new intercept_t());
+		::g->intercepts.emplace_back(new intercept_t());
 	}
 	::g->interind++;
 	
@@ -906,7 +921,7 @@ P_PathTraverse
 
 void AddNewIntercept() {
 	if (::g->interind >= ::g->intercepts.size()) {
-		::g->intercepts.push_back(new intercept_t());
+		::g->intercepts.emplace_back(new intercept_t());
 	}
 	else {
 		::g->intercepts[::g->interind]->d.line = NULL;

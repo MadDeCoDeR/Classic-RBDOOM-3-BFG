@@ -293,7 +293,7 @@ void P_AddActivePlat(plat_t* plat)
     
    
 	if (::g->platind >= ::g->activeplats.size()) {
-		::g->activeplats.push_back(plat);
+		::g->activeplats.emplace_back(plat);
 	}
 	else {
 		::g->activeplats[::g->platind] = plat;

@@ -59,7 +59,7 @@ If you have questions concerning this license or the applicable additional terms
 
 void STlib_init(void)
 {
-    ::g->sttminus = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STTMINUS", PU_STATIC_SHARED), W_GetNumForName("STTMINUS"));
+    ::g->sttminus = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STTMINUS", PU_LEVEL_SHARED), W_GetNumForName("STTMINUS"));
 }
 
 

@@ -318,7 +318,7 @@ P_FindNextHighestFloor
 	fixed_t		height = currentheight;
 
 
-	std::vector<fixed_t>		heightlist;		
+	std::vector<fixed_t>		heightlist;	
 
 	for (i=0, h=0 ;i < sec->linecount ; i++)
 	{
@@ -330,7 +330,7 @@ P_FindNextHighestFloor
 
 		if (other->floorheight > height) {
 			if (h >= heightlist.size()) {
-				heightlist.push_back(other->floorheight);
+				heightlist.emplace_back(other->floorheight);
 				h++;
 			}
 			else {
@@ -1950,7 +1950,7 @@ void P_SpawnSpecials (void)
 			// EFFECT FIRSTCOL SCROLL+
 			if (::g->numlinespecials >= ::g->linespeciallist.size()) {
 				//::g->linespeciallist.clear();
-				::g->linespeciallist.push_back(&::g->lines[i]);
+				::g->linespeciallist.emplace_back(&::g->lines[i]);
 			}
 			else {
 				::g->linespeciallist[::g->numlinespecials] = &::g->lines[i];
@@ -1993,12 +1993,12 @@ void P_SpawnSpecials (void)
 	//	Init other misc stuff
 	::g->cellind = 0;
 	if (::g->cellind >= ::g->activeceilings.size()) {
-		::g->activeceilings.push_back(new ceiling_t());
+		::g->activeceilings.emplace_back(new ceiling_t());
 	}
 	::g->cellind++;
 	::g->platind = 0;
 	if (::g->platind >= ::g->activeplats.size()) {
-		::g->activeplats.push_back(new plat_t());
+		::g->activeplats.emplace_back(new plat_t());
 	}
 	::g->platind++;
 
@@ -2163,12 +2163,12 @@ static void Add_WallScroller(fixed_t dx, fixed_t dy, const line_t *l,
 }
 
 // Amount (dx,dy) vector linedef is shifted right to get scroll amount
-#define SCROLL_SHIFT 6
+#define SCROLL_SHIFT 5
 
 // Factor to scale scrolling effect into mobj-carrying properties = 3/32.
 // (This is so scrolling floors and objects on them can move at same speed.)
 //GK: reduced it because for some reason with it's orignal value it was moving the object so fast that it tears apart the space time continium
-#define CARRYFACTOR ((fixed_t)(FRACUNIT*.00025))
+#define CARRYFACTOR ((fixed_t)(FRACUNIT*.09375))
 
 // Initialize the scrollers
 static void P_SpawnScrollers(void)

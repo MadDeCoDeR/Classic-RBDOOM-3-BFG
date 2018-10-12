@@ -728,6 +728,10 @@ void W_FreeWadFiles() {
 	::g->cpind = 0;
 	if (::g->gamemode == commercial) {
 		I_Printf("Reseting Dehacked Patches...\n");
+		for (int i = 0; i < ::g->cpatch.size(); i++) {
+			free(::g->cpatch[i]);
+			::g->cpatch[i] = NULL;
+		}
 		resetValues();
 		resetWeapons();
 		ResetAmmo();
@@ -993,7 +997,7 @@ W_CacheLumpNum
 {
 #ifdef RANGECHECK
 	if (lump >= numlumps)
-	I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
+		I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
 #endif
 
 	if (!lumpcache[lump])
@@ -1093,7 +1097,7 @@ bool OpenCompFile(const char* filename) {
 									} while (buff > 0);
 									fclose(out);
 									unzCloseCurrentFile(zip);
-									fname.push_back(path);
+									fname.emplace_back(path);
 									char* pname = new char[MAX_FILENAME];
 									sprintf(pname, "%s%s", senddir, name);
 									if (idStr::Icmp(name + strlen(name) - 3, "wad")) {
@@ -1101,7 +1105,7 @@ bool OpenCompFile(const char* filename) {
 									}
 									inzip = true;
 									//W_AddFile(pname);
-									wadsinzip.push_back(pname);//GK: Just store the file path for now
+									wadsinzip.emplace_back(pname);//GK: Just store the file path for now
 
 								}
 								if (i + 1 < gi.number_entry) {
@@ -1191,7 +1195,7 @@ bool OpenCompFile(const char* filename) {
 							#else
 													mkdir(maindir, S_IRWXU);
 							#endif
-						foldername.push_back(maindir);
+						foldername.emplace_back(maindir);
 						if (i + 1 < gi.number_entry) {
 							unzGoToNextFile(zip);
 						}
@@ -1311,7 +1315,7 @@ void uncompressMaster() {
 								} while (buff > 0);
 								fclose(out);
 								unzCloseCurrentFile(zip);
-								fname.push_back(path);
+								fname.emplace_back(path);
 								char* pname = new char[MAX_FILENAME];
 								sprintf(pname, "%s%s", ddir, name);
 
@@ -1434,7 +1438,7 @@ void MasterList() {
 				lump->position = LONG(filelumpPointer->filepos);
 				lump->size = LONG(filelumpPointer->size);
 				if (pushit)
-					fofs.push_back(offs);
+					fofs.emplace_back(offs);
 
 				if (idStr::Cmpn(filelumpPointer->name, "TEXTURE1", 8) && idStr::Cmpn(filelumpPointer->name, "PNAMES", 6) && idStr::Cmpn(filelumpPointer->name, "PP_START", 8) && idStr::Cmpn(filelumpPointer->name, "PP_END", 7))
 				{

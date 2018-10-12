@@ -233,7 +233,7 @@ qboolean PIT_CheckLine (line_t* ld)
 		//GK:From now on it uses indexed vectors (for now until and if I found something better)
 		if (::g->numspechit >= ::g->spechit.size()) {
 			//::g->specind = 0;
-			::g->spechit.push_back(ld);
+			::g->spechit.emplace_back(ld);
 		}
 		else {
 			::g->spechit[::g->numspechit] = ld;
@@ -265,7 +265,7 @@ qboolean PIT_CheckThing (mobj_t* thing)
 	return true;	
     }
 	if (::g->tmthing->player) {//GK: trigger secret by touching an object inside the secret sector (map exclusive)
-		if (((::g->gamemission == pack_custom && ::g->maps[::g->gamemap].tsecret) || (::g->gamemission == doom && ::g->gameepisode == 4 && (::g->gamemap == 3 || ::g->gamemap == 7 ))) && thing->subsector->sector->special == 9) {
+		if (((::g->gamemission == pack_custom && ::g->maps[::g->gamemap-1].tsecret) || (::g->gamemission == doom && ::g->gameepisode == 4 && (::g->gamemap == 3 || ::g->gamemap == 7 ))) && thing->subsector->sector->special == 9) {
 			::g->tmthing->player->secretcount++;
 			//GK send message when secret found
 			S_StartSound(::g->tmthing->player->mo, sfx_getpow);

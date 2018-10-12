@@ -182,7 +182,7 @@ void R_InitSpriteDefs (const char* const* namelist)
 	//::g->sprites.clear();
 	::g->sprind = 0;
 	if (::g->sprites.empty()) {
-		::g->sprites.push_back(new spritedef_t());// = (spritedef_t*)DoomLib::Z_Malloc(::g->numsprites * sizeof(*::g->sprites), PU_STATIC, NULL);
+		::g->sprites.emplace_back(new spritedef_t());// = (spritedef_t*)DoomLib::Z_Malloc(::g->numsprites * sizeof(*::g->sprites), PU_STATIC, NULL);
 	}
 	::g->sprind++;
 	
@@ -230,7 +230,7 @@ void R_InitSpriteDefs (const char* const* namelist)
 	{
 	    ::g->sprites[i]->numframes = 0;
 		if (::g->sprind >= ::g->sprites.size()) {
-			::g->sprites.push_back(new spritedef_t());
+			::g->sprites.emplace_back(new spritedef_t());
 		}
 		::g->sprind++;
 	    continue;
@@ -266,11 +266,11 @@ void R_InitSpriteDefs (const char* const* namelist)
 	// allocate space for the frames present and copy ::g->sprtemp to it
 		::g->sprites[i]->numframes = ::g->maxframe;
 		::g->sprites[i]->spriteframes =
-			(spriteframe_t*)DoomLib::Z_Malloc(::g->maxframe * sizeof(spriteframe_t), PU_STATIC, NULL);
+			(spriteframe_t*)DoomLib::Z_Malloc(::g->maxframe * sizeof(spriteframe_t), PU_LEVEL, NULL);
 		memcpy(::g->sprites[i]->spriteframes, ::g->sprtemp, ::g->maxframe * sizeof(spriteframe_t));
 	
 	if (::g->sprind >= ::g->sprites.size()) {
-		::g->sprites.push_back(new spritedef_t());
+		::g->sprites.emplace_back(new spritedef_t());
 	}
 	::g->sprind++;
     }
@@ -302,7 +302,28 @@ void R_InitSprites (const char* const* namelist)
     R_InitSpriteDefs (namelist);
 }
 
+//
+// R_ZeroVisSprite
+//
 
+void R_ZeroVisSprite(int index) {
+	::g->vissprites[index]->colormap = 0;
+	::g->vissprites[index]->gx = 0;
+	::g->vissprites[index]->gy = 0;
+	::g->vissprites[index]->gz = 0;
+	::g->vissprites[index]->gzt = 0;
+	::g->vissprites[index]->mobjflags = 0;
+	::g->vissprites[index]->next = ::g->vissprites[index];
+	::g->vissprites[index]->prev = ::g->vissprites[index - 1];
+	::g->vissprites[index]->patch = 0;
+	::g->vissprites[index]->scale = 0;
+	::g->vissprites[index]->startfrac = 0;
+	::g->vissprites[index]->suck = 0;
+	::g->vissprites[index]->texturemid = 0;
+	::g->vissprites[index]->x1 = 0;
+	::g->vissprites[index]->x2 = 0;
+	::g->vissprites[index]->xiscale = 0;
+}
 
 //
 // R_ClearSprites
@@ -313,12 +334,16 @@ void R_ClearSprites (void)
 	//::g->vissprites.clear();
 	::g->visspriteind = 0;
 	if (::g->vissprites.empty()) {
-		::g->vissprites.push_back(new vissprite_t());
+		::g->vissprites.emplace_back(new vissprite_t());
 	}
+/*	else {
+		for (int i = 0; i < ::g->vissprites.size(); i++) {
+			R_ZeroVisSprite(i);
+		}
+	}*/
 	::g->visspriteind++;
     //::g->vissprite_p = ::g->vissprites;
 }
-
 
 //
 // R_NewVisSprite
@@ -330,25 +355,10 @@ vissprite_t* R_NewVisSprite (void)
 	//return &::g->overflowsprite;
 	
 	if (::g->visspriteind >= ::g->vissprites.size()) {
-		::g->vissprites.push_back(new vissprite_t());
+		::g->vissprites.emplace_back(new vissprite_t());
 	}
 	else {
-		::g->vissprites[::g->visspriteind]->colormap = 0;
-		::g->vissprites[::g->visspriteind]->gx = 0;
-		::g->vissprites[::g->visspriteind]->gy = 0;
-		::g->vissprites[::g->visspriteind]->gz = 0;
-		::g->vissprites[::g->visspriteind]->gzt = 0;
-		::g->vissprites[::g->visspriteind]->mobjflags = 0;
-		::g->vissprites[::g->visspriteind]->next = ::g->vissprites[::g->visspriteind];
-		::g->vissprites[::g->visspriteind]->prev = ::g->vissprites[::g->visspriteind-1];
-		::g->vissprites[::g->visspriteind]->patch = 0;
-		::g->vissprites[::g->visspriteind]->scale = 0;
-		::g->vissprites[::g->visspriteind]->startfrac = 0;
-		::g->vissprites[::g->visspriteind]->suck = 0;
-		::g->vissprites[::g->visspriteind]->texturemid = 0;
-		::g->vissprites[::g->visspriteind]->x1 = 0;
-		::g->vissprites[::g->visspriteind]->x2 = 0;
-		::g->vissprites[::g->visspriteind]->xiscale = 0;
+		R_ZeroVisSprite(::g->visspriteind);
 	}
 	
     return ::g->vissprites[::g->visspriteind-1];

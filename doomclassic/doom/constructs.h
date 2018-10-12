@@ -606,6 +606,7 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->kfarmor = 200;
 	::g->kfart = 2;
 	::g->BFGCELL = 40;
+	::g->reset = false;
 // st_stuff.constructs end // 
 //  s_sound.constructs begin //
 	::g->mus_playing=0;
@@ -632,6 +633,7 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 //  z_zone.constructs begin // 
 	::g->zones[NUM_ZONES] = NULL;
 	::g->NumAlloc = 0;
+	::g->CacheAlloc = 0;
 // z_zone.constructs end // 
 // info constructs begin //
 	//GK: No more constant variable

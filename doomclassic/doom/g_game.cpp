@@ -642,6 +642,15 @@ void G_DoLoadLevel ()
 	idMatchParameters newParms = session->GetActingGameStateLobbyBase().GetMatchParms();
 	DoomLib::SetCurrentMapName( expansion->mapNames[ truemap - 1 ] );
 	DoomLib::SetCurrentDifficulty( difficultyNames[ ::g->gameskill ]  );
+	// initialize the msecnode_t freelist.                     phares 3/25/98
+	// any nodes in the freelist are gone by now, cleared
+	// by Z_FreeTags() when the previous level ended or player
+	// died.
+
+	{
+		extern msecnode_t *headsecnode; // phares 3/25/98
+		headsecnode = NULL;
+	}
 
 	P_SetupLevel (::g->gameepisode, ::g->gamemap, 0, ::g->gameskill);
 
@@ -1442,16 +1451,8 @@ void G_WorldDone (void)
 		}
 		if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
 			if (::g->gamemap == ::g->endmap || ::g->maps[::g->gamemap-1].cluster != ::g->maps[::g->wminfo.next].cluster || ::g->maps[::g->gamemap - 1].ftext != NULL) {
-				if (::g->maps[::g->gamemap - 1].ftext != NULL && ::g->maps[::g->gamemap - 1].fsecret) {
-					if(::g->secretexit){
-						F_StartFinale();
-					}
-				}
-				else {
-					if (::g->maps[::g->gamemap - 1].ftext != NULL && (::g->secretexit && !::g->maps[::g->gamemap - 1].fsecret)) {}
-					else {
-						F_StartFinale();
-					}
+				if (!::g->secretexit == !::g->maps[::g->gamemap - 1].fsecret) {
+					F_StartFinale();
 				}
 			}
 		}

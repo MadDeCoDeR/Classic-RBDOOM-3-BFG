@@ -59,8 +59,20 @@ void InitColorMap() {
 	}
 }
 
+patch_t* GetPreloaded() {
+	if (::g->cpatch.size() >= flmp) {
+		if (::g->cpatch[flmp - 1] != NULL) {
+			return ::g->cpatch[flmp - 1];
+		}
+	}
+	return NULL;
+}
+
 bool checkpng(unsigned char* buff) {
-	return !png_sig_cmp((png_bytep)buff, 0, 8);
+	if (buff[0] == 137 && buff[1] == 80 && buff[2] == 78 && buff[3] == 71) {
+		return true;
+	}
+	return false;//!png_sig_cmp((png_bytep)buff, 0, 8);
 }
 
 bool checkjpeg(unsigned char* buff) {
@@ -279,15 +291,32 @@ patch_t* PNG2lmp(unsigned char* buffer) {
 				}
 		}
 	}
+	for (int i = 0; i < patch->height; i++) {
+		free(rows[i]);
+	}
+	free(rows);
+	rows = NULL;
+	for (int i = 0; i < patch->height; i++) {
+		free(post[i]);
+	}
 	free(post);
-	png_read_end(png_ptr, info_ptr);
-	png_read_destroy(png_ptr, info_ptr, NULL);
+	post = NULL;
+	free(offsets);
+	offsets = NULL;
+	png_infop end_info;
+	end_info = png_create_info_struct(png_ptr);
+	png_read_end(png_ptr, end_info);
+	png_read_destroy(png_ptr, info_ptr, end_info);
+	png_ptr = NULL;
+	info_ptr = NULL;
+	end_info = NULL;
 
 	::g->cpind = 1;
 	if (::g->cpatch.size() < flmp) {
 		::g->cpatch.resize(flmp);
 	}
-	::g->cpatch[flmp-1]=patch;
+	::g->cpatch[flmp - 1] = (patch_t*)malloc(imagesize);
+	memcpy(::g->cpatch[flmp-1],patch,imagesize);
 #ifdef _DEBUG
 	char* ddir = "base//lmps//";
 #ifdef _WIN32
@@ -300,9 +329,12 @@ patch_t* PNG2lmp(unsigned char* buffer) {
 	std::ofstream of(filename.c_str(), std::ios::binary);
 	of.write((char*)patch,imagesize);
 	of.flush();
+	of.close();
 #endif
-	
-	return patch;
+	Z_Free(buffer);
+	free(patch);
+	patch = NULL;
+	return GetPreloaded();
 }
 
 patch_t* JPEG2lmp(unsigned char* buffer) {
@@ -431,7 +463,18 @@ patch_t* JPEG2lmp(unsigned char* buffer) {
 				}
 			}
 		}
+		for (int i = 0; i < patch->height; i++) {
+			free(rows[i]);
+		}
+		free(rows);
+		rows = NULL;
+		for (int i = 0; i < patch->height; i++) {
+			free(post[i]);
+		}
 		free(post);
+		post = NULL;
+		free(offsets);
+		offsets = NULL;
 		jpeg_finish_decompress(&cinfo);
 		jpeg_destroy_decompress(&cinfo);
 
@@ -439,7 +482,8 @@ patch_t* JPEG2lmp(unsigned char* buffer) {
 		if (::g->cpatch.size() < flmp) {
 			::g->cpatch.resize(flmp);
 		}
-		::g->cpatch[flmp - 1] = patch;
+		::g->cpatch[flmp - 1] =(patch_t*) malloc(imagesize);
+		memcpy(::g->cpatch[flmp - 1], patch, imagesize);
 #ifdef _DEBUG
 		char* ddir = "base//lmps//";
 #ifdef _WIN32
@@ -452,51 +496,47 @@ patch_t* JPEG2lmp(unsigned char* buffer) {
 		std::ofstream of(filename.c_str(), std::ios::binary);
 		of.write((char*)patch, imagesize);
 		of.flush();
+		of.close();
 #endif
-
-		return patch;
-}
-
-patch_t* GetPreloaded() {
-	if (::g->cpatch.size() >= flmp) {
-		if (::g->cpatch[flmp-1] != NULL) {
-			return ::g->cpatch[flmp-1];
-		}
-	}
-	return NULL;
+		Z_Free(buffer);
+		free(patch);
+		patch = NULL;
+		return GetPreloaded();
 }
 
 patch_t* img2lmp(void* buff,int lump) {
 	bool is_png;
 	bool is_jpeg;
-	flmp = lump;
-	unsigned char* imgbuf = reinterpret_cast<unsigned char*>(buff);
-	is_png = checkpng(imgbuf);
-	is_jpeg = checkjpeg(imgbuf);
-	if (is_png) {
-		patch_t* patch = NULL;
-		if (::g->cpind) {
-			patch = GetPreloaded();
+	if (buff != NULL || buff != nullptr) {
+		flmp = lump;
+		unsigned char* imgbuf = reinterpret_cast<unsigned char*>(buff);
+		is_png = checkpng(imgbuf);
+		is_jpeg = checkjpeg(imgbuf);
+		if (is_png) {
+			patch_t* patch = NULL;
+			if (::g->cpind) {
+				patch = GetPreloaded();
+			}
+			if (patch != NULL) {
+				return patch;
+			}
+			else {
+				InitColorMap();
+				return PNG2lmp(imgbuf);
+			}
 		}
-		if (patch != NULL) {
-			return patch;
-		}
-		else {
-			InitColorMap();
-			return PNG2lmp(imgbuf);
-		}
-	}
-	else if (is_jpeg) {
-		patch_t* patch = NULL;
-		if (::g->cpind) {
-			patch = GetPreloaded();
-		}
-		if (patch != NULL) {
-			return patch;
-		}
-		else {
-			InitColorMap();
-			return JPEG2lmp(imgbuf);
+		else if (is_jpeg) {
+			patch_t* patch = NULL;
+			if (::g->cpind) {
+				patch = GetPreloaded();
+			}
+			if (patch != NULL) {
+				return patch;
+			}
+			else {
+				InitColorMap();
+				return JPEG2lmp(imgbuf);
+			}
 		}
 	}
 	return (patch_t *)buff;

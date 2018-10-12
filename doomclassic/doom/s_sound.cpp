@@ -143,7 +143,7 @@ void S_Init
 	// (the maximum numer of sounds rendered
 	// simultaneously) within zone memory.
 	::g->channels =
-		(channel_t *) DoomLib::Z_Malloc(::g->numChannels*sizeof(channel_t), PU_STATIC, 0);
+		(channel_t *) DoomLib::Z_Malloc(::g->numChannels*sizeof(channel_t), PU_LEVEL, 0);
 
 	// Free all ::g->channels for use
 	for (i=0 ; i < ::g->numChannels ; i++)

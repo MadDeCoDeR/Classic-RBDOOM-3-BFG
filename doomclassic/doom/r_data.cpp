@@ -193,7 +193,7 @@ void R_GenerateComposite (int texnum)
     texture = ::g->s_textures[texnum];
 
     block = (byte*)DoomLib::Z_Malloc (::g->s_texturecompositesize[texnum],
-		      PU_STATIC_SHARED, 
+		      PU_CACHE_SHARED, 
 		      &::g->s_texturecomposite[texnum]);	
 
     collump = ::g->s_texturecolumnlump[texnum];

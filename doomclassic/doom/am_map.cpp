@@ -399,15 +399,17 @@ void AM_loadPics(void)
 	for (i=0;i<10;i++)
 	{
 		sprintf(namebuf, "AMMNUM%d", i);
-		::g->marknums[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATIC_SHARED), W_GetNumForName(namebuf));
+		::g->marknums[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_CACHE_SHARED), W_GetNumForName(namebuf));
 	}
 
 }
 
 void AM_unloadPics(void)
 {
-//	int i;
-
+	int i;
+	for (i = 0; i < 10; i++) {
+		Z_Free(::g->marknums[i]);
+	}
 }
 
 void AM_clearMarks(void)

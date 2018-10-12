@@ -1308,6 +1308,7 @@ void M_Aspect(int choice) {
 		r_aspectcorrect.SetBool(false);
 	}
 	R_Initwidth(); //GK: Restart the classic Doom renderer
+	::g->reset = true;
 	R_Init();
 	if (::g->automapactive) {
 		AM_Start();
@@ -1317,6 +1318,7 @@ void M_Aspect(int choice) {
 
 void M_Light(int choice) {
 	r_clight.SetInteger(r_clight.GetInteger() ? 0 : 1);
+	::g->reset = true;
 	R_Init(); //GK: Re-init the renderer to apply the new light mode
 }
 //
@@ -1414,6 +1416,10 @@ void M_GameSelection(int choice)
 {
 	I_Printf("Reseting Dehacked Patches...\n");
 	::g->cpind = 0;
+	for (int i = 0; i < ::g->cpatch.size(); i++) {
+		free(::g->cpatch[i]);
+		::g->cpatch[i] = NULL;
+	}
 	resetValues();
 	resetWeapons();
 	ResetAmmo();

@@ -725,8 +725,8 @@ P_SetupLevel
 
 	// Make sure all sounds are stopped before Z_FreeTags.
 	S_Start ();			
-
-	Z_FreeTags( PU_LEVEL, PU_PURGELEVEL-1 );
+	//GK: Clear also the cache since it's not needed
+	Z_FreeTags( PU_LEVEL, PU_CACHE );
 
 	// UNUSED W_Profile ();
 	P_InitThinkers ();

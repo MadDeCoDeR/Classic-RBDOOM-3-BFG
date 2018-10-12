@@ -301,7 +301,7 @@ void P_AddActiveCeiling(ceiling_t* c)
 {
    //GK:From now on it uses indexed vectors (for now until and if I found something better)
 	if (::g->cellind >= ::g->activeceilings.size()) {
-		::g->activeceilings.push_back(c);
+		::g->activeceilings.emplace_back(c);
 	}
 	else {
 		::g->activeceilings[::g->cellind] = c;

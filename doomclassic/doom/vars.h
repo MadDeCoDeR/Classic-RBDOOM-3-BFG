@@ -29,6 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 // the all-important zone //
 memzone_t*	mainzone;
 int zonesize;
+int zmem;
 
 idFile *	wadFileHandles[MAXWADFILES];
 int		numWadFiles;
@@ -902,6 +903,7 @@ int			reloadlump;
 int sizes[NUM_ZONES+1];
 memzone_t*	zones[NUM_ZONES] ;
 int NumAlloc ;
+int CacheAlloc; //GK:Keep track of the allocated Cache on Z-Memory
 // z_zone.vars end // 
 // info vars begin //
 state_t	states[NUMSTATES];
@@ -934,6 +936,7 @@ visplane_t*		ceilingplane;
 int reallightlevels;
 int reallightscale;
 int LIGHTZSHIFT;
+bool reset; //GK: Make sure every time the graphical options changes the Z-Memory doesn't allocate more memory
 // r_main end //
 
 // wi_stuff
