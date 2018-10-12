@@ -406,6 +406,16 @@ void setMAPSTR(int pos, char* name, char* value) {
 	}
 
 	if (!idStr::Icmp(name, "sky_tex") || !idStr::Icmp(name, "sky1")) {
+		if (value[0] == '\"') {
+			value = value + 1;
+			for(int j=0;j<strlen(value);j++){
+				if (value[j] == '\"') {
+					value[j] = '\0';
+					break;
+				}
+			}
+			
+		}
 		::g->maps[pos].sky = value;
 		return;
 	}

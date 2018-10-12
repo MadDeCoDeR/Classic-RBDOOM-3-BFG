@@ -47,28 +47,22 @@
 #include "f_finale.h"
 #include "g_game.h"
 
-void parsetext(char* text);
-std::vector<std::string> getlines(char* text);
-int checkstate(char* text);
-void setThing(int pos, char* varname, int varval);
-void setFrame(int pos, char* varname, int varval);
-void setWeapon(int pos, char* varname, int varval);
-void setPointer(int pos, char* varname, int varval);
-void setCptr( char* varname, char* varfunc);
-void setAmmo(int pos, char* varname, int varval);
-void setText(std::vector<std::string>lines,int i,int il, int nl);
-void setPars(int pos, int val1, int val2=-1);
-void setBText(char* varname, char* text);
-int Generateflags(char* text);
-int Getflag(char* text);
-//More Headache than it's worth
-void setSound(int pos, char* varname, int varval); //And is back and working
-void setMisc(char* varname, int varval);
-
 typedef struct {
 	char** var;
 	char* name;
 }dehstr;
+//TODO: Use this more
+typedef struct{
+	char* name;
+	long limit;
+	char** sval;
+	int* ival;
+	long* lval;
+	float* fval;
+	spritenum_t* spval;
+	statenum_t* stval;
+	ammotype_t* amval;
+}dehobj;
 
 dehstr strval[] = {
 	{&GOTARMOR,"GOTARMOR"},
@@ -388,223 +382,6 @@ dehbits mobfl[] = {
 { "TRANSSHIFT",MF_TRANSSHIFT }
 };
 
-
-void loaddeh(int lump) {
-	char* text = (char*)malloc(W_LumpLength(lump)+1);
-	text[W_LumpLength(lump)] = '\0';
-	I_Printf("Applying DeHackeD patch ...\n");
-	W_ReadLump(lump, text);
-
-	//idLib::Printf("%s", text);
-	parsetext(text);
-	free(text);
-	I_Printf("DeHackeD patch succesfully applied\n");
-}
-
-void parsetext(char* text) {
-	std::vector<std::string> linedtext = getlines(text);
-	int state = 0;
-	char* varname;
-	char* varfunc;
-	int statepos;
-	int varval;
-	int varval2 = -1;
-	char eq = '=';
-	for (int i = 0; i < linedtext.size(); i++) {
-		varval2 = -1;
-		//I_Printf("%s\n", linedtext[i].c_str());
-		if ((linedtext[i].find(eq) != std::string::npos) && state != 3 && state != 0) {
-			varname = strtok(strdup(linedtext[i].c_str()), "=");
-			std::string tv3 = strtok(NULL, "=");
-			if (!tv3.empty()) {
-				if (state != 6 && state != 9) {
-					varval = atoi(tv3.c_str());
-					if (state == 1 && !idStr::Icmp(varname, "Bits ") && varval == 0) {
-						varval = Generateflags(strdup(tv3.c_str()));
-					}
-				}
-				else {
-					varfunc =strdup( tv3.c_str());
-				}
-			}
-			//idLib::Printf("%s = %i\n", varname, varval);
-			switch (state) {
-			case 1:
-				setThing(statepos - 1, varname, varval);
-				break;
-			case 2:
-				setFrame(statepos, varname, varval);
-				memcpy(::g->states, tempStates, sizeof(tempStates));
-				break;
-			case 4:
-				setWeapon(statepos, varname, varval);
-				break;
-			case 5:
-				setPointer(statepos, varname, varval);
-				memcpy(::g->states, tempStates, sizeof(tempStates));
-				break;
-			case 6:
-				setCptr(varname, varfunc);
-				memcpy(::g->states, tempStates, sizeof(tempStates));
-				break;
-			case 7:
-				setAmmo(statepos, varname, varval);
-				break;
-			case 9:
-				setBText(varname, varfunc);
-				break;
-				//More Headache than it's worth
-			case 10:
-				setSound(statepos, varname, varval);
-				break;
-			case 11:
-				setMisc( varname, varval);
-				break;
-			}
-			
-			
-		}
-		else {
-			if (linedtext[i].length() > 1) {
-				char* tst = strtok(strdup(linedtext[i].c_str()), " ");
-				char* tval = strtok(NULL, " ");
-					if (tst != NULL && tval != NULL) {
-
-						statepos = atoi(tval);
-						state = checkstate(tst);
-						int tpos = -1;
-						char* tv;
-						switch (state) {
-						case 1:
-							tpos = statepos - 1;
-							if (tpos >= NUMMOBJTYPES) {
-								I_Error("No such Thing found");
-							}
-							break;
-						case 2:
-							if (statepos >= NUMSTATES) {
-								I_Error("No such Frame found");
-							}
-							break;
-						case 3:
-							statepos = statepos + 1;
-							varval2 = atoi(strtok(NULL, " "));
-							setText(linedtext, i + 1, statepos, varval2);
-							break;
-						case 4:
-							if (statepos >= NUMWEAPONS) {
-								I_Error("No such Weapon found");
-							}
-							break;
-						case 5:
-							tv = strtok(NULL, " ");
-							if (tv != NULL) {
-								char* tv2 = strtok(NULL, " ");
-								if (tv2!=NULL) {
-									tv2[strlen(tv2) - 1] = '\0';
-									statepos = atoi(tv2);
-
-									if (statepos >= NUMSTATES) {
-										idLib::Printf("%i\n", statepos);
-										I_Error("No such codeptr found");
-									}
-								}
-							}
-							break;
-						case 7:
-							if (statepos >= NUMAMMO) {
-								I_Error("No such Ammo found");
-							}
-							break;
-						case 8:
-							tval = strtok(NULL, " ");
-							if (tval != NULL) {
-								varval = atoi(tval);
-							}
-							tval = strtok(NULL, " ");
-							if (tval != NULL) {
-								varval2 = atoi(tval);
-
-							}
-							if (varval2 == -1) {
-								if (::g->gamemode == commercial) {
-									if (statepos > 0 && statepos <= 33) {
-										setPars(statepos, varval);
-									}
-									else {
-										I_Error("No map found");
-									}
-								}
-							}
-							else {
-								if (::g->gamemode == retail) {
-									if (statepos > 0 && statepos <= 4) {
-										if (varval > 0 && varval <= 9) {
-											setPars(statepos, varval, varval2);
-										}
-										else {
-											I_Error("No level found");
-										}
-									}
-									else {
-										I_Error("No episode found");
-									}
-								}
-							}
-							break;
-							//More Headache than it's worth
-						case 10:
-							if (statepos >= NUMSFX) {
-								I_Error("No such Sound found");
-							}
-							break;
-						}
-						
-					}
-					else {
-						if (tst != NULL){
-						int tstate = checkstate(tst);
-						if (tstate != 0) {
-							state = tstate;
-						}
-					}
-				}
-			}
-		}
-	}
-	}
-
-
-std::vector<std::string> getlines(char* text) {
-	std::vector<std::string> lines;
-	int size = strlen(text);
-	for (int i = 0; i < size /*- 7*/; i++ ) {
-		std::string letter = "";
-		qboolean ignore = false;
-		while (text[i] != '\n') {
-			if (text[i] == '#' && text[i-3]!='I' && text[i-2]!='D')
-				ignore = true;
-
-			if (!ignore) {
-				if (text[i] != '\r') {
-					letter += text[i];
-				}
-			}
-			if (i < size /*- 7*/) {
-				i++;
-			}
-			else {
-				break;
-			}
-
-		}
-		//i++;
-		lines.push_back(letter);
-
-	}
-	return lines;
-}
-
 int checkstate(char* text) {
 	char* stable[11] = {
 		"Thing",
@@ -622,141 +399,100 @@ int checkstate(char* text) {
 	if (text != NULL) {
 		for (int i = 0; i < 11; i++) {
 			if (!idStr::Icmp(text, stable[i])) {
-				return i+1;
+				return i + 1;
 			}
 		}
 	}
-	
+
 	return 0;
 }
-//GK: Use iteration tables in order to avoid multiple if case senarios
-char* ttable[23] = {
-	"Initial frame ",
-	"Hit points ",
-	"First moving frame ",
-	"Alert sound ",
-	"Reaction time ",
-	"Attack sound ",
-	"Injury frame ",
-	"Pain chance ",
-	"Pain sound ",
-	"Close attack frame ",
-	"Far attack frame ",
-	"Death frame ",
-	"Exploding frame ",
-	"Death sound ",
-	"Speed ",
-	"Width ",
-	"Height ",
-	"Mass ",
-	"Missle damage ",
-	"Action sound ",
-	"Bits ",
-	"Respawn frame ",
-	"ID # "
-};
 
 void setThing(int pos, char* varname, int varval) {
-	typedef struct {
-		int* var;
-		int limit;
-	}Tvars_t;
 	//GK: This works (suprisingly)
-	Tvars_t tvars[23] = {
-		{&mobjinfo[pos].spawnstate,NUMSTATES},
-		{&mobjinfo[pos].spawnhealth,MAXINT},
-		{&mobjinfo[pos].seestate,NUMSTATES},
-		{&mobjinfo[pos].seesound,NUMSFX},
-		{&mobjinfo[pos].reactiontime,MAXINT},
-		{&mobjinfo[pos].attacksound,NUMSFX},
-		{&mobjinfo[pos].painstate,NUMSTATES},
-		{&mobjinfo[pos].painchance,MAXINT},
-		{&mobjinfo[pos].painsound,NUMSFX},
-		{&mobjinfo[pos].meleestate,NUMSTATES},
-		{&mobjinfo[pos].missilestate,NUMSTATES},
-		{&mobjinfo[pos].deathstate,NUMSTATES},
-		{&mobjinfo[pos].xdeathstate,NUMSTATES},
-		{&mobjinfo[pos].deathsound,NUMSFX},
-		{&mobjinfo[pos].speed,MAXINT},
-		{&mobjinfo[pos].radius,MAXINT},
-		{&mobjinfo[pos].height,MAXINT},
-		{&mobjinfo[pos].mass,MAXINT},
-		{&mobjinfo[pos].damage,MAXINT},
-		{&mobjinfo[pos].activesound,NUMSFX},
-		{&mobjinfo[pos].flags,MAXINT},
-		{&mobjinfo[pos].raisestate,NUMSTATES},
-		{&mobjinfo[pos].doomednum,MAXINT},
+	dehobj tvars[23] = {
+		{"Initial frame ",NUMSTATES,NULL,&mobjinfo[pos].spawnstate},
+		{"Hit points ",MAXINT,NULL,&mobjinfo[pos].spawnhealth},
+		{"First moving frame ",NUMSTATES,NULL,&mobjinfo[pos].seestate},
+		{"Alert sound ",NUMSFX,NULL,&mobjinfo[pos].seesound},
+		{"Reaction time ",MAXINT,NULL,&mobjinfo[pos].reactiontime},
+		{"Attack sound ",NUMSFX,NULL,&mobjinfo[pos].attacksound},
+		{"Injury frame ",NUMSTATES,NULL,&mobjinfo[pos].painstate},
+		{"Pain chance ",MAXINT,NULL,&mobjinfo[pos].painchance},
+		{"Pain sound ",NUMSFX,NULL,&mobjinfo[pos].painsound},
+		{"Close attack frame ",NUMSTATES,NULL,&mobjinfo[pos].meleestate},
+		{"Far attack frame ",NUMSTATES,NULL,&mobjinfo[pos].missilestate},
+		{"Death frame ",NUMSTATES,NULL,&mobjinfo[pos].deathstate,},
+		{"Exploding frame ",NUMSTATES,NULL,&mobjinfo[pos].xdeathstate},
+		{"Death sound ",NUMSFX,NULL,&mobjinfo[pos].deathsound},
+		{"Speed ",MAXINT,NULL,&mobjinfo[pos].speed},
+		{"Width ",MAXINT,NULL,&mobjinfo[pos].radius},
+		{"Height ",MAXINT,NULL,&mobjinfo[pos].height},
+		{"Mass ",MAXINT,NULL,&mobjinfo[pos].mass},
+		{"Missle damage ",MAXINT,NULL,&mobjinfo[pos].damage},
+		{"Action sound ",NUMSFX,NULL,&mobjinfo[pos].activesound},
+		{"Bits ",MAXINT,NULL,&mobjinfo[pos].flags},
+		{"Respawn frame ",NUMSTATES,NULL,&mobjinfo[pos].raisestate},
+		{"ID # ",MAXINT,NULL,&mobjinfo[pos].doomednum},
 	};
 	for (int i = 0; i < 23; i++) {
-		if (!idStr::Icmp(varname, ttable[i])) {
+		if (!idStr::Icmp(varname, tvars[i].name)) {
 			if (varval < tvars[i].limit) {
-				*tvars[i].var = varval;
+				*tvars[i].ival = varval;
 				return;
 			}
 		}
 	}
 }
-//GK: Use iteration tables in order to avoid multiple if case senarios
-char* ftable[4] = {
-	"Sprite subnumber ",
-	"Duration ",
-	"Unknown 1 ",
-	"Unknown 2 "
-};
 
 void setFrame(int pos, char* varname, int varval) {
-	long* fvars[4] = {
-		&tempStates[pos].frame,
-		&tempStates[pos].tics,
-		&tempStates[pos].misc1,
-		&tempStates[pos].misc2
+	dehobj fvars[6] = {
+		{"Sprite subnumber ",MAXLONG,NULL,NULL,&tempStates[pos].frame},
+		{"Duration ",MAXLONG,NULL,NULL,&tempStates[pos].tics},
+		{"Unknown 1 ",MAXLONG,NULL,NULL,&tempStates[pos].misc1},
+		{"Unknown 2 ",MAXLONG,NULL,NULL,&tempStates[pos].misc2},
+		{"Sprite number ",NUMSPRITES,NULL,NULL,NULL,NULL,&tempStates[pos].sprite},
+		{"Next frame ",NUMSTATES,NULL,NULL,NULL,NULL,NULL,&tempStates[pos].nextstate}
 	};
-	if (!idStr::Icmp(varname, "Sprite number ")) {
-		if (varval < NUMSPRITES) {
-			tempStates[pos].sprite = static_cast<spritenum_t> (varval);
-			return;
-		}
-	}
-	else if (!idStr::Icmp(varname, "Next frame ")) {
-		if (varval < NUMSTATES) {
-			tempStates[pos].nextstate = static_cast<statenum_t> (varval);
-			return;
-		}
-	}
-	for (int i = 0; i < 4; i++) {
-		if (!idStr::Icmp(varname, ftable[i])) {
-			*fvars[i] = varval;
-			return;
+	for (int i = 0; i < 6; i++) {
+		if (!idStr::Icmp(varname, fvars[i].name)) {
+			if (varval < fvars[i].limit) {
+				switch (i) {
+				case 4:
+					*fvars[i].spval = static_cast<spritenum_t>(varval);
+					break;
+				case 5:
+					*fvars[i].stval = static_cast<statenum_t>(varval);
+					break;
+				default:
+					*fvars[i].lval = varval;
+				}
+				
+				return;
+			}
 		}
 	}
 }
 
-char* wtable[5] = {
-	"Select frame ",
-	"Deselect frame ",
-	"Bobbing frame ",
-	"Shooting frame ",
-	"Firing frame "
-};
-
 void setWeapon(int pos, char* varname, int varval) {
-	int* wvars[5] = {
-		&weaponinfo[pos].downstate,
-		&weaponinfo[pos].upstate,
-		&weaponinfo[pos].readystate,
-		&weaponinfo[pos].atkstate,
-		&weaponinfo[pos].flashstate
+	dehobj wvars[6] = {
+		{"Select frame ",NUMSTATES,NULL,&weaponinfo[pos].downstate},
+		{"Deselect frame ",NUMSTATES,NULL,&weaponinfo[pos].upstate},
+		{"Bobbing frame ",NUMSTATES,NULL,&weaponinfo[pos].readystate},
+		{"Shooting frame ",NUMSTATES,NULL,&weaponinfo[pos].atkstate},
+		{"Firing frame ",NUMSTATES,NULL,&weaponinfo[pos].flashstate},
+		{"Ammo type ",NUMAMMO,NULL,NULL,NULL,NULL,NULL,NULL,&weaponinfo[pos].ammo}
 	};
-	if (!idStr::Icmp(varname, "Ammo type ")) {
-		if (varval < NUMAMMO) {
-			weaponinfo[pos].ammo = static_cast<ammotype_t>(varval);
-			return;
-		}
-	}
-	for (int i = 0; i < 5; i++) {
-		if (!idStr::Icmp(varname, wtable[i])) {
-			if (varval < NUMSTATES) {
-				*wvars[i] = varval;
+	for (int i = 0; i < 6; i++) {
+		if (!idStr::Icmp(varname, wvars[i].name)) {
+			if (varval < wvars[i].limit) {
+				switch (i) {
+				case 5:
+					*wvars[i].amval = static_cast<ammotype_t>(varval);
+					break;
+				default:
+					*wvars[i].ival = varval;
+				}
+				
 				return;
 			}
 		}
@@ -948,7 +684,7 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 	return;
 }
 
-void setPars(int pos, int val, int val2) {
+void setPars(int pos, int val, int val2=-1) {
 	if (val2 == -1) {
 		cpars[pos-1] = val;
 		return;
@@ -978,6 +714,16 @@ void setBText(char* varname, char* text) {
 	}
 }
 
+int Getflag(char* text) {
+	int size = sizeof(mobfl) / sizeof(*mobfl);
+	for (int i = 0; i < size; i++) {
+		if (!idStr::Icmp(text, mobfl[i].name)) {
+			return mobfl[i].bit;
+		}
+	}
+	return 0;
+}
+
 int Generateflags(char* text) {
 	char*ttext = text + 1;
 	char* tst = strtok(strdup(ttext), "+");
@@ -988,16 +734,6 @@ int Generateflags(char* text) {
 		tst = strtok(NULL, "+");
 	}
 	return flags;
-}
-
-int Getflag(char* text) {
-	int size = sizeof(mobfl) / sizeof(*mobfl);
-	for (int i = 0; i < size; i++) {
-		if (!idStr::Icmp(text, mobfl[i].name)) {
-			return mobfl[i].bit;
-		}
-	}
-	return 0;
 }
 
 char* misctable[15] = { //It's not more than the Things editor but still so many repetive values
@@ -1042,4 +778,219 @@ void setMisc(char* varname, int varval) {
 			return;
 		}
 	}
+}
+
+std::vector<std::string> getlines(char* text) {
+	std::vector<std::string> lines;
+	int size = strlen(text);
+	for (int i = 0; i < size /*- 7*/; i++) {
+		std::string letter = "";
+		qboolean ignore = false;
+		while (text[i] != '\n') {
+			if (text[i] == '#' && text[i - 3] != 'I' && text[i - 2] != 'D')
+				ignore = true;
+
+			if (!ignore) {
+				if (text[i] != '\r') {
+					letter += text[i];
+				}
+			}
+			if (i < size /*- 7*/) {
+				i++;
+			}
+			else {
+				break;
+			}
+
+		}
+		//i++;
+		lines.push_back(letter);
+
+	}
+	return lines;
+}
+
+void parsetext(char* text) {
+	std::vector<std::string> linedtext = getlines(text);
+	int state = 0;
+	char* varname;
+	char* varfunc;
+	int statepos;
+	int varval;
+	int varval2 = -1;
+	char eq = '=';
+	for (int i = 0; i < linedtext.size(); i++) {
+		varval2 = -1;
+		//I_Printf("%s\n", linedtext[i].c_str());
+		if ((linedtext[i].find(eq) != std::string::npos) && state != 3 && state != 0) {
+			varname = strtok(strdup(linedtext[i].c_str()), "=");
+			std::string tv3 = strtok(NULL, "=");
+			if (!tv3.empty()) {
+				if (state != 6 && state != 9) {
+					varval = atoi(tv3.c_str());
+					if (state == 1 && !idStr::Icmp(varname, "Bits ") && varval == 0) {
+						varval = Generateflags(strdup(tv3.c_str()));
+					}
+				}
+				else {
+					varfunc = strdup(tv3.c_str());
+				}
+			}
+			//idLib::Printf("%s = %i\n", varname, varval);
+			switch (state) {
+			case 1:
+				setThing(statepos - 1, varname, varval);
+				break;
+			case 2:
+				setFrame(statepos, varname, varval);
+				memcpy(::g->states, tempStates, sizeof(tempStates));
+				break;
+			case 4:
+				setWeapon(statepos, varname, varval);
+				break;
+			case 5:
+				setPointer(statepos, varname, varval);
+				memcpy(::g->states, tempStates, sizeof(tempStates));
+				break;
+			case 6:
+				setCptr(varname, varfunc);
+				memcpy(::g->states, tempStates, sizeof(tempStates));
+				break;
+			case 7:
+				setAmmo(statepos, varname, varval);
+				break;
+			case 9:
+				setBText(varname, varfunc);
+				break;
+				//More Headache than it's worth
+			case 10:
+				setSound(statepos, varname, varval);
+				break;
+			case 11:
+				setMisc(varname, varval);
+				break;
+			}
+
+
+		}
+		else {
+			if (linedtext[i].length() > 1) {
+				char* tst = strtok(strdup(linedtext[i].c_str()), " ");
+				char* tval = strtok(NULL, " ");
+				if (tst != NULL && tval != NULL) {
+
+					statepos = atoi(tval);
+					state = checkstate(tst);
+					int tpos = -1;
+					char* tv;
+					switch (state) {
+					case 1:
+						tpos = statepos - 1;
+						if (tpos >= NUMMOBJTYPES) {
+							I_Error("No such Thing found");
+						}
+						break;
+					case 2:
+						if (statepos >= NUMSTATES) {
+							I_Error("No such Frame found");
+						}
+						break;
+					case 3:
+						statepos = statepos + 1;
+						varval2 = atoi(strtok(NULL, " "));
+						setText(linedtext, i + 1, statepos, varval2);
+						break;
+					case 4:
+						if (statepos >= NUMWEAPONS) {
+							I_Error("No such Weapon found");
+						}
+						break;
+					case 5:
+						tv = strtok(NULL, " ");
+						if (tv != NULL) {
+							char* tv2 = strtok(NULL, " ");
+							if (tv2 != NULL) {
+								tv2[strlen(tv2) - 1] = '\0';
+								statepos = atoi(tv2);
+
+								if (statepos >= NUMSTATES) {
+									idLib::Printf("%i\n", statepos);
+									I_Error("No such codeptr found");
+								}
+							}
+						}
+						break;
+					case 7:
+						if (statepos >= NUMAMMO) {
+							I_Error("No such Ammo found");
+						}
+						break;
+					case 8:
+						tval = strtok(NULL, " ");
+						if (tval != NULL) {
+							varval = atoi(tval);
+						}
+						tval = strtok(NULL, " ");
+						if (tval != NULL) {
+							varval2 = atoi(tval);
+
+						}
+						if (varval2 == -1) {
+							if (::g->gamemode == commercial) {
+								if (statepos > 0 && statepos <= 33) {
+									setPars(statepos, varval);
+								}
+								else {
+									I_Error("No map found");
+								}
+							}
+						}
+						else {
+							if (::g->gamemode == retail) {
+								if (statepos > 0 && statepos <= 4) {
+									if (varval > 0 && varval <= 9) {
+										setPars(statepos, varval, varval2);
+									}
+									else {
+										I_Error("No level found");
+									}
+								}
+								else {
+									I_Error("No episode found");
+								}
+							}
+						}
+						break;
+						//More Headache than it's worth
+					case 10:
+						if (statepos >= NUMSFX) {
+							I_Error("No such Sound found");
+						}
+						break;
+					}
+
+				}
+				else {
+					if (tst != NULL) {
+						int tstate = checkstate(tst);
+						if (tstate != 0) {
+							state = tstate;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void loaddeh(int lump) {
+	char* text = (char*)malloc(W_LumpLength(lump) + 1);
+	text[W_LumpLength(lump)] = '\0';
+	I_Printf("Applying DeHackeD patch ...\n");
+	W_ReadLump(lump, text);
+
+	//idLib::Printf("%s", text);
+	parsetext(text);
+	free(text);
+	I_Printf("DeHackeD patch succesfully applied\n");
 }
