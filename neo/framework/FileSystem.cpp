@@ -909,7 +909,7 @@ void idFileSystemLocal::AddFonts( idStrList& files )
 
 const char* excludeExtensions[] =
 {
-	".idxma", ".idmsf", ".idwav", ".xma", ".msf", ".wav", ".resource",".ogg"
+	".idxma", ".idmsf", ".idwav", ".xma", ".msf", ".wav", ".resource",".ogg",".mp3",".flac"
 };
 const int numExcludeExtensions = sizeof( excludeExtensions ) / sizeof( excludeExtensions[ 0 ] );
 

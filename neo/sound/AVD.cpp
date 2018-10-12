@@ -28,6 +28,9 @@
 
 #ifndef USE_OPENAL
 bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice,bool ext) {
+	if ( *len <= 0) {
+		return false;
+	}
 	int ret = 0;
 	int avindx = 0;
 	AVFormatContext*		fmt_ctx = avformat_alloc_context();
@@ -203,6 +206,9 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 }
 #else
 bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
+	if ( *len <= 0) {
+		return false;
+	}
 	int ret = 0;
 	int avindx = 0;
 	AVFormatContext*		fmt_ctx = avformat_alloc_context();
