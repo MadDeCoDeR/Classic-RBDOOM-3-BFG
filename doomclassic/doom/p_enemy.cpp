@@ -1453,8 +1453,8 @@ A_PainShootSkull
 
     // if there are allready 20 skulls on the level,
     // don't spit another one
-    if (count > 20)
-	return;
+   // if (count > 20)
+	//return;
 
 
     // okay, there's playe for another one

@@ -167,7 +167,7 @@ void I_Error(const char *error, ...)
     va_list	argptr;
 
     // Message first.
-	if( debugOutput ) {
+	//if( debugOutput ) {
 		va_start (argptr,error);
 		idStr::vsnPrintf (error_msg, ERROR_MSG_SIZE, error, argptr);
 
@@ -176,7 +176,7 @@ void I_Error(const char *error, ...)
 		safeOutputDebug("\n");
 
 		va_end (argptr);
-	}
+	//}
 
 	// CRASH DUMP - enable this to get extra info on error from crash dumps
 	//*(int*)0x0 = 21;
