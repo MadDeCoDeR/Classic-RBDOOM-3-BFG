@@ -4,6 +4,32 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+12 Octomber 2018 - Classic RBDOOM-3-BFG 1.1.11.5
+_______________________________
+
+[classicdoom]
+
+- Various Memory and Z-Memory improvments and optimizations
+
+- Optimization and Improvments on the dehacked and expinfo compilers
+
+- Added new Parameter "-zmem" that allows you to set the maximum Zone Memory
+
+- Remove the limit of the concurret lost souls
+
+- From now on the CVar "com_showMemoryUsage" will display the Z-Memory usage on Doom 1 & 2
+
+[DOOM3BFG]
+
+- Added idCVar "pm_thirdPersonXOff" that allow you to adjust the X Position of the third Person camera
+
+- Various bugfixes and Improvments
+
+[Launcher]
+
+- Added the option to set the mod base on Doom3
+_______________________________________
+
 25 September 2018(02/10/2018) - Classic RBDOOM-3-BFG 1.1.11
 _______________________________
 
