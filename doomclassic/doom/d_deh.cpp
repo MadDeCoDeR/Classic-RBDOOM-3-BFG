@@ -446,10 +446,10 @@ void setThing(int pos, char* varname, int varval) {
 
 void setFrame(int pos, char* varname, int varval) {
 	dehobj fvars[6] = {
-		{"Sprite subnumber ",MAXLONG,NULL,NULL,&tempStates[pos].frame},
-		{"Duration ",MAXLONG,NULL,NULL,&tempStates[pos].tics},
-		{"Unknown 1 ",MAXLONG,NULL,NULL,&tempStates[pos].misc1},
-		{"Unknown 2 ",MAXLONG,NULL,NULL,&tempStates[pos].misc2},
+		{"Sprite subnumber ",MAXINT,NULL,NULL,&tempStates[pos].frame},
+		{"Duration ",MAXINT,NULL,NULL,&tempStates[pos].tics},
+		{"Unknown 1 ",MAXINT,NULL,NULL,&tempStates[pos].misc1},
+		{"Unknown 2 ",MAXINT,NULL,NULL,&tempStates[pos].misc2},
 		{"Sprite number ",NUMSPRITES,NULL,NULL,NULL,NULL,&tempStates[pos].sprite},
 		{"Next frame ",NUMSTATES,NULL,NULL,NULL,NULL,NULL,&tempStates[pos].nextstate}
 	};
