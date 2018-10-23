@@ -38,6 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // Misc. other strings.
 #define SAVEGAMENAME	"doomsav"
+#define QUICKSAVENAME	"quicksav"
 
 
 //

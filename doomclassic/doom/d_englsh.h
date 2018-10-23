@@ -48,10 +48,15 @@ If you have questions concerning this license or the applicable additional terms
 #define QUITMSG	"are you sure you want to\nquit this great game?"
 #define LOADNET 	"you can't do load while in a net game!\n\n" PRESSKEY
 #define QLOADNET	"you can't quickload during a netgame!\n\n" PRESSKEY
-#define QSAVESPOT	"you haven't picked a quicksave slot yet!\n\n" PRESSKEY
+//#define QSAVESPOT	"you haven't picked a quicksave slot yet!\n\n" PRESSKEY
+#define QSAVESPOT	"you haven't have a quicksave yet!\n\n" PRESSKEY
 #define SAVEDEAD 	"you can't save if you aren't playing!\n\n" PRESSKEY
 #define QSPROMPT 	"quicksave over your game named\n\n'%s'?\n\n" PRESSYN
+#define QSPROMPTGP 	"quicksave over your game named\n\n'%s'?\n\n" PRESSAB
+#define QSPROMPTGPX 	"quicksave over your game named\n\n'%s'?\n\n" PRESSXO
 #define QLPROMPT	"do you want to quickload the game named\n\n'%s'?\n\n" PRESSYN
+#define QLPROMPTGP	"do you want to quickload the game named\n\n'%s'?\n\n" PRESSAB
+#define QLPROMPTGPX	"do you want to quickload the game named\n\n'%s'?\n\n" PRESSXO
 #define DELSAV		"Are you sure you want to\ndelete this save file?\n\n" PRESSYN
 #define DELSAVGP	"Are you sure you want to\ndelete this save file?\n\n" PRESSAB
 #define DELSAVGPX	"Are you sure you want to\ndelete this save file?\n\n" PRESSXO
@@ -79,6 +84,8 @@ If you have questions concerning this license or the applicable additional terms
 #define MSGON		"Messages ON"
 #define NETEND	"you can't end a netgame!\n\n" PRESSKEY
 #define ENDGAME	"are you sure you want to end the game?\n\n" PRESSYN
+#define ENDGAMEGP	"are you sure you want to end the game?\n\n" PRESSAB
+#define ENDGAMEGPX	"are you sure you want to end the game?\n\n" PRESSXO
 
 #define DOSY		"(press A to quit)"
 

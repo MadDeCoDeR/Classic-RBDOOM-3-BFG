@@ -186,6 +186,7 @@ void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
 void M_SaveSelect(int choice);
 void M_ReadSaveStrings(void);
+bool M_CheckQuickSave(void);
 void M_QuickSave(void);
 void M_QuickLoad(void);
 
@@ -336,8 +337,58 @@ void M_ReadSaveStrings(void)
 		::g->LoadMenu[i].status = 1;
 	}
 }
+//GK: From now on quicksave-quickload will use a hidden saveslot
+//
+// M_CheckQuickSave
+//  read the strings from the savegame files
+//
+bool M_CheckQuickSave(void)
+{
+	idFile*         handle;
+	int             count;
+	int             i;
+	char    name[256];
+
+	//for (i = 0; i < load_end; i++)
+	{
+		if (common->GetCurrentGame() == DOOM_CLASSIC) {
+			sprintf(name, "DOOM\\%s%d.dsg", QUICKSAVENAME, 7);
+		}
+		else {
+			if (::g->gamemission == pack_custom && ::g->savedir) { //GK: Custom expansion related stuff
+				sprintf(name, "%s\\%s%d.dsg", ::g->savedir, QUICKSAVENAME, 7);
+			}
+			else
+				if (DoomLib::idealExpansion == doom2) {
+					sprintf(name, "DOOM2\\%s%d.dsg", QUICKSAVENAME, 7);
+				}
+				else if (DoomLib::idealExpansion == pack_nerve) {
+					sprintf(name, "DOOM2_NRFTL\\%s%d.dsg", QUICKSAVENAME, 7);
+				}
+				else if (DoomLib::idealExpansion == pack_tnt) {
+					sprintf(name, "DOOM2_TNT\\%s%d.dsg", QUICKSAVENAME, 7);
+				}
+				else if (DoomLib::idealExpansion == pack_plut) {
+					sprintf(name, "DOOM2_PLUT\\%s%d.dsg", QUICKSAVENAME, 7);
+				}
+				else if (DoomLib::idealExpansion == pack_master) {
+					sprintf(name, "DOOM2_MASTER\\%s%d.dsg", QUICKSAVENAME, 7);
+				}
 
 
+		}
+
+		handle = fileSystem->OpenFileRead(name, false);
+		if (handle == NULL)
+		{
+			return false;
+		}
+		handle->Read(&::g->savegamestrings[7], SAVESTRINGSIZE);
+		strcpy(::g->savegamepaths[7], name);
+		return true;
+	}
+}
+//GK: End
 //
 // M_LoadGame & Cie.
 //
@@ -514,9 +565,9 @@ void M_DoSave(int slot)
 	G_SaveGame (slot,::g->savegamestrings[slot]);
 	M_ClearMenus ();
 
-	// PICK QUICKSAVE SLOT YET?
-	if (::g->quickSaveSlot == -2)
-		::g->quickSaveSlot = slot;
+	// PICK QUICKSAVE SLOT YET? GK: Already did
+	//if (::g->quickSaveSlot == -2)
+	//	::g->quickSaveSlot = slot;
 }
 
 //
@@ -690,7 +741,7 @@ void M_QuickSaveResponse(int ch)
 {
 	if (ch == KEY_ENTER)
 	{
-		M_DoSave(::g->quickSaveSlot);
+		M_SaveSelect(::g->quickSaveSlot); //GK: use Saveselect instead in order to change it's name
 		S_StartSound(NULL,sfx_swtchx);
 	}
 }
@@ -708,13 +759,25 @@ void M_QuickSave(void)
 
 	if (::g->quickSaveSlot < 0)
 	{
-		M_StartControlPanel();
-		M_ReadSaveStrings();
-		M_SetupNextMenu(&::g->SaveDef);
-		::g->quickSaveSlot = -2;	// means to pick a slot now
+		//M_StartControlPanel();
+		//M_ReadSaveStrings();
+		//M_SetupNextMenu(&::g->SaveDef);
+		//GK: Use a hidden saveslot for quick saves
+		::g->quickSaveSlot = 7;	// means to pick a slot now
+		M_SaveSelect(::g->quickSaveSlot);
 		return;
 	}
-	sprintf(::g->tempstring,QSPROMPT,::g->savegamestrings[::g->quickSaveSlot]);
+	if (!idLib::joystick) {
+		sprintf(::g->tempstring, QSPROMPT, ::g->savegamestrings[::g->quickSaveSlot]);
+	}
+	else {
+		if (!in_joylayout.GetBool()) {
+			sprintf(::g->tempstring, QSPROMPTGP, ::g->savegamestrings[::g->quickSaveSlot]);
+		}
+		else {
+			sprintf(::g->tempstring, QSPROMPTGPX, ::g->savegamestrings[::g->quickSaveSlot]);
+		}
+	}
 	M_StartMessage(::g->tempstring,M_QuickSaveResponse,true);
 }
 
@@ -741,12 +804,26 @@ void M_QuickLoad(void)
 		return;
 	}
 
-	if (::g->quickSaveSlot < 0)
+	//GK: No longer need to assign quicksave slot. Instead check for the hidden save
+	if (!M_CheckQuickSave())
 	{
 		M_StartMessage(QSAVESPOT,NULL,false);
 		return;
 	}
-	sprintf(::g->tempstring,QLPROMPT,::g->savegamestrings[::g->quickSaveSlot]);
+	else {
+		::g->quickSaveSlot = 7;
+	}
+	if (!idLib::joystick) {
+		sprintf(::g->tempstring, QLPROMPT, ::g->savegamestrings[::g->quickSaveSlot]);
+	}
+	else {
+		if (!in_joylayout.GetBool()) {
+			sprintf(::g->tempstring, QLPROMPTGP, ::g->savegamestrings[::g->quickSaveSlot]);
+		}
+		else {
+			sprintf(::g->tempstring, QLPROMPTGPX, ::g->savegamestrings[::g->quickSaveSlot]);
+		}
+	}
 	M_StartMessage(::g->tempstring,M_QuickLoadResponse,true);
 }
 
@@ -1229,9 +1306,13 @@ void M_ChangeMessages(int choice)
 	bool sm = m_show_messages.GetBool();
 	if (!sm) {
 		m_show_messages.SetBool(!m_show_messages.GetBool());
+		if (choice == 0) { //GK: Try to circle through the options
+			cl_messages.SetInteger(4);
+		}
 	}
-	else if (cl_messages.GetInteger() == 1 && choice ==0){
+	else if ((cl_messages.GetInteger() == 1 && choice ==0)||(cl_messages.GetInteger()== 4 && choice == 1)){
 		m_show_messages.SetBool(!m_show_messages.GetBool());
+		cl_messages.SetInteger(1);
 	}
 
 	if (sm != m_show_messages.GetBool()) {
@@ -1348,8 +1429,17 @@ void M_EndGame(int choice)
 		M_StartMessage(NETEND,NULL,false);
 		return;
 	}
-
-	M_StartMessage(ENDGAME,M_EndGameResponse,true);
+	if (!idLib::joystick) {
+		M_StartMessage(ENDGAME, M_EndGameResponse, true);
+	}
+	else {
+		if (!in_joylayout.GetBool()) {
+			M_StartMessage(ENDGAMEGP, M_EndGameResponse, true);
+		}
+		else {
+			M_StartMessage(ENDGAMEGPX, M_EndGameResponse, true);
+		}
+	}
 }
 
 
@@ -1907,8 +1997,8 @@ qboolean M_Responder (event_t* ev)
 	{
 		G_ScreenShot ();
 		return true;
-	}
-
+	}*/
+	//GK: Restored (It was quite easy)
 	// F-Keys
 	if (!::g->menuactive)
 		switch(ch)
@@ -1917,6 +2007,7 @@ qboolean M_Responder (event_t* ev)
 			if (::g->automapactive || ::g->chat_on)
 				return false;
 			//M_SizeDisplay(0);
+			M_Aspect(0); //GK: Screen size doesn't work
 			S_StartSound(NULL,sfx_stnmov);
 			return true;
 
@@ -1924,18 +2015,20 @@ qboolean M_Responder (event_t* ev)
 			if (::g->automapactive || ::g->chat_on)
 				return false;
 			//M_SizeDisplay(1);
+			M_Aspect(1); //GK: It doesn't circle through
 			S_StartSound(NULL,sfx_stnmov);
 			return true;
 
 		case KEY_F1:            // Help key
 			M_StartControlPanel ();
+			M_ReadThis(0); //GK: otherwise it doesn't work
+			//if ( ::g->gamemode == retail )
+				//::g->currentMenu = &::g->ReadDef2;
 
-			if ( ::g->gamemode == retail )
-				::g->currentMenu = &::g->ReadDef2;
-			else
-				::g->currentMenu = &::g->ReadDef1;
+			//else
+			//	::g->currentMenu = &::g->ReadDef1;
 
-			::g->itemOn = 0;
+			//::g->itemOn = 0;
 			S_StartSound(NULL,sfx_swtchn);
 			return true;
 
@@ -1959,7 +2052,8 @@ qboolean M_Responder (event_t* ev)
 			return true;
 
 		case KEY_F5:            // Detail toggle
-			M_ChangeDetail(0);
+			//M_ChangeDetail(0);
+			M_Light(0); //GK: You don't want to mess with the detail (looking you with my evil eye)
 			S_StartSound(NULL,sfx_swtchn);
 			return true;
 
@@ -1974,7 +2068,7 @@ qboolean M_Responder (event_t* ev)
 			return true;
 
 		case KEY_F8:            // Toggle messages
-			M_ChangeMessages(0);
+			M_ChangeMessages(1);
 			S_StartSound(NULL,sfx_swtchn);
 			return true;
 
@@ -1984,6 +2078,7 @@ qboolean M_Responder (event_t* ev)
 			return true;
 
 		case KEY_F10:           // Quit DOOM
+			M_StartControlPanel(); //GK: without it it doesn't show
 			S_StartSound(NULL,sfx_swtchn);
 			M_QuitDOOM(0);
 			return true;
@@ -1993,11 +2088,14 @@ qboolean M_Responder (event_t* ev)
 			if (::g->usegamma > 4)
 				::g->usegamma = 0;
 			::g->players[::g->consoleplayer].message = gammamsg[::g->usegamma];
-			I_SetPalette ((byte*)W_CacheLumpName ("PLAYPAL",PU_CACHE_SHARED));
+			I_SetPalette ((byte*)W_CacheLumpName ("PLAYPAL",PU_CACHE_SHARED),W_LumpLength(W_GetNumForName("PLAYPAL")));
 			return true;
-
+		case KEY_F12: //GK: Why not
+			M_Alwaysrun(0);
+			S_StartSound(NULL, sfx_swtchn);
+			return true;
 	}
-*/
+
 
 	// Pop-up menu?
 	if (!::g->menuactive)
