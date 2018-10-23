@@ -473,7 +473,12 @@ idFileHandle idFileSystemLocal::OpenOSFile( const char* fileName, fsMode_t mode 
 	else if( mode == FS_READ )
 	{
 		dwAccess = GENERIC_READ;
-		dwShare = FILE_SHARE_READ;
+		if (common->GetCurrentGame() != DOOM3_BFG && !idStr::Icmpn(fileName+strlen(fileName) - 13, "quicksav7.dsg", 13)) {
+			dwShare = FILE_SHARE_READ | FILE_SHARE_WRITE; //GK: ONLY for the classic Doom quicksaves
+		}
+		else {
+			dwShare = FILE_SHARE_READ;
+		}
 		dwCreate = OPEN_EXISTING;
 		dwFlags = FILE_ATTRIBUTE_NORMAL;
 	}

@@ -603,7 +603,7 @@ void idCommonLocal::ExecuteMapChange()
 	}
 	
 	renderSystem->EndLevelLoad();
-	soundSystem->EndLevelLoad();
+	soundSystem->EndLevelLoad(currentMapName);
 	declManager->EndLevelLoad();
 	uiManager->EndLevelLoad( currentMapName );
 	fileSystem->EndLevelLoad();

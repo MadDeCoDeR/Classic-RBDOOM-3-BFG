@@ -67,7 +67,7 @@ idSoundWorldLocal::idSoundWorldLocal()
 	listener.pos.Zero();
 	listener.id = -1;
 	listener.area = 0;
-	
+	EAXarea = -1;
 	shakeAmp = 0.0f;
 	currentCushionDB = DB_SILENCE;
 	
@@ -166,7 +166,7 @@ float idSoundWorldLocal::CurrentShakeAmplitude()
 idSoundWorldLocal::PlaceListener
 ========================
 */
-void idSoundWorldLocal::PlaceListener( const idVec3& origin, const idMat3& axis, const int id )
+void idSoundWorldLocal::PlaceListener( const idVec3& origin, const idMat3& axis, const int id, const char* locationName)
 {
 	if( writeDemo )
 	{
@@ -185,6 +185,7 @@ void idSoundWorldLocal::PlaceListener( const idVec3& origin, const idMat3& axis,
 	listener.axis = axis;
 	listener.pos = origin;
 	listener.id = id;
+	listener.name = locationName;
 	
 	if( renderWorld )
 	{
@@ -337,7 +338,53 @@ void idSoundWorldLocal::Update()
 	{
 		return;
 	}
-	
+#ifdef USE_OPENAL
+	//GK: Check here if the player has change environment and re-set the effect slot
+	if (soundSystemLocal.efxloaded) {
+		int EnvironmentID = -1;
+		idSoundEffect *effect = NULL;
+		if (EAXarea != listener.area) {
+			idStr defaultStr("default");
+			idStr listenerAreaStr(listener.area);
+			soundSystemLocal.EFXDatabase.FindEffect(listenerAreaStr, &effect, &EnvironmentID);
+			if (!effect)
+				soundSystemLocal.EFXDatabase.FindEffect(listener.name, &effect, &EnvironmentID);
+			if (!effect)
+				soundSystemLocal.EFXDatabase.FindEffect(defaultStr, &effect, &EnvironmentID);
+		}
+		else {
+			EnvironmentID = listener.id;
+		}
+		// only update if change in settings 
+		if (/*soundSystemLocal.s_muteEAXReverb.GetBool()*/listener.id != EnvironmentID || soundSystemLocal.EAX == 0) {
+			EFXEAXREVERBPROPERTIES EnvironmentParameters;
+			if (alIsEffect(soundSystemLocal.EAX)) {
+				alDeleteEffects(1, &soundSystemLocal.EAX);
+				
+			}
+			soundSystemLocal.EAX = 0;
+			if (alIsAuxiliaryEffectSlot(soundSystemLocal.slot)) {
+				alDeleteAuxiliaryEffectSlots(1, &soundSystemLocal.slot);
+			}
+			soundSystemLocal.slot = 0;
+			// get area reverb setting from EAX Manager
+			if ((effect) && (effect->data) ) {
+				memcpy(&EnvironmentParameters, effect->data, effect->datasize);
+				/*if (soundSystemLocal.s_muteEAXReverb.GetBool()) {
+					EnvironmentParameters.flGain = -10000;
+					EnvironmentID = -2;
+				}*/
+				if (soundSystemLocal.alEAXSet) {
+					EAXarea = listener.area;
+					soundSystemLocal.SetEFX(&EnvironmentParameters);
+					alGenAuxiliaryEffectSlots(1, &soundSystemLocal.slot);
+					alAuxiliaryEffectSloti(soundSystemLocal.slot, AL_EFFECTSLOT_EFFECT, soundSystemLocal.EAX);
+				}
+			}
+			listener.id = EnvironmentID;
+		}
+	}
+#endif
 	// ------------------
 	// Update emitters
 	//
@@ -948,7 +995,7 @@ void idSoundWorldLocal::ProcessDemoCommand( idDemoFile* readDemo )
 			readDemo->ReadMat3( axis );
 			readDemo->ReadInt( listenerId );
 			
-			PlaceListener( origin, axis, listenerId );
+			PlaceListener( origin, axis, listenerId,"Undefined" );
 		};
 		break;
 		case SCMD_ALLOC_EMITTER:

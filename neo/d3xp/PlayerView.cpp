@@ -437,7 +437,7 @@ void idPlayerView::SingleView( const renderView_t* view, idMenuHandler_HUD* hudM
 	}
 	
 	// place the sound origin for the player
-	gameSoundWorld->PlaceListener( view->vieworg, view->viewaxis, player->entityNumber + 1 );
+	gameSoundWorld->PlaceListener( view->vieworg, view->viewaxis, player->entityNumber + 1,player->hud?player->hud->GetSWFObject()->GetRootObject().GetNestedText("_bottomLeft", "location", "txtVal")->text.c_str():"Undefined"); //GK: like OG Doom 3 keep the location name
 	
 	// if the objective system is up, don't do normal drawing
 	if( player->objectiveSystemOpen )

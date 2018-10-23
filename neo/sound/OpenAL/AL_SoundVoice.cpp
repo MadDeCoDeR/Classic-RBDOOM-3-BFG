@@ -186,8 +186,8 @@ void idSoundVoice_OpenAL::Create( const idSoundSample* leadinSample_, const idSo
 	alSourcei( openalSource, AL_SOURCE_RELATIVE, AL_TRUE );
 	alSource3f( openalSource, AL_POSITION, 0.0f, 0.0f, 0.0f );
 	
-	// RB: FIXME 0.0f ?
-	alSourcef( openalSource, AL_GAIN, 1.0f );
+		// RB: FIXME 0.0f ?
+		alSourcef( openalSource, AL_GAIN, 1.0f );
 	
 	//OnBufferStart( leadinSample, 0 );
 }
@@ -205,7 +205,7 @@ void idSoundVoice_OpenAL::DestroyInternal()
 		{
 			idLib::Printf( "%dms: %i destroyed\n", Sys_Milliseconds(), openalSource );
 		}
-		
+
 		alDeleteSources( 1, &openalSource );
 		openalSource = 0;
 		
@@ -378,11 +378,13 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 	{
 		alSourcei( openalSource, AL_BUFFER, sample->openalBuffer );
 		alSourcei( openalSource, AL_LOOPING, ( sample == loopingSample && loopingSample != NULL ? AL_TRUE : AL_FALSE ) );
-		
+
 		return sample->totalBufferSize;
 	}
 	else
 	{
+		//GK: Check also here for looping samples, since music samples fail to check it otherwise
+		alSourcei(openalSource, AL_LOOPING, (sample == loopingSample && loopingSample != NULL ? AL_TRUE : AL_FALSE));
 		ALint finishedbuffers;
 		
 		if( !triggered )
@@ -399,7 +401,7 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 			finishedbuffers = 3;
 		}
 		//GK: Just make sure we don't get 0 buffers because it's result on silent audio
-		if (!openalStreamingBuffer[0] && !openalStreamingBuffer[1] && !openalStreamingBuffer[2]) {
+		if (openalStreamingBuffer[0]==openalStreamingBuffer[1]==openalStreamingBuffer[2]==0) {
 			alGenBuffers(3, &openalStreamingBuffer[0]);
 		}
 		ALenum format;
@@ -623,7 +625,13 @@ void idSoundVoice_OpenAL::UnPause()
 	{
 		idLib::Printf( "%dms: %i unpausing %s\n", Sys_Milliseconds(), openalSource, leadinSample ? leadinSample->GetName() : "<null>" );
 	}
-	
+	//GK: Set the EFX in the last moment
+	if (soundSystemLocal.slot != 0) {
+		alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.slot, 0, AL_FILTER_NULL);
+	}
+	else {
+		alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, NULL, 0, AL_FILTER_NULL);
+	}
 	alSourcePlay( openalSource );
 	//pSourceVoice->Start( 0, OPERATION_SET );
 	paused = false;

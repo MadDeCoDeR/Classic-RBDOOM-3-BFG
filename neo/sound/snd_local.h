@@ -110,6 +110,7 @@ typedef enum
 #include "OpenAL/AL_SoundSample.h"
 #include "OpenAL/AL_SoundVoice.h"
 #include "OpenAL/AL_SoundHardware.h"
+#include "OpenAL/efxlib.h"
 
 ID_INLINE_EXTERN ALenum CheckALErrors_( const char* filename, int line )
 {
@@ -188,6 +189,7 @@ struct listener_t
 	idVec3	pos;		// position in meters
 	int		id;			// the entity number, used to detect when a sound is local
 	int		area;		// area number the listener is in
+	idStr	name;		//GK: The name of the area the player is in
 };
 
 class idSoundFade
@@ -294,7 +296,7 @@ public:
 	virtual float			CurrentShakeAmplitude();
 	
 	// where is the camera
-	virtual void			PlaceListener( const idVec3& origin, const idMat3& axis, const int listenerId );
+	virtual void			PlaceListener( const idVec3& origin, const idMat3& axis, const int listenerId, const char* locationName );
 	
 	virtual void			WriteSoundShaderLoad( const idSoundShader* snd );
 	
@@ -359,6 +361,7 @@ public:
 	float				shakeAmp;			// last calculated shake amplitude
 	
 	listener_t			listener;
+	int					EAXarea;
 	idList<idSoundEmitterLocal*, TAG_AUDIO>	emitters;
 	
 	idSoundEmitter* 	localSound;			// for PlayShaderDirectly()
@@ -518,7 +521,7 @@ public:
 	virtual	void			BeginLevelLoad();
 	
 	// We might want to defer the loading of new sounds to this point
-	virtual	void			EndLevelLoad();
+	virtual	void			EndLevelLoad(const char* mapstring);
 	
 	// prints memory info
 	virtual void			PrintMemInfo( MemInfo_t* mi );
@@ -545,7 +548,9 @@ public:
 	idSoundSample* 			LoadSample( const char* name );
 	
 	virtual void			Preload( idPreloadManifest& preload );
-	
+#ifdef USE_OPENAL
+	void					SetEFX(EFXEAXREVERBPROPERTIES* rev);
+#endif
 	struct bufferContext_t
 	{
 		bufferContext_t() :
@@ -575,7 +580,13 @@ public:
 	// Get a stream buffer from the free pool, returns NULL if none are available
 	bufferContext_t* 			ObtainStreamBufferContext();
 	void						ReleaseStreamBufferContext( bufferContext_t* p );
-	
+#ifdef USE_OPENAL
+	idEFXFile				EFXDatabase;
+	bool					efxloaded;
+	bool					alEAXSet;
+	ALuint					EAX;
+	ALuint					slot;
+#endif
 	idSysMutex					streamBufferMutex;
 	idStaticList< bufferContext_t*, MAX_SOUND_BUFFERS > freeStreamBufferContexts;
 	idStaticList< bufferContext_t*, MAX_SOUND_BUFFERS > activeStreamBufferContexts;

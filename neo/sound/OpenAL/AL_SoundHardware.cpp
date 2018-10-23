@@ -196,14 +196,22 @@ void idSoundHardware_OpenAL::Init()
 		common->FatalError( "idSoundHardware_OpenAL::Init: alcOpenDevice() failed\n" );
 		return;
 	}
-	
-	openalContext = alcCreateContext( openalDevice, NULL );
+	//GK: Set this for EFX support
+	ALCint att[4] = {0};
+	att[0] = ALC_MAX_AUXILIARY_SENDS;
+	att[1] = 4;
+	openalContext = alcCreateContext( openalDevice, att );
 	if( alcMakeContextCurrent( openalContext ) == 0 )
 	{
 		common->FatalError( "idSoundHardware_OpenAL::Init: alcMakeContextCurrent( %p) failed\n", openalContext );
 		return;
 	}
-	
+	//GK: And check if it works
+	ALCint size = 0;
+	alcGetIntegerv(openalDevice, ALC_MAX_AUXILIARY_SENDS, 1, &size);
+	if (!alcIsExtensionPresent(openalDevice, "ALC_EXT_EFX") || size == 0) {
+		common->Printf("No EAX support");
+	}
 	common->Printf( "Done.\n" );
 	
 	common->Printf( "OpenAL vendor: %s\n", alGetString( AL_VENDOR ) );

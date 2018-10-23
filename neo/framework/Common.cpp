@@ -1416,7 +1416,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		soundWorld = soundSystem->AllocSoundWorld( renderWorld );
 		
 		menuSoundWorld = soundSystem->AllocSoundWorld( NULL );
-		menuSoundWorld->PlaceListener( vec3_origin, mat3_identity, 0 );
+		menuSoundWorld->PlaceListener( vec3_origin, mat3_identity, 0,"Undefined" );
 		
 		// init the session
 		session->Initialize();
@@ -1695,7 +1695,7 @@ void idCommonLocal::CreateMainMenu()
 		
 		// load
 		renderSystem->EndLevelLoad();
-		soundSystem->EndLevelLoad();
+		soundSystem->EndLevelLoad("");
 		declManager->EndLevelLoad();
 		uiManager->EndLevelLoad( "" );
 	}

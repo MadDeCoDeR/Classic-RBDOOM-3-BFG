@@ -506,17 +506,21 @@ set(XAUDIO2_SOURCES
 	sound/XAudio2/XA2_SoundHardware.cpp
 	sound/XAudio2/XA2_SoundSample.cpp
 	sound/XAudio2/XA2_SoundVoice.cpp)
-	
+	#GK: Add EFX related files when using the openAL
 set(OPENAL_INCLUDES
 	sound/OpenAL/AL_SoundHardware.h
 	sound/OpenAL/AL_SoundSample.h
-	sound/OpenAL/AL_SoundVoice.h)
+	sound/OpenAL/AL_SoundVoice.h
+	sound/OpenAL/efxlib.h)
 	
 set(OPENAL_SOURCES
 	sound/OpenAL/AL_SoundHardware.cpp
 	sound/OpenAL/AL_SoundSample.cpp
 	sound/OpenAL/AL_SoundVoice.cpp)
-
+	
+if(OPENAL)
+	list(APPEND SOUND_SOURCES sound/snd_efxfile.cpp)
+endif()
 set(STUBAUDIO_INCLUDES
 	sound/stub/SoundStub.h)
 
@@ -1231,7 +1235,7 @@ if(MSVC)
 	#endif()
 	
 	if(OPENAL)
-		add_definitions(-DUSE_OPENAL)
+		add_definitions(-DUSE_OPENAL -DAL_ALEXT_PROTOTYPES) #GK: This will let us use alEffect and alAuxilaryeffect without setting them up
 	
 		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
 		
@@ -1250,7 +1254,7 @@ if(MSVC)
 			OpenAL32)
 			
 		if(CMAKE_CL_64)
-			install(FILES libs/openal-soft/libs/win64/OpenAL64.dll DESTINATION .)
+			install(FILES libs/openal-soft/libs/win64/OpenAL32.dll DESTINATION .)
 		else()
 			install(FILES libs/openal-soft/libs/win32/OpenAL32.dll DESTINATION .)
 			install(FILES libs/openal-soft/libs/win32/OpenAL32.pdb DESTINATION .)
@@ -1449,7 +1453,7 @@ else()
 			
 		if(OPENAL)
 			find_package(OpenAL REQUIRED)
-			add_definitions(-DUSE_OPENAL)
+			add_definitions(-DUSE_OPENAL -DAL_ALEXT_PROTOTYPES)
 
 			#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
 			
