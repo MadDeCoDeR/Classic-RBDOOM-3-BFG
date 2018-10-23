@@ -4,6 +4,25 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+23 Octomber 2018 - Classic RBDOOM-3-BFG 1.1.11.6
+_______________________________
+
+[classicdoom]
+
+- Slightly improved the Bootleg ending
+
+- Restored the quick buttons in Classic Doom
+
+- Improved the quicksave and quickload functions
+
+- Fixed an issue with save files on the easiest difficulty
+
+[DOOM3BFG]
+
+- Added support for OpenAL-soft EFX (Expirimental)
+
+_______________________________________
+
 12 Octomber 2018 - Classic RBDOOM-3-BFG 1.1.11.5
 _______________________________
 
