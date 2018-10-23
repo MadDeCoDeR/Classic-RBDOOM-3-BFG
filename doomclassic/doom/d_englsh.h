@@ -733,7 +733,15 @@ extern char* C2TEXT;
 "As you step off the transport, you hear\n"\
 "the stomp of a cyberdemon's iron shoe."
 
-
+#define BTLTEXT \
+"CONGURATUATIONS!!!\n"\
+"\n"\
+"THE fish king salutes\nyou while chariots of\nboard games gallop on the\nbeautiful rad \"in\nmulticolor\" sky...\n"\
+"\n"\
+"If you expected something\n"\
+"better for reaching the final\n"\
+"map of this custom expansion\nyou have bigger\n"\
+"halutinations than me..."
 
 //
 // Character cast strings F_FINALE.C

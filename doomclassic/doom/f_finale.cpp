@@ -196,6 +196,8 @@ void F_StartFinale (void)
     // Okay - IWAD dependend stuff.
     // This has been changed severly, and
     //  some stuff might have changed in the process.
+	//GK: just something for the lols
+	char* fooltext = BTLTEXT;
     switch ( ::g->gamemode )
     {
 
@@ -226,6 +228,9 @@ void F_StartFinale (void)
 				break;
 			  default:
 				// Ouch.
+				  S_ChangeMusic(mus_read_m, true);
+				  flt = finaleflat[10]; // Not used anywhere else.
+				  finaletext = fooltext;   //GK: NO finale text found??
 				break;
 			}
 			break;
@@ -247,8 +252,6 @@ void F_StartFinale (void)
 						c2 = ::g->maps[::g->wminfo.next].cluster - 1;
 					}
 					int c3 = ::g->maps[::g->endmap - 1].cluster - 1;
-					//GK: just something for the lols
-					char* fooltext = "CONGURATUATIONS!!!\n\r\nTHE fish king salutes\nyou while chariots of\nboard games gallop on the\nbeautiful rad \"in\nmulticolor\" sky...\n\r\nIf you expected something\nbetter for reaching the final\nmap of this custom expansion\nyou have bigger\nhalutinations than me...";
 					if (::g->clusters.size() > 0 && c1 >=0) {
 						if (c2 >= 0) {
 							if (::g->clusters[c1].textpr >= ::g->clusters[c2].textpr) {
@@ -426,6 +429,9 @@ void F_StartFinale (void)
 					break;
 				default:
 					// Ouch.
+					S_ChangeMusic(mus_read_m, true);
+					flt = finaleflat[10]; // Not used anywhere else.
+					finaletext = fooltext;   //GK: NO finale text found??
 					break;
 				}
 			}
@@ -436,7 +442,7 @@ void F_StartFinale (void)
 		default:
 			S_ChangeMusic(mus_read_m, true);
 			flatind=10; // Not used anywhere else.
-			finaletext = c1text;  // FIXME - other text, music?
+			finaletext = fooltext;  // FIXME - other text, music? GK: just give it the bootleg ending
 			break;
 	}
     
