@@ -1588,7 +1588,8 @@ bool W_CheckMods(int sc, std::vector<std::string> filelist) {
 	int ac = 0;
 	bool movetonext;
 	if (sc > 0) {
-		for (int mf = 0; mf < filelist.size() - 1; mf++) {
+		//GK: No more trash talking
+		for (int mf = 0; mf < filelist.size(); mf++) {
 			int f = 1;
 			while (wadfiles[f] != NULL) {
 				movetonext = false;

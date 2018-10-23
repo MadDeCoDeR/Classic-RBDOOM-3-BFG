@@ -1543,8 +1543,12 @@ qboolean G_CheckSave(char* name) {
 	char* clab = new char[19];
 	std::vector<std::string>filelist;
 	if (strcmp(tlab, vcheck)) {
-
-
+		//GK: Welp forgeting that was causing most of the problems with save files
+		int o = strlen(tlab) - 1;
+		while (tlab[o] != ',') {
+			tlab[o] = '\0';
+			o--;
+		}
 		strncpy(clab, tlab, 18);
 		clab[18] = '\0';
 		sprintf(vcheck, "version %i files ", VERSION);
@@ -1561,7 +1565,6 @@ qboolean G_CheckSave(char* name) {
 				}
 				file = strtok(NULL, ",");
 			}
-			sc = sc - 1;
 			ok = W_CheckMods(sc, filelist);
 		}
 		if (!ok) {
@@ -1621,8 +1624,12 @@ qboolean G_DoLoadGame ()
 	char* clab = new char[19];
 	std::vector<std::string>filelist;
 	if (strcmp (tlab, vcheck)) {
-		
-		
+		//GK: Welp forgeting that was causing most of the problems with save files
+		int o = strlen(tlab) - 1;
+		while (tlab[o] != ',') {
+			tlab[o] = '\0';
+			o--;
+		}
 		strncpy(clab, tlab, 18);
 		clab[18] = '\0';
 		sprintf(vcheck, "version %i files ", VERSION);
@@ -1639,7 +1646,6 @@ qboolean G_DoLoadGame ()
 				}
 				file = strtok(NULL, ",");
 			}
-			sc = sc - 1;
 			ok = W_CheckMods(sc, filelist);
 		}
 		if (!ok) {
@@ -1656,7 +1662,7 @@ qboolean G_DoLoadGame ()
 	if (hm) {
 		char* tla = new char[256];
 		strcpy(tla, clab);
-		for (int mf = 0; mf < filelist.size() - 1; mf++) {
+		for (int mf = 0; mf < filelist.size(); mf++) {
 			strcat(tla, filelist[mf].c_str());
 			strcat(tla, ",");
 		}
@@ -1727,6 +1733,7 @@ qboolean G_DoSaveGame (void)
 { 
 	char	name[100]; 
 	char*	name2; 
+	char	sname[10];
 	char*	description; 
 	int		length; 
 	int		i; 
@@ -1737,29 +1744,36 @@ qboolean G_DoSaveGame (void)
 	}
 
 	description = ::g->savedescription; 
+	//GK: quicksaves are using diferent name in order to be detected more easy
+	if (::g->savegameslot == 7) {
+		sprintf(sname, "%s", QUICKSAVENAME);
+	}
+	else {
+		sprintf(sname, "%s", SAVEGAMENAME);
+	}
 
 	if( common->GetCurrentGame() == DOOM_CLASSIC ) {
-		sprintf(name,"DOOM\\%s%d.dsg", SAVEGAMENAME,::g->savegameslot );
+		sprintf(name,"DOOM\\%s%d.dsg", sname,::g->savegameslot );
 	} else {
 		//GK: Add save directories for Evilution and Plutonia expansions
 	if (::g->gamemission == pack_custom && ::g->savedir != NULL) { //GK: Custom expansion related stuff
-		sprintf(name, "%s\\%s%d.dsg", ::g->savedir, SAVEGAMENAME, ::g->savegameslot);
+		sprintf(name, "%s\\%s%d.dsg", ::g->savedir, sname, ::g->savegameslot);
 	}
 	else
 		if (DoomLib::idealExpansion == doom2) {
-			sprintf(name, "DOOM2\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
+			sprintf(name, "DOOM2\\%s%d.dsg", sname, ::g->savegameslot);
 		}
 		else if (DoomLib::idealExpansion == pack_nerve) {
-			sprintf(name, "DOOM2_NRFTL\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
+			sprintf(name, "DOOM2_NRFTL\\%s%d.dsg", sname, ::g->savegameslot);
 		}
 		else if (DoomLib::idealExpansion == pack_tnt) {
-			sprintf(name, "DOOM2_TNT\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
+			sprintf(name, "DOOM2_TNT\\%s%d.dsg", sname, ::g->savegameslot);
 		}
 		else if (DoomLib::idealExpansion == pack_plut) {
-			sprintf(name, "DOOM2_PLUT\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
+			sprintf(name, "DOOM2_PLUT\\%s%d.dsg", sname, ::g->savegameslot);
 		}
 		else if (DoomLib::idealExpansion == pack_master) {
-			sprintf(name, "DOOM2_MASTER\\%s%d.dsg", SAVEGAMENAME, ::g->savegameslot);
+			sprintf(name, "DOOM2_MASTER\\%s%d.dsg", sname, ::g->savegameslot);
 		}
 		
 	}
