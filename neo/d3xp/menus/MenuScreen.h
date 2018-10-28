@@ -1524,6 +1524,7 @@ public:
 			// RB begin
 			ADV_FIELD_CONTROLS,
 			ADV_FIELD_FLASH,
+			ADV_FIELD_VMFOV,
 			// RB end
 			MAX_ADVANCED_FIELDS
 		};

@@ -39,6 +39,7 @@ extern idCVar r_useSSAO; // RB: use this to control HDR exposure or brightness i
 extern idCVar r_useFilmicPostProcessEffects;
 extern idCVar in_joylayout; //GK: use forced aspect ratio
 extern idCVar flashlight_old;
+extern idCVar pm_vmfov;
 
 
 /*
@@ -149,6 +150,13 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_FLASH);
 		options->AddChild(control);
 	}
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_BAR);
+	control->SetLabel("View Model Field of View");
+	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_VMFOV);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_VMFOV);
+	options->AddChild(control);
 	
 	options->AddEventAction( WIDGET_EVENT_SCROLL_DOWN ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_DOWN_START_REPEATER, WIDGET_EVENT_SCROLL_DOWN ) );
 	options->AddEventAction( WIDGET_EVENT_SCROLL_UP ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_UP_START_REPEATER, WIDGET_EVENT_SCROLL_UP ) );
@@ -451,6 +459,17 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Comm
 
 /*
 ========================
+ReLinearAdjust
+Linearly converts a float from one scale to another
+========================
+*/
+float ReLinearAdjust(float input, float currentMin, float currentMax, float desiredMin, float desiredMax)
+{
+	return ((input - currentMin) / (currentMax - currentMin)) * (desiredMax - desiredMin) + desiredMin;
+}
+
+/*
+========================
 idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustField
 ========================
 */
@@ -499,6 +518,11 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 			else {
 				flashlight_old.SetInteger(idMath::ClampInt(0, 2, flashlight_old.GetInteger() + 1));
 			}
+			break;
+		}
+		case ADV_FIELD_VMFOV:
+		{
+			pm_vmfov.SetInteger(pm_vmfov.GetInteger()+adjustAmount);
 			break;
 		}
 	}
@@ -589,6 +613,8 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 			case 0:
 				return "BFG";
 			}
+		case ADV_FIELD_VMFOV:
+			return ReLinearAdjust(pm_vmfov.GetInteger(), 0.0f, 64.0f, 0.0f, 100.0f);
 			//GK: End
 	}
 	return false;
