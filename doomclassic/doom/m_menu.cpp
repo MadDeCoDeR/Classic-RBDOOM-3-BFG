@@ -2000,7 +2000,7 @@ qboolean M_Responder (event_t* ev)
 	}*/
 	//GK: Restored (It was quite easy)
 	// F-Keys
-	if (!::g->menuactive)
+	if (!::g->menuactive && !idLib::joystick) //GK: Apparently controllers hate the Function Keys
 		switch(ch)
 	{
 		case KEY_MINUS:         // Screen size down
