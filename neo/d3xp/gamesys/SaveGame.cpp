@@ -59,6 +59,8 @@ At the head of the save game is enough information to restore the player to the 
 file be unloadable in some way (for example, due to script changes).
 */
 
+extern idCVar flashlight_old;
+
 /*
 ================
 idSaveGame::idSaveGame()
@@ -798,6 +800,7 @@ idSaveGame::WriteUsercmd
 void idSaveGame::WriteUsercmd( const usercmd_t& usercmd )
 {
 	WriteShort( usercmd.buttons ); //GK: Just add two new buttons to press and hold they said it will be better they say
+	WriteByte((byte)flashlight_old.GetInteger()); //GK: Since now you can change the flashlight mode on the main menu save the value it had and use that in order to not get bugs
 	WriteSignedChar( usercmd.forwardmove );
 	WriteSignedChar( usercmd.rightmove );
 	WriteShort( usercmd.angles[0] );
@@ -1692,13 +1695,19 @@ idRestoreGame::ReadUsercmd
 void idRestoreGame::ReadUsercmd( usercmd_t& usercmd )
 {
 	//GK: At least here I can make old saves compatible
-	if (version < BUILD_NUMBER) {
+	if (version <= 1401) {
 		byte button = 0;
 		ReadByte(button);
 		usercmd.buttons = button;
 	}
 	else {
 		ReadShort(usercmd.buttons);
+	}
+	//GK: Still keeping backward compatibility with old save files
+	if (version >= 1403) {
+		byte flashData = 0;
+		ReadByte(flashData);
+		flashlight_old.SetInteger(flashData);
 	}
 	ReadSignedChar( usercmd.forwardmove );
 	ReadSignedChar( usercmd.rightmove );

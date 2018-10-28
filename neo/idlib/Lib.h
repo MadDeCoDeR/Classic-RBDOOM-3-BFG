@@ -59,6 +59,8 @@ public:
 	static int					frameNumber;
 	//enables/disables the gamepad for PC use
 	static bool					joystick;
+	// Since now the Controller Layout option can change in the settings, make sure the game is aware of that
+	static bool					layoutchange;
 	//Use custom expansion on Doom 3
 	static bool					usecustom;
 

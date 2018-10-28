@@ -1494,6 +1494,87 @@ private:
 	const idMaterial* 			rightEyeMat;
 };
 
+//GK: Begin
+//*
+//================================================
+//idMenuScreen_Shell_AdvancedOptions
+//================================================
+//*/
+class idMenuScreen_Shell_AdvancedOptions : public idMenuScreen
+{
+public:
+
+	/*
+	================================================
+	idMenuDataSource_AdvancedSettings
+	================================================
+	*/
+	class idMenuDataSource_AdvancedSettings : public idMenuDataSource
+	{
+	public:
+		enum advancedSettingFields_t
+		{
+			ADV_FIELD_SHADOWMAPPING,
+			//GK begin
+			ADV_FIELD_HDR,
+			//GK end
+			ADV_FIELD_ATHDR,
+			ADV_FIELD_SSAO,
+			ADV_FIELD_FPPE,
+			// RB begin
+			ADV_FIELD_CONTROLS,
+			ADV_FIELD_FLASH,
+			// RB end
+			MAX_ADVANCED_FIELDS
+		};
+
+		idMenuDataSource_AdvancedSettings();
+
+		// loads data
+		virtual void				LoadData();
+
+		// submits data
+		virtual void				CommitData();
+
+		// says whether something changed with the data
+		virtual bool				IsDataChanged() const;
+
+		// retrieves a particular field for reading
+		virtual idSWFScriptVar		GetField(const int fieldIndex) const;
+
+		// updates a particular field value
+		virtual void				AdjustField(const int fieldIndex, const int adjustAmount);
+
+		bool						IsRestartRequired() const;
+
+	private:
+		int originalShadowMapping;
+		int originalHDR;
+		int originalATHDR;
+		int originalSSAO;
+		int originalFilmic;
+		int originalControler;
+		int originalFlashlight;
+	};
+
+	idMenuScreen_Shell_AdvancedOptions() :
+		options(NULL),
+		btnBack(NULL)
+	{
+	}
+	virtual void				Initialize(idMenuHandler* data);
+	virtual void				Update();
+	virtual void				ShowScreen(const mainMenuTransition_t transitionType);
+	virtual void				HideScreen(const mainMenuTransition_t transitionType);
+	virtual bool				HandleAction(idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled = false);
+
+private:
+	idMenuWidget_DynamicList* 	options;
+	idMenuDataSource_AdvancedSettings	advData;
+	idMenuWidget_Button*			btnBack;
+
+};
+//GK: End
 //*
 //================================================
 //idMenuScreen_Shell_PartyLobby

@@ -679,7 +679,7 @@ int	idSWF::GetPlatform()
 {
 
 
-	if( idLib::joystick || forceNonPCPlatform )
+	if( (idLib::joystick || forceNonPCPlatform) && !idLib::layoutchange ) //GK: just in case the layout has changed in the options, make sure the pop up dialogs won't use controller layout (otherwise it will crash)
 	{
 		forceNonPCPlatform = false;
 		return 0;
