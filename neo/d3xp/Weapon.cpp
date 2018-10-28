@@ -42,6 +42,7 @@ If you have questions concerning this license or the applicable additional terms
 // event defs
 //
 extern idCVar flashlight_old;
+idCVar pm_vmfov("pm_vmfov", "0", CVAR_INTEGER | CVAR_GAME, "Adjust the View Model Field of View", 0, 64);
 const idEventDef EV_Weapon_Clear( "<clear>" );
 const idEventDef EV_Weapon_GetOwner( "getOwner", NULL, 'e' );
 const idEventDef EV_Weapon_Next( "nextWeapon" );
@@ -2626,7 +2627,9 @@ void idWeapon::PresentWeapon( bool showViewModel )
 	{
 		// calculate weapon position based on player movement bobbing
 		owner->CalculateViewWeaponPos( viewWeaponOrigin, viewWeaponAxis );
-		
+		//GK: Complex Math stuff
+		double vmfov = (100.0 - pm_vmfov.GetInteger()) / 100.0;
+		viewWeaponAxis = viewWeaponAxis*vmfov;
 		// hide offset is for dropping the gun when approaching a GUI or NPC
 		// This is simpler to manage than doing the weapon put-away animation
 		if( gameLocal.time - hideStartTime < hideTime )
