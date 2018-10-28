@@ -4,6 +4,32 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+28 Octomber 2018 - Classic RBDOOM-3-BFG 1.1.11.7
+_______________________________
+
+[classicdoom]
+
+- Small bugfix for the Function Keys while using a controller
+
+[DOOM3BFG]
+
+- Added a new settings option
+that allowing you to change
+various settings available
+only to this port and it's parent port
+
+- Added Zoom on the Key Bindings
+
+- Expanded the Brightness levels
+
+- Added new CVar "pm_vmfov" which allowing you to adjust the viewmodel Field Of View
+
+- Updated and Fixed OpenAL-soft support
+
+- Improved OpenAL-soft's EFX
+
+_______________________________________
+
 23 Octomber 2018 - Classic RBDOOM-3-BFG 1.1.11.6
 _______________________________
 
