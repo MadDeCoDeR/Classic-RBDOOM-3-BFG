@@ -29,8 +29,4 @@ A configuration GUI app is provided in the alsoft-config folder. It is a front-
 end to editing %AppData%\alsoft.ini, which can be used to modify certain
 behaviors for OpenAL Soft devices.
 
-HRTF data sets are provided for 44.1khz and 48khz playback in the hrtf folder.
-They should be copied into %AppData%\openal\hrtf to be seen by OpenAL Soft
-devices.
-
 Have fun!
