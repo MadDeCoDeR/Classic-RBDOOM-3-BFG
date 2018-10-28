@@ -47,7 +47,15 @@ idCVar preLoad_Samples( "preLoad_Samples", "1", CVAR_SYSTEM | CVAR_BOOL, "preloa
 
 idSoundSystemLocal soundSystemLocal;
 idSoundSystem* soundSystem = &soundSystemLocal;
-
+//GK: OpenAL-soft 1.1.19.1 doesn't like the use of the AL_ALEXT_PROTOTYPES
+LPALGENEFFECTS			alGenEffects = (LPALGENEFFECTS)alGetProcAddress("alGenEffects");
+LPALEFFECTI				alEffecti = (LPALEFFECTI)alGetProcAddress("alEffecti");
+LPALEFFECTF				alEffectf = (LPALEFFECTF)alGetProcAddress("alEffectf");
+LPALEFFECTFV			alEffectfv = (LPALEFFECTFV)alGetProcAddress("alEffectfv");
+LPALISEFFECT			alIsEffect = (LPALISEFFECT)alGetProcAddress("alIsEffect");
+LPALISAUXILIARYEFFECTSLOT	alIsAuxiliaryEffectSlot = (LPALISAUXILIARYEFFECTSLOT)alGetProcAddress("alIsAuxiliaryEffectSlot");;
+LPALDELETEAUXILIARYEFFECTSLOTS	alDeleteAuxiliaryEffectSlots = (LPALDELETEAUXILIARYEFFECTSLOTS)alGetProcAddress("alDeleteAuxiliaryEffectSlots");
+LPALDELETEEFFECTS	alDeleteEffects = (LPALDELETEEFFECTS)alGetProcAddress("alDeleteEffects");
 /*
 ================================================================================================
 
@@ -158,7 +166,15 @@ void idSoundSystemLocal::Init()
 		InitStreamBuffers();
 	}
 #ifdef USE_OPENAL
+	//GK: And check if it works
 	alEAXSet = true;
+	ALCint size = 0;
+	alcGetIntegerv(hardware.GetOpenALDevice(), ALC_MAX_AUXILIARY_SENDS, 1, &size);
+	if (!alcIsExtensionPresent(hardware.GetOpenALDevice(), "ALC_EXT_EFX") || size == 0) {
+		alEAXSet = false;
+		common->Printf("No EAX support");
+	}
+	
 #endif
 	cmdSystem->AddCommand( "testSound", TestSound_f, 0, "tests a sound", idCmdSystem::ArgCompletion_SoundName );
 	cmdSystem->AddCommand( "s_restart", RestartSound_f, 0, "restart sound system" );
@@ -233,7 +249,7 @@ void idSoundSystemLocal::Shutdown()
 		alDeleteAuxiliaryEffectSlots(1, &slot);
 		slot = 0;
 	}
-	alEAXSet = false;
+	//alEAXSet = false;
 #endif
 	FreeStreamBuffers();
 	samples.DeleteContents( true );
@@ -766,7 +782,7 @@ void idSoundSystemLocal::SetEFX(EFXEAXREVERBPROPERTIES* rev)
 
 	{
 
-		common->Printf("Using EAX Reverb\n");
+		//common->Printf("Using EAX Reverb\n");
 
 
 
@@ -830,7 +846,7 @@ void idSoundSystemLocal::SetEFX(EFXEAXREVERBPROPERTIES* rev)
 
 	{
 
-		common->Printf("Using Standard Reverb\n");
+		//common->Printf("Using Standard Reverb\n");
 
 
 

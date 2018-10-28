@@ -47,7 +47,9 @@ idCVar s_volume_dB( "s_volume_dB", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB
 extern idCVar s_noSound;
 
 extern void WriteDeclCache( idDemoFile* f, int demoCategory, int demoCode, declType_t  declType );
-
+//GK: OpenAL-soft 1.1.19.1 doesn't like the use of the AL_ALEXT_PROTOTYPES
+LPALGENAUXILIARYEFFECTSLOTS	alGenAuxiliaryEffectSlots = (LPALGENAUXILIARYEFFECTSLOTS)alGetProcAddress("alGenAuxiliaryEffectSlots");
+LPALAUXILIARYEFFECTSLOTI	alAuxiliaryEffectSloti = (LPALAUXILIARYEFFECTSLOTI)alGetProcAddress("alAuxiliaryEffectSloti");
 /*
 ========================
 idSoundWorldLocal::idSoundWorldLocal

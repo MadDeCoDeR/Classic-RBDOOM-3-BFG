@@ -1235,7 +1235,7 @@ if(MSVC)
 	#endif()
 	
 	if(OPENAL)
-		add_definitions(-DUSE_OPENAL -DAL_ALEXT_PROTOTYPES) #GK: This will let us use alEffect and alAuxilaryeffect without setting them up
+		add_definitions(-DUSE_OPENAL)
 	
 		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
 		
@@ -1453,7 +1453,7 @@ else()
 			
 		if(OPENAL)
 			find_package(OpenAL REQUIRED)
-			add_definitions(-DUSE_OPENAL -DAL_ALEXT_PROTOTYPES)
+			add_definitions(-DUSE_OPENAL)
 
 			#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
 			

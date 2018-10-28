@@ -133,6 +133,11 @@ ID_INLINE_EXTERN ALCenum CheckALCErrors_( ALCdevice* device, const char* filenam
 	return err;
 }
 #define CheckALCErrors(x) CheckALCErrors_((x), __FILE__, __LINE__)
+//GK: OpenAL-soft 1.1.19.1 doesn't like the use of the AL_ALEXT_PROTOTYPES
+extern LPALISEFFECT			alIsEffect;
+extern LPALISAUXILIARYEFFECTSLOT	alIsAuxiliaryEffectSlot;
+extern LPALDELETEAUXILIARYEFFECTSLOTS	alDeleteAuxiliaryEffectSlots;
+extern LPALDELETEEFFECTS	alDeleteEffects;
 
 #elif defined(_MSC_VER) // DG: stub out xaudio for MinGW etc
 

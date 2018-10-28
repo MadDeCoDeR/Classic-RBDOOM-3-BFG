@@ -116,20 +116,21 @@ bool idEFXFile::ReadEffect( idLexer &src, idSoundEffect *effect ) {
 					effect->datasize = sizeof( EFXEAXREVERBPROPERTIES );
 					break;
 				}
-
+				//GK: Thanks to Dhewm 3 I found a better way to parse these files
 				if ( token == "environment" ) {
 					src.ReadTokenOnLine( &token );
 					//reverb->flDensity = token.GetUnsignedLongValue();
 				} else if ( token == "environment size" ) {
-					reverb->flDensity = src.ParseFloat();
+					float size = src.ParseFloat();
+					reverb->flDensity = (size < 2.0f) ? (size - 1.0f) : 1.0f;
 				} else if ( token == "environment diffusion" ) {
 					reverb->flDiffusion = src.ParseFloat();
 				} else if ( token == "room" ) {
-					reverb->flGain = src.ParseInt();
+					reverb->flGain = idMath::ClampFloat(AL_EAXREVERB_MIN_GAIN, AL_EAXREVERB_MAX_GAIN, idMath::Pow(10.0f, src.ParseInt() / 2000.0f));
 				} else if ( token == "room hf" ) {
-					reverb->flGainHF = src.ParseInt();
+					reverb->flGainHF = idMath::ClampFloat(AL_EAXREVERB_MIN_GAINHF, AL_EAXREVERB_MAX_GAINHF, idMath::Pow(10.0f, src.ParseInt() / 2000.0f));
 				} else if ( token == "room lf" ) {
-					reverb->flGainLF = src.ParseInt();
+					reverb->flGainLF = idMath::ClampFloat(AL_EAXREVERB_MIN_GAINLF, AL_EAXREVERB_MAX_GAINLF, idMath::Pow(10.0f, src.ParseInt() / 2000.0f));
 				} else if ( token == "decay time" ) {
 					reverb->flDecayTime = src.ParseFloat();
 				} else if ( token == "decay hf ratio" ) {
@@ -137,7 +138,7 @@ bool idEFXFile::ReadEffect( idLexer &src, idSoundEffect *effect ) {
 				} else if ( token == "decay lf ratio" ) {
 					reverb->flDecayLFRatio = src.ParseFloat();
 				} else if ( token == "reflections" ) {
-					reverb->flReflectionsGain = src.ParseInt();
+					reverb->flReflectionsGain = idMath::ClampFloat(AL_EAXREVERB_MIN_REFLECTIONS_GAIN, AL_EAXREVERB_MAX_REFLECTIONS_GAIN, idMath::Pow(10.0f, src.ParseInt() / 2000.0f));
 				} else if ( token == "reflections delay" ) {
 					reverb->flReflectionsDelay = src.ParseFloat();
 				} else if ( token == "reflections pan" ) {
@@ -145,7 +146,7 @@ bool idEFXFile::ReadEffect( idLexer &src, idSoundEffect *effect ) {
 					reverb->flLateReverbPan[1] = src.ParseFloat();
 					reverb->flLateReverbPan[2] = src.ParseFloat();
 				} else if ( token == "reverb" ) {
-					reverb->flLateReverbGain = src.ParseInt();
+					reverb->flLateReverbGain = idMath::ClampFloat(AL_EAXREVERB_MIN_LATE_REVERB_GAIN, AL_EAXREVERB_MAX_LATE_REVERB_GAIN, idMath::Pow(10.0f, src.ParseInt() / 2000.0f));
 				} else if ( token == "reverb delay" ) {
 					reverb->flLateReverbDelay = src.ParseFloat();
 				} else if ( token == "reverb pan" ) {
@@ -170,7 +171,8 @@ bool idEFXFile::ReadEffect( idLexer &src, idSoundEffect *effect ) {
 					reverb->flRoomRolloffFactor = src.ParseFloat();
 				} else if ( token == "flags" ) {
 					src.ReadTokenOnLine( &token );
-					reverb->iDecayHFLimit = token.GetUnsignedLongValue();
+					unsigned int flags= token.GetUnsignedLongValue();
+					reverb->iDecayHFLimit = (flags & 0x20) ? AL_TRUE : AL_FALSE;
 				} else {
 					src.ReadTokenOnLine( &token );
 					src.Error( "idEFXFile::ReadEffect: Invalid parameter in reverb definition" );
