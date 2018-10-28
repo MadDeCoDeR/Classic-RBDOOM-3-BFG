@@ -5446,12 +5446,15 @@ void idPlayer::SelectWeapon( int num, bool force )
 		UpdateHudWeapon();
 		//GK: A small logic HACK for the orginal Doom 3 Flashlight
 		const char* weap = spawnArgs.GetString(va("def_weapon%d", num));
-		if (!idStr::Icmp("weapon_flashlight", weap) && flashlight_old.GetInteger()) {
-			flashlight.GetEntity()->lightOn = true;
+		if ( flashlight_old.GetInteger()) {
+			if (!idStr::Icmp("weapon_flashlight", weap)) {
+				flashlight.GetEntity()->lightOn = true;
+			}
+			else {
+				flashlight.GetEntity()->lightOn = false;
+			}
 		}
-		else {
-			flashlight.GetEntity()->lightOn = false;
-		}
+		
 	}
 }
 
