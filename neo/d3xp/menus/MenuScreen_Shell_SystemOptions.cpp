@@ -571,7 +571,7 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 			const float clamped = idMath::ClampFloat( 0.0f, 100.0f, adjusted );
 			
 			r_exposure.SetFloat( LinearAdjust( clamped, 0.0f, 100.0f, 0.0f, 1.0f ) );
-			r_lightScale.SetFloat( LinearAdjust( clamped, 0.0f, 100.0f, 2.0f, 4.0f ) );
+			r_lightScale.SetFloat( LinearAdjust( clamped, 0.0f, 100.0f, 1.0f, 5.0f ) ); //GK: More light options
 			break;
 		}
 		case SYSTEM_FIELD_VOLUME:
