@@ -228,29 +228,7 @@ void idSoundSample_OpenAL::LoadResource()
 		generatedName.Append( sampleName );
 		
 		{
-			//GK:First look for ogg,mp3 and flac and then for wav
-			sampleName.SetFileExtension("ogg");
-			loaded = LoadAll(sampleName);
-			if (loaded) {
-				useavi = true;
-				return;
-			}
-			else {
-				sampleName.SetFileExtension("mp3");
-				loaded = LoadAll(sampleName);
-				if (loaded) {
-					useavi = true;
-					return;
-				}
-				else {
-					sampleName.SetFileExtension("flac");
-					loaded = LoadAll(sampleName);
-					if (loaded) {
-						useavi = true;
-						return;
-					}
-				}
-			}
+			//GK: Just a small mistake can bring a whole world of bugs
 			if( s_useCompression.GetBool() )
 			{
 				sampleName.Append( ".msadpcm" );
@@ -260,6 +238,37 @@ void idSoundSample_OpenAL::LoadResource()
 				sampleName.Append( ".wav" );
 			}
 			generatedName.Append( ".idwav" );
+		}
+		//GK:First look for ogg,mp3 and flac and then for wav
+		sampleName.SetFileExtension("ogg");
+		loaded = LoadAll(sampleName);
+		if (loaded) {
+			useavi = true;
+			return;
+		}
+		else {
+			sampleName.SetFileExtension("mp3");
+			loaded = LoadAll(sampleName);
+			if (loaded) {
+				useavi = true;
+				return;
+			}
+			else {
+				sampleName.SetFileExtension("flac");
+				loaded = LoadAll(sampleName);
+				if (loaded) {
+					useavi = true;
+					return;
+				}
+			}
+		}
+		if (s_useCompression.GetBool())
+		{
+			sampleName.SetFileExtension(".msadpcm");
+		}
+		else
+		{
+			sampleName.SetFileExtension(".wav");
 		}
 		loaded = LoadGeneratedSample( generatedName ) || LoadWav( sampleName );
 		
@@ -621,13 +630,13 @@ bool idSoundSample_OpenAL::LoadWav( const idStr& filename )
 	
 	if( format.basic.formatTag == idWaveFile::FORMAT_PCM || format.basic.formatTag == idWaveFile::FORMAT_EXTENSIBLE )
 	{
-	
-		if( format.basic.bitsPerSample != 16 )
+	//GK: I guess it can now play non 16-bit wav files
+		/*if( format.basic.bitsPerSample != 16 )
 		{
 			idLib::Warning( "LoadWav( %s ) : %s", filename.c_str(), "Not a 16 bit PCM wav file" );
 			MakeDefault();
 			return false;
-		}
+		}*/
 		
 		playBegin = 0;
 		playLength = ( totalBufferSize ) / format.basic.blockSize;
