@@ -411,6 +411,7 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 	originalControler = in_joylayout.GetInteger();
 	// RB end
 	originalFlashlight = flashlight_old.GetInteger();
+	originalVmfov = pm_vmfov.GetInteger();
 	/*const int fullscreen = r_fullscreen.GetInteger();
 	if( fullscreen > 0 )
 	{
@@ -653,6 +654,10 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 	}
 	// RB begin
 	if( originalFlashlight != flashlight_old.GetInteger() )
+	{
+		return true;
+	}
+	if (originalVmfov != pm_vmfov.GetInteger())
 	{
 		return true;
 	}

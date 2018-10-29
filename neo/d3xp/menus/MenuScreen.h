@@ -1556,6 +1556,7 @@ public:
 		int originalFilmic;
 		int originalControler;
 		int originalFlashlight;
+		int originalVmfov;
 	};
 
 	idMenuScreen_Shell_AdvancedOptions() :
