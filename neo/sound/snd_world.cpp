@@ -48,7 +48,6 @@ extern idCVar s_noSound;
 
 extern void WriteDeclCache( idDemoFile* f, int demoCategory, int demoCode, declType_t  declType );
 //GK: OpenAL-soft 1.1.19.1 doesn't like the use of the AL_ALEXT_PROTOTYPES
-LPALGENAUXILIARYEFFECTSLOTS	alGenAuxiliaryEffectSlots = (LPALGENAUXILIARYEFFECTSLOTS)alGetProcAddress("alGenAuxiliaryEffectSlots");
 LPALAUXILIARYEFFECTSLOTI	alAuxiliaryEffectSloti = (LPALAUXILIARYEFFECTSLOTI)alGetProcAddress("alAuxiliaryEffectSloti");
 /*
 ========================
@@ -365,10 +364,6 @@ void idSoundWorldLocal::Update()
 				
 			}
 			soundSystemLocal.EAX = 0;
-			if (alIsAuxiliaryEffectSlot(soundSystemLocal.slot)) {
-				alDeleteAuxiliaryEffectSlots(1, &soundSystemLocal.slot);
-			}
-			soundSystemLocal.slot = 0;
 			// get area reverb setting from EAX Manager
 			if ((effect) && (effect->data) ) {
 				memcpy(&EnvironmentParameters, effect->data, effect->datasize);
@@ -379,8 +374,7 @@ void idSoundWorldLocal::Update()
 				if (soundSystemLocal.alEAXSet) {
 					EAXarea = listener.area;
 					soundSystemLocal.SetEFX(&EnvironmentParameters);
-					alGenAuxiliaryEffectSlots(1, &soundSystemLocal.slot);
-					alAuxiliaryEffectSloti(soundSystemLocal.slot, AL_EFFECTSLOT_EFFECT, soundSystemLocal.EAX);
+					alAuxiliaryEffectSloti(soundSystemLocal.hardware.slot, AL_EFFECTSLOT_EFFECT, soundSystemLocal.EAX);
 				}
 			}
 			listener.id = EnvironmentID;

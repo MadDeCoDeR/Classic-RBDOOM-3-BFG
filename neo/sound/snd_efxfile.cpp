@@ -162,7 +162,8 @@ bool idEFXFile::ReadEffect( idLexer &src, idSoundEffect *effect ) {
 				} else if ( token == "modulation depth" ) {
 					reverb->flModulationDepth = src.ParseFloat();
 				} else if ( token == "air absorption hf" ) {
-					reverb->flAirAbsorptionGainHF = src.ParseFloat();
+					//GK: This is wrong in the files so clamp it
+					reverb->flAirAbsorptionGainHF = idMath::ClampFloat(AL_EAXREVERB_MIN_AIR_ABSORPTION_GAINHF, AL_EAXREVERB_MAX_AIR_ABSORPTION_GAINHF,src.ParseFloat());
 				} else if ( token == "hf reference" ) {
 					reverb->flHFReference = src.ParseFloat();
 				} else if ( token == "lf reference" ) {

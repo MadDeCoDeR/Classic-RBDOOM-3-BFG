@@ -626,11 +626,9 @@ void idSoundVoice_OpenAL::UnPause()
 		idLib::Printf( "%dms: %i unpausing %s\n", Sys_Milliseconds(), openalSource, leadinSample ? leadinSample->GetName() : "<null>" );
 	}
 	//GK: Set the EFX in the last moment
-	if (soundSystemLocal.slot != 0) {
-		alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.slot, 0, AL_FILTER_NULL);
-	}
-	else {
-		alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, NULL, 0, AL_FILTER_NULL);
+	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
+	if (alIsEffect(soundSystemLocal.EAX)) {
+		alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.hardware.slot, 0, AL_FILTER_NULL);
 	}
 	alSourcePlay( openalSource );
 	//pSourceVoice->Start( 0, OPERATION_SET );

@@ -39,7 +39,7 @@ idCVar s_meterPosition( "s_meterPosition", "100 100 20 200", CVAR_ARCHIVE, "VU m
 idCVar s_device( "s_device", "-1", CVAR_INTEGER | CVAR_ARCHIVE, "Which audio device to use (listDevices to list, -1 for default)" );
 idCVar s_showPerfData( "s_showPerfData", "0", CVAR_BOOL, "Show XAudio2 Performance data" );
 extern idCVar s_volume_dB;
-
+LPALGENAUXILIARYEFFECTSLOTS	alGenAuxiliaryEffectSlots = (LPALGENAUXILIARYEFFECTSLOTS)alGetProcAddress("alGenAuxiliaryEffectSlots");
 
 /*
 ========================
@@ -206,6 +206,7 @@ void idSoundHardware_OpenAL::Init()
 		common->FatalError( "idSoundHardware_OpenAL::Init: alcMakeContextCurrent( %p) failed\n", openalContext );
 		return;
 	}
+	alGenAuxiliaryEffectSlots(1, &slot); //GK: This will remain static during the whole execution
 	common->Printf( "Done.\n" );
 	
 	common->Printf( "OpenAL vendor: %s\n", alGetString( AL_VENDOR ) );

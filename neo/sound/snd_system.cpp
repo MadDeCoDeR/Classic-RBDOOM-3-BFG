@@ -241,15 +241,11 @@ void idSoundSystemLocal::Shutdown()
 	// EAX or not, the list needs to be cleared
 	EFXDatabase.Clear();
 	efxloaded = false;
+	alAuxiliaryEffectSloti(soundSystemLocal.hardware.slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
 	if (alIsEffect(EAX)) {
 		alDeleteEffects(1, &EAX);
 		EAX = 0;
 	}
-	if (alIsAuxiliaryEffectSlot(slot)) {
-		alDeleteAuxiliaryEffectSlots(1, &slot);
-		slot = 0;
-	}
-	//alEAXSet = false;
 #endif
 	FreeStreamBuffers();
 	samples.DeleteContents( true );
@@ -592,14 +588,7 @@ void idSoundSystemLocal::BeginLevelLoad()
 	if (efxloaded) {
 		EFXDatabase.UnloadFile();
 		efxloaded = false;
-		if (alIsEffect(EAX)) {
-			alDeleteEffects(1, &EAX);
-			EAX = 0;
-		}
-		if (alIsAuxiliaryEffectSlot(slot)) {
-			alDeleteAuxiliaryEffectSlots(1, &slot);
-			slot = 0;
-		}
+		alAuxiliaryEffectSloti(soundSystemLocal.hardware.slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
 	}
 #endif
 }
@@ -742,13 +731,10 @@ void idSoundSystemLocal::EndLevelLoad(const char* mapstring)
 		common->Printf("sound: found %s\n", efxname.c_str() );
 	} else {
 		common->Printf("sound: missing %s\n", efxname.c_str() );
+		alAuxiliaryEffectSloti(soundSystemLocal.hardware.slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
 		if (alIsEffect(EAX)) {
 			alDeleteEffects(1, &EAX);
 			EAX = 0;
-		}
-		if (alIsAuxiliaryEffectSlot(slot)) {
-			alDeleteAuxiliaryEffectSlots(1, &slot);
-			slot = 0;
 		}
 	}
 #endif

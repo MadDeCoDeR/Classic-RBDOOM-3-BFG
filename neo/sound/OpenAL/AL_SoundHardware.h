@@ -73,7 +73,7 @@ public:
 	static void		PrintDeviceList( const char* list );
 	static void		PrintALCInfo( ALCdevice* device );
 	static void		PrintALInfo();
-	
+	ALuint slot;
 protected:
 	friend class idSoundSample_OpenAL;
 	friend class idSoundVoice_OpenAL;

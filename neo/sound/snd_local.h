@@ -138,7 +138,7 @@ extern LPALISEFFECT			alIsEffect;
 extern LPALISAUXILIARYEFFECTSLOT	alIsAuxiliaryEffectSlot;
 extern LPALDELETEAUXILIARYEFFECTSLOTS	alDeleteAuxiliaryEffectSlots;
 extern LPALDELETEEFFECTS	alDeleteEffects;
-
+extern LPALAUXILIARYEFFECTSLOTI	alAuxiliaryEffectSloti;
 #elif defined(_MSC_VER) // DG: stub out xaudio for MinGW etc
 
 #define OPERATION_SET 1
@@ -590,7 +590,6 @@ public:
 	bool					efxloaded;
 	bool					alEAXSet;
 	ALuint					EAX;
-	ALuint					slot;
 #endif
 	idSysMutex					streamBufferMutex;
 	idStaticList< bufferContext_t*, MAX_SOUND_BUFFERS > freeStreamBufferContexts;
