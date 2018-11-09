@@ -1,0 +1,74 @@
+REVERBD Documentation
+------------------
+Table of Contents
+------------------
+1. What is REVERBD?
+2. How to use it?
+3. REVERBD structure
+4. REVERBD parameters
+
+------------------
+1. What is REVERBD?
+------------------
+
+REVERBD is a Enviromental Reverb script that assign Reverbs on individual Map sectors.
+
+------------------
+2. How to use it?
+------------------
+
+REVERBD can be loaded as a lump inside a .wad file.
+REVERBD is also independant from the map related lumps, which allowing it to be added 
+even if the map is already made.
+
+------------------
+3. REVERBD structure
+------------------
+
+In order to apply reverb on two sectors in the same room REVERBD should be like this:
+
+map E1M1: Hangar
+
+reverb "0" {
+"environment" 26
+"environment size" 5.0670
+"environment diffusion" 0.8360
+"room" -411
+"room hf" -685
+"room lf" 0
+"decay time" 3.3710
+"decay hf ratio" 0.6990
+"decay lf ratio" 1.0000
+"reflections" -55
+"reflections delay" 0.0750
+"reflections pan" 0.0000 0.0000 0.0000
+"reverb" 27
+"reverb delay" 0.1000
+"reverb pan" 0.0000 0.0000 0.0000
+"echo time" 0.0850
+"echo depth" 0.0000
+"modulation time" 0.2500
+"modulation depth" 0.0000
+"air absorption hf" -5.0000
+"hf reference" 5000.0000
+"lf reference" 250.0000
+"room rolloff factor" 0.0000
+"flags" 63
+}
+
+reverb "1" {
+"sector" 0
+}
+
+------------------
+3. REVERBD parameters
+------------------
+
+REVERBD is heavily based on Doom 3's .efx files.
+Unlike Doom 3's .efx files REVERBD comes with two different parameters.
+
+map Mapname shown on automap : This is used to define for which map the following reverbs will be loaded for
+
+"sector" #of sector : This is used for getting the reverb of a sector that has already reverb (so sector 1 can't get the reverb of sector 2)
+
+Also on REVERBD the reverb "number" is for setting which sector should use that reverb the number is the sector index number (so far Slade map editor can show them)
