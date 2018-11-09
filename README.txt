@@ -257,6 +257,10 @@ Anyway:
 	 
 5. Copy paste the base\wads directory from the source code directory to the base directory on your own 
    Doom 3 BFG directory (/path/to/Doom3BFG).
+   
+(Optional if you want EAX on Doom 3) Download this addon https://www.moddb.com/mods/classic-rbdoom-3-bfg-edition/downloads/roe-addon
+and extract it to the directory on your own 
+   Doom 3 BFG directory (/path/to/Doom3BFG)
 
 6. Run the game by executing the RBDoom3BFG executable.
 
