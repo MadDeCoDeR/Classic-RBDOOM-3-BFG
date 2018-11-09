@@ -31,6 +31,7 @@
 #include "m_bbox.h"
 #include "d_udmf.h"
 #include "m_swap.h"
+#include "s_efx.h"
 
 long numlinedefs;
 long numthings;
@@ -270,6 +271,18 @@ void ParseSector(std::vector<std::string> lines, int index) {
 		{"id",NULL,&::g->sectors[index].tag},
 		{"special",NULL,&::g->sectors[index].special}
 	};
+	//GK: Load the reverbs based on sector's index
+	::g->sectors[index].counter = index;
+#ifdef USE_OPENAL
+	if (::g->hasreverb) {
+		if (::g->reverbs.size() < index + 1) {
+			::g->reverbs.push_back(GetReverb(strdup(::g->mapname.c_str()), index));
+		}
+		else {
+			::g->reverbs[index] = GetReverb(strdup(::g->mapname.c_str()), index);
+		}
+	}
+#endif
 	char* token1, *token2;
 	for (int i = 0; i < lines.size(); i++) {
 		token1 = strtok(strdup(lines[i].c_str()), "=");

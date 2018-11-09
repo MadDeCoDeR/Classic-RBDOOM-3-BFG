@@ -28,7 +28,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifndef __SOUNDS__
 #define __SOUNDS__
-
+#ifdef USE_OPENAL
+#include "AL/efx-presets.h"
+#endif
 
 //
 // SoundFX struct.

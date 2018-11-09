@@ -81,6 +81,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "g_game.h"
 
 #include "am_map.h"
+#ifdef USE_OPENAL
+#include "sound\OpenAL\AL_EAX.h"
+#endif
 
 extern idCVar cl_messages;
 extern idCVar in_joylayout;
@@ -1510,6 +1513,10 @@ void M_GameSelection(int choice)
 		free(::g->cpatch[i]);
 		::g->cpatch[i] = NULL;
 	}
+	//GK: Make sure the other game wont start with reverb
+#ifdef USE_OPENAL
+	alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
+#endif
 	resetValues();
 	resetWeapons();
 	ResetAmmo();

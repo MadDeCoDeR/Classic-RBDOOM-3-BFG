@@ -50,9 +50,12 @@ If you have questions concerning this license or the applicable additional terms
 #include "doomstat.h"
 
 #include "d_udmf.h"
+#ifdef USE_OPENAL
+#include "s_efx.h"
 
+#include "sound/OpenAL/AL_EAX.h"
+#endif
 void	P_SpawnMapThing (mapthing_t*	mthing);
-
 
 //
 // MAP related Lookup tables.
@@ -242,6 +245,18 @@ void P_LoadSectors (int lump)
 		ss->tag = SHORT(ms->tag);
 		ss->thinglist = NULL;
 		ss->touching_thinglist = NULL;            // phares 3/14/98
+		//GK: Load the reverbs based on sector's index
+		ss->counter = i;
+#ifdef USE_OPENAL
+		if (::g->hasreverb) {
+			if (::g->reverbs.size() < i+1) {
+				::g->reverbs.push_back(GetReverb(strdup(::g->mapname.c_str()), i));
+			}
+			else {
+				::g->reverbs[i] = GetReverb(strdup(::g->mapname.c_str()), i);
+			}
+		}
+#endif
 	}
 
 	Z_Free(data);
@@ -727,7 +742,17 @@ P_SetupLevel
 	S_Start ();			
 	//GK: Clear also the cache since it's not needed
 	Z_FreeTags( PU_LEVEL, PU_CACHE );
-
+	//GK: Make sure previous reverb effects are freed
+#ifdef USE_OPENAL
+	if (::g->hasreverb) {
+		for (int i = ::g->reverbs.size() - 1; i >= 0; i--) {
+			Mem_Free(::g->reverbs[i]);
+			::g->reverbs.pop_back();
+		}
+		alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
+	}
+	::g->mapindex = 0;
+#endif
 	// UNUSED W_Profile ();
 	P_InitThinkers ();
 
@@ -754,6 +779,21 @@ P_SetupLevel
 		if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
 			sprintf(lumpname, "%s", ::g->maps[map-1].lumpname);
 		}
+		//GK: Get Map's name in order to check for reverbs
+		switch (::g->gamemission) {
+		case doom2:
+			::g->mapname = std::string(mapnames2[map - 1]);
+			break;
+		case pack_tnt:
+			::g->mapname = std::string(mapnamest[map - 1]);
+			break;
+		case pack_plut:
+			::g->mapname = std::string(mapnamesp[map - 1]);
+			break;
+		default:
+			::g->mapname=DoomLib::GetCurrentExpansion()->mapNames[map - 1];
+			break;
+		}
 	}
 	else
 	{
@@ -762,6 +802,7 @@ P_SetupLevel
 		lumpname[2] = 'M';
 		lumpname[3] = '0' + map;
 		lumpname[4] = 0;
+		::g->mapname = std::string(mapnames[(episode - 1) * 9 + (map - 1)]);
 	}
 
 	lumpnum = W_GetNumForName (lumpname);

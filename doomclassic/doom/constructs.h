@@ -607,6 +607,12 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->kfart = 2;
 	::g->BFGCELL = 40;
 	::g->reset = false;
+#ifdef USE_OPENAL
+	::g->hasreverb = false;
+	::g->csec = -1;
+	::g->mapindex = 0;
+	::g->clEAX = 0;
+#endif
 // st_stuff.constructs end // 
 //  s_sound.constructs begin //
 	::g->mus_playing=0;

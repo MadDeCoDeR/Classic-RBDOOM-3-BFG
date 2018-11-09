@@ -36,6 +36,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "p_local.h"
 
 #include "doomstat.h"
+#ifdef USE_OPENAL
+#include "s_efx.h"
+#include "sound/OpenAL/AL_EAX.h"
+#endif
 
 
 
@@ -229,6 +233,30 @@ void P_DeathThink (player_t* player)
 		player->playerstate = PST_REBORN;
 }
 
+//P_Reverb
+//Check if the player has moved to
+//another sector and try to load
+//that sector's reverb (if it exists)
+
+void P_Reverb(player_t* player) {
+	int index = player->mo->subsector->sector->counter;
+	if (index != ::g->csec) {
+		if (alIsEffect((ALuint)::g->clEAX)) {
+			alDeleteEffects(1, &(ALuint)::g->clEAX);
+			::g->clEAX = 0;
+		}
+		if (::g->reverbs[index]) {
+			SetEFX(::g->reverbs[index]);
+			alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, (ALuint)::g->clEAX);
+			::g->csec = index;
+		}
+		else {
+			alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
+			::g->csec = index;
+		}
+	}
+}
+
 
 
 //
@@ -271,7 +299,10 @@ void P_PlayerThink (player_t* player)
 		P_MovePlayer (player);
 
 	P_CalcHeight (player);
-
+#ifdef USE_OPENAL
+	if (::g->hasreverb)
+		P_Reverb(player);
+#endif
 	if (player->mo->subsector->sector->special)
 		P_PlayerInSpecialSector (player);
 

@@ -629,6 +629,12 @@ void W_AddFile ( const char *filename)
 					strncpy(lump_p->name, filelumpPointer->name, 8);
 					lump_p->name[8] = '\0';
 					lump_p->null = false;
+					//GK: Check for REVERBD lump and activate reverb check ups
+#ifdef USE_OPENAL
+					if (!idStr::Cmpn(filelumpPointer->name, "REVERBD", 7)) {
+						::g->hasreverb = true;
+					}
+#endif
 					//GK: Check if it is a .deh file
 					if ((!idStr::Cmpn(filelumpPointer->name, "DEHACKED", 8)) || (!idStr::Icmp(filename + strlen(filename) - 3, "deh")) || (!idStr::Icmp(filename + strlen(filename) - 3, "bex"))) {
 						//idLib::Printf("Adding DeHackeD file %s\n",filelumpPointer->name);

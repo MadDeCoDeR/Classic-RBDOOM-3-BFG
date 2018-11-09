@@ -1001,6 +1001,15 @@ const char*		spritename;
 //as global variables since they get calculated based on the r_aspectcorrect CVar
 int ASPECT_IMAGE_SCALER;
 int SCREENWIDTH;
+#ifdef USE_OPENAL
+bool hasreverb;
+std::vector<EFXEAXREVERBPROPERTIES*>reverbs;
+int csec;
+unsigned int clslot;
+unsigned int clEAX;
+int mapindex;
+std::string mapname;
+#endif
 //img2lmp starts
 std::vector<patch_t*>cpatch;
 int cpind;
