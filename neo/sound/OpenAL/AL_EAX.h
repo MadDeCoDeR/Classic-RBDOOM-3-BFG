@@ -24,7 +24,7 @@
 
 #pragma once
 #include "precompiled.h"
-#include "AL\efx.h"
+#include "AL/efx.h"
 extern LPALGENEFFECTS			alGenEffects;
 extern LPALEFFECTI				alEffecti;
 extern LPALEFFECTF				alEffectf;
