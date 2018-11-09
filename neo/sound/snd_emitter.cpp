@@ -363,7 +363,7 @@ void idSoundChannel::UpdateHardware( float volumeAdd, int currentTime )
 			return;
 		}
 		
-		hardwareVoice = soundSystemLocal.AllocateVoice( leadinSample, loopingSample );
+		hardwareVoice = soundSystemLocal.AllocateVoice( leadinSample, loopingSample,logicalChannel );
 		
 		if( hardwareVoice == NULL )
 		{

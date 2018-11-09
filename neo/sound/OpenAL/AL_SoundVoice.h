@@ -62,8 +62,8 @@ public:
 		
 		alSourcef( openalSource, AL_PITCH, p );
 	}
-	
-	void					Create( const idSoundSample* leadinSample, const idSoundSample* loopingSample );
+	//GK: Get the sound channel in order to filter which sound will use the Room's reverb and which the default
+	void					Create( const idSoundSample* leadinSample, const idSoundSample* loopingSample, const int channel );
 	
 	// Start playing at a particular point in the buffer.  Does an Update() too
 	void					Start( int offsetMS, int ssFlags );
@@ -121,7 +121,7 @@ private:
 	ALuint					openalStreamingOffset;
 	ALuint					openalStreamingBuffer[3];
 	ALuint					lastopenalStreamingBuffer[3];
-	
+	int						channel;
 	idSoundSample_OpenAL*	leadinSample;
 	idSoundSample_OpenAL*	loopingSample;
 	

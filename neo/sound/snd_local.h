@@ -111,6 +111,9 @@ typedef enum
 #include "OpenAL/AL_SoundVoice.h"
 #include "OpenAL/AL_SoundHardware.h"
 #include "OpenAL/efxlib.h"
+#include "OpenAL/AL_EAX.h" //GK: Keep the Effect function definitions in separate files for better portability
+
+extern ALuint clslot;
 
 ID_INLINE_EXTERN ALenum CheckALErrors_( const char* filename, int line )
 {
@@ -133,12 +136,6 @@ ID_INLINE_EXTERN ALCenum CheckALCErrors_( ALCdevice* device, const char* filenam
 	return err;
 }
 #define CheckALCErrors(x) CheckALCErrors_((x), __FILE__, __LINE__)
-//GK: OpenAL-soft 1.1.19.1 doesn't like the use of the AL_ALEXT_PROTOTYPES
-extern LPALISEFFECT			alIsEffect;
-extern LPALISAUXILIARYEFFECTSLOT	alIsAuxiliaryEffectSlot;
-extern LPALDELETEAUXILIARYEFFECTSLOTS	alDeleteAuxiliaryEffectSlots;
-extern LPALDELETEEFFECTS	alDeleteEffects;
-extern LPALAUXILIARYEFFECTSLOTI	alAuxiliaryEffectSloti;
 #elif defined(_MSC_VER) // DG: stub out xaudio for MinGW etc
 
 #define OPERATION_SET 1
@@ -547,7 +544,7 @@ public:
 	int						SoundTime() const;
 	
 	// may return NULL if there are no more voices left
-	idSoundVoice* 			AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample );
+	idSoundVoice* 			AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample, const int channel );
 	void					FreeVoice( idSoundVoice* );
 	
 	idSoundSample* 			LoadSample( const char* name );

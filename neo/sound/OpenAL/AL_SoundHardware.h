@@ -50,8 +50,8 @@ public:
 	void			Shutdown();
 	
 	void 			Update();
-	
-	idSoundVoice* 	AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample );
+	//GK: Get the sound channel in order to filter which sound will use the Room's reverb and which the default
+	idSoundVoice* 	AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample,const int channel );
 	void			FreeVoice( idSoundVoice* voice );
 	
 	// listDevices needs this
@@ -74,6 +74,7 @@ public:
 	static void		PrintALCInfo( ALCdevice* device );
 	static void		PrintALInfo();
 	ALuint slot;
+	ALuint voiceslot;
 protected:
 	friend class idSoundSample_OpenAL;
 	friend class idSoundVoice_OpenAL;

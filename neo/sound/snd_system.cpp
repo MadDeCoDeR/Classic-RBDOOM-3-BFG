@@ -47,15 +47,6 @@ idCVar preLoad_Samples( "preLoad_Samples", "1", CVAR_SYSTEM | CVAR_BOOL, "preloa
 
 idSoundSystemLocal soundSystemLocal;
 idSoundSystem* soundSystem = &soundSystemLocal;
-//GK: OpenAL-soft 1.1.19.1 doesn't like the use of the AL_ALEXT_PROTOTYPES
-LPALGENEFFECTS			alGenEffects = (LPALGENEFFECTS)alGetProcAddress("alGenEffects");
-LPALEFFECTI				alEffecti = (LPALEFFECTI)alGetProcAddress("alEffecti");
-LPALEFFECTF				alEffectf = (LPALEFFECTF)alGetProcAddress("alEffectf");
-LPALEFFECTFV			alEffectfv = (LPALEFFECTFV)alGetProcAddress("alEffectfv");
-LPALISEFFECT			alIsEffect = (LPALISEFFECT)alGetProcAddress("alIsEffect");
-LPALISAUXILIARYEFFECTSLOT	alIsAuxiliaryEffectSlot = (LPALISAUXILIARYEFFECTSLOT)alGetProcAddress("alIsAuxiliaryEffectSlot");;
-LPALDELETEAUXILIARYEFFECTSLOTS	alDeleteAuxiliaryEffectSlots = (LPALDELETEAUXILIARYEFFECTSLOTS)alGetProcAddress("alDeleteAuxiliaryEffectSlots");
-LPALDELETEEFFECTS	alDeleteEffects = (LPALDELETEEFFECTS)alGetProcAddress("alDeleteEffects");
 /*
 ================================================================================================
 
@@ -458,9 +449,9 @@ int idSoundSystemLocal::SoundTime() const
 idSoundSystemLocal::AllocateVoice
 ========================
 */
-idSoundVoice* idSoundSystemLocal::AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample )
+idSoundVoice* idSoundSystemLocal::AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample, const int channel)
 {
-	return hardware.AllocateVoice( leadinSample, loopingSample );
+	return hardware.AllocateVoice( leadinSample, loopingSample,channel );
 }
 
 /*

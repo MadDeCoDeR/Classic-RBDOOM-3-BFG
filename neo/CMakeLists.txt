@@ -508,12 +508,14 @@ set(XAUDIO2_SOURCES
 	sound/XAudio2/XA2_SoundVoice.cpp)
 	#GK: Add EFX related files when using the openAL
 set(OPENAL_INCLUDES
+	sound/OpenAL/AL_EAX.h
 	sound/OpenAL/AL_SoundHardware.h
 	sound/OpenAL/AL_SoundSample.h
 	sound/OpenAL/AL_SoundVoice.h
 	sound/OpenAL/efxlib.h)
 	
 set(OPENAL_SOURCES
+	sound/OpenAL/AL_EAX.cpp
 	sound/OpenAL/AL_SoundHardware.cpp
 	sound/OpenAL/AL_SoundSample.cpp
 	sound/OpenAL/AL_SoundVoice.cpp)
@@ -785,11 +787,14 @@ file(GLOB DOOMCLASSIC_INCLUDES ../doomclassic/doom/*.h)
 file(GLOB DOOMCLASSIC_SOURCES ../doomclassic/doom/*.cpp)
 
 set(DOOMCLASSIC_STUBAUDIO_SOURCES ../doomclassic/doom/i_sound_stub.cpp)
-set(DOOMCLASSIC_OPENAL_SOURCES ../doomclassic/doom/i_sound_openal.cpp)
+set(DOOMCLASSIC_OPENAL_INCLUDES ../doomclassic/doom/s_efx.h)
+set(DOOMCLASSIC_OPENAL_SOURCES ../doomclassic/doom/i_sound_openal.cpp ../doomclassic/doom/s_efx.cpp)
 set(DOOMCLASSIC_XAUDIO2_SOURCES ../doomclassic/doom/i_sound_win32.cpp)
 
 list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_sound_stub.cpp)
 list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_sound_openal.cpp)
+list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/s_efx.cpp)
+list(REMOVE_ITEM DOOMCLASSIC_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/s_efx.h)
 list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_sound_win32.cpp)
 if(NOT MSVC)
 list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_net_win32.cpp)
@@ -988,6 +993,7 @@ source_group("doomclassic" FILES ${DOOMCLASSIC_INCLUDES})
 source_group("doomclassic" FILES ${DOOMCLASSIC_SOURCES})
 
 source_group("doomclassic" FILES ${DOOMCLASSIC_STUBAUDIO_SOURCES})
+source_group("doomclassic" FILES ${DOOMCLASSIC_OPENAL_INCLUDES})
 source_group("doomclassic" FILES ${DOOMCLASSIC_OPENAL_SOURCES})
 source_group("doomclassic" FILES ${DOOMCLASSIC_XAUDIO2_SOURCES})
 
@@ -1245,7 +1251,9 @@ if(MSVC)
 			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/libs/win32)
 		endif()
 		
-		list(APPEND RBDOOM3_INCLUDES ${OPENAL_INCLUDES})
+		list(APPEND RBDOOM3_INCLUDES 
+			${OPENAL_INCLUDES}
+			${DOOMCLASSIC_OPENAL_INCLUDES})
 		list(APPEND RBDOOM3_SOURCES
 			${OPENAL_SOURCES}
 			${DOOMCLASSIC_OPENAL_SOURCES})
@@ -1463,7 +1471,9 @@ else()
 			#	link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/lib/win32)
 			#endif()
 			
-			list(APPEND RBDOOM3_INCLUDES ${OPENAL_INCLUDES})
+			list(APPEND RBDOOM3_INCLUDES 
+				${OPENAL_INCLUDES}
+				${DOOMCLASSIC_OPENAL_INCLUDES})
 			list(APPEND RBDOOM3_SOURCES
 				${OPENAL_SOURCES}
 				${DOOMCLASSIC_OPENAL_SOURCES})

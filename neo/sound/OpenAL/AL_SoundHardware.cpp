@@ -39,7 +39,6 @@ idCVar s_meterPosition( "s_meterPosition", "100 100 20 200", CVAR_ARCHIVE, "VU m
 idCVar s_device( "s_device", "-1", CVAR_INTEGER | CVAR_ARCHIVE, "Which audio device to use (listDevices to list, -1 for default)" );
 idCVar s_showPerfData( "s_showPerfData", "0", CVAR_BOOL, "Show XAudio2 Performance data" );
 extern idCVar s_volume_dB;
-LPALGENAUXILIARYEFFECTSLOTS	alGenAuxiliaryEffectSlots = (LPALGENAUXILIARYEFFECTSLOTS)alGetProcAddress("alGenAuxiliaryEffectSlots");
 
 /*
 ========================
@@ -207,6 +206,38 @@ void idSoundHardware_OpenAL::Init()
 		return;
 	}
 	alGenAuxiliaryEffectSlots(1, &slot); //GK: This will remain static during the whole execution
+	//GK: Set default preset for Audio Logs, PDA Videos and Radio Communications
+	alGenAuxiliaryEffectSlots(1, &voiceslot);
+	EFXEAXREVERBPROPERTIES voicereverb = EFX_REVERB_PRESET_AUDITORIUM;
+	EFXEAXREVERBPROPERTIES* voicereverb2 = &voicereverb;
+	ALuint EFX;
+	alGenEffects(1, &EFX);
+	alEffecti(EFX, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
+	alEffectf(EFX, AL_EAXREVERB_DENSITY, voicereverb2->flDensity);
+	alEffectf(EFX, AL_EAXREVERB_DIFFUSION, voicereverb2->flDiffusion);
+	alEffectf(EFX, AL_EAXREVERB_GAIN, voicereverb2->flGain);
+	alEffectf(EFX, AL_EAXREVERB_GAINHF, voicereverb2->flGainHF);
+	alEffectf(EFX, AL_EAXREVERB_GAINLF, voicereverb2->flGainLF);
+	alEffectf(EFX, AL_EAXREVERB_DECAY_TIME, voicereverb2->flDecayTime);
+	alEffectf(EFX, AL_EAXREVERB_DECAY_HFRATIO, voicereverb2->flDecayHFRatio);
+	alEffectf(EFX, AL_EAXREVERB_DECAY_LFRATIO, voicereverb2->flDecayLFRatio);
+	alEffectf(EFX, AL_EAXREVERB_REFLECTIONS_GAIN, voicereverb2->flReflectionsGain);
+	alEffectf(EFX, AL_EAXREVERB_REFLECTIONS_DELAY, voicereverb2->flReflectionsDelay);
+	alEffectfv(EFX, AL_EAXREVERB_REFLECTIONS_PAN, voicereverb2->flReflectionsPan);
+	alEffectf(EFX, AL_EAXREVERB_LATE_REVERB_GAIN, voicereverb2->flLateReverbGain);
+	alEffectf(EFX, AL_EAXREVERB_LATE_REVERB_DELAY, voicereverb2->flLateReverbDelay);
+	alEffectfv(EFX, AL_EAXREVERB_LATE_REVERB_PAN, voicereverb2->flLateReverbPan);
+	alEffectf(EFX, AL_EAXREVERB_ECHO_TIME, voicereverb2->flEchoTime);
+	alEffectf(EFX, AL_EAXREVERB_ECHO_DEPTH, voicereverb2->flEchoDepth);
+	alEffectf(EFX, AL_EAXREVERB_MODULATION_TIME, voicereverb2->flModulationTime);
+	alEffectf(EFX, AL_EAXREVERB_MODULATION_DEPTH, voicereverb2->flModulationDepth);
+	alEffectf(EFX, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, voicereverb2->flAirAbsorptionGainHF);
+	alEffectf(EFX, AL_EAXREVERB_HFREFERENCE, voicereverb2->flHFReference);
+	alEffectf(EFX, AL_EAXREVERB_LFREFERENCE, voicereverb2->flLFReference);
+	alEffectf(EFX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, voicereverb2->flRoomRolloffFactor);
+	alEffecti(EFX, AL_EAXREVERB_DECAY_HFLIMIT, voicereverb2->iDecayHFLimit);
+	alAuxiliaryEffectSloti(soundSystemLocal.hardware.voiceslot, AL_EFFECTSLOT_EFFECT, EFX);
+	alDeleteEffects(1, &EFX);
 	common->Printf( "Done.\n" );
 	
 	common->Printf( "OpenAL vendor: %s\n", alGetString( AL_VENDOR ) );
@@ -336,7 +367,7 @@ void idSoundHardware_OpenAL::Shutdown()
 idSoundHardware_OpenAL::AllocateVoice
 ========================
 */
-idSoundVoice* idSoundHardware_OpenAL::AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample )
+idSoundVoice* idSoundHardware_OpenAL::AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample, const int channel )
 {
 	if( leadinSample == NULL )
 	{
@@ -368,7 +399,7 @@ idSoundVoice* idSoundHardware_OpenAL::AllocateVoice( const idSoundSample* leadin
 	}
 	if( voice != NULL )
 	{
-		voice->Create( leadinSample, loopingSample );
+		voice->Create( leadinSample, loopingSample,channel );
 		freeVoices.Remove( voice );
 		return voice;
 	}

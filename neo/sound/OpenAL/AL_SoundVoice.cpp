@@ -90,7 +90,7 @@ bool idSoundVoice_OpenAL::CompatibleFormat( idSoundSample_OpenAL* s )
 idSoundVoice_OpenAL::Create
 ========================
 */
-void idSoundVoice_OpenAL::Create( const idSoundSample* leadinSample_, const idSoundSample* loopingSample_ )
+void idSoundVoice_OpenAL::Create( const idSoundSample* leadinSample_, const idSoundSample* loopingSample_,const int channel_ )
 {
 	if( IsPlaying() )
 	{
@@ -103,6 +103,7 @@ void idSoundVoice_OpenAL::Create( const idSoundSample* leadinSample_, const idSo
 	
 	leadinSample = ( idSoundSample_OpenAL* )leadinSample_;
 	loopingSample = ( idSoundSample_OpenAL* )loopingSample_;
+	channel = channel_;
 	
 	if( alIsSource( openalSource ) && CompatibleFormat( leadinSample ) )
 	{
@@ -186,8 +187,8 @@ void idSoundVoice_OpenAL::Create( const idSoundSample* leadinSample_, const idSo
 	alSourcei( openalSource, AL_SOURCE_RELATIVE, AL_TRUE );
 	alSource3f( openalSource, AL_POSITION, 0.0f, 0.0f, 0.0f );
 	
-		// RB: FIXME 0.0f ?
-		alSourcef( openalSource, AL_GAIN, 1.0f );
+		// RB: FIXME 0.0f ? GK: Not needed anymore, the issue was with the buffers and is fixed long time ago
+		//alSourcef( openalSource, AL_GAIN, 1.0f );
 	
 	//OnBufferStart( leadinSample, 0 );
 }
@@ -627,8 +628,15 @@ void idSoundVoice_OpenAL::UnPause()
 	}
 	//GK: Set the EFX in the last moment
 	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
-	if (alIsEffect(soundSystemLocal.EAX)) {
-		alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.hardware.slot, 0, AL_FILTER_NULL);
+	if (alIsEffect(soundSystemLocal.EAX) && soundSystemLocal.EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
+		//GK: Audio Logs, PDA Videos and Radio Comms are supposed to be produced by the suit. 
+		//And they should not blend with Room's reverb (Plus some of these reverbs are making the voices harder to understand)
+		if (channel == 9 || channel == 10 || channel == 12) {
+			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.hardware.voiceslot, 0,AL_FILTER_NULL);
+		}
+		else {
+			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.hardware.slot, 0, AL_FILTER_NULL);
+		}
 	}
 	alSourcePlay( openalSource );
 	//pSourceVoice->Start( 0, OPERATION_SET );
