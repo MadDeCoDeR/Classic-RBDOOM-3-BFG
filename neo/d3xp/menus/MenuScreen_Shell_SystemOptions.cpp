@@ -406,7 +406,7 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::LoadData
 	originalBrightness = r_exposure.GetFloat();
 	originalVolume = s_volume_dB.GetFloat();
 	// RB begin
-	originalShadowMapping = r_useShadowMapping.GetInteger();
+	//originalShadowMapping = r_useShadowMapping.GetInteger();
 	// RB end
 	
 	const int fullscreen = r_fullscreen.GetInteger();
@@ -437,10 +437,10 @@ bool idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsRestar
 		return true;
 	}
 	
-	if( originalShadowMapping != r_useShadowMapping.GetInteger() )
-	{
-		return true;
-	}
+//	if( originalShadowMapping != r_useShadowMapping.GetInteger() )
+	//{
+	//	return true;
+	//}
 	
 	return false;
 }
@@ -548,13 +548,13 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 			break;
 		}
 		// RB begin
-		case SYSTEM_FIELD_SHADOWMAPPING:
-		{
-			static const int numValues = 2;
-			static const int values[numValues] = { 0, 1 };
-			r_useShadowMapping.SetInteger( AdjustOption( r_useShadowMapping.GetInteger(), values, numValues, adjustAmount ) );
-			break;
-		}
+	//	case SYSTEM_FIELD_SHADOWMAPPING:
+	//	{
+	//		static const int numValues = 2;
+	//		static const int values[numValues] = { 0, 1 };
+	//		r_useShadowMapping.SetInteger( AdjustOption( r_useShadowMapping.GetInteger(), values, numValues, adjustAmount ) );
+	//		break;
+	//	}
 		/*case SYSTEM_FIELD_LODBIAS:
 		{
 			const float percent = LinearAdjust( r_lodBias.GetFloat(), -1.0f, 1.0f, 0.0f, 100.0f );
@@ -566,11 +566,11 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 		// RB end
 		case SYSTEM_FIELD_BRIGHTNESS:
 		{
-			const float percent = LinearAdjust( r_exposure.GetFloat(), 0.0f, 1.0f, 0.0f, 100.0f );
+			const float percent = LinearAdjust(r_lightScale.GetFloat(), 1.0f, 5.0f, 0.0f, 100.0f );
 			const float adjusted = percent + ( float )adjustAmount;
 			const float clamped = idMath::ClampFloat( 0.0f, 100.0f, adjusted );
-			
-			r_exposure.SetFloat( LinearAdjust( clamped, 0.0f, 100.0f, 0.0f, 1.0f ) );
+			//GK: Make lightScale and exposure independent
+			//r_exposure.SetFloat( LinearAdjust( clamped, 0.0f, 100.0f, 0.0f, 1.0f ) );
 			r_lightScale.SetFloat( LinearAdjust( clamped, 0.0f, 100.0f, 1.0f, 5.0f ) ); //GK: More light options
 			break;
 		}
@@ -670,20 +670,20 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 			}
 			return va( "%dx", idMath::IPow( 2, r_motionBlur.GetInteger() ) );
 		// RB begin
-		case SYSTEM_FIELD_SHADOWMAPPING:
-			if( r_useShadowMapping.GetInteger() == 1 )
-			{
-				return "#str_swf_enabled";
-			}
-			else
-			{
-				return "#str_swf_disabled";
-			}
+	//	case SYSTEM_FIELD_SHADOWMAPPING:
+	//		if( r_useShadowMapping.GetInteger() == 1 )
+	//		{
+	//			return "#str_swf_enabled";
+	//		}
+	//		else
+	//		{
+	//			return "#str_swf_disabled";
+	//		}
 		//case SYSTEM_FIELD_LODBIAS:
 		//	return LinearAdjust( r_lodBias.GetFloat(), -1.0f, 1.0f, 0.0f, 100.0f );
 		// RB end
 		case SYSTEM_FIELD_BRIGHTNESS:
-			return LinearAdjust( r_exposure.GetFloat(), 0.0f, 1.0f, 0.0f, 100.0f );
+			return LinearAdjust( r_lightScale.GetFloat(), 1.0f, 5.0f, 0.0f, 100.0f );
 		case SYSTEM_FIELD_VOLUME:
 		{
 			return 100.0f * Square( 1.0f - ( s_volume_dB.GetFloat() / DB_SILENCE ) );
@@ -724,10 +724,10 @@ bool idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsDataCh
 		return true;
 	}
 	// RB begin
-	if( originalShadowMapping != r_useShadowMapping.GetInteger() )
-	{
-		return true;
-	}
+//	if( originalShadowMapping != r_useShadowMapping.GetInteger() )
+//	{
+//		return true;
+//	}
 	// RB end
 	return false;
 }

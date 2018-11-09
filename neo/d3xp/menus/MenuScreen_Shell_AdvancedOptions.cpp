@@ -33,6 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 const static int NUM_ADVANCED_OPTIONS_OPTIONS = 8;
 
 extern idCVar r_useShadowMapping;
+extern idCVar r_shadowMapLodScale;
 extern idCVar r_useHDR;
 extern idCVar r_hdrAutoExposure;
 extern idCVar r_useSSAO; // RB: use this to control HDR exposure or brightness in LDR mode
@@ -82,6 +83,14 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPPING);
 	options->AddChild( control );
+
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_BAR);
+	control->SetLabel("Soft Shadows LOD");
+	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPLOD);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPLOD);
+	options->AddChild(control);
 	//GK: Begin
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_TEXT);
@@ -412,6 +421,7 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 	// RB end
 	originalFlashlight = flashlight_old.GetInteger();
 	originalVmfov = pm_vmfov.GetInteger();
+	originalShadowMapLod = r_shadowMapLodScale.GetFloat();
 	/*const int fullscreen = r_fullscreen.GetInteger();
 	if( fullscreen > 0 )
 	{
@@ -483,6 +493,15 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 		r_useShadowMapping.SetBool(!r_useShadowMapping.GetBool());
 		break;
 	}
+	case ADV_FIELD_SHADOWMAPLOD:
+	{
+		const float percent = ReLinearAdjust(r_shadowMapLodScale.GetFloat(), 0.1f, 2.0f, 0.0f, 100.0f);
+		const float adjusted = percent + (float)adjustAmount;
+		const float clamped = idMath::ClampFloat(0.0f, 100.0f, adjusted);
+
+		r_shadowMapLodScale.SetFloat(ReLinearAdjust(clamped, 0.0f, 100.0f, 0.1f, 2.0f));
+		break;
+	}
 		//GK: BEgin
 	case ADV_FIELD_HDR:
 	{
@@ -549,6 +568,10 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 			{
 				return "#str_swf_disabled";
 			}
+		}
+		case ADV_FIELD_SHADOWMAPLOD:
+		{
+			return ReLinearAdjust(r_shadowMapLodScale.GetFloat(), 0.1f, 2.0f, 0.0f, 100.0f);
 		}
 		case ADV_FIELD_HDR:
 		{
@@ -630,6 +653,9 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 {
 	if( originalShadowMapping != r_useShadowMapping.GetInteger() )
 	{
+		return true;
+	}
+	if (originalShadowMapLod != r_shadowMapLodScale.GetFloat()) {
 		return true;
 	}
 	if( originalHDR != r_useHDR.GetInteger() )

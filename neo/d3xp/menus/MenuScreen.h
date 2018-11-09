@@ -1367,7 +1367,7 @@ public:
 			SYSTEM_FIELD_ANTIALIASING,
 			SYSTEM_FIELD_MOTIONBLUR,
 			// RB begin
-			SYSTEM_FIELD_SHADOWMAPPING,
+			//SYSTEM_FIELD_SHADOWMAPPING,
 			//SYSTEM_FIELD_LODBIAS,
 			// RB end
 			SYSTEM_FIELD_BRIGHTNESS,
@@ -1402,7 +1402,7 @@ public:
 		float originalBrightness;
 		float originalVolume;
 		// RB begin
-		int originalShadowMapping;
+		//int originalShadowMapping;
 		// RB end
 		
 		idList<vidMode_t>			modeList;
@@ -1515,6 +1515,7 @@ public:
 		enum advancedSettingFields_t
 		{
 			ADV_FIELD_SHADOWMAPPING,
+			ADV_FIELD_SHADOWMAPLOD,
 			//GK begin
 			ADV_FIELD_HDR,
 			//GK end
@@ -1557,6 +1558,7 @@ public:
 		int originalControler;
 		int originalFlashlight;
 		int originalVmfov;
+		float originalShadowMapLod;
 	};
 
 	idMenuScreen_Shell_AdvancedOptions() :
