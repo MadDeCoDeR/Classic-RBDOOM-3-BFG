@@ -41,7 +41,7 @@ typedef struct {
 
 void SetEFX(EFXEAXREVERBPROPERTIES* rev)
 {
-	alGenEffects(1, &(ALuint)::g->clEAX);
+	alGenEffects(1, &::g->clEAX);
 
 		//common->Printf("Using EAX Reverb\n");
 

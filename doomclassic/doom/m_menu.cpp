@@ -82,7 +82,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "am_map.h"
 #ifdef USE_OPENAL
-#include "sound\OpenAL\AL_EAX.h"
+#include "sound/OpenAL/AL_EAX.h"
 #endif
 
 extern idCVar cl_messages;

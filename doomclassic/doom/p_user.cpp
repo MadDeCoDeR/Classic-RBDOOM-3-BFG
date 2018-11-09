@@ -242,7 +242,7 @@ void P_Reverb(player_t* player) {
 	int index = player->mo->subsector->sector->counter;
 	if (index != ::g->csec) {
 		if (alIsEffect((ALuint)::g->clEAX)) {
-			alDeleteEffects(1, &(ALuint)::g->clEAX);
+			alDeleteEffects(1, &::g->clEAX);
 			::g->clEAX = 0;
 		}
 		if (::g->reverbs[index]) {
