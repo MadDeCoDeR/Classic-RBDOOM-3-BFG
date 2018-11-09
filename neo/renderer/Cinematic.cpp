@@ -38,7 +38,7 @@ WAVEFORMATEX voiceFormatcine = { 0 };
 IXAudio2SourceVoice*	pMusicSourceVoice1;
 XAUDIO2_BUFFER Packet = { 0 };
 #else //GK: Add audio support for OpenAL
-#define NUM_BUFFERS 3
+#define NUM_BUFFERS 4
 static ALuint		alMusicSourceVoicecin;
 static ALuint		alMusicBuffercin[NUM_BUFFERS];
 ALenum av_sample_cin;
@@ -497,7 +497,7 @@ idCinematicLocal::~idCinematicLocal()
 }
 
 	if (alMusicBuffercin) {
-		alDeleteBuffers(NUM_BUFFERS, &alMusicBuffercin[0]);
+		alDeleteBuffers(NUM_BUFFERS, alMusicBuffercin);
 	}
 #endif
 	delete img;
@@ -1113,9 +1113,8 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 					}
 					av_frame_free(&frame3);
 #else //GK: But also it requires better coding DX
-					ALint val1,val2;
+					ALint val2;
 					
-					alGetSourcei(alMusicSourceVoicecin, AL_SOURCE_STATE, &val1);
 					if (!trigger) {
 						alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &val2);
 						if (val2 > 0) {
@@ -1128,21 +1127,16 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 					else {
 						val2 = NUM_BUFFERS;
 					}
-					if (!tBuffer) {
-						tBuffer = (uint8_t*)malloc(file_size * sizeof(uint8_t*));
-					}
-					memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
-					offset += num_bytes;
-					alcount = 0;
-						alBufferData(alMusicBuffercin[alcount], av_sample_cin, tBuffer, offset, av_rate_cin);
-						alcount++;
+						if (!tBuffer) {
+							tBuffer = (uint8_t*)malloc(file_size * sizeof(uint8_t*));
+						}
+						memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
+						offset += num_bytes;
 						if (val2> 0) {
-							alSourceQueueBuffers(alMusicSourceVoicecin, alcount, alMusicBuffercin);
-							if (alcount == 1) {
-								trigger = false;
-							}
+							alBufferData(alMusicBuffercin[0], av_sample_cin, tBuffer, offset, av_rate_cin);
+							alSourceQueueBuffers(alMusicSourceVoicecin, 1, &alMusicBuffercin[0]);
+							trigger = false;
 							alSourcePlay(alMusicSourceVoicecin);
-							alcount = 0;
 							offset = 0;
 							free(tBuffer);
 							tBuffer = NULL;
