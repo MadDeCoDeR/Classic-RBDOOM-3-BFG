@@ -1,0 +1,24 @@
+table
+{
+color:#990000;
+background:#ffb84d;
+text-align:center;
+overflow:hidden;
+position:fixed;
+left: 0;
+border-collapse: collapse;
+
+}
+.sticky {
+  position: fixed;
+  left: 0;
+}
+
+.sticky + .content {
+  padding-top: 60px;
+}
+
+tr
+{
+border-bottom: 1px solid darkred;
+}
