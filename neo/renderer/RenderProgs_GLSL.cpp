@@ -549,6 +549,11 @@ idStr StripDeadCode( const idStr& in, const char* name, const idStrList& compile
 	{
 		src.AddDefine( "USE_GPU_SKINNING" );
 	}
+
+	if (!r_useShadowMapping.GetBool() && r_selfShadow.GetBool() && r_selfShadowAdjust.GetBool())
+	{
+		src.AddDefine("USE_SELF_SHADOW_ADJUST");
+	}
 	
 	if( r_useUniformArrays.GetBool() )
 	{

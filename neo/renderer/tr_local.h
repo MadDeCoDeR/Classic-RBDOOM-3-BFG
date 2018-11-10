@@ -1068,6 +1068,8 @@ extern idCVar r_shadowPolygonFactor;		// scale value for stencil shadow drawing
 extern idCVar r_jitter;						// randomly subpixel jitter the projection matrix
 extern idCVar r_orderIndexes;				// perform index reorganization to optimize vertex use
 
+extern idCVar r_selfShadow;					// allows all materials to cast shadows on themselves 
+extern idCVar r_selfShadowAdjust;			// adjust shaders to work around self shadow popping artifacts 
 extern idCVar r_debugLineDepthTest;			// perform depth test on debug lines
 extern idCVar r_debugLineWidth;				// width of debug lines
 extern idCVar r_debugArrowStep;				// step size of arrow cone line rotation in degrees

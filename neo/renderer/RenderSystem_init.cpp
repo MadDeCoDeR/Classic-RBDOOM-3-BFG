@@ -151,6 +151,8 @@ idCVar r_offsetUnits( "r_offsetunits", "-600", CVAR_RENDERER | CVAR_FLOAT, "poly
 #endif
 // RB end
 
+idCVar r_selfShadow("r_selfShadow", "1", CVAR_RENDERER | CVAR_FLOAT, "allows all materials to cast shadows on themselves");
+idCVar r_selfShadowAdjust("r_selfShadowAdjust", "1", CVAR_RENDERER | CVAR_FLOAT, "adjust shaders to work around self shadow popping artifacts");
 idCVar r_shadowPolygonOffset( "r_shadowPolygonOffset", "-1", CVAR_RENDERER | CVAR_FLOAT, "bias value added to depth test for stencil shadow drawing" );
 idCVar r_shadowPolygonFactor( "r_shadowPolygonFactor", "0", CVAR_RENDERER | CVAR_FLOAT, "scale value for stencil shadow drawing" );
 idCVar r_subviewOnly( "r_subviewOnly", "0", CVAR_RENDERER | CVAR_BOOL, "1 = don't render main view, allowing subviews to be debugged" );
