@@ -403,7 +403,7 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::LoadData
 	originalAntialias = r_antiAliasing.GetInteger();
 	originalMotionBlur = r_motionBlur.GetInteger();
 	originalVsync = r_swapInterval.GetInteger();
-	originalBrightness = r_exposure.GetFloat();
+	originalBrightness = r_lightScale.GetFloat();
 	originalVolume = s_volume_dB.GetFloat();
 	// RB begin
 	//originalShadowMapping = r_useShadowMapping.GetInteger();
@@ -715,7 +715,7 @@ bool idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsDataCh
 	{
 		return true;
 	}
-	if( originalBrightness != r_exposure.GetFloat() )
+	if( originalBrightness != r_lightScale.GetFloat() )
 	{
 		return true;
 	}
