@@ -189,6 +189,31 @@ void S_Start(void)
 			if(::g->maps[::g->gamemap-1].music)
 				mnum = ::g->maps[::g->gamemap-1].music;
 		}
+		else if (::g->gamemission == pack_nerve) {
+			switch (::g->gamemap) {
+			case 1:
+				mnum = mus_messag;
+				break;
+			case 2:
+			case 9:
+				mnum = mus_ddtblu;
+				break;
+			case 3:
+				mnum = mus_doom;
+				break;
+			case 4:
+			case 8:
+				mnum = mus_shawn;
+				break;
+			case 5:
+			case 7:
+				mnum = mus_in_cit;
+				break;
+			case 6:
+				mnum = mus_the_da;
+				break;
+			}
+		}
 		/*
 		Is this necessary?
 		

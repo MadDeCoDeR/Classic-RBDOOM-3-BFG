@@ -1210,6 +1210,11 @@ void G_ScreenShot (void)
 	120,30,240									// 31-33
 };
 
+int npars[9] =
+{
+	75,105,120,105,210,105,165,105,135			// 1-9
+};
+
 void ResetPars(void) {
 	 int tpars[5][10] =
 	{
@@ -1395,7 +1400,14 @@ void G_DoCompleted (void)
 	::g->wminfo.maxfrags = 0; 
 
 	if ( ::g->gamemode == commercial ) {
-		::g->wminfo.partime = TICRATE *cpars[::g->gamemap-1];
+		switch (::g->gamemission) {
+		case pack_nerve:
+			::g->wminfo.partime = TICRATE * npars[::g->gamemap - 1];
+			break;
+		default:
+			::g->wminfo.partime = TICRATE * cpars[::g->gamemap - 1];
+			break;
+		}
 	}
 	else
 		::g->wminfo.partime = TICRATE * pars[::g->gameepisode][::g->gamemap]; 
