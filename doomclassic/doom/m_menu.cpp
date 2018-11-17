@@ -305,7 +305,7 @@ void M_ReadSaveStrings(void)
 		if( common->GetCurrentGame() == DOOM_CLASSIC ) {
 			sprintf(name,"DOOM\\%s%d.dsg",  SAVEGAMENAME,i );
 		} else {
-			if (::g->gamemission == pack_custom && ::g->savedir) { //GK: Custom expansion related stuff
+			if (DoomLib::idealExpansion == ::g->rexp && ::g->gamemission == pack_custom && ::g->savedir) { //GK: Custom expansion related stuff
 				sprintf(name, "%s\\%s%d.dsg", ::g->savedir, SAVEGAMENAME, i);
 			}
 			else

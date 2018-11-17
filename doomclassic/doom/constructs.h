@@ -613,6 +613,7 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->mapindex = 0;
 	::g->clEAX = 0;
 #endif
+	::g->rexp = -1;
 // st_stuff.constructs end // 
 //  s_sound.constructs begin //
 	::g->mus_playing=0;

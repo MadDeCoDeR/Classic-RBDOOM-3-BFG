@@ -1014,4 +1014,5 @@ std::string mapname;
 std::vector<patch_t*>cpatch;
 int cpind;
 std::vector<int> cmap;
+int rexp;
 //img2lmp ends

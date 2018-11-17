@@ -508,7 +508,7 @@ void IdentifyVersion (void)
 	const ExpansionData * expansion =  DoomLib::GetCurrentExpansion();
 	::g->gamemode = expansion->gameMode;
 	::g->gamemission = expansion->pack_type;
-
+	::g->rexp = expansion->pack_type;
 
 	if( expansion->type == ExpansionData::PWAD ) {
 		D_AddFile( expansion->iWadFilename );
