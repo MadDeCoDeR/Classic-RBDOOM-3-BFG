@@ -4,12 +4,16 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
-09 November 2018 (10/11/18) - Classic RBDOOM-3-BFG 1.1.11.8
+09 November 2018 (17/11/18) - Classic RBDOOM-3-BFG 1.1.11.8
 _______________________________
 
 [classicdoom]
 
 - Add REVERBD script that allowing you to set reverb on multiple maps per each sector
+
+- Restored NERVE proper music order and par times
+
+- Fix for EXPINFO custom save directory
 
 [DOOM3BFG]
 
