@@ -4,6 +4,24 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+27 December 2018 - Classic RBDOOM-3-BFG 1.1.12
+_______________________________
+
+WARNING: While using dll don't try to use PDA videos or PDA inventory and don't try to do 
+multiple load games in a single playthrou.The game dll support is nearly complete but 
+there are still bugs while using them.
+
+[classicdoom]
+
+- Optimized DeHeckeD Text editor
+
+- Doom sfx will use the file's sample rate instead of the default (11025 MHz)
+
+[DOOM3BFG]
+
+- Added Support for game dll files on both 32 and 64-bit executables
+_______________________________________
+
 09 November 2018 (17/11/18) - Classic RBDOOM-3-BFG 1.1.11.8
 _______________________________
 
