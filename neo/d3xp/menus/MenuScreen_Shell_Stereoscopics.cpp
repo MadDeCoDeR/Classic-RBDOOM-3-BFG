@@ -326,8 +326,8 @@ bool idMenuScreen_Shell_Stereoscopics::HandleAction( idWidgetAction& action, con
 // SCREEN SETTINGS
 /////////////////////////////////
 
-extern idCVar stereoRender_interOccularCentimeters;
-extern idCVar stereoRender_swapEyes;
+//extern idCVar stereoRender_interOccularCentimeters;
+//extern idCVar stereoRender_swapEyes;
 
 /*
 ========================
@@ -350,9 +350,9 @@ void idMenuScreen_Shell_Stereoscopics::idMenuDataSource_StereoSettings::LoadData
 
 	fields[ STEREO_FIELD_ENABLE ].SetInteger( renderSystem->GetStereoScopicRenderingMode() );
 	
-	fields[ STEREO_FIELD_SEPERATION ].SetFloat( 100.0f * ( stereoRender_interOccularCentimeters.GetFloat() / MAX_INTEROCCULAR_DISTANCE ) );
+	fields[ STEREO_FIELD_SEPERATION ].SetFloat( 100.0f * (game->GetCVarFloat("stereoRender_interOccularCentimeters") / MAX_INTEROCCULAR_DISTANCE ) );
 	
-	fields[ STEREO_FIELD_SWAP_EYES ].SetBool( stereoRender_swapEyes.GetBool() );
+	fields[ STEREO_FIELD_SWAP_EYES ].SetBool(game->GetCVarBool("stereoRender_swapEyes") );
 	originalFields = fields;
 }
 
@@ -395,14 +395,14 @@ void idMenuScreen_Shell_Stereoscopics::idMenuDataSource_StereoSettings::AdjustFi
 		fields[fieldIndex].SetInteger( adjusted );
 		renderSystem->EnableStereoScopicRendering( ( stereo3DMode_t )adjusted );
 		
-		gameLocal.Shell_ClearRepeater();
+		game->Shell_ClearRepeater();
 		
 	}
 	else if( fieldIndex == STEREO_FIELD_SWAP_EYES )
 	{
 	
 		fields[ fieldIndex ].SetBool( !fields[ fieldIndex ].ToBool() );
-		stereoRender_swapEyes.SetBool( fields[ fieldIndex ].ToBool() );
+		game->SetCVarBool("stereoRender_swapEyes", fields[ fieldIndex ].ToBool() );
 		
 	}
 	else if( fieldIndex == STEREO_FIELD_SEPERATION )
@@ -411,7 +411,7 @@ void idMenuScreen_Shell_Stereoscopics::idMenuDataSource_StereoSettings::AdjustFi
 		float newValue = idMath::ClampFloat( 0.0f, 100.0f, fields[ fieldIndex ].ToFloat() + adjustAmount );
 		fields[ fieldIndex ].SetFloat( newValue );
 		
-		stereoRender_interOccularCentimeters.SetFloat( ( fields[ STEREO_FIELD_SEPERATION ].ToFloat() / 100.0f ) * MAX_INTEROCCULAR_DISTANCE );
+		game->SetCVarFloat("stereoRender_interOccularCentimeters", ( fields[ STEREO_FIELD_SEPERATION ].ToFloat() / 100.0f ) * MAX_INTEROCCULAR_DISTANCE );
 		
 	}
 	

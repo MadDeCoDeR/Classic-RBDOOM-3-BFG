@@ -30,10 +30,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "../Game_local.h"
 
 const static int NUM_SETTING_OPTIONS = 8;
-extern idCVar g_nightmare;
-extern idCVar g_roeNightmare;
-extern idCVar g_leNightmare;
-extern idCVar g_skill;
+//extern idCVar g_nightmare;
+//extern idCVar g_roeNightmare;
+//extern idCVar g_leNightmare;
+//extern idCVar g_skill;
 /*
 ========================
 idMenuScreen_Shell_Difficulty::Initialize
@@ -178,7 +178,7 @@ void idMenuScreen_Shell_Difficulty::ShowScreen( const mainMenuTransition_t trans
 	
 	nightmareUnlocked = false;
 	
-	idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_Shell* >( menuData );
+	idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 	int type = 0;
 	if( shell != NULL )
 	{
@@ -187,15 +187,15 @@ void idMenuScreen_Shell_Difficulty::ShowScreen( const mainMenuTransition_t trans
 	
 	if( type == 0 )
 	{
-		nightmareUnlocked = g_nightmare.GetBool();
+		nightmareUnlocked = game->GetCVarBool("g_nightmare");
 	}
 	else if( type == 1 )
 	{
-		nightmareUnlocked = g_roeNightmare.GetBool();
+		nightmareUnlocked = game->GetCVarBool("g_roeNightmare");
 	}
 	else if( type == 2 )
 	{
-		nightmareUnlocked = g_leNightmare.GetBool();
+		nightmareUnlocked = game->GetCVarBool("g_leNightmare");
 	}
 	//GK: Always have available the Nightmare difficulty on custom expansions
 	else if (type == 3)
@@ -204,7 +204,7 @@ void idMenuScreen_Shell_Difficulty::ShowScreen( const mainMenuTransition_t trans
 	}
 	//GK: End
 
-	int skill = Max( 0, g_skill.GetInteger() );
+	int skill = Max( 0, game->GetCVarInteger("g_skill") );
 	if( !nightmareUnlocked )
 	{
 		options->GetChildByIndex( 3 ).SetState( WIDGET_STATE_DISABLED );
@@ -312,16 +312,16 @@ bool idMenuScreen_Shell_Difficulty::HandleAction( idWidgetAction& action, const 
 				options->SetViewIndex( options->GetViewOffset() + selectionIndex );
 			}
 			
-			idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_Shell* >( menuData );
+			idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 			int type = 0;
 			if( shell != NULL )
 			{
 				type = shell->GetNewGameType();
 			}
 			
-			g_skill.SetInteger( selectionIndex );
+			game->SetCVarInteger("g_skill", selectionIndex );
 			
-			idMenuHandler_Shell* shellMgr = dynamic_cast< idMenuHandler_Shell* >( menuData );
+			idMenuHandler_Shell* shellMgr = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 			if( shellMgr )
 			{
 				if( type == 0 )

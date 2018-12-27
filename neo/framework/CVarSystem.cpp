@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar* idCVar::staticVars = NULL;
 
-extern idCVar net_allowCheats;
+//extern idCVar net_allowCheats;
 
 /*
 ===============================================================================
@@ -365,7 +365,7 @@ void idInternalCVar::Set( const char* newValue, bool force, bool fromServer )
 			return;
 		}
 #endif
-		if( ( flags & CVAR_CHEAT ) && !net_allowCheats.GetBool() )
+		if( ( flags & CVAR_CHEAT ) && !game->GetCVarBool("net_allowCheats"))
 		{
 			common->Printf( "%s cannot be changed in multiplayer.\n", nameString.c_str() );
 			return;
@@ -497,6 +497,7 @@ public:
 	virtual void			Shutdown();
 	virtual bool			IsInitialized() const;
 	
+	virtual idDict*			GetSyncedCvars() { return new idDict; };
 	virtual void			Register( idCVar* cvar );
 	
 	virtual idCVar* 		Find( const char* name );

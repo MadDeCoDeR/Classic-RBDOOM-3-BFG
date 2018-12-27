@@ -77,10 +77,10 @@ void idWorldspawn::Spawn()
 	scriptname.SetFileExtension( ".script" );
 	if( fileSystem->ReadFile( scriptname, NULL, NULL ) > 0 )
 	{
-		gameLocal.program.CompileFile( scriptname );
+		gameLocal.GetProgram()->CompileFile( scriptname );
 		
 		// call the main function by default
-		func = gameLocal.program.FindFunction( "main" );
+		func = gameLocal.GetProgram()->FindFunction( "main" );
 		if( func != NULL )
 		{
 			thread = new idThread( func );
@@ -92,7 +92,7 @@ void idWorldspawn::Spawn()
 	kv = spawnArgs.MatchPrefix( "call" );
 	while( kv != NULL )
 	{
-		func = gameLocal.program.FindFunction( kv->GetValue() );
+		func = gameLocal.GetProgram()->FindFunction( kv->GetValue() );
 		if( func == NULL )
 		{
 			gameLocal.Error( "Function '%s' not found in script for '%s' key on worldspawn", kv->GetValue().c_str(), kv->GetKey().c_str() );

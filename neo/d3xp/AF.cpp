@@ -380,7 +380,7 @@ int idAF::EntitiesTouchingAF( afTouch_t touchList[ MAX_GENTITIES ] ) const
 	}
 	
 	numTouching = 0;
-	numClipModels = gameLocal.clip.ClipModelsTouchingBounds( physicsObj.GetAbsBounds(), -1, clipModels, MAX_GENTITIES );
+	numClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( physicsObj.GetAbsBounds(), -1, clipModels, MAX_GENTITIES );
 	
 	for( i = 0; i < jointMods.Num(); i++ )
 	{
@@ -405,7 +405,7 @@ int idAF::EntitiesTouchingAF( afTouch_t touchList[ MAX_GENTITIES ] ) const
 				continue;
 			}
 			
-			if( gameLocal.clip.ContentsModel( body->GetWorldOrigin(), body->GetClipModel(), body->GetWorldAxis(), -1, cm->Handle(), cm->GetOrigin(), cm->GetAxis() ) )
+			if( gameLocal.GetClip()->ContentsModel( body->GetWorldOrigin(), body->GetClipModel(), body->GetWorldAxis(), -1, cm->Handle(), cm->GetOrigin(), cm->GetAxis() ) )
 			{
 				touchList[ numTouching ].touchedByBody = body;
 				touchList[ numTouching ].touchedClipModel = cm;
@@ -616,7 +616,7 @@ bool idAF::LoadBody( const idDeclAF_Body* fb, const idJointMat* joints )
 		{
 			clip = new( TAG_PHYSICS_CLIP_AF ) idClipModel( trm );
 			clip->SetContents( fb->contents );
-			clip->Link( gameLocal.clip, self, 0, origin, axis );
+			clip->Link( *gameLocal.GetClip(), self, 0, origin, axis );
 			body->SetClipModel( clip );
 		}
 		clip->SetContents( fb->contents );
@@ -629,7 +629,7 @@ bool idAF::LoadBody( const idDeclAF_Body* fb, const idJointMat* joints )
 	{
 		clip = new( TAG_PHYSICS_CLIP_AF ) idClipModel( trm );
 		clip->SetContents( fb->contents );
-		clip->Link( gameLocal.clip, self, 0, origin, axis );
+		clip->Link( *gameLocal.GetClip(), self, 0, origin, axis );
 		body = new( TAG_PHYSICS_AF ) idAFBody( fb->name, clip, fb->density );
 		if( fb->inertiaScale != mat3_identity )
 		{
@@ -1121,7 +1121,7 @@ bool idAF::TestSolid() const
 	for( i = 0; i < physicsObj.GetNumBodies(); i++ )
 	{
 		body = physicsObj.GetBody( i );
-		if( gameLocal.clip.Translation( trace, body->GetWorldOrigin(), body->GetWorldOrigin(), body->GetClipModel(), body->GetWorldAxis(), body->GetClipMask(), self ) )
+		if( gameLocal.GetClip()->Translation( trace, body->GetWorldOrigin(), body->GetWorldOrigin(), body->GetClipModel(), body->GetWorldAxis(), body->GetClipMask(), self ) )
 		{
 			float depth = idMath::Fabs( trace.c.point * trace.c.normal - trace.c.dist );
 			

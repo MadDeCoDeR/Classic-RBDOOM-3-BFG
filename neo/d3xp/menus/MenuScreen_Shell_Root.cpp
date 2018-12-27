@@ -29,7 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../Game_local.h"
 
-extern idCVar g_demoMode;
+//extern idCVar g_demoMode;
 const static int NUM_MAIN_OPTIONS = 6;
 /*
 ========================
@@ -101,7 +101,7 @@ void idMenuScreen_Shell_Root::Update()
 			cmdBar->ClearAllButtons();
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			
-			if( !g_demoMode.GetBool() )
+			if( !game->GetCVarBool("g_demoMode"))
 			{
 				buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
 				if( menuData->GetPlatform() != 2 )
@@ -151,7 +151,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 		
 		int index = 0;
 		
-		if( g_demoMode.GetBool() )
+		if(game->GetCVarBool("g_demoMode"))
 		{
 			idMenuWidget_Button* buttonWidget = NULL;
 			
@@ -166,7 +166,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 			}
 			index++;
 			
-			if( g_demoMode.GetInteger() == 2 )
+			if(game->GetCVarInteger("g_demoMode") == 2 )
 			{
 				option.Clear();
 				option.Append( "START PRESS DEMO" );	// START DEMO
@@ -298,7 +298,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 	
 	if( menuData != NULL && menuData->GetPlatform() == 2 )
 	{
-		idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_Shell* >( menuData );
+		idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 		if( shell != NULL )
 		{
 			idMenuWidget_MenuBar* menuBar = shell->GetMenuBar();
@@ -426,7 +426,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 			if( menuData->GetPlatform() == 2 )
 			{
 			
-				idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_Shell* >( menuData );
+				idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 				if( !shell )
 				{
 					return true;
@@ -459,7 +459,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 				return true;
 			}
 			
-			idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_Shell* >( menuData );
+			idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 			if( !shell )
 			{
 				return true;

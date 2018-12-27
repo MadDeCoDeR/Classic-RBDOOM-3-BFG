@@ -32,8 +32,8 @@ If you have questions concerning this license or the applicable additional terms
 const static int NUM_LOBBY_OPTIONS = 8;
 
 extern idCVar net_inviteOnly;
-extern idCVar si_map;
-extern idCVar si_mode;
+//extern idCVar si_map;
+//extern idCVar si_mode;
 
 enum partyLobbyCmds_t
 {
@@ -601,9 +601,9 @@ bool idMenuScreen_Shell_PartyLobby::HandleAction( idWidgetAction& action, const 
 						matchParameters.matchFlags |= MATCH_INVITE_ONLY;
 					}
 					
-					int mode = idMath::ClampInt( -1, GAME_COUNT - 1, si_mode.GetInteger() );
+					int mode = idMath::ClampInt( -1, GAME_COUNT - 1, game->GetCVarInteger("si_mode") );
 					const idList< mpMap_t > maps = common->GetMapList();
-					int map = idMath::ClampInt( -1, maps.Num() - 1, si_map.GetInteger() );
+					int map = idMath::ClampInt( -1, maps.Num() - 1, game->GetCVarInteger("si_map") );
 					
 					matchParameters.gameMap = map;
 					matchParameters.gameMode = mode;
@@ -732,7 +732,7 @@ void idMenuScreen_Shell_PartyLobby::UpdateLobby()
 	// setup names for lobby;
 	if( lobby != NULL )
 	{
-		idMenuHandler_Shell* mgr = dynamic_cast< idMenuHandler_Shell* >( menuData );
+		idMenuHandler_Shell* mgr = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 		if( mgr != NULL )
 		{
 			mgr->UpdateLobby( lobby );

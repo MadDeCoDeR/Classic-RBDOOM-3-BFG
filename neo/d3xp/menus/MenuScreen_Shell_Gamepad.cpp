@@ -248,7 +248,7 @@ void idMenuScreen_Shell_Gamepad::HideScreen( const mainMenuTransition_t transiti
 	
 	if( menuData != NULL )
 	{
-		idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_Shell* >( menuData );
+		idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 		if( handler != NULL )
 		{
 			handler->SetupPCOptions();

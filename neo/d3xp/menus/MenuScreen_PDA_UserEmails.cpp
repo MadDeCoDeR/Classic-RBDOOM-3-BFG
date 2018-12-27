@@ -208,7 +208,7 @@ void idMenuScreen_PDA_UserEmails::Update()
 				if( pdaList != NULL )
 				{
 					int pdaIndex = pdaList->GetViewIndex();
-					idPlayer* player = gameLocal.GetLocalPlayer();
+					idPlayer* player = game->GetLocalPlayer();
 					if( player != NULL )
 					{
 						if( pdaIndex < player->GetInventory().pdas.Num() )
@@ -292,7 +292,7 @@ void idMenuScreen_PDA_UserEmails::UpdateEmail()
 	
 		int pdaIndex = pdaList->GetViewIndex();
 		
-		idPlayer* player = gameLocal.GetLocalPlayer();
+		idPlayer* player = game->GetLocalPlayer();
 		if( player == NULL )
 		{
 			return;

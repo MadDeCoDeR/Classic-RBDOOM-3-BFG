@@ -55,6 +55,25 @@ void idSysLocal::DebugVPrintf( const char* fmt, va_list arg )
 {
 	Sys_DebugVPrintf( fmt, arg );
 }
+//GK: Move thos inside the idSys class for use inside the dll
+struct leaderboardDefinition_t* idSysLocal::FindLeaderboardDef(int id)
+{
+	return Sys_FindLeaderboardDef(id);
+}
+
+struct leaderboardDefinition_t* idSysLocal::CreateLeaderboardDef(int id_, int numColumns_, const struct columnDef_t* columnDefs_, enum rankOrder_t rankOrder_, bool supportsAttachments_, bool checkAgainstCurrent_)
+{
+	return Sys_CreateLeaderboardDef(id_, numColumns_, columnDefs_, rankOrder_, supportsAttachments_, checkAgainstCurrent_);
+}
+
+void idSysLocal::DestroyLeaderboardDefs() {
+	Sys_DestroyLeaderboardDefs();
+}
+
+int idSysLocal::GetMilliseconds()
+{
+	return Sys_Milliseconds();
+}
 
 double idSysLocal::GetClockTicks()
 {
@@ -106,7 +125,7 @@ bool idSysLocal::UnlockMemory( void* ptr, int bytes )
 	return Sys_UnlockMemory( ptr, bytes );
 }
 
-int idSysLocal::DLL_Load( const char* dllName )
+intptr_t idSysLocal::DLL_Load( const char* dllName )
 {
 	return Sys_DLL_Load( dllName );
 }

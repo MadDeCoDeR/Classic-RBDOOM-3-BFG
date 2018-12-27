@@ -43,6 +43,7 @@ const int8		PROFILE_VER_MINOR			= 0;	// Within each major version, minor version
 
 class idPlayerProfileLocal : public idPlayerProfile
 {
+	virtual bool			GetAchievement(const int id) const;
 };
 idPlayerProfileLocal playerProfiles[MAX_INPUT_DEVICES];
 
@@ -365,7 +366,7 @@ void idPlayerProfile::ClearAchievement( const int id )
 idPlayerProfile::GetAchievement
 ========================
 */
-bool idPlayerProfile::GetAchievement( const int id ) const
+bool idPlayerProfileLocal::GetAchievement( const int id ) const
 {
 	if( id >= idAchievementSystem::MAX_ACHIEVEMENTS )
 	{

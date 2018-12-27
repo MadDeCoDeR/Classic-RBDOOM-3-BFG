@@ -3790,7 +3790,7 @@ void idPhantomObjects::Think()
 		entPhys = ent->GetPhysics();
 		const idVec3& entOrg = entPhys->GetOrigin();
 		
-		gameLocal.clip.TracePoint( tr, entOrg, toPos, MASK_OPAQUE, ent );
+		gameLocal.GetClip()->TracePoint( tr, entOrg, toPos, MASK_OPAQUE, ent );
 		if( tr.fraction >= 1.0f || ( gameLocal.GetTraceEntity( tr ) == targetEnt ) )
 		{
 			lastTargetPos[ i ] = toPos;
@@ -3995,7 +3995,7 @@ void idShockwave::Think()
 			gameRenderWorld->DebugBounds( colorRed,  bounds, vec3_origin );
 		}
 		
-		listedClipModels = gameLocal.clip.ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
+		listedClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
 		
 		for( i = 0; i < listedClipModels; i++ )
 		{
@@ -4152,7 +4152,7 @@ void idFuncMountedObject::Spawn()
 	idStr funcName = spawnArgs.GetString( "call", "" );
 	if( funcName.Length() )
 	{
-		scriptFunction = gameLocal.program.FindFunction( funcName );
+		scriptFunction = gameLocal.GetProgram()->FindFunction( funcName );
 		if( scriptFunction == NULL )
 		{
 			gameLocal.Warning( "idFuncMountedObject '%s' at (%s) calls unknown function '%s'\n", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcName.c_str() );

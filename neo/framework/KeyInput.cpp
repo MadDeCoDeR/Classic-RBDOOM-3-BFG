@@ -287,20 +287,7 @@ keyname_t keynames[] =
 	{K_NONE, NULL, NULL}
 };
 
-class idKey
-{
-public:
-	idKey()
-	{
-		down = false;
-		repeats = 0;
-		usercmdAction = 0;
-	}
-	bool			down;
-	int				repeats;		// if > 1, it is autorepeating
-	idStr			binding;
-	int				usercmdAction;	// for testing by the asyncronous usercmd generation
-};
+
 
 bool		key_overstrikeMode = false;
 idKey* 		keys = NULL;

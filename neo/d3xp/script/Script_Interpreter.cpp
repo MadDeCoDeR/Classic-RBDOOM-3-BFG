@@ -63,7 +63,7 @@ void idInterpreter::Save( idSaveGame* savefile ) const
 		savefile->WriteInt( callStack[i].s );
 		if( callStack[i].f )
 		{
-			savefile->WriteInt( gameLocal.program.GetFunctionIndex( callStack[i].f ) );
+			savefile->WriteInt( gameLocal.GetProgram()->GetFunctionIndex( callStack[i].f ) );
 		}
 		else
 		{
@@ -81,7 +81,7 @@ void idInterpreter::Save( idSaveGame* savefile ) const
 	
 	if( currentFunction )
 	{
-		savefile->WriteInt( gameLocal.program.GetFunctionIndex( currentFunction ) );
+		savefile->WriteInt( gameLocal.GetProgram()->GetFunctionIndex( currentFunction ) );
 	}
 	else
 	{
@@ -128,7 +128,7 @@ void idInterpreter::Restore( idRestoreGame* savefile )
 		savefile->ReadInt( func_index );
 		if( func_index >= 0 )
 		{
-			callStack[i].f = gameLocal.program.GetFunction( func_index );
+			callStack[i].f = gameLocal.GetProgram()->GetFunction( func_index );
 		}
 		else
 		{
@@ -148,7 +148,7 @@ void idInterpreter::Restore( idRestoreGame* savefile )
 	savefile->ReadInt( func_index );
 	if( func_index >= 0 )
 	{
-		currentFunction = gameLocal.program.GetFunction( func_index );
+		currentFunction = gameLocal.GetProgram()->GetFunction( func_index );
 	}
 	else
 	{
@@ -244,7 +244,7 @@ bool idInterpreter::GetRegisterValue( const char* name, idStr& out, int scopeDep
 	if( funcName )
 	{
 		*funcName = '\0';
-		scope = gameLocal.program.GetDef( NULL, funcObject, &def_namespace );
+		scope = gameLocal.GetProgram()->GetDef( NULL, funcObject, &def_namespace );
 		funcName += 2;
 	}
 	else
@@ -254,14 +254,14 @@ bool idInterpreter::GetRegisterValue( const char* name, idStr& out, int scopeDep
 	}
 	
 	// Get the function from the object
-	d = gameLocal.program.GetDef( NULL, funcName, scope );
+	d = gameLocal.GetProgram()->GetDef( NULL, funcName, scope );
 	if( !d )
 	{
 		return false;
 	}
 	
 	// Get the variable itself and check various namespaces
-	d = gameLocal.program.GetDef( NULL, name, d );
+	d = gameLocal.GetProgram()->GetDef( NULL, name, d );
 	if( !d )
 	{
 		if( scope == &def_namespace )
@@ -269,10 +269,10 @@ bool idInterpreter::GetRegisterValue( const char* name, idStr& out, int scopeDep
 			return false;
 		}
 		
-		d = gameLocal.program.GetDef( NULL, name, scope );
+		d = gameLocal.GetProgram()->GetDef( NULL, name, scope );
 		if( !d )
 		{
-			d = gameLocal.program.GetDef( NULL, name, &def_namespace );
+			d = gameLocal.GetProgram()->GetDef( NULL, name, &def_namespace );
 			if( !d )
 			{
 				return false;
@@ -428,7 +428,7 @@ int idInterpreter::CurrentLine() const
 	{
 		return 0;
 	}
-	return gameLocal.program.GetLineNumberForStatement( instructionPointer );
+	return gameLocal.GetProgram()->GetLineNumberForStatement( instructionPointer );
 }
 
 /*
@@ -442,7 +442,7 @@ const char* idInterpreter::CurrentFile() const
 	{
 		return "";
 	}
-	return gameLocal.program.GetFilenameForStatement( instructionPointer );
+	return gameLocal.GetProgram()->GetFilenameForStatement( instructionPointer );
 }
 
 /*
@@ -474,7 +474,7 @@ void idInterpreter::StackTrace() const
 	}
 	else
 	{
-		gameLocal.Printf( "%12s : %s\n", gameLocal.program.GetFilename( currentFunction->filenum ), currentFunction->Name() );
+		gameLocal.Printf( "%12s : %s\n", gameLocal.GetProgram()->GetFilename( currentFunction->filenum ), currentFunction->Name() );
 	}
 	
 	for( i = top; i >= 0; i-- )
@@ -486,7 +486,7 @@ void idInterpreter::StackTrace() const
 		}
 		else
 		{
-			gameLocal.Printf( "%12s : %s\n", gameLocal.program.GetFilename( f->filenum ), f->Name() );
+			gameLocal.Printf( "%12s : %s\n", gameLocal.GetProgram()->GetFilename( f->filenum ), f->Name() );
 		}
 	}
 }
@@ -509,10 +509,10 @@ void idInterpreter::Error( const char* fmt, ... ) const
 	
 	StackTrace();
 	
-	if( ( instructionPointer >= 0 ) && ( instructionPointer < gameLocal.program.NumStatements() ) )
+	if( ( instructionPointer >= 0 ) && ( instructionPointer < gameLocal.GetProgram()->NumStatements() ) )
 	{
-		statement_t& line = gameLocal.program.GetStatement( instructionPointer );
-		common->Error( "%s(%d): Thread '%s': %s\n", gameLocal.program.GetFilename( line.file ), line.linenumber, thread->GetThreadName(), text );
+		statement_t& line = gameLocal.GetProgram()->GetStatement( instructionPointer );
+		common->Error( "%s(%d): Thread '%s': %s\n", gameLocal.GetProgram()->GetFilename( line.file ), line.linenumber, thread->GetThreadName(), text );
 	}
 	else
 	{
@@ -536,10 +536,10 @@ void idInterpreter::Warning( const char* fmt, ... ) const
 	vsprintf( text, fmt, argptr );
 	va_end( argptr );
 	
-	if( ( instructionPointer >= 0 ) && ( instructionPointer < gameLocal.program.NumStatements() ) )
+	if( ( instructionPointer >= 0 ) && ( instructionPointer < gameLocal.GetProgram()->NumStatements() ) )
 	{
-		statement_t& line = gameLocal.program.GetStatement( instructionPointer );
-		common->Warning( "%s(%d): Thread '%s': %s", gameLocal.program.GetFilename( line.file ), line.linenumber, thread->GetThreadName(), text );
+		statement_t& line = gameLocal.GetProgram()->GetStatement( instructionPointer );
+		common->Warning( "%s(%d): Thread '%s': %s", gameLocal.GetProgram()->GetFilename( line.file ), line.linenumber, thread->GetThreadName(), text );
 	}
 	else
 	{
@@ -573,7 +573,7 @@ void idInterpreter::DisplayInfo() const
 		}
 		else
 		{
-			gameLocal.Printf( "%12s : %s\n", gameLocal.program.GetFilename( currentFunction->filenum ), currentFunction->Name() );
+			gameLocal.Printf( "%12s : %s\n", gameLocal.GetProgram()->GetFilename( currentFunction->filenum ), currentFunction->Name() );
 		}
 		
 		for( i = callStackDepth; i > 0; i-- )
@@ -586,7 +586,7 @@ void idInterpreter::DisplayInfo() const
 			}
 			else
 			{
-				gameLocal.Printf( "%12s : %s\n", gameLocal.program.GetFilename( f->filenum ), f->Name() );
+				gameLocal.Printf( "%12s : %s\n", gameLocal.GetProgram()->GetFilename( f->filenum ), f->Name() );
 			}
 		}
 	}
@@ -694,7 +694,7 @@ void idInterpreter::EnterFunction( const function_t* func, bool clearStack )
 		if( currentFunction )
 		{
 			gameLocal.Printf( "%d: call '%s' from '%s'(line %d)%s\n", gameLocal.time, func->Name(), currentFunction->Name(),
-							  gameLocal.program.GetStatement( instructionPointer ).linenumber, clearStack ? " clear stack" : "" );
+							  gameLocal.GetProgram()->GetStatement( instructionPointer ).linenumber, clearStack ? " clear stack" : "" );
 		}
 		else
 		{
@@ -749,17 +749,17 @@ void idInterpreter::LeaveFunction( idVarDef* returnDef )
 		switch( returnDef->Type() )
 		{
 			case ev_string :
-				gameLocal.program.ReturnString( GetString( returnDef ) );
+				gameLocal.GetProgram()->ReturnString( GetString( returnDef ) );
 				break;
 				
 			case ev_vector :
 				ret = GetVariable( returnDef );
-				gameLocal.program.ReturnVector( *ret.vectorPtr );
+				gameLocal.GetProgram()->ReturnVector( *ret.vectorPtr );
 				break;
 				
 			default :
 				ret = GetVariable( returnDef );
-				gameLocal.program.ReturnInteger( *ret.intPtr );
+				gameLocal.GetProgram()->ReturnInteger( *ret.intPtr );
 		}
 	}
 	
@@ -769,11 +769,11 @@ void idInterpreter::LeaveFunction( idVarDef* returnDef )
 	
 	if( debug )
 	{
-		statement_t& line = gameLocal.program.GetStatement( instructionPointer );
-		gameLocal.Printf( "%d: %s(%d): exit %s", gameLocal.time, gameLocal.program.GetFilename( line.file ), line.linenumber, currentFunction->Name() );
+		statement_t& line = gameLocal.GetProgram()->GetStatement( instructionPointer );
+		gameLocal.Printf( "%d: %s(%d): exit %s", gameLocal.time, gameLocal.GetProgram()->GetFilename( line.file ), line.linenumber, currentFunction->Name() );
 		if( callStackDepth > 1 )
 		{
-			gameLocal.Printf( " return to %s(line %d)\n", callStack[ callStackDepth - 1 ].f->Name(), gameLocal.program.GetStatement( callStack[ callStackDepth - 1 ].s ).linenumber );
+			gameLocal.Printf( " return to %s(line %d)\n", callStack[ callStackDepth - 1 ].f->Name(), gameLocal.GetProgram()->GetStatement( callStack[ callStackDepth - 1 ].s ).linenumber );
 		}
 		else
 		{
@@ -839,24 +839,24 @@ void idInterpreter::CallEvent( const function_t* func, int argsize )
 		switch( evdef->GetReturnType() )
 		{
 			case D_EVENT_INTEGER :
-				gameLocal.program.ReturnInteger( 0 );
+				gameLocal.GetProgram()->ReturnInteger( 0 );
 				break;
 				
 			case D_EVENT_FLOAT :
-				gameLocal.program.ReturnFloat( 0 );
+				gameLocal.GetProgram()->ReturnFloat( 0 );
 				break;
 				
 			case D_EVENT_VECTOR :
-				gameLocal.program.ReturnVector( vec3_zero );
+				gameLocal.GetProgram()->ReturnVector( vec3_zero );
 				break;
 				
 			case D_EVENT_STRING :
-				gameLocal.program.ReturnString( "" );
+				gameLocal.GetProgram()->ReturnString( "" );
 				break;
 				
 			case D_EVENT_ENTITY :
 			case D_EVENT_ENTITY_NULL :
-				gameLocal.program.ReturnEntity( ( idEntity* )NULL );
+				gameLocal.GetProgram()->ReturnEntity( ( idEntity* )NULL );
 				break;
 				
 			case D_EVENT_TRACE :
@@ -1126,7 +1126,7 @@ bool idInterpreter::Execute()
 		}
 		
 		// next statement
-		st = &gameLocal.program.GetStatement( instructionPointer );
+		st = &gameLocal.GetProgram()->GetStatement( instructionPointer );
 		
 		switch( st->op )
 		{
@@ -1139,7 +1139,7 @@ bool idInterpreter::Execute()
 				newThread->Start();
 				
 				// return the thread number to the script
-				gameLocal.program.ReturnFloat( newThread->GetThreadNum() );
+				gameLocal.GetProgram()->ReturnFloat( newThread->GetThreadNum() );
 				PopParms( st->b->value.argSize );
 				break;
 				
@@ -1154,12 +1154,12 @@ bool idInterpreter::Execute()
 					newThread->Start();
 					
 					// return the thread number to the script
-					gameLocal.program.ReturnFloat( newThread->GetThreadNum() );
+					gameLocal.GetProgram()->ReturnFloat( newThread->GetThreadNum() );
 				}
 				else
 				{
 					// return a null thread to the script
-					gameLocal.program.ReturnFloat( 0.0f );
+					gameLocal.GetProgram()->ReturnFloat( 0.0f );
 				}
 				PopParms( st->c->value.argSize );
 				break;
@@ -1183,8 +1183,8 @@ bool idInterpreter::Execute()
 				else
 				{
 					// return a 'safe' value
-					gameLocal.program.ReturnVector( vec3_zero );
-					gameLocal.program.ReturnString( "" );
+					gameLocal.GetProgram()->ReturnVector( vec3_zero );
+					gameLocal.GetProgram()->ReturnString( "" );
 					PopParms( st->c->value.argSize );
 				}
 				break;

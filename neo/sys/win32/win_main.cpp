@@ -878,7 +878,7 @@ Sys_DLL_Load
 intptr_t Sys_DLL_Load( const char *dllName )
 {
 	HINSTANCE libHandle = LoadLibrary( dllName );
-	return (int)libHandle;
+	return (intptr_t)libHandle; //GK: ladies and gentlerman the stupidiest reason why 64-bit dll wasn't working. A wrong cast
 }
 
 /*
@@ -1351,7 +1351,7 @@ void EmailCrashReport( LPSTR messageText ) {
 		return;
 	}
 
-	lastEmailTime = Sys_Milliseconds();
+	lastEmailTime = sys->GetMilliseconds();
 
 	HINSTANCE mapi = LoadLibrary( "MAPI32.DLL" ); 
 	if( mapi ) {
@@ -1512,7 +1512,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	timeBeginPeriod( 1 );
 
 	// get the initial time base
-	Sys_Milliseconds();
+	sys->GetMilliseconds();
 
 #ifdef DEBUG
 	// disable the painfully slow MS heap check every 1024 allocs

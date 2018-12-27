@@ -426,7 +426,7 @@ void idTestModel::Think()
 			joint = animator.GetJointHandle( "origin" );
 			animator.GetJointTransform( joint, gameLocal.time, neworigin, axis );
 			neworigin = ( ( neworigin - animator.ModelDef()->GetVisualOffset() ) * physicsObj.GetAxis() ) + GetPhysics()->GetOrigin();
-			clip->Link( gameLocal.clip, this, 0, neworigin, clip->GetAxis() );
+			clip->Link( *gameLocal.GetClip(), this, 0, neworigin, clip->GetAxis() );
 		}
 	}
 	

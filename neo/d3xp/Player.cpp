@@ -30,7 +30,8 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Game_local.h"
-#include "../framework/Common_local.h"
+//#include "../framework/Common_dialog.h"
+//#include "../framework/Common_local.h"
 #include "PredictedValue_impl.h"
 
 idCVar flashlight_batteryDrainTimeMS( "flashlight_batteryDrainTimeMS", "30000", CVAR_INTEGER, "amount of time (in MS) it takes for full battery to drain (-1 == no battery drain)" );
@@ -38,7 +39,7 @@ idCVar flashlight_batteryChargeTimeMS( "flashlight_batteryChargeTimeMS", "3000",
 idCVar flashlight_minActivatePercent( "flashlight_minActivatePercent", ".25", CVAR_FLOAT, "( 0.0 - 1.0 ) minimum amount of battery (%) needed to turn on flashlight" );
 idCVar flashlight_batteryFlickerPercent( "flashlight_batteryFlickerPercent", ".1", CVAR_FLOAT, "chance of flickering when battery is low" );
 //GK: Allow to select what kind of flashlight you want
-idCVar flashlight_old("flashlight_old","0",CVAR_GAME|CVAR_INTEGER|CVAR_ARCHIVE,"Enable old flashlight");
+extern idCVar flashlight_old;
 
 // No longer userinfo, but I don't want to rename the cvar
 idCVar ui_showGun( "ui_showGun", "1", CVAR_GAME | CVAR_ARCHIVE | CVAR_BOOL, "show gun" );
@@ -58,7 +59,7 @@ idCVar pm_clientInterpolation_Divergence( "pm_clientInterpolation_Divergence", "
 
 idCVar pm_clientAuthoritative_minSpeedSquared( "pm_clientAuthoritative_minSpeedSquared", "1000.0f", CVAR_FLOAT, "" );
 
-idCVar pm_cursor("pm_cursor", "1", CVAR_GAME | CVAR_BOOL|CVAR_ARCHIVE, "Enable/disable Crosshair");
+extern idCVar pm_cursor;
 
 extern idCVar g_demoMode;
 
@@ -821,7 +822,7 @@ void idInventory::AddPickupName( const char* name, idPlayer* owner )     //_D3XP
 	{
 		if( idStr::Cmpn( name, STRTABLE_ID, STRTABLE_ID_LENGTH ) == 0 )
 		{
-			pickupItemNames.Append( idLocalization::GetString( name ) );
+			pickupItemNames.Append( common->GetName( name ) );
 		}
 		else
 		{
@@ -1492,15 +1493,16 @@ idPlayer::idPlayer():
 	weapon					= NULL;
 	primaryObjective		= NULL;
 	
-	hudManager				= new idMenuHandler_HUD();
+	hudManager				= uiManager->CreateHUD();
 	hud						= NULL;
 	objectiveSystemOpen		= false;
 	memset( quickSlot, -1, sizeof( quickSlot ) );
 	
-	pdaMenu = new( TAG_SWF ) idMenuHandler_PDA();
+	pdaMenu = uiManager->CreatePDA();
 	pdaVideoMat				= NULL;
+#ifndef GAME_DLL
 	mpMessages				= NULL;
-	
+#endif
 	mountedObject			= NULL;
 	enviroSuitLight			= NULL;
 	
@@ -2085,13 +2087,13 @@ void idPlayer::Spawn()
 		}
 		objectiveSystemOpen = false;
 	}
-	
+#ifndef GAME_DLL
 	if( common->IsMultiplayer() && mpMessages == NULL )
 	{
-		mpMessages = new idSWF( "mp_messages", common->SW() );
+		mpMessages = uiManager->CreateSWF( "mp_messages", common->SW() );
 		mpMessages->Activate( true );
 	}
-	
+#endif
 	SetLastHitTime( 0 );
 	
 	// load the armor sound feedback
@@ -2173,7 +2175,7 @@ void idPlayer::Spawn()
 		{
 			GetPDA()->AddEmail( inventory.emails[i] );
 		}
-		GetPDA()->SetSecurity( idLocalization::GetString( "#str_00066" ) );
+		GetPDA()->SetSecurity( common->GetName( "#str_00066" ) );
 	}
 	
 	if( gameLocal.world->spawnArgs.GetBool( "no_Weapons" ) )
@@ -2324,9 +2326,10 @@ idPlayer::~idPlayer()
 	
 	delete pdaMenu;
 	pdaMenu = NULL;
-	
+#ifndef GAME_DLL
 	delete mpMessages;
 	mpMessages = NULL;
+#endif
 }
 
 /*
@@ -2543,7 +2546,7 @@ void idPlayer::Save( idSaveGame* savefile ) const
 	
 	// TODO_SPARTY hook this up with new hud
 	//if ( hud ) {
-	//	hud->SetStateString( "message", idLocalization::GetString( "#str_02916" ) );
+	//	hud->SetStateString( "message", common->GetName( "#str_02916" ) );
 	//	hud->HandleNamedEvent( "Message" );
 	//}
 	
@@ -3453,7 +3456,7 @@ idMenuScreen_Scoreboard::UpdateSpectating
 */
 void idPlayer::UpdateSpectatingText()
 {
-
+#ifndef GAME_DLL
 	idSWF* spectatorMessages = mpMessages;
 	idPlayer* p = this;
 	if( gameLocal.GetLocalClientNum() >= 0 && gameLocal.entities[ gameLocal.GetLocalClientNum() ] && gameLocal.entities[ gameLocal.GetLocalClientNum() ]->IsType( idPlayer::Type ) )
@@ -3497,6 +3500,7 @@ void idPlayer::UpdateSpectatingText()
 		txtVal->SetText( spectatetext[1] );
 		txtVal->SetStrokeInfo( true, 0.75f, 1.75f );
 	}
+#endif
 }
 
 /*
@@ -3506,7 +3510,7 @@ idPlayer::UpdateMpMessages
 */
 void idPlayer::AddChatMessage( int index, int alpha, const idStr& message )
 {
-
+#ifndef GAME_DLL
 	if( mpMessages == NULL || !mpMessages->IsActive() )
 	{
 		return;
@@ -3547,7 +3551,7 @@ void idPlayer::AddChatMessage( int index, int alpha, const idStr& message )
 		txtVal->SetText( message );
 		txtVal->SetStrokeInfo( true, 0.9f, 1.75f );
 	}
-	
+#endif
 }
 
 /*
@@ -3557,7 +3561,7 @@ idPlayer::UpdateMpMessages
 */
 void idPlayer::ClearChatMessage( int index )
 {
-
+#ifndef GAME_DLL
 	if( mpMessages == NULL || !mpMessages->IsActive() )
 	{
 		return;
@@ -3576,7 +3580,7 @@ void idPlayer::ClearChatMessage( int index )
 	{
 		txtVal->SetText( "" );
 	}
-	
+#endif
 }
 
 /*
@@ -3601,12 +3605,12 @@ void idPlayer::DrawHUD( idMenuHandler_HUD* _hudManager )
 	
 	// Always draw the local client's messages so that chat works correctly while spectating another player.
 	idPlayer* localPlayer = static_cast< idPlayer* >( gameLocal.entities[ gameLocal.GetLocalClientNum() ] );
-	
+#ifndef GAME_DLL
 	if( localPlayer != NULL && localPlayer->mpMessages != NULL )
 	{
-		localPlayer->mpMessages->Render( renderSystem, Sys_Milliseconds() );
+		localPlayer->mpMessages->Render( renderSystem, sys->GetMilliseconds() );
 	}
-	
+#endif
 	
 	UpdateHudStats( _hudManager );
 	
@@ -4716,7 +4720,7 @@ bool idPlayer::GiveInventoryItem( idDict* item, unsigned int giveFlags )
 	{
 		if( idStr::Cmpn( itemName, STRTABLE_ID, STRTABLE_ID_LENGTH ) == 0 )
 		{
-			inventory.pickupItemNames.Append( idLocalization::GetString( itemName ) );
+			inventory.pickupItemNames.Append( common->GetName( itemName ) );
 		}
 		else
 		{
@@ -5017,7 +5021,7 @@ void idPlayer::RemoveInventoryItem( const char* name )
 	//Hack for localization
 	if( !idStr::Icmp( name, "Pwr Cell" ) )
 	{
-		name = idLocalization::GetString( "#str_00101056" );
+		name = common->GetName( "#str_00101056" );
 	}
 	idDict* item = FindInventoryItem( name );
 	if( item )
@@ -6201,7 +6205,7 @@ void idPlayer::SpectateFreeFly( bool force )
 			start[2] += pm_spectatebbox.GetFloat() * 0.5f;
 			trace_t t;
 			// assuming spectate bbox is inside stand or crouch box
-			gameLocal.clip.TraceBounds( t, start, newOrig, b, MASK_PLAYERSOLID, player );
+			gameLocal.GetClip()->TraceBounds( t, start, newOrig, b, MASK_PLAYERSOLID, player );
 			newOrig.Lerp( start, newOrig, t.fraction );
 			SetOrigin( newOrig );
 			idAngles angle = player->viewAngles;
@@ -6393,7 +6397,7 @@ void idPlayer::PlayVideoDisk( const idDeclVideo* decl )
 			const shaderStage_t* stage = pdaVideoMat->GetStage( i );
 			if( stage != NULL && stage->texture.cinematic )
 			{
-				stage->texture.cinematic->ResetTime( Sys_Milliseconds() );
+				stage->texture.cinematic->ResetTime(sys->GetMilliseconds() );
 			}
 		}
 		if( decl->GetWave() != NULL )
@@ -6552,7 +6556,7 @@ void idPlayer::UpdateFocus()
 	if( common->IsMultiplayer() && IsLocallyControlled() )
 	{
 		idVec3 end = start + viewAngles.ToForward() * 768.0f;
-		gameLocal.clip.TracePoint( trace, start, end, MASK_SHOT_BOUNDINGBOX, this );
+		gameLocal.GetClip()->TracePoint( trace, start, end, MASK_SHOT_BOUNDINGBOX, this );
 		int iclient = -1;
 		if( ( trace.fraction < 1.0f ) && ( trace.c.entityNum < MAX_CLIENTS ) )
 		{
@@ -6569,7 +6573,7 @@ void idPlayer::UpdateFocus()
 	idBounds bounds( start );
 	bounds.AddPoint( end );
 	
-	listedClipModels = gameLocal.clip.ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
+	listedClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
 	
 	// no pretense at sorting here, just assume that there will only be one active
 	// gui within range along the trace
@@ -6590,7 +6594,7 @@ void idPlayer::UpdateFocus()
 				idEntity* body = static_cast<idAFAttachment*>( ent )->GetBody();
 				if( body != NULL && body->IsType( idAI::Type ) && ( static_cast<idAI*>( body )->GetTalkState() >= TALK_OK ) )
 				{
-					gameLocal.clip.TracePoint( trace, start, end, MASK_SHOT_RENDERMODEL, this );
+					gameLocal.GetClip()->TracePoint( trace, start, end, MASK_SHOT_RENDERMODEL, this );
 					if( ( trace.fraction < 1.0f ) && ( trace.c.entityNum == ent->entityNumber ) )
 					{
 						ClearFocus();
@@ -6607,7 +6611,7 @@ void idPlayer::UpdateFocus()
 			{
 				if( static_cast<idAI*>( ent )->GetTalkState() >= TALK_OK )
 				{
-					gameLocal.clip.TracePoint( trace, start, end, MASK_SHOT_RENDERMODEL, this );
+					gameLocal.GetClip()->TracePoint( trace, start, end, MASK_SHOT_RENDERMODEL, this );
 					if( ( trace.fraction < 1.0f ) && ( trace.c.entityNum == ent->entityNumber ) )
 					{
 						ClearFocus();
@@ -6622,7 +6626,7 @@ void idPlayer::UpdateFocus()
 			
 			if( ent->IsType( idAFEntity_Vehicle::Type ) )
 			{
-				gameLocal.clip.TracePoint( trace, start, end, MASK_SHOT_RENDERMODEL, this );
+				gameLocal.GetClip()->TracePoint( trace, start, end, MASK_SHOT_RENDERMODEL, this );
 				if( ( trace.fraction < 1.0f ) && ( trace.c.entityNum == ent->entityNumber ) )
 				{
 					ClearFocus();
@@ -7655,7 +7659,7 @@ void idPlayer::UseVehicle()
 	{
 		start = GetEyePosition();
 		end = start + viewAngles.ToForward() * 80.0f;
-		gameLocal.clip.TracePoint( trace, start, end, MASK_SHOT_RENDERMODEL, this );
+		gameLocal.GetClip()->TracePoint( trace, start, end, MASK_SHOT_RENDERMODEL, this );
 		if( trace.fraction < 1.0f )
 		{
 			ent = gameLocal.entities[ trace.c.entityNum ];
@@ -8587,7 +8591,7 @@ bool idPlayer::AllowClientAuthPhysics()
 {
 	// note respawn count > 1: respawn should be called twice - once for initial spawn and once for actual respawn by game mode
 	// TODO: I don't think doom 3 will need to care about the respawn count.
-	return ( usercmd.serverGameMilliseconds > serverOverridePositionTime && commonLocal.GetUCmdMgr().HasUserCmdForPlayer( entityNumber ) );
+	return ( usercmd.serverGameMilliseconds > serverOverridePositionTime && common->GetUCmdMgr().HasUserCmdForPlayer( entityNumber ) );
 }
 
 /*
@@ -9331,7 +9335,7 @@ void idPlayer::Think()
 	}
 	
 	// determine if portal sky is in pvs
-	gameLocal.portalSkyActive = gameLocal.pvs.CheckAreasForPortalSky( gameLocal.GetPlayerPVS(), GetPhysics()->GetOrigin() );
+	gameLocal.portalSkyActive = gameLocal.GetPvs()->CheckAreasForPortalSky( gameLocal.GetPlayerPVS(), GetPhysics()->GetOrigin() );
 	
 	// stereo rendering laser sight that replaces the crosshair
 	UpdateLaserSight();
@@ -10663,7 +10667,7 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 		// trace a ray from the origin to the viewpoint to make sure the view isn't
 		// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
 		bounds = idBounds( idVec3( -4, -4, -4 ), idVec3( 4, 4, 4 ) );
-		gameLocal.clip.TraceBounds( trace, origin, view, bounds, MASK_SOLID, this );
+		gameLocal.GetClip()->TraceBounds( trace, origin, view, bounds, MASK_SOLID, this );
 		if( trace.fraction != 1.0f )
 		{
 			view = trace.endpos;
@@ -10671,7 +10675,7 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 			
 			// try another trace to this position, because a tunnel may have the ceiling
 			// close enough that this is poking out
-			gameLocal.clip.TraceBounds( trace, origin, view, bounds, MASK_SOLID, this );
+			gameLocal.GetClip()->TraceBounds( trace, origin, view, bounds, MASK_SOLID, this );
 			view = trace.endpos;
 		}
 	}
@@ -11863,9 +11867,9 @@ void idPlayer::ClientThink( const int curTime, const float fraction, const bool 
 	}
 	
 	// determine if portal sky is in pvs
-	pvsHandle_t	clientPVS = gameLocal.pvs.SetupCurrentPVS( GetPVSAreas(), GetNumPVSAreas() );
-	gameLocal.portalSkyActive = gameLocal.pvs.CheckAreasForPortalSky( clientPVS, GetPhysics()->GetOrigin() );
-	gameLocal.pvs.FreeCurrentPVS( clientPVS );
+	pvsHandle_t	clientPVS = gameLocal.GetPvs()->SetupCurrentPVS( GetPVSAreas(), GetNumPVSAreas() );
+	gameLocal.portalSkyActive = gameLocal.GetPvs()->CheckAreasForPortalSky( clientPVS, GetPhysics()->GetOrigin() );
+	gameLocal.GetPvs()->FreeCurrentPVS( clientPVS );
 	
 	//InterpolatePhysics( fraction );
 	

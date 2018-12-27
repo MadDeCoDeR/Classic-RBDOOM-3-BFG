@@ -216,6 +216,8 @@ public:
 	virtual void			AddAnimPreload( const char* resName ) = 0;
 	virtual void			AddParticlePreload( const char* resName ) = 0;
 	virtual void			AddCollisionPreload( const char* resName ) = 0;
+	virtual idFile_SaveGamePipelined* GetSaveGamePipelined() = 0;
+	virtual bool			OpenPipelineFileForReading(idFile_SaveGamePipelined* pipe, idFile* file) = 0;
 	
 };
 

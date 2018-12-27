@@ -391,7 +391,7 @@ void idAI::Event_FindEnemyAI( int useFOV )
 	idVec3		delta;
 	pvsHandle_t pvs;
 	
-	pvs = gameLocal.pvs.SetupCurrentPVS( GetPVSAreas(), GetNumPVSAreas() );
+	pvs = gameLocal.GetPvs()->SetupCurrentPVS( GetPVSAreas(), GetNumPVSAreas() );
 	
 	bestDist = idMath::INFINITY;
 	bestEnemy = NULL;
@@ -408,7 +408,7 @@ void idAI::Event_FindEnemyAI( int useFOV )
 			continue;
 		}
 		
-		if( !gameLocal.pvs.InCurrentPVS( pvs, actor->GetPVSAreas(), actor->GetNumPVSAreas() ) )
+		if( !gameLocal.GetPvs()->InCurrentPVS( pvs, actor->GetPVSAreas(), actor->GetNumPVSAreas() ) )
 		{
 			continue;
 		}
@@ -422,7 +422,7 @@ void idAI::Event_FindEnemyAI( int useFOV )
 		}
 	}
 	
-	gameLocal.pvs.FreeCurrentPVS( pvs );
+	gameLocal.GetPvs()->FreeCurrentPVS( pvs );
 	idThread::ReturnEntity( bestEnemy );
 }
 
@@ -719,7 +719,7 @@ void idAI::Event_LaunchMissile( const idVec3& org, const idAngles& ang )
 		start = ownerBounds.GetCenter();
 	}
 	
-	gameLocal.clip.Translation( tr, start, org, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
+	gameLocal.GetClip()->Translation( tr, start, org, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
 	
 	// launch the projectile
 	idThread::ReturnEntity( projectile.GetEntity() );
@@ -782,7 +782,7 @@ void idAI::Event_LaunchProjectile( const char* entityDefName )
 	{
 		start = ownerBounds.GetCenter();
 	}
-	gameLocal.clip.Translation( tr, start, muzzle, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
+	gameLocal.GetClip()->Translation( tr, start, muzzle, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
 	muzzle = tr.endpos;
 	
 	GetAimDir( muzzle, enemy.GetEntity(), this, dir );
@@ -906,7 +906,7 @@ void idAI::Event_MeleeAttackToJoint( const char* jointname, const char* meleeDef
 		gameRenderWorld->DebugLine( colorYellow, start, end, 1 );
 	}
 	
-	gameLocal.clip.TranslationEntities( trace, start, end, NULL, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
+	gameLocal.GetClip()->TranslationEntities( trace, start, end, NULL, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
 	if( trace.fraction < 1.0f )
 	{
 		hitEnt = gameLocal.GetTraceEntity( trace );
@@ -935,7 +935,7 @@ void idAI::Event_CanBecomeSolid()
 	idClipModel* cm;
 	idClipModel* clipModels[ MAX_GENTITIES ];
 	
-	num = gameLocal.clip.ClipModelsTouchingBounds( physicsObj.GetAbsBounds(), MASK_MONSTERSOLID, clipModels, MAX_GENTITIES );
+	num = gameLocal.GetClip()->ClipModelsTouchingBounds( physicsObj.GetAbsBounds(), MASK_MONSTERSOLID, clipModels, MAX_GENTITIES );
 	for( i = 0; i < num; i++ )
 	{
 		cm = clipModels[ i ];
@@ -999,7 +999,7 @@ void idAI::Event_BecomeSolid()
 	{
 		physicsObj.SetContents( CONTENTS_BODY );
 	}
-	physicsObj.GetClipModel()->Link( gameLocal.clip );
+	physicsObj.GetClipModel()->Link( *gameLocal.GetClip() );
 	fl.takedamage = !spawnArgs.GetBool( "noDamage" );
 }
 
@@ -1759,7 +1759,7 @@ void idAI::Event_CanHitEnemy()
 	dir = toPos - eye;
 	dir.Normalize();
 	toPos = eye + dir * MAX_WORLD_SIZE;
-	gameLocal.clip.TracePoint( tr, eye, toPos, MASK_SHOT_BOUNDINGBOX, this );
+	gameLocal.GetClip()->TracePoint( tr, eye, toPos, MASK_SHOT_BOUNDINGBOX, this );
 	hit = gameLocal.GetTraceEntity( tr );
 	if( tr.fraction >= 1.0f || ( hit == enemyEnt ) )
 	{
@@ -1851,7 +1851,7 @@ void idAI::Event_CanHitEnemyFromAnim( const char* animname )
 		start = ownerBounds.GetCenter();
 	}
 	
-	gameLocal.clip.Translation( tr, start, fromPos, projectileClipModel, mat3_identity, MASK_SHOT_RENDERMODEL, this );
+	gameLocal.GetClip()->Translation( tr, start, fromPos, projectileClipModel, mat3_identity, MASK_SHOT_RENDERMODEL, this );
 	fromPos = tr.endpos;
 	
 	if( GetAimDir( fromPos, enemy.GetEntity(), this, dir ) )
@@ -1930,10 +1930,10 @@ void idAI::Event_CanHitEnemyFromJoint( const char* jointname )
 		start = ownerBounds.GetCenter();
 	}
 	
-	gameLocal.clip.Translation( tr, start, muzzle, projectileClipModel, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
+	gameLocal.GetClip()->Translation( tr, start, muzzle, projectileClipModel, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
 	muzzle = tr.endpos;
 	
-	gameLocal.clip.Translation( tr, muzzle, toPos, projectileClipModel, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
+	gameLocal.GetClip()->Translation( tr, muzzle, toPos, projectileClipModel, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
 	if( tr.fraction >= 1.0f || ( gameLocal.GetTraceEntity( tr ) == enemyEnt ) )
 	{
 		lastHitCheckResult = true;
@@ -3071,7 +3071,7 @@ void idAI::Event_FindActorsInBounds( const idVec3& mins, const idVec3& maxs )
 	int			numListedEntities;
 	int			i;
 	
-	numListedEntities = gameLocal.clip.EntitiesTouchingBounds( idBounds( mins, maxs ), CONTENTS_BODY, entityList, MAX_GENTITIES );
+	numListedEntities = gameLocal.GetClip()->EntitiesTouchingBounds( idBounds( mins, maxs ), CONTENTS_BODY, entityList, MAX_GENTITIES );
 	for( i = 0; i < numListedEntities; i++ )
 	{
 		ent = entityList[ i ];
@@ -3370,7 +3370,7 @@ void idAI::Event_LaunchHomingMissile()
 		start = ownerBounds.GetCenter();
 	}
 	
-	gameLocal.clip.Translation( tr, start, org, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
+	gameLocal.GetClip()->Translation( tr, start, org, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
 	
 	// launch the projectile
 	idThread::ReturnEntity( projectile.GetEntity() );

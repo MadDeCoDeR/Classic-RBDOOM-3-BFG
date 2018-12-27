@@ -101,7 +101,7 @@ public:
 		return dirty;
 	}
 	
-	bool			GetAchievement( const int id ) const;
+	virtual bool			GetAchievement( const int id ) const = 0;
 	void			SetAchievement( const int id );
 	void			ClearAchievement( const int id );
 	

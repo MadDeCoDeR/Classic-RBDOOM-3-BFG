@@ -3855,11 +3855,11 @@ void idDoor::ClientThink( const int curTime, const float fraction, const bool pr
 		{
 			if( trigger )
 			{
-				trigger->Link( gameLocal.clip, this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
+				trigger->Link( *gameLocal.GetClip(), this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
 			}
 			if( sndTrigger )
 			{
-				sndTrigger->Link( gameLocal.clip, this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
+				sndTrigger->Link( *gameLocal.GetClip(), this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
 			}
 		}
 	}
@@ -3884,11 +3884,11 @@ void idDoor::Think()
 		{
 			if( trigger )
 			{
-				trigger->Link( gameLocal.clip, this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
+				trigger->Link( *gameLocal.GetClip(), this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
 			}
 			if( sndTrigger )
 			{
-				sndTrigger->Link( gameLocal.clip, this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
+				sndTrigger->Link( *gameLocal.GetClip(), this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
 			}
 		}
 	}
@@ -4307,7 +4307,7 @@ void idDoor::Event_SpawnDoorTrigger()
 	
 	// create a trigger clip model
 	trigger = new( TAG_PHYSICS_CLIP_MOVER ) idClipModel( idTraceModel( bounds ) );
-	trigger->Link( gameLocal.clip, this, 255, GetPhysics()->GetOrigin(), mat3_identity );
+	trigger->Link( *gameLocal.GetClip(), this, 255, GetPhysics()->GetOrigin(), mat3_identity );
 	trigger->SetContents( CONTENTS_TRIGGER );
 	
 	GetLocalTriggerPosition( trigger );
@@ -4335,7 +4335,7 @@ void idDoor::Event_SpawnSoundTrigger()
 	
 	// create a trigger clip model
 	sndTrigger = new( TAG_PHYSICS_CLIP_MOVER ) idClipModel( idTraceModel( bounds ) );
-	sndTrigger->Link( gameLocal.clip, this, 254, GetPhysics()->GetOrigin(), mat3_identity );
+	sndTrigger->Link( *gameLocal.GetClip(), this, 254, GetPhysics()->GetOrigin(), mat3_identity );
 	sndTrigger->SetContents( CONTENTS_TRIGGER );
 	
 	GetLocalTriggerPosition( sndTrigger );
@@ -4915,7 +4915,7 @@ void idPlat::ClientThink( const int curTime, const float fraction, const bool pr
 		// update trigger position
 		if ( GetMasterPosition( masterOrigin, masterAxis ) ) {
 			if ( trigger ) {
-				trigger->Link( gameLocal.clip, this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
+				trigger->Link( *gameLocal.GetClip(), this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
 			}
 		}
 	}
@@ -4941,7 +4941,7 @@ void idPlat::Think()
 		{
 			if( trigger )
 			{
-				trigger->Link( gameLocal.clip, this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
+				trigger->Link( *gameLocal.GetClip(), this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
 			}
 		}
 	}
@@ -5024,7 +5024,7 @@ void idPlat::SpawnPlatTrigger( idVec3& pos )
 	}
 	
 	trigger = new( TAG_PHYSICS_CLIP_MOVER ) idClipModel( idTraceModel( idBounds( tmin, tmax ) ) );
-	trigger->Link( gameLocal.clip, this, 255, GetPhysics()->GetOrigin(), mat3_identity );
+	trigger->Link( *gameLocal.GetClip(), this, 255, GetPhysics()->GetOrigin(), mat3_identity );
 	trigger->SetContents( CONTENTS_TRIGGER );
 }
 

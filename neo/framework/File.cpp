@@ -2009,14 +2009,15 @@ idFileLocal::~idFileLocal
 Destructor that will destroy (close) the managed file when this wrapper class goes out of scope.
 ========================
 */
-idFileLocal::~idFileLocal()
+//GK: Not needed here anymore
+/*idFileLocal::~idFileLocal()
 {
 	if( file != NULL )
 	{
 		delete file;
 		file = NULL;
 	}
-}
+}*/
 
 static const char* testEndianNessFilename = "temp.bin";
 struct testEndianNess_t

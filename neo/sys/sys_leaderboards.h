@@ -151,7 +151,7 @@ public:
 	int64 columns[ MAX_LEADERBOARD_COLUMNS ];
 };
 
-const leaderboardDefinition_t* Sys_FindLeaderboardDef( int id );
+///*const*/ leaderboardDefinition_t* Sys_FindLeaderboardDef( int id );
 
 
 //------------------------

@@ -54,7 +54,7 @@ void idPhysics_Monster::CheckGround( monsterPState_t& state )
 	}
 	
 	down = state.origin + gravityNormal * CONTACT_EPSILON;
-	gameLocal.clip.Translation( groundTrace, state.origin, down, clipModel, clipModel->GetAxis(), clipMask, self );
+	gameLocal.GetClip()->Translation( groundTrace, state.origin, down, clipModel, clipModel->GetAxis(), clipMask, self );
 	
 	if( groundTrace.fraction == 1.0f )
 	{
@@ -103,7 +103,7 @@ monsterMoveResult_t idPhysics_Monster::SlideMove( idVec3& start, idVec3& velocit
 	move = delta;
 	for( i = 0; i < 3; i++ )
 	{
-		gameLocal.clip.Translation( tr, start, start + move, clipModel, clipModel->GetAxis(), clipMask, self );
+		gameLocal.GetClip()->Translation( tr, start, start + move, clipModel, clipModel->GetAxis(), clipMask, self );
 		
 		start = tr.endpos;
 		
@@ -166,7 +166,7 @@ monsterMoveResult_t idPhysics_Monster::StepMove( idVec3& start, idVec3& velocity
 		
 		// try to step down so that we walk down slopes and stairs at a normal rate
 		down = noStepPos + gravityNormal * maxStepHeight;
-		gameLocal.clip.Translation( tr, noStepPos, down, clipModel, clipModel->GetAxis(), clipMask, self );
+		gameLocal.GetClip()->Translation( tr, noStepPos, down, clipModel, clipModel->GetAxis(), clipMask, self );
 		if( tr.fraction < 1.0f )
 		{
 			start = tr.endpos;
@@ -183,7 +183,7 @@ monsterMoveResult_t idPhysics_Monster::StepMove( idVec3& start, idVec3& velocity
 	{
 		// try to step down in case walking into an actor while going down steps
 		down = noStepPos + gravityNormal * maxStepHeight;
-		gameLocal.clip.Translation( tr, noStepPos, down, clipModel, clipModel->GetAxis(), clipMask, self );
+		gameLocal.GetClip()->Translation( tr, noStepPos, down, clipModel, clipModel->GetAxis(), clipMask, self );
 		start = tr.endpos;
 		velocity = noStepVel;
 		return MM_BLOCKED;
@@ -196,7 +196,7 @@ monsterMoveResult_t idPhysics_Monster::StepMove( idVec3& start, idVec3& velocity
 	
 	// try to step up
 	up = start - gravityNormal * maxStepHeight;
-	gameLocal.clip.Translation( tr, start, up, clipModel, clipModel->GetAxis(), clipMask, self );
+	gameLocal.GetClip()->Translation( tr, start, up, clipModel, clipModel->GetAxis(), clipMask, self );
 	if( tr.fraction == 0.0f )
 	{
 		start = noStepPos;
@@ -217,7 +217,7 @@ monsterMoveResult_t idPhysics_Monster::StepMove( idVec3& start, idVec3& velocity
 	
 	// step down again
 	down = stepPos + gravityNormal * maxStepHeight;
-	gameLocal.clip.Translation( tr, stepPos, down, clipModel, clipModel->GetAxis(), clipMask, self );
+	gameLocal.GetClip()->Translation( tr, stepPos, down, clipModel, clipModel->GetAxis(), clipMask, self );
 	stepPos = tr.endpos;
 	
 	// if the move is further without stepping up, or the slope is too steap, don't step up
@@ -506,7 +506,7 @@ bool idPhysics_Monster::Evaluate( int timeStepMSec, int endTimeMSec )
 	{
 		self->GetMasterPosition( masterOrigin, masterAxis );
 		current.origin = masterOrigin + current.localOrigin * masterAxis;
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, clipModel->GetAxis() );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, clipModel->GetAxis() );
 		current.velocity = ( current.origin - oldOrigin ) / timeStep;
 		masterDeltaYaw = masterYaw;
 		masterYaw = masterAxis[0].ToYaw();
@@ -588,7 +588,7 @@ bool idPhysics_Monster::Evaluate( int timeStepMSec, int endTimeMSec )
 		}
 	}
 	
-	clipModel->Link( gameLocal.clip, self, 0, current.origin, clipModel->GetAxis() );
+	clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, clipModel->GetAxis() );
 	
 	// get all the ground contacts
 	EvaluateContacts();
@@ -692,7 +692,7 @@ void idPhysics_Monster::RestoreState()
 {
 	current = saved;
 	
-	clipModel->Link( gameLocal.clip, self, 0, current.origin, clipModel->GetAxis() );
+	clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, clipModel->GetAxis() );
 	
 	EvaluateContacts();
 }
@@ -717,7 +717,7 @@ void idPhysics_Monster::SetOrigin( const idVec3& newOrigin, int id )
 	{
 		current.origin = newOrigin;
 	}
-	clipModel->Link( gameLocal.clip, self, 0, newOrigin, clipModel->GetAxis() );
+	clipModel->Link( *gameLocal.GetClip(), self, 0, newOrigin, clipModel->GetAxis() );
 	Activate();
 }
 
@@ -728,7 +728,7 @@ idPhysics_Player::SetAxis
 */
 void idPhysics_Monster::SetAxis( const idMat3& newAxis, int id )
 {
-	clipModel->Link( gameLocal.clip, self, 0, clipModel->GetOrigin(), newAxis );
+	clipModel->Link( *gameLocal.GetClip(), self, 0, clipModel->GetOrigin(), newAxis );
 	Activate();
 }
 
@@ -742,7 +742,7 @@ void idPhysics_Monster::Translate( const idVec3& translation, int id )
 
 	current.localOrigin += translation;
 	current.origin += translation;
-	clipModel->Link( gameLocal.clip, self, 0, current.origin, clipModel->GetAxis() );
+	clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, clipModel->GetAxis() );
 	Activate();
 }
 
@@ -766,7 +766,7 @@ void idPhysics_Monster::Rotate( const idRotation& rotation, int id )
 	{
 		current.localOrigin = current.origin;
 	}
-	clipModel->Link( gameLocal.clip, self, 0, current.origin, clipModel->GetAxis() * rotation.ToMat3() );
+	clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, clipModel->GetAxis() * rotation.ToMat3() );
 	Activate();
 }
 

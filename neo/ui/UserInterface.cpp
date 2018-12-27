@@ -33,6 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "DeviceContext.h"
 #include "Window.h"
 #include "UserInterfaceLocal.h"
+#include "../d3xp/Game_local.h"
 
 extern idCVar r_skipGuiShaders;		// 1 = don't render any gui elements on surfaces
 
@@ -323,6 +324,31 @@ idListGUI* 	idUserInterfaceManagerLocal::AllocListGUI() const
 void idUserInterfaceManagerLocal::FreeListGUI( idListGUI* listgui )
 {
 	delete listgui;
+}
+//GK: Avoid link depedencies between dll and menus by using initializers instead of raw constructors
+idMenuHandler_Scoreboard* idUserInterfaceManagerLocal::CreateScoreboard() const
+{
+	return new idMenuHandler_ScoreboardLocal();
+}
+
+idMenuHandler_HUD* idUserInterfaceManagerLocal::CreateHUD() const
+{
+	return new idMenuHandler_HUDLocal();
+}
+
+idMenuHandler_PDA* idUserInterfaceManagerLocal::CreatePDA() const
+{
+	return new(TAG_SWF) idMenuHandler_PDALocal();
+}
+
+idMenuHandler_Shell* idUserInterfaceManagerLocal::CreateShell() const
+{
+	return new(TAG_SWF) idMenuHandler_ShellLocal();
+}
+
+idSWF* idUserInterfaceManagerLocal::CreateSWF(const char* filename, idSoundWorld* sound)
+{
+	return new idSWF(filename, sound);
 }
 
 /*

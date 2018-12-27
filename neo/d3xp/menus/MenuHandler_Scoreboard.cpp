@@ -34,7 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 idMenuHandler_Scoreboard::Update
 ========================
 */
-void idMenuHandler_Scoreboard::Update()
+void idMenuHandler_ScoreboardLocal::Update()
 {
 
 	if( gui == NULL || !gui->IsActive() )
@@ -95,7 +95,7 @@ void idMenuHandler_Scoreboard::Update()
 idMenuHandler_Scoreboard::ActivateMenu
 ========================
 */
-void idMenuHandler_Scoreboard::TriggerMenu()
+void idMenuHandler_ScoreboardLocal::TriggerMenu()
 {
 	nextScreen = activationScreen;
 }
@@ -105,12 +105,12 @@ void idMenuHandler_Scoreboard::TriggerMenu()
 idMenuHandler_Scoreboard::ActivateMenu
 ========================
 */
-void idMenuHandler_Scoreboard::ActivateMenu( bool show )
+void idMenuHandler_ScoreboardLocal::ActivateMenu( bool show )
 {
 
 	idMenuHandler::ActivateMenu( show );
 	
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = game->GetLocalPlayer();
 	if( player == NULL )
 	{
 		return;
@@ -165,7 +165,7 @@ void idMenuHandler_Scoreboard::ActivateMenu( bool show )
 idMenuHandler_Scoreboard::Initialize
 ========================
 */
-void idMenuHandler_Scoreboard::Initialize( const char* swfFile, idSoundWorld* sw )
+void idMenuHandler_ScoreboardLocal::Initialize( const char* swfFile, idSoundWorld* sw )
 {
 	idMenuHandler::Initialize( swfFile, sw );
 	
@@ -200,7 +200,7 @@ void idMenuHandler_Scoreboard::Initialize( const char* swfFile, idSoundWorld* sw
 	public:
 		idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 		{
-			gameLocal.mpGame.SetScoreboardActive( false );
+			game->SetScoreboardActive( false );
 			return idSWFScriptVar();
 		}
 	};
@@ -260,7 +260,7 @@ void idMenuHandler_Scoreboard::Initialize( const char* swfFile, idSoundWorld* sw
 idMenuHandler_Scoreboard::GetMenuScreen
 ========================
 */
-idMenuScreen* idMenuHandler_Scoreboard::GetMenuScreen( int index )
+idMenuScreen* idMenuHandler_ScoreboardLocal::GetMenuScreen( int index )
 {
 
 	if( index < 0 || index >= SCOREBOARD_NUM_AREAS )
@@ -277,7 +277,7 @@ idMenuScreen* idMenuHandler_Scoreboard::GetMenuScreen( int index )
 idMenuHandler_Scoreboard::HandleAction
 ========================
 */
-bool idMenuHandler_Scoreboard::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled )
+bool idMenuHandler_ScoreboardLocal::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled )
 {
 
 	if( activeScreen == SCOREBOARD_AREA_INVALID )
@@ -315,14 +315,14 @@ bool idMenuHandler_Scoreboard::HandleAction( idWidgetAction& action, const idWid
 idMenuHandler_Scoreboard::AddPlayerInfo
 ========================
 */
-void idMenuHandler_Scoreboard::AddPlayerInfo( int index, voiceStateDisplay_t voiceState, int team, idStr name, int score, int wins, int ping, idStr spectateData )
+void idMenuHandler_ScoreboardLocal::AddPlayerInfo( int index, voiceStateDisplay_t voiceState, int team, idStr name, int score, int wins, int ping, idStr spectateData )
 {
 
 	scoreboardInfo_t info;
 	idList< idStr > values;
 	values.Append( name );
 	
-	if( spectateData.IsEmpty() || gameLocal.mpGame.GetGameState() == idMultiplayerGame::GAMEREVIEW )
+	if( spectateData.IsEmpty() || game->GetMpGame().GetGameState() == idMultiplayerGame::GAMEREVIEW )
 	{
 		values.Append( va( "%i", score ) );
 	}
@@ -353,7 +353,7 @@ void idMenuHandler_Scoreboard::AddPlayerInfo( int index, voiceStateDisplay_t voi
 idMenuHandler_Scoreboard::UpdateScoreboard
 ========================
 */
-void idMenuHandler_Scoreboard::UpdateSpectating( idStr spectate, idStr follow )
+void idMenuHandler_ScoreboardLocal::UpdateSpectating( idStr spectate, idStr follow )
 {
 
 	if( nextScreen == SCOREBOARD_AREA_DEFAULT )
@@ -379,7 +379,7 @@ void idMenuHandler_Scoreboard::UpdateSpectating( idStr spectate, idStr follow )
 idMenuHandler_Scoreboard::UpdateScoreboard
 ========================
 */
-void idMenuHandler_Scoreboard::UpdateScoreboard( idList< mpScoreboardInfo >& data, idStr gameInfo )
+void idMenuHandler_ScoreboardLocal::UpdateScoreboard( idList< mpScoreboardInfo >& data, idStr gameInfo )
 {
 
 	bool changed = false;
@@ -477,7 +477,7 @@ void idMenuHandler_Scoreboard::UpdateScoreboard( idList< mpScoreboardInfo >& dat
 idMenuHandler_Scoreboard::SetTeamScore
 ========================
 */
-void idMenuHandler_Scoreboard::SetTeamScores( int r, int b )
+void idMenuHandler_ScoreboardLocal::SetTeamScores( int r, int b )
 {
 	redScore = r;
 	blueScore = b;
@@ -488,7 +488,7 @@ void idMenuHandler_Scoreboard::SetTeamScores( int r, int b )
 idMenuHandler_Scoreboard::GetNumPlayers
 ========================
 */
-int idMenuHandler_Scoreboard::GetNumPlayers( int team )
+int idMenuHandler_ScoreboardLocal::GetNumPlayers( int team )
 {
 
 	if( team == 1 )
@@ -507,7 +507,7 @@ int idMenuHandler_Scoreboard::GetNumPlayers( int team )
 idMenuHandler_Scoreboard::SetActivationScreen
 ========================
 */
-void idMenuHandler_Scoreboard::SetActivationScreen( int screen, int trans )
+void idMenuHandler_ScoreboardLocal::SetActivationScreen( int screen, int trans )
 {
 	activationScreen = screen;
 	transition = trans;
@@ -518,7 +518,7 @@ void idMenuHandler_Scoreboard::SetActivationScreen( int screen, int trans )
 idMenuHandler_Scoreboard::GetUserID
 ========================
 */
-void idMenuHandler_Scoreboard::GetUserID( int slot, lobbyUserID_t& luid )
+void idMenuHandler_ScoreboardLocal::GetUserID( int slot, lobbyUserID_t& luid )
 {
 	idList< int > redList;
 	idList< int > blueList;
@@ -552,7 +552,7 @@ void idMenuHandler_Scoreboard::GetUserID( int slot, lobbyUserID_t& luid )
 		return;
 	}
 	
-	luid = gameLocal.lobbyUserIDs[ displayList[ slot ] ];
+	luid = game->GetLobbyUserID( displayList[ slot ] );
 }
 
 /*
@@ -560,7 +560,7 @@ void idMenuHandler_Scoreboard::GetUserID( int slot, lobbyUserID_t& luid )
 idMenuHandler_Scoreboard::ViewPlayerProfile
 ========================
 */
-void idMenuHandler_Scoreboard::ViewPlayerProfile( int slot )
+void idMenuHandler_ScoreboardLocal::ViewPlayerProfile( int slot )
 {
 
 	lobbyUserID_t luid;
@@ -576,7 +576,7 @@ void idMenuHandler_Scoreboard::ViewPlayerProfile( int slot )
 idMenuHandler_Scoreboard::MutePlayer
 ========================
 */
-void idMenuHandler_Scoreboard::MutePlayer( int slot )
+void idMenuHandler_ScoreboardLocal::MutePlayer( int slot )
 {
 
 	lobbyUserID_t luid;
@@ -592,7 +592,7 @@ void idMenuHandler_Scoreboard::MutePlayer( int slot )
 idMenuHandler_Scoreboard::UpdateScoreboardSelection
 ========================
 */
-void idMenuHandler_Scoreboard::UpdateScoreboardSelection()
+void idMenuHandler_ScoreboardLocal::UpdateScoreboardSelection()
 {
 
 	if( nextScreen == SCOREBOARD_AREA_DEFAULT || activationScreen == SCOREBOARD_AREA_DEFAULT )

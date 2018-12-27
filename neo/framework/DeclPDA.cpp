@@ -201,7 +201,7 @@ bool idDeclPDA::Parse( const char* text, const int textLength, bool allowBinaryV
 		if( !token.Icmp( "pda_video" ) )
 		{
 			src.ReadToken( &token );
-			videos.Append( static_cast<const idDeclVideo*>( declManager->FindType( DECL_VIDEO, token ) ) );
+			videos.Append( static_cast<const idDeclVideoLocal*>( declManager->FindType( DECL_VIDEO, token ) ) );
 			continue;
 		}
 		
@@ -456,9 +456,9 @@ void idDeclEmail::FreeData()
 idDeclVideo::Size
 =================
 */
-size_t idDeclVideo::Size() const
+size_t idDeclVideoLocal::Size() const
 {
-	return sizeof( idDeclVideo );
+	return sizeof( idDeclVideoLocal );
 }
 
 /*
@@ -466,7 +466,7 @@ size_t idDeclVideo::Size() const
 idDeclVideo::Print
 ===============
 */
-void idDeclVideo::Print() const
+void idDeclVideoLocal::Print() const
 {
 	common->Printf( "Implement me\n" );
 }
@@ -476,7 +476,7 @@ void idDeclVideo::Print() const
 idDeclVideo::List
 ===============
 */
-void idDeclVideo::List() const
+void idDeclVideoLocal::List() const
 {
 	common->Printf( "Implement me\n" );
 }
@@ -486,7 +486,7 @@ void idDeclVideo::List() const
 idDeclVideo::Parse
 ================
 */
-bool idDeclVideo::Parse( const char* text, const int textLength, bool allowBinaryVersion )
+bool idDeclVideoLocal::Parse( const char* text, const int textLength, bool allowBinaryVersion )
 {
 	idLexer src;
 	idToken token;
@@ -575,7 +575,7 @@ bool idDeclVideo::Parse( const char* text, const int textLength, bool allowBinar
 idDeclVideo::DefaultDefinition
 ===================
 */
-const char* idDeclVideo::DefaultDefinition() const
+const char* idDeclVideoLocal::DefaultDefinition() const
 {
 	return
 		"{\n"
@@ -590,7 +590,7 @@ const char* idDeclVideo::DefaultDefinition() const
 idDeclVideo::FreeData
 ===================
 */
-void idDeclVideo::FreeData()
+void idDeclVideoLocal::FreeData()
 {
 }
 

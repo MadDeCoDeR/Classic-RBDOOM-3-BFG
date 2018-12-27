@@ -129,9 +129,8 @@ void LeaderboardLocal_Init()
 				// Generate a Leaderboard ID for the map/mode
 				int boardID = LeaderboardLocal_GetID( mapIdx, modeIdx );
 				
-				
 				// Create and Register the leaderboard with the sys_stats registered Leaderboards
-				leaderboardDefinition_t* newLeaderboardDef = Sys_CreateLeaderboardDef( boardID,
+				leaderboardDefinition_t* newLeaderboardDef = sys->CreateLeaderboardDef( boardID,
 						gamemode.numColumns,
 						gamemode.columnDef,
 						gamemode.rankOrder,
@@ -145,7 +144,7 @@ void LeaderboardLocal_Init()
 				newLeaderboardDef->boardName.Format( "%s %s", mapname, gamemode.abrevName );
 				
 				// sanity check.
-				if( Sys_FindLeaderboardDef( boardID ) != newLeaderboardDef )
+				if( sys->FindLeaderboardDef( boardID ) != newLeaderboardDef )
 				{
 					idLib::Error( "Leaderboards_Init leaderboard creation failed" );
 				}
@@ -164,7 +163,7 @@ LeaderboardLocal_Shutdown
 void LeaderboardLocal_Shutdown()
 {
 
-	Sys_DestroyLeaderboardDefs();
+	sys->DestroyLeaderboardDefs();
 }
 
 /*
@@ -250,7 +249,7 @@ void LeaderboardLocal_Upload( lobbyUserID_t lobbyUserID, int gameType, leaderboa
 	}
 	
 	int boardID = LeaderboardLocal_GetID( mapIdx, gameType );
-	const leaderboardDefinition_t* board =  Sys_FindLeaderboardDef( boardID );
+	const leaderboardDefinition_t* board = sys->FindLeaderboardDef( boardID );
 	
 	if( board )
 	{
@@ -307,7 +306,7 @@ CONSOLE_COMMAND( testLeaderboardDownload, "<id 0 - n > <start = 1> <end = 100>",
 		end = atoi( args.Argv( 3 ) );
 	}
 	
-	const leaderboardDefinition_t* leaderboardDef = Sys_FindLeaderboardDef( leaderboardID );
+	const leaderboardDefinition_t* leaderboardDef = sys->FindLeaderboardDef( leaderboardID );
 	
 	if( leaderboardDef )
 	{

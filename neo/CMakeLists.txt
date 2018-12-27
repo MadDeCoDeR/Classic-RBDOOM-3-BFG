@@ -48,6 +48,8 @@ set(CPU_OPTIMIZATION "-mmmx -msse -msse2" CACHE STRING "Which CPU specific optim
 
 option(USE_INTRINSICS "Compile using intrinsics (e.g mmx, sse, msse2)" ON)
 
+option (MAKE_DLL "Make game.dll solution" ON)
+
 if(UNIX)
 	set(OPENAL TRUE)
 endif()
@@ -213,6 +215,9 @@ elseif(MSVC)
 		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SAFESEH:NO")
 		#set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /SAFESEH:NO")
 		set(CMAKE_EXE_LINKER_FLAGS_RETAIL "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SAFESEH:NO")
+		set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /DEF:../neo/d3xp/Game.def /SAFESEH:NO")
+		set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEF:../neo/d3xp/Game.def /SAFESEH:NO")
+		set(CMAKE_SHARED_LINKER_FLAGS_RETAIL "${CMAKE_SHARED_LINKER_FLAGS_RETAIL} /DEF:../neo/d3xp/Game.def /SAFESEH:NO")
 		endif()
 	# endif()
 	
@@ -305,6 +310,10 @@ else (GLEW_FOUND)
 endif (GLEW_FOUND)
 
 add_subdirectory(idlib)
+
+if (MAKE_DLL)
+	add_subdirectory(d3xp)
+endif (MAKE_DLL)
 
 file(GLOB AAS_INCLUDES aas/*.h)
 file(GLOB AAS_SOURCES aas/*.cpp)
@@ -1000,7 +1009,6 @@ source_group("doomclassic" FILES ${DOOMCLASSIC_XAUDIO2_SOURCES})
 source_group("libs\\timidity" FILES ${TIMIDITY_INCLUDES})
 source_group("libs\\timidity" FILES ${TIMIDITY_SOURCES})
 
-
 source_group("game-d3xp" FILES ${GAMED3XP_INCLUDES})
 source_group("game-d3xp" FILES ${GAMED3XP_SOURCES})
 
@@ -1021,9 +1029,6 @@ source_group("game-d3xp\\physics" FILES ${GAMED3XP_PHYSICS_SOURCES})
 
 source_group("game-d3xp\\script" FILES ${GAMED3XP_SCRIPT_INCLUDES})
 source_group("game-d3xp\\script" FILES ${GAMED3XP_SCRIPT_SOURCES})
-
-
-
 
 source_group("sys\\win32" FILES ${WIN32_INCLUDES})
 source_group("sys\\win32" FILES ${WIN32_SOURCES})
@@ -1173,6 +1178,7 @@ add_definitions(-D__DOOM__
 				#-DBUILD_FREETYPE
 				#-DFT2_BUILD_LIBRARY
 				)
+add_definitions (-D__DOOM_DLL__)
 				
 if(MONOLITH)
 	list(APPEND RBDOOM3_INCLUDES
@@ -1192,7 +1198,13 @@ if(MONOLITH)
 		${GAMED3XP_MENUS_SOURCES}
 		${GAMED3XP_PHYSICS_SOURCES}
 		${GAMED3XP_SCRIPT_SOURCES})
+		add_definitions(-D__MONOLITH__)
 else()
+list(APPEND RBDOOM3_INCLUDES
+		${GAMED3XP_MENUS_INCLUDES})
+		
+	list(APPEND RBDOOM3_SOURCES
+		${GAMED3XP_MENUS_SOURCES})
 	add_definitions(-D__DOOM_DLL__)
 endif()
 
@@ -1238,7 +1250,7 @@ if(MSVC)
 	#else()
 		find_package(DirectX REQUIRED)
 		include_directories(${DirectX_INCLUDE_DIR})
-	#endif()
+		#endif
 	
 	if(OPENAL)
 		add_definitions(-DUSE_OPENAL)
@@ -1376,7 +1388,6 @@ if(MSVC)
 	endif()
 	
 	list(APPEND RBDOOM3_SOURCES ${WIN32_RESOURCES})
-	
 	add_executable(RBDoom3BFG WIN32 ${RBDOOM3_INCLUDES} ${RBDOOM3_SOURCES})
 	#GK: Allow to compile and run the game from VS
 	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT RBDoom3BFG)
@@ -1412,6 +1423,7 @@ if(MSVC)
         ${GLEW_LIBRARY}
 		${CMAKE_DL_LIBS}
 		)
+
 		
 	#CMAKE_BINARY_DIR
 	if(CMAKE_CL_64)
@@ -1421,7 +1433,6 @@ if(MSVC)
 		install(TARGETS RBDoom3BFG
 			RUNTIME DESTINATION .)
 	endif()
-	
 else()
 
 	list(APPEND RBDOOM3_SOURCES

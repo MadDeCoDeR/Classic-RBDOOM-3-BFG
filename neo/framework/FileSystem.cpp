@@ -223,6 +223,9 @@ public:
 	{
 		preloadList.AddParticle( resName );
 	}
+
+	virtual idFile_SaveGamePipelined* GetSaveGamePipelined();
+	virtual bool			OpenPipelineFileForReading(idFile_SaveGamePipelined* pipe, idFile* file);
 	
 	static void				Dir_f( const idCmdArgs& args );
 	static void				DirTree_f( const idCmdArgs& args );
@@ -3818,27 +3821,36 @@ void idFileSystemLocal::CloseFile( idFile* f )
 idFileSystemLocal::FindDLL
 =================
 */
-void idFileSystemLocal::FindDLL( const char* name, char _dllPath[ MAX_OSPATH ] )
+void idFileSystemLocal::FindDLL(const char* name, char _dllPath[MAX_OSPATH])
 {
 	char dllName[MAX_OSPATH];
-	sys->DLL_GetFileName( name, dllName, MAX_OSPATH );
+	sys->DLL_GetFileName(name, dllName, MAX_OSPATH);
 	
 	// from executable directory first - this is handy for developement
-	idStr dllPath = Sys_EXEPath( );
-	dllPath.StripFilename( );
-	dllPath.AppendPath( dllName );
-	idFile* dllFile = OpenExplicitFileRead( dllPath );
+	//GK: Check all it's directories for a dll not just the basics
+	idStr dllPath;
+	for (int sp = fileSystemLocal.searchPaths.Num() - 1; sp >= 0; sp--) {
+	dllPath = fileSystemLocal.searchPaths[sp].path.c_str();
+	dllPath.AppendPath(fileSystemLocal.searchPaths[sp].gamedir.c_str());
+	dllPath.SlashesToBackSlashes();
+	//dllPath.StripFilename();
+	dllPath.AppendPath(dllName);
+	dllPath.SlashesToBackSlashes();
+	idFile* dllFile = OpenExplicitFileRead(dllPath);
 	
-	if( dllFile )
+
+	if (dllFile)
 	{
 		dllPath = dllFile->GetFullPath();
-		CloseFile( dllFile );
+		CloseFile(dllFile);
 		dllFile = NULL;
+		break;
 	}
 	else
 	{
 		dllPath = "";
 	}
+}
 	idStr::snPrintf( _dllPath, MAX_OSPATH, dllPath.c_str() );
 }
 
@@ -3866,4 +3878,12 @@ idFileSystemLocal::IsFolder
 sysFolder_t idFileSystemLocal::IsFolder( const char* relativePath, const char* basePath )
 {
 	return Sys_IsFolder( RelativePathToOSPath( relativePath, basePath ) );
+}
+
+idFile_SaveGamePipelined* idFileSystemLocal::GetSaveGamePipelined() {
+	return new(TAG_SAVEGAMES) idFile_SaveGamePipelined();
+}
+
+bool			idFileSystemLocal::OpenPipelineFileForReading(idFile_SaveGamePipelined* pipe, idFile* file) {
+	return pipe->OpenForReading(file);
 }

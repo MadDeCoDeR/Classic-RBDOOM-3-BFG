@@ -886,8 +886,8 @@ void idVarDef::PrintInfo( idFile* file, int instructionPointer ) const
 	{
 		case ev_jumpoffset :
 			jumpto = instructionPointer + value.jumpOffset;
-			jumpst = &gameLocal.program.GetStatement( jumpto );
-			file->Printf( "address %d [%s(%d)]", jumpto, gameLocal.program.GetFilename( jumpst->file ), jumpst->linenumber );
+			jumpst = &gameLocal.GetProgram()->GetStatement( jumpto );
+			file->Printf( "address %d [%s(%d)]", jumpto, gameLocal.GetProgram()->GetFilename( jumpst->file ), jumpst->linenumber );
 			break;
 			
 		case ev_function :
@@ -1128,7 +1128,7 @@ bool idScriptObject::SetType( const char* typeName )
 	idTypeDef* newtype;
 	
 	// lookup the type
-	newtype = gameLocal.program.FindType( typeName );
+	newtype = gameLocal.GetProgram()->FindType( typeName );
 	
 	// only allocate memory if the object type changes
 	if( newtype != type )
@@ -1249,7 +1249,7 @@ const function_t* idScriptObject::GetFunction( const char* name ) const
 		return NULL;
 	}
 	
-	func = gameLocal.program.FindFunction( name, type );
+	func = gameLocal.GetProgram()->FindFunction( name, type );
 	return func;
 }
 

@@ -48,7 +48,7 @@ void idMenuWidget_PDA_UserData::Update()
 		return;
 	}
 	
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = game->GetLocalPlayer();
 	if( player == NULL )
 	{
 		return;
@@ -109,10 +109,10 @@ void idMenuWidget_PDA_UserData::Update()
 		{
 			if( pdaIndex == 0 )
 			{
-				idLocationEntity* locationEntity = gameLocal.LocationForPoint( player->GetEyePosition() );
+				idLocationEntity* locationEntity = game->LocationForPoint( game->GetEyePosition(player) );
 				if( locationEntity )
 				{
-					txtLocation->SetText( locationEntity->GetLocation() );
+					txtLocation->SetText(game->GetLocation(locationEntity));
 				}
 				else
 				{

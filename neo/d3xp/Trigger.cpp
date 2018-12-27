@@ -205,7 +205,7 @@ void idTrigger::Restore( idRestoreGame* savefile )
 	savefile->ReadString( funcname );
 	if( funcname.Length() )
 	{
-		scriptFunction = gameLocal.program.FindFunction( funcname );
+		scriptFunction = gameLocal.GetProgram()->FindFunction( funcname );
 		if( scriptFunction == NULL )
 		{
 			gameLocal.Warning( "idTrigger_Multi '%s' at (%s) calls unknown function '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcname.c_str() );
@@ -259,7 +259,7 @@ void idTrigger::Spawn()
 	idStr funcname = spawnArgs.GetString( "call", "" );
 	if( funcname.Length() )
 	{
-		scriptFunction = gameLocal.program.FindFunction( funcname );
+		scriptFunction = gameLocal.GetProgram()->FindFunction( funcname );
 		if( scriptFunction == NULL )
 		{
 			gameLocal.Warning( "trigger '%s' at (%s) calls unknown function '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcname.c_str() );
@@ -1346,7 +1346,7 @@ void idTrigger_Touch::TouchEntities()
 	}
 	
 	bounds.FromTransformedBounds( clipModel->GetBounds(), clipModel->GetOrigin(), clipModel->GetAxis() );
-	numClipModels = gameLocal.clip.ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
+	numClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
 	
 	for( i = 0; i < numClipModels; i++ )
 	{
@@ -1364,7 +1364,7 @@ void idTrigger_Touch::TouchEntities()
 			continue;
 		}
 		
-		if( !gameLocal.clip.ContentsModel( cm->GetOrigin(), cm, cm->GetAxis(), -1,
+		if( !gameLocal.GetClip()->ContentsModel( cm->GetOrigin(), cm, cm->GetAxis(), -1,
 										   clipModel->Handle(), clipModel->GetOrigin(), clipModel->GetAxis() ) )
 		{
 			continue;
@@ -1456,7 +1456,7 @@ void idTrigger_Flag::Spawn()
 	idStr funcname = spawnArgs.GetString( "eventflag", "" );
 	if( funcname.Length() )
 	{
-		eventFlag = idEventDef::FindEvent( funcname );// gameLocal.program.FindFunction( funcname );//, &idItemTeam::Type );
+		eventFlag = idEventDef::FindEvent( funcname );// gameLocal.GetProgram()->FindFunction( funcname );//, &idItemTeam::Type );
 		if( eventFlag == NULL )
 		{
 			gameLocal.Warning( "trigger '%s' at (%s) event unknown '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcname.c_str() );

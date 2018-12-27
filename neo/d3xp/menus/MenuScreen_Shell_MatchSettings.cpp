@@ -280,10 +280,10 @@ bool idMenuScreen_Shell_MatchSettings::HandleAction( idWidgetAction& action, con
 // SCREEN SETTINGS
 /////////////////////////////////
 
-extern idCVar si_timeLimit;
-extern idCVar si_fragLimit;
-extern idCVar si_map;
-extern idCVar si_mode;
+//extern idCVar si_timeLimit;
+//extern idCVar si_fragLimit;
+//extern idCVar si_map;
+//extern idCVar si_mode;
 
 /*
 ========================
@@ -355,7 +355,7 @@ void idMenuScreen_Shell_MatchSettings::idMenuDataSource_MatchSettings::GetMapNam
 	if( matchParameters.gameMap >= 0 )
 	{
 		const idList< mpMap_t > maps = common->GetMapList();
-		name = idLocalization::GetString( maps[ idMath::ClampInt( 0, maps.Num() - 1, matchParameters.gameMap ) ].mapName );
+		name = common->GetName( maps[ idMath::ClampInt( 0, maps.Num() - 1, matchParameters.gameMap ) ].mapName );
 	}
 }
 
@@ -372,7 +372,7 @@ void idMenuScreen_Shell_MatchSettings::idMenuDataSource_MatchSettings::GetModeNa
 	if( matchParameters.gameMode >= 0 )
 	{
 		const idStrList& modes = common->GetModeDisplayList();
-		name = idLocalization::GetString( modes[ idMath::ClampInt( 0, modes.Num() - 1, matchParameters.gameMode ) ] );
+		name = common->GetName( modes[ idMath::ClampInt( 0, modes.Num() - 1, matchParameters.gameMode ) ] );
 	}
 }
 
@@ -410,7 +410,7 @@ void idMenuScreen_Shell_MatchSettings::idMenuDataSource_MatchSettings::AdjustFie
 		
 		idStr val;
 		GetMapName( matchParameters.gameMap, val );
-		si_map.SetInteger( matchParameters.gameMap );
+		game->SetCVarInteger("si_map", matchParameters.gameMap );
 		fields[ MATCH_FIELD_MAP ].SetString( val );
 		
 	}
@@ -442,20 +442,20 @@ void idMenuScreen_Shell_MatchSettings::idMenuDataSource_MatchSettings::AdjustFie
 		idStr val;
 		
 		GetModeName( matchParameters.gameMode, val );
-		si_mode.SetInteger( matchParameters.gameMode );
+		game->SetCVarInteger("si_mode", matchParameters.gameMode );
 		fields[ MATCH_FIELD_MODE ].SetString( val );
 		
 		if( updateMap )
 		{
 			GetMapName( matchParameters.gameMap, val );
-			si_map.SetInteger( matchParameters.gameMap );
+			game->SetCVarInteger("si_map", matchParameters.gameMap );
 			fields[ MATCH_FIELD_MAP ].SetString( val );
 		}
 		
 	}
 	else if( fieldIndex == MATCH_FIELD_TIME )
 	{
-		int time = si_timeLimit.GetInteger() + ( adjustAmount * 5 );
+		int time = game->GetCVarInteger("si_timeLimit") + ( adjustAmount * 5 );
 		if( time < 0 )
 		{
 			time = 60;
@@ -474,9 +474,9 @@ void idMenuScreen_Shell_MatchSettings::idMenuDataSource_MatchSettings::AdjustFie
 			fields[ MATCH_FIELD_TIME ].SetString( va( "%i", time ) );
 		}
 		
-		si_timeLimit.SetInteger( time );
+		game->SetCVarInteger("si_timeLimit", time );
 		
-		matchParameters.serverInfo.SetInt( "si_timeLimit", si_timeLimit.GetInteger() );
+		matchParameters.serverInfo.SetInt( "si_timeLimit", game->GetCVarInteger("si_timeLimit"));
 		session->UpdateMatchParms( matchParameters );
 		
 	}
@@ -494,9 +494,9 @@ void idMenuScreen_Shell_MatchSettings::idMenuDataSource_MatchSettings::AdjustFie
 		}
 		
 		fields[ fieldIndex ].SetInteger( val );
-		si_fragLimit.SetInteger( val );
+		game->SetCVarInteger("si_fragLimit", val );
 		
-		matchParameters.serverInfo.SetInt( "si_fragLimit", si_fragLimit.GetInteger() );
+		matchParameters.serverInfo.SetInt( "si_fragLimit", game->GetCVarInteger("si_fragLimit"));
 		session->UpdateMatchParms( matchParameters );
 	}
 	

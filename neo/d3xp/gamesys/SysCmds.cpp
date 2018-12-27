@@ -156,12 +156,12 @@ void Cmd_ReloadScript_f( const idCmdArgs& args )
 	gameLocal.MapShutdown();
 	
 	// recompile the scripts
-	gameLocal.program.Startup( SCRIPT_DEFAULT );
+	gameLocal.GetProgram()->Startup( SCRIPT_DEFAULT );
 	
 	if( fileSystem->ReadFile( "doom_main.script", NULL ) > 0 )
 	{
-		gameLocal.program.CompileFile( "doom_main.script" );
-		gameLocal.program.FinishCompilation();
+		gameLocal.GetProgram()->CompileFile( "doom_main.script" );
+		gameLocal.GetProgram()->FinishCompilation();
 	}
 	
 	// error out so that the user can rerun the scripts
@@ -174,12 +174,12 @@ CONSOLE_COMMAND( reloadScript2, "Doesn't thow an error...  Use this when switchi
 	gameLocal.MapShutdown();
 	
 	// recompile the scripts
-	gameLocal.program.Startup( SCRIPT_DEFAULT );
+	gameLocal.GetProgram()->Startup( SCRIPT_DEFAULT );
 	
 	if( fileSystem->ReadFile( "doom_main.script", NULL ) > 0 )
 	{
-		gameLocal.program.CompileFile( "doom_main.script" );
-		gameLocal.program.FinishCompilation();
+		gameLocal.GetProgram()->CompileFile( "doom_main.script" );
+		gameLocal.GetProgram()->FinishCompilation();
 	}
 }
 
@@ -207,15 +207,15 @@ void Cmd_Script_f( const idCmdArgs& args )
 	
 	script = args.Args();
 	sprintf( text, "void %s() {%s;}\n", funcname.c_str(), script );
-	if( gameLocal.program.CompileText( "console", text, true ) )
+	if( gameLocal.GetProgram()->CompileText( "console", text, true ) )
 	{
-		func = gameLocal.program.FindFunction( funcname );
+		func = gameLocal.GetProgram()->FindFunction( funcname );
 		if( func )
 		{
 			// set all the entity names in case the user named one in the script that wasn't referenced in the default script
 			for( ent = gameLocal.spawnedEntities.Next(); ent != NULL; ent = ent->spawnNode.Next() )
 			{
-				gameLocal.program.SetEntity( ent->name, ent );
+				gameLocal.GetProgram()->SetEntity( ent->name, ent );
 			}
 			
 			thread = new idThread( func );
@@ -2250,7 +2250,7 @@ Cmd_DisasmScript_f
 */
 static void Cmd_DisasmScript_f( const idCmdArgs& args )
 {
-	gameLocal.program.Disassemble();
+	gameLocal.GetProgram()->Disassemble();
 }
 
 /*

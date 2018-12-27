@@ -2035,7 +2035,7 @@ CLASS_DECLARATION( idTarget, idTarget_Checkpoint )
 EVENT( EV_Activate,	idTarget_Checkpoint::Event_Activate )
 END_CLASS
 
-idCVar g_checkpoints( "g_checkpoints", "1", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable checkpoints" );
+extern idCVar g_checkpoints;
 
 /*
 ================

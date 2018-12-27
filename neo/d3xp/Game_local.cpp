@@ -48,7 +48,12 @@ idDeclManager* 				declManager = NULL;
 idAASFileManager* 			AASFileManager = NULL;
 idCollisionModelManager* 	collisionModelManager = NULL;
 idCVar* 					idCVar::staticVars = NULL;
-
+idKey*						keys = NULL;
+idSession*					session = NULL;
+//GK: Not ideal but for now it will do
+float com_engineHz_latched = 60.0f; // Latched version of cvar, updated between map loads
+int64 com_engineHz_numerator = 100LL * 1000LL;
+int64 com_engineHz_denominator = 100LL * 60LL;
 idCVar com_forceGenericSIMD( "com_forceGenericSIMD", "0", CVAR_BOOL | CVAR_SYSTEM, "force generic platform independent SIMD" );
 
 #endif
@@ -72,8 +77,9 @@ const char* idGameLocal::sufaceTypeNames[ MAX_SURFACE_TYPES ] =
 };
 
 idCVar net_usercmd_timing_debug( "net_usercmd_timing_debug", "0", CVAR_BOOL, "Print messages about usercmd timing." );
-extern idCVar r_aspectratio; //GK: The only place where it's nedded
-
+idCVar r_aspectratio("r_aspectratio", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "change FOV aspect ratio 0 = 4:3, 1 = resolution based"); //GK: Special cvar for DOOM 3 aspect ratio //GK: The only place where it's nedded
+idCVar net_allowCheats("net_allowCheats", "0", CVAR_BOOL | CVAR_ROM, "Allow cheats in multiplayer");
+idCVar net_ucmdRate("net_ucmdRate", "40", CVAR_SYSTEM | CVAR_INTEGER, "How many milliseconds between sending usercmds");
 // List of all defs used by the player that will stay on the fast timeline
 static const char* fastEntityList[] =
 {
@@ -109,6 +115,52 @@ static const char* fastEntityList[] =
 	"weapon_bloodstone_passive",
 	NULL
 };
+//GK: Make a self contained CVarSystem in order to access the dll CVars
+typedef struct
+{
+	char* name;
+	idCVar* CVar;
+}Var_t;
+//GK: Init them here in order to get their values
+idCVar g_demoMode("g_demoMode", "0", CVAR_INTEGER, "this is a demo");
+idCVar stereoRender_swapEyes("stereoRender_swapEyes", "0", CVAR_BOOL | CVAR_ARCHIVE, "reverse eye adjustments");
+//GK: Allow to select what kind of flashlight you want
+idCVar flashlight_old("flashlight_old", "0", CVAR_GAME | CVAR_INTEGER | CVAR_ARCHIVE, "Enable old flashlight");
+idCVar pm_vmfov("pm_vmfov", "32", CVAR_INTEGER | CVAR_GAME | CVAR_ARCHIVE, "Adjust the View Model Field of View", 0, 64);
+idCVar pm_cursor("pm_cursor", "1", CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE, "Enable/disable Crosshair");
+idCVar aa_targetAimAssistEnable("aa_targetAimAssistEnable", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enables/Disables the entire Aim Assist system");
+idCVar g_checkpoints("g_checkpoints", "1", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable checkpoints");
+idCVar g_weaponShadows("g_weaponShadows", "0", CVAR_BOOL | CVAR_ARCHIVE, "Cast shadows from weapons");
+
+idCVar	stereoRender_interOccularCentimeters("stereoRender_interOccularCentimeters", "3.0", CVAR_ARCHIVE | CVAR_RENDERER, "Distance between eyes");
+
+Var_t g_vars[] = 
+{
+	{"net_allowCheats",&net_allowCheats},
+	{"g_demoMode",&g_demoMode},
+	{"net_ucmdRate",&net_ucmdRate},
+	{"stereoRender_swapEyes",&stereoRender_swapEyes},
+	{"flashlight_old",&flashlight_old},
+	{"pm_vmfov",&pm_vmfov},
+	{"pm_cursor",&pm_cursor},
+	{"g_skill",&g_skill},
+	{"g_nightmare",&g_nightmare},
+	{"g_roeNightmare",&g_roeNightmare},
+	{"g_leNightmare",&g_leNightmare},
+	{"g_muzzleFlash",&g_muzzleFlash},
+	{"g_gun_x",&g_gun_x},
+	{"g_fov",&g_fov},
+	{"aa_targetAimAssistEnable",&aa_targetAimAssistEnable},
+	{"g_checkpoints",&g_checkpoints},
+	{"g_weaponShadows",&g_weaponShadows},
+	{"si_fragLimit",&si_fragLimit},
+	{"si_timeLimit",&si_timeLimit},
+	{"si_map",&si_map},
+	{"si_mode",&si_mode},
+	{"stereoRender_interOccularCentimeters",&stereoRender_interOccularCentimeters},
+	{"r_aspectratio",&r_aspectratio},
+	{"pm_stamina",&pm_stamina}
+};
 /*
 ===========
 GetGameAPI
@@ -142,6 +194,8 @@ extern "C" gameExport_t* GetGameAPI( gameImport_t* import )
 		declManager					= import->declManager;
 		AASFileManager				= import->AASFileManager;
 		collisionModelManager		= import->collisionModelManager;
+		keys						= import->keys;
+		session						= import->session;
 	}
 	
 	// set interface pointers used by idLib
@@ -183,6 +237,8 @@ void TestGameAPI()
 	testImport.declManager				= ::declManager;
 	testImport.AASFileManager			= ::AASFileManager;
 	testImport.collisionModelManager	= ::collisionModelManager;
+	testImport.keys						= ::keys;
+	testImport.session					= ::session;
 	
 	testExport = *GetGameAPI( &testImport );
 }
@@ -195,6 +251,10 @@ idGameLocal::idGameLocal
 idGameLocal::idGameLocal()
 {
 	Clear();
+	//GK: Removes destructors link depedencies
+	program = new idProgram();
+	pvs = new idPVS();
+	clip = new idClip();
 }
 
 /*
@@ -229,8 +289,8 @@ void idGameLocal::Clear()
 	frameCommandThread = NULL;
 	testmodel = NULL;
 	testFx = NULL;
-	clip.Shutdown();
-	pvs.Shutdown();
+	clip->Shutdown();
+	pvs->Shutdown();
 	sessionCommand.Clear();
 	locationEntities = NULL;
 	smokeParticles = NULL;
@@ -280,6 +340,7 @@ void idGameLocal::Clear()
 	portalSkyEnt			= NULL;
 	portalSkyActive			= false;
 	
+	
 	ResetSlowTimeVars();
 	
 	lastCmdRunTimeOnClient.Zero();
@@ -312,13 +373,13 @@ void idGameLocal::Init()
 	
 	// initialize processor specific SIMD
 	idSIMD::InitProcessor( "game", com_forceGenericSIMD.GetBool() );
-	
+
 #endif
 	
 	Printf( "--------- Initializing Game ----------\n" );
 	Printf( "gamename: %s\n", GAME_VERSION );
 	Printf( "gamedate: %s\n", __DATE__ );
-	
+
 	// register game specific decl types
 	declManager->RegisterDeclType( "model",				DECL_MODELDEF,		idDeclAllocator<idDeclModelDef> );
 	declManager->RegisterDeclType( "export",			DECL_MODELEXPORT,	idDeclAllocator<idDecl> );
@@ -339,9 +400,9 @@ void idGameLocal::Init()
 	idClass::Init();
 	
 	InitConsoleCommands();
-	
-	shellHandler = new( TAG_SWF ) idMenuHandler_Shell();
-	
+
+	shellHandler = uiManager->CreateShell(); //GK: Use initializers instead of default constructors
+
 	if( !g_xp_bind_run_once.GetBool() )
 	{
 		//The default config file contains remapped controls that support the XP weapons
@@ -353,7 +414,7 @@ void idGameLocal::Init()
 	}
 	
 	// load default scripts
-	program.Startup( SCRIPT_DEFAULT );
+	program->Startup( SCRIPT_DEFAULT );
 	
 	smokeParticles = new( TAG_PARTICLE ) idSmokeParticles;
 	
@@ -425,7 +486,7 @@ void idGameLocal::Shutdown()
 	idForce::ClearForceList();
 	
 	// free the program data
-	program.FreeData();
+	program->FreeData();
 	
 	// delete the .map file
 	delete mapFile;
@@ -450,7 +511,7 @@ void idGameLocal::Shutdown()
 	cvarSystem->RemoveFlaggedAutoCompletion( CVAR_GAME );
 	
 	// enable leak test
-	Mem_EnableLeakTest( "game" );
+	//Mem_EnableLeakTest( "game" ); //GK: Doesn't exist???
 	
 	// shutdown idLib
 	idLib::ShutDown();
@@ -474,7 +535,7 @@ void idGameLocal::SaveGame( idFile* f, idFile* strings )
 	idEntity* ent;
 	idEntity* link;
 	
-	int startTimeMs = Sys_Milliseconds();
+	int startTimeMs = sys->GetMilliseconds();
 	if( g_recordSaveGameTrace.GetBool() )
 	{
 		bool result = BeginTraceRecording( "e:\\savegame_trace.pix2" );
@@ -522,7 +583,7 @@ void idGameLocal::SaveGame( idFile* f, idFile* strings )
 	// write out complete object list
 	savegame.WriteObjectList();
 	
-	program.Save( &savegame );
+	program->Save( &savegame );
 	
 	savegame.WriteInt( g_skill.GetInteger() );
 	
@@ -676,9 +737,9 @@ void idGameLocal::SaveGame( idFile* f, idFile* strings )
 	
 	savegame.Close();
 	
-	int endTimeMs = Sys_Milliseconds();
+	int endTimeMs = sys->GetMilliseconds();
 	idLib::Printf( "Save time: %dms\n", ( endTimeMs - startTimeMs ) );
-	
+
 	if( g_recordSaveGameTrace.GetBool() )
 	{
 		EndTraceRecording();
@@ -693,15 +754,15 @@ idGameLocal::GetSaveGameDetails
 */
 void idGameLocal::GetSaveGameDetails( idSaveGameDetails& gameDetails )
 {
-	idLocationEntity* locationEnt = LocationForPoint( gameLocal.GetLocalPlayer()->GetEyePosition() );
-	const char* locationStr = locationEnt ? locationEnt->GetLocation() : idLocalization::GetString( "#str_02911" );
+	idLocationEntity* locationEnt = LocationForPoint( GetLocalPlayer()->GetEyePosition() );
+	const char* locationStr = locationEnt ? locationEnt->GetLocation() : common->GetName( "#str_02911" );
 	
 	idStrStatic< MAX_OSPATH > shortMapName = mapFileName;
 	shortMapName.StripFileExtension();
 	shortMapName.StripLeading( "maps/" );
 	
 	const idDeclEntityDef* mapDef = static_cast<const idDeclEntityDef*>( declManager->FindType( DECL_MAPDEF, shortMapName, false ) );
-	const char* mapPrettyName = mapDef ? idLocalization::GetString( mapDef->dict.GetString( "name", shortMapName ) ) : shortMapName.c_str();
+	const char* mapPrettyName = mapDef ? common->GetName( mapDef->dict.GetString( "name", shortMapName ) ) : shortMapName.c_str();
 	idPlayer* player = GetClientByNum( 0 );
 	int playTime = player ? player->GetPlayedTime() : 0;
 	gameExpansionType_t expansionType = player ? player->GetExpansionType() : GAME_BASE;
@@ -1049,11 +1110,11 @@ void idGameLocal::LoadMap( const char* mapName, int randseed )
 	cinematicStopTime = 0;
 	cinematicMaxSkipTime = 0;
 	
-	clip.Init();
+	clip->Init();
 	
 	common->UpdateLevelLoadPacifier();
 	
-	pvs.Init();
+	pvs->Init();
 	
 	common->UpdateLevelLoadPacifier();
 	
@@ -1154,7 +1215,7 @@ void idGameLocal::LocalMapRestart( )
 	
 	gamestate = GAMESTATE_STARTUP;
 	
-	program.Restart();
+	program->Restart();
 	
 	InitScriptForMap();
 	
@@ -1336,21 +1397,22 @@ bool idGameLocal::InitFromSaveGame( const char* mapName, idRenderWorld* renderWo
 	// load the map needed for this savegame
 	LoadMap( mapName, 0 );
 	
-	idFile_SaveGamePipelined* pipelineFile = new( TAG_SAVEGAMES ) idFile_SaveGamePipelined();
-	pipelineFile->OpenForReading( saveGameFile );
+	idFile_SaveGamePipelined* pipelineFile = fileSystem->GetSaveGamePipelined();
+	fileSystem->OpenPipelineFileForReading(pipelineFile, saveGameFile);
+	//pipelineFile->OpenForReading( saveGameFile );
 	idRestoreGame savegame( pipelineFile, stringTableFile, saveGameVersion );
 	
 	// Create the list of all objects in the game
 	savegame.CreateObjects();
 	
 	// Load the idProgram, also checking to make sure scripting hasn't changed since the savegame
-	if( program.Restore( &savegame ) == false )
+	if( program->Restore( &savegame ) == false )
 	{
 	
 		// Abort the load process, and let the session know so that it can restart the level
 		// with the player persistent data.
 		savegame.DeleteObjects();
-		program.Restart();
+		program->Restart();
 		return false;
 	}
 	
@@ -1656,18 +1718,18 @@ void idGameLocal::MapShutdown()
 	common->UpdateLevelLoadPacifier();
 	
 	// reset the script to the state it was before the map was started
-	program.Restart();
+	program->Restart();
 	
 	if( smokeParticles )
 	{
 		smokeParticles->Shutdown();
 	}
 	
-	pvs.Shutdown();
+	pvs->Shutdown();
 	
 	common->UpdateLevelLoadPacifier();
 	
-	clip.Shutdown();
+	clip->Shutdown();
 	idClipModel::ClearTraceModelCache();
 	
 	common->UpdateLevelLoadPacifier();
@@ -2036,7 +2098,7 @@ void idGameLocal::InitScriptForMap()
 	frameCommandThread->SetThreadName( "frameCommands" );
 	
 	// run the main game script function (not the level specific main)
-	const function_t* func = program.FindFunction( SCRIPT_DEFAULTFUNC );
+	const function_t* func = program->FindFunction( SCRIPT_DEFAULTFUNC );
 	if( func != NULL )
 	{
 		idThread* thread = new idThread( func );
@@ -2055,7 +2117,7 @@ idGameLocal::SetScriptFPS
 */
 void idGameLocal::SetScriptFPS( const float engineHz )
 {
-	idVarDef* fpsDef = program.GetDef( &type_float, "GAME_FPS", &def_namespace );
+	idVarDef* fpsDef = program->GetDef( &type_float, "GAME_FPS", &def_namespace );
 	if( fpsDef != NULL )
 	{
 		eval_t fpsValue;
@@ -2198,15 +2260,15 @@ pvsHandle_t idGameLocal::GetClientPVS( idPlayer* player, pvsType_t type )
 {
 	if( player->GetPrivateCameraView() )
 	{
-		return pvs.SetupCurrentPVS( player->GetPrivateCameraView()->GetPVSAreas(), player->GetPrivateCameraView()->GetNumPVSAreas() );
+		return pvs->SetupCurrentPVS( player->GetPrivateCameraView()->GetPVSAreas(), player->GetPrivateCameraView()->GetNumPVSAreas() );
 	}
 	else if( camera )
 	{
-		return pvs.SetupCurrentPVS( camera->GetPVSAreas(), camera->GetNumPVSAreas() );
+		return pvs->SetupCurrentPVS( camera->GetPVSAreas(), camera->GetNumPVSAreas() );
 	}
 	else
 	{
-		return pvs.SetupCurrentPVS( player->GetPVSAreas(), player->GetNumPVSAreas() );
+		return pvs->SetupCurrentPVS( player->GetPVSAreas(), player->GetNumPVSAreas() );
 	}
 }
 
@@ -2240,9 +2302,9 @@ void idGameLocal::SetupPlayerPVS()
 		else
 		{
 			otherPVS = GetClientPVS( player, PVS_NORMAL );
-			newPVS = pvs.MergeCurrentPVS( playerPVS, otherPVS );
-			pvs.FreeCurrentPVS( playerPVS );
-			pvs.FreeCurrentPVS( otherPVS );
+			newPVS = pvs->MergeCurrentPVS( playerPVS, otherPVS );
+			pvs->FreeCurrentPVS( playerPVS );
+			pvs->FreeCurrentPVS( otherPVS );
 			playerPVS = newPVS;
 		}
 		
@@ -2253,9 +2315,9 @@ void idGameLocal::SetupPlayerPVS()
 		else
 		{
 			otherPVS = GetClientPVS( player, PVS_CONNECTED_AREAS );
-			newPVS = pvs.MergeCurrentPVS( playerConnectedAreas, otherPVS );
-			pvs.FreeCurrentPVS( playerConnectedAreas );
-			pvs.FreeCurrentPVS( otherPVS );
+			newPVS = pvs->MergeCurrentPVS( playerConnectedAreas, otherPVS );
+			pvs->FreeCurrentPVS( playerConnectedAreas );
+			pvs->FreeCurrentPVS( otherPVS );
 			playerConnectedAreas = newPVS;
 		}
 		
@@ -2264,16 +2326,16 @@ void idGameLocal::SetupPlayerPVS()
 		{
 			idEntity* skyEnt = portalSkyEnt.GetEntity();
 			
-			otherPVS = pvs.SetupCurrentPVS( skyEnt->GetPVSAreas(), skyEnt->GetNumPVSAreas() );
-			newPVS = pvs.MergeCurrentPVS( playerPVS, otherPVS );
-			pvs.FreeCurrentPVS( playerPVS );
-			pvs.FreeCurrentPVS( otherPVS );
+			otherPVS = pvs->SetupCurrentPVS( skyEnt->GetPVSAreas(), skyEnt->GetNumPVSAreas() );
+			newPVS = pvs->MergeCurrentPVS( playerPVS, otherPVS );
+			pvs->FreeCurrentPVS( playerPVS );
+			pvs->FreeCurrentPVS( otherPVS );
 			playerPVS = newPVS;
 			
-			otherPVS = pvs.SetupCurrentPVS( skyEnt->GetPVSAreas(), skyEnt->GetNumPVSAreas() );
-			newPVS = pvs.MergeCurrentPVS( playerConnectedAreas, otherPVS );
-			pvs.FreeCurrentPVS( playerConnectedAreas );
-			pvs.FreeCurrentPVS( otherPVS );
+			otherPVS = pvs->SetupCurrentPVS( skyEnt->GetPVSAreas(), skyEnt->GetNumPVSAreas() );
+			newPVS = pvs->MergeCurrentPVS( playerConnectedAreas, otherPVS );
+			pvs->FreeCurrentPVS( playerConnectedAreas );
+			pvs->FreeCurrentPVS( otherPVS );
 			playerConnectedAreas = newPVS;
 		}
 	}
@@ -2288,12 +2350,12 @@ void idGameLocal::FreePlayerPVS()
 {
 	if( playerPVS.i != -1 )
 	{
-		pvs.FreeCurrentPVS( playerPVS );
+		pvs->FreeCurrentPVS( playerPVS );
 		playerPVS.i = -1;
 	}
 	if( playerConnectedAreas.i != -1 )
 	{
-		pvs.FreeCurrentPVS( playerConnectedAreas );
+		pvs->FreeCurrentPVS( playerConnectedAreas );
 		playerConnectedAreas.i = -1;
 	}
 }
@@ -2311,7 +2373,7 @@ bool idGameLocal::InPlayerPVS( idEntity* ent ) const
 	{
 		return false;
 	}
-	return pvs.InCurrentPVS( playerPVS, ent->GetPVSAreas(), ent->GetNumPVSAreas() );
+	return pvs->InCurrentPVS( playerPVS, ent->GetPVSAreas(), ent->GetNumPVSAreas() );
 }
 
 /*
@@ -2327,7 +2389,7 @@ bool idGameLocal::InPlayerConnectedArea( idEntity* ent ) const
 	{
 		return false;
 	}
-	return pvs.InCurrentPVS( playerConnectedAreas, ent->GetPVSAreas(), ent->GetNumPVSAreas() );
+	return pvs->InCurrentPVS( playerConnectedAreas, ent->GetPVSAreas(), ent->GetNumPVSAreas() );
 }
 
 /*
@@ -3427,17 +3489,17 @@ void idGameLocal::RunDebugInfo()
 	
 	if( g_showCollisionModels.GetBool() )
 	{
-		clip.DrawClipModels( player->GetEyePosition(), g_maxShowDistance.GetFloat(), pm_thirdPerson.GetBool() ? NULL : player );
+		clip->DrawClipModels( player->GetEyePosition(), g_maxShowDistance.GetFloat(), pm_thirdPerson.GetBool() ? NULL : player );
 	}
 	
 	if( g_showCollisionTraces.GetBool() )
 	{
-		clip.PrintStatistics();
+		clip->PrintStatistics();
 	}
 	
 	if( g_showPVS.GetInteger() )
 	{
-		pvs.DrawPVS( origin, ( g_showPVS.GetInteger() == 2 ) ? PVS_ALL_PORTALS_OPEN : PVS_NORMAL );
+		pvs->DrawPVS( origin, ( g_showPVS.GetInteger() == 2 ) ? PVS_ALL_PORTALS_OPEN : PVS_NORMAL );
 	}
 	
 	if( aas_test.GetInteger() >= 0 )
@@ -3853,7 +3915,7 @@ bool idGameLocal::SpawnEntityDef( const idDict& args, idEntity** ent, bool setDe
 	spawnArgs.GetString( "spawnfunc", NULL, &spawn );
 	if( spawn )
 	{
-		const function_t* func = program.FindFunction( spawn );
+		const function_t* func = program->FindFunction( spawn );
 		if( !func )
 		{
 			Warning( "Could not spawn '%s'.  Script function '%s' not found%s.", classname, spawn, error.c_str() );
@@ -4287,7 +4349,7 @@ void idGameLocal::KillBox( idEntity* ent, bool catch_teleport )
 		return;
 	}
 	
-	num = clip.ClipModelsTouchingBounds( phys->GetAbsBounds(), phys->GetClipMask(), clipModels, MAX_GENTITIES );
+	num = clip->ClipModelsTouchingBounds( phys->GetAbsBounds(), phys->GetClipMask(), clipModels, MAX_GENTITIES );
 	for( i = 0; i < num; i++ )
 	{
 		cm = clipModels[ i ];
@@ -4437,7 +4499,7 @@ void idGameLocal::RadiusDamage( const idVec3& origin, idEntity* inflictor, idEnt
 	bounds = idBounds( origin ).Expand( radius );
 	
 	// get all entities touching the bounds
-	numListedEntities = clip.EntitiesTouchingBounds( bounds, -1, entityList, MAX_GENTITIES );
+	numListedEntities = clip->EntitiesTouchingBounds( bounds, -1, entityList, MAX_GENTITIES );
 	
 	if( inflictor && inflictor->IsType( idAFAttachment::Type ) )
 	{
@@ -4587,7 +4649,7 @@ void idGameLocal::RadiusPush( const idVec3& origin, const float radius, const fl
 	bounds = idBounds( origin ).Expand( radius );
 	
 	// get all clip models touching the bounds
-	numListedClipModels = clip.ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
+	numListedClipModels = clip->ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
 	
 	if( inflictor && inflictor->IsType( idAFAttachment::Type ) )
 	{
@@ -4799,7 +4861,7 @@ void idGameLocal::BloodSplat( const idVec3& origin, const idVec3& dir, float siz
 	size = halfSize + random.RandomFloat() * halfSize;
 	trm.SetupPolygon( verts, 4 );
 	mdl.LoadModel( trm );
-	clip.Translation( results, origin, origin + dir * 64.0f, &mdl, mat3_identity, CONTENTS_SOLID, NULL );
+	clip->Translation( results, origin, origin + dir * 64.0f, &mdl, mat3_identity, CONTENTS_SOLID, NULL );
 	ProjectDecal( results.endpos, dir, 2.0f * size, true, size, material );
 }
 
@@ -5830,7 +5892,7 @@ void idGameLocal::Shell_ResetMenu()
 	if( shellHandler != NULL )
 	{
 		delete shellHandler;
-		shellHandler = new( TAG_SWF ) idMenuHandler_Shell();
+		shellHandler = uiManager->CreateShell();
 	}
 }
 
@@ -5995,7 +6057,8 @@ idGameLocal::DemoWriteGameInfo
 ===============
 */
 void idGameLocal::DemoWriteGameInfo()
-{
+{//GK: Don't impement them on dlls it requires more depedencies
+#ifndef GAME_DLL
 	if( common->WriteDemo() != NULL )
 	{
 		common->WriteDemo()->WriteInt( DS_GAME );
@@ -6013,10 +6076,12 @@ void idGameLocal::DemoWriteGameInfo()
 		common->WriteDemo()->WriteInt( slow.time );
 		common->WriteDemo()->WriteInt( slow.realClientTime );
 	}
+#endif
 }
 
 bool idGameLocal::ProcessDemoCommand( idDemoFile* readDemo )
 {
+#ifndef GAME_DLL
 	gameDemoCommand_t cmd = GCMD_UNKNOWN;
 	
 	if( !readDemo->ReadInt( ( int& )cmd ) )
@@ -6045,6 +6110,210 @@ bool idGameLocal::ProcessDemoCommand( idDemoFile* readDemo )
 			break;
 		}
 	}
-	
+#endif
 	return true;
+}
+//GK: Resolve inverse depedencies
+bool idGameLocal::IsSoundChannelPlaying(idPlayer* player, const s_channelType channel)
+{
+	return player->IsSoundChannelPlaying(channel);
+}
+
+void	idGameLocal::EndAudioLog(idPlayer* player) {
+	player->EndAudioLog();
+}
+
+void	idGameLocal::EndVideoDisk(idPlayer* player) {
+	player->EndVideoDisk();
+}
+
+void	idGameLocal::TogglePDA(idPlayer* player) {
+	player->TogglePDA();
+}
+
+const char* 		idGameLocal::GetLocation(idLocationEntity* locationEntity) const
+{
+	return locationEntity->GetLocation();
+}
+
+idVec3					idGameLocal::GetEyePosition(idPlayer* player) const
+{
+	return player->GetEyePosition();
+}
+
+const idDeclVideo* 		idGameLocal::GetVideo(idPlayer* player, int index)
+{
+	return player->GetVideo(index);
+}
+
+void  idGameLocal::HideTip(idPlayer* player)
+{
+	player->HideTip();
+}
+
+void					idGameLocal::PlayAudioLog(idPlayer* player, const idSoundShader* sound)
+{
+	player->PlayAudioLog(sound);
+}
+
+void			idGameLocal::SetScoreboardActive(bool active) {
+	mpGame.SetScoreboardActive(active);
+}
+
+idProgram* idGameLocal::GetProgram() 
+{
+	if (program == NULL) {
+		program = new idProgram();
+	}
+	return program;
+}
+idClip* idGameLocal::GetClip()
+{
+	if (clip == NULL) {
+		clip = new idClip();
+	}
+	return clip;
+}
+idPVS* idGameLocal::GetPvs()
+{
+	if (pvs == NULL) {
+		pvs = new idPVS();
+	}
+	return pvs;
+}
+
+bool            idGameLocal::IsGametypeTeamBased()
+{
+	return mpGame.IsGametypeTeamBased();
+}
+
+int			idGameLocal::GetSlowTime() const
+{
+	return slow.time;
+}
+
+int				idGameLocal::GetSpawnId(int index)
+{
+	return spawnIds[index];
+}
+
+bool			idGameLocal::StartSound(idPlayer* player, const char* soundName, const s_channelType channel, int soundShaderFlags, bool broadcast, int* length)
+{
+	return player->StartSound(soundName, channel, soundShaderFlags, broadcast, length);
+}
+
+bool					idGameLocal::IsReady(idWeapon* weapon) const
+{
+	return weapon->IsReady();
+}
+
+int						idGameLocal::AmmoAvailable(idWeapon* weapon) const
+{
+	return weapon->AmmoAvailable();
+}
+
+int						idGameLocal::AmmoInClip(idWeapon* weapon) const
+{
+	return weapon->AmmoInClip();
+}
+
+int						idGameLocal::ClipSize(idWeapon* weapon) const
+{
+	return weapon->ClipSize();
+}
+
+int						idGameLocal::LowAmmo(idWeapon* weapon) const
+{
+	return weapon->LowAmmo();
+}
+
+int					idGameLocal::AmmoIndexForWeaponClass(idPlayer* player, const char* weapon_classname, int* ammoRequired)
+{
+	return player->inventory.AmmoIndexForWeaponClass(weapon_classname, ammoRequired);
+}
+
+int						idGameLocal::HasAmmo(idPlayer* player, int type, int amount)
+{
+	return player->inventory.HasAmmo(type, amount);
+}
+
+int						idGameLocal::HasAmmo(idPlayer* player, const char* weapon_classname, bool includeClip, idPlayer* owner)
+{
+	return player->inventory.HasAmmo(weapon_classname, includeClip, owner);
+}
+
+int						idGameLocal::SlotForWeapon(idPlayer* player, const char* weaponName)
+{
+	return player->SlotForWeapon(weaponName);
+}
+
+void					idGameLocal::PlayVideoDisk(idPlayer* player, const idDeclVideo* decl)
+{
+	player->PlayVideoDisk(decl);
+}
+
+int					idGameLocal::GetCVarInteger(const char* var)
+{
+	for (Var_t g_cvar : g_vars)
+	{
+		if (!strcmp(g_cvar.name, var)) {
+			return g_cvar.CVar->GetInteger();
+		}
+	}
+}
+float				idGameLocal::GetCVarFloat(const char* var)
+{
+	for (Var_t g_cvar : g_vars)
+	{
+		if (!strcmp(g_cvar.name, var)) {
+			return g_cvar.CVar->GetFloat();
+		}
+	}
+
+}
+bool				idGameLocal::GetCVarBool(const char* var)
+{
+	for (Var_t g_cvar : g_vars)
+	{
+		if (!strcmp(g_cvar.name, var)) {
+			return g_cvar.CVar->GetBool();
+		}
+	}
+}
+void				idGameLocal::SetCVarInteger(const char* var, int value) 
+{
+	for (Var_t g_cvar : g_vars)
+	{
+		if (!strcmp(g_cvar.name, var)) {
+			g_cvar.CVar->SetInteger(value);
+		}
+	}
+}
+void				idGameLocal::SetCVarFloat(const char* var, float value)
+{
+	for (Var_t g_cvar : g_vars)
+	{
+		if (!strcmp(g_cvar.name, var)) {
+			return g_cvar.CVar->SetFloat(value);
+		}
+	}
+}
+void				idGameLocal::SetCVarBool(const char* var, bool value)
+{
+	for (Var_t g_cvar : g_vars)
+	{
+		if (!strcmp(g_cvar.name, var)) {
+			return g_cvar.CVar->SetBool(value);
+		}
+	}
+}
+
+int idGameLocal::GetRandomInt(int max)
+{
+	return random.RandomInt(max);
+}
+
+float idGameLocal::GetRandomFloat()
+{
+	return random.RandomFloat();
 }

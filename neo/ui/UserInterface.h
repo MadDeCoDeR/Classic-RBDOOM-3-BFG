@@ -40,7 +40,11 @@ If you have questions concerning this license or the applicable additional terms
 
 class idFile;
 class idDemoFile;
-
+class idMenuHandler_Scoreboard;
+class idMenuHandler_HUD;
+class idMenuHandler_PDA;
+class idMenuHandler_Shell;
+class idSWF;
 
 class idUserInterface
 {
@@ -162,6 +166,13 @@ public:
 	
 	// De-allocates a list gui
 	virtual void				FreeListGUI( idListGUI* listgui ) = 0;
+
+	virtual idMenuHandler_Scoreboard*				CreateScoreboard() const = 0;
+	virtual idMenuHandler_HUD*						CreateHUD() const = 0;
+	virtual idMenuHandler_PDA*						CreatePDA() const = 0;
+	virtual idMenuHandler_Shell*					CreateShell() const = 0;
+	virtual idSWF*									CreateSWF(const char* filename, idSoundWorld* sound) = 0;
+
 };
 
 extern idUserInterfaceManager* 	uiManager;

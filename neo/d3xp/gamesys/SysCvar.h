@@ -38,6 +38,9 @@ extern idCVar	g_monsters;
 extern idCVar	g_decals;
 extern idCVar	g_knockback;
 extern idCVar	g_skill;
+extern idCVar	g_nightmare;
+extern idCVar	g_roeNightmare;
+extern idCVar	g_leNightmare;
 extern idCVar	g_gravity;
 extern idCVar	g_skipFX;
 extern idCVar	g_bloodEffects;
@@ -256,6 +259,8 @@ extern idCVar	net_clientPredictGUI;
 extern idCVar	si_timeLimit;
 extern idCVar	si_fragLimit;
 extern idCVar	si_spectators;
+extern idCVar	si_mode;
+extern idCVar	si_map;
 
 extern idCVar si_flagDropTimeLimit;
 extern idCVar si_midnight;

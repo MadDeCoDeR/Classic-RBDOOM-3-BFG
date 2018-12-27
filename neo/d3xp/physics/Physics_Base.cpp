@@ -827,7 +827,7 @@ void idPhysics_Base::AddGroundContacts( const idClipModel* clipModel )
 	
 	dir.SubVec3( 0 ) = gravityNormal;
 	dir.SubVec3( 1 ) = vec3_origin;
-	num = gameLocal.clip.Contacts( &contacts[index], 10, clipModel->GetOrigin(),
+	num = gameLocal.GetClip()->Contacts( &contacts[index], 10, clipModel->GetOrigin(),
 								   dir, CONTACT_EPSILON, clipModel, clipModel->GetAxis(), clipMask, self );
 	contacts.SetNum( index + num );
 }
@@ -883,7 +883,7 @@ idPhysics_Base::IsOutsideWorld
 */
 bool idPhysics_Base::IsOutsideWorld() const
 {
-	if( !gameLocal.clip.GetWorldBounds().Expand( 128.0f ).IntersectsBounds( GetAbsBounds() ) )
+	if( !gameLocal.GetClip()->GetWorldBounds().Expand( 128.0f ).IntersectsBounds( GetAbsBounds() ) )
 	{
 		return true;
 	}

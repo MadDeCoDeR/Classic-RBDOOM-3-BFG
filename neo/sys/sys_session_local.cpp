@@ -3427,7 +3427,7 @@ idStaticList< leaderboardDefinition_t*, MAX_LEADERBOARDS > registeredLeaderboard
 Sys_FindLeaderboardDef
 ========================
 */
-const leaderboardDefinition_t* Sys_FindLeaderboardDef( int id )
+/*const*/ leaderboardDefinition_t* Sys_FindLeaderboardDef( int id )
 {
 	for( int i = 0; i < registeredLeaderboards.Num() ; i++ )
 	{

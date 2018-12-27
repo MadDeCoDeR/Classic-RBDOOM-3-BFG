@@ -745,7 +745,7 @@ ID_INLINE void SetTimeState::PushState( int timeGroup )
 		activated = true;
 		
 		// determine previous fast setting
-		if( gameLocal.time == gameLocal.slow.time )
+		if( game->GetTime() == game->GetSlowTime() )
 		{
 			previousFast = false;
 		}
@@ -765,7 +765,7 @@ ID_INLINE void SetTimeState::PushState( int timeGroup )
 		}
 		
 		// set correct time
-		gameLocal.SelectTimeGroup( timeGroup );
+		game->SelectTimeGroup( timeGroup );
 	}
 }
 
@@ -774,7 +774,7 @@ ID_INLINE SetTimeState::~SetTimeState()
 	if( activated && !common->IsMultiplayer() )
 	{
 		// set previous correct time
-		gameLocal.SelectTimeGroup( previousFast );
+		game->SelectTimeGroup( previousFast );
 	}
 }
 

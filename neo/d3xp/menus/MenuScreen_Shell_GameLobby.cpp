@@ -516,7 +516,7 @@ bool idMenuScreen_Shell_GameLobby::HandleAction( idWidgetAction& action, const i
 			{
 				case GAME_CMD_START:
 				{
-					idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_Shell* const >( menuData );
+					idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_ShellLocal* const >( menuData );
 					if( handler != NULL )
 					{
 						handler->SetTimeRemaining( 0 );
@@ -641,13 +641,13 @@ void idMenuScreen_Shell_GameLobby::UpdateLobby()
 		int ms = 0;
 		if( session->GetActivePlatformLobbyBase().IsHost() )
 		{
-			idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_Shell* const >( menuData );
+			idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_ShellLocal* const >( menuData );
 			if( handler != NULL )
 			{
 				if( session->GetActivePlatformLobbyBase().IsLobbyFull() )
 				{
 					longCountdown = Sys_Milliseconds() + longCountRemaining;
-					int timeRemaining = shortCountdown - Sys_Milliseconds();
+					int timeRemaining = shortCountdown - sys->GetMilliseconds();
 					if( timeRemaining < 0 )
 					{
 						timeRemaining = 0;
@@ -657,7 +657,7 @@ void idMenuScreen_Shell_GameLobby::UpdateLobby()
 				}
 				else if( session->GetActivePlatformLobbyBase().GetNumLobbyUsers() > 1 )
 				{
-					int timeRemaining = longCountdown - Sys_Milliseconds();
+					int timeRemaining = longCountdown - sys->GetMilliseconds();
 					if( timeRemaining > WAIT_START_TIME_SHORT )
 					{
 						shortCountdown = Sys_Milliseconds() + WAIT_START_TIME_SHORT;
@@ -688,7 +688,7 @@ void idMenuScreen_Shell_GameLobby::UpdateLobby()
 		{
 			if( menuData != NULL )
 			{
-				idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_Shell* const >( menuData );
+				idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_ShellLocal* const >( menuData );
 				if( handler != NULL )
 				{
 					ms = ( int ) ceilf( handler->GetTimeRemaining() / 1000.0f );
@@ -819,7 +819,7 @@ void idMenuScreen_Shell_GameLobby::UpdateLobby()
 	// setup names for lobby;
 	if( lobby != NULL )
 	{
-		idMenuHandler_Shell* mgr = dynamic_cast< idMenuHandler_Shell* >( menuData );
+		idMenuHandler_Shell* mgr = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 		if( mgr != NULL )
 		{
 			mgr->UpdateLobby( lobby );

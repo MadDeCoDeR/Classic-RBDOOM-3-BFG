@@ -172,7 +172,7 @@ void idForce_Field::Evaluate( int time )
 	assert( clipModel );
 	
 	bounds.FromTransformedBounds( clipModel->GetBounds(), clipModel->GetOrigin(), clipModel->GetAxis() );
-	numClipModels = gameLocal.clip.ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
+	numClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
 	
 	for( i = 0; i < numClipModels; i++ )
 	{
@@ -207,7 +207,7 @@ void idForce_Field::Evaluate( int time )
 			}
 		}
 		
-		if( !gameLocal.clip.ContentsModel( cm->GetOrigin(), cm, cm->GetAxis(), -1,
+		if( !gameLocal.GetClip()->ContentsModel( cm->GetOrigin(), cm, cm->GetAxis(), -1,
 										   clipModel->Handle(), clipModel->GetOrigin(), clipModel->GetAxis() ) )
 		{
 			continue;

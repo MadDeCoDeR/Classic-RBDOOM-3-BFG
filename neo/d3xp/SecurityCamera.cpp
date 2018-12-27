@@ -160,7 +160,7 @@ void idSecurityCamera::Spawn()
 		fl.takedamage = true;
 	}
 	
-	pvsArea = gameLocal.pvs.GetPVSArea( GetPhysics()->GetOrigin() );
+	pvsArea = gameLocal.GetPvs()->GetPVSArea( GetPhysics()->GetOrigin() );
 	// if no target specified use ourself
 	str = spawnArgs.GetString( "cameraTarget" );
 	if( str.Length() == 0 )
@@ -305,7 +305,7 @@ bool idSecurityCamera::CanSeePlayer()
 	idVec3 dir;
 	pvsHandle_t handle;
 	
-	handle = gameLocal.pvs.SetupCurrentPVS( pvsArea );
+	handle = gameLocal.GetPvs()->SetupCurrentPVS( pvsArea );
 	
 	for( i = 0; i < gameLocal.numClients; i++ )
 	{
@@ -317,7 +317,7 @@ bool idSecurityCamera::CanSeePlayer()
 		}
 		
 		// if there is no way we can see this player
-		if( !gameLocal.pvs.InCurrentPVS( handle, ent->GetPVSAreas(), ent->GetNumPVSAreas() ) )
+		if( !gameLocal.GetPvs()->InCurrentPVS( handle, ent->GetPVSAreas(), ent->GetNumPVSAreas() ) )
 		{
 			continue;
 		}
@@ -339,15 +339,15 @@ bool idSecurityCamera::CanSeePlayer()
 		
 		eye = ent->EyeOffset();
 		
-		gameLocal.clip.TracePoint( tr, GetPhysics()->GetOrigin(), ent->GetPhysics()->GetOrigin() + eye, MASK_OPAQUE, this );
+		gameLocal.GetClip()->TracePoint( tr, GetPhysics()->GetOrigin(), ent->GetPhysics()->GetOrigin() + eye, MASK_OPAQUE, this );
 		if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == ent ) )
 		{
-			gameLocal.pvs.FreeCurrentPVS( handle );
+			gameLocal.GetPvs()->FreeCurrentPVS( handle );
 			return true;
 		}
 	}
 	
-	gameLocal.pvs.FreeCurrentPVS( handle );
+	gameLocal.GetPvs()->FreeCurrentPVS( handle );
 	
 	return false;
 }

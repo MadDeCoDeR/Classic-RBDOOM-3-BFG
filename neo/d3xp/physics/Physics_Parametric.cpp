@@ -517,7 +517,7 @@ void idPhysics_Parametric::SetClipModel( idClipModel* model, float density, int 
 		delete clipModel;
 	}
 	clipModel = model;
-	clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+	clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 }
 
 /*
@@ -694,7 +694,7 @@ bool idPhysics_Parametric::Evaluate( int timeStepMSec, int endTimeMSec )
 		{
 			if( clipModel )
 			{
-				clipModel->Link( gameLocal.clip, self, 0, oldOrigin, oldAxis );
+				clipModel->Link( *gameLocal.GetClip(), self, 0, oldOrigin, oldAxis );
 			}
 			current.localOrigin = oldLocalOrigin;
 			current.origin = oldOrigin;
@@ -710,7 +710,7 @@ bool idPhysics_Parametric::Evaluate( int timeStepMSec, int endTimeMSec )
 	
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 	
 	current.time = endTimeMSec;
@@ -745,7 +745,7 @@ bool idPhysics_Parametric::Interpolate( const float fraction )
 	
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 	
 	return hasChanged;
@@ -835,7 +835,7 @@ void idPhysics_Parametric::RestoreState()
 	
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 }
 
@@ -864,7 +864,7 @@ void idPhysics_Parametric::SetOrigin( const idVec3& newOrigin, int id )
 	}
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 	Activate();
 }
@@ -898,7 +898,7 @@ void idPhysics_Parametric::SetAxis( const idMat3& newAxis, int id )
 	}
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 	Activate();
 }
@@ -1059,7 +1059,7 @@ void idPhysics_Parametric::LinkClip()
 {
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 }
 

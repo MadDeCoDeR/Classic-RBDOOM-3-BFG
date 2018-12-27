@@ -48,8 +48,10 @@ If you have questions concerning this license or the applicable additional terms
 extern idRenderWorld* 				gameRenderWorld;
 extern idSoundWorld* 				gameSoundWorld;
 
+#ifndef GAME_VERSION //GK: Let dll to have it's own game version
 // the "gameversion" client command will print this plus compile date
 #define	GAME_VERSION		"baseDOOM-1"
+#endif
 
 // classes used by idGameLocal
 class idEntity;
@@ -314,12 +316,12 @@ public:
 	
 	idRandom				random;					// random number generator used throughout the game
 	
-	idProgram				program;				// currently loaded script and data space
+	
 	idThread* 				frameCommandThread;
 	
-	idClip					clip;					// collision detection
+	
 	idPush					push;					// geometric pushing
-	idPVS					pvs;					// potential visible set
+	
 	
 	idTestModel* 			testmodel;				// for development testing of models
 	idEntityFx* 			testFx;					// for development testing of fx
@@ -461,7 +463,7 @@ public:
 	bool					SpawnEntityDef( const idDict& args, idEntity** ent = NULL, bool setDefaults = true );
 	int						GetSpawnId( const idEntity* ent ) const;
 	
-	const idDeclEntityDef* 	FindEntityDef( const char* name, bool makeDefault = true ) const;
+	virtual const idDeclEntityDef* 	FindEntityDef( const char* name, bool makeDefault = true ) const;
 	const idDict* 			FindEntityDefDict( const char* name, bool makeDefault = true ) const;
 	
 	void					RegisterEntity( idEntity* ent, int forceSpawnId, const idDict& spawnArgsToCopy );
@@ -519,18 +521,79 @@ public:
 	{
 		return framenum;
 	};
-	int						GetTime() const
+	virtual int						GetTime() const
 	{
 		return time;
 	};
-	
+
+	virtual idMultiplayerGame GetMpGame() const
+	{
+		return mpGame;
+	};
+
+	virtual lobbyUserID_t GetLobbyUserID(int index) const
+	{
+		return lobbyUserIDs[index];
+	};
+
+	virtual idEntity** GetEntities()
+	{
+		return entities;
+	};
+
+	virtual int GetRandomInt(int max);
+
+	virtual float GetRandomFloat();
+
+	virtual int GetGameType() const
+	{
+		return gameType;
+	};
+
+	idProgram* GetProgram();
+	idClip* GetClip();
+	idPVS* GetPvs();
+
+	virtual bool IsSoundChannelPlaying(idPlayer* player, const s_channelType channel = 0);
+
+	virtual void	EndAudioLog(idPlayer* player);
+	virtual void	EndVideoDisk(idPlayer* player);
+	virtual void	TogglePDA(idPlayer* player);
+	virtual const char* 		GetLocation(idLocationEntity* locationEntity) const;
+	virtual idVec3					GetEyePosition(idPlayer* player) const;
+	virtual const idDeclVideo* 		GetVideo(idPlayer* player,int index);
+	virtual float	GetScreenSeparationForGuis();
+	virtual void  HideTip(idPlayer* player);
+	virtual void					PlayAudioLog(idPlayer* player, const idSoundShader* sound);
+	virtual void			SetScoreboardActive(bool active);
+	virtual bool            IsGametypeTeamBased();
+	virtual int						GetSlowTime() const;
+	virtual int				GetSpawnId(int index);
+	virtual bool			StartSound(idPlayer* player, const char* soundName, const s_channelType channel, int soundShaderFlags, bool broadcast, int* length);
+	virtual bool					IsReady(idWeapon* weapon) const;
+	virtual int						AmmoAvailable(idWeapon* weapon) const;
+	virtual int						AmmoInClip(idWeapon* weapon) const;
+	virtual int						ClipSize(idWeapon* weapon) const;
+	virtual int						LowAmmo(idWeapon* weapon) const;
+	virtual int					AmmoIndexForWeaponClass(idPlayer* player, const char* weapon_classname, int* ammoRequired);
+	virtual int						HasAmmo(idPlayer* player, int type, int amount);
+	virtual int						HasAmmo(idPlayer* player, const char* weapon_classname, bool includeClip = false, idPlayer* owner = NULL);
+	virtual int						SlotForWeapon(idPlayer* player, const char* weaponName);
+	virtual void					PlayVideoDisk(idPlayer* player, const idDeclVideo* decl);
+	virtual int					GetCVarInteger(const char* var);
+	virtual float				GetCVarFloat(const char* var);
+	virtual bool				GetCVarBool(const char* var);
+	virtual void				SetCVarInteger(const char* var, int value);
+	virtual void				SetCVarFloat(const char* var, float value);
+	virtual void				SetCVarBool(const char* var, bool value);
+
 	int						GetNextClientNum( int current ) const;
 	idPlayer* 				GetClientByNum( int current ) const;
 	
-	idPlayer* 				GetLocalPlayer() const;
+	virtual idPlayer* 				GetLocalPlayer() const;
 	
 	void					SpreadLocations();
-	idLocationEntity* 		LocationForPoint( const idVec3& point );	// May return NULL
+	virtual idLocationEntity* 		LocationForPoint( const idVec3& point );	// May return NULL
 	idEntity* 				SelectInitialSpawnPoint( idPlayer* player );
 	
 	void					SetPortalState( qhandle_t portal, int blockingBits );
@@ -617,9 +680,9 @@ public:
 	};
 	virtual bool					ProcessDemoCommand( idDemoFile* readDemo );
 	
-	void					Shell_ClearRepeater();
+	virtual void					Shell_ClearRepeater();
 	
-	const char* 			GetMapFileName()
+	virtual const char* 			GetMapFileName()
 	{
 		return mapFileName.c_str();
 	}
@@ -730,11 +793,16 @@ private:
 	static int				sortSpawnPoints( const void* ptr1, const void* ptr2 );
 	
 	bool					SimulateProjectiles();
+	idProgram*				program = NULL;				// currently loaded script and data space
+	idClip*					clip = NULL;					// collision detection
+	idPVS*					pvs = NULL;					// potential visible set
 };
 
 //============================================================================
 
+#if !defined (GAME_DLL) && defined (__MONOLITH__)
 extern idGameLocal			gameLocal;
+#endif
 extern idAnimManager		animationLib;
 
 //============================================================================
@@ -815,9 +883,9 @@ ID_INLINE type* idEntityPtr<type>::GetEntity() const
 {
 	int entityNum = spawnId & ( ( 1 << GENTITYNUM_BITS ) - 1 );
 	// DG: removed extraneous parenthesis to shut up clang
-	if( gameLocal.spawnIds[ entityNum ] == ( spawnId >> GENTITYNUM_BITS ) )
+	if( game->GetSpawnId( entityNum ) == ( spawnId >> GENTITYNUM_BITS ) )
 	{
-		return static_cast<type*>( gameLocal.entities[ entityNum ] );
+		return static_cast<type*>( game->GetEntities()[entityNum] );
 	}
 	return NULL;
 }

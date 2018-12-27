@@ -30,12 +30,12 @@ If you have questions concerning this license or the applicable additional terms
 #include "../Game_local.h"
 
 
-extern idCVar g_demoMode;
+//extern idCVar g_demoMode;
 
 static const int PEER_UPDATE_INTERVAL = 500;
 static const int MAX_MENU_OPTIONS = 6;
 
-void idMenuHandler_Shell::Update()
+void idMenuHandler_ShellLocal::Update()
 {
 
 //#if defined ( ID_360 )
@@ -295,7 +295,7 @@ void idMenuHandler_Shell::Update()
 idMenuHandler_Shell::SetCanContinue
 ========================
 */
-void idMenuHandler_Shell::SetCanContinue( bool valid )
+void idMenuHandler_ShellLocal::SetCanContinue( bool valid )
 {
 
 	idMenuScreen_Shell_Singleplayer* screen = dynamic_cast< idMenuScreen_Shell_Singleplayer* >( menuScreens[ SHELL_AREA_CAMPAIGN ] );
@@ -311,7 +311,7 @@ void idMenuHandler_Shell::SetCanContinue( bool valid )
 idMenuHandler_Shell::HandleGuiEvent
 ========================
 */
-bool idMenuHandler_Shell::HandleGuiEvent( const sysEvent_t* sev )
+bool idMenuHandler_ShellLocal::HandleGuiEvent( const sysEvent_t* sev )
 {
 
 	if( IsPacifierVisible() )
@@ -446,7 +446,7 @@ bool idMenuHandler_Shell::HandleGuiEvent( const sysEvent_t* sev )
 idMenuHandler_Shell::Initialize
 ========================
 */
-void idMenuHandler_Shell::Initialize( const char* swfFile, idSoundWorld* sw )
+void idMenuHandler_ShellLocal::Initialize( const char* swfFile, idSoundWorld* sw )
 {
 	idMenuHandler::Initialize( swfFile, sw );
 	
@@ -472,11 +472,11 @@ void idMenuHandler_Shell::Initialize( const char* swfFile, idSoundWorld* sw )
 	{
 		BIND_SHELL_SCREEN( SHELL_AREA_ROOT, idMenuScreen_Shell_Pause, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_SETTINGS, idMenuScreen_Shell_Settings, this );
-		BIND_SHELL_SCREEN( SHELL_AREA_LOAD, idMenuScreen_Shell_Load, this );
+		BIND_SHELL_SCREEN( SHELL_AREA_LOAD, idMenuScreen_Shell_LoadLocal, this );
 		BIND_SHELL_SCREEN(SHELL_AREA_ADVANCED, idMenuScreen_Shell_AdvancedOptions, this); //GK: New option stuff
 		BIND_SHELL_SCREEN( SHELL_AREA_SYSTEM_OPTIONS, idMenuScreen_Shell_SystemOptions, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_GAME_OPTIONS, idMenuScreen_Shell_GameOptions, this );
-		BIND_SHELL_SCREEN( SHELL_AREA_SAVE, idMenuScreen_Shell_Save, this );
+		BIND_SHELL_SCREEN( SHELL_AREA_SAVE, idMenuScreen_Shell_SaveLocal, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_STEREOSCOPICS, idMenuScreen_Shell_Stereoscopics, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_CONTROLS, idMenuScreen_Shell_Controls, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_KEYBOARD, idMenuScreen_Shell_Bindings, this );
@@ -493,7 +493,7 @@ void idMenuHandler_Shell::Initialize( const char* swfFile, idSoundWorld* sw )
 		BIND_SHELL_SCREEN( SHELL_AREA_ROOT, idMenuScreen_Shell_Root, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_CAMPAIGN, idMenuScreen_Shell_Singleplayer, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_SETTINGS, idMenuScreen_Shell_Settings, this );
-		BIND_SHELL_SCREEN( SHELL_AREA_LOAD, idMenuScreen_Shell_Load, this );
+		BIND_SHELL_SCREEN( SHELL_AREA_LOAD, idMenuScreen_Shell_LoadLocal, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_NEW_GAME, idMenuScreen_Shell_NewGame, this );
 		BIND_SHELL_SCREEN(SHELL_AREA_ADVANCED, idMenuScreen_Shell_AdvancedOptions, this); //GK: New option stuff
 		BIND_SHELL_SCREEN( SHELL_AREA_SYSTEM_OPTIONS, idMenuScreen_Shell_SystemOptions, this );
@@ -568,7 +568,7 @@ void idMenuHandler_Shell::Initialize( const char* swfFile, idSoundWorld* sw )
 	}
 	else
 	{
-		idStrStatic< MAX_OSPATH > shortMapName = gameLocal.GetMapFileName();
+		idStrStatic< MAX_OSPATH > shortMapName = game->GetMapFileName();
 		shortMapName.StripFileExtension();
 		shortMapName.StripLeading( "maps/" );
 		shortMapName.StripLeading( "game/" );
@@ -628,7 +628,7 @@ void idMenuHandler_Shell::Initialize( const char* swfFile, idSoundWorld* sw )
 	public:
 		idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 		{
-			gameLocal.Shell_Show( false );
+			game->Shell_Show( false );
 			return idSWFScriptVar();
 		}
 	};
@@ -644,7 +644,7 @@ void idMenuHandler_Shell::Initialize( const char* swfFile, idSoundWorld* sw )
 idMenuHandler_Shell::Cleanup
 ========================
 */
-void idMenuHandler_Shell::Cleanup()
+void idMenuHandler_ShellLocal::Cleanup()
 {
 	idMenuHandler::Cleanup();
 	
@@ -657,7 +657,7 @@ void idMenuHandler_Shell::Cleanup()
 idMenuHandler_Shell::ActivateMenu
 ========================
 */
-void idMenuHandler_Shell::ActivateMenu( bool show )
+void idMenuHandler_ShellLocal::ActivateMenu( bool show )
 {
 
 	if( show && gui != NULL && gui->IsActive() )
@@ -672,7 +672,7 @@ void idMenuHandler_Shell::ActivateMenu( bool show )
 	
 	if( inGame )
 	{
-		idPlayer* player = gameLocal.GetLocalPlayer();
+		idPlayer* player = game->GetLocalPlayer();
 		if( player != NULL )
 		{
 			if( !show )
@@ -772,7 +772,7 @@ enum shellCommandsPC_t
 idMenuHandler_Shell::SetPCOptionsVisible
 ========================
 */
-void idMenuHandler_Shell::SetupPCOptions()
+void idMenuHandler_ShellLocal::SetupPCOptions()
 {
 
 	if( inGame )
@@ -784,10 +784,10 @@ void idMenuHandler_Shell::SetupPCOptions()
 	
 	if( GetPlatform() == 2 && menuBar != NULL )
 	{
-		if( g_demoMode.GetBool() )
+		if( game->GetCVarBool("g_demoMode") )
 		{
 			navOptions.Append( "START DEMO" );	// START DEMO
-			if( g_demoMode.GetInteger() == 2 )
+			if(game->GetCVarInteger("g_demoMode") == 2 )
 			{
 				navOptions.Append( "START PRESS DEMO" );	// START DEMO
 			}
@@ -803,7 +803,7 @@ void idMenuHandler_Shell::SetupPCOptions()
 				buttonWidget->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, SHELL_CMD_DEMO0, index );
 				buttonWidget->SetDescription( "Launch the demo" );
 			}
-			if( g_demoMode.GetInteger() == 2 )
+			if(game->GetCVarInteger("g_demoMode") == 2 )
 			{
 				index++;
 				buttonWidget = dynamic_cast< idMenuWidget_MenuButton* >( &menuBar->GetChildByIndex( index ) );
@@ -923,7 +923,7 @@ void idMenuHandler_Shell::SetupPCOptions()
 idMenuHandler_Shell::HandleExitGameBtn
 ========================
 */
-void idMenuHandler_Shell::HandleExitGameBtn()
+void idMenuHandler_ShellLocal::HandleExitGameBtn()
 {
 	class idSWFScriptFunction_QuitDialog : public idSWFScriptFunction_RefCounted
 	{
@@ -968,7 +968,7 @@ void idMenuHandler_Shell::HandleExitGameBtn()
 idMenuHandler_Shell::HandleAction
 ========================
 */
-bool idMenuHandler_Shell::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled )
+bool idMenuHandler_ShellLocal::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled )
 {
 
 	if( activeScreen == SHELL_AREA_INVALID )
@@ -1104,7 +1104,7 @@ bool idMenuHandler_Shell::HandleAction( idWidgetAction& action, const idWidgetEv
 idMenuHandler_Shell::GetMenuScreen
 ========================
 */
-idMenuScreen* idMenuHandler_Shell::GetMenuScreen( int index )
+idMenuScreen* idMenuHandler_ShellLocal::GetMenuScreen( int index )
 {
 
 	if( index < 0 || index >= SHELL_NUM_AREAS )
@@ -1120,7 +1120,7 @@ idMenuScreen* idMenuHandler_Shell::GetMenuScreen( int index )
 idMenuHandler_Shell::ShowSmallFrame
 ========================
 */
-void idMenuHandler_Shell::ShowSmallFrame( bool show )
+void idMenuHandler_ShellLocal::ShowSmallFrame( bool show )
 {
 
 	if( gui == NULL )
@@ -1154,7 +1154,7 @@ void idMenuHandler_Shell::ShowSmallFrame( bool show )
 idMenuHandler_Shell::ShowMPFrame
 ========================
 */
-void idMenuHandler_Shell::ShowMPFrame( bool show )
+void idMenuHandler_ShellLocal::ShowMPFrame( bool show )
 {
 
 	if( gui == NULL )
@@ -1188,7 +1188,7 @@ void idMenuHandler_Shell::ShowMPFrame( bool show )
 idMenuHandler_Shell::ShowSmallFrame
 ========================
 */
-void idMenuHandler_Shell::ShowLogo( bool show )
+void idMenuHandler_ShellLocal::ShowLogo( bool show )
 {
 
 	if( gui == NULL )
@@ -1229,7 +1229,7 @@ void idMenuHandler_Shell::ShowLogo( bool show )
 idMenuHandler_Shell::UpdateSavedGames
 ========================
 */
-void idMenuHandler_Shell::UpdateSavedGames()
+void idMenuHandler_ShellLocal::UpdateSavedGames()
 {
 	if( activeScreen == SHELL_AREA_LOAD )
 	{
@@ -1254,7 +1254,7 @@ void idMenuHandler_Shell::UpdateSavedGames()
 idMenuHandler_Shell::UpdateBGState
 ========================
 */
-void idMenuHandler_Shell::UpdateBGState()
+void idMenuHandler_ShellLocal::UpdateBGState()
 {
 
 	if( smallFrameShowing )
@@ -1309,7 +1309,7 @@ void idMenuHandler_Shell::UpdateBGState()
 idMenuHandler_Shell::UpdateLeaderboard
 ========================
 */
-void idMenuHandler_Shell::UpdateLeaderboard( const idLeaderboardCallback* callback )
+void idMenuHandler_ShellLocal::UpdateLeaderboard( const idLeaderboardCallback* callback )
 {
 	idMenuScreen_Shell_Leaderboards* screen = dynamic_cast< idMenuScreen_Shell_Leaderboards* >( menuScreens[ SHELL_AREA_LEADERBOARDS ] );
 	if( screen != NULL )
@@ -1323,7 +1323,7 @@ void idMenuHandler_Shell::UpdateLeaderboard( const idLeaderboardCallback* callba
 idMenuManager_Shell::ShowPacifier
 ========================
 */
-void idMenuHandler_Shell::ShowPacifier( const idStr& msg )
+void idMenuHandler_ShellLocal::ShowPacifier( const idStr& msg )
 {
 	if( GetPacifier() != NULL && gui != NULL )
 	{
@@ -1337,7 +1337,7 @@ void idMenuHandler_Shell::ShowPacifier( const idStr& msg )
 idMenuManager_Shell::HidePacifier
 ========================
 */
-void idMenuHandler_Shell::HidePacifier()
+void idMenuHandler_ShellLocal::HidePacifier()
 {
 	if( GetPacifier() != NULL )
 	{
@@ -1350,7 +1350,7 @@ void idMenuHandler_Shell::HidePacifier()
 idMenuHandler_Shell::CopySettingsFromSession
 ========================
 */
-void idMenuHandler_Shell::UpdateLobby( idMenuWidget_LobbyList* lobbyList )
+void idMenuHandler_ShellLocal::UpdateLobby( idMenuWidget_LobbyList* lobbyList )
 {
 
 	if( lobbyList == NULL )
@@ -1402,7 +1402,7 @@ void idMenuHandler_Shell::UpdateLobby( idMenuWidget_LobbyList* lobbyList )
 idMenuHandler_Shell::StartGame
 ========================
 */
-void idMenuHandler_Shell::StartGame( int index )
+void idMenuHandler_ShellLocal::StartGame( int index )
 {
 	if( index == 0 )
 	{
@@ -1419,7 +1419,7 @@ void idMenuHandler_Shell::StartGame( int index )
 	//GK: Get the start map string and use it for starting a new game with the custom expansion
 	else if (index == 3)
 	{
-		cmdSystem->AppendCommandText(va("map %s %d\n", idLocalization::GetString("#str_swf_start_map"),3) );
+		cmdSystem->AppendCommandText(va("map %s %d\n", common->GetName("#str_swf_start_map"),3) );
 	}
 	//GK: End
 }
@@ -1430,7 +1430,7 @@ static const int NUM_DOOM_INTRO_LINES = 7;
 idMenuHandler_Shell::ShowIntroVideo
 ========================
 */
-void idMenuHandler_Shell::ShowDoomIntro()
+void idMenuHandler_ShellLocal::ShowDoomIntro()
 {
 
 	StopSound();
@@ -1459,7 +1459,7 @@ void idMenuHandler_Shell::ShowDoomIntro()
 		introGui->Activate( true );
 		
 		int numTextFields = NUM_DOOM_INTRO_LINES;
-		idStr textEntries[NUM_DOOM_INTRO_LINES] = { va( "%s %s", idLocalization::GetString( "#str_04052" ), idLocalization::GetString( "#str_04053" ) ),
+		idStr textEntries[NUM_DOOM_INTRO_LINES] = { va( "%s %s", common->GetName( "#str_04052" ), idLocalization::GetString( "#str_04053" ) ),
 													va( "%s %s", idLocalization::GetString( "#str_04054" ), idLocalization::GetString( "#str_04055" ) ),
 													idLocalization::GetString( "#str_03012" ),
 													idLocalization::GetString( "#str_04056" ),
@@ -1695,7 +1695,7 @@ static const int NUM_ROE_INTRO_LINES = 6;
 idMenuHandler_Shell::ShowROEIntro
 ========================
 */
-void idMenuHandler_Shell::ShowROEIntro()
+void idMenuHandler_ShellLocal::ShowROEIntro()
 {
 
 	StopSound();
@@ -1885,7 +1885,7 @@ void idMenuHandler_Shell::ShowROEIntro()
 											{
 												if( startFade == 0 )
 												{
-													startFade = Sys_Milliseconds();
+													startFade = sys->GetMilliseconds();
 												}
 												else
 												{
@@ -1957,7 +1957,7 @@ static const int NUM_LE_INTRO_LINES = 1;
 idMenuHandler_Shell::ShowLEIntro
 ========================
 */
-void idMenuHandler_Shell::ShowLEIntro()
+void idMenuHandler_ShellLocal::ShowLEIntro()
 {
 
 	StopSound();
@@ -2103,7 +2103,7 @@ void idMenuHandler_Shell::ShowLEIntro()
 						{
 							if( startFade == 0 )
 							{
-								startFade = Sys_Milliseconds();
+								startFade = sys->GetMilliseconds();
 							}
 							else
 							{

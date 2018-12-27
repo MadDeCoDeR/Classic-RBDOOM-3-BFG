@@ -221,7 +221,7 @@ void idGuiModel::EmitToCurrentView( float modelMatrix[16], bool depthHack )
 // DG: move function declaration here (=> out of EmitFullScreen() method) because it confused clang
 // (and possibly other compilers that just didn't complain and silently made it a float variable
 // initialized to something, probably 0.0f)
-float GetScreenSeparationForGuis();
+//float GetScreenSeparationForGuis();
 // DG end
 
 /*
@@ -248,14 +248,14 @@ void idGuiModel::EmitFullScreen()
 	bool stereoEnabled = ( renderSystem->GetStereo3DMode() != STEREO3D_OFF );
 	if( stereoEnabled )
 	{
-		const float screenSeparation = GetScreenSeparationForGuis();
+		const float screenSeparation = game->GetScreenSeparationForGuis();
 		
 		// this will be negated on the alternate eyes, both rendered each frame
 		viewDef->renderView.stereoScreenSeparation = screenSeparation;
 		
-		extern idCVar stereoRender_swapEyes;
+		//extern idCVar stereoRender_swapEyes;
 		viewDef->renderView.viewEyeBuffer = 0;	// render to both buffers
-		if( stereoRender_swapEyes.GetBool() )
+		if(game->GetCVarBool("stereoRender_swapEyes") )
 		{
 			viewDef->renderView.stereoScreenSeparation = -screenSeparation;
 		}

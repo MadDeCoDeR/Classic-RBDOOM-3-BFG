@@ -29,16 +29,16 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../Game_local.h"
 
-extern idCVar pm_stamina;
+//extern idCVar pm_stamina;
 
-extern idCVar flashlight_batteryDrainTimeMS;
+//extern idCVar flashlight_batteryDrainTimeMS;
 
 /*
 ========================
 idMenuScreen_HUD::Initialize
 ========================
 */
-void idMenuScreen_HUD::Initialize( idMenuHandler* data )
+void idMenuScreen_HUDLocal::Initialize( idMenuHandler* data )
 {
 	idMenuScreen::Initialize( data );
 }
@@ -48,7 +48,7 @@ void idMenuScreen_HUD::Initialize( idMenuHandler* data )
 idMenuScreen_HUD::ShowScreen
 ========================
 */
-void idMenuScreen_HUD::ShowScreen( const mainMenuTransition_t transitionType )
+void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionType )
 {
 	if( menuData != NULL )
 	{
@@ -188,7 +188,7 @@ void idMenuScreen_HUD::ShowScreen( const mainMenuTransition_t transitionType )
 idMenuScreen_HUD::HideScreen
 ========================
 */
-void idMenuScreen_HUD::HideScreen( const mainMenuTransition_t transitionType )
+void idMenuScreen_HUDLocal::HideScreen( const mainMenuTransition_t transitionType )
 {
 
 }
@@ -198,10 +198,10 @@ void idMenuScreen_HUD::HideScreen( const mainMenuTransition_t transitionType )
 idMenuScreen_HUD::Update
 ========================
 */
-void idMenuScreen_HUD::Update()
+void idMenuScreen_HUDLocal::Update()
 {
 
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = game->GetLocalPlayer();
 	if( player == NULL )
 	{
 		return;
@@ -215,7 +215,7 @@ void idMenuScreen_HUD::Update()
 idMenuScreen_HUD::UpdateHealth
 ========================
 */
-void idMenuScreen_HUD::UpdateHealthArmor( idPlayer* player )
+void idMenuScreen_HUDLocal::UpdateHealthArmor( idPlayer* player )
 {
 
 	if( !playerInfo || !player )
@@ -288,7 +288,7 @@ void idMenuScreen_HUD::UpdateHealthArmor( idPlayer* player )
 	{
 		if( player->healthPulse )
 		{
-			player->StartSound( "snd_healthpulse", SND_CHANNEL_ITEM, 0, false, NULL );
+			game->StartSound(player,"snd_healthpulse", SND_CHANNEL_ITEM, 0, false, NULL );
 			player->healthPulse = false;
 			healthPulse->SetVisible( true );
 			healthPulse->PlayFrame( "rollOn" );
@@ -296,7 +296,7 @@ void idMenuScreen_HUD::UpdateHealthArmor( idPlayer* player )
 		
 		if( player->healthTake )
 		{
-			player->StartSound( "snd_healthtake", SND_CHANNEL_ITEM, 0, false, NULL );
+			game->StartSound(player,"snd_healthtake", SND_CHANNEL_ITEM, 0, false, NULL );
 			player->healthTake = false;
 			healthPulse->SetVisible( true );
 			healthPulse->PlayFrame( "rollOn" );
@@ -309,7 +309,7 @@ void idMenuScreen_HUD::UpdateHealthArmor( idPlayer* player )
 idMenuScreen_HUD::UpdateStamina
 ========================
 */
-void idMenuScreen_HUD::UpdateStamina( idPlayer* player )
+void idMenuScreen_HUDLocal::UpdateStamina( idPlayer* player )
 {
 
 	if( !stamina || !player )
@@ -327,7 +327,7 @@ void idMenuScreen_HUD::UpdateStamina( idPlayer* player )
 		}
 		else
 		{
-			float max_stamina = pm_stamina.GetFloat();
+			float max_stamina = game->GetCVarFloat("pm_stamina");
 			if( !max_stamina )
 			{
 				stamSprite->SetVisible( false );
@@ -347,7 +347,7 @@ void idMenuScreen_HUD::UpdateStamina( idPlayer* player )
 idMenuScreen_HUD::UpdateLocation
 ========================
 */
-void idMenuScreen_HUD::UpdateWeaponInfo( idPlayer* player )
+void idMenuScreen_HUDLocal::UpdateWeaponInfo( idPlayer* player )
 {
 
 	if( !player || !ammoInfo )
@@ -359,16 +359,16 @@ void idMenuScreen_HUD::UpdateWeaponInfo( idPlayer* player )
 	
 	assert( weapon.GetEntity() );
 	
-	int inClip = weapon.GetEntity()->AmmoInClip();
-	int ammoAmount = weapon.GetEntity()->AmmoAvailable();
+	int inClip = game->AmmoInClip(weapon.GetEntity());
+	int ammoAmount = game->AmmoAvailable(weapon.GetEntity());
 	
 	//Make sure the hud always knows how many bloodstone charges there are
 	int ammoRequired;
 	int bloodstoneAmmo = 0;
 	if( player->weapon_bloodstone >= 0 )
 	{
-		ammo_t ammo_i = player->inventory.AmmoIndexForWeaponClass( "weapon_bloodstone_passive", &ammoRequired );
-		bloodstoneAmmo = player->inventory.HasAmmo( ammo_i, ammoRequired );
+		ammo_t ammo_i = game->AmmoIndexForWeaponClass(player,"weapon_bloodstone_passive", &ammoRequired );
+		bloodstoneAmmo = game->HasAmmo(player,ammo_i, ammoRequired );
 	}
 	if( bsInfo )
 	{
@@ -399,7 +399,7 @@ void idMenuScreen_HUD::UpdateWeaponInfo( idPlayer* player )
 		bool showClip = true;
 		
 		//Hack to stop the bloodstone ammo to display when it is being activated
-		if( !weapon.GetEntity()->IsReady() )
+		if( !game->IsReady(weapon.GetEntity()) )
 		{
 			// show infinite ammo
 			playerAmmo = "";
@@ -409,19 +409,19 @@ void idMenuScreen_HUD::UpdateWeaponInfo( idPlayer* player )
 		{
 			// show remaining ammo
 			totalAmmo = va( "%i", ammoAmount );
-			playerAmmo = weapon.GetEntity()->ClipSize() ? va( "%i", inClip ) : "--";		// how much in the current clip
-			playerClip = weapon.GetEntity()->ClipSize() ? va( "%i", ammoAmount / weapon.GetEntity()->ClipSize() ) : "--";
+			playerAmmo = game->ClipSize(weapon.GetEntity()) ? va( "%i", inClip ) : "--";		// how much in the current clip
+			playerClip = game->ClipSize(weapon.GetEntity()) ? va( "%i", ammoAmount / game->ClipSize(weapon.GetEntity())) : "--";
 			//allAmmo = va( "%i/%i", inClip, ammoAmount );
 		}
 		
-		if( !weapon.GetEntity()->ClipSize() )
+		if( !game->ClipSize(weapon.GetEntity()))
 		{
 			showClip = false;
 		}
 		
 		bool ammoEmpty = ( ammoAmount == 0 );
-		bool clipEmpty = ( weapon.GetEntity()->ClipSize() ? inClip == 0 : false );
-		bool clipLow = ( weapon.GetEntity()->ClipSize() ? inClip <= weapon.GetEntity()->LowAmmo() : false );
+		bool clipEmpty = (game->ClipSize(weapon.GetEntity()) ? inClip == 0 : false );
+		bool clipLow = (game->ClipSize(weapon.GetEntity()) ? inClip <= game->LowAmmo(weapon.GetEntity()) : false );
 		
 		//Hack to stop the bloodstone ammo to display when it is being activated
 		if( player->GetCurrentWeaponSlot() == player->weapon_bloodstone )
@@ -535,7 +535,7 @@ void idMenuScreen_HUD::UpdateWeaponInfo( idPlayer* player )
 idMenuScreen_HUD::GiveWeapon
 ========================
 */
-void idMenuScreen_HUD::GiveWeapon( idPlayer* player, int weaponIndex )
+void idMenuScreen_HUDLocal::GiveWeapon( idPlayer* player, int weaponIndex )
 {
 
 	if( common->IsMultiplayer() )
@@ -547,7 +547,7 @@ void idMenuScreen_HUD::GiveWeapon( idPlayer* player, int weaponIndex )
 	const char* weap = player->spawnArgs.GetString( weapnum );
 	if( weap != NULL && *weap != '\0' )
 	{
-		const idDeclEntityDef* weaponDef = gameLocal.FindEntityDef( weap, false );
+		const idDeclEntityDef* weaponDef = game->FindEntityDef( weap, false );
 		if( weaponDef != NULL )
 		{
 			const char* hudIconName = weaponDef->dict.GetString( "hudIcon" );
@@ -581,7 +581,7 @@ void idMenuScreen_HUD::GiveWeapon( idPlayer* player, int weaponIndex )
 idMenuScreen_HUD::UpdateWeaponStates
 ========================
 */
-void idMenuScreen_HUD::UpdatePickupInfo( int index, const idStr& name )
+void idMenuScreen_HUDLocal::UpdatePickupInfo( int index, const idStr& name )
 {
 
 	if( !pickupInfo )
@@ -603,7 +603,7 @@ void idMenuScreen_HUD::UpdatePickupInfo( int index, const idStr& name )
 idMenuScreen_HUD::IsPickupListReady
 ========================
 */
-bool idMenuScreen_HUD::IsPickupListReady()
+bool idMenuScreen_HUDLocal::IsPickupListReady()
 {
 
 	if( !pickupInfo )
@@ -624,7 +624,7 @@ bool idMenuScreen_HUD::IsPickupListReady()
 idMenuScreen_HUD::UpdateWeaponStates
 ========================
 */
-void idMenuScreen_HUD::ShowPickups()
+void idMenuScreen_HUDLocal::ShowPickups()
 {
 
 	if( !pickupInfo )
@@ -641,7 +641,7 @@ void idMenuScreen_HUD::ShowPickups()
 idMenuScreen_HUD::SetCursorState
 ========================
 */
-void idMenuScreen_HUD::SetCursorState( idPlayer* player, cursorState_t state, int set )
+void idMenuScreen_HUDLocal::SetCursorState( idPlayer* player, cursorState_t state, int set )
 {
 
 	switch( state )
@@ -692,7 +692,7 @@ void idMenuScreen_HUD::SetCursorState( idPlayer* player, cursorState_t state, in
 idMenuScreen_HUD::SetCursorText
 ========================
 */
-void idMenuScreen_HUD::SetCursorText( const idStr& action, const idStr& focus )
+void idMenuScreen_HUDLocal::SetCursorText( const idStr& action, const idStr& focus )
 {
 	cursorAction = action;
 	cursorFocus = focus;
@@ -703,7 +703,7 @@ void idMenuScreen_HUD::SetCursorText( const idStr& action, const idStr& focus )
 idMenuScreen_HUD::CombatCursorFlash
 ========================
 */
-void idMenuScreen_HUD::CombatCursorFlash()
+void idMenuScreen_HUDLocal::CombatCursorFlash()
 {
 
 	if( cursorInCombat )
@@ -724,7 +724,7 @@ void idMenuScreen_HUD::CombatCursorFlash()
 idMenuScreen_HUD::UpdateCursorState
 ========================
 */
-void idMenuScreen_HUD::UpdateCursorState()
+void idMenuScreen_HUDLocal::UpdateCursorState()
 {
 
 	if( !cursorTalking && !cursorInCombat && !cursorGrabber && !cursorItem )
@@ -959,7 +959,7 @@ void idMenuScreen_HUD::UpdateCursorState()
 idMenuScreen_HUD::UpdateSoulCube
 ========================
 */
-void idMenuScreen_HUD::UpdateSoulCube( bool ready )
+void idMenuScreen_HUDLocal::UpdateSoulCube( bool ready )
 {
 
 	if( !soulcubeInfo )
@@ -984,7 +984,7 @@ void idMenuScreen_HUD::UpdateSoulCube( bool ready )
 idMenuScreen_HUD::ShowRespawnMessage
 ========================
 */
-void idMenuScreen_HUD::ShowRespawnMessage( bool show )
+void idMenuScreen_HUDLocal::ShowRespawnMessage( bool show )
 {
 
 	if( !respawnMessage )
@@ -1020,7 +1020,7 @@ void idMenuScreen_HUD::ShowRespawnMessage( bool show )
 idMenuScreen_HUD::UpdateWeaponStates
 ========================
 */
-void idMenuScreen_HUD::UpdateWeaponStates( idPlayer* player, bool weaponChanged )
+void idMenuScreen_HUDLocal::UpdateWeaponStates( idPlayer* player, bool weaponChanged )
 {
 
 	if( !weaponPills )
@@ -1143,7 +1143,7 @@ void idMenuScreen_HUD::UpdateWeaponStates( idPlayer* player, bool weaponChanged 
 				const char* weap = player->spawnArgs.GetString( weapNum );
 				if( weap != NULL && *weap != '\0' )
 				{
-					const idDeclEntityDef* weaponDef = gameLocal.FindEntityDef( weap, false );
+					const idDeclEntityDef* weaponDef = game->FindEntityDef( weap, false );
 					if( weaponDef != NULL )
 					{
 						hudIcon = declManager->FindMaterial( weaponDef->dict.GetString( "hudIcon" ), false );
@@ -1154,7 +1154,7 @@ void idMenuScreen_HUD::UpdateWeaponStates( idPlayer* player, bool weaponChanged 
 						}
 					}
 					
-					if( !player->inventory.HasAmmo( weap, true, player ) )
+					if( !game->HasAmmo(player, weap, true, player ) )
 					{
 						weapState = 0;
 					}
@@ -1212,7 +1212,7 @@ void idMenuScreen_HUD::UpdateWeaponStates( idPlayer* player, bool weaponChanged 
 				if( player->GetIdealWeapon() == i )
 				{
 				
-					const idDeclEntityDef* weaponDef = gameLocal.FindEntityDef( weap, false );
+					const idDeclEntityDef* weaponDef = game->FindEntityDef( weap, false );
 					if( weaponDef != NULL )
 					{
 						hudIcon = declManager->FindMaterial( weaponDef->dict.GetString( "hudIcon" ), false );
@@ -1276,7 +1276,7 @@ void idMenuScreen_HUD::UpdateWeaponStates( idPlayer* player, bool weaponChanged 
 idMenuScreen_HUD::UpdateLocation
 ========================
 */
-void idMenuScreen_HUD::UpdateLocation( idPlayer* player )
+void idMenuScreen_HUDLocal::UpdateLocation( idPlayer* player )
 {
 
 	if( !locationName || !player )
@@ -1287,17 +1287,17 @@ void idMenuScreen_HUD::UpdateLocation( idPlayer* player )
 	idPlayer* playertoLoc = player;
 	if( player->spectating && player->spectator != player->entityNumber )
 	{
-		playertoLoc = static_cast< idPlayer* >( gameLocal.entities[ player->spectator ] );
+		playertoLoc = static_cast< idPlayer* >( game->GetEntities()[ player->spectator ] );
 		if( playertoLoc == NULL )
 		{
 			playertoLoc = player;
 		}
 	}
 	
-	idLocationEntity* locationEntity = gameLocal.LocationForPoint( playertoLoc->GetEyePosition() );
+	idLocationEntity* locationEntity = game->LocationForPoint( game->GetEyePosition(playertoLoc) );
 	if( locationEntity )
 	{
-		locationName->SetText( locationEntity->GetLocation() );
+		locationName->SetText( game->GetLocation(locationEntity) );
 	}
 	else
 	{
@@ -1312,9 +1312,8 @@ void idMenuScreen_HUD::UpdateLocation( idPlayer* player )
 idMenuScreen_HUD::ShowTip
 ========================
 */
-void idMenuScreen_HUD::ShowTip( const char* title, const char* tip )
+void idMenuScreen_HUDLocal::ShowTip( const char* title, const char* tip )
 {
-
 	if( !tipInfo )
 	{
 		return;
@@ -1362,7 +1361,7 @@ void idMenuScreen_HUD::ShowTip( const char* title, const char* tip )
 idMenuScreen_HUD::HideTip
 ========================
 */
-void idMenuScreen_HUD::HideTip()
+void idMenuScreen_HUDLocal::HideTip()
 {
 
 	if( !tipInfo )
@@ -1387,7 +1386,7 @@ void idMenuScreen_HUD::HideTip()
 idMenuScreen_HUD::DownloadPDA
 ========================
 */
-void idMenuScreen_HUD::DownloadPDA( const idDeclPDA* pda, bool newSecurity )
+void idMenuScreen_HUDLocal::DownloadPDA( const idDeclPDA* pda, bool newSecurity )
 {
 
 	if( newPDADownload )
@@ -1424,7 +1423,7 @@ void idMenuScreen_HUD::DownloadPDA( const idDeclPDA* pda, bool newSecurity )
 idMenuScreen_HUD::DownloadVideo
 ========================
 */
-void idMenuScreen_HUD::DownloadVideo()
+void idMenuScreen_HUDLocal::DownloadVideo()
 {
 
 	if( newVideoDownload )
@@ -1447,7 +1446,7 @@ void idMenuScreen_HUD::DownloadVideo()
 idMenuScreen_HUD::UpdatedSecurity
 ========================
 */
-void idMenuScreen_HUD::UpdatedSecurity()
+void idMenuScreen_HUDLocal::UpdatedSecurity()
 {
 	if( security != NULL && securityText != NULL )
 	{
@@ -1463,7 +1462,7 @@ void idMenuScreen_HUD::UpdatedSecurity()
 idMenuScreen_HUD::ClearNewPDAInfo
 ========================
 */
-void idMenuScreen_HUD::ClearNewPDAInfo()
+void idMenuScreen_HUDLocal::ClearNewPDAInfo()
 {
 
 	ToggleNewVideo( false );
@@ -1491,7 +1490,7 @@ void idMenuScreen_HUD::ClearNewPDAInfo()
 idMenuScreen_HUD::UpdatedSecurity
 ========================
 */
-void  idMenuScreen_HUD::ToggleNewVideo( bool show )
+void  idMenuScreen_HUDLocal::ToggleNewVideo( bool show )
 {
 
 	if( !newVideo )
@@ -1516,7 +1515,7 @@ void  idMenuScreen_HUD::ToggleNewVideo( bool show )
 idMenuScreen_HUD::UpdatedSecurity
 ========================
 */
-void  idMenuScreen_HUD::ToggleNewPDA( bool show )
+void  idMenuScreen_HUDLocal::ToggleNewPDA( bool show )
 {
 
 	if( !newPDA )
@@ -1541,7 +1540,7 @@ void  idMenuScreen_HUD::ToggleNewPDA( bool show )
 idMenuScreen_HUD::UpdatedSecurity
 ========================
 */
-void  idMenuScreen_HUD::UpdateAudioLog( bool show )
+void  idMenuScreen_HUDLocal::UpdateAudioLog( bool show )
 {
 
 	if( !audioLog )
@@ -1559,9 +1558,9 @@ void  idMenuScreen_HUD::UpdateAudioLog( bool show )
 			idSWFSpriteInstance* node = audioLog->GetScriptObject()->GetNestedSprite( "bar", va( "node%d", index ) );
 			if( node != NULL )
 			{
-				int frame = gameLocal.random.RandomInt( 100 );
+				int frame = game->GetRandomInt( 100 );
 				node->SetScale( 100.0f, frame );
-				float toFrame = gameLocal.random.RandomFloat();
+				float toFrame = game->GetRandomFloat();
 				node->SetMoveToScale( -1.0f, toFrame );
 			}
 		}
@@ -1578,7 +1577,7 @@ void  idMenuScreen_HUD::UpdateAudioLog( bool show )
 	
 		if( audioLogPrevTime == 0 )
 		{
-			audioLogPrevTime = gameLocal.time;
+			audioLogPrevTime = game->GetTime();
 		}
 		
 		for( int index = 0; index < 13; ++index )
@@ -1586,17 +1585,17 @@ void  idMenuScreen_HUD::UpdateAudioLog( bool show )
 			idSWFSpriteInstance* node = audioLog->GetScriptObject()->GetNestedSprite( "bar", va( "node%d", index ) );
 			if( node != NULL )
 			{
-				float diff = gameLocal.time - audioLogPrevTime;
+				float diff = game->GetTime() - audioLogPrevTime;
 				float speed = ( diff / 350.0f ) * 100.0f;
 				if( !node->UpdateMoveToScale( speed ) )
 				{
-					int frame = gameLocal.random.RandomInt( 100 );
+					int frame = game->GetRandomInt( 100 );
 					float scale = frame / 100.0f;
 					node->SetMoveToScale( -1.0f, scale );
 				}
 			}
 		}
-		audioLogPrevTime = gameLocal.time;
+		audioLogPrevTime = game->GetTime();
 	}
 }
 
@@ -1605,7 +1604,7 @@ void  idMenuScreen_HUD::UpdateAudioLog( bool show )
 idMenuScreen_HUD::UpdatedSecurity
 ========================
 */
-void  idMenuScreen_HUD::UpdateCommunication( bool show, idPlayer* player )
+void  idMenuScreen_HUDLocal::UpdateCommunication( bool show, idPlayer* player )
 {
 
 	if( !communication || !player )
@@ -1636,9 +1635,9 @@ void  idMenuScreen_HUD::UpdateCommunication( bool show, idPlayer* player )
 			idSWFSpriteInstance* node = communication->GetScriptObject()->GetNestedSprite( "info", "bar", va( "node%d", index ) );
 			if( node != NULL )
 			{
-				int frame = gameLocal.random.RandomInt( 100 );
+				int frame = game->GetRandomInt( 100 );
 				node->SetScale( 100.0f, frame );
-				float toFrame = gameLocal.random.RandomFloat();
+				float toFrame = game->GetRandomFloat();
 				node->SetMoveToScale( -1.0f, toFrame );
 			}
 		}
@@ -1664,7 +1663,7 @@ void  idMenuScreen_HUD::UpdateCommunication( bool show, idPlayer* player )
 		
 		if( commPrevTime == 0 )
 		{
-			commPrevTime = gameLocal.time;
+			commPrevTime = game->GetTime();
 		}
 		
 		for( int index = 0; index < 16; ++index )
@@ -1672,18 +1671,18 @@ void  idMenuScreen_HUD::UpdateCommunication( bool show, idPlayer* player )
 			idSWFSpriteInstance* node = communication->GetScriptObject()->GetNestedSprite( "info", "bar", va( "node%d", index ) );
 			if( node != NULL )
 			{
-				float diff = gameLocal.time - commPrevTime;
+				float diff = game->GetTime() - commPrevTime;
 				float speed = ( diff / 350.0f ) * 100.0f;
 				if( !node->UpdateMoveToScale( speed ) )
 				{
-					int frame = gameLocal.random.RandomInt( 100 );
+					int frame = game->GetRandomInt( 100 );
 					float scale = frame / 100.0f;
 					node->SetMoveToScale( -1.0f, scale );
 				}
 			}
 		}
 		
-		commPrevTime = gameLocal.time;
+		commPrevTime = game->GetTime();
 	}
 	
 	oxygenComm = inVaccuum;
@@ -1694,7 +1693,7 @@ void  idMenuScreen_HUD::UpdateCommunication( bool show, idPlayer* player )
 idMenuScreen_HUD::UpdateOxygen
 ========================
 */
-void  idMenuScreen_HUD::UpdateOxygen( bool show, int val )
+void  idMenuScreen_HUDLocal::UpdateOxygen( bool show, int val )
 {
 
 	if( !oxygen )
@@ -1761,7 +1760,7 @@ void  idMenuScreen_HUD::UpdateOxygen( bool show, int val )
 idMenuScreen_HUD::SetupObjective
 ========================
 */
-void idMenuScreen_HUD::SetupObjective( const idStr& title, const idStr& desc, const idMaterial* screenshot )
+void idMenuScreen_HUDLocal::SetupObjective( const idStr& title, const idStr& desc, const idMaterial* screenshot )
 {
 	objTitle = title;
 	objDesc = desc;
@@ -1773,7 +1772,7 @@ void idMenuScreen_HUD::SetupObjective( const idStr& title, const idStr& desc, co
 idMenuScreen_HUD::SetupObjective
 ========================
 */
-void idMenuScreen_HUD::SetupObjectiveComplete( const idStr& title )
+void idMenuScreen_HUDLocal::SetupObjectiveComplete( const idStr& title )
 {
 
 	objCompleteTitle = title;
@@ -1785,7 +1784,7 @@ void idMenuScreen_HUD::SetupObjectiveComplete( const idStr& title )
 idMenuScreen_HUD::ShowObjective
 ========================
 */
-void idMenuScreen_HUD::ShowObjective( bool complete )
+void idMenuScreen_HUDLocal::ShowObjective( bool complete )
 {
 
 	if( complete )
@@ -1872,7 +1871,7 @@ void idMenuScreen_HUD::ShowObjective( bool complete )
 idMenuScreen_HUD::HideObjective
 ========================
 */
-void idMenuScreen_HUD::HideObjective( bool complete )
+void idMenuScreen_HUDLocal::HideObjective( bool complete )
 {
 
 	if( complete )
@@ -1910,7 +1909,7 @@ void idMenuScreen_HUD::HideObjective( bool complete )
 idMenuScreen_HUD::ToggleMPInfo
 ========================
 */
-void idMenuScreen_HUD::ToggleMPInfo( bool show, bool showTeams, bool isCTF )
+void idMenuScreen_HUDLocal::ToggleMPInfo( bool show, bool showTeams, bool isCTF )
 {
 
 	if( !mpInfo )
@@ -1976,7 +1975,7 @@ void idMenuScreen_HUD::ToggleMPInfo( bool show, bool showTeams, bool isCTF )
 idMenuScreen_HUD::SetFlagState
 ========================
 */
-void idMenuScreen_HUD::SetFlagState( int team, int state )
+void idMenuScreen_HUDLocal::SetFlagState( int team, int state )
 {
 
 	if( !mpInfo )
@@ -2015,7 +2014,7 @@ void idMenuScreen_HUD::SetFlagState( int team, int state )
 idMenuScreen_HUD::SetTeamScore
 ========================
 */
-void idMenuScreen_HUD::SetTeamScore( int team, int score )
+void idMenuScreen_HUDLocal::SetTeamScore( int team, int score )
 {
 
 	if( !mpInfo )
@@ -2047,7 +2046,7 @@ void idMenuScreen_HUD::SetTeamScore( int team, int score )
 idMenuScreen_HUD::SetTeam
 ========================
 */
-void idMenuScreen_HUD::SetTeam( int team )
+void idMenuScreen_HUDLocal::SetTeam( int team )
 {
 
 	if( !mpInfo )
@@ -2076,7 +2075,7 @@ void idMenuScreen_HUD::SetTeam( int team )
 idMenuScreen_HUD::TriggerHitTarget
 ========================
 */
-void idMenuScreen_HUD::TriggerHitTarget( bool show, const idStr& target, int color )
+void idMenuScreen_HUDLocal::TriggerHitTarget( bool show, const idStr& target, int color )
 {
 
 	if( !mpHitInfo )
@@ -2098,7 +2097,7 @@ void idMenuScreen_HUD::TriggerHitTarget( bool show, const idStr& target, int col
 		idSWFSpriteInstance* backing = mpHitInfo->GetScriptObject()->GetNestedSprite( "bgColor" );
 		if( backing )
 		{
-			if( color <= 0 || !gameLocal.mpGame.IsGametypeTeamBased() )
+			if( color <= 0 || !game->IsGametypeTeamBased() )
 			{
 				color = 1;
 			}
@@ -2118,7 +2117,7 @@ void idMenuScreen_HUD::TriggerHitTarget( bool show, const idStr& target, int col
 idMenuScreen_HUD::ToggleLagged
 ========================
 */
-void idMenuScreen_HUD::ToggleLagged( bool show )
+void idMenuScreen_HUDLocal::ToggleLagged( bool show )
 {
 
 	if( !mpConnection )
@@ -2134,7 +2133,7 @@ void idMenuScreen_HUD::ToggleLagged( bool show )
 idMenuScreen_HUD::UpdateGameTime
 ========================
 */
-void idMenuScreen_HUD::UpdateGameTime( const char* time )
+void idMenuScreen_HUDLocal::UpdateGameTime( const char* time )
 {
 
 	if( !mpTime )
@@ -2154,7 +2153,7 @@ void idMenuScreen_HUD::UpdateGameTime( const char* time )
 idMenuScreen_HUD::UpdateMessage
 ========================
 */
-void idMenuScreen_HUD::UpdateMessage( bool show, const idStr& message )
+void idMenuScreen_HUDLocal::UpdateMessage( bool show, const idStr& message )
 {
 
 	if( !mpMessage )
@@ -2184,7 +2183,7 @@ void idMenuScreen_HUD::UpdateMessage( bool show, const idStr& message )
 idMenuScreen_HUD::ShowNewItem
 ========================
 */
-void idMenuScreen_HUD::ShowNewItem( const char* name, const char* icon )
+void idMenuScreen_HUDLocal::ShowNewItem( const char* name, const char* icon )
 {
 
 	if( !newItem )
@@ -2226,7 +2225,7 @@ void idMenuScreen_HUD::ShowNewItem( const char* name, const char* icon )
 idMenuScreen_HUD::UpdateFlashlight
 ========================
 */
-void idMenuScreen_HUD::UpdateFlashlight( idPlayer* player )
+void idMenuScreen_HUDLocal::UpdateFlashlight( idPlayer* player )
 {
 
 	if( !player || !flashlight )
@@ -2234,14 +2233,14 @@ void idMenuScreen_HUD::UpdateFlashlight( idPlayer* player )
 		return;
 	}
 	
-	if( player->flashlightBattery != flashlight_batteryDrainTimeMS.GetInteger() )
+	if( player->flashlightBattery != cvarSystem->GetCVarInteger("flashlight_batteryDrainTimeMS") )
 	{
 		flashlight->StopFrame( 2 );
 		flashlight->SetVisible( true );
 		idSWFSpriteInstance* batteryLife = flashlight->GetScriptObject()->GetNestedSprite( "info" );
 		if( batteryLife )
 		{
-			float power = ( ( float )player->flashlightBattery / ( float )flashlight_batteryDrainTimeMS.GetInteger() ) * 100.0f;
+			float power = ( ( float )player->flashlightBattery / ( float )cvarSystem->GetCVarInteger("flashlight_batteryDrainTimeMS")) * 100.0f;
 			batteryLife->StopFrame( power );
 		}
 	}
@@ -2257,7 +2256,7 @@ void idMenuScreen_HUD::UpdateFlashlight( idPlayer* player )
 idMenuScreen_HUD::UpdateChattingHud
 ========================
 */
-void idMenuScreen_HUD::UpdateChattingHud( idPlayer* player )
+void idMenuScreen_HUDLocal::UpdateChattingHud( idPlayer* player )
 {
 
 	if( !mpChatObject || !GetSWFObject() )
@@ -2392,4 +2391,8 @@ void idMenuScreen_HUD::UpdateChattingHud( idPlayer* player )
 			}
 		}
 	}
+}
+
+const char*		idMenuScreen_HUDLocal::GetlocationName() {
+	return GetSWFObject()->GetRootObject().GetNestedText("_bottomLeft", "location", "txtVal")->text.c_str();
 }

@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../framework/Common_local.h"
 
 static const int NUM_GAME_SELECTIONS_VISIBLE = 5;
-extern idCVar g_demoMode;
+//extern idCVar g_demoMode;
 extern idCVar in_joylayout;
 
 namespace
@@ -123,7 +123,7 @@ idMenuScreen_Shell_Root::Update
 void idMenuScreen_Shell_PressStart::Update()
 {
 
-	if( !g_demoMode.GetBool() )
+	if( !game->GetCVarBool("g_demoMode"))
 	{
 		if( menuData != NULL )
 		{
@@ -156,7 +156,7 @@ void idMenuScreen_Shell_PressStart::ShowScreen( const mainMenuTransition_t trans
 	idSWFScriptObject& root = GetSWFObject()->GetRootObject();
 	if( BindSprite( root ) )
 	{
-		if( g_demoMode.GetBool() )
+		if(game->GetCVarBool("g_demoMode"))
 		{
 		
 			idList<const idMaterial*> coverIcons;

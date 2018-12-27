@@ -126,11 +126,12 @@ typedef struct
 	CRITICAL_SECTION criticalSections[MAX_CRITICAL_SECTIONS];
 	
 	HINSTANCE		hInstDI;			// direct input
-	
+#ifndef GAME_DLL //GK: Game dll comes here ??
 	LPDIRECTINPUT8			g_pdi;
 	LPDIRECTINPUTDEVICE8	g_pMouse;
 	LPDIRECTINPUTDEVICE8	g_pKeyboard;
 	idJoystickWin32			g_Joystick;
+#endif
 	
 } Win32Vars_t;
 

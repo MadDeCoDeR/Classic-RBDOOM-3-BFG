@@ -37,7 +37,7 @@ const static int NUM_LOAD_OPTIONS = 10;
 idMenuScreen_Shell_Load::Initialize
 ========================
 */
-void idMenuScreen_Shell_Load::Initialize( idMenuHandler* data )
+void idMenuScreen_Shell_LoadLocal::Initialize( idMenuHandler* data )
 {
 	idMenuScreen::Initialize( data );
 	
@@ -71,7 +71,7 @@ void idMenuScreen_Shell_Load::Initialize( idMenuHandler* data )
 	
 	btnBack = new( TAG_SWF ) idMenuWidget_Button();
 	btnBack->Initialize( data );
-	idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_Shell* >( data );
+	idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_ShellLocal* >( data );
 	if( handler != NULL && handler->GetInGame() )
 	{
 		btnBack->SetLabel( "#str_swf_pause_menu" );
@@ -108,7 +108,7 @@ void idMenuScreen_Shell_Load::Initialize( idMenuHandler* data )
 idMenuScreen_Shell_Load::Update
 ========================
 */
-void idMenuScreen_Shell_Load::Update()
+void idMenuScreen_Shell_LoadLocal::Update()
 {
 
 	UpdateSaveEnumerations();
@@ -143,7 +143,7 @@ void idMenuScreen_Shell_Load::Update()
 idMenuScreen_Shell_Load::UpdateSaveEnumerations
 ========================
 */
-void idMenuScreen_Shell_Load::UpdateSaveEnumerations()
+void idMenuScreen_Shell_LoadLocal::UpdateSaveEnumerations()
 {
 
 	const saveGameDetailsList_t& saveGameInfo = session->GetSaveGameManager().GetEnumeratedSavegames();
@@ -175,11 +175,11 @@ void idMenuScreen_Shell_Load::UpdateSaveEnumerations()
 				const idSaveGameDetails& details = sortedSaves[slot];
 				if( details.damaged )
 				{
-					slotSaveName =  va( S_COLOR_RED "%s", idLocalization::GetString( "#str_swf_corrupt_file" ) );
+					slotSaveName =  va( S_COLOR_RED "%s", common->GetName( "#str_swf_corrupt_file" ) );
 				}
 				else if( details.GetSaveVersion() > BUILD_NUMBER )
 				{
-					slotSaveName =  va( S_COLOR_RED "%s", idLocalization::GetString( "#str_swf_wrong_version" ) );
+					slotSaveName =  va( S_COLOR_RED "%s", common->GetName( "#str_swf_wrong_version" ) );
 				}
 				else
 				{
@@ -286,7 +286,7 @@ void idMenuScreen_Shell_Load::UpdateSaveEnumerations()
 idMenuScreen_Shell_Load::ShowScreen
 ========================
 */
-void idMenuScreen_Shell_Load::ShowScreen( const mainMenuTransition_t transitionType )
+void idMenuScreen_Shell_LoadLocal::ShowScreen( const mainMenuTransition_t transitionType )
 {
 	idMenuScreen::ShowScreen( transitionType );
 }
@@ -296,7 +296,7 @@ void idMenuScreen_Shell_Load::ShowScreen( const mainMenuTransition_t transitionT
 idMenuScreen_Shell_Load::HideScreen
 ========================
 */
-void idMenuScreen_Shell_Load::HideScreen( const mainMenuTransition_t transitionType )
+void idMenuScreen_Shell_LoadLocal::HideScreen( const mainMenuTransition_t transitionType )
 {
 	idMenuScreen::HideScreen( transitionType );
 }
@@ -307,7 +307,7 @@ void idMenuScreen_Shell_Load::HideScreen( const mainMenuTransition_t transitionT
 idMenuScreen_Shell_Load::LoadDamagedGame
 ========================
 */
-void idMenuScreen_Shell_Load::LoadDamagedGame( int index )
+void idMenuScreen_Shell_LoadLocal::LoadDamagedGame( int index )
 {
 
 	if( index >= sortedSaves.Num() )
@@ -356,7 +356,7 @@ void idMenuScreen_Shell_Load::LoadDamagedGame( int index )
 idMenuScreen_Shell_Load::LoadGame
 ========================
 */
-void idMenuScreen_Shell_Load::LoadGame( int index )
+void idMenuScreen_Shell_LoadLocal::LoadGame( int index )
 {
 
 	if( menuData == NULL )
@@ -371,13 +371,13 @@ void idMenuScreen_Shell_Load::LoadGame( int index )
 	}
 	
 	bool isDead = false;
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = game->GetLocalPlayer();
 	if( player != NULL && player->health <= 0 )
 	{
 		isDead = true;
 	}
 	
-	idMenuHandler_Shell* mgr = dynamic_cast< idMenuHandler_Shell* >( menuData );
+	idMenuHandler_Shell* mgr = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 	if( mgr != NULL && mgr->GetInGame() && !isDead )
 	{
 	
@@ -429,7 +429,7 @@ void idMenuScreen_Shell_Load::LoadGame( int index )
 idMenuScreen_Shell_Save::DeleteGame
 ========================
 */
-void idMenuScreen_Shell_Load::DeleteGame( int index )
+void idMenuScreen_Shell_LoadLocal::DeleteGame( int index )
 {
 
 	class idSWFScriptFunction_DeleteGame : public idSWFScriptFunction_RefCounted
@@ -470,7 +470,7 @@ void idMenuScreen_Shell_Load::DeleteGame( int index )
 idMenuScreen_Shell_Load::HandleAction h
 ========================
 */
-bool idMenuScreen_Shell_Load::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled )
+bool idMenuScreen_Shell_LoadLocal::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled )
 {
 
 	if( menuData != NULL )

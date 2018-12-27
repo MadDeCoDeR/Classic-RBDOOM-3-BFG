@@ -223,7 +223,7 @@ bool idMenuScreen_Shell_NewGame::HandleAction( idWidgetAction& action, const idW
 				options->SetFocusIndex( selectionIndex );
 			}
 			
-			idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_Shell* >( menuData );
+			idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 			if( shell != NULL )
 			{
 				shell->SetNewGameType( selectionIndex );

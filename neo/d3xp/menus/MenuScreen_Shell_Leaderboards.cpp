@@ -178,6 +178,7 @@ void idMenuScreen_Shell_Leaderboards::Initialize( idMenuHandler* data )
 			// Check the supported modes on the map.
 			if( maps[ mapIndex ].supportedModes & BIT( modeIndex ) )
 			{
+#ifdef __MONOLITH__
 				int boardID = LeaderboardLocal_GetID( mapIndex, modeIndex );
 				const leaderboardDefinition_t* lbDef = Sys_FindLeaderboardDef( boardID );
 				if( lbDef != NULL )
@@ -185,6 +186,7 @@ void idMenuScreen_Shell_Leaderboards::Initialize( idMenuHandler* data )
 					doomLeaderboard_t lb = doomLeaderboard_t( lbDef, lbDef->boardName );
 					leaderboards.Append( lb );
 				}
+#endif
 			}
 		}
 	}
@@ -861,7 +863,7 @@ public:
 	
 	void Call()
 	{
-		gameLocal.Shell_UpdateLeaderboard( this );
+		game->Shell_UpdateLeaderboard( this );
 	}
 	
 	LBCallback* Clone() const
@@ -1206,7 +1208,7 @@ void idLBCache::Update( const idLeaderboardCallback* callback )
 	// Find a a row block to store these new rows
 	idLBRowBlock* rowBlock	= FindFreeRowBlock();
 	
-	rowBlock->lastTime		= Sys_Milliseconds();			// Freshen row
+	rowBlock->lastTime		= sys->GetMilliseconds();			// Freshen row
 	rowBlock->startIndex	= callback->GetStartIndex();
 	rowBlock->rows			= callback->GetRows();
 }
@@ -1235,7 +1237,7 @@ const idLeaderboardCallback::row_t* idLBCache::GetLeaderboardRow( int row )
 		int lastIndex = startIndex + rowBlocks[i].rows.Num() - 1;
 		if( row >= startIndex && row <= lastIndex )
 		{
-			rowBlocks[i].lastTime = Sys_Milliseconds();		// Freshen row
+			rowBlocks[i].lastTime = sys->GetMilliseconds();		// Freshen row
 			return &rowBlocks[i].rows[row - startIndex];
 		}
 	}

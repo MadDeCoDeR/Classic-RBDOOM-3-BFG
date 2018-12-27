@@ -602,7 +602,7 @@ idLangDict::AddString
 */
 const char* idLangDict::AddString( const char* val )
 {
-	int i = Sys_Milliseconds();
+	int i = sys->GetMilliseconds();
 	idStr key;
 	sprintf( key, "#str_%06d", ( i++ % 1000000 ) );
 	while( FindStringIndex( key ) > 0 )

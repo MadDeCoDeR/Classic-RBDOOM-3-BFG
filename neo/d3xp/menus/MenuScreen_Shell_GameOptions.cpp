@@ -298,11 +298,11 @@ bool idMenuScreen_Shell_GameOptions::HandleAction( idWidgetAction& action, const
 
 extern idCVar ui_autoSwitch;
 extern idCVar ui_autoReload;
-extern idCVar aa_targetAimAssistEnable;
+//extern idCVar aa_targetAimAssistEnable;
 extern idCVar in_alwaysRun;
-extern idCVar g_checkpoints;
-extern idCVar g_weaponShadows;
-extern idCVar g_muzzleFlash;
+//extern idCVar g_checkpoints;
+//extern idCVar g_weaponShadows;
+//extern idCVar g_muzzleFlash;
 
 /*
 ========================
@@ -322,14 +322,14 @@ idMenuScreen_Shell_GameOptions::idMenuDataSource_AudioSettings::LoadData
 */
 void idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::LoadData()
 {
-	fields[ GAME_FIELD_FOV ].SetInteger( g_fov.GetFloat() );
-	fields[ GAME_FIELD_CHECKPOINTS ].SetBool( g_checkpoints.GetBool() );
+	fields[ GAME_FIELD_FOV ].SetInteger(game->GetCVarFloat("g_fov") );
+	fields[ GAME_FIELD_CHECKPOINTS ].SetBool(game->GetCVarBool("g_checkpoints") );
 	fields[ GAME_FIELD_AUTO_SWITCH ].SetBool( ui_autoSwitch.GetBool() );
 	fields[ GAME_FIELD_AUTO_RELOAD ].SetBool( ui_autoReload.GetBool() );
-	fields[ GAME_FIELD_AIM_ASSIST ].SetBool( aa_targetAimAssistEnable.GetBool() );
+	fields[ GAME_FIELD_AIM_ASSIST ].SetBool(game->GetCVarBool("aa_targetAimAssistEnable") );
 	fields[ GAME_FIELD_ALWAYS_SPRINT ].SetBool( in_alwaysRun.GetBool() );
-	fields[ GAME_FIELD_FLASHLIGHT_SHADOWS ].SetBool( g_weaponShadows.GetBool() );
-	fields[ GAME_FIELD_MUZZLE_FLASHES ].SetBool( g_muzzleFlash.GetBool() );
+	fields[ GAME_FIELD_FLASHLIGHT_SHADOWS ].SetBool(game->GetCVarBool("g_weaponShadows") );
+	fields[ GAME_FIELD_MUZZLE_FLASHES ].SetBool(game->GetCVarBool("g_muzzleFlash") );
 	originalFields = fields;
 }
 
@@ -341,16 +341,16 @@ idMenuScreen_Shell_GameOptions::idMenuDataSource_AudioSettings::CommitData
 void idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::CommitData()
 {
 
-	g_fov.SetFloat( fields[ GAME_FIELD_FOV ].ToFloat() );
-	g_gun_x.SetFloat( Lerp( MIN_FOV_GUN, MAX_FOV_GUN, ( fields[ GAME_FIELD_FOV ].ToFloat() - MIN_FOV ) / ( MAX_FOV - MIN_FOV ) ) );
+	game->SetCVarFloat("g_fov", fields[ GAME_FIELD_FOV ].ToFloat() );
+	game->SetCVarFloat("g_gun_x", Lerp( MIN_FOV_GUN, MAX_FOV_GUN, ( fields[ GAME_FIELD_FOV ].ToFloat() - MIN_FOV ) / ( MAX_FOV - MIN_FOV ) ) );
 	
-	g_checkpoints.SetBool( fields[ GAME_FIELD_CHECKPOINTS ].ToBool() );
+	game->SetCVarBool("g_checkpoints", fields[ GAME_FIELD_CHECKPOINTS ].ToBool() );
 	ui_autoSwitch.SetBool( fields[ GAME_FIELD_AUTO_SWITCH ].ToBool() );
 	ui_autoReload.SetBool( fields[ GAME_FIELD_AUTO_RELOAD ].ToBool() );
-	aa_targetAimAssistEnable.SetBool( fields[ GAME_FIELD_AIM_ASSIST ].ToBool() );
+	game->SetCVarBool("aa_targetAimAssistEnable", fields[ GAME_FIELD_AIM_ASSIST ].ToBool() );
 	in_alwaysRun.SetBool( fields[ GAME_FIELD_ALWAYS_SPRINT ].ToBool() );
-	g_weaponShadows.SetBool( fields[ GAME_FIELD_FLASHLIGHT_SHADOWS ].ToBool() );
-	g_muzzleFlash.SetBool( fields[ GAME_FIELD_MUZZLE_FLASHES ].ToBool() );
+	game->SetCVarBool("g_weaponShadows", fields[ GAME_FIELD_FLASHLIGHT_SHADOWS ].ToBool() );
+	game->SetCVarBool("g_muzzleFlash", fields[ GAME_FIELD_MUZZLE_FLASHES ].ToBool() );
 	
 	cvarSystem->SetModifiedFlags( CVAR_ARCHIVE );
 	

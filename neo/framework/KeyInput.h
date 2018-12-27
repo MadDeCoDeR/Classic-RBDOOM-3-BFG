@@ -70,5 +70,21 @@ public:
 	static void				WriteBindings( idFile* f );
 	static keyBindings_t	KeyBindingsFromBinding( const char* bind, bool firstOnly = false, bool localized = false );
 };
+//GK: My dll needs me
+class idKey
+{
+public:
+	idKey()
+	{
+		down = false;
+		repeats = 0;
+		usercmdAction = 0;
+	}
+	bool			down;
+	int				repeats;		// if > 1, it is autorepeating
+	idStr			binding;
+	int				usercmdAction;	// for testing by the asyncronous usercmd generation
+};
 
+extern idKey* keys;
 #endif /* !__KEYINPUT_H__ */

@@ -682,7 +682,7 @@ void idIK_Walk::Evaluate()
 		
 		start = jointOrigins[i] + normal * footUpTrace;
 		end = jointOrigins[i] - normal * footDownTrace;
-		gameLocal.clip.Translation( results, start, end, footModel, mat3_identity, CONTENTS_SOLID | CONTENTS_IKCLIP, self );
+		gameLocal.GetClip()->Translation( results, start, end, footModel, mat3_identity, CONTENTS_SOLID | CONTENTS_IKCLIP, self );
 		floorHeights[i] = results.endpos * normal;
 		
 		if( ik_debug.GetBool() && footModel )
@@ -766,7 +766,7 @@ void idIK_Walk::Evaluate()
 	{
 		start = waistOrigin;
 		end = waistOrigin + waistOffset - normal * minWaistFloorDist;
-		gameLocal.clip.Translation( results, start, end, footModel, modelAxis, CONTENTS_SOLID | CONTENTS_IKCLIP, self );
+		gameLocal.GetClip()->Translation( results, start, end, footModel, modelAxis, CONTENTS_SOLID | CONTENTS_IKCLIP, self );
 		height = ( waistOrigin + waistOffset - results.endpos ) * normal;
 		if( height < minWaistFloorDist )
 		{
@@ -1173,7 +1173,7 @@ void idIK_Reach::Evaluate()
 		handOrigin = modelOrigin + handOrigin * modelAxis;
 		
 		// get first collision going from shoulder to hand
-		gameLocal.clip.TracePoint( trace, shoulderOrigin, handOrigin, CONTENTS_SOLID, self );
+		gameLocal.GetClip()->TracePoint( trace, shoulderOrigin, handOrigin, CONTENTS_SOLID, self );
 		handOrigin = trace.endpos;
 		
 		// get the IK bend direction

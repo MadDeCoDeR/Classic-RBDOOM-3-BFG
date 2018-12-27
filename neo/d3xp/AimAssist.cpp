@@ -37,7 +37,7 @@ Contains the AimAssist implementation.
 ================================================================================================
 */
 
-idCVar aa_targetAimAssistEnable(	"aa_targetAimAssistEnable",						"0",		CVAR_BOOL | CVAR_ARCHIVE,	"Enables/Disables the entire Aim Assist system" );
+extern idCVar aa_targetAimAssistEnable;
 
 idCVar aa_targetAdhesionEnable(	"aa_targetAdhesionEnable",						"1",		CVAR_BOOL,	"Enables Target Adhesion" );
 idCVar aa_targetFrictionEnable(	"aa_targetFrictionEnable",						"1",		CVAR_BOOL,	"Enables Target Friction" );
@@ -238,7 +238,7 @@ idEntity* idAimAssist::FindAimAssistTarget( idVec3& targetPos )
 		
 			// determine if the current target is in our line of sight
 			trace_t tr;
-			gameLocal.clip.TracePoint( tr, cameraPos, primaryTargetPos, MASK_MONSTERSOLID, player );
+			gameLocal.GetClip()->TracePoint( tr, cameraPos, primaryTargetPos, MASK_MONSTERSOLID, player );
 			
 			// did our trace fail?
 			if( ( ( tr.fraction < 1.0f ) && ( tr.c.entityNum != entity->entityNumber ) ) || ( tr.fraction >= 1.0f ) )
@@ -246,7 +246,7 @@ idEntity* idAimAssist::FindAimAssistTarget( idVec3& targetPos )
 			
 				// if the collision test failed for the primary position -- check the secondary position
 				trace_t tr2;
-				gameLocal.clip.TracePoint( tr2, cameraPos, secondaryTargetPos, MASK_MONSTERSOLID, player );
+				gameLocal.GetClip()->TracePoint( tr2, cameraPos, secondaryTargetPos, MASK_MONSTERSOLID, player );
 				
 				if( ( ( tr2.fraction < 1.0f ) && ( tr2.c.entityNum != entity->entityNumber ) ) || ( tr2.fraction >= 1.0f ) )
 				{

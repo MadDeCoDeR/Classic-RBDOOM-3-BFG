@@ -1690,7 +1690,7 @@ bool idActor::CanSee( idEntity* ent, bool useFov ) const
 	
 	eye = GetEyePosition();
 	
-	gameLocal.clip.TracePoint( tr, eye, toPos, MASK_OPAQUE, this );
+	gameLocal.GetClip()->TracePoint( tr, eye, toPos, MASK_OPAQUE, this );
 	if( tr.fraction >= 1.0f || ( gameLocal.GetTraceEntity( tr ) == ent ) )
 	{
 		return true;
@@ -1713,7 +1713,7 @@ bool idActor::PointVisible( const idVec3& point ) const
 	end = point;
 	end[2] += 1.0f;
 	
-	gameLocal.clip.TracePoint( results, start, end, MASK_OPAQUE, this );
+	gameLocal.GetClip()->TracePoint( results, start, end, MASK_OPAQUE, this );
 	return ( results.fraction >= 1.0f );
 }
 
@@ -1804,7 +1804,7 @@ void idActor::LinkCombat()
 	
 	if( combatModel )
 	{
-		combatModel->Link( gameLocal.clip, this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle );
+		combatModel->Link( *gameLocal.GetClip(), this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle );
 	}
 	headEnt = head.GetEntity();
 	if( headEnt )

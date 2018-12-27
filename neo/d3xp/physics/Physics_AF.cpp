@@ -4453,7 +4453,7 @@ void idAFConstraint_Suspension::Evaluate( float invTimeStep )
 	
 	axis *= rotation.ToMat3();
 	
-	gameLocal.clip.Translation( trace, start, end, wheelModel, axis, MASK_SOLID, NULL );
+	gameLocal.GetClip()->Translation( trace, start, end, wheelModel, axis, MASK_SOLID, NULL );
 	
 	wheelOffset = ( trace.endpos - body1->GetWorldOrigin() ) * body1->GetWorldAxis().Transpose();
 	
@@ -6277,7 +6277,7 @@ void idPhysics_AF::CheckForCollisions( float timeStep )
 			
 #ifdef TEST_COLLISION_DETECTION
 			bool startsolid = false;
-			if( gameLocal.clip.Contents( body->current->worldOrigin, body->clipModel,
+			if( gameLocal.GetClip()->Contents( body->current->worldOrigin, body->clipModel,
 										 body->current->worldAxis, body->clipMask, passEntity ) )
 			{
 				startsolid = true;
@@ -6289,7 +6289,7 @@ void idPhysics_AF::CheckForCollisions( float timeStep )
 			rotation.SetOrigin( body->current->worldOrigin );
 			
 			// if there was a collision
-			if( gameLocal.clip.Motion( collision, body->current->worldOrigin, body->next->worldOrigin, rotation,
+			if( gameLocal.GetClip()->Motion( collision, body->current->worldOrigin, body->next->worldOrigin, rotation,
 									   body->clipModel, body->current->worldAxis, body->clipMask, passEntity ) )
 			{
 			
@@ -6305,7 +6305,7 @@ void idPhysics_AF::CheckForCollisions( float timeStep )
 			}
 			
 #ifdef TEST_COLLISION_DETECTION
-			if( gameLocal.clip.Contents( body->next->worldOrigin, body->clipModel,
+			if( gameLocal.GetClip()->Contents( body->next->worldOrigin, body->clipModel,
 										 body->next->worldAxis, body->clipMask, passEntity ) )
 			{
 				if( !startsolid )
@@ -6316,7 +6316,7 @@ void idPhysics_AF::CheckForCollisions( float timeStep )
 #endif
 		}
 		
-		body->clipModel->Link( gameLocal.clip, self, body->clipModel->GetId(), body->next->worldOrigin, body->next->worldAxis );
+		body->clipModel->Link( *gameLocal.GetClip(), self, body->clipModel->GetId(), body->next->worldOrigin, body->next->worldAxis );
 	}
 }
 
@@ -6363,7 +6363,7 @@ bool idPhysics_AF::EvaluateContacts()
 		dir.SubVec3( 0 ).Normalize();
 		dir.SubVec3( 1 ).Normalize();
 		
-		numContacts = gameLocal.clip.Contacts( contactInfo, 10, body->current->worldOrigin, dir.SubVec6( 0 ), 2.0f, //CONTACT_EPSILON,
+		numContacts = gameLocal.GetClip()->Contacts( contactInfo, 10, body->current->worldOrigin, dir.SubVec6( 0 ), 2.0f, //CONTACT_EPSILON,
 											   body->clipModel, body->current->worldAxis, body->clipMask, passEntity );
 											   
 #if 1
@@ -6549,7 +6549,7 @@ void idPhysics_AF::UpdateClipModels()
 	for( i = 0; i < bodies.Num(); i++ )
 	{
 		body = bodies[i];
-		body->clipModel->Link( gameLocal.clip, self, body->clipModel->GetId(), body->current->worldOrigin, body->current->worldAxis );
+		body->clipModel->Link( *gameLocal.GetClip(), self, body->clipModel->GetId(), body->current->worldOrigin, body->current->worldAxis );
 	}
 }
 
@@ -8720,13 +8720,13 @@ void idPhysics_AF::ClipTranslation( trace_t& results, const idVec3& translation,
 		{
 			if( model )
 			{
-				gameLocal.clip.TranslationModel( bodyResults, body->current->worldOrigin, body->current->worldOrigin + translation,
+				gameLocal.GetClip()->TranslationModel( bodyResults, body->current->worldOrigin, body->current->worldOrigin + translation,
 												 body->clipModel, body->current->worldAxis, body->clipMask,
 												 model->Handle(), model->GetOrigin(), model->GetAxis() );
 			}
 			else
 			{
-				gameLocal.clip.Translation( bodyResults, body->current->worldOrigin, body->current->worldOrigin + translation,
+				gameLocal.GetClip()->Translation( bodyResults, body->current->worldOrigin, body->current->worldOrigin + translation,
 											body->clipModel, body->current->worldAxis, body->clipMask, self );
 			}
 			if( bodyResults.fraction < results.fraction )
@@ -8762,13 +8762,13 @@ void idPhysics_AF::ClipRotation( trace_t& results, const idRotation& rotation, c
 		{
 			if( model )
 			{
-				gameLocal.clip.RotationModel( bodyResults, body->current->worldOrigin, rotation,
+				gameLocal.GetClip()->RotationModel( bodyResults, body->current->worldOrigin, rotation,
 											  body->clipModel, body->current->worldAxis, body->clipMask,
 											  model->Handle(), model->GetOrigin(), model->GetAxis() );
 			}
 			else
 			{
-				gameLocal.clip.Rotation( bodyResults, body->current->worldOrigin, rotation,
+				gameLocal.GetClip()->Rotation( bodyResults, body->current->worldOrigin, rotation,
 										 body->clipModel, body->current->worldAxis, body->clipMask, self );
 			}
 			if( bodyResults.fraction < results.fraction )
@@ -8803,13 +8803,13 @@ int idPhysics_AF::ClipContents( const idClipModel* model ) const
 		{
 			if( model )
 			{
-				contents |= gameLocal.clip.ContentsModel( body->current->worldOrigin,
+				contents |= gameLocal.GetClip()->ContentsModel( body->current->worldOrigin,
 							body->clipModel, body->current->worldAxis, -1,
 							model->Handle(), model->GetOrigin(), model->GetAxis() );
 			}
 			else
 			{
-				contents |= gameLocal.clip.Contents( body->current->worldOrigin,
+				contents |= gameLocal.GetClip()->Contents( body->current->worldOrigin,
 													 body->clipModel, body->current->worldAxis, -1, NULL );
 			}
 		}

@@ -30,10 +30,12 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "Game_local.h"
 #include "../../doomclassic/doom/doomdef.h"
+#ifndef GAME_DLL
 #include "../../doomclassic/doom/doomlib.h"
+#endif
 
 idCVar achievements_Verbose( "achievements_Verbose", "1", CVAR_BOOL, "debug spam" );
-idCVar g_demoMode( "g_demoMode", "0", CVAR_INTEGER, "this is a demo" );
+extern idCVar g_demoMode;
 //GK: Bypass the warning
 bool idAchievementManager::cheatingDialogShown = true;
 
@@ -256,6 +258,7 @@ void idAchievementManager::EventCompletesAchievement( const achievement_t eventI
 	}
 	
 #ifdef ID_RETAIL
+#ifndef GAME_DLL
 	if( common->GetConsoleUsed() )
 	{
 		if( !cheatingDialogShown )
@@ -265,6 +268,7 @@ void idAchievementManager::EventCompletesAchievement( const achievement_t eventI
 		}
 		return;
 	}
+#endif
 #endif
 	
 	counts[eventId]++;
@@ -340,6 +344,7 @@ void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
 	}
 	
 #ifdef ID_RETAIL					//GK No achievments if we use classic parameters
+#ifndef GAME_DLL
 	if( common->GetConsoleUsed() || (classicargv[1] !=NULL && classicargv[1] != "\0"))
 	{
 		if( !cheatingDialogShown )
@@ -349,6 +354,7 @@ void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
 		}
 		return;
 	}
+#endif
 #endif
 	
 	session->GetAchievementSystem().AchievementUnlock( localUser, id );
@@ -537,7 +543,9 @@ CONSOLE_COMMAND( AchievementsReset, "Lock an achievement", NULL )
 		user->SetStatInt( i, 0 );
 		session->GetAchievementSystem().AchievementLock( user, i );
 	}
+#ifndef GAME_DLL
 	user->SaveProfileSettings();
+#endif
 }
 
 /*
@@ -567,7 +575,9 @@ CONSOLE_COMMAND( AchievementsUnlock, "Unlock an achievement", NULL )
 		user->SetStatInt( i, achievementInfo[i].required );
 		session->GetAchievementSystem().AchievementUnlock( user, i );
 	}
+#ifndef GAME_DLL
 	user->SaveProfileSettings();
+#endif
 }
 
 /*

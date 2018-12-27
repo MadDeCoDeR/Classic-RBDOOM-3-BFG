@@ -37,7 +37,7 @@ const static int NUM_SAVE_OPTIONS = 10;
 idMenuScreen_Shell_Save::Initialize
 ========================
 */
-void idMenuScreen_Shell_Save::Initialize( idMenuHandler* data )
+void idMenuScreen_Shell_SaveLocal::Initialize( idMenuHandler* data )
 {
 	idMenuScreen::Initialize( data );
 	
@@ -101,7 +101,7 @@ void idMenuScreen_Shell_Save::Initialize( idMenuHandler* data )
 idMenuScreen_Shell_Save::Update
 ========================
 */
-void idMenuScreen_Shell_Save::Update()
+void idMenuScreen_Shell_SaveLocal::Update()
 {
 
 	UpdateSaveEnumerations();
@@ -136,7 +136,7 @@ void idMenuScreen_Shell_Save::Update()
 idMenuScreen_Shell_Save::UpdateSaveEnumerations
 ========================
 */
-void idMenuScreen_Shell_Save::UpdateSaveEnumerations()
+void idMenuScreen_Shell_SaveLocal::UpdateSaveEnumerations()
 {
 
 	const saveGameDetailsList_t& saveGameInfo = session->GetSaveGameManager().GetEnumeratedSavegames();
@@ -202,11 +202,11 @@ void idMenuScreen_Shell_Save::UpdateSaveEnumerations()
 				const idSaveGameDetails& details = sortedSaves[slot];
 				if( details.damaged )
 				{
-					slotSaveName =  va( S_COLOR_RED "%s", idLocalization::GetString( "#str_swf_corrupt_file" ) );
+					slotSaveName =  va( S_COLOR_RED "%s", common->GetName( "#str_swf_corrupt_file" ) );
 				}
 				else if( details.GetSaveVersion() > BUILD_NUMBER )
 				{
-					slotSaveName =  va( S_COLOR_RED "%s", idLocalization::GetString( "#str_swf_wrong_version" ) );
+					slotSaveName =  va( S_COLOR_RED "%s", common->GetName( "#str_swf_wrong_version" ) );
 				}
 				else
 				{
@@ -319,7 +319,7 @@ void idMenuScreen_Shell_Save::UpdateSaveEnumerations()
 idMenuScreen_Shell_Save::ShowScreen
 ========================
 */
-void idMenuScreen_Shell_Save::ShowScreen( const mainMenuTransition_t transitionType )
+void idMenuScreen_Shell_SaveLocal::ShowScreen( const mainMenuTransition_t transitionType )
 {
 	idMenuScreen::ShowScreen( transitionType );
 }
@@ -329,7 +329,7 @@ void idMenuScreen_Shell_Save::ShowScreen( const mainMenuTransition_t transitionT
 idMenuScreen_Shell_Save::HideScreen
 ========================
 */
-void idMenuScreen_Shell_Save::HideScreen( const mainMenuTransition_t transitionType )
+void idMenuScreen_Shell_SaveLocal::HideScreen( const mainMenuTransition_t transitionType )
 {
 	idMenuScreen::HideScreen( transitionType );
 }
@@ -339,7 +339,7 @@ void idMenuScreen_Shell_Save::HideScreen( const mainMenuTransition_t transitionT
 idMenuScreen_Shell_Save::SaveGame
 ========================
 */
-void idMenuScreen_Shell_Save::SaveGame( int index )
+void idMenuScreen_Shell_SaveLocal::SaveGame( int index )
 {
 	const saveGameDetailsList_t& saveGameInfo = session->GetSaveGameManager().GetEnumeratedSavegames();
 	int newSaveOffset = 1;
@@ -455,7 +455,7 @@ void idMenuScreen_Shell_Save::SaveGame( int index )
 idMenuScreen_Shell_Save::DeleteGame
 ========================
 */
-void idMenuScreen_Shell_Save::DeleteGame( int index )
+void idMenuScreen_Shell_SaveLocal::DeleteGame( int index )
 {
 
 	class idSWFScriptFunction_DeleteGame : public idSWFScriptFunction_RefCounted
@@ -512,7 +512,7 @@ void idMenuScreen_Shell_Save::DeleteGame( int index )
 idMenuScreen_Shell_Save::HandleAction
 ========================
 */
-bool idMenuScreen_Shell_Save::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled )
+bool idMenuScreen_Shell_SaveLocal::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled )
 {
 
 	if( menuData == NULL )

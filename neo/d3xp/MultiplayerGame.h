@@ -42,18 +42,6 @@ class idMenuHandler_HUD;
 class idMenuHandler_Scoreboard;
 class idItemTeam;
 
-enum gameType_t
-{
-	GAME_SP = -2,
-	GAME_RANDOM = -1,
-	GAME_DM = 0,
-	GAME_TOURNEY,
-	GAME_TDM,
-	GAME_LASTMAN,
-	GAME_CTF,
-	GAME_COUNT,
-};
-
 // Used by the UI
 typedef enum
 {

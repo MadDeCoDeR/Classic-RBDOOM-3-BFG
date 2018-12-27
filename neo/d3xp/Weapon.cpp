@@ -42,7 +42,7 @@ If you have questions concerning this license or the applicable additional terms
 // event defs
 //
 extern idCVar flashlight_old;
-idCVar pm_vmfov("pm_vmfov", "0", CVAR_INTEGER | CVAR_GAME | CVAR_ARCHIVE, "Adjust the View Model Field of View", 0, 64);
+extern idCVar pm_vmfov;
 const idEventDef EV_Weapon_Clear( "<clear>" );
 const idEventDef EV_Weapon_GetOwner( "getOwner", NULL, 'e' );
 const idEventDef EV_Weapon_Next( "nextWeapon" );
@@ -140,7 +140,7 @@ idCVar cg_projectile_clientAuthoritative_maxCatchup( "cg_projectile_clientAuthor
 
 idCVar g_useWeaponDepthHack( "g_useWeaponDepthHack", "1", CVAR_BOOL, "Crunch z depth on weapons" );
 
-idCVar g_weaponShadows( "g_weaponShadows", "0", CVAR_BOOL | CVAR_ARCHIVE, "Cast shadows from weapons" );
+extern idCVar g_weaponShadows;
 
 extern idCVar cg_predictedSpawn_debug;
 
@@ -1427,7 +1427,7 @@ idWeapon::DisplayName
 */
 const char* idWeapon::DisplayName() const
 {
-	return idLocalization::GetString( displayName );
+	return common->GetName( displayName );
 }
 
 /*
@@ -1437,7 +1437,7 @@ idWeapon::Description
 */
 const char* idWeapon::Description() const
 {
-	return idLocalization::GetString( itemDesc );
+	return common->GetName( itemDesc );
 }
 
 /*
@@ -1546,7 +1546,7 @@ void idWeapon::UpdateFlashPosition()
 	idVec3	start = muzzleFlash.origin - playerViewAxis[0] * 16;
 	idVec3	end = muzzleFlash.origin + playerViewAxis[0] * 8;
 	trace_t	tr;
-	gameLocal.clip.TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL, owner );
+	gameLocal.GetClip()->TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL, owner );
 	// be at least 8 units away from a solid
 	muzzleFlash.origin = tr.endpos - playerViewAxis[0] * 8;
 	
@@ -2446,7 +2446,7 @@ void idWeapon::AlertMonsters()
 	idEntity* ent;
 	idVec3 end = muzzleFlash.origin + muzzleFlash.axis * muzzleFlash.target;
 	
-	gameLocal.clip.TracePoint( tr, muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, owner );
+	gameLocal.GetClip()->TracePoint( tr, muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, owner );
 	if( g_debugWeapon.GetBool() )
 	{
 		gameRenderWorld->DebugLine( colorYellow, muzzleFlash.origin, end, 0 );
@@ -2470,7 +2470,7 @@ void idWeapon::AlertMonsters()
 	// jitter the trace to try to catch cases where a trace down the center doesn't hit the monster
 	end += muzzleFlash.axis * muzzleFlash.right * idMath::Sin16( MS2SEC( gameLocal.time ) * 31.34f );
 	end += muzzleFlash.axis * muzzleFlash.up * idMath::Sin16( MS2SEC( gameLocal.time ) * 12.17f );
-	gameLocal.clip.TracePoint( tr, muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, owner );
+	gameLocal.GetClip()->TracePoint( tr, muzzleFlash.origin, end, CONTENTS_OPAQUE | MASK_SHOT_RENDERMODEL | CONTENTS_FLASHLIGHT_TRIGGER, owner );
 	if( g_debugWeapon.GetBool() )
 	{
 		gameRenderWorld->DebugLine( colorYellow, muzzleFlash.origin, end, 0 );
@@ -4164,7 +4164,7 @@ void idWeapon::Event_LaunchProjectiles( int num_projectiles, float spread, float
 				{
 					start = ownerBounds.GetCenter();
 				}
-				gameLocal.clip.Translation( tr, start, muzzle_pos, proj->GetPhysics()->GetClipModel(), proj->GetPhysics()->GetClipModel()->GetAxis(), MASK_SHOT_RENDERMODEL, owner );
+				gameLocal.GetClip()->Translation( tr, start, muzzle_pos, proj->GetPhysics()->GetClipModel(), proj->GetPhysics()->GetClipModel()->GetAxis(), MASK_SHOT_RENDERMODEL, owner );
 				muzzle_pos = tr.endpos;
 			}
 			
@@ -4351,7 +4351,7 @@ void idWeapon::Event_LaunchProjectilesEllipse( int num_projectiles, float spread
 				{
 					start = ownerBounds.GetCenter();
 				}
-				gameLocal.clip.Translation( tr, start, muzzle_pos, proj->GetPhysics()->GetClipModel(), proj->GetPhysics()->GetClipModel()->GetAxis(), MASK_SHOT_RENDERMODEL, owner );
+				gameLocal.GetClip()->Translation( tr, start, muzzle_pos, proj->GetPhysics()->GetClipModel(), proj->GetPhysics()->GetClipModel()->GetAxis(), MASK_SHOT_RENDERMODEL, owner );
 				muzzle_pos = tr.endpos;
 			}
 			
@@ -4528,7 +4528,7 @@ void idWeapon::Event_Melee()
 	{
 		idVec3 start = playerViewOrigin;
 		idVec3 end = start + playerViewAxis[0] * ( meleeDistance * owner->PowerUpModifier( MELEE_DISTANCE ) );
-		gameLocal.clip.TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL, owner );
+		gameLocal.GetClip()->TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL, owner );
 		if( tr.fraction < 1.0f )
 		{
 			ent = gameLocal.GetTraceEntity( tr );

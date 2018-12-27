@@ -55,6 +55,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../framework/CmdSystem.h"
 #include "../framework/CVarSystem.h"
 #include "../framework/Common.h"
+#include "../framework/KeyInput.h"
 // DG: needed for idFile_InZip in File.h
 #include "../framework/Unzip.h"
 // DG end
@@ -144,7 +145,7 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 
 #ifdef GAME_DLL
 
-#include "../d3xp/Game_local.h"
+#include "../d3xp/Game_Internal.h"
 
 #else
 

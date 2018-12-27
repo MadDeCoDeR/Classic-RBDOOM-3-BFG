@@ -168,7 +168,7 @@ void idMultiplayerGame::Reset()
 	
 	if( common->IsMultiplayer() )
 	{
-		scoreboardManager = new idMenuHandler_Scoreboard();
+		scoreboardManager = uiManager->CreateScoreboard();
 		if( scoreboardManager != NULL )
 		{
 			scoreboardManager->Initialize( "scoreboard", common->SW() );
@@ -201,7 +201,7 @@ void idMultiplayerGame::SpawnPlayer( int clientNum )
 	idLobbyBase& lobby = session->GetActingGameStateLobbyBase();
 	lobbyUserID_t& lobbyUserID = gameLocal.lobbyUserIDs[clientNum];
 	
-	AddChatLine( idLocalization::GetString( "#str_07177" ), lobby.GetLobbyUserName( lobbyUserID ) );
+	AddChatLine( common->GetName( "#str_07177" ), lobby.GetLobbyUserName( lobbyUserID ) );
 	
 	memset( &playerState[ clientNum ], 0, sizeof( playerState[ clientNum ] ) );
 	if( !common->IsClient() )
@@ -493,22 +493,22 @@ void idMultiplayerGame::UpdateScoreboard( idMenuHandler_Scoreboard* scoreboard, 
 			{
 				if( player->spectating )
 				{
-					spectateData = idLocalization::GetString( "#str_04246" );
+					spectateData = common->GetName( "#str_04246" );
 				}
 				else
 				{
-					spectateData = idLocalization::GetString( "#str_04247" );
+					spectateData = common->GetName( "#str_04247" );
 				}
 			}
 			else
 			{
 				if( gameLocal.gameType == GAME_LASTMAN && playerState[ playerNum ].fragCount == LASTMAN_NOLIVES )
 				{
-					spectateData = idLocalization::GetString( "#str_06736" );
+					spectateData = common->GetName( "#str_06736" );
 				}
 				else if( player->spectating )
 				{
-					spectateData = idLocalization::GetString( "#str_04246" );
+					spectateData = common->GetName( "#str_04246" );
 				}
 			}
 			
@@ -567,12 +567,12 @@ void idMultiplayerGame::UpdateScoreboard( idMenuHandler_Scoreboard* scoreboard, 
 		int ms = ( int ) ceilf( timeRemaining / 1000.0f );
 		if( ms == 1 )
 		{
-			gameInfo = idLocalization::GetString( "#str_online_game_starts_in_second" );
+			gameInfo = common->GetName( "#str_online_game_starts_in_second" );
 			gameInfo.Replace( "<DNT_VAL>", idStr( ms ) );
 		}
 		else if( ms > 0 && ms < 30 )
 		{
-			gameInfo = idLocalization::GetString( "#str_online_game_starts_in_seconds" );
+			gameInfo = common->GetName( "#str_online_game_starts_in_seconds" );
 			gameInfo.Replace( "<DNT_VAL>", idStr( ms ) );
 		}
 	}
@@ -582,26 +582,26 @@ void idMultiplayerGame::UpdateScoreboard( idMenuHandler_Scoreboard* scoreboard, 
 		{
 			if( gameState == GAMEON || gameState == SUDDENDEATH )
 			{
-				gameInfo = va( "%s: %i", idLocalization::GetString( "#str_04264" ), startFragLimit );
+				gameInfo = va( "%s: %i", common->GetName( "#str_04264" ), startFragLimit );
 			}
 			else
 			{
-				gameInfo = va( "%s: %i", idLocalization::GetString( "#str_04264" ), gameLocal.serverInfo.GetInt( "si_fragLimit" ) );
+				gameInfo = va( "%s: %i", common->GetName( "#str_04264" ), gameLocal.serverInfo.GetInt( "si_fragLimit" ) );
 			}
 		}
 		else if( gameLocal.gameType == GAME_CTF )
 		{
 			int captureLimit = gameLocal.serverInfo.GetInt( "si_fragLimit" );
-			gameInfo = va( idLocalization::GetString( "#str_11108" ), captureLimit );
+			gameInfo = va( common->GetName( "#str_11108" ), captureLimit );
 		}
 		else
 		{
-			gameInfo = va( "%s: %i", idLocalization::GetString( "#str_01982" ), gameLocal.serverInfo.GetInt( "si_fragLimit" ) );
+			gameInfo = va( "%s: %i", common->GetName( "#str_01982" ), gameLocal.serverInfo.GetInt( "si_fragLimit" ) );
 		}
 		
 		if( gameLocal.serverInfo.GetInt( "si_timeLimit" ) > 0 )
 		{
-			gameInfo.Append( va( "        %s: %i", idLocalization::GetString( "#str_01983" ), gameLocal.serverInfo.GetInt( "si_timeLimit" ) ) );
+			gameInfo.Append( va( "        %s: %i", common->GetName( "#str_01983" ), gameLocal.serverInfo.GetInt( "si_timeLimit" ) ) );
 		}
 	}
 	
@@ -2069,8 +2069,8 @@ void idMultiplayerGame::GetSpectateText( idPlayer* player, idStr spectatetext[ 2
 		{
 			// If we're in GAMEON in lastman, you can't actully spawn, or you'll have an unfair
 			// advantage with more lives than everyone else.
-			spectatetext[ 0 ] = idLocalization::GetString( "#str_04246" );
-			spectatetext[ 0 ] += idLocalization::GetString( "#str_07003" );
+			spectatetext[ 0 ] = common->GetName( "#str_04246" );
+			spectatetext[ 0 ] += common->GetName( "#str_07003" );
 		}
 		else
 		{
@@ -2080,27 +2080,27 @@ void idMultiplayerGame::GetSpectateText( idPlayer* player, idStr spectatetext[ 2
 					( currentTourneyPlayer[0] != player->entityNumber && currentTourneyPlayer[1] != player->entityNumber ) )
 			{
 			
-				spectatetext[ 0 ] = idLocalization::GetString( "#str_04246" );
+				spectatetext[ 0 ] = common->GetName( "#str_04246" );
 				switch( player->tourneyLine )
 				{
 					case 0:
-						spectatetext[ 0 ] += idLocalization::GetString( "#str_07003" );
+						spectatetext[ 0 ] += common->GetName( "#str_07003" );
 						break;
 					case 1:
-						spectatetext[ 0 ] += idLocalization::GetString( "#str_07004" );
+						spectatetext[ 0 ] += common->GetName( "#str_07004" );
 						break;
 					case 2:
-						spectatetext[ 0 ] += idLocalization::GetString( "#str_07005" );
+						spectatetext[ 0 ] += common->GetName( "#str_07005" );
 						break;
 					default:
-						spectatetext[ 0 ] += va( idLocalization::GetString( "#str_07006" ), player->tourneyLine );
+						spectatetext[ 0 ] += va( common->GetName( "#str_07006" ), player->tourneyLine );
 						break;
 				}
 				
 			}
 			else
 			{
-				spectatetext[ 0 ] = idLocalization::GetString( "#str_respawn_message" );
+				spectatetext[ 0 ] = common->GetName( "#str_respawn_message" );
 			}
 		}
 	}
@@ -2108,36 +2108,36 @@ void idMultiplayerGame::GetSpectateText( idPlayer* player, idStr spectatetext[ 2
 	{
 		if( gameLocal.gameType == GAME_TOURNEY )
 		{
-			spectatetext[ 0 ] = idLocalization::GetString( "#str_04246" );
+			spectatetext[ 0 ] = common->GetName( "#str_04246" );
 			switch( player->tourneyLine )
 			{
 				case 0:
-					spectatetext[ 0 ] += idLocalization::GetString( "#str_07003" );
+					spectatetext[ 0 ] += common->GetName( "#str_07003" );
 					break;
 				case 1:
-					spectatetext[ 0 ] += idLocalization::GetString( "#str_07004" );
+					spectatetext[ 0 ] += common->GetName( "#str_07004" );
 					break;
 				case 2:
-					spectatetext[ 0 ] += idLocalization::GetString( "#str_07005" );
+					spectatetext[ 0 ] += common->GetName( "#str_07005" );
 					break;
 				default:
-					spectatetext[ 0 ] += va( idLocalization::GetString( "#str_07006" ), player->tourneyLine );
+					spectatetext[ 0 ] += va( common->GetName( "#str_07006" ), player->tourneyLine );
 					break;
 			}
 		}
 		else if( gameLocal.gameType == GAME_LASTMAN )
 		{
-			spectatetext[ 0 ] = idLocalization::GetString( "#str_07007" );
+			spectatetext[ 0 ] = common->GetName( "#str_07007" );
 		}
 		else
 		{
-			spectatetext[ 0 ] = idLocalization::GetString( "#str_04246" );
+			spectatetext[ 0 ] = common->GetName( "#str_04246" );
 		}
 	}
 	if( player->spectator != player->entityNumber )
 	{
 		idLobbyBase& lobby = session->GetActingGameStateLobbyBase();
-		spectatetext[ 1 ] = va( idLocalization::GetString( "#str_07008" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[ player->spectator ] ) );
+		spectatetext[ 1 ] = va( common->GetName( "#str_07008" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[ player->spectator ] ) );
 	}
 }
 
@@ -2293,7 +2293,7 @@ void idMultiplayerGame::AddChatLine( const char* fmt, ... )
 		chatHistorySize++;
 	}
 	chatDataUpdated = true;
-	lastChatLineTime = Sys_Milliseconds();
+	lastChatLineTime = sys->GetMilliseconds();
 }
 
 /*
@@ -2307,7 +2307,7 @@ void idMultiplayerGame::DrawChat( idPlayer* player )
 	
 	if( player )
 	{
-		if( Sys_Milliseconds() - lastChatLineTime > CHAT_FADE_TIME )
+		if(sys->GetMilliseconds() - lastChatLineTime > CHAT_FADE_TIME )
 		{
 			if( chatHistorySize > 0 )
 			{
@@ -2321,7 +2321,7 @@ void idMultiplayerGame::DrawChat( idPlayer* player )
 				}
 				chatDataUpdated = true;
 			}
-			lastChatLineTime = Sys_Milliseconds();
+			lastChatLineTime = sys->GetMilliseconds();
 		}
 		if( chatDataUpdated )
 		{
@@ -2547,134 +2547,134 @@ void idMultiplayerGame::PrintMessageEvent( msg_evt_t evt, int parm1, int parm2 )
 	{
 		case MSG_LEFTGAME:
 			assert( parm1 >= 0 );
-			AddChatLine( idLocalization::GetString( "#str_11604" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
+			AddChatLine( common->GetName( "#str_11604" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
 			break;
 		case MSG_SUICIDE:
 			assert( parm1 >= 0 );
-			AddChatLine( idLocalization::GetString( "#str_04293" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
+			AddChatLine( common->GetName( "#str_04293" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
 			break;
 		case MSG_KILLED:
 			assert( parm1 >= 0 && parm2 >= 0 );
-			AddChatLine( idLocalization::GetString( "#str_04292" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );
+			AddChatLine( common->GetName( "#str_04292" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );
 			break;
 		case MSG_KILLEDTEAM:
 			assert( parm1 >= 0 && parm2 >= 0 );
-			AddChatLine( idLocalization::GetString( "#str_04291" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );
+			AddChatLine( common->GetName( "#str_04291" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );
 			break;
 		case MSG_TELEFRAGGED:
 			assert( parm1 >= 0 && parm2 >= 0 );
-			AddChatLine( idLocalization::GetString( "#str_04290" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );
+			AddChatLine( common->GetName( "#str_04290" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );
 			break;
 		case MSG_DIED:
 			assert( parm1 >= 0 );
-			AddChatLine( idLocalization::GetString( "#str_04289" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
+			AddChatLine( common->GetName( "#str_04289" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
 			break;
 		case MSG_SUDDENDEATH:
-			AddChatLine( idLocalization::GetString( "#str_04287" ) );
+			AddChatLine( common->GetName( "#str_04287" ) );
 			break;
 		case MSG_JOINEDSPEC:
-			AddChatLine( idLocalization::GetString( "#str_04285" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
+			AddChatLine( common->GetName( "#str_04285" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
 			break;
 		case MSG_TIMELIMIT:
-			AddChatLine( idLocalization::GetString( "#str_04284" ) );
+			AddChatLine( common->GetName( "#str_04284" ) );
 			break;
 		case MSG_FRAGLIMIT:
 			if( gameLocal.gameType == GAME_LASTMAN )
 			{
-				AddChatLine( idLocalization::GetString( "#str_04283" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
+				AddChatLine( common->GetName( "#str_04283" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
 			}
 			else if( IsGametypeTeamBased() )      /* CTF */
 			{
-				AddChatLine( idLocalization::GetString( "#str_04282" ), idLocalization::GetString( teamNames[ parm1 ] ) );
+				AddChatLine( common->GetName( "#str_04282" ), common->GetName( teamNames[ parm1 ] ) );
 			}
 			else
 			{
-				AddChatLine( idLocalization::GetString( "#str_04281" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
+				AddChatLine( common->GetName( "#str_04281" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ) );
 			}
 			break;
 		case MSG_JOINTEAM:
-			AddChatLine( idLocalization::GetString( "#str_04280" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ), parm2 ? idLocalization::GetString( "#str_02500" ) : idLocalization::GetString( "#str_02499" ) );
+			AddChatLine( common->GetName( "#str_04280" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm1] ), parm2 ? common->GetName( "#str_02500" ) : common->GetName( "#str_02499" ) );
 			break;
 		case MSG_HOLYSHIT:
-			AddChatLine( idLocalization::GetString( "#str_06732" ) );
+			AddChatLine( common->GetName( "#str_06732" ) );
 			break;
 		case MSG_POINTLIMIT:
-			AddChatLine( idLocalization::GetString( "#str_11100" ), parm1 ? idLocalization::GetString( "#str_11110" ) : idLocalization::GetString( "#str_11111" ) );
+			AddChatLine( common->GetName( "#str_11100" ), parm1 ? common->GetName( "#str_11110" ) : common->GetName( "#str_11111" ) );
 			break;
 			
 		case MSG_FLAGTAKEN :
-			if( gameLocal.GetLocalPlayer() == NULL )
+			if( game->GetLocalPlayer() == NULL )
 				break;
 				
 			if( parm2 < 0 || parm2 >= MAX_CLIENTS )
 				break;
 				
-			if( gameLocal.GetLocalPlayer()->team != parm1 )
+			if( game->GetLocalPlayer()->team != parm1 )
 			{
-				AddChatLine( idLocalization::GetString( "#str_11101" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// your team
+				AddChatLine( common->GetName( "#str_11101" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// your team
 			}
 			else
 			{
-				AddChatLine( idLocalization::GetString( "#str_11102" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// enemy
+				AddChatLine( common->GetName( "#str_11102" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// enemy
 			}
 			break;
 			
 		case MSG_FLAGDROP :
-			if( gameLocal.GetLocalPlayer() == NULL )
+			if( game->GetLocalPlayer() == NULL )
 				break;
 				
-			if( gameLocal.GetLocalPlayer()->team != parm1 )
+			if( game->GetLocalPlayer()->team != parm1 )
 			{
-				AddChatLine( idLocalization::GetString( "#str_11103" ) );	// your team
+				AddChatLine( common->GetName( "#str_11103" ) );	// your team
 			}
 			else
 			{
-				AddChatLine( idLocalization::GetString( "#str_11104" ) );	// enemy
+				AddChatLine( common->GetName( "#str_11104" ) );	// enemy
 			}
 			break;
 			
 		case MSG_FLAGRETURN :
-			if( gameLocal.GetLocalPlayer() == NULL )
+			if( game->GetLocalPlayer() == NULL )
 				break;
 				
 			if( parm2 >= 0 && parm2 < MAX_CLIENTS )
 			{
-				if( gameLocal.GetLocalPlayer()->team != parm1 )
+				if( game->GetLocalPlayer()->team != parm1 )
 				{
-					AddChatLine( idLocalization::GetString( "#str_11120" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// your team
+					AddChatLine( common->GetName( "#str_11120" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// your team
 				}
 				else
 				{
-					AddChatLine( idLocalization::GetString( "#str_11121" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// enemy
+					AddChatLine( common->GetName( "#str_11121" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// enemy
 				}
 			}
 			else
 			{
-				AddChatLine( idLocalization::GetString( "#str_11105" ), parm1 ? idLocalization::GetString( "#str_11110" ) : idLocalization::GetString( "#str_11111" ) );
+				AddChatLine( common->GetName( "#str_11105" ), parm1 ? common->GetName( "#str_11110" ) : common->GetName( "#str_11111" ) );
 			}
 			break;
 			
 		case MSG_FLAGCAPTURE :
-			if( gameLocal.GetLocalPlayer() == NULL )
+			if( game->GetLocalPlayer() == NULL )
 				break;
 				
 			if( parm2 < 0 || parm2 >= MAX_CLIENTS )
 				break;
 				
-			if( gameLocal.GetLocalPlayer()->team != parm1 )
+			if( game->GetLocalPlayer()->team != parm1 )
 			{
-				AddChatLine( idLocalization::GetString( "#str_11122" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// your team
+				AddChatLine( common->GetName( "#str_11122" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// your team
 			}
 			else
 			{
-				AddChatLine( idLocalization::GetString( "#str_11123" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// enemy
+				AddChatLine( common->GetName( "#str_11123" ), lobby.GetLobbyUserName( gameLocal.lobbyUserIDs[parm2] ) );	// enemy
 			}
 			
-//			AddChatLine( idLocalization::GetString( "#str_11106" ), parm1 ? idLocalization::GetString( "#str_11110" ) : idLocalization::GetString( "#str_11111" ) );
+//			AddChatLine( idLocalization::GetString( "#str_11106" ), parm1 ? common->GetName( "#str_11110" ) : common->GetName( "#str_11111" ) );
 			break;
 			
 		case MSG_SCOREUPDATE:
-			AddChatLine( idLocalization::GetString( "#str_11107" ), parm1, parm2 );
+			AddChatLine( common->GetName( "#str_11107" ), parm1, parm2 );
 			break;
 		default:
 			gameLocal.DPrintf( "PrintMessageEvent: unknown message type %d\n", evt );
@@ -3375,7 +3375,7 @@ void idMultiplayerGame::ToggleSpectate()
 	// only allow toggling to spectate if spectators are enabled.
 	if( !spectating && !gameLocal.serverInfo.GetBool( "si_spectators" ) )
 	{
-		gameLocal.mpGame.AddChatLine( idLocalization::GetString( "#str_06747" ) );
+		gameLocal.mpGame.AddChatLine( common->GetName( "#str_06747" ) );
 		return;
 	}
 	
@@ -3456,7 +3456,7 @@ void idMultiplayerGame::VoiceChat( const idCmdArgs& args, bool team )
 	{
 		return;
 	}
-	if( gameLocal.GetLocalPlayer() == NULL )
+	if(gameLocal.GetLocalPlayer() == NULL )
 	{
 		return;
 	}

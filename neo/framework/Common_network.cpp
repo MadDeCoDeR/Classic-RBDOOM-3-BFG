@@ -30,9 +30,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "Common_local.h"
 
-idCVar net_clientMaxPrediction( "net_clientMaxPrediction", "5000", CVAR_SYSTEM | CVAR_INTEGER | CVAR_NOCHEAT, "maximum number of milliseconds a client can predict ahead of server." );
+extern idCVar net_clientMaxPrediction;
 idCVar net_snapRate( "net_snapRate", "100", CVAR_SYSTEM | CVAR_INTEGER, "How many milliseconds between sending snapshots" );
-idCVar net_ucmdRate( "net_ucmdRate", "40", CVAR_SYSTEM | CVAR_INTEGER, "How many milliseconds between sending usercmds" );
+//extern idCVar net_ucmdRate;
 
 idCVar net_debug_snapShotTime( "net_debug_snapShotTime", "0", CVAR_BOOL | CVAR_ARCHIVE, "" );
 idCVar com_forceLatestSnap( "com_forceLatestSnap", "0", CVAR_BOOL, "" );
@@ -127,7 +127,7 @@ void idCommonLocal::SendSnapshots()
 	{
 		return;
 	}
-	int currentTime = Sys_Milliseconds();
+	int currentTime = sys->GetMilliseconds();
 	if( currentTime < nextSnapshotSendTime )
 	{
 		return;
@@ -185,7 +185,7 @@ void idCommonLocal::SendUsercmds( int localClientNum )
 	{
 		return;
 	}
-	int currentTime = Sys_Milliseconds();
+	int currentTime = sys->GetMilliseconds();
 	if( currentTime < nextUsercmdSendTime )
 	{
 		return;
@@ -215,7 +215,7 @@ void idCommonLocal::SendUsercmds( int localClientNum )
 	}
 	session->SendUsercmds( msg );
 	
-	nextUsercmdSendTime = MSEC_ALIGN_TO_FRAME( currentTime + net_ucmdRate.GetInteger() );
+	nextUsercmdSendTime = MSEC_ALIGN_TO_FRAME( currentTime + game->GetCVarInteger("net_ucmdRate") );
 }
 
 /*
@@ -267,7 +267,7 @@ idCommonLocal::ProcessSnapshot
 */
 void idCommonLocal::ProcessSnapshot( idSnapShot& ss )
 {
-	int time = Sys_Milliseconds();
+	int time = sys->GetMilliseconds();
 	
 	snapTime = time;
 	snapPrevious			= snapCurrent;
@@ -498,8 +498,8 @@ void idCommonLocal::RunNetworkSnapshotFrame()
 		int	msec_interval = 1 + idMath::Ftoi( ( float )initialBaseTicksPerSec );
 		
 		static int clientTimeResidual = 0;
-		static int lastTime = Sys_Milliseconds();
-		int currentTime = Sys_Milliseconds();
+		static int lastTime = sys->GetMilliseconds();
+		int currentTime = sys->GetMilliseconds();
 		int deltaFrameTime = idMath::ClampInt( 1, 33, currentTime - lastTime );
 		
 		clientTimeResidual += idMath::ClampInt( 0, 50, currentTime - lastTime );

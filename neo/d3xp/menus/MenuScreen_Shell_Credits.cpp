@@ -762,7 +762,7 @@ void idMenuScreen_Shell_Credits::Update()
 		{
 			cmdBar->ClearAllButtons();
 			
-			idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_Shell* >( menuData );
+			idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 			bool complete = false;
 			if( shell != NULL )
 			{
@@ -820,7 +820,7 @@ void idMenuScreen_Shell_Credits::ShowScreen( const mainMenuTransition_t transiti
 
 	if( menuData != NULL )
 	{
-		idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_Shell* >( menuData );
+		idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 		bool complete = false;
 		if( shell != NULL )
 		{
@@ -872,7 +872,7 @@ bool idMenuScreen_Shell_Credits::HandleAction( idWidgetAction& action, const idW
 		case WIDGET_ACTION_GO_BACK:
 		{
 		
-			idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_Shell* >( menuData );
+			idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 			bool complete = false;
 			if( shell != NULL )
 			{
@@ -915,7 +915,7 @@ void idMenuScreen_Shell_Credits::UpdateCredits()
 	
 	if( creditIndex >= creditList.Num() + NUM_CREDIT_LINES )
 	{
-		idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_Shell* >( menuData );
+		idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 		bool complete = false;
 		if( shell != NULL )
 		{

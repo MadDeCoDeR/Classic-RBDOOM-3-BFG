@@ -102,7 +102,7 @@ void idMenuScreen_PDA_UserData::Update()
 			buttonInfo->label = "";
 			buttonInfo->action.Set( WIDGET_ACTION_GO_BACK );
 			
-			idPlayer* player = gameLocal.GetLocalPlayer();
+			idPlayer* player = game->GetLocalPlayer();
 			idMenuWidget_DynamicList* pdaList = dynamic_cast< idMenuWidget_DynamicList* >( menuData->GetChildFromIndex( PDA_WIDGET_PDA_LIST ) );
 			if( pdaList != NULL && player != NULL )
 			{
@@ -112,7 +112,7 @@ void idMenuScreen_PDA_UserData::Update()
 					const idDeclPDA* pda = player->GetInventory().pdas[ pdaIndex ];
 					if( pda != NULL && pdaIndex != 0 )
 					{
-						if( player->IsSoundChannelPlaying( SND_CHANNEL_PDA_AUDIO ) )
+						if( game->IsSoundChannelPlaying( player,SND_CHANNEL_PDA_AUDIO ) )
 						{
 							buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
 							if( menuData->GetPlatform() != 2 )
@@ -237,17 +237,17 @@ bool idMenuScreen_PDA_UserData::HandleAction( idWidgetAction& action, const idWi
 				return true;
 			}
 			
-			idPlayer* player = gameLocal.GetLocalPlayer();
-			if( player != NULL && player->IsSoundChannelPlaying( SND_CHANNEL_PDA_AUDIO ) )
+			idPlayer* player = game->GetLocalPlayer();
+			if( player != NULL && game->IsSoundChannelPlaying( player,SND_CHANNEL_PDA_AUDIO ) )
 			{
-				player->EndAudioLog();
+				game->EndAudioLog(player);
 			}
 			else
 			{
 				if( menuData != NULL && pdaAudioFiles.GetChildren().Num() > 0 )
 				{
 					int index = pdaAudioFiles.GetChildByIndex( 0 ).GetFocusIndex();
-					idMenuHandler_PDA* pdaHandler = dynamic_cast< idMenuHandler_PDA* const >( menuData );
+					idMenuHandler_PDA* pdaHandler = dynamic_cast< idMenuHandler_PDALocal* const >( menuData );
 					if( pdaHandler != NULL )
 					{
 						pdaHandler->PlayPDAAudioLog( pdaIndex, index );

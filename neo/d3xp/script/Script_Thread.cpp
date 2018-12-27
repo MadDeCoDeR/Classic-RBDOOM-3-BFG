@@ -922,7 +922,7 @@ idThread::ReturnString
 */
 void idThread::ReturnString( const char* text )
 {
-	gameLocal.program.ReturnString( text );
+	gameLocal.GetProgram()->ReturnString( text );
 }
 
 /*
@@ -932,7 +932,7 @@ idThread::ReturnFloat
 */
 void idThread::ReturnFloat( float value )
 {
-	gameLocal.program.ReturnFloat( value );
+	gameLocal.GetProgram()->ReturnFloat( value );
 }
 
 /*
@@ -944,7 +944,7 @@ void idThread::ReturnInt( int value )
 {
 	// true integers aren't supported in the compiler,
 	// so int values are stored as floats
-	gameLocal.program.ReturnFloat( value );
+	gameLocal.GetProgram()->ReturnFloat( value );
 }
 
 /*
@@ -954,7 +954,7 @@ idThread::ReturnVector
 */
 void idThread::ReturnVector( idVec3 const& vec )
 {
-	gameLocal.program.ReturnVector( vec );
+	gameLocal.GetProgram()->ReturnVector( vec );
 }
 
 /*
@@ -964,7 +964,7 @@ idThread::ReturnEntity
 */
 void idThread::ReturnEntity( idEntity* ent )
 {
-	gameLocal.program.ReturnEntity( ent );
+	gameLocal.GetProgram()->ReturnEntity( ent );
 }
 
 /*
@@ -1085,7 +1085,7 @@ void idThread::Event_WaitFor( idEntity* ent )
 	if( ent && ent->RespondsTo( EV_Thread_SetCallback ) )
 	{
 		ent->ProcessEvent( &EV_Thread_SetCallback );
-		if( gameLocal.program.GetReturnedInteger() )
+		if( gameLocal.GetProgram()->GetReturnedInteger() )
 		{
 			Pause();
 			waitingFor = ent->entityNumber;
@@ -1598,7 +1598,7 @@ void idThread::Event_OnSignal( int signal, idEntity* ent, const char* func )
 		Error( "Signal out of range" );
 	}
 	
-	function = gameLocal.program.FindFunction( func );
+	function = gameLocal.GetProgram()->FindFunction( func );
 	if( !function )
 	{
 		Error( "Function '%s' not found", func );
@@ -1669,11 +1669,11 @@ void idThread::Event_Trace( const idVec3& start, const idVec3& end, const idVec3
 {
 	if( mins == vec3_origin && maxs == vec3_origin )
 	{
-		gameLocal.clip.TracePoint( trace, start, end, contents_mask, passEntity );
+		gameLocal.GetClip()->TracePoint( trace, start, end, contents_mask, passEntity );
 	}
 	else
 	{
-		gameLocal.clip.TraceBounds( trace, start, end, idBounds( mins, maxs ), contents_mask, passEntity );
+		gameLocal.GetClip()->TraceBounds( trace, start, end, idBounds( mins, maxs ), contents_mask, passEntity );
 	}
 	ReturnFloat( trace.fraction );
 }
@@ -1685,7 +1685,7 @@ idThread::Event_TracePoint
 */
 void idThread::Event_TracePoint( const idVec3& start, const idVec3& end, int contents_mask, idEntity* passEntity )
 {
-	gameLocal.clip.TracePoint( trace, start, end, contents_mask, passEntity );
+	gameLocal.GetClip()->TracePoint( trace, start, end, contents_mask, passEntity );
 	ReturnFloat( trace.fraction );
 }
 

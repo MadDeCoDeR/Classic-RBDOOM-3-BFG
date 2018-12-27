@@ -97,7 +97,7 @@ idCVar com_pause( "com_pause", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "set
 //GK: com_game_mode
 idCVar com_game_mode("com_game_mode", "0", CVAR_INTEGER | CVAR_SYSTEM | CVAR_NOCHEAT, "Set which game to run 1: DOOM 2:DOOM2 3:DOOM3");
 //GK End
-extern idCVar g_demoMode;
+//extern idCVar g_demoMode; //GK: get it from game object
 
 idCVar com_engineHz( "com_engineHz", "60", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the engine runs at", 10.0f, 1024.0f );
 float com_engineHz_latched = 60.0f; // Latched version of cvar, updated between map loads
@@ -112,7 +112,7 @@ HWND com_hwndMsg = NULL;
 #endif
 // RB end
 
-#ifdef __DOOM_DLL__
+#ifndef __MONOLITH__ //GK: We want DOOM_DLL to be always on but also have monolithic executable
 idGame* 		game = NULL;
 idGameEdit* 	gameEdit = NULL;
 #endif
@@ -1076,58 +1076,74 @@ void idCommonLocal::LoadGameDLL()
 	gameExport_t	gameExport;
 	GetGameAPI_t	GetGameAPI;
 	
-	fileSystem->FindDLL( "game", dllPath, true );
+	fileSystem->FindDLL( "game", dllPath);
 	
-	if( !dllPath[ 0 ] )
+	if (dllPath[0])
 	{
-		common->FatalError( "couldn't find game dynamic library" );
-		return;
+		//GK: If no dll be ok and load monolithic game
+		//common->FatalError( "couldn't find game dynamic library" );
+		//return;
+
+		common->DPrintf("Loading game DLL: '%s'\n", dllPath);
+		gameDLL = sys->DLL_Load(dllPath);
+		if (!gameDLL)
+		{
+			common->FatalError("couldn't load game dynamic library");
+			return;
+		}
+
+		const char* functionName = "GetGameAPI";
+		GetGameAPI = (GetGameAPI_t)Sys_DLL_GetProcAddress(gameDLL, functionName);
+		if (!GetGameAPI)
+		{
+			//GK: Just some 64-bit paranoia
+			int lastError = GetLastError();
+			char msgbuf[256];
+			FormatMessage(
+				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL,
+				lastError,
+				MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
+				(LPTSTR)&msgbuf,
+				sizeof(msgbuf),
+				NULL
+			);
+
+			Sys_Error("Sys_DLL_: GetProcAddress failed - %s (%d)", msgbuf, lastError);
+			Sys_DLL_Unload(gameDLL);
+			gameDLL = NULL;
+			common->FatalError("couldn't find game DLL API");
+			return;
+		}
+
+		gameImport.version = GAME_API_VERSION;
+		gameImport.sys = ::sys;
+		gameImport.common = ::common;
+		gameImport.cmdSystem = ::cmdSystem;
+		gameImport.cvarSystem = ::cvarSystem;
+		gameImport.fileSystem = ::fileSystem;
+		gameImport.renderSystem = ::renderSystem;
+		gameImport.soundSystem = ::soundSystem;
+		gameImport.renderModelManager = ::renderModelManager;
+		gameImport.uiManager = ::uiManager;
+		gameImport.declManager = ::declManager;
+		gameImport.AASFileManager = ::AASFileManager;
+		gameImport.collisionModelManager = ::collisionModelManager;
+		gameImport.keys = ::keys;
+		gameImport.session = ::session;
+		gameExport = *GetGameAPI(&gameImport);
+
+		if (gameExport.version != GAME_API_VERSION)
+		{
+			Sys_DLL_Unload(gameDLL);
+			gameDLL = NULL;
+			common->FatalError("wrong game DLL API version");
+			return;
+		}
+
+		game = gameExport.game;
+		gameEdit = gameExport.gameEdit;
 	}
-	common->DPrintf( "Loading game DLL: '%s'\n", dllPath );
-	gameDLL = sys->DLL_Load( dllPath );
-	if( !gameDLL )
-	{
-		common->FatalError( "couldn't load game dynamic library" );
-		return;
-	}
-	
-	const char* functionName = "GetGameAPI";
-	GetGameAPI = ( GetGameAPI_t ) Sys_DLL_GetProcAddress( gameDLL, functionName );
-	if( !GetGameAPI )
-	{
-		Sys_DLL_Unload( gameDLL );
-		gameDLL = NULL;
-		common->FatalError( "couldn't find game DLL API" );
-		return;
-	}
-	
-	gameImport.version					= GAME_API_VERSION;
-	gameImport.sys						= ::sys;
-	gameImport.common					= ::common;
-	gameImport.cmdSystem				= ::cmdSystem;
-	gameImport.cvarSystem				= ::cvarSystem;
-	gameImport.fileSystem				= ::fileSystem;
-	gameImport.renderSystem				= ::renderSystem;
-	gameImport.soundSystem				= ::soundSystem;
-	gameImport.renderModelManager		= ::renderModelManager;
-	gameImport.uiManager				= ::uiManager;
-	gameImport.declManager				= ::declManager;
-	gameImport.AASFileManager			= ::AASFileManager;
-	gameImport.collisionModelManager	= ::collisionModelManager;
-	
-	gameExport							= *GetGameAPI( &gameImport );
-	
-	if( gameExport.version != GAME_API_VERSION )
-	{
-		Sys_DLL_Unload( gameDLL );
-		gameDLL = NULL;
-		common->FatalError( "wrong game DLL API version" );
-		return;
-	}
-	
-	game								= gameExport.game;
-	gameEdit							= gameExport.gameEdit;
-	
 #endif
 	
 	// initialize the game object
@@ -1293,10 +1309,13 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// exec the startup scripts
 		cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec default.cfg\n" );
-		
+#ifndef __MONOLITH__ //GK: Non Monolithic doesn't have the game object until it loads the dll
+		// load the game dll
+		LoadGameDLL();	
+#endif
 #ifdef CONFIG_FILE
 		// skip the config file if "safe" is on the command line
-		if( !SafeMode() && !g_demoMode.GetBool() )
+		if( !SafeMode() && !game->GetCVarBool("g_demoMode") )
 		{
 			cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec " CONFIG_FILE "\n" );
 		}
@@ -1362,7 +1381,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		}
 		
 		
-		int legalStartTime = Sys_Milliseconds();
+		int legalStartTime = sys->GetMilliseconds();
 		declManager->Init2();
 		
 		// initialize string database so we can use it for loading messages
@@ -1388,7 +1407,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// Init tool commands
 		InitCommands();
-		
+#ifndef __MONOLITH__ //GK: Reload the dll just in case
+		UnloadGameDLL();
+#endif
 		// load the game dll
 		LoadGameDLL();
 		

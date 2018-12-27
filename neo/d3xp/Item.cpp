@@ -316,7 +316,7 @@ void idItem::Spawn()
 	if( spawnArgs.GetFloat( "triggersize", "0", tsize ) )
 	{
 		GetPhysics()->GetClipModel()->LoadModel( idTraceModel( idBounds( vec3_origin ).Expand( tsize ) ) );
-		GetPhysics()->GetClipModel()->Link( gameLocal.clip );
+		GetPhysics()->GetClipModel()->Link( *gameLocal.GetClip() );
 	}
 	
 	if( spawnArgs.GetBool( "start_off" ) )
@@ -600,7 +600,7 @@ void idItem::Event_DropToFloor()
 		return;
 	}
 	
-	gameLocal.clip.TraceBounds( trace, renderEntity.origin, renderEntity.origin - idVec3( 0, 0, 64 ), renderEntity.bounds, MASK_SOLID | CONTENTS_CORPSE, this );
+	gameLocal.GetClip()->TraceBounds( trace, renderEntity.origin, renderEntity.origin - idVec3( 0, 0, 64 ), renderEntity.bounds, MASK_SOLID | CONTENTS_CORPSE, this );
 	SetOrigin( trace.endpos );
 }
 
@@ -894,7 +894,7 @@ function_t* idItemTeam::LoadScript( const char* script )
 	idStr funcname = spawnArgs.GetString( script, "" );
 	if( funcname.Length() )
 	{
-		function = gameLocal.program.FindFunction( funcname );
+		function = gameLocal.GetProgram()->FindFunction( funcname );
 		if( function == NULL )
 		{
 #ifdef _DEBUG
@@ -1109,7 +1109,7 @@ void idItemTeam::PrivateReturn()
 	SetOrigin( returnOrigin );
 	SetAxis( returnAxis );
 	
-	trigger->Link( gameLocal.clip, this, 0, GetPhysics()->GetOrigin(), mat3_identity );
+	trigger->Link( *gameLocal.GetClip(), this, 0, GetPhysics()->GetOrigin(), mat3_identity );
 	
 	SetSkin( skinDefault );
 	
@@ -1829,7 +1829,7 @@ void idMoveableItem::Spawn()
 	// create a trigger for item pickup
 	spawnArgs.GetFloat( "triggersize", "16.0", tsize );
 	trigger = new( TAG_PHYSICS_CLIP_ENTITY ) idClipModel( idTraceModel( idBounds( vec3_origin ).Expand( tsize ) ) );
-	trigger->Link( gameLocal.clip, this, 0, GetPhysics()->GetOrigin(), GetPhysics()->GetAxis() );
+	trigger->Link( *gameLocal.GetClip(), this, 0, GetPhysics()->GetOrigin(), GetPhysics()->GetAxis() );
 	trigger->SetContents( CONTENTS_TRIGGER );
 	
 	// check if a clip model is set
@@ -1904,7 +1904,7 @@ void idMoveableItem::ClientThink( const int curTime, const float fraction, const
 	if( thinkFlags & TH_PHYSICS )
 	{
 		// update trigger position
-		trigger->Link( gameLocal.clip, this, 0, GetPhysics()->GetOrigin(), mat3_identity );
+		trigger->Link( *gameLocal.GetClip(), this, 0, GetPhysics()->GetOrigin(), mat3_identity );
 	}
 	
 	Present();
@@ -1923,7 +1923,7 @@ void idMoveableItem::Think()
 	if( thinkFlags & TH_PHYSICS )
 	{
 		// update trigger position
-		trigger->Link( gameLocal.clip, this, 0, GetPhysics()->GetOrigin(), mat3_identity );
+		trigger->Link( *gameLocal.GetClip(), this, 0, GetPhysics()->GetOrigin(), mat3_identity );
 	}
 	
 	if( thinkFlags & TH_UPDATEPARTICLES )

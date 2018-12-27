@@ -148,7 +148,7 @@ idMenuScreen_Shell_GameBrowser::ShowScreen
 */
 void idMenuScreen_Shell_GameBrowser::ShowScreen( const mainMenuTransition_t transitionType )
 {
-	idMenuHandler_Shell* const mgr = dynamic_cast< idMenuHandler_Shell* >( menuData );
+	idMenuHandler_Shell* const mgr = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 	if( mgr == NULL )
 	{
 		return;
@@ -204,7 +204,7 @@ idMenuScreen_Shell_GameBrowser::HideScreen
 */
 void idMenuScreen_Shell_GameBrowser::HideScreen( const mainMenuTransition_t transitionType )
 {
-	idMenuHandler_Shell* const mgr = dynamic_cast< idMenuHandler_Shell* >( menuData );
+	idMenuHandler_Shell* const mgr = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 	if( mgr == NULL )
 	{
 		return;
@@ -224,7 +224,7 @@ idMenuScreen_Shell_GameBrowser::UpdateServerList
 */
 void idMenuScreen_Shell_GameBrowser::UpdateServerList()
 {
-	idMenuHandler_Shell* const mgr = dynamic_cast< idMenuHandler_Shell* >( menuData );
+	idMenuHandler_Shell* const mgr = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 	
 	if( mgr == NULL )
 	{
@@ -252,7 +252,7 @@ idMenuScreen_Shell_GameBrowser::OnServerListReady
 */
 void idMenuScreen_Shell_GameBrowser::OnServerListReady()
 {
-	idMenuHandler_Shell* const mgr = dynamic_cast< idMenuHandler_Shell* >( menuData );
+	idMenuHandler_Shell* const mgr = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 	
 	if( mgr == NULL )
 	{
@@ -389,7 +389,7 @@ idMenuScreen_Shell_GameBrowser::HandleAction h
 */
 bool idMenuScreen_Shell_GameBrowser::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandle )
 {
-	idMenuHandler_Shell* const mgr = dynamic_cast< idMenuHandler_Shell* >( menuData );
+	idMenuHandler_Shell* const mgr = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 	
 	if( mgr == NULL )
 	{

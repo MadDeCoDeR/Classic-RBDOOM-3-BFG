@@ -138,7 +138,7 @@ void idPhysics_Static::SetClipModel( idClipModel* model, float density, int id, 
 	clipModel = model;
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 }
 
@@ -153,7 +153,7 @@ idClipModel* idPhysics_Static::GetClipModel( int id ) const
 	{
 		return clipModel;
 	}
-	return gameLocal.clip.DefaultClipModel();
+	return gameLocal.GetClip()->DefaultClipModel();
 }
 
 /*
@@ -290,7 +290,7 @@ bool idPhysics_Static::Evaluate( int timeStepMSec, int endTimeMSec )
 		}
 		if( clipModel )
 		{
-			clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+			clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 		}
 		
 		return ( current.origin != oldOrigin || current.axis != oldAxis );
@@ -452,7 +452,7 @@ void idPhysics_Static::SetOrigin( const idVec3& newOrigin, int id )
 	
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 	
 	next = ConvertPStateToInterpolateState( current );
@@ -483,7 +483,7 @@ void idPhysics_Static::SetAxis( const idMat3& newAxis, int id )
 	
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 	
 	next = ConvertPStateToInterpolateState( current );
@@ -504,7 +504,7 @@ void idPhysics_Static::Translate( const idVec3& translation, int id )
 	
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 }
 
@@ -535,7 +535,7 @@ void idPhysics_Static::Rotate( const idRotation& rotation, int id )
 	
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 }
 
@@ -637,12 +637,12 @@ void idPhysics_Static::ClipTranslation( trace_t& results, const idVec3& translat
 {
 	if( model )
 	{
-		gameLocal.clip.TranslationModel( results, current.origin, current.origin + translation,
+		gameLocal.GetClip()->TranslationModel( results, current.origin, current.origin + translation,
 										 clipModel, current.axis, MASK_SOLID, model->Handle(), model->GetOrigin(), model->GetAxis() );
 	}
 	else
 	{
-		gameLocal.clip.Translation( results, current.origin, current.origin + translation,
+		gameLocal.GetClip()->Translation( results, current.origin, current.origin + translation,
 									clipModel, current.axis, MASK_SOLID, self );
 	}
 }
@@ -656,12 +656,12 @@ void idPhysics_Static::ClipRotation( trace_t& results, const idRotation& rotatio
 {
 	if( model )
 	{
-		gameLocal.clip.RotationModel( results, current.origin, rotation,
+		gameLocal.GetClip()->RotationModel( results, current.origin, rotation,
 									  clipModel, current.axis, MASK_SOLID, model->Handle(), model->GetOrigin(), model->GetAxis() );
 	}
 	else
 	{
-		gameLocal.clip.Rotation( results, current.origin, rotation, clipModel, current.axis, MASK_SOLID, self );
+		gameLocal.GetClip()->Rotation( results, current.origin, rotation, clipModel, current.axis, MASK_SOLID, self );
 	}
 }
 
@@ -676,12 +676,12 @@ int idPhysics_Static::ClipContents( const idClipModel* model ) const
 	{
 		if( model )
 		{
-			return gameLocal.clip.ContentsModel( clipModel->GetOrigin(), clipModel, clipModel->GetAxis(), -1,
+			return gameLocal.GetClip()->ContentsModel( clipModel->GetOrigin(), clipModel, clipModel->GetAxis(), -1,
 												 model->Handle(), model->GetOrigin(), model->GetAxis() );
 		}
 		else
 		{
-			return gameLocal.clip.Contents( clipModel->GetOrigin(), clipModel, clipModel->GetAxis(), -1, NULL );
+			return gameLocal.GetClip()->Contents( clipModel->GetOrigin(), clipModel, clipModel->GetAxis(), -1, NULL );
 		}
 	}
 	return 0;
@@ -735,7 +735,7 @@ void idPhysics_Static::LinkClip()
 {
 	if( clipModel )
 	{
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
 	}
 }
 

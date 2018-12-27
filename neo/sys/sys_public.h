@@ -806,6 +806,10 @@ public:
 	virtual void			DebugPrintf( VERIFY_FORMAT_STRING const char* fmt, ... ) = 0;
 	virtual void			DebugVPrintf( const char* fmt, va_list arg ) = 0;
 	
+	virtual struct leaderboardDefinition_t* FindLeaderboardDef(int id)=0;
+	virtual struct leaderboardDefinition_t* CreateLeaderboardDef(int id_, int numColumns_, const struct columnDef_t* columnDefs_, enum rankOrder_t rankOrder_, bool supportsAttachments_, bool checkAgainstCurrent_) = 0;
+	virtual void			DestroyLeaderboardDefs() = 0;
+	virtual int				GetMilliseconds() = 0;
 	virtual double			GetClockTicks() = 0;
 	virtual double			ClockTicksPerSecond() = 0;
 	virtual cpuid_t			GetProcessorId() = 0;
@@ -820,7 +824,7 @@ public:
 	virtual bool			LockMemory( void* ptr, int bytes ) = 0;
 	virtual bool			UnlockMemory( void* ptr, int bytes ) = 0;
 	
-	virtual int				DLL_Load( const char* dllName ) = 0;
+	virtual intptr_t				DLL_Load( const char* dllName ) = 0;
 	virtual void* 			DLL_GetProcAddress( int dllHandle, const char* procName ) = 0;
 	virtual void			DLL_Unload( int dllHandle ) = 0;
 	virtual void			DLL_GetFileName( const char* baseName, char* dllName, int maxLength ) = 0;

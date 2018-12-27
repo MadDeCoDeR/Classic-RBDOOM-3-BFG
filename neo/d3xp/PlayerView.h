@@ -274,7 +274,7 @@ public:
 	void					EnableGrabber( bool active )
 	{
 		grabberEnabled = active;
-		startWarpTime = gameLocal.slow.time;
+		startWarpTime = game->GetSlowTime();
 	};
 	
 	virtual void			Save( idSaveGame* savefile );
@@ -378,7 +378,7 @@ public:
 	};
 	idPlayer*				GetPlayer()
 	{
-		return gameLocal.GetLocalPlayer();
+		return game->GetLocalPlayer();
 	};
 	
 	int						GetNum()

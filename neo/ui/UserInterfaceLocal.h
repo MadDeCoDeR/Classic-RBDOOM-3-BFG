@@ -192,6 +192,11 @@ public:
 	virtual idUserInterface* 	FindDemoGui( const char* qpath );
 	virtual	idListGUI* 			AllocListGUI() const;
 	virtual void				FreeListGUI( idListGUI* listgui );
+	virtual idMenuHandler_Scoreboard*				CreateScoreboard() const;
+	virtual idMenuHandler_HUD*						CreateHUD() const;
+	virtual idMenuHandler_PDA*						CreatePDA() const;
+	virtual idMenuHandler_Shell*					CreateShell() const;
+	virtual idSWF*									CreateSWF(const char* filename, idSoundWorld* sound);
 	idTokenParser& 				GetBinaryParser()
 	{
 		return mapParser;

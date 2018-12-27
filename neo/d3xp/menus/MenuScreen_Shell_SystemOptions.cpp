@@ -38,7 +38,7 @@ extern idCVar r_swapInterval;
 extern idCVar s_volume_dB;
 extern idCVar r_exposure; // RB: use this to control HDR exposure or brightness in LDR mode
 extern idCVar r_lightScale;
-extern idCVar r_aspectratio; //GK: use forced aspect ratio
+//extern idCVar r_aspectratio; //GK: use forced aspect ratio
 
 /*
 ========================
@@ -506,7 +506,7 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 	{
 		static const int numValues = 2;
 		static const int values[numValues] = { 0, 1 };
-		r_aspectratio.SetInteger(AdjustOption(r_aspectratio.GetInteger(), values, numValues, adjustAmount));
+		game->SetCVarInteger("r_aspectratio",AdjustOption(game->GetCVarInteger("r_aspectratio"), values, numValues, adjustAmount));
 		break;
 	}
 	//GK: End
@@ -618,7 +618,7 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 		}
 		//GK: Begin
 		case SYSTEM_FIELD_ASPECTRATIO:
-			if (r_aspectratio.GetInteger())
+			if (game->GetCVarInteger("r_aspectratio"))
 			{
 				return "Dynamic";
 			}

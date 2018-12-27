@@ -637,7 +637,9 @@ P_TouchSpecialThing
 		if ( !common->IsMultiplayer() ) {
 			switch( DoomLib::GetGameSKU() ) {
 				case GAME_SKU_DOOM2_BFG: {
+#ifdef __MONOLITH__
 					idAchievementManager::LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM2_REALLY_BIG_GUN_FIND_BFG_SINGLEPLAYER );
+#endif
 				}
 				default: {
 					// No unlocks for other SKUs.

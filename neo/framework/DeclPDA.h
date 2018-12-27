@@ -79,11 +79,27 @@ private:
 	idStr					from;
 };
 
-
 class idDeclVideo : public idDecl
 {
 public:
-	idDeclVideo() : preview( NULL ), video( NULL ), audio( NULL ) {};
+	virtual size_t			Size() const = 0;
+	virtual const char* 	DefaultDefinition() const = 0;
+	virtual bool			Parse(const char* text, const int textLength, bool allowBinaryVersion) = 0;
+	virtual void			FreeData() = 0;
+	virtual void			Print() const = 0;
+	virtual void			List() const = 0;
+
+	virtual const idMaterial* 		GetRoq() const = 0;
+	virtual const idSoundShader* 	GetWave() const = 0;
+	virtual const char* 			GetVideoName() const = 0;
+	virtual const char* 			GetInfo() const = 0;
+	virtual const idMaterial* 		GetPreview() const = 0;
+};
+
+class idDeclVideoLocal : public idDeclVideo
+{
+public:
+	idDeclVideoLocal() : preview( NULL ), video( NULL ), audio( NULL ) {};
 	
 	virtual size_t			Size() const;
 	virtual const char* 	DefaultDefinition() const;
@@ -92,23 +108,23 @@ public:
 	virtual void			Print() const;
 	virtual void			List() const;
 	
-	const idMaterial* 		GetRoq() const
+	virtual const idMaterial* 		GetRoq() const
 	{
 		return video;
 	}
-	const idSoundShader* 	GetWave() const
+	virtual const idSoundShader* 	GetWave() const
 	{
 		return audio;
 	}
-	const char* 			GetVideoName() const
+	virtual const char* 			GetVideoName() const
 	{
 		return videoName;
 	}
-	const char* 			GetInfo() const
+	virtual const char* 			GetInfo() const
 	{
 		return info;
 	}
-	const idMaterial* 		GetPreview() const
+	virtual const idMaterial* 		GetPreview() const
 	{
 		return preview;
 	}

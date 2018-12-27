@@ -378,7 +378,7 @@ int GetObstacles( const idPhysics* physics, const idAAS* aas, const idEntity* ig
 	clipMask = physics->GetClipMask();
 	
 	// find all obstacles touching the clip bounds
-	numListedClipModels = gameLocal.clip.ClipModelsTouchingBounds( clipBounds, clipMask, clipModelList, MAX_GENTITIES );
+	numListedClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( clipBounds, clipMask, clipModelList, MAX_GENTITIES );
 	
 	for( i = 0; i < numListedClipModels && numObstacles < MAX_OBSTACLES; i++ )
 	{
@@ -1215,7 +1215,7 @@ bool PathTrace( const idEntity* ent, const idAAS* aas, const idVec3& start, cons
 	if( !aas || !aas->GetSettings() )
 	{
 	
-		gameLocal.clip.Translation( clipTrace, start, end, ent->GetPhysics()->GetClipModel(),
+		gameLocal.GetClip()->Translation( clipTrace, start, end, ent->GetPhysics()->GetClipModel(),
 									ent->GetPhysics()->GetClipModel()->GetAxis(), MASK_MONSTERSOLID, ent );
 									
 		// NOTE: could do (expensive) ledge detection here for when there is no AAS file
@@ -1239,7 +1239,7 @@ bool PathTrace( const idEntity* ent, const idAAS* aas, const idVec3& start, cons
 		
 		aas->Trace( aasTrace, start, end );
 		
-		gameLocal.clip.TranslationEntities( clipTrace, start, aasTrace.endpos, ent->GetPhysics()->GetClipModel(),
+		gameLocal.GetClip()->TranslationEntities( clipTrace, start, aasTrace.endpos, ent->GetPhysics()->GetClipModel(),
 											ent->GetPhysics()->GetClipModel()->GetAxis(), MASK_MONSTERSOLID, ent );
 											
 		if( clipTrace.fraction >= 1.0f )
@@ -1641,7 +1641,7 @@ bool idAI::TestTrajectory( const idVec3& start, const idVec3& end, float zVel, f
 	result = true;
 	for( i = 0; i < numSegments; i++ )
 	{
-		gameLocal.clip.Translation( trace, points[i], points[i + 1], clip, mat3_identity, clipmask, ignore );
+		gameLocal.GetClip()->Translation( trace, points[i], points[i + 1], clip, mat3_identity, clipmask, ignore );
 		if( trace.fraction < 1.0f )
 		{
 			if( gameLocal.GetTraceEntity( trace ) == targetEntity )
@@ -1711,7 +1711,7 @@ bool idAI::PredictTrajectory( const idVec3& firePos, const idVec3& target, float
 		aimDir = target - firePos;
 		aimDir.Normalize();
 		
-		gameLocal.clip.Translation( trace, firePos, target, clip, mat3_identity, clipmask, ignore );
+		gameLocal.GetClip()->Translation( trace, firePos, target, clip, mat3_identity, clipmask, ignore );
 		
 		if( drawtime )
 		{

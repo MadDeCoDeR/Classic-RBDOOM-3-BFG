@@ -109,7 +109,7 @@ void idMenuScreen_Shell_Settings::Initialize( idMenuHandler* data )
 	
 	btnBack = new( TAG_SWF ) idMenuWidget_Button();
 	btnBack->Initialize( data );
-	idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_Shell* >( data );
+	idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_ShellLocal* >( data );
 	if( handler != NULL && handler->GetInGame() )
 	{
 		btnBack->SetLabel( "#str_swf_pause_menu" );

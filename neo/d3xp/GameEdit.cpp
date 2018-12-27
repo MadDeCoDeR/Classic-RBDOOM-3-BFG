@@ -195,7 +195,7 @@ void idDragEntity::Update( idPlayer* player )
 		if( player->usercmd.buttons & BUTTON_ATTACK )
 		{
 		
-			gameLocal.clip.TracePoint( trace, viewPoint, viewPoint + viewAxis[0] * MAX_DRAG_TRACE_DISTANCE, ( CONTENTS_SOLID | CONTENTS_RENDERMODEL | CONTENTS_BODY ), player );
+			gameLocal.GetClip()->TracePoint( trace, viewPoint, viewPoint + viewAxis[0] * MAX_DRAG_TRACE_DISTANCE, ( CONTENTS_SOLID | CONTENTS_RENDERMODEL | CONTENTS_BODY ), player );
 			if( trace.fraction < 1.0f )
 			{
 			

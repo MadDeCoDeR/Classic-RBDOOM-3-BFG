@@ -342,7 +342,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* modelDef, int framenu
 			return "Unexpected end of line";
 		}
 		fc.type = FC_SCRIPTFUNCTION;
-		fc.function = gameLocal.program.FindFunction( token );
+		fc.function = gameLocal.GetProgram()->FindFunction( token );
 		if( !fc.function )
 		{
 			return va( "Function '%s' not found", token.c_str() );

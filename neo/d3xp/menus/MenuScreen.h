@@ -922,11 +922,26 @@ private:
 class idMenuScreen_Shell_Load : public idMenuScreen
 {
 public:
-	idMenuScreen_Shell_Load() :
-		options( NULL ),
-		saveInfo( NULL ),
-		btnBack( NULL ),
-		btnDelete( NULL )
+	virtual void				Initialize(idMenuHandler* data) = 0;
+	virtual void				Update() = 0;
+	virtual void				ShowScreen(const mainMenuTransition_t transitionType) = 0;
+	virtual void				HideScreen(const mainMenuTransition_t transitionType) = 0;
+	virtual bool				HandleAction(idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled = false) = 0;
+
+	virtual void						UpdateSaveEnumerations() = 0;
+	virtual void						LoadDamagedGame(int index) = 0;
+	virtual void						LoadGame(int index) = 0;
+	virtual void						DeleteGame(int index) = 0;
+	virtual saveGameDetailsList_t		GetSortedSaves() const = 0;
+};
+class idMenuScreen_Shell_LoadLocal : public idMenuScreen_Shell_Load
+{
+public:
+	idMenuScreen_Shell_LoadLocal() :
+		options(NULL),
+		saveInfo(NULL),
+		btnBack(NULL),
+		btnDelete(NULL)
 	{
 	}
 	virtual void				Initialize( idMenuHandler* data );
@@ -935,11 +950,11 @@ public:
 	virtual void				HideScreen( const mainMenuTransition_t transitionType );
 	virtual bool				HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled = false );
 	
-	void						UpdateSaveEnumerations();
-	void						LoadDamagedGame( int index );
-	void						LoadGame( int index );
-	void						DeleteGame( int index );
-	saveGameDetailsList_t		GetSortedSaves() const
+	virtual void						UpdateSaveEnumerations();
+	virtual void						LoadDamagedGame( int index );
+	virtual void						LoadGame( int index );
+	virtual void						DeleteGame( int index );
+	virtual saveGameDetailsList_t		GetSortedSaves() const
 	{
 		return sortedSaves;
 	}
@@ -960,11 +975,26 @@ private:
 class idMenuScreen_Shell_Save : public idMenuScreen
 {
 public:
-	idMenuScreen_Shell_Save() :
-		btnBack( NULL ),
-		options( NULL ),
-		saveInfo( NULL ),
-		btnDelete( NULL )
+	virtual void				Initialize(idMenuHandler* data) = 0;
+	virtual void				Update() = 0;
+	virtual void				ShowScreen(const mainMenuTransition_t transitionType) = 0;
+	virtual void				HideScreen(const mainMenuTransition_t transitionType) = 0;
+	virtual bool				HandleAction(idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled = false) = 0;
+	virtual saveGameDetailsList_t		GetSortedSaves() const = 0;
+
+
+	virtual void						UpdateSaveEnumerations() = 0;
+	virtual void						SaveGame(int index) = 0;
+	virtual void						DeleteGame(int index) = 0;
+};
+class idMenuScreen_Shell_SaveLocal : public idMenuScreen_Shell_Save
+{
+public:
+	idMenuScreen_Shell_SaveLocal() :
+		btnBack(NULL),
+		options(NULL),
+		saveInfo(NULL),
+		btnDelete(NULL)
 	{
 	}
 	virtual void				Initialize( idMenuHandler* data );
@@ -972,14 +1002,14 @@ public:
 	virtual void				ShowScreen( const mainMenuTransition_t transitionType );
 	virtual void				HideScreen( const mainMenuTransition_t transitionType );
 	virtual bool				HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled = false );
-	saveGameDetailsList_t		GetSortedSaves() const
+	virtual saveGameDetailsList_t		GetSortedSaves() const
 	{
 		return sortedSaves;
 	}
 	
-	void						UpdateSaveEnumerations();
-	void						SaveGame( int index );
-	void						DeleteGame( int index );
+	virtual void						UpdateSaveEnumerations();
+	virtual void						SaveGame( int index );
+	virtual void						DeleteGame( int index );
 	
 private:
 	idMenuWidget_Button*			btnBack;
@@ -1673,65 +1703,122 @@ class idMenuScreen_HUD : public idMenuScreen
 {
 public:
 
-	idMenuScreen_HUD() :
-		weaponInfo( NULL ),
-		playerInfo( NULL ),
-		stamina( NULL ),
-		weaponName( NULL ),
-		weaponPills( NULL ),
-		downloadPda( NULL ),
-		downloadVideo( NULL ),
-		tipInfo( NULL ),
-		mpChat( NULL ),
-		mpWeapons( NULL ),
-		healthBorder( NULL ),
-		healthPulse( NULL ),
-		armorFrame( NULL ),
-		security( NULL ),
-		newPDADownload( NULL ),
-		newVideoDownload( NULL ),
-		newPDA( NULL ),
-		newVideo( NULL ),
-		audioLog( NULL ),
-		communication( NULL ),
-		oxygen( NULL ),
-		objective( NULL ),
-		objectiveComplete( NULL ),
-		ammoInfo( NULL ),
-		weaponImg( NULL ),
-		newWeapon( NULL ),
-		pickupInfo( NULL ),
-		talkCursor( NULL ),
-		combatCursor( NULL ),
-		grabberCursor( NULL ),
-		bsInfo( NULL ),
-		soulcubeInfo( NULL ),
-		newItem( NULL ),
-		respawnMessage( NULL ),
-		flashlight( NULL ),
-		mpChatObject( NULL ),
-		mpConnection( NULL ),
-		mpInfo( NULL ),
-		mpHitInfo( NULL ),
-		locationName( NULL ),
-		securityText( NULL ),
-		newPDAName( NULL ),
-		newPDAHeading( NULL ),
-		newVideoHeading( NULL ),
-		mpMessage( NULL ),
-		mpTime( NULL ),
-		audioLogPrevTime( 0 ),
-		commPrevTime( 0 ),
-		oxygenComm( false ),
-		inVaccuum( false ),
-		objScreenshot( NULL ),
-		cursorState( CURSOR_NONE ),
-		cursorInCombat( 0 ),
-		cursorTalking( 0 ),
-		cursorItem( 0 ),
-		cursorGrabber( 0 ),
-		cursorNone( 0 ),
-		showSoulCubeInfoOnLoad( false )
+	virtual void			Initialize(idMenuHandler* data) = 0;
+	virtual void			Update() = 0;
+	virtual void			ShowScreen(const mainMenuTransition_t transitionType) = 0;
+	virtual void			HideScreen(const mainMenuTransition_t transitionType) = 0;
+
+	virtual void					UpdateHealthArmor(idPlayer* player) = 0;
+	virtual void					UpdateStamina(idPlayer* player) = 0;
+	virtual void					UpdateLocation(idPlayer* player) = 0;
+	virtual void					UpdateWeaponInfo(idPlayer* player) = 0;
+	virtual void					UpdateWeaponStates(idPlayer* player, bool weaponChanged) = 0;
+	virtual void					ShowTip(const char* title, const char* tip) = 0;
+	virtual void					HideTip() = 0;
+	virtual void					DownloadVideo() = 0;
+	virtual void					DownloadPDA(const idDeclPDA* pda, bool newSecurity) = 0;
+	virtual void					UpdatedSecurity() = 0;
+	virtual void					ToggleNewVideo(bool show) = 0;
+	virtual void					ClearNewPDAInfo() = 0;
+	virtual void					ToggleNewPDA(bool show) = 0;
+	virtual void					UpdateAudioLog(bool show) = 0;
+	virtual void					UpdateCommunication(bool show, idPlayer* player) = 0;
+	virtual void					UpdateOxygen(bool show, int val = 0) = 0;
+	virtual void					SetupObjective(const idStr& title, const idStr& desc, const idMaterial* screenshot) = 0;
+	virtual void					SetupObjectiveComplete(const idStr& title) = 0;
+	virtual void					ShowObjective(bool complete) = 0;
+	virtual void					HideObjective(bool complete) = 0;
+	virtual void					GiveWeapon(idPlayer* player, int weaponIndex) = 0;
+	virtual void					UpdatePickupInfo(int index, const idStr& name) = 0;
+	virtual bool					IsPickupListReady() = 0;
+	virtual void					ShowPickups() = 0;
+	virtual void					SetCursorState(idPlayer* player, cursorState_t state, int set) = 0;
+	virtual void					SetCursorText(const idStr& action, const idStr& focus) = 0;
+	virtual void					UpdateCursorState() = 0;
+	virtual void					CombatCursorFlash() = 0;
+	virtual void					UpdateSoulCube(bool ready) = 0;
+	virtual void					ShowRespawnMessage(bool show) = 0;
+	virtual const char*				GetlocationName() = 0;
+	virtual void					SetShowSoulCubeOnLoad(bool show) = 0;
+
+	// MULTIPLAYER
+
+	virtual void					ToggleMPInfo(bool show, bool showTeams, bool isCTF = false) = 0;
+	virtual void					SetFlagState(int team, int state) = 0;
+	virtual void					SetTeamScore(int team, int score) = 0;
+	virtual void					SetTeam(int team) = 0;
+	virtual void					TriggerHitTarget(bool show, const idStr& target, int color = 0) = 0;
+	virtual void					ToggleLagged(bool show) = 0;
+	virtual void					UpdateGameTime(const char* time) = 0;
+	virtual void					UpdateMessage(bool show, const idStr& message) = 0;
+	virtual void					ShowNewItem(const char* name, const char* icon) = 0;
+	virtual void					UpdateFlashlight(idPlayer* player) = 0;
+	virtual void					UpdateChattingHud(idPlayer* player) = 0;
+};
+
+class idMenuScreen_HUDLocal : public idMenuScreen_HUD
+{
+public:
+
+	idMenuScreen_HUDLocal() :
+		weaponInfo(NULL),
+		playerInfo(NULL),
+		stamina(NULL),
+		weaponName(NULL),
+		weaponPills(NULL),
+		downloadPda(NULL),
+		downloadVideo(NULL),
+		tipInfo(NULL),
+		mpChat(NULL),
+		mpWeapons(NULL),
+		healthBorder(NULL),
+		healthPulse(NULL),
+		armorFrame(NULL),
+		security(NULL),
+		newPDADownload(NULL),
+		newVideoDownload(NULL),
+		newPDA(NULL),
+		newVideo(NULL),
+		audioLog(NULL),
+		communication(NULL),
+		oxygen(NULL),
+		objective(NULL),
+		objectiveComplete(NULL),
+		ammoInfo(NULL),
+		weaponImg(NULL),
+		newWeapon(NULL),
+		pickupInfo(NULL),
+		talkCursor(NULL),
+		combatCursor(NULL),
+		grabberCursor(NULL),
+		bsInfo(NULL),
+		soulcubeInfo(NULL),
+		newItem(NULL),
+		respawnMessage(NULL),
+		flashlight(NULL),
+		mpChatObject(NULL),
+		mpConnection(NULL),
+		mpInfo(NULL),
+		mpHitInfo(NULL),
+		locationName(NULL),
+		securityText(NULL),
+		newPDAName(NULL),
+		newPDAHeading(NULL),
+		newVideoHeading(NULL),
+		mpMessage(NULL),
+		mpTime(NULL),
+		audioLogPrevTime(0),
+		commPrevTime(0),
+		oxygenComm(false),
+		inVaccuum(false),
+		objScreenshot(NULL),
+		cursorState(CURSOR_NONE),
+		cursorInCombat(0),
+		cursorTalking(0),
+		cursorItem(0),
+		cursorGrabber(0),
+		cursorNone(0),
+		showSoulCubeInfoOnLoad(false)
 	{
 	}
 	
@@ -1740,129 +1827,129 @@ public:
 	virtual void			ShowScreen( const mainMenuTransition_t transitionType );
 	virtual void			HideScreen( const mainMenuTransition_t transitionType );
 	
-	void					UpdateHealthArmor( idPlayer* player );
-	void					UpdateStamina( idPlayer* player );
-	void					UpdateLocation( idPlayer* player );
-	void					UpdateWeaponInfo( idPlayer* player );
-	void					UpdateWeaponStates( idPlayer* player, bool weaponChanged );
-	void					ShowTip( const char* title, const char* tip );
-	void					HideTip();
-	void					DownloadVideo();
-	void					DownloadPDA( const idDeclPDA* pda, bool newSecurity );
-	void					UpdatedSecurity();
-	void					ToggleNewVideo( bool show );
-	void					ClearNewPDAInfo();
-	void					ToggleNewPDA( bool show );
-	void					UpdateAudioLog( bool show );
-	void					UpdateCommunication( bool show, idPlayer* player );
-	void					UpdateOxygen( bool show, int val = 0 );
-	void					SetupObjective( const idStr& title, const idStr& desc, const idMaterial* screenshot );
-	void					SetupObjectiveComplete( const idStr& title );
-	void					ShowObjective( bool complete );
-	void					HideObjective( bool complete );
-	void					GiveWeapon( idPlayer* player, int weaponIndex );
-	void					UpdatePickupInfo( int index, const idStr& name );
-	bool					IsPickupListReady();
-	void					ShowPickups();
-	void					SetCursorState( idPlayer* player, cursorState_t state, int set );
-	void					SetCursorText( const idStr& action, const idStr& focus );
-	void					UpdateCursorState();
-	void					CombatCursorFlash();
-	void					UpdateSoulCube( bool ready );
-	void					ShowRespawnMessage( bool show );
-	void					SetShowSoulCubeOnLoad( bool show )
+	virtual void					UpdateHealthArmor( idPlayer* player );
+	virtual void					UpdateStamina( idPlayer* player );
+	virtual void					UpdateLocation( idPlayer* player );
+	virtual void					UpdateWeaponInfo( idPlayer* player );
+	virtual void					UpdateWeaponStates( idPlayer* player, bool weaponChanged );
+	virtual void					ShowTip( const char* title, const char* tip );
+	virtual void					HideTip();
+	virtual void					DownloadVideo();
+	virtual void					DownloadPDA( const idDeclPDA* pda, bool newSecurity );
+	virtual void					UpdatedSecurity();
+	virtual void					ToggleNewVideo( bool show );
+	virtual void					ClearNewPDAInfo();
+	virtual void					ToggleNewPDA( bool show );
+	virtual void					UpdateAudioLog( bool show );
+	virtual void					UpdateCommunication( bool show, idPlayer* player );
+	virtual void					UpdateOxygen( bool show, int val = 0 );
+	virtual void					SetupObjective( const idStr& title, const idStr& desc, const idMaterial* screenshot );
+	virtual void					SetupObjectiveComplete( const idStr& title );
+	virtual void					ShowObjective( bool complete );
+	virtual void					HideObjective( bool complete );
+	virtual void					GiveWeapon( idPlayer* player, int weaponIndex );
+	virtual void					UpdatePickupInfo( int index, const idStr& name );
+	virtual bool					IsPickupListReady();
+	virtual void					ShowPickups();
+	virtual void					SetCursorState( idPlayer* player, cursorState_t state, int set );
+	virtual void					SetCursorText( const idStr& action, const idStr& focus );
+	virtual void					UpdateCursorState();
+	virtual void					CombatCursorFlash();
+	virtual void					UpdateSoulCube( bool ready );
+	virtual void					ShowRespawnMessage( bool show );
+	virtual const char*				GetlocationName();
+	virtual void					SetShowSoulCubeOnLoad( bool show )
 	{
 		showSoulCubeInfoOnLoad = show;
 	}
 	
 	// MULTIPLAYER
 	
-	void					ToggleMPInfo( bool show, bool showTeams, bool isCTF = false );
-	void					SetFlagState( int team, int state );
-	void					SetTeamScore( int team, int score );
-	void					SetTeam( int team );
-	void					TriggerHitTarget( bool show, const idStr& target, int color = 0 );
-	void					ToggleLagged( bool show );
-	void					UpdateGameTime( const char* time );
-	void					UpdateMessage( bool show, const idStr& message );
-	void					ShowNewItem( const char* name, const char* icon );
-	void					UpdateFlashlight( idPlayer* player );
-	void					UpdateChattingHud( idPlayer* player );
-	
-private:
+	virtual void					ToggleMPInfo( bool show, bool showTeams, bool isCTF = false );
+	virtual void					SetFlagState( int team, int state );
+	virtual void					SetTeamScore( int team, int score );
+	virtual void					SetTeam( int team );
+	virtual void					TriggerHitTarget( bool show, const idStr& target, int color = 0 );
+	virtual void					ToggleLagged( bool show );
+	virtual void					UpdateGameTime( const char* time );
+	virtual void					UpdateMessage( bool show, const idStr& message );
+	virtual void					ShowNewItem( const char* name, const char* icon );
+	virtual void					UpdateFlashlight( idPlayer* player );
+	virtual void					UpdateChattingHud( idPlayer* player );
+	private:
 
-	idSWFScriptObject* 		weaponInfo;
-	idSWFScriptObject* 		playerInfo;
-	idSWFScriptObject* 		stamina;
-	idSWFScriptObject* 		weaponName;
-	idSWFScriptObject* 		weaponPills;
-	idSWFScriptObject* 		downloadPda;
-	idSWFScriptObject* 		downloadVideo;
-	idSWFScriptObject* 		tipInfo;
-	idSWFScriptObject* 		mpChat;
-	idSWFScriptObject* 		mpWeapons;
-	
-	idSWFSpriteInstance* 	healthBorder;
-	idSWFSpriteInstance* 	healthPulse;
-	idSWFSpriteInstance* 	armorFrame;
-	idSWFSpriteInstance* 	security;
-	idSWFSpriteInstance* 	newPDADownload;
-	idSWFSpriteInstance* 	newVideoDownload;
-	idSWFSpriteInstance* 	newPDA;
-	idSWFSpriteInstance* 	newVideo;
-	idSWFSpriteInstance* 	audioLog;
-	idSWFSpriteInstance* 	communication;
-	idSWFSpriteInstance* 	oxygen;
-	idSWFSpriteInstance* 	objective;
-	idSWFSpriteInstance* 	objectiveComplete;
-	idSWFSpriteInstance* 	ammoInfo;
-	idSWFSpriteInstance* 	weaponImg;
-	idSWFSpriteInstance* 	newWeapon;
-	idSWFSpriteInstance* 	pickupInfo;
-	idSWFSpriteInstance* 	talkCursor;
-	idSWFSpriteInstance* 	combatCursor;
-	idSWFSpriteInstance* 	grabberCursor;
-	idSWFSpriteInstance* 	bsInfo;
-	idSWFSpriteInstance* 	soulcubeInfo;
-	idSWFSpriteInstance* 	newItem;
-	idSWFSpriteInstance*		respawnMessage;
-	idSWFSpriteInstance* 	flashlight;
-	idSWFSpriteInstance* 	mpChatObject;
-	idSWFSpriteInstance* 	mpConnection;
-	
-	idSWFSpriteInstance* 	mpInfo;
-	idSWFSpriteInstance* 	mpHitInfo;
-	
-	idSWFTextInstance* 		locationName;
-	idSWFTextInstance* 		securityText;
-	idSWFTextInstance* 		newPDAName;
-	idSWFTextInstance* 		newPDAHeading;
-	idSWFTextInstance* 		newVideoHeading;
-	
-	idSWFTextInstance* 		mpMessage;
-	idSWFTextInstance* 		mpTime;
-	
-	int						audioLogPrevTime;
-	int						commPrevTime;
-	
-	bool					oxygenComm;
-	bool					inVaccuum;
-	
-	idStr					objTitle;
-	idStr					objDesc;
-	const idMaterial* 		objScreenshot;
-	idStr					objCompleteTitle;
-	
-	cursorState_t			cursorState;
-	int						cursorInCombat;
-	int						cursorTalking;
-	int						cursorItem;
-	int						cursorGrabber;
-	int						cursorNone;
-	idStr					cursorAction;
-	idStr					cursorFocus;
-	
-	bool					showSoulCubeInfoOnLoad;
+		idSWFScriptObject* 		weaponInfo;
+		idSWFScriptObject* 		playerInfo;
+		idSWFScriptObject* 		stamina;
+		idSWFScriptObject* 		weaponName;
+		idSWFScriptObject* 		weaponPills;
+		idSWFScriptObject* 		downloadPda;
+		idSWFScriptObject* 		downloadVideo;
+		idSWFScriptObject* 		tipInfo;
+		idSWFScriptObject* 		mpChat;
+		idSWFScriptObject* 		mpWeapons;
+
+		idSWFSpriteInstance* 	healthBorder;
+		idSWFSpriteInstance* 	healthPulse;
+		idSWFSpriteInstance* 	armorFrame;
+		idSWFSpriteInstance* 	security;
+		idSWFSpriteInstance* 	newPDADownload;
+		idSWFSpriteInstance* 	newVideoDownload;
+		idSWFSpriteInstance* 	newPDA;
+		idSWFSpriteInstance* 	newVideo;
+		idSWFSpriteInstance* 	audioLog;
+		idSWFSpriteInstance* 	communication;
+		idSWFSpriteInstance* 	oxygen;
+		idSWFSpriteInstance* 	objective;
+		idSWFSpriteInstance* 	objectiveComplete;
+		idSWFSpriteInstance* 	ammoInfo;
+		idSWFSpriteInstance* 	weaponImg;
+		idSWFSpriteInstance* 	newWeapon;
+		idSWFSpriteInstance* 	pickupInfo;
+		idSWFSpriteInstance* 	talkCursor;
+		idSWFSpriteInstance* 	combatCursor;
+		idSWFSpriteInstance* 	grabberCursor;
+		idSWFSpriteInstance* 	bsInfo;
+		idSWFSpriteInstance* 	soulcubeInfo;
+		idSWFSpriteInstance* 	newItem;
+		idSWFSpriteInstance*		respawnMessage;
+		idSWFSpriteInstance* 	flashlight;
+		idSWFSpriteInstance* 	mpChatObject;
+		idSWFSpriteInstance* 	mpConnection;
+
+		idSWFSpriteInstance* 	mpInfo;
+		idSWFSpriteInstance* 	mpHitInfo;
+
+		idSWFTextInstance* 		locationName;
+		idSWFTextInstance* 		securityText;
+		idSWFTextInstance* 		newPDAName;
+		idSWFTextInstance* 		newPDAHeading;
+		idSWFTextInstance* 		newVideoHeading;
+
+		idSWFTextInstance* 		mpMessage;
+		idSWFTextInstance* 		mpTime;
+
+		int						audioLogPrevTime;
+		int						commPrevTime;
+
+		bool					oxygenComm;
+		bool					inVaccuum;
+
+		idStr					objTitle;
+		idStr					objDesc;
+		const idMaterial* 		objScreenshot;
+		idStr					objCompleteTitle;
+
+		cursorState_t			cursorState;
+		int						cursorInCombat;
+		int						cursorTalking;
+		int						cursorItem;
+		int						cursorGrabber;
+		int						cursorNone;
+		idStr					cursorAction;
+		idStr					cursorFocus;
+
+		bool					showSoulCubeInfoOnLoad;
 };
 
 //*

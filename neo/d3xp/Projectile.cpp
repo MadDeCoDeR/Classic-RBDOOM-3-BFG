@@ -1132,7 +1132,7 @@ void idProjectile::Explode( const trace_t& collision, idEntity* ignore )
 	
 	// If the explosion is in liquid, spawn a particle splash
 	idVec3 testOrg = GetPhysics()->GetOrigin();
-	int testC = gameLocal.clip.Contents( testOrg, NULL, mat3_identity, CONTENTS_WATER, this );
+	int testC = gameLocal.GetClip()->Contents( testOrg, NULL, mat3_identity, CONTENTS_WATER, this );
 	if( testC & CONTENTS_WATER )
 	{
 		idFuncEmitter* splashEnt;
@@ -1991,7 +1991,7 @@ void idGuidedProjectile::Launch( const idVec3& start, const idVec3& dir, const i
 			idPlayer* player = static_cast<idPlayer*>( owner.GetEntity() );
 			idVec3 start = player->GetEyePosition();
 			idVec3 end = start + player->viewAxis[0] * 1000.0f;
-			gameLocal.clip.TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL | CONTENTS_BODY, owner.GetEntity() );
+			gameLocal.GetClip()->TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL | CONTENTS_BODY, owner.GetEntity() );
 			if( tr.fraction < 1.0f )
 			{
 				enemy = gameLocal.GetTraceEntity( tr );
@@ -2570,7 +2570,7 @@ void idBFGProjectile::Launch( const idVec3& start, const idVec3& dir, const idVe
 	//physicsObj.SetAngularExtrapolation( extrapolation_t(EXTRAPOLATION_LINEAR|EXTRAPOLATION_NOSTOP), gameLocal.time, 0, physicsObj.GetAxis().ToAngles(), delta, ang_zero );
 	
 	// get all entities touching the bounds
-	numListedEntities = gameLocal.clip.EntitiesTouchingBounds( bounds, CONTENTS_BODY, entityList, MAX_GENTITIES );
+	numListedEntities = gameLocal.GetClip()->EntitiesTouchingBounds( bounds, CONTENTS_BODY, entityList, MAX_GENTITIES );
 	for( int e = 0; e < numListedEntities; e++ )
 	{
 		ent = entityList[ e ];
@@ -3363,7 +3363,7 @@ void idHomingProjectile::Launch( const idVec3& start, const idVec3& dir, const i
 			idPlayer* player = static_cast<idPlayer*>( owner.GetEntity() );
 			idVec3 start = player->GetEyePosition();
 			idVec3 end = start + player->viewAxis[0] * 1000.0f;
-			gameLocal.clip.TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL | CONTENTS_BODY, owner.GetEntity() );
+			gameLocal.GetClip()->TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL | CONTENTS_BODY, owner.GetEntity() );
 			if( tr.fraction < 1.0f )
 			{
 				enemy = gameLocal.GetTraceEntity( tr );

@@ -270,6 +270,10 @@ public:
 	{
 		showShellRequested = true;
 	}
+	virtual const char*			GetName(const char* Str) 
+	{
+		return idLocalization::GetString(Str);
+	}
 	
 	// RB begin
 #if defined(USE_DOOMCLASSIC)
@@ -367,7 +371,7 @@ private:
 	idStrList					warningList;
 	idStrList					errorList;
 	
-	int							gameDLL;
+	intptr_t					gameDLL;
 	
 	idCommonDialog				commonDialog;
 	

@@ -43,7 +43,7 @@ idCVar com_disableAllSaves( "com_disableAllSaves", "0", CVAR_SYSTEM | CVAR_BOOL,
 
 extern idCVar sys_lang;
 
-extern idCVar g_demoMode;
+//extern idCVar g_demoMode;
 
 // This is for the dirty hack to get a dialog to show up before we capture the screen for autorender.
 const int NumScreenUpdatesToShowDialog = 25;
@@ -249,7 +249,7 @@ void idCommonLocal::LoadLoadingGui( const char* mapName, bool& hellMap )
 	defaultLoadscreen = false;
 	loadGUI = new idSWF( "loading/default", NULL );
 	
-	if( g_demoMode.GetBool() )
+	if(game->GetCVarBool("g_demoMode"))
 	{
 		hellMap = false;
 		if( loadGUI != NULL )
@@ -1284,7 +1284,7 @@ Common_RestartMap_f
 */
 CONSOLE_COMMAND_SHIP( restartMap, "restarts the current map", NULL )
 {
-	if( g_demoMode.GetBool() )
+	if(game->GetCVarBool("g_demoMode"))
 	{
 		cmdSystem->AppendCommandText( va( "devmap %s %d\n", commonLocal.GetCurrentMapName(), 0 ) );
 	}

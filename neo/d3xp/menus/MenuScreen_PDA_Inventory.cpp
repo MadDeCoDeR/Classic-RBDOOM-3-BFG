@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../Game_local.h"
 
 static const int NUM_INVENTORY_ITEMS_VISIBLE = 9;
-extern idCVar flashlight_old;
+//extern idCVar flashlight_old;
 
 /*
 ========================
@@ -95,7 +95,7 @@ idMenuScreen_PDA_Inventory::ShowScreen
 */
 void idMenuScreen_PDA_Inventory::ShowScreen( const mainMenuTransition_t transitionType )
 {
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = game->GetLocalPlayer();
 	if( player != NULL )
 	{
 	
@@ -134,7 +134,7 @@ void idMenuScreen_PDA_Inventory::ShowScreen( const mainMenuTransition_t transiti
 				continue;
 			}
 			
-			const idDeclEntityDef* weaponDef = gameLocal.FindEntityDef( weap, false );
+			const idDeclEntityDef* weaponDef = game->FindEntityDef( weap, false );
 			if( weaponDef != NULL )
 			{
 				weaponIcons.Append( declManager->FindMaterial( weaponDef->dict.GetString( "hudIcon" ), false ) );
@@ -169,7 +169,7 @@ idMenuScreen_PDA_Inventory::GetWeaponName
 const char* idMenuScreen_PDA_Inventory::GetWeaponName( int index )
 {
 
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = game->GetLocalPlayer();
 	if( player == NULL )
 	{
 		return NULL;
@@ -192,7 +192,7 @@ idMenuScreen_PDA_Inventory::GetWeaponName
 bool idMenuScreen_PDA_Inventory::IsVisibleWeapon( int index )
 {
 
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = game->GetLocalPlayer();
 	if( player == NULL )
 	{
 		return false;
@@ -202,7 +202,7 @@ bool idMenuScreen_PDA_Inventory::IsVisibleWeapon( int index )
 	{
 		//GK: HACK for the def of the orginal Doom 3 Flashlight
 		idStr name = player->spawnArgs.GetString(va("def_weapon%d", index));
-		if (!idStr::Icmp(name,"weapon_flashlight") && flashlight_old.GetInteger()) {
+		if (!idStr::Icmp(name,"weapon_flashlight") && game->GetCVarInteger("flashlight_old")) {
 			return true;
 		}
 		return player->spawnArgs.GetBool( va( "weapon%d_visible", index ) );
@@ -220,7 +220,7 @@ idMenuScreen_PDA_Inventory::Update
 void idMenuScreen_PDA_Inventory::Update()
 {
 
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = game->GetLocalPlayer();
 	if( player == NULL )
 	{
 		idMenuScreen::Update();
@@ -242,7 +242,7 @@ void idMenuScreen_PDA_Inventory::Update()
 			return;
 		}
 		
-		const idDeclEntityDef* weaponDef = gameLocal.FindEntityDef( weap, false );
+		const idDeclEntityDef* weaponDef = game->FindEntityDef( weap, false );
 		if( weaponDef == NULL )
 		{
 			continue;
@@ -308,7 +308,7 @@ void idMenuScreen_PDA_Inventory::EquipWeapon()
 		return;
 	}
 	
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = game->GetLocalPlayer();
 	if( player == NULL )
 	{
 		return;
@@ -331,10 +331,10 @@ void idMenuScreen_PDA_Inventory::EquipWeapon()
 		
 		if( validIndex == itemList.GetMoveToIndex() )
 		{
-			int slot = player->SlotForWeapon( weap );
+			int slot = game->SlotForWeapon(player,weap );
 			player->SetPreviousWeapon( slot );
 			//GK: A small logic HACK for the orginal Doom 3 Flashlight
-			if (!idStr::Icmp("weapon_flashlight", weap) && flashlight_old.GetInteger()) {
+			if (!idStr::Icmp("weapon_flashlight", weap) && game->GetCVarInteger("flashlight_old")) {
 				player->flashlight.GetEntity()->lightOn = true;
 			}
 			else {
@@ -345,7 +345,7 @@ void idMenuScreen_PDA_Inventory::EquipWeapon()
 		validIndex++;
 	}
 	
-	player->TogglePDA();
+	game->TogglePDA(player);
 }
 
 /*

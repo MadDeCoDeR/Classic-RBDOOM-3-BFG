@@ -29,11 +29,11 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #pragma hdrstop
 
-#ifdef ID_RETAIL
-idCVar net_allowCheats( "net_allowCheats", "0", CVAR_BOOL | CVAR_ROM, "Allow cheats in multiplayer" );
+/*#ifdef ID_RETAIL
+extern idCVar net_allowCheats;
 #else
-idCVar net_allowCheats( "net_allowCheats", "0", CVAR_BOOL | CVAR_NOCHEAT, "Allow cheats in multiplayer" );
-#endif
+extern idCVar net_allowCheats;
+#endif*/
 
 /*
 ===============================================================================
@@ -576,7 +576,7 @@ void idCmdSystemLocal::ExecuteTokenizedString( const idCmdArgs& args )
 			cmd->next = commands;
 			commands = cmd;
 			
-			if( ( cmd->flags & ( CMD_FL_CHEAT | CMD_FL_TOOL ) ) && common->IsMultiplayer() && !net_allowCheats.GetBool() )
+			if( ( cmd->flags & ( CMD_FL_CHEAT | CMD_FL_TOOL ) ) && common->IsMultiplayer() && !game->GetCVarBool("net_allowCheats") )
 			{
 				common->Printf( "Command '%s' not valid in multiplayer mode.\n", cmd->name );
 				return;

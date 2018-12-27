@@ -1201,7 +1201,7 @@ idParticleStage::NumQuadsPerParticle
 includes trails and cross faded animations
 ================
 */
-int idParticleStage::NumQuadsPerParticle() const
+/*int idParticleStage::NumQuadsPerParticle() const
 {
 	int	count = 1;
 	
@@ -1219,7 +1219,7 @@ int idParticleStage::NumQuadsPerParticle() const
 	}
 	
 	return count;
-}
+}*/
 
 /*
 ===============
@@ -1718,7 +1718,7 @@ Vertex order is:
 2 3
 ================
 */
-int idParticleStage::CreateParticle( particleGen_t* g, idDrawVert* verts ) const
+/*int idParticleStage::CreateParticle( particleGen_t* g, idDrawVert* verts ) const
 {
 	idVec3	origin;
 	
@@ -1771,7 +1771,7 @@ int idParticleStage::CreateParticle( particleGen_t* g, idDrawVert* verts ) const
 	}
 	
 	return numVerts * 2;
-}
+}*/
 
 /*
 ==================

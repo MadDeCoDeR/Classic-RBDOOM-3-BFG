@@ -29,7 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../Game_local.h"
 
-extern idCVar g_demoMode;
+//extern idCVar g_demoMode;
 const static int NUM_PAUSE_OPTIONS = 6;
 
 enum pauseMenuCmds_t
@@ -114,7 +114,7 @@ void idMenuScreen_Shell_Pause::Update()
 			buttonInfo->action.Set( WIDGET_ACTION_PRESS_FOCUSED );
 			
 			bool isDead = false;
-			idPlayer* player = gameLocal.GetLocalPlayer();
+			idPlayer* player = game->GetLocalPlayer();
 			if( player != NULL )
 			{
 				if( player->health <= 0 )
@@ -150,7 +150,7 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 	idList< idStr > option;
 	
 	bool isDead = false;
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = game->GetLocalPlayer();
 	if( player != NULL )
 	{
 		if( player->health <= 0 )
@@ -159,7 +159,7 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 		}
 	}
 	
-	if( g_demoMode.GetBool() )
+	if(game->GetCVarBool("g_demoMode"))
 	{
 		isMpPause = false;
 		if( isDead )

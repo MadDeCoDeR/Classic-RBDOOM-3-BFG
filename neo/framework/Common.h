@@ -41,6 +41,7 @@ extern idCVar com_engineHz;
 extern float com_engineHz_latched;
 extern int64 com_engineHz_numerator;
 extern int64 com_engineHz_denominator;
+class idUserCmdMgr;
 
 // Returns the msec the frame starts on
 ID_INLINE int FRAME_TO_MSEC( int64 frame )
@@ -333,6 +334,8 @@ public:
 	virtual bool				JapaneseCensorship() const = 0;
 	
 	virtual void				QueueShowShell() = 0;		// Will activate the shell on the next frame.
+	//GK: idLocalization doesn't work on dll
+	virtual const char*			GetName(const char* Str) = 0;
 	
 	// RB begin
 #if defined(USE_DOOMCLASSIC)
@@ -340,6 +343,8 @@ public:
 	virtual void				SwitchToGame( currentGame_t newGame ) = 0;
 #endif
 	// RB end
+	//GK: Neither ucmdMgr
+	virtual idUserCmdMgr& GetUCmdMgr() = 0;
 };
 
 extern idCommon* 		common;

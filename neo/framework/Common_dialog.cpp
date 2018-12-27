@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar popupDialog_debug( "popupDialog_debug", "0", CVAR_BOOL | CVAR_ARCHIVE, "display debug spam" );
 
-extern idCVar g_demoMode;
+//extern idCVar g_demoMode;
 
 static const char* dialogStateToString[ GDM_MAX + 1 ] =
 {
@@ -919,7 +919,7 @@ idStr idCommonDialog::GetDialogMsg( gameDialogMessages_t msg, idStr& message, id
 		{
 			title = idLocalization::GetString( "#str_04215" );
 			title.ToUpper();
-			if( g_demoMode.GetBool() )
+			if(game->GetCVarBool("g_demoMode"))
 			{
 				message = "#str_04145";
 			}

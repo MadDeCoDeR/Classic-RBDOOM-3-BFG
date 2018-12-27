@@ -583,7 +583,7 @@ void idClipModel::Restore( idRestoreGame* savefile )
 	
 	if( linked )
 	{
-		Link( gameLocal.clip, entity, id, origin, axis, renderModelHandle );
+		Link( *gameLocal.GetClip(), entity, id, origin, axis, renderModelHandle );
 	}
 }
 
@@ -911,24 +911,26 @@ idClip::Shutdown
 */
 void idClip::Shutdown()
 {
-	delete[] clipSectors;
-	clipSectors = NULL;
-	
-	// free the trace model used for the temporaryClipModel
-	if( temporaryClipModel.traceModelIndex != -1 )
-	{
-		idClipModel::FreeTraceModel( temporaryClipModel.traceModelIndex );
-		temporaryClipModel.traceModelIndex = -1;
+	if (this != NULL) {
+		delete[] clipSectors;
+		clipSectors = NULL;
+
+		// free the trace model used for the temporaryClipModel
+		if (temporaryClipModel.traceModelIndex != -1)
+		{
+			idClipModel::FreeTraceModel(temporaryClipModel.traceModelIndex);
+			temporaryClipModel.traceModelIndex = -1;
+		}
+
+		// free the trace model used for the defaultClipModel
+		if (defaultClipModel.traceModelIndex != -1)
+		{
+			idClipModel::FreeTraceModel(defaultClipModel.traceModelIndex);
+			defaultClipModel.traceModelIndex = -1;
+		}
+
+		clipLinkAllocator.Shutdown();
 	}
-	
-	// free the trace model used for the defaultClipModel
-	if( defaultClipModel.traceModelIndex != -1 )
-	{
-		idClipModel::FreeTraceModel( defaultClipModel.traceModelIndex );
-		defaultClipModel.traceModelIndex = -1;
-	}
-	
-	clipLinkAllocator.Shutdown();
 }
 
 /*

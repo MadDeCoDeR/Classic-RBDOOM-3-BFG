@@ -911,7 +911,7 @@ void idDeclManagerLocal::Init()
 	RegisterDeclType( "articulatedFigure",	DECL_AF,			idDeclAllocator<idDeclAF> );
 	RegisterDeclType( "pda",				DECL_PDA,			idDeclAllocator<idDeclPDA> );
 	RegisterDeclType( "email",				DECL_EMAIL,			idDeclAllocator<idDeclEmail> );
-	RegisterDeclType( "video",				DECL_VIDEO,			idDeclAllocator<idDeclVideo> );
+	RegisterDeclType( "video",				DECL_VIDEO,			idDeclAllocator<idDeclVideoLocal> );
 	RegisterDeclType( "audio",				DECL_AUDIO,			idDeclAllocator<idDeclAudio> );
 	
 	RegisterDeclFolder( "materials",		".mtr",				DECL_MATERIAL );

@@ -32,7 +32,8 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Game_local.h"
-#include "../framework/Common_local.h"
+//#include "../framework/Common_dialog.h"
+//#include "../framework/Common_local.h"
 
 static const int SNAP_GAMESTATE = 0;
 static const int SNAP_SHADERPARMS = 1;
@@ -56,7 +57,7 @@ static const int SNAP_LAST_CLIENT_FRAME_END = SNAP_LAST_CLIENT_FRAME + MAX_PLAYE
 
 idCVar net_clientSmoothing( "net_clientSmoothing", "0.8", CVAR_GAME | CVAR_FLOAT, "smooth other clients angles and position.", 0.0f, 0.95f );
 idCVar net_clientSelfSmoothing( "net_clientSelfSmoothing", "0.6", CVAR_GAME | CVAR_FLOAT, "smooth self position if network causes prediction error.", 0.0f, 0.95f );
-extern idCVar net_clientMaxPrediction;
+idCVar net_clientMaxPrediction("net_clientMaxPrediction", "5000", CVAR_SYSTEM | CVAR_INTEGER | CVAR_NOCHEAT, "maximum number of milliseconds a client can predict ahead of server.");
 
 idCVar cg_predictedSpawn_debug( "cg_predictedSpawn_debug", "0", CVAR_BOOL, "Debug predictive spawning of presentables" );
 idCVar g_clientFire_checkLineOfSightDebug( "g_clientFire_checkLineOfSightDebug", "0", CVAR_BOOL, "" );
@@ -255,13 +256,13 @@ void idGameLocal::ServerSendNetworkSyncCvars()
 	
 	outMsg.InitWrite( msgBuf, sizeof( msgBuf ) );
 	outMsg.BeginWriting();
-	idDict syncedCvars;
-	cvarSystem->MoveCVarsToDict( CVAR_NETWORKSYNC, syncedCvars, true );
-	outMsg.WriteDeltaDict( syncedCvars, NULL );
+	idDict* syncedCvars = cvarSystem->GetSyncedCvars();
+	cvarSystem->MoveCVarsToDict( CVAR_NETWORKSYNC, *syncedCvars, true );
+	outMsg.WriteDeltaDict( *syncedCvars, NULL );
 	lobby.SendReliable( GAME_RELIABLE_MESSAGE_SYNCEDCVARS, outMsg, false );
 	
 	idLib::Printf( "Sending networkSync cvars:\n" );
-	syncedCvars.Print();
+	syncedCvars->Print();
 }
 
 /*
@@ -380,7 +381,7 @@ void idGameLocal::ServerWriteSnapshot( idSnapShot& ss )
 	portalSkyPVS.i = -1;
 	if( skyEnt != NULL )
 	{
-		portalSkyPVS = pvs.SetupCurrentPVS( skyEnt->GetPVSAreas(), skyEnt->GetNumPVSAreas() );
+		portalSkyPVS = pvs->SetupCurrentPVS( skyEnt->GetPVSAreas(), skyEnt->GetNumPVSAreas() );
 	}
 	
 	// Build PVS data for each player and write their player state to the snapshot as well
@@ -405,11 +406,11 @@ void idGameLocal::ServerWriteSnapshot( idSnapShot& ss )
 		
 		int sourceAreas[ idEntity::MAX_PVS_AREAS ];
 		int numSourceAreas = gameRenderWorld->BoundsInAreas( spectated->GetPlayerPhysics()->GetAbsBounds(), sourceAreas, idEntity::MAX_PVS_AREAS );
-		pvsHandles[i] = pvs.SetupCurrentPVS( sourceAreas, numSourceAreas, PVS_NORMAL );
+		pvsHandles[i] = pvs->SetupCurrentPVS( sourceAreas, numSourceAreas, PVS_NORMAL );
 		if( portalSkyPVS.i >= 0 )
 		{
-			pvsHandle_t	tempPVS = pvs.MergeCurrentPVS( pvsHandles[i], portalSkyPVS );
-			pvs.FreeCurrentPVS( pvsHandles[i] );
+			pvsHandle_t	tempPVS = pvs->MergeCurrentPVS( pvsHandles[i], portalSkyPVS );
+			pvs->FreeCurrentPVS( pvsHandles[i] );
 			pvsHandles[i] = tempPVS;
 		}
 		
@@ -422,7 +423,7 @@ void idGameLocal::ServerWriteSnapshot( idSnapShot& ss )
 	
 	if( portalSkyPVS.i >= 0 )
 	{
-		pvs.FreeCurrentPVS( portalSkyPVS );
+		pvs->FreeCurrentPVS( portalSkyPVS );
 	}
 	
 	// Add all entities to the snapshot
@@ -456,7 +457,7 @@ void idGameLocal::ServerWriteSnapshot( idSnapShot& ss )
 		{
 			continue;
 		}
-		pvs.FreeCurrentPVS( pvsHandles[i] );
+		pvs->FreeCurrentPVS( pvsHandles[i] );
 	}
 }
 
@@ -683,7 +684,7 @@ void idGameLocal::ServerProcessReliableMessage( int clientNum, int type, const i
 			idVec3 targetLocation = victim.GetRenderEntity()->origin + victim.GetRenderEntity()->joints[location].ToVec3() * victim.GetRenderEntity()->axis;
 			
 			trace_t tr;
-			gameLocal.clip.Translation( tr, muzzleOrigin, targetLocation, NULL, mat3_identity, MASK_SHOT_RENDERMODEL, &attacker );
+			gameLocal.GetClip()->Translation( tr, muzzleOrigin, targetLocation, NULL, mat3_identity, MASK_SHOT_RENDERMODEL, &attacker );
 			
 			idEntity* hitEnt = gameLocal.entities[ tr.c.entityNum ];
 			if( hitEnt != &victim )
@@ -905,7 +906,7 @@ void idGameLocal::ClientReadSnapshot( const idSnapShot& ss )
 			
 			if( entityNumber < MAX_CLIENTS )
 			{
-				commonLocal.GetUCmdMgr().ResetPlayer( entityNumber );
+				common->GetUCmdMgr().ResetPlayer( entityNumber );
 				SpawnPlayer( entityNumber );
 				ent = entities[ entityNumber ];
 				ent->FreeModelDef();

@@ -144,8 +144,8 @@ idAASFindCover::idAASFindCover( const idVec3& hideFromPos )
 	idBounds	bounds( hideFromPos - idVec3( 16, 16, 0 ), hideFromPos + idVec3( 16, 16, 64 ) );
 	
 	// setup PVS
-	numPVSAreas = gameLocal.pvs.GetPVSAreas( bounds, PVSAreas, idEntity::MAX_PVS_AREAS );
-	hidePVS		= gameLocal.pvs.SetupCurrentPVS( PVSAreas, numPVSAreas );
+	numPVSAreas = gameLocal.GetPvs()->GetPVSAreas( bounds, PVSAreas, idEntity::MAX_PVS_AREAS );
+	hidePVS		= gameLocal.GetPvs()->SetupCurrentPVS( PVSAreas, numPVSAreas );
 }
 
 /*
@@ -155,7 +155,7 @@ idAASFindCover::~idAASFindCover
 */
 idAASFindCover::~idAASFindCover()
 {
-	gameLocal.pvs.FreeCurrentPVS( hidePVS );
+	gameLocal.GetPvs()->FreeCurrentPVS( hidePVS );
 }
 
 /*
@@ -172,8 +172,8 @@ bool idAASFindCover::TestArea( const idAAS* aas, int areaNum )
 	areaCenter = aas->AreaCenter( areaNum );
 	areaCenter[ 2 ] += 1.0f;
 	
-	numPVSAreas = gameLocal.pvs.GetPVSAreas( idBounds( areaCenter ).Expand( 16.0f ), PVSAreas, idEntity::MAX_PVS_AREAS );
-	if( !gameLocal.pvs.InCurrentPVS( hidePVS, PVSAreas, numPVSAreas ) )
+	numPVSAreas = gameLocal.GetPvs()->GetPVSAreas( idBounds( areaCenter ).Expand( 16.0f ), PVSAreas, idEntity::MAX_PVS_AREAS );
+	if( !gameLocal.GetPvs()->InCurrentPVS( hidePVS, PVSAreas, numPVSAreas ) )
 	{
 		return true;
 	}
@@ -210,7 +210,7 @@ bool idAASFindAreaOutOfRange::TestArea( const idAAS* aas, int areaNum )
 		return false;
 	}
 	
-	gameLocal.clip.TracePoint( trace, targetPos, areaCenter + idVec3( 0.0f, 0.0f, 1.0f ), MASK_OPAQUE, NULL );
+	gameLocal.GetClip()->TracePoint( trace, targetPos, areaCenter + idVec3( 0.0f, 0.0f, 1.0f ), MASK_OPAQUE, NULL );
 	if( trace.fraction < 1.0f )
 	{
 		return false;
@@ -239,8 +239,8 @@ idAASFindAttackPosition::idAASFindAttackPosition( const idAI* self, const idMat3
 	
 	// setup PVS
 	idBounds bounds( targetPos - idVec3( 16, 16, 0 ), targetPos + idVec3( 16, 16, 64 ) );
-	numPVSAreas = gameLocal.pvs.GetPVSAreas( bounds, PVSAreas, idEntity::MAX_PVS_AREAS );
-	targetPVS	= gameLocal.pvs.SetupCurrentPVS( PVSAreas, numPVSAreas );
+	numPVSAreas = gameLocal.GetPvs()->GetPVSAreas( bounds, PVSAreas, idEntity::MAX_PVS_AREAS );
+	targetPVS	= gameLocal.GetPvs()->SetupCurrentPVS( PVSAreas, numPVSAreas );
 }
 
 /*
@@ -250,7 +250,7 @@ idAASFindAttackPosition::~idAASFindAttackPosition
 */
 idAASFindAttackPosition::~idAASFindAttackPosition()
 {
-	gameLocal.pvs.FreeCurrentPVS( targetPVS );
+	gameLocal.GetPvs()->FreeCurrentPVS( targetPVS );
 }
 
 /*
@@ -277,8 +277,8 @@ bool idAASFindAttackPosition::TestArea( const idAAS* aas, int areaNum )
 		return false;
 	}
 	
-	numPVSAreas = gameLocal.pvs.GetPVSAreas( idBounds( areaCenter ).Expand( 16.0f ), PVSAreas, idEntity::MAX_PVS_AREAS );
-	if( !gameLocal.pvs.InCurrentPVS( targetPVS, PVSAreas, numPVSAreas ) )
+	numPVSAreas = gameLocal.GetPvs()->GetPVSAreas( idBounds( areaCenter ).Expand( 16.0f ), PVSAreas, idEntity::MAX_PVS_AREAS );
+	if( !gameLocal.GetPvs()->InCurrentPVS( targetPVS, PVSAreas, numPVSAreas ) )
 	{
 		return false;
 	}
@@ -1413,7 +1413,7 @@ void idAI::KickObstacles( const idVec3& dir, float force, idEntity* alwaysKick )
 	clipBounds.ExpandSelf( 8.0f );
 	clipBounds.AddPoint( org );
 	clipmask = physicsObj.GetClipMask();
-	numListedClipModels = gameLocal.clip.ClipModelsTouchingBounds( clipBounds, clipmask, clipModelList, MAX_GENTITIES );
+	numListedClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( clipBounds, clipmask, clipModelList, MAX_GENTITIES );
 	for( i = 0; i < numListedClipModels; i++ )
 	{
 		clipModel = clipModelList[i];
@@ -2651,15 +2651,15 @@ bool idAI::EntityCanSeePos( idActor* actor, const idVec3& actorOrigin, const idV
 	trace_t results;
 	pvsHandle_t handle;
 	
-	handle = gameLocal.pvs.SetupCurrentPVS( actor->GetPVSAreas(), actor->GetNumPVSAreas() );
+	handle = gameLocal.GetPvs()->SetupCurrentPVS( actor->GetPVSAreas(), actor->GetNumPVSAreas() );
 	
-	if( !gameLocal.pvs.InCurrentPVS( handle, GetPVSAreas(), GetNumPVSAreas() ) )
+	if( !gameLocal.GetPvs()->InCurrentPVS( handle, GetPVSAreas(), GetNumPVSAreas() ) )
 	{
-		gameLocal.pvs.FreeCurrentPVS( handle );
+		gameLocal.GetPvs()->FreeCurrentPVS( handle );
 		return false;
 	}
 	
-	gameLocal.pvs.FreeCurrentPVS( handle );
+	gameLocal.GetPvs()->FreeCurrentPVS( handle );
 	
 	eye = actorOrigin + actor->EyeOffset();
 	
@@ -2668,7 +2668,7 @@ bool idAI::EntityCanSeePos( idActor* actor, const idVec3& actorOrigin, const idV
 	
 	physicsObj.DisableClip();
 	
-	gameLocal.clip.TracePoint( results, eye, point, MASK_SOLID, actor );
+	gameLocal.GetClip()->TracePoint( results, eye, point, MASK_SOLID, actor );
 	if( results.fraction >= 1.0f || ( gameLocal.GetTraceEntity( results ) == this ) )
 	{
 		physicsObj.EnableClip();
@@ -2678,7 +2678,7 @@ bool idAI::EntityCanSeePos( idActor* actor, const idVec3& actorOrigin, const idV
 	const idBounds& bounds = physicsObj.GetBounds();
 	point[2] += bounds[1][2] - bounds[0][2];
 	
-	gameLocal.clip.TracePoint( results, eye, point, MASK_SOLID, actor );
+	gameLocal.GetClip()->TracePoint( results, eye, point, MASK_SOLID, actor );
 	physicsObj.EnableClip();
 	if( results.fraction >= 1.0f || ( gameLocal.GetTraceEntity( results ) == this ) )
 	{
@@ -3471,7 +3471,7 @@ void idAI::AdjustFlyHeight( idVec3& vel, const idVec3& goalPos )
 			end.z = goalPos.z + DEFAULT_FLY_OFFSET + fly_offset;
 		}
 		
-		gameLocal.clip.Translation( trace, origin, end, physicsObj.GetClipModel(), mat3_identity, MASK_MONSTERSOLID, this );
+		gameLocal.GetClip()->Translation( trace, origin, end, physicsObj.GetClipModel(), mat3_identity, MASK_MONSTERSOLID, this );
 		vel += Seek( vel, origin, trace.endpos, AI_SEEK_PREDICTION );
 	}
 }
@@ -4287,7 +4287,7 @@ bool idAI::EnemyPositionValid() const
 		return true;
 	}
 	
-	gameLocal.clip.TracePoint( tr, GetEyePosition(), lastVisibleEnemyPos + lastVisibleEnemyEyeOffset, MASK_OPAQUE, this );
+	gameLocal.GetClip()->TracePoint( tr, GetEyePosition(), lastVisibleEnemyPos + lastVisibleEnemyEyeOffset, MASK_OPAQUE, this );
 	if( tr.fraction < 1.0f )
 	{
 		// can't see the area yet, so don't know if he's there or not
@@ -4919,7 +4919,7 @@ idProjectile* idAI::LaunchProjectile( const char* jointname, idEntity* target, b
 			start = ownerBounds.GetCenter();
 		}
 		
-		gameLocal.clip.Translation( tr, start, muzzle, projClip, axis, MASK_SHOT_RENDERMODEL, this );
+		gameLocal.GetClip()->Translation( tr, start, muzzle, projClip, axis, MASK_SHOT_RENDERMODEL, this );
 		muzzle = tr.endpos;
 	}
 	
@@ -5097,7 +5097,7 @@ bool idAI::TestMelee() const
 	idVec3 start = GetEyePosition();
 	idVec3 end = enemyEnt->GetEyePosition();
 	
-	gameLocal.clip.TracePoint( trace, start, end, MASK_SHOT_BOUNDINGBOX, this );
+	gameLocal.GetClip()->TracePoint( trace, start, end, MASK_SHOT_BOUNDINGBOX, this );
 	if( ( trace.fraction == 1.0f ) || ( gameLocal.GetTraceEntity( trace ) == enemyEnt ) )
 	{
 		return true;
@@ -5393,7 +5393,7 @@ void idAI::Show()
 	{
 		physicsObj.SetContents( CONTENTS_BODY );
 	}
-	physicsObj.GetClipModel()->Link( gameLocal.clip );
+	physicsObj.GetClipModel()->Link( *gameLocal.GetClip() );
 	fl.takedamage = !spawnArgs.GetBool( "noDamage" );
 	SetChatSound();
 	StartSound( "snd_ambient", SND_CHANNEL_AMBIENT, 0, false, NULL );

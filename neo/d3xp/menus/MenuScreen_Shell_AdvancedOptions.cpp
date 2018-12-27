@@ -39,8 +39,8 @@ extern idCVar r_hdrAutoExposure;
 extern idCVar r_useSSAO; // RB: use this to control HDR exposure or brightness in LDR mode
 extern idCVar r_useFilmicPostProcessEffects;
 extern idCVar in_joylayout; //GK: use forced aspect ratio
-extern idCVar flashlight_old;
-extern idCVar pm_vmfov;
+//extern idCVar flashlight_old;
+//extern idCVar pm_vmfov;
 
 
 /*
@@ -150,7 +150,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_CONTROLS);
 		options->AddChild(control);
 	}
-	if (!gameLocal.GetLocalPlayer()) {
+	if (!game->GetLocalPlayer()) {
 		control = new(TAG_SWF) idMenuWidget_ControlButton();
 		control->SetOptionType(OPTION_SLIDER_TEXT);
 		control->SetLabel("Flashlight mode");	// Volume
@@ -419,8 +419,8 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 	// RB begin
 	originalControler = in_joylayout.GetInteger();
 	// RB end
-	originalFlashlight = flashlight_old.GetInteger();
-	originalVmfov = pm_vmfov.GetInteger();
+	originalFlashlight = game->GetCVarInteger("flashlight_old");
+	originalVmfov = game->GetCVarInteger("pm_vmfov");
 	originalShadowMapLod = r_shadowMapLodScale.GetFloat();
 	/*const int fullscreen = r_fullscreen.GetInteger();
 	if( fullscreen > 0 )
@@ -532,17 +532,17 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 		}
 		case ADV_FIELD_FLASH:
 		{
-			if (flashlight_old.GetInteger() == 2) {
-				flashlight_old.SetInteger(idMath::ClampInt(0, 2, flashlight_old.GetInteger() - 2));
+			if (game->GetCVarInteger("flashlight_old") == 2) {
+				game->SetCVarInteger("flashlight_old",idMath::ClampInt(0, 2, game->GetCVarInteger("flashlight_old") - 2));
 			}
 			else {
-				flashlight_old.SetInteger(idMath::ClampInt(0, 2, flashlight_old.GetInteger() + 1));
+				game->SetCVarInteger("flashlight_old",idMath::ClampInt(0, 2, game->GetCVarInteger("flashlight_old") + 1));
 			}
 			break;
 		}
 		case ADV_FIELD_VMFOV:
 		{
-			pm_vmfov.SetInteger(pm_vmfov.GetInteger()+adjustAmount);
+			game->SetCVarInteger("pm_vmfov", game->GetCVarInteger("pm_vmfov") +adjustAmount);
 			break;
 		}
 	}
@@ -628,7 +628,7 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 				return "XBOX360";
 			}
 		case ADV_FIELD_FLASH:
-			switch (flashlight_old.GetInteger())
+			switch (game->GetCVarInteger("flashlight_old"))
 			{
 			case 2:
 				return "BFG Mix";
@@ -638,7 +638,7 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 				return "BFG";
 			}
 		case ADV_FIELD_VMFOV:
-			return ReLinearAdjust(pm_vmfov.GetInteger(), 0.0f, 64.0f, 0.0f, 100.0f);
+			return ReLinearAdjust(game->GetCVarInteger("pm_vmfov"), 0.0f, 64.0f, 0.0f, 100.0f);
 			//GK: End
 	}
 	return false;
@@ -679,11 +679,11 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 		return true;
 	}
 	// RB begin
-	if( originalFlashlight != flashlight_old.GetInteger() )
+	if( originalFlashlight != game->GetCVarInteger("flashlight_old"))
 	{
 		return true;
 	}
-	if (originalVmfov != pm_vmfov.GetInteger())
+	if (originalVmfov != game->GetCVarInteger("pm_vmfov"))
 	{
 		return true;
 	}

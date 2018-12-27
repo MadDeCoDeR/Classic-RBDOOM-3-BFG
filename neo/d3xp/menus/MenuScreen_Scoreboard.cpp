@@ -91,7 +91,7 @@ void idMenuScreen_Scoreboard::Update()
 			cmdBar->ClearAllButtons();
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			
-			if( gameLocal.mpGame.GetGameState() != idMultiplayerGame::GAMEREVIEW )
+			if( game->GetMpGame().GetGameState() != idMultiplayerGame::GAMEREVIEW )
 			{
 				buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
 				if( menuData->GetPlatform() != 2 )
@@ -145,7 +145,7 @@ void idMenuScreen_Scoreboard::ShowScreen( const mainMenuTransition_t transitionT
 				idStr mode = idLocalization::GetString( "#str_02376" );
 				mode.Append( ": " );
 				const idStrList& modes = common->GetModeDisplayList();
-				idStr modeName = idLocalization::GetString( modes[ idMath::ClampInt( 0, modes.Num() - 1, gameLocal.gameType ) ] );
+				idStr modeName = idLocalization::GetString( modes[ idMath::ClampInt( 0, modes.Num() - 1, game->GetGameType() ) ] );
 				mode.Append( idLocalization::GetString( idLocalization::GetString( modeName ) ) );
 				txtVal->SetText( mode );
 				txtVal->SetStrokeInfo( true, 0.9f, 1.8f );
@@ -160,11 +160,11 @@ void idMenuScreen_Scoreboard::ShowScreen( const mainMenuTransition_t transitionT
 			txtVal = GetSprite()->GetScriptObject()->GetNestedText( "info", "txtScore" );
 			if( txtVal != NULL )
 			{
-				if( gameLocal.gameType == GAME_LASTMAN )
+				if( game->GetGameType() == GAME_LASTMAN )
 				{
 					txtVal->SetText( idLocalization::GetString( "#str_04242" ) );
 				}
-				else if( gameLocal.gameType == GAME_CTF )
+				else if( game->GetGameType() == GAME_CTF )
 				{
 					txtVal->SetText( idLocalization::GetString( "#str_11112" ) );
 				}
@@ -196,11 +196,11 @@ void idMenuScreen_Scoreboard::ShowScreen( const mainMenuTransition_t transitionT
 			txtVal = GetSprite()->GetScriptObject()->GetNestedText( "info", "txtScore2" );
 			if( txtVal != NULL )
 			{
-				if( gameLocal.gameType == GAME_LASTMAN )
+				if( game->GetGameType() == GAME_LASTMAN )
 				{
 					txtVal->SetText( idLocalization::GetString( "#str_04242" ) );
 				}
-				else if( gameLocal.gameType == GAME_CTF )
+				else if( game->GetGameType() == GAME_CTF )
 				{
 					txtVal->SetText( idLocalization::GetString( "#str_11112" ) );
 				}

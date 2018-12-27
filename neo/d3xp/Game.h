@@ -65,6 +65,25 @@ struct gameReturn_t
 #define TIME_GROUP1		0
 #define TIME_GROUP2		1
 
+class idMultiplayerGame;
+class idPlayer;
+class idEntity;
+class idLocationEntity;
+class idWeapon;
+class idInventory;
+
+enum gameType_t
+{
+	GAME_SP = -2,
+	GAME_RANDOM = -1,
+	GAME_DM = 0,
+	GAME_TOURNEY,
+	GAME_TDM,
+	GAME_LASTMAN,
+	GAME_CTF,
+	GAME_COUNT,
+};
+
 class idGame
 {
 public:
@@ -192,6 +211,64 @@ public:
 	virtual void				StartDemoPlayback( idRenderWorld* renderworld ) = 0;
 	
 	virtual bool				ProcessDemoCommand( idDemoFile* readDemo ) = 0;
+
+	virtual idPlayer* 				GetLocalPlayer() const = 0;
+
+	virtual int						GetTime() const = 0;
+
+	virtual const idDeclEntityDef* 	FindEntityDef(const char* name, bool makeDefault = true) const = 0;
+
+	virtual idMultiplayerGame GetMpGame() const = 0;
+
+	virtual lobbyUserID_t GetLobbyUserID(int index) const = 0;
+
+	virtual const char* 			GetMapFileName() = 0;
+
+	virtual idEntity** GetEntities() = 0;
+
+	virtual idLocationEntity* 		LocationForPoint(const idVec3& point) = 0;
+
+	virtual int GetRandomInt(int max) = 0;
+
+	virtual float GetRandomFloat() = 0;
+
+	virtual int GetGameType() const = 0;
+
+	virtual void					Shell_ClearRepeater() = 0;
+
+	virtual bool					IsSoundChannelPlaying(idPlayer* player, const s_channelType channel = 0) = 0;
+
+	virtual void	EndAudioLog(idPlayer* player) = 0;
+	virtual void	EndVideoDisk(idPlayer* player) = 0;
+	virtual void	TogglePDA(idPlayer* player) = 0;
+	virtual const char* 		GetLocation(idLocationEntity* locationEntity) const = 0;
+	virtual idVec3					GetEyePosition(idPlayer* player) const = 0;
+	virtual const idDeclVideo* 		GetVideo(idPlayer* player,int index) = 0;
+	virtual float	GetScreenSeparationForGuis() = 0;
+	virtual void  HideTip(idPlayer* player) = 0;
+	virtual void					PlayAudioLog(idPlayer* player,const idSoundShader* sound) = 0;
+	virtual void			SetScoreboardActive(bool active) = 0;
+	virtual bool            IsGametypeTeamBased() = 0;
+	virtual int						GetSlowTime() const = 0;
+	virtual void			SelectTimeGroup(int timeGroup) = 0;
+	virtual int				GetSpawnId(int index) = 0;
+	virtual bool			StartSound(idPlayer* player, const char* soundName, const s_channelType channel, int soundShaderFlags, bool broadcast, int* length) = 0;
+	virtual bool					IsReady(idWeapon* weapon) const = 0;
+	virtual int						AmmoAvailable(idWeapon* weapon) const = 0;
+	virtual int						AmmoInClip(idWeapon* weapon) const = 0;
+	virtual int						ClipSize(idWeapon* weapon) const = 0;
+	virtual int						LowAmmo(idWeapon* weapon) const = 0;
+	virtual int					AmmoIndexForWeaponClass(idPlayer* player,const char* weapon_classname, int* ammoRequired) = 0;
+	virtual int						HasAmmo(idPlayer* player, int type, int amount) = 0;
+	virtual int						HasAmmo(idPlayer* player, const char* weapon_classname, bool includeClip = false, idPlayer* owner = NULL) = 0;
+	virtual int						SlotForWeapon(idPlayer* player, const char* weaponName) = 0;
+	virtual void					PlayVideoDisk(idPlayer* player, const idDeclVideo* decl) = 0;
+	virtual int					GetCVarInteger(const char* var) = 0;
+	virtual float				GetCVarFloat(const char* var) = 0;
+	virtual bool				GetCVarBool(const char* var) = 0;
+	virtual void				SetCVarInteger(const char* var, int value) = 0;
+	virtual void				SetCVarFloat(const char* var, float value) = 0;
+	virtual void				SetCVarBool(const char* var, bool value) = 0;
 };
 
 extern idGame* 					game;
@@ -322,8 +399,8 @@ extern idGameEdit* 				gameEdit;
 
 ===============================================================================
 */
-
-const int GAME_API_VERSION		= 8;
+//GK: Distinct OG dll from BFG dll
+const int GAME_API_VERSION		= 9;
 
 typedef struct
 {
@@ -341,6 +418,8 @@ typedef struct
 	idDeclManager* 				declManager;			// declaration manager
 	idAASFileManager* 			AASFileManager;			// AAS file manager
 	idCollisionModelManager* 	collisionModelManager;	// collision model manager
+	idKey*						keys;
+	idSession*					session;
 	
 } gameImport_t;
 

@@ -559,7 +559,7 @@ bool idMenuScreen_Shell_Bindings::HandleAction( idWidgetAction& action, const id
 			else
 			{
 			
-				idMenuHandler_Shell* data = dynamic_cast< idMenuHandler_Shell* >( menuData );
+				idMenuHandler_Shell* data = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 				if( data != NULL )
 				{
 					ToggleWait( true );

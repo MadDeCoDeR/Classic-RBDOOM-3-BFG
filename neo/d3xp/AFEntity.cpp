@@ -181,7 +181,7 @@ void idChain::BuildChain( const idStr& name, const idVec3& origin, float linkLen
 		// add body
 		clip = new( TAG_PHYSICS_CLIP_AF ) idClipModel( trm );
 		clip->SetContents( CONTENTS_SOLID );
-		clip->Link( gameLocal.clip, this, 0, org, mat3_identity );
+		clip->Link( *gameLocal.GetClip(), this, 0, org, mat3_identity );
 		body = new( TAG_PHYSICS_AF ) idAFBody( name + idStr( i ), clip, density );
 		physicsObj.AddBody( body );
 		
@@ -548,7 +548,7 @@ void idAFAttachment::LinkCombat()
 	
 	if( combatModel )
 	{
-		combatModel->Link( gameLocal.clip, this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle );
+		combatModel->Link( *gameLocal.GetClip(), this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle );
 	}
 }
 
@@ -969,7 +969,7 @@ void idAFEntity_Base::LinkCombat()
 	}
 	if( combatModel )
 	{
-		combatModel->Link( gameLocal.clip, this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle );
+		combatModel->Link( *gameLocal.GetClip(), this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle );
 	}
 }
 
@@ -1727,7 +1727,7 @@ void idAFEntity_WithAttachedHead::LinkCombat()
 	
 	if( combatModel )
 	{
-		combatModel->Link( gameLocal.clip, this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle );
+		combatModel->Link( *gameLocal.GetClip(), this, 0, renderEntity.origin, renderEntity.axis, modelDefHandle );
 	}
 	headEnt = head.GetEntity();
 	if( headEnt )
@@ -2780,7 +2780,7 @@ void idAFEntity_VehicleAutomated::Think()
 		waypoint->spawnArgs.GetString( "call", "", callfunc );
 		if( callfunc.Length() )
 		{
-			func = gameLocal.program.FindFunction( callfunc );
+			func = gameLocal.GetProgram()->FindFunction( callfunc );
 			if( func != NULL )
 			{
 				thread = new idThread( func );
@@ -3724,7 +3724,7 @@ void idHarvestable::Think()
 	//Update the orientation of the box
 	if( trigger && parent && !parent->GetPhysics()->IsAtRest() )
 	{
-		trigger->Link( gameLocal.clip, this, 0, parent->GetPhysics()->GetOrigin(), parent->GetPhysics()->GetAxis() );
+		trigger->Link( *gameLocal.GetClip(), this, 0, parent->GetPhysics()->GetOrigin(), parent->GetPhysics()->GetAxis() );
 	}
 	
 	if( startTime && gameLocal.slow.time - startTime > giveDelay && ! given )
@@ -3975,7 +3975,7 @@ void idHarvestable::Event_SpawnHarvestTrigger()
 	
 	// create a trigger clip model
 	trigger = new( TAG_PHYSICS_CLIP_AF ) idClipModel( idTraceModel( bounds ) );
-	trigger->Link( gameLocal.clip, this, 255, parent->GetPhysics()->GetOrigin(), mat3_identity );
+	trigger->Link( *gameLocal.GetClip(), this, 255, parent->GetPhysics()->GetOrigin(), mat3_identity );
 	trigger->SetContents( CONTENTS_TRIGGER );
 	
 	startTime = 0;

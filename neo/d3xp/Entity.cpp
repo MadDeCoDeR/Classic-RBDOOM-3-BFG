@@ -498,7 +498,7 @@ void idEntity::FixupLocalizedStrings()
 		const idKeyValue* kv = spawnArgs.GetKeyVal( i );
 		if( idStr::Cmpn( kv->GetValue(), STRTABLE_ID, STRTABLE_ID_LENGTH ) == 0 )
 		{
-			spawnArgs.Set( kv->GetKey(), idLocalization::GetString( kv->GetValue() ) );
+			spawnArgs.Set( kv->GetKey(), common->GetName( kv->GetValue() ) );
 		}
 	}
 }
@@ -866,7 +866,7 @@ void idEntity::Restore( idRestoreGame* savefile )
 			{
 				savefile->ReadInt( signals->signal[ i ][ j ].threadnum );
 				savefile->ReadString( funcname );
-				signals->signal[ i ][ j ].function = gameLocal.program.FindFunction( funcname );
+				signals->signal[ i ][ j ].function = gameLocal.GetProgram()->FindFunction( funcname );
 				if( !signals->signal[ i ][ j ].function )
 				{
 					savefile->Error( "Function '%s' not found", funcname.c_str() );
@@ -908,7 +908,7 @@ void idEntity::SetName( const char* newname )
 	if( name.Length() )
 	{
 		gameLocal.RemoveEntityFromHash( name.c_str(), this );
-		gameLocal.program.SetEntity( name, NULL );
+		gameLocal.GetProgram()->SetEntity( name, NULL );
 	}
 	
 	name = newname;
@@ -919,7 +919,7 @@ void idEntity::SetName( const char* newname )
 			gameLocal.Error( "Cannot name entity '%s'.  '%s' is reserved for script.", name.c_str(), name.c_str() );
 		}
 		gameLocal.AddEntityToHash( name.c_str(), this );
-		gameLocal.program.SetEntity( name, this );
+		gameLocal.GetProgram()->SetEntity( name, this );
 	}
 }
 
@@ -1450,13 +1450,13 @@ void idEntity::UpdatePVSAreas()
 	int i;
 	
 	modelAbsBounds.FromTransformedBounds( renderEntity.bounds, renderEntity.origin, renderEntity.axis );
-	localNumPVSAreas = gameLocal.pvs.GetPVSAreas( modelAbsBounds, localPVSAreas, sizeof( localPVSAreas ) / sizeof( localPVSAreas[0] ) );
+	localNumPVSAreas = gameLocal.GetPvs()->GetPVSAreas( modelAbsBounds, localPVSAreas, sizeof( localPVSAreas ) / sizeof( localPVSAreas[0] ) );
 	
 	// FIXME: some particle systems may have huge bounds and end up in many PVS areas
 	// the first MAX_PVS_AREAS may not be visible to a network client and as a result the particle system may not show up when it should
 	if( localNumPVSAreas > MAX_PVS_AREAS )
 	{
-		localNumPVSAreas = gameLocal.pvs.GetPVSAreas( idBounds( renderEntity.origin ).Expand( 64.0f ), localPVSAreas, sizeof( localPVSAreas ) / sizeof( localPVSAreas[0] ) );
+		localNumPVSAreas = gameLocal.GetPvs()->GetPVSAreas( idBounds( renderEntity.origin ).Expand( 64.0f ), localPVSAreas, sizeof( localPVSAreas ) / sizeof( localPVSAreas[0] ) );
 	}
 	
 	for( numPVSAreas = 0; numPVSAreas < MAX_PVS_AREAS && numPVSAreas < localNumPVSAreas; numPVSAreas++ )
@@ -1479,7 +1479,7 @@ void idEntity::UpdatePVSAreas( const idVec3& pos )
 {
 	int i;
 	
-	numPVSAreas = gameLocal.pvs.GetPVSAreas( idBounds( pos ), PVSAreas, MAX_PVS_AREAS );
+	numPVSAreas = gameLocal.GetPvs()->GetPVSAreas( idBounds( pos ), PVSAreas, MAX_PVS_AREAS );
 	i = numPVSAreas;
 	while( i < MAX_PVS_AREAS )
 	{
@@ -1540,7 +1540,7 @@ bool idEntity::PhysicsTeamInPVS( pvsHandle_t pvsHandle )
 	{
 		for( part = teamMaster; part; part = part->teamChain )
 		{
-			if( gameLocal.pvs.InCurrentPVS( pvsHandle, part->GetPVSAreas(), part->GetNumPVSAreas() ) )
+			if( gameLocal.GetPvs()->InCurrentPVS( pvsHandle, part->GetPVSAreas(), part->GetNumPVSAreas() ) )
 			{
 				return true;
 			}
@@ -1548,7 +1548,7 @@ bool idEntity::PhysicsTeamInPVS( pvsHandle_t pvsHandle )
 	}
 	else
 	{
-		return gameLocal.pvs.InCurrentPVS( pvsHandle, GetPVSAreas(), GetNumPVSAreas() );
+		return gameLocal.GetPvs()->InCurrentPVS( pvsHandle, GetPVSAreas(), GetNumPVSAreas() );
 	}
 	return false;
 }
@@ -3602,7 +3602,7 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	midpoint = ( GetPhysics()->GetAbsBounds()[0] + GetPhysics()->GetAbsBounds()[1] ) * 0.5;
 	
 	dest = midpoint;
-	gameLocal.clip.TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
 	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
@@ -3613,7 +3613,7 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	dest = midpoint;
 	dest[0] += 15.0;
 	dest[1] += 15.0;
-	gameLocal.clip.TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
 	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
@@ -3623,7 +3623,7 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	dest = midpoint;
 	dest[0] += 15.0;
 	dest[1] -= 15.0;
-	gameLocal.clip.TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
 	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
@@ -3633,7 +3633,7 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	dest = midpoint;
 	dest[0] -= 15.0;
 	dest[1] += 15.0;
-	gameLocal.clip.TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
 	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
@@ -3643,7 +3643,7 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	dest = midpoint;
 	dest[0] -= 15.0;
 	dest[1] -= 15.0;
-	gameLocal.clip.TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
 	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
@@ -3652,7 +3652,7 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	
 	dest = midpoint;
 	dest[2] += 15.0;
-	gameLocal.clip.TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
 	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
@@ -3661,7 +3661,7 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	
 	dest = midpoint;
 	dest[2] -= 15.0;
-	gameLocal.clip.TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
 	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
@@ -4190,7 +4190,7 @@ bool idEntity::HandleGuiCommands( idEntity* entityGui, const char* cmds )
 						}
 						token2 += "::" + token3;
 					}
-					const function_t* func = gameLocal.program.FindFunction( token2 );
+					const function_t* func = gameLocal.GetProgram()->FindFunction( token2 );
 					if( !func )
 					{
 						gameLocal.Error( "Can't find function '%s' for gui in entity '%s'", token2.c_str(), entityGui->name.c_str() );
@@ -4454,7 +4454,7 @@ bool idEntity::TouchTriggers() const
 	trace.endpos = GetPhysics()->GetOrigin();
 	trace.endAxis = GetPhysics()->GetAxis();
 	
-	numClipModels = gameLocal.clip.ClipModelsTouchingBounds( GetPhysics()->GetAbsBounds(), CONTENTS_TRIGGER, clipModels, MAX_GENTITIES );
+	numClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( GetPhysics()->GetAbsBounds(), CONTENTS_TRIGGER, clipModels, MAX_GENTITIES );
 	numEntities = 0;
 	
 	for( i = 0; i < numClipModels; i++ )

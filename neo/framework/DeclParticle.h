@@ -120,9 +120,80 @@ public:
 	~idParticleStage() {}
 	
 	void					Default();
-	int						NumQuadsPerParticle() const;	// includes trails and cross faded animations
+	virtual int						NumQuadsPerParticle() const	// includes trails and cross faded animations
+	{
+		int	count = 1;
+
+		if (orientation == POR_AIMED)
+		{
+			int	trails = idMath::Ftoi(orientationParms[0]);
+			// each trail stage will add an extra quad
+			count *= (1 + trails);
+		}
+
+		// if we are doing strip-animation, we need to double the number and cross fade them
+		if (animationFrames > 1)
+		{
+			count *= 2;
+		}
+
+		return count;
+	}
 	// returns the number of verts created, which will range from 0 to 4*NumQuadsPerParticle()
-	int						CreateParticle( particleGen_t* g, idDrawVert* verts ) const;
+	virtual int						CreateParticle( particleGen_t* g, idDrawVert* verts ) const
+	{
+		idVec3	origin;
+
+		verts[0].Clear();
+		verts[1].Clear();
+		verts[2].Clear();
+		verts[3].Clear();
+
+		ParticleColors(g, verts);
+
+		// if we are completely faded out, kill the particle
+		if (verts[0].color[0] == 0 && verts[0].color[1] == 0 && verts[0].color[2] == 0 && verts[0].color[3] == 0)
+		{
+			return 0;
+		}
+
+		ParticleOrigin(g, origin);
+
+		ParticleTexCoords(g, verts);
+
+		int	numVerts = ParticleVerts(g, origin, verts);
+
+		if (animationFrames <= 1)
+		{
+			return numVerts;
+		}
+
+		// if we are doing strip-animation, we need to double the quad and cross fade it
+		float	width = 1.0f / animationFrames;
+		float	frac = g->animationFrameFrac;
+		float	iFrac = 1.0f - frac;
+
+		idVec2 tempST;
+		for (int i = 0; i < numVerts; i++)
+		{
+			verts[numVerts + i] = verts[i];
+
+			tempST = verts[numVerts + i].GetTexCoord();
+			verts[numVerts + i].SetTexCoord(tempST.x + width, tempST.y);
+
+			verts[numVerts + i].color[0] *= frac;
+			verts[numVerts + i].color[1] *= frac;
+			verts[numVerts + i].color[2] *= frac;
+			verts[numVerts + i].color[3] *= frac;
+
+			verts[i].color[0] *= iFrac;
+			verts[i].color[1] *= iFrac;
+			verts[i].color[2] *= iFrac;
+			verts[i].color[3] *= iFrac;
+		}
+
+		return numVerts * 2;
+	}
 	
 	void					ParticleOrigin( particleGen_t* g, idVec3& origin ) const;
 	int						ParticleVerts( particleGen_t* g, const idVec3 origin, idDrawVert* verts ) const;

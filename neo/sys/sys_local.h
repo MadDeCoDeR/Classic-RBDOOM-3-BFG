@@ -43,6 +43,10 @@ public:
 	virtual void			DebugPrintf( VERIFY_FORMAT_STRING const char* fmt, ... );
 	virtual void			DebugVPrintf( const char* fmt, va_list arg );
 	
+	virtual struct leaderboardDefinition_t* FindLeaderboardDef(int id);
+	virtual struct leaderboardDefinition_t* CreateLeaderboardDef(int id_, int numColumns_, const struct columnDef_t* columnDefs_, enum rankOrder_t rankOrder_, bool supportsAttachments_, bool checkAgainstCurrent_);
+	virtual void			DestroyLeaderboardDefs();
+	virtual int				GetMilliseconds();
 	virtual double			GetClockTicks();
 	virtual double			ClockTicksPerSecond();
 	virtual cpuid_t			GetProcessorId();
@@ -57,7 +61,7 @@ public:
 	virtual bool			LockMemory( void* ptr, int bytes );
 	virtual bool			UnlockMemory( void* ptr, int bytes );
 	
-	virtual int				DLL_Load( const char* dllName );
+	virtual intptr_t				DLL_Load( const char* dllName );
 	virtual void* 			DLL_GetProcAddress( int dllHandle, const char* procName );
 	virtual void			DLL_Unload( int dllHandle );
 	virtual void			DLL_GetFileName( const char* baseName, char* dllName, int maxLength );

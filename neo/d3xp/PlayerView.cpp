@@ -435,9 +435,9 @@ void idPlayerView::SingleView( const renderView_t* view, idMenuHandler_HUD* hudM
 	{
 		return;
 	}
-	
+
 	// place the sound origin for the player
-	gameSoundWorld->PlaceListener( view->vieworg, view->viewaxis, player->entityNumber + 1,player->hud?player->hud->GetSWFObject()->GetRootObject().GetNestedText("_bottomLeft", "location", "txtVal")->text.c_str():"Undefined"); //GK: like OG Doom 3 keep the location name
+	gameSoundWorld->PlaceListener( view->vieworg, view->viewaxis, player->entityNumber + 1,player->hud?player->hud->GetlocationName():"Undefined"); //GK: like OG Doom 3 keep the location name
 	
 	// if the objective system is up, don't do normal drawing
 	if( player->objectiveSystemOpen )
@@ -666,11 +666,11 @@ void idPlayerView::ScreenFade()
 	}
 }
 
-idCVar	stereoRender_interOccularCentimeters( "stereoRender_interOccularCentimeters", "3.0", CVAR_ARCHIVE | CVAR_RENDERER, "Distance between eyes" );
+extern idCVar	stereoRender_interOccularCentimeters;
 idCVar	stereoRender_convergence( "stereoRender_convergence", "6", CVAR_RENDERER, "0 = head mounted display, otherwise world units to convergence plane" );
 
 extern	idCVar stereoRender_screenSeparation;	// screen units from center to eyes
-extern	idCVar stereoRender_swapEyes;
+extern  idCVar stereoRender_swapEyes;
 
 // In a head mounted display with separate displays for each eye,
 // screen separation will be zero and world separation will be the eye distance.
@@ -734,7 +734,7 @@ stereoDistances_t	CaclulateStereoDistances(
 	return dists;
 }
 
-float	GetScreenSeparationForGuis()
+float	idGameLocal::GetScreenSeparationForGuis()
 {
 	const stereoDistances_t dists = CaclulateStereoDistances(
 										stereoRender_interOccularCentimeters.GetFloat(),

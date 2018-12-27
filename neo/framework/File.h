@@ -430,7 +430,13 @@ public:
 	}
 	
 	// Destructor that will destroy (close) the file when this wrapper class goes out of scope.
-	~idFileLocal();
+	~idFileLocal() { //GK: Simple and doesn't cause any depedency issue here
+		if (file != NULL)
+		{
+			delete file;
+			file = NULL;
+		}
+	}
 	
 	// Cast to a file pointer.
 	operator idFile* () const

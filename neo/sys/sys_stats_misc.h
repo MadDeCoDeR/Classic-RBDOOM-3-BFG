@@ -149,7 +149,7 @@ public:
 	int64 columns[ MAX_LEADERBOARD_COLUMNS ];
 };
 
-const leaderboardDefinition_t* Sys_FindLeaderboardDef( int id );
+/*const*/ leaderboardDefinition_t* Sys_FindLeaderboardDef( int id );
 leaderboardDefinition_t* 		Sys_CreateLeaderboardDef( int id_, int numColumns_, const columnDef_t* columnDefs_, rankOrder_t rankOrder_, bool supportsAttachments_, bool checkAgainstCurrent_ );
 void							Sys_DestroyLeaderboardDefs();
 

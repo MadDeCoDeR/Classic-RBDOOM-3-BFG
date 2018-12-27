@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 
 const static int NUM_CONTROLS_OPTIONS = 8;
 
-extern idCVar pm_cursor;
+//extern idCVar pm_cursor;
 
 enum contorlsMenuCmds_t
 {
@@ -216,7 +216,7 @@ void idMenuScreen_Shell_Controls::HideScreen( const mainMenuTransition_t transit
 	
 	if( menuData != NULL )
 	{
-		idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_Shell* >( menuData );
+		idMenuHandler_Shell* handler = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 		if( handler != NULL )
 		{
 			handler->SetupPCOptions();
@@ -371,7 +371,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::LoadData()
 	fields[ CONTROLS_FIELD_INVERT_MOUSE ].SetBool( in_mouseInvertLook.GetBool() );
 	float mouseSpeed = ( ( in_mouseSpeed.GetFloat() - 0.25f ) / ( 4.0f - 0.25 ) ) * 100.0f;
 	fields[ CONTROLS_FIELD_MOUSE_SENS ].SetFloat( mouseSpeed );
-	fields[ CONTROLS_FIELD_CROSSHAIR ].SetBool( pm_cursor.GetBool() );
+	fields[ CONTROLS_FIELD_CROSSHAIR ].SetBool(game->GetCVarBool("pm_cursor") );
 	
 	originalFields = fields;
 }
@@ -387,7 +387,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::CommitData()
 	in_mouseInvertLook.SetBool( fields[ CONTROLS_FIELD_INVERT_MOUSE ].ToBool() );
 	float mouseSpeed = 0.25f + ( ( 4.0f - 0.25 ) * ( fields[ CONTROLS_FIELD_MOUSE_SENS ].ToFloat() / 100.0f ) );
 	in_mouseSpeed.SetFloat( mouseSpeed );
-	pm_cursor.SetBool(fields[ CONTROLS_FIELD_CROSSHAIR ].ToBool() );
+	game->SetCVarBool("pm_cursor",fields[ CONTROLS_FIELD_CROSSHAIR ].ToBool() );
 	
 	cvarSystem->SetModifiedFlags( CVAR_ARCHIVE );
 	
