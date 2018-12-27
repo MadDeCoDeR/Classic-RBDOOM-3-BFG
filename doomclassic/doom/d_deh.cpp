@@ -573,7 +573,26 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 	char* ntxt=new char[nl];
 	strcpy(ntxt, "");
 	char* otxt = new char[il];
-	while (checkstate(tst) == 0 && i<lines.size()) {
+	char* ltxt = new char[il + nl];
+	while (checkstate(tst) == 0 && i < lines.size()) {
+		newline = lines[i] + "\n";
+		if (i== op) {
+			strcpy(ltxt, newline.c_str());
+		}
+		else {
+			strcat(ltxt, newline.c_str());
+		}
+		i++;
+		if (i < lines.size()) {
+			tst = strtok(strdup(lines[i].c_str()), " ");
+		}
+	}
+
+	strncpy(otxt, ltxt, il-1);
+	otxt[il - 1] = '\0';
+	strncpy(ntxt, ltxt + il-1, nl-1);
+	ntxt[nl - 1] = '\0';
+	/*while (checkstate(tst) == 0 && i<lines.size()) {
 		newline = lines[i] + "\n";
 		//if (size + strlen(newline.c_str()) <= il) {
 		//idLib::Printf("%s\n", lines[i].c_str());
@@ -599,7 +618,7 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 					/*int r = 0;
 					for (int h = il-1; h < strlen(ltxt); h++,r++) {
 						ntxt[r] = ltxt[h];
-					}*/
+					}
 					//ntxt[r - 1] = '\0';
 					nsize += strlen(ltxt+il-1);
 					//ntxt[strlen(ltxt)] = '\0';
@@ -629,7 +648,7 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 	}
 	else {
 		ntxt[nl] = '\0';
-	}
+	}*/
 	//idLib::Printf("Replacing: %s with %s size %i\n", otxt, ntxt,nsize);
 	int arrsz = sizeof(strval) / sizeof(*strval);
 	if (otxt != nullptr) {
