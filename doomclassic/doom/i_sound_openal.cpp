@@ -195,7 +195,7 @@ void* getsfx ( const char* sfxname, int* len )
 		DecodeALAudio(&sfxSampleStart, &size, &av_rate, &av_sample);
 	}
 	else {
-		av_rate = SFX_RATE;
+		memcpy(&av_rate,sfx+2,sizeof(short));
 		av_sample = SFX_SAMPLETYPE;
 	}
 	// Allocate from zone memory.
