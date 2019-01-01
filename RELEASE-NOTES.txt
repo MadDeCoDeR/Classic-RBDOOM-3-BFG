@@ -20,7 +20,7 @@ there are still bugs while using them.
 
 - Added Support for game dll files on both 32 and 64-bit executables
 
-- Further fixes and impovments for game.dll
+- Further fixes and impovments for game.dll(hotfix)
 _______________________________________
 
 09 November 2018 (17/11/18) - Classic RBDOOM-3-BFG 1.1.11.8
