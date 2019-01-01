@@ -1500,9 +1500,7 @@ idPlayer::idPlayer():
 	
 	pdaMenu = uiManager->CreatePDA();
 	pdaVideoMat				= NULL;
-#ifndef GAME_DLL
 	mpMessages				= NULL;
-#endif
 	mountedObject			= NULL;
 	enviroSuitLight			= NULL;
 	

@@ -373,6 +373,9 @@ void idGameLocal::Init()
 	
 	// initialize processor specific SIMD
 	idSIMD::InitProcessor( "game", com_forceGenericSIMD.GetBool() );
+	//GK: Setup game dll FPS
+	com_engineHz_denominator = 100LL * cvarSystem->GetCVarFloat("com_engineHz");
+	com_engineHz_latched = cvarSystem->GetCVarFloat("com_engineHz");
 
 #endif
 	
@@ -767,13 +770,13 @@ void idGameLocal::GetSaveGameDetails( idSaveGameDetails& gameDetails )
 	int playTime = player ? player->GetPlayedTime() : 0;
 	gameExpansionType_t expansionType = player ? player->GetExpansionType() : GAME_BASE;
 	
-	gameDetails.descriptors.Clear();
-	gameDetails.descriptors.SetInt( SAVEGAME_DETAIL_FIELD_EXPANSION, expansionType );
-	gameDetails.descriptors.Set( SAVEGAME_DETAIL_FIELD_MAP, mapPrettyName );
-	gameDetails.descriptors.Set( SAVEGAME_DETAIL_FIELD_MAP_LOCATE, locationStr );
-	gameDetails.descriptors.SetInt( SAVEGAME_DETAIL_FIELD_SAVE_VERSION, BUILD_NUMBER );
-	gameDetails.descriptors.SetInt( SAVEGAME_DETAIL_FIELD_DIFFICULTY, g_skill.GetInteger() );
-	gameDetails.descriptors.SetInt( SAVEGAME_DETAIL_FIELD_PLAYTIME, playTime );
+	
+	declManager->SetDictInt(&gameDetails.descriptors, SAVEGAME_DETAIL_FIELD_EXPANSION, expansionType );
+	declManager->SetDictStr(&gameDetails.descriptors, SAVEGAME_DETAIL_FIELD_MAP, mapPrettyName );
+	declManager->SetDictStr(&gameDetails.descriptors, SAVEGAME_DETAIL_FIELD_MAP_LOCATE, locationStr );
+	declManager->SetDictInt(&gameDetails.descriptors, SAVEGAME_DETAIL_FIELD_SAVE_VERSION, BUILD_NUMBER );
+	declManager->SetDictInt(&gameDetails.descriptors, SAVEGAME_DETAIL_FIELD_DIFFICULTY, g_skill.GetInteger() );
+	declManager->SetDictInt(&gameDetails.descriptors, SAVEGAME_DETAIL_FIELD_PLAYTIME, playTime );
 	
 	// PS3 only strings that use the dict just set
 	
@@ -6057,51 +6060,48 @@ idGameLocal::DemoWriteGameInfo
 ===============
 */
 void idGameLocal::DemoWriteGameInfo()
-{//GK: Don't impement them on dlls it requires more depedencies
-#ifndef GAME_DLL
+{
 	if( common->WriteDemo() != NULL )
 	{
-		common->WriteDemo()->WriteInt( DS_GAME );
-		common->WriteDemo()->WriteInt( GCMD_GAMETIME );
+		common->WriteDemoInt( 3 );
+		common->WriteDemoInt( GCMD_GAMETIME );
 		
-		common->WriteDemo()->WriteInt( previousTime );
-		common->WriteDemo()->WriteInt( time );
-		common->WriteDemo()->WriteInt( framenum );
+		common->WriteDemoInt( previousTime );
+		common->WriteDemoInt( time );
+		common->WriteDemoInt( framenum );
 		
-		common->WriteDemo()->WriteInt( fast.previousTime );
-		common->WriteDemo()->WriteInt( fast.time );
-		common->WriteDemo()->WriteInt( fast.realClientTime );
+		common->WriteDemoInt( fast.previousTime );
+		common->WriteDemoInt( fast.time );
+		common->WriteDemoInt( fast.realClientTime );
 		
-		common->WriteDemo()->WriteInt( slow.previousTime );
-		common->WriteDemo()->WriteInt( slow.time );
-		common->WriteDemo()->WriteInt( slow.realClientTime );
+		common->WriteDemoInt( slow.previousTime );
+		common->WriteDemoInt( slow.time );
+		common->WriteDemoInt( slow.realClientTime );
 	}
-#endif
 }
 
-bool idGameLocal::ProcessDemoCommand( idDemoFile* readDemo )
+bool idGameLocal::ProcessDemoCommand( )
 {
-#ifndef GAME_DLL
 	gameDemoCommand_t cmd = GCMD_UNKNOWN;
 	
-	if( !readDemo->ReadInt( ( int& )cmd ) )
+	if( !common->ReadDemoInt( ( int& )cmd ) )
 		return false;
 		
 	switch( cmd )
 	{
 		case GCMD_GAMETIME:
 		{
-			readDemo->ReadInt( previousTime );
-			readDemo->ReadInt( time );
-			readDemo->ReadInt( framenum );
+			common->ReadDemoInt( previousTime );
+			common->ReadDemoInt( time );
+			common->ReadDemoInt( framenum );
 			
-			readDemo->ReadInt( fast.previousTime );
-			readDemo->ReadInt( fast.time );
-			readDemo->ReadInt( fast.realClientTime );
+			common->ReadDemoInt( fast.previousTime );
+			common->ReadDemoInt( fast.time );
+			common->ReadDemoInt( fast.realClientTime );
 			
-			readDemo->ReadInt( slow.previousTime );
-			readDemo->ReadInt( slow.time );
-			readDemo->ReadInt( slow.realClientTime );
+			common->ReadDemoInt( slow.previousTime );
+			common->ReadDemoInt( slow.time );
+			common->ReadDemoInt( slow.realClientTime );
 			break;
 		}
 		default:
@@ -6110,7 +6110,6 @@ bool idGameLocal::ProcessDemoCommand( idDemoFile* readDemo )
 			break;
 		}
 	}
-#endif
 	return true;
 }
 //GK: Resolve inverse depedencies
@@ -6317,3 +6316,7 @@ float idGameLocal::GetRandomFloat()
 {
 	return random.RandomFloat();
 }
+
+const idMaterial*			idGameLocal::GetVideoMaterial(idPlayer* player) {
+	return player->GetVideoMaterial();
+ }

@@ -344,9 +344,7 @@ public:
 	idMenuHandler_HUD* 		hudManager;
 	idMenuScreen_HUD* 		hud;
 	idMenuHandler_PDA* 		pdaMenu;
-#ifndef GAME_DLL
 	idSWF* 					mpMessages;
-#endif
 	bool					objectiveSystemOpen;
 	int						quickSlot[ NUM_QUICK_SLOTS ];
 	

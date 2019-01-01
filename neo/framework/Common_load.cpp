@@ -623,10 +623,11 @@ void idCommonLocal::ExecuteMapChange()
 			}
 			game->RunFrame( emptyCommandManager, emptyGameReturn );
 		}
-		
-		// kick off an auto-save of the game (so we can always continue in this map if we die before hitting an autosave)
-		common->Printf( "----- Saving Game -----\n" );
-		SaveGame( "autosave" );
+		if (game->GetCVarBool("g_checkpoints")) {
+			// kick off an auto-save of the game (so we can always continue in this map if we die before hitting an autosave)
+			common->Printf("----- Saving Game -----\n");
+			SaveGame("autosave");
+		}
 	}
 	
 	common->Printf( "----- Generating Interactions -----\n" );
@@ -914,6 +915,7 @@ bool idCommonLocal::SaveGame( const char* saveName )
 	pipelineFile->Finish();
 	
 	idSaveGameDetails gameDetails;
+	gameDetails.descriptors.Clear();
 	game->GetSaveGameDetails( gameDetails );
 	
 	gameDetails.descriptors.Set( SAVEGAME_DETAIL_FIELD_LANGUAGE, sys_lang.GetString() );

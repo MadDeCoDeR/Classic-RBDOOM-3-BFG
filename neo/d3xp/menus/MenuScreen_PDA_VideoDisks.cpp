@@ -118,7 +118,7 @@ void idMenuScreen_PDA_VideoDisks::Update()
 			
 			if( player != NULL && player->GetInventory().videos.Num() > 0 )
 			{
-				if( player->GetVideoMaterial() == NULL )
+				if( game->GetVideoMaterial(player) == NULL )
 				{
 					buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
 					if( menuData->GetPlatform() != 2 )
@@ -157,13 +157,13 @@ void idMenuScreen_PDA_VideoDisks::Update()
 			return;
 		}
 		
-		if( player->GetVideoMaterial() != NULL )
+		if( game->GetVideoMaterial(player) != NULL )
 		{
 			// update video material
 			if( BindSprite( root ) && GetSprite() != NULL )
 			{
 				idSWFSpriteInstance* videoSprite = GetSprite()->GetScriptObject()->GetNestedSprite( "info", "details", "video", "img" );
-				const idMaterial* mat = player->GetVideoMaterial();
+				const idMaterial* mat = game->GetVideoMaterial(player);
 				
 				if( videoSprite != NULL && mat != NULL )
 				{
@@ -246,7 +246,7 @@ void idMenuScreen_PDA_VideoDisks::ToggleVideoDiskPlay()
 	
 	activeVideo = video;
 	
-	if( player->GetVideoMaterial() == NULL )
+	if( game->GetVideoMaterial(player) == NULL )
 	{
 		game->PlayVideoDisk(player, video );
 	}

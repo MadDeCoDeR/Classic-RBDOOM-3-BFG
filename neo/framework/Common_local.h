@@ -284,6 +284,13 @@ public:
 	virtual void				SwitchToGame( currentGame_t newGame );
 #endif
 	// RB end
+	virtual idUserCmdMgr& GetUCmdMgr()
+	{
+		return userCmdMgr;
+	}
+	virtual void WriteDemoInt(int value);
+	virtual int ReadDemoInt(int& var);
+	
 	
 public:
 	void	Draw();			// called by gameThread
@@ -346,11 +353,6 @@ public:	// These are public because they are called directly by static functions
 	void	LocalizeGui( const char* fileName, idLangDict& langDict );
 	void	LocalizeMapData( const char* fileName, idLangDict& langDict );
 	void	LocalizeSpecificMapData( const char* fileName, idLangDict& langDict, const idLangDict& replaceArgs );
-	
-	idUserCmdMgr& GetUCmdMgr()
-	{
-		return userCmdMgr;
-	}
 	
 private:
 	bool						com_fullyInitialized;

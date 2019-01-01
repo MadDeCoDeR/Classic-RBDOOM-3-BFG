@@ -515,7 +515,7 @@ void idCommonLocal::AdvanceRenderDemo( bool singleFrameOnly )
 				soundWorld->ProcessDemoCommand( readDemo );
 				break;
 			case DS_GAME:
-				Game()->ProcessDemoCommand( readDemo );
+				Game()->ProcessDemoCommand( );
 				break;
 			default:
 				common->Error( "Bad render demo token %d", ds );

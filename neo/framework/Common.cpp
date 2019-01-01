@@ -2149,3 +2149,13 @@ CONSOLE_COMMAND( testFormattingSizes, "test printf format security", 0 )
 	common->Printf( " sizeof( int64 ): %" PRIuSIZE " bytes\n", sizeof( int64 ) );
 }
 // RB end
+//GK Begin
+void idCommonLocal::WriteDemoInt(int value) {
+		writeDemo->WriteInt(value);
+}
+
+int idCommonLocal::ReadDemoInt(int& var)
+{
+		return readDemo->ReadInt(var);
+}
+//GK End

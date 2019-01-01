@@ -345,6 +345,9 @@ public:
 	// RB end
 	//GK: Neither ucmdMgr
 	virtual idUserCmdMgr& GetUCmdMgr() = 0;
+	virtual void WriteDemoInt(int value) = 0;
+	virtual int ReadDemoInt(int& var) = 0;
+	
 };
 
 extern idCommon* 		common;

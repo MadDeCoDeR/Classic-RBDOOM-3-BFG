@@ -210,7 +210,7 @@ public:
 	// Demo helper functions
 	virtual void				StartDemoPlayback( idRenderWorld* renderworld ) = 0;
 	
-	virtual bool				ProcessDemoCommand( idDemoFile* readDemo ) = 0;
+	virtual bool				ProcessDemoCommand( ) = 0;
 
 	virtual idPlayer* 				GetLocalPlayer() const = 0;
 
@@ -269,6 +269,7 @@ public:
 	virtual void				SetCVarInteger(const char* var, int value) = 0;
 	virtual void				SetCVarFloat(const char* var, float value) = 0;
 	virtual void				SetCVarBool(const char* var, bool value) = 0;
+	virtual const idMaterial*			GetVideoMaterial(idPlayer* player) = 0;
 };
 
 extern idGame* 					game;

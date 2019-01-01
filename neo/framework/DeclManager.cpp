@@ -222,6 +222,9 @@ public:
 	virtual const idSoundShader* 	SoundByIndex( int index, bool forceParse = true );
 	
 	virtual void					Touch( const idDecl* decl );
+
+	virtual void SetDictInt(idDict* dict, const char* key, int val);
+	virtual void SetDictStr(idDict* dict, const char* key, const char* val);
 	
 public:
 	static void					MakeNameCanonical( const char* name, char* result, int maxLength );
@@ -2783,4 +2786,13 @@ idDeclLocal::EverReferenced
 bool idDeclLocal::EverReferenced() const
 {
 	return everReferenced;
+}
+
+void idDeclManagerLocal::SetDictInt(idDict* dict, const char* key, int val)
+{
+	dict->SetInt(key, val);
+}
+void idDeclManagerLocal::SetDictStr(idDict* dict, const char* key, const char* val)
+{
+	dict->Set(key, val);
 }

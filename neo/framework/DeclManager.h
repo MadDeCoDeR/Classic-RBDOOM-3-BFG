@@ -402,6 +402,9 @@ public:
 	virtual const idSoundShader* 	SoundByIndex( int index, bool forceParse = true ) = 0;
 	
 	virtual void					Touch( const idDecl* decl ) = 0;
+
+	virtual void SetDictInt(idDict* dict, const char* key, int val) = 0;
+	virtual void SetDictStr(idDict* dict, const char* key, const char* val) = 0;
 };
 
 extern idDeclManager* 		declManager;

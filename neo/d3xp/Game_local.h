@@ -678,7 +678,7 @@ public:
 		GCMD_UNKNOWN,
 		GCMD_GAMETIME,
 	};
-	virtual bool					ProcessDemoCommand( idDemoFile* readDemo );
+	virtual bool					ProcessDemoCommand( );
 	
 	virtual void					Shell_ClearRepeater();
 	
@@ -686,6 +686,8 @@ public:
 	{
 		return mapFileName.c_str();
 	}
+
+	virtual const idMaterial*			GetVideoMaterial(idPlayer* player);
 	
 	const char* 			GetMPPlayerDefName() const;
 	
