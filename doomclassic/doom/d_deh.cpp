@@ -916,7 +916,7 @@ void parsetext(char* text) {
 						break;
 					case 3:
 						statepos = statepos + 1;
-						varval2 = atoi(strtok(NULL, " "));
+						varval2 = atoi(strtok(NULL, " "))+1;
 						setText(linedtext, i + 1, statepos, varval2);
 						break;
 					case 4:
