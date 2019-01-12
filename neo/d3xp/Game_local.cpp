@@ -250,6 +250,10 @@ idGameLocal::idGameLocal
 */
 idGameLocal::idGameLocal()
 {
+	//GK: Linux is more strict on that 
+	program = NULL;
+	pvs = NULL;
+	clip = NULL;
 	Clear();
 	//GK: Removes destructors link depedencies
 	program = new idProgram();
@@ -289,8 +293,13 @@ void idGameLocal::Clear()
 	frameCommandThread = NULL;
 	testmodel = NULL;
 	testFx = NULL;
-	clip->Shutdown();
-	pvs->Shutdown();
+	//GK: Way more strict
+	if (clip != NULL) {
+		clip->Shutdown();
+	}
+	if (pvs != NULL) {
+		pvs->Shutdown();
+	}
 	sessionCommand.Clear();
 	locationEntities = NULL;
 	smokeParticles = NULL;

@@ -142,7 +142,11 @@ void idSysLocal::DLL_Unload( int dllHandle )
 
 void idSysLocal::DLL_GetFileName( const char* baseName, char* dllName, int maxLength )
 {
+#ifdef WIN32
 	idStr::snPrintf( dllName, maxLength, "%s" CPUSTRING ".dll", baseName );
+#else
+	idStr::snPrintf(dllName, maxLength, "%s" CPUSTRING ".so", baseName);
+#endif
 }
 
 sysEvent_t idSysLocal::GenerateMouseButtonEvent( int button, bool down )

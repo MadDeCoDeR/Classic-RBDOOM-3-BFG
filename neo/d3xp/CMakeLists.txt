@@ -145,9 +145,9 @@ if(MSVC)
 		#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MP /MTd")
 		#set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
 		set(CMAKE_CXX_FLAGS_RETAIL "${CMAKE_CXX_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /LD")
-		set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /ALLOWBIND:NO /NOASSEMBLY /DEF:../../neo/d3xp/Game.def /SAFESEH:NO")
-		set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /ALLOWBIND:NO /NOASSEMBLY /DEF:../../neo/d3xp/Game.def /SAFESEH:NO")
-		set(CMAKE_SHARED_LINKER_FLAGS_RETAIL "${CMAKE_SHARED_LINKER_FLAGS_RETAIL} /ALLOWBIND:NO /NOASSEMBLY /DEF:../../neo/d3xp/Game.def /SAFESEH:NO")
+		set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /ALLOWBIND /NOASSEMBLY /DEF:../../neo/d3xp/Game.def /SAFESEH:NO")
+		set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /ALLOWBIND /NOASSEMBLY /DEF:../../neo/d3xp/Game.def /SAFESEH:NO")
+		set(CMAKE_SHARED_LINKER_FLAGS_RETAIL "${CMAKE_SHARED_LINKER_FLAGS_RETAIL} /ALLOWBIND /NOASSEMBLY /DEF:../../neo/d3xp/Game.def /SAFESEH:NO")
 
     add_library(game$(PlatformTarget) SHARED ${ID_SOURCES_ALL} ${ID_INCLUDES_ALL})
 	include_directories(
@@ -156,46 +156,64 @@ if(MSVC)
 	target_link_libraries(game$(PlatformTarget)
 		idlib)
 else()
-	if (USE_PRECOMPILED_HEADERS)
-	foreach( src_file ${ID_PRECOMPILED_SOURCES} )
-		#message(STATUS "-include precompiled.h for ${src_file}")
-		set_source_files_properties(
-			${src_file}
-			PROPERTIES
-			COMPILE_FLAGS "-include ${CMAKE_CURRENT_SOURCE_DIR}/precompiled.h"
-			)
-	endforeach()
-	endif()
+	add_compile_options(-fPIC)
+	if(USE_PRECOMPILED_HEADERS) 	
+		set(GAME_PRECOMPILED_SOURCES ${ID_SOURCE_ALL})
 
-	include_directories(.)
-	
-	if (USE_PRECOMPILED_HEADERS)
-	# precompiled magic for GCC/clang, adapted from https://gist.github.com/573926
-	STRING(TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _flags_var_name)
-	SET(_compiler_FLAGS ${${_flags_var_name}})
-	GET_DIRECTORY_PROPERTY(_directory_flags INCLUDE_DIRECTORIES)
-	FOREACH(item ${_directory_flags})
-		LIST(APPEND _compiler_FLAGS " -I${item}")
-	ENDFOREACH(item)
+		foreach( src_file ${GAME_PRECOMPILED_SOURCES} )
+			#message(STATUS "-include precompiled.h for ${src_file}")
+			set_source_files_properties(
+				${src_file}
+				PROPERTIES
+				COMPILE_FLAGS "-include ${CMAKE_CURRENT_SOURCE_DIR}/../idlib/precompiled.h"
+				)
+		endforeach()
+
+		# precompiled magic for GCC/clang, adapted from https://gist.github.com/573926
+		STRING(TOUPPER "CMAKE_CXX_FLAGS_${CMAKE_BUILD_TYPE}" _flags_var_name)
+		SET(_compiler_FLAGS ${${_flags_var_name}})
+		GET_DIRECTORY_PROPERTY(_directory_flags INCLUDE_DIRECTORIES)
+		FOREACH(item ${_directory_flags})
+			LIST(APPEND _compiler_FLAGS " -I${item}")
+		ENDFOREACH(item)
 	endif()
-#GK: fix for mingw and recent versions of cmake
-cmake_policy(SET CMP0059 NEW)
+	#GK: fix for mingw and recent versions of cmake
+		cmake_policy(SET CMP0059 NEW)
 	GET_DIRECTORY_PROPERTY(_directory_flags DEFINITIONS)
 	LIST(APPEND _compiler_FLAGS ${_directory_flags})
-	
 	SEPARATE_ARGUMENTS(_compiler_FLAGS)
 	
-	if (USE_PRECOMPILED_HEADERS)
-	add_custom_target(precomp_header_idlib ALL
-	                  COMMAND ${CMAKE_CXX_COMPILER} ${_compiler_FLAGS} -x c++-header precompiled.h -o precompiled.h.gch
-	                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	                  COMMENT "Creating idlib/precompiled.h.gch for idlib"
-	                  )
+	if(USE_PRECOMPILED_HEADERS)
+		# we need to recreate the precompiled header for RBDoom3BFG 
+		# (i.e. can't use the one created for idlib before)
+		# because some definitions (e.g. -D__IDLIB__ -D__DOOM_DLL__) differ
+		add_custom_target(precomp_header_game ALL
+				COMMAND ${CMAKE_CXX_COMPILER} ${_compiler_FLAGS} -x c++-header ../idlib/precompiled.h -o ../idlib/precompiled.h.gch
+				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+				COMMENT "Creating ../idlib/precompiled.h.gch for game"
+				)
 	endif()
-	
-	add_library(idlib ${ID_SOURCES_ALL} ${ID_INCLUDES_ALL})
+	include_directories(
+			.
+			../idlib
+			#libs/curl/include
+			#libs/openal/include
+			#libs/freetype/include
+            )
+	add_library(game SHARED ${ID_SOURCES_ALL} ${ID_INCLUDES_ALL})
 	if (USE_PRECOMPILED_HEADERS)
-	add_dependencies(idlib precomp_header_idlib)
+		# make sure precompiled header is created before executable is compiled
+		add_dependencies(game precomp_header_game)
+		
+	endif()
+	target_link_libraries(game
+		idlib)
+		#GK: Make sure the name is right
+	set_target_properties(game PROPERTIES PREFIX "")
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	set_target_properties(game PROPERTIES SUFFIX "x86_64.so")
+	else()
+	set_target_properties(game PROPERTIES SUFFIX "x86.so")
 	endif()
 	
 endif()

@@ -101,6 +101,8 @@ if(MSVC)
 
     add_library(idlib ${ID_SOURCES_ALL} ${ID_INCLUDES_ALL})
 else()
+#GK: RBDoom3BFG doesn't seems to care if this is here but game does
+add_compile_options(-fPIC)
 	if (USE_PRECOMPILED_HEADERS)
 	foreach( src_file ${ID_PRECOMPILED_SOURCES} )
 		#message(STATUS "-include precompiled.h for ${src_file}")

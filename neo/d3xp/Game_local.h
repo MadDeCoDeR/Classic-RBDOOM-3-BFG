@@ -844,7 +844,7 @@ ID_INLINE idEntityPtr<type>& idEntityPtr<type>::operator=( const type* ent )
 	}
 	else
 	{
-		spawnId = ( gameLocal.spawnIds[ent->entityNumber] << GENTITYNUM_BITS ) | ent->entityNumber;
+		spawnId = ( game->GetSpawnId(ent->entityNumber) << GENTITYNUM_BITS ) | ent->entityNumber;
 	}
 	return *this;
 }
@@ -866,7 +866,7 @@ ID_INLINE bool idEntityPtr<type>::SetSpawnId( int id )
 	{
 		return false;
 	}
-	if( ( id >> GENTITYNUM_BITS ) == gameLocal.spawnIds[ id & ( ( 1 << GENTITYNUM_BITS ) - 1 ) ] )
+	if( ( id >> GENTITYNUM_BITS ) == game->GetSpawnId(id & ( ( 1 << GENTITYNUM_BITS ) - 1 ) ) )
 	{
 		spawnId = id;
 		return true;
@@ -877,7 +877,7 @@ ID_INLINE bool idEntityPtr<type>::SetSpawnId( int id )
 template< class type >
 ID_INLINE bool idEntityPtr<type>::IsValid() const
 {
-	return ( gameLocal.spawnIds[ spawnId & ( ( 1 << GENTITYNUM_BITS ) - 1 ) ] == ( spawnId >> GENTITYNUM_BITS ) );
+	return (game->GetSpawnId(spawnId & ( ( 1 << GENTITYNUM_BITS ) - 1 ) ) == ( spawnId >> GENTITYNUM_BITS ) );
 }
 
 template< class type >

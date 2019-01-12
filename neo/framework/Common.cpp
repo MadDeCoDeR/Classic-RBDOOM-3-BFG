@@ -1096,6 +1096,7 @@ void idCommonLocal::LoadGameDLL()
 		GetGameAPI = (GetGameAPI_t)Sys_DLL_GetProcAddress(gameDLL, functionName);
 		if (!GetGameAPI)
 		{
+#ifdef WIN32
 			//GK: Just some 64-bit paranoia
 			int lastError = GetLastError();
 			char msgbuf[256];
@@ -1110,6 +1111,7 @@ void idCommonLocal::LoadGameDLL()
 			);
 
 			Sys_Error("Sys_DLL_: GetProcAddress failed - %s (%d)", msgbuf, lastError);
+#endif
 			Sys_DLL_Unload(gameDLL);
 			gameDLL = NULL;
 			common->FatalError("couldn't find game DLL API");

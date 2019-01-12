@@ -745,7 +745,8 @@ TODO: OSX - use the native API instead? NSModule
 // RB: 64 bit fixes, changed int to intptr_t
 intptr_t Sys_DLL_Load( const char* path )
 {
-	void* handle = dlopen( path, RTLD_NOW );
+	//GK: Use DEEPBIND in dlopen otherwise the game will freeze
+	void* handle = dlopen( path, RTLD_NOW | RTLD_DEEPBIND );
 	if( !handle )
 	{
 		Sys_Printf( "dlopen '%s' failed: %s\n", path, dlerror() );

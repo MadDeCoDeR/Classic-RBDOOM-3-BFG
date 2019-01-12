@@ -63,13 +63,14 @@ enum aggregationMethod_t
 	AGGREGATE_SUM,  // Add the new value to the existing value and write the result.
 	AGGREGATE_LAST, // Write the new value.
 };
-
+//GK: Linux don't want it here?
+#ifdef WIN32
 enum rankOrder_t
 {
 	RANK_GREATEST_FIRST, // Rank the in descending order, greatest score is best score
 	RANK_LEAST_FIRST,	 // Rank the in ascending order, lowest score is best score
 };
-
+#endif
 enum statsColumnDisplayType_t
 {
 	STATS_COLUMN_DISPLAY_NUMBER,

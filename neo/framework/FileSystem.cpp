@@ -3832,10 +3832,18 @@ void idFileSystemLocal::FindDLL(const char* name, char _dllPath[MAX_OSPATH])
 	for (int sp = fileSystemLocal.searchPaths.Num() - 1; sp >= 0; sp--) {
 	dllPath = fileSystemLocal.searchPaths[sp].path.c_str();
 	dllPath.AppendPath(fileSystemLocal.searchPaths[sp].gamedir.c_str());
+#ifdef WIN32
 	dllPath.SlashesToBackSlashes();
+#else
+	dllPath.BackSlashesToSlashes();
+#endif
 	//dllPath.StripFilename();
 	dllPath.AppendPath(dllName);
+#ifdef WIN32
 	dllPath.SlashesToBackSlashes();
+#else
+	dllPath.BackSlashesToSlashes();
+#endif
 	idFile* dllFile = OpenExplicitFileRead(dllPath);
 	
 

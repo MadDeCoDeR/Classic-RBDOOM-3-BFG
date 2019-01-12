@@ -789,8 +789,14 @@ public:
 	}
 	virtual void	EndInputEvents() { }
 };
-
-
+//GK: Linux wants it here?
+#ifndef WIN32
+enum rankOrder_t
+{
+	RANK_GREATEST_FIRST, // Rank the in descending order, greatest score is best score
+	RANK_LEAST_FIRST,	 // Rank the in ascending order, lowest score is best score
+};
+#endif
 
 /*
 ==============================================================
