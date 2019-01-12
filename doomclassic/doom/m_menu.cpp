@@ -86,8 +86,10 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 
 extern idCVar cl_messages;
+extern idCVar cl_randpitch;
 extern idCVar in_joylayout;
 extern idCVar in_alwaysRunCl;
+extern idCVar cl_freelook;
 //
 // defaulted values
 //
@@ -177,6 +179,7 @@ void M_Light(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
+void M_RandomPitch(int choice);
 void M_ChangeDetail(int choice);
 void M_SizeDisplay(int choice);
 void M_StartGame(int choice);
@@ -184,6 +187,8 @@ void M_Sound(int choice);
 void M_Video(int choice);
 void M_MasterSelect(int choice);
 void M_Doom_IT(int choice);
+void M_Gameplay(int choice);
+void M_Freelook(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
@@ -206,6 +211,7 @@ void M_DrawLoad(void);
 void M_DrawSave(void);
 void M_DrawMaster(void);
 void M_DrawDoomIT(void);
+void M_DrawGame(void);
 
 void M_DrawSaveLoadBorder(int x,int y);
 void M_SetupNextMenu(menu_t *menudef);
@@ -919,13 +925,17 @@ void M_DrawReadThis2(void)
 	}
 	return;
 }
-
-
+//GK: Put them here in order to be used by the sound settings
+char	msgNames[2][9] =
+{
+"M_MSGOFF","M_MSGON"
+};
 //
 // Change Sfx & Music volumes
 //
 void M_DrawSound(void)
 {
+	int randpitch = cl_randpitch.GetInteger() >= 1 ? 1 : 0;
 	V_DrawPatchDirect (60,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SVOL",PU_CACHE_SHARED), W_GetNumForName("M_SVOL")));
 
 	M_DrawThermo( ::g->SoundDef.x,::g->SoundDef.y+LINEHEIGHT*(sfx_vol+1),
@@ -933,6 +943,8 @@ void M_DrawSound(void)
 
 	M_DrawThermo(::g->SoundDef.x,::g->SoundDef.y+LINEHEIGHT*(music_vol+1),
 		16, s_volume_midi.GetInteger() );
+	V_DrawPatchDirect(::g->SoundDef.x + 200, ::g->SoundDef.y + LINEHEIGHT * sound_rp, 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[randpitch], PU_CACHE_SHARED), W_GetNumForName(msgNames[randpitch])));
 }
 
 char    detailNames[3][9] =
@@ -940,10 +952,7 @@ char    detailNames[3][9] =
 "M_GDLOW","M_DETAIL","M_DISOPT" //GK: Use unique values for aspect ratio
 };
 
-char	msgNames[2][9] =
-{
-"M_MSGOFF","M_MSGON"
-};
+
 //GK:Begin
 //
 // Change aspect Ratio & lighting
@@ -970,6 +979,27 @@ void M_DrawVideo(void)
 void M_Video(int choice)
 {
 	M_SetupNextMenu(&::g->VideoDef);
+}
+//
+// Toogle always run & Freelook
+//
+void M_DrawGame(void)
+{
+	V_DrawPatchDirect(60, 38, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_GM", PU_CACHE_SHARED), W_GetNumForName("M_GM")));
+
+	int alwayrun = in_alwaysRunCl.GetInteger();
+	int freelook = cl_freelook.GetInteger();
+
+
+	V_DrawPatchDirect(::g->GameDef.x + 120, ::g->GameDef.y + LINEHEIGHT * run, 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[alwayrun], PU_CACHE_SHARED), W_GetNumForName(msgNames[alwayrun])));
+	V_DrawPatchDirect(::g->GameDef.x + 135, ::g->GameDef.y + LINEHEIGHT * (look), 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[freelook], PU_CACHE_SHARED), W_GetNumForName(msgNames[freelook])));
+}
+
+void M_Gameplay(int choice)
+{
+	M_SetupNextMenu(&::g->GameDef);
 }
 //GK: End
 void M_Sound(int choice)
@@ -1007,7 +1037,9 @@ void M_MusicVol(int choice)
 	S_SetMusicVolume( s_volume_midi.GetInteger() );
 }
 
-
+void M_RandomPitch(int choice) {
+	cl_randpitch.SetBool(!cl_randpitch.GetBool());
+}
 
 
 //
@@ -1278,10 +1310,10 @@ void M_DrawOptions(void)
 	else {
 		optoffs = 0;
 	}
-
-	V_DrawPatchDirect(::g->OptionsDef.x + 120, ::g->OptionsDef.y + LINEHEIGHT * (scrnsize+optoffs), 0,
+	//GK: No longer needed here
+	/*V_DrawPatchDirect(::g->OptionsDef.x + 120, ::g->OptionsDef.y + LINEHEIGHT * (scrnsize+optoffs), 0,
 		(patch_t*)W_CacheLumpName(msgNames[in_alwaysRunCl.GetBool()], PU_CACHE_SHARED));
-	
+	*/
 	//GK:End
 	extern idCVar in_mouseSpeed;
 	const int roundedMouseSpeed = M_GetMouseSpeedForMenu( in_mouseSpeed.GetFloat() );
@@ -1371,6 +1403,11 @@ void M_Alwaysrun(int choice) {
 
 	in_alwaysRunCl.SetBool(in_alwaysRunCl.GetBool() ? 0 : 1);
 	//cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
+}
+
+void M_Freelook(int choice) 
+{
+	cl_freelook.SetBool(cl_freelook.GetBool() ? 0 : 1);
 }
 //GK:End
 //

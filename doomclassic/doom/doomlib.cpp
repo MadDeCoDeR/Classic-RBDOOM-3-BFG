@@ -359,10 +359,16 @@ angle_t GetViewAngle()
 {
 	return g->viewangle;
 }
+//GK: With tis function we are getting the mouse pitch for freelook
+angle_t GetViewAngle2()
+{
+	return g->viewangle2;
+}
 
-void SetViewAngle( angle_t ang )
+void SetViewAngle( angle_t ang,angle_t viewang )
 {
 	g->viewangle = ang;
+	g->viewangle2 = viewang;
 	::g->viewxoffset = (finesine[g->viewangle>>ANGLETOFINESHIFT]*::g->realoffset) >> 8;
 	::g->viewyoffset = (finecosine[g->viewangle>>ANGLETOFINESHIFT]*::g->realoffset) >> 8;
 	

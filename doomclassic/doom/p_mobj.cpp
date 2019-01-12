@@ -986,13 +986,13 @@ P_SpawnPlayerMissile
 		if (!::g->linetarget)
 		{
 			an = source->angle;
-			slope = 0;
+			slope = -(((::g->mouseposy) << FRACBITS) / 673); //GK: Taken from Heretic source and altered in order to work with idTech 5 input
 		}
 	}
 
 	x = source->x;
 	y = source->y;
-	z = source->z + 4*8*FRACUNIT;
+	z = source->z + 4*8*FRACUNIT - (((::g->mouseposy) << FRACBITS) / 673);
 
 	th = P_SpawnMobj (x,y,z, type);
 

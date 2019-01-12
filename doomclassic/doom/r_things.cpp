@@ -429,6 +429,7 @@ R_DrawVisSprite
     int			texturecolumn;
     fixed_t		frac;
     patch_t*		patch;
+	fixed_t		baseclip;
 	
 	
    // patch = /*(patch_t*)*/img2lmp(W_CacheLumpNum (vis->patch+::g->firstspritelump, PU_CACHE_SHARED));
@@ -436,7 +437,7 @@ R_DrawVisSprite
 	::g->texnum = vis->patch;  //GK:Get the pointer to the sprite in order to get it's height
     ::g->dc_colormap = vis->colormap;
 	::g->usesprite = true;//GK:SPRITE
-    
+	::g->issky = false;
     if (!::g->dc_colormap)
     {
 	// NULL colormap = shadow draw
@@ -454,7 +455,28 @@ R_DrawVisSprite
     frac = vis->startfrac;
     ::g->spryscale = vis->scale;
     ::g->sprtopscreen = ::g->centeryfrac - FixedMul(::g->dc_texturemid,::g->spryscale);
+	//GK: Begin
+	//GK: Heretic stuff for making the psprite to stuck with the view
+	// check to see if weapon is a vissprite
+	if (vis->psprite)
+	{
+		::g->dc_texturemid += FixedMul(((::g->centery - ::g->viewheight / 2) << FRACBITS),
+			vis->xiscale);
+		::g->sprtopscreen += (::g->viewheight / 2 - ::g->centery) << FRACBITS;
+	}
 
+	if ( !vis->psprite)
+	{
+		::g->sprbotscreen = ::g->sprtopscreen + FixedMul(patch->height << FRACBITS,
+			::g->spryscale);
+		baseclip = (::g->sprbotscreen - FixedMul(vis->footclip << FRACBITS,
+			::g->spryscale)) >> FRACBITS;
+	}
+	else
+	{
+		baseclip = -1;
+	}
+	//GK: End
     for (::g->dc_x=vis->x1 ; ::g->dc_x<=vis->x2 ; ::g->dc_x++, frac += vis->xiscale)
     {
 	texturecolumn = frac>>FRACBITS;
@@ -591,6 +613,7 @@ void R_ProjectSprite (mobj_t* thing)
     vis = R_NewVisSprite ();
 	::g->visspriteind++;
     vis->mobjflags = thing->flags;
+	vis->psprite = false;
     vis->scale = xscale << ::g->detailshift;
     vis->gx = thing->x;
     vis->gy = thing->y;
@@ -742,6 +765,7 @@ void R_DrawPSprite (pspdef_t* psp)
     // store information in a vissprite
     vis = &avis;
     vis->mobjflags = 0;
+	vis->psprite = true;
     vis->texturemid = (BASEYCENTER<<FRACBITS)+FRACUNIT/2-(psp->sy-::g->spritetopoffset[lump]);
     vis->x1 = x1 < 0 ? 0 : x1;
     vis->x2 = x2 >= ::g->viewwidth ? ::g->viewwidth-1 : x2;	

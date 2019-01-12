@@ -153,6 +153,7 @@ R_RenderMaskedSegRange
 		(byte *)R_GetColumn(texnum,::g->maskedtexturecol[::g->dc_x]) -3);
 		::g->texnum = texnum; //GK:How do I miss this one??
 		::g->usesprite = false;
+		::g->issky = false;
 	    R_DrawMaskedColumn (col);
 	    ::g->maskedtexturecol[::g->dc_x] = SHRT_MAX;
 	}
@@ -256,6 +257,7 @@ void R_RenderSegLoop (void)
 	    ::g->dc_source = R_GetColumn(::g->midtexture,texturecolumn);
 		::g->texnum = ::g->midtexture; //GK: Store pointer not the value
 		::g->usesprite = false; //GK:NO SPRITE
+		::g->issky = false;
 	    colfunc ( ::g->dc_colormap, ::g->dc_source );
 	    ::g->ceilingclip[::g->rw_x] = ::g->viewheight;
 	    ::g->floorclip[::g->rw_x] = -1;
@@ -280,6 +282,7 @@ void R_RenderSegLoop (void)
 				::g->dc_source = R_GetColumn(::g->toptexture,texturecolumn);
 				::g->texnum = ::g->toptexture;
 				::g->usesprite = false; //GK:NO SPRITE
+				::g->issky = false;
 				colfunc ( ::g->dc_colormap, ::g->dc_source );
 				::g->ceilingclip[::g->rw_x] = mid;
 			}
@@ -312,6 +315,7 @@ void R_RenderSegLoop (void)
 							texturecolumn);
 				::g->texnum = ::g->bottomtexture;
 				::g->usesprite = false; //GK:NO SPRITE
+				::g->issky = false;
 				colfunc ( ::g->dc_colormap, ::g->dc_source );
 				::g->floorclip[::g->rw_x] = mid;
 			}

@@ -441,6 +441,9 @@ typedef struct vissprite_s
     lighttable_t*	colormap;
    
     int			mobjflags;
+	//GK: Heretic stuff for making the psprite to stuck with the view
+	qboolean	psprite;		// true if psprite
+	fixed_t		footclip;		// foot clipping
 } vissprite_t;
 
 

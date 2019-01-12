@@ -47,7 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "d3xp/Game_local.h"
 
 extern bool globalNetworking;
-
+extern idCVar cl_freelook;
 
 
 static const float	PISTOL_MAGNITUDE_HIGH			= 0.5f;
@@ -535,6 +535,12 @@ A_Punch
 	angle = player->mo->angle;
 	angle += (P_Random()-P_Random())<<18;
 	slope = P_AimLineAttack (player->mo, angle, MELEERANGE);
+	//GK: Move puffs up and down based on player's view
+	if (cl_freelook.GetBool())
+	{
+		angle -= 2 << 26;
+		slope = -(((::g->mouseposy) << FRACBITS) / 673);
+	}
 	P_LineAttack (player->mo, angle, MELEERANGE, slope, damage);
 
 	// turn to face target
@@ -567,6 +573,12 @@ A_Saw
 
 	// use meleerange + 1 se the puff doesn't skip the flash
 	slope = P_AimLineAttack (player->mo, angle, MELEERANGE+1);
+	//GK: Move puffs up and down based on player's view
+	if (cl_freelook.GetBool())
+	{
+		angle -= 2 << 26;
+		slope = -(((::g->mouseposy) << FRACBITS) / 673);
+	}
 	P_LineAttack (player->mo, angle, MELEERANGE+1, slope, damage);
 
 	if (!::g->linetarget)
@@ -686,6 +698,12 @@ void P_BulletSlope (mobj_t*	mo)
 		{
 			an -= 2<<26;
 			::g->bulletslope = P_AimLineAttack (mo, an, 16*64*FRACUNIT);
+		}
+		//GK: Move puffs up and down based on player's view
+		if (cl_freelook.GetBool() && !::g->linetarget)
+		{
+			an -= 2 << 26;
+			::g->bulletslope = -(((::g->mouseposy) << FRACBITS) / 673);
 		}
 	}
 }

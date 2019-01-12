@@ -226,6 +226,7 @@ struct mobj_t
 
     //More drawing info: to determine current sprite.
     angle_t		angle;	// orientation
+	angle_t		viewangle;	// GK: Freelook
     spritenum_t		sprite;	// used to find patch_t and flip value
     int			frame;	// might be ORed with FF_FULLBRIGHT
 

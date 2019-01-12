@@ -200,6 +200,7 @@ typedef enum
 	sfx_empty1,
 	music_vol,
 	sfx_empty2,
+	sound_rp,
 	sound_end
 } sound_e;
 typedef enum
@@ -209,6 +210,12 @@ typedef enum
 	light, //GK: Use this value for light modes
 	video_end
 } video_e;
+typedef enum
+{
+	run,
+	look,
+	game_end
+} game_e;
 typedef enum
 {
 	load1,

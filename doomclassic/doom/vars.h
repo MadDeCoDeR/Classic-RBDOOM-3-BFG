@@ -396,7 +396,7 @@ menuitem_t NewGameMenu[5];
 menu_t  NewDef;
 menuitem_t OptionsMenu[8];
 menu_t  OptionsDef;
-menuitem_t SoundMenu[4];
+menuitem_t SoundMenu[5];
 menu_t  SoundDef;
 menuitem_t VideoMenu[3];
 menu_t  VideoDef;
@@ -415,6 +415,8 @@ menuitem_t MasterMenu[2];
 menu_t  MasterDef;
 menuitem_t DOOMIT[20];
 menu_t  DOOMITDef;
+menuitem_t GameMenu[2];
+menu_t  GameDef;
 char    tempstring[80];
 int     epi;
 int     exp;
@@ -624,6 +626,7 @@ int		flatmemory;
 int		texturememory;
 int		spritememory;
 qboolean usesprite;
+byte*	skybuffer;
 // r_data.vars end // 
 //  r_draw.vars begin // 
 byte*		viewimage; 
@@ -657,6 +660,7 @@ fixed_t			ds_xstep;
 fixed_t			ds_ystep;
 byte*			ds_source;	
 int			dscount;
+qboolean	issky;
 // r_draw.vars end // 
 //  r_main.vars begin // 
 int			viewangleoffset;
@@ -675,6 +679,8 @@ fixed_t			viewx;
 fixed_t			viewy;
 fixed_t			viewz;
 angle_t			viewangle;
+angle_t			viewangle2;
+fixed_t			mouseposy;
 fixed_t			viewcos;
 fixed_t			viewsin;
 player_t*		viewplayer;
@@ -690,6 +696,7 @@ qboolean		setsizeneeded;
 int		setblocks;
 int		setdetail;
 int ow; //GK: Make it global cause why not
+fixed_t		sprbotscreen;
 // r_main.vars end // 
 //  r_plane.vars begin // 
 planefunction_t		floorfunc;

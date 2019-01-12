@@ -314,7 +314,8 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 
 		// idAngles is stored in degrees. Convert to doom format.
 		cmd->angleturn = DegreesToDoomAngleTurn( angleDelta.yaw );
-
+		//GK: Since idTech 5 is already giving it then take it and use it
+		cmd->angleview = DegreesToDoomAngleTurn(angleDelta.pitch); 
 
 		// Translate buttons
 		//if ( curTech5Command.inhibited == false ) {
@@ -550,7 +551,12 @@ void G_DoLoadLevel ()
 	//  we look for an actual index, instead of simply
 	//  setting one.
 	::g->skyflatnum = R_FlatNumForName ( SKYFLATNAME );
-
+	//GK: Re-render the sky buffer on every map 
+	//in order to have a color similar to the sky flat
+	if (::g->skybuffer) {
+		free(::g->skybuffer);
+		::g->skybuffer = NULL;
+	}
 	// DOOM determines the sky texture to be used
 	// depending on the current episode, and the game version.
 	if ( ::g->gamemode == commercial )

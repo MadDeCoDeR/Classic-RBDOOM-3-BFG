@@ -47,6 +47,7 @@ typedef struct
     short	consistancy;	// checks for net game
     byte	buttons;
 	byte	nextPrevWeapon;
+	short	angleview; //GK: For the freelook
 } ticcmd_t;
 
 

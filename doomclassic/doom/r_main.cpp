@@ -90,7 +90,7 @@ If you have questions concerning this license or the applicable additional terms
 // fixed_t		finesine[5*FINEANGLES/4];
 const fixed_t*		finecosine = &finesine[FINEANGLES/4];
 
-
+idCVar cl_freelook("cl_freelook", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Classic Doom freelook");
 
 // bumped light from gun blasts
 
@@ -735,7 +735,7 @@ void R_ExecuteSetViewSize (void)
 	// planes
 	for (i=0 ; i < ::g->viewheight ; i++)
 	{
-		dy = ((i- ::g->viewheight /2)<<FRACBITS)+FRACUNIT/2;
+		dy = ((i- ::g->centery)<<FRACBITS)+FRACUNIT/2;
 		dy = abs(dy);
 		::g->yslope[i] = FixedDiv ( (::g->viewwidth << ::g->detailshift)/2*FRACUNIT, dy);
 	}
@@ -836,18 +836,44 @@ R_PointInSubsector
 void R_SetupFrame (player_t* player)
 {		
 	int		i;
+	fixed_t	dy;
+	int mousepos;
 
 	::g->viewplayer = player;
-	extern void SetViewX( fixed_t ); extern void SetViewY( fixed_t ); extern void SetViewAngle( angle_t );
+	extern void SetViewX( fixed_t ); extern void SetViewY( fixed_t ); extern void SetViewAngle( angle_t,angle_t );
 	SetViewX( player->mo->x );
 	SetViewY( player->mo->y );
-	SetViewAngle( player->mo->angle + ::g->viewangleoffset );
+	SetViewAngle( player->mo->angle + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
 	::g->extralight = player->extralight;
 
 	::g->viewz = player->viewz;
 
 	extern angle_t GetViewAngle();
-
+	//GK: Begin
+	//Based on the cvar it will 
+	// get the vertical mouse
+	// position and shear the view based on that
+	extern angle_t GetViewAngle2();
+	if (cl_freelook.GetBool()) {
+		::g->mouseposy = (int)GetViewAngle2() >> ANGLETOFINESHIFT;
+	}
+	else {
+		::g->mouseposy = 0;
+	}
+	mousepos = ::g->mouseposy * ::g->screenblocks/10;
+		int tmpcy = ::g->viewheight/ 2 - mousepos;
+		if (::g->centery != tmpcy ) {
+			::g->centery = tmpcy;
+			::g->centeryfrac = ::g->centery << FRACBITS;
+			// planes
+			for (i = 0; i < ::g->viewheight; i++)
+			{
+				dy = ((i - ::g->centery) << FRACBITS) + FRACUNIT / 2;
+				dy = abs(dy);
+				::g->yslope[i] = FixedDiv((::g->viewwidth << ::g->detailshift) / 2 * FRACUNIT, dy);
+			}
+		}
+		//GK: End
 	::g->viewsin = finesine[GetViewAngle()>>ANGLETOFINESHIFT];
 	::g->viewcos = finecosine[GetViewAngle()>>ANGLETOFINESHIFT];
 

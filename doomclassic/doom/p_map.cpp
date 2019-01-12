@@ -1143,6 +1143,15 @@ qboolean PTR_ShootTraverse (intercept_t* in)
     fixed_t		dist;
     fixed_t		thingtopslope;
     fixed_t		thingbottomslope;
+	//GK: TODO: Make bullet puffs to spawn on the floor/ceiling
+	/*if (::g->mouseposy && !(in->isaline)) {
+		frac = in->frac - FixedDiv(10 * FRACUNIT, ::g->attackrange);
+		x = ::g->trace.x + FixedMul(::g->trace.dx, frac);
+		y = ::g->trace.y + FixedMul(::g->trace.dy, frac);
+		z = ::g->shootz + FixedMul(::g->aimslope, FixedMul(frac, ::g->attackrange)) - (((::g->mouseposy) << FRACBITS) / 673);
+		P_SpawnPuff(x, y, z);
+		return false;
+	}*/
 		
     if (in->isaline)
     {
@@ -1183,7 +1192,7 @@ qboolean PTR_ShootTraverse (intercept_t* in)
 	frac = in->frac - FixedDiv (4*FRACUNIT,::g->attackrange);
 	x = ::g->trace.x + FixedMul (::g->trace.dx, frac);
 	y = ::g->trace.y + FixedMul (::g->trace.dy, frac);
-	z = ::g->shootz + FixedMul (::g->aimslope, FixedMul(frac, ::g->attackrange));
+	z = ::g->shootz + FixedMul (::g->aimslope, FixedMul(frac, ::g->attackrange)) -(((::g->mouseposy) << FRACBITS) / 673);
 
 	if (li->frontsector->ceilingpic == ::g->skyflatnum)
 	{
@@ -1241,7 +1250,7 @@ qboolean PTR_ShootTraverse (intercept_t* in)
 
     x = ::g->trace.x + FixedMul (::g->trace.dx, frac);
     y = ::g->trace.y + FixedMul (::g->trace.dy, frac);
-    z = ::g->shootz + FixedMul (::g->aimslope, FixedMul(frac, ::g->attackrange));
+    z = ::g->shootz + FixedMul (::g->aimslope, FixedMul(frac, ::g->attackrange)) - (((::g->mouseposy) << FRACBITS) / 673);
 
 	// check for friendly fire.
 #ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING

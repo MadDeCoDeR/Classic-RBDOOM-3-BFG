@@ -94,13 +94,14 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 	int mheight = 0;
 	if (::g->usesprite) {
 		theght = ::g->spriteheight[::g->texnum];
-		mheight = theght - 1;
+	}
+	else if (::g->issky) {
+		theght = 1 ;
 	}
 	else {
 		theght = ::g->s_textureheight[::g->texnum]>>FRACBITS;
-		mheight = theght - 1;
 	}
-	
+	mheight = theght - 1;
 	//GK:Sanity check
 	if (::g->dc_yh >= SCREENHEIGHT) {
 		::g->dc_yh = SCREENHEIGHT - 1;

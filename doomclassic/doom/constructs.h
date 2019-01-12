@@ -225,7 +225,7 @@ menuitem_t temp_OptionsMenu[8] = {
 	{2,"M_MESSG",	M_ChangeMessages,'m'},
 	//{1,"M_DETAIL",	M_ChangeDetail,'g'},
 	//{2,"M_SCRNSZ",	M_SizeDisplay,'s'},
-	{1,"M_AR",M_Alwaysrun,'a'},
+	{1,"M_GM",M_Gameplay,'g'},
     { -1,"",0 },
 	{2,"M_MSENS",	M_ChangeSensitivity,'m'},
 	{-1,"",0},
@@ -256,11 +256,12 @@ menu_t  temp_VideoDef = {
 		0
 };
 memcpy(&::g->VideoDef, &temp_VideoDef, sizeof(temp_VideoDef));
-menuitem_t temp_SoundMenu[4] = {
+menuitem_t temp_SoundMenu[5] = {
 	{2,"M_SFXVOL",M_SfxVol,'s'},
 	{-1,"",0},
 	{2,"M_MUSVOL",M_MusicVol,'m'},
-	{-1,"",0}
+	{-1,"",0},
+	{1,"M_SRP",M_RandomPitch,'r'}
 };
 memcpy( ::g->SoundMenu, temp_SoundMenu, sizeof(temp_SoundMenu) );
 menu_t  temp_SoundDef = {
@@ -408,6 +409,22 @@ int     temp_quitsounds2[8] = {
 		sfx_sgtatk
 };
 memcpy( ::g->quitsounds2, temp_quitsounds2, sizeof(temp_quitsounds2) );
+//GK: Begin
+menuitem_t temp_GameMenu[2] = {
+	{1,"M_AR",	M_Alwaysrun,'a'},
+	{1,"M_FL",M_Freelook,'f'},
+};
+memcpy(::g->GameMenu, temp_GameMenu, sizeof(temp_GameMenu));
+menu_t  temp_GameDef = {
+	game_end,
+		&::g->OptionsDef,
+		::g->GameMenu,
+		M_DrawGame,
+		60,64,
+		0
+};
+memcpy(&::g->GameDef, &temp_GameDef, sizeof(temp_GameDef));
+//GK: End
 	::g->joywait = 0;
 	::g->mousewait = 0;
 	::g->mmenu_mousey = 0;
@@ -500,6 +517,7 @@ int temp_checkcoord[12][4] = {
 memcpy( ::g->checkcoord, temp_checkcoord, sizeof(temp_checkcoord) );
 // r_bsp.constructs end // 
 //  r_draw.constructs begin // 
+	::g->skybuffer = NULL; //GK: Freelook empty sky hack
 	::g->fuzzpos = 0; 
 // r_draw.constructs end // 
 //  r_main.constructs begin // 

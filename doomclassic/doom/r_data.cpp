@@ -49,6 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include "r_data.h"
+#include "m_random.h"
 
 #include <vector>
 
@@ -419,7 +420,70 @@ R_GetColumn
 
     return ::g->s_texturecomposite[tex] + ofs;
 }
+//GK: Begin
+//
+// R_GetColumn
+//
+//This function esentialy is taking a random
+// pixel from the first row of a flat and it
+// is storing it in a buffer.
+//This allow us to fill rendering spaces
+// (aka places where the renderer isn't 
+// suppose to render) with a monochromatic
+// pixel
+void R_GenerateSkyHead(int lump) {
+	postColumn_t * column;
+	byte*			source;
+	byte src = 0;
+	int pos = 0;
+	int col = 0;
+	patch_t* patch = (patch_t *)W_CacheLumpNum(lump, PU_CACHE_SHARED);
+	::g->skybuffer = (byte*)malloc( 3 * sizeof(byte));
+	// SMF - rewritten for scaling
+		column = (postColumn_t *)((byte *)patch + LONG(patch->columnofs[M_Random()]));
+			source = (byte *)column + 3;
+			src = *source++;
+				::g->skybuffer[pos] = src;
+				pos++;
+			::g->skybuffer[pos] = src;
+			pos++;
+		::g->skybuffer[pos] = 0xff;
+		pos++;
+	
+}
 
+//
+// R_GetSkyColumn
+//
+//With that we can get the monochromatic
+// pixel.
+byte*
+R_GetSkyColumn
+(int		tex,
+	int		col)
+{
+	int		lump;
+	int		ofs;
+	
+
+	col &= ::g->s_texturewidthmask[tex];
+	lump = ::g->s_texturecolumnlump[tex][col];
+	ofs = ::g->s_texturecolumnofs[tex][col];
+
+	if (lump > 0) {
+		if (!::g->skybuffer) {
+			R_GenerateSkyHead(lump);
+		}
+		return ::g->skybuffer;
+	}
+		
+
+	if (!::g->s_texturecomposite[tex])
+		R_GenerateComposite(tex);
+
+	return ::g->s_texturecomposite[tex] + ofs;
+}
+//GK: End
 
 
 

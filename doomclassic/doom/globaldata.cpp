@@ -61,11 +61,14 @@ void M_Light(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
+void M_RandomPitch(int choice);
 void M_ChangeDetail(int choice);
 void M_SizeDisplay(int choice);
 void M_StartGame(int choice);
 void M_Sound(int choice);
 void M_Video(int choice);
+void M_Gameplay(int choice);
+void M_Freelook(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
@@ -87,6 +90,7 @@ void M_DrawLoad(void);
 void M_DrawSave(void);
 void M_DrawMaster(void);
 void M_DrawDoomIT(void);
+void M_DrawGame(void);
 
 void M_DrawSaveLoadBorder(int x,int y);
 void M_SetupNextMenu(menu_t *menudef);

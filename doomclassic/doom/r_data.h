@@ -42,6 +42,12 @@ R_GetColumn
 ( int		tex,
   int		col );
 
+//GK: Retrieve sky pixel for filling empty spaces on the sky.
+byte*
+R_GetSkyColumn
+(int		tex,
+	int		col);
+
 
 // I/O, setting up the stuff.
 void R_InitData (void);
