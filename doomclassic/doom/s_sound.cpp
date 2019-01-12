@@ -53,7 +53,7 @@ If you have questions concerning this license or the applicable additional terms
 const char snd_prefixen[]
 = { 'P', 'P', 'A', 'S', 'S', 'S', 'M', 'M', 'M', 'S', 'S', 'S' };
 
-
+idCVar cl_randpitch("cl_randpitch", "1", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Classic Doom Random sfx pitches");
 // when to clip out sounds
 // Does not fit the large outdoor areas.
 
@@ -338,8 +338,8 @@ S_StartSoundAtVolume
 
 	// hacks to vary the sfx pitches
 	const bool isChainsawSound = sfx_id >= sfx_sawup && sfx_id <= sfx_sawhit;
-
-	if ( !isChainsawSound && sfx_id != sfx_itemup && sfx_id != sfx_tink)
+	//GK: And as it seems it's that simple to remove the random pitches
+	if (cl_randpitch.GetBool() &&( !isChainsawSound && sfx_id != sfx_itemup && sfx_id != sfx_tink))
 	{
 		pitch += 16 - (M_Random()&31);
 
