@@ -352,13 +352,13 @@ const char* Sys_DefaultLanguage()
 	}
 	else
 	{
-		if( currentLangList.Find( ID_LANG_JAPANESE ) )
+		if (currentLangList.Find(ID_LANG_ENGLISH))
+		{
+			sys_lang.SetString(ID_LANG_ENGLISH);
+		}
+		else if( currentLangList.Find( ID_LANG_JAPANESE ) )
 		{
 			sys_lang.SetString( ID_LANG_JAPANESE );
-		}
-		else if( currentLangList.Find( ID_LANG_ENGLISH ) )
-		{
-			sys_lang.SetString( ID_LANG_ENGLISH );
 		}
 		else if( currentLangList.Find( ID_LANG_FRENCH ) )
 		{
