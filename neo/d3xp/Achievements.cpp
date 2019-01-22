@@ -37,7 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 idCVar achievements_Verbose( "achievements_Verbose", "1", CVAR_BOOL, "debug spam" );
 extern idCVar g_demoMode;
 //GK: Bypass the warning
-bool idAchievementManager::cheatingDialogShown = true;
+bool idAchievementManager::cheatingDialogShown = false;
 
 const struct achievementInfo_t
 {
@@ -259,9 +259,9 @@ void idAchievementManager::EventCompletesAchievement( const achievement_t eventI
 	
 #ifdef ID_RETAIL
 #ifndef GAME_DLL
-	if( common->GetConsoleUsed() )
+	if( common->GetConsoleUsed() || idLib::classichUsed || idLib::warpUsed)
 	{
-		if( !cheatingDialogShown )
+		if( ::op && !cheatingDialogShown)
 		{
 			common->Dialog().AddDialog( GDM_ACHIEVEMENTS_DISABLED_DUE_TO_CHEATING, DIALOG_ACCEPT, NULL, NULL, true );
 			cheatingDialogShown = true;
@@ -345,9 +345,9 @@ void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
 	
 #ifdef ID_RETAIL					//GK No achievments if we use classic parameters
 #ifndef GAME_DLL
-	if( common->GetConsoleUsed() || (classicargv[1] !=NULL && classicargv[1] != "\0"))
+	if( common->GetConsoleUsed() || idLib::classichUsed || idLib::warpUsed)
 	{
-		if( !cheatingDialogShown )
+		if( ::op && !cheatingDialogShown)
 		{
 			common->Dialog().AddDialog( GDM_ACHIEVEMENTS_DISABLED_DUE_TO_CHEATING, DIALOG_ACCEPT, NULL, NULL, true );
 			cheatingDialogShown = true;
@@ -596,7 +596,7 @@ CONSOLE_COMMAND( AchievementsList, "Lists achievements and status", NULL )
 	}
 	idPlayerProfile* profile = user->GetProfile();
 	
-	idArray<bool, 128> achievementState;
+	idArray<bool, 66> achievementState;
 	bool achievementStateValid = session->GetAchievementSystem().GetAchievementState( user, achievementState );
 	
 	for( int i = 0; i < ACHIEVEMENTS_NUM; i++ )

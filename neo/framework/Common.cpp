@@ -117,6 +117,10 @@ idGame* 		game = NULL;
 idGameEdit* 	gameEdit = NULL;
 #endif
 
+
+GetPlatformAPI_t GetPlatformAPI;
+intptr_t platformDLL = 0;
+
 idCommonLocal	commonLocal;
 idCommon* 		common = &commonLocal;
 
@@ -1061,6 +1065,74 @@ void idCommonLocal::InitSIMD()
 	com_forceGenericSIMD.ClearModified();
 }
 
+void LoadPlatformDLL()
+{
+	char			dllPath[MAX_OSPATH];
+
+	fileSystem->FindDLL("OpenPlatform", dllPath);
+
+	if (dllPath[0])
+	{
+
+		common->DPrintf("Loading Platform DLL: '%s'\n", dllPath);
+		platformDLL = sys->DLL_Load(dllPath);
+		if (!platformDLL)
+		{
+			common->FatalError("couldn't load game dynamic library");
+			return;
+		}
+
+		const char* functionName = "GetPlatformAPI";
+		GetPlatformAPI = (GetPlatformAPI_t)Sys_DLL_GetProcAddress(platformDLL, functionName);
+		if (!GetPlatformAPI)
+		{
+#ifdef WIN32
+			//GK: Just some 64-bit paranoia
+			int lastError = GetLastError();
+			char msgbuf[256];
+			FormatMessage(
+				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL,
+				lastError,
+				MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
+				(LPTSTR)&msgbuf,
+				sizeof(msgbuf),
+				NULL
+			);
+
+			Sys_Error("Sys_DLL_: GetProcAddress failed - %s (%d)", msgbuf, lastError);
+#endif
+			Sys_DLL_Unload(platformDLL);
+			platformDLL = NULL;
+			common->FatalError("couldn't find platform DLL API");
+			return;
+		}
+
+		::op = GetPlatformAPI();
+		
+	}
+	if (!op->API_Init()) {
+		::op = NULL;
+	}
+}
+
+void UnloadPlatformDLL()
+{
+	// shut down the game object
+	if (::op != NULL)
+	{
+		::op->API_Shutdown();
+	}
+
+	if (platformDLL)
+	{
+		Sys_DLL_Unload(platformDLL);
+		platformDLL = NULL;
+	}
+	::op = NULL;
+
+}
+
 
 /*
 =================
@@ -1333,7 +1405,12 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// if any archived cvars are modified after this, we will trigger a writing of the config file
 		cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
-		
+		common->Printf("Initializing Platform\n");
+		LoadPlatformDLL();
+		if (::op == NULL) {
+			common->Printf("Failed to initialize\n");
+		}
+
 		// init OpenGL, which will open a window and connect sound and input hardware
 		renderSystem->InitOpenGL();
 		
@@ -1637,6 +1714,9 @@ void idCommonLocal::Shutdown()
 	// shutdown the decl manager
 	printf( "declManager->Shutdown();\n" );
 	declManager->Shutdown();
+	if (::op) {
+		UnloadPlatformDLL();
+	}
 	
 	// shut down the renderSystem
 	printf( "renderSystem->Shutdown();\n" );

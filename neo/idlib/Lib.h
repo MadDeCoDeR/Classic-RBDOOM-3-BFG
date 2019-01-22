@@ -64,6 +64,9 @@ public:
 	//Use custom expansion on Doom 3
 	static bool					usecustom;
 
+	static bool					classichUsed;
+	static bool					warpUsed;
+
 	static void					Init();
 	static void					ShutDown();
 	
