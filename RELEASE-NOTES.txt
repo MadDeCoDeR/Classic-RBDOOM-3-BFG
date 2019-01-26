@@ -12,6 +12,25 @@ there are still bugs while using them.
 
 [classicdoom]
 
+- Added ThirdPerson view
+
+- Show which weapon slot is in use on Status Bar
+
+- Added MAPINFO support for DOOM I
+
+[DOOM3BFG]
+
+- Fixed GOG Language Bug
+_______________________________________
+
+12 January 2019 - Classic RBDOOM-3-BFG 1.1.12.3
+_______________________________
+
+WARNING: The game dll support is nearly complete but 
+there are still bugs while using them.
+
+[classicdoom]
+
 - Added Freelook 
 
 - Added Option to disable Ramdomized pitches on Doom sfx's
