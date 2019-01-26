@@ -109,9 +109,17 @@ fstr mval[] = {
 
 void setMAP(int index,char* value1, char* value2) {
 	int map;
+	int endmap;
+	if (::g->clusters[episodecount].endmap) {
+		endmap = ::g->clusters[episodecount].endmap - ::g->clusters[episodecount].startmap;
+		endmap++;
+	}
+	else {
+		endmap = 8;
+	}
 	if (::g->gamemode == retail) {
 		map = ::g->clusters[episodecount].startmap + index;
-		if (index == 8) {
+		if (index == endmap) {
 			episodecount++;
 		}
 	}

@@ -113,4 +113,21 @@ Supported parameters:
 
 flat , music , entertext , exittext
 
-Also support the parameter intermusic
+Also it support MAPINFO episode.
+
+Supported structure:
+
+episode 1 <or> episode e1m1
+titlename "M_EPI1" <or> picname "M_EPI1"
+startmap "1"
+endmap "8"
+
+Episode definition is used in combination to the cluster.
+Which means that you can use the cluster definition parameters
+with the episode definition.
+
+Supported parameters:
+
+titlename,picname,startmap,endmap
+
+Also support the parameter intermusic,clearepisodes (BOTH must be used before any other definition)
