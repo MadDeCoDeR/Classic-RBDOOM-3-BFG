@@ -186,8 +186,16 @@ void F_StartFinale (void)
 		endOfMission = true;
 	}
 	else if (::g->gamemission == pack_custom ) { //GK: Custom expansion related stuff
-		if (::g->gamemap == ::g->endmap) {
-			endOfMission = true;
+		if (::g->gamemode == retail) {
+			int map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			if (map == ::g->clusters[::g->gameepisode - 1].endmap) {
+				endOfMission = true;
+			}
+		}
+		else if (::g->gamemode == commercial) {
+			if (::g->gamemap == ::g->endmap) {
+				endOfMission = true;
+			}
 		}
 	}
 
@@ -206,32 +214,46 @@ void F_StartFinale (void)
 		case registered:
 		case retail:
 		{
-			S_ChangeMusic(mus_victor, true);
+			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+				if (::g->clusters[::g->gameepisode-1].ftext != NULL) {
+					S_ChangeMusic(::g->clusters[::g->gameepisode-1].fmusic, true);
+					flt = finaleflat[::g->clusters[::g->gameepisode-1].fflat];
+					finaletext = ::g->clusters[::g->gameepisode-1].ftext;
+				}
+				else {//GK: NO finale??
+					S_ChangeMusic(mus_victor, true);
+					flt = finaleflat[10]; // Not used anywhere else.
+					finaletext = fooltext;   //GK: NO finale text found??
+				}
+			}
+			else {
+				S_ChangeMusic(mus_victor, true);
 
-			switch (::g->gameepisode)
-			{
-			  case 1:
-				flatind=0;
-				finaletext = e1text;
-				break;
-			  case 2:
-				flatind=1;
-				finaletext = e2text;
-				break;
-			  case 3:
-				flatind=2;
-				finaletext = e3text;
-				break;
-			  case 4:
-				flatind=3;
-				finaletext = e4text;
-				break;
-			  default:
-				// Ouch.
-				  S_ChangeMusic(mus_read_m, true);
-				  flt = finaleflat[10]; // Not used anywhere else.
-				  finaletext = fooltext;   //GK: NO finale text found??
-				break;
+				switch (::g->gameepisode)
+				{
+				case 1:
+					flatind = 0;
+					finaletext = e1text;
+					break;
+				case 2:
+					flatind = 1;
+					finaletext = e2text;
+					break;
+				case 3:
+					flatind = 2;
+					finaletext = e3text;
+					break;
+				case 4:
+					flatind = 3;
+					finaletext = e4text;
+					break;
+				default:
+					// Ouch.
+					S_ChangeMusic(mus_read_m, true);
+					flt = finaleflat[10]; // Not used anywhere else.
+					finaletext = fooltext;   //GK: NO finale text found??
+					break;
+				}
 			}
 			break;
 		}

@@ -170,7 +170,17 @@ void S_Start(void)
 {
 	int cnum;
 	int mnum;
-
+	int map; //GK: Calculate custom expansion map based on game mode
+	if (::g->gamemission == pack_custom) {
+		switch (::g->gamemode) {
+		case retail:
+			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			break;
+		case commercial:
+			map = ::g->gamemap;
+			break;
+		}
+	}
 	// kill all playing sounds at start of level
 	//  (trust me - a good idea)
 	if( ::g->channels ) {
@@ -185,11 +195,7 @@ void S_Start(void)
 	if (::g->gamemode == commercial) {
 		
 		mnum = mus_runnin + ::g->gamemap - 1;
-		if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
-			if(::g->maps[::g->gamemap-1].music)
-				mnum = ::g->maps[::g->gamemap-1].music;
-		}
-		else if (::g->gamemission == pack_nerve) {
+		if (::g->gamemission == pack_nerve) {
 			switch (::g->gamemap) {
 			case 1:
 				mnum = mus_messag;
@@ -245,7 +251,10 @@ void S_Start(void)
 		else
 			mnum = spmus[::g->gamemap-1];
 	}	
-
+	if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
+		if (::g->maps[map - 1].music)
+			mnum = ::g->maps[map - 1].music;
+	}
 	S_StopMusic();
 	S_ChangeMusic(mnum, true);
 

@@ -428,7 +428,17 @@ EV_VerticalDoor
     sector_t*	sec;
     vldoor_t*	door;
     int		side;
-	
+	int map; //GK: Calculate custom expansion map based on game mode
+	if (::g->gamemission == pack_custom) {
+		switch (::g->gamemode) {
+		case retail:
+			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			break;
+		case commercial:
+			map = ::g->gamemap;
+			break;
+		}
+	}
     side = 0;	// only front ::g->sides can be used
 
     //	Check for locks
@@ -560,7 +570,7 @@ EV_VerticalDoor
 	door->type = blazeRaise;
 	door->speed = VDOORSPEED*4;
 	//GK: A small hack in order to get the secret count on nessus level on Master Levels Expansion (Note : It's kinda exclusive. If you load NESSUS.WAD this hack wont work. Better not risk it)
-	if (((::g->gamemission == pack_custom && ::g->maps[::g->gamemap-1].dsecret) ||(::g->gamemission == pack_master && ::g->gamemap == 16)) && door->sector->special == 9) {
+	if (((::g->gamemission == pack_custom && ::g->maps[map-1].dsecret) ||(::g->gamemission == pack_master && ::g->gamemap == 16)) && door->sector->special == 9) {
 		player->secretcount++;
 		//GK send message when secret found
 		S_StartSound(player->mo,sfx_getpow);

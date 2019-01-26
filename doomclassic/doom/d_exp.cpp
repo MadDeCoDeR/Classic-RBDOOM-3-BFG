@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2018 George Kalmpokis
+* Copyright (C) 2018 - 2019 George Kalmpokis
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * this software and associated documentation files (the "Software"), to deal in
@@ -46,6 +46,19 @@
 #include "f_finale.h"
 #include "g_game.h"
 
+typedef struct {
+	char* name;
+	long limit;
+	char** sval;
+	int* ival;
+	long* lval;
+	float* fval;
+	bool* bval;
+	statenum_t* stval;
+	ammotype_t* amval;
+}expobj;
+int episodecount = 0;
+
 void parseexptext(char* text);
 std::vector<std::string> getexplines(char* text);
 int checkexpstate(char* text);
@@ -58,6 +71,7 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 int tex = 1;
 void setExpData(char* name, char* value);
 const char* getENumName(int i);
+void M_Episode(int choice);
 
 typedef struct {
 	char** var;
@@ -93,19 +107,58 @@ fstr mval[] = {
 
 };
 
+void setMAP(int index,char* value1, char* value2) {
+	int map;
+	if (::g->gamemode == retail) {
+		map = ::g->clusters[episodecount].startmap + index;
+		if (index == 8) {
+			episodecount++;
+		}
+	}
+	else {
+		map = index + 1;
+	}
+	if (!::g->mapmax) {
+		if ( map > ::g->maps.size()) {
+			::g->maps.resize(map);
+			::g->mapind = map;
+		}
+	}
+	else {
+		if (map > ::g->mapmax) {
+			map = ::g->mapmax;
+		}
+	}
+
+	if (!atoi(value1)) {
+		::g->maps[map -1].lumpname = value1;
+	}
+	else {
+		sprintf(::g->maps[map-1].lumpname, "MAP%02d", index);
+	}
+	/*if (value2 != NULL) {
+		::g->maps[index].
+	}*/
+}
+
 void EX_add(int lump) {
 	char* text = (char*)malloc(W_LumpLength(lump) + 1);
 	text[W_LumpLength(lump)] = '\0';
 	I_Printf("Applying Expansion Info ...\n");
 	W_ReadLump(lump, text);
-	::g->mapmax = 33;
+	::g->mapmax = 0;
 	if (!::g->maps.empty()) {
 		::g->maps.clear();
 	}
 	::g->maps.resize(1);
 	::g->endmap = 30;
 	::g->savedir = NULL;
-	::g->intermusic = mus_dm2int;
+	if (::g->gamemode == retail) {
+		::g->intermusic = mus_inter;
+	}
+	else {
+		::g->intermusic = mus_dm2int;
+	}
 	//idLib::Printf("%s", text);
 	parseexptext(text);
 	free(text);
@@ -118,53 +171,79 @@ void parseexptext(char* text) {
 	int val1;
 	int val2;
 	int val3;
+	int mapcount = 0;
+	int clustercount = 0;
 	char* varname;
 	char* varval;
 	char* varopt;
-	if (!::g->mapind) {
+	/*if (!::g->mapind) {
 		initMAPS(linedtext);
-	}
+	}*/
 
 	for (int i = 0; i < linedtext.size(); i++) {
 		char* t = strtok(strdup(linedtext[i].c_str()), " ");
 		if (t == NULL)
 			continue;
 		int tstate= checkexpstate(t);
+		varname = t;
+		t = strtok(NULL, " ");
+		if (t != NULL) {
+			
+			if (!idStr::Icmp(t, "=")) {
+				t = strtok(NULL, " ");
+			}
+		}
 			if (tstate) {
 				state = tstate;
-				t = strtok(NULL, " ");
 				if (t != NULL) {
-					if (!idStr::Icmpn(t, "MAP",3)) {
-						char* s = t + 3;
-						val1 = atoi(s) - 1;
+					if (atoi(t + 3)) {
+						val1 = atoi(t + 3) - 1;
 					}
 					else {
 						val1 = atoi(t) - 1;
-						if (state == 3) {
-							if (!::g->clusterind || ::g->clusterind <= ::g->clusters.size()) {
-								::g->clusters.resize(val1 + 1);
-								::g->clusterind = val1 + 1;
-							}
-							::g->clusters[val1].fflat = -1;
-						}
 					}
-					t = strtok(NULL, " ");
-					if (t != NULL) {
-						val2 = atoi(t)-1;
+					switch (state) {
+					case 2:
+						if (val1 == -1) {
+							mapcount++;
+							val1 = mapcount - 1;
+						}
+						varopt = t;
+						t = strtok(NULL, " ");
+						if (t != NULL) {
+							varval = t;
+						}
+						setMAP(val1, varopt, varval);
+						break;
+					case 3:
+						if (val1 == -1) {
+							clustercount++;
+							val1 = clustercount - 1;
+						}
+						if (!::g->clusterind || ::g->clusterind <= ::g->clusters.size()) {
+							if (::g->gamemode == retail) {
+								if (val1 + 1 > ::g->EpiDef.numitems) {
+									::g->EpiDef.numitems = val1 + 1;
+									int newval = val1 + 1;
+									::g->EpisodeMenu = (menuitem_t*)realloc(::g->EpisodeMenu, newval * sizeof(menuitem_t));
+								}
+							}
+							::g->clusters.resize(val1 + 1);
+							::g->clusterind = val1 + 1;
+						}
+						::g->clusters[val1].fflat = -1;
+						if (!atoi(t)) {
+							::g->clusters[val1].mapname = t;
+						}
+						break;
 					}
 				}
 			}
 			else {
-					varname = t;
+					//varname = t;
 
-				t = strtok(NULL, " ");
 				if (t != NULL) {
-					if (!idStr::Icmp(t, "=")) {
-						t = strtok(NULL, " ");
-						if (t == NULL)
-							continue;
-					}
-					else {
+					
 						varopt = t;
 						t = strtok(NULL, " ");
 						if (t == NULL || !idStr::Icmpn(varopt, "\"", 1) || !idStr::Icmp(varname, "sky1")) {
@@ -172,7 +251,7 @@ void parseexptext(char* text) {
 							varopt = NULL;
 						}
 
-					}
+					
 					val3 = atoi(t);
 				}
 				else {
@@ -191,6 +270,9 @@ void parseexptext(char* text) {
 					}
 					break;
 				case 2:
+					if (::g->mapmax && val1 > ::g->mapmax) {
+						val1 = ::g->mapmax - 1;
+					}
 							if (!val3) {
 								varval = t;
 								setMAPSTR(val1, varname, varval);
@@ -245,13 +327,17 @@ std::vector<std::string> getexplines(char* text) {
 }
 
 int checkexpstate(char* text) {
-	char* extable[3] = {
+	char* extable[] = {
 		"EXP",
 		"MAP",
-		"clusterdef"
+		"clusterdef",
+		"episode"
 	};
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < 4; i++) {
 		if (!idStr::Icmp(text, extable[i])) {
+			if (i == 3) {
+				return i;
+			}
 			return i+1;
 		}
 	}
@@ -262,15 +348,17 @@ void setEXP(char* name, int value) {
 	if (!idStr::Icmp(name, "max_maps")) {
 		::g->mapmax = value;
 		if (!::g->mapind || ::g->mapind >= ::g->maps.size()) {
-			::g->maps.resize(::g->mapmax);
+			if (::g->mapmax > ::g->maps.size()) {
+				::g->maps.resize(::g->mapmax);
+			}
 			::g->mapind = ::g->mapmax;
 		}
 			for (int i = 0; i < ::g->mapmax; i++) {
+				if (::g->maps[i].lumpname == NULL) {
+					continue;
+				}
 				char* tname = new char[6];
-				if (i + 1 < 10)
-					sprintf(tname, "MAP0%i", i + 1);
-				else
-					sprintf(tname, "MAP%i", i + 1);
+				sprintf(tname, "MAP%02d", i + 1);
 				::g->maps[i].lumpname = tname;
 				::g->maps[i].nextmap = i + 1;
 			}
@@ -287,157 +375,119 @@ void setSAVEDIR( char* value) {
 }
 
 void setMAPINT(int pos,char* name, int value) {
-	if (!idStr::Icmp(name, "secret_map")) {
-		::g->maps[pos].secretmap = value;
-		::g->maps[value-1].nextmap = pos+1;
-	}
-	if (!idStr::Icmp(name, "next_map")) {
-		::g->maps[pos].nextmap = value-1;
-	}
-	
-	if (!idStr::Icmp(name, "cluster")) {
-		::g->maps[pos].cluster = value;
-	}
-	if (!idStr::Icmp(name, "par")) {
-		cpars[pos - 1] = value;
-	}
-
-
-	if (!idStr::Icmp(name, "0teleport")) {
-		::g->maps[pos].otel = value;
-		return;
+	expobj mapint[] = {
+	{ "secret_map" ,MAXINT,NULL,&::g->maps[pos].secretmap},
+	{ "next_map" ,MAXINT,NULL,&::g->maps[pos].nextmap },
+	{ "cluster" ,MAXINT,NULL,&::g->maps[pos].cluster },
+	{ "par" ,MAXINT,NULL,&cpars[pos -1] },
+	{ "secret_map" ,MAXINT,NULL,&::g->maps[pos].otel }
+	};
+	for (int i = 0; i < 5; i++) {
+		if (!idStr::Icmp(name, mapint[i].name)) {
+			switch(i+1) {
+			case 1:
+				::g->maps[value - 1].nextmap = pos + 1;
+			default:
+				*mapint[i].ival = value;
+				break;
+			}
+			break;
+		}
 	}
 }
 
 void setMAPSTR(int pos, char* name, char* value) {
-	if (!idStr::Icmp(name, "miniboss") || !idStr::Icmp(name, "map07special")) {
-		::g->maps[pos].miniboss = true;
+	if (value[0] == '\"') {
+		value = value + 1;
 	}
-	if (!idStr::Icmp(name, "secret_final")) {
-		::g->maps[pos].fsecret = true;
-	}
-	if(!idStr::Icmp(name,"final_flat")){
-		for (int i = 0; i < 12; i++) {
-			if (!idStr::Icmp(finaleflat[i], value)) {
-				::g->maps[pos].fflat = i;
-				return;
-			}
-		}
-	}
-	if (!idStr::Icmp(name, "final_text")) {
-		for (int i = 0; i < 24; i++) {
-			if (!idStr::Icmp(mval[i].name, value)) {
-				::g->maps[pos].ftext = *mval[i].var;
-				return;
-			}
-		}
-	}
-
-	if (!idStr::Icmp(name, "final_music")) {
-		for (int i = 1; i < 80; i++) {
-			char* musname = value + 2;
-			if (::g->S_music[i].name == NULL) {
-				::g->totalmus++;
-				::g->S_music[i].name = musname;
-				::g->maps[pos].fmusic = i;
-				return;
-			}
-			if (!idStr::Icmp(musname, ::g->S_music[i].name)) {
-				::g->maps[pos].fmusic = i;
-				return;
+		for (int j = 0; j < strlen(value); j++) {
+			if (value[j] == '\"') {
+				value[j] = '\0';
 			}
 		}
 
-	}
+		expobj mapstr[] = {
+			{"miniboss",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].miniboss},
+			{"map07special",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].miniboss},
+			{"secret_final",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].fsecret},
+			{"final_flat",MAXINT,NULL,&::g->maps[pos].fflat},
+			{"final_text",MAXINT,&::g->maps[pos].ftext},
+			{"final_music",MAXINT,NULL,&::g->maps[pos].fmusic},
+			{"music",MAXINT,NULL,&::g->maps[pos].music},
+			{"next",MAXINT,NULL,&::g->maps[pos].nextmap},
+			{"secretnext",MAXINT,NULL,&::g->maps[pos].secretmap},
+			{"sky_tex",MAXINT,&::g->maps[pos].sky},
+			{"sky1",MAXINT,&::g->maps[pos].sky},
+			{"doorsecret",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].dsecret},
+			{"thingsecret",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].tsecret},
+			{"cspeclsecret",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].cspecls},
+		};
 
-	if (!idStr::Icmp(name, "music")) {
-		for (int i = 1; i < 80; i++) {
-			char* musname = value + 2;
-			if (::g->S_music[i].name == NULL) {
-				::g->S_music[i].name = musname;
-				::g->totalmus++;
-				::g->maps[pos].fmusic = i;
-				return;
-			}
-			if (!idStr::Icmp(musname, ::g->S_music[i].name)) {
-				::g->maps[pos].music = i;
-				return;
-			}
-		}
-	}
-
-	if (!idStr::Icmp(name, "next")) {
-		for (int i = 0; i < ::g->maps.size(); i++) {
-			if (!::g->maps[i].lumpname) {
-				continue;
-			}
-			if (!idStr::Icmp(value, ::g->maps[i].lumpname)) {
-				::g->maps[pos].nextmap = i;
-				return;
-			}
-		}
-		if (!idStr::Icmpn(value, "EndGame", 7)) {
-			::g->endmap = pos + 1;
-			return;
-		}
-	}
-	if (!idStr::Icmp(name, "secretnext")) {
-		for (int i = pos; i < ::g->maps.size(); i++) {
-			if (!::g->maps[i].lumpname) {
-				continue;
-			}
-			if (!idStr::Icmp(value, ::g->maps[i].lumpname)) {
-				if (::g->maps[pos].nextmap != i) {
-					::g->maps[pos].secretmap = i+1;
-					return;
-				}
-				else
-					return;
-			}
-		}
-		if (!idStr::Icmpn(value, "EndGame", 7)) {
-			if (::g->endmap != pos + 1) {
-				::g->endmap = pos + 1;
-				return;
-			}
-			else
-				return;
-		}
-	}
-
-	if (!idStr::Icmp(name, "sky_tex") || !idStr::Icmp(name, "sky1")) {
-		if (value[0] == '\"') {
-			value = value + 1;
-			for(int j=0;j<strlen(value);j++){
-				if (value[j] == '\"') {
-					value[j] = '\0';
+		for (int i = 0; i < 14; i++) {
+			if (!idStr::Icmp(name, mapstr[i].name)) {
+				switch (i + 1) {
+				case 4:
+					for (int j = 0; j < 12; j++) {
+						if (!idStr::Icmp(finaleflat[j], value)) {
+							*mapstr[i].ival = j;
+						}
+					}
+					break;
+				case 5:
+					for (int j = 0; j < 24; j++) {
+						if (!idStr::Icmp(mval[j].name, value)) {
+							*mapstr[i].sval = *mval[j].var;
+						}
+					}
+					break;
+				case 6:
+				case 7:
+					for (int j = 1; j < 80; j++) {
+						char* musname = value + 2;
+						if (::g->S_music[j].name == NULL) {
+							::g->S_music[j].name = musname;
+							::g->totalmus++;
+							*mapstr[i].ival = j;
+						}
+						if (!idStr::Icmp(musname, ::g->S_music[j].name)) {
+							*mapstr[i].ival = j;
+						}
+					}
+					break;
+				case 8:
+				case 9:
+					for (int j = 0; j < ::g->maps.size(); j++) {
+						if (!::g->maps[j].lumpname) {
+							continue;
+						}
+						if (!idStr::Icmp(value, ::g->maps[j].lumpname)) {
+							*mapstr[i].ival = j;
+						}
+					}
+					if (!idStr::Icmpn(value, "EndGame", 7)) {
+						::g->endmap = pos + 1;
+					}
+					break;
+				case 10:
+				case 11:
+					*mapstr[i].sval = value;
+					break;
+				case 1:
+				case 2:
+				case 3:
+				case 12:
+				case 13:
+				case 14:
+					*mapstr[i].bval = true;
 					break;
 				}
+				break;
 			}
-			
 		}
-		::g->maps[pos].sky = value;
-		return;
-	}
-
-	if (!idStr::Icmp(name, "doorsecret")) {
-		::g->maps[pos].dsecret = true;
-		return;
-	}
-
-	if (!idStr::Icmp(name, "thingsecret")) {
-		::g->maps[pos].tsecret = true;
-		return;
-	}
-
-	if (!idStr::Icmp(name, "cspeclsecret")) {
-		::g->maps[pos].cspecls = true;
-		return;
-	}
 
 }
 
-void initMAPS(std::vector<std::string> lines) {
+/*void initMAPS(std::vector<std::string> lines) {
 	int map = 0;
 	for (int i = 0; i < lines.size(); i++) {
 		char* t = strtok(strdup(lines[i].c_str()), " ");
@@ -494,16 +544,137 @@ void initMAPS(std::vector<std::string> lines) {
 			}
 		}
 	}
-}
+}*/
 
 void setCluster(int pos, char* name, char*value, char* option, int linepos, std::vector<std::string> lines) {
-	if (!idStr::Icmp(name, "flat")) {
+	if (value != NULL) {
 		if (value[0] == '\"') {
 			value++;
 		}
-		if (value[sizeof(value) - 1] == '\"') {
-			value[sizeof(value) - 1] = '\0';
+		for (int i = 1; i < strlen(value); i++) {
+			if (value[strlen(value) - i] == '\"') {
+				value[strlen(value) - i] = '\0';
+			}
 		}
+	}
+	int c = 0;
+	char* musname;
+	expobj clusterobj[] = {
+		{"flat",MAXINT,&::g->clusters[pos].ftex,&::g->clusters[pos].fflat},
+		{"music",MAXINT,NULL,&::g->clusters[pos].fmusic},
+		{"entertext",MAXINT,&::g->clusters[pos].ftext},
+		{"exittext",MAXINT,&::g->clusters[pos].ftext},
+		{"startmap",MAXINT,NULL,&::g->clusters[pos].startmap},
+		{"endmap",MAXINT,NULL,&::g->clusters[pos].endmap},
+		{"titlename",MAXINT,NULL},
+		{"picname",MAXINT,NULL},
+		{"key",MAXINT,NULL}
+	};
+	for (int i = 0; i < 7; i++) {
+		if (!idStr::Icmp(name, clusterobj[i].name)){
+			switch (i + 1) {
+			case 1:
+				for (int j = 0; j < 12; j++) {
+					if (!idStr::Icmp(finaleflat[j], value)) {
+						*clusterobj[i].ival = j;
+						break;
+					}
+				}
+				*clusterobj[i].sval = value;
+				break;
+			case 2:
+				c = 0;
+				while (value[c] != '_' && c < strlen(value)) {
+					c++;
+				}
+				if (c == strlen(value)) {
+					c = 0;
+				}
+				if (c) {
+					c++;
+				}
+				musname = new char[strlen(value + c)];
+				musname = value + c;
+				for (int j = 1; j < 80; j++) {
+
+					if (::g->S_music[j].name == NULL) {
+						::g->S_music[j].name = musname;
+						::g->totalmus++;
+						*clusterobj[i].ival = j;
+					}
+					if (!idStr::Icmp(musname, ::g->S_music[j].name)) {
+						*clusterobj[i].ival = j;
+						break;
+					}
+				}
+				break;
+			case 5:
+			case 6:
+				*clusterobj[i].ival = atoi(value);
+				break;
+			case 7:
+			case 8:
+				::g->EpisodeMenu[pos].status = 1;
+				strcpy(::g->EpisodeMenu[pos].name, value);
+				::g->EpisodeMenu[pos].routine = M_Episode;
+				::g->EpisodeMenu[pos].alphaKey = 'c';
+				::g->EpiDef.menuitems = ::g->EpisodeMenu;
+				break;
+			case 9:
+				::g->EpisodeMenu[pos].alphaKey = value[0];
+				::g->EpiDef.menuitems = ::g->EpisodeMenu;
+				break;
+			case 3:
+				tex++;
+				::g->clusters[pos].textpr = tex;
+
+			case 4:
+				if (i + 1 == 4) {
+					::g->clusters[pos].textpr = 1;
+				}
+			default:
+				if (option != NULL) {
+					if (!idStr::Icmp(option, "lookup")) {
+						if (value[0] == 'X') {
+							value[0] = 'C';
+						}
+						for (int i = 0; i < 24; i++) {
+							if (!idStr::Icmp(mval[i].name, value)) {
+								*clusterobj[i].sval = *mval[i].var;
+							}
+						}
+
+					}
+				}
+				else {
+					idStr lval;
+					char* t = strtok(strdup(lines[linepos].c_str()), " ");
+					t = strtok(NULL, " ");
+					if (t[0] = '\"') {
+						t = t + 1;
+					}
+					lval += t;
+					lval += "\n";
+					for (int j = linepos+1; j < lines.size(); j++) {
+						if (lines[j].c_str()[lines[j].size()-1] == '\"') {
+							lines[j].at(lines[j].size()-1) = '\0';
+							lval += lines[j].c_str();
+							break;
+						}
+						lval += lines[j].c_str();
+						lval += "\n";
+					}
+					*clusterobj[i].sval = new char[lval.Size()];
+					strcpy(*clusterobj[i].sval, lval.c_str());
+				}
+				break;
+			}
+			break;
+		}
+	}
+	/*return;
+	if (!idStr::Icmp(name, "flat")) {
+		
 		for (int i = 0; i < 12; i++) {
 			if (!idStr::Icmp(finaleflat[i], value)) {
 				::g->clusters[pos].fflat = i;
@@ -631,9 +802,29 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 			}
 		}
 	}
+
+	if (!idStr::Icmp(name, "startmap")) {
+		::g->clusters[pos].startmap = atoi(value);
+	}
+	if (!idStr::Icmp(name, "endmap")) {
+		::g->clusters[pos].endmap = atoi(value);
+	}
+	if (!idStr::Icmp(name, "titlename")) {
+		::g->EpisodeMenu[pos].status = 1 ;
+		strcpy(::g->EpisodeMenu[pos].name, value);
+		::g->EpisodeMenu[pos].routine = M_Episode;
+		::g->EpisodeMenu[pos].alphaKey = 'c';
+		::g->EpiDef.menuitems = ::g->EpisodeMenu;
+	}*/
 }
 
 void setExpData(char* name, char* value) {
+	if (!idStr::Icmp(name,"clearepisodes")) {
+		::g->EpiDef.numitems = 0;
+		free(::g->EpisodeMenu);
+		::g->EpisodeMenu = (menuitem_t*)malloc(sizeof(menuitem_t));
+		return;
+	}
 	if (!idStr::Icmp(name, "intermusic")) {
 		for (int i = 1; i < 80; i++) {
 			char* musname = value + 2;

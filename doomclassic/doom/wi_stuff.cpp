@@ -1511,16 +1511,14 @@ void WI_Ticker(void)
     {
 	// intermission music
 		if (::g->gamemode == commercial) { //GK:Custom expansion related stuff
-			if (::g->gamemission == pack_custom) {
-				S_ChangeMusic(::g->intermusic, true);
-			}
-			else {
-				S_ChangeMusic(mus_dm2int, true);
-			}
+			S_ChangeMusic(mus_dm2int, true);
 		}
 	else
 	  S_ChangeMusic(mus_inter, true); 
     }
+	if (::g->gamemission == pack_custom) {
+		S_ChangeMusic(::g->intermusic, true);
+	}
 
     WI_checkForAccelerate();
 

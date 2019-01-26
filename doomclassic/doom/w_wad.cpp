@@ -641,13 +641,13 @@ void W_AddFile ( const char *filename)
 						loaddeh(i);
 						
 					}
-					if (::g->gamemode == commercial) {
+					//if (::g->gamemode == commercial) {
 						//GK: if you find either MAPINFO lump of EXPINFO lump change to custom expansion and set it's data (from these two lumps)
 						if (!idStr::Cmpn(filelumpPointer->name, "EXPINFO", 7) || !idStr::Cmpn(filelumpPointer->name, "MAPINFO", 7) || (!idStr::Icmp(filename + strlen(filename) - 3, "dlc"))) {
 							::g->gamemission = pack_custom;
 							EX_add(i);
 						}
-					}
+					//}
 			}
 			
 		}

@@ -155,6 +155,7 @@ menuitem_t temp_EpisodeMenu[4] = {
 	{1,"M_EPI3", M_Episode,'i'},
 	{1,"M_EPI4", M_Episode,'t'}
 };
+::g->EpisodeMenu = (menuitem_t*)malloc(4 * sizeof(menuitem_t));
 memcpy( ::g->EpisodeMenu, temp_EpisodeMenu, sizeof(temp_EpisodeMenu) );
 menu_t  temp_EpiDef = {
 	ep_end,		// # of menu items

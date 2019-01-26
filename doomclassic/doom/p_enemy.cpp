@@ -1591,17 +1591,28 @@ void A_BossDeath (mobj_t* mo, void * )
     line_t	junk;
     int		i;
 	bool ok = false; //GK:Oversimplyfication for the if case on map 07's logic
+	int map; //GK: Calculate custom expansion map based on game mode
+	if (::g->gamemission == pack_custom) {
+		switch (::g->gamemode) {
+		case retail:
+			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			break;
+		case commercial:
+			map = ::g->gamemap;
+			break;
+		}
+	}
 		
+	if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
+		if (!::g->maps[map-1].miniboss) {
+			return;
+		}
+		else {
+			ok = true;
+		}
+	}else
     if ( ::g->gamemode == commercial)
     {
-		if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
-			if (!::g->maps[::g->gamemap-1].miniboss) {
-				return;
-			}
-			else {
-				ok = true;
-			}
-		}
 
 		if (::g->gamemission == pack_master)
 			if (::g->gamemap != 14 && ::g->gamemap != 15 && ::g->gamemap != 16)// GK: Fix for Master Levels
@@ -1673,7 +1684,7 @@ void A_BossDeath (mobj_t* mo, void * )
 	}
 		
     }
-
+	
     
     // make sure there is a player alive for victory
     for (i=0 ; i<MAXPLAYERS ; i++)

@@ -65,6 +65,17 @@ EV_Teleport
     fixed_t	oldx;
     fixed_t	oldy;
     fixed_t	oldz;
+	int map; //GK: Calculate custom expansion map based on game mode
+	if (::g->gamemission == pack_custom) {
+		switch (::g->gamemode) {
+		case retail:
+			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			break;
+		case commercial:
+			map = ::g->gamemap;
+			break;
+		}
+	}
 
     // don't teleport missiles
     if (thing->flags & MF_MISSILE)
@@ -82,9 +93,9 @@ EV_Teleport
 			tag = 41;
 		}
 	}
-	if (::g->gamemission == pack_custom && ::g->maps[::g->gamemap - 1].otel) {
+	if (::g->gamemission == pack_custom && ::g->maps[map - 1].otel) {
 		if (line->tag == 0) {
-			tag = ::g->maps[::g->gamemap - 1].otel;
+			tag = ::g->maps[map - 1].otel;
 		}
 	}
     for (i = 0; i < ::g->numsectors; i++)

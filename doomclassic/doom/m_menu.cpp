@@ -308,13 +308,13 @@ void M_ReadSaveStrings(void)
 
 	for (i = 0;i < load_end;i++)
 	{
+		if (DoomLib::idealExpansion == ::g->rexp && ::g->gamemission == pack_custom && ::g->savedir) { //GK: Custom expansion related stuff
+			sprintf(name, "%s\\%s%d.dsg", ::g->savedir, SAVEGAMENAME, i);
+		}
+		else
 		if( common->GetCurrentGame() == DOOM_CLASSIC ) {
 			sprintf(name,"DOOM\\%s%d.dsg",  SAVEGAMENAME,i );
 		} else {
-			if (DoomLib::idealExpansion == ::g->rexp && ::g->gamemission == pack_custom && ::g->savedir) { //GK: Custom expansion related stuff
-				sprintf(name, "%s\\%s%d.dsg", ::g->savedir, SAVEGAMENAME, i);
-			}
-			else
 			if( DoomLib::idealExpansion == doom2 ) {
 				sprintf(name,"DOOM2\\%s%d.dsg",  SAVEGAMENAME,i );
 			} else if ( DoomLib::idealExpansion == pack_nerve){
@@ -360,14 +360,14 @@ bool M_CheckQuickSave(void)
 
 	//for (i = 0; i < load_end; i++)
 	{
+		if (::g->gamemission == pack_custom && ::g->savedir) { //GK: Custom expansion related stuff
+			sprintf(name, "%s\\%s%d.dsg", ::g->savedir, QUICKSAVENAME, 7);
+		}
+		else
 		if (common->GetCurrentGame() == DOOM_CLASSIC) {
 			sprintf(name, "DOOM\\%s%d.dsg", QUICKSAVENAME, 7);
 		}
 		else {
-			if (::g->gamemission == pack_custom && ::g->savedir) { //GK: Custom expansion related stuff
-				sprintf(name, "%s\\%s%d.dsg", ::g->savedir, QUICKSAVENAME, 7);
-			}
-			else
 				if (DoomLib::idealExpansion == doom2) {
 					sprintf(name, "DOOM2\\%s%d.dsg", QUICKSAVENAME, 7);
 				}
@@ -1137,6 +1137,12 @@ void M_ChooseSkill(int choice)
 	if ( ::g->gamemode != commercial ) {
 		static int startLevel = 1;
 		G_DeferedInitNew((skill_t)choice,::g->epi+1, startLevel);
+		if (::g->gamemission == pack_custom) { //GK: Set Endmap for the selected episode
+			if (!::g->clusters[::g->epi].endmap) {
+				::g->clusters[::g->epi].endmap = ::g->clusters[::g->epi].startmap + 7;
+			}
+			::g->endmap = ::g->clusters[::g->epi].endmap;
+		}
 		M_ClearMenus ();
 	} else {
 		if (DoomLib::idealExpansion == pack_master && state == 0)

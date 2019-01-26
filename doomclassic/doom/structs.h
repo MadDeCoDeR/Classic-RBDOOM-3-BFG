@@ -563,4 +563,8 @@ typedef struct {//GK:Store information for the custom expansion clusters
 	int fmusic;
 	char* ftext;
 	int textpr;
+	int startmap; //GK: Set episode first map (from the maps vector)
+	int endmap; //GK: Set episode last map (from the maps vector)
+	char* titlename; //GK: Set episode picname
+	char* mapname; //GK: Set episode first map (from the maps vector)
 }cluster_t;

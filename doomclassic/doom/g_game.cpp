@@ -535,7 +535,17 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 void G_DoLoadLevel () 
 { 
 	int             i; 
-
+	int map; //GK: Calculate custom expansion map based on game mode
+	if (::g->gamemission == pack_custom) {
+		switch (::g->gamemode) {
+		case retail:
+			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			break;
+		case commercial:
+			map = ::g->gamemap;
+			break;
+		}
+	}
 	M_ClearRandom();
 	/*if (lumpcache != NULL) {
 		for (int i = 0; i < numlumps; i++) {
@@ -569,12 +579,6 @@ void G_DoLoadLevel ()
 			}
 			else if (::g->gamemap < 21) {
 				::g->skytexture = R_TextureNumForName("SKY2");
-			}
-
-			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
-				if (::g->maps[::g->gamemap-1].sky != NULL) {
-					::g->skytexture = R_TextureNumForName(::g->maps[::g->gamemap-1].sky);
-				}
 			}
 		}
 		else {
@@ -610,6 +614,11 @@ void G_DoLoadLevel ()
 					break;
 				}
 			}
+		}
+	}
+	if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+		if (::g->maps[map - 1].sky != NULL) {
+			::g->skytexture = R_TextureNumForName(::g->maps[map - 1].sky);
 		}
 	}
 	if (::g->s_textures[::g->skytexture]->height >= 200) {//GK:Tall skies support
@@ -1268,7 +1277,17 @@ void G_SecretExitLevel (void)
 void G_DoCompleted (void) 
 { 
 	int             i; 
-
+	int map; //GK: Calculate custom expansion map based on game mode
+	if (::g->gamemission == pack_custom) {
+		switch (::g->gamemode) {
+		case retail:
+			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			break;
+		case commercial:
+			map = ::g->gamemap;
+			break;
+		}
+	}
 	::g->gameaction = ga_nothing; 
 
 	for (i=0 ; i<MAXPLAYERS ; i++) {
@@ -1330,7 +1349,7 @@ void G_DoCompleted (void)
 			}
 			else if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
 					if (::g->maps[::g->gamemap-1].secretmap) {
-						::g->wminfo.next = ::g->maps[::g->gamemap-1].secretmap-1;
+						::g->wminfo.next = ::g->maps[::g->gamemap-1].secretmap;
 					}
 				
 			}
@@ -1369,30 +1388,41 @@ void G_DoCompleted (void)
 	}
 	else
 	{
-		if (::g->secretexit) { 
-			::g->wminfo.next = 8; 	// go to secret level 
+		if (::g->gamemission != pack_custom) {
+			if (::g->secretexit) {
+				::g->wminfo.next = 8; 	// go to secret level 
+			}
+			else if (::g->gamemap == 9)
+			{
+				// returning from secret level 
+				switch (::g->gameepisode)
+				{
+				case 1:
+					::g->wminfo.next = 3;
+					break;
+				case 2:
+					::g->wminfo.next = 5;
+					break;
+				case 3:
+					::g->wminfo.next = 6;
+					break;
+				case 4:
+					::g->wminfo.next = 2;
+					break;
+				}
+			}
+			else
+				::g->wminfo.next = ::g->gamemap;          // go to next level 
+
+		}else { //GK: Custom expansion related stuff
+			int map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			if (::g->secretexit) {
+				::g->wminfo.next = ::g->maps[map-1].secretmap;
+			}
+			else {
+				::g->wminfo.next = ::g->maps[map-1].nextmap;
+			}
 		}
-		else if (::g->gamemap == 9 ) 
-		{
-			// returning from secret level 
-			switch (::g->gameepisode) 
-			{ 
-			case 1: 
-				::g->wminfo.next = 3; 
-				break; 
-			case 2: 
-				::g->wminfo.next = 5; 
-				break; 
-			case 3: 
-				::g->wminfo.next = 6; 
-				break; 
-			case 4:
-				::g->wminfo.next = 2;
-				break;
-			}                
-		} 
-		else 
-			::g->wminfo.next = ::g->gamemap;          // go to next level 
 	}
 
 	// DHM - Nerve :: In deathmatch, repeat the current level.  User must exit and choose a new level.
@@ -1417,6 +1447,10 @@ void G_DoCompleted (void)
 	}
 	else
 		::g->wminfo.partime = TICRATE * pars[::g->gameepisode][::g->gamemap]; 
+
+	if (::g->gamemission == pack_custom) {
+		::g->wminfo.partime = TICRATE * cpars[map - 1];
+	}
 
 	::g->wminfo.pnum = ::g->consoleplayer; 
 
@@ -1449,6 +1483,13 @@ void G_WorldDone (void)
 	if (::g->secretexit) 
 		::g->players[::g->consoleplayer].didsecret = true; 
 
+	if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+		if (::g->gamemap == ::g->endmap || ::g->maps[::g->gamemap - 1].cluster != ::g->maps[::g->wminfo.next].cluster || ::g->maps[::g->gamemap - 1].ftext != NULL) {
+			if (!::g->secretexit == !::g->maps[::g->gamemap - 1].fsecret) {
+				F_StartFinale();
+			}
+		}
+	}
 	if ( ::g->gamemode == commercial )
 	{
 
@@ -1467,14 +1508,7 @@ void G_WorldDone (void)
 
 			}
 		}
-		if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
-			if (::g->gamemap == ::g->endmap || ::g->maps[::g->gamemap-1].cluster != ::g->maps[::g->wminfo.next].cluster || ::g->maps[::g->gamemap - 1].ftext != NULL) {
-				if (!::g->secretexit == !::g->maps[::g->gamemap - 1].fsecret) {
-					F_StartFinale();
-				}
-			}
-		}
-		else {
+		 {
 			//if ( ::g->gamemission == doom2 || ::g->gamemission == pack_tnt || ::g->gamemission == pack_plut || ((::g->gamemission == pack_nerve || ::g->gamemission == pack_master) && ::g->modifiedtext)) {
 			switch (::g->gamemap)
 			{
@@ -1769,15 +1803,14 @@ qboolean G_DoSaveGame (void)
 	else {
 		sprintf(sname, "%s", SAVEGAMENAME);
 	}
-
-	if( common->GetCurrentGame() == DOOM_CLASSIC ) {
-		sprintf(name,"DOOM\\%s%d.dsg", sname,::g->savegameslot );
-	} else {
-		//GK: Add save directories for Evilution and Plutonia expansions
+	//GK: Add save directories for Evilution and Plutonia expansions
 	if (::g->gamemission == pack_custom && ::g->savedir != NULL) { //GK: Custom expansion related stuff
 		sprintf(name, "%s\\%s%d.dsg", ::g->savedir, sname, ::g->savegameslot);
 	}
 	else
+	if( common->GetCurrentGame() == DOOM_CLASSIC ) {
+		sprintf(name,"DOOM\\%s%d.dsg", sname,::g->savegameslot );
+	} else {
 		if (DoomLib::idealExpansion == doom2) {
 			sprintf(name, "DOOM2\\%s%d.dsg", sname, ::g->savegameslot);
 		}
@@ -1944,8 +1977,10 @@ G_InitNew
 
 	if ( ::g->gamemode == retail )
 	{
-		if (episode > 4)
-			episode = 4;
+		//GK: No limits
+		if (::g->gamemission != pack_custom)
+			if (episode > 4)
+				episode = 4;
 	}
 	else if ( ::g->gamemode == shareware )
 	{

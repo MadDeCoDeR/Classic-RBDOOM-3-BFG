@@ -252,6 +252,17 @@ qboolean PIT_CheckThing (mobj_t* thing)
     fixed_t		blockdist;
     qboolean		solid;
     int			damage;
+	int map; //GK: Calculate custom expansion map based on game mode
+	if (::g->gamemission == pack_custom) {
+		switch (::g->gamemode) {
+		case retail:
+			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			break;
+		case commercial:
+			map = ::g->gamemap;
+			break;
+		}
+	}
 		
     if (!(thing->flags & (MF_SOLID|MF_SPECIAL|MF_SHOOTABLE) ))
 	return true;
@@ -265,7 +276,7 @@ qboolean PIT_CheckThing (mobj_t* thing)
 	return true;	
     }
 	if (::g->tmthing->player) {//GK: trigger secret by touching an object inside the secret sector (map exclusive)
-		if (((::g->gamemission == pack_custom && ::g->maps[::g->gamemap-1].tsecret) || (::g->gamemission == doom && ::g->gameepisode == 4 && (::g->gamemap == 3 || ::g->gamemap == 7 ))) && thing->subsector->sector->special == 9) {
+		if (((::g->gamemission == pack_custom && ::g->maps[map-1].tsecret) || (::g->gamemission == doom && ::g->gameepisode == 4 && (::g->gamemap == 3 || ::g->gamemap == 7 ))) && thing->subsector->sector->special == 9) {
 			::g->tmthing->player->secretcount++;
 			//GK send message when secret found
 			S_StartSound(::g->tmthing->player->mo, sfx_getpow);
