@@ -706,9 +706,12 @@ void P_SpawnPlayer (mapthing_t* mthing)
 		 p->armortype = ::g->bart;
 
 		int i;
-		for (i=0;i<NUMWEAPONS;i++)
-			 p->weaponowned[i] = true;
-
+		for (i = 0; i < NUMWEAPONS; i++) {
+			p->weaponowned[i] = true;
+			if (::g->weaponcond[i] != 2) { //GK: Everytime you get a weapon record that
+				::g->weaponcond[i] = 1;
+			}
+		}
 		for (i=0;i<NUMAMMO;i++)
 			 p->ammo[i] =  p->maxammo[i];
 

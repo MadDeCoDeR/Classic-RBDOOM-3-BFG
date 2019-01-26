@@ -435,8 +435,12 @@ ST_Responder (event_t* ev)
 				::g->plyr->armorpoints = ::g->farmor;
 				::g->plyr->armortype = ::g->fart;
 
-				for (i = 0; i<NUMWEAPONS; i++)
+				for (i = 0; i < NUMWEAPONS; i++) {
 					::g->plyr->weaponowned[i] = true;
+					if (::g->weaponcond[i] != 2) { //GK: Everytime you get a weapon record that
+						::g->weaponcond[i] = 1;
+					}
+				}
 
 				for (i = 0; i<NUMAMMO; i++)
 					::g->plyr->ammo[i] = ::g->plyr->maxammo[i];
@@ -457,8 +461,12 @@ ST_Responder (event_t* ev)
 					::g->plyr->backpack = true;
 				}
 				//GK: End
-				for (i = 0; i<NUMWEAPONS; i++)
+				for (i = 0; i < NUMWEAPONS; i++) {
 					::g->plyr->weaponowned[i] = true;
+					if (::g->weaponcond[i] != 2) { //GK: Everytime you get a weapon record that
+						::g->weaponcond[i] = 1;
+					}
+				}
 
 				for (i = 0; i<NUMAMMO; i++)
 					::g->plyr->ammo[i] = ::g->plyr->maxammo[i];
@@ -544,6 +552,9 @@ ST_Responder (event_t* ev)
 			{
 				::g->markfordelete = 0;
 				::g->plyr->weaponowned[wp_chainsaw] = true;
+				if (::g->weaponcond[wp_chainsaw] != 2) { //GK: Everytime you get a weapon record that
+					::g->weaponcond[wp_chainsaw] = 1;
+				}
 				::g->plyr->powers[pw_invulnerability] = true;
 				::g->plyr->message = STSTR_CHOPPERS;
 			}
@@ -1092,6 +1103,10 @@ void ST_loadGraphics(void)
 
 		// yellow #
 		::g->arms[i][1] = ::g->shortnum[i+2]; 
+		//GK: pink-ish #
+		sprintf(namebuf, "STPNNUM%d", i + 2); //GK: That number indicating which weapon is in use on the status bar
+
+		::g->arms[i][2] = img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
 	}
 
 	// face backgrounds for different color ::g->players
@@ -1212,10 +1227,18 @@ void ST_createWidgets(void)
 	// weapons owned
 	for(i=0;i<6;i++)
 	{
+		//GK: For the first time initialize it.
+		//Otherwise it might not work so well
+		if (::g->plyr->readyweapon == i + 1) {
+			::g->weaponcond[i+1] = 2;
+		}
+		else {
+			::g->weaponcond[i + 1] = ::g->plyr->weaponowned[i + 1];
+		}
 		STlib_initMultIcon(&::g->w_arms[i],
 			ST_ARMSX+(i%3)*ST_ARMSXSPACE,
 			ST_ARMSY+(i/3)*ST_ARMSYSPACE,
-			::g->arms[i], (int *) &::g->plyr->weaponowned[i+1],
+			::g->arms[i], (int *) &::g->weaponcond[i + 1],
 			&::g->st_armson);
 	}
 
@@ -1408,8 +1431,12 @@ CONSOLE_COMMAND_SHIP( idfa, "cheat for killer fucking arsenal", 0 ) {
 	::g->plyr->armorpoints = ::g->farmor;
 	::g->plyr->armortype = ::g->fart;
 
-	for (i=0;i<NUMWEAPONS;i++)
+	for (i = 0; i < NUMWEAPONS; i++) {
 		::g->plyr->weaponowned[i] = true;
+		if (::g->weaponcond[i] != 2) { //GK: Everytime you get a weapon record that
+			::g->weaponcond[i] = 1;
+		}
+	}
 
 	for (i=0;i<NUMAMMO;i++)
 		::g->plyr->ammo[i] = ::g->plyr->maxammo[i];
@@ -1441,8 +1468,12 @@ CONSOLE_COMMAND_SHIP( idkfa, "cheat for key full ammo", 0 ) {
 		::g->plyr->backpack = true;
 	}
 	//GK: End
-	for (i=0;i<NUMWEAPONS;i++)
+	for (i = 0; i < NUMWEAPONS; i++) {
 		::g->plyr->weaponowned[i] = true;
+		if (::g->weaponcond[i] != 2) { //GK: Everytime you get a weapon record that
+			::g->weaponcond[i] = 1;
+		}
+	}
 
 	for (i=0;i<NUMAMMO;i++)
 		::g->plyr->ammo[i] = ::g->plyr->maxammo[i];

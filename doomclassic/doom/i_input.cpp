@@ -90,8 +90,12 @@ static bool Cheat_GiveAll() {
 	::g->plyr->armortype = ::g->kfart;
 
 	int i;
-	for (i=0;i<NUMWEAPONS;i++)
+	for (i = 0; i < NUMWEAPONS; i++) {
 		::g->plyr->weaponowned[i] = true;
+		if (::g->weaponcond[i] != 2) { //GK: Everytime you get a weapon record that
+			::g->weaponcond[i] = 1;
+		}
+	}
 
 	for (i=0;i<NUMAMMO;i++)
 		::g->plyr->ammo[i] = ::g->plyr->maxammo[i];
@@ -111,9 +115,12 @@ static bool Cheat_GiveAmmo() {
 	::g->plyr->armortype = ::g->fart;
 
 	int i;
-	for (i=0;i<NUMWEAPONS;i++)
+	for (i = 0; i < NUMWEAPONS; i++) {
 		::g->plyr->weaponowned[i] = true;
-
+		if (::g->weaponcond[i] != 2) { //GK: Everytime you get a weapon record that
+			::g->weaponcond[i] = 1;
+		}
+	}
 	for (i=0;i<NUMAMMO;i++)
 		::g->plyr->ammo[i] = ::g->plyr->maxammo[i];
 
@@ -126,6 +133,9 @@ static bool Cheat_Choppers() {
 		return false;
 	}
 	::g->plyr->weaponowned[wp_chainsaw] = true;
+	if (::g->weaponcond[wp_chainsaw] != 2) { //GK: Everytime you get a weapon record that
+		::g->weaponcond[wp_chainsaw] = 1;
+	}
 	::g->plyr->message = "Chainsaw!";
 	return true;
 }

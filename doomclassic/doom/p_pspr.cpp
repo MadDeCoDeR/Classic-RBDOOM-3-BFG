@@ -463,8 +463,15 @@ A_Lower
 		P_SetPsprite (player,  ps_weapon, S_NULL);
 		return;	
 	}
-
-	player->readyweapon = player->pendingweapon; 
+	::g->weaponcond[player->readyweapon] = 1; //GK: No longer in use just keep owning it
+	player->readyweapon = player->pendingweapon;
+	//GK: The weapon is ready set it on use
+	if (player->readyweapon == wp_supershotgun) { //GK: supershotgun is using the same slot as the shotgun
+		::g->weaponcond[wp_shotgun] = 2;
+	}
+	else {
+		::g->weaponcond[player->readyweapon] = 2;
+	}
 
 	P_BringUpWeapon (player);
 }

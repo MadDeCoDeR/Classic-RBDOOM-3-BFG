@@ -388,7 +388,7 @@ menuitem_t MainMenu[6];
 menu_t  QuitDef;
 menuitem_t QuitMenu[3];
 menu_t  MainDef;
-menuitem_t EpisodeMenu[4];
+menuitem_t* EpisodeMenu; //GK: Dynamic menu
 menu_t  EpiDef;
 menuitem_t ExpansionMenu[5];
 menu_t  ExpDef;
@@ -812,7 +812,7 @@ patch_t*		keys[NUMCARDS];  // AffLANHACK IGNORE
 patch_t*		faces[ST_NUMFACES]; // AffLANHACK IGNORE
 patch_t*		faceback; // AffLANHACK IGNORE
 patch_t*		armsbg; // AffLANHACK IGNORE
-patch_t*		arms[6][2];  // AffLANHACK IGNORE
+patch_t*		arms[6][3];  // AffLANHACK IGNORE //GkHACK More states
 st_number_t	w_ready;
 st_number_t	w_frags;
 st_percent_t	w_health;
@@ -857,6 +857,7 @@ int fart; //GK: This armor type stings xD
 int kfarmor;
 int kfart;
 int BFGCELL;
+int weaponcond[9]; //GK: Keep track of which weapon player owns and which is using
 //GK: End
 // st_stuff.vars end // 
 //  s_sound.vars begin // 

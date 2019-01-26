@@ -197,6 +197,9 @@ P_GiveWeapon
 
 		player->bonuscount += BONUSADD;
 		player->weaponowned[weapon] = true;
+		if (::g->weaponcond[weapon] != 2) { //GK: Everytime you get a weapon record that
+			::g->weaponcond[weapon] = 1;
+		}
 
 		if (::g->deathmatch)
 			P_GiveAmmo (player, weaponinfo[weapon].ammo, 5);
@@ -227,6 +230,9 @@ P_GiveWeapon
 	{
 		gaveweapon = true;
 		player->weaponowned[weapon] = true;
+		if (::g->weaponcond[weapon] != 2) { //GK: Everytime you get a weapon record that
+			::g->weaponcond[weapon] = 1;
+		}
 		player->pendingweapon = weapon;
 	}
 
