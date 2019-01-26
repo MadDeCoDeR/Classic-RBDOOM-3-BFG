@@ -91,7 +91,12 @@ If you have questions concerning this license or the applicable additional terms
 const fixed_t*		finecosine = &finesine[FINEANGLES/4];
 
 idCVar cl_freelook("cl_freelook", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Classic Doom freelook");
-
+//GK: AW Yeah! This is Happening!
+extern idCVar pm_thirdPerson;
+extern idCVar pm_thirdPersonRange;
+extern idCVar pm_thirdPersonXOff;
+extern idCVar pm_thirdPersonAngle;
+extern idCVar pm_thirdPersonHeight;
 // bumped light from gun blasts
 
 
@@ -827,8 +832,43 @@ R_PointInSubsector
 
 	return &::g->subsectors[nodenum & ~NF_SUBSECTOR];
 }
+//GK: Begin
+//
+// R_SetupThirdPersonView
+//
 
+//This Function re-calculate the camera position
+//and angle based on the pm_thirdPerson CVars.
+//In general it converts pm_thirdPersonAngle
+//from degrees to Doom Angles, then it substracting
+//it with the mouse anlge and then convert the result
+//to radians(??) in order to be used for calculating
+//the camera position using sines and cosines
 
+void R_SetupThirdPersonView(player_t* player) {
+	extern void SetViewX(fixed_t); extern void SetViewY(fixed_t); extern void SetViewAngle(angle_t, angle_t);
+	float tpviewangletemp = pm_thirdPersonAngle.GetFloat();
+	tpviewangletemp /= 360.0f;
+	tpviewangletemp *= std::numeric_limits<unsigned short>::max();
+	angle_t tpviewangle = tpviewangletemp;
+	tpviewangle <<= 16;
+	float trueangle = (player->mo->angle - tpviewangle) >> 16;
+	trueangle /= std::numeric_limits<unsigned short>::max();
+	trueangle *= 360.0f;
+	//trueangle = (int)trueangle;
+	trueangle *= PI / 180;
+	//This static values are making the cvars to have some actual impact while calculating the offsets
+	fixed_t xposoffset = ((pm_thirdPersonRange.GetFloat() * 40000)*cos(trueangle)) + ((pm_thirdPersonXOff.GetFloat() * 80000)*sin(trueangle));
+	fixed_t yposoffset = ((pm_thirdPersonRange.GetFloat() * 40000)*sin(trueangle)) - ((pm_thirdPersonXOff.GetFloat() * 80000)*cos(trueangle));
+	SetViewX(player->mo->x - xposoffset);
+	SetViewY(player->mo->y - yposoffset);
+	
+	SetViewAngle( (player->mo->angle- tpviewangle) + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
+	int ogwidth = ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER;
+	int viewzoffset = ((::g->SCREENWIDTH - ogwidth) * 1000) + (pm_thirdPersonHeight.GetFloat() * 100000);
+	::g->viewz = player->viewz + viewzoffset;
+}
+//GK: End
 
 //
 // R_SetupFrame
@@ -840,13 +880,21 @@ void R_SetupFrame (player_t* player)
 	int mousepos;
 
 	::g->viewplayer = player;
-	extern void SetViewX( fixed_t ); extern void SetViewY( fixed_t ); extern void SetViewAngle( angle_t,angle_t );
-	SetViewX( player->mo->x );
-	SetViewY( player->mo->y );
-	SetViewAngle( player->mo->angle + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
+	//GK: Either thirdPerson Camera or ForstPerson
+	if (pm_thirdPerson.GetBool()) {
+		R_SetupThirdPersonView(player);
+	}
+	else {
+		extern void SetViewX(fixed_t); extern void SetViewY(fixed_t); extern void SetViewAngle(angle_t, angle_t);
+		SetViewX(player->mo->x);
+		SetViewY(player->mo->y);
+		SetViewAngle(player->mo->angle + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
+		//GK: Adjust the height if aspect ratio correction is on
+		int ogwidth = ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER;
+		::g->viewz = player->viewz + ((::g->SCREENWIDTH - ogwidth) * 1000);
+	}
 	::g->extralight = player->extralight;
-
-	::g->viewz = player->viewz;
+	
 
 	extern angle_t GetViewAngle();
 	//GK: Begin

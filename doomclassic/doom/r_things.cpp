@@ -55,7 +55,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 
-
+extern idCVar pm_thirdPerson;
 //
 // Sprite rotation 0 is facing the viewer,
 //  rotation 1 is one angle turn CLOCKWISE around the axis.
@@ -1065,8 +1065,12 @@ void R_DrawMasked (void)
     
     // draw the psprites on top of everything
     //  but does not draw on side views
-    if (!::g->viewangleoffset)		
-	R_DrawPlayerSprites ();
+	//GK: DONT POINT THAT THING ON ME
+	if (!pm_thirdPerson.GetBool()) {
+		if (!::g->viewangleoffset)
+			R_DrawPlayerSprites();
+
+	}
 }
 
 

@@ -41,7 +41,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "sound/OpenAL/AL_EAX.h"
 #endif
 
-
+extern idCVar pm_thirdPerson;
 
 // Index of the special effects (INVUL inverse) map.
 
@@ -81,17 +81,24 @@ void P_CalcHeight (player_t* player)
 {
 	int		angle;
 	fixed_t	bob;
-
-	// Regular movement bobbing
-	// (needs to be calculated for gun swing
-	// even if not on ground)
-	// OPTIMIZE: tablify angle
-	// Note: a LUT allows for effects
-	//  like a ramp with low health.
-	player->bob =
-		FixedMul (player->mo->momx, player->mo->momx)
-		+ FixedMul (player->mo->momy,player->mo->momy);
-
+	//GK: Bobing as it seems can cause
+	//a mild motion sickness when playing
+	//on thirdPerson. So disable it
+	//ONLY on thirdPerson
+	if (!pm_thirdPerson.GetBool()) {
+		// Regular movement bobbing
+		// (needs to be calculated for gun swing
+		// even if not on ground)
+		// OPTIMIZE: tablify angle
+		// Note: a LUT allows for effects
+		//  like a ramp with low health.
+		player->bob =
+			FixedMul(player->mo->momx, player->mo->momx)
+			+ FixedMul(player->mo->momy, player->mo->momy);
+	}
+	else {
+		player->bob = 0;
+	}
 	player->bob >>= 2;
 
 	// DHM - NERVE :: player bob reduced by 25%, MAXBOB reduced by 25% as well
