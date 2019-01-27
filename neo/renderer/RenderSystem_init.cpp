@@ -396,7 +396,7 @@ static void R_CheckPortableExtensions()
 	}
 	
 	// RB: Mesa support																																											//GK: Add support for VMWare gpu
-	if( idStr::Icmpn( glConfig.renderer_string, "Mesa", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "X.org", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "Gallium", 7 ) == 0 || idStr::Icmpn(glConfig.renderer_string, "SVGA3D", 6) == 0)
+	if( idStr::Icmpn( glConfig.renderer_string, "Mesa", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "X.org", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "Gallium", 7 ) == 0 || idStr::Icmpn(glConfig.renderer_string, "SVGA3D", 6) == 0 || idStr::Icmpn(glConfig.renderer_string, "nouveau", 7) == 0)
 	{
 		if( glConfig.driverType == GLDRV_OPENGL32_CORE_PROFILE )
 		{
