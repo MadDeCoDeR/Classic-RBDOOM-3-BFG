@@ -159,7 +159,12 @@ Var_t g_vars[] =
 	{"si_mode",&si_mode},
 	{"stereoRender_interOccularCentimeters",&stereoRender_interOccularCentimeters},
 	{"r_aspectratio",&r_aspectratio},
-	{"pm_stamina",&pm_stamina}
+	{"pm_stamina",&pm_stamina},
+	{"pm_thirdPerson",&pm_thirdPerson},
+	{"pm_thirdPersonAngle",&pm_thirdPersonAngle},
+	{"pm_thirdPersonRange",&pm_thirdPersonRange},
+	{"pm_thirdPersonXOff",&pm_thirdPersonXOff},
+	{"pm_thirdPersonHeight",&pm_thirdPersonHeight}
 };
 /*
 ===========
