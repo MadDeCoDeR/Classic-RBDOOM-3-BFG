@@ -235,6 +235,9 @@ void parseexptext(char* text) {
 									int newval = val1 + 1;
 									::g->EpisodeMenu = (menuitem_t*)realloc(::g->EpisodeMenu, newval * sizeof(menuitem_t));
 								}
+								if (!::g->clusterind) {
+									episodecount = val1;
+								}
 							}
 							::g->clusters.resize(val1 + 1);
 							::g->clusterind = val1 + 1;

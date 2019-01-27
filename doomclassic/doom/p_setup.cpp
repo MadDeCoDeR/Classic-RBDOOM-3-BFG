@@ -776,7 +776,7 @@ P_SetupLevel
 		else
 			sprintf (lumpname,"map%i", map);
 
-		if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
+		if (::g->gamemission == pack_custom ) { //GK:Custom expansion related stuff
 			sprintf(lumpname, "%s", ::g->maps[map-1].lumpname);
 		}
 		//GK: Get Map's name in order to check for reverbs
@@ -797,25 +797,30 @@ P_SetupLevel
 	}
 	else
 	{
-		if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
-			if (!::g->clusters[episode - 1].startmap) {
-				for (int i = 0; i < ::g->maps.size(); i++) {
-					if (!idStr::Icmp(::g->clusters[episode - 1].mapname, ::g->maps[i].lumpname)) {
-						::g->clusters[episode - 1].startmap = i;
-					}
-				}
-			}
-			int newmap = ::g->clusters[episode - 1].startmap + (map-1);
-			sprintf(lumpname, "%s", ::g->maps[newmap - 1].lumpname);
-		}
-		else {
+		
 			lumpname[0] = 'E';
 			lumpname[1] = '0' + episode;
 			lumpname[2] = 'M';
 			lumpname[3] = '0' + map;
 			lumpname[4] = 0;
-		}
+
+			if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
+				if (!::g->clusters[episode - 1].startmap && ::g->clusters[episode - 1].mapname != NULL) {
+					for (int i = 0; i < ::g->maps.size(); i++) {
+						if (!idStr::Icmp(::g->clusters[episode - 1].mapname, ::g->maps[i].lumpname)) {
+							::g->clusters[episode - 1].startmap = i;
+						}
+					}
+				}
+				if (::g->clusters[episode - 1].startmap) {
+					int newmap = ::g->clusters[episode - 1].startmap + (map - 1);
+					if (::g->maps[newmap - 1].lumpname != NULL) {
+						sprintf(lumpname, "%s", ::g->maps[newmap - 1].lumpname);
+					}
+				}
+			}
 		::g->mapname = std::string(mapnames[(episode - 1) * 9 + (map - 1)]);
+
 
 	}
 

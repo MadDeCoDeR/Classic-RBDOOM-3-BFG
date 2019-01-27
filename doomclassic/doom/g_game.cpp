@@ -535,11 +535,16 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 void G_DoLoadLevel () 
 { 
 	int             i; 
-	int map; //GK: Calculate custom expansion map based on game mode
+	int map = 0; //GK: Calculate custom expansion map based on game mode
 	if (::g->gamemission == pack_custom) {
 		switch (::g->gamemode) {
 		case retail:
-			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			if (::g->clusters[::g->gameepisode - 1].startmap) {
+				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			}
+			else {
+				map = 0;
+			}
 			break;
 		case commercial:
 			map = ::g->gamemap;
@@ -616,7 +621,7 @@ void G_DoLoadLevel ()
 			}
 		}
 	}
-	if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+	if (::g->gamemission == pack_custom && map) { //GK: Custom expansion related stuff
 		if (::g->maps[map - 1].sky != NULL) {
 			::g->skytexture = R_TextureNumForName(::g->maps[map - 1].sky);
 		}
@@ -1277,11 +1282,16 @@ void G_SecretExitLevel (void)
 void G_DoCompleted (void) 
 { 
 	int             i; 
-	int map; //GK: Calculate custom expansion map based on game mode
+	int map = 0; //GK: Calculate custom expansion map based on game mode
 	if (::g->gamemission == pack_custom) {
 		switch (::g->gamemode) {
 		case retail:
-			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			if (::g->clusters[::g->gameepisode - 1].startmap) {
+				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			}
+			else {
+				map = 0;
+			}
 			break;
 		case commercial:
 			map = ::g->gamemap;
@@ -1388,7 +1398,6 @@ void G_DoCompleted (void)
 	}
 	else
 	{
-		if (::g->gamemission != pack_custom) {
 			if (::g->secretexit) {
 				::g->wminfo.next = 8; 	// go to secret level 
 			}
@@ -1414,13 +1423,15 @@ void G_DoCompleted (void)
 			else
 				::g->wminfo.next = ::g->gamemap;          // go to next level 
 
-		}else { //GK: Custom expansion related stuff
-			int map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
-			if (::g->secretexit) {
-				::g->wminfo.next = ::g->maps[map-1].secretmap;
-			}
-			else {
-				::g->wminfo.next = ::g->maps[map-1].nextmap;
+			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+			//int map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			if (map) {
+				if (::g->secretexit) {
+					::g->wminfo.next = ::g->maps[map - 1].secretmap;
+				}
+				else {
+					::g->wminfo.next = ::g->maps[map - 1].nextmap;
+				}
 			}
 		}
 	}
@@ -1448,7 +1459,7 @@ void G_DoCompleted (void)
 	else
 		::g->wminfo.partime = TICRATE * pars[::g->gameepisode][::g->gamemap]; 
 
-	if (::g->gamemission == pack_custom) {
+	if (::g->gamemission == pack_custom && map) {
 		::g->wminfo.partime = TICRATE * cpars[map - 1];
 	}
 

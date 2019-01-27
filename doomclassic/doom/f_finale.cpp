@@ -185,7 +185,7 @@ void F_StartFinale (void)
 	else if (::g->gamemission == pack_master && ((::g->gamemap == 20 && !::g->secretexit) || ::g->gamemap == 21)) {
 		endOfMission = true;
 	}
-	else if (::g->gamemission == pack_custom ) { //GK: Custom expansion related stuff
+	if (::g->gamemission == pack_custom ) { //GK: Custom expansion related stuff
 		if (::g->gamemode == retail) {
 			int map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
 			if (map == ::g->clusters[::g->gameepisode - 1].endmap) {
@@ -602,11 +602,9 @@ void F_TextWrite (void)
 	}
 
     // erase the entire screen to a tiled background
-	if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+	src = (byte*)W_CacheLumpName(finaleflat[flatind], PU_CACHE_SHARED);
+	if (::g->gamemission == pack_custom && flt != NULL) { //GK: Custom expansion related stuff
 		src = (byte*)W_CacheLumpName(flt, PU_CACHE_SHARED);
-	}
-	else {
-		src = (byte*)W_CacheLumpName(finaleflat[flatind], PU_CACHE_SHARED);
 	}
     dest = ::g->screens[0];
 	

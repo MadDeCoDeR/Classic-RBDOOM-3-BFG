@@ -1591,11 +1591,16 @@ void A_BossDeath (mobj_t* mo, void * )
     line_t	junk;
     int		i;
 	bool ok = false; //GK:Oversimplyfication for the if case on map 07's logic
-	int map; //GK: Calculate custom expansion map based on game mode
+	int map = 0; //GK: Calculate custom expansion map based on game mode
 	if (::g->gamemission == pack_custom) {
 		switch (::g->gamemode) {
 		case retail:
-			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			if (::g->clusters[::g->gameepisode - 1].startmap) {
+				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			}
+			else {
+				map = 0;
+			}
 			break;
 		case commercial:
 			map = ::g->gamemap;
@@ -1603,8 +1608,9 @@ void A_BossDeath (mobj_t* mo, void * )
 		}
 	}
 		
-	if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
+	if (::g->gamemission == pack_custom && map) { //GK:Custom expansion related stuff
 		if (!::g->maps[map-1].miniboss) {
+			if (::g->gamemode == commercial)
 			return;
 		}
 		else {
