@@ -41,7 +41,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "sound/OpenAL/AL_EAX.h"
 #endif
 
-extern idCVar pm_thirdPerson;
+//extern idCVar pm_thirdPerson;
 
 // Index of the special effects (INVUL inverse) map.
 
@@ -85,7 +85,7 @@ void P_CalcHeight (player_t* player)
 	//a mild motion sickness when playing
 	//on thirdPerson. So disable it
 	//ONLY on thirdPerson
-	if (!pm_thirdPerson.GetBool()) {
+	if (!game->GetCVarBool("pm_thirdPerson")) {
 		// Regular movement bobbing
 		// (needs to be calculated for gun swing
 		// even if not on ground)

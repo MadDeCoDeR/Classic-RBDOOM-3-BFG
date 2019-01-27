@@ -92,11 +92,11 @@ const fixed_t*		finecosine = &finesine[FINEANGLES/4];
 
 idCVar cl_freelook("cl_freelook", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Classic Doom freelook");
 //GK: AW Yeah! This is Happening!
-extern idCVar pm_thirdPerson;
+/*extern idCVar pm_thirdPerson;
 extern idCVar pm_thirdPersonRange;
 extern idCVar pm_thirdPersonXOff;
 extern idCVar pm_thirdPersonAngle;
-extern idCVar pm_thirdPersonHeight;
+extern idCVar pm_thirdPersonHeight;*/
 // bumped light from gun blasts
 
 
@@ -847,7 +847,7 @@ R_PointInSubsector
 
 void R_SetupThirdPersonView(player_t* player) {
 	extern void SetViewX(fixed_t); extern void SetViewY(fixed_t); extern void SetViewAngle(angle_t, angle_t);
-	float tpviewangletemp = pm_thirdPersonAngle.GetFloat();
+	float tpviewangletemp = game->GetCVarFloat("pm_thirdPersonAngle");
 	tpviewangletemp /= 360.0f;
 	tpviewangletemp *= std::numeric_limits<unsigned short>::max();
 	angle_t tpviewangle = tpviewangletemp;
@@ -858,14 +858,14 @@ void R_SetupThirdPersonView(player_t* player) {
 	//trueangle = (int)trueangle;
 	trueangle *= PI / 180;
 	//This static values are making the cvars to have some actual impact while calculating the offsets
-	fixed_t xposoffset = ((pm_thirdPersonRange.GetFloat() * 40000)*cos(trueangle)) + ((pm_thirdPersonXOff.GetFloat() * 80000)*sin(trueangle));
-	fixed_t yposoffset = ((pm_thirdPersonRange.GetFloat() * 40000)*sin(trueangle)) - ((pm_thirdPersonXOff.GetFloat() * 80000)*cos(trueangle));
+	fixed_t xposoffset = ((game->GetCVarFloat("pm_thirdPersonRange") * 40000)*cos(trueangle)) + ((game->GetCVarFloat("pm_thirdPersonXOff") * 80000)*sin(trueangle));
+	fixed_t yposoffset = ((game->GetCVarFloat("pm_thirdPersonRange") * 40000)*sin(trueangle)) - ((game->GetCVarFloat("pm_thirdPersonXOff") * 80000)*cos(trueangle));
 	SetViewX(player->mo->x - xposoffset);
 	SetViewY(player->mo->y - yposoffset);
 	
 	SetViewAngle( (player->mo->angle- tpviewangle) + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
 	int ogwidth = ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER;
-	int viewzoffset = ((::g->SCREENWIDTH - ogwidth) * 1000) + (pm_thirdPersonHeight.GetFloat() * 100000);
+	int viewzoffset = ((::g->SCREENWIDTH - ogwidth) * 1000) + (game->GetCVarFloat("pm_thirdPersonHeight") * 100000);
 	::g->viewz = player->viewz + viewzoffset;
 }
 //GK: End
@@ -881,7 +881,7 @@ void R_SetupFrame (player_t* player)
 
 	::g->viewplayer = player;
 	//GK: Either thirdPerson Camera or ForstPerson
-	if (pm_thirdPerson.GetBool()) {
+	if (game->GetCVarBool("pm_thirdPerson")) {
 		R_SetupThirdPersonView(player);
 	}
 	else {
