@@ -4,7 +4,7 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
-12 January 2019 - Classic RBDOOM-3-BFG 1.1.12.3
+27 January 2019 - Classic RBDOOM-3-BFG 1.1.12.5
 _______________________________
 
 WARNING: The game dll support is nearly complete but 
