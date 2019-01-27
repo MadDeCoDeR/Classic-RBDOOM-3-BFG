@@ -110,14 +110,15 @@ fstr mval[] = {
 void setMAP(int index,char* value1, char* value2) {
 	int map;
 	int endmap;
-	if (::g->clusters[episodecount].endmap) {
-		endmap = ::g->clusters[episodecount].endmap - ::g->clusters[episodecount].startmap;
-		endmap++;
-	}
-	else {
-		endmap = 8;
-	}
+	
 	if (::g->gamemode == retail) {
+		if (::g->clusters[episodecount].endmap) {
+			endmap = ::g->clusters[episodecount].endmap - ::g->clusters[episodecount].startmap;
+			endmap++;
+		}
+		else {
+			endmap = 8;
+		}
 		map = ::g->clusters[episodecount].startmap + index;
 		if (index == endmap) {
 			episodecount++;
@@ -142,7 +143,8 @@ void setMAP(int index,char* value1, char* value2) {
 		::g->maps[map -1].lumpname = value1;
 	}
 	else {
-		sprintf(::g->maps[map-1].lumpname, "MAP%02d", index);
+		::g->maps[map - 1].lumpname = (char*)malloc(6 * sizeof(char));
+		sprintf(::g->maps[map-1].lumpname, "MAP%02d", map);
 	}
 	/*if (value2 != NULL) {
 		::g->maps[index].
@@ -365,7 +367,7 @@ void setEXP(char* name, int value) {
 			::g->mapind = ::g->mapmax;
 		}
 			for (int i = 0; i < ::g->mapmax; i++) {
-				if (::g->maps[i].lumpname == NULL) {
+				if (::g->maps[i].lumpname != NULL) {
 					continue;
 				}
 				char* tname = new char[6];
