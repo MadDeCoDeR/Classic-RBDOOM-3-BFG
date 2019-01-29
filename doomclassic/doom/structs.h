@@ -555,6 +555,10 @@ typedef struct {//GK:Store information for the custom expansion maps
 	int otel;
 	bool dsecret;
 	bool tsecret;
+	char* realname;
+	int par;
+	char* nextmapname;
+	char* secretmapname;
 }map_t;
 
 typedef struct {//GK:Store information for the custom expansion clusters

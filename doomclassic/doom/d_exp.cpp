@@ -107,6 +107,19 @@ fstr mval[] = {
 
 };
 
+char* removequotes(char* value) {
+	char* tmpvalue = value;
+	if (tmpvalue[0] == '\"') {
+		tmpvalue = tmpvalue + 1;
+	}
+	for (int j = 0; j < strlen(tmpvalue); j++) {
+		if (tmpvalue[j] == '\"') {
+			tmpvalue[j] = '\0';
+		}
+	}
+	return tmpvalue;
+}
+
 void setMAP(int index,char* value1, char* value2) {
 	int map;
 	int endmap;
@@ -146,9 +159,10 @@ void setMAP(int index,char* value1, char* value2) {
 		::g->maps[map - 1].lumpname = (char*)malloc(6 * sizeof(char));
 		sprintf(::g->maps[map-1].lumpname, "MAP%02d", map);
 	}
-	/*if (value2 != NULL) {
-		::g->maps[index].
-	}*/
+	if (value2 != NULL) {
+		value2 = removequotes(value2);
+		::g->maps[map - 1].realname = value2;
+	}
 }
 
 void EX_add(int lump) {
@@ -171,6 +185,9 @@ void EX_add(int lump) {
 	}
 	//idLib::Printf("%s", text);
 	parseexptext(text);
+	if (!::g->mapmax) {
+		::g->mapmax = ::g->maps.size();
+	}
 	free(text);
 	I_Printf("Expansion Info succesfully applied\n");
 }
@@ -182,7 +199,6 @@ void parseexptext(char* text) {
 	int val2;
 	int val3;
 	int mapcount = 0;
-	int clustercount = 0;
 	char* varname;
 	char* varval;
 	char* varopt;
@@ -227,8 +243,7 @@ void parseexptext(char* text) {
 						break;
 					case 3:
 						if (val1 == -1) {
-							clustercount++;
-							val1 = clustercount - 1;
+							val1 = ::g->EpiDef.numitems;
 						}
 						if (!::g->clusterind || ::g->clusterind <= ::g->clusters.size()) {
 							if (::g->gamemode == retail) {
@@ -392,7 +407,7 @@ void setMAPINT(int pos,char* name, int value) {
 	{ "secret_map" ,MAXINT,NULL,&::g->maps[pos].secretmap},
 	{ "next_map" ,MAXINT,NULL,&::g->maps[pos].nextmap },
 	{ "cluster" ,MAXINT,NULL,&::g->maps[pos].cluster },
-	{ "par" ,MAXINT,NULL,&cpars[pos -1] },
+	{ "par" ,MAXINT,NULL,&::g->maps[pos].par },
 	{ "secret_map" ,MAXINT,NULL,&::g->maps[pos].otel }
 	};
 	for (int i = 0; i < 5; i++) {
@@ -410,14 +425,7 @@ void setMAPINT(int pos,char* name, int value) {
 }
 
 void setMAPSTR(int pos, char* name, char* value) {
-	if (value[0] == '\"') {
-		value = value + 1;
-	}
-		for (int j = 0; j < strlen(value); j++) {
-			if (value[j] == '\"') {
-				value[j] = '\0';
-			}
-		}
+	value = removequotes(value);
 
 		expobj mapstr[] = {
 			{"miniboss",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].miniboss},
@@ -427,8 +435,8 @@ void setMAPSTR(int pos, char* name, char* value) {
 			{"final_text",MAXINT,&::g->maps[pos].ftext},
 			{"final_music",MAXINT,NULL,&::g->maps[pos].fmusic},
 			{"music",MAXINT,NULL,&::g->maps[pos].music},
-			{"next",MAXINT,NULL,&::g->maps[pos].nextmap},
-			{"secretnext",MAXINT,NULL,&::g->maps[pos].secretmap},
+			{"next",MAXINT,&::g->maps[pos].nextmapname,&::g->maps[pos].nextmap},
+			{"secretnext",MAXINT,&::g->maps[pos].secretmapname,&::g->maps[pos].secretmap},
 			{"sky_tex",MAXINT,&::g->maps[pos].sky},
 			{"sky1",MAXINT,&::g->maps[pos].sky},
 			{"doorsecret",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].dsecret},
@@ -475,6 +483,10 @@ void setMAPSTR(int pos, char* name, char* value) {
 						}
 						if (!idStr::Icmp(value, ::g->maps[j].lumpname)) {
 							*mapstr[i].ival = j;
+						}
+						else {
+							*mapstr[i].sval = value;
+							*mapstr[i].ival = -1;
 						}
 					}
 					if (!idStr::Icmpn(value, "EndGame", 7)) {
@@ -561,14 +573,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 
 void setCluster(int pos, char* name, char*value, char* option, int linepos, std::vector<std::string> lines) {
 	if (value != NULL) {
-		if (value[0] == '\"') {
-			value++;
-		}
-		for (int i = 1; i < strlen(value); i++) {
-			if (value[strlen(value) - i] == '\"') {
-				value[strlen(value) - i] = '\0';
-			}
-		}
+		value = removequotes(value);
 	}
 	int c = 0;
 	char* musname;
@@ -651,9 +656,9 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 						if (value[0] == 'X') {
 							value[0] = 'C';
 						}
-						for (int i = 0; i < 24; i++) {
-							if (!idStr::Icmp(mval[i].name, value)) {
-								*clusterobj[i].sval = *mval[i].var;
+						for (int j = 0; j < 24; j++) {
+							if (!idStr::Icmp(mval[j].name, value)) {
+								*clusterobj[i].sval = *mval[j].var;
 							}
 						}
 

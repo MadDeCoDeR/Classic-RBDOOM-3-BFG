@@ -518,6 +518,22 @@ void HU_Start(void)
 
 	int		i;
 	const char*	s;
+	int map = 0; //GK: Calculate custom expansion map based on game mode
+	if (::g->gamemission == pack_custom) {
+		switch (::g->gamemode) {
+		case retail:
+			if (::g->clusters[::g->gameepisode - 1].startmap) {
+				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			}
+			else {
+				map = 0;
+			}
+			break;
+		case commercial:
+			map = ::g->gamemap;
+			break;
+		}
+	}
 
 	if (::g->headsupactive)
 		HU_Stop();
@@ -611,6 +627,12 @@ void HU_Start(void)
 
 		
 		break;
+	}
+
+	if (::g->gamemission == pack_custom && map) {
+		if (::g->maps[map - 1].realname != NULL) {
+			s = ::g->maps[map - 1].realname;
+		}
 	}
 
 	while (*s)

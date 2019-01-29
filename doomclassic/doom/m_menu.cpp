@@ -1138,7 +1138,7 @@ void M_ChooseSkill(int choice)
 		static int startLevel = 1;
 		G_DeferedInitNew((skill_t)choice,::g->epi+1, startLevel);
 		if (::g->gamemission == pack_custom) { //GK: Set Endmap for the selected episode
-			if (!::g->clusters[::g->epi].startmap) {
+			if (!::g->clusters[::g->epi].startmap && ::g->clusters[::g->epi].mapname == NULL) {
 				::g->gamemission = doom;
 			}
 			else {

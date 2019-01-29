@@ -1279,6 +1279,23 @@ void G_SecretExitLevel (void)
 	::g->gameaction = ga_completed; 
 } 
 
+void FindNextMap(int map,bool issecret = false) {
+	int* nmap = &::g->maps[map].nextmap;
+	char* name = ::g->maps[map].nextmapname;
+	if (issecret) {
+		nmap = &::g->maps[map].secretmap;
+		name = ::g->maps[map].secretmapname;
+	}
+	if (*nmap == -1) {
+		for (int j = 0; j < ::g->maps.size(); j++) {
+			if (!idStr::Icmp(name, ::g->maps[j].lumpname)) {
+				*nmap = j;
+				break;
+			}
+		}
+	}
+}
+
 void G_DoCompleted (void) 
 { 
 	int             i; 
@@ -1358,6 +1375,7 @@ void G_DoCompleted (void)
 				::g->wminfo.next = 20;
 			}
 			else if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+				FindNextMap(::g->gamemap - 1, true);
 					if (::g->maps[::g->gamemap-1].secretmap) {
 						::g->wminfo.next = ::g->maps[::g->gamemap-1].secretmap;
 					}
@@ -1386,6 +1404,7 @@ void G_DoCompleted (void)
 			
 			}
 			else if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+				FindNextMap(::g->gamemap - 1);
 				if (::g->maps[::g->gamemap - 1].nextmap < ::g->mapmax)
 					::g->wminfo.next = ::g->maps[::g->gamemap - 1].nextmap;
 				else
@@ -1427,9 +1446,11 @@ void G_DoCompleted (void)
 			//int map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
 			if (map) {
 				if (::g->secretexit) {
+					FindNextMap(map - 1, true);
 					::g->wminfo.next = ::g->maps[map - 1].secretmap;
 				}
 				else {
+					FindNextMap(map - 1);
 					::g->wminfo.next = ::g->maps[map - 1].nextmap;
 				}
 			}
@@ -1460,7 +1481,8 @@ void G_DoCompleted (void)
 		::g->wminfo.partime = TICRATE * pars[::g->gameepisode][::g->gamemap]; 
 
 	if (::g->gamemission == pack_custom && map) {
-		::g->wminfo.partime = TICRATE * cpars[map - 1];
+		if (::g->maps[map -1].par)
+		::g->wminfo.partime = TICRATE * ::g->maps[map - 1].par;
 	}
 
 	::g->wminfo.pnum = ::g->consoleplayer; 
