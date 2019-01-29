@@ -56,6 +56,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../../neo/d3xp/Game_local.h"
 
+#include "d_exp.h"
+
 //
 // Animating textures and planes
 // There is another anim_t used in wi_stuff, unrelated. BLAH!
@@ -479,19 +481,7 @@ P_CrossSpecialLine
 	int map = 0;
 	bool ok2 = false;
 	if (::g->gamemission == pack_custom) {
-		switch (::g->gamemode) {
-		case retail:
-			if (::g->clusters[::g->gameepisode - 1].startmap) {
-				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
-			}
-			else {
-				map = 0;
-			}
-			break;
-		case commercial:
-			map = ::g->gamemap;
-			break;
-		}
+		map = getMapNum();
 	}
 
 	line = &::g->lines[linenum];

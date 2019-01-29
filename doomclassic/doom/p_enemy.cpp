@@ -47,7 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // Data.
 #include "sounds.h"
-
+#include "d_exp.h"
 
 extern bool globalNetworking;
 
@@ -1593,19 +1593,7 @@ void A_BossDeath (mobj_t* mo, void * )
 	bool ok = false; //GK:Oversimplyfication for the if case on map 07's logic
 	int map = 0; //GK: Calculate custom expansion map based on game mode
 	if (::g->gamemission == pack_custom) {
-		switch (::g->gamemode) {
-		case retail:
-			if (::g->clusters[::g->gameepisode - 1].startmap) {
-				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
-			}
-			else {
-				map = 0;
-			}
-			break;
-		case commercial:
-			map = ::g->gamemap;
-			break;
-		}
+		map = getMapNum();
 	}
 		
 	if (::g->gamemission == pack_custom && map) { //GK:Custom expansion related stuff

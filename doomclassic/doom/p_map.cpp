@@ -47,7 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "sounds.h"
 
 #include "Main.h"
-
+#include "d_exp.h"
 
 // If "floatok" true, move would be ok
 // if within "tmfloorz - tmceilingz".
@@ -254,19 +254,7 @@ qboolean PIT_CheckThing (mobj_t* thing)
     int			damage;
 	int map = 0; //GK: Calculate custom expansion map based on game mode
 	if (::g->gamemission == pack_custom) {
-		switch (::g->gamemode) {
-		case retail:
-			if (::g->clusters[::g->gameepisode - 1].startmap) {
-				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
-			}
-			else {
-				map = 0;
-			}
-			break;
-		case commercial:
-			map = ::g->gamemap;
-			break;
-		}
+		map = getMapNum();
 	}
 		
     if (!(thing->flags & (MF_SOLID|MF_SPECIAL|MF_SHOOTABLE) ))

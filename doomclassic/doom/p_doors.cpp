@@ -45,6 +45,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "dstrings.h"
 #include "sounds.h"
 
+#include "d_exp.h"
 
 extern bool globalNetworking;
 
@@ -430,19 +431,7 @@ EV_VerticalDoor
     int		side;
 	int map = 0; //GK: Calculate custom expansion map based on game mode
 	if (::g->gamemission == pack_custom) {
-		switch (::g->gamemode) {
-		case retail:
-			if (::g->clusters[::g->gameepisode - 1].startmap) {
-				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
-			}
-			else {
-				map = 0;
-			}
-			break;
-		case commercial:
-			map = ::g->gamemap;
-			break;
-		}
+		map = getMapNum();
 	}
 	bool ok = false;
     side = 0;	// only front ::g->sides can be used

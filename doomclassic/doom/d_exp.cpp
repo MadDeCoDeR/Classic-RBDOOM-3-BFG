@@ -107,7 +107,29 @@ fstr mval[] = {
 
 };
 
+int getMapNum() {
+	int map = 0;
+	switch (::g->gamemode) {
+	case retail:
+		if (::g->clusters.size()) {
+			if (::g->clusters[::g->gameepisode - 1].startmap) {
+				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+			}
+			else {
+				map = 0;
+			}
+		}
+		break;
+	case commercial:
+		map = ::g->gamemap;
+		break;
+	}
+	return map;
+}
+
 char* removequotes(char* value) {
+	if (!value)
+		return value;
 	char* tmpvalue = value;
 	if (tmpvalue[0] == '\"') {
 		tmpvalue = tmpvalue + 1;
@@ -124,7 +146,7 @@ void setMAP(int index,char* value1, char* value2) {
 	int map;
 	int endmap;
 	
-	if (::g->gamemode == retail) {
+	if (::g->gamemode == retail && ::g->clusters.size()) {
 		if (::g->clusters[episodecount].endmap) {
 			endmap = ::g->clusters[episodecount].endmap - ::g->clusters[episodecount].startmap;
 			endmap++;
@@ -335,7 +357,7 @@ std::vector<std::string> getexplines(char* text) {
 		while (text[i] != '\n') {
 
 			if (!ignore) {
-				if (text[i] != '\r') {
+				if (text[i] != '\r' && text[i] != '{' && text[i] != '}') {
 					letter += text[i];
 				}
 			}

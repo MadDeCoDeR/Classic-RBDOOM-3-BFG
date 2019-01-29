@@ -805,18 +805,20 @@ P_SetupLevel
 			lumpname[4] = 0;
 
 			if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
-				if (!::g->clusters[episode - 1].startmap && ::g->clusters[episode - 1].mapname != NULL) {
-					for (int i = 0; i < ::g->maps.size(); i++) {
-						if (!idStr::Icmp(::g->clusters[episode - 1].mapname, ::g->maps[i].lumpname)) {
-							::g->clusters[episode - 1].startmap = i;
+				if (::g->clusters.size()) {
+					if (!::g->clusters[episode - 1].startmap && ::g->clusters[episode - 1].mapname != NULL) {
+						for (int i = 0; i < ::g->maps.size(); i++) {
+							if (!idStr::Icmp(::g->clusters[episode - 1].mapname, ::g->maps[i].lumpname)) {
+								::g->clusters[episode - 1].startmap = i;
+							}
 						}
 					}
-				}
 				if (::g->clusters[episode - 1].startmap) {
 					int newmap = ::g->clusters[episode - 1].startmap + (map - 1);
 					if (::g->maps[newmap - 1].lumpname != NULL) {
 						sprintf(lumpname, "%s", ::g->maps[newmap - 1].lumpname);
 					}
+				}
 				}
 			}
 		::g->mapname = std::string(mapnames[(episode - 1) * 9 + (map - 1)]);

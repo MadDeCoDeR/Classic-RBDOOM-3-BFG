@@ -30,4 +30,6 @@
 
 void EX_add(int lump);
 
+int getMapNum();
+
 #endif

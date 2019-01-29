@@ -48,6 +48,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "doomstat.h"
 #include "Main.h"
+#include "d_exp.h"
 
 // Purpose?
 const char snd_prefixen[]
@@ -172,19 +173,7 @@ void S_Start(void)
 	int mnum;
 	int map = 0; //GK: Calculate custom expansion map based on game mode
 	if (::g->gamemission == pack_custom) {
-		switch (::g->gamemode) {
-		case retail:
-			if (::g->clusters[::g->gameepisode - 1].startmap) {
-				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
-			}
-			else {
-				map = 0;
-			}
-			break;
-		case commercial:
-			map = ::g->gamemap;
-			break;
-		}
+		map = getMapNum();
 	}
 	// kill all playing sounds at start of level
 	//  (trust me - a good idea)

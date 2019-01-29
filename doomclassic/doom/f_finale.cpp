@@ -186,7 +186,7 @@ void F_StartFinale (void)
 		endOfMission = true;
 	}
 	if (::g->gamemission == pack_custom ) { //GK: Custom expansion related stuff
-		if (::g->gamemode == retail) {
+		if (::g->gamemode == retail && ::g->clusters.size()) {
 			int map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
 			if (map == ::g->clusters[::g->gameepisode - 1].endmap) {
 				endOfMission = true;

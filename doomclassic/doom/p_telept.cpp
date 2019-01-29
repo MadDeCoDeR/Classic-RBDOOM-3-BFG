@@ -44,7 +44,7 @@ If you have questions concerning this license or the applicable additional terms
 // State.
 #include "r_state.h"
 
-
+#include "d_exp.h"
 
 //
 // TELEPORTATION
@@ -67,19 +67,7 @@ EV_Teleport
     fixed_t	oldz;
 	int map = 0; //GK: Calculate custom expansion map based on game mode
 	if (::g->gamemission == pack_custom) {
-		switch (::g->gamemode) {
-		case retail:
-			if (::g->clusters[::g->gameepisode - 1].startmap) {
-				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
-			}
-			else {
-				map = 0;
-			}
-			break;
-		case commercial:
-			map = ::g->gamemap;
-			break;
-		}
+		map = getMapNum();
 	}
 
     // don't teleport missiles

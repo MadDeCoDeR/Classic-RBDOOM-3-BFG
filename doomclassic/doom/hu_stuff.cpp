@@ -51,6 +51,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "Main.h"
 
+#include "d_exp.h"
+
 //
 // Locally used constants, shortcuts.
 //
@@ -520,19 +522,7 @@ void HU_Start(void)
 	const char*	s;
 	int map = 0; //GK: Calculate custom expansion map based on game mode
 	if (::g->gamemission == pack_custom) {
-		switch (::g->gamemode) {
-		case retail:
-			if (::g->clusters[::g->gameepisode - 1].startmap) {
-				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
-			}
-			else {
-				map = 0;
-			}
-			break;
-		case commercial:
-			map = ::g->gamemap;
-			break;
-		}
+		map = getMapNum();
 	}
 
 	if (::g->headsupactive)
