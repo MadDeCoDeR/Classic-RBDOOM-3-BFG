@@ -510,14 +510,15 @@ void P_UnArchiveThinkers (void)
 	sector_t* ss = NULL;
 
 	int			mo_index = 0;
-	int			mo_targets[1024];
-	int			mo_tracers[1024];
-	int			mo_snext[1024];
-	int			mo_sprev[1024];
-	bool		mo_shead[1024];
-	int			mo_bnext[1024];
-	int			mo_bprev[1024];
-	bool		mo_bhead[1024];
+	int			mo_max = 1024;
+	int*			mo_targets= (int*)malloc(mo_max *sizeof(int));
+	int*			mo_tracers = (int*)malloc(mo_max * sizeof(int));
+	int*			mo_snext = (int*)malloc(mo_max * sizeof(int));
+	int*			mo_sprev = (int*)malloc(mo_max * sizeof(int));
+	bool*		mo_shead = (bool*)malloc(mo_max * sizeof(bool));
+	int*			mo_bnext = (int*)malloc(mo_max * sizeof(int));
+	int*			mo_bprev = (int*)malloc(mo_max * sizeof(int));
+	bool*		mo_bhead = (bool*)malloc(mo_max * sizeof(bool));
 
 	// remove all the current thinkers
 	currentthinker = ::g->thinkercap.next;
@@ -785,6 +786,17 @@ void P_UnArchiveThinkers (void)
 
 		default:
 			I_Error ("Unknown tclass %i in savegame",tclass);
+		}
+		if (mo_index == mo_max) {
+			mo_max++;
+			mo_targets = (int*)realloc(mo_targets, mo_max * sizeof(int));
+			mo_tracers = (int*)realloc(mo_tracers, mo_max * sizeof(int));
+			mo_snext = (int*)realloc(mo_snext, mo_max * sizeof(int));
+			mo_sprev = (int*)realloc(mo_sprev, mo_max * sizeof(int));
+			mo_shead = (bool*)realloc(mo_shead, mo_max * sizeof(bool));
+			mo_bnext = (int*)realloc(mo_bnext, mo_max * sizeof(int));
+			mo_bprev = (int*)realloc(mo_bprev, mo_max * sizeof(int));
+			mo_bhead = (bool*)realloc(mo_bhead, mo_max * sizeof(bool));
 		}
 	}
 }
