@@ -28,18 +28,13 @@ class OPlatform
 public:
 	virtual bool API_Init() = 0;
 	virtual void API_Shutdown() = 0;
-	virtual const char* GetAPIUserName() = 0;
-	virtual bool GetAPIAchievement(const char* name, bool* status) = 0;
-	virtual const char* GetAPINameAchievement(unsigned int id) = 0;
-	virtual bool GetAPIAchievementPercent(const char* name, float* status) = 0;
-	virtual bool SetAPIAchievement(const char* name) = 0;
-	virtual const char* GetAPIAchievementDetail(const char* name, const char* type) = 0;
-	virtual bool StoreAPIStats() = 0;
-	virtual bool GetAPIStats(const char* name, int* stat) = 0;
-	virtual bool GetAPIStats(const char* name, float* stat) = 0;
-	virtual bool SetAPIStats(const char* name, int stat) = 0;
-	virtual bool SetAPIStats(const char* name, float stat) = 0;
-	virtual void ShowAPIUser(const char* type, unsigned long long id) = 0;
+	virtual const char* GetUserName() = 0;
+	virtual bool GetAchievement(const char* name, bool* status) = 0;
+	virtual const char* GetAchievementName(unsigned int id) = 0;
+	virtual bool GetAchievementPercent(const char* name, float* status) = 0;
+	virtual bool UnlockAchievement(const char* name) = 0;
+	virtual const char* GetAchievementDetails(const char* name, const char* type) = 0;
+	virtual void ShowUser(const char* type, unsigned long long id) = 0;
 };
 
 extern OPlatform* op;

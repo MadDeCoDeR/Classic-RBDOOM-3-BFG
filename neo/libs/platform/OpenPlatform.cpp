@@ -21,22 +21,50 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include "OpenPlatformLocal.h"
+#include "OpenPlatform.h"
+
+class OPlatformLocal : public OPlatform
+{
+public:
+	virtual bool API_Init();
+	virtual void API_Shutdown();
+	virtual const char* GetUserName();
+	virtual bool GetAchievement(const char* name, bool* status);
+	virtual const char* GetAchievementName(unsigned int id);
+	virtual bool GetAchievementPercent(const char* name, float* status);
+	virtual bool UnlockAchievement(const char* name);
+	virtual const char* GetAchievementDetails(const char* name, const char* type);
+	virtual void ShowUser(const char* type, unsigned long long id);
+};
 
 OPlatformLocal opl;
+
+#if __MWERKS__
+#pragma export on
+#endif
+#if __GNUC__ >= 4
+#pragma GCC visibility push(default)
+#endif
+extern "C" OPlatform* GetPlatformAPI()
+{
+#if __MWERKS__
+#pragma export off
+#endif
+
+	return &opl;
+}
+#if __GNUC__ >= 4
+#pragma GCC visibility pop
+#endif
+
 OPlatform* op = &opl;
 
 bool OPlatformLocal::API_Init() { return false; }
 void OPlatformLocal::API_Shutdown() {}
-const char* OPlatformLocal::GetAPIUserName() { return ""; }
-bool OPlatformLocal::GetAPIAchievement(const char* name, bool* status) { return false; }
-const char* OPlatformLocal::GetAPINameAchievement(unsigned int id) { return ""; }
-bool OPlatformLocal::GetAPIAchievementPercent(const char* name, float* status) { return false; }
-bool OPlatformLocal::SetAPIAchievement(const char* name) { return false; }
-const char* OPlatformLocal::GetAPIAchievementDetail(const char* name, const char* type) { return ""; }
-bool OPlatformLocal::StoreAPIStats() { return false; }
-bool OPlatformLocal::GetAPIStats(const char* name, int* stat) { return false; }
-bool OPlatformLocal::GetAPIStats(const char* name, float* stat) { return false; }
-bool OPlatformLocal::SetAPIStats(const char* name, int stat) { return false; }
-bool OPlatformLocal::SetAPIStats(const char* name, float stat) { return false; }
-void OPlatformLocal::ShowAPIUser(const char* type, unsigned long long id) {}
+const char* OPlatformLocal::GetUserName() { return ""; }
+bool OPlatformLocal::GetAchievement(const char* name, bool* status) { return false; }
+const char* OPlatformLocal::GetAchievementName(unsigned int id) { return ""; }
+bool OPlatformLocal::GetAchievementPercent(const char* name, float* status) { return false; }
+bool OPlatformLocal::UnlockAchievement(const char* name) { return false; }
+const char* OPlatformLocal::GetAchievementDetails(const char* name, const char* type) { return ""; }
+void OPlatformLocal::ShowUser(const char* type, unsigned long long id) {}
