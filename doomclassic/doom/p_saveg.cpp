@@ -508,18 +508,26 @@ void P_UnArchiveThinkers (void)
 
 	int count = 0;
 	sector_t* ss = NULL;
+	//GK: Why so many values were individual arrays ???
+	typedef struct{
+		int mo_targets;
+		int mo_tracers;
+		int mo_snext;
+		int mo_sprev;
+		bool mo_shead;
+		int mo_bnext;
+		int mo_bprev;
+		bool mo_bhead;
+	}mostuff;
 
 	int			mo_index = 0;
 	int			mo_max = 1024;
-	int*			mo_targets= (int*)malloc(mo_max *sizeof(int));
-	int*			mo_tracers = (int*)malloc(mo_max * sizeof(int));
-	int*			mo_snext = (int*)malloc(mo_max * sizeof(int));
-	int*			mo_sprev = (int*)malloc(mo_max * sizeof(int));
-	bool*		mo_shead = (bool*)malloc(mo_max * sizeof(bool));
-	int*			mo_bnext = (int*)malloc(mo_max * sizeof(int));
-	int*			mo_bprev = (int*)malloc(mo_max * sizeof(int));
-	bool*		mo_bhead = (bool*)malloc(mo_max * sizeof(bool));
-
+	//GK: Use vector instead of dynamic arrays for stability
+	std::vector<mostuff> unmo;
+	//GK: But also try to optimize it
+	unmo.reserve(mo_max);
+	mostuff mos;
+	unmo.push_back(mos);
 	// remove all the current thinkers
 	currentthinker = ::g->thinkercap.next;
 	while (currentthinker != &::g->thinkercap)
@@ -563,20 +571,20 @@ void P_UnArchiveThinkers (void)
 				if (th->function.acp1 == (actionf_p1)P_MobjThinker) {
 					mobj = (mobj_t*)th;
 
-					mobj->target = GetMO( mo_targets[mo_index] );
-					mobj->tracer = GetMO( mo_tracers[mo_index] );
+					mobj->target = GetMO( unmo[mo_index].mo_targets );
+					mobj->tracer = GetMO(unmo[mo_index].mo_tracers );
 
-					mobj->snext = GetMO( mo_snext[mo_index] );
-					mobj->sprev = GetMO( mo_sprev[mo_index] );
+					mobj->snext = GetMO(unmo[mo_index].mo_snext );
+					mobj->sprev = GetMO(unmo[mo_index].mo_sprev );
 
-					if ( mo_shead[mo_index] ) {
+					if (unmo[mo_index].mo_shead ) {
 						mobj->subsector->sector->thinglist = mobj;
 					}
 
-					mobj->bnext = GetMO( mo_bnext[mo_index] );
-					mobj->bprev = GetMO( mo_bprev[mo_index] );
+					mobj->bnext = GetMO(unmo[mo_index].mo_bnext );
+					mobj->bprev = GetMO(unmo[mo_index].mo_bprev );
 
-					if ( mo_bhead[mo_index] ) {
+					if (unmo[mo_index].mo_bhead ) {
 						// Is this the head of a block list?
 						int	blockx = (mobj->x - ::g->bmaporgx)>>MAPBLOCKSHIFT;
 						int	blocky = (mobj->y - ::g->bmaporgy)>>MAPBLOCKSHIFT;
@@ -592,6 +600,8 @@ void P_UnArchiveThinkers (void)
 					}
 
 					mo_index++;
+					mostuff mos;
+					unmo.push_back(mos);
 				}
 			}
 
@@ -649,46 +659,47 @@ void P_UnArchiveThinkers (void)
 			a = *::g->save_p++;
 			b = *::g->save_p++;
 			foundIndex = (a << 8) + b;
-			mo_targets[mo_index] = foundIndex;
+			unmo[mo_index].mo_targets = foundIndex;
 
 			// Read in 'tracer' and store for fixup
 			a = *::g->save_p++;
 			b = *::g->save_p++;
 			foundIndex = (a << 8) + b;
-			mo_tracers[mo_index] = foundIndex;
+			unmo[mo_index].mo_tracers = foundIndex;
 
 			// Read in 'snext' and store for fixup
 			a = *::g->save_p++;
 			b = *::g->save_p++;
 			foundIndex = (a << 8) + b;
-			mo_snext[mo_index] = foundIndex;
+			unmo[mo_index].mo_snext = foundIndex;
 
 			// Read in 'sprev' and store for fixup
 			a = *::g->save_p++;
 			b = *::g->save_p++;
 			foundIndex = (a << 8) + b;
-			mo_sprev[mo_index] = foundIndex;
+			unmo[mo_index].mo_sprev = foundIndex;
 
 			foundIndex = *::g->save_p++;
-			mo_shead[mo_index] = foundIndex == 1;
+			unmo[mo_index].mo_shead = foundIndex == 1;
 
 			// Read in 'bnext' and store for fixup
 			a = *::g->save_p++;
 			b = *::g->save_p++;
 			foundIndex = (a << 8) + b;
-			mo_bnext[mo_index] = foundIndex;
+			unmo[mo_index].mo_bnext = foundIndex;
 
 			// Read in 'bprev' and store for fixup
 			a = *::g->save_p++;
 			b = *::g->save_p++;
 			foundIndex = (a << 8) + b;
-			mo_bprev[mo_index] = foundIndex;
+			unmo[mo_index].mo_bprev = foundIndex;
 
 			foundIndex = *::g->save_p++;
-			mo_bhead[mo_index] = foundIndex == 1;
+			unmo[mo_index].mo_bhead = foundIndex == 1;
 
 			mo_index++;
-
+			mostuff mos;
+			unmo.push_back(mos);
 			P_AddThinker (&mobj->thinker);
 			break;
 
@@ -786,17 +797,6 @@ void P_UnArchiveThinkers (void)
 
 		default:
 			I_Error ("Unknown tclass %i in savegame",tclass);
-		}
-		if (mo_index == mo_max) {
-			mo_max++;
-			mo_targets = (int*)realloc(mo_targets, mo_max * sizeof(int));
-			mo_tracers = (int*)realloc(mo_tracers, mo_max * sizeof(int));
-			mo_snext = (int*)realloc(mo_snext, mo_max * sizeof(int));
-			mo_sprev = (int*)realloc(mo_sprev, mo_max * sizeof(int));
-			mo_shead = (bool*)realloc(mo_shead, mo_max * sizeof(bool));
-			mo_bnext = (int*)realloc(mo_bnext, mo_max * sizeof(int));
-			mo_bprev = (int*)realloc(mo_bprev, mo_max * sizeof(int));
-			mo_bhead = (bool*)realloc(mo_bhead, mo_max * sizeof(bool));
 		}
 	}
 }
