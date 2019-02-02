@@ -537,10 +537,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 void G_DoLoadLevel () 
 { 
 	int             i; 
-	int map = 0; //GK: Calculate custom expansion map based on game mode
-	if (::g->gamemission == pack_custom) {
-		map = getMapNum();
-	}
+
 	M_ClearRandom();
 	/*if (lumpcache != NULL) {
 		for (int i = 0; i < numlumps; i++) {
@@ -611,9 +608,9 @@ void G_DoLoadLevel ()
 			}
 		}
 	}
-	if (::g->gamemission == pack_custom && map) { //GK: Custom expansion related stuff
-		if (::g->maps[map - 1].sky != NULL) {
-			::g->skytexture = R_TextureNumForName(::g->maps[map - 1].sky);
+	if (::g->gamemission == pack_custom && ::g->map) { //GK: Custom expansion related stuff
+		if (::g->maps[::g->map - 1].sky != NULL) {
+			::g->skytexture = R_TextureNumForName(::g->maps[::g->map - 1].sky);
 		}
 	}
 	if (::g->s_textures[::g->skytexture]->height >= 200) {//GK:Tall skies support
@@ -1289,10 +1286,7 @@ void FindNextMap(int map,bool issecret = false) {
 void G_DoCompleted (void) 
 { 
 	int             i; 
-	int map = 0; //GK: Calculate custom expansion map based on game mode
-	if (::g->gamemission == pack_custom) {
-		map = getMapNum();
-	}
+
 	::g->gameaction = ga_nothing; 
 
 	for (i=0 ; i<MAXPLAYERS ; i++) {
@@ -1422,14 +1416,14 @@ void G_DoCompleted (void)
 
 			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
 			//int map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
-			if (map) {
+			if (::g->map) {
 				if (::g->secretexit) {
-					FindNextMap(map - 1, true);
-					::g->wminfo.next = ::g->maps[map - 1].secretmap;
+					FindNextMap(::g->map - 1, true);
+					::g->wminfo.next = ::g->maps[::g->map - 1].secretmap;
 				}
 				else {
-					FindNextMap(map - 1);
-					::g->wminfo.next = ::g->maps[map - 1].nextmap;
+					FindNextMap(::g->map - 1);
+					::g->wminfo.next = ::g->maps[::g->map - 1].nextmap;
 				}
 			}
 		}
@@ -1458,9 +1452,9 @@ void G_DoCompleted (void)
 	else
 		::g->wminfo.partime = TICRATE * pars[::g->gameepisode][::g->gamemap]; 
 
-	if (::g->gamemission == pack_custom && map) {
-		if (::g->maps[map -1].par)
-		::g->wminfo.partime = TICRATE * ::g->maps[map - 1].par;
+	if (::g->gamemission == pack_custom && ::g->map) {
+		if (::g->maps[::g->map -1].par)
+		::g->wminfo.partime = TICRATE * ::g->maps[::g->map - 1].par;
 	}
 
 	::g->wminfo.pnum = ::g->consoleplayer; 
@@ -1559,6 +1553,10 @@ void G_DoWorldDone (void)
 	::g->gamestate = GS_LEVEL;
 
 	::g->gamemap = ::g->wminfo.next+1;
+	//GK: When changing the gamemap change and the map for the custom expansion
+	if (::g->gamemission == pack_custom) {
+		setMapNum();
+	}
 
 	M_ClearRandom();
 
@@ -2043,6 +2041,10 @@ G_InitNew
 	//::g->gamemission = expansion->pack_type;
 	::g->gamemap = map; 
 	::g->gameskill = skill; 
+	//GK: When setting the gamemap set and the map for the custom expansion
+	if (::g->gamemission == pack_custom) {
+		setMapNum();
+	}
 
 	::g->viewactive = true;
 

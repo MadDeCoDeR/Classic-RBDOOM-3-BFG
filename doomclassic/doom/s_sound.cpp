@@ -171,10 +171,7 @@ void S_Start(void)
 {
 	int cnum;
 	int mnum;
-	int map = 0; //GK: Calculate custom expansion map based on game mode
-	if (::g->gamemission == pack_custom) {
-		map = getMapNum();
-	}
+
 	// kill all playing sounds at start of level
 	//  (trust me - a good idea)
 	if( ::g->channels ) {
@@ -245,9 +242,9 @@ void S_Start(void)
 		else
 			mnum = spmus[::g->gamemap-1];
 	}	
-	if (::g->gamemission == pack_custom && map) { //GK:Custom expansion related stuff
-		if (::g->maps[map - 1].music)
-			mnum = ::g->maps[map - 1].music;
+	if (::g->gamemission == pack_custom && ::g->map) { //GK:Custom expansion related stuff
+		if (::g->maps[::g->map - 1].music)
+			mnum = ::g->maps[::g->map - 1].music;
 	}
 	S_StopMusic();
 	S_ChangeMusic(mnum, true);

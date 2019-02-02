@@ -478,11 +478,7 @@ P_CrossSpecialLine
 {
 	line_t*	line;
 	int		ok;
-	int map = 0;
 	bool ok2 = false;
-	if (::g->gamemission == pack_custom) {
-		map = getMapNum();
-	}
 
 	line = &::g->lines[linenum];
 	//GK: Bug fix for Doom 2 Map 15 Just in case the sector is inaccessible check if the player passes through any of it's lines (if they are special)
@@ -490,8 +486,8 @@ P_CrossSpecialLine
 		bool hs = false;
 		switch (::g->gamemission){
 		case pack_custom:
-			if (map) {
-				ok2 = ::g->maps[map - 1].cspecls;
+			if (::g->map) {
+				ok2 = ::g->maps[::g->map - 1].cspecls;
 			}
 			if (ok2) {
 				switch (line->frontsector->special) {

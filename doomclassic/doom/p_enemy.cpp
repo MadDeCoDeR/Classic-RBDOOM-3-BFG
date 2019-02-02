@@ -1591,13 +1591,9 @@ void A_BossDeath (mobj_t* mo, void * )
     line_t	junk;
     int		i;
 	bool ok = false; //GK:Oversimplyfication for the if case on map 07's logic
-	int map = 0; //GK: Calculate custom expansion map based on game mode
-	if (::g->gamemission == pack_custom) {
-		map = getMapNum();
-	}
 		
-	if (::g->gamemission == pack_custom && map) { //GK:Custom expansion related stuff
-		if (!::g->maps[map-1].miniboss) {
+	if (::g->gamemission == pack_custom && ::g->map) { //GK:Custom expansion related stuff
+		if (!::g->maps[::g->map-1].miniboss) {
 			if (::g->gamemode == commercial)
 			return;
 		}

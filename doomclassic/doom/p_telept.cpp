@@ -65,10 +65,6 @@ EV_Teleport
     fixed_t	oldx;
     fixed_t	oldy;
     fixed_t	oldz;
-	int map = 0; //GK: Calculate custom expansion map based on game mode
-	if (::g->gamemission == pack_custom) {
-		map = getMapNum();
-	}
 
     // don't teleport missiles
     if (thing->flags & MF_MISSILE)
@@ -87,8 +83,8 @@ EV_Teleport
 		}
 	}
 	int ok = 0;
-	if (map) {
-		ok = ::g->maps[map - 1].otel;
+	if (::g->map) {
+		ok = ::g->maps[::g->map - 1].otel;
 	}
 	if (::g->gamemission == pack_custom && ok) {
 		if (line->tag == 0) {

@@ -520,10 +520,6 @@ void HU_Start(void)
 
 	int		i;
 	const char*	s;
-	int map = 0; //GK: Calculate custom expansion map based on game mode
-	if (::g->gamemission == pack_custom) {
-		map = getMapNum();
-	}
 
 	if (::g->headsupactive)
 		HU_Stop();
@@ -619,9 +615,9 @@ void HU_Start(void)
 		break;
 	}
 
-	if (::g->gamemission == pack_custom && map) {
-		if (::g->maps[map - 1].realname != NULL) {
-			s = ::g->maps[map - 1].realname;
+	if (::g->gamemission == pack_custom && ::g->map) {
+		if (::g->maps[::g->map - 1].realname != NULL) {
+			s = ::g->maps[::g->map - 1].realname;
 		}
 	}
 

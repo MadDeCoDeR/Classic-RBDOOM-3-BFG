@@ -107,24 +107,23 @@ fstr mval[] = {
 
 };
 
-int getMapNum() {
-	int map = 0;
+void setMapNum() {
+	::g->map = 0;
 	switch (::g->gamemode) {
 	case retail:
 		if (::g->clusters.size()) {
 			if (::g->clusters[::g->gameepisode - 1].startmap) {
-				map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+				::g->map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
 			}
 			else {
-				map = 0;
+				::g->map = 0;
 			}
 		}
 		break;
 	case commercial:
-		map = ::g->gamemap;
+		::g->map = ::g->gamemap;
 		break;
 	}
-	return map;
 }
 
 char* removequotes(char* value) {

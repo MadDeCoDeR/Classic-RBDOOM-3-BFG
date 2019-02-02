@@ -111,6 +111,7 @@ int mapind; //GK:Indexed vector indexer (you can't trust a vector with pointers 
 std::vector<cluster_t> clusters; //GK:information for each cluster
 int clusterind;//GK:Indexed vector indexer (you can't trust a vector with pointers these days)
 int intermusic; //GK:Intermission music
+int map; //GK: Current map index
 // doomstat.vars end // 
 //  d_main.vars begin // 
 qboolean		devparm;	// started game with -devparm
