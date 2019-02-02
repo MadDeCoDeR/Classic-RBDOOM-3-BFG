@@ -54,7 +54,7 @@ idAchievementSystem
 class idAchievementSystem
 {
 public:
-	static const int MAX_ACHIEVEMENTS = 128;		// This matches the max number of achievements bits in the profile
+	static const int MAX_ACHIEVEMENTS = 66;		// This matches the max number of achievements bits in the profile
 	
 	virtual			~idAchievementSystem() {}
 	

@@ -145,8 +145,12 @@ void idSignInManagerWin::RegisterLocalUser( int inputDevice )
 	idLib::Printf( "Added local user: %s\n", name.c_str() );
 	
 	idLocalUserWin& localUser = *localUsers.Alloc();
-	
-	localUser.Init( inputDevice, name.c_str(), localUsers.Num() );
+	if (::op != NULL) {
+		localUser.Init(inputDevice, ::op->GetAPIUserName(), localUsers.Num());
+	}
+	else {
+		localUser.Init(inputDevice, name.c_str(), localUsers.Num());
+	}
 	localUser.SetLocalUserHandle( GetUniqueLocalUserHandle( localUser.GetGamerTag() ) );
 	
 	session->OnLocalUserSignin( &localUser );

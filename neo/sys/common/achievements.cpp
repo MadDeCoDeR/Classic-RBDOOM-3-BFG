@@ -51,6 +51,9 @@ idAchievementSystemWin::IsInitialized
 */
 bool idAchievementSystemWin::IsInitialized()
 {
+	if (::op) {
+		return true;
+	}
 	return false;
 }
 
@@ -61,6 +64,9 @@ idAchievementSystemWin::AchievementUnlock
 */
 void idAchievementSystemWin::AchievementUnlock( idLocalUser* user, int achievementID )
 {
+	if (::op) {
+		::op->SetAPIAchievement(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
+	}
 }
 
 /*
@@ -98,6 +104,14 @@ idAchievementSystemWin::GetAchievementState
 */
 bool idAchievementSystemWin::GetAchievementState( idLocalUser* user, idArray< bool, idAchievementSystem::MAX_ACHIEVEMENTS >& achievements ) const
 {
+	if (::op) {
+		for (int i = 1; i < achievements.Num(); i++) {
+			if (!::op->GetAPIAchievement(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, i), &achievements[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
 	return false;
 }
 

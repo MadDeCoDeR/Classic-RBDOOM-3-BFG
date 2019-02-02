@@ -120,6 +120,8 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 // game
 #include "../d3xp/Game.h"
 
+#include "../libs/platform/OpenPlatform.h"
+
 // Session / Network
 #include "../sys/LightweightCompression.h"
 #include "../sys/Snapshot.h"
