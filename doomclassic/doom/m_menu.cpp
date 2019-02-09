@@ -2067,16 +2067,16 @@ qboolean M_Responder (event_t* ev)
 		case KEY_MINUS:         // Screen size down
 			if (::g->automapactive || ::g->chat_on)
 				return false;
-			//M_SizeDisplay(0);
-			M_Aspect(0); //GK: Screen size doesn't work
+			M_SizeDisplay(0);
+			//M_Aspect(0); //GK: Screen size doesn't work
 			S_StartSound(NULL,sfx_stnmov);
 			return true;
 
 		case KEY_EQUALS:        // Screen size up
 			if (::g->automapactive || ::g->chat_on)
 				return false;
-			//M_SizeDisplay(1);
-			M_Aspect(1); //GK: It doesn't circle through
+			M_SizeDisplay(1);
+			//M_Aspect(1); //GK: It doesn't circle through
 			S_StartSound(NULL,sfx_stnmov);
 			return true;
 
