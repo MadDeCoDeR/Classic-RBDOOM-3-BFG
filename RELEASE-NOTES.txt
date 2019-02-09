@@ -4,6 +4,29 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+09 February 2019 - Classic RBDOOM-3-BFG 1.1.12.8
+_______________________________
+
+WARNING: The game dll support is nearly complete but 
+there are still bugs while using them.
+
+[classicdoom]
+
+- Minus-Plus buttons will show/hide the status bar
+
+- Fixed a small bug when showing the weapon in use on status bar with the super shotgun
+
+[DOOM3BFG]
+
+- Added support for Open Platform
+
+- Allow controller sticks to be remapped for 2d perspective oriented controls
+
+[Launcher]
+
+- Added linux compatibility (requires Mono runtime)
+_______________________________________
+
 27 January 2019 (02/02/2019) - Classic RBDOOM-3-BFG 1.1.12.5
 _______________________________
 

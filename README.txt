@@ -209,13 +209,19 @@ C:\Program Files (x86)\Steam\SteamApps\common\Doom 3 BFG Edition\ directory and 
 
 The following instructions are primarily intented for Linux users and all hackers on other operating systems.
 
-To play the game, you need the game data from a legal copy of the game, which 
-unfortunately requires Steam for Windows - Steam for Linux or OSX won't do, because
-(at least currently) the Doom 3 BFG game is only installable on Steam for Windows.
+To play the game, you need the game data from a legal copy of the game.
+
+It requires Steam or GOG Windows Installer.
+
 Even the DVD version of Doom 3 BFG only contains encrytped data that is decoded
 by Steam on install.
 
-On Linux and OSX the easiest way to install is with SteamCMD: https://developer.valvesoftware.com/wiki/SteamCMD
+Steam:
+
+On Steam for Linux you right click on the game in your library and select Properties, from there just check the last check box you will see and then right click it again and select install.
+To get the game files just right click on the game select Properties -> local files -> Browse local files.
+
+Alternatively on Linux and OSX the easiest way to install is with SteamCMD: https://developer.valvesoftware.com/wiki/SteamCMD
 See the description on https://developer.valvesoftware.com/wiki/SteamCMD#Linux (OS X is directly below that) on how to install SteamCMD on your system. You won't have to create a new user.
 
 Then you can download Doom 3 BFG with
@@ -226,10 +232,26 @@ Then you can download Doom 3 BFG with
 When it's done you should have the normal windows installation of Doom 3 BFG in ./doom3bfg/ and the needed files in ./doom3bfg/base/
 That number is the "AppID" of Doom 3 BFG; if you wanna use this to get the data of other games you own, you can look up the AppID at https://steamdb.info/
 
+NOTE that we've previously recommended using download_depot in the Steam console to install the game data. That turned out to be unreliable and result in broken, unusable game data. So use SteamCMD instead, as described above.
+GOG:
+
+Alternatively with the GOG installer, you can use Wine to install the game. See https://winehq.org/download for details on how to install wine for Linux and Mac.
+
+Once Wine is installed and configured on your system install Doom 3 BFG edition using the downloaded installers from gog.com:
+
+> wine setup_doom_3_bfg_1.14_\(13452\)_\(g\).exe
+
+(there will be several .exe files from GOG, make sure all of them are in the same directory)
+
+Once this is complete, by default you can find your Doom 3 BFG "base/" directory at ".wine/drive_c/GOG\ Games/DOOM\ 3\ BFG/base".
+
+Extra:
+
 Additionally in Ubuntu you can open the RBDoom3BFG file with the text editor and add the missing paths on it and save it as .desktop.
 This will give you a desktop shortcut for Ubuntu. (NOTE: I don't know if other operating systems support this file)
 
-NOTE that we've previously recommended using download_depot in the Steam console to install the game data. That turned out to be unreliable and result in broken, unusable game data. So use SteamCMD instead, as described above.
+Also you can install www.mono-project.com. Which allow you to use CDL.exe natively on linux.
+After you have install mono, download the latest release of this project and extract the CDL.exe in the same directory RBDoom3BFG is.
 
 Anyway:
 
