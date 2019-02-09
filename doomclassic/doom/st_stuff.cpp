@@ -1235,6 +1235,9 @@ void ST_createWidgets(void)
 		else {
 			::g->weaponcond[i + 1] = ::g->plyr->weaponowned[i + 1];
 		}
+		if (::g->plyr->readyweapon == wp_supershotgun) {
+			::g->weaponcond[wp_shotgun] = 2;
+		}
 		STlib_initMultIcon(&::g->w_arms[i],
 			ST_ARMSX+(i%3)*ST_ARMSXSPACE,
 			ST_ARMSY+(i/3)*ST_ARMSYSPACE,
