@@ -1016,6 +1016,7 @@ void idUsercmdGenLocal::JoystickMove2()
 	idVec2 leftRaw( joystickAxis[ AXIS_LEFT_X ], joystickAxis[ AXIS_LEFT_Y ] );
 	idVec2 rightRaw( joystickAxis[ AXIS_RIGHT_X ], joystickAxis[ AXIS_RIGHT_Y ] );
 	
+	
 	// optional stick swap
 	if( idKeyInput::GetUsercmdAction( K_JOY_STICK1_LEFT ) == UB_LOOKLEFT )
 	{
@@ -1028,6 +1029,13 @@ void idUsercmdGenLocal::JoystickMove2()
 	if( invertLook )
 	{
 		rightRaw.y = -rightRaw.y;
+	}
+	//GK: Just in case we want the movement joy stick to work on a 2d prespective
+	if (idKeyInput::GetUsercmdAction(K_JOY_STICK1_RIGHT) == UB_MOVEFORWARD || idKeyInput::GetUsercmdAction(K_JOY_STICK2_RIGHT) == UB_MOVEFORWARD)
+	{
+		float temp = -leftRaw.x;
+		leftRaw.x = leftRaw.y;
+		leftRaw.y = temp;
 	}
 	
 	// save for visualization
