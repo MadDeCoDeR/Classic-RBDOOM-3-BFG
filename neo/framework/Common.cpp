@@ -118,7 +118,6 @@ idGameEdit* 	gameEdit = NULL;
 #endif
 
 
-GetPlatformAPI_t GetPlatformAPI;
 intptr_t platformDLL = 0;
 
 idCommonLocal	commonLocal;
@@ -1068,7 +1067,7 @@ void idCommonLocal::InitSIMD()
 void LoadPlatformDLL()
 {
 	char			dllPath[MAX_OSPATH];
-
+	GetPlatformAPI_t GetPlatformAPI;
 	fileSystem->FindDLL("OpenPlatform", dllPath);
 
 	if (dllPath[0])
@@ -1076,49 +1075,50 @@ void LoadPlatformDLL()
 
 		common->DPrintf("Loading Platform DLL: '%s'\n", dllPath);
 		platformDLL = sys->DLL_Load(dllPath);
-		if (!platformDLL)
+		if (platformDLL) //GK: If the library fail don't let it to take the game with it
 		{
-			common->FatalError("couldn't load game dynamic library");
-			return;
-		}
 
-		const char* functionName = "GetPlatformAPI";
-		GetPlatformAPI = (GetPlatformAPI_t)Sys_DLL_GetProcAddress(platformDLL, functionName);
-		if (!GetPlatformAPI)
-		{
+
+			const char* functionName = "GetPlatformAPI";
+			GetPlatformAPI = (GetPlatformAPI_t)Sys_DLL_GetProcAddress(platformDLL, functionName);
+			if (!GetPlatformAPI)
+			{
 #ifdef WIN32
-			//GK: Just some 64-bit paranoia
-			int lastError = GetLastError();
-			char msgbuf[256];
-			FormatMessage(
-				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL,
-				lastError,
-				MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
-				(LPTSTR)&msgbuf,
-				sizeof(msgbuf),
-				NULL
-			);
+				//GK: Just some 64-bit paranoia
+				int lastError = GetLastError();
+				char msgbuf[256];
+				FormatMessage(
+					FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+					NULL,
+					lastError,
+					MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
+					(LPTSTR)&msgbuf,
+					sizeof(msgbuf),
+					NULL
+				);
 
-			Sys_Error("Sys_DLL_: GetProcAddress failed - %s (%d)", msgbuf, lastError);
+				Sys_Error("Sys_DLL_: GetProcAddress failed - %s (%d)", msgbuf, lastError);
 #endif
-			Sys_DLL_Unload(platformDLL);
-			platformDLL = NULL;
-			common->FatalError("couldn't find platform DLL API");
-			return;
-		}
+				Sys_DLL_Unload(platformDLL);
+				platformDLL = NULL;
+				//common->FatalError("couldn't find platform DLL API");
+				::op = NULL;
+				return;
+			}
 
-		::op = GetPlatformAPI();
-		
+			::op = GetPlatformAPI();
+
+		}
 	}
-	if (!op->API_Init()) {
-		::op = NULL;
+
+	if (::op->API_Init()) {
+		common->Printf("Platform loaded sucessfully !!!\n");
 	}
 }
 
 void UnloadPlatformDLL()
 {
-	// shut down the game object
+	// shut down the platform object
 	if (::op != NULL)
 	{
 		::op->API_Shutdown();

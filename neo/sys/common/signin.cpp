@@ -113,7 +113,13 @@ void idSignInManagerWin::RegisterLocalUser( int inputDevice )
 	
 	static char machineName[128];
 	// DG: support for ui_name
-	const char* nameSource = ui_name.GetString();
+	const char* nameSource;
+	if (::op == NULL) { //GK: Let open Platform to give the user name
+		nameSource = ui_name.GetString();
+	}
+	else {
+		nameSource = ::op->GetPlatformUserName();
+	}
 	
 	if( idStr::Length( nameSource ) == 0 )
 	{
@@ -145,12 +151,7 @@ void idSignInManagerWin::RegisterLocalUser( int inputDevice )
 	idLib::Printf( "Added local user: %s\n", name.c_str() );
 	
 	idLocalUserWin& localUser = *localUsers.Alloc();
-	if (::op != NULL) {
-		localUser.Init(inputDevice, ::op->GetAPIUserName(), localUsers.Num());
-	}
-	else {
-		localUser.Init(inputDevice, name.c_str(), localUsers.Num());
-	}
+	localUser.Init(inputDevice, name.c_str(), localUsers.Num());
 	localUser.SetLocalUserHandle( GetUniqueLocalUserHandle( localUser.GetGamerTag() ) );
 	
 	session->OnLocalUserSignin( &localUser );

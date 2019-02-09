@@ -65,7 +65,7 @@ idAchievementSystemWin::AchievementUnlock
 void idAchievementSystemWin::AchievementUnlock( idLocalUser* user, int achievementID )
 {
 	if (::op) {
-		::op->SetAPIAchievement(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
+		::op->UnlockAchievement(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
 	}
 }
 
@@ -76,6 +76,9 @@ idAchievementSystemWin::AchievementLock
 */
 void idAchievementSystemWin::AchievementLock( idLocalUser* user, const int achievementID )
 {
+	if (::op) {
+		::op->LockAchievement(va("%s%d",STEAM_ACHIEVEMENT_PREFIX,achievementID));
+	}
 }
 
 /*
@@ -85,6 +88,11 @@ idAchievementSystemWin::AchievementLockAll
 */
 void idAchievementSystemWin::AchievementLockAll( idLocalUser* user, const int maxId )
 {
+	if (::op) {
+		for (int i = 1; i < maxId; i++) {
+			::op->LockAchievement(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, i));
+		}
+	}
 }
 
 /*
@@ -94,6 +102,12 @@ idAchievementSystemWin::GetAchievementDescription
 */
 bool idAchievementSystemWin::GetAchievementDescription( idLocalUser* user, const int achievementID, achievementDescription_t& data ) const
 {
+	if (::op) {
+		strcpy(data.name, ::op->GetAchievementName(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID)));
+		strcpy(data.description, ::op->GetAchievementDescription(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID)));
+		data.hidden = ::op->GetAchievementHidden(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
+		return true;
+	}
 	return false;
 }
 
@@ -106,7 +120,7 @@ bool idAchievementSystemWin::GetAchievementState( idLocalUser* user, idArray< bo
 {
 	if (::op) {
 		for (int i = 1; i < achievements.Num(); i++) {
-			if (!::op->GetAPIAchievement(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, i), &achievements[i])) {
+			if (!::op->GetAchievement(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, i), &achievements[i])) {
 				return false;
 			}
 		}
