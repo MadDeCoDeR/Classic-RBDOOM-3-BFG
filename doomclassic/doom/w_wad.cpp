@@ -1583,7 +1583,7 @@ void W_CheckExp() {
 		fclose(file);
 		DoomLib::hexp[1] = true;
 	}
-	if (FILE *file = fopen("base/wads/MASTERLEVELS.WAD", "r")) {
+	if (FILE *file = fopen("base/wads/MASTERLEVELS.wad", "r")) {
 		fclose(file);
 		DoomLib::hexp[2] = true;
 	}
