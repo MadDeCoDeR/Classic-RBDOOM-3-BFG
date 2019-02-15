@@ -117,6 +117,7 @@ idAchievementManager::idAchievementManager() :
 	playerTookDamage( false )
 {
 	counts.Zero();
+	oldcounts.Zero();
 	ResetHellTimeKills();
 }
 
@@ -150,10 +151,21 @@ void idAchievementManager::SyncAchievments()
 		if( user->GetProfile()->GetAchievement( i ) )
 		{
 			counts[i] = achievementInfo[i].required;
+			oldcounts[i] = counts[i];
 		}
 		else if( achievementInfo[i].lifetime )
 		{
 			counts[i] = user->GetStatInt( i );
+			//GK: Get the number of already achieved in order to not get unnecessary progress notification
+			if (achievementInfo[i].required >= 20) {
+				if (counts[i] >= 10) {
+					int ten = (counts[i] / 10) * 10;
+					oldcounts[i] = ten;
+				}
+			}
+			else {
+				oldcounts[i] = counts[i];
+			}
 		}
 	}
 }
@@ -204,6 +216,16 @@ void idAchievementManager::Restore( idRestoreGame* savefile )
 	for( int i = 0; i < ACHIEVEMENTS_NUM; i++ )
 	{
 		savefile->ReadInt( counts[i] );
+		//GK: Get the number of already achieved in order to not get unnecessary progress notification
+		if (achievementInfo[i].required >= 20) {
+			if (counts[i] >= 10) {
+				int ten = (counts[i] / 10) * 10;
+				oldcounts[i] = ten;
+			}
+		}
+		else {
+			oldcounts[i] = counts[i];
+		}
 	}
 	
 	savefile->ReadInt( lastImpKilledTime );
@@ -282,6 +304,20 @@ void idAchievementManager::EventCompletesAchievement( const achievement_t eventI
 		if( achievementInfo[eventId].lifetime )
 		{
 			localUser->SetStatInt( eventId, counts[eventId] );
+		}
+		//GK: Once reached a specific amount of progress show a progress notification using open platform's notification
+		int sub = counts[eventId] - oldcounts[eventId];
+		if (achievementInfo[eventId].required >= 20) {
+			if (sub >= 10) {
+				oldcounts[eventId] = counts[eventId];
+				session->GetAchievementSystem().ShowAchievementProgress(eventId, counts[eventId], achievementInfo[eventId].required);
+			}
+		}
+		else{
+			if (sub >= 1) {
+				oldcounts[eventId] = counts[eventId];
+				session->GetAchievementSystem().ShowAchievementProgress(eventId, counts[eventId], achievementInfo[eventId].required);
+			}
 		}
 	}
 }

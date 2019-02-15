@@ -137,3 +137,8 @@ idAchievementSystemWin::Pump
 void idAchievementSystemWin::Pump()
 {
 }
+
+
+void idAchievementSystemWin::ShowAchievementProgress(const int achievementID, int progress, int max) {
+	::op->GetAchievementPercent(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID), progress, max);
+}

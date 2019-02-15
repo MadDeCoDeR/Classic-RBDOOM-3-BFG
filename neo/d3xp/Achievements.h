@@ -203,6 +203,7 @@ public:
 private:
 	idEntityPtr< idPlayer >	owner;
 	idArray<int, ACHIEVEMENTS_NUM> counts; // How many times has each achievement been given
+	idArray<int, ACHIEVEMENTS_NUM> oldcounts; //GK: How many times each achievement has been given minus the current progress
 	
 	int				lastPlayerKilledTime;
 	int				lastImpKilledTime;

@@ -131,6 +131,8 @@ public:
 	// You want to get the server's cached achievement status into the user because the profile may not have been
 	// saved with the achievement bits after an achievement was granted.
 	void			SyncAchievementBits( idLocalUser* user );
+	//GK: Show achievement progress when asked
+	virtual void			ShowAchievementProgress(const int achievementID, int progress, int max) = 0;
 	
 protected:
 	// Retrieves the index from the local user list
