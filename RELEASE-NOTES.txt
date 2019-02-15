@@ -4,6 +4,32 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+15 February 2019 - Classic RBDOOM-3-BFG 1.1.12.8.5
+_______________________________
+
+WARNING: The game dll support is nearly complete but 
+there are still bugs while using them.
+
+[classicdoom]
+
+- All games will pause if the open platform overlay is open
+
+- Fixed a bug where weapons are incorrectly shown in status bar after loading a save file
+
+- Added new CVar "cl_pitch" that allow you to change standard sound pitch
+
+[DOOM3BFG]
+
+- Updated Open Platform
+
+- All games will pause if the open platform overlay is open
+
+- Added achievement progress notification
+
+- PDA will not be triggered if the player press shift+tab
+
+_______________________________________
+
 09 February 2019 - Classic RBDOOM-3-BFG 1.1.12.8
 _______________________________
 
