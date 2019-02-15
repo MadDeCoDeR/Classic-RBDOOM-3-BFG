@@ -276,7 +276,8 @@ void D_Display (void)
 	::g->oldgamestate = ::g->wipegamestate = ::g->gamestate;
 
 	// draw pause pic
-/*
+	//GK: Just Draw it already
+	int y = 0;
 	if (::g->paused)
 	{
 		if (::g->automapactive)
@@ -284,9 +285,9 @@ void D_Display (void)
 		else
 			y = ::g->viewwindowy+4;
 		V_DrawPatchDirect(::g->viewwindowx+(ORIGINAL_WIDTH-68)/2,
-			y,0,(patch_t*)W_CacheLumpName ("M_PAUSE", PU_CACHE_SHARED));
+			y,0,img2lmp((patch_t*)W_CacheLumpName ("M_PAUSE", PU_CACHE_SHARED),W_GetNumForName("M_PAUSE")));
 	}
-*/
+
 
 	// menus go directly to the screen
 	M_Drawer ();          // menu is drawn even on top of everything

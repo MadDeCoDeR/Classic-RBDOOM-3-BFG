@@ -294,6 +294,9 @@ idSessionLocalWin::PlatformPump
 */
 void idSessionLocalWin::PlatformPump()
 {
+	//GK: Pause the game when the overlay is open
+	cvarSystem->SetCVarBool("com_pause",::op->isPlatformOverlayActive());
+	//common->Printf("Pause = %s\n", cvarSystem->GetCVarBool("com_pause")?"true":"false"); //GK: for debug purposes ONLY
 }
 
 /*
