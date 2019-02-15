@@ -55,6 +55,7 @@ const char snd_prefixen[]
 = { 'P', 'P', 'A', 'S', 'S', 'S', 'M', 'M', 'M', 'S', 'S', 'S' };
 
 idCVar cl_randpitch("cl_randpitch", "1", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Classic Doom Random sfx pitches");
+idCVar cl_pitch("cl_pitch", "128", CVAR_INTEGER , "Set Classic Doom standard sound pitch", 0, 255); //GK: just for fun but DONT SAVE IT
 // when to clip out sounds
 // Does not fit the large outdoor areas.
 
@@ -299,7 +300,7 @@ S_StartSoundAtVolume
 	}
 	else
 	{
-		pitch = NORM_PITCH;
+		pitch = cl_pitch.GetInteger();//NORM_PITCH;
 		priority = NORM_PRIORITY;
 
 		if (volume < 1)
@@ -448,7 +449,7 @@ void S_UpdateSounds(void* listener_p)
 			{
 				// initialize parameters
 				volume = s_volume_sound.GetInteger();
-				pitch = NORM_PITCH;
+				pitch = cl_pitch.GetInteger();//NORM_PITCH;
 				sep = NORM_SEP;
 
 				if (sfx->link)
