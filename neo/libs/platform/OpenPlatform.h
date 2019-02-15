@@ -30,13 +30,15 @@ public:
 	virtual const char* GetPlatformUserName() = 0;
 	virtual bool GetAchievement(const char* name, bool* status) = 0;
 	virtual const char* GetAchievementDevName(unsigned int id) = 0;
-	virtual bool GetAchievementPercent(const char* name, float* status) = 0;
+	virtual bool GetAchievementPercent(const char* name, unsigned int progress, unsigned int max) = 0;
 	virtual bool UnlockAchievement(const char* name) = 0;
 	virtual bool LockAchievement(const char* name) = 0;
 	virtual const char* GetAchievementName(const char* name) = 0;
 	virtual const char* GetAchievementDescription(const char* name) = 0;
 	virtual bool GetAchievementHidden(const char* name) = 0;
 	virtual void ShowUser( unsigned int id) = 0;
+	virtual bool isPlatformOverlayActive() = 0;
+	virtual void SetNotificationsPosition(unsigned int x, unsigned int y) = 0;
 };
 
 extern OPlatform* op;

@@ -1,4 +1,4 @@
-Open Platform
+MIT License
 
 Copyright (C) 2019 George Kalmpokis
 

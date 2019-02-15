@@ -1112,8 +1112,10 @@ void LoadPlatformDLL()
 	}
 
 	if (::op->API_Init()) {
+		//::op->SetNotificationsPosition(0, 0); //GK: Who knows maybe someone want it on top left
 		common->Printf("Platform loaded sucessfully !!!\n");
 	}
+	
 }
 
 void UnloadPlatformDLL()
