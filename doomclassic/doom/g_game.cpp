@@ -891,6 +891,12 @@ void G_Ticker (void)
 			} 
 		}
 	}
+	//GK: When Doom 3 says pause then pause
+	::g->paused = cvarSystem->GetCVarBool("com_pause");
+	if (::g->paused)
+		S_PauseSound();
+	else
+		S_ResumeSound();
 
 	// check for special buttons
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -1765,7 +1771,19 @@ qboolean G_DoLoadGame ()
 
 	// draw the pattern into the back screen
 	R_FillBackScreen ();
-
+	//GK: Make sure the status bar is showing properly the weapons that are owned and which one is used
+	//after it load a save file
+	for (int i = 0; i < NUMWEAPONS; i++) {
+		if (::g->players[::g->consoleplayer].weaponowned[i]) {
+			::g->weaponcond[i] = 1;
+		}
+	}
+	if (::g->players[::g->consoleplayer].readyweapon == wp_supershotgun) {
+		::g->weaponcond[wp_shotgun] = 2;
+	}
+	else {
+		::g->weaponcond[::g->players[::g->consoleplayer].readyweapon] = 2;
+	}
 	loadingGame = false;
 
 	Z_Free(g->savebuffer);
@@ -2307,8 +2325,12 @@ void G_DoPlayDemo (void)
 				::g->players[i].armorpoints = *src++;
 				::g->players[i].armortype = *src++;
 				::g->players[i].readyweapon = (weapontype_t)*src++;
+				::g->weaponcond[::g->players[i].readyweapon] = 2; //GK: Why not -\('')/-
 				for ( int j = 0; j < NUMWEAPONS; j++ ) {
 					::g->players[i].weaponowned[j] = *src++;
+					if (::g->weaponcond[j] != 2) {
+						::g->weaponcond[j] = 1;
+					}
 				}
 				for ( int j = 0; j < NUMAMMO; j++ ) {
 					::g->players[i].ammo[j] = *src++;
