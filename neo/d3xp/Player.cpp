@@ -7733,16 +7733,21 @@ void idPlayer::PerformImpulse( int impulse )
 #if !defined(ID_RETAIL) && !defined(ID_RETAIL_INTERNAL)
 				if( !common->KeyState( 56 ) )  		// don't toggle PDA when LEFT ALT is down
 				{
+#elif defined(ID_RETAIL)
+				if (!common->KeyState(42))		//GK: don't toggle PDA when LEFT SHIFT is down
+				{
 #endif
-					if( objectiveSystemOpen )
+					if (objectiveSystemOpen)
 					{
 						TogglePDA();
 					}
-					else if( weapon_pda >= 0 )
+					else if (weapon_pda >= 0)
 					{
-						SelectWeapon( weapon_pda, true );
+						SelectWeapon(weapon_pda, true);
 					}
 #if !defined(ID_RETAIL) && !defined(ID_RETAIL_INTERNAL)
+				}
+#elif defined(ID_RETAIL)
 				}
 #endif
 			}
