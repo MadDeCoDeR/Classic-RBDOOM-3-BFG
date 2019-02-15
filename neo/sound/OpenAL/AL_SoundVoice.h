@@ -93,6 +93,10 @@ public:
 	
 	// callback function
 	void					OnBufferStart( idSoundSample_OpenAL* sample, int bufferNumber );
+	//GK: It might come handy in the future
+	int						GetChannel() {
+		return channel;
+	}
 	
 private:
 	friend class idSoundHardware_OpenAL;
