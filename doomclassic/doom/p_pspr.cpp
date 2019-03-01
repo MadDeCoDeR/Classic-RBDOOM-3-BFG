@@ -338,7 +338,8 @@ A_WeaponReady
 {	
 	statenum_t	newstate;
 	int		angle;
-
+	if (!psp) //GK:SANITY CHECK
+		return;
 	// get out of attack state
 	if (player->mo->state == &::g->states[S_PLAY_ATK1]
 	|| player->mo->state == &::g->states[S_PLAY_ATK2] )

@@ -544,6 +544,7 @@ typedef struct {//GK:Store information for the custom expansion maps
 	int nextmap = 0;
 	bool miniboss;
 	int fflat;
+	char* fflatname;
 	char* ftext;
 	char* sky;
 	char* lumpname;

@@ -264,7 +264,14 @@ void F_StartFinale (void)
 			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
 				if (::g->maps[::g->gamemap - 1].ftext != NULL) {
 					S_ChangeMusic(::g->maps[::g->gamemap - 1].fmusic, true);
-					flt = finaleflat[::g->maps[::g->gamemap - 1].fflat];
+					if (::g->maps[::g->gamemap - 1].fflat > -1) { //SANITY CHECK
+						flatind = ::g->maps[::g->gamemap - 1].fflat;
+						flt = finaleflat[flatind];
+					}
+					else {
+						flatind = 11;
+						flt = ::g->maps[::g->gamemap - 1].fflatname;
+					}
 					finaletext = ::g->maps[::g->gamemap - 1].ftext;
 				}
 				else {

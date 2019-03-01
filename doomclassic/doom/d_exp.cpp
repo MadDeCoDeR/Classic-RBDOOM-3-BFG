@@ -77,6 +77,143 @@ typedef struct {
 	char** var;
 	char* name;
 }fstr;
+//Allow map names to be retrieved from the base ones
+fstr expmapnames[] = {
+	{ &mapnames[0],"HUSTR_E1M1" },
+	{ &mapnames[1],"HUSTR_E1M2" },
+	{ &mapnames[2],"HUSTR_E1M3" },
+	{ &mapnames[3],"HUSTR_E1M4" },
+	{ &mapnames[4],"HUSTR_E1M5" },
+	{ &mapnames[5],"HUSTR_E1M6" },
+	{ &mapnames[6],"HUSTR_E1M7" },
+	{ &mapnames[7],"HUSTR_E1M8" },
+	{ &mapnames[8],"HUSTR_E1M9" },
+	{ &mapnames[9],"HUSTR_E2M1" },
+	{ &mapnames[10],"HUSTR_E2M2" },
+	{ &mapnames[11],"HUSTR_E2M3" },
+	{ &mapnames[12],"HUSTR_E2M4" },
+	{ &mapnames[13],"HUSTR_E2M5" },
+	{ &mapnames[14],"HUSTR_E2M6" },
+	{ &mapnames[15],"HUSTR_E2M7" },
+	{ &mapnames[16],"HUSTR_E2M8" },
+	{ &mapnames[17],"HUSTR_E2M9" },
+	{ &mapnames[18],"HUSTR_E3M1" },
+	{ &mapnames[19],"HUSTR_E3M2" },
+	{ &mapnames[20],"HUSTR_E3M3" },
+	{ &mapnames[21],"HUSTR_E3M4" },
+	{ &mapnames[22],"HUSTR_E3M5" },
+	{ &mapnames[23],"HUSTR_E3M6" },
+	{ &mapnames[24],"HUSTR_E3M7" },
+	{ &mapnames[25],"HUSTR_E3M8" },
+	{ &mapnames[26],"HUSTR_E3M9" },
+	{ &mapnames[27],"HUSTR_E4M1" },
+	{ &mapnames[28],"HUSTR_E4M2" },
+	{ &mapnames[29],"HUSTR_E4M3" },
+	{ &mapnames[30],"HUSTR_E4M4" },
+	{ &mapnames[31],"HUSTR_E4M5" },
+	{ &mapnames[32],"HUSTR_E4M6" },
+	{ &mapnames[33],"HUSTR_E4M7" },
+	{ &mapnames[34],"HUSTR_E4M8" },
+	{ &mapnames[35],"HUSTR_E4M9" },
+	{ &mapnames2[0],"HUSTR_1" },
+	{ &mapnames2[1],"HUSTR_2" },
+	{ &mapnames2[2],"HUSTR_3" },
+	{ &mapnames2[3],"HUSTR_4" },
+	{ &mapnames2[4],"HUSTR_5" },
+	{ &mapnames2[5],"HUSTR_6" },
+	{ &mapnames2[6],"HUSTR_7" },
+	{ &mapnames2[7],"HUSTR_8" },
+	{ &mapnames2[8],"HUSTR_9" },
+	{ &mapnames2[9],"HUSTR_10" },
+	{ &mapnames2[10],"HUSTR_11" },
+	{ &mapnames2[11],"HUSTR_12" },
+	{ &mapnames2[12],"HUSTR_13" },
+	{ &mapnames2[13],"HUSTR_14" },
+	{ &mapnames2[14],"HUSTR_15" },
+	{ &mapnames2[15],"HUSTR_16" },
+	{ &mapnames2[16],"HUSTR_17" },
+	{ &mapnames2[17],"HUSTR_18" },
+	{ &mapnames2[18],"HUSTR_19" },
+	{ &mapnames2[19],"HUSTR_20" },
+	{ &mapnames2[20],"HUSTR_21" },
+	{ &mapnames2[21],"HUSTR_22" },
+	{ &mapnames2[22],"HUSTR_23" },
+	{ &mapnames2[23],"HUSTR_24" },
+	{ &mapnames2[24],"HUSTR_25" },
+	{ &mapnames2[25],"HUSTR_26" },
+	{ &mapnames2[26],"HUSTR_27" },
+	{ &mapnames2[27],"HUSTR_28" },
+	{ &mapnames2[28],"HUSTR_29" },
+	{ &mapnames2[29],"HUSTR_30" },
+	{ &mapnames2[30],"HUSTR_31" },
+	{ &mapnames2[31],"HUSTR_32" },
+	{ &mapnames2[32],"HUSTR_33" },
+	{ &mapnamesp[0],"PHUSTR_1" },
+	{ &mapnamesp[1],"PHUSTR_2" },
+	{ &mapnamesp[2],"PHUSTR_3" },
+	{ &mapnamesp[3],"PHUSTR_4" },
+	{ &mapnamesp[4],"PHUSTR_5" },
+	{ &mapnamesp[5],"PHUSTR_6" },
+	{ &mapnamesp[6],"PHUSTR_7" },
+	{ &mapnamesp[7],"PHUSTR_8" },
+	{ &mapnamesp[8],"PHUSTR_9" },
+	{ &mapnamesp[9],"PHUSTR_10" },
+	{ &mapnamesp[10],"PHUSTR_11" },
+	{ &mapnamesp[11],"PHUSTR_12" },
+	{ &mapnamesp[12],"PHUSTR_13" },
+	{ &mapnamesp[13],"PHUSTR_14" },
+	{ &mapnamesp[14],"PHUSTR_15" },
+	{ &mapnamesp[15],"PHUSTR_16" },
+	{ &mapnamesp[16],"PHUSTR_17" },
+	{ &mapnamesp[17],"PHUSTR_18" },
+	{ &mapnamesp[18],"PHUSTR_19" },
+	{ &mapnamesp[19],"PHUSTR_20" },
+	{ &mapnamesp[20],"PHUSTR_21" },
+	{ &mapnamesp[21],"PHUSTR_22" },
+	{ &mapnamesp[22],"PHUSTR_23" },
+	{ &mapnamesp[23],"PHUSTR_24" },
+	{ &mapnamesp[24],"PHUSTR_25" },
+	{ &mapnamesp[25],"PHUSTR_26" },
+	{ &mapnamesp[26],"PHUSTR_27" },
+	{ &mapnamesp[27],"PHUSTR_28" },
+	{ &mapnamesp[28],"PHUSTR_29" },
+	{ &mapnamesp[29],"PHUSTR_30" },
+	{ &mapnamesp[30],"PHUSTR_31" },
+	{ &mapnamesp[31],"PHUSTR_32" },
+	{ &mapnamest[0],"THUSTR_1" },
+	{ &mapnamest[1],"THUSTR_2" },
+	{ &mapnamest[2],"THUSTR_3" },
+	{ &mapnamest[3],"THUSTR_4" },
+	{ &mapnamest[4],"THUSTR_5" },
+	{ &mapnamest[5],"THUSTR_6" },
+	{ &mapnamest[6],"THUSTR_7" },
+	{ &mapnamest[7],"THUSTR_8" },
+	{ &mapnamest[8],"THUSTR_9" },
+	{ &mapnamest[9],"THUSTR_10" },
+	{ &mapnamest[10],"THUSTR_11" },
+	{ &mapnamest[11],"THUSTR_12" },
+	{ &mapnamest[12],"THUSTR_13" },
+	{ &mapnamest[13],"THUSTR_14" },
+	{ &mapnamest[14],"THUSTR_15" },
+	{ &mapnamest[15],"THUSTR_16" },
+	{ &mapnamest[16],"THUSTR_17" },
+	{ &mapnamest[17],"THUSTR_18" },
+	{ &mapnamest[18],"THUSTR_19" },
+	{ &mapnamest[19],"THUSTR_20" },
+	{ &mapnamest[20],"THUSTR_21" },
+	{ &mapnamest[21],"THUSTR_22" },
+	{ &mapnamest[22],"THUSTR_23" },
+	{ &mapnamest[23],"THUSTR_24" },
+	{ &mapnamest[24],"THUSTR_25" },
+	{ &mapnamest[25],"THUSTR_26" },
+	{ &mapnamest[26],"THUSTR_27" },
+	{ &mapnamest[27],"THUSTR_28" },
+	{ &mapnamest[28],"THUSTR_29" },
+	{ &mapnamest[29],"THUSTR_30" },
+	{ &mapnamest[30],"THUSTR_31" },
+	{ &mapnamest[31],"THUSTR_32" },
+
+};
 
 fstr mval[] = {
 
@@ -134,6 +271,10 @@ char* removequotes(char* value) {
 		tmpvalue = tmpvalue + 1;
 	}
 	for (int j = 0; j < strlen(tmpvalue); j++) {
+		//Name with spaces HACK
+		if (tmpvalue[j] == ';') {
+			tmpvalue[j] = ' ';
+		}
 		if (tmpvalue[j] == '\"') {
 			tmpvalue[j] = '\0';
 		}
@@ -141,7 +282,7 @@ char* removequotes(char* value) {
 	return tmpvalue;
 }
 
-void setMAP(int index,char* value1, char* value2) {
+void setMAP(int index,char* value1, char* value2, char* value3) {
 	int map;
 	int endmap;
 	
@@ -182,7 +323,19 @@ void setMAP(int index,char* value1, char* value2) {
 	}
 	if (value2 != NULL) {
 		value2 = removequotes(value2);
-		::g->maps[map - 1].realname = value2;
+		//Either take the name from lookup or directly
+		if (!idStr::Icmp("lookup", value2)) {
+			value3 = removequotes(value3);
+			for (int i = 0; i < sizeof(expmapnames) / sizeof(fstr); i++) {
+				if (!idStr::Icmp(expmapnames[i].name, value3)) {
+					::g->maps[map - 1].realname = *expmapnames[i].var;
+					break;
+				}
+			}
+		}
+		else {
+			::g->maps[map - 1].realname = value2;
+		}
 	}
 }
 
@@ -223,6 +376,7 @@ void parseexptext(char* text) {
 	char* varname;
 	char* varval;
 	char* varopt;
+	char* varval2 = NULL; //SANITY CHECK
 	/*if (!::g->mapind) {
 		initMAPS(linedtext);
 	}*/
@@ -260,7 +414,11 @@ void parseexptext(char* text) {
 						if (t != NULL) {
 							varval = t;
 						}
-						setMAP(val1, varopt, varval);
+						t = strtok(NULL, " ");
+						if (t != NULL) {
+							varval2 = t;
+						}
+						setMAP(val1, varopt, varval,varval2);
 						break;
 					case 3:
 						if (val1 == -1) {
@@ -353,11 +511,21 @@ std::vector<std::string> getexplines(char* text) {
 	for (int i = 0; i < size /*- 7*/; i++) {
 		std::string letter = "";
 		qboolean ignore = false;
+		qboolean isname = false;
 		while (text[i] != '\n') {
 
 			if (!ignore) {
-				if (text[i] != '\r' && text[i] != '{' && text[i] != '}') {
-					letter += text[i];
+				//replace spaces with ; if we found quotes(indicating a name)
+				if (text[i] == '\"') {
+					isname = !isname;
+				}
+				if (text[i] != '\r' && text[i] != '{' && text[i] != '}' && text[i] != '\t') {
+					if (isname && text[i] == ' ') {
+						letter += ';';
+					}
+					else {
+						letter += text[i];
+					}
 				}
 			}
 			if (i < size /*- 7*/) {
@@ -452,7 +620,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 			{"miniboss",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].miniboss},
 			{"map07special",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].miniboss},
 			{"secret_final",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].fsecret},
-			{"final_flat",MAXINT,NULL,&::g->maps[pos].fflat},
+			{"final_flat",MAXINT,&::g->maps[pos].fflatname,&::g->maps[pos].fflat},
 			{"final_text",MAXINT,&::g->maps[pos].ftext},
 			{"final_music",MAXINT,NULL,&::g->maps[pos].fmusic},
 			{"music",MAXINT,NULL,&::g->maps[pos].music},
@@ -467,12 +635,19 @@ void setMAPSTR(int pos, char* name, char* value) {
 
 		for (int i = 0; i < 14; i++) {
 			if (!idStr::Icmp(name, mapstr[i].name)) {
+				bool found = false;
 				switch (i + 1) {
 				case 4:
 					for (int j = 0; j < 12; j++) {
 						if (!idStr::Icmp(finaleflat[j], value)) {
 							*mapstr[i].ival = j;
+							found = true;
 						}
+					}
+					//if it failed to find it's index then take the name as is
+					if (!found) {
+						*mapstr[i].ival = -1;
+						*mapstr[i].sval = value;
 					}
 					break;
 				case 5:
@@ -505,10 +680,10 @@ void setMAPSTR(int pos, char* name, char* value) {
 						if (!idStr::Icmp(value, ::g->maps[j].lumpname)) {
 							*mapstr[i].ival = j;
 						}
-						else {
-							*mapstr[i].sval = value;
-							*mapstr[i].ival = -1;
-						}
+					}
+					if (!*mapstr[i].ival) {
+						*mapstr[i].sval = value;
+						*mapstr[i].ival = -1;
 					}
 					if (!idStr::Icmpn(value, "EndGame", 7)) {
 						::g->endmap = pos + 1;
