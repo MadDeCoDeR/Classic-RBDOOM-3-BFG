@@ -321,8 +321,12 @@ int idLexer::ReadWhiteSpace()
 	while( 1 )
 	{
 		// skip white space
-		while( *idLexer::script_p <= ' ' )
+		while( *idLexer::script_p <= ' ')
 		{
+			int c = *idLexer::script_p;
+			if (c < 0) {//GK: As it turn out char with negative values are the ANSI chars that your System usually provide
+				break;
+			}
 			if( !*idLexer::script_p )
 			{
 				return 0;
@@ -743,7 +747,7 @@ idLexer::ReadName
 */
 int idLexer::ReadName( idToken* token )
 {
-	char c;
+	unsigned char c;
 	
 	token->type = TT_NAME;
 	do
@@ -754,7 +758,7 @@ int idLexer::ReadName( idToken* token )
 	while( ( c >= 'a' && c <= 'z' ) ||
 			( c >= 'A' && c <= 'Z' ) ||
 			( c >= '0' && c <= '9' ) ||
-			c == '_' ||
+			c == '_' || c>127 || //GK: Any non-ASCII character should count as a name character
 			// if treating all tokens as strings, don't parse '-' as a separate token
 			( ( idLexer::flags & LEXFL_ONLYSTRINGS ) && ( c == '-' ) ) ||
 			// if special path name characters are allowed
@@ -1163,7 +1167,7 @@ int idLexer::ReadToken( idToken* token )
 		if( idLexer::flags & LEXFL_ALLOWNUMBERNAMES )
 		{
 			c = *idLexer::script_p;
-			if( ( c >= 'a' && c <= 'z' ) ||	( c >= 'A' && c <= 'Z' ) || c == '_' )
+			if( ( c >= 'a' && c <= 'z' ) ||	( c >= 'A' && c <= 'Z' ) || c == '_' || c < 0)
 			{
 				if( !idLexer::ReadName( token ) )
 				{
@@ -1181,7 +1185,7 @@ int idLexer::ReadToken( idToken* token )
 		}
 	}
 	// if there is a name
-	else if( ( c >= 'a' && c <= 'z' ) ||	( c >= 'A' && c <= 'Z' ) || c == '_' )
+	else if( ( c >= 'a' && c <= 'z' ) ||	( c >= 'A' && c <= 'Z' ) || c == '_' || c < 0)
 	{
 		if( !idLexer::ReadName( token ) )
 		{

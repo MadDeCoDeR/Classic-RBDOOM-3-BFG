@@ -284,7 +284,8 @@ void listDevices_f( const idCmdArgs& args )
 			channelNames.Append( "Side Right" );
 		}
 		char mbcsDisplayName[ 256 ];
-		wcstombs( mbcsDisplayName, deviceDetails.DisplayName, sizeof( mbcsDisplayName ) );
+		//GK:wcstombs doen't read non-ASCII on windows so instead use this function in order to read them
+		WideCharToMultiByte(CP_ACP, NULL, deviceDetails.DisplayName,lstrlenW(deviceDetails.DisplayName),mbcsDisplayName,  sizeof( mbcsDisplayName ),NULL,0 );
 		idLib::Printf( "%3d: %s\n", i, mbcsDisplayName );
 		idLib::Printf( "     %d channels, %d Hz\n", deviceDetails.OutputFormat.Format.nChannels, deviceDetails.OutputFormat.Format.nSamplesPerSec );
 		if( channelNames.Num() != deviceDetails.OutputFormat.Format.nChannels )

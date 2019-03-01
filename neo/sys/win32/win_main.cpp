@@ -550,7 +550,8 @@ const char *Sys_DefaultSavePath() {
 #endif
 			// RB end
 			{
-				if ( wcstombs( savePath, path, MAX_PATH ) > MAX_PATH ) {
+				//GK: wcstombs wasn't working as intented and was excluding non-ASCII
+				if ( WideCharToMultiByte(CP_ACP,NULL, path,lstrlenW(path), savePath, MAX_PATH,NULL,0 ) > MAX_PATH ) {
 					savePath[0] = 0;
 				}
 				CoTaskMemFree( path );
