@@ -742,6 +742,9 @@ P_SetupLevel
 	S_Start ();			
 	//GK: Clear also the cache since it's not needed
 	Z_FreeTags( PU_LEVEL, PU_CACHE );
+	//GK: New level new flips
+	::g->flip = false;
+	::g->isfliped = false;
 	//GK: Make sure previous reverb effects are freed
 #ifdef USE_OPENAL
 	if (::g->hasreverb) {

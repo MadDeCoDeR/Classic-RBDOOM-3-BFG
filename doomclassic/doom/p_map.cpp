@@ -503,6 +503,19 @@ P_TryMove
     thing->ceilingz = ::g->tmceilingz;	
     thing->x = x;
     thing->y = y;
+	//GK: Higher Level ?
+	if (thing->player) {
+		if (game->GetCVarBool("pm_thirdPerson") && abs(game->GetCVarFloat("pm_thirdPersonAngle")) == 90.0f) {
+			if (::g->flip && !::g->isfliped) {
+				thing->angle = thing->angle - ANG180;
+				::g->isfliped = true;
+			}
+			else if (!::g->flip && ::g->isfliped) {
+				thing->angle = thing->angle + ANG180;
+				::g->isfliped = false;
+			}
+		}
+	}
 
     P_SetThingPosition (thing);
     

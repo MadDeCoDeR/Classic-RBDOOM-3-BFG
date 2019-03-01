@@ -258,6 +258,9 @@ int             joybfire;
 int             joybstrafe; 
 int             joybuse; 
 int             joybspeed; 
+fixed_t		oldforwardmove; //GK: The flipping trynity
+bool		flip;
+bool		isfliped;
 fixed_t		forwardmove[2];
 fixed_t		sidemove[2];
 fixed_t		angleturn[3];
@@ -581,6 +584,7 @@ int		levelFragCount;
 long		numlinespecials;
 long		linespecind;
 std::vector<line_t*>		linespeciallist;
+animdef_t animdefs[23]; //GK: Make this global in order to be used and elsewhere
 // p_spec.vars end // 
 //  p_switch.vars begin // 
 int		switchlist[MAXSWITCHES * 2];

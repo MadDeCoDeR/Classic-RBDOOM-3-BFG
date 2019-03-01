@@ -846,13 +846,15 @@ R_PointInSubsector
 //the camera position using sines and cosines
 
 void R_SetupThirdPersonView(player_t* player) {
+	//GK: if it's fliped try to not let the camera flip with it
+	angle_t pangle = ::g->flip ? player->mo->angle + ANG180 : player->mo->angle;
 	extern void SetViewX(fixed_t); extern void SetViewY(fixed_t); extern void SetViewAngle(angle_t, angle_t);
 	float tpviewangletemp = game->GetCVarFloat("pm_thirdPersonAngle");
 	tpviewangletemp /= 360.0f;
 	tpviewangletemp *= std::numeric_limits<unsigned short>::max();
 	angle_t tpviewangle = tpviewangletemp;
 	tpviewangle <<= 16;
-	float trueangle = (player->mo->angle - tpviewangle) >> 16;
+	float trueangle = (pangle - tpviewangle) >> 16;
 	trueangle /= std::numeric_limits<unsigned short>::max();
 	trueangle *= 360.0f;
 	//trueangle = (int)trueangle;
@@ -863,7 +865,7 @@ void R_SetupThirdPersonView(player_t* player) {
 	SetViewX(player->mo->x - xposoffset);
 	SetViewY(player->mo->y - yposoffset);
 	
-	SetViewAngle( (player->mo->angle- tpviewangle) + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
+	SetViewAngle( (pangle- tpviewangle) + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
 	int ogwidth = ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER;
 	int viewzoffset = ((::g->SCREENWIDTH - ogwidth) * 1000) + (game->GetCVarFloat("pm_thirdPersonHeight") * 100000);
 	::g->viewz = player->viewz + viewzoffset;

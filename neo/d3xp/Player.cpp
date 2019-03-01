@@ -58,7 +58,8 @@ idCVar pm_clientAuthoritative_Divergence( "pm_clientAuthoritative_Divergence", "
 idCVar pm_clientInterpolation_Divergence( "pm_clientInterpolation_Divergence", "5000.0f", CVAR_FLOAT, "" );
 
 idCVar pm_clientAuthoritative_minSpeedSquared( "pm_clientAuthoritative_minSpeedSquared", "1000.0f", CVAR_FLOAT, "" );
-
+//GK: Internal CVar in order to keep track on whenever the character is flipped or not
+idCVar pm_flip("pm_flip", "0", CVAR_BOOL, "");
 extern idCVar pm_cursor;
 
 extern idCVar g_demoMode;
@@ -2017,6 +2018,8 @@ void idPlayer::Init()
 	memset( &laserSightRenderEntity, 0, sizeof( laserSightRenderEntity ) );
 	laserSightRenderEntity.hModel = renderModelManager->FindModel( "_BEAM" );
 	laserSightRenderEntity.customShader = declManager->FindMaterial( "stereoRenderLaserSight" );
+	//GK:New map new flips
+	pm_flip.SetBool(false);
 }
 
 /*
@@ -2291,7 +2294,8 @@ void idPlayer::Spawn()
 	{
 		weapon.GetEntity()->ForceAmmoInClip();
 	}
-	
+	//GK:New map new flips
+	pm_flip.SetBool(false);
 }
 
 /*
@@ -3806,7 +3810,7 @@ void idPlayer::UpdateConditions()
 		AI_STRAFE_LEFT	= false;
 		AI_STRAFE_RIGHT	= false;
 	}
-	
+
 	AI_RUN			= ( usercmd.buttons & BUTTON_RUN ) && ( ( !pm_stamina.GetFloat() ) || ( stamina > pm_staminathreshold.GetFloat() ) );
 	AI_DEAD			= ( health <= 0 );
 }
@@ -8075,11 +8079,17 @@ void idPlayer::AdjustBodyAngles()
 	}
 	else if( usercmd.forwardmove < 0 )
 	{
+		if (pm_thirdPerson.GetBool() && abs(pm_thirdPersonAngle.GetFloat()) == 90.0f) {
+			pm_flip.SetBool(true);
+		}
 		idealLegsYaw = idMath::AngleNormalize180( idVec3( -usercmd.forwardmove, usercmd.rightmove, 0.0f ).ToYaw() );
 		legsForward = false;
 	}
 	else if( usercmd.forwardmove > 0 )
 	{
+		if (pm_thirdPerson.GetBool() && abs(pm_thirdPersonAngle.GetFloat()) == 90.0f) {
+			pm_flip.SetBool(false);
+		}
 		idealLegsYaw = idMath::AngleNormalize180( idVec3( usercmd.forwardmove, -usercmd.rightmove, 0.0f ).ToYaw() );
 		legsForward = true;
 	}
@@ -8139,7 +8149,15 @@ void idPlayer::AdjustBodyAngles()
 	}
 	legsAxis = idAngles( 0.0f, legsYaw, 0.0f ).ToMat3();
 	animator.SetJointAxis( hipJoint, JOINTMOD_WORLD, legsAxis );
-	
+	//GK:flip nearly everything about the player
+		if (pm_flip.GetBool()) {
+			idAngles lookAngles = viewAxis.ToAngles();
+			lookAxis = idAngles(lookAngles.pitch, lookAngles.yaw - 180.0f, lookAngles.roll).ToMat3();
+			viewAxis = lookAxis;
+			viewAngles.yaw -= 180.0f;
+			usercmd.forwardmove *= -1;
+			usercmd.rightmove *= -1;
+		}
 	// calculate the blending between down, straight, and up
 	frac = viewAngles.pitch / 90.0f;
 	if( frac > 0.0f )
@@ -10641,6 +10659,10 @@ void idPlayer::OffsetThirdPersonView( float angle, float range, float height, bo
 	idBounds		bounds;
 	
 	angles = viewAngles;
+	//GK: Don't let the camera to flip with the player
+	if (pm_flip.GetBool()) {
+		angles.yaw += 180.0f;
+	}
 	GetViewPos( origin, axis );
 	
 	if( angle )

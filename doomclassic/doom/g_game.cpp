@@ -286,13 +286,22 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 
 		// tech5 move commands range from -127 o 127. Scale to doom range of -25 to 25.
 		const float scaledForward = curTech5Command.forwardmove / 127.0f;
-
+		::g->oldforwardmove = cmd->forwardmove;
 		if ( isRunning ) {
 			cmd->forwardmove = scaledForward * 50.0f;
 		} else {
 			cmd->forwardmove = scaledForward * 25.0f;
 		}
-
+		//GK: In case of 2d flip the caracter if we want to go backwards
+		if (game->GetCVarBool("pm_thirdPerson") && abs(game->GetCVarFloat("pm_thirdPersonAngle")) == 90.0F) {
+			if (cmd->forwardmove < ::g->oldforwardmove) {
+				::g->flip = true;
+				cmd->forwardmove = cmd->forwardmove*-1;
+			}
+			else if (cmd->forwardmove > ::g->oldforwardmove) {
+				::g->flip = false;
+			}
+		}
 		// tech5 move commands range from -127 o 127. Scale to doom range of -24 to 24.
 		const float scaledSide = curTech5Command.rightmove / 127.0f;
 		
@@ -300,6 +309,12 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			cmd->sidemove = scaledSide * 40.0f;
 		} else {
 			cmd->sidemove = scaledSide * 24.0f;
+		}
+		//GK: also flip the movement commands
+		if (game->GetCVarBool("pm_thirdPerson") && abs(game->GetCVarFloat("pm_thirdPersonAngle")) == 90.0F) {
+			if (::g->flip) {
+				cmd->sidemove = cmd->sidemove*-1;
+			}
 		}
 
 		idAngles angleDelta;
