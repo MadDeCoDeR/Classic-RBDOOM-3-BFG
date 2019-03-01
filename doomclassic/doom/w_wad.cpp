@@ -291,6 +291,7 @@ void W_AddFile ( const char *filename)
 	filelump_t * filelumpPointer = &fileinfo[0];
 	rep = false;
 	bool sprite = false;
+	bool markfordelete = false; //GK:Mass murd-deletion flag
 	for (i=startlump ; i<numlumps ; i++,lump_p++, filelumpPointer++)
 	{
 		//GK: replace lumps between "_START" and "_END" markers instead of append
@@ -399,12 +400,32 @@ void W_AddFile ( const char *filename)
 
 			if (rep) {
 					bool replaced = false;
-					tlump = lumpinfo + ep;
+					tlump = lumpinfo + ep;	
 					for (int j = ep; j > op; j--, tlump--) {
 						//GK: Lookup sprite animation frames in case of the modded one having scrambled frame name and rotation
 						bool ok = false;
 						if (!sprite) {
 							if (!idStr::Icmpn(filelumpPointer->name, tlump->name, 8)) {
+								//GK: find animation flats and delete their between frames
+								for (int p = 0; !::g->animdefs[p].istexture ; p++) {
+									if (!idStr::Icmpn(::g->animdefs[p].startname, tlump->name, 8)) {
+										markfordelete = true;
+										break;
+									}
+								}
+								int k = 1;
+								lumpinfo_t* ttlump = &lumpinfo[j + k];
+									while (markfordelete) {
+										I_Printf("Delete lump %s\n", ttlump->name);
+										W_RemoveLump(j + (k+1));
+										for (int p = 0; !::g->animdefs[p].istexture; p++) {
+											if (!idStr::Icmpn(::g->animdefs[p].endname, ttlump->name, 8)) {
+												markfordelete = false;
+												break;
+											}
+										}
+										
+									}
 								ok = true;
 							}
 						}
@@ -582,9 +603,9 @@ void W_AddFile ( const char *filename)
 							tlump->position = LONG(filelumpPointer->filepos);
 							tlump->size = LONG(filelumpPointer->size);
 							replaced = true;
-							if (j > reppos) {
+							//if (j > reppos) { //GK: What was the purpose of this?
 								reppos = j;
-							}
+							//}
 							break;
 						}
 					}
@@ -868,7 +889,8 @@ int W_CheckNumForName (const char* name)
     int		v1;
     int		v2;
     lumpinfo_t*	lump_p;
-
+	if (!name) //GK: SANITY CHECK
+		return -1;
     // make the name into two integers for easy compares
     strncpy (name8.s,name, NameLength - 1);
 

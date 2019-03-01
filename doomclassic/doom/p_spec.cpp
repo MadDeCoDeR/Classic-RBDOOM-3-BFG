@@ -85,7 +85,7 @@ If you have questions concerning this license or the applicable additional terms
 //  and end entry, in the order found in
 //  the WAD file.
 //
-const animdef_t		animdefs[] =
+/*const animdef_t		animdefs[] =
 {
 	{false,	"NUKAGE3",	"NUKAGE1",	8},
 	{false,	"FWATER4",	"FWATER1",	8},
@@ -116,7 +116,7 @@ const animdef_t		animdefs[] =
 	{true,	"DBRAIN4",	"DBRAIN1",	8},
 
 	{-1}
-};
+};*/
 
 // killough 3/7/98: Initialize generalized scrolling
 static void P_SpawnScrollers(void);
@@ -135,35 +135,35 @@ void P_InitPicAnims (void)
 
 	//	Init animation
 	::g->lastanim = ::g->anims;
-	for (i=0 ; animdefs[i].istexture != (qboolean)-1 ; i++)
+	for (i=0 ; ::g->animdefs[i].istexture != (qboolean)-1 ; i++)
 	{
-		if (animdefs[i].istexture)
+		if (::g->animdefs[i].istexture)
 		{
 			// different episode ?
-			if (R_CheckTextureNumForName(animdefs[i].startname) == -1)
+			if (R_CheckTextureNumForName(::g->animdefs[i].startname) == -1)
 				continue;	
 
-			::g->lastanim->picnum = R_TextureNumForName (animdefs[i].endname);
-			::g->lastanim->basepic = R_TextureNumForName (animdefs[i].startname);
+			::g->lastanim->picnum = R_TextureNumForName (::g->animdefs[i].endname);
+			::g->lastanim->basepic = R_TextureNumForName (::g->animdefs[i].startname);
 		}
 		else
 		{
-			if (W_CheckNumForName(animdefs[i].startname) == -1)
+			if (W_CheckNumForName(::g->animdefs[i].startname) == -1)
 				continue;
 
-			::g->lastanim->picnum = R_FlatNumForName (animdefs[i].endname);
-			::g->lastanim->basepic = R_FlatNumForName (animdefs[i].startname);
+			::g->lastanim->picnum = R_FlatNumForName (::g->animdefs[i].endname);
+			::g->lastanim->basepic = R_FlatNumForName (::g->animdefs[i].startname);
 		}
 
-		::g->lastanim->istexture = animdefs[i].istexture;
+		::g->lastanim->istexture = ::g->animdefs[i].istexture;
 		::g->lastanim->numpics = ::g->lastanim->picnum - ::g->lastanim->basepic + 1;
 
 		if (::g->lastanim->numpics < 2)
 			I_Error ("P_InitPicAnims: bad cycle from %s to %s",
-			animdefs[i].startname,
-			animdefs[i].endname);
+				::g->animdefs[i].startname,
+				::g->animdefs[i].endname);
 
-		::g->lastanim->speed = animdefs[i].speed;
+		::g->lastanim->speed = ::g->animdefs[i].speed;
 		::g->lastanim++;
 	}
 
