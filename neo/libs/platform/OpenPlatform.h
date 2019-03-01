@@ -39,6 +39,7 @@ public:
 	virtual void ShowUser( unsigned int id) = 0;
 	virtual bool isPlatformOverlayActive() = 0;
 	virtual void SetNotificationsPosition(unsigned int x, unsigned int y) = 0;
+	virtual unsigned long long CreateLobby(int type, int maxplayers) = 0;
 };
 
 extern OPlatform* op;

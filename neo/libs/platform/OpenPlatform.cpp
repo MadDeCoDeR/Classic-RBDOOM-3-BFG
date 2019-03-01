@@ -43,6 +43,7 @@ public:
 	virtual void ShowUser( unsigned int id);
 	virtual bool isPlatformOverlayActive();
 	virtual void SetNotificationsPosition(unsigned int x, unsigned int y);
+	virtual unsigned long long CreateLobby(int type, int maxplayers);
 };
 
 OPlatformLocal opl;
@@ -81,3 +82,4 @@ bool OPlatformLocal::GetAchievementHidden(const char* name) { return false; }
 void OPlatformLocal::ShowUser( unsigned int id) {}
 bool OPlatformLocal::isPlatformOverlayActive() { return false; }
 void OPlatformLocal::SetNotificationsPosition(unsigned int x, unsigned int y) {}
+unsigned long long OPlatformLocal::CreateLobby(int type, int maxplayers) { return 0; }
