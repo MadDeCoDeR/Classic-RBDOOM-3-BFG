@@ -4,6 +4,31 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+30 March 2019 - Classic RBDOOM-3-BFG 1.1.12.10
+_______________________________
+
+WARNING: The game dll support is nearly complete but 
+there are still bugs while using them.
+
+[classicdoom]
+
+- Added jumping and a new map script ActMap
+
+- Further fixes and improvments for EXPINFO/MAPINFO
+
+- Spelling fix for one of the Master Levels ending
+
+- Added new command line "-exportMaster" which 
+"extract" the MASTERLEVELS.wad in order
+to be use in other ports (mostly ZDoom and derivates)
+
+[DOOM3BFG]
+
+- Updated game.dll cmake script and linux and 
+vs2017 cmake scripts will 
+return a log file with the cmake's output
+_______________________________________
+
 02 March 2019 - Classic RBDOOM-3-BFG 1.1.12.9
 _______________________________
 
