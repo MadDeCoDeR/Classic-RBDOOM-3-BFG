@@ -2718,7 +2718,7 @@ int idSndWindow::AnimationLength()
 void			InitCinematicAudio() {
 	alGenSources(1, &alMusicSourceVoicecin);
 
-	alSource3i(alMusicSourceVoicecin, AL_POSITION, 0, 0, -1);
+	alSource3i(alMusicSourceVoicecin, AL_POSITION, 0, 0, 0);
 	alSourcei(alMusicSourceVoicecin, AL_SOURCE_RELATIVE, AL_TRUE);
 	alSourcei(alMusicSourceVoicecin, AL_ROLLOFF_FACTOR, 0);
 	alGenBuffers(NUM_BUFFERS, &alMusicBuffercin[0]);

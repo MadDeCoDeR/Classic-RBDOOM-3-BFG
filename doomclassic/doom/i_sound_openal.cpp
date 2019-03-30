@@ -342,6 +342,7 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 			sound->localSound = false;
 			x = (ALfloat)(origin->x >> FRACBITS);
 			z = (ALfloat)(origin->y >> FRACBITS);
+			y = (ALfloat)(origin->z >> FRACBITS);
 		}
 	} else {
 		sound->localSound = true;
@@ -349,6 +350,7 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 	if ( sound->localSound ) {
 		x = doom_Listener.Position.x;
 		z = doom_Listener.Position.z;
+		y = doom_Listener.Position.y;
 	}
 	alSource3f( sound->alSourceVoice, AL_POSITION, x, y, z );
 	//GK: Set the EFX in the last moment
@@ -537,7 +539,7 @@ void I_UpdateSound( void )
 						doom_Listener.Position.y, doom_Listener.Position.z );
 			} else {
 				ALfloat x = (ALfloat)(sound->originator->x >> FRACBITS);
-				ALfloat y = 0.f;
+				ALfloat y = (ALfloat)(sound->originator->z >> FRACBITS);
 				ALfloat z = (ALfloat)(sound->originator->y >> FRACBITS);
 				
 				alSource3f( sound->alSourceVoice, AL_POSITION, x, y, z );
