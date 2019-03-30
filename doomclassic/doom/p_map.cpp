@@ -89,8 +89,12 @@ qboolean PIT_StompThing (mobj_t* thing)
     if (thing == ::g->tmthing)
 	return true;
     
+	bool ok = false;
+	if (::g->gamemission == pack_custom)
+		if (::g->maps[::g->gamemap - 1].monstertelefrag)
+			ok = true;
     // monsters don't stomp things except on boss level
-    if ( !::g->tmthing->player && ::g->gamemap != 30)
+    if ( !::g->tmthing->player && (::g->gamemap != 30 && !ok) )
 	return false;	
 		
     P_DamageMobj (thing, ::g->tmthing, ::g->tmthing, 10000);

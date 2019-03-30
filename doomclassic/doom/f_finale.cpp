@@ -214,19 +214,7 @@ void F_StartFinale (void)
 		case registered:
 		case retail:
 		{
-			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
-				if (::g->clusters[::g->gameepisode-1].ftext != NULL) {
-					S_ChangeMusic(::g->clusters[::g->gameepisode-1].fmusic, true);
-					flt = finaleflat[::g->clusters[::g->gameepisode-1].fflat];
-					finaletext = ::g->clusters[::g->gameepisode-1].ftext;
-				}
-				else {//GK: NO finale??
-					S_ChangeMusic(mus_victor, true);
-					flt = finaleflat[10]; // Not used anywhere else.
-					finaletext = fooltext;   //GK: NO finale text found??
-				}
-			}
-			else {
+			{
 				S_ChangeMusic(mus_victor, true);
 
 				switch (::g->gameepisode)
@@ -253,6 +241,13 @@ void F_StartFinale (void)
 					flt = finaleflat[10]; // Not used anywhere else.
 					finaletext = fooltext;   //GK: NO finale text found??
 					break;
+				}
+			}
+			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+				if (::g->clusters[::g->gameepisode - 1].ftext != NULL) {
+					S_ChangeMusic(::g->clusters[::g->gameepisode - 1].fmusic, true);
+					flt = finaleflat[::g->clusters[::g->gameepisode - 1].fflat];
+					finaletext = ::g->clusters[::g->gameepisode - 1].ftext;
 				}
 			}
 			break;
@@ -609,7 +604,9 @@ void F_TextWrite (void)
 	}
 
     // erase the entire screen to a tiled background
-	src = (byte*)W_CacheLumpName(finaleflat[flatind], PU_CACHE_SHARED);
+	if (flatind > -1) {
+		src = (byte*)W_CacheLumpName(finaleflat[flatind], PU_CACHE_SHARED);
+	}
 	if (::g->gamemission == pack_custom && flt != NULL) { //GK: Custom expansion related stuff
 		src = (byte*)W_CacheLumpName(flt, PU_CACHE_SHARED);
 	}

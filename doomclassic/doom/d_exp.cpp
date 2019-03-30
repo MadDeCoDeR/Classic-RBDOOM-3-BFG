@@ -57,7 +57,10 @@ typedef struct {
 	statenum_t* stval;
 	ammotype_t* amval;
 }expobj;
-int episodecount = 0;
+int episodecount = -1;
+int realmap = 0;
+//int episodecount1 = 0;
+//int episodecount2 = 0;
 
 void parseexptext(char* text);
 std::vector<std::string> getexplines(char* text);
@@ -72,6 +75,8 @@ int tex = 1;
 void setExpData(char* name, char* value);
 const char* getENumName(int i);
 void M_Episode(int choice);
+
+bool beginepisode = false;
 
 typedef struct {
 	char** var;
@@ -282,22 +287,39 @@ char* removequotes(char* value) {
 	return tmpvalue;
 }
 
-void setMAP(int index,char* value1, char* value2, char* value3) {
-	int map;
+int calculateD1map(int map, int& counter) {
 	int endmap;
+	int result = map;
 	
-	if (::g->gamemode == retail && ::g->clusters.size()) {
-		if (::g->clusters[episodecount].endmap) {
-			endmap = ::g->clusters[episodecount].endmap - ::g->clusters[episodecount].startmap;
+	if (::g->clusters.size()) {
+		if (::g->clusters[counter].endmap) {
+			endmap = ::g->clusters[counter].endmap - ::g->clusters[counter].startmap;
 			endmap++;
 		}
 		else {
 			endmap = 8;
 		}
-		map = ::g->clusters[episodecount].startmap + index;
-		if (index == endmap) {
-			episodecount++;
+		result = ::g->clusters[counter].startmap + map;
+		/*if (map == endmap) {
+			counter++;
+		}*/
+	}
+	return result;
+}
+
+void setMAP(int index,char* value1, char* value2, char* value3) {
+	int map;
+	int endmap;
+	
+	if (::g->gamemode == retail) {
+		if (beginepisode) {
+			if (episodecount >= ::g->clusters.size()) {
+				::g->clusters.resize(episodecount + 1);
+			}
+			::g->clusters[episodecount].startmap = realmap;
+			beginepisode = false;
 		}
+		map = calculateD1map(index,episodecount);
 	}
 	else {
 		map = index + 1;
@@ -352,6 +374,9 @@ void EX_add(int lump) {
 	::g->endmap = 30;
 	::g->savedir = NULL;
 	if (::g->gamemode == retail) {
+		beginepisode = false;
+		episodecount = -1;
+		realmap = 0;
 		::g->intermusic = mus_inter;
 	}
 	else {
@@ -409,6 +434,13 @@ void parseexptext(char* text) {
 							mapcount++;
 							val1 = mapcount - 1;
 						}
+						if (::g->gamemode == retail && val1 == 0) {
+							episodecount++;
+							if (!beginepisode) {
+								beginepisode = true;
+							}
+						}
+						realmap++;
 						varopt = t;
 						t = strtok(NULL, " ");
 						if (t != NULL) {
@@ -424,15 +456,15 @@ void parseexptext(char* text) {
 						if (val1 == -1) {
 							val1 = ::g->EpiDef.numitems;
 						}
-						if (!::g->clusterind || ::g->clusterind <= ::g->clusters.size()) {
+						if (atoi(t + 1)) {
+							val1 = atoi(t + 1) - 1;
+						}
+						if ((!::g->clusterind || ::g->clusterind <= ::g->clusters.size()) && ::g->clusterind <= val1) {
 							if (::g->gamemode == retail) {
 								if (val1 + 1 > ::g->EpiDef.numitems) {
 									::g->EpiDef.numitems = val1 + 1;
 									int newval = val1 + 1;
 									::g->EpisodeMenu = (menuitem_t*)realloc(::g->EpisodeMenu, newval * sizeof(menuitem_t));
-								}
-								if (!::g->clusterind) {
-									episodecount = val1;
 								}
 							}
 							::g->clusters.resize(val1 + 1);
@@ -441,6 +473,9 @@ void parseexptext(char* text) {
 						::g->clusters[val1].fflat = -1;
 						if (!atoi(t)) {
 							::g->clusters[val1].mapname = t;
+							if (::g->gamemode == retail) {
+								beginepisode = true;
+							}
 						}
 						break;
 					}
@@ -592,6 +627,9 @@ void setSAVEDIR( char* value) {
 }
 
 void setMAPINT(int pos,char* name, int value) {
+	if (::g->gamemode == retail) {
+		pos = calculateD1map(pos,episodecount)-1;
+	}
 	expobj mapint[] = {
 	{ "secret_map" ,MAXINT,NULL,&::g->maps[pos].secretmap},
 	{ "next_map" ,MAXINT,NULL,&::g->maps[pos].nextmap },
@@ -616,6 +654,9 @@ void setMAPINT(int pos,char* name, int value) {
 void setMAPSTR(int pos, char* name, char* value) {
 	value = removequotes(value);
 
+	if (::g->gamemode == retail) {
+		pos = calculateD1map(pos,episodecount) -1;
+	}
 		expobj mapstr[] = {
 			{"miniboss",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].miniboss},
 			{"map07special",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].miniboss},
@@ -631,9 +672,10 @@ void setMAPSTR(int pos, char* name, char* value) {
 			{"doorsecret",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].dsecret},
 			{"thingsecret",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].tsecret},
 			{"cspeclsecret",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].cspecls},
+			{"allowmonstertelefrags",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].monstertelefrag},
 		};
 
-		for (int i = 0; i < 14; i++) {
+		for (int i = 0; i < 15; i++) {
 			if (!idStr::Icmp(name, mapstr[i].name)) {
 				bool found = false;
 				switch (i + 1) {
@@ -685,8 +727,12 @@ void setMAPSTR(int pos, char* name, char* value) {
 						*mapstr[i].sval = value;
 						*mapstr[i].ival = -1;
 					}
-					if (!idStr::Icmpn(value, "EndGame", 7)) {
+					if (!idStr::Icmpn(value, "EndGame", 7) || !idStr::Icmpn(value, "endbunny", 8)) {
 						::g->endmap = pos + 1;
+						if (::g->gamemode == retail) {
+							::g->clusters[episodecount].endmap = ::g->endmap - (::g->clusters[episodecount].startmap - 1);
+							beginepisode = true;
+						}
 					}
 					break;
 				case 10:
@@ -699,6 +745,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 				case 12:
 				case 13:
 				case 14:
+				case 15:
 					*mapstr[i].bval = true;
 					break;
 				}

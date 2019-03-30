@@ -708,14 +708,20 @@ void WI_drawShowNextLoc(void)
 				}
 			}
 		}
-		if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
-			if (::g->wbs->next != ::g->endmap || ::g->secretexit) {
-				WI_drawEL();
-				return;
-			}
-			else {
-				return;
-			}
+		
+	}
+
+	if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
+		int nmap = ::g->wbs->next;
+		if (::g->gamemode == retail) {
+			nmap = nmap - (::g->clusters[::g->wbs->epsd].startmap - 1);
+		}
+		if (nmap != ::g->endmap || ::g->secretexit) {
+			WI_drawEL();
+			return;
+		}
+		else {
+			return;
 		}
 	}
     // draws which level you are entering..
