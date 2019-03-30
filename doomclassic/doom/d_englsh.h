@@ -582,7 +582,7 @@ extern char* C2TEXT;
 "You have venture throught all the\n"\
 "twisted levels that hell had to\n"\
 "offer and you have survived.\n\n"\
-"The Flames of range flow through\n"\
+"The Flames of rage flow through\n"\
 " your veins, you are ready\n"\
 " for more but you don't know where\n"\
 "to find more when the demons hide\n"\
