@@ -99,6 +99,7 @@ void	W_Shutdown();
 void CleanUncompFiles(bool unalloc);
 
 void MakeMaster_Wad();
+void MasterExport();
 void uncompressMaster();
 void MasterList();
 void W_CheckExp();

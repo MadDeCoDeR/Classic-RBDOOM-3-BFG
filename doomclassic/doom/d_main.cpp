@@ -1000,6 +1000,11 @@ void D_DoomMain(void)
 	//GK: Check if there is either a folder or a zip that is called "master" and create the MASTERLEVELS.wad
 	if (::g->gamemode == commercial && !DoomLib::hexp[2])
 	    MakeMaster_Wad();
+	//GK: "Extract" the Master Levels in order to be used in other ports
+	int exm = M_CheckParm("-extractMaster");
+	if (exm && DoomLib::hexp[2]) {
+		MasterExport();
+	}
 
 	if (::g->gamemode == commercial && !initonce) {
 		initonce =true;

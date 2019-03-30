@@ -59,6 +59,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "libs/zlib/minizip/unzip.h" //GK: Linux doesn't like the use of \ for file paths
 #include "f_finale.h"
 #include "g_game.h"
+#include "p_setup.h"
 
 #ifndef _WIN32
 #include <dirent.h>
@@ -768,6 +769,7 @@ void W_FreeWadFiles() {
 		resetSprnames();
 		ResetPars();
 		ResetFinalflat();
+		P_ResetAct();
 		I_Printf("Reset Completed!!\n");
 	}
 	//GK End
@@ -1594,6 +1596,168 @@ void MasterList() {
 	of.flush();
 	//GK: Nothing to see here (or close in that mater)
 	return;
+}
+
+//GK:Open all the wads and copy and rename their contents into one WAD file
+void MasterExport() {
+
+	wadinfo_t		header;
+	lumpinfo_t*		lump;
+	lumpinfo_t*		lumpnfo = NULL;
+	idFile *		handle;
+	int			length;
+	int			startlump;
+	int nlps = 0;
+	int cl = 0;
+	int remlmp = 0;
+	bool pushit = true;
+	std::vector<filelump_t>	fileinfo(1);
+	int count = 1;
+	int count2 = 1;
+	char* filename = new char[MAX_FILENAME];
+	char* file[3];
+	file[0] = "wads/MASTERLEVELS.wad"; //GK: Otherwise it will crash once it will try to open them
+	file[1] = "wads/mlbls.wad";
+	file[2] = "wads/ua.wad";
+#ifdef _WIN32
+	WIN32_FIND_DATA ffd;
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+#else
+	DIR           *dirp;
+	struct dirent *directory;
+#endif
+	std::vector <int> fofs;
+	int offs = 12;
+	char* buffer = new char[512];
+	std::ofstream of("base//wads//MASTERLEVELZ.wad", std::ios::binary);
+	of.write("PWAD", 4);
+	for (int i = 0; i < 3; i++) {
+		sprintf(filename, "%s", file[i]);
+		idLib::Printf("%s\n", filename);
+		// open the file and add to directory
+		if ((handle = fileSystem->OpenFileRead(filename)) == 0)
+		{
+			idLib::Printf("Doom Classic Error : Master Levels generation failed\n");
+			of.close();
+			//DoomLib::hexp[2] = false;
+			remove("base//wads//MASTERLEVELZ.wad");
+			return;
+		}
+		startlump = nlps;
+
+
+		if (idStr::Icmp(filename + strlen(filename) - 3, "wad"))
+		{
+		}
+		else
+		{
+			// WAD file
+			handle->Read(&header, sizeof(header));
+			if (idStr::Cmpn(header.identification, "IWAD", 4))
+			{
+				// Homebrew levels?
+				if (idStr::Cmpn(header.identification, "PWAD", 4))
+				{
+					I_Error("Wad file %s doesn't have IWAD "
+						"or PWAD id\n", filename);
+				}
+
+				// ???modifiedgame = true;		
+			}
+			header.numlumps = LONG(header.numlumps);
+			header.infotableofs = LONG(header.infotableofs);
+			length = header.numlumps * sizeof(filelump_t);
+			fileinfo.resize(header.numlumps);
+			handle->Seek(header.infotableofs, FS_SEEK_SET);
+			handle->Read(&fileinfo[0], length);
+			nlps += header.numlumps;
+			if (lumpnfo == NULL) {
+				lumpnfo = (lumpinfo_t*)malloc(nlps * sizeof(lumpinfo_t));
+			}
+			else {
+				lumpnfo = (lumpinfo_t*)realloc(lumpnfo, nlps * sizeof(lumpinfo_t));
+			}
+
+			if (!lumpnfo)
+				I_Error("Couldn't realloc lumpinfo");
+
+			lump = &lumpnfo[startlump];
+
+			filelump_t * filelumpPointer = &fileinfo[0];
+			rep = false;
+
+			for (int i = startlump; i < nlps; i++, filelumpPointer++)
+			{
+				if (!idStr::Icmpn(filelumpPointer->name, "M_EPISOD",8) || !idStr::Icmp(filelumpPointer->name, "M_EPI1") || !idStr::Icmp(filelumpPointer->name, "M_EPI2") || !idStr::Icmp(filelumpPointer->name, "M_EPI3") || !idStr::Icmp(filelumpPointer->name, "M_EPI4")) {
+					remlmp++;
+					continue;
+				}
+				lump->null = false;
+				lump->handle = handle;
+				lump->position = LONG(filelumpPointer->filepos);
+				lump->size = LONG(filelumpPointer->size);
+				strncpy(lump->name, filelumpPointer->name, 8);
+				lump->name[8] = '\0';
+				fofs.emplace_back(offs);
+				if (!idStr::Cmpn(lump->name, "MAP", 3)) {
+					lump->name[1] = 'S';
+					lump->name[2] = 'L';
+				}
+				if (!idStr::Cmpn(lump->name, "CWILV", 5)) {
+					lump->name[0] = 'M';
+				}
+				if (!idStr::Cmpn(lump->name, "INTERPIC", 8)) {
+					lump->name[0] = 'M';
+					lump->name[1] = 'S';
+				}
+				if (!idStr::Cmpn(lump->name, "DNL", 3)) {
+					sprintf(lump->name, "MAPINFO",7*sizeof(char));
+				}
+				offs += lump->size;
+				lump++;
+
+			}
+		}
+	}
+lump = &lumpnfo[0];
+nlps = nlps - remlmp;
+of.write(reinterpret_cast<char*>(&nlps), 4);
+of.write(reinterpret_cast<char*>(&offs), 4);
+//GK:The more the better
+buffer = new char[offs];
+try {
+	for (int i = 0; i < nlps ; i++, lump++) {
+
+		handle = lump->handle;
+		handle->Seek(lump->position, FS_SEEK_SET);
+		int c = handle->Read(buffer, lump->size);
+		if (!lump->null) {
+			if (idStr::Cmpn(buffer, "WARNING", 7)) {
+				of.write(buffer, lump->size);
+			}
+		}
+	}
+}
+catch (int e) {
+
+}
+
+lump = &lumpnfo[0];
+
+for (int i = 0; i < nlps; lump++) {
+	if (!lump->null) {
+		of.write(reinterpret_cast<char*>(&fofs[i]), 4);
+		of.write(reinterpret_cast<char*>(&lump->size), 4);
+		of.write(lump->name, 8);
+		i++;
+	}
+}
+lump = nullptr;
+lumpnfo = nullptr;
+delete[] buffer;
+of.flush();
+//GK: Nothing to see here (or close in that mater)
+return;
 }
 
 void W_CheckExp() {
