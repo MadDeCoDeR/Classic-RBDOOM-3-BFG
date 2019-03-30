@@ -164,7 +164,8 @@ Var_t g_vars[] =
 	{"pm_thirdPersonAngle",&pm_thirdPersonAngle},
 	{"pm_thirdPersonRange",&pm_thirdPersonRange},
 	{"pm_thirdPersonXOff",&pm_thirdPersonXOff},
-	{"pm_thirdPersonHeight",&pm_thirdPersonHeight}
+	{"pm_thirdPersonHeight",&pm_thirdPersonHeight},
+	{"pm_jumpheight",&pm_jumpheight}
 };
 /*
 ===========

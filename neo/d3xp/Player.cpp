@@ -6094,7 +6094,6 @@ void idPlayer::UpdateFlashlight()
 	else {
 		worldModel->Hide(); //GK: This time make sure there is NO second flashlight model rendered
 	}
-	if (!flashlight_old.GetInteger()) {
 		if (flashlight.GetEntity()->lightOn)
 		{
 			if ((flashlightBattery < flashlight_batteryChargeTimeMS.GetInteger() / 2) && (gameLocal.random.RandomFloat() < flashlight_batteryFlickerPercent.GetFloat()))
@@ -6106,7 +6105,6 @@ void idPlayer::UpdateFlashlight()
 				flashlight.GetEntity()->MuzzleFlashLight();
 			}
 		}
-	}
 	
 	flashlight.GetEntity()->PresentWeapon( true );
 	if (!flashlight_old.GetInteger()) { //GK: Not legacy no care
