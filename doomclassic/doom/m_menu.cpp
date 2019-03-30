@@ -79,6 +79,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "d_items.h"
 #include "f_finale.h"
 #include "g_game.h"
+#include "p_setup.h"
 
 #include "am_map.h"
 #ifdef USE_OPENAL
@@ -90,6 +91,7 @@ extern idCVar cl_randpitch;
 extern idCVar in_joylayout;
 extern idCVar in_alwaysRunCl;
 extern idCVar cl_freelook;
+extern idCVar cl_jump;
 //
 // defaulted values
 //
@@ -189,6 +191,7 @@ void M_MasterSelect(int choice);
 void M_Doom_IT(int choice);
 void M_Gameplay(int choice);
 void M_Freelook(int choice);
+void M_Jump(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
@@ -989,12 +992,15 @@ void M_DrawGame(void)
 
 	int alwayrun = in_alwaysRunCl.GetInteger();
 	int freelook = cl_freelook.GetInteger();
+	int jumping = cl_jump.GetBool();
 
 
 	V_DrawPatchDirect(::g->GameDef.x + 120, ::g->GameDef.y + LINEHEIGHT * run, 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[alwayrun], PU_CACHE_SHARED), W_GetNumForName(msgNames[alwayrun])));
 	V_DrawPatchDirect(::g->GameDef.x + 135, ::g->GameDef.y + LINEHEIGHT * (look), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[freelook], PU_CACHE_SHARED), W_GetNumForName(msgNames[freelook])));
+	V_DrawPatchDirect(::g->GameDef.x + 70, ::g->GameDef.y + LINEHEIGHT * (jump), 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[jumping], PU_CACHE_SHARED), W_GetNumForName(msgNames[jumping])));
 }
 
 void M_Gameplay(int choice)
@@ -1426,6 +1432,11 @@ void M_Freelook(int choice)
 {
 	cl_freelook.SetBool(cl_freelook.GetBool() ? 0 : 1);
 }
+
+void M_Jump(int choice)
+{
+	cl_jump.SetBool(cl_jump.GetBool() ? 0 : 1);
+}
 //GK:End
 //
 //      Toggle Fullscreen
@@ -1580,6 +1591,7 @@ void M_GameSelection(int choice)
 	resetSprnames();
 	ResetPars();
 	ResetFinalflat();
+	P_ResetAct();
 	I_Printf("Reset Completed!!\n");
 	memset(DoomLib::otherfiles,0,5*20);//GK:Reset this for better checking
 	

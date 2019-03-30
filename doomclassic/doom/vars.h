@@ -259,6 +259,7 @@ int             joybstrafe;
 int             joybuse; 
 int             joybspeed; 
 fixed_t		oldforwardmove; //GK: The flipping trynity
+bool		jump;
 bool		flip;
 bool		isfliped;
 fixed_t		forwardmove[2];
@@ -419,7 +420,7 @@ menuitem_t MasterMenu[2];
 menu_t  MasterDef;
 menuitem_t DOOMIT[20];
 menu_t  DOOMITDef;
-menuitem_t GameMenu[2];
+menuitem_t GameMenu[3];
 menu_t  GameDef;
 char    tempstring[80];
 int     epi;
@@ -1023,6 +1024,12 @@ unsigned int clEAX;
 int mapindex;
 std::string mapname;
 #endif
+//d_act starts
+std::vector<std::vector<actdef_t*>> acts;
+int actind;
+bool hasacts;
+int oldsec;
+//d_act ends
 //img2lmp starts
 std::vector<patch_t*>cpatch;
 int cpind;

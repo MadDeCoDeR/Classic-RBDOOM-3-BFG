@@ -50,6 +50,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "doomstat.h"
 
 #include "d_udmf.h"
+#include "d_act.h"
 #ifdef USE_OPENAL
 #include "s_efx.h"
 
@@ -541,7 +542,27 @@ void P_LoadBlockMap (int lump)
 	::g->blockmap = ::g->blockmaplump + 4;
 }
 
+//P_ResetAct
+//Make sure that the next map,game,expansion
+//will not gonna carry the changes ActMap did
+//in any sector
+void P_ResetAct() {
+	for (int i = 0; i < ::g->acts.size(); i++) {
+		if (!::g->acts[i].empty()) {
+			for (actdef_t* act : ::g->acts[i]) {
+				cvarSystem->SetCVarString(act->cvar, act->oldValue);
+			}
+		}
+	}
+	::g->hasacts = false;
+	::g->oldsec = 0;
+}
 
+//P_ActMap
+//Load the act map for later use
+void P_ActMap(int lump) {
+	loadacts(lump);
+}
 
 //
 // P_GroupLines
@@ -737,7 +758,7 @@ P_SetupLevel
 	// Initial height of PointOfView
 	// will be set by player think.
 	::g->players[::g->consoleplayer].viewz = 1; 
-
+	P_ResetAct();
 	// Make sure all sounds are stopped before Z_FreeTags.
 	S_Start ();			
 	//GK: Clear also the cache since it's not needed
@@ -818,6 +839,7 @@ P_SetupLevel
 					}
 				if (::g->clusters[episode - 1].startmap) {
 					int newmap = ::g->clusters[episode - 1].startmap + (map - 1);
+					::g->endmap = ::g->clusters[episode - 1].endmap;
 					if (::g->maps[newmap - 1].lumpname != NULL) {
 						sprintf(lumpname, "%s", ::g->maps[newmap - 1].lumpname);
 					}
@@ -882,6 +904,7 @@ P_SetupLevel
 	else {
 
 		// note: most of this ordering is important	
+		P_ActMap(lumpnum + ML_ACTMAP);
 		P_LoadBlockMap(lumpnum + ML_BLOCKMAP);
 		P_LoadVertexes(lumpnum + ML_VERTEXES);
 		P_LoadSectors(lumpnum + ML_SECTORS);

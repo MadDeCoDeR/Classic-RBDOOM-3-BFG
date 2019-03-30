@@ -411,9 +411,10 @@ int     temp_quitsounds2[8] = {
 };
 memcpy( ::g->quitsounds2, temp_quitsounds2, sizeof(temp_quitsounds2) );
 //GK: Begin
-menuitem_t temp_GameMenu[2] = {
+menuitem_t temp_GameMenu[3] = {
 	{1,"M_AR",	M_Alwaysrun,'a'},
 	{1,"M_FL",M_Freelook,'f'},
+	{1,"M_JM",M_Jump,'j'},
 };
 memcpy(::g->GameMenu, temp_GameMenu, sizeof(temp_GameMenu));
 menu_t  temp_GameDef = {

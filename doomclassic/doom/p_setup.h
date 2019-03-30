@@ -46,5 +46,8 @@ P_SetupLevel
 // Called by startup code.
 void P_Init (void);
 
+//Called when entering a new level or changing game.expansion
+void P_ResetAct();
+
 #endif
 

@@ -377,8 +377,12 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			}
 
 
-			if ( curTech5Command.buttons & BUTTON_USE || curTech5Command.buttons & BUTTON_JUMP ) {
+			if ( curTech5Command.buttons & BUTTON_USE  ) {
 				cmd->buttons |= BT_USE;
+			}
+			::g->jump = false;
+			if ( curTech5Command.buttons & BUTTON_JUMP) {
+				::g->jump = true;
 			}
 
 			// TODO: PC

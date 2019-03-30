@@ -52,7 +52,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // 16 pixels of bob
 
-
+idCVar cl_jump("cl_jump", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable jumping on classic Doom");
 
 //
 // P_Thrust
@@ -169,11 +169,16 @@ void P_MovePlayer (player_t* player)
 	// Do not let the player control movement
 	//  if not ::g->onground.
 	::g->onground = (player->mo->z <= player->mo->floorz);
+	//GK: The most sophisticated thing in the hole world.
+	//Just raising the player's z pos in order to jump
+	if ( ::g->jump && cl_jump.GetBool()) {
+		player->mo->z += game->GetCVarFloat("pm_jumpheight")*(2048*4);
+	}
 
-	if (cmd->forwardmove && ::g->onground)
+	if (cmd->forwardmove && (::g->onground || ::g->jump))
 		P_Thrust (player, player->mo->angle, cmd->forwardmove*2048);
 
-	if (cmd->sidemove && ::g->onground)
+	if (cmd->sidemove && (::g->onground || ::g->jump))
 		P_Thrust (player, player->mo->angle-ANG90, cmd->sidemove*2048);
 
 	if ( (cmd->forwardmove || cmd->sidemove) 
@@ -265,6 +270,33 @@ void P_Reverb(player_t* player) {
 	}
 }
 
+//P_Acts
+//Change game CVars based on the
+//sector tag of the sector the player is on
+void P_Acts(player_t* player) {
+	int index = player->mo->subsector->sector->tag;
+	//first reset
+	if (index != ::g->oldsec) {
+		if (!::g->acts[::g->oldsec].empty()) {
+			for (actdef_t* act : ::g->acts[::g->oldsec]) {
+				cvarSystem->SetCVarString(act->cvar, act->oldValue);
+			}
+			::g->oldsec = index;
+		}
+	}
+	//and then apply
+	if (index <= ::g->actind) {
+		if (!::g->acts[index].empty()) {
+			for (actdef_t* act : ::g->acts[index]) {
+				char* tempVal = strdup(cvarSystem->GetCVarString(act->cvar));
+				if (idStr::Cmp(tempVal, act->value)) {
+					::g->oldsec = index;
+					cvarSystem->SetCVarString(act->cvar, act->value);
+				}
+			}
+		}
+	}
+}
 
 
 //
@@ -311,6 +343,9 @@ void P_PlayerThink (player_t* player)
 	if (::g->hasreverb)
 		P_Reverb(player);
 #endif
+	if (::g->hasacts)
+		P_Acts(player);
+
 	if (player->mo->subsector->sector->special)
 		P_PlayerInSpecialSector (player);
 

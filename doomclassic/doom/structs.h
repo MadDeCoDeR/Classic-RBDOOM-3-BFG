@@ -214,6 +214,7 @@ typedef enum
 {
 	run,
 	look,
+	jump,
 	game_end
 } game_e;
 typedef enum
@@ -560,6 +561,7 @@ typedef struct {//GK:Store information for the custom expansion maps
 	int par;
 	char* nextmapname;
 	char* secretmapname;
+	bool monstertelefrag;
 }map_t;
 
 typedef struct {//GK:Store information for the custom expansion clusters
@@ -573,3 +575,9 @@ typedef struct {//GK:Store information for the custom expansion clusters
 	char* titlename; //GK: Set episode picname
 	char* mapname; //GK: Set episode first map (from the maps vector)
 }cluster_t;
+//GK: Store CVar name new and original value
+typedef struct {
+	char* cvar;
+	char* value;
+	char* oldValue;
+}actdef_t;
