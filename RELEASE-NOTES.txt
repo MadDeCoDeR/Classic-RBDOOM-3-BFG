@@ -22,6 +22,8 @@ there are still bugs while using them.
 "extract" the MASTERLEVELS.wad in order
 to be use in other ports (mostly ZDoom and derivates)
 
+- Impoved OpenAL's 3D Audio
+
 [DOOM3BFG]
 
 - Updated game.dll cmake script and linux and 
