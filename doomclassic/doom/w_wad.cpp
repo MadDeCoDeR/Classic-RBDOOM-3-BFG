@@ -1711,7 +1711,11 @@ void MasterExport() {
 					lump->name[1] = 'S';
 				}
 				if (!idStr::Cmpn(lump->name, "DNL", 3)) {
+#ifdef WIN32
 					sprintf(lump->name, "MAPINFO",7*sizeof(char));
+#else
+					sprintf(lump->name,"MAPINFO");
+#endif
 				}
 				offs += lump->size;
 				lump++;
