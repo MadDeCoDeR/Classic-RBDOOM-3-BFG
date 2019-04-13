@@ -48,3 +48,4 @@ neo/neo.kdev4
 /neo/libs/ffmpeg-win32-old
 /.vs
 *.gch
+/.vscode/ipch
