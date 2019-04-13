@@ -1,3 +1,4 @@
+
 /*
 ===========================================================================
 
@@ -401,7 +402,8 @@ extern idGameEdit* 				gameEdit;
 ===============================================================================
 */
 //GK: Distinct OG dll from BFG dll
-const int GAME_API_VERSION		= 9;
+//Update: added support for Classic Doom
+const int GAME_API_VERSION		= 10;
 
 typedef struct
 {
@@ -421,6 +423,7 @@ typedef struct
 	idCollisionModelManager* 	collisionModelManager;	// collision model manager
 	idKey*						keys;
 	idSession*					session;
+	GetClassicData_t			GetClassicData;
 	
 } gameImport_t;
 

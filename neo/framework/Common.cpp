@@ -43,6 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../doomclassic/doom/d_event.h"
 #include "../../doomclassic/doom/d_main.h"
 #include "../../doomclassic/doom/w_wad.h"
+#include "../../doomclassic/doom/globaldata.h"
 #endif
 // RB end
 
@@ -122,6 +123,8 @@ intptr_t platformDLL = 0;
 
 idCommonLocal	commonLocal;
 idCommon* 		common = &commonLocal;
+
+GetClassicData_t GetClassicData = &GetClassicDoomData;
 
 // RB: defaulted this to 1 because we don't have a sound for the intro .bik video
 //GK : defaulted back to 0 the audio plays again (not perfectly but it will do for now)
@@ -1207,6 +1210,7 @@ void idCommonLocal::LoadGameDLL()
 		gameImport.collisionModelManager = ::collisionModelManager;
 		gameImport.keys = ::keys;
 		gameImport.session = ::session;
+		gameImport.GetClassicData = &GetClassicDoomData;
 		gameExport = *GetGameAPI(&gameImport);
 
 		if (gameExport.version != GAME_API_VERSION)

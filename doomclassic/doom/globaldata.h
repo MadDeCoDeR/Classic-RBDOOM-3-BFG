@@ -67,5 +67,5 @@ extern Globals *g;
 
 extern void localCalculateAchievements(bool epComplete);
 
-
+extern void* GetClassicDoomData();
 #endif

@@ -9,6 +9,7 @@ set(ID_GAME_INCLUDES
 	AimAssist.h
 	BrittleFracture.h
 	Camera.h
+	Classic.h
 	#d3xp/EndLevel.h
 	Entity.h
 	Fx.h
@@ -46,6 +47,7 @@ set(ID_GAME_SOURCES
 	AimAssist.cpp
 	BrittleFracture.cpp
 	Camera.cpp
+	Classic.cpp
 	#d3xp/EndLevel.cpp
 	Entity.cpp
 	Fx.cpp

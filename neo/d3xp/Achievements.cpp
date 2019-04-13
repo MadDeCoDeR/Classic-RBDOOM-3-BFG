@@ -571,7 +571,9 @@ CONSOLE_COMMAND( AchievementsReset, "Lock an achievement", NULL )
 		{
 			user->SetStatInt( i, 0 );
 			session->GetAchievementSystem().AchievementLock( user, i );
+#ifndef GAME_DLL
 			user->GetProfile()->ClearAchievement(i); //GK: Reset it for real
+#endif
 		}
 	}
 	else
@@ -579,7 +581,9 @@ CONSOLE_COMMAND( AchievementsReset, "Lock an achievement", NULL )
 		int i = atoi( args.Argv( 1 ) );
 		user->SetStatInt( i, 0 );
 		session->GetAchievementSystem().AchievementLock( user, i );
+#ifndef GAME_DLL
 		user->GetProfile()->ClearAchievement(i); //GK: Reset it for real
+#endif
 	}
 #ifndef GAME_DLL
 	user->SaveProfileSettings();

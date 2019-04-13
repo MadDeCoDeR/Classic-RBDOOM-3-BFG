@@ -61,6 +61,7 @@ void M_Light(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
+void M_MusicRev(int choice);
 void M_RandomPitch(int choice);
 void M_ChangeDetail(int choice);
 void M_SizeDisplay(int choice);
@@ -118,3 +119,7 @@ void Globals::InitGlobals()
 
 Globals *g;
 
+void* GetClassicDoomData()
+{
+	return DoomLib::GetGlobalData(0);
+}

@@ -118,6 +118,7 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 #include "../aas/AASFileManager.h"
 
 // game
+#include "../d3xp/Classic.h"
 #include "../d3xp/Game.h"
 
 #include "../libs/platform/OpenPlatform.h"

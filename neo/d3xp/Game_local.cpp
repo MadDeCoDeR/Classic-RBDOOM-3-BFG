@@ -50,6 +50,7 @@ idCollisionModelManager* 	collisionModelManager = NULL;
 idCVar* 					idCVar::staticVars = NULL;
 idKey*						keys = NULL;
 idSession*					session = NULL;
+GetClassicData_t			GetClassicData = NULL;
 //GK: Not ideal but for now it will do
 float com_engineHz_latched = 60.0f; // Latched version of cvar, updated between map loads
 int64 com_engineHz_numerator = 100LL * 1000LL;
@@ -202,6 +203,7 @@ extern "C" gameExport_t* GetGameAPI( gameImport_t* import )
 		collisionModelManager		= import->collisionModelManager;
 		keys						= import->keys;
 		session						= import->session;
+		GetClassicData				= import->GetClassicData;
 	}
 	
 	// set interface pointers used by idLib
@@ -245,6 +247,7 @@ void TestGameAPI()
 	testImport.collisionModelManager	= ::collisionModelManager;
 	testImport.keys						= ::keys;
 	testImport.session					= ::session;
+	testImport.GetClassicData			 = GetClassicData;
 	
 	testExport = *GetGameAPI( &testImport );
 }
@@ -420,6 +423,8 @@ void idGameLocal::Init()
 	InitConsoleCommands();
 
 	shellHandler = uiManager->CreateShell(); //GK: Use initializers instead of default constructors
+	//GK: Register new commands for Classic Doom here
+	InitClassic();
 
 	if( !g_xp_bind_run_once.GetBool() )
 	{
@@ -3719,7 +3724,7 @@ void idGameLocal::RegisterEntity( idEntity* ent, int forceSpawnId, const idDict&
 {
 	int spawn_entnum;
 	
-	ent->fl.skipReplication = spawnArgsToCopy.GetBool( "net_skip_replication", false );
+	ent->fl.skipReplication = spawnArgsToCopy.GetBool( "net_skip_replication", (bool)false );
 	
 	if( spawnCount >= ( 1 << ( 32 - GENTITYNUM_BITS ) ) )
 	{

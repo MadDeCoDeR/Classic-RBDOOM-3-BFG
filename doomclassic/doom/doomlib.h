@@ -34,7 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "doomdef.h"
 #include "doominterface.h"
 
-#include "idlib/containers/Array.h"
+#include "containers/Array.h"
 
 class idSysMutex;
 class idUserCmdMgr;

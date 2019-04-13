@@ -59,7 +59,7 @@ extern bool globalNetworking;
 const dirtype_t opposite[] =
 {
   DI_WEST, DI_SOUTHWEST, DI_SOUTH, DI_SOUTHEAST,
-  DI_EAST, DI_NORTHEAST, DI_NORTH, DI_NORTHWEST, DI_NODIR
+  DI_EAST, DI_NORTHEAST, DI_NORTH, DI_NORTHWEST, DI_NODIR_CL
 };
 
 const dirtype_t diags[] =
@@ -263,7 +263,7 @@ qboolean P_Move (mobj_t*	actor)
     qboolean	try_ok;
     qboolean	good;
 		
-    if (actor->movedir == DI_NODIR)
+    if (actor->movedir == DI_NODIR_CL)
 	return false;
 		
     if ((unsigned)actor->movedir >= 8)
@@ -292,7 +292,7 @@ qboolean P_Move (mobj_t*	actor)
 	if (!::g->numspechit)
 	    return false;
 			
-	actor->movedir = DI_NODIR;
+	actor->movedir = DI_NODIR_CL;
 	good = false;
 	while (::g->numspechit--)
 	{
@@ -367,18 +367,18 @@ void P_NewChaseDir (mobj_t*	actor)
     else if (deltax<-10*FRACUNIT)
 	d[1]= DI_WEST;
     else
-	d[1]=DI_NODIR;
+	d[1]=DI_NODIR_CL;
 
     if (deltay<-10*FRACUNIT)
 	d[2]= DI_SOUTH;
     else if (deltay>10*FRACUNIT)
 	d[2]= DI_NORTH;
     else
-	d[2]=DI_NODIR;
+	d[2]=DI_NODIR_CL;
 
     // try direct route
-    if (d[1] != DI_NODIR
-	&& d[2] != DI_NODIR)
+    if (d[1] != DI_NODIR_CL
+	&& d[2] != DI_NODIR_CL)
     {
 	actor->movedir = diags[((deltay<0)<<1)+(deltax>0)];
 	if (actor->movedir != turnaround && P_TryWalk(actor))
@@ -395,11 +395,11 @@ void P_NewChaseDir (mobj_t*	actor)
     }
 
     if (d[1]==turnaround)
-	d[1]=DI_NODIR;
+	d[1]=DI_NODIR_CL;
     if (d[2]==turnaround)
-	d[2]=DI_NODIR;
+	d[2]=DI_NODIR_CL;
 	
-    if (d[1]!=DI_NODIR)
+    if (d[1]!=DI_NODIR_CL)
     {
 	actor->movedir = d[1];
 	if (P_TryWalk(actor))
@@ -409,7 +409,7 @@ void P_NewChaseDir (mobj_t*	actor)
 	}
     }
 
-    if (d[2]!=DI_NODIR)
+    if (d[2]!=DI_NODIR_CL)
     {
 	actor->movedir =d[2];
 
@@ -419,7 +419,7 @@ void P_NewChaseDir (mobj_t*	actor)
 
     // there is no direct path to the player,
     // so pick another direction.
-    if (olddir!=DI_NODIR)
+    if (olddir!=DI_NODIR_CL)
     {
 	actor->movedir =olddir;
 
@@ -459,14 +459,14 @@ void P_NewChaseDir (mobj_t*	actor)
 	}
     }
 
-    if (turnaround !=  DI_NODIR)
+    if (turnaround !=  DI_NODIR_CL)
     {
 	actor->movedir =turnaround;
 	if ( P_TryWalk(actor) )
 	    return;
     }
 
-    actor->movedir = DI_NODIR;	// can not move
+    actor->movedir = DI_NODIR_CL;	// can not move
 }
 
 
@@ -1157,7 +1157,7 @@ void A_VileChase (mobj_t* actor, void * )
     const mobjinfo_t*	info;
     mobj_t*		temp;
 	
-    if (actor->movedir != DI_NODIR)
+    if (actor->movedir != DI_NODIR_CL)
     {
 	// check for corpses to raise
 	::g->viletryx =
