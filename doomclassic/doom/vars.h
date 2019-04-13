@@ -401,7 +401,7 @@ menuitem_t NewGameMenu[5];
 menu_t  NewDef;
 menuitem_t OptionsMenu[8];
 menu_t  OptionsDef;
-menuitem_t SoundMenu[5];
+menuitem_t SoundMenu[6];
 menu_t  SoundDef;
 menuitem_t VideoMenu[3];
 menu_t  VideoDef;

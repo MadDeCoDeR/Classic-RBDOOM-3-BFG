@@ -257,12 +257,13 @@ menu_t  temp_VideoDef = {
 		0
 };
 memcpy(&::g->VideoDef, &temp_VideoDef, sizeof(temp_VideoDef));
-menuitem_t temp_SoundMenu[5] = {
+menuitem_t temp_SoundMenu[6] = {
 	{2,"M_SFXVOL",M_SfxVol,'s'},
 	{-1,"",0},
 	{2,"M_MUSVOL",M_MusicVol,'m'},
 	{-1,"",0},
-	{1,"M_SRP",M_RandomPitch,'r'}
+	{1,"M_SRP",M_RandomPitch,'r'},
+	{1,"M_MUSREV",M_MusicRev,'v'}
 };
 memcpy( ::g->SoundMenu, temp_SoundMenu, sizeof(temp_SoundMenu) );
 menu_t  temp_SoundDef = {

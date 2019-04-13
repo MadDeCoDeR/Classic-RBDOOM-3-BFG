@@ -146,6 +146,8 @@ static int		numOutputChannels = 0;
 
 doomListener_t		doom_Listener;
 
+idCVar S_museax("S_museax","0",CVAR_BOOL|CVAR_SOUND|CVAR_ARCHIVE,"Set music EAX for Classic Doom");
+
 void			I_InitSoundChannel( int channel, int numOutputChannels_ );
 
 /*
@@ -783,7 +785,7 @@ void I_InitMusic( void )
 		alGenBuffers( (ALuint)1, &alMusicBuffer );
 		//GK: Set default preset for music in order to level it's volume to the levels of the reverbed sfxes
 		alGenAuxiliaryEffectSlots(1, &clmusslot);
-		EFXEAXREVERBPROPERTIES voicereverb = EFX_REVERB_PRESET_AUDITORIUM;
+		EFXEAXREVERBPROPERTIES voicereverb = EFX_REVERB_PRESET_MOOD_HELL;
 		EFXEAXREVERBPROPERTIES* voicereverb2 = &voicereverb;
 		ALuint EFX;
 		alGenEffects(1, &EFX);
@@ -963,18 +965,19 @@ void I_UpdateMusic( void )
 	}
 	
 	if ( alMusicSourceVoice ) {
-		// Set the volume
+		// Set the volume GK: and the music Reverb
 		alSourcef( alMusicSourceVoice, AL_GAIN, x_MusicVolume * GLOBAL_VOLUME_MULTIPLIER );
+		alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
+		if ((alIsEffect((ALuint)::g->clEAX) && ::g->clEAX > 0) || S_museax.GetBool()) {
+			alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, clmusslot, 0, AL_FILTER_NULL);
+		}
 	}
 	
 	if ( waitingForMusic ) {
 		if ( musicReady && alMusicSourceVoice ) {
 			if ( musicBuffer ) {
 				alSourcei( alMusicSourceVoice, AL_BUFFER, 0 );
-				alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
-				if (alIsEffect((ALuint)::g->clEAX) && ::g->clEAX > 0) {
-					alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, clmusslot, 0, AL_FILTER_NULL);
-				}
+				
 				if (!use_avi) {
 					alBufferData(alMusicBuffer, MIDI_SAMPLETYPE, musicBuffer, totalBufferSize, MIDI_RATE);
 				}

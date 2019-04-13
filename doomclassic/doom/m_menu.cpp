@@ -92,6 +92,7 @@ extern idCVar in_joylayout;
 extern idCVar in_alwaysRunCl;
 extern idCVar cl_freelook;
 extern idCVar cl_jump;
+extern idCVar S_museax;
 //
 // defaulted values
 //
@@ -181,6 +182,7 @@ void M_Light(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
+void M_MusicRev(int choice);
 void M_RandomPitch(int choice);
 void M_ChangeDetail(int choice);
 void M_SizeDisplay(int choice);
@@ -939,6 +941,7 @@ char	msgNames[2][9] =
 void M_DrawSound(void)
 {
 	int randpitch = cl_randpitch.GetInteger() >= 1 ? 1 : 0;
+	int musrev = S_museax.GetInteger() >= 1 ? 1 : 0;
 	V_DrawPatchDirect (60,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SVOL",PU_CACHE_SHARED), W_GetNumForName("M_SVOL")));
 
 	M_DrawThermo( ::g->SoundDef.x,::g->SoundDef.y+LINEHEIGHT*(sfx_vol+1),
@@ -948,6 +951,8 @@ void M_DrawSound(void)
 		16, s_volume_midi.GetInteger() );
 	V_DrawPatchDirect(::g->SoundDef.x + 200, ::g->SoundDef.y + LINEHEIGHT * sound_rp, 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[randpitch], PU_CACHE_SHARED), W_GetNumForName(msgNames[randpitch])));
+	V_DrawPatchDirect(::g->SoundDef.x + 170, ::g->SoundDef.y + LINEHEIGHT * music_rev, 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[musrev], PU_CACHE_SHARED), W_GetNumForName(msgNames[musrev])));
 }
 
 char    detailNames[3][9] =
@@ -1045,6 +1050,10 @@ void M_MusicVol(int choice)
 
 void M_RandomPitch(int choice) {
 	cl_randpitch.SetBool(!cl_randpitch.GetBool());
+}
+
+void M_MusicRev(int choice) {
+	S_museax.SetBool(!S_museax.GetBool());
 }
 
 
