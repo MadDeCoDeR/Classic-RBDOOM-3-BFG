@@ -550,7 +550,9 @@ void P_ResetAct() {
 	for (int i = 0; i < ::g->acts.size(); i++) {
 		if (!::g->acts[i].empty()) {
 			for (actdef_t* act : ::g->acts[i]) {
-				cvarSystem->SetCVarString(act->cvar, act->oldValue);
+				if (act->cvar) {
+					cvarSystem->SetCVarString(act->cvar, act->oldValue);
+				}
 			}
 		}
 	}

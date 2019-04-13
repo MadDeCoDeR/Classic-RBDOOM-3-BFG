@@ -279,19 +279,26 @@ void P_Acts(player_t* player) {
 	if (index != ::g->oldsec) {
 		if (!::g->acts[::g->oldsec].empty()) {
 			for (actdef_t* act : ::g->acts[::g->oldsec]) {
-				cvarSystem->SetCVarString(act->cvar, act->oldValue);
+				if (act->cvar) {
+					cvarSystem->SetCVarString(act->cvar, act->oldValue);
+				}
 			}
-			::g->oldsec = index;
+			
 		}
-	}
-	//and then apply
-	if (index <= ::g->actind) {
-		if (!::g->acts[index].empty()) {
-			for (actdef_t* act : ::g->acts[index]) {
-				char* tempVal = strdup(cvarSystem->GetCVarString(act->cvar));
-				if (idStr::Cmp(tempVal, act->value)) {
-					::g->oldsec = index;
-					cvarSystem->SetCVarString(act->cvar, act->value);
+		::g->oldsec = index;
+		//and then apply
+		if (index <= ::g->actind) {
+			if (!::g->acts[index].empty()) {
+				for (actdef_t* act : ::g->acts[index]) {
+					if (act->command) {
+						cmdSystem->AppendCommandText(act->command);
+						continue;
+					}
+					char* tempVal = strdup(cvarSystem->GetCVarString(act->cvar));
+					if (idStr::Cmp(tempVal, act->value)) {
+						::g->oldsec = index;
+						cvarSystem->SetCVarString(act->cvar, act->value);
+					}
 				}
 			}
 		}

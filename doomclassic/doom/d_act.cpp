@@ -38,7 +38,7 @@ std::vector<std::string> getactlines(char* text) {
 		std::string letter = "";
 		qboolean ignore = false;
 		while (text[i] != '\n') {
-				if (text[i] != '\r' && text[i] != ' ') {
+				if (text[i] != '\r') {
 					letter += text[i];
 				}
 			if (i < size /*- 7*/) {
@@ -58,8 +58,9 @@ void parseacttext(char* text) {
 	std::vector<std::string> lines = getactlines(text);
 	int i = 0;
 	for (std::string line : lines) {
-		char* variable = strtok(strdup(line.c_str()), "=");
-		char* value = strtok(NULL, "=");
+		char* variable = strtok(strdup(line.c_str()), " = ");
+		char* value = strtok(NULL, "");
+		value = value+2;
 		if (!idStr::Cmpn(variable, "sector", 6)) {
 			::g->actind = atoi(value);
 			if (::g->actind >= ::g->acts.size()) {
@@ -69,9 +70,14 @@ void parseacttext(char* text) {
 			continue;
 		}
 		::g->acts[::g->actind].push_back(new actdef_t());
-		::g->acts[::g->actind][i]->cvar = variable;
-		::g->acts[::g->actind][i]->value = value;
-		::g->acts[::g->actind][i]->oldValue = strdup(cvarSystem->GetCVarString(variable));
+		if (!idStr::Icmp(variable, "command")) {
+			::g->acts[::g->actind][i]->command = value;
+		}
+		else {
+			::g->acts[::g->actind][i]->cvar = variable;
+			::g->acts[::g->actind][i]->value = value;
+			::g->acts[::g->actind][i]->oldValue = strdup(cvarSystem->GetCVarString(variable));
+		}
 		i++;
 	}
 }

@@ -201,6 +201,7 @@ typedef enum
 	music_vol,
 	sfx_empty2,
 	sound_rp,
+	music_rev,
 	sound_end
 } sound_e;
 typedef enum
@@ -330,7 +331,7 @@ typedef enum
     DI_SOUTHWEST,
     DI_SOUTH,
     DI_SOUTHEAST,
-    DI_NODIR,
+    DI_NODIR_CL,
     NUMDIRS
     
 } dirtype_t;
@@ -580,4 +581,5 @@ typedef struct {
 	char* cvar;
 	char* value;
 	char* oldValue;
+	char* command;
 }actdef_t;
