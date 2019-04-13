@@ -1628,3 +1628,52 @@ CONSOLE_COMMAND_SHIP( idclev, "warp to next level", 0 ) {
 
 	DoomLib::SetPlayer( oldPlayer );
 }
+
+CONSOLE_COMMAND_SHIP(idmus, "change level music", 0) {
+	int		musnum;
+	int		map;
+	int		epsd;
+
+	int oldPlayer = DoomLib::GetPlayer();
+	DoomLib::SetPlayer(0);
+	if (::g == NULL) {
+		return;
+	}
+	::g->plyr->message = STSTR_MUS;
+	//cht_GetParam(&cheat_mus, buf);
+
+	if (::g->gamemode == commercial)
+	{
+		if (args.Argc() > 1) {
+			map = atoi(args.Argv(1))-1;
+		}
+		else {
+			idLib::Printf("idmus takes map as first argument \n");
+			return;
+		}
+		//GK: Buffers are geting number + 1 (except 0 which equals 11)
+		musnum = mus_runnin + map;
+
+		if (map > 35)
+			::g->plyr->message = STSTR_NOMUS;
+		else
+			S_ChangeMusic(musnum, 1);
+	}
+	else
+	{
+		if (args.Argc() > 2) {
+			epsd = atoi(args.Argv(1))-1;
+			map = atoi(args.Argv(2))-1;
+		}
+		else {
+			idLib::Printf("idmus takes episode and map as first two arguments \n");
+			return;
+		}
+		musnum = mus_e1m1 + epsd*9 + map;
+
+		if (epsd*9 + map > 31)
+			::g->plyr->message = STSTR_NOMUS;
+		else
+			S_ChangeMusic(musnum, 1);
+	}
+}
