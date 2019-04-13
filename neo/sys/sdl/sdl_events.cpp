@@ -1013,7 +1013,7 @@ sysEvent_t Sys_GetEvent()
 				//     if unicode is not 0  it should work..
 				if( ev.key.state == SDL_PRESSED )
 				{
-					uniChar = ev.key.keysym.unicode; // for SE_CHAR
+					uniChar = ev.key.keysym.sym; // for SE_CHAR
 				}
 				// DG end
 #endif // SDL 1.2
@@ -1089,6 +1089,7 @@ sysEvent_t Sys_GetEvent()
 			
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 			case SDL_TEXTINPUT:
+				::common->Printf("I'm Here !!!");
 				if( ev.text.text[0] != '\0' )
 				{
 					// fill uniStr array for SE_CHAR events
