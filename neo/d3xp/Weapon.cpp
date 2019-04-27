@@ -2627,9 +2627,7 @@ void idWeapon::PresentWeapon( bool showViewModel )
 	{
 		// calculate weapon position based on player movement bobbing
 		owner->CalculateViewWeaponPos( viewWeaponOrigin, viewWeaponAxis );
-		//GK: Complex Math stuff
-		double vmfov = (100.0 - pm_vmfov.GetInteger()) / 100.0;
-		viewWeaponAxis = viewWeaponAxis*vmfov;
+		
 		// hide offset is for dropping the gun when approaching a GUI or NPC
 		// This is simpler to manage than doing the weapon put-away animation
 		if( gameLocal.time - hideStartTime < hideTime )
@@ -2655,7 +2653,9 @@ void idWeapon::PresentWeapon( bool showViewModel )
 			}
 		}
 		viewWeaponOrigin += hideOffset * viewWeaponAxis[ 2 ];
-		
+		//GK: Complex Math stuff
+		double vmfov = (100.0 - pm_vmfov.GetInteger()) / 100.0;
+		viewWeaponAxis = viewWeaponAxis * vmfov;
 		// kick up based on repeat firing
 		MuzzleRise( viewWeaponOrigin, viewWeaponAxis );
 	}
