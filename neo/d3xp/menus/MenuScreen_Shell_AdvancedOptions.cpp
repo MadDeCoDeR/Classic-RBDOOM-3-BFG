@@ -38,7 +38,6 @@ extern idCVar r_useHDR;
 extern idCVar r_hdrAutoExposure;
 extern idCVar r_useSSAO; // RB: use this to control HDR exposure or brightness in LDR mode
 extern idCVar r_useFilmicPostProcessEffects;
-extern idCVar in_joylayout; //GK: use forced aspect ratio
 //extern idCVar flashlight_old;
 //extern idCVar pm_vmfov;
 
@@ -141,15 +140,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_LODBIAS );
 	options->AddChild( control );*/
 	// RB end
-	if (idLib::joystick) {
-		control = new(TAG_SWF) idMenuWidget_ControlButton();
-		control->SetOptionType(OPTION_SLIDER_TEXT);
-		control->SetLabel("Controler Layout");	// Brightness
-		control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_CONTROLS);
-		control->SetupEvents(2, options->GetChildren().Num());
-		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_CONTROLS);
-		options->AddChild(control);
-	}
+	
 	if (!game->GetLocalPlayer()) {
 		control = new(TAG_SWF) idMenuWidget_ControlButton();
 		control->SetOptionType(OPTION_SLIDER_TEXT);
@@ -249,41 +240,6 @@ idMenuScreen_Shell_SystemOptions::HideScreen
 */
 void idMenuScreen_Shell_AdvancedOptions::HideScreen( const mainMenuTransition_t transitionType )
 {
-
-	if( advData.IsRestartRequired() )
-	{
-		class idSWFScriptFunction_Restart : public idSWFScriptFunction_RefCounted
-		{
-		public:
-			idSWFScriptFunction_Restart( gameDialogMessages_t _msg, bool _restart )
-			{
-				msg = _msg;
-				restart = _restart;
-			}
-			idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
-			{
-				common->Dialog().ClearDialog( msg );
-				if( restart )
-				{
-					// DG: Sys_ReLaunch() doesn't need any options anymore
-					//     (the old way would have been unnecessarily painful on POSIX systems)
-					Sys_ReLaunch();
-					// DG end
-				}
-				return idSWFScriptVar();
-			}
-		private:
-			gameDialogMessages_t msg;
-			bool restart;
-		};
-		idStaticList<idSWFScriptFunction*, 4> callbacks;
-		idStaticList<idStrId, 4> optionText;
-		callbacks.Append( new idSWFScriptFunction_Restart( GDM_GAME_RESTART_REQUIRED, false ) );
-		callbacks.Append( new idSWFScriptFunction_Restart( GDM_GAME_RESTART_REQUIRED, true ) );
-		optionText.Append( idStrId( "#str_00100113" ) ); // Continue
-		optionText.Append( idStrId( "#str_02487" ) ); // Restart Now
-		common->Dialog().AddDynamicDialog( GDM_GAME_RESTART_REQUIRED, callbacks, optionText, true, idStr() );
-	}
 	
 	if( advData.IsDataChanged() )
 	{
@@ -416,9 +372,6 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 	originalATHDR = r_hdrAutoExposure.GetInteger();
 	originalSSAO = r_useSSAO.GetInteger();
 	originalFilmic = r_useFilmicPostProcessEffects.GetInteger();
-	// RB begin
-	originalControler = in_joylayout.GetInteger();
-	// RB end
 	originalFlashlight = game->GetCVarInteger("flashlight_old");
 	originalVmfov = game->GetCVarInteger("pm_vmfov");
 	originalShadowMapLod = r_shadowMapLodScale.GetFloat();
@@ -431,31 +384,6 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 	{
 		modeList.Clear();
 	}*/
-}
-
-/*
-========================
-idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsRestartRequired
-========================
-*/
-bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsRestartRequired() const
-{
-	if( originalControler != in_joylayout.GetInteger() )
-	{
-		return true;
-	}
-	
-	/*if( originalFramerate != com_engineHz.GetInteger() )
-	{
-		return true;
-	}*/
-	
-	/*if( originalShadowMapping != r_useShadowMapping.GetInteger() )
-	{
-		return true;
-	}*/
-	
-	return false;
 }
 
 /*
@@ -495,11 +423,12 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 	}
 	case ADV_FIELD_SHADOWMAPLOD:
 	{
-		const float percent = ReLinearAdjust(r_shadowMapLodScale.GetFloat(), 0.1f, 2.0f, 0.0f, 100.0f);
+		/*const float percent = ReLinearAdjust(r_shadowMapLodScale.GetFloat(), 0.1f, 20.0f, 0.0f, 100.0f);
 		const float adjusted = percent + (float)adjustAmount;
 		const float clamped = idMath::ClampFloat(0.0f, 100.0f, adjusted);
 
-		r_shadowMapLodScale.SetFloat(ReLinearAdjust(clamped, 0.0f, 100.0f, 0.1f, 2.0f));
+		r_shadowMapLodScale.SetFloat(ReLinearAdjust(clamped, 0.0f, 100.0f, 0.1f, 20.0f));*/
+		r_shadowMapLodScale.SetFloat(r_shadowMapLodScale.GetFloat() + adjustAmount * 0.1f);
 		break;
 	}
 		//GK: BEgin
@@ -524,12 +453,6 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 			r_useFilmicPostProcessEffects.SetBool( !r_useFilmicPostProcessEffects.GetBool() );
 			break;
 		}
-		case ADV_FIELD_CONTROLS:
-		{
-			in_joylayout.SetBool( !in_joylayout.GetBool() );
-			idLib::layoutchange = true;
-			break;
-		}
 		case ADV_FIELD_FLASH:
 		{
 			if (game->GetCVarInteger("flashlight_old") == 2) {
@@ -542,7 +465,7 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 		}
 		case ADV_FIELD_VMFOV:
 		{
-			game->SetCVarInteger("pm_vmfov", game->GetCVarInteger("pm_vmfov") +adjustAmount);
+			game->SetCVarInteger("pm_vmfov", game->GetCVarInteger("pm_vmfov") + adjustAmount);
 			break;
 		}
 	}
@@ -618,15 +541,6 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 			}
 		}
 		//GK: Begin
-		case ADV_FIELD_CONTROLS:
-			if (in_joylayout.GetInteger())
-			{
-				return "PS3";
-			}
-			else
-			{
-				return "XBOX360";
-			}
 		case ADV_FIELD_FLASH:
 			switch (game->GetCVarInteger("flashlight_old"))
 			{
@@ -674,11 +588,7 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 	{
 		return true;
 	}
-	if( originalControler != in_joylayout.GetInteger() )
-	{
-		return true;
-	}
-	// RB begin
+	//GK begin
 	if( originalFlashlight != game->GetCVarInteger("flashlight_old"))
 	{
 		return true;
@@ -687,6 +597,6 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 	{
 		return true;
 	}
-	// RB end
+	//GK end
 	return false;
 }

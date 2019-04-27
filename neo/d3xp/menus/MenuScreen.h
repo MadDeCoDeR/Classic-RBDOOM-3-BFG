@@ -1191,6 +1191,7 @@ public:
 			CONTROLS_FIELD_INVERT_MOUSE,
 			CONTROLS_FIELD_CROSSHAIR,
 			CONTROLS_FIELD_MOUSE_SENS,
+			CONTROLS_FIELD_CONTROLLER_LAYOUT,
 			MAX_CONTROL_FIELDS
 		};
 		
@@ -1204,12 +1205,11 @@ public:
 		
 		// says whether something changed with the data
 		virtual bool				IsDataChanged() const;
+
+		virtual bool				IsRestartRequired() const;
 		
 		// retrieves a particular field for reading or updating
-		virtual idSWFScriptVar		GetField( const int fieldIndex ) const
-		{
-			return fields[ fieldIndex ];
-		}
+		virtual idSWFScriptVar		GetField(const int fieldIndex) const;
 		
 		virtual void				AdjustField( const int fieldIndex, const int adjustAmount );
 		
@@ -1546,17 +1546,16 @@ public:
 		{
 			ADV_FIELD_SHADOWMAPPING,
 			ADV_FIELD_SHADOWMAPLOD,
-			//GK begin
+			//RB begin
 			ADV_FIELD_HDR,
-			//GK end
+			//RB end
 			ADV_FIELD_ATHDR,
 			ADV_FIELD_SSAO,
 			ADV_FIELD_FPPE,
-			// RB begin
-			ADV_FIELD_CONTROLS,
+			//GK begin
 			ADV_FIELD_FLASH,
 			ADV_FIELD_VMFOV,
-			// RB end
+			//GK end
 			MAX_ADVANCED_FIELDS
 		};
 
@@ -1577,15 +1576,12 @@ public:
 		// updates a particular field value
 		virtual void				AdjustField(const int fieldIndex, const int adjustAmount);
 
-		bool						IsRestartRequired() const;
-
 	private:
 		int originalShadowMapping;
 		int originalHDR;
 		int originalATHDR;
 		int originalSSAO;
 		int originalFilmic;
-		int originalControler;
 		int originalFlashlight;
 		int originalVmfov;
 		float originalShadowMapLod;

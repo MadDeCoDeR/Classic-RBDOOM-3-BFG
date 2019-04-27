@@ -39,7 +39,8 @@ enum contorlsMenuCmds_t
 	CONTROLS_CMD_GAMEPAD,
 	CONTROLS_CMD_CROSSHAIR,
 	CONTROLS_CMD_INVERT,
-	CONTROLS_CMD_MOUSE_SENS
+	CONTROLS_CMD_MOUSE_SENS,
+	CONTROLS_CMD_CONTROLLER_LAYOUT
 };
 
 /*
@@ -121,6 +122,14 @@ void idMenuScreen_Shell_Controls::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_MOUSE_SENS );
 	control->RegisterEventObserver( helpWidget );
 	options->AddChild( control );
+
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TEXT);
+	control->SetLabel("Controler Layout");	// Layout
+	control->SetDataSource(&controlData, idMenuDataSource_ControlSettings::CONTROLS_FIELD_CONTROLLER_LAYOUT);
+	control->SetupEvents(2, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, CONTROLS_CMD_CONTROLLER_LAYOUT);
+	options->AddChild(control);
 	
 	options->AddEventAction( WIDGET_EVENT_SCROLL_DOWN ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_DOWN_START_REPEATER, WIDGET_EVENT_SCROLL_DOWN ) );
 	options->AddEventAction( WIDGET_EVENT_SCROLL_UP ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_UP_START_REPEATER, WIDGET_EVENT_SCROLL_UP ) );
@@ -208,6 +217,40 @@ idMenuScreen_Shell_Controls::HideScreen
 */
 void idMenuScreen_Shell_Controls::HideScreen( const mainMenuTransition_t transitionType )
 {
+	if (controlData.IsRestartRequired())
+	{
+		class idSWFScriptFunction_Restart : public idSWFScriptFunction_RefCounted
+		{
+		public:
+			idSWFScriptFunction_Restart(gameDialogMessages_t _msg, bool _restart)
+			{
+				msg = _msg;
+				restart = _restart;
+			}
+			idSWFScriptVar Call(idSWFScriptObject* thisObject, const idSWFParmList& parms)
+			{
+				common->Dialog().ClearDialog(msg);
+				if (restart)
+				{
+					// DG: Sys_ReLaunch() doesn't need any options anymore
+					//     (the old way would have been unnecessarily painful on POSIX systems)
+					Sys_ReLaunch();
+					// DG end
+				}
+				return idSWFScriptVar();
+			}
+		private:
+			gameDialogMessages_t msg;
+			bool restart;
+		};
+		idStaticList<idSWFScriptFunction*, 4> callbacks;
+		idStaticList<idStrId, 4> optionText;
+		callbacks.Append(new idSWFScriptFunction_Restart(GDM_GAME_RESTART_REQUIRED, false));
+		callbacks.Append(new idSWFScriptFunction_Restart(GDM_GAME_RESTART_REQUIRED, true));
+		optionText.Append(idStrId("#str_00100113")); // Continue
+		optionText.Append(idStrId("#str_02487")); // Restart Now
+		common->Dialog().AddDynamicDialog(GDM_GAME_RESTART_REQUIRED, callbacks, optionText, true, idStr());
+	}
 
 	if( controlData.IsDataChanged() )
 	{
@@ -314,6 +357,15 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 					}
 					break;
 				}
+				case CONTROLS_CMD_CONTROLLER_LAYOUT:
+				{
+					controlData.AdjustField(idMenuDataSource_ControlSettings::CONTROLS_FIELD_CONTROLLER_LAYOUT, 1);
+					if (options != NULL)
+					{
+						options->Update();
+					}
+					break;
+				}
 			}
 			
 			return true;
@@ -348,6 +400,7 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 
 extern idCVar in_mouseInvertLook;
 extern idCVar in_mouseSpeed;
+extern idCVar in_joylayout;
 
 
 /*
@@ -372,6 +425,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::LoadData()
 	float mouseSpeed = ( ( in_mouseSpeed.GetFloat() - 0.25f ) / ( 4.0f - 0.25 ) ) * 100.0f;
 	fields[ CONTROLS_FIELD_MOUSE_SENS ].SetFloat( mouseSpeed );
 	fields[ CONTROLS_FIELD_CROSSHAIR ].SetBool(game->GetCVarBool("pm_cursor") );
+	fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].SetBool(in_joylayout.GetBool());
 	
 	originalFields = fields;
 }
@@ -388,6 +442,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::CommitData()
 	float mouseSpeed = 0.25f + ( ( 4.0f - 0.25 ) * ( fields[ CONTROLS_FIELD_MOUSE_SENS ].ToFloat() / 100.0f ) );
 	in_mouseSpeed.SetFloat( mouseSpeed );
 	game->SetCVarBool("pm_cursor",fields[ CONTROLS_FIELD_CROSSHAIR ].ToBool() );
+	in_joylayout.SetBool( fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToBool());
 	
 	cvarSystem->SetModifiedFlags( CVAR_ARCHIVE );
 	
@@ -402,7 +457,7 @@ idMenuScreen_Shell_Controls::idMenuDataSource_AudioSettings::AdjustField
 */
 void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::AdjustField( const int fieldIndex, const int adjustAmount )
 {
-	if( fieldIndex == CONTROLS_FIELD_INVERT_MOUSE || fieldIndex == CONTROLS_FIELD_CROSSHAIR )
+	if( fieldIndex == CONTROLS_FIELD_INVERT_MOUSE || fieldIndex == CONTROLS_FIELD_CROSSHAIR || fieldIndex == CONTROLS_FIELD_CONTROLLER_LAYOUT )
 	{
 		fields[ fieldIndex ].SetBool( !fields[ fieldIndex ].ToBool() );
 	}
@@ -435,6 +490,36 @@ bool idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::IsDataChange
 	{
 		return true;
 	}
+
+	if (fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToFloat() != originalFields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToFloat())
+	{
+		return true;
+	}
 	
+	return false;
+}
+
+idSWFScriptVar idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::GetField(const int fieldIndex) const
+{
+	if (fieldIndex == CONTROLS_FIELD_CONTROLLER_LAYOUT) {
+		if (fields[ fieldIndex ].ToBool()) {
+			return "PS3";
+		}
+		else {
+			return "XBOX360";
+		}
+	}
+	return fields[fieldIndex];
+}
+
+bool idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::IsRestartRequired() const
+{
+	if (fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToFloat() != originalFields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToFloat()) {
+		idLib::layoutchange = true;
+		return true;
+	}
+	else {
+		idLib::layoutchange = false;
+	}
 	return false;
 }
