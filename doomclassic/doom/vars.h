@@ -422,7 +422,7 @@ menuitem_t DOOMIT[20];
 menu_t  DOOMITDef;
 menuitem_t GameMenu[4];
 menu_t  GameDef;
-char    tempstring[80];
+char    tempstring[256];
 int     epi;
 int     exp;
 int     quitsounds[8];
