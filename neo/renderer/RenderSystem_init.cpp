@@ -245,7 +245,7 @@ idCVar r_shadowMapRandomizeJitter( "r_shadowMapRandomizeJitter", "1", CVAR_RENDE
 idCVar r_shadowMapSamples( "r_shadowMapSamples", "1", CVAR_RENDERER | CVAR_INTEGER, "0, 1, 4, or 16" );
 idCVar r_shadowMapSplits( "r_shadowMapSplits", "3", CVAR_RENDERER | CVAR_INTEGER, "number of splits for cascaded shadow mapping with parallel lights", 0, 4 );
 idCVar r_shadowMapSplitWeight( "r_shadowMapSplitWeight", "0.9", CVAR_RENDERER | CVAR_FLOAT, "" );
-idCVar r_shadowMapLodScale( "r_shadowMapLodScale", "0.4", CVAR_ARCHIVE|CVAR_RENDERER | CVAR_FLOAT, "" ); //GK: Lowered to 0.4 for performance
+idCVar r_shadowMapLodScale( "r_shadowMapLodScale", "0.4", CVAR_ARCHIVE|CVAR_RENDERER | CVAR_FLOAT, "",0.0f, 2.0f ); //GK: Lowered to 0.4 for performance
 idCVar r_shadowMapLodBias( "r_shadowMapLodBias", "0", CVAR_RENDERER | CVAR_INTEGER, "" );
 idCVar r_shadowMapPolygonFactor( "r_shadowMapPolygonFactor", "2", CVAR_RENDERER | CVAR_FLOAT, "polygonOffset factor for drawing shadow buffer" );
 idCVar r_shadowMapPolygonOffset( "r_shadowMapPolygonOffset", "3000", CVAR_RENDERER | CVAR_FLOAT, "polygonOffset units for drawing shadow buffer" );
