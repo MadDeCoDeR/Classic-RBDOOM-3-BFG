@@ -93,6 +93,7 @@ extern idCVar in_alwaysRunCl;
 extern idCVar cl_freelook;
 extern idCVar cl_jump;
 extern idCVar S_museax;
+extern idCVar cl_cursor;
 //
 // defaulted values
 //
@@ -194,6 +195,7 @@ void M_Doom_IT(int choice);
 void M_Gameplay(int choice);
 void M_Freelook(int choice);
 void M_Jump(int choice);
+void M_Cross(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
@@ -998,6 +1000,7 @@ void M_DrawGame(void)
 	int alwayrun = in_alwaysRunCl.GetInteger();
 	int freelook = cl_freelook.GetInteger();
 	int jumping = cl_jump.GetBool();
+	int crosshair = cl_cursor.GetBool();
 
 
 	V_DrawPatchDirect(::g->GameDef.x + 120, ::g->GameDef.y + LINEHEIGHT * run, 0,
@@ -1006,6 +1009,8 @@ void M_DrawGame(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[freelook], PU_CACHE_SHARED), W_GetNumForName(msgNames[freelook])));
 	V_DrawPatchDirect(::g->GameDef.x + 70, ::g->GameDef.y + LINEHEIGHT * (jump), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[jumping], PU_CACHE_SHARED), W_GetNumForName(msgNames[jumping])));
+	V_DrawPatchDirect(::g->GameDef.x + 140, ::g->GameDef.y + LINEHEIGHT * (cross), 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[crosshair], PU_CACHE_SHARED), W_GetNumForName(msgNames[crosshair])));
 }
 
 void M_Gameplay(int choice)
@@ -1445,6 +1450,11 @@ void M_Freelook(int choice)
 void M_Jump(int choice)
 {
 	cl_jump.SetBool(cl_jump.GetBool() ? 0 : 1);
+}
+
+void M_Cross(int choice)
+{
+	cl_cursor.SetBool(cl_cursor.GetBool() ? 0 : 1);
 }
 //GK:End
 //

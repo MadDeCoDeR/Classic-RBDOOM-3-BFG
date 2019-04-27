@@ -543,12 +543,6 @@ P_TryMove
     return true;
 }
 
-// phares 3/21/98
-//
-// Maintain a freelist of msecnode_t's to reduce memory allocs and frees.
-
-msecnode_t* headsecnode = NULL;
-
 // P_GetSecnode() retrieves a node from the freelist. The calling routine
 // should make sure it sets all fields properly.
 
@@ -556,13 +550,13 @@ msecnode_t* P_GetSecnode()
 {
 	msecnode_t* node;
 
-	if (headsecnode)
+	if (::g->headsecnode)
 	{
-		node = headsecnode;
-		headsecnode = headsecnode->m_snext;
+		node = ::g->headsecnode;
+		::g->headsecnode = ::g->headsecnode->m_snext;
 	}
 	else
-		node =(msecnode_t*) DoomLib::Z_Malloc(sizeof(*node), PU_LEVEL, NULL);
+		node =(msecnode_t*) DoomLib::Z_Malloc(sizeof(*node), PU_STATIC_SHARED, NULL);
 	return(node);
 }
 
@@ -570,8 +564,8 @@ msecnode_t* P_GetSecnode()
 
 void P_PutSecnode(msecnode_t* node)
 {
-	node->m_snext = headsecnode;
-	headsecnode = node;
+	node->m_snext = ::g->headsecnode;
+	::g->headsecnode = node;
 }
 // phares 3/16/98
 //
@@ -651,7 +645,7 @@ msecnode_t* P_DelSecnode(msecnode_t* node)
 		sn = node->m_snext;
 		if (sp)
 			sp->m_snext = sn;
-		else
+		else if(node->m_sector)
 			node->m_sector->touching_thinglist = sn;
 		if (sn)
 			sn->m_sprev = sp;
@@ -698,7 +692,7 @@ qboolean PIT_GetSectors(line_t* ld)
 	// sector_list you're examining. If the Thing ends up being
 	// allowed to move to this position, then the sector_list
 	// will be attached to the Thing's mobj_t at touching_sectorlist.
-
+	if (ld->frontsector)
 	::g->sector_list = P_AddSecnode(ld->frontsector, ::g->tmthing, ::g->sector_list);
 
 	// Don't assume all lines are 2-sided, since some Things

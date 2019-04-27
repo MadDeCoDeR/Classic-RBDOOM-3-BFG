@@ -953,6 +953,14 @@ P_DamageMobj
 
 	if (target->health <= 0)
 		return;
+	//GK: Change crosshair's state when the damager is you and only you
+	if (source != NULL) {
+		if (source->player)
+			if ((player_t*)source->player == &::g->players[::g->consoleplayer]) {
+				::g->cross_state = 1;
+				::g->cross_decay = 4;
+			}
+	}
 
 	if ( target->flags & MF_SKULLFLY )
 	{

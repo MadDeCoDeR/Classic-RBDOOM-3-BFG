@@ -420,7 +420,7 @@ menuitem_t MasterMenu[2];
 menu_t  MasterDef;
 menuitem_t DOOMIT[20];
 menu_t  DOOMITDef;
-menuitem_t GameMenu[3];
+menuitem_t GameMenu[4];
 menu_t  GameDef;
 char    tempstring[80];
 int     epi;
@@ -1024,6 +1024,11 @@ unsigned int clEAX;
 int mapindex;
 std::string mapname;
 #endif
+//GK Cross starts
+char crossnames[2][9];
+int cross_state;
+int cross_decay;
+//GK Cross ends
 //d_act starts
 std::vector<std::vector<actdef_t*>> acts;
 int actind;
@@ -1036,3 +1041,14 @@ int cpind;
 std::vector<int> cmap;
 int rexp;
 //img2lmp ends
+
+// phares 3/21/98
+//
+// Maintain a freelist of msecnode_t's to reduce memory allocs and frees.
+//
+// Kalampokis 27/04/19
+//
+// If you EVER find ANY custom global variable 
+// when importing from other ports then put it HERE
+
+msecnode_t* headsecnode;

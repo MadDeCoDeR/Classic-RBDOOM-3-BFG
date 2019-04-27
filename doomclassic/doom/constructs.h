@@ -412,10 +412,11 @@ int     temp_quitsounds2[8] = {
 };
 memcpy( ::g->quitsounds2, temp_quitsounds2, sizeof(temp_quitsounds2) );
 //GK: Begin
-menuitem_t temp_GameMenu[3] = {
+menuitem_t temp_GameMenu[4] = {
 	{1,"M_AR",	M_Alwaysrun,'a'},
 	{1,"M_FL",M_Freelook,'f'},
 	{1,"M_JM",M_Jump,'j'},
+	{1,"M_CROSS",M_Cross,'c'},
 };
 memcpy(::g->GameMenu, temp_GameMenu, sizeof(temp_GameMenu));
 menu_t  temp_GameDef = {
@@ -718,9 +719,14 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	};
 	memcpy(::g->animdefs, tempanimdefs, sizeof(tempanimdefs));
 // p_spec end //
+	char tempcrossnames[2][9] = { "STCROSS","STHCROSS" };
+	memcpy(::g->crossnames, tempcrossnames, sizeof(tempcrossnames));
+	::g->cross_state = 0;
 //GK: End
 // r_data begin //
 	::g->s_numtextures = 0;
 // r_data end //
+
+	::g->headsecnode = NULL;
 
 

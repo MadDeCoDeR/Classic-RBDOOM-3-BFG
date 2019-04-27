@@ -216,6 +216,7 @@ typedef enum
 	run,
 	look,
 	jump,
+	cross,
 	game_end
 } game_e;
 typedef enum

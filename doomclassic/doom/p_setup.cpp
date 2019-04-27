@@ -763,8 +763,8 @@ P_SetupLevel
 	P_ResetAct();
 	// Make sure all sounds are stopped before Z_FreeTags.
 	S_Start ();			
-	//GK: Clear also the cache since it's not needed
-	Z_FreeTags( PU_LEVEL, PU_CACHE );
+	
+	Z_FreeTags( PU_LEVEL, PU_PURGELEVEL-1 );
 	//GK: New level new flips
 	::g->flip = false;
 	::g->isfliped = false;

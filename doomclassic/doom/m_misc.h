@@ -61,6 +61,7 @@ M_DrawText
   qboolean	direct,
   char*		string );
 
+void M_DrawCross();
 
 #endif
 

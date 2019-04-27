@@ -68,6 +68,8 @@ If you have questions concerning this license or the applicable additional terms
 // HU_Init must have been called to init the font
 //
 
+idCVar cl_cursor("cl_cursor", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Classic Doom crosshair");
+
 int
 M_DrawText
 ( int		x,
@@ -99,6 +101,29 @@ M_DrawText
     }
 
     return x;
+}
+
+//
+// M_DrawCross
+//
+//GK: This is were the crosshair is drawn as a
+//direct patch on the center of your screen
+
+void M_DrawCross()
+{
+	if (cl_cursor.GetBool()) {
+		int yoffset = (20 / abs(::g->screenSize - 6)) - (5 * (::g->screenSize - 7));
+		V_DrawPatchDirect((ORIGINAL_WIDTH / 2) - 5, (BASEYCENTER)-yoffset, 0, img2lmp(W_CacheLumpName(::g->crossnames[::g->cross_state], PU_CACHE_SHARED),
+			W_GetNumForName(::g->crossnames[::g->cross_state])));
+	}
+	if (::g->cross_state) {
+		if (::g->cross_decay) {
+			::g->cross_decay--;
+		}
+		else {
+			::g->cross_state = 0;
+		}
+	}
 }
 
 

@@ -558,14 +558,7 @@ void G_DoLoadLevel ()
 	int             i; 
 
 	M_ClearRandom();
-	/*if (lumpcache != NULL) {
-		for (int i = 0; i < numlumps; i++) {
-			if (lumpcache[i]) {
-				Z_Free(lumpcache[i]);
-			}
-		}
-	}
-	Z_FreeMemory();*/
+
 	// Set the sky map.
 	// First thing, we have a dummy sky texture name,
 	//  a flat. The data is in the WAD only because
@@ -673,10 +666,7 @@ void G_DoLoadLevel ()
 	// by Z_FreeTags() when the previous level ended or player
 	// died.
 
-	{
-		extern msecnode_t *headsecnode; // phares 3/25/98
-		headsecnode = NULL;
-	}
+	::g->headsecnode = NULL;
 
 	P_SetupLevel (::g->gameepisode, ::g->gamemap, 0, ::g->gameskill);
 

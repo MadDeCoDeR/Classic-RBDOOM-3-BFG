@@ -43,6 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "r_local.h"
 #include "r_sky.h"
 #include "i_system.h"
+#include "m_misc.h"
 
 
 
@@ -983,7 +984,13 @@ void R_RenderPlayerView (player_t* player)
 	R_DrawMasked ();
 
 	// Check for new console commands.
-	NetUpdate ( NULL );				
+	NetUpdate ( NULL );
+	//GK: Draw the crosshair ONLY here. 
+	//We don't want it to overlap the map or the menu
+	M_DrawCross ();
+
+	// Check for new console commands.
+	NetUpdate ( NULL );
 }
 
 
