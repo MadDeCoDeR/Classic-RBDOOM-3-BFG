@@ -4,7 +4,7 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
-27 April 2019 - Classic RBDOOM-3-BFG 1.1.12.12
+28 April 2019 - Classic RBDOOM-3-BFG 1.1.12.12
 _______________________________
 
 WARNING: The game dll support is nearly complete but 
@@ -23,6 +23,8 @@ there are still bugs while using them.
 - Fix issue with player model field of view (I hope)
 
 - Slight rework of soft shadow LOD CVar
+
+- Fixed Compiler issues with gcc 8
 _______________________________________
 
 14 April 2019 - Classic RBDOOM-3-BFG 1.1.12.11
