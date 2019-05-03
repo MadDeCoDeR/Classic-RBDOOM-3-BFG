@@ -958,7 +958,7 @@ P_DamageMobj
 		if (source->player)
 			if ((player_t*)source->player == &::g->players[::g->consoleplayer]) {
 				::g->cross_state = 1;
-				::g->cross_decay = 4;
+				::g->cross_decay = com_engineHz_latched;
 			}
 	}
 
