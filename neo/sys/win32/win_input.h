@@ -34,7 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "wine-xinput.h"
 #endif // DG end
 
-static const int MAX_JOYSTICKS = 1; //GK: This thing still works only on PC right?
+static const int MAX_JOYSTICKS = 4; //GK: This thing still works only on PC right? Apparently no
 
 /*
 ================================================================================================

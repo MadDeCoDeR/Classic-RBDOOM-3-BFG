@@ -805,43 +805,36 @@ void JoystickSamplingThread( void* data )
 			
 			// do this short amount of processing inside a critical section
 			idScopedCriticalSection cs( win32.g_Joystick.mutexXis );
-			
+			int inactive = 0;
 			for( int i = 0 ; i < MAX_JOYSTICKS ; i++ )
 			{
 				controllerState_t* cs = &win32.g_Joystick.controllers[i];
-
+				
 				if (!validData[i])
 				{
-					if (idLib::joystick) {
-						//GK: Disable controller layout if the controller is disconnected
-						idLib::joystick=false;
-					}
+					inactive++;
 					cs->valid = false;
 					continue;
 				}
-				else {
-					if (!idLib::joystick) {
-						//GK: Enable controller layout if the controller is connected
-						idLib::joystick = true;
-					}
-					cs->valid = true;
+				cs->valid = true;
 
-					XINPUT_STATE& current = joyData[i];
+				XINPUT_STATE& current = joyData[i];
 
-					cs->current = current;
+				cs->current = current;
 
-					// Switch from using cs->current to current to reduce chance of Load-Hit-Store on consoles
+				// Switch from using cs->current to current to reduce chance of Load-Hit-Store on consoles
 
-					threadPacket[threadCount & 255] = current.dwPacketNumber;
+				threadPacket[threadCount & 255] = current.dwPacketNumber;
 #if 0
-					if (xis.dwPacketNumber == oldXis[inputDeviceNum].dwPacketNumber)
-					{
-						return numEvents;
+				if (xis.dwPacketNumber == oldXis[inputDeviceNum].dwPacketNumber)
+				{
+					return numEvents;
 				}
 #endif
-					cs->buttonBits |= current.Gamepad.wButtons;
+				cs->buttonBits |= current.Gamepad.wButtons;
 			}
-			}
+			//GK: Enable controller layout if there is one controller connected
+			idLib::joystick = inactive >= 4 ? false : true;
 		}
 
 		// we want this to be processed at least 250 times a second

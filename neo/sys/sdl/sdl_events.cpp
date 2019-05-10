@@ -71,7 +71,7 @@ If you have questions concerning this license or the applicable additional terms
 // DG end
 #endif
 
-static const int MAX_JOYSTICKS = 1; //GK: This thing still works only on PC right?
+static const int MAX_JOYSTICKS = 4; //GK: This thing still works only on PC right? Apparently no
 
 // DG: those are needed for moving/resizing windows
 extern idCVar r_windowX;
@@ -147,8 +147,8 @@ struct joystick_poll_t
 static idList<joystick_poll_t> joystick_polls;
 SDL_Joystick* joy = NULL;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
-static SDL_GameController* gcontroller = NULL; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
-static SDL_Haptic *haptic = NULL; //GK: Joystick rumble support
+static SDL_GameController* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
+static SDL_Haptic *haptic[MAX_JOYSTICKS] = {NULL}; //GK: Joystick rumble support
 #endif
 int SDL_joystick_has_hat = 0;
 bool buttonStates[K_LAST_KEY];	// For keeping track of button up/down events
@@ -1794,7 +1794,7 @@ void Sys_SetRumble( int device, int low, int hi )
 	//It doesn't affect the game's performance (Remember NO SDL_Delay)
 
 	#if SDL_VERSION_ATLEAST(2, 0, 0)
-	if(haptic){ //GK: Make sure the rumble code will run ONLY if the SDL_Haptic device is already initialized
+	if(haptic[device]){ //GK: Make sure the rumble code will run ONLY if the SDL_Haptic device is already initialized
 	
 	SDL_HapticEffect effect;
  	int effect_id;
@@ -1806,17 +1806,17 @@ void Sys_SetRumble( int device, int low, int hi )
 	effect.leftright.large_magnitude = hi;
 	effect.leftright.length = 1000;
 	//GK:Ps3 controller fix
-	if(SDL_HapticNumEffectsPlaying(haptic) >= SDL_HapticNumEffects(haptic)){
-		SDL_HapticDestroyEffect(haptic,0);
+	if(SDL_HapticNumEffectsPlaying(haptic[device]) >= SDL_HapticNumEffects(haptic[device])){
+		SDL_HapticDestroyEffect(haptic[device],0);
 	}
 	//GK:End of fix
-	effect_id = SDL_HapticNewEffect( haptic, &effect );
+	effect_id = SDL_HapticNewEffect( haptic[device], &effect );
 	if(effect_id < 0){
 		common->Printf("%s\n",SDL_GetError());
 		return;
 	}
 
-	 if(SDL_HapticRunEffect( haptic, effect_id, 1 )<0){
+	 if(SDL_HapticRunEffect( haptic[device], effect_id, 1 )<0){
 		 common->Printf("%s\n",SDL_GetError());
 	 }
 	}
@@ -1895,6 +1895,7 @@ int JoystickSamplingThread(void* data){
 		common->Printf( "Sys_InitInput: SDL_INIT_HAPTIC error: %s\n", SDL_GetError() );
 		
 	SDL_GameController* controller = NULL;
+	int inactive = 0;
 	for( int i = 0; i < MAX_JOYSTICKS; ++i )
 	{
 		if( SDL_IsGameController( i ) )
@@ -1903,24 +1904,20 @@ int JoystickSamplingThread(void* data){
 			if( controller )
 			{
 				
-				if (!idLib::joystick) {
-						//GK: Enable controller layout if the controller is connected
-						idLib::joystick = true;
-					}
 					nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
-					gcontroller=controller;
-					if (!haptic){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
-					haptic = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller)); //GK: Make sure it mounted to the right controller
-	if(haptic){
-		if(SDL_HapticRumbleInit( haptic ) < 0){
+					gcontroller[i]=controller;
+					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
+					haptic[i] = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller[i])); //GK: Make sure it mounted to the right controller
+	if(haptic[i]){
+		if(SDL_HapticRumbleInit( haptic[i] ) < 0){
 			//common->Printf("Failed to rumble\n");
 		}
-	if ((SDL_HapticQuery(haptic) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
-  		SDL_HapticClose(haptic);
-		  haptic = NULL;
+	if ((SDL_HapticQuery(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
+  		SDL_HapticClose(haptic[i]);
+		  haptic[i] = NULL;
 		 // common->Printf("Failed to find rumble effect\n");
 	}
-	common->Printf("Found haptic Device %d\n",SDL_HapticNumEffects(haptic));
+	common->Printf("Found haptic Device %d\n",SDL_HapticNumEffects(haptic[i]));
 	}
 			}
 					continue;
@@ -1933,22 +1930,21 @@ int JoystickSamplingThread(void* data){
 			}
 			
 		}else{
-			if (idLib::joystick) {
-						//GK: Disable controller layout if the controller is disconnected
-						idLib::joystick=false;
+			inactive++;
+					if(haptic[i]){
+						SDL_HapticClose(haptic[i]);
+						haptic[i] = NULL;
 					}
-					if(haptic){
-						SDL_HapticClose(haptic);
-						haptic = NULL;
+					if(gcontroller[i]){
+						SDL_GameControllerClose(gcontroller[i]);
 					}
-					if(gcontroller){
-						SDL_GameControllerClose(gcontroller);
-					}
-					gcontroller=NULL;
+					gcontroller[i]=NULL;
 					nextCheck[0] = now + waitTime;
 					continue;
 		}
 	}
+	//GK: Enable controller layout if there is one controller connected
+	idLib::joystick = inactive >= 4 ? false : true;
 #else
 	// WM0110: Initialise SDL Joystick
 	//common->Printf( "Sys_InitInput: Joystick subsystem init\n" );
@@ -1960,73 +1956,63 @@ int JoystickSamplingThread(void* data){
 	
 	int numJoysticks = SDL_NumJoysticks();
 	//common->Printf( "Sys_InitInput: Joystic - Found %i joysticks\n", numJoysticks );
-#if !SDL_VERSION_ATLEAST(2, 0, 0)
-	for( i = 0; i < numJoysticks; i++ )
+//#if !SDL_VERSION_ATLEAST(2, 0, 0)
+	int inactive = 0;
+	for (i = 0; i < numJoysticks; i++) {
 		//common->Printf( " Joystick %i name '%s'\n", i, SDL_JoystickName( i ) );
-#endif
-	
+//#endif
+
 	// Open first available joystick and use it
-	if( SDL_NumJoysticks() > 0 )
-	{
-		joy = SDL_JoystickOpen( 0 );
-	
-		if( joy )
+		if (SDL_NumJoysticks() > 0)
 		{
-			if (!idLib::joystick) {
-						//GK: Enable controller layout if the controller is connected
-						idLib::joystick = true;
-					}
-					nextCheck[0]=0;
-			int num_hats;
-	
-			num_hats = SDL_JoystickNumHats( joy );
-			//common->Printf( "Opened Joystick number 0\n" );
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-			//common->Printf( "Name: %s\n", SDL_JoystickName( joy ) );
-#else
-			//common->Printf( "Name: %s\n", SDL_JoystickName( 0 ) );
-#endif
+			joy = SDL_JoystickOpen(0);
+
+			if (joy)
+			{
+				nextCheck[0] = 0;
+				int num_hats;
+
+				num_hats = SDL_JoystickNumHats(joy);
+				//common->Printf( "Opened Joystick number 0\n" );
 			//common->Printf( "Number of Axes: %d\n", SDL_JoystickNumAxes( joy ) );
 			//common->Printf( "Number of Buttons: %d\n", SDL_JoystickNumButtons( joy ) );
 			//common->Printf( "Number of Hats: %d\n", num_hats );
 			//common->Printf( "Number of Balls: %d\n", SDL_JoystickNumBalls( joy ) );
-	
-			SDL_joystick_has_hat = 0;
-			if( num_hats )
+
+				SDL_joystick_has_hat = 0;
+				if (num_hats)
+				{
+					SDL_joystick_has_hat = 1;
+				}
+				break;
+			}
+			else
 			{
-				SDL_joystick_has_hat = 1;
+				inactive++;
+				nextCheck[0] = now + waitTime;
+				if (joy)
+				{
+					//common->Printf( "Sys_ShutdownInput: closing SDL joystick.\n" );
+					SDL_JoystickClose(joy);
+				}
+				joy = NULL;
+				//common->Printf( "Couldn't open Joystick 0\n" );
 			}
 		}
 		else
 		{
-			if (idLib::joystick) {
-						//GK: Disable controller layout if the controller is disconnected
-						idLib::joystick=false;
-					}
-					nextCheck[0] = now + waitTime;
-					if( joy )
-	{
-		//common->Printf( "Sys_ShutdownInput: closing SDL joystick.\n" );
-		SDL_JoystickClose( joy );
-	}
+			inactive = 4;
+			nextCheck[0] = now + waitTime;
+			if (joy)
+			{
+				//common->Printf( "Sys_ShutdownInput: closing SDL joystick.\n" );
+				SDL_JoystickClose(joy);
+			}
 			joy = NULL;
-			//common->Printf( "Couldn't open Joystick 0\n" );
 		}
 	}
-	else
-	{
-		if (idLib::joystick) {
-						//GK: Disable controller layout if the controller is disconnected
-						idLib::joystick=false;
-					}
-		nextCheck[0] = now + waitTime;
-		if( joy )
-		{
-		 //common->Printf( "Sys_ShutdownInput: closing SDL joystick.\n" );
-		 SDL_JoystickClose( joy );
-		}
-		joy = NULL;
-	}
+	//GK: Enable controller layout if there is one controller connected
+	idLib::joystick = inactive >= 4 ? false : true;
 	// WM0110
 #endif
 		}else{
