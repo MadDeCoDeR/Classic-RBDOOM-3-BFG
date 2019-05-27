@@ -77,6 +77,7 @@ const char* getENumName(int i);
 void M_Episode(int choice);
 
 bool beginepisode = false;
+bool BFGEpisodic = false;
 
 typedef struct {
 	char** var;
@@ -292,14 +293,19 @@ int calculateD1map(int map, int& counter) {
 	int result = map;
 	
 	if (::g->clusters.size()) {
-		if (::g->clusters[counter].endmap) {
+		/*if (::g->clusters[counter].endmap) {
 			endmap = ::g->clusters[counter].endmap - ::g->clusters[counter].startmap;
 			endmap++;
 		}
 		else {
 			endmap = 8;
+		}*/
+		if (!BFGEpisodic) {
+			result = ::g->clusters[counter].startmap + map;
 		}
-		result = ::g->clusters[counter].startmap + map;
+		else {
+			result = realmap;
+		}
 		/*if (map == endmap) {
 			counter++;
 		}*/
@@ -315,8 +321,9 @@ void setMAP(int index,char* value1, char* value2, char* value3) {
 		if (beginepisode) {
 			if (episodecount >= ::g->clusters.size()) {
 				::g->clusters.resize(episodecount + 1);
+				::g->clusters[episodecount].startmap = realmap;
 			}
-			::g->clusters[episodecount].startmap = realmap;
+			
 			beginepisode = false;
 		}
 		map = calculateD1map(index,episodecount);
@@ -872,6 +879,7 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 			case 5:
 			case 6:
 				*clusterobj[i].ival = atoi(value);
+				BFGEpisodic = true;
 				break;
 			case 7:
 			case 8:
