@@ -878,9 +878,9 @@ bool I_LoadSong( const char * songname )
 	}
 	alGenBuffers((ALuint)1, &alMusicBuffer);
 	
-	unsigned char * musFile = static_cast< unsigned char * >( W_CacheLumpName( lumpName.c_str(), PU_STATIC_SHARED ) );
-	Z_Free(lumpcache[W_GetNumForName(lumpName.c_str())]);
-	Z_FreeMemory();
+	unsigned char * musFile = static_cast< unsigned char * >( W_LoadLumpName( lumpName.c_str()/*, PU_STATIC_SHARED*/ ) );
+	/*Z_Free(lumpcache[W_GetNumForName(lumpName.c_str())]);
+	Z_FreeMemory();*/
 	
 	int length = 0;
 	//GK: Capture it's return value and use it to determine if the file is mus or not
@@ -910,12 +910,15 @@ bool I_LoadSong( const char * songname )
 		
 		Timidity_Stop();
 		Timidity_FreeSong( doomMusic );
+		free(lumpcache[W_GetNumForName(lumpName.c_str())]);
+		lumpcache[W_GetNumForName(lumpName.c_str())] = NULL;
 		use_avi = false;
 	}
 	else {
-			
 			use_avi = DecodeALAudio(&musFile,&mus_size,&av_rate,&av_sample); //GK: Simplified
 			if (use_avi) {
+				free(lumpcache[W_GetNumForName(lumpName.c_str())]);
+				lumpcache[W_GetNumForName(lumpName.c_str())] = NULL;
 				totalBufferSize = mus_size;
 				musicBuffer = musFile;
 			}
@@ -941,7 +944,7 @@ void I_PlaySong( const char *songname, int looping )
 	// Clear old state
 	if ( musicBuffer ) {
 		free( musicBuffer );
-		musicBuffer = 0;
+		musicBuffer = NULL;
 	}
 	
 	musicReady = false;
@@ -985,6 +988,9 @@ void I_UpdateMusic( void )
 					alBufferData(alMusicBuffer, av_sample, musicBuffer, totalBufferSize, av_rate);
 				}
 				alSourcei( alMusicSourceVoice, AL_BUFFER, alMusicBuffer );
+				free(musicBuffer);
+				musicBuffer = NULL;
+				alDeleteBuffers(1, &alMusicBuffer);
 				alSourcePlay( alMusicSourceVoice );
 			}
 			
@@ -1033,6 +1039,8 @@ void I_StopSong( int handle )
 	}
 	
 	alSourceStop( alMusicSourceVoice );
+	alDeleteSources(1, &alMusicSourceVoice);
+	alGenSources(1, &alMusicSourceVoice);
 }
 
 /*
