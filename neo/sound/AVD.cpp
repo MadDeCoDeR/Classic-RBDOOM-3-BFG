@@ -141,7 +141,8 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 	int offset = 0;
 	int num_bytes = 0;
 	int bufferoffset = format_byte * 10;
-	byte* tBuffer = (byte *)malloc(2 * (*len)*bufferoffset);
+	unsigned long long length = *len;
+	byte* tBuffer = (byte *)malloc(2 * length*bufferoffset);
 	uint8_t** tBuffer2 = NULL;
 	int  bufflinesize;
 
@@ -294,10 +295,10 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	int offset = 0;
 	int num_bytes = 0;
 	int bufferoffset = format_byte * 10;
-	byte* tBuffer = (byte *)malloc(2 * (*len)*bufferoffset);
+	unsigned long long length = *len;
+	byte* tBuffer = (byte *)malloc(2* length * bufferoffset);
 	uint8_t** tBuffer2 = NULL;
 	int  bufflinesize;
-
 	while (av_read_frame(fmt_ctx, &packet) >= 0) {
 		if (packet.stream_index == avindx) {
 			frame = av_frame_alloc();
@@ -312,7 +313,6 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 						av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
 						dst_smp,
 						0);
-
 					int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame->extended_data, frame->nb_samples);
 					num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
 						res, dst_smp, 1);
