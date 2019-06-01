@@ -4,6 +4,33 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+1 June 2019 - Classic RBDOOM-3-BFG 1.1.12.13
+_______________________________
+
+WARNING: The game dll support is nearly complete but 
+there are still bugs while using them.
+
+[classicdoom]
+
+- crosshair hit frame will last for  2/3 of a second
+
+- Improved episodic handling in EXPINFO/MAPINFO
+
+- EXINFO improvments and bugfixes
+
+- Added "interpic" and "endmode" in EXINFO's episode definition
+
+- Fixed memory leaks with non-midi music
+
+- Added loading lumps directly to physical memory
+
+[DOOM3BFG]
+
+- Added support for 4 controllers on windows and sdl 2.0
+
+- Extended audio file maximum size when decoding
+_______________________________________
+
 28 April 2019 - Classic RBDOOM-3-BFG 1.1.12.12
 _______________________________
 
