@@ -250,6 +250,22 @@ fstr mval[] = {
 
 };
 
+enum CLUSTER {
+	FLAT,
+	MUSIC,
+	ENTERTXT,
+	EXITTXT,
+	STARTMAP,
+	ENDMAP,
+	TITLENAME,
+	PICNAME,
+	KEY,
+	INTERPIC,
+	ENDMODE,
+	MAXCLUSTER
+
+};
+
 void setMapNum() {
 	::g->map = 0;
 	switch (::g->gamemode) {
@@ -282,7 +298,11 @@ char* removequotes(char* value) {
 			tmpvalue[j] = ' ';
 		}
 		if (tmpvalue[j] == '\"') {
-			tmpvalue[j] = '\0';
+			tmpvalue[j] = ' ';
+		}
+		if (tmpvalue[j] == '\\' && tmpvalue[j + 1] == 'n') {
+			tmpvalue[j] = ' ';
+			tmpvalue[j + 1] = '\n';
 		}
 	}
 	return tmpvalue;
@@ -376,6 +396,9 @@ void EX_add(int lump) {
 	::g->mapmax = 0;
 	if (!::g->maps.empty()) {
 		::g->maps.clear();
+	}
+	if (!::g->clusters.empty()) {
+		::g->clusters.clear();
 	}
 	::g->maps.resize(1);
 	::g->endmap = 30;
@@ -660,6 +683,11 @@ void setMAPINT(int pos,char* name, int value) {
 
 void setMAPSTR(int pos, char* name, char* value) {
 	value = removequotes(value);
+	if (value != NULL) {
+		if (value[strlen(value) - 1] == ' ') {
+			value[strlen(value) - 1] = '\0';
+		}
+	}
 
 	if (::g->gamemode == retail) {
 		pos = calculateD1map(pos,episodecount) -1;
@@ -717,6 +745,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 						}
 						if (!idStr::Icmp(musname, ::g->S_music[j].name)) {
 							*mapstr[i].ival = j;
+							break;
 						}
 					}
 					break;
@@ -824,6 +853,9 @@ void setMAPSTR(int pos, char* name, char* value) {
 void setCluster(int pos, char* name, char*value, char* option, int linepos, std::vector<std::string> lines) {
 	if (value != NULL) {
 		value = removequotes(value);
+		if (value[strlen(value) - 1] == ' ') {
+			value[strlen(value) - 1] = '\0';
+		}
 	}
 	int c = 0;
 	char* musname;
@@ -836,12 +868,15 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 		{"endmap",MAXINT,NULL,&::g->clusters[pos].endmap},
 		{"titlename",MAXINT,NULL},
 		{"picname",MAXINT,NULL},
-		{"key",MAXINT,NULL}
+		{"key",MAXINT,NULL},
+		{"interpic",MAXINT,&::g->clusters[pos].interpic},
+		{"endmode", MAXINT,NULL, &::g->clusters[pos].endmode}
+		
 	};
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < MAXCLUSTER; i++) {
 		if (!idStr::Icmp(name, clusterobj[i].name)){
-			switch (i + 1) {
-			case 1:
+			switch (i) {
+			case FLAT:
 				for (int j = 0; j < 12; j++) {
 					if (!idStr::Icmp(finaleflat[j], value)) {
 						*clusterobj[i].ival = j;
@@ -850,7 +885,7 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 				}
 				*clusterobj[i].sval = value;
 				break;
-			case 2:
+			case MUSIC:
 				c = 0;
 				while (value[c] != '_' && c < strlen(value)) {
 					c++;
@@ -876,28 +911,34 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 					}
 				}
 				break;
-			case 5:
-			case 6:
+			case STARTMAP:
+			case ENDMAP:
 				*clusterobj[i].ival = atoi(value);
 				BFGEpisodic = true;
 				break;
-			case 7:
-			case 8:
+			case TITLENAME:
+			case PICNAME:
 				::g->EpisodeMenu[pos].status = 1;
 				strcpy(::g->EpisodeMenu[pos].name, value);
 				::g->EpisodeMenu[pos].routine = M_Episode;
 				::g->EpisodeMenu[pos].alphaKey = 'c';
 				::g->EpiDef.menuitems = ::g->EpisodeMenu;
 				break;
-			case 9:
+			case KEY:
 				::g->EpisodeMenu[pos].alphaKey = value[0];
 				::g->EpiDef.menuitems = ::g->EpisodeMenu;
 				break;
-			case 3:
+			case INTERPIC:
+				*clusterobj[i].sval = removequotes(value);
+				break;
+			case ENDMODE:
+				*clusterobj[i].ival = atoi(value);
+				break;
+			case ENTERTXT:
 				tex++;
 				::g->clusters[pos].textpr = tex;
 
-			case 4:
+			case EXITTXT:
 				if (i + 1 == 4) {
 					::g->clusters[pos].textpr = 1;
 				}
@@ -917,23 +958,30 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 				}
 				else {
 					idStr lval;
-					char* t = strtok(strdup(lines[linepos].c_str()), " ");
+					/*char* t = strtok(strdup(lines[linepos].c_str()), " ");
 					t = strtok(NULL, " ");
 					if (t[0] = '\"') {
 						t = t + 1;
 					}
 					lval += t;
-					lval += "\n";
-					for (int j = linepos+1; j < lines.size(); j++) {
-						if (lines[j].c_str()[lines[j].size()-1] == '\"') {
+					lval += "\n";*/
+					lines[linepos] = strtok(strdup(lines[linepos].c_str()), " ");
+					lines[linepos] = strtok(NULL, " ");
+					for (int j = linepos; j < lines.size(); j++) {
+						/*if (lines[j].c_str()[lines[j].size()-1] == '\"') {
 							lines[j].at(lines[j].size()-1) = '\0';
 							lval += lines[j].c_str();
 							break;
+						}*/
+						const char* tocheck = removequotes(strdup(lines[j].c_str()));
+						lval += tocheck;
+						if (tocheck[strlen(tocheck) - 1] == ' ') {
+							break;
 						}
-						lval += lines[j].c_str();
-						lval += "\n";
+						/*lval += "\n";*/
+
 					}
-					*clusterobj[i].sval = new char[lval.Size()];
+					*clusterobj[i].sval = new char[lval.Length()];
 					strcpy(*clusterobj[i].sval, lval.c_str());
 				}
 				break;

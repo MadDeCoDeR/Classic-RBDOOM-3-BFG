@@ -1568,6 +1568,10 @@ void WI_loadData(void)
 			strcpy(name,"INTERPIC");
 	}
 
+	if (::g->gamemission == pack_custom && ::g->gamemode == retail){
+		strcpy(name, ::g->clusters[::g->wbs->epsd].interpic);
+	}
+
 	// background
 	::g->bg = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
 

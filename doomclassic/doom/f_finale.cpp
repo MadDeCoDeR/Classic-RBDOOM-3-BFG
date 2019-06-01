@@ -237,7 +237,7 @@ void F_StartFinale (void)
 					break;
 				default:
 					// Ouch.
-					S_ChangeMusic(mus_read_m, true);
+					S_ChangeMusic(mus_victor, true);
 					flt = finaleflat[10]; // Not used anywhere else.
 					finaletext = fooltext;   //GK: NO finale text found??
 					break;
@@ -246,7 +246,12 @@ void F_StartFinale (void)
 			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
 				if (::g->clusters[::g->gameepisode - 1].ftext != NULL) {
 					S_ChangeMusic(::g->clusters[::g->gameepisode - 1].fmusic, true);
-					flt = finaleflat[::g->clusters[::g->gameepisode - 1].fflat];
+					if (::g->clusters[::g->gameepisode - 1].ftex != NULL) {
+						flt = ::g->clusters[::g->gameepisode - 1].ftex;
+					}
+					else {
+						flt = finaleflat[::g->clusters[::g->gameepisode - 1].fflat];
+					}
 					finaletext = ::g->clusters[::g->gameepisode - 1].ftext;
 				}
 			}
@@ -1052,7 +1057,11 @@ void F_Drawer (void)
 	F_TextWrite ();
     else
     {
-	switch (::g->gameepisode)
+		int ending = ::g->gameepisode;
+		if (::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode -1].endmode > 0){
+			ending = ::g->clusters[::g->gameepisode - 1].endmode;
+		}
+	switch (ending)
 	{
 	  case 1:
 	    if ( ::g->gamemode == retail )

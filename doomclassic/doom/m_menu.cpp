@@ -716,6 +716,10 @@ void M_SaveSelect(int choice)
 		break;
 	}
 
+	if (::g->gamemission == pack_custom) {
+		s = strdup(::g->maps[::g->gamemap - 1].realname);
+	}
+
 	::g->saveSlot = choice;	
 	strcpy(::g->savegamestrings[::g->saveSlot], s);
 	M_DoSave(::g->saveSlot);

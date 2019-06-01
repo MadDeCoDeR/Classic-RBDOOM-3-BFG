@@ -1594,7 +1594,6 @@ void A_BossDeath (mobj_t* mo, void * )
 		
 	if (::g->gamemission == pack_custom && ::g->map) { //GK:Custom expansion related stuff
 		if (!::g->maps[::g->map-1].miniboss) {
-			if (::g->gamemode == commercial)
 			return;
 		}
 		else {

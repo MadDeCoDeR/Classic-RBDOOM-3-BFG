@@ -576,6 +576,8 @@ typedef struct {//GK:Store information for the custom expansion clusters
 	int endmap; //GK: Set episode last map (from the maps vector)
 	char* titlename; //GK: Set episode picname
 	char* mapname; //GK: Set episode first map (from the maps vector)
+	char* interpic; //GK: Set intermission lump
+	int endmode;
 }cluster_t;
 //GK: Store CVar name new and original value
 typedef struct {
