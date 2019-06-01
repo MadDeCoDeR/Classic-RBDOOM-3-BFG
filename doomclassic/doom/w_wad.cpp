@@ -65,6 +65,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <dirent.h>
 #include <unistd.h>
 #endif
+#include <set>
 
 #define READ_SIZE 8192
 #define MAX_FILENAME 512
@@ -75,6 +76,7 @@ If you have questions concerning this license or the applicable additional terms
 lumpinfo_t*	lumpinfo = NULL;
 int			numlumps;
 void**		lumpcache;
+std::set<int> direct;
 std::vector<std::string> fname;
 std::vector<std::string> foldername;
 //GK: Keep information retrieved from .zip and .pk3 files
@@ -714,11 +716,17 @@ void W_Reload (void)
 void W_FreeLumps() {
 	if ( lumpcache != NULL ) {
 		for ( int i = 0; i < numlumps; i++ ) {
-			if ( lumpcache[i] ) {
+			if ( lumpcache[i] && direct.find(i) == direct.end()) {
 				Z_Free( lumpcache[i] );
 			}
+			else if (lumpcache[i] && direct.find(i) != direct.end()){
+				free(lumpcache[i]);
+				direct.erase(i);
+			}
 		}
-
+		if (direct.size() > 0) {
+			direct.clear();
+		}
 		Z_Free( lumpcache );
 		lumpcache = NULL;
 	}
@@ -1038,10 +1046,35 @@ W_CacheLumpNum
 		ptr = (byte*)DoomLib::Z_Malloc(W_LumpLength (lump), tag, &lumpcache[lump]);
 		W_ReadLump (lump, lumpcache[lump]);
 	}
-
+	
 	return lumpcache[lump];
 }
 
+
+//
+// W_CacheLumpNum
+//
+// GK: Load the lump directly without the use of the Z-Memory
+void*
+W_LoadLumpNum
+(int		lump)
+{
+#ifdef RANGECHECK
+	if (lump >= numlumps)
+		I_Error("W_CacheLumpNum: %i >= numlumps", lump);
+#endif
+
+	if (!lumpcache[lump])
+	{
+		byte* ptr;
+		// read the lump in
+		//I_Printf ("cache miss on lump %i\n",lump);
+		lumpcache[lump] = (byte*)malloc(W_LumpLength(lump));
+		W_ReadLump(lump, lumpcache[lump]);
+	}
+	direct.insert(lump);
+	return lumpcache[lump];
+}
 
 
 //
@@ -1065,6 +1098,26 @@ W_CacheLumpName
     return W_CacheLumpNum (point, tag);
 }
 
+//
+// W_CacheLumpName
+//
+// GK: Load the lump directly without the use of the Z-Memory
+void*
+W_LoadLumpName
+(const char* name)
+{
+	//GK begin
+	int point = W_GetNumForName(name);
+	if (!idStr::Icmp("TITLEPIC", name) && point == -1) { //Handle no TITLEPIC lump from DOOM2.WAD
+		point = W_GetNumForName("INTERPIC");
+	}
+
+	if (!idStr::Icmp("SWITCHES", name) && point == -1) { //Handle no SWITCHES lump
+		return NULL;
+	}
+	//GK end
+	return W_LoadLumpNum(point);
+}
 
 void W_Profile (void)
 {
