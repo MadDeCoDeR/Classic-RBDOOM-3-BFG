@@ -988,9 +988,8 @@ void I_UpdateMusic( void )
 					alBufferData(alMusicBuffer, av_sample, musicBuffer, totalBufferSize, av_rate);
 				}
 				alSourcei( alMusicSourceVoice, AL_BUFFER, alMusicBuffer );
-				free(musicBuffer);
-				musicBuffer = NULL;
 				alDeleteBuffers(1, &alMusicBuffer);
+				alGenBuffers(1, &alMusicBuffer);
 				alSourcePlay( alMusicSourceVoice );
 			}
 			
