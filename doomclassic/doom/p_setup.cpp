@@ -830,6 +830,9 @@ P_SetupLevel
 			lumpname[3] = '0' + map;
 			lumpname[4] = 0;
 
+			if (episode < 5 && map < 10) {
+				::g->mapname = std::string(mapnames[(episode - 1) * 9 + (map - 1)]);
+			}
 			if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
 				if (::g->clusters.size()) {
 					if (!::g->clusters[episode - 1].startmap && ::g->clusters[episode - 1].mapname != NULL) {
@@ -844,11 +847,14 @@ P_SetupLevel
 					::g->endmap = ::g->clusters[episode - 1].endmap;
 					if (::g->maps[newmap - 1].lumpname != NULL) {
 						sprintf(lumpname, "%s", ::g->maps[newmap - 1].lumpname);
+						if (::g->maps[newmap - 1].realname != NULL) {
+							::g->mapname = ::g->maps[newmap - 1].realname;
+						}
 					}
 				}
 				}
 			}
-		::g->mapname = std::string(mapnames[(episode - 1) * 9 + (map - 1)]);
+			
 
 
 	}
