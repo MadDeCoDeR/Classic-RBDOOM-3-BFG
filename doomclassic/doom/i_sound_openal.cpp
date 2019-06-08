@@ -952,7 +952,7 @@ void I_PlaySong( const char *songname, int looping )
 	waitingForMusic = true;
 	
 	if ( DoomLib::GetPlayer() >= 0 ) {
-		//GK: Did they ven know how to use openAL ??
+		//GK: Did they even know how to use openAL ??
 		alSourcei(alMusicSourceVoice, AL_LOOPING, looping);
 	}
 }
@@ -991,8 +991,6 @@ void I_UpdateMusic( void )
 				alSourcei( alMusicSourceVoice, AL_BUFFER, alMusicBuffer );
 				free(musicBuffer);
 				musicBuffer = NULL;
-				alDeleteBuffers(1, &alMusicBuffer);
-				alGenBuffers(1, &alMusicBuffer);
 				alSourcePlay( alMusicSourceVoice );
 			}
 			
@@ -1039,8 +1037,11 @@ void I_StopSong( int handle )
 	if ( !Music_initialized || !alMusicSourceVoice ) {
 		return;
 	}
-	
+	alSourcei(alMusicSourceVoice, AL_LOOPING, 0);
 	alSourceStop( alMusicSourceVoice );
+	alSourcei(alMusicSourceVoice, AL_BUFFER, 0);
+	alDeleteBuffers(1, &alMusicBuffer);
+	alGenBuffers(1, &alMusicBuffer);
 	alDeleteSources(1, &alMusicSourceVoice);
 	alGenSources(1, &alMusicSourceVoice);
 }
