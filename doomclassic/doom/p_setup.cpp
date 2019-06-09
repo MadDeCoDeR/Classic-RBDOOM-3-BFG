@@ -808,13 +808,13 @@ P_SetupLevel
 		//GK: Get Map's name in order to check for reverbs
 		switch (::g->gamemission) {
 		case doom2:
-			::g->mapname = std::string(mapnames2[map - 1]);
+			::g->mapname = mapnames2[map - 1];
 			break;
 		case pack_tnt:
-			::g->mapname = std::string(mapnamest[map - 1]);
+			::g->mapname = mapnamest[map - 1];
 			break;
 		case pack_plut:
-			::g->mapname = std::string(mapnamesp[map - 1]);
+			::g->mapname = mapnamesp[map - 1];
 			break;
 		default:
 			::g->mapname=DoomLib::GetCurrentExpansion()->mapNames[map - 1];
@@ -831,7 +831,8 @@ P_SetupLevel
 			lumpname[4] = 0;
 
 			if (episode < 5 && map < 10) {
-				::g->mapname = std::string(mapnames[(episode - 1) * 9 + (map - 1)]);
+				idLib::Printf("%s\n", mapnames[(episode - 1) * 9 + (map - 1)]);
+				::g->mapname = mapnames[(episode - 1) * 9 + (map - 1)];
 			}
 			if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
 				if (::g->clusters.size()) {
@@ -854,9 +855,6 @@ P_SetupLevel
 				}
 				}
 			}
-			
-
-
 	}
 
 	lumpnum = W_GetNumForName (lumpname);
