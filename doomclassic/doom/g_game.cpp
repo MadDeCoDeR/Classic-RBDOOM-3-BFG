@@ -1464,8 +1464,11 @@ void G_DoCompleted (void)
 			break;
 		}
 	}
-	else
-		::g->wminfo.partime = TICRATE * pars[::g->gameepisode][::g->gamemap]; 
+	else {
+		if (::g->gameepisode < 5 && ::g->gamemap < 10) {
+			::g->wminfo.partime = TICRATE * pars[::g->gameepisode][::g->gamemap];
+		}
+	}
 
 	if (::g->gamemission == pack_custom && ::g->map) {
 		if (::g->maps[::g->map -1].par)

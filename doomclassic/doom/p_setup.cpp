@@ -747,7 +747,7 @@ P_SetupLevel
 	int		lumpnum;
 
 	::g->totalkills = ::g->totalitems = ::g->totalsecret = ::g->wminfo.maxfrags = 0;
-	::g->wminfo.partime = 180;
+	::g->wminfo.partime = 3600 * TICRATE; //GK: Time Really SUCKS
 	for (i=0 ; i<MAXPLAYERS ; i++)
 	{
 		::g->players[i].killcount = ::g->players[i].secretcount 
