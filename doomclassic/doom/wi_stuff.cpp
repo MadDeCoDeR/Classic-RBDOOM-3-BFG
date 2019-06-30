@@ -1568,7 +1568,7 @@ void WI_loadData(void)
 			strcpy(name,"INTERPIC");
 	}
 
-	if (::g->gamemission == pack_custom && ::g->gamemode == retail){
+	if (::g->gamemission == pack_custom && ::g->gamemode == retail && ::g->clusters[::g->wbs->epsd].interpic){
 		strcpy(name, ::g->clusters[::g->wbs->epsd].interpic);
 	}
 

@@ -398,6 +398,7 @@ void EX_add(int lump) {
 		::g->maps.clear();
 	}
 	if (!::g->clusters.empty()) {
+		::g->clusterind = 0;
 		::g->clusters.clear();
 	}
 	::g->maps.resize(1);

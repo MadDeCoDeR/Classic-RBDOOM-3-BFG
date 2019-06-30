@@ -716,7 +716,7 @@ void M_SaveSelect(int choice)
 		break;
 	}
 
-	if (::g->gamemission == pack_custom) {
+	if (::g->gamemission == pack_custom && ::g->maps[::g->gamemap - 1].realname) {
 		s = strdup(::g->maps[::g->gamemap - 1].realname);
 	}
 
