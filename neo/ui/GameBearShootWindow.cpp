@@ -202,7 +202,7 @@ void BSEntity::Draw()
 {
 	if( visible )
 	{
-		dc->DrawMaterialRotated( position.x, position.y, width, height, material, entColor, 1.0f, 1.0f, DEG2RAD( rotation ) );
+		dc->DrawMaterialRotated( position.x, position.y, width, height, material, entColor, 1.0f, 1.0f, DEG2RAD( -rotation ) );
 	}
 }
 
