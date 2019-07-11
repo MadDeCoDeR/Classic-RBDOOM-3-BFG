@@ -782,10 +782,11 @@ void R_ExecuteSetViewSize (void)
 
 void R_Init (void)
 {
-	if (!::g->reset) {
-		R_InitData();
-		I_Printf("\nR_InitData");
+	if (::g->reset) { //GK: when a reset graphics request is sent clear first the data and then reload them
+		R_ClearData();
 	}
+	R_InitData();
+	I_Printf("\nR_InitData");
 	R_InitPointToAngle ();
 	I_Printf ("\nR_InitPointToAngle");
 	R_InitTables ();

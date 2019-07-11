@@ -51,6 +51,7 @@ R_GetSkyColumn
 
 // I/O, setting up the stuff.
 void R_InitData (void);
+void R_ClearData(void);
 void R_PrecacheLevel (void);
 
 

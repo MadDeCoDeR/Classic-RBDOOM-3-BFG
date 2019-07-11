@@ -662,7 +662,28 @@ void R_InitTextures (void)
 		::g->texturetranslation[i] = i;	
 }
 
-
+//
+// R_ClearTextures
+// Clear the texture list
+//  with the s_textures from the world map.
+//
+void R_ClearTextures(void) {
+	
+	for (int i = 0; i < ::g->s_numtextures; i++) {
+		Z_Free(::g->s_texturecolumnlump[i]);
+		Z_Free(::g->s_texturecolumnofs[i]);
+		Z_Free(::g->s_textures[i]);
+	}
+	Z_Free(::g->s_textures);
+	Z_Free(::g->s_texturecolumnlump);
+	Z_Free(::g->s_texturecolumnofs);
+	Z_Free(::g->s_texturewidthmask);
+	Z_Free(::g->s_textureheight);
+	Z_Free(::g->s_texturecomposite);
+	Z_Free(::g->s_texturecompositesize);
+	Z_Free(::g->texturetranslation);
+	::g->s_numtextures = 0;
+}
 
 //
 // R_InitFlats
@@ -680,6 +701,18 @@ void R_InitFlats (void)
     
     for (i=0 ; i < ::g->numflats ; i++)
 	::g->flattranslation[i] = i;
+}
+
+//
+// R_ClearFlats
+//
+void R_ClearFlats(void)
+{
+	::g->firstflat = 0;
+	::g->lastflat = 0;
+	::g->numflats = 0;
+
+	Z_Free(::g->flattranslation);
 }
 
 
@@ -713,6 +746,21 @@ void R_InitSpriteLumps (void)
 	::g->spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;
 	::g->spritetopoffset[i] = SHORT(patch->topoffset)<<FRACBITS;
     }
+}
+
+//
+// R_ClearSpriteLumps
+//
+void R_ClearSpriteLumps(void)
+{
+	::g->firstspritelump = 0;
+	::g->lastspritelump = 0;
+
+	::g->numspritelumps = 0;
+	Z_Free(::g->spritewidth);
+	::g->spriteheight.resize(::g->numspritelumps);
+	Z_Free(::g->spriteoffset);
+	Z_Free(::g->spritetopoffset);
 }
 
 
@@ -751,6 +799,19 @@ void R_InitData (void)
     I_Printf ("\nInitSprites");
     R_InitColormaps ();
     I_Printf ("\nInitColormaps");
+}
+
+//
+// R_ClearData
+// Clear all listed data 
+//  that has been loaded.
+// Must be called when changing the aspect ratio in menu.
+//
+void R_ClearData(void)
+{
+	R_ClearTextures();
+	R_ClearFlats();
+	R_ClearSpriteLumps();
 }
 
 
