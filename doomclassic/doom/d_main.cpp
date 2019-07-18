@@ -845,57 +845,7 @@ void D_DoomMain(void)
 	p = M_CheckParm ("-avg");
 	if (p && p < ::g->myargc-1 && ::g->deathmatch)
 		I_Printf("Austin Virtual Gaming: Levels will end after 20 minutes\n");
-	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
-		p = M_CheckParm("-warp");
-		if (p && p < ::g->myargc - 1)
-		{
-			idLib::warpUsed = true;
-			int level = atoi(::g->myargv[p + 1]);
-			int episode = ::g->myargv[p + 1][0] - '0';
-			int map = 1;
-			if (strlen(::g->myargv[p + 1]) > 1) {
-				map = ::g->myargv[p + 1][1] - '0';
-			}
-			else {
-				int cp = p + 2;
-				if (cp < ::g->myargc) {
-					map = ::g->myargv[p + 2][0] - '0';
-				}
-			}
-			
-			if (::g->gamemode == commercial) {
-				::g->startmap = level;
-				if (::g->gamemission == pack_master) {
-					DoomLib::use_doomit = true;
-					if (level <= 0 || level > 21) {
-						::g->startmap = 1;
-					}
-				}else
-				if (::g->gamemission == pack_nerve) {
-					if (level <= 0 || level > 9) {
-						::g->startmap = 1;
-					}
-				}
-				else
-				{
-						if (level <= 0 || level > 33) {
-							::g->startmap = 1;
-						}
-					
-				}
-			}
-			else
-			{
-					::g->startepisode = episode;
-					if (episode <= 0 || episode> 4)
-						::g->startepisode = 1;
-					::g->startmap = map;
-					if (map <= 0 || map > 9)
-						::g->startmap = 1;
-			}
-			::g->autostart = true;
-		}
-	}
+	
 	I_Printf ("Z_Init: Init zone memory allocation daemon. \n");
 	//GK: Allow the user to set the Z-Memory (What Could Possibly go wrong?)
 	int zcheck = M_CheckParm("-zmem");
@@ -914,6 +864,83 @@ void D_DoomMain(void)
 
 	I_Printf ("W_Init: Init WADfiles.\n");
 	W_InitMultipleFiles (wadfiles);
+
+	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+		p = M_CheckParm("-warp");
+		if (p && p < ::g->myargc - 1)
+		{
+			idLib::warpUsed = true;
+			int level = atoi(::g->myargv[p + 1]);
+			int episode = ::g->myargv[p + 1][0] - '0';
+			int map = 1;
+			if (strlen(::g->myargv[p + 1]) > 1) {
+				map = ::g->myargv[p + 1][1] - '0';
+			}
+			else {
+				int cp = p + 2;
+				if (cp < ::g->myargc) {
+					map = ::g->myargv[p + 2][0] - '0';
+				}
+			}
+
+			
+			if (::g->gamemode == commercial) {
+				::g->startmap = level;
+				if (::g->gamemission == pack_master) {
+					DoomLib::use_doomit = true;
+					if (level <= 0 || level > 21) {
+						::g->startmap = 1;
+					}
+				}
+				else
+					if (::g->gamemission == pack_nerve) {
+						if (level <= 0 || level > 9) {
+							::g->startmap = 1;
+						}
+					}
+					else
+					{
+						if (level <= 0 || level > 33) {
+							::g->startmap = 1;
+						}
+
+					}
+			}
+			else
+			{
+				::g->startepisode = episode;
+				if (episode <= 0 || episode > 4)
+					::g->startepisode = 1;
+				::g->startmap = map;
+				if (map <= 0 || map > 9)
+					::g->startmap = 1;
+			}
+
+			if (::g->gamemission == pack_custom)
+			{
+				if (::g->gamemode == commercial)
+				{
+					::g->startmap = level;
+					if (level <= 0 || level > ::g->maps.size())
+					{
+						::g->startmap = 1;
+					}
+				}
+				else
+				{
+					::g->startepisode = episode;
+					if (episode <= 0 || episode > ::g->clusters.size())
+						::g->startepisode = 1;
+					::g->startmap = map;
+					if (::g->clusters[::g->startepisode - 1].startmap != ::g->clusters[::g->startepisode - 1].endmap)
+						if (map <= 0 || ::g->clusters[::g->startepisode - 1].startmap - 1 + map > ::g->clusters[::g->startepisode - 1].endmap + 1)
+							::g->startmap = 1;
+				}
+			}
+
+			::g->autostart = true;
+		}
+	}
 
 
 	// Check for -file in shareware
