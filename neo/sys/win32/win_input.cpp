@@ -805,19 +805,11 @@ void JoystickSamplingThread( void* data )
 			
 			// do this short amount of processing inside a critical section
 			idScopedCriticalSection cs( win32.g_Joystick.mutexXis );
-			int registeredControllers = 0;
-			for (int i = 0; i < MAX_JOYSTICKS; i++)
-			{
-				if (win32.g_Joystick.controllers[i].valid) 
-				{
-					registeredControllers++;
-				}
-			}
 			int inactive = 0;
 			for( int i = 0 ; i < MAX_JOYSTICKS ; i++ )
 			{
 				
-				controllerState_t* cs = &win32.g_Joystick.controllers[registeredControllers];
+				controllerState_t* cs = &win32.g_Joystick.controllers[i];
 				
 				if (!validData[i])
 				{
