@@ -1424,6 +1424,82 @@ void idMenuHandler_ShellLocal::StartGame( int index )
 	//GK: End
 }
 
+bool checkInput()
+{
+	// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
+	bool escapeEvent = false;
+	int numKeyEvents = Sys_PollKeyboardInputEvents();
+	if (numKeyEvents > 0)
+	{
+		for (int i = 0; i < numKeyEvents; i++)
+		{
+			int key;
+			bool state;
+
+			if (Sys_ReturnKeyboardInputEvent(i, key, state))
+			{
+				if (key == K_ESCAPE && state == true)
+				{
+					escapeEvent = true;
+				}
+				break;
+			}
+		}
+
+		Sys_EndKeyboardInputEvents();
+	}
+	int	mouseEvents[MAX_MOUSE_EVENTS][2];
+	int numMouseEvents = Sys_PollMouseInputEvents(mouseEvents);
+	if (numMouseEvents > 0)
+	{
+		for (int i = 0; i < numMouseEvents; i++)
+		{
+			int action = mouseEvents[i][0];
+			switch (action)
+			{
+			case M_ACTION1:
+			case M_ACTION2:
+			case M_ACTION3:
+			case M_ACTION4:
+			case M_ACTION5:
+			case M_ACTION6:
+			case M_ACTION7:
+			case M_ACTION8:
+				escapeEvent = true;
+				break;
+
+			default:	// some other undefined button
+				break;
+			}
+		}
+	}
+
+	int numJoystickEvents = Sys_PollJoystickInputEvents(0);
+	if (numJoystickEvents > 0)
+	{
+		for (int i = 0; i < numJoystickEvents; i++)
+		{
+			int action;
+			int value;
+
+			if (Sys_ReturnJoystickInputEvent(i, action, value))
+			{
+				if (action >= J_ACTION1 && action <= J_ACTION_MAX)
+				{
+					if (value != 0)
+					{
+						escapeEvent = true;
+						break;
+					}
+				}
+			}
+		}
+
+		Sys_EndJoystickInputEvents();
+	}
+	return escapeEvent;
+}
+
 static const int NUM_DOOM_INTRO_LINES = 7;
 /*
 ========================
@@ -1439,7 +1515,7 @@ void idMenuHandler_ShellLocal::ShowDoomIntro()
 	
 	delete introGui;
 	introGui = new idSWF( "doomIntro", common->MenuSW() );
-	
+
 	if( introGui != NULL )
 	{
 		const idMaterial* mat = doom3Intro;
@@ -1470,7 +1546,6 @@ void idMenuHandler_ShellLocal::ShowDoomIntro()
 												  
 		for( int i = 0; i < numTextFields; ++i )
 		{
-		
 			idSWFTextInstance* txtVal = introGui->GetRootObject().GetNestedText( va( "info%d", i ), "txtInfo", "txtVal" );
 			if( txtVal != NULL )
 			{
@@ -1500,9 +1575,17 @@ void idMenuHandler_ShellLocal::ShowDoomIntro()
 						nextIndex = _nextIndex;
 						shell = _shell;
 						gui = _gui;
+						hasEscaped = false;
 					}
 					idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 					{
+						if (checkInput()) {
+							if (!hasEscaped) {
+								shell->StartGame(0);
+								hasEscaped = true;
+							}
+							return idSWFScriptVar();
+						}
 						if( thisObject->GetSprite() == NULL )
 						{
 							return idSWFScriptVar();
@@ -1517,80 +1600,7 @@ void idMenuHandler_ShellLocal::ShowDoomIntro()
 						{
 							return idSWFScriptVar();
 						}
-						// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
-						bool escapeEvent = false;
-						int numKeyEvents = Sys_PollKeyboardInputEvents();
-						if (numKeyEvents > 0)
-						{
-							for (int i = 0; i < numKeyEvents; i++)
-							{
-								int key;
-								bool state;
-
-								if (Sys_ReturnKeyboardInputEvent(i, key, state))
-								{
-									if (key == K_ESCAPE && state == true)
-									{
-										escapeEvent = true;
-									}
-									break;
-								}
-							}
-
-							Sys_EndKeyboardInputEvents();
-						}
-						int	mouseEvents[MAX_MOUSE_EVENTS][2];
-						int numMouseEvents = Sys_PollMouseInputEvents(mouseEvents);
-						if (numMouseEvents > 0)
-						{
-							for (int i = 0; i < numMouseEvents; i++)
-							{
-								int action = mouseEvents[i][0];
-								switch (action)
-								{
-								case M_ACTION1:
-								case M_ACTION2:
-								case M_ACTION3:
-								case M_ACTION4:
-								case M_ACTION5:
-								case M_ACTION6:
-								case M_ACTION7:
-								case M_ACTION8:
-									escapeEvent = true;
-									break;
-
-								default:	// some other undefined button
-									break;
-								}
-							}
-						}
-
-						int numJoystickEvents = Sys_PollJoystickInputEvents(0);
-						if (numJoystickEvents > 0)
-						{
-							for (int i = 0; i < numJoystickEvents; i++)
-							{
-								int action;
-								int value;
-
-								if (Sys_ReturnJoystickInputEvent(i, action, value))
-								{
-									if (action >= J_ACTION1 && action <= J_ACTION_MAX)
-									{
-										if (value != 0)
-										{
-											escapeEvent = true;
-											break;
-										}
-									}
-								}
-							}
-
-							Sys_EndJoystickInputEvents();
-						}
-						if (escapeEvent) {
-							shell->StartGame(0);
-						}
+						
 						if( !generating )
 						{
 							generating = true;
@@ -1648,6 +1658,7 @@ void idMenuHandler_ShellLocal::ShowDoomIntro()
 					int nextIndex;
 					bool generating;
 					idSWF* gui;
+					bool hasEscaped;
 				};
 				
 				infoSprite->GetScriptObject()->Set( "onEnterFrame", new idIntroTextUpdate( txtVal, txtVal->CalcNumLines(), i + 1, this, introGui ) );
@@ -1767,9 +1778,17 @@ void idMenuHandler_ShellLocal::ShowROEIntro()
 						shell = _shell;
 						gui = _gui;
 						startFade = 0;
+						hasEscaped = false;
 					}
 					idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 					{
+						if (checkInput()) {
+							if (!hasEscaped) {
+								shell->StartGame(1);
+								hasEscaped = true;
+							}
+							return idSWFScriptVar();
+						}
 						if( thisObject->GetSprite() == NULL )
 						{
 							return idSWFScriptVar();
@@ -1783,81 +1802,6 @@ void idMenuHandler_ShellLocal::ShowROEIntro()
 						if( txtVal == NULL )
 						{
 							return idSWFScriptVar();
-						}
-						
-						// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
-						bool escapeEvent = false;
-						int numKeyEvents = Sys_PollKeyboardInputEvents();
-						if (numKeyEvents > 0)
-						{
-							for (int i = 0; i < numKeyEvents; i++)
-							{
-								int key;
-								bool state;
-
-								if (Sys_ReturnKeyboardInputEvent(i, key, state))
-								{
-									if (key == K_ESCAPE && state == true)
-									{
-										escapeEvent = true;
-									}
-									break;
-								}
-							}
-
-							Sys_EndKeyboardInputEvents();
-						}
-						int	mouseEvents[MAX_MOUSE_EVENTS][2];
-						int numMouseEvents = Sys_PollMouseInputEvents(mouseEvents);
-						if (numMouseEvents > 0)
-						{
-							for (int i = 0; i < numMouseEvents; i++)
-							{
-								int action = mouseEvents[i][0];
-								switch (action)
-								{
-								case M_ACTION1:
-								case M_ACTION2:
-								case M_ACTION3:
-								case M_ACTION4:
-								case M_ACTION5:
-								case M_ACTION6:
-								case M_ACTION7:
-								case M_ACTION8:
-									escapeEvent = true;
-									break;
-
-								default:	// some other undefined button
-									break;
-								}
-							}
-						}
-
-						int numJoystickEvents = Sys_PollJoystickInputEvents(0);
-						if (numJoystickEvents > 0)
-						{
-							for (int i = 0; i < numJoystickEvents; i++)
-							{
-								int action;
-								int value;
-
-								if (Sys_ReturnJoystickInputEvent(i, action, value))
-								{
-									if (action >= J_ACTION1 && action <= J_ACTION_MAX)
-									{
-										if (value != 0)
-										{
-											escapeEvent = true;
-											break;
-										}
-									}
-								}
-							}
-
-							Sys_EndJoystickInputEvents();
-						}
-						if (escapeEvent) {
-							shell->StartGame(1);
 						}
 
 						if( !generating )
@@ -1934,6 +1878,7 @@ void idMenuHandler_ShellLocal::ShowROEIntro()
 					bool generating;
 					idSWF* gui;
 					int startFade;
+					bool hasEscaped;
 				};
 				
 				infoSprite->GetScriptObject()->Set( "onEnterFrame", new idIntroTextUpdate( txtVal, txtVal->CalcNumLines(), i + 1, this, introGui ) );
@@ -1999,9 +1944,17 @@ void idMenuHandler_ShellLocal::ShowLEIntro()
 					generating = false;
 					shell = _shell;
 					startFade = 0;
+					hasEscaped = false;
 				}
 				idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 				{
+					if (checkInput()) {
+						if (!hasEscaped) {
+							shell->StartGame(2);
+							hasEscaped = true;
+						}
+						return idSWFScriptVar();
+					}
 					if( thisObject->GetSprite() == NULL )
 					{
 						return idSWFScriptVar();
@@ -2015,81 +1968,6 @@ void idMenuHandler_ShellLocal::ShowLEIntro()
 					if( txtVal == NULL )
 					{
 						return idSWFScriptVar();
-					}
-
-					// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
-					bool escapeEvent = false;
-					int numKeyEvents = Sys_PollKeyboardInputEvents();
-					if (numKeyEvents > 0)
-					{
-						for (int i = 0; i < numKeyEvents; i++)
-						{
-							int key;
-							bool state;
-
-							if (Sys_ReturnKeyboardInputEvent(i, key, state))
-							{
-								if (key == K_ESCAPE && state == true)
-								{
-									escapeEvent = true;
-								}
-								break;
-							}
-						}
-
-						Sys_EndKeyboardInputEvents();
-					}
-					int	mouseEvents[MAX_MOUSE_EVENTS][2];
-					int numMouseEvents = Sys_PollMouseInputEvents(mouseEvents);
-					if (numMouseEvents > 0)
-					{
-						for (int i = 0; i < numMouseEvents; i++)
-						{
-							int action = mouseEvents[i][0];
-							switch (action)
-							{
-							case M_ACTION1:
-							case M_ACTION2:
-							case M_ACTION3:
-							case M_ACTION4:
-							case M_ACTION5:
-							case M_ACTION6:
-							case M_ACTION7:
-							case M_ACTION8:
-								escapeEvent = true;
-								break;
-
-							default:	// some other undefined button
-								break;
-							}
-						}
-					}
-
-					int numJoystickEvents = Sys_PollJoystickInputEvents(0);
-					if (numJoystickEvents > 0)
-					{
-						for (int i = 0; i < numJoystickEvents; i++)
-						{
-							int action;
-							int value;
-
-							if (Sys_ReturnJoystickInputEvent(i, action, value))
-							{
-								if (action >= J_ACTION1 && action <= J_ACTION_MAX)
-								{
-									if (value != 0)
-									{
-										escapeEvent = true;
-										break;
-									}
-								}
-							}
-						}
-
-						Sys_EndJoystickInputEvents();
-					}
-					if (escapeEvent) {
-						shell->StartGame(2);
 					}
 					
 					if( !generating )
@@ -2126,6 +2004,7 @@ void idMenuHandler_ShellLocal::ShowLEIntro()
 				idMenuHandler_Shell* shell;
 				bool generating;
 				int startFade;
+				bool hasEscaped;
 			};
 			
 			infoSprite->GetScriptObject()->Set( "onEnterFrame", new idIntroTextUpdate( txtVal, this ) );
