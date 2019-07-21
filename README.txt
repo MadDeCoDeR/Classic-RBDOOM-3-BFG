@@ -367,7 +367,9 @@ ___________________________________________________
 10) KNOWN ISSUES
 __________________________________________
 
-- If you find any please report it
+- HDR produces black spots.
+
+For now in order to resolve that issue disable SSAO and SSGI before enabling the HDR
 
 ___________________________________________________
 
