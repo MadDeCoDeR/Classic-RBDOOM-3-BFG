@@ -4,6 +4,39 @@ Thank you for downloading Classic RBDOOM-3-BFG.
 
 _______________________________________
 
+27 Jule 2019 - Classic RBDOOM-3-BFG 1.1.12.14
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- Various bugfixes for EXPINFO
+
+- If no par time is defined then it will show "SUCKS"
+
+- vastly improved and reworked the sprite/flat loading code
+
+- Fixed a bug which was causing the game to crash when changing aspect ratio
+
+- Fixed performance issue with debug builds
+
+- Warp parameter will be able to accept extended episodes and maps from EXPINFO/MAPINFO
+
+- IDCLEV cheat now allows you to warp between extended levels and episodes from MAPINFO/EXPINFO
+
+[DOOM3BFG]
+
+- fixed Bear Shooting minigame reverse rotation hand bug
+
+- Fixed issue with MSVC 142 debugger
+
+- Fixed double loading after escaping the intro text sequences
+
+- Skip intro text is now instant
+_______________________________________
+
 1 June 2019 (08/06/2019) - Classic RBDOOM-3-BFG 1.1.12.13 hotfix 3
 _______________________________
 
