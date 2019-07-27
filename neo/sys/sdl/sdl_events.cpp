@@ -149,6 +149,7 @@ SDL_Joystick* joy = NULL;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 static SDL_GameController* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
 static SDL_Haptic *haptic[MAX_JOYSTICKS] = {NULL}; //GK: Joystick rumble support
+static int registeredControllers = 0;
 #endif
 int SDL_joystick_has_hat = 0;
 bool buttonStates[K_LAST_KEY];	// For keeping track of button up/down events
@@ -1944,6 +1945,7 @@ int JoystickSamplingThread(void* data){
 		}
 	}
 	//GK: Enable controller layout if there is one controller connected
+	registeredControllers = 4-inactive;
 	idLib::joystick = inactive >= 4 ? false : true;
 #else
 	// WM0110: Initialise SDL Joystick

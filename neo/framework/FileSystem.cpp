@@ -2617,6 +2617,9 @@ idFileSystemLocal::BuildGame_f
 */
 void idFileSystemLocal::BuildGame_f( const idCmdArgs& args )
 {
+	if (args.Argc() > 0) {
+		//do something ???
+	}
 	fileSystemLocal.WriteResourcePacks();
 }
 

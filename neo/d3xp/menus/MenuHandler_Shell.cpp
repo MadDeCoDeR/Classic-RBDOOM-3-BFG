@@ -1426,6 +1426,10 @@ void idMenuHandler_ShellLocal::StartGame( int index )
 
 bool checkInput()
 {
+	Sys_GenerateEvents();
+		
+	// queue system events ready for polling
+	Sys_GetEvent();
 	// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
 	bool escapeEvent = false;
 	int numKeyEvents = Sys_PollKeyboardInputEvents();
