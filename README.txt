@@ -163,9 +163,9 @@ _________________________
 	
 	On Fedora
 
-		// TODO add ffmpeg libs for bink videos
+		// ffmpeg-devel is found in the rpm-fusion repo. Can be enabled from Gnome Software if not already enabled
 		
-		> yum install cmake SDL-devel openal-devel
+		> dnf install cmake SDL2-devel openal-devel ffmpeg-devel gcc-c++
 	
 	On ArchLinux 
 	
@@ -194,6 +194,11 @@ _________________________
 
 	> cd ../build
 	> make
+	
+	or
+	
+	> make -j <number of CPU cores> (for faster compiles)
+
 
 ___________________________________________________
 
