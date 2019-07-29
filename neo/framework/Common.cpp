@@ -97,6 +97,8 @@ idCVar com_pause( "com_pause", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "set
 // DG end
 //GK: com_game_mode
 idCVar com_game_mode("com_game_mode", "0", CVAR_INTEGER | CVAR_SYSTEM | CVAR_NOCHEAT, "Set which game to run 1: DOOM 2:DOOM2 3:DOOM3");
+//GK: add cvar to pause the platform bump
+idCVar com_pausePlatform("com_pausePlatform", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "set to 1 to pause the platform bump, to 0 to unpause again");
 //GK End
 //extern idCVar g_demoMode; //GK: get it from game object
 

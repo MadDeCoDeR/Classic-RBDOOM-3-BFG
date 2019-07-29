@@ -63,7 +63,7 @@ idCVar r_useOpenGL32( "r_useOpenGL32", "1", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = O
 static bool grabbed = false;
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
-static SDL_Window* window = NULL;
+
 static SDL_GLContext context = NULL;
 #else
 static SDL_Surface* window = NULL;

@@ -35,6 +35,11 @@ const int GRAB_REENABLE		= ( 1 << 1 );
 const int GRAB_HIDECURSOR	= ( 1 << 2 );
 const int GRAB_SETSTATE		= ( 1 << 3 );
 
+//GK: Keep that here in order to be used by more than one places
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+static SDL_Window* window = NULL;
+#endif
+
 void GLimp_GrabInput( int flags );
 
 char*	Sys_ConsoleInput();

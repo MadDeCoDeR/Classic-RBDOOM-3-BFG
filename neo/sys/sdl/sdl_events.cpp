@@ -887,13 +887,18 @@ sysEvent_t Sys_GetEvent()
 						
 						// DG: un-pause the game when focus is gained, that also re-grabs the input
 						//     disabling the cursor is now done once in GLimp_Init() because it should always be disabled
+						soundSystem->SetMute( false );
+						cvarSystem->SetCVarBool("com_pausePlatform", false);
 						cvarSystem->SetCVarBool( "com_pause", false );
 						// DG end
 						break;
 					}
 					
 					case SDL_WINDOWEVENT_FOCUS_LOST:
+						SDL_MinimizeWindow(window);
 						// DG: pause the game when focus is lost, that also un-grabs the input
+						soundSystem->SetMute( true );
+						cvarSystem->SetCVarBool("com_pausePlatform", true);
 						cvarSystem->SetCVarBool( "com_pause", true );
 						// DG end
 						break;
