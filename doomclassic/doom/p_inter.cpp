@@ -948,6 +948,11 @@ P_DamageMobj
 	fixed_t	thrust;
 	int		temp;
 
+	if (source != NULL) {
+		if (source->player)
+			DoomLib::SetRumble(damage * 100, 5, damage * 100, 5);
+	}
+
 	if ( !(target->flags & MF_SHOOTABLE) )
 		return;	// shouldn't happen...
 

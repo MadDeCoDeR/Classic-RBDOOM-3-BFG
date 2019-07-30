@@ -45,6 +45,8 @@ idCVar s_volume_midi( "s_volume_midi", "8", CVAR_ARCHIVE | CVAR_INTEGER, "music 
 idCVar m_show_messages( "m_show_messages", "1", CVAR_ARCHIVE | CVAR_INTEGER, "show messages", 0, 1 );
 idCVar m_inDemoMode( "m_inDemoMode", "1", CVAR_INTEGER, "in demo mode", 0, 1 );
 
+extern idCVar in_joystickRumble;
+
 bool	globalNetworking	= false;
 bool	globalPauseTime		= false;
 int		PLAYERCOUNT			= 1;
@@ -170,6 +172,11 @@ namespace DoomLib
 	char*							generalfiles[20]; //GK:Keep track of global mods for save file checks
 
 	idMatchParameters				matchParms;
+
+	static float							high;
+	static int								highDuration;
+	static float							low;
+	static int								lowDuration;
 
 	void * (*Z_Malloc)( int size, int tag, void* user ) = NULL;
 	void 	(*Z_FreeTag)(int lowtag );
@@ -584,3 +591,23 @@ void DoomLib::RunSound() {
 	I_ProcessSoundEvents();
 }
 
+void DoomLib::SetRumble(float high, int highDuration, float low, int lowDuration) {
+	DoomLib::high = high;
+	DoomLib::highDuration = highDuration;
+	DoomLib::low = low;
+	DoomLib::lowDuration = lowDuration;
+}
+
+void DoomLib::ApplyRumble() {
+	if (idLib::joystick && in_joystickRumble.GetBool()) {
+		Sys_SetRumble(0, low, high);
+		highDuration--;
+		lowDuration--;
+		if (highDuration <= 0) {
+			high = 0;
+		}
+		if (lowDuration <= 0) {
+			low = 0;
+		}
+	}
+}

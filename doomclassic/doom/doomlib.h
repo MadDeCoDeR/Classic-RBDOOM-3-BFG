@@ -166,6 +166,9 @@ namespace DoomLib
 	void						ShowXToContinue( bool activate );
 	gameSKU_t					GetGameSKU();
 	void						HandleEndMatch();
+
+	void						SetRumble(float high, int highDuration, float low, int lowDuration);
+	void						ApplyRumble();
 	
 };
 

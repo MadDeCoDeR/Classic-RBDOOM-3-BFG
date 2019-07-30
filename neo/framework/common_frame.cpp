@@ -786,6 +786,14 @@ void idCommonLocal::Frame()
 		
 		// start the game / draw command generation thread going in the background
 		gameReturn_t ret = gameThread.RunGameAndDraw( numGameFrames, userCmdMgr, IsClient(), gameFrame - numGameFrames );
+
+#if defined(USE_DOOMCLASSIC)
+		// If we're in Doom or Doom 2, run tics and upload the new texture.
+		if ((GetCurrentGame() == DOOM_CLASSIC || GetCurrentGame() == DOOM2_CLASSIC) && !(Dialog().IsDialogPausing() || session->IsSystemUIShowing()))
+		{
+			DoomLib::ApplyRumble();
+		}
+#endif
 		
 		if( !com_smp.GetBool() )
 		{
@@ -832,8 +840,10 @@ void idCommonLocal::Frame()
 		}
 		soundSystem->Render();
 		
-		// process the game return for map changes, etc
-		ProcessGameReturn( ret );
+		if ((GetCurrentGame() != DOOM_CLASSIC && GetCurrentGame() != DOOM2_CLASSIC)) {
+			// process the game return for map changes, etc
+			ProcessGameReturn(ret);
+		}
 		
 		idLobbyBase& lobby = session->GetActivePlatformLobbyBase();
 		if( lobby.HasActivePeers() )
