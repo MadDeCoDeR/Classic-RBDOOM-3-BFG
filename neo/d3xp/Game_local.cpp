@@ -127,7 +127,7 @@ idCVar g_demoMode("g_demoMode", "0", CVAR_INTEGER, "this is a demo");
 idCVar stereoRender_swapEyes("stereoRender_swapEyes", "0", CVAR_BOOL | CVAR_ARCHIVE, "reverse eye adjustments");
 //GK: Allow to select what kind of flashlight you want
 idCVar flashlight_old("flashlight_old", "0", CVAR_GAME | CVAR_INTEGER | CVAR_ARCHIVE, "Enable old flashlight");
-idCVar pm_vmfov("pm_vmfov", "32", CVAR_INTEGER | CVAR_GAME | CVAR_ARCHIVE, "Adjust the View Model Field of View", 0, 64);
+idCVar pm_vmfov("pm_vmfov", "0", CVAR_INTEGER | CVAR_GAME | CVAR_ARCHIVE, "Adjust the View Model Field of View", 0, 64);
 idCVar pm_cursor("pm_cursor", "1", CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE, "Enable/disable Crosshair");
 idCVar aa_targetAimAssistEnable("aa_targetAimAssistEnable", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enables/Disables the entire Aim Assist system");
 idCVar g_checkpoints("g_checkpoints", "1", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable checkpoints");
