@@ -178,7 +178,7 @@ void T_MoveCeiling (ceiling_t* ceiling)
 	      case lowerAndCrush:
 	      case lowerToFloor:
 		  case genCeiling:
-		P_RemoveActiveCeiling(ceiling);
+			P_RemoveActiveCeiling(ceiling);
 		break;
 
 	      default:
@@ -306,6 +306,7 @@ void P_AddActiveCeiling(ceiling_t* c)
 	else {
 		::g->activeceilings[::g->cellind] = c;
 	}
+	::g->cellind++;
 }
 
 
