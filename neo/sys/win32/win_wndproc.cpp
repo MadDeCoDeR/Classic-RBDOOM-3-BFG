@@ -216,9 +216,23 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 				r.bottom = 1;
 				
 				AdjustWindowRect( &r, style, FALSE );
+
+				LONG finalxPos = xPos + r.left;
+				LONG finalyPos = yPos + r.top;
+
+				//GK: Regulate the window Position
+				if ( finalxPos < 0)
+				{
+					finalxPos = 0;
+				}
+
+				if ( finalyPos < 0)
+				{
+					finalyPos = 0;
+				}
 				
-				r_windowX.SetInteger( xPos + r.left );
-				r_windowY.SetInteger( yPos + r.top );
+				r_windowX.SetInteger( finalxPos );
+				r_windowY.SetInteger( finalyPos );
 			}
 			break;
 		}

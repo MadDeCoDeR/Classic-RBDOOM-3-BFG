@@ -706,8 +706,8 @@ void R_SetNewMode( const bool fullInit )
 		if( r_fullscreen.GetInteger() <= 0 )
 		{
 			// use explicit position / size for window
-			parms.x = r_windowX.GetInteger();
-			parms.y = r_windowY.GetInteger();
+			parms.x = r_windowX.GetInteger() >= 0 ? r_windowX.GetInteger() : 0;
+			parms.y = r_windowY.GetInteger() >= 0 ? r_windowY.GetInteger() : 0;
 			parms.width = r_windowWidth.GetInteger();
 			parms.height = r_windowHeight.GetInteger();
 			// may still be -1 to force a borderless window
