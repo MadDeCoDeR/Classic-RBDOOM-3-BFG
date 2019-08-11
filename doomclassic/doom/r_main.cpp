@@ -616,18 +616,21 @@ void R_InitLightTables (void)
 	int		level;
 	int		nocollide_startmap; 	
 	int		scale;
+	float	screendiv;
 	//GK: Just changing these value result in better lighting who knew
 	if (r_clight.GetBool()) {
 		::g->reallightlevels = 15;
 		::g->reallightscale = 10;
 		::g->LIGHTZSHIFT = 23;
 		::g->reallightscaleshift = 14;
+		screendiv = ::g->ASPECT_IMAGE_SCALER/2.0;
 	}
 	else {
 		::g->reallightlevels = LIGHTLEVELS;
 		::g->reallightscale = MAXLIGHTSCALE;
 		::g->LIGHTZSHIFT = 20;
 		::g->reallightscaleshift = LIGHTSCALESHIFT;
+		screendiv = (1 + (::g->ASPECT_IMAGE_SCALER - 2));
 	}
 
 	// Calculate the light levels to use
@@ -637,7 +640,7 @@ void R_InitLightTables (void)
 		nocollide_startmap = ((::g->reallightlevels -1-i)*2)*NUMCOLORMAPS/ ::g->reallightlevels;
 		for (j=0 ; j<MAXLIGHTZ ; j++)
 		{
-			scale = FixedDiv ((::g->SCREENWIDTH/2*FRACUNIT), (j+1)<<::g->LIGHTZSHIFT);
+			scale = FixedDiv ((::g->SCREENWIDTH/screendiv*FRACUNIT), (j+1)<<::g->LIGHTZSHIFT);
 			scale >>= ::g->reallightscaleshift;
 			level = nocollide_startmap - scale/DISTMAP;
 
