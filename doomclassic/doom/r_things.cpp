@@ -659,7 +659,7 @@ void R_ProjectSprite (mobj_t* thing)
     else
     {
 	// diminished light
-	index = xscale>>(LIGHTSCALESHIFT-::g->detailshift);
+	index = xscale>>(::g->reallightscaleshift-::g->detailshift);
 
 	if (index >= ::g->reallightscale)
 	    index = ::g->reallightscale -1;

@@ -950,6 +950,7 @@ visplane_t*		ceilingplane;
 int reallightlevels;
 int reallightscale;
 int LIGHTZSHIFT;
+int reallightscaleshift;
 bool reset; //GK: Make sure every time the graphical options changes the Z-Memory doesn't allocate more memory
 // r_main end //
 

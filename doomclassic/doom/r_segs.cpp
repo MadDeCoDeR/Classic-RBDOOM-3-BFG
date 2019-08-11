@@ -137,7 +137,7 @@ R_RenderMaskedSegRange
 	{
 	    if (!::g->fixedcolormap)
 	    {
-		index = ::g->spryscale>>LIGHTSCALESHIFT;
+		index = ::g->spryscale>>::g->reallightscaleshift;
 
 		if (index >= ::g->reallightscale)
 		    index = ::g->reallightscale -1;
@@ -237,7 +237,7 @@ void R_RenderSegLoop (void)
 	    texturecolumn = ::g->rw_offset-FixedMul(finetangent[angle],::g->rw_distance);
 	    texturecolumn >>= FRACBITS;
 	    // calculate lighting
-	    index = ::g->rw_scale>>LIGHTSCALESHIFT;
+	    index = ::g->rw_scale>>::g->reallightscaleshift;
 
 	    if (index >= ::g->reallightscale)
 			index = ::g->reallightscale -1;

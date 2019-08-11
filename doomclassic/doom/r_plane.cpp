@@ -42,6 +42,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "r_sky.h"
 
 
+extern idCVar r_clight;
 void AddNewVisplane();
 
 //
@@ -138,7 +139,12 @@ R_MapPlane
 	::g->ds_colormap = ::g->fixedcolormap;
     else
     {
-	index = distance >> ::g->LIGHTZSHIFT;
+		if (r_clight.GetBool()) {
+			index = 0;
+		}
+		else {
+			index = distance >> ::g->LIGHTZSHIFT;
+		}
 	
 	if (index >= MAXLIGHTZ )
 	    index = MAXLIGHTZ-1;
