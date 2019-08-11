@@ -486,6 +486,8 @@ void			Sys_SetLanguageFromSystem();
 const char* 	Sys_DefaultLanguage();
 void			Sys_Quit();
 
+void			Sys_ChangeTitle( const char* string );
+
 bool			Sys_AlreadyRunning();
 
 // note that this isn't journaled...

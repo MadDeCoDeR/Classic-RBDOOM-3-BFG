@@ -331,6 +331,15 @@ void Sys_Quit() {
 	ExitProcess( 0 );
 }
 
+/*
+==============
+Sys_ChangeTitle
+==============
+*/
+void Sys_ChangeTitle(const char* string) {
+	SetWindowText(win32.hWnd, const_cast<LPCSTR>(string));
+}
+
 
 /*
 ==============

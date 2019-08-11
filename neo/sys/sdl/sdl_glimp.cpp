@@ -771,3 +771,13 @@ bool R_GetModeListForDisplay( const int requestedDisplayNum, idList<vidMode_t>& 
 	return false;
 #endif
 }
+
+/*
+====================
+Sys_ChangeTitle
+====================
+ */
+ void Sys_ChangeTitle( const char* string )
+ {
+	 SDL_SetWindowTitle(window, string);
+ }

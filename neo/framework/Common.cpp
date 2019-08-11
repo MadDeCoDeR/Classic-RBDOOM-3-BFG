@@ -2105,6 +2105,7 @@ void idCommonLocal::PerformGameSwitch()
 		{
 			menuSoundWorld->Pause();
 		}
+		Sys_ChangeTitle(idealCurrentGame == DOOM_CLASSIC ? DOOM1_NAME : DOOM2_NAME);
 		
 		DoomLib::skipToNew = false;
 		DoomLib::skipToLoad = false;
@@ -2138,6 +2139,7 @@ void idCommonLocal::PerformGameSwitch()
 		DoomLib::Interface.Shutdown();
 		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
 		com_engineHz_latched = com_engineHz.GetFloat();
+		Sys_ChangeTitle(GAME_NAME);
 		
 		// Don't MoveToPressStart if we have an invite, we need to go
 		// directly to the lobby.
