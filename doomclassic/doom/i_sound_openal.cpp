@@ -396,7 +396,7 @@ I_StartSound
 int I_StartSound ( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int pitch, int priority )
 {
 	// only allow player 0s sounds in intermission and finale screens
-	if( ::g->gamestate != GS_LEVEL && DoomLib::GetPlayer() != 0 ) {
+	if( (::g->gamestate != GS_LEVEL && ::g->gamestate != GS_DEMOLEVEL) && DoomLib::GetPlayer() != 0 ) {
 		return 0;
 	}
 	

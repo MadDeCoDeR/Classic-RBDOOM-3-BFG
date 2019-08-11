@@ -169,9 +169,9 @@ void P_MovePlayer (player_t* player)
 	// Do not let the player control movement
 	//  if not ::g->onground.
 	::g->onground = (player->mo->z <= player->mo->floorz);
-	//GK: The most sophisticated thing in the hole world.
+	//GK: The most sophisticated thing in the whole world.
 	//Just raising the player's z pos in order to jump
-	if ( ::g->jump && cl_jump.GetBool()) {
+	if ( ::g->jump && cl_jump.GetBool() && ::g->gamestate != GS_DEMOLEVEL) {
 		player->mo->z += game->GetCVarFloat("pm_jumpheight")*(2048*4);
 	}
 

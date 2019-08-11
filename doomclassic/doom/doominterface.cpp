@@ -192,7 +192,7 @@ bool DoomInterface::Frame( int iTime, idUserCmdMgr * userCmdMgr )
 					M_Drawer();
 				}
 
-				if( ::g->gamestate != GS_LEVEL && GetNumPlayers() > 2 ) {
+				if( (::g->gamestate != GS_LEVEL && ::g->gamestate != GS_DEMOLEVEL)  && GetNumPlayers() > 2 ) {
 					drawFullScreen = true;
 				}
 			}

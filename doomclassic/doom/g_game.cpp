@@ -87,6 +87,7 @@ If you have questions concerning this license or the applicable additional terms
 
 extern bool waitingForWipe;
 extern idCVar in_alwaysRunCl;
+extern idCVar cl_jump;
 
 bool	loadingGame = false;
 
@@ -382,7 +383,12 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			}
 			::g->jump = false;
 			if ( curTech5Command.buttons & BUTTON_JUMP) {
-				::g->jump = true;
+				if (cl_jump.GetBool()) {
+					::g->jump = true;
+				}
+				else {
+					cmd->buttons |= BT_USE;
+				}
 			}
 
 			// TODO: PC
@@ -633,7 +639,7 @@ void G_DoLoadLevel ()
 	}
 	::g->levelstarttic = ::g->gametic;        // for time calculation
 
-	if (::g->wipegamestate == GS_LEVEL) {
+	if (::g->wipegamestate == GS_LEVEL || ::g->wipegamestate == GS_DEMOLEVEL) {
 		::g->wipegamestate = (gamestate_t)-1;             // force a wipe 
 	} else if ( ::g->netgame ) {
 		::g->wipegamestate = GS_LEVEL;
@@ -690,7 +696,7 @@ void G_DoLoadLevel ()
 qboolean G_Responder (event_t* ev) 
 { 
 	// allow spy mode changes even during the demo
-	if (::g->gamestate == GS_LEVEL && ev->type == ev_keydown 
+	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && ev->type == ev_keydown
 		&& ev->data1 == KEY_F12 && (::g->singledemo || !::g->deathmatch) )
 	{
 		// spy mode 
@@ -718,7 +724,7 @@ qboolean G_Responder (event_t* ev)
 		return false; 
 	} 
 
-	if (::g->gamestate == GS_LEVEL && ( ::g->usergame || ::g->netgame || ::g->demoplayback )) 
+	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && ( ::g->usergame || ::g->netgame || ::g->demoplayback ))
 	{ 
 #if 0 
 		if (::g->devparm && ev->type == ev_keydown && ev->data1 == ';') 
@@ -944,6 +950,7 @@ void G_Ticker (void)
 	// do main actions
 	switch (::g->gamestate) 
 	{ 
+	case GS_DEMOLEVEL:
 	case GS_LEVEL: 
 		P_Ticker (); 
 		ST_Ticker (); 
@@ -2323,6 +2330,7 @@ void G_DoPlayDemo (void)
 	G_InitNew (skill, episode, map ); 
 	R_SetViewSize (::g->screenblocks + 1, ::g->detailLevel);
 	m_inDemoMode.SetBool( true );
+	::g->gamestate = GS_DEMOLEVEL;
 
 	// JAF - Dont show messages when in Demo Mode. ::g->showMessages = false;
 	::g->precache = true; 

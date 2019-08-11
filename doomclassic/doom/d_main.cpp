@@ -203,12 +203,13 @@ void D_Display (void)
 	else
 		::g->wipe = false;
 
-	if (::g->gamestate == GS_LEVEL && ::g->gametic)
+	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && ::g->gametic)
 		HU_Erase();
 
 	// do buffered drawing
 	switch (::g->gamestate)
 	{
+	case GS_DEMOLEVEL:
 	case GS_LEVEL:
 		if (!::g->gametic)
 			break;
@@ -240,25 +241,25 @@ void D_Display (void)
 	I_UpdateNoBlit ();
 
 	// draw the view directly
-	if (::g->gamestate == GS_LEVEL && !::g->automapactive && ::g->gametic)
+	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && !::g->automapactive && ::g->gametic)
 		R_RenderPlayerView (&::g->players[::g->displayplayer]);
 
-	if (::g->gamestate == GS_LEVEL && ::g->gametic)
+	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && ::g->gametic)
 		HU_Drawer ();
 
 	// clean up border stuff
-	if (::g->gamestate != ::g->oldgamestate && ::g->gamestate != GS_LEVEL)
+	if (::g->gamestate != ::g->oldgamestate && (::g->gamestate != GS_LEVEL && ::g->gamestate != GS_DEMOLEVEL))
 		I_SetPalette ((byte*)W_CacheLumpName ("PLAYPAL",PU_CACHE_SHARED), W_LumpLength(W_GetNumForName("PLAYPAL")));
 
 	// see if the border needs to be initially drawn
-	if (::g->gamestate == GS_LEVEL && ::g->oldgamestate != GS_LEVEL)
+	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && (::g->oldgamestate != GS_LEVEL && ::g->oldgamestate != GS_DEMOLEVEL))
 	{
 		::g->viewactivestate = false;        // view was not active
 		R_FillBackScreen ();    // draw the pattern into the back screen
 	}
 
 	// see if the border needs to be updated to the screen
-	if (::g->gamestate == GS_LEVEL && !::g->automapactive && ::g->scaledviewwidth != (320 * GLOBAL_IMAGE_SCALER) )
+	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && !::g->automapactive && ::g->scaledviewwidth != (320 * GLOBAL_IMAGE_SCALER) )
 	{
 		if (::g->menuactive || ::g->menuactivestate || !::g->viewactivestate)
 			::g->borderdrawcount = 3;
