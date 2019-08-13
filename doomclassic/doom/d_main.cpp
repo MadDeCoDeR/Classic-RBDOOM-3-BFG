@@ -422,7 +422,8 @@ void D_DoAdvanceDemo (void)
 		::g->pagename = (char *)"TITLEPIC";
 
 		if ( ::g->gamemode == commercial )
-			S_StartMusic(mus_dm2ttl);
+			//GK: in case of Master Levels and No Rest for the Living there are no demos so keep looping the music
+			S_ChangeMusic(mus_dm2ttl, true);
 		else
 			S_StartMusic (mus_intro);
 

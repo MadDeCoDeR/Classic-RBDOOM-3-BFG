@@ -995,7 +995,7 @@ W_CacheLumpName
 	//GK begin
 	int point = W_GetNumForName(name);
 	if (!idStr::Icmp("TITLEPIC", name) && point == -1) { //Handle no TITLEPIC lump from DOOM2.WAD
-		point = W_GetNumForName("INTERPIC");
+		point = W_GetNumForName("DMENUPIC");
 	}
 
 	if (!idStr::Icmp("SWITCHES", name) && point == -1) { //Handle no SWITCHES lump
@@ -1016,7 +1016,7 @@ W_LoadLumpName
 	//GK begin
 	int point = W_GetNumForName(name);
 	if (!idStr::Icmp("TITLEPIC", name) && point == -1) { //Handle no TITLEPIC lump from DOOM2.WAD
-		point = W_GetNumForName("INTERPIC");
+		point = W_GetNumForName("DMENUPIC");
 	}
 
 	if (!idStr::Icmp("SWITCHES", name) && point == -1) { //Handle no SWITCHES lump
