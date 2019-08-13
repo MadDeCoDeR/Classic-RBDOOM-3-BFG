@@ -1370,6 +1370,9 @@ void idUsercmdGenLocal::Mouse()
 	
 	int numEvents = Sys_PollMouseInputEvents( mouseEvents );
 	
+	if (numEvents) {
+		idLib::joystick = false;
+	}
 	// Study each of the buffer elements and process them.
 	for( int i = 0; i < numEvents; i++ )
 	{
@@ -1435,6 +1438,10 @@ void idUsercmdGenLocal::Keyboard()
 {
 
 	int numEvents = Sys_PollKeyboardInputEvents();
+
+	if (numEvents) {
+		idLib::joystick = false;
+	}
 	
 	// Study each of the buffer elements and process them.
 	for( int i = 0; i < numEvents; i++ )
@@ -1463,6 +1470,7 @@ void idUsercmdGenLocal::Joystick( int deviceNum )
 //		common->Printf("idUsercmdGenLocal::Joystick: numEvents = %i\n", numEvents);
 //	}
 
+	int validevents = 0;
 	// Study each of the buffer elements and process them.
 	for( int i = 0; i < numEvents; i++ )
 	{
@@ -1474,15 +1482,24 @@ void idUsercmdGenLocal::Joystick( int deviceNum )
 			
 			if( action >= J_ACTION1 && action <= J_ACTION_MAX )
 			{
+				validevents++;
 				int joyButton = K_JOY1 + ( action - J_ACTION1 );
 				Key( joyButton, ( value != 0 ) );
 			}
 			else if( ( action >= J_AXIS_MIN ) && ( action <= J_AXIS_MAX ) )
 			{
 				joystickAxis[ action - J_AXIS_MIN ] = static_cast<float>( value ) / 32767.0f;
+				int currentaction = action - J_AXIS_MIN;
+				int siblingaction = currentaction % 2 == 0 ? currentaction + 1 : currentaction - 1;
+				if (floor(abs(joystickAxis[currentaction])) != 0.0f || floor(abs(joystickAxis[siblingaction])) != 0.0f) {
+					validevents++;
+					//common->Printf("idUsercmdGenLocal::Joystick: xAxis = %f tAxis = %f\n", joystickAxis[currentaction], joystickAxis[siblingaction]);
+				}
+				
 			}
 			else if( action >= J_DPAD_UP && action <= J_DPAD_RIGHT )
 			{
+				validevents++;
 				int joyButton = K_JOY_DPAD_UP + ( action - J_DPAD_UP );
 				Key( joyButton, ( value != 0 ) );
 			}
@@ -1491,6 +1508,9 @@ void idUsercmdGenLocal::Joystick( int deviceNum )
 				assert( !"Unknown joystick event" );
 			}
 		}
+	}
+	if (validevents > 0) {
+		idLib::joystick = true;
 	}
 	
 	Sys_EndJoystickInputEvents();
@@ -1533,7 +1553,7 @@ void idUsercmdGenLocal::BuildCurrentUsercmd( int deviceNum )
 	Keyboard();
 	
 	// process the system joystick events
-	if( deviceNum >= 0 && idLib::joystick )
+	if( deviceNum >= 0 )
 	{
 		Joystick( deviceNum );
 	}

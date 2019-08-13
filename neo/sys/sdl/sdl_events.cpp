@@ -1951,7 +1951,7 @@ int JoystickSamplingThread(void* data){
 	}
 	//GK: Enable controller layout if there is one controller connected
 	registeredControllers = 4-inactive;
-	idLib::joystick = inactive >= 4 ? false : true;
+	/*idLib::joystick = inactive >= 4 ? false : true;*/
 #else
 	// WM0110: Initialise SDL Joystick
 	//common->Printf( "Sys_InitInput: Joystick subsystem init\n" );

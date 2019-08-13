@@ -835,7 +835,7 @@ void JoystickSamplingThread( void* data )
 				cs->buttonBits |= current.Gamepad.wButtons;
 			}
 			//GK: Enable controller layout if there is one controller connected
-			idLib::joystick = inactive >= 4 ? false : true;
+			/*idLib::joystick = inactive >= 4 ? false : true;*/
 		}
 
 		// we want this to be processed at least 250 times a second

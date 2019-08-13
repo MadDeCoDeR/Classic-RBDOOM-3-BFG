@@ -243,7 +243,7 @@ void idMenuScreen_Shell_ControllerLayout::UpdateBindingInfo()
 		
 		idSWFTextInstance* txtVal = NULL;
 		
-		txtVal = GetSprite()->GetScriptObject()->GetNestedText( "info", "controlInfo", "layout360", txtField );
+		txtVal = GetSprite()->GetScriptObject()->GetNestedText( "info", "controlInfo", !in_joylayout.GetBool() ? "layout360" : "layoutPS3", txtField );
 		
 		if( txtVal != NULL )
 		{

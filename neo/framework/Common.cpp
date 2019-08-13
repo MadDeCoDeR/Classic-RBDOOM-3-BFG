@@ -979,6 +979,7 @@ void idCommonLocal::RenderBink( const char* path )
 		int numKeyEvents = Sys_PollKeyboardInputEvents();
 		if( numKeyEvents > 0 )
 		{
+			idLib::joystick = false;
 			for( int i = 0; i < numKeyEvents; i++ )
 			{
 				int key;
@@ -1000,6 +1001,7 @@ void idCommonLocal::RenderBink( const char* path )
 		int numMouseEvents = Sys_PollMouseInputEvents( mouseEvents );
 		if( numMouseEvents > 0 )
 		{
+			idLib::joystick = false;
 			for( int i = 0; i < numMouseEvents; i++ )
 			{
 				int action = mouseEvents[i][0];
@@ -1025,6 +1027,7 @@ void idCommonLocal::RenderBink( const char* path )
 		int numJoystickEvents = Sys_PollJoystickInputEvents( 0 );
 		if( numJoystickEvents > 0 )
 		{
+			int validevents = 0;
 			for( int i = 0; i < numJoystickEvents; i++ )
 			{
 				int action;
@@ -1036,13 +1039,16 @@ void idCommonLocal::RenderBink( const char* path )
 					{
 						if( value != 0 )
 						{
+							validevents++;
 							escapeEvent = true;
 							break;
 						}
 					}
 				}
 			}
-			
+			if( validevents > 0 ) {
+				idLib::joystick = true;
+			}
 			Sys_EndJoystickInputEvents();
 		}
 		
