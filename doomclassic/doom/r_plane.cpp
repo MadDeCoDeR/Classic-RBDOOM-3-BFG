@@ -389,6 +389,28 @@ R_MakeSpans
     }
 }
 
+int R_InitSkyPlane(int x) {
+	extern angle_t GetViewAngle();
+	int angle = (GetViewAngle() + ::g->xtoviewangle[x]) >> ANGLETOSKYSHIFT;
+	::g->dc_x = x;
+	::g->texnum = ::g->skytexture; //GK:Get sky texture's height for use in R_DrawColumn
+	::g->usesprite = false;
+	return angle;
+}
+
+void R_DrawSkyPlane(int x) {
+	int angle = R_InitSkyPlane(x);
+	::g->dc_source = R_GetColumn(::g->skytexture, angle);
+	::g->issky = false;
+	colfunc(::g->dc_colormap, ::g->dc_source);
+}
+
+void R_DrawFakeSkyPlane(int x) {
+	int angle = R_InitSkyPlane(x);
+	::g->dc_source = R_GetSkyColumn(::g->skytexture, angle);
+	::g->issky = true;
+	colfunc(::g->dc_colormap, ::g->dc_source);
+}
 
 
 //
@@ -439,6 +461,7 @@ void R_DrawPlanes (void)
 		if (::g->skytexturemid > ttmid) { //GK:Tall skies support
 			::g->dc_iscale = ::g->dc_iscale *2.0f;
 		}
+		unsigned short mintop = USHRT_MAX;
 	    for (x= ::g->visplanes[i]->minx ; x <= ::g->visplanes[i]->maxx ; x++)
 	    {
 			//GK: Sky Freelook Hack
@@ -446,21 +469,26 @@ void R_DrawPlanes (void)
 			// onthe world and when player is looking above
 			// it then a monochromatic pixel will be drawn
 			// in order to avoid HOMs
+			
 		::g->dc_yl = ::g->visplanes[i]->top[x] - ::g->mouseposy;
 		::g->dc_yh = ::g->visplanes[i]->bottom[x];
+		int realheight = ::g->s_textureheight[::g->skytexture] >> FRACBITS;
+		int viewheight = ::g->visplanes[i]->bottom[x] - ::g->visplanes[i]->top[x];
+		if (::g->visplanes[i]->top[x] < mintop && ::g->visplanes[i]->top[x] <= realheight - ::g->visplanes[i]->top[x]) {
+			mintop = ::g->visplanes[i]->top[x];
+		}
 		if (::g->dc_yl <= ::g->dc_yh)
 		{
-			extern angle_t GetViewAngle();
-		    angle = (GetViewAngle() + ::g->xtoviewangle[x])>>ANGLETOSKYSHIFT;
-		    ::g->dc_x = x;
 			if (::g->dc_yl > ::g->visplanes[i]->top[x]) {
 				::g->dc_yh = ::g->dc_yl;
 				::g->dc_yl = ::g->visplanes[i]->top[x];
-				::g->dc_source = R_GetSkyColumn(::g->skytexture, angle);
-				::g->texnum = ::g->skytexture; //GK:Get sky texture's height for use in R_DrawColumn
-				::g->usesprite = false;
-				::g->issky = true;
-				colfunc(::g->dc_colormap, ::g->dc_source);
+			
+				if (::g->dc_yl <= realheight - ::g->visplanes[i]->top[x]) {
+					R_DrawFakeSkyPlane(x);
+				}
+				else {
+					R_DrawSkyPlane(x);
+				}
 			}
 			if (::g->dc_yl < ::g->visplanes[i]->top[x]) {
 				::g->dc_yl = ::g->visplanes[i]->top[x];
@@ -469,22 +497,16 @@ void R_DrawPlanes (void)
 				::g->dc_yl = ::g->visplanes[i]->top[x] - ::g->mouseposy;
 			}
 			::g->dc_yh = ::g->visplanes[i]->bottom[x];
-		    ::g->dc_source = R_GetColumn(::g->skytexture, angle);
-			::g->texnum = ::g->skytexture; //GK:Get sky texture's height for use in R_DrawColumn
-			::g->usesprite = false;
-			::g->issky = false;
-		    colfunc ( ::g->dc_colormap, ::g->dc_source );
+			R_DrawSkyPlane(x);
 		}
 		else {
 			::g->dc_yl = ::g->visplanes[i]->top[x];
-			extern angle_t GetViewAngle();
-			angle = (GetViewAngle() + ::g->xtoviewangle[x]) >> ANGLETOSKYSHIFT;
-			::g->dc_x = x;
-			::g->dc_source = R_GetSkyColumn(::g->skytexture, angle);
-			::g->texnum = ::g->skytexture; //GK:Get sky texture's height for use in R_DrawColumn
-			::g->usesprite = false;
-			::g->issky = true;
-			colfunc(::g->dc_colormap, ::g->dc_source);
+			if (abs(viewheight) < (realheight * 3) && ::g->visplanes[i]->bottom[x] < mintop) {
+				R_DrawSkyPlane(x);
+			}
+			else {
+				R_DrawFakeSkyPlane(x);
+			}
 			
 		}
 	    }
