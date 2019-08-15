@@ -147,6 +147,8 @@ const unsigned char cheat_menu_seq[] = {
 
 static int optoffs = 0; //GK: use for dynamicly adding/removing the number of message lines thermo from the menu 
 
+static bool reset = false;
+
 // graphic name of skulls
 // warning: initializer-string for array of chars is too long
 char    skullName[2][/*8*/9] = 
@@ -1471,6 +1473,8 @@ void M_FullScreen( int choice ) {
 }
 
 void M_Aspect(int choice) {
+	bool originalAspect = r_aspectcorrect.GetBool();
+
 	//GK: Similar to fullscreen but with the aspect parameter
 	if (r_aspect.GetInteger() && !r_aspectcorrect.GetBool()) {
 		r_aspectcorrect.SetBool(true);
@@ -1478,6 +1482,11 @@ void M_Aspect(int choice) {
 	else {
 		r_aspect.SetInteger(r_aspect.GetInteger() ? 0 : 1);
 		r_aspectcorrect.SetBool(false);
+	}
+	if (originalAspect != r_aspectcorrect.GetBool() && !::g->netgame)
+	{
+		reset = true;
+		::g->useDemo = false;
 	}
 	R_Initwidth(); //GK: Restart the classic Doom renderer
 	::g->reset = true;
@@ -1593,7 +1602,7 @@ void M_CancelExit(int choice) {
 	M_SetupNextMenu(&::g->MainDef);
 }
 
-void M_GameSelection(int choice)
+void M_CloseGame()
 {
 	I_Printf("Reseting Dehacked Patches...\n");
 	::g->cpind = 0;
@@ -1616,8 +1625,8 @@ void M_GameSelection(int choice)
 	ResetFinalflat();
 	P_ResetAct();
 	I_Printf("Reset Completed!!\n");
-	memset(DoomLib::otherfiles,0,5*20);//GK:Reset this for better checking
-	
+	memset(DoomLib::otherfiles, 0, 5 * 20);//GK:Reset this for better checking
+
 	//CleanUncompFiles(); //GK: A good practice would have been to delete the files after
 	//we change the game but W_Shutdown which must be called to free the files causes bugs and crashes
 	initonce = false;
@@ -1625,6 +1634,11 @@ void M_GameSelection(int choice)
 	if (::g->netgame) {
 		DoomLib::Interface.QuitCurrentGame();
 	}
+}
+
+void M_GameSelection(int choice)
+{
+	M_CloseGame();
 	common->SwitchToGame( DOOM3_BFG );
 }
 
@@ -1870,6 +1884,33 @@ M_WriteText
 //
 // CONTROL PANEL
 //
+void M_ResetGame(int ch)
+{
+	if (ch != KEY_ENTER)
+		return;
+	M_CloseGame();
+	currentGame_t current = (currentGame_t)DoomLib::expansionSelected;
+	DoomLib::SetCurrentExpansion(current);
+	reset = false;
+
+}
+
+void M_CheckReset()
+{
+	if (reset) {
+		if (!idLib::joystick) {
+			M_StartMessage(RESETGAME, M_ResetGame, true);
+		}
+		else {
+			if (!in_joylayout.GetBool()) {
+				M_StartMessage(RESETGAMEGP, M_ResetGame, true);
+			}
+			else {
+				M_StartMessage(RESETGAMEGPX, M_ResetGame, true);
+			}
+		}
+	}
+}
 
 //
 // M_Responder
@@ -2289,12 +2330,14 @@ qboolean M_Responder (event_t* ev)
 	case KEY_ESCAPE:
 		//GK : Re-enable pop up main menu
 		::g->currentMenu->lastOn = ::g->itemOn;
+		M_CheckReset();
 		M_ClearMenus();
 		S_StartSound(NULL, sfx_swtchn);
 		return true;
 
 	case KEY_BACKSPACE:
 		::g->currentMenu->lastOn = ::g->itemOn;
+		M_CheckReset();
 		if (::g->currentMenu->prevMenu)
 		{
 			::g->currentMenu = ::g->currentMenu->prevMenu;
@@ -2354,7 +2397,7 @@ void M_Drawer (void)
 {
 	unsigned short		i;
 	short		max;
-	char		string[40];
+	char		string[120];
 	int			start;
 
 	::g->inhelpscreens = false;
@@ -2370,7 +2413,7 @@ void M_Drawer (void)
 			for (i = 0;i < strlen(::g->messageString+start);i++)
 				if (*(::g->messageString+start+i) == '\n')
 				{
-					memset(string,0,40);
+					memset(string,0,120);
 					strncpy(string,::g->messageString+start,i);
 					start += i+1;
 					break;
@@ -2435,6 +2478,8 @@ void M_ClearMenus (void)
 	// if (!::g->netgame && ::g->usergame && ::g->paused)
 	//       ::g->sendpause = true;
 }
+
+
 
 
 

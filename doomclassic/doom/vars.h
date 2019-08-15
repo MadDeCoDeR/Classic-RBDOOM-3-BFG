@@ -1043,6 +1043,8 @@ std::vector<int> cmap;
 int rexp;
 //img2lmp ends
 
+bool useDemo;
+
 // phares 3/21/98
 //
 // Maintain a freelist of msecnode_t's to reduce memory allocs and frees.

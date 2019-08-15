@@ -2265,7 +2265,7 @@ void G_BeginRecording (void)
 //
 void G_DeferedPlayDemo (const char* name)
 { 
-	if (::g->gamemission != pack_master && ::g->gamemission != pack_nerve) {
+	if (::g->gamemission != pack_master && ::g->gamemission != pack_nerve && ::g->useDemo) {
 		::g->defdemoname = (char*)name;
 		::g->gameaction = ga_playdemo;
 	}

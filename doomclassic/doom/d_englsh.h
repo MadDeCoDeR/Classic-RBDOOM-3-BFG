@@ -87,6 +87,13 @@ If you have questions concerning this license or the applicable additional terms
 #define ENDGAMEGP	"are you sure you want to end the game?\n\n" PRESSAB
 #define ENDGAMEGPX	"are you sure you want to end the game?\n\n" PRESSXO
 
+#define RESETGAMEBASE	\
+"you must restart the game. restart it now?\n"\
+"(if you don't the game might crash)\n\n"
+#define RESETGAME	RESETGAMEBASE PRESSYN
+#define RESETGAMEGP	RESETGAMEBASE PRESSAB
+#define RESETGAMEGPX	RESETGAMEBASE PRESSXO
+
 #define DOSY		"(press A to quit)"
 
 #define DETAILHI	"High detail"

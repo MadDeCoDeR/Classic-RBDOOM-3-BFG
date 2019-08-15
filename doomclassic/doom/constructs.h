@@ -727,6 +727,8 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->s_numtextures = 0;
 // r_data end //
 
+	::g->useDemo = true;
+
 	::g->headsecnode = NULL;
 
 
