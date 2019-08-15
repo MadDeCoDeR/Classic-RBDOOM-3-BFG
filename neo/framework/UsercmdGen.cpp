@@ -1553,10 +1553,10 @@ void idUsercmdGenLocal::BuildCurrentUsercmd( int deviceNum )
 	Keyboard();
 	
 	// process the system joystick events
-	if( deviceNum >= 0 )
-	{
-		Joystick( deviceNum );
-	}
+	/*if( deviceNum >= 0 )
+	{*/
+		Joystick( deviceNum < 0 ? 0 : deviceNum );
+	//}
 	
 	// create the usercmd
 	MakeCurrent();
