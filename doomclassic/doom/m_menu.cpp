@@ -1203,7 +1203,7 @@ void M_Episode(int choice)
 		choice = 0;
 	}
 	if (::g->gamemode == shareware && choice > 0) {
-		M_StartMessage(SWSTRING, NULL, true);
+		M_StartMessage(SWSTRINGBFG, NULL, true);
 		return;
 	}
 

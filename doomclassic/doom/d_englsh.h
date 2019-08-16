@@ -80,6 +80,10 @@ If you have questions concerning this license or the applicable additional terms
 "this is the shareware version of doom.\n\n"\
 "you need to order the entire trilogy.\n\n" PRESSKEY
 
+#define SWSTRINGBFG	\
+"this is the shareware version of doom.\n\n"\
+"you need to buy DOOM 3 BFG Edition.\n\n" PRESSKEY
+
 #define MSGOFF	"Messages OFF"
 #define MSGON		"Messages ON"
 #define NETEND	"you can't end a netgame!\n\n" PRESSKEY
