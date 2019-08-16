@@ -152,6 +152,7 @@ namespace DoomLib
 	extern idMatchParameters	matchParms;
 
 	const ExpansionData *		GetCurrentExpansion();
+	const ExpansionData*		GetDemo();
 	void						SetCurrentExpansion( int expansion );
 
 	void						SetIdealExpansion( int expansion );

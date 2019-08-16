@@ -342,7 +342,7 @@ void W_AddFile ( const char *filename)
     // open the file and add to directory
     if ( (handle = fileSystem->OpenFileRead(filename)) == 0)
     {
-		if (!idStr::Icmp(filename, "wads/DOOM.wad") || !idStr::Icmp(filename, "wads/DOOM2.wad") || !idStr::Icmp(filename, "wads/NERVE.wad") || !idStr::Icmp(filename, "wads/newopt.wad") || !idStr::Icmp(filename, "wads/ua.wad") || !idStr::Icmp(filename, "wads/mlbls.wad")) {
+		if (!idStr::Icmp(filename, "wads/DOOM1.wad") || !idStr::Icmp(filename, "wads/DOOM.wad") || !idStr::Icmp(filename, "wads/DOOM2.wad") || !idStr::Icmp(filename, "wads/NERVE.wad") || !idStr::Icmp(filename, "wads/newopt.wad") || !idStr::Icmp(filename, "wads/ua.wad") || !idStr::Icmp(filename, "wads/mlbls.wad")) {
 			common->FatalError("Doom Classic Error : Unable to load %s", filename);
 		}
 		I_Printf (" couldn't open %s\n",filename);

@@ -118,12 +118,17 @@ namespace DoomLib
 		{	ExpansionData::IWAD, commercial,	pack_plut,		"FINAL DOOM: PLUTONIA EXPERIMENT",	DOOMWADDIR"PLUTONIA.WAD",	NULL,							"base/textures/PLUTICON.PNG"	, Plut_MapNames },
 		{	ExpansionData::PWAD, commercial,	pack_master,	"DOOM 2: MASTER LEVELS",			DOOMWADDIR"DOOM2.WAD",		DOOMWADDIR"MASTERLEVELS.WAD",	"base/textures/MASTICON.PNG"	, Mast_MapNames },
 		{	ExpansionData::PWAD, commercial,	pack_nerve,		"DOOM 2: NO REST FOR THE LIVING",	DOOMWADDIR"DOOM2.WAD",		DOOMWADDIR"NERVE.WAD",			"base/textures/NERVEICON.PNG"	, Nerve_MapNames },
+		{	ExpansionData::IWAD, shareware,		doom,			"DOOM Shareware",					DOOMWADDIR"DOOM1.WAD",		NULL,							"base/textures/DOOMICON.PNG"	, Doom_MapNames }
 	};
 
 	int classicRemap[K_LAST_KEY];
 
 	const ExpansionData * GetCurrentExpansion() {
 		return &App_Expansion_Data_Local[ DoomLib::expansionSelected ];
+	}
+
+	const ExpansionData* GetDemo() {
+		return &App_Expansion_Data_Local[6];
 	}
 
 	void				  SetCurrentExpansion( int expansion )  { 

@@ -29,7 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "Precompiled.h"
 #include "globaldata.h"
 
-
+#include "idlib/precompiled.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -419,42 +419,42 @@ void D_DoAdvanceDemo (void)
 
 		::g->gamestate = GS_DEMOSCREEN;
 		//GK change INTERPIC with TITLEPIC
-		::g->pagename = (char *)"TITLEPIC";
+::g->pagename = (char*)"TITLEPIC";
 
-		if ( ::g->gamemode == commercial )
-			//GK: in case of Master Levels and No Rest for the Living there are no demos so keep looping the music
-			S_ChangeMusic(mus_dm2ttl, true);
-		else
-			S_StartMusic (mus_intro);
+if (::g->gamemode == commercial)
+//GK: in case of Master Levels and No Rest for the Living there are no demos so keep looping the music
+S_ChangeMusic(mus_dm2ttl, true);
+else
+S_ChangeMusic(mus_intro, true);
 
-		break;
+break;
 	case 1:
-		G_DeferedPlayDemo ("demo1");
+		G_DeferedPlayDemo("demo1");
 		break;
 	case 2:
 		::g->pagetic = 3 * TICRATE;
 		::g->gamestate = GS_DEMOSCREEN;
-		::g->pagename = (char *)"TITLEPIC";
+		::g->pagename = (char*)"TITLEPIC";
 		break;
 	case 3:
-		G_DeferedPlayDemo ("demo2");
+		G_DeferedPlayDemo("demo2");
 		break;
 	case 4:
 		::g->pagetic = 3 * TICRATE;
 		::g->gamestate = GS_DEMOSCREEN;
-		::g->pagename = (char *)"TITLEPIC";
+		::g->pagename = (char*)"TITLEPIC";
 		break;
 	case 5:
-		G_DeferedPlayDemo ("demo3");
+		G_DeferedPlayDemo("demo3");
 		break;
 		// THE DEFINITIVE DOOM Special Edition demo
 	case 6:
 		::g->pagetic = 3 * TICRATE;
 		::g->gamestate = GS_DEMOSCREEN;
-		::g->pagename = (char *)"TITLEPIC";
+		::g->pagename = (char*)"TITLEPIC";
 		break;
 	case 7:
-		G_DeferedPlayDemo ("demo4");
+		G_DeferedPlayDemo("demo4");
 		break;
 	}
 }
@@ -464,11 +464,11 @@ void D_DoAdvanceDemo (void)
 //
 // D_StartTitle
 //
-void D_StartTitle (void)
+void D_StartTitle(void)
 {
 	::g->gameaction = ga_nothing;
 	::g->demosequence = -1;
-	D_AdvanceDemo ();
+	D_AdvanceDemo();
 }
 
 
@@ -479,21 +479,21 @@ void D_StartTitle (void)
 //
 // D_AddExtraWadFile
 //
-void D_SetExtraWadFile( const char *file ) {
+void D_SetExtraWadFile(const char* file) {
 	extraWad = file;
 }
 
 //
 // D_AddFile
 //
-void D_AddFile (const char *file)
+void D_AddFile(const char* file)
 {
 	int     numwadfiles;
 
-	for (numwadfiles = 0 ; wadfiles[numwadfiles] ; numwadfiles++)
+	for (numwadfiles = 0; wadfiles[numwadfiles]; numwadfiles++)
 		if (file == wadfiles[numwadfiles])
 			return;
-		;
+	;
 	wadfiles[numwadfiles] = file;
 }
 
@@ -504,21 +504,35 @@ void D_AddFile (const char *file)
 // should be executed (notably loading PWAD's).
 //
 
-void IdentifyVersion (void)
+void IdentifyVersion(void)
 {
 	W_FreeWadFiles();
 
-	const ExpansionData * expansion =  DoomLib::GetCurrentExpansion();
+
+	const ExpansionData* expansion = DoomLib::GetCurrentExpansion();
 	::g->gamemode = expansion->gameMode;
 	::g->gamemission = expansion->pack_type;
 	::g->rexp = expansion->pack_type;
 
-	if( expansion->type == ExpansionData::PWAD ) {
-		D_AddFile( expansion->iWadFilename );
-		D_AddFile( expansion->pWadFilename );
+	if (expansion->type == ExpansionData::PWAD) {
+		D_AddFile(expansion->iWadFilename);
+		D_AddFile(expansion->pWadFilename);
 
-	} else {
-		D_AddFile( expansion->iWadFilename );
+	}
+	else {
+		if (::g->gamemode == retail) {
+			if (fileSystem->OpenFileRead(expansion->iWadFilename) == 0){
+			const ExpansionData* expansiondemo = DoomLib::GetDemo();
+			::g->gamemode = expansiondemo->gameMode;
+			::g->gamemission = expansiondemo->pack_type;
+			::g->rexp = expansiondemo->pack_type;
+			D_AddFile(expansiondemo->iWadFilename);
+			}
+			else {
+				D_AddFile(expansion->iWadFilename);
+			}
+		}
+		
 	}
 	
 }

@@ -1202,6 +1202,10 @@ void M_Episode(int choice)
 		I_PrintfE("M_Episode: 4th episode requires UltimateDOOM\n");
 		choice = 0;
 	}
+	if (::g->gamemode == shareware && choice > 0) {
+		M_StartMessage(SWSTRING, NULL, true);
+		return;
+	}
 
 	::g->epi = choice;
 	M_SetupNextMenu(&::g->NewDef);
