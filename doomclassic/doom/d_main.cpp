@@ -532,6 +532,9 @@ void IdentifyVersion(void)
 				D_AddFile(expansion->iWadFilename);
 			}
 		}
+		else {
+			D_AddFile(expansion->iWadFilename);
+		}
 		
 	}
 	
