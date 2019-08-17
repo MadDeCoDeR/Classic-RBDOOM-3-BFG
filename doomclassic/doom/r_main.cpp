@@ -619,10 +619,10 @@ void R_InitLightTables (void)
 	float	screendiv;
 	//GK: Just changing these value result in better lighting who knew
 	if (r_clight.GetBool()) {
-		::g->reallightlevels = 15;
-		::g->reallightscale = 10;
-		::g->LIGHTZSHIFT = 23;
-		::g->reallightscaleshift = 14;
+		::g->reallightlevels = r_clight.GetInteger() == 1 ? 15 : LIGHTLEVELS;
+		::g->reallightscale = r_clight.GetInteger() == 1 ? 18 : 28;
+		::g->LIGHTZSHIFT = 24;
+		::g->reallightscaleshift = r_clight.GetInteger() == 1 ? 14 : LIGHTSCALESHIFT;
 		screendiv = ::g->ASPECT_IMAGE_SCALER/2.0;
 	}
 	else {

@@ -974,6 +974,10 @@ char    detailNames[3][9] =
 "M_GDLOW","M_DETAIL","M_DISOPT" //GK: Use unique values for aspect ratio
 };
 
+char	lightNames[3][9] =
+{
+	"M_MSGOFF", "M_DARK", "M_LIGHT"
+};
 
 //GK:Begin
 //
@@ -995,7 +999,7 @@ void M_DrawVideo(void)
 	V_DrawPatchDirect(::g->VideoDef.x + asoffset, ::g->VideoDef.y + LINEHEIGHT * (detail), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])));
 	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light), 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[reallight], PU_CACHE_SHARED), W_GetNumForName(msgNames[reallight])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])));
 }
 
 void M_Video(int choice)
@@ -1510,7 +1514,7 @@ void M_Aspect(int choice) {
 }
 
 void M_Light(int choice) {
-	r_clight.SetInteger(r_clight.GetInteger() ? 0 : 1);
+	r_clight.SetInteger(r_clight.GetInteger() ? r_clight.GetInteger() == 1 ? 2 : 0 : 1);
 	::g->reset = true;
 	R_Init(); //GK: Re-init the renderer to apply the new light mode
 }
