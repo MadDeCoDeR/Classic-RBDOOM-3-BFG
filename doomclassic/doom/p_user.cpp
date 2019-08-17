@@ -246,6 +246,7 @@ void P_DeathThink (player_t* player)
 		player->playerstate = PST_REBORN;
 }
 
+#ifdef USE_OPENAL
 //P_Reverb
 //Check if the player has moved to
 //another sector and try to load
@@ -269,6 +270,7 @@ void P_Reverb(player_t* player) {
 		}
 	}
 }
+#endif
 
 //P_Acts
 //Change game CVars based on the

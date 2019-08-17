@@ -653,7 +653,7 @@ void idSoundHardware_XAudio2::Shutdown()
 idSoundHardware_XAudio2::AllocateVoice
 ========================
 */
-idSoundVoice* idSoundHardware_XAudio2::AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample )
+idSoundVoice* idSoundHardware_XAudio2::AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample, const int channel )
 {
 	if( leadinSample == NULL )
 	{

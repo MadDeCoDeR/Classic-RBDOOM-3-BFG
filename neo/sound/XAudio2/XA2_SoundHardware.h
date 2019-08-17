@@ -72,7 +72,7 @@ public:
 	
 	void 			Update();
 	
-	idSoundVoice* 	AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample );
+	idSoundVoice* 	AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample, const int channel );
 	void			FreeVoice( idSoundVoice* voice );
 	
 	// video playback needs this

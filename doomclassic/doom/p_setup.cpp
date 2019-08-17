@@ -805,6 +805,7 @@ P_SetupLevel
 		if (::g->gamemission == pack_custom ) { //GK:Custom expansion related stuff
 			sprintf(lumpname, "%s", ::g->maps[map-1].lumpname);
 		}
+#ifdef USE_OPENAL
 		//GK: Get Map's name in order to check for reverbs
 		switch (::g->gamemission) {
 		case doom2:
@@ -820,6 +821,7 @@ P_SetupLevel
 			::g->mapname=DoomLib::GetCurrentExpansion()->mapNames[map - 1];
 			break;
 		}
+#endif
 	}
 	else
 	{
@@ -832,7 +834,9 @@ P_SetupLevel
 
 			if (episode < 5 && map < 10) {
 				idLib::Printf("%s\n", mapnames[(episode - 1) * 9 + (map - 1)]);
+#ifdef USE_OPENAL
 				::g->mapname = mapnames[(episode - 1) * 9 + (map - 1)];
+#endif
 			}
 			if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
 				if (::g->clusters.size()) {
@@ -849,7 +853,9 @@ P_SetupLevel
 					if (::g->maps[newmap - 1].lumpname != NULL) {
 						sprintf(lumpname, "%s", ::g->maps[newmap - 1].lumpname);
 						if (::g->maps[newmap - 1].realname != NULL) {
+#ifdef USE_OPENAL
 							::g->mapname = ::g->maps[newmap - 1].realname;
+#endif
 						}
 					}
 				}

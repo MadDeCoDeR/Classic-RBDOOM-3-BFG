@@ -263,7 +263,9 @@ menuitem_t temp_SoundMenu[6] = {
 	{2,"M_MUSVOL",M_MusicVol,'m'},
 	{-1,"",0},
 	{1,"M_SRP",M_RandomPitch,'r'},
+#ifdef USE_OPENAL
 	{1,"M_MUSREV",M_MusicRev,'v'}
+#endif
 };
 memcpy( ::g->SoundMenu, temp_SoundMenu, sizeof(temp_SoundMenu) );
 menu_t  temp_SoundDef = {

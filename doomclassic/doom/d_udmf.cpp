@@ -31,7 +31,9 @@
 #include "m_bbox.h"
 #include "d_udmf.h"
 #include "m_swap.h"
+#ifdef USE_OPENAL
 #include "s_efx.h"
+#endif
 
 long numlinedefs;
 long numthings;
