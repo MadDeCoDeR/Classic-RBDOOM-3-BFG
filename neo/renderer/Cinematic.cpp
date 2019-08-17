@@ -82,6 +82,7 @@ extern "C"
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
 }
+bool hasplanar = true;
 #endif
 
 class idCinematicLocal : public idCinematic
@@ -590,11 +591,32 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 			common->Warning("idCinematic: Cannot open audio decoder for: '%s', %d\n", qpath, looping);
 			//return false;
 		}
-		dst_smp = static_cast<AVSampleFormat> (dec_ctx2->sample_fmt - 5);
-		swr_ctx = swr_alloc_set_opts(NULL, dec_ctx2->channel_layout, dst_smp, dec_ctx2->sample_rate, dec_ctx2->channel_layout, dec_ctx2->sample_fmt, dec_ctx2->sample_rate, 0, NULL);
-		int res = swr_init(swr_ctx);
+		if (dec_ctx2->sample_fmt >= 5) {
+			dst_smp = static_cast<AVSampleFormat> (dec_ctx2->sample_fmt - 5);
+			swr_ctx = swr_alloc_set_opts(NULL, dec_ctx2->channel_layout, dst_smp, dec_ctx2->sample_rate, dec_ctx2->channel_layout, dec_ctx2->sample_fmt, dec_ctx2->sample_rate, 0, NULL);
+			int res = swr_init(swr_ctx);
+			hasplanar = true;
+		}
+		else {
+			hasplanar = false;
+		}
 #ifndef USE_OPENAL
-		int format_byte = 4;
+		int format_byte = 0;
+		bool use_ext = false;
+		if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8P) {
+			format_byte = 1;
+		}
+		else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16P) {
+			format_byte = 2;
+		}
+		else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32P) {
+			format_byte = 4;
+		}
+		else {
+			//return false;
+			format_byte = 4;
+			use_ext = true;
+		}
 		WAVEFORMATEXTENSIBLE exvoice = { 0 };
 		voiceFormatcine.wFormatTag = WAVE_FORMAT_EXTENSIBLE; //Use extensible wave format in order to handle properly the audio
 		voiceFormatcine.nChannels = dec_ctx2->channels; //fixed
@@ -604,19 +626,47 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		voiceFormatcine.nAvgBytesPerSec = voiceFormatcine.nSamplesPerSec * voiceFormatcine.nBlockAlign; //fixed
 		voiceFormatcine.cbSize = 22; //fixed
 		exvoice.Format = voiceFormatcine;
-		exvoice.dwChannelMask = SPEAKER_MONO;
+		switch (voiceFormatcine.nChannels) {
+		case 1:
+			exvoice.dwChannelMask = SPEAKER_MONO;
+			break;
+		case 2:
+			exvoice.dwChannelMask = SPEAKER_STEREO;
+			break;
+		case 4:
+			exvoice.dwChannelMask = SPEAKER_QUAD;
+			break;
+		case 5:
+			exvoice.dwChannelMask = SPEAKER_5POINT1_SURROUND;
+			break;
+		case 7:
+			exvoice.dwChannelMask = SPEAKER_7POINT1_SURROUND;
+			break;
+		default:
+			exvoice.dwChannelMask = SPEAKER_MONO;
+			break;
+		}
 		exvoice.Samples.wReserved = 0;
 		exvoice.Samples.wValidBitsPerSample = voiceFormatcine.wBitsPerSample;
 		exvoice.Samples.wSamplesPerBlock = voiceFormatcine.wBitsPerSample;
-		exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
+		exvoice.SubFormat = use_ext ? KSDATAFORMAT_SUBTYPE_IEEE_FLOAT : KSDATAFORMAT_SUBTYPE_PCM;
 		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice1, (WAVEFORMATEX*)&exvoice, XAUDIO2_VOICE_USEFILTER |  XAUDIO2_VOICE_MUSIC);//Use the XAudio2 that the game has initialized instead of making your own
 #else //GK: Yep while in xaudio2 require so many line in OpenAL it require quite less
 		av_rate_cin = dec_ctx2->sample_rate;
-		av_sample_cin = AL_FORMAT_MONO_FLOAT32;
+		switch (dec_ctx2->channels) {
+		case 1:
+			av_sample_cin = hasplanar ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_MONO16;
+			break;
+		case 2:
+			av_sample_cin = hasplanar ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_STEREO16;
+			break;
+		}
+		
 		alSourceRewind(alMusicSourceVoicecin);
 		alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
 		alcount = 0;
 		trigger = true;
+		alSourcePlay(alMusicSourceVoicecin);
 #endif
 	}
 	else {
@@ -685,7 +735,7 @@ void idCinematicLocal::FFMPEGReset()
 	{
 		status = FMV_LOOPED;
 	}
-	else
+	else if (av_seek_frame(fmt_ctx, audio_stream_index, 0, 0) < 0 && av_seek_frame(fmt_ctx, video_stream_index, 0, 0) < 0)
 	{
 		status = FMV_EOF;
 	}
@@ -728,11 +778,17 @@ bool idCinematicLocal::InitFromFile( const char* qpath, bool amilooping )
 	iFile = fileSystem->OpenFileRead( fileName );
 	
 	// Carl: If the RoQ file doesn't exist, try using ffmpeg instead:
-	if( !iFile )
+	if( /*!iFile*/ true )
 	{
 #if defined(USE_FFMPEG)
 		//idLib::Warning( "Original Doom 3 RoQ Cinematic not found: '%s'\n", fileName.c_str() );
-		idStr temp = fileName.StripFileExtension() + ".bik";
+		idStr temp;
+		if (!iFile) {
+			temp = fileName.StripFileExtension() + ".bik";
+		}
+		else {
+			temp = fileName;
+		}
 		animationLength = 0;
 		hasFrame = false;
 		RoQShutdown();
@@ -975,16 +1031,74 @@ cinData_t idCinematicLocal::ImageForTime( int thisTime )
 	return cinData;
 }
 
+#if defined(USE_FFMPEG)
+void PlayAudio(uint8_t* data, int size) {
+#ifndef USE_OPENAL
+	//Store the data to XAudio2 buffer
+	Packet.Flags = XAUDIO2_END_OF_STREAM;
+	Packet.AudioBytes = size;
+	Packet.pAudioData = (BYTE*)data;
+	Packet.PlayBegin = 0;
+	Packet.PlayLength = 0;
+	Packet.LoopBegin = 0;
+	Packet.LoopLength = 0;
+	Packet.LoopCount = 0;
+	Packet.pContext = NULL;
+	HRESULT hr;
+	if (FAILED(hr = pMusicSourceVoice1->SubmitSourceBuffer(&Packet))) {
+		int fail = 1;
+	}
+
+	// Play the source voice
+	if (FAILED(hr = pMusicSourceVoice1->Start(0))) {
+		int fail = 1;
+	}
+#else //GK: But also it requires better coding DX
+	ALint val2;
+	if (!tBuffer) {
+		tBuffer = (uint8_t*)malloc(file_size * sizeof(uint8_t*));
+	}
+	memcpy(tBuffer + offset, data, size);
+	offset += size;
+
+	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &val2);
+
+	if ( val2 ) {
+		alSourceUnqueueBuffers(alMusicSourceVoicecin, val2 , &alMusicBuffercin[0]);
+	}
+
+	ALint val3;
+	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_QUEUED, &val3);
+
+	if ( !val3 ) {
+		alBufferData(alMusicBuffercin[0], av_sample_cin, tBuffer, offset, av_rate_cin);
+		free(tBuffer);
+		tBuffer = NULL;
+		alSourceQueueBuffers(alMusicSourceVoicecin, 1, &alMusicBuffercin[0]);
+		offset = 0;
+	}
+
+	ALint state;
+	alGetSourcei(alMusicSourceVoicecin, AL_SOURCE_STATE, &state);
+
+	if (state != AL_PLAYING) {
+		alSourcePlay(alMusicSourceVoicecin);
+	}
+#endif
+}
+
 /*
 ==============
 idCinematicLocal::ImageForTimeFFMPEG
 ==============
 */
-#if defined(USE_FFMPEG)
+
 cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 {
 	cinData_t	cinData;
 	int i = 0;
+	uint8_t** tBuffer2 = NULL;
+	int num_bytes = 0;
 	if( thisTime <= 0 )
 	{
 		thisTime = Sys_Milliseconds();
@@ -1072,77 +1186,33 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 				avcodec_decode_video2( dec_ctx, frame, &frameFinished, &packet );
 			}
 			//GK:Begin
-			else if (packet.stream_index == audio_stream_index) {//Check if it found any audio data
+			if (packet.stream_index == audio_stream_index) {//Check if it found any audio data
 				frame3 = av_frame_alloc();
 				frameFinished1 = 0;
 				avcodec_decode_audio4(dec_ctx2, frame3, &frameFinished1, &packet);
-				uint8_t** tBuffer2 = NULL;
+				
 				int  bufflinesize;
 				if (frameFinished1) {
-					int num_bytes = 0;
+					
+					if (hasplanar) {
 					av_samples_alloc_array_and_samples(&tBuffer2,
-							&bufflinesize,
-							frame3->channels,
-							av_rescale_rnd(frame3->nb_samples, frame3->sample_rate, frame3->sample_rate, AV_ROUND_UP),
-							dst_smp,
-							0);
+						&bufflinesize,
+						frame3->channels,
+						av_rescale_rnd(frame3->nb_samples, frame3->sample_rate, frame3->sample_rate, AV_ROUND_UP),
+						dst_smp,
+						0);
 
 					int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame3->extended_data, frame3->nb_samples);
 					num_bytes = av_samples_get_buffer_size(&bufflinesize, frame3->channels,
-							res, dst_smp, 1);
-					
-#ifndef USE_OPENAL
-					//Store the data to XAudio2 buffer
-					Packet.Flags = XAUDIO2_END_OF_STREAM;
-					Packet.AudioBytes = num_bytes;
-					Packet.pAudioData = (BYTE*)tBuffer2[0];
-					Packet.PlayBegin = 0;
-					Packet.PlayLength = 0;
-					Packet.LoopBegin = 0;
-					Packet.LoopLength = 0;
-					Packet.LoopCount = 0;
-					Packet.pContext = NULL;
-					HRESULT hr;
-					if (FAILED(hr = pMusicSourceVoice1->SubmitSourceBuffer(&Packet))) {
-						int fail = 1;
-					}
-
-					// Play the source voice
-					if (FAILED(hr = pMusicSourceVoice1->Start(0))) {
-						int fail = 1;
-					}
+						res, dst_smp, 1);
+				}
+				else {
+					num_bytes = frame3->linesize[0];
+					tBuffer2 = (uint8_t**)malloc(sizeof(frame3->extended_data)/sizeof(uint8_t*));
+					tBuffer2[0] = (uint8_t *)malloc(num_bytes);
+					memcpy(tBuffer2[0], frame3->extended_data[0], num_bytes);
+				}
 					av_frame_free(&frame3);
-#else //GK: But also it requires better coding DX
-					ALint val2;
-					
-					if (!trigger) {
-						alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &val2);
-						if (val2 > 0) {
-							alSourceUnqueueBuffers(alMusicSourceVoicecin, val2, &alMusicBuffercin[0]);
-							if (val2 == NUM_BUFFERS) {
-								trigger = true;
-							}
-						}
-					}
-					else {
-						val2 = NUM_BUFFERS;
-					}
-						if (!tBuffer) {
-							tBuffer = (uint8_t*)malloc(file_size * sizeof(uint8_t*));
-						}
-						memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
-						offset += num_bytes;
-						if (val2> 0) {
-							alBufferData(alMusicBuffercin[0], av_sample_cin, tBuffer, offset, av_rate_cin);
-							alSourceQueueBuffers(alMusicSourceVoicecin, 1, &alMusicBuffercin[0]);
-							trigger = false;
-							alSourcePlay(alMusicSourceVoicecin);
-							offset = 0;
-							free(tBuffer);
-							tBuffer = NULL;
-						}
-					av_frame_free(&frame3);
-#endif
 				}
 			}
 			//GK:End
@@ -1164,6 +1234,9 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 	img->UploadScratch( image, CIN_WIDTH, CIN_HEIGHT );
 	hasFrame = true;
 	cinData.image = img;
+	if (tBuffer2) {
+		PlayAudio(tBuffer2[0], num_bytes);
+	}
 	
 	return cinData;
 }
