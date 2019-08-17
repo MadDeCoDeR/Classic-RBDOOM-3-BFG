@@ -285,7 +285,7 @@ idCVar r_exposure( "r_exposure", "0.5", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_FLOA
 //GK begin
 idCVar r_aspect("r_aspect", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "0 = original, 1 = streched"); //GK: Special cvar for classic DOOM aspect ratio
 idCVar r_aspectcorrect("r_aspectcorrect", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL|CVAR_INIT, "0 = original, 1 = corrected"); //GK: Special cvar for classic DOOM aspect ratio correction
-idCVar r_clight("r_clight", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL | CVAR_INIT, "0 = original, 1 = Real"); //GK: Special cvar for classic DOOM Light
+idCVar r_clight("r_clight", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER | CVAR_INIT, "0 = original, 1 = Dark, 2 = Bright"); //GK: Special cvar for classic DOOM Light
 //GK end
 const char* fileExten[3] = { "tga", "png", "jpg" };
 const char* envDirection[6] = { "_px", "_nx", "_py", "_ny", "_pz", "_nz" };

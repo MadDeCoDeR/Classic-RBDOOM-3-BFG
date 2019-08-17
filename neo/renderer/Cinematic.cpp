@@ -38,7 +38,7 @@ WAVEFORMATEX voiceFormatcine = { 0 };
 IXAudio2SourceVoice*	pMusicSourceVoice1;
 XAUDIO2_BUFFER Packet = { 0 };
 #else //GK: Add audio support for OpenAL
-#define NUM_BUFFERS 4
+#define NUM_BUFFERS 3
 static ALuint		alMusicSourceVoicecin;
 static ALuint		alMusicBuffercin[NUM_BUFFERS];
 ALenum av_sample_cin;
@@ -424,6 +424,10 @@ idCinematicLocal::idCinematicLocal()
 	audio_stream_index = -1;
 	img_convert_ctx = NULL;
 	hasFrame = false;
+#endif
+
+#ifdef USE_OPENAL
+	InitCinematicAudio(); //GK: Make sure the cinematic voices are the first to be initialized
 #endif
 
 	// Carl: Original Doom 3 RoQ files:
@@ -1054,32 +1058,35 @@ void PlayAudio(uint8_t* data, int size) {
 		int fail = 1;
 	}
 #else //GK: But also it requires better coding DX
+	ALint val3;
+	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_QUEUED, &val3);
 	ALint val2;
+	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &val2);
+	ALint state;
+	alGetSourcei(alMusicSourceVoicecin, AL_SOURCE_STATE, &state);
+
 	if (!tBuffer) {
-		tBuffer = (uint8_t*)malloc(file_size * sizeof(uint8_t*));
+		tBuffer = (uint8_t*)malloc(size * sizeof(uint8_t*));
+	}
+	else {
+		tBuffer = (uint8_t*)realloc(tBuffer, (offset * sizeof(uint8_t*)) + (size * sizeof(uint8_t*)));
 	}
 	memcpy(tBuffer + offset, data, size);
 	offset += size;
-
-	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &val2);
 
 	if ( val2 ) {
 		alSourceUnqueueBuffers(alMusicSourceVoicecin, val2 , &alMusicBuffercin[0]);
 	}
 
-	ALint val3;
-	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_QUEUED, &val3);
+	if ( !val3 || val3 <= val2) {
 
-	if ( !val3 ) {
 		alBufferData(alMusicBuffercin[0], av_sample_cin, tBuffer, offset, av_rate_cin);
+		alSourceQueueBuffers(alMusicSourceVoicecin, 1, &alMusicBuffercin[0]);
+
+		offset = 0;
 		free(tBuffer);
 		tBuffer = NULL;
-		alSourceQueueBuffers(alMusicSourceVoicecin, 1, &alMusicBuffercin[0]);
-		offset = 0;
 	}
-
-	ALint state;
-	alGetSourcei(alMusicSourceVoicecin, AL_SOURCE_STATE, &state);
 
 	if (state != AL_PLAYING) {
 		alSourcePlay(alMusicSourceVoicecin);

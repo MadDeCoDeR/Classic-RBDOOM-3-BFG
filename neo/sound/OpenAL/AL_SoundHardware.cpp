@@ -268,7 +268,7 @@ void idSoundHardware_OpenAL::Init()
 	// ---------------------
 	// Initialize the Doom classic sound system.
 	// ---------------------
-	InitCinematicAudio(); //GK: Make sure the cinematic voices are the first to be initialized
+	
 	I_InitSoundHardware( voices.Max(), 0 );
 
 	// ---------------------
