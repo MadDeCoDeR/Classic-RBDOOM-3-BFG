@@ -641,7 +641,7 @@ static void FillStaticVidModes( idList<vidMode_t>& modeList )
 	modeList.AddUnique( vidMode_t( 1280,  768, 60 ) );
 	modeList.AddUnique( vidMode_t( 1280,  800, 60 ) );
 	modeList.AddUnique( vidMode_t( 1280, 1024, 60 ) );
-	modeList.AddUnique( vidMode_t( 1360,  768, 60 ) );
+	modeList.AddUnique( vidMode_t( 1366,  768, 60 ) );
 	modeList.AddUnique( vidMode_t( 1440,  900, 60 ) );
 	modeList.AddUnique( vidMode_t( 1680, 1050, 60 ) );
 	modeList.AddUnique( vidMode_t( 1600, 1200, 60 ) );
