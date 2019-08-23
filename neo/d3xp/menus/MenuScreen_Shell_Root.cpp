@@ -501,7 +501,8 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 			{
 				case ROOT_CMD_START_DEMO:
 				{
-					cmdSystem->AppendCommandText( va( "devmap %s %d\n", "demo/enpro_e3_2012", 1 ) );
+					cmdSystem->AppendCommandText(va("devmap %s %d\n", "game/demo_mars_city1", 1));
+					/*cmdSystem->AppendCommandText( va( "devmap %s %d\n", "demo/enpro_e3_2012", 1 ) );*/
 					break;
 				}
 				case ROOT_CMD_START_DEMO2:

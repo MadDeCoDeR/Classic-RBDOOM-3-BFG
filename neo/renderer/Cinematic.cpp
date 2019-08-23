@@ -670,7 +670,6 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
 		alcount = 0;
 		trigger = true;
-		alSourcePlay(alMusicSourceVoicecin);
 #endif
 	}
 	else {
@@ -1058,12 +1057,6 @@ void PlayAudio(uint8_t* data, int size) {
 		int fail = 1;
 	}
 #else //GK: But also it requires better coding DX
-	ALint val3;
-	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_QUEUED, &val3);
-	ALint val2;
-	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &val2);
-	ALint state;
-	alGetSourcei(alMusicSourceVoicecin, AL_SOURCE_STATE, &state);
 
 	if (!tBuffer) {
 		tBuffer = (uint8_t*)malloc(size * sizeof(uint8_t*));
@@ -1074,20 +1067,25 @@ void PlayAudio(uint8_t* data, int size) {
 	memcpy(tBuffer + offset, data, size);
 	offset += size;
 
+	ALint val2;
+	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &val2);
 	if ( val2 ) {
-		alSourceUnqueueBuffers(alMusicSourceVoicecin, val2 , &alMusicBuffercin[0]);
+		alSourceUnqueueBuffers(alMusicSourceVoicecin, val2 , alMusicBuffercin);
 	}
 
-	if ( !val3 || val3 <= val2) {
+	ALint val3;
+	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_QUEUED, &val3);
 
+	if (val2 || !val3) {
 		alBufferData(alMusicBuffercin[0], av_sample_cin, tBuffer, offset, av_rate_cin);
-		alSourceQueueBuffers(alMusicSourceVoicecin, 1, &alMusicBuffercin[0]);
-
+		alSourceQueueBuffers(alMusicSourceVoicecin, 1, alMusicBuffercin);
 		offset = 0;
 		free(tBuffer);
 		tBuffer = NULL;
 	}
 
+	ALint state;
+	alGetSourcei(alMusicSourceVoicecin, AL_SOURCE_STATE, &state);
 	if (state != AL_PLAYING) {
 		alSourcePlay(alMusicSourceVoicecin);
 	}

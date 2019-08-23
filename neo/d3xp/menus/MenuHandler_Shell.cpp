@@ -1046,7 +1046,8 @@ bool idMenuHandler_ShellLocal::HandleAction( idWidgetAction& action, const idWid
 			{
 				case SHELL_CMD_DEMO0:
 				{
-					cmdSystem->AppendCommandText( va( "devmap %s %d\n", "demo/enpro_e3_2012", 1 ) );
+					cmdSystem->AppendCommandText(va("devmap %s %d\n", "game/demo_mars_city1", 1));
+					/*cmdSystem->AppendCommandText( va( "devmap %s %d\n", "demo/enpro_e3_2012", 1 ) );*/
 					break;
 				}
 				case SHELL_CMD_DEMO1:

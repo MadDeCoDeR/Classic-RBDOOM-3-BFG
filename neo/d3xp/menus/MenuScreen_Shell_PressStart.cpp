@@ -160,9 +160,14 @@ void idMenuScreen_Shell_PressStart::ShowScreen( const mainMenuTransition_t trans
 		{
 		
 			idList<const idMaterial*> coverIcons;
+			coverIcons.Append(doomCover);
+			coverIcons.Append(doom3Cover);
 			if( itemList != NULL )
 			{
 				itemList->SetListImages( coverIcons );
+				itemList->SetFocusIndex(1, true);
+				itemList->SetViewIndex(1);
+				itemList->SetMoveToIndex(1);
 			}
 			
 			if( startButton != NULL )
