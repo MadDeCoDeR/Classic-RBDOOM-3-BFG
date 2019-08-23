@@ -934,7 +934,7 @@ void idCommonLocal::RunDoomClassicFrame()
 	{
 		Globals* data = ( Globals* )DoomLib::GetGlobalData( 0 );
 		
-		idArray< unsigned int, 256 > palette;
+		idArray< unsigned int, 16000 > palette;
 		std::copy( data->XColorMap, data->XColorMap + palette.Num(), palette.Ptr() );
 		
 		// Do the palette lookup.
