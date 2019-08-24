@@ -361,16 +361,33 @@ static HGLRC CreateOpenGLContextOnDC( const HDC hdc, const bool debugContext )
 		const int glDebugFlag = debugContext ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
 		const int glProfileMask = ( useOpenGL32 != 0 ) ? WGL_CONTEXT_PROFILE_MASK_ARB : 0;
 		const int glProfile = ( useOpenGL32 == 1 ) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : ( ( useOpenGL32 == 2 ) ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : 0 );
-		const int attribs[] =
-		{
-			WGL_CONTEXT_MAJOR_VERSION_ARB,	glMajorVersion,
-			WGL_CONTEXT_MINOR_VERSION_ARB,	glMinorVersion,
-			WGL_CONTEXT_FLAGS_ARB,			glDebugFlag,
-			glProfileMask,					glProfile,
-			0
-		};
-		
-		m_hrc = wglCreateContextAttribsARB( hdc, 0, attribs );
+#if 0
+		int majorCounter = 4;
+		int minorCounter = 6;
+		int glMajorVersion;
+		int glMinorVersion;
+		while (m_hrc == NULL) {
+			glMajorVersion = (useOpenGL32 != 0) ? majorCounter : 2;
+			glMinorVersion = (useOpenGL32 != 0) ? minorCounter : 0;
+#endif
+			const int attribs[] =
+			{
+				WGL_CONTEXT_MAJOR_VERSION_ARB,	glMajorVersion,
+				WGL_CONTEXT_MINOR_VERSION_ARB,	glMinorVersion,
+				WGL_CONTEXT_FLAGS_ARB,			glDebugFlag,
+				glProfileMask,					glProfile,
+				0
+			};
+
+			m_hrc = wglCreateContextAttribsARB( hdc, 0, attribs );
+#if 0
+			minorCounter--;
+			if (minorCounter < 0) {
+				majorCounter--;
+				minorCounter = 9;
+			}
+		}
+#endif
 		if( m_hrc != NULL )
 		{
 			idLib::Printf( "created OpenGL %d.%d context\n", glMajorVersion, glMinorVersion );
