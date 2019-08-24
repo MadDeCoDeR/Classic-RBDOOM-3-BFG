@@ -43,7 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 // RB: changed home folder so we don't break the savegame of the original game
 #define SAVE_PATH						"\\id Software\\RBDOOM 3 BFG"
 
-#define ENGINE_VERSION					"Classic RBDOOM 3 BFG 1.1.12"	// printed in console
+#define ENGINE_VERSION					"Classic RBDOOM 3 BFG 1.1.13"	// printed in console
 // RB end
 
 #define	BASE_GAMEDIR					"base"
