@@ -272,7 +272,7 @@ void setMapNum() {
 	case retail:
 		if (::g->clusters.size()) {
 			if (::g->clusters[::g->gameepisode - 1].startmap) {
-				::g->map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+				::g->map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - ::g->clusters[::g->gameepisode - 1].startmap);
 			}
 			else {
 				::g->map = 0;
