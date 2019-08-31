@@ -950,7 +950,7 @@ P_DamageMobj
 
 	if (source != NULL) {
 		if (source->player)
-			DoomLib::SetRumble(damage * 100, 5, damage * 100, 5);
+			DoomLib::SetRumble(damage * 100 < 5000 ? damage * 100 : damage * 50, 5, damage * 100 >= 5000 ? damage * 100 : damage * 50, 5);
 	}
 
 	if ( !(target->flags & MF_SHOOTABLE) )
