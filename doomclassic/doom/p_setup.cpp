@@ -848,7 +848,8 @@ P_SetupLevel
 						}
 					}
 				if (::g->clusters[episode - 1].startmap) {
-					int newmap = ::g->clusters[episode - 1].startmap + (map - 1);
+					int tempmap = map >= ::g->clusters[episode - 1].startmap ? (map - ::g->clusters[episode - 1].startmap) : (map - 1);
+					int newmap = ::g->clusters[episode - 1].startmap + tempmap;
 					::g->endmap = ::g->clusters[episode - 1].endmap;
 					if (::g->maps[newmap - 1].lumpname != NULL) {
 						sprintf(lumpname, "%s", ::g->maps[newmap - 1].lumpname);

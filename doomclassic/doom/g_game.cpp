@@ -1445,7 +1445,7 @@ void G_DoCompleted (void)
 				}
 				else {
 					FindNextMap(::g->map - 1);
-					::g->wminfo.next = ::g->maps[::g->map - 1].nextmap;
+					::g->wminfo.next = ::g->maps[::g->map - 1].nextmap - (::g->clusters[::g->gameepisode - 1].startmap - 1);
 				}
 			}
 		}
