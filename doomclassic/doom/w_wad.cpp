@@ -155,6 +155,7 @@ typedef struct spritename_t {
 };
 
 bool W_CompareSprites(spritename_t* original, spritename_t* newname) {
+	
 	if (idStr::Icmpn(original->base, newname->base, 4)) {
 		return false;
 	}
@@ -195,6 +196,11 @@ bool W_ReplaceSprite(filelump_t* file, int pos, idFile* handle, int start, int e
 	if (idStr::Icmpn(original->base, newname->base, 4)) {
 		return false;
 	}
+	if (!idStr::Icmpn("PAIN", newname->base, 4)) {
+		if (newname->frame1 == 'C') {
+			I_Printf("Hello There\n");
+		}
+	}
 	char originalFrames[2] = { original->frame1, original->frame2 };
 	char originalRotations[2] = { original->rotation1, original->rotation2 };
 	char newFrames[2] = { newname->frame1, newname->frame2 };
@@ -226,6 +232,9 @@ bool W_ReplaceSprite(filelump_t* file, int pos, idFile* handle, int start, int e
 	if (framematch) {
 		if (originalRotations[framematchi] != '0' && newRotations[framematchj] == '0') {
 			lumpinfo_t* tlump = &lumpinfo[pos - 1];
+			if (idStr::Icmpn(tlump->name, (char*)original, 4)) {
+				tlump = &lumpinfo[pos - 2];
+			}
 			while (!idStr::Icmpn(tlump->name, (char*)original, 5)) {
 				W_RemoveLump(pos);
 				pos = pos - 1;
@@ -234,10 +243,12 @@ bool W_ReplaceSprite(filelump_t* file, int pos, idFile* handle, int start, int e
 				tlump = &lumpinfo[pos - 1];
 			}
 			W_ReplaceLump(file, pos, handle);
+			W_DeleteDuplicateSprites(newname, pos, start, end);
 			return true;
 		}
 		if (originalRotations[framematchi] == '0' && newRotations[framematchj] != '0') {
 			W_ReplaceLump(file, pos, handle);
+			W_DeleteDuplicateSprites(newname, pos, start, end);
 			return true;
 		}
 	}
