@@ -403,7 +403,7 @@ void idResourceContainer::ExtractResourceFile( const char* _fileName, const char
 idResourceContainer::Open
 ========================
 */
-void idResourceContainer::WriteResourceFile( const char* manifestName, const idStrList& manifest, const bool& _writeManifest )
+void idResourceContainer::WriteResourceFile( const char* manifestName, idStrList& manifest, const bool& _writeManifest, const char* rootPath )
 {
 
 	if( manifest.Num() == 0 )
@@ -420,16 +420,23 @@ void idResourceContainer::WriteResourceFile( const char* manifestName, const idS
 	int64 size = 0;
 	idStrList flist;
 	flist.SetGranularity( 16384 );
-	for( int i = 0; i < manifest.Num(); i++ )
+	for (int i = 0; i < manifest.Num(); i++)
 	{
-		flist.Append( manifest[ i ] );
-		size += fileSystem->GetFileLength( manifest[ i ] );
-		if( size > 1024 * 1024 * 1024 )
+		if (rootPath != NULL)
 		{
-			outPutFiles.Append( flist );
+			idStr tempPath;
+			sprintf(tempPath, "%s/", rootPath);
+			manifest[i].Replace(tempPath.c_str(), "");
+		}
+		flist.Append(manifest[i]);
+		size += fileSystem->GetFileLength(manifest[i]);
+		if (size > 1024 * 1024 * 1024)
+		{
+			outPutFiles.Append(flist);
 			size = 0;
 			flist.Clear();
 		}
+		
 		outManifest.AddFile( manifest[ i ] );
 	}
 	
@@ -490,8 +497,14 @@ void idResourceContainer::WriteResourceFile( const char* manifestName, const idS
 			ent.filename = fileList[ i ];
 			ent.length = 0;
 			ent.offset = 0;
-			
-			idFile* file = fileSystem->OpenFileReadMemory( ent.filename, false );
+			idStr loadPath;
+			if (rootPath != NULL) {
+				sprintf(loadPath, "%s/%s", rootPath, ent.filename.c_str());
+			}
+			else {
+				loadPath = ent.filename;
+			}
+			idFile* file = fileSystem->OpenFileReadMemory( loadPath, false );
 			idFile_Memory* fm = dynamic_cast< idFile_Memory* >( file );
 			if( fm == NULL )
 			{

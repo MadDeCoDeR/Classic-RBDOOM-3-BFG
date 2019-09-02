@@ -235,6 +235,7 @@ public:
 	static void				BuildGame_f( const idCmdArgs& args );
 	//static void				FileStats_f( const idCmdArgs &args );
 	static void				WriteResourceFile_f( const idCmdArgs& args );
+	static void				WriteResourceFileWithDir_f(const idCmdArgs& args);
 	static void				ExtractResourceFile_f( const idCmdArgs& args );
 	static void				UpdateResourceFile_f( const idCmdArgs& args );
 	static void				GenerateResourceCRCs_f( const idCmdArgs& args );
@@ -1183,7 +1184,7 @@ void idFileSystemLocal::BuildOrderedStartupContainer()
 	}
 	FreeFileList( fl );
 	
-	idResourceContainer::WriteResourceFile( "_ordered.resources", orderedFiles, false );
+	idResourceContainer::WriteResourceFile( "_ordered.resources", orderedFiles, false, NULL );
 }
 
 /*
@@ -1398,7 +1399,7 @@ void idFileSystemLocal::WriteResourcePacks()
 		{
 			mapFilesToWrite.Append( mapFilesTwo[ j ] );
 		}
-		idResourceContainer::WriteResourceFile( resourceFileName, mapFilesToWrite, false );
+		idResourceContainer::WriteResourceFile( resourceFileName, mapFilesToWrite, false, NULL );
 	}
 	
 	// add  the new manifests just written
@@ -1461,7 +1462,7 @@ void idFileSystemLocal::WriteResourcePacks()
 	//idResourceContainer::WriteResourceFile( "_common_models", commonModels );
 	
 	commonPreloads.WriteManifest( "_common.preload" );
-	idResourceContainer::WriteResourceFile( "_common", commonFiles, false );
+	idResourceContainer::WriteResourceFile( "_common", commonFiles, false, NULL );
 	
 	
 	idList< idStrList > soundOutputFiles;
@@ -1501,14 +1502,14 @@ void idFileSystemLocal::WriteResourcePacks()
 		idStrList& sampleList = *soundFileInfo[ k ].samples;
 		
 		// write pc
-		idResourceContainer::WriteResourceFile( va( "_sound_pc_%s", soundFileInfo[ k ].filename ), sampleList, false );
+		idResourceContainer::WriteResourceFile( va( "_sound_pc_%s", soundFileInfo[ k ].filename ), sampleList, false, NULL );
 		for( int l = 0; l < sampleList.Num(); l++ )
 		{
 			sampleList[ l ].Replace( ".idwav", ".idxma" );
 		}
 	}
 	
-	idResourceContainer::WriteResourceFile( "_sound_pc", soundFiles, false );
+	idResourceContainer::WriteResourceFile( "_sound_pc", soundFiles, false, NULL );
 	for( int k = 0; k < soundFiles.Num(); k++ )
 	{
 		soundFiles[ k ].Replace( ".idwav", ".idxma" );
@@ -2638,7 +2639,34 @@ void idFileSystemLocal::WriteResourceFile_f( const idCmdArgs& args )
 	
 	idStrList manifest;
 	idResourceContainer::ReadManifestFile( args.Argv( 1 ), manifest );
-	idResourceContainer::WriteResourceFile( args.Argv( 1 ), manifest, false );
+	idResourceContainer::WriteResourceFile( args.Argv( 1 ), manifest, false, NULL );
+}
+
+/*
+================
+idFileSystemLocal::WriteResourceFile_f
+================
+*/
+void idFileSystemLocal::WriteResourceFileWithDir_f(const idCmdArgs& args)
+{
+	if (args.Argc() != 2)
+	{
+		common->Printf("Usage: writeResourceFile <dir>\n");
+		return;
+	}
+
+	idStrList manifest;
+	idStr path;
+	sprintf(path, "%s/%s", fileSystemLocal.searchPaths[0].path.c_str(), args.Argv(1));
+	idFileList* files = fileSystemLocal.ListFilesTree(path, "");
+	for (int i = 0; i < files->GetNumFiles(); i++) {
+		manifest.AddUnique(files->GetFile(i) );
+	}
+	//idResourceContainer::ReadManifestFile(args.Argv(1), manifest);
+	
+	idStr resourcePath;
+	sprintf(resourcePath, "_%s.resources", args.Argv(1));
+	idResourceContainer::WriteResourceFile(args.Argv(1), manifest, true, path);
 }
 
 
@@ -3123,6 +3151,7 @@ void idFileSystemLocal::Startup()
 	
 	cmdSystem->AddCommand( "buildGame", BuildGame_f, CMD_FL_SYSTEM, "builds game pak files" );
 	cmdSystem->AddCommand( "writeResourceFile", WriteResourceFile_f, CMD_FL_SYSTEM, "writes a .resources file from a supplied manifest" );
+	cmdSystem->AddCommand("writeResourceFileWithDir", WriteResourceFileWithDir_f, CMD_FL_SYSTEM, "writes a .resources file from a directory");
 	cmdSystem->AddCommand( "extractResourceFile", ExtractResourceFile_f, CMD_FL_SYSTEM, "extracts to the supplied resource file to the supplied path" );
 	cmdSystem->AddCommand( "updateResourceFile", UpdateResourceFile_f, CMD_FL_SYSTEM, "updates or appends the supplied files in the supplied resource file" );
 	
@@ -3305,7 +3334,7 @@ idFile* idFileSystemLocal::GetResourceFile( const char* fileName, bool memFile )
 	{
 		if( fs_debugResources.GetBool() )
 		{
-			idLib::Printf( "RES: loading file %s\n", rc.filename.c_str() );
+			idLib::Printf( "RES: loading file %s from %s\n", rc.filename.c_str(), resourceFiles[rc.containerIndex]->GetFileName());
 		}
 		idFile_InnerResource* file = new idFile_InnerResource( rc.filename, resourceFiles[ rc.containerIndex ]->resourceFile, rc.offset, rc.length );
 		// DG: add parenthesis to make sure this block is only entered when file != NULL - bug found by clang.
