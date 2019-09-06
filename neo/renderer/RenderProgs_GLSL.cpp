@@ -1423,14 +1423,14 @@ idStr ConvertCG2GLSL( const idStr& in, const char* name, bool isVertexProgram, i
 			program += ( token.linesCrossed > 0 ) ? newline : ( token.WhiteSpaceBeforeToken() > 0 ? " " : "" );
 			program += "{";
 			
-			int len = Min( idStr::Length( newline ) + 1, ( int )sizeof( newline ) - 1 );
+			int64 len = Min( idStr::Length( newline ) + 1, (int64)sizeof( newline ) - 1 );
 			newline[len - 1] = '\t';
 			newline[len - 0] = '\0';
 			continue;
 		}
 		if( token == "}" )
 		{
-			int len = Max( idStr::Length( newline ) - 1, 0 );
+			int64 len = Max( idStr::Length( newline ) - 1, (int64)0 );
 			newline[len] = '\0';
 			
 			program += ( token.linesCrossed > 0 ) ? newline : ( token.WhiteSpaceBeforeToken() > 0 ? " " : "" );

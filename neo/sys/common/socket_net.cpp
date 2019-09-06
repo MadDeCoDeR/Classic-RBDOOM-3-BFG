@@ -327,7 +327,7 @@ static bool Net_ExtractPort( const char* src, char* buf, int bufsize, int* port 
 	char* p;
 	strncpy( buf, src, bufsize );
 	p = buf;
-	p += Min( bufsize - 1, idStr::Length( src ) );
+	p += Min( (int64)(bufsize - 1), idStr::Length( src ) );
 	*p = '\0';
 	p = strchr( buf, ':' );
 	if( !p )

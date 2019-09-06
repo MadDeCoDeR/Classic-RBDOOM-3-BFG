@@ -154,10 +154,10 @@ public:
 	virtual int				Write( const void* buffer, int len );
 	
 	// this file is strictly streaming, you can't seek at all
-	virtual int				Length() const
+	virtual int64				Length() const
 	{
 		// RB: 64 bit fix, we don't need support for files bigger than 2 GB
-		return ( int ) compressedLength;
+		return (int64) compressedLength;
 		// RB end
 	}
 	virtual void			SetLength( size_t len )

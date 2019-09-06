@@ -75,10 +75,10 @@ idVec4& idStr::ColorForIndex( int i )
 idStr::ReAllocate
 ============
 */
-void idStr::ReAllocate( int amount, bool keepold )
+void idStr::ReAllocate(int64 amount, bool keepold )
 {
 	char*	newbuffer;
-	int		newsize;
+	int64	newsize;
 	int		mod;
 	
 	//assert( data );
@@ -148,7 +148,7 @@ idStr::operator=
 */
 void idStr::operator=( const char* text )
 {
-	int l;
+	int64 l;
 	int diff;
 	int i;
 	
@@ -186,7 +186,7 @@ void idStr::operator=( const char* text )
 	}
 	
 	// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
-	l = ( int )strlen( text );
+	l = (int64)strlen( text );
 	// RB end
 	EnsureAlloced( l + 1, false );
 	strcpy( data, text );
@@ -200,14 +200,14 @@ idStr::FindChar
 returns -1 if not found otherwise the index of the char
 ============
 */
-int idStr::FindChar( const char* str, const char c, int start, int end )
+int64 idStr::FindChar( const char* str, const char c, int64 start, int64 end )
 {
-	int i;
+	int64 i;
 	
 	if( end == -1 )
 	{
 		// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
-		end = ( int )strlen( str ) - 1;
+		end = (int64)strlen( str ) - 1;
 		// RB end
 	}
 	for( i = start; i <= end; i++ )
@@ -227,16 +227,16 @@ idStr::FindText
 returns -1 if not found otherwise the index of the text
 ============
 */
-int idStr::FindText( const char* str, const char* text, bool casesensitive, int start, int end )
+int64 idStr::FindText( const char* str, const char* text, bool casesensitive, int64 start, int64 end )
 {
-	int l, i, j;
+	int64 l, i, j;
 	
 	// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
 	if( end == -1 )
 	{
-		end = ( int )strlen( str );
+		end = (int64)strlen( str );
 	}
-	l = end - ( int )strlen( text );
+	l = end - (int64)strlen( text );
 	// RB end
 	
 	for( i = start; i <= l; i++ )
@@ -286,7 +286,7 @@ Several metacharacter may be used in the filter.
 bool idStr::Filter( const char* filter, const char* name, bool casesensitive )
 {
 	idStr buf;
-	int i, found, index;
+	int64 i, found, index;
 	
 	while( *filter )
 	{
@@ -499,11 +499,11 @@ bool idStr::CheckExtension( const char* name, const char* ext )
 idStr::FloatArrayToString
 =============
 */
-const char* idStr::FloatArrayToString( const float* array, const int length, const int precision )
+const char* idStr::FloatArrayToString( const float* array, const int64 length, const int precision )
 {
-	static int index = 0;
+	static int64 index = 0;
 	static char str[4][16384];	// in case called by nested functions
-	int i, n;
+	int64 i, n;
 	char format[16], *s;
 	
 	// use an array of string so that multiple calls won't collide
@@ -694,9 +694,9 @@ idStr::Last
 returns -1 if not found otherwise the index of the char
 ============
 */
-int idStr::Last( const char c ) const
+int64 idStr::Last( const char c ) const
 {
-	int i;
+	int64 i;
 	
 	for( i = Length(); i > 0; i-- )
 	{
@@ -782,10 +782,10 @@ idStr::StripLeading
 */
 void idStr::StripLeading( const char* string )
 {
-	int l;
+	int64 l;
 	
 	// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
-	l = ( int )strlen( string );
+	l = (int64)strlen( string );
 	// RB end
 	if( l > 0 )
 	{
@@ -804,10 +804,10 @@ idStr::StripLeadingOnce
 */
 bool idStr::StripLeadingOnce( const char* string )
 {
-	int l;
+	int64 l;
 	
 	// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
-	l = ( int )strlen( string );
+	l = (int64)strlen( string );
 	// RB end
 	if( ( l > 0 ) && !Cmpn( string, l ) )
 	{
@@ -841,10 +841,10 @@ idStr::StripLeading
 */
 void idStr::StripTrailing( const char* string )
 {
-	int l;
+	int64 l;
 	
 	// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
-	l = ( int )strlen( string );
+	l = (int64)strlen( string );
 	// RB end
 	if( l > 0 )
 	{
@@ -863,10 +863,10 @@ idStr::StripTrailingOnce
 */
 bool idStr::StripTrailingOnce( const char* string )
 {
-	int l;
+	int64 l;
 	
 	// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
-	l = ( int )strlen( string );
+	l = (int64)strlen( string );
 	// RB end
 	if( ( l > 0 ) && ( len >= l ) && !Cmpn( string, data + len - l, l ) )
 	{
@@ -904,13 +904,13 @@ idStr::Replace
 bool idStr::Replace( const char* old, const char* nw )
 {
 	// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
-	int oldLen = ( int )strlen( old );
-	int newLen = ( int )strlen( nw );
+	int64 oldLen = (int64)strlen( old );
+	int64 newLen = (int64)strlen( nw );
 	// RB end
 	
 	// Work out how big the new string will be
-	int count = 0;
-	for( int i = 0; i < Length(); i++ )
+	int64 count = 0;
+	for(int64 i = 0; i < Length(); i++ )
 	{
 		if( idStr::Cmpn( &data[i], old, oldLen ) == 0 )
 		{
@@ -926,8 +926,8 @@ bool idStr::Replace( const char* old, const char* nw )
 		EnsureAlloced( len + ( ( newLen - oldLen ) * count ) + 2, false );
 		
 		// Replace the old data with the new data
-		int j = 0;
-		for( int i = 0; i < oldString.Length(); i++ )
+		int64 j = 0;
+		for(int64 i = 0; i < oldString.Length(); i++ )
 		{
 			if( idStr::Cmpn( &oldString[i], old, oldLen ) == 0 )
 			{
@@ -943,7 +943,7 @@ bool idStr::Replace( const char* old, const char* nw )
 		}
 		data[j] = 0;
 		// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
-		len = ( int )strlen( data );
+		len = (int64)strlen( data );
 		// RB end
 		return true;
 	}
@@ -955,9 +955,9 @@ bool idStr::Replace( const char* old, const char* nw )
 idStr::Mid
 ============
 */
-const char* idStr::Mid( int start, int len, idStr& result ) const
+const char* idStr::Mid(int64 start, int64 len, idStr& result ) const
 {
-	int i;
+	int64 i;
 	
 	result.Empty();
 	
@@ -981,9 +981,9 @@ const char* idStr::Mid( int start, int len, idStr& result ) const
 idStr::Mid
 ============
 */
-idStr idStr::Mid( int start, int len ) const
+idStr idStr::Mid(int64 start, int64 len ) const
 {
-	int i;
+	int64 i;
 	idStr result;
 	
 	i = Length();
@@ -1008,7 +1008,7 @@ idStr::StripTrailingWhitespace
 */
 void idStr::StripTrailingWhitespace()
 {
-	int i;
+	int64 i;
 	
 	// cast to unsigned char to prevent stripping off high-ASCII characters
 	for( i = Length(); i > 0 && ( unsigned char )( data[ i - 1 ] ) <= ' '; i-- )
@@ -1093,7 +1093,7 @@ idStr::BackSlashesToSlashes
 */
 idStr& idStr::BackSlashesToSlashes()
 {
-	int i;
+	int64 i;
 	
 	for( i = 0; i < len; i++ )
 	{
@@ -1112,7 +1112,7 @@ idStr::SlashesToBackSlashes
 */
 idStr& idStr::SlashesToBackSlashes()
 {
-	int i;
+	int64 i;
 	
 	for( i = 0; i < len; i++ )
 	{
@@ -1147,7 +1147,7 @@ idStr::StripFileExtension
 */
 idStr& idStr::StripFileExtension()
 {
-	int i;
+	int64 i;
 	
 	for( i = len - 1; i >= 0; i-- )
 	{
@@ -1168,7 +1168,7 @@ idStr::StripAbsoluteFileExtension
 */
 idStr& idStr::StripAbsoluteFileExtension()
 {
-	int i;
+	int64 i;
 	
 	for( i = 0; i < len; i++ )
 	{
@@ -1190,7 +1190,7 @@ idStr::DefaultFileExtension
 */
 idStr& idStr::DefaultFileExtension( const char* extension )
 {
-	int i;
+	int64 i;
 	
 	// do nothing if the string already has an extension
 	for( i = len - 1; i >= 0; i-- )
@@ -1232,14 +1232,14 @@ idStr::AppendPath
 */
 void idStr::AppendPath( const char* text )
 {
-	int pos;
-	int i = 0;
+	int64 pos;
+	int64 i = 0;
 	
 	if( text && text[i] )
 	{
 		pos = len;
 		// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
-		EnsureAlloced( len + ( int )strlen( text ) + 2 );
+		EnsureAlloced( len + (int64)strlen( text ) + 2 );
 		// RB end
 		
 		if( pos )
@@ -1277,7 +1277,7 @@ idStr::StripFilename
 */
 idStr& idStr::StripFilename()
 {
-	int pos;
+	int64 pos;
 	
 	pos = Length() - 1;
 	while( ( pos > 0 ) && ( ( *this )[ pos ] != '/' ) && ( ( *this )[ pos ] != '\\' ) )
@@ -1301,7 +1301,7 @@ idStr::StripPath
 */
 idStr& idStr::StripPath()
 {
-	int pos;
+	int64 pos;
 	
 	pos = Length();
 	while( ( pos > 0 ) && ( ( *this )[ pos - 1 ] != '/' ) && ( ( *this )[ pos - 1 ] != '\\' ) )
@@ -1320,7 +1320,7 @@ idStr::ExtractFilePath
 */
 void idStr::ExtractFilePath( idStr& dest ) const
 {
-	int pos;
+	int64 pos;
 	
 	//
 	// back up until a \ or the start
@@ -1341,7 +1341,7 @@ idStr::ExtractFileName
 */
 void idStr::ExtractFileName( idStr& dest ) const
 {
-	int pos;
+	int64 pos;
 	
 	//
 	// back up until a \ or the start
@@ -1362,8 +1362,8 @@ idStr::ExtractFileBase
 */
 void idStr::ExtractFileBase( idStr& dest ) const
 {
-	int pos;
-	int start;
+	int64 pos;
+	int64 start;
 	
 	//
 	// back up until a \ or the start
@@ -1390,7 +1390,7 @@ idStr::ExtractFileExtension
 */
 void idStr::ExtractFileExtension( idStr& dest ) const
 {
-	int pos;
+	int64 pos;
 	
 	//
 	// back up until a . or the start
@@ -1892,7 +1892,7 @@ idStr::Copynz
 Safe strncpy that ensures a trailing zero
 =============
 */
-void idStr::Copynz( char* dest, const char* src, int destsize )
+void idStr::Copynz( char* dest, const char* src, int64 destsize )
 {
 	if( !src )
 	{
@@ -1916,12 +1916,12 @@ idStr::Append
   never goes past bounds or leaves without a terminating 0
 ================
 */
-void idStr::Append( char* dest, int size, const char* src )
+void idStr::Append( char* dest, int64 size, const char* src )
 {
-	int		l1;
+	int64		l1;
 	
 	// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
-	l1 = ( int )strlen( dest );
+	l1 = (int64)strlen( dest );
 	// RB end
 	if( l1 >= size )
 	{
@@ -2170,9 +2170,9 @@ uint32 idStr::UTF8Char( const byte* s, int& idx )
 idStr::LengthWithoutColors
 ================
 */
-int idStr::LengthWithoutColors( const char* s )
+int64 idStr::LengthWithoutColors( const char* s )
 {
-	int len;
+	int64 len;
 	const char* p;
 	
 	if( !s )
@@ -2231,9 +2231,9 @@ char* idStr::RemoveColors( char* string )
 idStr::snPrintf
 ================
 */
-int idStr::snPrintf( char* dest, int size, const char* fmt, ... )
+int idStr::snPrintf( char* dest, int64 size, const char* fmt, ... )
 {
-	int len;
+	int64 len;
 	va_list argptr;
 	char buffer[32000];	// big, but small enough to fit in PPC stack
 	
@@ -2271,7 +2271,7 @@ idStr::vsnPrintf: always appends a trailing '\0', returns number of characters w
 or returns -1 on failure or if the buffer would be overflowed.
 ============
 */
-int idStr::vsnPrintf( char* dest, int size, const char* fmt, va_list argptr )
+int idStr::vsnPrintf( char* dest, int64 size, const char* fmt, va_list argptr )
 {
 	int ret;
 	
@@ -2304,7 +2304,7 @@ Sets the value of the string using a printf interface.
 */
 int sprintf( idStr& string, const char* fmt, ... )
 {
-	int l;
+	int64 l;
 	va_list argptr;
 	char buffer[32000];
 	
@@ -2326,7 +2326,7 @@ Sets the value of the string using a vprintf interface.
 */
 int vsprintf( idStr& string, const char* fmt, va_list argptr )
 {
-	int l;
+	int64 l;
 	char buffer[32000];
 	
 	l = idStr::vsnPrintf( buffer, sizeof( buffer ) - 1, fmt, argptr );

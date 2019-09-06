@@ -61,7 +61,7 @@ public:
 	// Write data from the buffer to the file.
 	virtual int				Write( const void* buffer, int len );
 	// Returns the length of the file.
-	virtual int				Length() const;
+	virtual int64				Length() const;
 	// Return a time value for reload operations.
 	virtual ID_TIME_T		Timestamp() const;
 	// Returns offset in file.
@@ -71,7 +71,7 @@ public:
 	// Causes any buffered data to be written to the file.
 	virtual void			Flush();
 	// Seek on a file.
-	virtual int				Seek( long offset, fsOrigin_t origin );
+	virtual int64				Seek(int64 offset, fsOrigin_t origin );
 	// Go back to the beginning of the file.
 	virtual void			Rewind();
 	// Like fprintf.
@@ -171,13 +171,13 @@ public:
 	}
 	virtual int				Read( void* buffer, int len );
 	virtual int				Write( const void* buffer, int len );
-	virtual int				Length() const;
+	virtual int64				Length() const;
 	virtual void			SetLength( size_t len );
 	virtual ID_TIME_T		Timestamp() const;
 	virtual int				Tell() const;
 	virtual void			ForceFlush();
 	virtual void			Flush();
-	virtual int				Seek( long offset, fsOrigin_t origin );
+	virtual int64				Seek(int64 offset, fsOrigin_t origin );
 	
 	// Set the given length and don't allow the file to grow.
 	void					SetMaxLength( size_t len );
@@ -254,12 +254,12 @@ public:
 	}
 	virtual int				Read( void* buffer, int len );
 	virtual int				Write( const void* buffer, int len );
-	virtual int				Length() const;
+	virtual int64			Length() const;
 	virtual ID_TIME_T		Timestamp() const;
 	virtual int				Tell() const;
 	virtual void			ForceFlush();
 	virtual void			Flush();
-	virtual int				Seek( long offset, fsOrigin_t origin );
+	virtual int64				Seek(int64 offset, fsOrigin_t origin );
 	
 private:
 	idStr					name;			// name of the file
@@ -286,12 +286,12 @@ public:
 	}
 	virtual int				Read( void* buffer, int len );
 	virtual int				Write( const void* buffer, int len );
-	virtual int				Length() const;
+	virtual int64			Length() const;
 	virtual ID_TIME_T		Timestamp() const;
 	virtual int				Tell() const;
 	virtual void			ForceFlush();
 	virtual void			Flush();
-	virtual int				Seek( long offset, fsOrigin_t origin );
+	virtual int64				Seek(int64 offset, fsOrigin_t origin );
 	
 	// returns file pointer
 	idFileHandle			GetFilePtr()
@@ -303,7 +303,7 @@ private:
 	idStr					name;			// relative path of the file - relative path
 	idStr					fullPath;		// full file path - OS path
 	int						mode;			// open mode
-	int						fileSize;		// size of the file
+	int64					fileSize;		// size of the file
 	idFileHandle			o;				// file handle
 	bool					handleSync;		// true if written data is immediately flushed
 };
@@ -315,17 +315,17 @@ public:
 	idFile_Cached();
 	virtual					~idFile_Cached();
 	
-	void					CacheData( uint64 offset, uint64 length );
+	void					CacheData( int64 offset, int64 length );
 	
 	virtual int				Read( void* buffer, int len );
 	
 	virtual int				Tell() const;
-	virtual int				Seek( long offset, fsOrigin_t origin );
+	virtual int64				Seek(int64 offset, fsOrigin_t origin );
 	
 private:
-	uint64				internalFilePos;
-	uint64				bufferedStartOffset;
-	uint64				bufferedEndOffset;
+	int64				internalFilePos;
+	int64				bufferedStartOffset;
+	int64				bufferedEndOffset;
 	byte* 				buffered;
 };
 
@@ -348,12 +348,12 @@ public:
 	}
 	virtual int				Read( void* buffer, int len );
 	virtual int				Write( const void* buffer, int len );
-	virtual int				Length() const;
+	virtual int64			Length() const;
 	virtual ID_TIME_T		Timestamp() const;
 	virtual int				Tell() const;
 	virtual void			ForceFlush();
 	virtual void			Flush();
-	virtual int				Seek( long offset, fsOrigin_t origin );
+	virtual int64				Seek(int64 offset, fsOrigin_t origin );
 	
 private:
 	idStr					name;			// name of the file in the pak
@@ -361,7 +361,7 @@ private:
 	// DG: use ZPOS64_T, it's the type minizip uses and should also work with zip64 files > 2GB
 	ZPOS64_T				zipFilePos;		// zip file info position in pak
 	// DG end
-	int						fileSize;		// size of the file
+	int64						fileSize;		// size of the file
 	void* 					z;				// unzip info
 };
 
@@ -388,7 +388,7 @@ public:
 		assert( false );
 		return 0;
 	}
-	virtual int				Length() const
+	virtual int64				Length() const
 	{
 		return length;
 	}
@@ -397,7 +397,7 @@ public:
 		return 0;
 	}
 	virtual int				Tell() const;
-	virtual int				Seek( long offset, fsOrigin_t origin );
+	virtual int64				Seek(int64 offset, fsOrigin_t origin );
 	void					SetResourceBuffer( byte* buf )
 	{
 		resourceBuffer = buf;
@@ -406,10 +406,10 @@ public:
 	
 private:
 	idStr				name;				// name of the file in the pak
-	int					offset;				// offset in the resource file
-	int					length;				// size
+	int64				offset;				// offset in the resource file
+	int64				length;				// size
 	idFile* 			resourceFile;		// actual file
-	int					internalFilePos;	// seek offset
+	int64				internalFilePos;	// seek offset
 	byte* 				resourceBuffer;		// if using the temp save memory
 };
 #endif
