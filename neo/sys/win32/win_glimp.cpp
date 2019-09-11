@@ -922,19 +922,23 @@ bool R_GetModeListForDisplay( const int requestedDisplayNum, idList<vidMode_t>& 
 	
 	bool	verbose = false;
 	
-	for( int displayNum = requestedDisplayNum; ; displayNum++ )
+	DWORD displayNum = requestedDisplayNum /*> 1 ? requestedDisplayNum : 0*/;
+	DISPLAY_DEVICE	device;
+	device.cb = sizeof(device);
+	while(EnumDisplayDevices(NULL, displayNum, &device, 0))//for( int displayNum = requestedDisplayNum; ; displayNum++ )
 	{
-		DISPLAY_DEVICE	device;
-		device.cb = sizeof( device );
-		if( !EnumDisplayDevices(
-					0,			// lpDevice
-					displayNum,
-					&device,
-					0 /* dwFlags */ ) )
-		{
-			return false;
+		if (/*requestedDisplayNum > 1 &&*/ displayNum > requestedDisplayNum) {
+			break;
 		}
-		
+		//if( !EnumDisplayDevices(
+		//			0,			// lpDevice
+		//			displayNum,
+		//			&device,
+		//			0 /* dwFlags */ ) )
+		//{
+		//	return false;
+		//}
+		displayNum++;
 		// get the monitor for this display
 		if( !( device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP ) )
 		{
@@ -957,7 +961,7 @@ bool R_GetModeListForDisplay( const int requestedDisplayNum, idList<vidMode_t>& 
 		
 		if( verbose )
 		{
-			common->Printf( "display device: %i\n", displayNum );
+			common->Printf( "display device: %i\n", displayNum - 1 );
 			common->Printf( "  DeviceName  : %s\n", device.DeviceName );
 			common->Printf( "  DeviceString: %s\n", device.DeviceString );
 			common->Printf( "  StateFlags  : 0x%x\n", device.StateFlags );
@@ -1016,7 +1020,9 @@ bool R_GetModeListForDisplay( const int requestedDisplayNum, idList<vidMode_t>& 
 			
 			return true;
 		}
+		
 	}
+	return false;
 	// Never gets here
 }
 
