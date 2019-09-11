@@ -19,6 +19,7 @@ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DONATIVE=ON -DSDL2=ON ../n
 echo ERROR Generating files
 cd ..
 rmdir /Q /S build
-read -rsp $'Press any key to continue...\n' -n1 key
+#read -rsp $'Press any key to continue...\n' -n1 key
 )
-read -rsp $'Press any key to continue...\n' -n1 key
+#read -rsp $'Press any key to continue...\n' -n1 key
+echo Files generated Successfully
