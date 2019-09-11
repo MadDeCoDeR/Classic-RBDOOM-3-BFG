@@ -948,10 +948,7 @@ P_DamageMobj
 	fixed_t	thrust;
 	int		temp;
 
-	if (source != NULL) {
-		if (source->player)
-			DoomLib::SetRumble(damage * 100 < 5000 ? damage * 100 : damage * 50, 5, damage * 100 >= 5000 ? damage * 100 : damage * 50, 5);
-	}
+	
 
 	if ( !(target->flags & MF_SHOOTABLE) )
 		return;	// shouldn't happen...
@@ -965,6 +962,10 @@ P_DamageMobj
 				::g->cross_state = 1;
 				::g->cross_decay = com_engineHz_latched - (com_engineHz_latched/3.0);
 			}
+	}
+	if (source != NULL) {
+		if (source->player || target-> player)
+			DoomLib::SetRumble(damage * 100 < 5000 ? damage * 100 : damage * 50, 5, damage * 100 >= 5000 ? damage * 100 : damage * 50, 5);
 	}
 
 	if ( target->flags & MF_SKULLFLY )
