@@ -418,6 +418,8 @@ mod directory, you should first specify your mod directory adding the following 
 
 so it would end up looking like: RBDoom3BFG +set fs_game modDirectoryName
 
+Also now you can package your mod in .resource files for more info check: https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/wiki
+
 Classic doom mods are enabled and can be used with the old "-file" parameter like this: RBDoom3BFG -file "classicmod.wad"
 
 IMPORTANT: RBDOOM-3-BFG does not support old Doom 3 modiciations that include sourcecode modifications in binary form (.dll)
