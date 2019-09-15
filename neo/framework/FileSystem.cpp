@@ -2938,7 +2938,7 @@ int idFileSystemLocal::FindResourceFile( const char* resourceFileName )
 {
 	for( int i = 0; i < resourceFiles.Num(); i++ )
 	{
-		if( idStr::Icmp( resourceFileName, resourceFiles[ i ]->GetFileName() ) == 0 )
+		if( idStr::Icmp( resourceFileName, resourceFiles[ i ]->GetFileName() ) == 0 || idStr::Icmp(va("maps/%s", resourceFileName), resourceFiles[i]->GetFileName()) == 0)
 		{
 			return i;
 		}
@@ -3295,6 +3295,9 @@ bool idFileSystemLocal::GetResourceCacheEntry( const char* fileName, idResourceC
 	int idx = resourceFiles.Num() - 1;
 	while( idx >= 0 )
 	{
+		/*if (fs_debugResources.GetBool()) {
+			common->Printf("RES: Searching for %s in %s\n", fileName, resourceFiles[idx]->GetFileName());
+		}*/
 		const int key = resourceFiles[ idx ]->cacheHash.GenerateKey( canonical, false );
 		for( int index = resourceFiles[ idx ]->cacheHash.GetFirst( key ); index != idHashIndex::NULL_INDEX; index = resourceFiles[ idx ]->cacheHash.GetNext( index ) )
 		{
