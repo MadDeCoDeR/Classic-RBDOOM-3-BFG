@@ -120,12 +120,20 @@ ExtractFileBase
 	memset (dest,0,8);
 	length = 0;
 
-	while (*src && *src != '.')
-	{
-		if (++length == 9)
-			I_Error ("Filename base of %s >8 chars",path);
+	if (!idStr::Icmp(path + strlen(path) - 3, "deh") || !idStr::Icmp(path + strlen(path), "bex")) {
+		dest = "DEHACKED";
+	}
+	else if (!idStr::Icmp(path + strlen(path) - 3, "dlc")) {
+		dest = "EXPINFO";
+	}
+	else {
+		while (*src && *src != '.')
+		{
+			if (++length == 9)
+				I_Error("Filename base of %s >8 chars", path);
 
-		*dest++ = toupper((int)*src++);
+			*dest++ = toupper((int)* src++);
+		}
 	}
 }
 
@@ -195,11 +203,6 @@ bool W_ReplaceSprite(filelump_t* file, int pos, idFile* handle, int start, int e
 	spritename_t* newname = (spritename_t*)file->name;
 	if (idStr::Icmpn(original->base, newname->base, 4)) {
 		return false;
-	}
-	if (!idStr::Icmpn("PAIN", newname->base, 4)) {
-		if (newname->frame1 == 'C') {
-			I_Printf("Hello There\n");
-		}
 	}
 	char originalFrames[2] = { original->frame1, original->frame2 };
 	char originalRotations[2] = { original->rotation1, original->rotation2 };
@@ -578,17 +581,17 @@ void W_AddFile ( const char *filename)
 					}
 #endif
 					//GK: Check if it is a .deh file
-					if ((!idStr::Cmpn(filelumpPointer->name, "DEHACKED", 8)) || (!idStr::Icmp(filename + strlen(filename) - 3, "deh")) || (!idStr::Icmp(filename + strlen(filename) - 3, "bex"))) {
-						//idLib::Printf("Adding DeHackeD file %s\n",filelumpPointer->name);
-						loaddeh(i);
-						
-					}
-					//if (::g->gamemode == commercial) {
-						//GK: if you find either MAPINFO lump of EXPINFO lump change to custom expansion and set it's data (from these two lumps)
-						if (!idStr::Cmpn(filelumpPointer->name, "EXPINFO", 7) || !idStr::Cmpn(filelumpPointer->name, "MAPINFO", 7) || (!idStr::Icmp(filename + strlen(filename) - 3, "dlc"))) {
-							::g->gamemission = pack_custom;
-							EX_add(i);
-						}
+					//if ((!idStr::Cmpn(filelumpPointer->name, "DEHACKED", 8)) || (!idStr::Icmp(filename + strlen(filename) - 3, "deh")) || (!idStr::Icmp(filename + strlen(filename) - 3, "bex"))) {
+					//	//idLib::Printf("Adding DeHackeD file %s\n",filelumpPointer->name);
+					//	loaddeh(i);
+					//	
+					//}
+					////if (::g->gamemode == commercial) {
+					//	//GK: if you find either MAPINFO lump of EXPINFO lump change to custom expansion and set it's data (from these two lumps) Update MAPINFO NO MORE ONLY EXPINFO
+					//	if (!idStr::Cmpn(filelumpPointer->name, "EXPINFO", 7) /*|| !idStr::Cmpn(filelumpPointer->name, "MAPINFO", 7)*/ || (!idStr::Icmp(filename + strlen(filename) - 3, "dlc"))) {
+					//		::g->gamemission = pack_custom;
+					//		EX_add(i);
+					//	}
 					//}
 			}
 			
@@ -797,6 +800,63 @@ int W_NumLumps (void)
     return numlumps;
 }
 
+//
+// W_CheckNumsForName
+// Returns -1 if name not found.
+//
+int* W_CheckNumsForName(const char* name)
+{
+	const int NameLength = 9;
+	int* result = (int*)malloc(1 * sizeof(int));
+	result[0] = -1;
+	union {
+		char	s[NameLength];
+		int	x[2];
+
+	} name8;
+
+	int		v1;
+	int		v2;
+	lumpinfo_t* lump_p;
+	if (!name) { //GK: SANITY CHECK
+		
+		return result;
+	}
+	// make the name into two integers for easy compares
+	strncpy(name8.s, name, NameLength - 1);
+
+	// in case the name was a fill 8 chars
+	name8.s[NameLength - 1] = 0;
+
+	// case insensitive
+	for (int i = 0; i < NameLength; ++i) {
+		name8.s[i] = toupper(name8.s[i]);
+	}
+
+	v1 = name8.x[0];
+	v2 = name8.x[1];
+
+
+	// scan backwards so patch lump files take precedence
+	lump_p = lumpinfo + numlumps;
+
+	int i = 0;
+	while (lump_p-- != lumpinfo)
+	{
+		if (*(int*)lump_p->name == v1
+			&& *(int*)& lump_p->name[4] == v2)
+		{
+			if (i >= 1) {
+				result = (int*)realloc(result, (i + 1)*sizeof(int));
+			}
+			result[i] = lump_p - lumpinfo;
+			i++;
+		}
+	}
+
+	// TFB. Not found.
+	return result;
+}
 
 
 //
@@ -870,6 +930,23 @@ int W_GetNumForName ( const char* name)
     return i;
 }
 
+
+//
+// W_GetNumForName
+// Calls W_CheckNumForName, but bombs out if not found.
+//
+int* W_GetNumsForName(const char* name)
+{
+	int*	i;
+
+	i = W_CheckNumsForName(name);
+	//GK begin
+	if (i[0] == -1 && idStr::Icmp("TITLEPIC", name) && idStr::Icmp("HELP2", name) && idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name) && idStr::Icmp("MAP33", name) && idStr::Icmp("CWILV32", name) && idStr::Icmp("SWITCHES", name)) //TITLEPIC might not exist
+		I_Error("W_GetNumForName: %s not found!", name);
+	//GK End
+
+	return i;
+}
 
 //
 // W_LumpLength

@@ -77,6 +77,8 @@ If you have questions concerning this license or the applicable additional terms
 //#include "../Main/PlayerProfile.h"
 //#include "../Main/PSN/PS3_Session.h"
 #include "d3xp/Game_local.h"
+#include "d_exp.h"
+#include "d_deh.h"
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -883,6 +885,19 @@ void D_DoomMain(void)
 
 	I_Printf ("W_Init: Init WADfiles.\n");
 	W_InitMultipleFiles (wadfiles);
+
+	if (W_GetNumForName("EXPINFO")) {
+		::g->gamemission = pack_custom;
+		EX_add(W_GetNumForName("EXPINFO"));
+	}
+
+	int* dehackeds = W_GetNumsForName("DEHACKED");
+	int dehackedsSize = sizeof(dehackeds) / sizeof(int);
+	if (dehackeds[0]) {
+		for (int i = 0; i < dehackedsSize; i++) {
+			loaddeh(dehackeds[0]);
+		}
+	}
 
 	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
 		p = M_CheckParm("-warp");
