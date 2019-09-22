@@ -956,26 +956,52 @@ void parsetext(char* text) {
 						}
 						if (varval2 == -1) {
 							if (::g->gamemode == commercial) {
-								if (statepos > 0 && statepos <= 33) {
-									setPars(statepos, varval);
+								if (::g->gamemission == pack_custom) {
+									if (statepos > 0 && statepos <= ::g->maps.size()) {
+										::g->maps[statepos - 1].par = varval2;
+									}
+									else {
+										I_Error("No map found");
+									}
 								}
 								else {
-									I_Error("No map found");
+									if (statepos > 0 && statepos <= 33) {
+										setPars(statepos, varval);
+									}
+									else {
+										I_Error("No map found");
+									}
 								}
 							}
 						}
 						else {
+							
 							if (::g->gamemode == retail) {
-								if (statepos > 0 && statepos <= 4) {
-									if (varval > 0 && varval <= 9) {
-										setPars(statepos, varval, varval2);
+								if (::g->gamemission == pack_custom) {
+									if (statepos > 0 && statepos <= ::g->clusters.size()) {
+										if (varval > 0 && varval <= ::g->maps.size()) {
+											::g->maps[((::g->clusters[statepos - 1].startmap - 1) + varval) - 1].par = varval2;
+										}
+										else {
+											I_Error("No level found");
+										}
 									}
 									else {
-										I_Error("No level found");
+										I_Error("No episode found");
 									}
 								}
 								else {
-									I_Error("No episode found");
+									if (statepos > 0 && statepos <= 4) {
+										if (varval > 0 && varval <= 9) {
+											setPars(statepos, varval, varval2);
+										}
+										else {
+											I_Error("No level found");
+										}
+									}
+									else {
+										I_Error("No episode found");
+									}
 								}
 							}
 						}
