@@ -837,11 +837,11 @@ int* W_CheckNumsForName(const char* name)
 	v2 = name8.x[1];
 
 
-	// scan backwards so patch lump files take precedence
-	lump_p = lumpinfo + numlumps;
+	// scan forwards so proper order of lump files take precedence
+	lump_p = lumpinfo;
 
 	int i = 0;
-	while (lump_p-- != lumpinfo)
+	while (lump_p++ != lumpinfo + numlumps)
 	{
 		if (*(int*)lump_p->name == v1
 			&& *(int*)& lump_p->name[4] == v2)
@@ -854,7 +854,6 @@ int* W_CheckNumsForName(const char* name)
 		}
 	}
 
-	// TFB. Not found.
 	return result;
 }
 
