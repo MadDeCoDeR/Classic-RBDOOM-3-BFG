@@ -896,7 +896,9 @@ void D_DoomMain(void)
 	int dehackedsSize = sizeof(dehackeds) / sizeof(int);
 	if (dehackeds[0] >= 0) {
 		for (int i = 0; i < dehackedsSize; i++) {
-			loaddeh(dehackeds[0]);
+			if (dehackeds[i] >= 0) {
+				loaddeh(dehackeds[i]);
+			}
 		}
 	}
 

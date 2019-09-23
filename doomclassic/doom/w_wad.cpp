@@ -807,7 +807,7 @@ int W_NumLumps (void)
 int* W_CheckNumsForName(const char* name)
 {
 	const int NameLength = 9;
-	int* result = (int*)malloc(1 * sizeof(int));
+	int* result = (int*)malloc(sizeof(int));
 	result[0] = -1;
 	union {
 		char	s[NameLength];
