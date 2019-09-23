@@ -1371,7 +1371,7 @@ void G_DoCompleted (void)
 			else if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
 				FindNextMap(::g->gamemap - 1, true);
 					if (::g->maps[::g->gamemap-1].secretmap) {
-						::g->wminfo.next = ::g->maps[::g->gamemap-1].secretmap;
+						::g->wminfo.next = ::g->maps[::g->gamemap-1].secretmap - 1;
 					}
 				
 			}
