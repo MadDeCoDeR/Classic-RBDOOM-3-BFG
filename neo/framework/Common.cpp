@@ -940,6 +940,39 @@ void idCommonLocal::RenderSplash()
 
 /*
 =================
+idCommonLocal::RenderPhotosensitivity
+=================
+*/
+void idCommonLocal::RenderPhotosensitivity()
+{
+	const float sysWidth = renderSystem->GetWidth() * renderSystem->GetPixelAspect();
+	const float sysHeight = renderSystem->GetHeight();
+	const float sysAspect = sysWidth / sysHeight;
+	const float splashAspect = 16.0f / 9.0f;
+	const float adjustment = sysAspect / splashAspect;
+	const float barHeight = (adjustment >= 1.0f) ? 0.0f : (1.0f - adjustment) * (float)renderSystem->GetVirtualHeight() * 0.25f;
+	const float barWidth = (adjustment <= 1.0f) ? 0.0f : (adjustment - 1.0f) * (float)renderSystem->GetVirtualWidth() * 0.25f;
+	if (barHeight > 0.0f)
+	{
+		renderSystem->SetColor(colorBlack);
+		renderSystem->DrawStretchPic(0, 0, renderSystem->GetVirtualWidth(), barHeight, 0, 0, 1, 1, whiteMaterial);
+		renderSystem->DrawStretchPic(0, renderSystem->GetVirtualHeight() - barHeight, renderSystem->GetVirtualWidth(), barHeight, 0, 0, 1, 1, whiteMaterial);
+	}
+	if (barWidth > 0.0f)
+	{
+		renderSystem->SetColor(colorBlack);
+		renderSystem->DrawStretchPic(0, 0, barWidth, renderSystem->GetVirtualHeight(), 0, 0, 1, 1, whiteMaterial);
+		renderSystem->DrawStretchPic(renderSystem->GetVirtualWidth() - barWidth, 0, barWidth, renderSystem->GetVirtualHeight(), 0, 0, 1, 1, whiteMaterial);
+	}
+	renderSystem->SetColor4(1, 1, 1, 1);
+	renderSystem->DrawStretchPic(barWidth, barHeight, renderSystem->GetVirtualWidth() - barWidth * 2.0f, renderSystem->GetVirtualHeight() - barHeight * 2.0f, 0, 0, 1, 1, photsensitivityscreen);
+
+	const emptyCommand_t* cmd = renderSystem->SwapCommandBuffers(&time_frontend, &time_backend, &time_shadows, &time_gpu);
+	renderSystem->RenderCommandBuffers(cmd);
+}
+
+/*
+=================
 idCommonLocal::RenderBink
 =================
 */
@@ -1455,8 +1488,13 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			// Otherwise show it in english
 			splashScreen = declManager->FindMaterial( "guis/assets/splash/legal_english" );
 		}
-		
-		const int legalMinTime = 4000;
+		photsensitivityscreen = declManager->FindMaterial("guis/assets/splash/legal_photosensitivity");
+		//GK: very dirty Hack in order to detect D3(2019)
+		idImage* photoimage = photsensitivityscreen->GetStage(0)->texture.image;
+		photoimage->ActuallyLoadImage(true);
+		idLib::newd3 = photoimage->IsActuallyLoaded();
+		const int legalMinTime = !idLib::newd3 ? 4000 : 8000;
+		Sys_ChangeTitle(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
 		const bool showVideo = ( !com_skipIntroVideos.GetBool() && fileSystem->UsingResourceFiles() );
 		if( showVideo )
 		{
@@ -1557,7 +1595,12 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		while( Sys_Milliseconds() - legalStartTime < legalMinTime )
 		{
-			RenderSplash();
+			if ((Sys_Milliseconds() - legalStartTime) >= legalMinTime / 2.0 && idLib::newd3) {
+				RenderPhotosensitivity();
+			}
+			else {
+				RenderSplash();
+			}
 			Sys_GenerateEvents();
 			Sys_Sleep( 10 );
 		};
@@ -1610,6 +1653,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		com_fullyInitialized = true;
 		
+		if (idLib::newd3 && (com_game_mode.GetInteger() <= 0 || com_game_mode.GetInteger() > 3)) {
+			com_game_mode.SetInteger(3);
+		}
 		
 		// No longer need the splash screen
 		if( splashScreen != NULL )
@@ -1618,6 +1664,17 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			{
 				idImage* image = splashScreen->GetStage( i )->texture.image;
 				if( image != NULL )
+				{
+					image->PurgeImage();
+				}
+			}
+		}
+		if (photsensitivityscreen != NULL)
+		{
+			for (int i = 0; i < photsensitivityscreen->GetNumStages(); i++)
+			{
+				idImage* image = photsensitivityscreen->GetStage(i)->texture.image;
+				if (image != NULL)
 				{
 					image->PurgeImage();
 				}
@@ -1778,7 +1835,7 @@ void idCommonLocal::Shutdown()
 	
 	// free any buffered warning messages
 	printf( "ClearWarnings( GAME_NAME \" shutdown\" );\n" );
-	ClearWarnings( GAME_NAME " shutdown" );
+	ClearWarnings(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME " shutdown" );
 	printf( "warningCaption.Clear();\n" );
 	warningCaption.Clear();
 	printf( "errorList.Clear();\n" );
@@ -2145,7 +2202,7 @@ void idCommonLocal::PerformGameSwitch()
 		DoomLib::Interface.Shutdown();
 		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
 		com_engineHz_latched = com_engineHz.GetFloat();
-		Sys_ChangeTitle(GAME_NAME);
+		Sys_ChangeTitle(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
 		
 		// Don't MoveToPressStart if we have an invite, we need to go
 		// directly to the lobby.

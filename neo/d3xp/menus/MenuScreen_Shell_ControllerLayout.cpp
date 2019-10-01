@@ -116,7 +116,7 @@ void idMenuScreen_Shell_ControllerLayout::Update()
 			cmdBar->ClearAllButtons();
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-			if( menuData->GetPlatform() != 2 )
+			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_00395";
 			}
@@ -155,7 +155,7 @@ void idMenuScreen_Shell_ControllerLayout::Update()
 			
 			if( layout != NULL )
 			{
-				if( menuData->GetPlatform( true ) == 2 )
+				if((!idLib::newd3 && menuData->GetPlatform(true) == 2) || (idLib::newd3 && menuData->GetPlatform(true) == 5))
 				{
 					layout->StopFrame( 1 );
 				}

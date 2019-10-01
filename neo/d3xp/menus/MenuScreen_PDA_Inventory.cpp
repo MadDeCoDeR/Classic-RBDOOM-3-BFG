@@ -276,7 +276,7 @@ void idMenuScreen_PDA_Inventory::Update()
 			cmdBar->ClearAllButtons();
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-			if( menuData->GetPlatform() != 2 )
+			if(((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5)))
 			{
 				buttonInfo->label = "#str_01345";
 			}

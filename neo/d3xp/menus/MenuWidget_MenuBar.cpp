@@ -91,7 +91,7 @@ void idMenuWidget_MenuBar::Update()
 	idSWFSpriteInstance* backing = GetSprite()->GetScriptObject()->GetNestedSprite( "backing" );
 	if( backing != NULL )
 	{
-		if( menuData != NULL && menuData->GetPlatform() != 2 )
+		if( menuData != NULL && (!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 		{
 			backing->SetVisible( false );
 		}

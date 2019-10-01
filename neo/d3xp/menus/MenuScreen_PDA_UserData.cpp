@@ -91,7 +91,7 @@ void idMenuScreen_PDA_UserData::Update()
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-			if( menuData->GetPlatform() != 2 )
+			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_01345";
 			}
@@ -115,7 +115,7 @@ void idMenuScreen_PDA_UserData::Update()
 						if( game->IsSoundChannelPlaying( player,SND_CHANNEL_PDA_AUDIO ) )
 						{
 							buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-							if( menuData->GetPlatform() != 2 )
+							if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 							{
 								buttonInfo->label = "#str_swf_stop";
 							}
@@ -124,7 +124,7 @@ void idMenuScreen_PDA_UserData::Update()
 						else if( pda->GetNumAudios() > 0 )
 						{
 							buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-							if( menuData->GetPlatform() != 2 )
+							if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 							{
 								buttonInfo->label = "#str_swf_play";
 							}

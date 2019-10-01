@@ -104,7 +104,7 @@ void idMenuScreen_Shell_Root::Update()
 			if( !game->GetCVarBool("g_demoMode"))
 			{
 				buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-				if( menuData->GetPlatform() != 2 )
+				if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 				{
 					buttonInfo->label = "#str_00395";
 				}
@@ -112,7 +112,7 @@ void idMenuScreen_Shell_Root::Update()
 			}
 			
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-			if( menuData->GetPlatform() != 2 )
+			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_SWF_SELECT";
 			}
@@ -144,7 +144,7 @@ idMenuScreen_Shell_Root::ShowScreen
 void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionType )
 {
 
-	if( menuData != NULL && menuData->GetPlatform() != 2 )
+	if( menuData != NULL && (!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 	{
 		idList< idList< idStr, TAG_IDLIB_LIST_MENU >, TAG_IDLIB_LIST_MENU > menuOptions;
 		idList< idStr > option;
@@ -235,18 +235,19 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 				buttonWidget->SetDescription( "#str_swf_campaign_desc" );
 			}
 			index++;
-			
-			option.Clear();
-			option.Append( "#str_swf_multiplayer" );	// multiplayer
-			menuOptions.Append( option );
-			options->GetChildByIndex( index ).ClearEventActions();
-			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, ROOT_CMD_MULTIPLAYER );
-			buttonWidget = dynamic_cast< idMenuWidget_Button* >( &options->GetChildByIndex( index ) );
-			if( buttonWidget != NULL )
-			{
-				buttonWidget->SetDescription( "#str_02215" );
+			if (!idLib::newd3 || idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
+				option.Clear();
+				option.Append("#str_swf_multiplayer");	// multiplayer
+				menuOptions.Append(option);
+				options->GetChildByIndex(index).ClearEventActions();
+				options->GetChildByIndex(index).AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, ROOT_CMD_MULTIPLAYER);
+				buttonWidget = dynamic_cast<idMenuWidget_Button*>(&options->GetChildByIndex(index));
+				if (buttonWidget != NULL)
+				{
+					buttonWidget->SetDescription("#str_02215");
+				}
+				index++;
 			}
-			index++;
 			
 			option.Clear();
 			option.Append( "#str_swf_settings" );	// settings
@@ -296,7 +297,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 	
 	idMenuScreen::ShowScreen( transitionType );
 	
-	if( menuData != NULL && menuData->GetPlatform() == 2 )
+	if( menuData != NULL && (!idLib::newd3 && menuData->GetPlatform() == 2) || (idLib::newd3 && menuData->GetPlatform() == 5))
 	{
 		idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 		if( shell != NULL )
@@ -357,10 +358,14 @@ void idMenuScreen_Shell_Root::HandleExitGameBtn()
 	idStaticList< idStrId, 4 > optionText;
 	callbacks.Append( new( TAG_SWF ) idSWFScriptFunction_QuitDialog( GDM_QUIT_GAME, 1 ) );
 	callbacks.Append( new( TAG_SWF ) idSWFScriptFunction_QuitDialog( GDM_QUIT_GAME, 0 ) );
-	callbacks.Append( new( TAG_SWF ) idSWFScriptFunction_QuitDialog( GDM_QUIT_GAME, -1 ) );
+	if (!idLib::newd3) {
+		callbacks.Append(new(TAG_SWF) idSWFScriptFunction_QuitDialog(GDM_QUIT_GAME, -1));
+	}
 	optionText.Append( idStrId( "#STR_SWF_ACCEPT" ) );
 	optionText.Append( idStrId( "#STR_SWF_CANCEL" ) );
-	optionText.Append( idStrId( "#str_swf_change_game" ) );
+	if (!idLib::newd3) {
+		optionText.Append(idStrId("#str_swf_change_game"));
+	}
 	
 	common->Dialog().AddDynamicDialog( GDM_QUIT_GAME, callbacks, optionText, true, "" );
 }
@@ -418,12 +423,17 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 	{
 		case WIDGET_ACTION_GO_BACK:
 		{
-			session->MoveToPressStart();
-			return true;
+			if (!idLib::newd3) {
+				session->MoveToPressStart();
+				return true;
+			}
+			else {
+				return false;
+			}
 		}
 		case WIDGET_ACTION_PRESS_FOCUSED:
 		{
-			if( menuData->GetPlatform() == 2 )
+			if((!idLib::newd3 && menuData->GetPlatform() == 2) || (idLib::newd3 && menuData->GetPlatform() == 5))
 			{
 			
 				idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
@@ -454,7 +464,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 		case WIDGET_ACTION_SCROLL_HORIZONTAL:
 		{
 		
-			if( menuData->GetPlatform() != 2 )
+			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 			{
 				return true;
 			}
@@ -479,12 +489,16 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 #else
 			const int totalCount = menuBar->GetTotalNumberOfOptions();
 #endif
+			int newtotalCount = totalCount;
+			if (idLib::newd3 && !idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
+				newtotalCount = totalCount - 1;
+			}
 			index += dir;
 			if( index < 0 )
 			{
-				index = totalCount - 1;
+				index = newtotalCount - 1;
 			}
-			else if( index >= totalCount )
+			else if( index >= newtotalCount)
 			{
 				index = 0;
 			}

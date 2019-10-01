@@ -484,6 +484,7 @@ void idImage::ActuallyLoadImage( bool fromBackEnd )
 			&& ( header.textureType == opts.textureType )
 																							) )
 	{
+		actuallyloaded = true;
 		opts.width = header.width;
 		opts.height = header.height;
 		opts.numLevels = header.numLevels;
@@ -506,9 +507,10 @@ void idImage::ActuallyLoadImage( bool fromBackEnd )
 			if( !R_LoadCubeImages( GetName(), cubeFiles, pics, &size, &sourceFileTime ) || size == 0 )
 			{
 				idLib::Warning( "Couldn't load cube image: %s", GetName() );
+				actuallyloaded = false;
 				return;
 			}
-			
+			actuallyloaded = true;
 			opts.textureType = TT_CUBIC;
 			repeat = TR_CLAMP;
 			opts.width = size;
@@ -537,6 +539,7 @@ void idImage::ActuallyLoadImage( bool fromBackEnd )
 			if( pic == NULL )
 			{
 				idLib::Warning( "Couldn't load image: %s : %s", GetName(), generatedName.c_str() );
+				actuallyloaded = false;
 				// create a default so it doesn't get continuously reloaded
 				opts.width = 8;
 				opts.height = 8;
@@ -554,7 +557,7 @@ void idImage::ActuallyLoadImage( bool fromBackEnd )
 				
 				return;
 			}
-			
+			actuallyloaded = true;
 			opts.width = width;
 			opts.height = height;
 			opts.numLevels = 0;

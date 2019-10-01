@@ -782,7 +782,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 	
 	navOptions.Clear();
 	
-	if( GetPlatform() == 2 && menuBar != NULL )
+	if( ((!idLib::newd3 && GetPlatform() == 2) || (idLib::newd3 && GetPlatform() == 5)) && menuBar != NULL )
 	{
 		if( game->GetCVarBool("g_demoMode") )
 		{
@@ -837,7 +837,9 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 			navOptions.Append( "DEV" );	// DEV
 #endif
 			navOptions.Append( "#str_swf_campaign" );	// singleplayer
-			navOptions.Append( "#str_swf_multiplayer" );	// multiplayer
+			if (!idLib::newd3 || idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
+				navOptions.Append("#str_swf_multiplayer");	// multiplayer
+			}
 			navOptions.Append( "#str_swf_settings" );	// settings
 			navOptions.Append( "#str_swf_credits" );	// credits
 			navOptions.Append( "#str_swf_quit" );	// quit
@@ -863,14 +865,16 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 				buttonWidget->SetDescription( "#str_swf_campaign_desc" );
 			}
 			index++;
-			buttonWidget = dynamic_cast< idMenuWidget_MenuButton* >( &menuBar->GetChildByIndex( index ) );
-			if( buttonWidget != NULL )
-			{
-				buttonWidget->ClearEventActions();
-				buttonWidget->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, SHELL_CMD_MULTIPLAYER, index );
-				buttonWidget->SetDescription( "#str_02215" );
+			if (!idLib::newd3 || idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
+				buttonWidget = dynamic_cast<idMenuWidget_MenuButton*>(&menuBar->GetChildByIndex(index));
+				if (buttonWidget != NULL)
+				{
+					buttonWidget->ClearEventActions();
+					buttonWidget->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, SHELL_CMD_MULTIPLAYER, index);
+					buttonWidget->SetDescription("#str_02215");
+				}
+				index++;
 			}
-			index++;
 			buttonWidget = dynamic_cast< idMenuWidget_MenuButton* >( &menuBar->GetChildByIndex( index ) );
 			if( buttonWidget != NULL )
 			{
@@ -955,10 +959,14 @@ void idMenuHandler_ShellLocal::HandleExitGameBtn()
 	idStaticList< idStrId, 4 > optionText;
 	callbacks.Append( new( TAG_SWF ) idSWFScriptFunction_QuitDialog( GDM_QUIT_GAME, 1 ) );
 	callbacks.Append( new( TAG_SWF ) idSWFScriptFunction_QuitDialog( GDM_QUIT_GAME, 0 ) );
-	callbacks.Append( new( TAG_SWF ) idSWFScriptFunction_QuitDialog( GDM_QUIT_GAME, -1 ) );
+	if (!idLib::newd3) {
+		callbacks.Append(new(TAG_SWF) idSWFScriptFunction_QuitDialog(GDM_QUIT_GAME, -1));
+	}
 	optionText.Append( idStrId( "#STR_SWF_ACCEPT" ) );
 	optionText.Append( idStrId( "#STR_SWF_CANCEL" ) );
-	optionText.Append( idStrId( "#str_swf_change_game" ) );
+	if (!idLib::newd3) {
+		optionText.Append(idStrId("#str_swf_change_game"));
+	}
 	
 	common->Dialog().AddDynamicDialog( GDM_QUIT_GAME, callbacks, optionText, true, "" );
 }

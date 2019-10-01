@@ -167,14 +167,14 @@ void idMenuScreen_Shell_PartyLobby::Update()
 			cmdBar->ClearAllButtons();
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-			if( menuData->GetPlatform() != 2 )
+			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_00395";
 			}
 			buttonInfo->action.Set( WIDGET_ACTION_GO_BACK );
 			
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-			if( menuData->GetPlatform() != 2 )
+			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_SWF_SELECT";
 			}
@@ -189,7 +189,7 @@ void idMenuScreen_Shell_PartyLobby::Update()
 			}
 			
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY3 );
-			if( menuData->GetPlatform() != 2 )
+			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_swf_view_profile";
 			}

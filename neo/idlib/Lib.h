@@ -63,6 +63,8 @@ public:
 	static bool					layoutchange;
 	//Use custom expansion on Doom 3
 	static bool					usecustom;
+	//DOOM 3 (2019)
+	static bool					newd3;
 
 	static bool					classichUsed;
 	static bool					warpUsed;

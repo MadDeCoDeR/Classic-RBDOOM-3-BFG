@@ -618,7 +618,7 @@ idSWFScriptFunction_GetPlatform::Call
 idSWFScriptVar idSWF::idSWFScriptFunction_getTruePlatform::Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 {
 
-	return 2;
+	return idLib::newd3 ? 5 : 2;
 }
 
 
@@ -684,8 +684,8 @@ int	idSWF::GetPlatform()
 		forceNonPCPlatform = false;
 		return 0;
 	}
-	
-	return 2;
+
+	return idLib::newd3 ? 5 : 2;
 }
 
 /*

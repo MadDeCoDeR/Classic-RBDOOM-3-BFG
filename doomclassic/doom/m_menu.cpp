@@ -2458,7 +2458,11 @@ void M_Drawer (void)
 	// DRAW MENU
 	::g->md_x = ::g->currentMenu->x;
 	::g->md_y = ::g->currentMenu->y;
+	if (::g->currentMenu->menuitems == ::g->QuitDef.menuitems && idLib::newd3) {
+		::g->currentMenu->numitems = 2;
+	}
 	max = ::g->currentMenu->numitems;
+	
 
 	for (i=0;i<max;i++)
 	{
