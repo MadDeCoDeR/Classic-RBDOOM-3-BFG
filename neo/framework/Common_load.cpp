@@ -865,24 +865,28 @@ bool idCommonLocal::SaveGame( const char* saveName )
 		return false;
 	}
 	
-	soundWorld->Pause();
-	soundSystem->SetPlayingSoundWorld( menuSoundWorld );
-	soundSystem->Render();
+	if (idStr::Icmp(saveName, "autosave") != 0) {
+		soundWorld->Pause();
+		soundSystem->SetPlayingSoundWorld(menuSoundWorld);
+		soundSystem->Render();
+	}
 	
-	Dialog().ShowSaveIndicator( true );
+	Dialog().ShowSaveIndicator(idStr::Icmp(saveName, "autosave") != 0);
 	if( insideExecuteMapChange )
 	{
 		UpdateLevelLoadPacifier();
 	}
 	else
 	{
-		// Heremake sure we pump the gui enough times to show the 'saving' dialog
-		const bool captureToImage = false;
-		for( int i = 0; i < NumScreenUpdatesToShowDialog; ++i )
-		{
-			UpdateScreen( captureToImage );
+		if (idStr::Icmp(saveName, "autosave") != 0) {
+			// Heremake sure we pump the gui enough times to show the 'saving' dialog
+			const bool captureToImage = false;
+			for (int i = 0; i < NumScreenUpdatesToShowDialog; ++i)
+			{
+				UpdateScreen(captureToImage);
+			}
+			renderSystem->BeginAutomaticBackgroundSwaps(AUTORENDER_DIALOGICON);
 		}
-		renderSystem->BeginAutomaticBackgroundSwaps( AUTORENDER_DIALOGICON );
 	}
 	
 	// Make sure the file is writable and the contents are cleared out (Set to write from the start of file)
@@ -899,7 +903,7 @@ bool idCommonLocal::SaveGame( const char* saveName )
 	// Game Name / Version / Map Name / Persistant Player Info
 	
 	// game
-	const char* gamename = GAME_NAME;
+	const char* gamename = idLib::newd3 ? NEW_GAME_NAME : GAME_NAME;
 	saveFile.WriteString( gamename );
 	
 	// map
@@ -930,7 +934,7 @@ bool idCommonLocal::SaveGame( const char* saveName )
 	
 	session->SaveGameSync( gameDetails.slotName, files, gameDetails );
 	
-	if( !insideExecuteMapChange )
+	if( !insideExecuteMapChange && idStr::Icmp(saveName, "autosave") != 0)
 	{
 		renderSystem->EndAutomaticBackgroundSwaps();
 	}
@@ -1164,7 +1168,7 @@ void idCommonLocal::OnLoadFilesCompleted( idSaveLoadParms& parms )
 		mapSpawnData.savegameFile->ReadString( gamename );
 		mapSpawnData.savegameFile->ReadString( mapname );
 		
-		if( ( gamename != GAME_NAME ) || ( mapname.IsEmpty() ) || ( parms.description.GetSaveVersion() > BUILD_NUMBER ) )
+		if( ( gamename != (idLib::newd3 ? NEW_GAME_NAME : GAME_NAME)) || ( mapname.IsEmpty() ) || ( parms.description.GetSaveVersion() > BUILD_NUMBER ) )
 		{
 			// if this isn't a savegame for the correct game, abort loadgame
 			common->Warning( "Attempted to load an invalid savegame" );
