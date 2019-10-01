@@ -349,20 +349,26 @@ void P_LoadThings (int lump)
 		// Do not spawn cool, new monsters if !commercial
 		if ( ::g->gamemode != commercial)
 		{
-			switch(mt->type)
+			if ((::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode - 1].allowall))
 			{
-			case 68:	// Arachnotron
-			case 64:	// Archvile
-			case 88:	// Boss Brain
-			case 89:	// Boss Shooter
-			case 69:	// Hell Knight
-			case 67:	// Mancubus
-			case 71:	// Pain Elemental
-			case 65:	// Former Human Commando
-			case 66:	// Revenant
-			case 84:	// Wolf SS
-				spawn = false;
-				break;
+				//do nothing
+			}
+			else {
+				switch (mt->type)
+				{
+				case 68:	// Arachnotron
+				case 64:	// Archvile
+				case 88:	// Boss Brain
+				case 89:	// Boss Shooter
+				case 69:	// Hell Knight
+				case 67:	// Mancubus
+				case 71:	// Pain Elemental
+				case 65:	// Former Human Commando
+				case 66:	// Revenant
+				case 84:	// Wolf SS
+					spawn = false;
+					break;
+				}
 			}
 		}
 		if (spawn == false)
@@ -974,6 +980,10 @@ P_SetupLevel
 	// preload graphics
 	if (::g->precache)
 		R_PrecacheLevel ();
+
+	if (::g->demorecording) {
+		G_BeginRecording();
+	}
 }
 
 

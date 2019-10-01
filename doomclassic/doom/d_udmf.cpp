@@ -343,20 +343,25 @@ void ParseThing(std::vector<std::string> lines, int index) {
 					// Do not spawn cool, new monsters if !commercial
 					if (::g->gamemode != commercial)
 					{
-						switch (SHORT(atoi(token2)))
-						{
-						case 68:	// Arachnotron
-						case 64:	// Archvile
-						case 88:	// Boss Brain
-						case 89:	// Boss Shooter
-						case 69:	// Hell Knight
-						case 67:	// Mancubus
-						case 71:	// Pain Elemental
-						case 65:	// Former Human Commando
-						case 66:	// Revenant
-						case 84:	// Wolf SS
-							spawn = false;
-							break;
+						if (::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode - 1].allowall) {
+							//do nothing
+						}
+						else {
+							switch (SHORT(atoi(token2)))
+							{
+							case 68:	// Arachnotron
+							case 64:	// Archvile
+							case 88:	// Boss Brain
+							case 89:	// Boss Shooter
+							case 69:	// Hell Knight
+							case 67:	// Mancubus
+							case 71:	// Pain Elemental
+							case 65:	// Former Human Commando
+							case 66:	// Revenant
+							case 84:	// Wolf SS
+								spawn = false;
+								break;
+							}
 						}
 					}
 					if (spawn == false)

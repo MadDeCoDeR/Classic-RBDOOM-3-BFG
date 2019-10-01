@@ -564,6 +564,8 @@ typedef struct {//GK:Store information for the custom expansion maps
 	char* nextmapname;
 	char* secretmapname;
 	bool monstertelefrag;
+	int bossname;
+	char* bossaction;
 }map_t;
 
 typedef struct {//GK:Store information for the custom expansion clusters
@@ -578,6 +580,7 @@ typedef struct {//GK:Store information for the custom expansion clusters
 	char* mapname; //GK: Set episode first map (from the maps vector)
 	char* interpic; //GK: Set intermission lump
 	int endmode;
+	bool allowall;
 }cluster_t;
 //GK: Store CVar name new and original value
 typedef struct {

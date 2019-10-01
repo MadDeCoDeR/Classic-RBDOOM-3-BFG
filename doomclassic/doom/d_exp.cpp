@@ -262,6 +262,7 @@ enum CLUSTER {
 	KEY,
 	INTERPIC,
 	ENDMODE,
+	ALLOWALL,
 	MAXCLUSTER
 
 };
@@ -710,9 +711,12 @@ void setMAPSTR(int pos, char* name, char* value) {
 			{"thingsecret",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].tsecret},
 			{"cspeclsecret",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].cspecls},
 			{"allowmonstertelefrags",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].monstertelefrag},
+			{"mastermindboss", MAXINT, &::g->maps[pos].bossaction, &::g->maps[pos].bossname},
+			{"cyberboss", MAXINT, &::g->maps[pos].bossaction, &::g->maps[pos].bossname}
+
 		};
 
-		for (int i = 0; i < 15; i++) {
+		for (int i = 0; i < 17; i++) {
 			if (!idStr::Icmp(name, mapstr[i].name)) {
 				bool found = false;
 				switch (i + 1) {
@@ -786,6 +790,15 @@ void setMAPSTR(int pos, char* name, char* value) {
 				case 15:
 					*mapstr[i].bval = true;
 					break;
+				case 16:
+					*mapstr[i].ival = MT_SPIDER;
+					*mapstr[i].sval = value;
+					break;
+				case 17:
+					*mapstr[i].ival = MT_CYBORG;
+					*mapstr[i].sval = value;
+					break;
+
 				}
 				break;
 			}
@@ -872,7 +885,8 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 		{"picname",MAXINT,NULL},
 		{"key",MAXINT,NULL},
 		{"interpic",MAXINT,&::g->clusters[pos].interpic},
-		{"endmode", MAXINT,NULL, &::g->clusters[pos].endmode}
+		{"endmode", MAXINT,NULL, &::g->clusters[pos].endmode},
+		{"allowall", MAXINT, NULL,NULL,NULL,NULL, &::g->clusters[pos].allowall}
 		
 	};
 	for (int i = 0; i < MAXCLUSTER; i++) {
@@ -935,6 +949,9 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 				break;
 			case ENDMODE:
 				*clusterobj[i].ival = atoi(value);
+				break;
+			case ALLOWALL:
+				*clusterobj[i].bval = true;
 				break;
 			case ENTERTXT:
 				tex++;
