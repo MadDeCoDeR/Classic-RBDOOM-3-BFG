@@ -77,6 +77,7 @@ If you have questions concerning this license or the applicable additional terms
 //#include "../Main/PlayerProfile.h"
 //#include "../Main/PSN/PS3_Session.h"
 #include "d3xp/Game_local.h"
+#include "framework/FileSystem.h"
 #include "d_exp.h"
 #include "d_deh.h"
 //
@@ -431,24 +432,39 @@ S_ChangeMusic(mus_intro, true);
 
 break;
 	case 1:
-		G_DeferedPlayDemo("demo1");
-		break;
+		if (::g->gamemission != pack_master && ::g->gamemission != pack_nerve) {
+			G_DeferedPlayDemo("demo1");
+			break;
+		}
+		else {
+			S_ChangeMusic(mus_dm2ttl, true);
+		}
 	case 2:
 		::g->pagetic = 3 * TICRATE;
 		::g->gamestate = GS_DEMOSCREEN;
 		::g->pagename = (char*)"TITLEPIC";
 		break;
 	case 3:
-		G_DeferedPlayDemo("demo2");
-		break;
+		if (::g->gamemission != pack_master && ::g->gamemission != pack_nerve) {
+			G_DeferedPlayDemo("demo2");
+			break;
+		}
+		else {
+			S_ChangeMusic(mus_dm2ttl, true);
+		}
 	case 4:
 		::g->pagetic = 3 * TICRATE;
 		::g->gamestate = GS_DEMOSCREEN;
 		::g->pagename = (char*)"TITLEPIC";
 		break;
 	case 5:
-		G_DeferedPlayDemo("demo3");
-		break;
+		if (::g->gamemission != pack_master && ::g->gamemission != pack_nerve) {
+			G_DeferedPlayDemo("demo3");
+			break;
+		}
+		else {
+			S_ChangeMusic(mus_dm2ttl, true);
+		}
 		// THE DEFINITIVE DOOM Special Edition demo
 	case 6:
 		::g->pagetic = 3 * TICRATE;
@@ -806,7 +822,7 @@ void D_DoomMain(void)
 
 	if (p && p < ::g->myargc-1)
 	{
-		sprintf (file,"d:\\%s.lmp", ::g->myargv[p+1]);
+		sprintf (file,"%s\\%s\\DEMO\\%s.lmp", cvarSystem->GetCVarString("fs_savepath"), !idStr::Icmp(cvarSystem->GetCVarString("fs_game"), "") ? "base" : cvarSystem->GetCVarString("fs_game"), ::g->myargv[p+1]);
 		D_AddFile (file);
 		I_Printf("Playing demo %s.lmp.\n",::g->myargv[p+1]);
 	}

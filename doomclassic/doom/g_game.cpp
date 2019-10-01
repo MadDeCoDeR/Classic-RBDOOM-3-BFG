@@ -112,7 +112,9 @@ qboolean	G_DoSaveGame (void);
 
 
 #define	DEBUG_DEMOS
+#ifdef _DEBUG
 #define DEBUG_DEMOS_WRITE
+#endif
 
 #ifdef DEBUG_DEMOS
 unsigned char testprndindex = 0;
@@ -383,7 +385,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			}
 			::g->jump = false;
 			if ( curTech5Command.buttons & BUTTON_JUMP) {
-				if (cl_jump.GetBool()) {
+				if (cl_jump.GetBool() && !::g->demorecording) {
 					::g->jump = true;
 				}
 				else {
@@ -649,8 +651,11 @@ void G_DoLoadLevel ()
 
 	for (i=0 ; i<MAXPLAYERS ; i++) 
 	{ 
-		if (::g->playeringame[i] && ::g->players[i].playerstate == PST_DEAD) 
-			::g->players[i].playerstate = PST_REBORN; 
+		if (::g->playeringame[i] && ::g->players[i].playerstate == PST_DEAD) {
+			if (::g->demorecording)
+				G_CheckDemoStatus();
+			::g->players[i].playerstate = PST_REBORN;
+		}
 		memset (::g->players[i].frags,0,sizeof(::g->players[i].frags));
 		memset (&(::g->players[i].cmd),0,sizeof(::g->players[i].cmd)); 
 	} 
@@ -814,8 +819,11 @@ void G_Ticker (void)
 
 	// do player reborns if needed
 	for (i=0 ; i<MAXPLAYERS ; i++) 
-		if (::g->playeringame[i] && ::g->players[i].playerstate == PST_REBORN) 
-			G_DoReborn (i);
+		if (::g->playeringame[i] && ::g->players[i].playerstate == PST_REBORN) {
+			if (!::g->netgame && ::g->demorecording)
+				G_CheckDemoStatus();
+			G_DoReborn(i);
+		}
 
 	// do things to change the game state
 	while (::g->gameaction != ga_nothing) 
@@ -1362,7 +1370,7 @@ void G_DoCompleted (void)
 			} else if( ::g->gamemission == pack_nerve ) {
 
 				// DHM - Nerve :: Secret level is always level 9 on extra Doom2 missions
-				::g->prevmap = ::g->gamemap;
+				//::g->prevmap = ::g->gamemap;
 				::g->wminfo.next = 8;
 			}
 			else if (::g->gamemission == pack_master) {
@@ -1389,7 +1397,7 @@ void G_DoCompleted (void)
 			else if( ::g->gamemission == pack_nerve) {
 				switch(::g->gamemap)
 				{	case 9:
-						::g->wminfo.next = ::g->prevmap;
+						::g->wminfo.next = 4;//::g->prevmap;
 						break;
 					default:
 						::g->wminfo.next = ::g->gamemap;
@@ -2201,7 +2209,8 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 void G_RecordDemo (char* name) 
 { 
 	//::g->usergame = false; 
-	strcpy( ::g->demoname, name ); 
+	strcpy(::g->demoname, "DEMO\\");
+	strcat( ::g->demoname, name ); 
 	strcat( ::g->demoname, ".lmp" );
 
 	::g->demobuffer = new byte[ MAXDEMOSIZE ];
@@ -2228,7 +2237,7 @@ void G_BeginRecording (void)
 #endif
 	*::g->demo_p++ = ::g->gameskill;
 	*::g->demo_p++ = ::g->gameepisode;
-	*::g->demo_p++ = ::g->gamemission;
+	*::g->demo_p++ = ::g->gamemission == pack_custom ? DoomLib::GetCurrentExpansion()->pack_type : ::g->gamemission;
 	*::g->demo_p++ = ::g->gamemap;
 	*::g->demo_p++ = ::g->deathmatch;
 	*::g->demo_p++ = ::g->respawnparm;
@@ -2243,6 +2252,9 @@ void G_BeginRecording (void)
 	for ( i=0 ; i<MAXPLAYERS ; i++ ) {
 		// Archive player state to demo
 		if ( ::g->playeringame[i] ) {
+			if (::g->playeringame[i]) {
+				common->Printf("%d\n", i + 1);
+			}
 		    int* dest = (int *)::g->demo_p;
 			*dest++ = ::g->players[i].health;
 			*dest++ = ::g->players[i].armorpoints;
@@ -2265,7 +2277,7 @@ void G_BeginRecording (void)
 //
 void G_DeferedPlayDemo (const char* name)
 { 
-	if (::g->gamemission != pack_master && ::g->gamemission != pack_nerve && ::g->useDemo) {
+	if ( ::g->useDemo) {
 		::g->defdemoname = (char*)name;
 		::g->gameaction = ga_playdemo;
 	}
@@ -2329,6 +2341,9 @@ void G_DoPlayDemo (void)
 
 	// don't spend a lot of time in loadlevel 
 	::g->precache = false;
+	if (mission > doom2 && mission != ::g->gamemission)
+		DoomLib::SetCurrentExpansion(mission);
+
 	G_InitNew (skill, episode, map ); 
 	R_SetViewSize (::g->screenblocks + 1, ::g->detailLevel);
 	m_inDemoMode.SetBool( true );
@@ -2349,9 +2364,9 @@ void G_DoPlayDemo (void)
 				::g->players[i].readyweapon = (weapontype_t)*src++;
 				::g->weaponcond[::g->players[i].readyweapon] = 2; //GK: Why not -\('')/-
 				for ( int j = 0; j < NUMWEAPONS; j++ ) {
-					::g->players[i].weaponowned[j] = *src++;
+					int owned = *src++;
 					if (::g->weaponcond[j] != 2) {
-						::g->weaponcond[j] = 1;
+						::g->players[i].weaponowned[j] = owned;
 					}
 				}
 				for ( int j = 0; j < NUMAMMO; j++ ) {
@@ -2416,14 +2431,15 @@ qboolean G_CheckDemoStatus (void)
 		return true; 
 	} 
 
-	/*
+	
 	if (::g->demorecording) { 
 		*::g->demo_p++ = DEMOMARKER; 
-
-		if ( ::g->leveltime > (TICRATE * 9) ) {
+		int length = ::g->demo_p - ::g->demobuffer;
+		M_WriteFile(::g->demoname, ::g->demobuffer, length);
+		/*if ( ::g->leveltime > (TICRATE * 9) ) {
 			gameLocal->DoomStoreDemoBuffer( gameLocal->GetPortForPlayer( DoomLib::GetPlayer() ), ::g->demobuffer, ::g->demo_p - ::g->demobuffer );
-		}
-
+		}*/
+		
 		delete ::g->demobuffer;
 		::g->demobuffer = NULL;
 		::g->demo_p = NULL;
@@ -2431,7 +2447,7 @@ qboolean G_CheckDemoStatus (void)
 
 		::g->demorecording = false; 
     }
-	*/
+	
 
 	return false; 
 } 
