@@ -932,7 +932,12 @@ bool idCommonLocal::SaveGame( const char* saveName )
 	files.Append( &stringsFile );
 	files.Append( &saveFile );
 	
-	session->SaveGameSync( gameDetails.slotName, files, gameDetails );
+	if (idStr::Icmp(saveName, "autosave") != 0) {
+		session->SaveGameSync(gameDetails.slotName, files, gameDetails);
+	}
+	else {
+		session->SaveGameAsync(gameDetails.slotName, files, gameDetails);
+	}
 	
 	if( !insideExecuteMapChange && idStr::Icmp(saveName, "autosave") != 0)
 	{
