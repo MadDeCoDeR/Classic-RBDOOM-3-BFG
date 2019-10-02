@@ -1458,6 +1458,13 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			common->Printf("Failed to initialize\n");
 		}
 
+		photsensitivityscreen = declManager->FindMaterial("guis/assets/splash/legal_photosensitivity");
+		//GK: very dirty Hack in order to detect D3(2019)
+		idImage* photoimage = photsensitivityscreen->GetStage(0)->texture.image;
+		photoimage->ActuallyLoadImage(true);
+		idLib::newd3 = photoimage->IsActuallyLoaded();
+		Sys_ChangeTitle(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
+
 		// init OpenGL, which will open a window and connect sound and input hardware
 		renderSystem->InitOpenGL();
 		
@@ -1488,13 +1495,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			// Otherwise show it in english
 			splashScreen = declManager->FindMaterial( "guis/assets/splash/legal_english" );
 		}
-		photsensitivityscreen = declManager->FindMaterial("guis/assets/splash/legal_photosensitivity");
-		//GK: very dirty Hack in order to detect D3(2019)
-		idImage* photoimage = photsensitivityscreen->GetStage(0)->texture.image;
-		photoimage->ActuallyLoadImage(true);
-		idLib::newd3 = photoimage->IsActuallyLoaded();
+
 		const int legalMinTime = !idLib::newd3 ? 4000 : 8000;
-		Sys_ChangeTitle(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
+		
 		const bool showVideo = ( !com_skipIntroVideos.GetBool() && fileSystem->UsingResourceFiles() );
 		if( showVideo )
 		{
