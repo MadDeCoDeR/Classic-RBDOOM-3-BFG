@@ -1463,7 +1463,6 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		idImage* photoimage = photsensitivityscreen->GetStage(0)->texture.image;
 		photoimage->ActuallyLoadImage(true);
 		idLib::newd3 = photoimage->IsActuallyLoaded();
-		Sys_ChangeTitle(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
 
 		// init OpenGL, which will open a window and connect sound and input hardware
 		renderSystem->InitOpenGL();
