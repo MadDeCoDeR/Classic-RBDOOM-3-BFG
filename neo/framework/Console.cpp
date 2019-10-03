@@ -1217,7 +1217,7 @@ void idConsoleLocal::DrawSolidConsole( float frac )
 	
 	// RB begin
 	//idStr version = va( "%s.%i.%i", ENGINE_VERSION, BUILD_NUMBER, BUILD_NUMBER_MINOR );
-	idStr version = va( "%s %s %s %s", ENGINE_VERSION, BUILD_STRING, __DATE__, __TIME__ );
+	idStr version = va( "%s %s %s %s", idLib::newd3 ? NEW_ENGINE_NAME : ENGINE_NAME, BUILD_STRING, __DATE__, __TIME__ );
 	//idStr version = com_version.GetString();
 	// RB end
 	

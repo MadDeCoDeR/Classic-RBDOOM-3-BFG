@@ -62,7 +62,7 @@ struct version_s
 {
 	version_s()
 	{
-		sprintf( string, "%s.%d%s %s %s %s", ENGINE_VERSION, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__ );
+		sprintf( string, "%s.%d%s %s %s %s", idLib::newd3 ? NEW_ENGINE_NAME : ENGINE_NAME, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__ );
 	}
 	char	string[256];
 } version;
@@ -1416,9 +1416,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		stringsFile.SetNameAndType( SAVEGAME_STRINGS_FILENAME, SAVEGAMEFILE_BINARY );
 		stringsFile.PreAllocate( MAX_SAVEGAME_STRING_TABLE_SIZE );
-		
-		fileSystem->BeginLevelLoad( "_startup", saveFile.GetDataPtr(), saveFile.GetAllocated() );
-		
+
+		fileSystem->BeginLevelLoad("_startup", saveFile.GetDataPtr(), saveFile.GetAllocated());
+
 		// initialize the declaration manager
 		declManager->Init();
 		
@@ -1438,7 +1438,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		// skip the config file if "safe" is on the command line
 		if( !SafeMode() && !game->GetCVarBool("g_demoMode") )
 		{
-			cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec " CONFIG_FILE "\n" );
+			std::string configname = CONFIG_FILE;
+			std::string command = "exec " + configname + "\n";
+			cmdSystem->BufferCommandText( CMD_EXEC_APPEND, command.c_str() );
 		}
 #endif
 		
@@ -1457,12 +1459,6 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		if (::op == NULL) {
 			common->Printf("Failed to initialize\n");
 		}
-
-		photsensitivityscreen = declManager->FindMaterial("guis/assets/splash/legal_photosensitivity");
-		//GK: very dirty Hack in order to detect D3(2019)
-		idImage* photoimage = photsensitivityscreen->GetStage(0)->texture.image;
-		photoimage->ActuallyLoadImage(true);
-		idLib::newd3 = photoimage->IsActuallyLoaded();
 
 		// init OpenGL, which will open a window and connect sound and input hardware
 		renderSystem->InitOpenGL();
@@ -1494,6 +1490,14 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			// Otherwise show it in english
 			splashScreen = declManager->FindMaterial( "guis/assets/splash/legal_english" );
 		}
+
+		photsensitivityscreen = declManager->FindMaterial("guis/assets/splash/legal_photosensitivity");
+		//GK: very dirty Hack in order to detect D3(2019)
+		idImage* photoimage = photsensitivityscreen->GetStage(0)->texture.image;
+		photoimage->ActuallyLoadImage(true);
+		idLib::newd3 = photoimage->IsActuallyLoaded();
+
+		Sys_ChangeTitle(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
 
 		const int legalMinTime = !idLib::newd3 ? 4000 : 8000;
 		
