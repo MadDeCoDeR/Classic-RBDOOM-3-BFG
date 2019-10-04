@@ -903,7 +903,7 @@ bool idCommonLocal::SaveGame( const char* saveName )
 	// Game Name / Version / Map Name / Persistant Player Info
 	
 	// game
-	const char* gamename = idLib::newd3 ? NEW_GAME_NAME : GAME_NAME;
+	const char* gamename = GAME_NAME;
 	saveFile.WriteString( gamename );
 	
 	// map
@@ -1173,7 +1173,7 @@ void idCommonLocal::OnLoadFilesCompleted( idSaveLoadParms& parms )
 		mapSpawnData.savegameFile->ReadString( gamename );
 		mapSpawnData.savegameFile->ReadString( mapname );
 		
-		if( ( gamename != (idLib::newd3 ? NEW_GAME_NAME : GAME_NAME)) || ( mapname.IsEmpty() ) || ( parms.description.GetSaveVersion() > BUILD_NUMBER ) )
+		if( ( gamename != GAME_NAME) || ( mapname.IsEmpty() ) || ( parms.description.GetSaveVersion() > BUILD_NUMBER ) )
 		{
 			// if this isn't a savegame for the correct game, abort loadgame
 			common->Warning( "Attempted to load an invalid savegame" );
