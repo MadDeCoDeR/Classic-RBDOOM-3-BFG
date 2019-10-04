@@ -3,6 +3,31 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 Thank you for downloading Classic RBDOOM-3-BFG.
 _______________________________________
 
+04 Octomber 2019 - Classic RBDOOM-3-BFG 1.1.14
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- EXPINFO and DEHACKED files will load right after the loading of Files (instead of loading them while the files are loaded)
+
+- DEHACKED can add par times to extended levels from EXPINFO
+
+- Added 3 new commands for EXPINFO.
+allowall: allowing all the monsters (Doom 1 & 2) on a custom episode for Doom 1.
+mastermidboss & cyberboss: allowing you to perform custom action if any of these bosses are dead (only on Doom 1)
+
+- Restore Demo recording and playing (version 1.11)
+
+[DOOM3BFG]
+
+- Added support for DOOM 3 (2019)
+
+- Removed auto save blocking pop up (instead you will get a small tip once it's done)
+_______________________________________
+
 13 September 2019 - Classic RBDOOM-3-BFG 1.1.13.2
 _______________________________
 
