@@ -336,16 +336,22 @@ private:
 			key = "";
 			xbImage = "";
 			psImage = "";
+			xboneImage = "";
+			ps4Image = "";
+			switchImage = "";
 			width = 0;
 			height = 0;
 			baseline = 0;
 		}
 		
-		keyButtonImages_t( const char* _key, const char* _xbImage, const char* _psImage, int w, int h, int _baseline )
+		keyButtonImages_t( const char* _key, const char* _xbImage, const char* _psImage, const char* _xboneImage, const char* _ps4Image, const char* _switchImage, int w, int h, int _baseline )
 		{
 			key = _key;
 			xbImage = _xbImage;
 			psImage = _psImage;
+			xboneImage = _xboneImage;
+			ps4Image = _ps4Image;
+			switchImage = _switchImage;
 			width = w;
 			height = h;
 			baseline = _baseline;
@@ -354,6 +360,9 @@ private:
 		const char* key;
 		const char* xbImage;
 		const char* psImage;
+		const char* xboneImage;
+		const char* ps4Image;
+		const char* switchImage;
 		int width;
 		int height;
 		int baseline;

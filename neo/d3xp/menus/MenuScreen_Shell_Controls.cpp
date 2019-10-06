@@ -425,7 +425,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::LoadData()
 	float mouseSpeed = ( ( in_mouseSpeed.GetFloat() - 0.25f ) / ( 4.0f - 0.25 ) ) * 100.0f;
 	fields[ CONTROLS_FIELD_MOUSE_SENS ].SetFloat( mouseSpeed );
 	fields[ CONTROLS_FIELD_CROSSHAIR ].SetBool(game->GetCVarBool("pm_cursor") );
-	fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].SetBool(in_joylayout.GetBool());
+	fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].SetInteger(in_joylayout.GetInteger());
 	
 	originalFields = fields;
 }
@@ -442,7 +442,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::CommitData()
 	float mouseSpeed = 0.25f + ( ( 4.0f - 0.25 ) * ( fields[ CONTROLS_FIELD_MOUSE_SENS ].ToFloat() / 100.0f ) );
 	in_mouseSpeed.SetFloat( mouseSpeed );
 	game->SetCVarBool("pm_cursor",fields[ CONTROLS_FIELD_CROSSHAIR ].ToBool() );
-	in_joylayout.SetBool( fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToBool());
+	in_joylayout.SetInteger( fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToInteger());
 	
 	cvarSystem->SetModifiedFlags( CVAR_ARCHIVE );
 	
@@ -457,7 +457,7 @@ idMenuScreen_Shell_Controls::idMenuDataSource_AudioSettings::AdjustField
 */
 void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::AdjustField( const int fieldIndex, const int adjustAmount )
 {
-	if( fieldIndex == CONTROLS_FIELD_INVERT_MOUSE || fieldIndex == CONTROLS_FIELD_CROSSHAIR || fieldIndex == CONTROLS_FIELD_CONTROLLER_LAYOUT )
+	if( fieldIndex == CONTROLS_FIELD_INVERT_MOUSE || fieldIndex == CONTROLS_FIELD_CROSSHAIR)
 	{
 		fields[ fieldIndex ].SetBool( !fields[ fieldIndex ].ToBool() );
 	}
@@ -465,6 +465,15 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::AdjustField(
 	{
 		float newValue = idMath::ClampFloat( 0.0f, 100.0f, fields[ fieldIndex ].ToFloat() + adjustAmount );
 		fields[ fieldIndex ].SetFloat( newValue );
+	}
+	else if (fieldIndex == CONTROLS_FIELD_CONTROLLER_LAYOUT) {
+		fields[fieldIndex].SetInteger(fields[fieldIndex].ToInteger() + 1);
+		if (!idLib::newd3 && fields[fieldIndex].ToInteger() > 1) {
+			fields[fieldIndex].SetInteger(0);
+		}
+		if (idLib::newd3 && fields[fieldIndex].ToInteger() > 4) {
+			fields[fieldIndex].SetInteger(0);
+		}
 	}
 }
 
@@ -502,11 +511,17 @@ bool idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::IsDataChange
 idSWFScriptVar idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::GetField(const int fieldIndex) const
 {
 	if (fieldIndex == CONTROLS_FIELD_CONTROLLER_LAYOUT) {
-		if (fields[ fieldIndex ].ToBool()) {
-			return "PS3";
-		}
-		else {
+		switch (fields[ fieldIndex ].ToInteger() + 1) {
+		case 1:
 			return "XBOX360";
+		case 2:
+			return "PS3";
+		case 3:
+			return "Xbox One";
+		case 4:
+			return "Ps4";
+		case 5:
+			return "Switch";
 		}
 	}
 	return fields[fieldIndex];

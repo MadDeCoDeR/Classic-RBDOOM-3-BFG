@@ -33,7 +33,6 @@ If you have questions concerning this license or the applicable additional terms
 
 static const int NUM_GAME_SELECTIONS_VISIBLE = 5;
 //extern idCVar g_demoMode;
-extern idCVar in_joylayout;
 
 namespace
 {

@@ -71,31 +71,51 @@ idSWF::idSWF( const char* filename_, idSoundWorld* soundWorld_ )
 	// RB:
 	debugFont = renderSystem->RegisterFont( "Arial Narrow" );
 	
-	tooltipButtonImage.Append( keyButtonImages_t( "<JOY1>", "guis/assets/hud/controller/xb360/a", "guis/assets/hud/controller/ps3/cross", 37, 37, 0 ) );
-	tooltipButtonImage.Append( keyButtonImages_t( "<JOY2>", "guis/assets/hud/controller/xb360/b", "guis/assets/hud/controller/ps3/circle", 37, 37, 0 ) );
-	tooltipButtonImage.Append( keyButtonImages_t( "<JOY3>", "guis/assets/hud/controller/xb360/x", "guis/assets/hud/controller/ps3/square", 37, 37, 0 ) );
-	tooltipButtonImage.Append( keyButtonImages_t( "<JOY4>", "guis/assets/hud/controller/xb360/y", "guis/assets/hud/controller/ps3/triangle", 37, 37, 0 ) );
-	tooltipButtonImage.Append( keyButtonImages_t( "<JOY_TRIGGER2>", "guis/assets/hud/controller/xb360/rt", "guis/assets/hud/controller/ps3/r2", 64, 52, 0 ) );
-	tooltipButtonImage.Append( keyButtonImages_t( "<JOY_TRIGGER1>", "guis/assets/hud/controller/xb360/lt", "guis/assets/hud/controller/ps3/l2", 64, 52, 0 ) );
-	tooltipButtonImage.Append( keyButtonImages_t( "<JOY5>", "guis/assets/hud/controller/xb360/lb", "guis/assets/hud/controller/ps3/l1", 52, 32, 0 ) );
-	tooltipButtonImage.Append( keyButtonImages_t( "<JOY6>", "guis/assets/hud/controller/xb360/rb", "guis/assets/hud/controller/ps3/r1", 52, 32, 0 ) );
-	tooltipButtonImage.Append( keyButtonImages_t( "<MOUSE1>", "guis/assets/hud/controller/mouse1", "", 64, 52, 0 ) );
-	tooltipButtonImage.Append( keyButtonImages_t( "<MOUSE2>", "guis/assets/hud/controller/mouse2", "", 64, 52, 0 ) );
-	tooltipButtonImage.Append( keyButtonImages_t( "<MOUSE3>", "guis/assets/hud/controller/mouse3", "", 64, 52, 0 ) );
+	tooltipButtonImage.Append( keyButtonImages_t( "<JOY1>", "guis/assets/hud/controller/xb360/a", "guis/assets/hud/controller/ps3/cross", "guis/assets/hud/controller/xbone/button_xbone_a", "guis/assets/hud/controller/ps4/button_ps4_x", "guis/assets/hud/controller/switch/button_switch_b", 37, 37, 0 ) );
+	tooltipButtonImage.Append( keyButtonImages_t( "<JOY2>", "guis/assets/hud/controller/xb360/b", "guis/assets/hud/controller/ps3/circle", "guis/assets/hud/controller/xbone/button_xbone_b", "guis/assets/hud/controller/ps4/button_ps4_o", "guis/assets/hud/controller/switch/button_switch_a", 37, 37, 0 ) );
+	tooltipButtonImage.Append( keyButtonImages_t( "<JOY3>", "guis/assets/hud/controller/xb360/x", "guis/assets/hud/controller/ps3/square", "guis/assets/hud/controller/xbone/button_xbone_x", "guis/assets/hud/controller/ps4/button_ps4_squ", "guis/assets/hud/controller/switch/button_switch_y", 37, 37, 0 ) );
+	tooltipButtonImage.Append( keyButtonImages_t( "<JOY4>", "guis/assets/hud/controller/xb360/y", "guis/assets/hud/controller/ps3/triangle", "guis/assets/hud/controller/xbone/button_xbone_y", "guis/assets/hud/controller/ps4/button_ps4_tri", "guis/assets/hud/controller/switch/button_switch_x", 37, 37, 0 ) );
+	tooltipButtonImage.Append( keyButtonImages_t( "<JOY_TRIGGER2>", "guis/assets/hud/controller/xb360/rt", "guis/assets/hud/controller/ps3/r2", "guis/assets/hud/controller/xbone/button_xbone_rt", "guis/assets/hud/controller/ps4/button_ps4_r2", "guis/assets/hud/controller/switch/button_switch_zr", 64, 52, 0 ) );
+	tooltipButtonImage.Append( keyButtonImages_t( "<JOY_TRIGGER1>", "guis/assets/hud/controller/xb360/lt", "guis/assets/hud/controller/ps3/l2", "guis/assets/hud/controller/xbone/button_xbone_lt", "guis/assets/hud/controller/ps4/button_ps4_l2", "guis/assets/hud/controller/switch/button_switch_zl", 64, 52, 0 ) );
+	tooltipButtonImage.Append( keyButtonImages_t( "<JOY5>", "guis/assets/hud/controller/xb360/lb", "guis/assets/hud/controller/ps3/l1", "guis/assets/hud/controller/xbone/button_xbone_lb", "guis/assets/hud/controller/ps4/button_ps4_l1", "guis/assets/hud/controller/switch/button_switch_l", 52, 32, 0 ) );
+	tooltipButtonImage.Append( keyButtonImages_t( "<JOY6>", "guis/assets/hud/controller/xb360/rb", "guis/assets/hud/controller/ps3/r1", "guis/assets/hud/controller/xbone/button_xbone_rb", "guis/assets/hud/controller/ps4/button_ps4_r1", "guis/assets/hud/controller/switch/button_switch_r", 52, 32, 0 ) );
+	tooltipButtonImage.Append( keyButtonImages_t( "<MOUSE1>", "guis/assets/hud/controller/mouse1", "", "", "", "", 64, 52, 0 ) );
+	tooltipButtonImage.Append( keyButtonImages_t( "<MOUSE2>", "guis/assets/hud/controller/mouse2", "", "", "", "", 64, 52, 0 ) );
+	tooltipButtonImage.Append( keyButtonImages_t( "<MOUSE3>", "guis/assets/hud/controller/mouse3", "", "", "", "", 64, 52, 0 ) );
 	
 	for( int index = 0; index < tooltipButtonImage.Num(); index++ )
 	{
-		if (!in_joylayout.GetBool()) {
+		switch (in_joylayout.GetInteger() + 1) {
+		case 1:
 			if ((tooltipButtonImage[index].xbImage != NULL) && (tooltipButtonImage[index].xbImage[0] != '\0'))
 			{
 				declManager->FindMaterial(tooltipButtonImage[index].xbImage);
 			}
-		}
-		else {
+			break;
+		case 2:
 			if ((tooltipButtonImage[index].psImage != NULL) && (tooltipButtonImage[index].psImage[0] != '\0'))
 			{
 				declManager->FindMaterial(tooltipButtonImage[index].psImage);
 			}
+			break;
+		case 3:
+			if ((tooltipButtonImage[index].xboneImage != NULL) && (tooltipButtonImage[index].xboneImage[0] != '\0'))
+			{
+				declManager->FindMaterial(tooltipButtonImage[index].xboneImage);
+			}
+			break;
+		case 4:
+			if ((tooltipButtonImage[index].ps4Image != NULL) && (tooltipButtonImage[index].ps4Image[0] != '\0'))
+			{
+				declManager->FindMaterial(tooltipButtonImage[index].ps4Image);
+			}
+			break;
+		case 5:
+			if ((tooltipButtonImage[index].switchImage != NULL) && (tooltipButtonImage[index].switchImage[0] != '\0'))
+			{
+				declManager->FindMaterial(tooltipButtonImage[index].switchImage);
+			}
+			break;
 		}
 	}
 	
@@ -682,7 +702,7 @@ int	idSWF::GetPlatform()
 	if( (idLib::joystick || forceNonPCPlatform) && !idLib::layoutchange ) //GK: just in case the layout has changed in the options, make sure the pop up dialogs won't use controller layout (otherwise it will crash)
 	{
 		forceNonPCPlatform = false;
-		return 0;
+		return 0 + in_joylayout.GetInteger();
 	}
 
 	return idLib::newd3 ? 5 : 2;

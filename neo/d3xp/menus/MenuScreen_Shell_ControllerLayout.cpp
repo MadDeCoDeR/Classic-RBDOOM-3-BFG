@@ -161,12 +161,13 @@ void idMenuScreen_Shell_ControllerLayout::Update()
 				}
 				else
 				{
-					if (!in_joylayout.GetBool()) {
+					layout->StopFrame(menuData->GetPlatform(true) + in_joylayout.GetInteger() + 1);
+					/*if (!in_joylayout.GetBool()) {
 						layout->StopFrame(menuData->GetPlatform(true) + 1);
 					}
 					else {
 						layout->StopFrame(menuData->GetPlatform(true) + 2);
-					}
+					}*/
 				}
 			}
 		}
@@ -197,14 +198,26 @@ void idMenuScreen_Shell_ControllerLayout::ShowScreen( const mainMenuTransition_t
 	
 		idSWFSpriteInstance* layout360 = NULL;
 		idSWFSpriteInstance* layoutPS3 = NULL;
+		idSWFSpriteInstance* layoutxbone = NULL;
+		idSWFSpriteInstance* layoutps4 = NULL;
+		idSWFSpriteInstance* layoutswitch = NULL;
 		
 		layout360 = GetSprite()->GetScriptObject()->GetNestedSprite( "info", "controlInfo", "layout360" );
 		layoutPS3 = GetSprite()->GetScriptObject()->GetNestedSprite( "info", "controlInfo", "layoutPS3" );
+		layoutps4 = GetSprite()->GetScriptObject()->GetNestedSprite("info", "controlInfo", "layoutps4");
+		layoutxbone = GetSprite()->GetScriptObject()->GetNestedSprite("info", "controlInfo", "layoutxbone");
+		layoutswitch = GetSprite()->GetScriptObject()->GetNestedSprite("info", "controlInfo", "layoutswitch");
 		
+		int currentPlatform = in_joylayout.GetInteger() + 1;
 		if( layout360 != NULL && layoutPS3 != NULL )
 		{
-			layout360->SetVisible( !in_joylayout.GetBool() );
-			layoutPS3->SetVisible( in_joylayout.GetBool() );
+			layout360->SetVisible( currentPlatform == 1 );
+			layoutPS3->SetVisible( currentPlatform == 2 );
+		}
+		if (idLib::newd3 && layoutps4 != NULL && layoutxbone != NULL && layoutswitch != NULL) {
+			layoutxbone->SetVisible(currentPlatform == 3);
+			layoutps4->SetVisible(currentPlatform == 4);
+			layoutswitch->SetVisible(currentPlatform == 5);
 		}
 	}
 	
@@ -242,8 +255,27 @@ void idMenuScreen_Shell_ControllerLayout::UpdateBindingInfo()
 		int keyNum = gamepadBinds[i].keyNum;
 		
 		idSWFTextInstance* txtVal = NULL;
+
+		std::string layoutName;
+		switch (in_joylayout.GetInteger() + 1) {
+		case 1:
+			layoutName = "layout360";
+			break;
+		case 2:
+			layoutName = "layoutPS3";
+			break;
+		case 3:
+			layoutName = "layoutxbone";
+			break;
+		case 4:
+			layoutName = "layoutps4";
+			break;
+		case 5:
+			layoutName = "layoutswitch";
+			break;
+		}
 		
-		txtVal = GetSprite()->GetScriptObject()->GetNestedText( "info", "controlInfo", !in_joylayout.GetBool() ? "layout360" : "layoutPS3", txtField );
+		txtVal = GetSprite()->GetScriptObject()->GetNestedText( "info", "controlInfo", layoutName.c_str(), txtField );
 		
 		if( txtVal != NULL )
 		{

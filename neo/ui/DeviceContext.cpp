@@ -68,17 +68,37 @@ void idDeviceContext::Init()
 	colorNone = idVec4( 0, 0, 0, 0 );
 	cursorImages[CURSOR_ARROW] = declManager->FindMaterial( "ui/assets/guicursor_arrow.tga" );
 	cursorImages[CURSOR_HAND] = declManager->FindMaterial( "ui/assets/guicursor_hand.tga" );
-	if (in_joylayout.GetBool()) {
+	switch (in_joylayout.GetInteger() + 1) {
+	case 2:
 		cursorImages[CURSOR_HAND_JOY1] = declManager->FindMaterial("ui/assets/guicursor_hand_cross.tga");
 		cursorImages[CURSOR_HAND_JOY2] = declManager->FindMaterial("ui/assets/guicursor_hand_circle.tga");
 		cursorImages[CURSOR_HAND_JOY3] = declManager->FindMaterial("ui/assets/guicursor_hand_square.tga");
 		cursorImages[CURSOR_HAND_JOY4] = declManager->FindMaterial("ui/assets/guicursor_hand_triangle.tga");
-	}
-	else {
+		break;
+	case 1:
 		cursorImages[CURSOR_HAND_JOY1] = declManager->FindMaterial("ui/assets/guicursor_hand_a.tga");
 		cursorImages[CURSOR_HAND_JOY2] = declManager->FindMaterial("ui/assets/guicursor_hand_b.tga");
 		cursorImages[CURSOR_HAND_JOY3] = declManager->FindMaterial("ui/assets/guicursor_hand_x.tga");
 		cursorImages[CURSOR_HAND_JOY4] = declManager->FindMaterial("ui/assets/guicursor_hand_y.tga");
+		break;
+	case 4:
+		cursorImages[CURSOR_HAND_JOY1] = declManager->FindMaterial("ui/assets/guicursor_hand_ps4_x.tga");
+		cursorImages[CURSOR_HAND_JOY2] = declManager->FindMaterial("ui/assets/guicursor_hand_ps4_circle.tga");
+		cursorImages[CURSOR_HAND_JOY3] = declManager->FindMaterial("ui/assets/guicursor_hand_ps4_squ.tga");
+		cursorImages[CURSOR_HAND_JOY4] = declManager->FindMaterial("ui/assets/guicursor_hand_ps4_tri.tga");
+		break;
+	case 3:
+		cursorImages[CURSOR_HAND_JOY1] = declManager->FindMaterial("ui/assets/guicursor_hand_xbone_a.tga");
+		cursorImages[CURSOR_HAND_JOY2] = declManager->FindMaterial("ui/assets/guicursor_hand_xbone_b.tga");
+		cursorImages[CURSOR_HAND_JOY3] = declManager->FindMaterial("ui/assets/guicursor_hand_xbone_x.tga");
+		cursorImages[CURSOR_HAND_JOY4] = declManager->FindMaterial("ui/assets/guicursor_hand_xbone_y.tga");
+		break;
+	case 5:
+		cursorImages[CURSOR_HAND_JOY1] = declManager->FindMaterial("ui/assets/guicursor_hand_switch_b.tga");
+		cursorImages[CURSOR_HAND_JOY2] = declManager->FindMaterial("ui/assets/guicursor_hand_switch_a.tga");
+		cursorImages[CURSOR_HAND_JOY3] = declManager->FindMaterial("ui/assets/guicursor_hand_switch_y.tga");
+		cursorImages[CURSOR_HAND_JOY4] = declManager->FindMaterial("ui/assets/guicursor_hand_switch_x.tga");
+		break;
 	}
 	scrollBarImages[SCROLLBAR_HBACK] = declManager->FindMaterial( "ui/assets/scrollbarh.tga" );
 	scrollBarImages[SCROLLBAR_VBACK] = declManager->FindMaterial( "ui/assets/scrollbarv.tga" );

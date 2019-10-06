@@ -1868,11 +1868,22 @@ void idSWF::FindTooltipIcons( idStr* text )
 			tooltipIcon_t icon;
 			icon.startIndex = index;
 			icon.endIndex = index + idStr::Length( tooltipButtonImage[count].key );
-			if (!in_joylayout.GetBool()) {
+			switch (in_joylayout.GetInteger() + 1) {
+			case 1:
 				icon.material = declManager->FindMaterial(tooltipButtonImage[count].xbImage);
-			}
-			else {
+				break;
+			case 2:
 				icon.material = declManager->FindMaterial(tooltipButtonImage[count].psImage);
+				break;
+			case 3:
+				icon.material = declManager->FindMaterial(tooltipButtonImage[count].xboneImage);
+				break;
+			case 4:
+				icon.material = declManager->FindMaterial(tooltipButtonImage[count].ps4Image);
+				break;
+			case 5:
+				icon.material = declManager->FindMaterial(tooltipButtonImage[count].switchImage);
+				break;
 			}
 			
 			if( icon.material )

@@ -317,12 +317,13 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 					
 					if( btnTabNext->GetSprite() != NULL && menuData != NULL )
 					{
-						if (!in_joylayout.GetBool()) {
+						btnTabNext->GetSprite()->StopFrame(menuData->GetPlatform() + in_joylayout.GetInteger() + 1);
+						/*if (!in_joylayout.GetBool()) {
 							btnTabNext->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
 						}
 						else {
 							btnTabNext->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
-						}
+						}*/
 					}
 					
 				}
@@ -336,12 +337,13 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 					
 					if( btnTabPrev->GetSprite() != NULL && menuData != NULL )
 					{
-						if (!in_joylayout.GetBool()) {
+						btnTabPrev->GetSprite()->StopFrame(menuData->GetPlatform() + in_joylayout.GetInteger() + 1);
+						/*if (!in_joylayout.GetBool()) {
 							btnTabPrev->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
 						}
 						else {
 							btnTabPrev->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
-						}
+						}*/
 					}
 				}
 				
@@ -354,12 +356,13 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 					
 					if( btnDwn->GetSprite() != NULL && menuData != NULL )
 					{
-						if (!in_joylayout.GetBool()) {
+						btnDwn->GetSprite()->StopFrame(menuData->GetPlatform() + in_joylayout.GetInteger() + 1);
+						/*if (!in_joylayout.GetBool()) {
 							btnDwn->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
 						}
 						else {
 							btnDwn->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
-						}
+						}*/
 					}
 					
 				}
@@ -373,12 +376,13 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 					
 					if( btnUp->GetSprite() != NULL && menuData != NULL )
 					{
-						if (!in_joylayout.GetBool()) {
+						btnUp->GetSprite()->StopFrame(menuData->GetPlatform() + in_joylayout.GetInteger() + 1);
+						/*if (!in_joylayout.GetBool()) {
 							btnUp->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
 						}
 						else {
 							btnUp->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
-						}
+						}*/
 					}
 				}
 				
@@ -407,12 +411,13 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 			else
 			{
 				btnImg->SetVisible( true );
-				if (!in_joylayout.GetBool()) {
+				btnImg->StopFrame(platform + in_joylayout.GetInteger() + 1);
+				/*if (!in_joylayout.GetBool()) {
 					btnImg->StopFrame(platform + 1);
 				}
 				else {
 					btnImg->StopFrame(platform + 2);
-				}
+				}*/
 			}
 		}
 	}
@@ -423,19 +428,20 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 		
 		if( btnImg != NULL )
 		{
-			if( platform == 2 )
+			if((!idLib::newd3 && platform == 2) || (idLib::newd3 && platform == 5))
 			{
 				btnImg->SetVisible( false );
 			}
 			else
 			{
 				btnImg->SetVisible( true );
-				if (!in_joylayout.GetBool()) {
+				btnImg->StopFrame(platform + in_joylayout.GetInteger() + 1);
+				/*if (!in_joylayout.GetBool()) {
 					btnImg->StopFrame(platform + 1);
 				}
 				else {
 					btnImg->StopFrame(platform + 2);
-				}
+				}*/
 			}
 		}
 	}
@@ -446,19 +452,20 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 		
 		if( btnImg != NULL )
 		{
-			if( platform == 2 )
+			if((!idLib::newd3 && platform == 2) || (idLib::newd3 && platform == 5))
 			{
 				btnImg->SetVisible( false );
 			}
 			else
 			{
 				btnImg->SetVisible( true );
-				if (!in_joylayout.GetBool()) {
+				btnImg->StopFrame(platform + in_joylayout.GetInteger() + 1);
+				/*if (!in_joylayout.GetBool()) {
 					btnImg->StopFrame(platform + 1);
 				}
 				else {
 					btnImg->StopFrame(platform + 2);
-				}
+				}*/
 			}
 		}
 	}
@@ -469,19 +476,20 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 		
 		if( btnImg != NULL )
 		{
-			if( platform == 2 )
+			if((!idLib::newd3 && platform == 2) || (idLib::newd3 && platform == 5))
 			{
 				btnImg->SetVisible( false );
 			}
 			else
 			{
 				btnImg->SetVisible( true );
-				if (!in_joylayout.GetBool()) {
+				btnImg->StopFrame(platform + in_joylayout.GetInteger() + 1);
+				/*if (!in_joylayout.GetBool()) {
 					btnImg->StopFrame(platform + 1);
 				}
 				else {
 					btnImg->StopFrame(platform + 2);
-				}
+				}*/
 			}
 		}
 	}

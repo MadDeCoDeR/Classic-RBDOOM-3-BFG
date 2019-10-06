@@ -261,12 +261,13 @@ void idMenuScreen::UpdateCmds()
 			
 			if( btnTabNext->GetSprite() != NULL && menuData != NULL )
 			{
-				if (!in_joylayout.GetBool()) {
+				btnTabNext->GetSprite()->StopFrame(menuData->GetPlatform() + in_joylayout.GetInteger()  + 1);
+				/*if (!in_joylayout.GetBool()) {
 					btnTabNext->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
 				}
 				else {
 					btnTabNext->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
-				}
+				}*/
 			}
 			
 		}
@@ -280,12 +281,13 @@ void idMenuScreen::UpdateCmds()
 			
 			if( btnTabPrev->GetSprite() != NULL && menuData != NULL )
 			{
-				if (!in_joylayout.GetBool()) {
+				btnTabPrev->GetSprite()->StopFrame(menuData->GetPlatform() + in_joylayout.GetInteger() + 1);
+				/*if (!in_joylayout.GetBool()) {
 					btnTabPrev->GetSprite()->StopFrame(menuData->GetPlatform() + 1);
 				}
 				else {
 					btnTabPrev->GetSprite()->StopFrame(menuData->GetPlatform() + 2);
-				}
+				}*/
 			}
 		}
 	}
