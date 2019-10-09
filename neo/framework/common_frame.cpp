@@ -82,6 +82,7 @@ idCVar timescale( "timescale", "1", CVAR_SYSTEM | CVAR_FLOAT, "Number of game fr
 
 extern idCVar in_joystickRumble;
 extern idCVar r_aspectcorrect; //GK: also here
+extern idCVar r_clblurry;
 /*
 ===============
 idGameThread::Run
@@ -934,7 +935,7 @@ void idCommonLocal::RunDoomClassicFrame()
 	{
 		Globals* data = ( Globals* )DoomLib::GetGlobalData( 0 );
 		
-		idArray< unsigned int, 16000 > palette;
+		idArray< unsigned int, 256 > palette;
 		std::copy( data->XColorMap, data->XColorMap + palette.Num(), palette.Ptr() );
 		
 		// Do the palette lookup.
@@ -948,12 +949,13 @@ void idCommonLocal::RunDoomClassicFrame()
 				const byte red = ( paletteColor & 0xFF000000 ) >> 24;
 				const byte green = ( paletteColor & 0x00FF0000 ) >> 16;
 				const byte blue = ( paletteColor & 0x0000FF00 ) >> 8;
+				const byte alpha = r_clblurry.GetBool() && data->blurryscreen ? (paletteColor & 0x000000FF) - 75 : (paletteColor & 0x000000FF);
 				
 				const int imageDataPixelIndex = row * w * DOOMCLASSIC_BYTES_PER_PIXEL + column * DOOMCLASSIC_BYTES_PER_PIXEL;
 				doomClassicImageData[imageDataPixelIndex]		= red;
 				doomClassicImageData[imageDataPixelIndex + 1]	= green;
 				doomClassicImageData[imageDataPixelIndex + 2]	= blue;
-				doomClassicImageData[imageDataPixelIndex + 3]	= 255;
+				doomClassicImageData[imageDataPixelIndex + 3]	= alpha;
 			}
 		}
 	}

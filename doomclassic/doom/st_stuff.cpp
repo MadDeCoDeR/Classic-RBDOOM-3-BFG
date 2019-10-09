@@ -972,6 +972,7 @@ void ST_doPaletteStuff(void)
 			palette = NUMREDPALS-1;
 
 		palette += STARTREDPALS;
+		::g->blurryscreen = true;
 	}
 
 	else if (::g->plyr->bonuscount)
@@ -987,8 +988,10 @@ void ST_doPaletteStuff(void)
 	else if ( ::g->plyr->powers[pw_ironfeet] > 4*32
 		|| ::g->plyr->powers[pw_ironfeet]&8)
 		palette = RADIATIONPAL;
-	else
+	else {
+		::g->blurryscreen = false;
 		palette = 0;
+	}
 
 	if (palette != ::g->st_palette)
 	{

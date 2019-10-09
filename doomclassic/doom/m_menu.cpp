@@ -96,6 +96,7 @@ extern idCVar cl_freelook;
 extern idCVar cl_jump;
 
 extern idCVar cl_cursor;
+extern idCVar r_clblurry;
 //
 // defaulted values
 //
@@ -184,6 +185,7 @@ void M_ChangeGPad(int choice);
 void M_FullScreen(int choice);
 void M_Aspect(int choice);
 void M_Light(int choice);
+void M_Blurry(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
@@ -992,6 +994,7 @@ void M_DrawVideo(void)
 	int asoffset = 165 - (6 * correct); //GK: The word "correct" is larger than the others and therefor it requires different x offset
 	int reallight = r_clight.GetInteger();
 	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : 0;
+	int blurryeffect = r_clblurry.GetInteger();
 
 
 	V_DrawPatchDirect(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * endgame, 0,
@@ -1000,6 +1003,8 @@ void M_DrawVideo(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])));
 	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])));
+	V_DrawPatchDirect(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (blurry), 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[blurryeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[blurryeffect])));
 }
 
 void M_Video(int choice)
@@ -1517,6 +1522,10 @@ void M_Light(int choice) {
 	r_clight.SetInteger(r_clight.GetInteger() ? r_clight.GetInteger() == 1 ? 2 : 0 : 1);
 	::g->reset = true;
 	R_Init(); //GK: Re-init the renderer to apply the new light mode
+}
+
+void M_Blurry(int choice) {
+	r_clblurry.SetBool(!r_clblurry.GetBool());
 }
 //
 // M_EndGame
