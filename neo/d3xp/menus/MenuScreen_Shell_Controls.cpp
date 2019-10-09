@@ -467,12 +467,22 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::AdjustField(
 		fields[ fieldIndex ].SetFloat( newValue );
 	}
 	else if (fieldIndex == CONTROLS_FIELD_CONTROLLER_LAYOUT) {
-		fields[fieldIndex].SetInteger(fields[fieldIndex].ToInteger() + 1);
-		if (!idLib::newd3 && fields[fieldIndex].ToInteger() > 1) {
-			fields[fieldIndex].SetInteger(0);
+		fields[fieldIndex].SetInteger(fields[fieldIndex].ToInteger() + adjustAmount);
+		if (!idLib::newd3 ) {
+			if (fields[fieldIndex].ToInteger() > 1) {
+				fields[fieldIndex].SetInteger(0);
+			}
+			if (fields[fieldIndex].ToInteger() < 0) {
+				fields[fieldIndex].SetInteger(1);
+			}
 		}
-		if (idLib::newd3 && fields[fieldIndex].ToInteger() > 4) {
-			fields[fieldIndex].SetInteger(0);
+		if (idLib::newd3) {
+			if (fields[fieldIndex].ToInteger() > 4) {
+				fields[fieldIndex].SetInteger(0);
+			}
+			if (fields[fieldIndex].ToInteger() < 0) {
+				fields[fieldIndex].SetInteger(4);
+			}
 		}
 	}
 }
