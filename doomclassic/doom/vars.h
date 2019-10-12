@@ -1045,7 +1045,9 @@ int rexp;
 
 bool useDemo;
 
-bool blurryscreen;
+byte blurryoffset;
+
+byte blurryoffsetmap[NUMPOWERS];
 
 // phares 3/21/98
 //

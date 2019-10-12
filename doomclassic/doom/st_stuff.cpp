@@ -972,7 +972,8 @@ void ST_doPaletteStuff(void)
 			palette = NUMREDPALS-1;
 
 		palette += STARTREDPALS;
-		::g->blurryscreen = true;
+		if (::g->plyr->powers[pw_strength])
+			::g->blurryoffset = ::g->blurryoffsetmap[pw_strength];
 	}
 
 	else if (::g->plyr->bonuscount)
@@ -985,11 +986,13 @@ void ST_doPaletteStuff(void)
 		palette += STARTBONUSPALS;
 	}
 
-	else if ( ::g->plyr->powers[pw_ironfeet] > 4*32
-		|| ::g->plyr->powers[pw_ironfeet]&8)
+	else if (::g->plyr->powers[pw_ironfeet] > 4 * 32
+		|| ::g->plyr->powers[pw_ironfeet] & 8) {
+		::g->blurryoffset = ::g->blurryoffsetmap[pw_ironfeet];
 		palette = RADIATIONPAL;
+	}
 	else {
-		::g->blurryscreen = false;
+		::g->blurryoffset = 0;
 		palette = 0;
 	}
 

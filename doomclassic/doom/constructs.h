@@ -731,6 +731,10 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 // r_data end //
 
 	::g->useDemo = true;
+	::g->blurryoffset = 0;
+
+	byte tempblurryoffsetmap[NUMPOWERS] = { 60, 80, 55, 65, 0, 0 };
+	memcpy(::g->blurryoffsetmap, tempblurryoffsetmap, sizeof(tempblurryoffsetmap));
 
 	::g->headsecnode = NULL;
 
