@@ -38,7 +38,7 @@ WAVEFORMATEX voiceFormatcine = { 0 };
 IXAudio2SourceVoice*	pMusicSourceVoice1;
 XAUDIO2_BUFFER Packet = { 0 };
 #else //GK: Add audio support for OpenAL
-#define NUM_BUFFERS 3
+#define NUM_BUFFERS 1
 static ALuint		alMusicSourceVoicecin;
 static ALuint		alMusicBuffercin[NUM_BUFFERS];
 ALenum av_sample_cin;
@@ -607,13 +607,13 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 #ifndef USE_OPENAL
 		int format_byte = 0;
 		bool use_ext = false;
-		if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8P) {
+		if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_U8P) {
 			format_byte = 1;
 		}
-		else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16P) {
+		else if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S16P) {
 			format_byte = 2;
 		}
-		else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32P) {
+		else if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S32P) {
 			format_byte = 4;
 		}
 		else {
@@ -657,12 +657,31 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice1, (WAVEFORMATEX*)&exvoice, XAUDIO2_VOICE_USEFILTER |  XAUDIO2_VOICE_MUSIC);//Use the XAudio2 that the game has initialized instead of making your own
 #else //GK: Yep while in xaudio2 require so many line in OpenAL it require quite less
 		av_rate_cin = dec_ctx2->sample_rate;
-		switch (dec_ctx2->channels) {
+		int format_byte = 0;
+		bool use_ext = false;
+		if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_U8P) {
+			format_byte = 1;
+		}
+		else if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S16P) {
+			format_byte = 2;
+		}
+		else if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S32P) {
+			format_byte = 4;
+		}
+		else {
+			//return false;
+			format_byte = 4;
+			use_ext = true;
+		}
+		switch (format_byte) {
 		case 1:
-			av_sample_cin = hasplanar ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_MONO16;
+			av_sample_cin = dec_ctx2->channels == 2 ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
 			break;
 		case 2:
-			av_sample_cin = hasplanar ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_STEREO16;
+			av_sample_cin = dec_ctx2->channels == 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
+			break;
+		case 4:
+			av_sample_cin = dec_ctx2->channels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
 			break;
 		}
 		
@@ -1070,7 +1089,9 @@ void PlayAudio(uint8_t* data, int size) {
 	ALint val2;
 	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &val2);
 	if ( val2 ) {
-		alSourceUnqueueBuffers(alMusicSourceVoicecin, val2 , alMusicBuffercin);
+		for (int i = 0; i < val2; i++) {
+			alSourceUnqueueBuffers(alMusicSourceVoicecin, 1, &alMusicBuffercin[0]);
+		}
 	}
 
 	ALint val3;
