@@ -949,7 +949,7 @@ void idCommonLocal::RunDoomClassicFrame()
 				const byte red = ( paletteColor & 0xFF000000 ) >> 24;
 				const byte green = ( paletteColor & 0x00FF0000 ) >> 16;
 				const byte blue = ( paletteColor & 0x0000FF00 ) >> 8;
-				const byte alpha = r_clblurry.GetBool() && data->blurryscreen ? (paletteColor & 0x000000FF) - 75 : (paletteColor & 0x000000FF);
+				const byte alpha = r_clblurry.GetBool() ? (paletteColor & 0x000000FF) - data->blurryoffset : (paletteColor & 0x000000FF);
 				
 				const int imageDataPixelIndex = row * w * DOOMCLASSIC_BYTES_PER_PIXEL + column * DOOMCLASSIC_BYTES_PER_PIXEL;
 				doomClassicImageData[imageDataPixelIndex]		= red;
