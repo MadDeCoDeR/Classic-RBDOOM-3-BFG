@@ -42,5 +42,6 @@ extern "C"
 bool DecodeXAudio(byte** audio, int* len, IXAudio2SourceVoice** pMusicSourceVoice,bool ext);
 #else // !USE_OPENAL
 bool DecodeALAudio(byte** audio, int* len, int *rate ,ALenum *sample );
+const char* GetSampleName(ALenum sample);
 #endif
 

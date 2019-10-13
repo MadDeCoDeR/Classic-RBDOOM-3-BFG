@@ -364,4 +364,21 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	av_freep(avio_ctx);
 	return true;
 }
+
+const char* GetSampleName(ALenum sample) {
+	switch (sample) {
+	case AL_FORMAT_MONO8:
+		return "Mono 8-bit";
+	case AL_FORMAT_MONO16:
+		return "Mono 16-bit";
+	case AL_FORMAT_STEREO8:
+		return "Stereo 8-bit";
+	case AL_FORMAT_STEREO16:
+		return "Stereo 16-bit";
+	case AL_FORMAT_STEREO_FLOAT32:
+		return "Stereo Float Point";
+	case AL_FORMAT_MONO_FLOAT32:
+		return "Mono Float Point";
+	}
+}
 #endif

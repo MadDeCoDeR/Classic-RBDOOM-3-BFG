@@ -84,6 +84,7 @@ extern "C"
 }
 bool hasplanar = true;
 #endif
+#include <sound\AVD.h>
 
 class idCinematicLocal : public idCinematic
 {
@@ -684,7 +685,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 			av_sample_cin = dec_ctx2->channels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
 			break;
 		}
-		
+		common->Printf("Video audio stream found:\n\tSample Rate: %dHz\n\tSample Format: %s\n", av_rate_cin, GetSampleName(av_sample_cin));
 		alSourceRewind(alMusicSourceVoicecin);
 		alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
 		alcount = 0;
