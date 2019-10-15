@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 
 
-#include "tr_local.h"
+#include "RenderCommon.h"
 #include "SMAA/AreaTex.h"
 #include "SMAA/SearchTex.h"
 
@@ -164,23 +164,24 @@ static void R_DepthImage( idImage* image )
 {
 	// RB: NULL data and MSAA support
 #if defined(USE_HDR_MSAA)
-	int msaaSamples = r_multiSamples.GetInteger();
+	textureSamples_t msaaSamples = glConfig.multisamples;
 #else
 	int msaaSamples = 0;
 #endif
-	image->GenerateImage( NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_NEAREST, TR_CLAMP, TD_DEPTH, msaaSamples );
+	image->GenerateImage( NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_NEAREST, TR_CLAMP, TD_DEPTH );//, msaaSamples );
 	// RB end
 }
 
 // RB begin
 static void R_HDR_RGBA16FImage_ResNative( idImage* image )
 {
+	// FIXME
 #if defined(USE_HDR_MSAA)
-	int msaaSamples = r_multiSamples.GetInteger();
+	int msaaSamples = glConfig.multisamples;
 #else
 	int msaaSamples = 0;
 #endif
-	image->GenerateImage( NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_NEAREST, TR_CLAMP, TD_RGBA16F, msaaSamples );
+	image->GenerateImage( NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_NEAREST, TR_CLAMP, TD_RGBA16F );//, msaaSamples );
 }
 
 static void R_HDR_RGBA16FImage_ResNative_NoMSAA( idImage* image )

@@ -29,7 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 #include "precompiled.h"
 
-#include "tr_local.h"
+#include "RenderCommon.h"
 
 /*
 ==============================================================================
@@ -2141,11 +2141,11 @@ void R_InitDrawSurfFromTri( drawSurf_t& ds, srfTriangles_t& tri )
 	}
 	else if( !vertexCache.CacheIsCurrent( tri.ambientCache ) )
 	{
-		tri.ambientCache = vertexCache.AllocVertex( tri.verts, ALIGN( tri.numVerts * sizeof( tri.verts[0] ), VERTEX_CACHE_ALIGN ) );
+		tri.ambientCache = vertexCache.AllocVertex( tri.verts, tri.numVerts );
 	}
 	if( !vertexCache.CacheIsCurrent( tri.indexCache ) )
 	{
-		tri.indexCache = vertexCache.AllocIndex( tri.indexes, ALIGN( tri.numIndexes * sizeof( tri.indexes[0] ), INDEX_CACHE_ALIGN ) );
+		tri.indexCache = vertexCache.AllocIndex( tri.indexes, tri.numIndexes );
 	}
 	
 	ds.numIndexes = tri.numIndexes;

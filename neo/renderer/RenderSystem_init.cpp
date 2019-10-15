@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 #include "precompiled.h"
 
-#include "tr_local.h"
+#include "RenderCommon.h"
 
 // RB begin
 #if defined(_WIN32)
@@ -293,384 +293,10 @@ const char* envDirection[6] = { "_px", "_nx", "_py", "_ny", "_pz", "_nz" };
 const char* skyDirection[6] = { "_forward", "_back", "_left", "_right", "_up", "_down" };
 
 
-/*
-========================
-glBindMultiTextureEXT
-
-As of 2011/09/16 the Intel drivers for "Sandy Bridge" and "Ivy Bridge" integrated graphics do not support this extension.
-========================
-*/
-/*
-void APIENTRY glBindMultiTextureEXT( GLenum texunit, GLenum target, GLuint texture )
-{
-	glActiveTextureARB( texunit );
-	glBindTexture( target, texture );
-}
-*/
-
-/*
-=================
-R_CheckExtension
-=================
-*/
-// RB begin
-static bool R_CheckExtension( const char* name )
-// RB end
-{
-	if( !strstr( glConfig.extensions_string, name ) )
-	{
-		common->Printf( "X..%s not found\n", name );
-		return false;
-	}
-	
-	common->Printf( "...using %s\n", name );
-	return true;
-}
-
-
-/*
-========================
-DebugCallback
-
-For ARB_debug_output
-========================
-*/
-// RB: added const to userParam
-static void CALLBACK DebugCallback( unsigned int source, unsigned int type,
-									unsigned int id, unsigned int severity, int length, const char* message, const void* userParam )
-{
-	// it probably isn't safe to do an idLib::Printf at this point
-	
-	// RB: printf should be thread safe on Linux
-#if defined(_WIN32)
-	OutputDebugString( message );
-	OutputDebugString( "\n" );
-#else
-	printf( "%s\n", message );
-#endif
-	// RB end
-}
-
-/*
-=================
-R_CheckExtension
-=================
-*/
-bool R_CheckExtension( char* name )
-{
-	if( !strstr( glConfig.extensions_string, name ) )
-	{
-		common->Printf( "X..%s not found\n", name );
-		return false;
-	}
-	
-	common->Printf( "...using %s\n", name );
-	return true;
-}
-
-/*
-==================
-R_CheckPortableExtensions
-==================
-*/
-// RB: replaced QGL with GLEW
-static void R_CheckPortableExtensions()
-{
-	glConfig.glVersion = atof( glConfig.version_string );
-	const char* badVideoCard = idLocalization::GetString( "#str_06780" );
-	if( glConfig.glVersion < 2.0f )
-	{
-		idLib::FatalError( "%s", badVideoCard );
-	}
-	
-	if( idStr::Icmpn( glConfig.renderer_string, "ATI ", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "AMD ", 4 ) == 0 )
-	{
-		glConfig.vendor = VENDOR_AMD;
-	}
-	else if( idStr::Icmpn( glConfig.renderer_string, "NVIDIA", 6 ) == 0 )
-	{
-		glConfig.vendor = VENDOR_NVIDIA;
-	}
-	else if( idStr::Icmpn( glConfig.renderer_string, "Intel", 5 ) == 0 )
-	{
-		glConfig.vendor = VENDOR_INTEL;
-	}
-	
-	// RB: Mesa support																																											//GK: Add support for VMWare gpu
-	if( idStr::Icmpn( glConfig.renderer_string, "Mesa", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "X.org", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "Gallium", 7 ) == 0 || idStr::Icmpn(glConfig.renderer_string, "SVGA3D", 6) == 0 || idStr::Icmpn(glConfig.renderer_string, "nouveau", 7) == 0)
-	{
-		if( glConfig.driverType == GLDRV_OPENGL32_CORE_PROFILE )
-		{
-			glConfig.driverType = GLDRV_OPENGL_MESA_CORE_PROFILE;
-		}
-		else
-		{
-			glConfig.driverType = GLDRV_OPENGL_MESA;
-		}
-	}
-	// RB end
-	
-	// GL_ARB_multitexture
-	if( glConfig.driverType != GLDRV_OPENGL3X )
-	{
-		glConfig.multitextureAvailable = true;
-	}
-	else
-	{
-		glConfig.multitextureAvailable = GLEW_ARB_multitexture != 0;
-	}
-	
-	// GL_EXT_direct_state_access
-	glConfig.directStateAccess = GLEW_EXT_direct_state_access != 0;
-	
-	
-	// GL_ARB_texture_compression + GL_S3_s3tc
-	// DRI drivers may have GL_ARB_texture_compression but no GL_EXT_texture_compression_s3tc
-	if( glConfig.driverType == GLDRV_OPENGL_MESA_CORE_PROFILE )
-	{
-		glConfig.textureCompressionAvailable = true;
-	}
-	else
-	{
-		glConfig.textureCompressionAvailable = GLEW_ARB_texture_compression != 0 || GLEW_EXT_texture_compression_s3tc != 0;
-	}
-	// GL_EXT_texture_filter_anisotropic
-	glConfig.anisotropicFilterAvailable = GLEW_EXT_texture_filter_anisotropic != 0;
-	if( glConfig.anisotropicFilterAvailable )
-	{
-		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &glConfig.maxTextureAnisotropy );
-		common->Printf( "   maxTextureAnisotropy: %f\n", glConfig.maxTextureAnisotropy );
-	}
-	else
-	{
-		glConfig.maxTextureAnisotropy = 1;
-	}
-	
-	// GL_EXT_texture_lod_bias
-	// The actual extension is broken as specificed, storing the state in the texture unit instead
-	// of the texture object.  The behavior in GL 1.4 is the behavior we use.
-	glConfig.textureLODBiasAvailable = ( glConfig.glVersion >= 1.4 || GLEW_EXT_texture_lod_bias != 0 );
-	if( glConfig.textureLODBiasAvailable )
-	{
-		common->Printf( "...using %s\n", "GL_EXT_texture_lod_bias" );
-	}
-	else
-	{
-		common->Printf( "X..%s not found\n", "GL_EXT_texture_lod_bias" );
-	}
-	
-	// GL_ARB_seamless_cube_map
-	glConfig.seamlessCubeMapAvailable = GLEW_ARB_seamless_cube_map != 0;
-	r_useSeamlessCubeMap.SetModified();		// the CheckCvars() next frame will enable / disable it
-	
-	// GL_ARB_framebuffer_sRGB
-	glConfig.sRGBFramebufferAvailable = GLEW_ARB_framebuffer_sRGB != 0;
-	r_useSRGB.SetModified();		// the CheckCvars() next frame will enable / disable it
-	
-	// GL_ARB_vertex_buffer_object
-	if( glConfig.driverType == GLDRV_OPENGL_MESA_CORE_PROFILE )
-	{
-		glConfig.vertexBufferObjectAvailable = true;
-	}
-	else
-	{
-		glConfig.vertexBufferObjectAvailable = GLEW_ARB_vertex_buffer_object != 0;
-	}
-	
-	// GL_ARB_map_buffer_range, map a section of a buffer object's data store
-	//if( glConfig.driverType == GLDRV_OPENGL_MESA_CORE_PROFILE )
-	//{
-	//    glConfig.mapBufferRangeAvailable = true;
-	//}
-	//else
-	{
-		glConfig.mapBufferRangeAvailable = GLEW_ARB_map_buffer_range != 0;
-	}
-	
-	// GL_ARB_vertex_array_object
-	//if( glConfig.driverType == GLDRV_OPENGL_MESA_CORE_PROFILE )
-	//{
-	//    glConfig.vertexArrayObjectAvailable = true;
-	//}
-	//else
-	{
-		glConfig.vertexArrayObjectAvailable = GLEW_ARB_vertex_array_object != 0;
-	}
-	
-	// GL_ARB_draw_elements_base_vertex
-	glConfig.drawElementsBaseVertexAvailable = GLEW_ARB_draw_elements_base_vertex != 0;
-	
-	// GL_ARB_vertex_program / GL_ARB_fragment_program
-	glConfig.fragmentProgramAvailable = GLEW_ARB_fragment_program != 0;
-	//if( glConfig.fragmentProgramAvailable )
-	{
-		glGetIntegerv( GL_MAX_TEXTURE_COORDS, ( GLint* )&glConfig.maxTextureCoords );
-		glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS, ( GLint* )&glConfig.maxTextureImageUnits );
-	}
-	
-	// GLSL, core in OpenGL > 2.0
-	glConfig.glslAvailable = ( glConfig.glVersion >= 2.0f );
-	
-	// GL_ARB_uniform_buffer_object
-	glConfig.uniformBufferAvailable = GLEW_ARB_uniform_buffer_object != 0;
-	if( glConfig.uniformBufferAvailable )
-	{
-		glGetIntegerv( GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, ( GLint* )&glConfig.uniformBufferOffsetAlignment );
-		if( glConfig.uniformBufferOffsetAlignment < 256 )
-		{
-			glConfig.uniformBufferOffsetAlignment = 256;
-		}
-	}
-	// RB: make GPU skinning optional for weak OpenGL drivers
-	glConfig.gpuSkinningAvailable = glConfig.uniformBufferAvailable && ( glConfig.driverType == GLDRV_OPENGL3X || glConfig.driverType == GLDRV_OPENGL32_CORE_PROFILE || glConfig.driverType == GLDRV_OPENGL32_COMPATIBILITY_PROFILE );
-	
-	// ATI_separate_stencil / OpenGL 2.0 separate stencil
-	glConfig.twoSidedStencilAvailable = ( glConfig.glVersion >= 2.0f ) || GLEW_ATI_separate_stencil != 0;
-	
-	// GL_EXT_depth_bounds_test
-	glConfig.depthBoundsTestAvailable = GLEW_EXT_depth_bounds_test != 0;
-	
-	// GL_ARB_sync
-	glConfig.syncAvailable = GLEW_ARB_sync &&
-							 // as of 5/24/2012 (driver version 15.26.12.64.2761) sync objects
-							 // do not appear to work for the Intel HD 4000 graphics
-							 ( glConfig.vendor != VENDOR_INTEL || r_skipIntelWorkarounds.GetBool() );
-							 
-	// GL_ARB_occlusion_query
-	glConfig.occlusionQueryAvailable = GLEW_ARB_occlusion_query != 0;
-	
-	// GL_ARB_timer_query
-	glConfig.timerQueryAvailable = ( GLEW_ARB_timer_query != 0 || GLEW_EXT_timer_query != 0 ) && ( glConfig.vendor != VENDOR_INTEL || r_skipIntelWorkarounds.GetBool() ) && glConfig.driverType != GLDRV_OPENGL_MESA;
-	
-	// GREMEDY_string_marker
-	glConfig.gremedyStringMarkerAvailable = GLEW_GREMEDY_string_marker != 0;
-	if( glConfig.gremedyStringMarkerAvailable )
-	{
-		common->Printf( "...using %s\n", "GL_GREMEDY_string_marker" );
-	}
-	else
-	{
-		common->Printf( "X..%s not found\n", "GL_GREMEDY_string_marker" );
-	}
-	
-	// GL_ARB_framebuffer_object
-	glConfig.framebufferObjectAvailable = GLEW_ARB_framebuffer_object != 0;
-	if( glConfig.framebufferObjectAvailable )
-	{
-		glGetIntegerv( GL_MAX_RENDERBUFFER_SIZE, &glConfig.maxRenderbufferSize );
-		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &glConfig.maxColorAttachments );
-		
-		common->Printf( "...using %s\n", "GL_ARB_framebuffer_object" );
-	}
-	else
-	{
-		common->Printf( "X..%s not found\n", "GL_ARB_framebuffer_object" );
-	}
-	
-	// GL_EXT_framebuffer_blit
-	glConfig.framebufferBlitAvailable = GLEW_EXT_framebuffer_blit != 0;
-	if( glConfig.framebufferBlitAvailable )
-	{
-		common->Printf( "...using %s\n", "GL_EXT_framebuffer_blit" );
-	}
-	else
-	{
-		common->Printf( "X..%s not found\n", "GL_EXT_framebuffer_blit" );
-	}
-	
-	// GL_ARB_debug_output
-	glConfig.debugOutputAvailable = GLEW_ARB_debug_output != 0;
-	if( glConfig.debugOutputAvailable )
-	{
-		if( r_debugContext.GetInteger() >= 1 )
-		{
-			glDebugMessageCallbackARB( ( GLDEBUGPROCARB ) DebugCallback, NULL );
-		}
-		if( r_debugContext.GetInteger() >= 2 )
-		{
-			// force everything to happen in the main thread instead of in a separate driver thread
-			glEnable( GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB );
-		}
-		if( r_debugContext.GetInteger() >= 3 )
-		{
-			// enable all the low priority messages
-			glDebugMessageControlARB( GL_DONT_CARE,
-									  GL_DONT_CARE,
-									  GL_DEBUG_SEVERITY_LOW_ARB,
-									  0, NULL, true );
-		}
-	}
-	
-	// GL_ARB_multitexture
-	if( !glConfig.multitextureAvailable )
-	{
-		idLib::Error( "GL_ARB_multitexture not available" );
-	}
-	// GL_ARB_texture_compression + GL_EXT_texture_compression_s3tc
-	if( !glConfig.textureCompressionAvailable )
-	{
-		idLib::Error( "GL_ARB_texture_compression or GL_EXT_texture_compression_s3tc not available" );
-	}
-	// GL_ARB_vertex_buffer_object
-	if( !glConfig.vertexBufferObjectAvailable )
-	{
-		idLib::Error( "GL_ARB_vertex_buffer_object not available" );
-	}
-	// GL_ARB_map_buffer_range
-	if( !glConfig.mapBufferRangeAvailable )
-	{
-		idLib::Error( "GL_ARB_map_buffer_range not available" );
-	}
-	// GL_ARB_vertex_array_object
-	if( !glConfig.vertexArrayObjectAvailable )
-	{
-		idLib::Error( "GL_ARB_vertex_array_object not available" );
-	}
-	// GL_ARB_draw_elements_base_vertex
-	if( !glConfig.drawElementsBaseVertexAvailable )
-	{
-		idLib::Error( "GL_ARB_draw_elements_base_vertex not available" );
-	}
-	// GL_ARB_vertex_program / GL_ARB_fragment_program
-	//if( !glConfig.fragmentProgramAvailable )
-	//{
-	//	idLib::Warning( "GL_ARB_fragment_program not available" );
-	//}
-	// GLSL
-	if( !glConfig.glslAvailable )
-	{
-		idLib::Error( "GLSL not available" );
-	}
-	// GL_ARB_uniform_buffer_object
-	if( !glConfig.uniformBufferAvailable )
-	{
-		idLib::Error( "GL_ARB_uniform_buffer_object not available" );
-	}
-	// GL_EXT_stencil_two_side
-	if( !glConfig.twoSidedStencilAvailable )
-	{
-		idLib::Error( "GL_ATI_separate_stencil not available" );
-	}
-	
-	// generate one global Vertex Array Object (VAO)
-	glGenVertexArrays( 1, &glConfig.global_vao );
-	glBindVertexArray( glConfig.global_vao );
-}
-// RB end
 
 
 
-static bool r_initialized = false;
 
-/*
-=============================
-R_IsInitialized
-=============================
-*/
-bool R_IsInitialized()
-{
-	return r_initialized;
-}
 
 /*
 =============================
@@ -823,201 +449,6 @@ safeMode:
 	}
 }
 
-idStr extensions_string;
-
-/*
-==================
-R_InitOpenGL
-
-This function is responsible for initializing a valid OpenGL subsystem
-for rendering.  This is done by calling the system specific GLimp_Init,
-which gives us a working OGL subsystem, then setting all necessary openGL
-state, including images, vertex programs, and display lists.
-
-Changes to the vertex cache size or smp state require a vid_restart.
-
-If R_IsInitialized() is false, no rendering can take place, but
-all renderSystem functions will still operate properly, notably the material
-and model information functions.
-==================
-*/
-void R_InitOpenGL()
-{
-
-	common->Printf( "----- R_InitOpenGL -----\n" );
-	
-	if( R_IsInitialized() )
-	{
-		common->FatalError( "R_InitOpenGL called while active" );
-	}
-	
-	// DG: make sure SDL has setup video so getting supported modes in R_SetNewMode() works
-	GLimp_PreInit();
-	// DG end
-	
-	R_SetNewMode( true );
-	
-	
-	// input and sound systems need to be tied to the new window
-	Sys_InitInput();
-	
-	// get our config strings
-	glConfig.vendor_string = ( const char* )glGetString( GL_VENDOR );
-	glConfig.renderer_string = ( const char* )glGetString( GL_RENDERER );
-	glConfig.version_string = ( const char* )glGetString( GL_VERSION );
-	glConfig.shading_language_string = ( const char* )glGetString( GL_SHADING_LANGUAGE_VERSION );
-	glConfig.extensions_string = ( const char* )glGetString( GL_EXTENSIONS );
-	
-	if( glConfig.extensions_string == NULL )
-	{
-		// As of OpenGL 3.2, glGetStringi is required to obtain the available extensions
-		//glGetStringi = ( PFNGLGETSTRINGIPROC )GLimp_ExtensionPointer( "glGetStringi" );
-		
-		// Build the extensions string
-		GLint numExtensions;
-		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
-		extensions_string.Clear();
-		for( int i = 0; i < numExtensions; i++ )
-		{
-			extensions_string.Append( ( const char* )glGetStringi( GL_EXTENSIONS, i ) );
-			// the now deprecated glGetString method usaed to create a single string with each extension separated by a space
-			if( i < numExtensions - 1 )
-			{
-				extensions_string.Append( ' ' );
-			}
-		}
-		glConfig.extensions_string = extensions_string.c_str();
-	}
-	
-	
-	float glVersion = atof( glConfig.version_string );
-	float glslVersion = atof( glConfig.shading_language_string );
-	idLib::Printf( "OpenGL Version   : %3.1f\n", glVersion );
-	idLib::Printf( "OpenGL Vendor    : %s\n", glConfig.vendor_string );
-	idLib::Printf( "OpenGL Renderer  : %s\n", glConfig.renderer_string );
-	idLib::Printf( "OpenGL GLSL      : %3.1f\n", glslVersion );
-	idLib::Printf( "OpenGL Extensions: %s\n", glConfig.extensions_string );
-	
-	// OpenGL driver constants
-	GLint temp;
-	glGetIntegerv( GL_MAX_TEXTURE_SIZE, &temp );
-	glConfig.maxTextureSize = temp;
-	
-	// stubbed or broken drivers may have reported 0...
-	if( glConfig.maxTextureSize <= 0 )
-	{
-		glConfig.maxTextureSize = 256;
-	}
-	
-	r_initialized = true;
-	
-	// recheck all the extensions (FIXME: this might be dangerous)
-	R_CheckPortableExtensions();
-	
-	renderProgManager.Init();
-	
-	r_initialized = true;
-	
-	// allocate the vertex array range or vertex objects
-	vertexCache.Init();
-	
-	// allocate the frame data, which may be more if smp is enabled
-	R_InitFrameData();
-	
-	// Reset our gamma
-	R_SetColorMappings();
-	
-	// RB begin
-#if defined(_WIN32)
-	static bool glCheck = false;
-	if( !glCheck && win32.osversion.dwMajorVersion == 6 )
-	{
-		glCheck = true;
-		if( !idStr::Icmp( glConfig.vendor_string, "Microsoft" ) && idStr::FindText( glConfig.renderer_string, "OpenGL-D3D" ) != -1 )
-		{
-			if( cvarSystem->GetCVarBool( "r_fullscreen" ) )
-			{
-				cmdSystem->BufferCommandText( CMD_EXEC_NOW, "vid_restart partial windowed\n" );
-				Sys_GrabMouseCursor( false );
-			}
-			int ret = MessageBox( NULL, "Please install OpenGL drivers from your graphics hardware vendor to run " GAME_NAME ".\nYour OpenGL functionality is limited.",
-								  "Insufficient OpenGL capabilities", MB_OKCANCEL | MB_ICONWARNING | MB_TASKMODAL );
-			if( ret == IDCANCEL )
-			{
-				cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "quit\n" );
-				cmdSystem->ExecuteCommandBuffer();
-			}
-			if( cvarSystem->GetCVarBool( "r_fullscreen" ) )
-			{
-				cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
-			}
-		}
-	}
-#endif
-	// RB end
-}
-
-/*
-==================
-GL_CheckErrors
-==================
-*/
-// RB: added filename, line parms
-bool GL_CheckErrors_( const char* filename, int line )
-{
-	int		err;
-	char	s[64];
-	int		i;
-	
-	if( r_ignoreGLErrors.GetBool() )
-	{
-		return false;
-	}
-	
-	// check for up to 10 errors pending
-	bool error = false;
-	for( i = 0 ; i < 10 ; i++ )
-	{
-		err = glGetError();
-		if( err == GL_NO_ERROR )
-		{
-			break;
-		}
-		
-		error = true;
-		switch( err )
-		{
-			case GL_INVALID_ENUM:
-				strcpy( s, "GL_INVALID_ENUM" );
-				break;
-			case GL_INVALID_VALUE:
-				strcpy( s, "GL_INVALID_VALUE" );
-				break;
-			case GL_INVALID_OPERATION:
-				strcpy( s, "GL_INVALID_OPERATION" );
-				break;
-#if !defined(USE_GLES2) && !defined(USE_GLES3)
-			case GL_STACK_OVERFLOW:
-				strcpy( s, "GL_STACK_OVERFLOW" );
-				break;
-			case GL_STACK_UNDERFLOW:
-				strcpy( s, "GL_STACK_UNDERFLOW" );
-				break;
-#endif
-			case GL_OUT_OF_MEMORY:
-				strcpy( s, "GL_OUT_OF_MEMORY" );
-				break;
-			default:
-				idStr::snPrintf( s, sizeof( s ), "%i", err );
-				break;
-		}
-		
-		common->Printf( "caught OpenGL error: %s in file %s line %i\n", s, filename, line );
-	}
-	
-	return error;
-}
-// RB end
 
 /*
 =====================
@@ -1263,6 +694,9 @@ If ref isn't specified, the full session UpdateScreen will be done.
 */
 void R_ReadTiledPixels( int width, int height, byte* buffer, renderView_t* ref = NULL )
 {
+	// FIXME
+#if !defined(USE_VULKAN)
+	
 	// include extra space for OpenGL padding to word boundaries
 	int sysWidth = renderSystem->GetWidth();
 	int sysHeight = renderSystem->GetHeight();
@@ -1377,6 +811,7 @@ void R_ReadTiledPixels( int width, int height, byte* buffer, renderView_t* ref =
 	r_useScissor.SetBool( true );
 	
 	R_StaticFree( temp );
+#endif
 }
 
 
@@ -1634,47 +1069,7 @@ void R_ScreenShot_f( const idCmdArgs& args )
 	common->Printf( "Wrote %s\n", checkname.c_str() );
 }
 
-/*
-===============
-R_StencilShot
-Save out a screenshot showing the stencil buffer expanded by 16x range
-===============
-*/
-void R_StencilShot()
-{
-	int			i, c;
-	
-	int	width = tr.GetWidth();
-	int	height = tr.GetHeight();
-	
-	int	pix = width * height;
-	
-	c = pix * 3 + 18;
-	idTempArray< byte > buffer( c );
-	memset( buffer.Ptr(), 0, 18 );
-	
-	idTempArray< byte > byteBuffer( pix );
-	
-	glReadPixels( 0, 0, width, height, GL_STENCIL_INDEX , GL_UNSIGNED_BYTE, byteBuffer.Ptr() );
-	
-	for( i = 0 ; i < pix ; i++ )
-	{
-		buffer[18 + i * 3] =
-			buffer[18 + i * 3 + 1] =
-				//		buffer[18+i*3+2] = ( byteBuffer[i] & 15 ) * 16;
-				buffer[18 + i * 3 + 2] = byteBuffer[i];
-	}
-	
-	// fill in the header (this is vertically flipped, which glReadPixels emits)
-	buffer[2] = 2;		// uncompressed type
-	buffer[12] = width & 255;
-	buffer[13] = width >> 8;
-	buffer[14] = height & 255;
-	buffer[15] = height >> 8;
-	buffer[16] = 24;	// pixel size
-	
-	fileSystem->WriteFile( "screenshots/stencilShot.tga", buffer.Ptr(), c, "fs_savepath" );
-}
+
 
 /*
 ==================
@@ -1877,6 +1272,126 @@ void R_SampleCubeMap( const idVec3& dir, int size, byte* buffers[6], byte result
 	result[3] = buffers[axis][( y * size + x ) * 4 + 3];
 }
 
+class CommandlineProgressBar
+{
+private:
+	size_t tics = 0;
+	size_t nextTicCount = 0;
+	int	count = 0;
+	int expectedCount = 0;
+	
+public:
+	CommandlineProgressBar( int _expectedCount )
+	{
+		expectedCount = _expectedCount;
+		
+		common->Printf( "0%%  10   20   30   40   50   60   70   80   90   100%%\n" );
+		common->Printf( "|----|----|----|----|----|----|----|----|----|----|\n" );
+		
+		common->UpdateScreen( false );
+	}
+	
+	void Increment()
+	{
+		if( ( count + 1 ) >= nextTicCount )
+		{
+			size_t ticsNeeded = ( size_t )( ( ( double )( count + 1 ) / expectedCount ) * 50.0 );
+			
+			do
+			{
+				common->Printf( "*" );
+			}
+			while( ++tics < ticsNeeded );
+			
+			nextTicCount = ( size_t )( ( tics / 50.0 ) * expectedCount );
+			if( count == ( expectedCount - 1 ) )
+			{
+				if( tics < 51 )
+				{
+					common->Printf( "*" );
+				}
+				common->Printf( "\n" );
+			}
+			
+			common->UpdateScreen( false );
+		}
+		
+		count++;
+	}
+};
+
+
+// http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
+
+// To implement the Hammersley point set we only need an efficent way to implement the Van der Corput radical inverse phi2(i).
+// Since it is in base 2 we can use some basic bit operations to achieve this.
+// The brilliant book Hacker's Delight [warren01] provides us a a simple way to reverse the bits in a given 32bit integer. Using this, the following code then implements phi2(i)
+
+/*
+GLSL version
+
+float radicalInverse_VdC( uint bits )
+{
+	bits = (bits << 16u) | (bits >> 16u);
+	bits = ((bits & 0x55555555u) << 1u) | ((bits & 0xAAAAAAAAu) >> 1u);
+	bits = ((bits & 0x33333333u) << 2u) | ((bits & 0xCCCCCCCCu) >> 2u);
+	bits = ((bits & 0x0F0F0F0Fu) << 4u) | ((bits & 0xF0F0F0F0u) >> 4u);
+	bits = ((bits & 0x00FF00FFu) << 8u) | ((bits & 0xFF00FF00u) >> 8u);
+	return float(bits) * 2.3283064365386963e-10; // / 0x100000000
+}
+*/
+
+// RB: radical inverse implementation from the Mitsuba PBR system
+
+// Van der Corput radical inverse in base 2 with single precision
+inline float RadicalInverse_VdC( uint32_t n, uint32_t scramble = 0U )
+{
+	/* Efficiently reverse the bits in 'n' using binary operations */
+#if (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))) || defined(__clang__)
+	n = __builtin_bswap32( n );
+#else
+	n = ( n << 16 ) | ( n >> 16 );
+	n = ( ( n & 0x00ff00ff ) << 8 ) | ( ( n & 0xff00ff00 ) >> 8 );
+#endif
+	n = ( ( n & 0x0f0f0f0f ) << 4 ) | ( ( n & 0xf0f0f0f0 ) >> 4 );
+	n = ( ( n & 0x33333333 ) << 2 ) | ( ( n & 0xcccccccc ) >> 2 );
+	n = ( ( n & 0x55555555 ) << 1 ) | ( ( n & 0xaaaaaaaa ) >> 1 );
+	
+	// Account for the available precision and scramble
+	n = ( n >> ( 32 - 24 ) ) ^ ( scramble & ~ -( 1 << 24 ) );
+	
+	return ( float ) n / ( float )( 1U << 24 );
+}
+
+// The ith point xi is then computed by
+inline idVec2 Hammersley2D( uint i, uint N )
+{
+	return idVec2( float( i ) / float( N ), RadicalInverse_VdC( i ) );
+}
+
+idVec3 ImportanceSampleGGX( const idVec2& Xi, float roughness, const idVec3& N )
+{
+	float a = roughness * roughness;
+	
+	// cosinus distributed direction (Z-up or tangent space) from the hammersley point xi
+	float Phi = 2 * idMath::PI * Xi.x;
+	float cosTheta = sqrt( ( 1 - Xi.y ) / ( 1 + ( a * a - 1 ) * Xi.y ) );
+	float sinTheta = sqrt( 1 - cosTheta * cosTheta );
+	
+	idVec3 H;
+	H.x = sinTheta * cos( Phi );
+	H.y = sinTheta * sin( Phi );
+	H.z = cosTheta;
+	
+	// rotate from tangent space to world space along N
+	idVec3 upVector = abs( N.z ) < 0.999f ? idVec3( 0, 0, 1 ) : idVec3( 1, 0, 0 );
+	idVec3 tangentX = upVector.Cross( N );
+	tangentX.Normalize();
+	idVec3 tangentY = N.Cross( tangentX );
+	
+	return tangentX * H.x + tangentY * H.y + N * H.z;
+}
+
 /*
 ==================
 R_MakeAmbientMap_f
@@ -1959,6 +1474,8 @@ void R_MakeAmbientMap_f( const idCmdArgs& args )
 		}
 	}
 	
+	bool pacifier = true;
+	
 	// resample with hemispherical blending
 	int	samples = 1000;
 	
@@ -1966,6 +1483,10 @@ void R_MakeAmbientMap_f( const idCmdArgs& args )
 	
 	for( int map = 0 ; map < 2 ; map++ )
 	{
+		CommandlineProgressBar progressBar( outSize * outSize * 6 );
+		
+		int	start = Sys_Milliseconds();
+		
 		for( i = 0 ; i < 6 ; i++ )
 		{
 			for( int x = 0 ; x < outSize ; x++ )
@@ -1978,30 +1499,14 @@ void R_MakeAmbientMap_f( const idCmdArgs& args )
 					dir = cubeAxis[i][0] + -( -1 + 2.0 * x / ( outSize - 1 ) ) * cubeAxis[i][1] + -( -1 + 2.0 * y / ( outSize - 1 ) ) * cubeAxis[i][2];
 					dir.Normalize();
 					total[0] = total[1] = total[2] = 0;
-					//samples = 1;
-					float	limit = map ? 0.95 : 0.25;		// small for specular, almost hemisphere for ambient
+					
+					float roughness = map ? 0.1 : 0.95;		// small for specular, almost hemisphere for ambient
 					
 					for( int s = 0 ; s < samples ; s++ )
 					{
-						// pick a random direction vector that is inside the unit sphere but not behind dir,
-						// which is a robust way to evenly sample a hemisphere
-						idVec3	test;
-						while( 1 )
-						{
-							for( int j = 0 ; j < 3 ; j++ )
-							{
-								test[j] = -1 + 2 * ( rand() & 0x7fff ) / ( float )0x7fff;
-							}
-							if( test.Length() > 1.0 )
-							{
-								continue;
-							}
-							test.Normalize();
-							if( test * dir > limit )  	// don't do a complete hemisphere
-							{
-								break;
-							}
-						}
+						idVec2 Xi = Hammersley2D( s, samples );
+						idVec3 test = ImportanceSampleGGX( Xi, roughness, dir );
+						
 						byte	result[4];
 						//test = dir;
 						R_SampleCubeMap( test, width, buffers, result );
@@ -2013,21 +1518,37 @@ void R_MakeAmbientMap_f( const idCmdArgs& args )
 					outBuffer[( y * outSize + x ) * 4 + 1] = total[1] / samples;
 					outBuffer[( y * outSize + x ) * 4 + 2] = total[2] / samples;
 					outBuffer[( y * outSize + x ) * 4 + 3] = 255;
+					
+					progressBar.Increment();
 				}
 			}
 			
 			if( map == 0 )
 			{
-				fullname.Format( "env/%s_amb%s.%s", baseName, envDirection[i], fileExten[TGA] );
+				fullname.Format( "env/%s_amb%s.%s", baseName, envDirection[i], fileExten[PNG] );
 			}
 			else
 			{
-				fullname.Format( "env/%s_spec%s.%s", baseName, envDirection[i], fileExten[TGA] );
+				fullname.Format( "env/%s_spec%s.%s", baseName, envDirection[i], fileExten[PNG] );
 			}
-			common->Printf( "writing %s\n", fullname.c_str() );
+			//common->Printf( "writing %s\n", fullname.c_str() );
+			
 			const bool captureToImage = false;
 			common->UpdateScreen( captureToImage );
-			R_WriteTGA( fullname, outBuffer, outSize, outSize );
+			
+			//R_WriteTGA( fullname, outBuffer, outSize, outSize, false, "fs_basepath" );
+			R_WritePNG( fullname, outBuffer, 4, outSize, outSize, true, "fs_basepath" );
+		}
+		
+		int	end = Sys_Milliseconds();
+		
+		if( map == 0 )
+		{
+			common->Printf( "env/%s_amb convolved  in %5.1f seconds\n\n", baseName, ( end - start ) * 0.001f );
+		}
+		else
+		{
+			common->Printf( "env/%s_spec convolved  in %5.1f seconds\n\n", baseName, ( end - start ) * 0.001f );
 		}
 	}
 	
@@ -2216,11 +1737,8 @@ void GfxInfo_f( const idCmdArgs& args )
 	common->Printf( "-------\n" );
 	
 	// RB begin
-#if defined(_WIN32) && !defined(USE_GLES2)
+#if defined(_WIN32) && !defined(USE_VULKAN)
 	// WGL_EXT_swap_interval
-	typedef BOOL ( WINAPI * PFNWGLSWAPINTERVALEXTPROC )( int interval );
-	extern	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
-	
 	if( r_swapInterval.GetInteger() && wglSwapIntervalEXT != NULL )
 	{
 		common->Printf( "Forcing swapInterval %i\n", r_swapInterval.GetInteger() );
@@ -2305,96 +1823,13 @@ R_VidRestart_f
 void R_VidRestart_f( const idCmdArgs& args )
 {
 	// if OpenGL isn't started, do nothing
-	if( !R_IsInitialized() )
+	if( !tr.IsInitialized() )
 	{
 		return;
 	}
 	
 	// set the mode without re-initializing the context
 	R_SetNewMode( false );
-	
-#if 0
-	bool full = true;
-	bool forceWindow = false;
-	for( int i = 1 ; i < args.Argc() ; i++ )
-	{
-		if( idStr::Icmp( args.Argv( i ), "partial" ) == 0 )
-		{
-			full = false;
-			continue;
-		}
-		if( idStr::Icmp( args.Argv( i ), "windowed" ) == 0 )
-		{
-			forceWindow = true;
-			continue;
-		}
-	}
-	
-	// this could take a while, so give them the cursor back ASAP
-	Sys_GrabMouseCursor( false );
-	
-	// dump ambient caches
-	renderModelManager->FreeModelVertexCaches();
-	
-	// free any current world interaction surfaces and vertex caches
-	R_FreeDerivedData();
-	
-	// make sure the defered frees are actually freed
-	R_ToggleSmpFrame();
-	R_ToggleSmpFrame();
-	
-	// free the vertex caches so they will be regenerated again
-	vertexCache.PurgeAll();
-	
-	// sound and input are tied to the window we are about to destroy
-	
-	if( full )
-	{
-		// free all of our texture numbers
-		Sys_ShutdownInput();
-		globalImages->PurgeAllImages();
-		// free the context and close the window
-		GLimp_Shutdown();
-		r_initialized = false;
-		
-		// create the new context and vertex cache
-		bool latch = cvarSystem->GetCVarBool( "r_fullscreen" );
-		if( forceWindow )
-		{
-			cvarSystem->SetCVarBool( "r_fullscreen", false );
-		}
-		R_InitOpenGL();
-		cvarSystem->SetCVarBool( "r_fullscreen", latch );
-		
-		// regenerate all images
-		globalImages->ReloadImages( true );
-	}
-	else
-	{
-		glimpParms_t parms;
-		parms.width = glConfig.nativeScreenWidth;
-		parms.height = glConfig.nativeScreenHeight;
-		parms.fullScreen = ( forceWindow ) ? false : r_fullscreen.GetInteger();
-		parms.displayHz = r_displayRefresh.GetInteger();
-		parms.multiSamples = r_multiSamples.GetInteger();
-		parms.stereo = false;
-		GLimp_SetScreenParms( parms );
-	}
-	
-	
-	
-	// make sure the regeneration doesn't use anything no longer valid
-	tr.viewCount++;
-	tr.viewDef = NULL;
-	
-	// check for problems
-	int err = glGetError();
-	if( err != GL_NO_ERROR )
-	{
-		common->Printf( "glGetError() = 0x%x\n", err );
-	}
-#endif
-	
 }
 
 /*
@@ -2479,15 +1914,7 @@ void R_TouchGui_f( const idCmdArgs& args )
 	uiManager->Touch( gui );
 }
 
-/*
-=================
-R_InitCvars
-=================
-*/
-void R_InitCvars()
-{
-	// update latched cvars here
-}
+
 
 /*
 =================
@@ -2775,7 +2202,6 @@ idRenderSystemLocal::Init
 */
 void idRenderSystemLocal::Init()
 {
-
 	common->Printf( "------- Initializing renderSystem --------\n" );
 	
 	// clear all our internal state
@@ -2788,24 +2214,16 @@ void idRenderSystemLocal::Init()
 	ambientLightVector[2] = 0.8925f;
 	ambientLightVector[3] = 1.0f;
 	
-	memset( &backEnd, 0, sizeof( backEnd ) );
-	
-	R_InitCvars();
-	
 	R_InitCommands();
+	
+	// allocate the frame data, which may be more if smp is enabled
+	R_InitFrameData();
 	
 	guiModel = new( TAG_RENDER ) idGuiModel;
 	guiModel->Clear();
 	tr_guiModel = guiModel;	// for DeviceContext fast path
-
-	if (glConfig.nativeScreenWidth == 1280 && glConfig.nativeScreenHeight == 1470)
-	{
-		glConfig.stereo3Dmode = STEREO3D_HDMI_720;
-	}
-	else
-	{
-		glConfig.stereo3Dmode = GetStereoScopicRenderingMode();
-	}
+	
+	UpdateStereo3DMode();
 	
 	globalImages->Init();
 	
@@ -2845,6 +2263,8 @@ void idRenderSystemLocal::Init()
 	
 	frontEndJobList = parallelJobManager->AllocJobList( JOBLIST_RENDERER_FRONTEND, JOBLIST_PRIORITY_MEDIUM, 2048, 0, NULL );
 	
+	bInitialized = true;
+	
 	// make sure the command buffers are ready to accept the first screen update
 	SwapCommandBuffers( NULL, NULL, NULL, NULL );
 	
@@ -2863,7 +2283,7 @@ void idRenderSystemLocal::Shutdown()
 	
 	fonts.DeleteContents();
 	
-	if( R_IsInitialized() )
+	if( IsInitialized() )
 	{
 		globalImages->PurgeAllImages();
 	}
@@ -2895,6 +2315,8 @@ void idRenderSystemLocal::Shutdown()
 	Clear();
 	
 	ShutdownOpenGL();
+	
+	bInitialized = false;
 }
 
 /*
@@ -3026,18 +2448,20 @@ idRenderSystemLocal::InitOpenGL
 void idRenderSystemLocal::InitOpenGL()
 {
 	// if OpenGL isn't started, start it now
-	if( !R_IsInitialized() )
+	if( !IsInitialized() )
 	{
-		R_InitOpenGL();
+		backend.Init();
 		
 		// Reloading images here causes the rendertargets to get deleted. Figure out how to handle this properly on 360
-		globalImages->ReloadImages( true );
+		//globalImages->ReloadImages( true );
 		
+#if !defined(USE_VULKAN)
 		int err = glGetError();
 		if( err != GL_NO_ERROR )
 		{
 			common->Printf( "glGetError() = 0x%x\n", err );
 		}
+#endif
 	}
 }
 
@@ -3050,8 +2474,8 @@ void idRenderSystemLocal::ShutdownOpenGL()
 {
 	// free the context and close the window
 	R_ShutdownFrameData();
-	GLimp_Shutdown();
-	r_initialized = false;
+	
+	backend.Shutdown();
 }
 
 /*
@@ -3061,7 +2485,7 @@ idRenderSystemLocal::IsOpenGLRunning
 */
 bool idRenderSystemLocal::IsOpenGLRunning() const
 {
-	return R_IsInitialized();
+	return IsInitialized();
 }
 
 /*
@@ -3168,6 +2592,23 @@ idRenderSystemLocal::HasQuadBufferSupport
 bool idRenderSystemLocal::HasQuadBufferSupport() const
 {
 	return glConfig.stereoPixelFormatAvailable;
+}
+
+/*
+========================
+idRenderSystemLocal::UpdateStereo3DMode
+========================
+*/
+void idRenderSystemLocal::UpdateStereo3DMode()
+{
+	if( glConfig.nativeScreenWidth == 1280 && glConfig.nativeScreenHeight == 1470 )
+	{
+		glConfig.stereo3Dmode = STEREO3D_HDMI_720;
+	}
+	else
+	{
+		glConfig.stereo3Dmode = GetStereoScopicRenderingMode();
+	}
 }
 
 /*

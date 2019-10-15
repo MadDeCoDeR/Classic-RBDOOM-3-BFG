@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 #include "precompiled.h"
 
-#include "tr_local.h"
+#include "RenderCommon.h"
 
 idRenderSystemLocal	tr;
 idRenderSystem* renderSystem = &tr;
@@ -44,56 +44,56 @@ This prints both front and back end counters, so it should
 only be called when the back end thread is idle.
 =====================
 */
-static void R_PerformanceCounters()
+void idRenderSystemLocal::PrintPerformanceCounters()
 {
 	if( r_showPrimitives.GetInteger() != 0 )
 	{
 		common->Printf( "views:%i draws:%i tris:%i (shdw:%i)\n",
-						tr.pc.c_numViews,
-						backEnd.pc.c_drawElements + backEnd.pc.c_shadowElements,
-						( backEnd.pc.c_drawIndexes + backEnd.pc.c_shadowIndexes ) / 3,
-						backEnd.pc.c_shadowIndexes / 3
+						pc.c_numViews,
+						backend.pc.c_drawElements + backend.pc.c_shadowElements,
+						( backend.pc.c_drawIndexes + backend.pc.c_shadowIndexes ) / 3,
+						backend.pc.c_shadowIndexes / 3
 					  );
 	}
 	
 	if( r_showDynamic.GetBool() )
 	{
 		common->Printf( "callback:%i md5:%i dfrmVerts:%i dfrmTris:%i tangTris:%i guis:%i\n",
-						tr.pc.c_entityDefCallbacks,
-						tr.pc.c_generateMd5,
-						tr.pc.c_deformedVerts,
-						tr.pc.c_deformedIndexes / 3,
-						tr.pc.c_tangentIndexes / 3,
-						tr.pc.c_guiSurfs
+						pc.c_entityDefCallbacks,
+						pc.c_generateMd5,
+						pc.c_deformedVerts,
+						pc.c_deformedIndexes / 3,
+						pc.c_tangentIndexes / 3,
+						pc.c_guiSurfs
 					  );
 	}
 	
 	if( r_showCull.GetBool() )
 	{
 		common->Printf( "%i box in %i box out\n",
-						tr.pc.c_box_cull_in, tr.pc.c_box_cull_out );
+						pc.c_box_cull_in, pc.c_box_cull_out );
 	}
 	
 	if( r_showAddModel.GetBool() )
 	{
 		common->Printf( "callback:%i createInteractions:%i createShadowVolumes:%i\n",
-						tr.pc.c_entityDefCallbacks, tr.pc.c_createInteractions, tr.pc.c_createShadowVolumes );
-		common->Printf( "viewEntities:%i  shadowEntities:%i  viewLights:%i\n", tr.pc.c_visibleViewEntities,
-						tr.pc.c_shadowViewEntities, tr.pc.c_viewLights );
+						pc.c_entityDefCallbacks, pc.c_createInteractions, pc.c_createShadowVolumes );
+		common->Printf( "viewEntities:%i  shadowEntities:%i  viewLights:%i\n", pc.c_visibleViewEntities,
+						pc.c_shadowViewEntities, pc.c_viewLights );
 	}
 	if( r_showUpdates.GetBool() )
 	{
 		common->Printf( "entityUpdates:%i  entityRefs:%i  lightUpdates:%i  lightRefs:%i\n",
-						tr.pc.c_entityUpdates, tr.pc.c_entityReferences,
-						tr.pc.c_lightUpdates, tr.pc.c_lightReferences );
+						pc.c_entityUpdates, pc.c_entityReferences,
+						pc.c_lightUpdates, pc.c_lightReferences );
 	}
 	if( r_showMemory.GetBool() )
 	{
 		common->Printf( "frameData: %i (%i)\n", frameData->frameMemoryAllocated.GetValue(), frameData->highWaterAllocated );
 	}
 	
-	memset( &tr.pc, 0, sizeof( tr.pc ) );
-	memset( &backEnd.pc, 0, sizeof( backEnd.pc ) );
+	memset( &pc, 0, sizeof( pc ) );
+	memset( &backend.pc, 0, sizeof( backend.pc ) );
 }
 
 /*
@@ -128,7 +128,7 @@ void idRenderSystemLocal::RenderCommandBuffers( const emptyCommand_t* const cmdH
 	// draw 2D graphics
 	if( !r_skipBackEnd.GetBool() )
 	{
-#if !defined(USE_GLES2) && !defined(USE_GLES3)
+#if !defined(USE_VULKAN)
 		if( glConfig.timerQueryAvailable )
 		{
 			if( tr.timerQueryId == 0 )
@@ -136,14 +136,14 @@ void idRenderSystemLocal::RenderCommandBuffers( const emptyCommand_t* const cmdH
 				glGenQueries( 1, & tr.timerQueryId );
 			}
 			glBeginQuery( GL_TIME_ELAPSED_EXT, tr.timerQueryId );
-			RB_ExecuteBackEndCommands( cmdHead );
+			backend.ExecuteBackEndCommands( cmdHead );
 			glEndQuery( GL_TIME_ELAPSED_EXT );
 			glFlush();
 		}
 		else
 #endif
 		{
-			RB_ExecuteBackEndCommands( cmdHead );
+			backend.ExecuteBackEndCommands( cmdHead );
 		}
 	}
 	
@@ -228,123 +228,7 @@ void	R_AddDrawPostProcess( viewDef_t* parms )
 //=================================================================================
 
 
-/*
-=============
-R_CheckCvars
 
-See if some cvars that we watch have changed
-=============
-*/
-static void R_CheckCvars()
-{
-	// gamma stuff
-	if( r_gamma.IsModified() || r_brightness.IsModified() )
-	{
-		r_gamma.ClearModified();
-		r_brightness.ClearModified();
-		R_SetColorMappings();
-	}
-	
-	// filtering
-	if( r_maxAnisotropicFiltering.IsModified() || r_useTrilinearFiltering.IsModified() || r_lodBias.IsModified() )
-	{
-		idLib::Printf( "Updating texture filter parameters.\n" );
-		r_maxAnisotropicFiltering.ClearModified();
-		r_useTrilinearFiltering.ClearModified();
-		r_lodBias.ClearModified();
-		for( int i = 0 ; i < globalImages->images.Num() ; i++ )
-		{
-			if( globalImages->images[i] )
-			{
-				globalImages->images[i]->Bind();
-				globalImages->images[i]->SetTexParameters();
-			}
-		}
-	}
-	
-	extern idCVar r_useSeamlessCubeMap;
-	if( r_useSeamlessCubeMap.IsModified() )
-	{
-		r_useSeamlessCubeMap.ClearModified();
-		if( glConfig.seamlessCubeMapAvailable )
-		{
-			if( r_useSeamlessCubeMap.GetBool() )
-			{
-				glEnable( GL_TEXTURE_CUBE_MAP_SEAMLESS );
-			}
-			else
-			{
-				glDisable( GL_TEXTURE_CUBE_MAP_SEAMLESS );
-			}
-		}
-	}
-	
-	extern idCVar r_useSRGB;
-	if( r_useSRGB.IsModified() )
-	{
-		r_useSRGB.ClearModified();
-		if( glConfig.sRGBFramebufferAvailable )
-		{
-			if( r_useSRGB.GetBool() && r_useSRGB.GetInteger() != 3 )
-			{
-				glEnable( GL_FRAMEBUFFER_SRGB );
-			}
-			else
-			{
-				glDisable( GL_FRAMEBUFFER_SRGB );
-			}
-		}
-	}
-	
-	if( r_antiAliasing.IsModified() )
-	{
-		switch( r_antiAliasing.GetInteger() )
-		{
-			case ANTI_ALIASING_MSAA_2X:
-			case ANTI_ALIASING_MSAA_4X:
-			case ANTI_ALIASING_MSAA_8X:
-				if( r_antiAliasing.GetInteger() > 0 )
-				{
-					glEnable( GL_MULTISAMPLE );
-				}
-				break;
-				
-			default:
-				glDisable( GL_MULTISAMPLE );
-				break;
-		}
-	}
-
-	// reload shaders 
-	if (r_useHDR.IsModified()
-		|| r_useHalfLambertLighting.IsModified()
-		|| r_selfShadow.IsModified()
-		|| r_selfShadowAdjust.IsModified()
-		|| r_useShadowMapping.IsModified())
-	{
-		r_useHDR.ClearModified();
-		r_useHalfLambertLighting.ClearModified();
-		r_selfShadow.ClearModified();
-		r_selfShadowAdjust.ClearModified();
-		r_useShadowMapping.ClearModified();
-		renderProgManager.KillAllShaders();
-		renderProgManager.LoadAllShaders();
-	}
-	
-	// RB: turn off shadow mapping for OpenGL drivers that are too slow
-	switch( glConfig.driverType )
-	{
-		case GLDRV_OPENGL_ES2:
-		case GLDRV_OPENGL_ES3:
-			//case GLDRV_OPENGL_MESA:
-			r_useShadowMapping.SetInteger( 0 );
-			break;
-			
-		default:
-			break;
-	}
-	// RB end
-}
 
 /*
 =============
@@ -354,7 +238,8 @@ idRenderSystemLocal::idRenderSystemLocal
 idRenderSystemLocal::idRenderSystemLocal() :
 	unitSquareTriangles( NULL ),
 	zeroOneCubeTriangles( NULL ),
-	testImageTriangles( NULL )
+	testImageTriangles( NULL ),
+	bInitialized( false )
 {
 	Clear();
 }
@@ -427,7 +312,7 @@ idRenderSystemLocal::DrawStretchPic
 static triIndex_t quadPicIndexes[6] = { 3, 0, 2, 2, 0, 1 };
 void idRenderSystemLocal::DrawStretchPic( const idVec4& topLeft, const idVec4& topRight, const idVec4& bottomRight, const idVec4& bottomLeft, const idMaterial* material )
 {
-	if( !R_IsInitialized() )
+	if( !IsInitialized() )
 	{
 		return;
 	}
@@ -482,7 +367,7 @@ idRenderSystemLocal::DrawStretchTri
 */
 void idRenderSystemLocal::DrawStretchTri( const idVec2& p1, const idVec2& p2, const idVec2& p3, const idVec2& t1, const idVec2& t2, const idVec2& t3, const idMaterial* material )
 {
-	if( !R_IsInitialized() )
+	if( !IsInitialized() )
 	{
 		return;
 	}
@@ -751,21 +636,21 @@ void idRenderSystemLocal::SwapCommandBuffers_FinishRendering(
 		*gpuMicroSec = 0;		// until shown otherwise
 	}
 	
-	if( !R_IsInitialized() )
+	if( !IsInitialized() )
 	{
 		return;
 	}
 	
 	
 	// After coming back from an autoswap, we won't have anything to render
-	if( frameData->cmdHead->next != NULL )
+	//if( frameData && frameData->cmdHead->next != NULL )
 	{
 		// wait for our fence to hit, which means the swap has actually happened
 		// We must do this before clearing any resources the GPU may be using
-		void GL_BlockingSwapBuffers();
-		GL_BlockingSwapBuffers();
+		backend.GL_BlockingSwapBuffers();
 	}
 	
+#if !defined(USE_VULKAN)
 	// read back the start and end timer queries from the previous frame
 	if( glConfig.timerQueryAvailable )
 	{
@@ -782,6 +667,7 @@ void idRenderSystemLocal::SwapCommandBuffers_FinishRendering(
 			*gpuMicroSec = drawingTimeNanoseconds / 1000;
 		}
 	}
+#endif
 	
 	//------------------------------
 	
@@ -792,18 +678,18 @@ void idRenderSystemLocal::SwapCommandBuffers_FinishRendering(
 	}
 	if( backEndMicroSec != NULL )
 	{
-		*backEndMicroSec = backEnd.pc.totalMicroSec;
+		*backEndMicroSec = backend.pc.totalMicroSec;
 	}
 	if( shadowMicroSec != NULL )
 	{
-		*shadowMicroSec = backEnd.pc.shadowMicroSec;
+		*shadowMicroSec = backend.pc.shadowMicroSec;
 	}
 	
 	// print any other statistics and clear all of them
-	R_PerformanceCounters();
+	PrintPerformanceCounters();
 	
 	// check for dynamic changes that require some initialization
-	R_CheckCvars();
+	backend.CheckCVars();
 	
 	// RB: resize HDR buffers
 	Framebuffer::CheckFramebuffers();
@@ -820,7 +706,7 @@ idRenderSystemLocal::SwapCommandBuffers_FinishCommandBuffers
 */
 const emptyCommand_t* idRenderSystemLocal::SwapCommandBuffers_FinishCommandBuffers()
 {
-	if( !R_IsInitialized() )
+	if( !IsInitialized() )
 	{
 		return NULL;
 	}
@@ -837,9 +723,9 @@ const emptyCommand_t* idRenderSystemLocal::SwapCommandBuffers_FinishCommandBuffe
 	
 	// copy the code-used drawsurfs that were
 	// allocated at the start of the buffer memory to the backEnd referenced locations
-	backEnd.unitSquareSurface = tr.unitSquareSurface_;
-	backEnd.zeroOneCubeSurface = tr.zeroOneCubeSurface_;
-	backEnd.testImageSurface = tr.testImageSurface_;
+	backend.unitSquareSurface = tr.unitSquareSurface_;
+	backend.zeroOneCubeSurface = tr.zeroOneCubeSurface_;
+	backend.testImageSurface = tr.testImageSurface_;
 	
 	// use the other buffers next frame, because another CPU
 	// may still be rendering into the current buffers
@@ -847,14 +733,7 @@ const emptyCommand_t* idRenderSystemLocal::SwapCommandBuffers_FinishCommandBuffe
 	
 	// possibly change the stereo3D mode
 	// PC
-	if( glConfig.nativeScreenWidth == 1280 && glConfig.nativeScreenHeight == 1470 )
-	{
-		glConfig.stereo3Dmode = STEREO3D_HDMI_720;
-	}
-	else
-	{
-		glConfig.stereo3Dmode = GetStereoScopicRenderingMode();
-	}
+	UpdateStereo3DMode();
 	
 	// prepare the new command buffer
 	guiModel->BeginFrame();
@@ -894,9 +773,18 @@ const emptyCommand_t* idRenderSystemLocal::SwapCommandBuffers_FinishCommandBuffe
 	// set the time for shader effects in 2D rendering
 	frameShaderTime = Sys_Milliseconds() * 0.001;
 	
+#if 1 //!defined(USE_VULKAN)
+	// RB: TODO RC_SET_BUFFER is not handled in OpenGL
 	setBufferCommand_t* cmd2 = ( setBufferCommand_t* )R_GetCommandBuffer( sizeof( *cmd2 ) );
 	cmd2->commandId = RC_SET_BUFFER;
+	
+#if defined(USE_VULKAN)
+	cmd2->buffer = 0;
+#else
 	cmd2->buffer = ( int )GL_BACK;
+#endif
+	
+#endif
 	
 	// the old command buffer can now be rendered, while the new one can
 	// be built in parallel
@@ -973,7 +861,7 @@ idRenderSystemLocal::CropRenderSize
 */
 void idRenderSystemLocal::CropRenderSize( int width, int height )
 {
-	if( !R_IsInitialized() )
+	if( !IsInitialized() )
 	{
 		return;
 	}
@@ -1020,7 +908,7 @@ idRenderSystemLocal::UnCrop
 */
 void idRenderSystemLocal::UnCrop()
 {
-	if( !R_IsInitialized() )
+	if( !IsInitialized() )
 	{
 		return;
 	}
@@ -1055,7 +943,7 @@ idRenderSystemLocal::CaptureRenderToImage
 */
 void idRenderSystemLocal::CaptureRenderToImage( const char* imageName, bool clearColorAfterCopy )
 {
-	if( !R_IsInitialized() )
+	if( !IsInitialized() )
 	{
 		return;
 	}
@@ -1100,7 +988,7 @@ idRenderSystemLocal::CaptureRenderToFile
 */
 void idRenderSystemLocal::CaptureRenderToFile( const char* fileName, bool fixAlpha )
 {
-	if( !R_IsInitialized() )
+	if( !IsInitialized() )
 	{
 		return;
 	}
@@ -1111,6 +999,7 @@ void idRenderSystemLocal::CaptureRenderToFile( const char* fileName, bool fixAlp
 	guiModel->Clear();
 	RenderCommandBuffers( frameData->cmdHead );
 	
+#if !defined(USE_VULKAN)
 	glReadBuffer( GL_BACK );
 	
 	// include extra space for OpenGL padding to word boundaries
@@ -1133,6 +1022,7 @@ void idRenderSystemLocal::CaptureRenderToFile( const char* fileName, bool fixAlp
 	
 	R_StaticFree( data );
 	R_StaticFree( data2 );
+#endif
 }
 
 

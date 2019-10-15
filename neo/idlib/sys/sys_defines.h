@@ -113,6 +113,8 @@ If you have questions concerning this license or the applicable additional terms
 #define	CPUSTRING						"x86"
 #elif defined(__x86_64__)
 #define CPUSTRING						"x86_64"
+#elif defined(__e2k__)
+#define CPUSTRING						"e2k"
 #else
 #error unknown CPU
 #endif
@@ -218,6 +220,8 @@ bulk of the codebase, so it is the best place for analyze pragmas.
 
 // win32 needs this, but 360 doesn't
 #pragma warning( disable: 6540 )	// warning C6540: The use of attribute annotations on this function will invalidate all of its existing __declspec annotations [D:\tech5\engine\engine-10.vcxproj]
+
+#pragma warning( disable: 4467 )	// .. Include\CodeAnalysis\SourceAnnotations.h(68): warning C4467: usage of ATL attributes is deprecated
 
 #if !defined(VERIFY_FORMAT_STRING)
 // checking format strings catches a LOT of errors
