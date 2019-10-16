@@ -19,10 +19,10 @@ option(OPENAL
 		"Use OpenAL soft instead of XAudio2" OFF)
 
 option(FFMPEG
-		"Use FMPEG to render Bink videos" OFF)
+		"Use FMPEG to render Bink videos" ON)
 
 option(BINKDEC
-		"Use included libbinkdec to render Bink videos" ON)
+		"Use included libbinkdec to render Bink videos" OFF)
 		
 option(USE_VULKAN
 		"Use Vulkan instead of OpenGL" OFF)
@@ -209,6 +209,20 @@ elseif(MSVC)
     if(CMAKE_CONFIGURATION_TYPES) 
         set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Retail" CACHE STRING "" FORCE) 
     endif()
+	if (USE_VULKAN) 
+	#GK: Fixe performance isse on classic doom for the debug build
+		set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /D _DEBUG /MP /Ob2 /Oi /Oy /MDd")
+		set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MP /Oi /Oy /MD")
+		#set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MP /Oi /MTd")
+		#set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
+		set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD")
+		
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /Ob2 /Oi /Oy /MDd")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /Oi /Oy /MD")
+		#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MP /MTd")
+		#set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
+		set(CMAKE_CXX_FLAGS_RETAIL "${CMAKE_CXX_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD")
+	else()
 	#GK: Fixe performance isse on classic doom for the debug build
 		set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /D _DEBUG /MP /Ob2 /Oi /Oy /MTd")
 		set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MP /Oi /Oy /MT")
@@ -221,7 +235,7 @@ elseif(MSVC)
 		#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MP /MTd")
 		#set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
 		set(CMAKE_CXX_FLAGS_RETAIL "${CMAKE_CXX_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MT")
-		
+	endif()
 		# RB: without /SAFESEH:NO we can't link against ffmpeg libs and VS2013 or we have to build our own
 		# libs for newer compilers
 		set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG:FULL /SAFESEH:NO")
@@ -346,8 +360,8 @@ if(USE_VULKAN)
 	#option(ENABLE_NV_EXTENSIONS "Enables support of Nvidia-specific extensions" ON)
 	#option(ENABLE_OPT "Enables spirv-opt capability if present" ON)
 	
-	set(GLSLANG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs/glslang)
-	add_subdirectory(${GLSLANG_DIR})
+	set(GLSLANG_DIR $ENV{VK_SDK_PATH}/glslang)
+	add_subdirectory(${GLSLANG_DIR} ${CMAKE_CURRENT_BINARY_DIR}/glslang)
 	
 	include_directories(${GLSLANG_DIR}/glslang)
 

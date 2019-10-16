@@ -15,7 +15,7 @@ rm -rf build > /dev/null 2>&1
 mkdir build > /dev/null 2>&1
 cd build 
 echo Generating files
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DSDL2=ON ../neo > log.txt ||(
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DSDL2=ON -DOpenGL_GL_PREFERENCE=GLVND ../neo > log.txt ||(
 echo ERROR Generating files
 cd ..
 rmdir /Q /S build
