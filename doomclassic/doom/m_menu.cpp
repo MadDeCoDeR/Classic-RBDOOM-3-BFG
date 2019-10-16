@@ -1003,8 +1003,8 @@ void M_DrawVideo(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])));
 	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])));
-	V_DrawPatchDirect(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (blurry), 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[blurryeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[blurryeffect])));
+	//V_DrawPatchDirect(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (blurry), 0,
+	//	/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[blurryeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[blurryeffect])));
 }
 
 void M_Video(int choice)
