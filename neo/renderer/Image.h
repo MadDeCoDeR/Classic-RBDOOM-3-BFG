@@ -447,8 +447,9 @@ private:
 	GLuint				internalFormat;
 	GLuint				dataFormat;
 	GLuint				dataType;
-	bool				actuallyloaded;
 	
+#endif
+	bool				actuallyloaded;
 };
 
 // data is RGBA

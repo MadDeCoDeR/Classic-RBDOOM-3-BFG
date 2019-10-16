@@ -26,7 +26,7 @@
 */
 #include <stdlib.h>
 #include <math.h>
-
+#if defined (USE_FFMPEG)
 extern "C"
 {
 #include <libavcodec/avcodec.h>
@@ -34,6 +34,7 @@ extern "C"
 #include <libavformat/avio.h>
 #include <libswresample/swresample.h>
 }
+#endif
 
 #include "sound/snd_local.h"
 #ifndef USE_OPENAL
