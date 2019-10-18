@@ -143,13 +143,15 @@ namespace DoomLib
 	extern int					chosenSkill;
 	extern int					chosenEpisode;
 	extern bool					use_doomit;
-	extern bool					hexp[3];
+	extern bool					hexp[4];
 	extern int					selection;
 
 	extern char*				otherfiles[5][20];
 	extern char*				generalfiles[20]; //GK:Keep track of global mods for save file checks
 
 	extern idMatchParameters	matchParms;
+
+	extern bool					oldHDR;
 
 	const ExpansionData *		GetCurrentExpansion();
 	const ExpansionData*		GetDemo();

@@ -497,7 +497,13 @@ void M_LoadExpansion(int choice)
 		DoomLib::SetIdealExpansion( doom2 );
 		break;
 	case 1:
-		DoomLib::SetIdealExpansion( pack_nerve );
+		if (DoomLib::hexp[3]) {
+			DoomLib::SetIdealExpansion(pack_nerve);
+		}
+		else {
+			procced = false;
+			M_StartMessage(EXPROMT, NULL, false);
+		}
 		break;
 	//GK: Before the expansion loads check if it is exist. Otherwise drop back to main menu
 	case 2:
@@ -1235,7 +1241,13 @@ void M_Expansion(int choice)
 	if( choice == 0 ) {
 		DoomLib::SetIdealExpansion( doom2 );
 	}else if (choice == 1){
-		DoomLib::SetIdealExpansion( pack_nerve );
+		if (DoomLib::hexp[3]) {
+			DoomLib::SetIdealExpansion(pack_nerve);
+		}
+		else {
+			procced = false;
+			M_StartMessage(EXPROMT, NULL, false);
+		}
 	}
 	else if (choice == 2) {
 		if (DoomLib::hexp[0]) {
@@ -1620,6 +1632,9 @@ void M_ExitGame(int choice)
 	if (::g->netgame) {
 		DoomLib::Interface.QuitCurrentGame();
 	}
+	r_useHDR.SetBool(DoomLib::oldHDR);
+	r_useHDR.SetModified();
+	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 	common->Quit();
 }
 
@@ -2058,7 +2073,7 @@ qboolean M_Responder (event_t* ev)
 
 						int expm = buf[1]-1;
 						if (expm > 0 && expm < 6) {
-							if (expm > 1 && expm < 5) {
+							if (expm > 1) {
 								switch (expm) {
 								case 2:
 									if (DoomLib::hexp[0]) {
@@ -2072,6 +2087,11 @@ qboolean M_Responder (event_t* ev)
 									break;
 								case 4:
 									if (DoomLib::hexp[2]) {
+										DoomLib::SetCurrentExpansion(expm);
+									}
+									break;
+								case 5:
+									if (DoomLib::hexp[3]) {
 										DoomLib::SetCurrentExpansion(expm);
 									}
 									break;

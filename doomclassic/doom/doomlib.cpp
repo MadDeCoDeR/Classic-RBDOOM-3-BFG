@@ -46,6 +46,7 @@ idCVar m_show_messages( "m_show_messages", "1", CVAR_ARCHIVE | CVAR_INTEGER, "sh
 idCVar m_inDemoMode( "m_inDemoMode", "1", CVAR_INTEGER, "in demo mode", 0, 1 );
 
 extern idCVar in_joystickRumble;
+extern idCVar r_useHDR;
 
 bool	globalNetworking	= false;
 bool	globalPauseTime		= false;
@@ -171,12 +172,14 @@ namespace DoomLib
 	int								chosenSkill = 0;
 	int								chosenEpisode = 1;
 	bool							use_doomit = false;
-	bool							hexp[3];
+	bool							hexp[4];
 	int								selection = -1;
 	char*							otherfiles[5][20];
 	char*							generalfiles[20]; //GK:Keep track of global mods for save file checks
 
 	idMatchParameters				matchParms;
+
+	bool							oldHDR = false;
 
 	static float							high;
 	static int								highDuration;
@@ -322,8 +325,6 @@ void DoomLib::InitGame( int argc, char** argv )
 	::g->myargv = argv;
 
 	InitControlRemap();
-		
-
 
 	D_DoomMain();
 }

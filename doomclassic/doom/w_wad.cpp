@@ -1832,6 +1832,10 @@ void W_CheckExp() {
 		fclose(file);
 		DoomLib::hexp[2] = true;
 	}
+	if (FILE* file = fopen("base/wads/NERVE.WAD", "r")) {
+		fclose(file);
+		DoomLib::hexp[3] = true;
+	}
 }
 //GK:Do here the modded save check
 bool W_CheckMods(int sc, std::vector<std::string> filelist) {

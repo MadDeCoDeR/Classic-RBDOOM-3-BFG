@@ -693,7 +693,12 @@ void D_DoomMain(void)
 				DoomLib::SetIdealExpansion(doom2);
 				break;
 			case 2:
-				DoomLib::SetIdealExpansion(pack_nerve);
+				if (DoomLib::hexp[3]) {
+					DoomLib::SetIdealExpansion(pack_nerve);
+				}
+				else {
+					DoomLib::SetIdealExpansion(doom2);
+				}
 				break;
 			case 3:
 

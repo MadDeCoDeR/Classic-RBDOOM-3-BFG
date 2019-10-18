@@ -82,6 +82,7 @@ idCVar timescale( "timescale", "1", CVAR_SYSTEM | CVAR_FLOAT, "Number of game fr
 extern idCVar in_joystickRumble;
 extern idCVar r_aspectcorrect; //GK: also here
 extern idCVar r_clblurry;
+extern idCVar r_useHDR;
 /*
 ===============
 idGameThread::Run
@@ -786,6 +787,9 @@ void idCommonLocal::Frame()
 		{
 			RunDoomClassicFrame();
 		}
+		else if (DoomLib::oldHDR){
+			r_useHDR.SetBool(DoomLib::oldHDR);
+		}
 #endif
 		// RB end
 		
@@ -926,6 +930,10 @@ idCommonLocal::RunDoomClassicFrame
 void idCommonLocal::RunDoomClassicFrame()
 {
 	static int doomTics = 0;
+	if (r_useHDR.GetBool()) {
+		DoomLib::oldHDR = r_useHDR.GetBool();
+		r_useHDR.SetBool(false);
+	}
 	
 	if( DoomLib::expansionDirty )
 	{
