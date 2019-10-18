@@ -84,7 +84,7 @@ extern "C"
 }
 bool hasplanar = true;
 #endif
-#include <sound\AVD.h>
+#include "sound/AVD.h"
 
 #ifdef USE_BINKDEC
 // DG: not sure how to use FFMPEG and BINKDEC at the same time.. it might be useful if someone wants to
