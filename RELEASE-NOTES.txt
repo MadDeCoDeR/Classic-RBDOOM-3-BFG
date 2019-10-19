@@ -3,6 +3,29 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 Thank you for downloading Classic RBDOOM-3-BFG.
 _______________________________________
 
+19 Octomber 2019 - Classic RBDOOM-3-BFG 1.2.0
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- Nerve expansion is now optional (like Final DOOM and Master Levels)
+
+- When Opening Classic DOOM games and HDR is enabled it will be temporary disabled (lag and some startup frame glitch is expected)
+
+[DOOM3BFG]
+
+- Upstream updates from RBDOOM-3-BFG for more information check: https://github.com/RobertBeckebans/RBDOOM-3-BFG/releases/tag/1.2.0-preview1
+
+- Fixed XAudio2 issue with .roq video files
+
+- Add the remaining console layouts from the DOOM 3 (2019)
+
+- Fixed the right/ left stick on PDA when using PS3 layout
+_______________________________________
+
 04 Octomber 2019 - Classic RBDOOM-3-BFG 1.1.14
 _______________________________
 
