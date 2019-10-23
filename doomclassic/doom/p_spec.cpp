@@ -525,8 +525,13 @@ P_CrossSpecialLine
 			thing->player->secretcount++;
 			//GK send message when secret found
 			S_StartSound(thing->player->mo, sfx_getpow);
-			::g->plyr->message = GOTSECRET;
-			line->frontsector->special = 0;
+			::g->plyr->message = GOTSECRET; 
+			if (line->frontsector->special == 9) {
+				line->frontsector->special = 0;
+			}
+			if (line->backsector->special == 9) {
+				line->backsector->special = 0;
+			}
 		}
 	}
 
