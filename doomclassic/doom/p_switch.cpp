@@ -225,12 +225,18 @@ P_ChangeSwitchTexture
     // EXIT SWITCH?
     if (line->special == 11)                
 	sound = sfx_swtchx;
-	
+
+	bool skipSound = false;
+	if (line->special == 46 && (line->frontsector->ceilingheight != line->frontsector->floorheight) && (line->backsector->ceilingheight != line->backsector->floorheight)) {
+		skipSound = true;
+	}
     for (i = 0;i < ::g->numswitches*2;i++)
     {
 	if (::g->switchlist[i] == texTop)
 	{
-	    S_StartSound(::g->buttonlist->soundorg,sound);
+		if (!skipSound)
+			S_StartSound(::g->buttonlist->soundorg,sound);
+
 	    ::g->sides[line->sidenum[0]].toptexture = ::g->switchlist[i^1];
 
 	    if (useAgain)
@@ -242,7 +248,9 @@ P_ChangeSwitchTexture
 	{
 	    if (::g->switchlist[i] == texMid)
 	    {
-		S_StartSound(::g->buttonlist->soundorg,sound);
+			if (!skipSound)
+				S_StartSound(::g->buttonlist->soundorg,sound);
+
 		::g->sides[line->sidenum[0]].midtexture = ::g->switchlist[i^1];
 
 		if (useAgain)
@@ -254,7 +262,8 @@ P_ChangeSwitchTexture
 	    {
 		if (::g->switchlist[i] == texBot)
 		{
-		    S_StartSound(::g->buttonlist->soundorg,sound);
+			if (!skipSound)
+				S_StartSound(::g->buttonlist->soundorg,sound);
 		    ::g->sides[line->sidenum[0]].bottomtexture = ::g->switchlist[i^1];
 
 		    if (useAgain)
