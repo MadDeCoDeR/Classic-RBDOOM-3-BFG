@@ -1796,16 +1796,29 @@ void WI_initVariables(wbstartstruct_t* wbstartstruct)
     ::g->cnt = ::g->bcnt = 0;
     ::g->firstrefresh = 1;
     ::g->me = ::g->wbs->pnum;
-    plrs = ::g->wbs->plyr;
 
-    if (!::g->wbs->maxkills)
-	::g->wbs->maxkills = 1;
+	if (!::g->wbs->maxkills) {
+		::g->wbs->maxkills = 1;
+		for (int i = 0; i < MAXPLAYERS; i++) {
+			::g->wbs->plyr[i].skills = 1;
+		}
+	}
 
-    if (!::g->wbs->maxitems)
-	::g->wbs->maxitems = 1;
+	if (!::g->wbs->maxitems) {
+		::g->wbs->maxitems = 1;
+		for (int i = 0; i < MAXPLAYERS; i++) {
+			::g->wbs->plyr[i].sitems = 1;
+		}
+	}
 
-    if (!::g->wbs->maxsecret)
-	::g->wbs->maxsecret = 1;
+	if (!::g->wbs->maxsecret) {
+		::g->wbs->maxsecret = 1;
+		for (int i = 0; i < MAXPLAYERS; i++) {
+			::g->wbs->plyr[i].ssecret = 1;
+		}
+	}
+
+	plrs = ::g->wbs->plyr;
 
     if ( ::g->gamemode != retail )
       if (::g->wbs->epsd > 2)
