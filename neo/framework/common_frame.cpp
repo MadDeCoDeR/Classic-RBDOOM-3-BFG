@@ -633,7 +633,7 @@ void idCommonLocal::Frame()
 			}
 			
 			// debug cvar to force multiple game tics
-			if( com_fixedTic.GetInteger() > 0 )
+			if( com_fixedTic.GetInteger() > 0 && !(GetCurrentGame() == DOOM_CLASSIC || GetCurrentGame() == DOOM2_CLASSIC))
 			{
 				numGameFrames = com_fixedTic.GetInteger();
 				gameFrame += numGameFrames;
