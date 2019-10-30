@@ -132,14 +132,14 @@ void I_Printf(const char* msg, ...)
     va_list	argptr;
 
     // Message first.
-	if( debugOutput ) {
+	//if( debugOutput ) {
 		va_start (argptr,msg);
 		vsprintf (pmsg, msg, argptr);
 
 		common->Printf(pmsg);//GK:Show ALL the classic Doom related messages on debug
 
 		va_end (argptr);
-	}
+	//}
 }
 
 
