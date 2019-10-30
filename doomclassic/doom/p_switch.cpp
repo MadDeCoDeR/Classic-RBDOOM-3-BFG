@@ -227,7 +227,15 @@ P_ChangeSwitchTexture
 	sound = sfx_swtchx;
 
 	bool skipSound = false;
-	if (line->special == 46 && (line->frontsector->ceilingheight != line->frontsector->floorheight) && (line->backsector->ceilingheight != line->backsector->floorheight)) {
+	bool front = true;
+	bool back = true;
+	if (line->frontsector) {
+		front = line->frontsector->ceilingheight != line->frontsector->floorheight;
+	}
+	if (line->backsector) {
+		back = line->backsector->ceilingheight != line->backsector->floorheight;
+	}
+	if (line->special == 46 && front && back) {
 		skipSound = true;
 	}
     for (i = 0;i < ::g->numswitches*2;i++)
