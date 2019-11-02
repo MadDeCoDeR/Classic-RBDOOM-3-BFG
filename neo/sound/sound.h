@@ -210,6 +210,8 @@ public:
 	// where is the camera/microphone
 	// listenerId allows listener-private and antiPrivate sounds to be filtered
 	virtual void			PlaceListener( const idVec3& origin, const idMat3& axis, const int listenerId,const char* locationName  ) = 0;
+
+	virtual void				ClearEAX() = 0;
 	
 	// fade all sounds in the world with a given shader soundClass
 	// to is in Db, over is in seconds

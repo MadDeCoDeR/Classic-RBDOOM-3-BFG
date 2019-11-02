@@ -9694,6 +9694,7 @@ void idPlayer::Killed( idEntity* inflictor, idEntity* attacker, int damage, cons
 	physicsObj.SetMovementType( PM_DEAD );
 	StartSound( "snd_death", SND_CHANNEL_VOICE, 0, false, NULL );
 	StopSound( SND_CHANNEL_BODY2, false );
+	gameSoundWorld->ClearEAX();
 	
 	fl.takedamage = true;		// can still be gibbed
 	

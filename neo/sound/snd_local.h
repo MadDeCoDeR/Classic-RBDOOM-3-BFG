@@ -299,6 +299,8 @@ public:
 	
 	// where is the camera
 	virtual void			PlaceListener( const idVec3& origin, const idMat3& axis, const int listenerId, const char* locationName );
+
+	virtual void			ClearEAX();
 	
 	virtual void			WriteSoundShaderLoad( const idSoundShader* snd );
 	

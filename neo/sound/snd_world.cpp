@@ -196,6 +196,10 @@ void idSoundWorldLocal::PlaceListener( const idVec3& origin, const idMat3& axis,
 	}
 }
 
+void idSoundWorldLocal::ClearEAX() {
+	EAXarea = -1;
+}
+
 /*
 ========================
 idSoundWorldLocal::WriteSoundShaderLoad
