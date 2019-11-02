@@ -7856,7 +7856,7 @@ void idPlayer::EvaluateControls()
 	//GK: Custom made weapon cycle algorithm in order to handle press and hold events
 	int npw = 0;
 	bool isIntroMap = (idStr::FindText(gameLocal.GetMapFileName(), "mars_city1") >= 0);
-	if (usercmd.buttons & BUTTON_NEXTWEAP && tweap == currentWeapon)
+	if (usercmd.buttons & BUTTON_NEXTWEAP && tweap == currentWeapon && circleWeaponPacifier >= com_engineHz_latched)
 	{
 		if (!isIntroMap)
 		{
@@ -7877,9 +7877,10 @@ void idPlayer::EvaluateControls()
 					weap = spawnArgs.GetString(va("def_weapon%d", tweap));
 				}
 			}
+			circleWeaponPacifier = 0;
 		}
 	}
-	if (usercmd.buttons & BUTTON_PREVWEAP && tweap == currentWeapon)
+	if (usercmd.buttons & BUTTON_PREVWEAP && tweap == currentWeapon && circleWeaponPacifier >= com_engineHz_latched)
 	{
 		if (!isIntroMap)
 		{
@@ -7900,9 +7901,10 @@ void idPlayer::EvaluateControls()
 					weap = spawnArgs.GetString(va("def_weapon%d", tweap));
 				}
 			}
+			circleWeaponPacifier = 0;
 		}
 	}
-
+	circleWeaponPacifier++;
 	/*if (currentWeapon == 0 && tweap != currentWeapon) {
 		const char* weap = spawnArgs.GetString(va("def_weapon%d", tweap));
 		int HW = inventory.weapons & (1 << tweap);
@@ -11607,7 +11609,7 @@ void idPlayer::ClientThink( const int curTime, const float fraction, const bool 
 	//GK: Custom made weapon cycle algorithm in order to handle press and hold events
 	int npw = 0;
 	bool isIntroMap = (idStr::FindText(gameLocal.GetMapFileName(), "mars_city1") >= 0);
-	if (usercmd.buttons & BUTTON_NEXTWEAP && tweap == currentWeapon)
+	if (usercmd.buttons & BUTTON_NEXTWEAP && tweap == currentWeapon && circleWeaponPacifier >= com_engineHz_latched)
 	{
 		if (!isIntroMap)
 		{
@@ -11628,9 +11630,10 @@ void idPlayer::ClientThink( const int curTime, const float fraction, const bool 
 					weap = spawnArgs.GetString(va("def_weapon%d", tweap));
 				}
 			}
+			circleWeaponPacifier = 0;
 		}
 	}
-	if (usercmd.buttons & BUTTON_PREVWEAP && tweap == currentWeapon)
+	if (usercmd.buttons & BUTTON_PREVWEAP && tweap == currentWeapon && circleWeaponPacifier >= com_engineHz_latched)
 	{
 		if (!isIntroMap)
 		{
@@ -11651,9 +11654,10 @@ void idPlayer::ClientThink( const int curTime, const float fraction, const bool 
 					weap = spawnArgs.GetString(va("def_weapon%d", tweap));
 				}
 			}
+			circleWeaponPacifier = 0;
 		}
 	}
-
+	circleWeaponPacifier++;
 	/*if (currentWeapon == 0 && tweap != currentWeapon) {
 		const char* weap = spawnArgs.GetString(va("def_weapon%d", tweap));
 		int HW = inventory.weapons & (1 << tweap);

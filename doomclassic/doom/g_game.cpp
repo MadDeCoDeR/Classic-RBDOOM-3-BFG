@@ -93,6 +93,8 @@ bool	loadingGame = false;
 
 byte	demoversion = 0;
 
+int circleWeaponPacifier = 0;
+
 qboolean	G_CheckDemoStatus (void); 
 void	G_ReadDemoTiccmd (ticcmd_t* cmd); 
 void	G_WriteDemoTiccmd (ticcmd_t* cmd); 
@@ -359,12 +361,14 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			int cimpulse = 0;
 			//I_Printf("Impulse seq %d", curTech5Command.impulseSequence);
 //			if( oldImpulseSequence != curTech5Command.impulseSequence ) {
-				cimpulse=G_PerformImpulse( curTech5Command.buttons, cmd );
-				if (cimpulse > 0) { //GK: Weapon change event happend
+				cimpulse = G_PerformImpulse( curTech5Command.buttons, cmd );
+				if (cimpulse > 0 && circleWeaponPacifier >= com_engineHz_latched) { //GK: Weapon change event happend
+					circleWeaponPacifier = 0;
 					cmd->buttons |= BT_CHANGE;
 					cmd->nextPrevWeapon = cimpulse;
 					P_PlayerThink(&::g->players[::g->consoleplayer]);
 				}
+				circleWeaponPacifier++;
 //			}
 //			oldImpulseSequence = curTech5Command.impulseSequence;
 

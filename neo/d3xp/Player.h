@@ -824,6 +824,7 @@ private:
 	int						landTime;
 	
 	int						tweap; //GK: In order to keep track on whenever we want to cycle through the weapons
+	int						circleWeaponPacifier;
 	int						currentWeapon;
 	idPredictedValue< int >	idealWeapon;
 	int						previousWeapon;
