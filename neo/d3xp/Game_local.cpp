@@ -5035,6 +5035,7 @@ bool idGameLocal::SkipCinematic( void )
 	}
 	
 	soundSystem->SetMute( true );
+	soundSystem->StopAllSounds();
 	if( !skipCinematic )
 	{
 		skipCinematic = true;
