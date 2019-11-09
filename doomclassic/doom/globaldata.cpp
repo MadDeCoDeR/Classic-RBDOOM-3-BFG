@@ -73,6 +73,7 @@ void M_Gameplay(int choice);
 void M_Freelook(int choice);
 void M_Jump(int choice);
 void M_Cross(int choice);
+void M_Mapst(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);

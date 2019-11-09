@@ -57,8 +57,6 @@ If you have questions concerning this license or the applicable additional terms
 // Locally used constants, shortcuts.
 //
 
-
-
 extern const char* const temp_chat_macros[];
 const char*	const temp_chat_macros[] =
 {
@@ -441,6 +439,7 @@ void resetMapNames() {
 
 //GK: cl_messages
 idCVar cl_messages("cl_messages", "1", CVAR_INIT | CVAR_INTEGER | CVAR_ARCHIVE, "Set how many messages will be shown", 1, 4);
+idCVar cl_showStats("cl_showStats", "0", CVAR_BOOL | CVAR_ARCHIVE | CVAR_NOCHEAT, "Display map status on automap");
 //GK End
 const char*	shiftxform;
 
@@ -539,6 +538,19 @@ void HU_Start(void)
 	// create the map title widget
 	HUlib_initTextLine(&::g->w_title,
 		HU_TITLEX, HU_TITLEY,
+		::g->hu_font,
+		HU_FONTSTART);
+
+	HUlib_initTextLine(&::g->w_kills,
+		HU_STATS, HU_TITLEY - SHORT(::g->hu_font[0]->height * 2),
+		::g->hu_font,
+		HU_FONTSTART);
+	HUlib_initTextLine(&::g->w_items,
+		HU_STATS, HU_TITLEY - SHORT(::g->hu_font[0]->height),
+		::g->hu_font,
+		HU_FONTSTART);
+	HUlib_initTextLine(&::g->w_secrets,
+		HU_STATS, HU_TITLEY,
 		::g->hu_font,
 		HU_FONTSTART);
 
@@ -643,8 +655,41 @@ void HU_Drawer(void)
 
 	HUlib_drawSText(&::g->w_message);
 	HUlib_drawIText(&::g->w_chat);
-	if (::g->automapactive)
+	if (::g->automapactive) {
 		HUlib_drawTextLine(&::g->w_title, false);
+
+		if (cl_showStats.GetBool()) {
+			HUlib_clearTextLine(&::g->w_kills);
+			idStr stkills;
+			sprintf(stkills, "Kills: %d / %d\0", ::g->players[::g->consoleplayer].killcount, ::g->totalkills);
+			const char* s = stkills.c_str();
+			::g->w_kills.x = HU_STATS - (stkills.Length() * ::g->hu_font[0]->width);
+			while (*s) {
+				HUlib_addCharToTextLine(&::g->w_kills, *(s++));
+			}
+			HUlib_drawTextLine(&::g->w_kills, false);
+
+			HUlib_clearTextLine(&::g->w_items);
+			idStr stitems;
+			sprintf(stitems, "Items: %d / %d\0", ::g->players[::g->consoleplayer].itemcount, ::g->totalitems);
+			const char* s1 = stitems.c_str();
+			::g->w_items.x = HU_STATS - (stitems.Length() * ::g->hu_font[0]->width);
+			while (*s1) {
+				HUlib_addCharToTextLine(&::g->w_items, *(s1++));
+			}
+			HUlib_drawTextLine(&::g->w_items, false);
+
+			HUlib_clearTextLine(&::g->w_secrets);
+			idStr stsecrets;
+			sprintf(stsecrets, "Secrets: %d / %d\0", ::g->players[::g->consoleplayer].secretcount, ::g->totalsecret);
+			const char* s2 = stsecrets.c_str();
+			::g->w_secrets.x = HU_STATS - (stsecrets.Length() * ::g->hu_font[0]->width);
+			while (*s2) {
+				HUlib_addCharToTextLine(&::g->w_secrets, *(s2++));
+			}
+			HUlib_drawTextLine(&::g->w_secrets, false);
+		}
+	}
 
 }
 
@@ -654,6 +699,9 @@ void HU_Erase(void)
 	HUlib_eraseSText(&::g->w_message);
 	HUlib_eraseIText(&::g->w_chat);
 	HUlib_eraseTextLine(&::g->w_title);
+	HUlib_eraseTextLine(&::g->w_kills);
+	HUlib_eraseTextLine(&::g->w_items);
+	HUlib_eraseTextLine(&::g->w_secrets);
 
 }
 

@@ -140,6 +140,7 @@ If you have questions concerning this license or the applicable additional terms
 #define HU_INPUTWIDTH	64
 #define HU_INPUTHEIGHT	1
 #define QUEUESIZE		128
+#define HU_STATS	270
 // hu_stuff.defs end // 
 //  i_net.defs begin // 
 // SMF

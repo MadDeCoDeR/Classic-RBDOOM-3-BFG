@@ -302,6 +302,9 @@ char			chat_char; // remove later.
 player_t*	plr;
 patch_t*		hu_font[HU_FONTSIZE];
 hu_textline_t	w_title;
+hu_textline_t	w_kills;
+hu_textline_t	w_items;
+hu_textline_t	w_secrets;
 qboolean			chat_on;
 hu_itext_t	w_chat;
 qboolean		always_off ;
@@ -420,7 +423,7 @@ menuitem_t MasterMenu[2];
 menu_t  MasterDef;
 menuitem_t DOOMIT[20];
 menu_t  DOOMITDef;
-menuitem_t GameMenu[4];
+menuitem_t GameMenu[5];
 menu_t  GameDef;
 char    tempstring[256];
 int     epi;

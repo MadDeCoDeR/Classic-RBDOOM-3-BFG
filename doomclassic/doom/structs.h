@@ -218,6 +218,7 @@ typedef enum
 	look,
 	jump,
 	cross,
+	mapst,
 	game_end
 } game_e;
 typedef enum
