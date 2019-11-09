@@ -1,0 +1,22 @@
+/*
+	This is the material that is
+	used for Doom Classic.
+	
+	The material affects the whole screen
+	and not just parts of it.
+	
+	DO NOT Delete the default lines,
+	without them you will not get anything 
+	on your screen.
+	
+	This file should be consider a mod resource.
+*/
+material _doomClassic {
+	{
+		//Program gui // This is an example of shader usage. You can change it to whatever you want to use (Better don't mix Doom 3 and Classic Doom Shaders).
+		blend blend
+		colored
+		map _doomClassic
+		clamp
+	}
+}
