@@ -1017,13 +1017,24 @@ void idUsercmdGenLocal::JoystickMove2()
 	idVec2 rightRaw( joystickAxis[ AXIS_RIGHT_X ], joystickAxis[ AXIS_RIGHT_Y ] );
 	
 	
-	// optional stick swap
-	if( idKeyInput::GetUsercmdAction( K_JOY_STICK1_LEFT ) == UB_LOOKLEFT )
-	{
-		const idVec2	temp = leftRaw;
-		leftRaw = rightRaw;
-		rightRaw = temp;
+	//// optional stick swap
+	//if( idKeyInput::GetUsercmdAction( K_JOY_STICK1_LEFT ) == UB_LOOKLEFT )
+	//{
+	//	const idVec2	temp = leftRaw;
+	//	leftRaw = rightRaw;
+	//	rightRaw = temp;
+	//}
+	if (idKeyInput::GetUsercmdAction(K_JOY_STICK1_UP) == UB_LOOKUP) {
+		float temp = leftRaw.y;
+		leftRaw.y = rightRaw.y;
+		rightRaw.y = temp;
 	}
+	if (idKeyInput::GetUsercmdAction(K_JOY_STICK1_LEFT) == UB_LOOKLEFT) {
+		float temp = leftRaw.x;
+		leftRaw.x = rightRaw.x;
+		rightRaw.x = temp;
+	}
+
 	
 	// optional invert look by inverting the right Y axis
 	if( invertLook )
