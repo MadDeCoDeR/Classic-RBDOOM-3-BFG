@@ -1521,7 +1521,7 @@ void checkInput( void* data)
 			Sys_EndJoystickInputEvents();
 		}
 		skipIntro = escapeEvent;
-		if (escapeEvent) {
+		if (skipIntro) {
 			break;
 		}
 	}
@@ -1646,6 +1646,7 @@ void idMenuHandler_ShellLocal::ShowDoomIntro()
 										thisObject->GetSprite()->SetVisible( false );
 										if( nextIndex >= NUM_DOOM_INTRO_LINES )
 										{
+											skipIntro = true;
 											shell->StartGame( 0 );
 										}
 									}
@@ -1879,6 +1880,7 @@ void idMenuHandler_ShellLocal::ShowROEIntro()
 														}
 														else
 														{
+															skipIntro = true;
 															shell->StartGame( 1 );
 															return idSWFScriptVar();
 														}
@@ -2019,6 +2021,7 @@ void idMenuHandler_ShellLocal::ShowLEIntro()
 								if( alpha <= 0.0f )
 								{
 									thisObject->GetSprite()->SetVisible( false );
+									skipIntro = true;
 									shell->StartGame( 2 );
 									return idSWFScriptVar();
 								}
