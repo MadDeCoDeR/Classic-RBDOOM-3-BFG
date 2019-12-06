@@ -35,6 +35,9 @@ If you have questions concerning this license or the applicable additional terms
 static const int PEER_UPDATE_INTERVAL = 500;
 static const int MAX_MENU_OPTIONS = 6;
 
+void checkInput(void* data);
+bool skipIntro;
+
 void idMenuHandler_ShellLocal::Update()
 {
 
@@ -1433,90 +1436,95 @@ void idMenuHandler_ShellLocal::StartGame( int index )
 	//GK: End
 }
 
-bool checkInput()
+void checkInput( void* data)
 {
-	Sys_GenerateEvents();
-		
-	// queue system events ready for polling
-	Sys_GetEvent();
-	// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
-	bool escapeEvent = false;
-	int numKeyEvents = Sys_PollKeyboardInputEvents();
-	if (numKeyEvents > 0)
-	{
-		idLib::joystick = false;
-		for (int i = 0; i < numKeyEvents; i++)
-		{
-			int key;
-			bool state;
+	while (true) {
+		Sys_GenerateEvents();
 
-			if (Sys_ReturnKeyboardInputEvent(i, key, state))
+		// queue system events ready for polling
+		Sys_GetEvent();
+		// GK: allow to escape intro by pressing anything (using the same code that RB used for cinematics)
+		bool escapeEvent = false;
+		int numKeyEvents = Sys_PollKeyboardInputEvents();
+		if (numKeyEvents > 0)
+		{
+			idLib::joystick = false;
+			for (int i = 0; i < numKeyEvents; i++)
 			{
-				if (key == K_ESCAPE && state == true)
+				int key;
+				bool state;
+
+				if (Sys_ReturnKeyboardInputEvent(i, key, state))
 				{
-					escapeEvent = true;
-				}
-				break;
-			}
-		}
-
-		Sys_EndKeyboardInputEvents();
-	}
-	int	mouseEvents[MAX_MOUSE_EVENTS][2];
-	int numMouseEvents = Sys_PollMouseInputEvents(mouseEvents);
-	if (numMouseEvents > 0)
-	{
-		idLib::joystick = false;
-		for (int i = 0; i < numMouseEvents; i++)
-		{
-			int action = mouseEvents[i][0];
-			switch (action)
-			{
-			case M_ACTION1:
-			case M_ACTION2:
-			case M_ACTION3:
-			case M_ACTION4:
-			case M_ACTION5:
-			case M_ACTION6:
-			case M_ACTION7:
-			case M_ACTION8:
-				escapeEvent = true;
-				break;
-
-			default:	// some other undefined button
-				break;
-			}
-		}
-	}
-
-	int numJoystickEvents = Sys_PollJoystickInputEvents(0);
-	if (numJoystickEvents > 0)
-	{
-		int validevents = 0;
-		for (int i = 0; i < numJoystickEvents; i++)
-		{
-			int action;
-			int value;
-
-			if (Sys_ReturnJoystickInputEvent(i, action, value))
-			{
-				if (action >= J_ACTION1 && action <= J_ACTION_MAX)
-				{
-					if (value != 0)
+					if (key == K_ESCAPE && state == true)
 					{
-						validevents++;
 						escapeEvent = true;
-						break;
+					}
+					break;
+				}
+			}
+
+			Sys_EndKeyboardInputEvents();
+		}
+		int	mouseEvents[MAX_MOUSE_EVENTS][2];
+		int numMouseEvents = Sys_PollMouseInputEvents(mouseEvents);
+		if (numMouseEvents > 0)
+		{
+			idLib::joystick = false;
+			for (int i = 0; i < numMouseEvents; i++)
+			{
+				int action = mouseEvents[i][0];
+				switch (action)
+				{
+				case M_ACTION1:
+				case M_ACTION2:
+				case M_ACTION3:
+				case M_ACTION4:
+				case M_ACTION5:
+				case M_ACTION6:
+				case M_ACTION7:
+				case M_ACTION8:
+					escapeEvent = true;
+					break;
+
+				default:	// some other undefined button
+					break;
+				}
+			}
+		}
+
+		int numJoystickEvents = Sys_PollJoystickInputEvents(0);
+		if (numJoystickEvents > 0)
+		{
+			int validevents = 0;
+			for (int i = 0; i < numJoystickEvents; i++)
+			{
+				int action;
+				int value;
+
+				if (Sys_ReturnJoystickInputEvent(i, action, value))
+				{
+					if (action >= J_ACTION1 && action <= J_ACTION_MAX)
+					{
+						if (value != 0)
+						{
+							validevents++;
+							escapeEvent = true;
+							break;
+						}
 					}
 				}
 			}
+			if (validevents > 0) {
+				idLib::joystick = true;
+			}
+			Sys_EndJoystickInputEvents();
 		}
-		if (validevents > 0) {
-			idLib::joystick = true;
+		skipIntro = escapeEvent;
+		if (escapeEvent) {
+			break;
 		}
-		Sys_EndJoystickInputEvents();
 	}
-	return escapeEvent;
 }
 
 static const int NUM_DOOM_INTRO_LINES = 7;
@@ -1527,6 +1535,7 @@ idMenuHandler_Shell::ShowIntroVideo
 */
 void idMenuHandler_ShellLocal::ShowDoomIntro()
 {
+	Sys_CreateThread((xthread_t)checkInput, NULL, THREAD_HIGHEST, "skip Input", CORE_ANY);
 
 	StopSound();
 	
@@ -1598,7 +1607,7 @@ void idMenuHandler_ShellLocal::ShowDoomIntro()
 					}
 					idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 					{
-						if (checkInput()) {
+						if (skipIntro) {
 							if (!hasEscaped) {
 								shell->StartGame(0);
 								hasEscaped = true;
@@ -1727,6 +1736,7 @@ idMenuHandler_Shell::ShowROEIntro
 */
 void idMenuHandler_ShellLocal::ShowROEIntro()
 {
+	Sys_CreateThread((xthread_t)checkInput, NULL, THREAD_HIGHEST, "skip Input", CORE_ANY);
 
 	StopSound();
 	
@@ -1801,7 +1811,7 @@ void idMenuHandler_ShellLocal::ShowROEIntro()
 					}
 					idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 					{
-						if (checkInput()) {
+						if (skipIntro) {
 							if (!hasEscaped) {
 								shell->StartGame(1);
 								hasEscaped = true;
@@ -1923,6 +1933,7 @@ idMenuHandler_Shell::ShowLEIntro
 */
 void idMenuHandler_ShellLocal::ShowLEIntro()
 {
+	Sys_CreateThread((xthread_t)checkInput, NULL, THREAD_HIGHEST, "skip Input", CORE_ANY);
 
 	StopSound();
 	
@@ -1967,7 +1978,7 @@ void idMenuHandler_ShellLocal::ShowLEIntro()
 				}
 				idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 				{
-					if (checkInput()) {
+					if (skipIntro) {
 						if (!hasEscaped) {
 							shell->StartGame(2);
 							hasEscaped = true;
