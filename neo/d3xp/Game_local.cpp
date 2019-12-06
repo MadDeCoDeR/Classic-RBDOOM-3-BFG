@@ -5035,11 +5035,12 @@ bool idGameLocal::SkipCinematic( void )
 	}
 	
 	soundSystem->SetMute( true );
-	soundSystem->StopAllSounds();
+	
 	if( !skipCinematic )
 	{
 		skipCinematic = true;
 		cinematicMaxSkipTime = gameLocal.time + SEC2MS( g_cinematicMaxSkipTime.GetFloat() );
+		soundSystem->GetPlayingSoundWorld()->Skip(cinematicMaxSkipTime);
 	}
 	
 	return true;
