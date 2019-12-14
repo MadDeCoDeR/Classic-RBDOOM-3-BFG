@@ -1603,6 +1603,9 @@ void A_BossDeath (mobj_t* mo, void * )
 						ok = true;
 					}
 				}
+				else {
+					return;
+				}
 			}
 		}
 		else {
@@ -1738,13 +1741,15 @@ void A_BossDeath (mobj_t* mo, void * )
     {
 		if (::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode - 1].startmap) {
 			junk.tag = 666;
-			if (!idStr::Icmp("openDoor", ::g->maps[::g->map - 1].bossaction)) {
-				EV_DoDoor(&junk, blazeOpen);
-				return;
-			}
-			if (!idStr::Icmp("lowerFloor", ::g->maps[::g->map - 1].bossaction)) {
-				EV_DoFloor(&junk, lowerFloorToLowest);
-				return;
+			if (::g->maps[::g->map - 1].bossaction) {
+				if (!idStr::Icmp("openDoor", ::g->maps[::g->map - 1].bossaction)) {
+					EV_DoDoor(&junk, blazeOpen);
+					return;
+				}
+				if (!idStr::Icmp("lowerFloor", ::g->maps[::g->map - 1].bossaction)) {
+					EV_DoFloor(&junk, lowerFloorToLowest);
+					return;
+				}
 			}
 		}
 		else {
