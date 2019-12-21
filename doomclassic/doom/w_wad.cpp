@@ -539,6 +539,9 @@ void W_AddFile ( const char *filename)
 					bool replaced = false;
 					tlump = lumpinfo + ep;	
 					for (int j = ep; j > op; j--, tlump--) {
+						if (!idStr::Icmpn(tlump->name + 2, "_START", 6) || !idStr::Icmpn(tlump->name + 1, "_START", 6) || !idStr::Icmpn(tlump->name + 2, "_END", 4) || !idStr::Icmpn(tlump->name + 1, "_END", 4)) {
+							continue;
+						}
 						//GK: Lookup sprite animation frames in case of the modded one having scrambled frame name and rotation
 						if (!sprite) {
 							if (!idStr::Icmpn(filelumpPointer->name, tlump->name, 8)) {
@@ -559,6 +562,10 @@ void W_AddFile ( const char *filename)
 						}
 					}
 					if (!replaced) {
+						lumpinfo_t* lump = &lumpinfo[reppos + 1];
+						if (!idStr::Icmpn(lump->name + 2, "_START", 6) || !idStr::Icmpn(lump->name + 2, "_END", 4)) {
+							reppos++;
+						}
 						//GK:add aditional content in between the markers
 						if (W_InjectLump(filelumpPointer, reppos, handle)) {
 							reppos++;
