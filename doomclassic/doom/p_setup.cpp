@@ -873,6 +873,9 @@ P_SetupLevel
 	lumpnum = W_GetNumForName (lumpname);
 
 	::g->leveltime = 0;
+	for (int i = 0; i < 6; i++)
+		::g->normalpowers[i] = 0;
+
 	bool isudmf = false;
 	//GK: Check if the map is udmf
 	if (!idStr::Icmp(W_GetNameForNum(lumpnum + 1), "TEXTMAP")) {

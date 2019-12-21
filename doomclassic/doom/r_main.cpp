@@ -1010,6 +1010,7 @@ void R_Initwidth() {
 	}
 
 	::g->SCREENWIDTH = ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER;
+	::g->ASPECT_POS_OFFSET = (((::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER) * ORIGINAL_WIDTH) / 2) / GLOBAL_IMAGE_SCALER;
 	::g->finit_width = ::g->SCREENWIDTH; //GK: Set here the auto-map width
 	int temp_fuzzoffset[FUZZTABLE] = { //GK: Init fuzztable here since FUZZOFF is relying on SCREENWIDTH
 		FUZZOFF,-FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,

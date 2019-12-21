@@ -482,21 +482,32 @@ void P_PlayerThink (player_t* player)
 	// Counters, time dependend power ups.
 
 	// Strength counts up to diminish fade.
-	if (player->powers[pw_strength])
-		player->powers[pw_strength]++;	
+	if (player->powers[pw_strength]) {
+		player->powers[pw_strength]++;
+		::g->normalpowers[pw_strength] = player->powers[pw_strength] / TICRATE;
+	}
 
-	if (player->powers[pw_invulnerability])
+	if (player->powers[pw_invulnerability]) {
 		player->powers[pw_invulnerability]--;
+		::g->normalpowers[pw_invulnerability] = player->powers[pw_invulnerability] / TICRATE;
+	}
 
-	if (player->powers[pw_invisibility])
-		if (! --player->powers[pw_invisibility] )
+	if (player->powers[pw_invisibility]) {
+		if (!--player->powers[pw_invisibility]) {
 			player->mo->flags &= ~MF_SHADOW;
+		}
+		::g->normalpowers[pw_invisibility] = player->powers[pw_invisibility] / TICRATE;
+	}
 
-	if (player->powers[pw_infrared])
+	if (player->powers[pw_infrared]) {
 		player->powers[pw_infrared]--;
+		::g->normalpowers[pw_infrared] = player->powers[pw_infrared] / TICRATE;
+	}
 
-	if (player->powers[pw_ironfeet])
+	if (player->powers[pw_ironfeet]) {
 		player->powers[pw_ironfeet]--;
+		::g->normalpowers[pw_ironfeet] = player->powers[pw_ironfeet] / TICRATE;
+	}
 
 	if (player->damagecount)
 		player->damagecount--;

@@ -174,5 +174,6 @@ void P_Ticker (void)
 
     // for par times
     ::g->leveltime++;	
+	::g->normaltime = ::g->leveltime / TICRATE;
 }
 

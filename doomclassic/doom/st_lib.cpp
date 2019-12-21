@@ -74,7 +74,7 @@ STlib_initNum
   qboolean*		on,
   int			width )
 {
-    n->x	= x;
+    n->x	= x + ::g->ASPECT_POS_OFFSET;
     n->y	= y;
     n->oldnum	= 0;
     n->width	= width;
@@ -83,6 +83,25 @@ STlib_initNum
     n->p	= pl;
 }
 
+// ?
+void
+STlib_initAspectNum
+(st_number_t* n,
+    int			x,
+    int			y,
+    patch_t** pl,
+    int* num,
+    qboolean* on,
+    int			width)
+{
+    n->x = x;
+    n->y = y;
+    n->oldnum = 0;
+    n->width = width;
+    n->num = num;
+    n->on = on;
+    n->p = pl;
+}
 
 // 
 // A fairly efficient way to draw a number
@@ -124,7 +143,7 @@ STlib_drawNum
     if (n->y - ST_Y < 0)
 	I_Error("drawNum: n->y - ST_Y < 0");
 
-    V_CopyRect(x, n->y - ST_Y, BG, w*numdigits, h, x, n->y, FG);
+    V_CopyAspectRect(x, n->y - ST_Y, BG, w*numdigits, h, x, n->y, FG);
 
     // if non-number, do not draw it
     if (num == 1994)
@@ -134,19 +153,19 @@ STlib_drawNum
 
     // in the special case of 0, you draw 0
     if (!num)
-	V_DrawPatch(x - w, n->y, FG, n->p[ 0 ]);
+	V_DrawAspectPatch(x - w, n->y, FG, n->p[ 0 ]);
 
     // draw the new number
     while (num && numdigits--)
     {
 	x -= w;
-	V_DrawPatch(x, n->y, FG, n->p[ num % 10 ]);
+	V_DrawAspectPatch(x, n->y, FG, n->p[ num % 10 ]);
 	num /= 10;
     }
 
     // draw a minus sign if necessary
     if (neg)
-	V_DrawPatch(x - 8, n->y, FG, ::g->sttminus);
+	V_DrawAspectPatch(x - 8, n->y, FG, ::g->sttminus);
 }
 
 
@@ -184,7 +203,7 @@ STlib_updatePercent
   int			refresh )
 {
     if (refresh && *per->n.on)
-	V_DrawPatch(per->n.x, per->n.y, FG, per->p);
+	V_DrawAspectPatch(per->n.x, per->n.y, FG, per->p);
     
     STlib_updateNum(&per->n, refresh);
 }
@@ -200,7 +219,7 @@ STlib_initMultIcon
   int*			inum,
   qboolean*		on )
 {
-    i->x	= x;
+    i->x	= x + ::g->ASPECT_POS_OFFSET;
     i->y	= y;
     i->oldinum 	= -1;
     i->inum	= inum;
@@ -234,9 +253,9 @@ STlib_updateMultIcon
 	    if (y - ST_Y < 0)
 			I_Error("updateMultIcon: y - ST_Y < 0");
 
-	    V_CopyRect(x, y-ST_Y, BG, w, h, x, y, FG);
+	    V_CopyAspectRect(x, y-ST_Y, BG, w, h, x, y, FG);
 	}
-	V_DrawPatch(mi->x, mi->y, FG, mi->p[*mi->inum]);
+	V_DrawAspectPatch(mi->x, mi->y, FG, mi->p[*mi->inum]);
 	mi->oldinum = *mi->inum;
     }
 }
@@ -252,7 +271,7 @@ STlib_initBinIcon
   qboolean*		val,
   qboolean*		on )
 {
-    b->x	= x;
+    b->x	= x + ::g->ASPECT_POS_OFFSET;
     b->y	= y;
     b->oldval	= 0;
     b->val	= val;
@@ -284,9 +303,9 @@ STlib_updateBinIcon
 	    I_Error("updateBinIcon: y - ST_Y < 0");
 
 	if (*bi->val)
-	    V_DrawPatch(bi->x, bi->y, FG, bi->p);
+	    V_DrawAspectPatch(bi->x, bi->y, FG, bi->p);
 	else
-	    V_CopyRect(x, y-ST_Y, BG, w, h, x, y, FG);
+	    V_CopyAspectRect(x, y-ST_Y, BG, w, h, x, y, FG);
 
 	bi->oldval = *bi->val;
     }

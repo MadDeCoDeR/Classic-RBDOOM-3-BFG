@@ -360,15 +360,23 @@ void ST_Stop(void);
 
 void ST_refreshBackground(void)
 {
-
 	if (::g->st_statusbaron)
 	{
-		V_DrawPatch(ST_X, 0, BG, ::g->sbar);
+		short widthoffset = 0;
+		if (::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) {
+			V_DrawAspectPatch(ST_X, 0, BG, ::g->mapt);
+			widthoffset += ::g->mapt->width;
+			V_DrawAspectPatch(ST_X + ST_WIDTH + widthoffset, 0, BG, ::g->spwr);
+			widthoffset += ::g->spwr->width;
+		}
+		
+		V_DrawAspectPatch(ST_X + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->sbar);
+			
 
 		if (::g->netgame)
-			V_DrawPatch(ST_FX, 0, BG, ::g->faceback);
+			V_DrawAspectPatch(ST_FX + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->faceback);
 
-		V_CopyRect(ST_X, 0, BG, ST_WIDTH, ST_HEIGHT, ST_X, ST_Y, FG);
+		V_CopyAspectRect(ST_X, 0, BG, ST_WIDTH + widthoffset, ST_HEIGHT, ST_X, ST_Y, FG);
 	}
 
 }
@@ -1016,7 +1024,7 @@ void ST_drawWidgets(qboolean refresh)
 
 	// used by ::g->w_frags widget
 	::g->st_fragson = ::g->deathmatch && ::g->st_statusbaron; 
-
+	STlib_updateNum(&::g->w_time, refresh);
 	STlib_updateNum(&::g->w_ready, refresh);
 
 	for (i=0;i<4;i++)
@@ -1037,6 +1045,9 @@ void ST_drawWidgets(qboolean refresh)
 
 	for (i=0;i<3;i++)
 		STlib_updateMultIcon(&::g->w_keyboxes[i], refresh);
+
+	for (i = 0; i < 5; i++)
+		STlib_updateNum(&::g->w_power[i], refresh);
 
 	STlib_updateNum(&::g->w_frags, refresh);
 
@@ -1134,6 +1145,8 @@ void ST_loadGraphics(void)
 
 	// status bar background bits
 	::g->sbar = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STBAR", PU_LEVEL_SHARED), W_GetNumForName("STBAR"));
+	::g->mapt = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STMAPT", PU_LEVEL_SHARED), W_GetNumForName("STMAPT"));
+	::g->spwr = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STPWR", PU_LEVEL_SHARED), W_GetNumForName("STPWR"));
 
 	// face states
 	facenum = 0;
@@ -1213,6 +1226,15 @@ void ST_createWidgets(void)
 {
 
 	int i;
+
+	// ready weapon ammo
+	STlib_initAspectNum(&::g->w_time,
+		ST_TIMEX,
+		ST_TIMEY,
+		::g->tallnum,
+		&::g->normaltime,
+		&::g->ASPECT_POS_OFFSET,
+		ST_TIMEWIDTH);
 
 	// ready weapon ammo
 	STlib_initNum(&::g->w_ready,
@@ -1376,6 +1398,46 @@ void ST_createWidgets(void)
 		&::g->plyr->maxammo[3],
 		&::g->st_statusbaron,
 		ST_MAXAMMO3WIDTH);
+
+	STlib_initAspectNum(&::g->w_power[0],
+		ST_POWER0X,
+		ST_POWER0Y,
+		::g->shortnum,
+		&::g->normalpowers[pw_invulnerability],
+		&::g->ASPECT_POS_OFFSET,
+		ST_POWER0WIDTH);
+
+	STlib_initAspectNum(&::g->w_power[1],
+		ST_POWER1X,
+		ST_POWER1Y,
+		::g->shortnum,
+		&::g->normalpowers[pw_strength],
+		&::g->ASPECT_POS_OFFSET,
+		ST_POWER1WIDTH);
+
+	STlib_initAspectNum(&::g->w_power[2],
+		ST_POWER2X,
+		ST_POWER2Y,
+		::g->shortnum,
+		&::g->normalpowers[pw_infrared],
+		&::g->ASPECT_POS_OFFSET,
+		ST_POWER2WIDTH);
+
+	STlib_initAspectNum(&::g->w_power[3],
+		ST_POWER3X,
+		ST_POWER3Y,
+		::g->shortnum,
+		&::g->normalpowers[pw_invisibility],
+		&::g->ASPECT_POS_OFFSET,
+		ST_POWER3WIDTH);
+
+	STlib_initAspectNum(&::g->w_power[4],
+		ST_POWER4X,
+		ST_POWER4Y,
+		::g->shortnum,
+		&::g->normalpowers[pw_ironfeet],
+		&::g->ASPECT_POS_OFFSET,
+		ST_POWER4WIDTH);
 
 }
 

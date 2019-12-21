@@ -597,6 +597,7 @@ button_t        buttonlist[MAXBUTTONS];
 // p_switch.vars end // 
 //  p_tick.vars begin // 
 int	leveltime;
+int normaltime;
 thinker_t	thinkercap;
 // p_tick.vars end // 
 //  p_user.vars begin // 
@@ -799,6 +800,7 @@ patch_t*		sttminus;
 // st_lib.vars end // 
 //  st_stuff.vars begin // 
 player_t*	plyr; 
+int         normalpowers[6];
 qboolean		st_firsttime;
 int		veryfirsttime ;
 int		lu_palette;
@@ -822,6 +824,9 @@ patch_t*		faces[ST_NUMFACES]; // AffLANHACK IGNORE
 patch_t*		faceback; // AffLANHACK IGNORE
 patch_t*		armsbg; // AffLANHACK IGNORE
 patch_t*		arms[6][3];  // AffLANHACK IGNORE //GkHACK More states
+patch_t*        mapt;
+patch_t*        spwr;
+st_number_t	w_time;
 st_number_t	w_ready;
 st_number_t	w_frags;
 st_percent_t	w_health;
@@ -831,7 +836,8 @@ st_multicon_t	w_faces;
 st_multicon_t	w_keyboxes[3];
 st_percent_t	w_armor;
 st_number_t	w_ammo[4];
-st_number_t	w_maxammo[4]; 
+st_number_t	w_maxammo[4];
+st_number_t w_power[5];
 int	st_fragscount;
 int	st_oldhealth ;
 qboolean	oldweaponsowned[NUMWEAPONS]; 
@@ -1019,6 +1025,7 @@ const char*		spritename;
 //as global variables since they get calculated based on the r_aspectcorrect CVar
 int ASPECT_IMAGE_SCALER;
 int SCREENWIDTH;
+int ASPECT_POS_OFFSET;
 #ifdef USE_OPENAL
 bool hasreverb;
 std::vector<EFXEAXREVERBPROPERTIES*>reverbs;

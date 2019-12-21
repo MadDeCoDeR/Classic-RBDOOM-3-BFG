@@ -169,6 +169,17 @@ STlib_initNum
   qboolean*		on,
   int			width );
 
+// Number widget routines
+void
+STlib_initAspectNum
+(st_number_t* n,
+    int			x,
+    int			y,
+    patch_t** pl,
+    int* num,
+    qboolean* on,
+    int			width);
+
 void
 STlib_updateNum
 ( st_number_t*		n,
