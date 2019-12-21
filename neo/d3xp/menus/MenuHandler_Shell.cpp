@@ -1439,6 +1439,9 @@ void idMenuHandler_ShellLocal::StartGame( int index )
 void checkInput( void* data)
 {
 	while (true) {
+		if (skipIntro) {
+			break;
+		}
 		Sys_GenerateEvents();
 
 		// queue system events ready for polling
