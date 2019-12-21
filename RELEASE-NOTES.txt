@@ -3,6 +3,35 @@ Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOO
 Thank you for downloading Classic RBDOOM-3-BFG.
 _______________________________________
 
+21 December 2019 - Classic RBDOOM-3-BFG 1.2.2
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- When using EXPINFO on Ultimate DOOM CyberDemon and Mastermind will behave like regular enemies if "cyberboss" and "mastermindboss" are not declared on that map
+
+- Fixed EXPINFO incorrectly sending you to wrong secret map on Doom II
+
+- Ignore FX and PX flags when replacing flats and planes
+
+- When aspect ratio correction is used on Classic Doom the status bar will extend in order to show the level time in sceonds and the time each power up is active in seconds
+
+[DOOM3BFG]
+
+- Allow to remap controller up/down and left/right axis to either move or look individualy
+
+- Skip cinematics will also skip the cinematic audio without any sudden silence
+
+- Fixed issue trying to initialize invalid OpenGL version (5.0)
+
+- Update OpenAL-soft to 1.20.0
+
+- Get console message why the achievement didn't unlock
+_______________________________________
+
 09 November 2019 - Classic RBDOOM-3-BFG 1.2.1
 _______________________________
 
