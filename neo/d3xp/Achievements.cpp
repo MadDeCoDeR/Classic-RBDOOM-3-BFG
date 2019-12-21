@@ -376,6 +376,7 @@ void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
 	// If so, don't do again because we don't want to autosave every time a trigger is hit
 	if( localUser == NULL || localUser->GetProfile()->GetAchievement( id ) )
 	{
+		common->Printf("user already has the achievement");
 		return;
 	}
 	
@@ -383,6 +384,17 @@ void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
 #ifndef GAME_DLL
 	if( common->GetConsoleUsed() || idLib::classichUsed || idLib::warpUsed)
 	{
+		std::string name;
+		if (common->GetConsoleUsed()) {
+			name = "console";
+		}
+		else if (idLib::classichUsed) {
+			name = "classich";
+		}
+		else {
+			name = "warp";
+		}
+		common->Printf("You cheat with %s", name.c_str());
 		if( ::op && !cheatingDialogShown)
 		{
 			common->Dialog().AddDialog( GDM_ACHIEVEMENTS_DISABLED_DUE_TO_CHEATING, DIALOG_ACCEPT, NULL, NULL, true );
