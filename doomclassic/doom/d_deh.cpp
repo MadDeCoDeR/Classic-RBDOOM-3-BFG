@@ -958,7 +958,7 @@ void parsetext(char* text) {
 							if (::g->gamemode == commercial) {
 								if (::g->gamemission == pack_custom) {
 									if (statepos > 0 && statepos <= ::g->maps.size()) {
-										::g->maps[statepos - 1].par = varval2;
+										::g->maps[statepos - 1].par = varval;
 									}
 									else {
 										I_Error("No map found");
