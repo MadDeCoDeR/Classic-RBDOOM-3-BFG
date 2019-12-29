@@ -870,9 +870,13 @@ int* W_CheckNumsForName(const char* name)
 // Returns -1 if name not found.
 //
 
-int W_CheckNumForName (const char* name)
+int W_CheckNumForName (const char* name, int last)
 {
 	const int NameLength = 9;
+
+	if (last < 0) {
+		last = numlumps;
+	}
 
     union {
 		char	s[NameLength];
@@ -901,7 +905,7 @@ int W_CheckNumForName (const char* name)
 
 
     // scan backwards so patch lump files take precedence
-    lump_p = lumpinfo + numlumps;
+    lump_p = lumpinfo + last;
 
     while (lump_p-- != lumpinfo)
     {

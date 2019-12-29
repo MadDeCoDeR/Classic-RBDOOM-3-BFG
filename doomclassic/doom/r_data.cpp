@@ -825,7 +825,7 @@ int R_FlatNumForName (const char* name)
     int		i;
     char	namet[9];
 
-    i = W_CheckNumForName (name);
+    i = W_CheckNumForName (name, ::g->lastflat);
 
     if (i == -1)
     {

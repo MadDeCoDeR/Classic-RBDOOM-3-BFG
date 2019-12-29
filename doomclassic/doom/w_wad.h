@@ -85,7 +85,7 @@ void    W_Reload (void);
 void	W_FreeLumps();
 void	W_FreeWadFiles();
 
-int	W_CheckNumForName (const char* name);
+int	W_CheckNumForName (const char* name, int last = -1);
 int	W_GetNumForName (const char* name);
 int* W_GetNumsForName(const char* name);
 
