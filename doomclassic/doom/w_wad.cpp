@@ -88,6 +88,7 @@ std::vector<std::string>wadsinzip;
 //GK: End
 bool OpenCompFile(const char* filename);
 void W_RemoveLump(int lump);
+bool W_InjectLump(filelump_t* file, int pos, idFile* handle);
 
 
 
@@ -204,6 +205,7 @@ bool W_ReplaceSprite(filelump_t* file, int pos, idFile* handle, int start, int e
 	if (idStr::Icmpn(original->base, newname->base, 4)) {
 		return false;
 	}
+	
 	char originalFrames[2] = { original->frame1, original->frame2 };
 	char originalRotations[2] = { original->rotation1, original->rotation2 };
 	char newFrames[2] = { newname->frame1, newname->frame2 };
@@ -234,19 +236,15 @@ bool W_ReplaceSprite(filelump_t* file, int pos, idFile* handle, int start, int e
 
 	if (framematch) {
 		if (originalRotations[framematchi] != '0' && newRotations[framematchj] == '0') {
-			lumpinfo_t* tlump = &lumpinfo[pos - 1];
-			if (idStr::Icmpn(tlump->name, (char*)original, 4)) {
-				tlump = &lumpinfo[pos - 2];
+			for (int i = end; i > start; --i) {
+				lumpinfo_t* tlump = lumpinfo + i;
+				if (!idStr::Icmpn(tlump->name, (char*)newname, 5)) {
+					W_RemoveLump(i + 1);
+					pos = i;
+				}
 			}
-			while (!idStr::Icmpn(tlump->name, (char*)original, 5)) {
-				W_RemoveLump(pos);
-				pos = pos - 1;
-				lump = &lumpinfo[pos];
-				original = (spritename_t*)lump->name;
-				tlump = &lumpinfo[pos - 1];
-			}
-			W_ReplaceLump(file, pos, handle);
-			W_DeleteDuplicateSprites(newname, pos, start, end);
+			W_InjectLump(file, pos, handle);
+			//W_DeleteDuplicateSprites(newname, pos, start, end);
 			return true;
 		}
 		if (originalRotations[framematchi] == '0' && newRotations[framematchj] != '0') {
