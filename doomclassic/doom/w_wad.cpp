@@ -238,6 +238,9 @@ bool W_ReplaceSprite(filelump_t* file, int pos, idFile* handle, int start, int e
 		if (originalRotations[framematchi] != '0' && newRotations[framematchj] == '0') {
 			for (int i = end; i > start; --i) {
 				lumpinfo_t* tlump = lumpinfo + i;
+				if (!idStr::Icmpn(tlump->name, "S_START", 7)) {
+					break;
+				}
 				if (!idStr::Icmpn(tlump->name, (char*)newname, 5)) {
 					W_RemoveLump(i + 1);
 					pos = i;
@@ -905,7 +908,7 @@ int W_CheckNumForName (const char* name, int last)
     // scan backwards so patch lump files take precedence
     lump_p = lumpinfo + last;
 
-    while (lump_p-- != lumpinfo)
+    while (--lump_p != lumpinfo)
     {
 		if ( *(int *)lump_p->name == v1
 			&& *(int *)&lump_p->name[4] == v2)

@@ -824,8 +824,7 @@ int R_FlatNumForName (const char* name)
 {
     int		i;
     char	namet[9];
-
-    i = W_CheckNumForName (name, ::g->lastflat);
+    i = W_CheckNumForName (name, ::g->lastflat + 1);
 
     if (i == -1)
     {
@@ -869,7 +868,6 @@ int	R_CheckTextureNumForName (const char *name)
 int	R_TextureNumForName (const char* name)
 {
     int		i;
-	
     i = R_CheckTextureNumForName (name);
 
     if (i==-1)
