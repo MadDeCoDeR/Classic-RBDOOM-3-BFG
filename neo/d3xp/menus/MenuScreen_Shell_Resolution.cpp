@@ -39,6 +39,7 @@ enum settingMenuCmds_t
 	SETTING_CMD_SYSTEM,
 	SETTING_CMD_3D,
 };
+idList< idList<vidMode_t> > displays;
 
 /*
 ========================
@@ -163,7 +164,7 @@ void idMenuScreen_Shell_Resolution::ShowScreen( const mainMenuTransition_t trans
 	optionData.Append( optionData_t( 0, 0 ) );
 	
 	int viewIndex = 0;
-	idList< idList<vidMode_t> > displays;
+	
 	for( int displayNum = 0 ; ; displayNum++ )
 	{
 		idList<vidMode_t>& modeList = displays.Alloc();
@@ -292,6 +293,9 @@ bool idMenuScreen_Shell_Resolution::HandleAction( idWidgetAction& action, const 
 					// Changing to fullscreen mode
 					r_fullscreen.SetInteger( currentOption.fullscreen );
 					r_vidMode.SetInteger( currentOption.vidmode );
+					r_customWidth.SetInteger(displays[0][currentOption.vidmode].width);
+					r_customHeight.SetInteger(displays[0][currentOption.vidmode].height);
+					r_displayRefresh.SetInteger(displays[0][currentOption.vidmode].displayHz);
 					cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 					cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
 					

@@ -315,6 +315,7 @@ r_vidMode 1			use second mode returned by EnumDisplaySettings()
 
 r_displayRefresh 0	don't specify refresh
 r_displayRefresh 70	specify 70 hz, etc
+GK: Ditch the r_vidMode since it is relying on the unreliable modelist
 =============================
 */
 void R_SetNewMode( const bool fullInit )
@@ -344,7 +345,7 @@ void R_SetNewMode( const bool fullInit )
 		else
 		{
 			// get the mode list for this monitor
-			idList<vidMode_t> modeList;
+			/*idList<vidMode_t> modeList;
 			if( !R_GetModeListForDisplay( r_fullscreen.GetInteger() - 1, modeList ) )
 			{
 				idLib::Printf( "r_fullscreen reset from %i to 1 because mode list failed.", r_fullscreen.GetInteger() );
@@ -355,20 +356,20 @@ void R_SetNewMode( const bool fullInit )
 			{
 				idLib::Printf( "Going to safe mode because mode list failed." );
 				goto safeMode;
-			}
+			}*/
 			
 			parms.x = 0;		// ignored
 			parms.y = 0;		// ignored
 			parms.fullScreen = r_fullscreen.GetInteger();
 			
 			// set the parameters we are trying
-			if( r_vidMode.GetInteger() < 0 )
-			{
+			/*if( r_vidMode.GetInteger() < 0 )
+			{*/
 				// try forcing a specific mode, even if it isn't on the list
 				parms.width = r_customWidth.GetInteger();
 				parms.height = r_customHeight.GetInteger();
 				parms.displayHz = r_displayRefresh.GetInteger();
-			}
+			/*}
 			else
 			{
 				if( r_vidMode.GetInteger() >= modeList.Num() )
@@ -380,7 +381,7 @@ void R_SetNewMode( const bool fullInit )
 				parms.width = modeList[ r_vidMode.GetInteger() ].width;
 				parms.height = modeList[ r_vidMode.GetInteger() ].height;
 				parms.displayHz = modeList[ r_vidMode.GetInteger() ].displayHz;
-			}
+			}*/
 		}
 		
 		switch( r_antiAliasing.GetInteger() )

@@ -879,6 +879,8 @@ extern idCVar r_vidMode;					// video mode number
 extern idCVar r_displayRefresh;				// optional display refresh rate option for vid mode
 extern idCVar r_fullscreen;					// 0 = windowed, 1 = full screen
 extern idCVar r_antiAliasing;				// anti aliasing mode, SMAA, TXAA, MSAA etc.
+extern idCVar r_customWidth;
+extern idCVar r_customHeight;
 
 extern idCVar r_znear;						// near Z clip plane
 
