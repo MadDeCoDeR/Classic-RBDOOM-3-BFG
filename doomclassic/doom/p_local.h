@@ -87,6 +87,7 @@ void P_RemoveThinker (thinker_t* thinker);
 void P_SetupPsprites (player_t* curplayer);
 void P_MovePsprites (player_t* curplayer);
 void P_DropWeapon (player_t* player);
+void P_SetPsprite(player_t* player, int position, int stnum);
 
 
 //
@@ -120,7 +121,7 @@ P_SpawnMobj
   mobjtype_t	type );
 
 void 	P_RemoveMobj (mobj_t* th);
-qboolean	P_SetMobjState (mobj_t* mobj, statenum_t state);
+qboolean	P_SetMobjState (mobj_t* mobj, int state);
 void 	P_MobjThinker (mobj_t* mobj);
 
 void	P_SpawnPuff (fixed_t x, fixed_t y, fixed_t z);

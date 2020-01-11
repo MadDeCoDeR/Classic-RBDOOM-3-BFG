@@ -31,6 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // Needed for action function pointer handling.
 #include "d_think.h"
+#include <vector>
 
 typedef enum
 {
@@ -172,6 +173,14 @@ typedef enum
     SPR_BRS1,
     SPR_TLMP,
     SPR_TLP2,
+    SPR_TNT1,
+    SPR_DOGS,
+    SPR_PLS1,
+    SPR_PLS2,
+    SPR_BON3,
+    SPR_BON4,
+    SPR_BLD2,
+    SPR_SP00,
     NUMSPRITES
 
 } spritenum_t;
@@ -1145,15 +1154,16 @@ typedef enum
     S_TECH2LAMP2,
     S_TECH2LAMP3,
     S_TECH2LAMP4,
+    S_TNT1, // add state for invisible sprite         // phares 3/8/98 
     NUMSTATES
 } statenum_t;
 
 
 typedef struct
 {
-  spritenum_t	sprite;
+  int	sprite = SPR_TNT1;
   long			frame;
-  long			tics;
+  long			tics = -1;
   // void		(*action) ();
 
   // GCC 4.1 for PS3 gives the error "braces around scalar initializer"
@@ -1172,17 +1182,17 @@ typedef struct
   };
 #endif
 
-  statenum_t			nextstate;
+  int			nextstate;
   long			misc1, misc2;
 } state_t;
 
-extern /*const*/ state_t	tempStates[NUMSTATES];
-extern /*const*/ state_t	origStates[NUMSTATES];
+extern /*const*/ std::vector<state_t>	tempStates;
+extern /*const*/ std::vector<state_t>	origStates;
 extern bool inited;
 void init_states();
 // RB: sprnames must be NULL-terminated
 //GK:For DeHackeD Text Editor
-extern /*const*/ char * /*const*/ sprnames[NUMSPRITES + 1];
+extern /*const*/ std::vector <char *> /*const*/ sprnames;
 void resetSprnames();
 // RB end
 
@@ -1356,7 +1366,7 @@ typedef struct
 
 } mobjinfo_t;
 
-extern /*const*/ mobjinfo_t mobjinfo[NUMMOBJTYPES];
+extern /*const*/ std::vector<mobjinfo_t> mobjinfo;
 
 void resetValues();
 actionf_p2 getFunc(char* func);

@@ -40,11 +40,12 @@ If you have questions concerning this license or the applicable additional terms
 #include "m_fixed.h"
 
 #include "p_mobj.h"
+#include "i_system.h"
 
 
 // RB: sprnames must be NULL-terminated
 //GK:NO CONSTANTS
-/*const*/ char * /*const*/ sprnames[NUMSPRITES + 1] = {
+/*const*/ std::vector <char *> /*const*/ sprnames {
     "TROO","SHTG","PUNG","PISG","PISF","SHTF","SHT2","CHGG","CHGF","MISG",
     "MISF","SAWG","PLSG","PLSF","BFGG","BFGF","BLUD","PUFF","BAL1","BAL2",
     "PLSS","PLSE","MISL","BFS1","BFE1","BFE2","TFOG","IFOG","PLAY","POSS",
@@ -58,11 +59,17 @@ If you have questions concerning this license or the applicable additional terms
     "POL3","POL1","POL6","GOR2","GOR3","GOR4","GOR5","SMIT","COL1","COL2",
     "COL3","COL4","CAND","CBRA","COL6","TRE1","TRE2","ELEC","CEYE","FSKU",
     "COL5","TBLU","TGRN","TRED","SMBT","SMGT","SMRT","HDB1","HDB2","HDB3",
-    "HDB4","HDB5","HDB6","POB1","POB2","BRS1","TLMP","TLP2", (/*const*/ char*) NULL
+    "HDB4","HDB5","HDB6","POB1","POB2","BRS1","TLMP","TLP2",
+  "TNT1" // invisible sprite                                 phares 3/9/98
+  ,"DOGS","PLS1","PLS2","BON3","BON4",
+	// [BH] blood splats, [crispy] unused
+	"BLD2",
+	//// [BH] 100 extra sprite names to use in dehacked patches
+  (char*)NULL
 };
 // RB end
 void resetSprnames() {
-	char * tsprnames[NUMSPRITES + 1] = {
+	std::vector <char *> tsprnames {
 		"TROO","SHTG","PUNG","PISG","PISF","SHTF","SHT2","CHGG","CHGF","MISG",
 		"MISF","SAWG","PLSG","PLSF","BFGG","BFGF","BLUD","PUFF","BAL1","BAL2",
 		"PLSS","PLSE","MISL","BFS1","BFE1","BFE2","TFOG","IFOG","PLAY","POSS",
@@ -76,9 +83,16 @@ void resetSprnames() {
 		"POL3","POL1","POL6","GOR2","GOR3","GOR4","GOR5","SMIT","COL1","COL2",
 		"COL3","COL4","CAND","CBRA","COL6","TRE1","TRE2","ELEC","CEYE","FSKU",
 		"COL5","TBLU","TGRN","TRED","SMBT","SMGT","SMRT","HDB1","HDB2","HDB3",
-		"HDB4","HDB5","HDB6","POB1","POB2","BRS1","TLMP","TLP2", (char*)NULL
+		"HDB4","HDB5","HDB6","POB1","POB2","BRS1","TLMP","TLP2",
+  "TNT1" // invisible sprite                                 phares 3/9/98
+  ,"DOGS","PLS1","PLS2","BON3","BON4",
+		// [BH] blood splats, [crispy] unused
+		"BLD2",
+		//// [BH] 100 extra sprite names to use in dehacked patches
+	  (char*)NULL
 	};
-	memcpy(sprnames, tsprnames, sizeof(tsprnames));
+	//memcpy(sprnames, tsprnames, sizeof(tsprnames));
+	sprnames = tsprnames;
 }
 
 extern "C"
@@ -158,10 +172,11 @@ extern "C"
 	void A_SpawnSound(void *p1, void *p2);
 	void A_SpawnFly(void *p1, void *p2);
 	void A_BrainExplode(void *p1, void *p2);
+	void A_RandomJump(void* p1, void* p2);
 };
 
 
-/*const*/ state_t	tempStates[NUMSTATES] = { 
+/*const*/ std::vector<state_t> tempStates {
 	{SPR_TROO,0,-1,{NULL},S_NULL,0,0},	// S_NULL
 	{SPR_SHTG,4,0,{(actionf_p2)A_Light0},S_NULL,0,0},	// S_LIGHTDONE
 	{SPR_PUNG,0,1,{(actionf_p2)A_WeaponReady},S_PUNCH,0,0},	// S_PUNCH
@@ -1128,18 +1143,21 @@ extern "C"
     {SPR_TLP2,32768,4,{NULL},S_TECH2LAMP2,0,0},	// S_TECH2LAMP
     {SPR_TLP2,32769,4,{NULL},S_TECH2LAMP3,0,0},	// S_TECH2LAMP2
     {SPR_TLP2,32770,4,{NULL},S_TECH2LAMP4,0,0},	// S_TECH2LAMP3
-    {SPR_TLP2,32771,4,{NULL},S_TECH2LAMP,0,0}	// S_TECH2LAMP4
+    {SPR_TLP2,32771,4,{NULL},S_TECH2LAMP,0,0},	// S_TECH2LAMP4
+	{ SPR_TNT1,0,-1,{NULL},S_TNT1,0,0 },          // S_TNT1    // phares 3/8/98
 };
-state_t	origStates[NUMSTATES] = {};
+//std::vector<state_t> tempStates(arrStates, arrStates + NUMSTATES);
+std::vector<state_t> origStates(NUMSTATES);
 bool inited = false;
 void init_states() {
 	if (!inited) {
-		memcpy(origStates, tempStates, sizeof(tempStates));
+		//memcpy(origStates, tempStates, sizeof(tempStates));
+		origStates = tempStates;
 		inited = true;
 	}
 }
 
-/*const*/ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
+/*const*/ std::vector <mobjinfo_t> mobjinfo {
 
     {		// MT_PLAYER
 	-1,		// doomednum
@@ -4702,12 +4720,67 @@ void init_states() {
 	MF_NOBLOCKMAP,		// flags
 	S_NULL		// raisestate
     }
+		,
+
+		// For use with wind and current effects
+  {   // MT_PUSH                       // phares
+	5001,           // doomednum       //   |      //jff 5/11/98 deconflict
+	S_TNT1,         // spawnstate      //   V      // with DOSDoom        
+	1000,           // spawnhealth                              
+	S_NULL,         // seestate                                 
+	sfx_None,       // seesound                                 
+	8,              // reactiontime                             
+	sfx_None,       // attacksound                              
+	S_NULL,         // painstate                                
+	0,              // painchance                               
+	sfx_None,       // painsound                                
+	S_NULL,         // meleestate                               
+	S_NULL,         // missilestate                             
+	S_NULL,         // deathstate                               
+	S_NULL,         // xdeathstate                              
+	sfx_None,       // deathsound                               
+	0,              // speed                                    
+	8,              // radius                                   
+	8,              // height                                   
+	10,             // mass                                     
+	0,              // damage                                   
+	sfx_None,       // activesound                              
+	MF_NOBLOCKMAP,  // flags
+	S_NULL          // raisestate                                   
+  },
+
+		// For use with wind and current effects
+  {   // MT_PULL
+	5002,           // doomednum                   //jff 5/11/98 deconflict            
+	S_TNT1,         // spawnstate                  // with DOSDoom        
+	1000,           // spawnhealth                              
+	S_NULL,         // seestate                                 
+	sfx_None,       // seesound                                 
+	8,              // reactiontime                             
+	sfx_None,       // attacksound                              
+	S_NULL,         // painstate                                
+	0,              // painchance                               
+	sfx_None,       // painsound                                
+	S_NULL,         // meleestate                               
+	S_NULL,         // missilestate                             
+	S_NULL,         // deathstate                               
+	S_NULL,         // xdeathstate                              
+	sfx_None,       // deathsound                               
+	0,              // speed                                    
+	8,              // radius                                   
+	8,              // height                                   
+	10,             // mass                                     
+	0,              // damage                                   
+	sfx_None,       // activesound                              
+	MF_NOBLOCKMAP,  // flags
+	S_NULL          // raisestate                                   
+  }
 };
 
 //GK: Reset values just in case dehacked is used
 void resetValues() {
 	//idLib::Printf("Reseting Values\n");
-	mobjinfo_t tmobjinfo[NUMMOBJTYPES] = {
+	std::vector <mobjinfo_t> tmobjinfo {
 
 		{		// MT_PLAYER
 			-1,		// doomednum
@@ -8269,10 +8342,65 @@ void resetValues() {
 			sfx_None,		// activesound
 			MF_NOBLOCKMAP,		// flags
 			S_NULL		// raisestate
-		}
+		},
+
+				// For use with wind and current effects
+  {   // MT_PUSH                       // phares
+	5001,           // doomednum       //   |      //jff 5/11/98 deconflict
+	S_TNT1,         // spawnstate      //   V      // with DOSDoom        
+	1000,           // spawnhealth                              
+	S_NULL,         // seestate                                 
+	sfx_None,       // seesound                                 
+	8,              // reactiontime                             
+	sfx_None,       // attacksound                              
+	S_NULL,         // painstate                                
+	0,              // painchance                               
+	sfx_None,       // painsound                                
+	S_NULL,         // meleestate                               
+	S_NULL,         // missilestate                             
+	S_NULL,         // deathstate                               
+	S_NULL,         // xdeathstate                              
+	sfx_None,       // deathsound                               
+	0,              // speed                                    
+	8,              // radius                                   
+	8,              // height                                   
+	10,             // mass                                     
+	0,              // damage                                   
+	sfx_None,       // activesound                              
+	MF_NOBLOCKMAP,  // flags
+	S_NULL          // raisestate                                   
+  },
+
+				// For use with wind and current effects
+  {   // MT_PULL
+	5002,           // doomednum                   //jff 5/11/98 deconflict            
+	S_TNT1,         // spawnstate                  // with DOSDoom        
+	1000,           // spawnhealth                              
+	S_NULL,         // seestate                                 
+	sfx_None,       // seesound                                 
+	8,              // reactiontime                             
+	sfx_None,       // attacksound                              
+	S_NULL,         // painstate                                
+	0,              // painchance                               
+	sfx_None,       // painsound                                
+	S_NULL,         // meleestate                               
+	S_NULL,         // missilestate                             
+	S_NULL,         // deathstate                               
+	S_NULL,         // xdeathstate                              
+	sfx_None,       // deathsound                               
+	0,              // speed                                    
+	8,              // radius                                   
+	8,              // height                                   
+	10,             // mass                                     
+	0,              // damage                                   
+	sfx_None,       // activesound                              
+	MF_NOBLOCKMAP,  // flags
+	S_NULL          // raisestate                                   
+  }
 	};
-	memcpy(mobjinfo, tmobjinfo, sizeof(tmobjinfo));
-	state_t	ttempStates[NUMSTATES] = {
+	//memcpy(mobjinfo, tmobjinfo, sizeof(tmobjinfo));
+	mobjinfo = tmobjinfo;
+	std::vector<state_t>	ttempStates {
 		{ SPR_TROO,0,-1,{ NULL },S_NULL,0,0 },	// S_NULL
 		{ SPR_SHTG,4,0,{ (actionf_p2)A_Light0 },S_NULL,0,0 },	// S_LIGHTDONE
 		{ SPR_PUNG,0,1,{ (actionf_p2)A_WeaponReady },S_PUNCH,0,0 },	// S_PUNCH
@@ -9239,9 +9367,11 @@ void resetValues() {
 		{ SPR_TLP2,32768,4,{ NULL },S_TECH2LAMP2,0,0 },	// S_TECH2LAMP
 		{ SPR_TLP2,32769,4,{ NULL },S_TECH2LAMP3,0,0 },	// S_TECH2LAMP2
 		{ SPR_TLP2,32770,4,{ NULL },S_TECH2LAMP4,0,0 },	// S_TECH2LAMP3
-		{ SPR_TLP2,32771,4,{ NULL },S_TECH2LAMP,0,0 }	// S_TECH2LAMP4
+		{ SPR_TLP2,32771,4,{ NULL },S_TECH2LAMP,0,0 },	// S_TECH2LAMP4
+		{ SPR_TNT1,0,-1,{NULL},S_TNT1,0,0 },          // S_TNT1    // phares 3/8/98
 	};
-	memcpy(tempStates, ttempStates, sizeof(ttempStates));
+	//memcpy(tempStates, ttempStates, sizeof(ttempStates));
+	tempStates = ttempStates;
 }
 
 typedef struct {
@@ -9324,7 +9454,8 @@ dehcptr cptrval[] = {
 { "BrainSpit",(actionf_p2)A_BrainSpit },
 { "SpawnSound",(actionf_p2)A_SpawnSound },
 { "SpawnFly",(actionf_p2)A_SpawnFly },
-{ "BrainExplode",(actionf_p2)A_BrainExplode }
+{ "BrainExplode",(actionf_p2)A_BrainExplode },
+{ "RandomJump", (actionf_p2)A_RandomJump }
 };
 
 actionf_p2 getFunc(char* func) {
@@ -9334,5 +9465,6 @@ actionf_p2 getFunc(char* func) {
 			return cptrval[i].func;
 		}
 	}
+	I_Printf("Code Pointer: %s is not supported.\n", func);
 	return NULL;
 }

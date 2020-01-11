@@ -883,10 +883,10 @@ P_KillMobj
 	if (target->health < -target->info->spawnhealth
 		&& target->info->xdeathstate)
 	{
-		P_SetMobjState (target, (statenum_t)target->info->xdeathstate);
+		P_SetMobjState (target, target->info->xdeathstate);
 	}
 	else
-		P_SetMobjState (target, (statenum_t)target->info->deathstate);
+		P_SetMobjState (target, target->info->deathstate);
 	target->tics -= P_Random()&3;
 
 	if (target->tics < 1)
@@ -1085,7 +1085,7 @@ P_DamageMobj
 	{
 		target->flags |= MF_JUSTHIT;	// fight back!
 
-		P_SetMobjState (target, (statenum_t)target->info->painstate);
+		P_SetMobjState (target, target->info->painstate);
 	}
 
 	target->reactiontime = 0;		// we're awake now...	
@@ -1100,7 +1100,7 @@ P_DamageMobj
 		target->threshold = BASETHRESHOLD;
 		if (target->state == &::g->states[target->info->spawnstate]
 		&& target->info->seestate != S_NULL)
-			P_SetMobjState (target, (statenum_t)target->info->seestate);
+			P_SetMobjState (target, target->info->seestate);
 	}
 
 }

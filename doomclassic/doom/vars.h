@@ -929,7 +929,7 @@ int NumAlloc ;
 int CacheAlloc; //GK:Keep track of the allocated Cache on Z-Memory
 // z_zone.vars end // 
 // info vars begin //
-state_t	states[NUMSTATES];
+std::vector<state_t>	states;
 // info vars end //
 // p_local begin //
 byte*		rejectmatrix;

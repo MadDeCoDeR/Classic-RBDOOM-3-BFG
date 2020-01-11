@@ -671,8 +671,8 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 // z_zone.constructs end // 
 // info constructs begin //
 	//GK: No more constant variable
-	extern /*const*/ state_t	tempStates[NUMSTATES];
-	memcpy(::g->states, tempStates, sizeof(tempStates));
+	//extern /*const*/ std::vector<state_t>	tempStates(NUMSTATES);
+	::g->states = tempStates;
 // info constructs end //
 // p_local begin //
 	::g->rejectmatrix = NULL;

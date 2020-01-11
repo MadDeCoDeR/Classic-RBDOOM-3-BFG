@@ -105,12 +105,12 @@ R_InstallSpriteLump
     {
 	// the lump should be used for all rotations
 	if (::g->sprtemp[frame].rotate == false)
-	    I_Error ("R_InitSprites: Sprite %s frame %c has "
+	    I_Printf ("R_InitSprites: Sprite %s frame %c has "
 		"multip rot=0 lump", ::g->spritename, 'A'+frame);
 
 	if (::g->sprtemp[frame].rotate == true)
-	    I_Error ("R_InitSprites: Sprite %s frame %c has rotations "
-		     "and a rot=0 lump", ::g->spritename, 'A'+frame);
+		I_Printf("R_InitSprites: Sprite %s frame %c has rotations "
+		     "and a rot=0 lump\n", ::g->spritename, 'A'+frame);
 			
 	::g->sprtemp[frame].rotate = false;
 	for (r=0 ; r<8 ; r++)
@@ -123,8 +123,8 @@ R_InstallSpriteLump
 	
     // the lump is only used for one rotation
     if (::g->sprtemp[frame].rotate == false)
-	I_Error ("R_InitSprites: Sprite %s frame %c has rotations "
-		 "and a rot=0 lump", ::g->spritename, 'A'+frame);
+		I_Printf("R_InitSprites: Sprite %s frame %c has rotations "
+		 "and a rot=0 lump\n", ::g->spritename, 'A'+frame);
 		
     ::g->sprtemp[frame].rotate = true;
 
@@ -157,7 +157,7 @@ R_InstallSpriteLump
 //  letter/number appended.
 // The rotation character can be 0 to signify no rotations.
 //
-void R_InitSpriteDefs (const char* const* namelist) 
+void R_InitSpriteDefs (const std::vector <char*> namelist) 
 { 
     const char* const*	check;
     int		i;
@@ -169,12 +169,12 @@ void R_InitSpriteDefs (const char* const* namelist)
     int		end;
     int		patched;
 		
-    // count the number of sprite names
-    check = namelist;
-    while (*check != NULL)
-	check++;
+ //   // count the number of sprite names
+ //   check = namelist;
+ //   while (*check != NULL)
+	//check++;
 
-    ::g->numsprites = check-namelist;
+	::g->numsprites = namelist.size() - 1;//check-namelist;
 	
     if (!::g->numsprites)
 	return;
@@ -244,8 +244,9 @@ void R_InitSpriteDefs (const char* const* namelist)
 	    {
 	      case -1:
 		// no rotations were found for that frame at all
-		I_Error ("R_InitSprites: No patches found "
-			 "for %s frame %c", namelist[i], frame+'A');
+		//GK: Ignore for now
+		//I_Error ("R_InitSprites: No patches found "
+		//	 "for %s frame %c", namelist[i], frame+'A');
 		break;
 		
 	      case 0:
@@ -290,7 +291,7 @@ void R_InitSpriteDefs (const char* const* namelist)
 // R_InitSprites
 // Called at program start.
 //
-void R_InitSprites (const char* const* namelist)
+void R_InitSprites (const std::vector <char*> namelist)
 {
     int		i;
 	
@@ -574,7 +575,7 @@ void R_ProjectSprite (mobj_t* thing)
     sprdef = ::g->sprites[ind];
 #ifdef RANGECHECK
     if ( (thing->frame&FF_FRAMEMASK) >= sprdef->numframes )
-	I_Error ("R_ProjectSprite: invalid sprite frame %i : %i ",
+	I_Error ("R_ProjectSprite: invalid sprite frame %i : %i \n",
 		 thing->sprite, thing->frame);
 #endif
     sprframe = &sprdef->spriteframes[ thing->frame & FF_FRAMEMASK];

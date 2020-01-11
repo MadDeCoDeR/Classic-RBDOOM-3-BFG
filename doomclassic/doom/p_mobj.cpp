@@ -58,7 +58,7 @@ void P_SpawnMapThing (mapthing_t*	mthing);
 qboolean
 P_SetMobjState
 ( mobj_t*	mobj,
- statenum_t	state )
+ int	state )
 {
 	const state_t*	st;
 
@@ -70,7 +70,6 @@ P_SetMobjState
 			P_RemoveMobj (mobj);
 			return false;
 		}
-
 		st = &::g->states[state];
 		mobj->state = st;
 		mobj->tics = st->tics;
@@ -96,7 +95,7 @@ void P_ExplodeMissile (mobj_t* mo)
 {
 	mo->momx = mo->momy = mo->momz = 0;
 
-	P_SetMobjState (mo, (statenum_t)mobjinfo[mo->type].deathstate);
+	P_SetMobjState (mo, mobjinfo[mo->type].deathstate);
 
 	mo->tics -= P_Random()&3;
 
@@ -130,7 +129,7 @@ void P_XYMovement (mobj_t* mo)
 			mo->flags &= ~MF_SKULLFLY;
 			mo->momx = mo->momy = mo->momz = 0;
 
-			P_SetMobjState (mo, (statenum_t)mo->info->spawnstate);
+			P_SetMobjState (mo, mo->info->spawnstate);
 		}
 		return;
 	}
@@ -230,7 +229,7 @@ void P_XYMovement (mobj_t* mo)
 		&& player->cmd.sidemove == 0 ) ) )
 	{
 		// if in a walking frame, stop moving
-		if ( player&&(unsigned)((player->mo->state - ::g->states)- S_PLAY_RUN1) < 4)
+		if ( player&&(unsigned)((player->mo->state - ::g->states.data())- S_PLAY_RUN1) < 4)
 			P_SetMobjState (player->mo, S_PLAY);
 
 		mo->momx = 0;
@@ -612,7 +611,7 @@ void P_RespawnSpecials (void)
 	S_StartSound (mo, sfx_itmbk);
 
 	// find which type to spawn
-	for (i=0 ; i< NUMMOBJTYPES ; i++)
+	for (i=0 ; i< mobjinfo.size(); i++)
 	{
 		if (mthing->type == mobjinfo[i].doomednum)
 			break;
@@ -773,17 +772,17 @@ void P_SpawnMapThing (mapthing_t* mthing)
 		return;
 
 	// find which type to spawn
-	for (i=0 ; i< NUMMOBJTYPES ; i++)
+	for (i=0 ; i< mobjinfo.size() ; i++)
 		if (mthing->type == mobjinfo[i].doomednum)
 			break;
 
-	if ( i==NUMMOBJTYPES ) {
+	//if ( i==NUMMOBJTYPES ) {
 		//printf( "P_SpawnMapThing: Unknown type %i at (%i, %i)", mthing->type, mthing->x, mthing->y);
-		return;
+	//	return;
 		//I_Error ("P_SpawnMapThing: Unknown type %i at (%i, %i)",
 		//mthing->type,
 		//mthing->x, mthing->y);
-	}
+//	}
 
 	// don't spawn keycards and ::g->players in ::g->deathmatch
 	if (::g->deathmatch && mobjinfo[i].flags & MF_NOTDMATCH)

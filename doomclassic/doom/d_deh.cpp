@@ -410,19 +410,19 @@ int checkstate(char* text) {
 void setThing(int pos, char* varname, int varval) {
 	//GK: This works (suprisingly)
 	dehobj tvars[23] = {
-		{"Initial frame ",NUMSTATES,NULL,&mobjinfo[pos].spawnstate},
+		{"Initial frame ",MAXINT,NULL,&mobjinfo[pos].spawnstate},
 		{"Hit points ",MAXINT,NULL,&mobjinfo[pos].spawnhealth},
-		{"First moving frame ",NUMSTATES,NULL,&mobjinfo[pos].seestate},
+		{"First moving frame ",MAXINT,NULL,&mobjinfo[pos].seestate},
 		{"Alert sound ",NUMSFX,NULL,&mobjinfo[pos].seesound},
 		{"Reaction time ",MAXINT,NULL,&mobjinfo[pos].reactiontime},
 		{"Attack sound ",NUMSFX,NULL,&mobjinfo[pos].attacksound},
-		{"Injury frame ",NUMSTATES,NULL,&mobjinfo[pos].painstate},
+		{"Injury frame ",MAXINT,NULL,&mobjinfo[pos].painstate},
 		{"Pain chance ",MAXINT,NULL,&mobjinfo[pos].painchance},
 		{"Pain sound ",NUMSFX,NULL,&mobjinfo[pos].painsound},
-		{"Close attack frame ",NUMSTATES,NULL,&mobjinfo[pos].meleestate},
-		{"Far attack frame ",NUMSTATES,NULL,&mobjinfo[pos].missilestate},
-		{"Death frame ",NUMSTATES,NULL,&mobjinfo[pos].deathstate,},
-		{"Exploding frame ",NUMSTATES,NULL,&mobjinfo[pos].xdeathstate},
+		{"Close attack frame ",MAXINT,NULL,&mobjinfo[pos].meleestate},
+		{"Far attack frame ",MAXINT,NULL,&mobjinfo[pos].missilestate},
+		{"Death frame ",MAXINT,NULL,&mobjinfo[pos].deathstate,},
+		{"Exploding frame ",MAXINT,NULL,&mobjinfo[pos].xdeathstate},
 		{"Death sound ",NUMSFX,NULL,&mobjinfo[pos].deathsound},
 		{"Speed ",MAXINT,NULL,&mobjinfo[pos].speed},
 		{"Width ",MAXINT,NULL,&mobjinfo[pos].radius},
@@ -431,7 +431,7 @@ void setThing(int pos, char* varname, int varval) {
 		{"Missle damage ",MAXINT,NULL,&mobjinfo[pos].damage},
 		{"Action sound ",NUMSFX,NULL,&mobjinfo[pos].activesound},
 		{"Bits ",MAXINT,NULL,&mobjinfo[pos].flags},
-		{"Respawn frame ",NUMSTATES,NULL,&mobjinfo[pos].raisestate},
+		{"Respawn frame ", MAXINT,NULL,&mobjinfo[pos].raisestate},
 		{"ID # ",MAXINT,NULL,&mobjinfo[pos].doomednum},
 	};
 	for (int i = 0; i < 23; i++) {
@@ -444,24 +444,37 @@ void setThing(int pos, char* varname, int varval) {
 	}
 }
 
+void extendSpriteNames(int newSize) {
+	if (newSize >= sprnames.size() - 1) {
+		int oldSize = sprnames.size();
+		sprnames.resize(newSize + 2);
+		for (int i = oldSize - NUMSPRITES; i <= (newSize + 1) - NUMSPRITES; i++) {
+			sprnames[i + (NUMSPRITES - 1)] = (char*)malloc(5 * sizeof(char));
+			sprintf(sprnames[i + (NUMSPRITES - 1)], "SP%02d", i);
+		}
+	}
+}
+
 void setFrame(int pos, char* varname, int varval) {
 	dehobj fvars[6] = {
 		{"Sprite subnumber ",MAXINT,NULL,NULL,&tempStates[pos].frame},
 		{"Duration ",MAXINT,NULL,NULL,&tempStates[pos].tics},
 		{"Unknown 1 ",MAXINT,NULL,NULL,&tempStates[pos].misc1},
 		{"Unknown 2 ",MAXINT,NULL,NULL,&tempStates[pos].misc2},
-		{"Sprite number ",NUMSPRITES,NULL,NULL,NULL,NULL,&tempStates[pos].sprite},
-		{"Next frame ",NUMSTATES,NULL,NULL,NULL,NULL,NULL,&tempStates[pos].nextstate}
+		{"Sprite number ",MAXINT,NULL, &tempStates[pos].sprite},
+		{"Next frame ",MAXINT,NULL,&tempStates[pos].nextstate}
 	};
 	for (int i = 0; i < 6; i++) {
 		if (!idStr::Icmp(varname, fvars[i].name)) {
 			if (varval < fvars[i].limit) {
 				switch (i) {
 				case 4:
-					*fvars[i].spval = static_cast<spritenum_t>(varval);
+					extendSpriteNames(varval);
+					*fvars[i].ival = varval;
 					break;
 				case 5:
-					*fvars[i].stval = static_cast<statenum_t>(varval);
+					//*fvars[i].stval = static_cast<statenum_t>(varval);
+					*fvars[i].ival = varval;
 					break;
 				default:
 					*fvars[i].lval = varval;
@@ -475,11 +488,11 @@ void setFrame(int pos, char* varname, int varval) {
 
 void setWeapon(int pos, char* varname, int varval) {
 	dehobj wvars[6] = {
-		{"Select frame ",NUMSTATES,NULL,&weaponinfo[pos].downstate},
-		{"Deselect frame ",NUMSTATES,NULL,&weaponinfo[pos].upstate},
-		{"Bobbing frame ",NUMSTATES,NULL,&weaponinfo[pos].readystate},
-		{"Shooting frame ",NUMSTATES,NULL,&weaponinfo[pos].atkstate},
-		{"Firing frame ",NUMSTATES,NULL,&weaponinfo[pos].flashstate},
+		{"Select frame ",MAXINT,NULL,&weaponinfo[pos].downstate},
+		{"Deselect frame ",MAXINT,NULL,&weaponinfo[pos].upstate},
+		{"Bobbing frame ",MAXINT,NULL,&weaponinfo[pos].readystate},
+		{"Shooting frame ",MAXINT,NULL,&weaponinfo[pos].atkstate},
+		{"Firing frame ",MAXINT,NULL,&weaponinfo[pos].flashstate},
 		{"Ammo type ",NUMAMMO,NULL,NULL,NULL,NULL,NULL,NULL,&weaponinfo[pos].ammo}
 	};
 	for (int i = 0; i < 6; i++) {
@@ -514,7 +527,7 @@ void setCptr(char* varname, char* varfunc) {
 	if (tp != NULL) {
 		int pos = atoi(tp);
 		if (strlen(name) > 1 && strlen(varfunc) > 1) {
-			if (!idStr::Icmp(name, "FRAME") && pos < NUMSTATES) {
+			if (!idStr::Icmp(name, "FRAME") && pos < tempStates.size()) {
 				tempStates[pos].action = getFunc(varfunc);
 			}
 		}
@@ -592,63 +605,6 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 	otxt[il - 1] = '\0';
 	strncpy(ntxt, ltxt + il-1, nl-1);
 	ntxt[nl - 1] = '\0';
-	/*while (checkstate(tst) == 0 && i<lines.size()) {
-		newline = lines[i] + "\n";
-		//if (size + strlen(newline.c_str()) <= il) {
-		//idLib::Printf("%s\n", lines[i].c_str());
-			size += strlen(newline.c_str());
-			char* ltxt = strdup(newline.c_str());
-			if (size <= il) {
-				if (i == op) {
-					strcpy(otxt, newline.c_str());
-				}
-				else {
-					strcat(otxt, newline.c_str());
-				}
-			}
-			else {
-				if (strlen(ltxt) > il) {
-					for (int o = 0; o < il - 1; o++) {
-						otxt[o] = ltxt[o];
-					}
-					otxt[il - 1] = '\0';
-					//strncpy(otxt, ltxt, il - 1);
-					//strcat(otxt, "\0");
-					strcpy(ntxt, ltxt + il - 1);
-					/*int r = 0;
-					for (int h = il-1; h < strlen(ltxt); h++,r++) {
-						ntxt[r] = ltxt[h];
-					}
-					//ntxt[r - 1] = '\0';
-					nsize += strlen(ltxt+il-1);
-					//ntxt[strlen(ltxt)] = '\0';
-				}
-				else if (psize < il && psize + strlen(ltxt) > il) {
-					int p = 0;
-					for (int o = psize; o < il - 1; o++, p++) {
-						otxt[o] = ltxt[p];
-					}
-					otxt[il - 1] = '\0';
-					strcpy(ntxt, ltxt+p);
-					nsize += strlen(ltxt + p);
-				}
-				else {
-					strcat(ntxt, newline.c_str());
-					nsize+= strlen(newline.c_str());
-				}
-			}
-		i++;
-		if (i < lines.size()) {
-			tst = strtok(strdup(lines[i].c_str()), " ");
-		}
-		psize = size;
-	}
-	if (nsize < nl) {
-		ntxt[nsize] = '\0';
-	}
-	else {
-		ntxt[nl] = '\0';
-	}*/
 	//idLib::Printf("Replacing: %s with %s size %i\n", otxt, ntxt,nsize);
 	int arrsz = sizeof(strval) / sizeof(*strval);
 	if (otxt != nullptr) {
@@ -671,7 +627,7 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 				return;
 			}
 		}
-			for (int m = 0; m < NUMSPRITES; m++) {
+			for (int m = 0; m < NUMSPRITES - 1; m++) {
 				if (!idStr::Icmp(otxt, sprnames[m])) {
 					sprnames[m] = ntxt;
 					return;
@@ -862,18 +818,21 @@ void parsetext(char* text) {
 				break;
 			case 2:
 				setFrame(statepos, varname, varval);
-				memcpy(::g->states, tempStates, sizeof(tempStates));
+				//memcpy(::g->states, tempStates, sizeof(tempStates));
+				::g->states = tempStates;
 				break;
 			case 4:
 				setWeapon(statepos, varname, varval);
 				break;
 			case 5:
 				setPointer(statepos, varname, varval);
-				memcpy(::g->states, tempStates, sizeof(tempStates));
+				//memcpy(::g->states, tempStates, sizeof(tempStates));
+				::g->states = tempStates;
 				break;
 			case 6:
 				setCptr(varname, varfunc);
-				memcpy(::g->states, tempStates, sizeof(tempStates));
+				//memcpy(::g->states, tempStates, sizeof(tempStates));
+				::g->states = tempStates;
 				break;
 			case 7:
 				setAmmo(statepos, varname, varval);
@@ -906,12 +865,18 @@ void parsetext(char* text) {
 					case 1:
 						tpos = statepos - 1;
 						if (tpos >= NUMMOBJTYPES) {
-							I_Error("No such Thing found");
+							//I_Error("No such Thing found");
+							mobjinfo.resize(tpos + 1);
 						}
 						break;
 					case 2:
-						if (statepos >= NUMSTATES) {
-							I_Error("No such Frame found");
+						if (statepos >= tempStates.size()) {
+							//I_Error("No such Frame found");
+							int oldsize = tempStates.size();
+							tempStates.resize(statepos + 1);
+							for (int i = oldsize; i < tempStates.size(); i++) {
+								tempStates[i].nextstate = i + 1;
+							}
 						}
 						break;
 					case 3:

@@ -162,6 +162,10 @@ void	F_StartCast (void);
 void	F_CastTicker (void);
 qboolean F_CastResponder (event_t *ev);
 void	F_CastDrawer (void);
+extern "C"
+{
+	void A_RandomJump(mobj_t* actor, pspdef_t* psp);
+}
 
 //
 // F_StartFinale
@@ -590,6 +594,7 @@ void F_Ticker (void)
 //
 
 #include "hu_stuff.h"
+#include "m_random.h"
 
 
 void F_TextWrite (void)
@@ -727,6 +732,14 @@ void F_StartCast (void)
 	}	
 }
 
+int F_CastRandomJump(state_t* frame) {
+	if ((frame->action == (actionf_p2)A_RandomJump) && M_Random() < frame->misc2) {
+		return frame->misc1;
+	}
+	else {
+		return frame->nextstate;
+	}
+}
 
 //
 // F_CastTicker
@@ -758,9 +771,9 @@ void F_CastTicker (void)
     else
     {
 	// just advance to next state in animation
-	if (::g->caststate == &::g->states[S_PLAY_ATK1])
+	if (!::g->castdeath && ::g->caststate == &::g->states[S_PLAY_ATK1])
 	    goto stopattack;	// Oh, gross hack!
-	st = ::g->caststate->nextstate;
+	st = F_CastRandomJump( ::g->caststate);
 	::g->caststate = &::g->states[st];
 	::g->castframes++;
 	
@@ -800,7 +813,7 @@ void F_CastTicker (void)
 	    S_StartSound (NULL, sfx);
     }
 	
-    if (::g->castframes == 12)
+    if (!::g->castdeath && ::g->castframes == 12)
     {
 	// go into attack frame
 	::g->castattacking = true;
@@ -833,8 +846,16 @@ void F_CastTicker (void)
     }
 	
     ::g->casttics = ::g->caststate->tics;
-    if (::g->casttics == -1)
-	::g->casttics = 15;
+	if (::g->casttics == -1)
+	{
+		if (F_CastRandomJump(::g->caststate)) {
+			::g->caststate = &::g->states[F_CastRandomJump(::g->caststate)];
+			::g->casttics = ::g->caststate->tics;
+		}
+
+		if (::g->casttics == -1)
+			::g->casttics = 15;
+	}
 }
 
 
@@ -854,6 +875,11 @@ qboolean F_CastResponder (event_t* ev)
     ::g->castdeath = true;
     ::g->caststate = &::g->states[mobjinfo[castorder[::g->castnum].type].deathstate];
     ::g->casttics = ::g->caststate->tics;
+	if (::g->casttics == -1)
+	{
+		::g->caststate = &::g->states[F_CastRandomJump(::g->caststate)];
+		::g->casttics = ::g->caststate->tics;
+	}
     ::g->castframes = 0;
     ::g->castattacking = false;
     if (mobjinfo[castorder[::g->castnum].type].deathsound)

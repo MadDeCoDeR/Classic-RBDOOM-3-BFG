@@ -642,7 +642,7 @@ void A_Look (mobj_t* actor, void * )
 	    S_StartSound (actor, sound);
     }
 
-    P_SetMobjState (actor, (statenum_t)actor->info->seestate);
+    P_SetMobjState (actor, actor->info->seestate);
 }
 
 
@@ -690,7 +690,7 @@ void A_Chase (mobj_t*	actor, void * )
 	if (P_LookForPlayers(actor,true))
 	    return; 	// got a new target
 	
-	P_SetMobjState (actor, (statenum_t)actor->info->spawnstate);
+	P_SetMobjState (actor, actor->info->spawnstate);
 	return;
     }
     
@@ -709,7 +709,7 @@ void A_Chase (mobj_t*	actor, void * )
 	if (actor->info->attacksound)
 	    S_StartSound (actor, actor->info->attacksound);
 
-	P_SetMobjState (actor, (statenum_t)actor->info->meleestate);
+	P_SetMobjState (actor, actor->info->meleestate);
 	return;
     }
     
@@ -725,7 +725,7 @@ void A_Chase (mobj_t*	actor, void * )
 	if (!P_CheckMissileRange (actor))
 	    goto nomissile;
 	
-	P_SetMobjState (actor, (statenum_t)actor->info->missilestate);
+	P_SetMobjState (actor, actor->info->missilestate);
 	actor->flags |= MF_JUSTATTACKED;
 	return;
     }
@@ -854,7 +854,7 @@ void A_CPosRefire (mobj_t* actor, void * )
 	|| actor->target->health <= 0
 	|| !P_CheckSight (actor, actor->target) )
     {
-	P_SetMobjState (actor, (statenum_t)actor->info->seestate);
+	P_SetMobjState (actor, actor->info->seestate);
     }
 }
 
@@ -871,7 +871,7 @@ void A_SpidRefire (mobj_t* actor, void * )
 	|| actor->target->health <= 0
 	|| !P_CheckSight (actor, actor->target) )
     {
-	P_SetMobjState (actor, (statenum_t)actor->info->seestate);
+	P_SetMobjState (actor, actor->info->seestate);
     }
 }
 
@@ -1190,7 +1190,7 @@ void A_VileChase (mobj_t* actor, void * )
 		    S_StartSound (::g->corpsehit, sfx_slop);
 		    info = ::g->corpsehit->info;
 		    
-		    P_SetMobjState (::g->corpsehit,(statenum_t)info->raisestate);
+		    P_SetMobjState (::g->corpsehit,info->raisestate);
 		    ::g->corpsehit->height <<= 2;
 		    ::g->corpsehit->flags = info->flags;
 		    ::g->corpsehit->health = info->spawnhealth;
@@ -2045,7 +2045,7 @@ void A_SpawnFly (mobj_t* mo, void * )
 
     newmobj	= P_SpawnMobj (targ->x, targ->y, targ->z, type);
     if (P_LookForPlayers (newmobj, true) )
-	P_SetMobjState (newmobj, (statenum_t)newmobj->info->seestate);
+	P_SetMobjState (newmobj, newmobj->info->seestate);
 	
     // telefrag anything in this spot
     P_TeleportMove (newmobj, newmobj->x, newmobj->y);
@@ -2071,6 +2071,22 @@ void A_PlayerScream (mobj_t* mo, void * )
     
 	if ( ::g->demoplayback || globalNetworking || (mo == ::g->players[::g->consoleplayer].mo))
 		S_StartSound (mo, sound);
+}
+
+void A_RandomJump(mobj_t* actor, pspdef_t* psp)
+
+{
+	// [BH] allow A_RandomJump() to work for weapon states as well
+	if (psp)
+	{
+		if (M_Random() < psp->state->misc2)
+			P_SetPsprite(::g->plyr, psp - &::g->plyr->psprites[ps_weapon], psp->state->misc1);
+	}
+	else
+	{
+		if (M_Random() < actor->state->misc2)
+			P_SetMobjState(actor, actor->state->misc1);
+	}
 }
 
 }; // extern "C"

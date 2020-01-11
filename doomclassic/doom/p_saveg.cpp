@@ -68,7 +68,7 @@ void P_ArchivePlayers (void)
 	    if (dest->psprites[j].state)
 	    {
 		dest->psprites[j].state 
-			= (state_t *)(dest->psprites[j].state-::g->states);
+			= (state_t *)(dest->psprites[j].state-::g->states.data());
 	    }
 	}
     }
@@ -309,7 +309,7 @@ void P_ArchiveThinkers (void)
 			mobj = (mobj_t *)::g->save_p;
 			memcpy (mobj, th, sizeof(*mobj));
 			::g->save_p += sizeof(*mobj);
-			mobj->state = (state_t *)(mobj->state - ::g->states);
+			mobj->state = (state_t *)(mobj->state - ::g->states.data());
 
 			if (mobj->player)
 				mobj->player = (player_t *)((mobj->player-::g->players) + 1);

@@ -295,7 +295,7 @@ qboolean PIT_CheckThing (mobj_t* thing)
 	::g->tmthing->flags &= ~MF_SKULLFLY;
 	::g->tmthing->momx = ::g->tmthing->momy = ::g->tmthing->momz = 0;
 	
-	P_SetMobjState (::g->tmthing, (statenum_t)::g->tmthing->info->spawnstate);
+	P_SetMobjState (::g->tmthing, ::g->tmthing->info->spawnstate);
 	
 	return false;		// stop moving
     }
