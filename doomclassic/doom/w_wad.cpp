@@ -908,7 +908,7 @@ int W_CheckNumForName (const char* name, int last)
     // scan backwards so patch lump files take precedence
     lump_p = lumpinfo + last;
 
-    while (--lump_p != lumpinfo)
+    while (lump_p-- != lumpinfo)
     {
 		if ( *(int *)lump_p->name == v1
 			&& *(int *)&lump_p->name[4] == v2)
