@@ -2282,10 +2282,10 @@ qboolean M_Responder (event_t* ev)
 			::g->players[::g->consoleplayer].message = gammamsg[::g->usegamma];
 			I_SetPalette ((byte*)W_CacheLumpName ("PLAYPAL",PU_CACHE_SHARED),W_LumpLength(W_GetNumForName("PLAYPAL")));
 			return true;
-		case KEY_F12: //GK: Why not
-			M_Alwaysrun(0);
-			S_StartSound(NULL, sfx_swtchn);
-			return true;
+		//case KEY_F12: //GK: Why not
+		//	M_Alwaysrun(0);
+		//	S_StartSound(NULL, sfx_swtchn);
+		//	return true;
 	}
 
 
