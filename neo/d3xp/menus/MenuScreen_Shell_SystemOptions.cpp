@@ -609,7 +609,7 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 			}
 			if( modeList[vidmode].displayHz == 60 )
 			{
-				return va( "%4i x %4i", modeList[vidmode].width, modeList[vidmode].height );
+				return va( "%4i x %4i", r_customWidth.GetInteger(), r_customHeight.GetInteger());
 			}
 			else
 			{

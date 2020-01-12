@@ -164,7 +164,7 @@ void idMenuScreen_Shell_Resolution::ShowScreen( const mainMenuTransition_t trans
 	optionData.Append( optionData_t( 0, 0 ) );
 	
 	int viewIndex = 0;
-	
+	displays.Clear();
 	for( int displayNum = 0 ; ; displayNum++ )
 	{
 		idList<vidMode_t>& modeList = displays.Alloc();
