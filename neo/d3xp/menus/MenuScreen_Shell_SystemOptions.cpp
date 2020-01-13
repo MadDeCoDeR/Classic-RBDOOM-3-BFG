@@ -613,7 +613,7 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 			}
 			else
 			{
-				return va( "%4i x %4i @ %dhz", modeList[vidmode].width, modeList[vidmode].height, modeList[vidmode].displayHz );
+				return va( "%4i x %4i @ %dhz", r_customWidth.GetInteger(), r_customHeight.GetInteger(), modeList[vidmode].displayHz );
 			}
 		}
 		//GK: Begin
