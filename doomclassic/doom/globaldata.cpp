@@ -58,6 +58,8 @@ void M_ChangeGPad(int choice);
 void M_FullScreen(int choice);
 void M_Aspect(int choice);
 void M_Light(int choice);
+void M_Resolution(int choice);
+void M_SetRes(int choice);
 void M_Blurry(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
@@ -96,6 +98,7 @@ void M_DrawSave(void);
 void M_DrawMaster(void);
 void M_DrawDoomIT(void);
 void M_DrawGame(void);
+void M_DrawRes(void);
 
 void M_DrawSaveLoadBorder(int x,int y);
 void M_SetupNextMenu(menu_t *menudef);

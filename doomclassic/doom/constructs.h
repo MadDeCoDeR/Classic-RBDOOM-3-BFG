@@ -25,7 +25,7 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-
+extern idCVar r_vidMode;
 	memset(::g, 0, sizeof(*::g));
 //  am_map.constructs begin // 
 	::g->cheating = 0;
@@ -244,8 +244,9 @@ menu_t  temp_OptionsDef = {
 memcpy( &::g->OptionsDef, &temp_OptionsDef, sizeof(temp_OptionsDef) );
 menuitem_t temp_VideoMenu[4] = {
 	{1,"M_GDHIGH",	M_FullScreen,'f'},
-	{1,"M_ASP",M_Aspect,'m'},//GK: Allow the player to switch aspect ratio
-	{1,"M_LGT",M_Light,'l'},//GK: Allow the player to switch lighting mode
+	{1,"M_ASP", M_Aspect,'m'},//GK: Allow the player to switch aspect ratio
+	{1,"M_LGT", M_Light,'l'},//GK: Allow the player to switch lighting mode
+	{1,"M_RES", M_Resolution, 'r'}
 	//{1, "M_BLURR", M_Blurry,'b'}//GK: Allow the player to enable blurry effect
 };
 memcpy(::g->VideoMenu, temp_VideoMenu, sizeof(temp_VideoMenu));
@@ -391,6 +392,40 @@ menu_t  temp_ReadDef2 = {
 	0
 };
 memcpy(&::g->ReadDef2, &temp_ReadDef2, sizeof(temp_ReadDef2));
+
+menuitem_t temp_ResMenu[20] = {
+	{ 1,"", M_SetRes,'1' },
+{ 1,"", M_SetRes,'2' },
+{ 1,"", M_SetRes,'3' },
+{ 1,"", M_SetRes,'4' },
+{ 1,"", M_SetRes,'5' },
+{ 1,"", M_SetRes,'6' },
+{ 1,"", M_SetRes,'7' },
+{ 1,"", M_SetRes,'8' },
+{ 1,"", M_SetRes,'9' },
+{ 1,"", M_SetRes,'0' }, //GK: Linux only accepts 0-9 as numbers to chars
+{ 1,"", M_SetRes,'a' },
+{ 1,"", M_SetRes,'b' },
+{ 1,"", M_SetRes,'c' },
+{ 1,"", M_SetRes,'d' },
+{ 1,"", M_SetRes,'e' },
+{ 1,"", M_SetRes,'f' },
+{ 1,"", M_SetRes,'g' },
+{ 1,"", M_SetRes,'h' },
+{ 1,"", M_SetRes,'i' },
+{ 1,"", M_SetRes,'j' }
+
+};
+memcpy(::g->ResMenu, temp_ResMenu, sizeof(temp_ResMenu));
+menu_t  temp_ResDef = {
+	doomit_end,
+	&::g->VideoDef,
+	::g->ResMenu,
+	M_DrawRes,
+	40,30,
+	r_vidMode.GetInteger()
+};
+memcpy(&::g->ResDef, &temp_ResDef, sizeof(temp_ResDef));
 
 int     temp_quitsounds[8] = {
 	sfx_pldeth,

@@ -186,6 +186,8 @@ void M_ChangeGPad(int choice);
 void M_FullScreen(int choice);
 void M_Aspect(int choice);
 void M_Light(int choice);
+void M_Resolution(int choice);
+void M_SetRes(int choice);
 void M_Blurry(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
@@ -227,6 +229,7 @@ void M_DrawSave(void);
 void M_DrawMaster(void);
 void M_DrawDoomIT(void);
 void M_DrawGame(void);
+void M_DrawRes(void);
 
 void M_DrawSaveLoadBorder(int x,int y);
 void M_SetupNextMenu(menu_t *menudef);
@@ -258,6 +261,7 @@ menu_t extradef = {
 };
 idCVar doomit("doomit","0",CVAR_GAME|CVAR_ARCHIVE|CVAR_NOCHEAT|CVAR_INTEGER|CVAR_ROM,"0 = no DOOM-IT, 1 = DOOM-IT");
 int state = 0;
+idList<vidMode_t>			modeList;
 //
 // DOOM MENU
 //
@@ -1003,6 +1007,7 @@ void M_DrawVideo(void)
 	int reallight = r_clight.GetInteger();
 	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : 0;
 	int blurryeffect = r_clblurry.GetInteger();
+	char* res = va("%4i x %4i", r_customWidth.GetInteger(), r_customHeight.GetInteger());
 
 
 	V_DrawPatchDirect(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * endgame, 0,
@@ -1013,6 +1018,7 @@ void M_DrawVideo(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])));
 	//V_DrawPatchDirect(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (blurry), 0,
 	//	/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[blurryeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[blurryeffect])));
+	M_WriteText(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * (resolution) + 6, res);
 }
 
 void M_Video(int choice)
@@ -1410,6 +1416,30 @@ void M_Options(int choice)
 	M_SetupNextMenu(&::g->OptionsDef);
 }
 
+void M_DrawRes(void) {
+	V_DrawPatchDirect(108, 10, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_RES", PU_CACHE_SHARED), W_GetNumForName("M_RES")));
+	modeList.Clear();
+	if (r_fullscreen.GetInteger() > 1) {
+		R_GetModeListForDisplay(r_fullscreen.GetInteger() - 1, modeList);
+	}
+	else {
+		R_GetModeListForDisplay(0, modeList);
+	}
+	for (int i = 0; i < modeList.Num(); i++) {
+		std::string res;
+		res = va("%4i x %4i", modeList[i].width, modeList[i].height);
+		if (modeList[i].displayHz != 60)
+		{
+			res += va(" @ %dhz", modeList[i].displayHz);
+		}
+		if (i < 10) {
+			M_WriteText(::g->ResDef.x, ::g->ResDef.y + LINEHEIGHT * i, res.c_str());
+		}
+		else {
+			M_WriteText(::g->ResDef.x + 120, ::g->ResDef.y + LINEHEIGHT * (i - 10), res.c_str());
+		}
+	}
+}
 
 
 //
@@ -1544,6 +1574,18 @@ void M_Light(int choice) {
 	r_clight.SetInteger(r_clight.GetInteger() ? r_clight.GetInteger() == 1 ? 2 : 0 : 1);
 	::g->reset = true;
 	R_Init(); //GK: Re-init the renderer to apply the new light mode
+}
+
+void M_Resolution(int choice) {
+	M_SetupNextMenu(&::g->ResDef);
+}
+
+void M_SetRes(int choice) {
+	r_vidMode.SetInteger(choice);
+	r_customWidth.SetInteger(modeList[choice].width);
+	r_customHeight.SetInteger(modeList[choice].height);
+	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
+	M_SetupNextMenu(::g->currentMenu->prevMenu);
 }
 
 void M_Blurry(int choice) {
@@ -2329,8 +2371,12 @@ qboolean M_Responder (event_t* ev)
 	case KEY_DOWNARROW:
 		do
 		{
-			if (::g->itemOn+1 > ::g->currentMenu->numitems-1)
+			if (::g->itemOn + 1 > ::g->currentMenu->numitems - 1) {
 				::g->itemOn = 0;
+			} else
+				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn + 1 >= modeList.Num()) {
+					::g->itemOn = 0;
+			}
 			else ::g->itemOn++;
 			S_StartSound(NULL,sfx_pstop);
 		} while(::g->currentMenu->menuitems[::g->itemOn].status==-1);
@@ -2340,7 +2386,9 @@ qboolean M_Responder (event_t* ev)
 		do
 		{
 			if (!::g->itemOn)
-				::g->itemOn = ::g->currentMenu->numitems-1;
+				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems)
+					::g->itemOn = modeList.Num() - 1;
+				else ::g->itemOn = ::g->currentMenu->numitems-1;
 			else ::g->itemOn--;
 			S_StartSound(NULL,sfx_pstop);
 		} while(::g->currentMenu->menuitems[::g->itemOn].status==-1);
@@ -2500,6 +2548,9 @@ void M_Drawer (void)
 	if (::g->currentMenu->menuitems == ::g->QuitDef.menuitems && idLib::newd3) {
 		::g->currentMenu->numitems = 2;
 	}
+	if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn >= 10) {
+		::g->md_x = ::g->currentMenu->x + 120;
+	}
 	max = ::g->currentMenu->numitems;
 	
 
@@ -2521,6 +2572,9 @@ void M_Drawer (void)
 		int lineoffs = ::g->itemOn*LINEHEIGHT;
 		if (::g->currentMenu == &::g->OptionsDef && ::g->itemOn > messages) {
 			lineoffs += (optoffs*LINEHEIGHT);
+		}
+		if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn >= 10) {
+			lineoffs = LINEHEIGHT * (::g->itemOn - 10);
 		}
 		V_DrawPatchDirect(::g->md_x + SKULLXOFF, ::g->currentMenu->y - 5 + lineoffs, 0,
 			/*(patch_t*)*/img2lmp(W_CacheLumpName(skullName[::g->whichSkull], PU_CACHE_SHARED), W_GetNumForName(skullName[::g->whichSkull])));
