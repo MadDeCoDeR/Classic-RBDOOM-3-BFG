@@ -124,6 +124,7 @@ int printErrorCount = 0;
 bool demoDebugOn = false;
 #endif
 
+float ogHz = 0.0f;
 // 
 // controls (have defaults) 
 // 
@@ -244,6 +245,16 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 	int		side;
 
 	ticcmd_t*	base;
+
+	if (::g->demoplayback || ::g->demorecording) {
+		com_engineHz_denominator = 100LL * TICRATE;
+		com_engineHz_latched = TICRATE;
+	}
+	else if (ogHz){
+		com_engineHz_denominator = 100LL * ogHz;
+		com_engineHz_latched = ogHz;
+		ogHz = 0;
+	}
 
 	base = I_BaseTiccmd ();		// empty, or external driver
 	memcpy (cmd,base,sizeof(*cmd)); 
@@ -2222,6 +2233,7 @@ void G_RecordDemo (char* name)
 
 	demoversion = VERSION;
 	::g->demorecording = true;
+	ogHz = com_engineHz_latched;
 } 
  
  
@@ -2386,6 +2398,7 @@ void G_DoPlayDemo (void)
 
 	::g->usergame = false;
 	::g->demoplayback = true;
+	ogHz = com_engineHz_latched;
 } 
 
 //
