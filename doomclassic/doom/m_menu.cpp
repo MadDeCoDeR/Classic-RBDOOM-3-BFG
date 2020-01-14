@@ -262,6 +262,7 @@ menu_t extradef = {
 idCVar doomit("doomit","0",CVAR_GAME|CVAR_ARCHIVE|CVAR_NOCHEAT|CVAR_INTEGER|CVAR_ROM,"0 = no DOOM-IT, 1 = DOOM-IT");
 int state = 0;
 idList<vidMode_t>			modeList;
+int modeSize = 0;
 //
 // DOOM MENU
 //
@@ -1425,7 +1426,8 @@ void M_DrawRes(void) {
 	else {
 		R_GetModeListForDisplay(0, modeList);
 	}
-	for (int i = 0; i < modeList.Num(); i++) {
+	modeSize = modeList.Num() < doomit_end ? modeList.Num() : doomit_end;
+	for (int i = 0; i < modeSize; i++) {
 		std::string res;
 		res = va("%4i x %4i", modeList[i].width, modeList[i].height);
 		if (modeList[i].displayHz != 60)
@@ -2374,7 +2376,7 @@ qboolean M_Responder (event_t* ev)
 			if (::g->itemOn + 1 > ::g->currentMenu->numitems - 1) {
 				::g->itemOn = 0;
 			} else
-				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn + 1 >= modeList.Num()) {
+				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn + 1 >= modeSize) {
 					::g->itemOn = 0;
 			}
 			else ::g->itemOn++;
@@ -2387,7 +2389,7 @@ qboolean M_Responder (event_t* ev)
 		{
 			if (!::g->itemOn)
 				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems)
-					::g->itemOn = modeList.Num() - 1;
+					::g->itemOn = modeSize - 1;
 				else ::g->itemOn = ::g->currentMenu->numitems-1;
 			else ::g->itemOn--;
 			S_StartSound(NULL,sfx_pstop);

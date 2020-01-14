@@ -207,9 +207,9 @@ typedef enum
 typedef enum
 {
 	endgame,
+	resolution,
 	detail,	//GK: Use this value for aspect ratio option
 	light, //GK: Use this value for light modes
-	resolution,
 	//blurry,
 	video_end
 } video_e;
