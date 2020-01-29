@@ -2083,7 +2083,12 @@ bool idCommonLocal::ProcessEvent( const sysEvent_t* event )
 			extern Globals* g;
 			if( g != NULL )
 			{
-				classicEvent.data1 =  DoomLib::RemapControl( event->GetKey() );
+				if (::g->captureBind) {
+					classicEvent.data1 = event->GetKey();
+				}
+				else {
+					classicEvent.data1 = DoomLib::RemapControl(event->GetKey());
+				}
 				
 				D_PostEvent( &classicEvent );
 			}
