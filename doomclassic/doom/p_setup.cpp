@@ -845,7 +845,7 @@ P_SetupLevel
 #endif
 			}
 			if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
-				if (::g->clusters.size()) {
+				if (::g->clusters.size() >= episode) {
 					if (!::g->clusters[episode - 1].startmap && ::g->clusters[episode - 1].mapname != NULL) {
 						for (int i = 0; i < ::g->maps.size(); i++) {
 							if (!idStr::Icmp(::g->clusters[episode - 1].mapname, ::g->maps[i].lumpname)) {
