@@ -1604,7 +1604,12 @@ void A_BossDeath (mobj_t* mo, void * )
 					}
 				}
 				else {
-					return;
+					if (!::g->maps[::g->map - 1].miniboss) {
+						return;
+					}
+					else {
+						ok = true;
+					}
 				}
 			}
 		}

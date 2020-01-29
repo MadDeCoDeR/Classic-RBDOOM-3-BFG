@@ -696,8 +696,8 @@ void setMAPSTR(int pos, char* name, char* value) {
 		pos = calculateD1map(pos,episodecount) -1;
 	}
 		expobj mapstr[] = {
-			{"miniboss",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].miniboss},
-			{"map07special",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].miniboss},
+			{"miniboss",MAXINT, &::g->maps[pos].bossaction,NULL,NULL,NULL,&::g->maps[pos].miniboss},
+			{"map07special",MAXINT, &::g->maps[pos].bossaction,NULL,NULL,NULL,&::g->maps[pos].miniboss},
 			{"secret_final",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].fsecret},
 			{"final_flat",MAXINT,&::g->maps[pos].fflatname,&::g->maps[pos].fflat},
 			{"final_text",MAXINT,&::g->maps[pos].ftext},
@@ -783,6 +783,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 					break;
 				case 1:
 				case 2:
+					*mapstr[i].sval = value;
 				case 3:
 				case 12:
 				case 13:
