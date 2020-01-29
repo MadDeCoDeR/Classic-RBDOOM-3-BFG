@@ -306,6 +306,10 @@ void DoomLib::InitControlRemap() {
 
 keyNum_t DoomLib::RemapControl( keyNum_t key ) {
 
+	if (!idStr::Icmp(idKeyInput::GetBinding(key), "_impulse19")) {
+		return K_TAB;
+	}
+
 	if( classicRemap[ key ] == K_NONE ) {
 		return key;
 	} else {
