@@ -922,8 +922,10 @@ void D_DoomMain(void)
 	int* dehackeds = W_GetNumsForName("DEHACKED");
 	int dehackedsSize = sizeof(dehackeds) / sizeof(int);
 	if (dehackeds[0] >= 0) {
+		int prev = 0;
 		for (int i = 0; i < dehackedsSize; i++) {
-			if (dehackeds[i] >= 0) {
+			if (dehackeds[i] >= prev) {
+				prev = dehackeds[i];
 				loaddeh(dehackeds[i]);
 			}
 		}
