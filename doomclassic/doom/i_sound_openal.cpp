@@ -967,19 +967,22 @@ void I_UpdateMusic( void )
 	if ( !Music_initialized ) {
 		return;
 	}
-	
+
+	alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
+	if ((alIsEffect((ALuint)::g->clEAX) && ::g->clEAX > 0) || S_museax.GetBool()) {
+		alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, clmusslot, 0, AL_FILTER_NULL);
+	}
+
 	if ( alMusicSourceVoice ) {
 		// Set the volume GK: and the music Reverb
 		alSourcef( alMusicSourceVoice, AL_GAIN, x_MusicVolume * GLOBAL_VOLUME_MULTIPLIER );
-		alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
-		if ((alIsEffect((ALuint)::g->clEAX) && ::g->clEAX > 0) || S_museax.GetBool()) {
-			alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, clmusslot, 0, AL_FILTER_NULL);
-		}
+		
 	}
 	
 	if ( waitingForMusic ) {
 		if ( musicReady && alMusicSourceVoice ) {
 			if ( musicBuffer ) {
+
 				alSourcei( alMusicSourceVoice, AL_BUFFER, 0 );
 				
 				if (!use_avi) {
