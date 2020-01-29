@@ -201,7 +201,7 @@ If you have questions concerning this license or the applicable additional terms
 #define LINEHEIGHT		16
 // m_menu.defs end // 
 //  p_enemy.defs begin // 
-//#define MAXSPECIALCROSS	8 //GK: No nedded anymore
+#define MAXSPECIALCROSS	8 //GK: No nedded anymore
 #define	FATSPREAD	(ANG90/8)
 #define	SKULLSPEED		(20*FRACUNIT)
 // p_enemy.defs end // 
@@ -209,7 +209,7 @@ If you have questions concerning this license or the applicable additional terms
 #define BONUSADD	6
 // p_inter.defs end // 
 //  p_map.defs begin // 
-//#define MAXSPECIALCROSS		8 //GK: No nedded anymore
+#define MAXSPECIALCROSS		8 //GK: No nedded anymore
 // p_map.defs end // 
 //  p_mobj.defs begin // 
 #define STOPSPEED		0x1000
@@ -229,9 +229,9 @@ If you have questions concerning this license or the applicable additional terms
 #define MAX_DEATHMATCH_STARTS	10
 // p_setup.defs end // 
 //  p_spec.defs begin // 
-#define MAXANIMS                1280 //GK: For now just increased it
-//#define MAXLINEANIMS            64 //GK: No nedded anymore
-//#define MAX_ADJOINING_SECTORS    	20 //GK: No nedded anymore
+#define MAXANIMS                32 //GK: For now just increased it
+#define MAXLINEANIMS            64 //GK: No nedded anymore
+#define MAX_ADJOINING_SECTORS    	20 //GK: No nedded anymore
 // p_spec.defs end // 
 //  p_user.defs begin // 
 #define INVERSECOLORMAP		32
@@ -257,7 +257,7 @@ If you have questions concerning this license or the applicable additional terms
 #define DISTMAP		2
 // r_main.defs end // 
 //  r_plane.defs begin // 
-//#define MAXVISPLANES	128
+#define MAXVISPLANES	128
 //#define MAXVISPLANES	384 //GK: No nedded anymore
 #define MAXOPENINGS	BASE_WIDTH*256 //GK: For now just increased it
 // r_plane.defs end // 
@@ -426,7 +426,7 @@ If you have questions concerning this license or the applicable additional terms
 // s_sound.defs end // 
 //  wi_stuff.defs begin // 
 #define NUMEPISODES	4
-#define NUMMAPS		9
+#define NUMMAPS		10
 #define WI_TITLEY		2
 #define WI_SPACINGY    		33
 #define SP_STATSX		50

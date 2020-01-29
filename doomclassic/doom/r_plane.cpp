@@ -195,6 +195,7 @@ void R_ClearPlanes (void)
 	::g->planeind = 0;
 	//visplane_t* tplane = new visplane_t();
 	if (::g->visplanes.empty()) {
+		::g->visplanes.reserve(MAXVISPLANES);
 		::g->visplanes.emplace_back(new visplane_t());
 	}
 	::g->planeind++;
@@ -546,6 +547,9 @@ void R_DrawPlanes (void)
 
 void AddNewVisplane() {
 	if (::g->planeind >= ::g->visplanes.size()) {
+		if (::g->visplanes.size() == ::g->visplanes.capacity()) {
+			::g->visplanes.reserve(::g->visplanes.size() + MAXVISPLANES);
+		}
 		::g->visplanes.emplace_back(new visplane_t());
 	}
 	else {

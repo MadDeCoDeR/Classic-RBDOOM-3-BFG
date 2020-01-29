@@ -34,7 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma interface
 #endif
 //GK : Increase the number of things from 128 to 245760 (lets become NUTS)
-//#define MAXVISSPRITES  	245760
+#define MAXVISSPRITES  	128
 
 extern std::vector<vissprite_t*>	vissprites;
 //extern vissprite_t*	vissprite_p;

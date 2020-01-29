@@ -1963,6 +1963,9 @@ void P_SpawnSpecials (void)
 			// EFFECT FIRSTCOL SCROLL+
 			if (::g->numlinespecials >= ::g->linespeciallist.size()) {
 				//::g->linespeciallist.clear();
+				if (::g->linespeciallist.size() == ::g->linespeciallist.capacity()) {
+					::g->linespeciallist.reserve(::g->linespeciallist.size() + MAXLINEANIMS);
+				}
 				::g->linespeciallist.emplace_back(&::g->lines[i]);
 			}
 			else {
@@ -2006,11 +2009,17 @@ void P_SpawnSpecials (void)
 	//	Init other misc stuff
 	::g->cellind = 0;
 	if (::g->cellind >= ::g->activeceilings.size()) {
+		if (::g->activeceilings.size() == ::g->activeceilings.capacity()) {
+			::g->activeceilings.reserve(::g->activeceilings.size() + MAXCEILINGS);
+		}
 		::g->activeceilings.emplace_back(new ceiling_t());
 	}
 	::g->cellind++;
 	::g->platind = 0;
 	if (::g->platind >= ::g->activeplats.size()) {
+		if (::g->activeplats.size() == ::g->activeplats.capacity()) {
+			::g->activeplats.reserve(::g->activeplats.size() + MAXPLATS);
+		}
 		::g->activeplats.emplace_back(new plat_t());
 	}
 	::g->platind++;

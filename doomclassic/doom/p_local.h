@@ -158,7 +158,7 @@ typedef struct
     }			d;
 } intercept_t;
 
-//#define MAXINTERCEPTS	2560 //GK:Not needed
+#define MAXINTERCEPTS	128 //GK:Not needed
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
 extern std::vector<intercept_t*>	intercepts;
 //extern intercept_t*	intercept_p;
