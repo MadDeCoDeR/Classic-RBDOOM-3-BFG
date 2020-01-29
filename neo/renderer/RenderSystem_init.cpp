@@ -417,6 +417,13 @@ void R_SetNewMode( const bool fullInit )
 			{
 				// it worked
 				break;
+			} 
+			else
+			{
+				//GK: Fullscreen Fallback
+				r_vidMode.SetInteger(0);
+				cvarSystem->SetCVarInteger("r_customWidth", 1280);
+				cvarSystem->SetCVarInteger("r_customHeight", 720);
 			}
 		}
 		else
