@@ -482,7 +482,7 @@ void parseudmf(char* text) {
 void LoadUdmf(int lump) {
 	char* text = (char*)malloc(W_LumpLength(lump) + 1);
 	text[W_LumpLength(lump)] = '\0';
-	I_Printf("Applying DeHackeD patch ...\n");
+	I_Printf("Reading UDMF map ...\n");
 	W_ReadLump(lump, text);
 
 	//idLib::Printf("%s", text);
