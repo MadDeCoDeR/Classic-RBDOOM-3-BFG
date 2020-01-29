@@ -2176,7 +2176,6 @@ void idCommonLocal::PerformGameSwitch()
 		{
 			menuSoundWorld->Pause();
 		}
-		Sys_ChangeTitle(idealCurrentGame == DOOM_CLASSIC ? DOOM1_NAME : DOOM2_NAME);
 		
 		DoomLib::skipToNew = false;
 		DoomLib::skipToLoad = false;

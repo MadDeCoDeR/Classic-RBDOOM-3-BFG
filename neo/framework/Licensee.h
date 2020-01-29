@@ -37,8 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #define GAME_NAME						"DOOM 3: BFG Edition"		// appears on window titles and errors
-#define DOOM1_NAME						"Ultimate DOOM: BFG Edition"
-#define DOOM2_NAME						"DOOM 2: BFG Edition"
 #define NEW_GAME_NAME					"DOOM 3"
 
 // RB: changed home folder so we don't break the savegame of the original game
