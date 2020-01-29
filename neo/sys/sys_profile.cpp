@@ -107,7 +107,9 @@ void idProfileMgr::Pump()
 			else if( parms.GetError() == SAVEGAME_E_CORRUPTED )
 			{
 				idLib::Warning( "Profile corrupt, creating a new one..." );
-				common->Dialog().AddDialog( GDM_CORRUPT_PROFILE, DIALOG_CONTINUE, NULL, NULL, false );
+				if (!(idLib::newd3 && cvarSystem->GetCVarInteger("com_game_mode") > 0 && cvarSystem->GetCVarInteger("com_game_mode") < 3)) {
+					common->Dialog().AddDialog(GDM_CORRUPT_PROFILE, DIALOG_CONTINUE, NULL, NULL, false);
+				}
 				profile->SetDefaults();
 				profile->SaveSettings( true );
 			}

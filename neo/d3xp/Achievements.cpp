@@ -283,7 +283,7 @@ void idAchievementManager::EventCompletesAchievement( const achievement_t eventI
 #ifndef GAME_DLL
 	if( common->GetConsoleUsed() || idLib::classichUsed || idLib::warpUsed)
 	{
-		if( ::op && !cheatingDialogShown)
+		if( ::op && !cheatingDialogShown && !(idLib::newd3 && (cvarSystem->GetCVarInteger("com_game_mode") == 1 || cvarSystem->GetCVarInteger("com_game_mode") == 2)))
 		{
 			common->Dialog().AddDialog( GDM_ACHIEVEMENTS_DISABLED_DUE_TO_CHEATING, DIALOG_ACCEPT, NULL, NULL, true );
 			cheatingDialogShown = true;
@@ -395,7 +395,7 @@ void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
 			name = "warp";
 		}
 		common->Printf("You cheat with %s", name.c_str());
-		if( ::op && !cheatingDialogShown)
+		if( ::op && !cheatingDialogShown && !(idLib::newd3 && (cvarSystem->GetCVarInteger("com_game_mode") == 1 || cvarSystem->GetCVarInteger("com_game_mode") == 2)))
 		{
 			common->Dialog().AddDialog( GDM_ACHIEVEMENTS_DISABLED_DUE_TO_CHEATING, DIALOG_ACCEPT, NULL, NULL, true );
 			cheatingDialogShown = true;

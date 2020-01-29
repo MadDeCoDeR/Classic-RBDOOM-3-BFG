@@ -461,7 +461,12 @@ void CheckAbort(void)
 		D_QuitNetGame();
 
 		session->QuitMatch();
-		common->Dialog().AddDialog(GDM_OPPONENT_CONNECTION_LOST, DIALOG_ACCEPT, NULL, NULL, false);
+		if (!idLib::newd3) {
+			common->Dialog().AddDialog(GDM_OPPONENT_CONNECTION_LOST, DIALOG_ACCEPT, NULL, NULL, false);
+		}
+		else {
+			I_Error("Connection Lost");
+		}
 	}
 }
 
