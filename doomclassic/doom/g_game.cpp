@@ -210,9 +210,9 @@ G_PerformImpulse
 */
 int G_PerformImpulse( const int impulse, ticcmd_t* cmd ) {
 
-	if( impulse & BUTTON_NEXTWEAP ) {
+	if( impulse & BUTTON_PREVWEAP ) {
 		return 1;
-	} else if( impulse & BUTTON_PREVWEAP ) {
+	} else if( impulse & BUTTON_NEXTWEAP ) {
 		return 2;
 	}  
 	return 0;
@@ -373,7 +373,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			//I_Printf("Impulse seq %d", curTech5Command.impulseSequence);
 //			if( oldImpulseSequence != curTech5Command.impulseSequence ) {
 				cimpulse = G_PerformImpulse( curTech5Command.buttons, cmd );
-				if (cimpulse > 0 && circleWeaponPacifier >= com_engineHz_latched) { //GK: Weapon change event happend
+				if (cimpulse > 0 && circleWeaponPacifier >= ( com_engineHz_latched / 2)) { //GK: Weapon change event happend
 					circleWeaponPacifier = 0;
 					cmd->buttons |= BT_CHANGE;
 					cmd->nextPrevWeapon = cimpulse;
@@ -1320,9 +1320,11 @@ void FindNextMap(int map,bool issecret = false) {
 	}
 	if (*nmap == -1) {
 		for (int j = 0; j < ::g->maps.size(); j++) {
-			if (!idStr::Icmp(name, ::g->maps[j].lumpname)) {
-				*nmap = j;
-				break;
+			if (::g->maps[j].lumpname != NULL) {
+				if (!idStr::Icmp(name, ::g->maps[j].lumpname)) {
+					*nmap = j;
+					break;
+				}
 			}
 		}
 	}
