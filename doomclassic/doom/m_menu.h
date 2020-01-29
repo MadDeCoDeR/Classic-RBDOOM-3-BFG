@@ -62,7 +62,7 @@ void M_StartControlPanel (void);
 //GK:Use it and in other places
 void M_StartMessage(const char *string, messageRoutine_t routine, qboolean input);
 
-
+void M_Remap(event_t* ev);
 
 
 #endif    

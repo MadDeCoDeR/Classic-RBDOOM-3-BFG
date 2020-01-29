@@ -91,6 +91,7 @@ extern idCVar S_museax;
 extern idCVar cl_messages;
 extern idCVar cl_randpitch;
 extern idCVar in_joylayout;
+extern idCVar in_joystickRumble;
 extern idCVar in_alwaysRunCl;
 extern idCVar cl_freelook;
 extern idCVar cl_jump;
@@ -153,6 +154,8 @@ static int optoffs = 0; //GK: use for dynamicly adding/removing the number of me
 
 static bool reset = false;
 
+static bool hardreset = false;
+
 // graphic name of skulls
 // warning: initializer-string for array of chars is too long
 char    skullName[2][/*8*/9] = 
@@ -188,6 +191,7 @@ void M_Aspect(int choice);
 void M_Light(int choice);
 void M_Resolution(int choice);
 void M_SetRes(int choice);
+void M_Framerate(int choice);
 void M_Blurry(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
@@ -206,6 +210,11 @@ void M_Freelook(int choice);
 void M_Jump(int choice);
 void M_Cross(int choice);
 void M_Mapst(int choice);
+void M_Ctl(int choice);
+void M_Key(int choice);
+void M_ChangeKeys(int choice);
+void M_Rumble(int choice);
+void M_Layout(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
@@ -230,6 +239,8 @@ void M_DrawMaster(void);
 void M_DrawDoomIT(void);
 void M_DrawGame(void);
 void M_DrawRes(void);
+void M_DrawCtl(void);
+void M_DrawKey(void);
 
 void M_DrawSaveLoadBorder(int x,int y);
 void M_SetupNextMenu(menu_t *menudef);
@@ -237,6 +248,7 @@ void M_DrawThermo(int x,int y,int thermWidth,int thermDot);
 void M_DrawEmptyCell(menu_t *menu,int item);
 void M_DrawSelCell(menu_t *menu,int item);
 void M_WriteText(int x, int y, const char *string);
+void M_WriteAspectText(int x, int y, const char* string);
 int  M_StringWidth(const char *string);
 int  M_StringHeight(const char *string);
 void M_StartControlPanel(void);
@@ -263,6 +275,7 @@ idCVar doomit("doomit","0",CVAR_GAME|CVAR_ARCHIVE|CVAR_NOCHEAT|CVAR_INTEGER|CVAR
 int state = 0;
 idList<vidMode_t>			modeList;
 int modeSize = 0;
+bool nextpage = 0;
 //
 // DOOM MENU
 //
@@ -315,6 +328,68 @@ int modeSize = 0;
 // SAVE GAME MENU
 //
 
+typedef struct
+{
+	const char* display;
+	const char* bind;
+} bindInfo_t;
+
+static bindInfo_t keyboardBinds[] =
+{
+	{ "Forward",	"_forward"								},	// FORWARD
+	{ "Backward",	"_back"									},	// BACKPEDAL
+	{ "Move Left",	"_moveLeft"								},	// MOVE LEFT
+	{ "Move Right",	"_moveRight"							},	// MOVE RIGHT
+	{ "Jump",	"_moveUp"								},	// JUMP
+	{ "Turn Left",	"_left"									},	// TURN LEFT
+	{ "Turn Right",	"_right"								},	// TURN RIGHT
+	{ "Sprint",	"_speed"								},	// SPRINT
+
+	{ "Attack",	"_attack"								},	// ATTACK
+	{ "Prev Weap",	"_impulse14"							},	// PREV. WEAPON
+	{ "Next Weap",	"_impulse15"							},	// NEXT WEAPON
+	{ "Use",	"_use"						},	// USE
+	{ "Auto Map",	"_impulse19"							},	// PDA / SCOREBOARD
+
+	{ "Weap 1",	"_impulse0"							},	// FISTS / GRABBER
+	{ "Weap 2",	"_impulse2"							},	// PISTOL
+	{ "Weap 3",	"_impulse3"							},	// SHOTGUN / DOUBLE
+	{ "Weap 4",	"_impulse5"							},	// MACHINEGUN
+	{ "Weap 5",	"_impulse6"							},	// CHAINGUN
+	{ "Weap 6",	"_impulse7"							},	// GRENADES
+	{ "Weap 7",	"_impulse8"							},	// PLASMA GUN
+};
+
+static const int numBinds = sizeof(keyboardBinds) / sizeof(keyboardBinds[0]);
+
+typedef struct
+{
+	const char* display;
+	const char* displayx;
+	const char* displaynx;
+	const char* bind;
+} layoutbindInfo_t;
+
+static layoutbindInfo_t joyLayoutBinds[] =
+{
+	{ "Btn_a", "Btn_X",	"Btn_B", "JOY1"								},	// A/X/B
+	{ "Btn_b", "Btn_O",	"Btn_A", "JOY2"									},	// B/O/A
+	{ "Btn_x", "Sqr", "Btn_Y", "JOY3"								},	// X/SQUARE/Y
+	{ "Btn_y", "Tri", "Btn_X", "JOY4"							},	// Y/TRIANGLE/X
+	{ "Lb", "L1", "Btn_L", "JOY5"								},	// LB/L1/L
+	{ "Rb", "R1", "Btn_R","JOY6"									},	// RB/R1/R
+	{ "Ls", "L3", "Ls", "JOY7"								},	// LS/L3
+	{ "Rs", "R3", "Rs", "JOY8"								},	// RS/R3
+	{ "Start", "Start",	"+", "JOY9"								},	// Start/+
+	{ "Select", "Select", "-", "JOY10"							},	// Select/-
+
+	{ "Lt", "L2", "ZL", "JOY_TRIGGER1"							},	// LT/L2/ZL
+	{ "Rt",	"R2", "ZR", "JOY_TRIGGER2"						},	// RT/R2/ZR
+};
+
+static const int numLayBinds = sizeof(joyLayoutBinds) / sizeof(joyLayoutBinds[0]);
+
+int newmap = -1;
 //
 // M_ReadSaveStrings
 //  read the strings from the savegame files
@@ -1009,6 +1084,7 @@ void M_DrawVideo(void)
 	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : 0;
 	int blurryeffect = r_clblurry.GetInteger();
 	char* res = va("%4i x %4i", r_customWidth.GetInteger(), r_customHeight.GetInteger());
+	char* fps = va("%d FPS", com_engineHz.GetInteger() > 60 ? 40 : 35);
 
 
 	V_DrawPatchDirect(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * endgame, 0,
@@ -1020,6 +1096,7 @@ void M_DrawVideo(void)
 	//V_DrawPatchDirect(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (blurry), 0,
 	//	/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[blurryeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[blurryeffect])));
 	M_WriteText(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * (resolution) + 6, res);
+	M_WriteText(::g->VideoDef.x + 133, ::g->VideoDef.y + LINEHEIGHT * (framerate) + 6, fps);
 }
 
 void M_Video(int choice)
@@ -1199,7 +1276,6 @@ void M_ChooseSkill(int choice)
 		static int startLevel = 1;
 		G_DeferedInitNew((skill_t)choice,::g->epi+1, startLevel);
 		{ //GK: Set Endmap for the selected episode
-			if (!::g->clusters.size()){
 				::g->gamemission = doom;
 			}
 			else {
@@ -1403,10 +1479,10 @@ void M_DrawOptions(void)
 		(patch_t*)W_CacheLumpName(msgNames[in_alwaysRunCl.GetBool()], PU_CACHE_SHARED));
 	*/
 	//GK:End
-	extern idCVar in_mouseSpeed;
+	/*extern idCVar in_mouseSpeed;
 	const int roundedMouseSpeed = M_GetMouseSpeedForMenu( in_mouseSpeed.GetFloat() );
 
-	M_DrawThermo( ::g->OptionsDef.x, ::g->OptionsDef.y + LINEHEIGHT * ( mousesens + 1+optoffs ), 16, roundedMouseSpeed );
+	M_DrawThermo( ::g->OptionsDef.x, ::g->OptionsDef.y + LINEHEIGHT * ( mousesens + 1+optoffs ), 16, roundedMouseSpeed );*/
 
 	//M_DrawThermo(::g->OptionsDef.x,::g->OptionsDef.y+LINEHEIGHT*(scrnsize+1),
 	//	9,::g->screenSize);
@@ -1590,8 +1666,158 @@ void M_SetRes(int choice) {
 	M_SetupNextMenu(::g->currentMenu->prevMenu);
 }
 
+void M_Framerate(int choice) {
+	com_engineHz.SetInteger(com_engineHz.GetInteger() > 60 ? 60 : 120);
+	hardreset = true;
+}
+
 void M_Blurry(int choice) {
 	r_clblurry.SetBool(!r_clblurry.GetBool());
+}
+
+char	layNames[2][9] =
+{
+"M_XBOX","M_PSX"
+};
+
+void M_DrawCtl(void)
+{
+	V_DrawPatchDirect(58, 15, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_CTL", PU_CACHE_SHARED), W_GetNumForName("M_CTL")));
+	//GK:End
+	extern idCVar in_mouseSpeed;
+	const int roundedMouseSpeed = M_GetMouseSpeedForMenu(in_mouseSpeed.GetFloat());
+	bool rumbleOnOff = in_joystickRumble.GetBool();
+	bool layoutOnOff = in_joylayout.GetBool();
+
+	V_DrawPatchDirect(::g->CtlDef.x + 95, ::g->CtlDef.y + LINEHEIGHT * rumble, 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[rumbleOnOff], PU_CACHE_SHARED), W_GetNumForName(msgNames[rumbleOnOff])));
+	V_DrawPatchDirect(::g->CtlDef.x + 99, ::g->CtlDef.y + LINEHEIGHT * layout, 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(layNames[layoutOnOff], PU_CACHE_SHARED), W_GetNumForName(layNames[layoutOnOff])));
+	M_DrawThermo(::g->CtlDef.x, ::g->CtlDef.y + LINEHEIGHT * ctl_empty3, 16, roundedMouseSpeed);
+
+	//M_DrawThermo(::g->OptionsDef.x,::g->OptionsDef.y+LINEHEIGHT*(scrnsize+1),
+	//	9,::g->screenSize);
+}
+
+void M_DrawKey(void) {
+	V_DrawPatchDirect(108, 10, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_KEY", PU_CACHE_SHARED), W_GetNumForName("M_KEY")));
+	int bindStart = 0;
+	int bindEnd = numBinds;
+	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+	if (!aspect && nextpage) {
+		bindStart = 10;
+		bindEnd = bindEnd + 1;
+	}
+	for (int i = bindStart; i < bindEnd; i++) {
+		std::string res;
+		if (i < numBinds) {
+			keyBindings_t bind = idKeyInput::KeyBindingsFromBinding(keyboardBinds[i].bind, false, true);
+			
+			idStr bindings;
+
+			if (!bind.gamepad.IsEmpty() && idLib::joystick)
+			{
+				idStrList joyBinds;
+				int start = 0;
+				while (start < bind.gamepad.Length())
+				{
+					int end = bind.gamepad.Find(", ", true, start);
+					if (end < 0)
+					{
+						end = bind.gamepad.Length();
+					}
+					joyBinds.Alloc().CopyRange(bind.gamepad, start, end);
+					start = end + 2;
+				}
+				const char* buttonsWithImages[] =
+				{
+					"JOY1", "JOY2", "JOY3", "JOY4", "JOY5", "JOY6",
+					"JOY_TRIGGER1", "JOY_TRIGGER2", 0
+				};
+				for (int i = 0; i < joyBinds.Num(); i++)
+				{
+					if (joyBinds[i].Icmpn("JOY_STICK", 9) == 0)
+					{
+						continue; // Can't rebind the sticks, so don't even show them
+					}
+					bool hasImage = false;
+					int imageIndex = -1;
+					for (int b = 0; b < numLayBinds; b++)
+					{
+						if (joyBinds[i].Icmp(joyLayoutBinds[b].bind) == 0)
+						{
+							hasImage = true;
+							imageIndex = b;
+							break;
+						}
+					}
+					if (!bindings.IsEmpty())
+					{
+						bindings.Append(", ");
+					}
+					if (hasImage)
+					{
+						switch (in_joylayout.GetInteger()) {
+						case 0:
+						case 2:
+							bindings.Append(joyLayoutBinds[imageIndex].display);
+							break;
+						case 4:
+							bindings.Append(joyLayoutBinds[imageIndex].displaynx);
+							break;
+						case 1:
+						case 3:
+							bindings.Append(joyLayoutBinds[imageIndex].displayx);
+							break;
+						}
+					}
+					else
+					{
+						bindings.Append(joyBinds[i]);
+					}
+				}
+				bindings.Replace("JOY_DPAD", "DPAD");
+			}
+
+			if (!bind.keyboard.IsEmpty())
+			{
+				if (!bindings.IsEmpty())
+				{
+					bindings.Append(", ");
+				}
+				bindings.Append(bind.keyboard);
+			}
+
+			if (!bind.mouse.IsEmpty())
+			{
+				if (!bindings.IsEmpty())
+				{
+					bindings.Append(", ");
+				}
+				bindings.Append(bind.mouse);
+			}
+			bindings.ToUpper();
+			res = va("%s - %s", keyboardBinds[i].display, bindings.c_str());
+		}
+		if (aspect) {
+			if (i < 10) {
+				M_WriteAspectText(::g->KeyDef.x, ::g->KeyDef.y + LINEHEIGHT * i, res.c_str());
+			}
+			else {
+				M_WriteAspectText(::g->KeyDef.x + 220, ::g->KeyDef.y + LINEHEIGHT * (i - 10), res.c_str());
+			}
+		}
+		else
+		{
+			if ((!nextpage && i < 10) || (nextpage && i < numBinds)) {
+				M_WriteAspectText(::g->KeyDef.x, ::g->KeyDef.y + LINEHEIGHT * (nextpage ? i - 10 : i), res.c_str());
+			}
+			else {
+				M_WriteAspectText(::g->KeyDef.x + 200, ::g->KeyDef.y + LINEHEIGHT * 0, !nextpage ? "next page" : "prev page");
+				break;
+			}
+		}
+	}
 }
 //
 // M_EndGame
@@ -1761,7 +1987,48 @@ void M_ChangeSensitivity(int choice)
 	in_mouseSpeed.SetFloat( rescaledNewMouseSpeed );
 }
 
+void M_Ctl(int choice)
+{
+	M_SetupNextMenu(&::g->CtlDef);
+}
 
+void M_Key(int choice)
+{
+	M_SetupNextMenu(&::g->KeyDef);
+}
+
+void M_ChangeKeys(int choice) {
+	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+	if (!aspect && choice > 9) {
+		nextpage = !nextpage;
+		M_SetupNextMenu(&::g->KeyDef);
+		return;
+	}
+	::g->captureBind = true;
+	if (!aspect) {
+		::g->bindIndex = !nextpage ? choice : choice + 10;
+	}
+	else
+	{
+		::g->bindIndex = choice;
+	}
+
+	M_StartMessage(va(KEYMSG, keyboardBinds[::g->bindIndex].display), NULL, false);
+	
+}
+
+void M_Rumble(int choice)
+{
+	in_joystickRumble.SetBool(!in_joystickRumble.GetBool());
+}
+
+void M_Layout(int choice)
+{
+	in_joylayout.SetBool(!in_joylayout.GetBool());
+	if (!idLib::newd3) {
+		hardreset = true;
+	}
+}
 
 
 void M_ChangeDetail(int choice)
@@ -1973,6 +2240,53 @@ M_WriteText
 	}
 }
 
+//
+//      Write a string using the ::g->hu_font
+//
+void
+M_WriteAspectText
+(int		x,
+	int		y,
+	const char* string)
+{
+	int		w;
+	const char* ch;
+	int		c;
+	int		cx;
+	int		cy;
+
+
+	ch = string;
+	cx = x;
+	cy = y;
+
+	while (1)
+	{
+		c = *ch++;
+		if (!c)
+			break;
+		if (c == '\n')
+		{
+			cx = x;
+			cy += 12;
+			continue;
+		}
+
+		c = toupper(c) - HU_FONTSTART;
+		if (c < 0 || c >= HU_FONTSIZE)
+		{
+			cx += 4;
+			continue;
+		}
+
+		w = SHORT(::g->hu_font[c]->width);
+		if (cx + w > ::g->SCREENWIDTH)
+			break;
+		V_DrawAspectPatch(cx, cy, 0, ::g->hu_font[c]);
+		cx += w;
+	}
+}
+
 
 
 //
@@ -1989,6 +2303,17 @@ void M_ResetGame(int ch)
 
 }
 
+void M_HardResetGame(int ch)
+{
+	if (ch != KEY_ENTER)
+		return;
+	hardreset = false;
+	M_CloseGame();
+	common->SwitchToGame(DOOM3_BFG);
+	Sys_ReLaunch();
+
+}
+
 void M_CheckReset()
 {
 	if (reset) {
@@ -2001,6 +2326,20 @@ void M_CheckReset()
 			}
 			else {
 				M_StartMessage(RESETGAMEGPX, M_ResetGame, true);
+			}
+		}
+	}
+
+	if (hardreset) {
+		if (!idLib::joystick) {
+			M_StartMessage(HARDRESETGAME, M_HardResetGame, true);
+		}
+		else {
+			if (!in_joylayout.GetBool()) {
+				M_StartMessage(HARDRESETGAMEGP, M_HardResetGame, true);
+			}
+			else {
+				M_StartMessage(HARDRESETGAMEGPX, M_HardResetGame, true);
 			}
 		}
 	}
@@ -2368,6 +2707,7 @@ qboolean M_Responder (event_t* ev)
 		}
 	}
 	// Keys usable within menu
+	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
 	switch (ch)
 	{
 	case KEY_DOWNARROW:
@@ -2377,6 +2717,9 @@ qboolean M_Responder (event_t* ev)
 				::g->itemOn = 0;
 			} else
 				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn + 1 >= modeSize) {
+					::g->itemOn = 0;
+				}
+				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && !aspect && ::g->itemOn + 1 >= 11) {
 					::g->itemOn = 0;
 			}
 			else ::g->itemOn++;
@@ -2390,6 +2733,8 @@ qboolean M_Responder (event_t* ev)
 			if (!::g->itemOn)
 				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems)
 					::g->itemOn = modeSize - 1;
+				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && !aspect)
+					::g->itemOn = 10;
 				else ::g->itemOn = ::g->currentMenu->numitems-1;
 			else ::g->itemOn--;
 			S_StartSound(NULL,sfx_pstop);
@@ -2553,6 +2898,17 @@ void M_Drawer (void)
 	if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn >= 10) {
 		::g->md_x = ::g->currentMenu->x + 120;
 	}
+	if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && ::g->itemOn >= 10) {
+		int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+		if (!aspect) 
+		{
+			::g->md_x = ::g->currentMenu->x + 200;
+		}
+		else 
+		{
+			::g->md_x = ::g->currentMenu->x + 165;
+		}
+	}
 	max = ::g->currentMenu->numitems;
 	
 
@@ -2575,7 +2931,7 @@ void M_Drawer (void)
 		if (::g->currentMenu == &::g->OptionsDef && ::g->itemOn > messages) {
 			lineoffs += (optoffs*LINEHEIGHT);
 		}
-		if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn >= 10) {
+		if ((::g->currentMenu->menuitems == ::g->ResDef.menuitems || ::g->currentMenu->menuitems == ::g->KeyDef.menuitems) && ::g->itemOn >= 10) {
 			lineoffs = LINEHEIGHT * (::g->itemOn - 10);
 		}
 		V_DrawPatchDirect(::g->md_x + SKULLXOFF, ::g->currentMenu->y - 5 + lineoffs, 0,
@@ -2673,4 +3029,94 @@ void M_Init (void)
 	}
 }
 
+void M_RemapConfirm(int ch) {
+	if (ch != KEY_ENTER) {
+		M_StopMessage();
+		M_SetupNextMenu(&::g->KeyDef);
+		return;
+	}
+	idKeyInput::SetBinding(newmap, "");
+	idKeyInput::SetBinding(newmap, keyboardBinds[::g->bindIndex].bind);
+	::g->captureBind = false;
+	::g->bindIndex = -1;
+	M_StopMessage();
+	M_SetupNextMenu(&::g->KeyDef);
+}
 
+void M_Remap(event_t* ev) {
+	
+	newmap = -1;
+	if (ev->data1 == K_ESCAPE) {
+		::g->captureBind = false;
+		M_StopMessage();
+		M_SetupNextMenu(&::g->KeyDef);
+	}
+	else if (ev->data1 != K_MINUS && ev->data1 != K_EQUALS && (ev->data1 < K_F1 || ev->data1 > K_F10) && ev->data1 != K_F11 && ev->data1 != K_F12 && (ev->data1 < K_JOY_STICK1_UP || ev->data1 > K_JOY_STICK2_RIGHT))
+	{
+		::g->captureBind = false;
+		if (idStr::Icmp(idKeyInput::GetBinding(ev->data1), "") == 0)  	// no existing binding found
+		{
+			idKeyInput::SetBinding(ev->data1, keyboardBinds[::g->bindIndex].bind);
+
+		}
+		else  	// binding found prompt to change
+		{
+
+			const char* curBind = idKeyInput::GetBinding(ev->data1);
+
+			if (idStr::Icmp(keyboardBinds[::g->bindIndex].bind, curBind) == 0)
+			{
+
+				idKeyInput::SetBinding(ev->data1, "");
+			}
+			else
+			{
+				newmap = ev->data1;
+				idStr bindName = idKeyInput::LocalizedKeyName(static_cast<keyNum_t>(ev->data1));
+				for (int b = 0; b < numLayBinds; b++)
+				{
+					if (bindName.Icmp(joyLayoutBinds[b].bind) == 0)
+					{
+						switch (in_joylayout.GetInteger()) {
+						case 0:
+						case 2:
+							bindName = joyLayoutBinds[b].display;
+							break;
+						case 4:
+							bindName = joyLayoutBinds[b].displaynx;
+							break;
+						case 1:
+						case 3:
+							bindName = joyLayoutBinds[b].displayx;
+							break;
+						}
+						break;
+					}
+				}
+				if (!idLib::joystick) {
+
+					M_StartMessage(va(REMAPKEY, bindName.c_str(), keyboardBinds[::g->bindIndex].display), M_RemapConfirm, true);
+				}
+				else {
+					if (!in_joylayout.GetBool()) {
+						M_StartMessage(va(REMAPKEYGP, bindName.c_str(), keyboardBinds[::g->bindIndex].display), M_RemapConfirm, true);
+					}
+					else {
+						M_StartMessage(va(REMAPKEYGPX, bindName.c_str(), keyboardBinds[::g->bindIndex].display), M_RemapConfirm, true);
+					}
+				}
+			}
+		}
+	}
+	else {
+		newmap = 0;
+	}
+	
+	if (newmap < 0) {
+		::g->bindIndex = -1;
+		M_StopMessage();
+		M_SetupNextMenu(&::g->KeyDef);
+	}
+
+
+}

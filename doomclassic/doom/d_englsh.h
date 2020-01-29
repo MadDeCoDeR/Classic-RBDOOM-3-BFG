@@ -61,6 +61,10 @@ If you have questions concerning this license or the applicable additional terms
 #define DELSAVGP	"Are you sure you want to\ndelete this save file?\n\n" PRESSAB
 #define DELSAVGPX	"Are you sure you want to\ndelete this save file?\n\n" PRESSXO
 #define EXPROMT		"Missing Expansion File!\n\n" PRESSKEY
+#define	KEYMSG		"Press any key to remap '%s'.\nPress 'ESC' to go back\n" PRESSKEY
+#define REMAPKEY	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSYN
+#define REMAPKEYGP	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSAB
+#define REMAPKEYGPX	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSXO
 
 #define NEWGAME	\
 "you can't start a new game\n"\
@@ -97,6 +101,13 @@ If you have questions concerning this license or the applicable additional terms
 #define RESETGAME	RESETGAMEBASE PRESSYN
 #define RESETGAMEGP	RESETGAMEBASE PRESSAB
 #define RESETGAMEGPX	RESETGAMEBASE PRESSXO
+
+#define HARDRESETGAMEBASE	\
+"you must restart the engine. restart it now?\n"\
+"(if you don't the game might crash)\n\n"
+#define HARDRESETGAME	HARDRESETGAMEBASE PRESSYN
+#define HARDRESETGAMEGP	HARDRESETGAMEBASE PRESSAB
+#define HARDRESETGAMEGPX	HARDRESETGAMEBASE PRESSXO
 
 #define DOSY		"(press A to quit)"
 

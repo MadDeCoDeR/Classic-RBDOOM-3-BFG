@@ -179,8 +179,8 @@ typedef enum
 	messages,
 	scrnsize, //GK: autorun
 	option_empty1,
-	mousesens,
-	option_empty2,
+	ctl_option,
+	//option_empty2,
 	soundvol,
 	opt_end
 } options_e;
@@ -208,6 +208,7 @@ typedef enum
 {
 	endgame,
 	resolution,
+	framerate,
 	detail,	//GK: Use this value for aspect ratio option
 	light, //GK: Use this value for light modes
 	//blurry,
@@ -262,6 +263,17 @@ typedef enum
 	wad20,
 	doomit_end
 }doom_it_e;
+typedef enum
+{
+	keymapping,
+	ctl_empty1,
+	rumble,
+	layout,
+	ctl_empty2,
+	mousesens,
+	ctl_empty3,
+	ctl_end
+} ctl_e;
 // m_menu.structs end // 
 //  m_misc.structs begin // 
 struct default_t

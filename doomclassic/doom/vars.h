@@ -406,7 +406,7 @@ menuitem_t OptionsMenu[8];
 menu_t  OptionsDef;
 menuitem_t SoundMenu[6];
 menu_t  SoundDef;
-menuitem_t VideoMenu[4];
+menuitem_t VideoMenu[5];
 menu_t  VideoDef;
 menuitem_t LoadMenu[6];
 menu_t  LoadDef;
@@ -427,6 +427,10 @@ menuitem_t GameMenu[5];
 menu_t  GameDef;
 menuitem_t ResMenu[20];
 menu_t  ResDef;
+menuitem_t CtlMenu[7];
+menu_t  CtlDef;
+menuitem_t KeyMenu[20];
+menu_t  KeyDef;
 char    tempstring[256];
 int     epi;
 int     exp;
@@ -1060,6 +1064,9 @@ bool useDemo;
 byte blurryoffset;
 
 byte blurryoffsetmap[NUMPOWERS];
+
+bool captureBind;
+int bindIndex;
 
 // phares 3/21/98
 //

@@ -141,6 +141,12 @@ void D_ProcessEvents (void)
 	for ( ; ::g->eventtail != ::g->eventhead ; ::g->eventtail = (++::g->eventtail)&(MAXEVENTS-1) )
 	{
 		ev = &::g->events[::g->eventtail];
+		if (::g->captureBind) {
+			if (ev->type == ev_keydown) {
+				M_Remap(ev);
+			}
+			continue;
+		}
 		if (M_Responder (ev))
 			continue;               // menu ate the event
 		G_Responder (ev);

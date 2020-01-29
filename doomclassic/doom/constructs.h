@@ -228,8 +228,8 @@ menuitem_t temp_OptionsMenu[8] = {
 	//{2,"M_SCRNSZ",	M_SizeDisplay,'s'},
 	{1,"M_GM",M_Gameplay,'g'},
     { -1,"",0 },
-	{2,"M_MSENS",	M_ChangeSensitivity,'m'},
-	{-1,"",0},
+	{1,"M_CTL",	M_Ctl,'c'},
+	//{-1,"",0},
 	{1,"M_SVOL",	M_Sound,'s'}
 };
 memcpy( ::g->OptionsMenu, temp_OptionsMenu, sizeof(temp_OptionsMenu) );
@@ -242,9 +242,10 @@ menu_t  temp_OptionsDef = {
 		0
 };
 memcpy( &::g->OptionsDef, &temp_OptionsDef, sizeof(temp_OptionsDef) );
-menuitem_t temp_VideoMenu[4] = {
+menuitem_t temp_VideoMenu[5] = {
 	{1,"M_GDHIGH",	M_FullScreen,'f'},
 	{1,"M_RES", M_Resolution, 'r'},
+	{1,"M_FPS", M_Framerate,'p'},
 	{1,"M_ASP", M_Aspect,'m'},//GK: Allow the player to switch aspect ratio
 	{1,"M_LGT", M_Light,'l'}//GK: Allow the player to switch lighting mode
 	
@@ -468,6 +469,59 @@ menu_t  temp_GameDef = {
 		0
 };
 memcpy(&::g->GameDef, &temp_GameDef, sizeof(temp_GameDef));
+menuitem_t temp_CtlMenu[7] = {
+	{1,"M_KEY",	M_Key,'k'},
+	{-1, "", 0},
+	{1, "M_RMBL", M_Rumble, 'r' },
+	{1, "M_LAY", M_Layout, 'l'},
+	{-1, "", 0},
+	{2,"M_MSENS",	M_ChangeSensitivity,'m'},
+	{-1,"",0}
+};
+memcpy(::g->CtlMenu, temp_CtlMenu, sizeof(temp_CtlMenu));
+menu_t  temp_CtlDef = {
+	ctl_end,
+		&::g->OptionsDef,
+		::g->CtlMenu,
+		M_DrawCtl,
+		60,37,
+		0
+};
+memcpy(&::g->CtlDef, &temp_CtlDef, sizeof(temp_CtlDef));
+
+menuitem_t temp_KeyMenu[20] = {
+	{ 1,"", M_ChangeKeys,'1' },
+{ 1,"", M_ChangeKeys,'2' },
+{ 1,"", M_ChangeKeys,'3' },
+{ 1,"", M_ChangeKeys,'4' },
+{ 1,"", M_ChangeKeys,'5' },
+{ 1,"", M_ChangeKeys,'6' },
+{ 1,"", M_ChangeKeys,'7' },
+{ 1,"", M_ChangeKeys,'8' },
+{ 1,"", M_ChangeKeys,'9' },
+{ 1,"", M_ChangeKeys,'0' }, //GK: Linux only accepts 0-9 as numbers to chars
+{ 1,"", M_ChangeKeys,'a' },
+{ 1,"", M_ChangeKeys,'b' },
+{ 1,"", M_ChangeKeys,'c' },
+{ 1,"", M_ChangeKeys,'d' },
+{ 1,"", M_ChangeKeys,'e' },
+{ 1,"", M_ChangeKeys,'f' },
+{ 1,"", M_ChangeKeys,'g' },
+{ 1,"", M_ChangeKeys,'h' },
+{ 1,"", M_ChangeKeys,'i' },
+{ 1,"", M_ChangeKeys,'j' }
+
+};
+memcpy(::g->KeyMenu, temp_KeyMenu, sizeof(temp_KeyMenu));
+menu_t  temp_KeyDef = {
+	doomit_end,
+	&::g->CtlDef,
+	::g->KeyMenu,
+	M_DrawKey,
+	40,30,
+	0
+};
+memcpy(&::g->KeyDef, &temp_KeyDef, sizeof(temp_KeyDef));
 //GK: End
 	::g->joywait = 0;
 	::g->mousewait = 0;
@@ -775,4 +829,6 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 
 	::g->headsecnode = NULL;
 
+	::g->captureBind = false;
 
+	::g->bindIndex = -1;
