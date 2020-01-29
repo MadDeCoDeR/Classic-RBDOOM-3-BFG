@@ -158,7 +158,8 @@ void idMenuWidget_CommandBar::Update()
 				{
 					case BUTTON_JOY1:
 					{
-						shortcutKeys->Set( "ENTER", buttonSprite->GetScriptObject() );
+						shortcutKeys->Set( "_use", buttonSprite->GetScriptObject() );
+						shortcutKeys->Set("ENTER", buttonSprite->GetScriptObject());
 						break;
 					}
 					case BUTTON_JOY2:
@@ -169,7 +170,8 @@ void idMenuWidget_CommandBar::Update()
 					}
 					case BUTTON_TAB:
 					{
-						shortcutKeys->Set( "K_TAB", buttonSprite->GetScriptObject() );
+						shortcutKeys->Set( "_impulse19", buttonSprite->GetScriptObject() );
+						shortcutKeys->Set("K_TAB", buttonSprite->GetScriptObject());
 						break;
 					}
 				}
