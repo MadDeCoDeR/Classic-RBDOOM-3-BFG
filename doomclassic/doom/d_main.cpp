@@ -634,42 +634,32 @@ void D_DoomMain(void)
 	{
 	case retail:
 		sprintf(::g->title,
-			"                         "
-			"The Ultimate DOOM Startup v%i.%i"
-			"                           ",
+			"The Ultimate DOOM v%i.%i",
 			VERSION / 100, VERSION % 100);
 		break;
 	case shareware:
 		sprintf(::g->title,
-			"                            "
-			"DOOM Shareware Startup v%i.%i"
-			"                           ",
+			"DOOM Shareware v%i.%i",
 			VERSION / 100, VERSION % 100);
 		break;
 	case registered:
 		sprintf(::g->title,
-			"                            "
-			"DOOM Registered Startup v%i.%i"
-			"                           ",
+			"DOOM Registered v%i.%i",
 			VERSION / 100, VERSION % 100);
 		break;
 	case commercial:
 		sprintf(::g->title,
-			"                         "
-			"DOOM 2: Hell on Earth v%i.%i"
-			"                           ",
+			"DOOM 2: Hell on Earth v%i.%i",
 			VERSION / 100, VERSION % 100);
 		break;
 	default:
 		sprintf(::g->title,
-			"                     "
-			"Public DOOM - v%i.%i"
-			"                           ",
+			"Public DOOM - v%i.%i",
 			VERSION / 100, VERSION % 100);
 		break;
 	}
-
-	I_Printf("%s\n", ::g->title);
+	Sys_ChangeTitle(::g->title);
+	I_Printf("                        %s                           \n", ::g->title);
 
 	if (::g->devparm)
 		I_Printf(D_DEVSTR);
