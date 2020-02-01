@@ -759,9 +759,6 @@ void setMAPSTR(int pos, char* name, char* value) {
 						*mapstr[i].sval = value;
 					}
 					break;
-				case 5:
-					*mapstr[i].sval = value;
-					break;
 				case 6:
 				case 7:
 					for (int j = 1; j < 80; j++) {
@@ -799,6 +796,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 						}
 					}
 					break;
+				case 5:
 				case 10:
 				case 11:
 					*mapstr[i].sval = value;

@@ -905,11 +905,11 @@ void D_DoomMain(void)
 
 	int* expinfoPointer = W_GetNumsForName("EXPINFO");
 	int expinfoSize = sizeof(expinfoPointer) / sizeof(int);
-	if (expinfoPointer >= 0) {
-		::g->gamemission = pack_custom;
+	if (expinfoPointer > 0) {
 		int expPrev = 0;
 		for (int i = 0; i < expinfoSize; i++) {
 			if (expinfoPointer[i] > expPrev) {
+				::g->gamemission = pack_custom;
 				expPrev = expinfoPointer[i];
 				EX_add(expinfoPointer[i]);
 			}
