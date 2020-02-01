@@ -737,7 +737,12 @@ void setMAPSTR(int pos, char* name, char* value) {
 					for (int j = 0; j < 24; j++) {
 						if (!idStr::Icmp(mval[j].name, value)) {
 							*mapstr[i].sval = *mval[j].var;
+							found = true;
+							break;
 						}
+					}
+					if (!found) {
+						*mapstr[i].sval = value;
 					}
 					break;
 				case 6:

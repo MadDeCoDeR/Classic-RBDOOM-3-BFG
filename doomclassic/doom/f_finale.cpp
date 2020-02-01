@@ -176,6 +176,7 @@ void F_StartFinale (void)
     ::g->gamestate = GS_FINALE;
     ::g->viewactive = false;
     ::g->automapactive = false;
+	int map = 0;
 
 	// Check for end of episode/mission
 	bool endOfMission = false;
@@ -190,8 +191,8 @@ void F_StartFinale (void)
 		endOfMission = true;
 	}
 	if (::g->gamemission == pack_custom ) { //GK: Custom expansion related stuff
-		if (::g->gamemode == retail && ::g->clusters.size()) {
-			int map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+		if (::g->gamemode == retail && ::g->clusters.size() <= ::g->gameepisode) {
+			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
 			if (map == ::g->clusters[::g->gameepisode - 1].endmap) {
 				endOfMission = true;
 			}
@@ -257,6 +258,15 @@ void F_StartFinale (void)
 						flt = finaleflat[::g->clusters[::g->gameepisode - 1].fflat];
 					}
 					finaletext = ::g->clusters[::g->gameepisode - 1].ftext;
+				} else if (::g->maps[map - 1].ftext) {
+					S_ChangeMusic(::g->maps[map - 1].fmusic, true);
+					if (::g->maps[map - 1].fflatname != NULL) {
+						flt = ::g->maps[map - 1].fflatname;
+					}
+					else {
+						flt = finaleflat[::g->maps[map - 1].fflat];
+					}
+					finaletext = ::g->maps[map - 1].ftext;
 				}
 			}
 			break;
@@ -508,7 +518,13 @@ void F_Ticker (void)
     int		i;
     
 	// check for skipping
-	if ( (::g->gamemode == commercial) && ( ::g->finalecount > 50) )
+	int map = 0;
+	bool keepRolling = false;
+	if (::g->gamemode == retail && ::g->gamemission == pack_custom && ::g->clusters.size() <= ::g->gameepisode) {
+		map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+		keepRolling = ::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode - 1].startmap && map != ::g->clusters[::g->gameepisode - 1].endmap;
+	}
+	if ( (::g->gamemode == commercial || (::g->gamemode == retail && keepRolling)) && ( ::g->finalecount > 50) )
 	{
 		// go on to the next level
 		for (i=0 ; i<MAXPLAYERS ; i++)
