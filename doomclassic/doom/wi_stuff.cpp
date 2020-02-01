@@ -1601,7 +1601,9 @@ void WI_loadData(void)
 		for (i=0 ; i < ::g->NUMCMAPS+1 ; i++) //GK: The stupidiest game crashing bug in the world
 		{
 			sprintf(name, "CWILV%2.2d", i);
-			::g->lnames[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
+			if (W_CheckNumForName(name) > 0) {
+				::g->lnames[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
+			}
 		}					
 	}
 	else
