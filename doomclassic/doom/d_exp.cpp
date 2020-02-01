@@ -287,6 +287,24 @@ void setMapNum() {
 	}
 }
 
+char* getFinalText(char* value)
+{
+	if (value) {
+		bool found = false;
+		for (int j = 0; j < 24; j++) {
+			if (!idStr::Icmp(mval[j].name, value)) {
+				return *mval[j].var;
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			return value;
+		}
+	}
+	return NULL;
+}
+
 char* removequotes(char* value) {
 	if (!value)
 		return value;
@@ -742,16 +760,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 					}
 					break;
 				case 5:
-					for (int j = 0; j < 24; j++) {
-						if (!idStr::Icmp(mval[j].name, value)) {
-							*mapstr[i].sval = *mval[j].var;
-							found = true;
-							break;
-						}
-					}
-					if (!found) {
-						*mapstr[i].sval = value;
-					}
+					*mapstr[i].sval = value;
 					break;
 				case 6:
 				case 7:

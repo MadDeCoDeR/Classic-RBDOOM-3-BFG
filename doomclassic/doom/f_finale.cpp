@@ -49,6 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "Main.h"
 #include "d3xp/Game_local.h"
 #include "../framework/Common_local.h"
+#include "d_exp.h"
 
 // ?
 //#include "doomstat.h"
@@ -258,7 +259,7 @@ void F_StartFinale (void)
 						flt = finaleflat[::g->clusters[::g->gameepisode - 1].fflat];
 					}
 					finaletext = ::g->clusters[::g->gameepisode - 1].ftext;
-				} else if (::g->maps[map - 1].ftext) {
+				} else if (getFinalText(::g->maps[map - 1].ftext)) {
 					S_ChangeMusic(::g->maps[map - 1].fmusic, true);
 					if (::g->maps[map - 1].fflatname != NULL) {
 						flt = ::g->maps[map - 1].fflatname;
@@ -266,7 +267,7 @@ void F_StartFinale (void)
 					else {
 						flt = finaleflat[::g->maps[map - 1].fflat];
 					}
-					finaletext = ::g->maps[map - 1].ftext;
+					finaletext = getFinalText(::g->maps[map - 1].ftext);
 				}
 			}
 			break;
@@ -276,7 +277,7 @@ void F_StartFinale (void)
 		case commercial:
 		{
 			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
-				if (::g->maps[::g->gamemap - 1].ftext != NULL) {
+				if (getFinalText(::g->maps[::g->gamemap - 1].ftext)) {
 					S_ChangeMusic(::g->maps[::g->gamemap - 1].fmusic, true);
 					if (::g->maps[::g->gamemap - 1].fflat > -1) { //SANITY CHECK
 						flatind = ::g->maps[::g->gamemap - 1].fflat;
@@ -286,7 +287,7 @@ void F_StartFinale (void)
 						flatind = 11;
 						flt = ::g->maps[::g->gamemap - 1].fflatname;
 					}
-					finaletext = ::g->maps[::g->gamemap - 1].ftext;
+					finaletext = getFinalText(::g->maps[::g->gamemap - 1].ftext);
 				}
 				else {
 					int c2 = 0;

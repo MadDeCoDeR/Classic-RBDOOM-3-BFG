@@ -32,4 +32,6 @@ void EX_add(int lump);
 
 void setMapNum();
 
+char* getFinalText(char* value);
+
 #endif
