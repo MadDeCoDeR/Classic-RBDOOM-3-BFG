@@ -149,7 +149,7 @@ ExtractFileBase
 void W_ReplaceLump(filelump_t* file, int pos, idFile* handle) {
 	lumpinfo_t* lump = &lumpinfo[pos];
 	lump->handle = handle;
-	strcpy(lump->name, file->name);
+	strncpy(lump->name, file->name, 8);
 	lump->null = false;
 	lump->position = file->filepos;
 	lump->size = file->size;
@@ -205,7 +205,7 @@ bool W_ReplaceSprite(filelump_t* file, int pos, idFile* handle, int start, int e
 	if (idStr::Icmpn(original->base, newname->base, 4)) {
 		return false;
 	}
-	
+
 	char originalFrames[2] = { original->frame1, original->frame2 };
 	char originalRotations[2] = { original->rotation1, original->rotation2 };
 	char newFrames[2] = { newname->frame1, newname->frame2 };
