@@ -903,10 +903,17 @@ void D_DoomMain(void)
 	I_Printf ("W_Init: Init WADfiles.\n");
 	W_InitMultipleFiles (wadfiles);
 
-	int expinfoPointer = W_GetNumForName("EXPINFO");
+	int* expinfoPointer = W_GetNumsForName("EXPINFO");
+	int expinfoSize = sizeof(expinfoPointer) / sizeof(int);
 	if (expinfoPointer >= 0) {
 		::g->gamemission = pack_custom;
-		EX_add(expinfoPointer);
+		int expPrev = 0;
+		for (int i = 0; i < expinfoSize; i++) {
+			if (expinfoPointer[i] > expPrev) {
+				expPrev = expinfoPointer[i];
+				EX_add(expinfoPointer[i]);
+			}
+		}
 	}
 
 	int* dehackeds = W_GetNumsForName("DEHACKED");

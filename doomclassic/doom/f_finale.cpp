@@ -191,7 +191,7 @@ void F_StartFinale (void)
 		endOfMission = true;
 	}
 	if (::g->gamemission == pack_custom ) { //GK: Custom expansion related stuff
-		if (::g->gamemode == retail && ::g->clusters.size() <= ::g->gameepisode) {
+		if (::g->gamemode == retail && ::g->clusters.size() >= ::g->gameepisode) {
 			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
 			if (map == ::g->clusters[::g->gameepisode - 1].endmap) {
 				endOfMission = true;
@@ -520,7 +520,7 @@ void F_Ticker (void)
 	// check for skipping
 	int map = 0;
 	bool keepRolling = false;
-	if (::g->gamemode == retail && ::g->gamemission == pack_custom && ::g->clusters.size() <= ::g->gameepisode) {
+	if (::g->gamemode == retail && ::g->gamemission == pack_custom && ::g->clusters.size() >= ::g->gameepisode) {
 		map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
 		keepRolling = ::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode - 1].startmap && map != ::g->clusters[::g->gameepisode - 1].endmap;
 	}

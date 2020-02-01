@@ -360,8 +360,8 @@ void setMAP(int index,char* value1, char* value2, char* value3) {
 		}
 	}
 	else {
-		if (map > ::g->mapmax) {
-			map = ::g->mapmax;
+		if (map > ::g->maps.size()) {
+			map = ::g->maps.size() - 1;
 		}
 	}
 
@@ -396,20 +396,22 @@ void EX_add(int lump) {
 	I_Printf("Applying Expansion Info ...\n");
 	W_ReadLump(lump, text);
 	::g->mapmax = 0;
-	if (!::g->maps.empty()) {
+	/*if (!::g->maps.empty()) {
 		::g->maps.clear();
 	}
 	if (!::g->clusters.empty()) {
 		::g->clusterind = 0;
 		::g->clusters.clear();
+	}*/
+	if (::g->maps.empty()) {
+		::g->maps.resize(1);
+		::g->endmap = 30;
+		realmap = 0;
+		episodecount = -1;
 	}
-	::g->maps.resize(1);
-	::g->endmap = 30;
 	::g->savedir = NULL;
 	if (::g->gamemode == retail) {
 		beginepisode = false;
-		episodecount = -1;
-		realmap = 0;
 		::g->intermusic = mus_inter;
 	}
 	else {
@@ -474,6 +476,10 @@ void parseexptext(char* text) {
 							}
 						}
 						realmap++;
+						if (realmap >= ::g->maps.size()) {
+							::g->maps.resize(realmap + 1);
+							::g->mapmax++;
+						}
 						varopt = t;
 						t = strtok(NULL, " ");
 						if (t != NULL) {
@@ -504,6 +510,8 @@ void parseexptext(char* text) {
 							::g->clusterind = val1 + 1;
 						}
 						::g->clusters[val1].fflat = -1;
+						::g->clusters[val1].startmap = realmap + 1;
+						episodecount = val1;
 						if (!atoi(t)) {
 							::g->clusters[val1].mapname = t;
 							if (::g->gamemode == retail) {
