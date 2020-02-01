@@ -1610,7 +1610,7 @@ void WI_loadData(void)
 		for (i=0 ; i<NUMMAPS ; i++)
 		{
 			sprintf(name, "WILV%d%d", ::g->wbs->epsd, i);
-			if (W_GetNumForName(name)) {
+			if (W_CheckNumForName(name) > 0) {
 				::g->lnames[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
 			}
 		}
