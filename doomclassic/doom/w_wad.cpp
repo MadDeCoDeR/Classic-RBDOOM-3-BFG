@@ -1969,11 +1969,11 @@ int W_GetLumpCount()
 	int epos;
 
 
-	temlump = &lumpinfo[0];
+	temlump = &lumpinfo[numlumps];
 	epos = 0;
-	for (int k = 0; k < numlumps; k++, temlump++) {
-		if (temlump->null) {
-			epos = k;
+	for (int k = numlumps; k >= 0; k--, temlump--) {
+		if (!temlump->null) {
+			epos = k + 1;
 			break;
 		}
 	}
