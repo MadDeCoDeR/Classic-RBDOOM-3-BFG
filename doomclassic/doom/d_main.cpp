@@ -908,7 +908,7 @@ void D_DoomMain(void)
 	if (expinfoPointer > 0) {
 		int expPrev = 0;
 		for (int i = 0; i < expinfoSize; i++) {
-			if (expinfoPointer[i] > expPrev) {
+			if (expinfoPointer[i] > expPrev && expinfoPointer[i] < W_GetLumpCount()) {
 				::g->gamemission = pack_custom;
 				expPrev = expinfoPointer[i];
 				EX_add(expinfoPointer[i]);
@@ -921,7 +921,7 @@ void D_DoomMain(void)
 	if (dehackeds[0] >= 0) {
 		int prev = 0;
 		for (int i = 0; i < dehackedsSize; i++) {
-			if (dehackeds[i] >= prev) {
+			if (dehackeds[i] >= prev && dehackeds[i] < W_GetLumpCount()) {
 				prev = dehackeds[i];
 				loaddeh(dehackeds[i]);
 			}

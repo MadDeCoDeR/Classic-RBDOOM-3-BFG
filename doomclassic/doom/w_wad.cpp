@@ -1962,3 +1962,20 @@ char* W_GetNameForNum(int lump) {
 	lumpinfo_t* l = lumpinfo + lump;
 	return l->name;
 }
+
+int W_GetLumpCount()
+{
+	lumpinfo_t* temlump, * tl;
+	int epos;
+
+
+	temlump = &lumpinfo[0];
+	epos = 0;
+	for (int k = 0; k < numlumps; k++, temlump++) {
+		if (temlump->null) {
+			epos = k;
+			break;
+		}
+	}
+	return epos;
+}
