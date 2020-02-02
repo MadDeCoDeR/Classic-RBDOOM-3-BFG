@@ -810,8 +810,14 @@ void M_SaveSelect(int choice)
 		break;
 	}
 
-	if (::g->gamemission == pack_custom && ::g->maps[::g->gamemap - 1].realname) {
-		s = strdup(::g->maps[::g->gamemap - 1].realname);
+	if (::g->gamemission == pack_custom) {
+		int map = ::g->gamemap;
+		if (::g->gamemode == retail && ::g->clusters[::g->gameepisode - 1].startmap) {
+			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+		}
+		if (::g->maps[map - 1].realname) {
+			s = strdup(::g->maps[map - 1].realname);
+		}
 	}
 
 	::g->saveSlot = choice;	
