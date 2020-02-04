@@ -297,7 +297,7 @@ static void GLW_GetWGLExtensionsWithFakeWindow()
 	
 	// Create a window for the sole purpose of getting
 	// a valid context to get the wglextensions
-	hWnd = CreateWindow( WIN32_FAKE_WINDOW_CLASS_NAME, idLib::newd3 ? NEW_GAME_NAME : GAME_NAME,
+	hWnd = CreateWindow( WIN32_FAKE_WINDOW_CLASS_NAME, ENGINE_NAME,
 						 WS_OVERLAPPEDWINDOW,
 						 40, 40,
 						 640,
@@ -1095,7 +1095,7 @@ static bool GLW_CreateWindow( glimpParms_t parms )
 	win32.hWnd = CreateWindowEx(
 					 exstyle,
 					 WIN32_WINDOW_CLASS_NAME,
-		idLib::newd3 ? NEW_GAME_NAME : GAME_NAME,
+					 ENGINE_NAME,
 					 stylebits,
 					 x, y, w, h,
 					 NULL,

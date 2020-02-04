@@ -64,8 +64,8 @@ IDI_ICON1               ICON                    "res\\doom.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,2,3
+ PRODUCTVERSION 1,2,3
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -81,13 +81,13 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "id Software LLC, a ZeniMax Media company"
-            VALUE "FileDescription", "DOOM 3: BFG Edition"
-            VALUE "FileVersion", "1.0.0.1"
-            VALUE "InternalName", "Doom3BFG"
+            VALUE "FileDescription", "DOOM: BFA Edition"
+            VALUE "FileVersion", "1.2.3"
+            VALUE "InternalName", "DoomBFA"
             VALUE "LegalCopyright", "© 1993-2012 id Software LLC, a ZeniMax Media company"
-            VALUE "OriginalFilename", "Doom3BFG"
-            VALUE "ProductName", "DOOM® 3: BFG Edition™"
-            VALUE "ProductVersion", "1.0.0.1"
+            VALUE "OriginalFilename", "DoomBFA"
+            VALUE "ProductName", "DOOM®: BFA Edition™"
+            VALUE "ProductVersion", "1.2.3"
         END
     END
     BLOCK "VarFileInfo"

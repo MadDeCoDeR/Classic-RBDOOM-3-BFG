@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-project(RBDoom3BFG)
+project(DoomBFA)
 
 option(USE_MFC_TOOLS
 		"Compile the built-in MFC based tools" OFF)
@@ -1529,10 +1529,10 @@ if(MSVC)
 	set_source_files_properties( ${SHADERS} PROPERTIES VS_TOOL_OVERRIDE "None" )
 	
 	list(APPEND RBDOOM3_SOURCES ${WIN32_RESOURCES})
-	add_executable(RBDoom3BFG WIN32 ${RBDOOM3_INCLUDES} ${RBDOOM3_SOURCES})
+	add_executable(DoomBFA WIN32 ${RBDOOM3_INCLUDES} ${RBDOOM3_SOURCES})
 	#GK: Allow to compile and run the game from VS
-	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT RBDoom3BFG)
-	set_target_properties(RBDoom3BFG PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "C:/Program Files (x86)/Steam/steamapps/common/DOOM 3 BFG Edition")
+	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT DoomBFA)
+	set_target_properties(DoomBFA PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "C:/Program Files (x86)/Steam/steamapps/common/DOOM 3 BFG Edition")
 	#GK: TODO add +set r_fullscreen "0" command line (VS DEBUGGER and Fullscreen not a good mix)
 	#set_target_properties(RBDoom3BFG PROPERTIES COMMAND_LINE_ARGUMENTS " +set r_fullscreen 0")
 		
@@ -1542,8 +1542,8 @@ if(MSVC)
 	#			   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/curl/lib
     #               COMMENT "Compiling libcURL")
 		
-	add_dependencies(RBDoom3BFG idlib)
-	target_link_libraries(RBDoom3BFG
+	add_dependencies(DoomBFA idlib)
+	target_link_libraries(DoomBFA
 		idlib
 		${DirectX_LIBRARIES}
 		dbghelp
@@ -1566,10 +1566,10 @@ if(MSVC)
 		
 	#CMAKE_BINARY_DIR
 	if(CMAKE_CL_64)
-		install(TARGETS RBDoom3BFG
+		install(TARGETS DoomBFA
 			RUNTIME DESTINATION .)
 	else()
-		install(TARGETS RBDoom3BFG
+		install(TARGETS DoomBFA
 			RUNTIME DESTINATION .)
 	endif()
 else()
@@ -1697,10 +1697,10 @@ else()
 		# we need to recreate the precompiled header for RBDoom3BFG 
 		# (i.e. can't use the one created for idlib before)
 		# because some definitions (e.g. -D__IDLIB__ -D__DOOM_DLL__) differ
-		add_custom_target(precomp_header_rbdoom3bfg ALL
+		add_custom_target(precomp_header_doombfa ALL
 				COMMAND ${CMAKE_CXX_COMPILER} ${_compiler_FLAGS} -x c++-header idlib/precompiled.h -o idlib/precompiled.h.gch
 				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-				COMMENT "Creating idlib/precompiled.h.gch for RBDoom3BFG"
+				COMMENT "Creating idlib/precompiled.h.gch for DoomBFA"
 				)
 	endif()
 	
@@ -1721,17 +1721,17 @@ else()
 				)
 				
 		# make sure this is run after creating idlib
-		add_dependencies(precomp_header_rbdoom3bfg idlib)
+		add_dependencies(precomp_header_doombfa idlib)
 	endif()
 	
-	add_executable(RBDoom3BFG WIN32 ${RBDOOM3_SOURCES})
+	add_executable(DoomBFA WIN32 ${RBDOOM3_SOURCES})
 
 	if (USE_PRECOMPILED_HEADERS)
 		# make sure precompiled header is created before executable is compiled
-		add_dependencies(RBDoom3BFG precomp_header_rbdoom3bfg)
+		add_dependencies(DoomBFA precomp_header_doombfa)
 		
 		# make sure precompiled header is deleted after executable is compiled
-		add_dependencies(rm_precomp_header RBDoom3BFG)
+		add_dependencies(rm_precomp_header DoomBFA)
 	endif()	
 
 	if(NOT WIN32)
@@ -1739,7 +1739,7 @@ else()
 			set(RT_LIBRARY rt)
 		endif()
 
-		target_link_libraries(RBDoom3BFG
+		target_link_libraries(DoomBFA
 			idlib
 			${OPENGL_LIBRARIES}
 			pthread

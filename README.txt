@@ -1,7 +1,24 @@
 
-Classic RBDOOM-3-BFG Readme - https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG
+______ _____  ________  ___     ____________ ___   
+|  _  \  _  ||  _  |  \/  |  _  | ___ \  ___/ _ \  
+| | | | | | || | | | .  . | (_) | |_/ / |_ / /_\ \ 
+| | | | | | || | | | |\/| |     | ___ \  _||  _  | 
+| |/ /\ \_/ /\ \_/ / |  | |  _  | |_/ / |  | | | | 
+|___/  \___/  \___/\_|  |_/ (_) \____/\_|  \_| |_/ 
+                                                   
+ ___________ _____ _____ _____ _____ _   _         
+|  ___|  _  \_   _|_   _|_   _|  _  | \ | |        
+| |__ | | | | | |   | |   | | | | | |  \| |        
+|  __|| | | | | |   | |   | | | | | | . ` |        
+| |___| |/ / _| |_  | |  _| |_\ \_/ / |\  |        
+\____/|___/  \___/  \_/  \___/ \___/\_| \_/       
 
-Thank you for downloading Classic RBDOOM-3-BFG.
+DOOM-BFA Readme - https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG
+
+Thank you for downloading DOOM-BFA.
+
+DOOM: BFA (Big Freaking Anniversary) Edition is a source port based on RBDOOM-3-BFG and enchance the experience of
+Ultimate DOOM, DOOM 2 and DOOM 3.
 
 
 
@@ -74,8 +91,12 @@ covered by the original EULA and must be obeyed as usual.
 
 You must patch the game to the latest version.
 
-Note that Doom 3 BFG Edition is available from the Steam store at
-http://store.steampowered.com/app/208200/
+Note that Doom 3 BFG Edition is available on:
+Steam store: http://store.steampowered.com/app/208200/
+
+GOG store: https://www.gog.com/game/doom_3_bfg_edition
+
+Bethesda.net store: https://store.bethesda.net/store/bethesda/en_IE/pd/productID.1268924300
 
 
 Steam:
@@ -138,7 +159,7 @@ __________________________________________________________
 4. Generate the VC projects using CMake by doubleclicking a matching configuration .bat file in the neo/ folder.
 
 5. Use the VC solution to compile  what you need:
-	Classic-RBDOOM-3-BFG/build/RBDoom3BFG.sln
+	Classic-RBDOOM-3-BFG/build/DoomBFA.sln
 	
 6. Download the latest ffmpeg shared from https://ffmpeg.zeranoe.com/builds/ depending on the architecture you want to use
 
@@ -207,7 +228,7 @@ __________________________________________
 
 
 If you use the prebuilt Win32 binaries then simply extract them to your
-C:\Program Files (x86)\Steam\SteamApps\common\Doom 3 BFG Edition\ directory and run RBDoom3BFG.exe.
+C:\Program Files (x86)\Steam\SteamApps\common\Doom 3 BFG Edition\ directory and run DoomBFA.exe.
 
 
 
@@ -256,7 +277,7 @@ Additionally in Ubuntu you can open the RBDoom3BFG file with the text editor and
 This will give you a desktop shortcut for Ubuntu. (NOTE: I don't know if other operating systems support this file)
 
 Also you can install www.mono-project.com. Which allow you to use CDL.exe natively on linux.
-After you have install mono, download the latest release of this project and extract the CDL.exe in the same directory RBDoom3BFG is.
+After you have install mono, download the latest release of this project and extract the CDL.exe in the same directory DoomBFA is.
 
 Anyway:
 
@@ -270,12 +291,12 @@ Anyway:
 	/your/path/to/Steam/steamapps/common/DOOM 3 BFG Edition/base/
 	or, if you used SteamCMD, in the path you used above.
 
-4. Copy your RBDoom3BFG executable that you created in 5) or 6) and the FFmpeg DLLs to your own 
+4. Copy your DoomBFA executable that you created in 5) or 6) and the FFmpeg DLLs to your own 
    Doom 3 BFG directory (/path/to/Doom3BFG).
    
    Your own Doom 3 BFG directory now should look like:
 	/path/to/Doom3BFG/
-	 ->	RBDoom3BFG (or RBDoom3BFG.exe on Windows)
+	 ->	DoomBFA (or DoomBFA.exe on Windows)
 	 -> avcodec-58.dll
 	 -> avformat-58.dll
 	 -> avutil-56.dll
@@ -289,7 +310,7 @@ Anyway:
 and extract it to the directory on your own 
    Doom 3 BFG directory (/path/to/Doom3BFG)
 
-6. Run the game by executing the RBDoom3BFG executable.
+6. Run the game by executing the DoomBFA executable.
 
 7. Enjoy
 
@@ -372,16 +393,14 @@ ___________________________________________________
 10) KNOWN ISSUES
 __________________________________________
 
-- HDR produces black spots.
-
-For now in order to resolve that issue disable SSAO and SSGI before enabling the HDR
+None.
 
 ___________________________________________________
 
 11) BUG REPORTS
 __________________________________________
 
-RBDOOM-3-BFG is not perfect, it is not bug free as every other software.
+DOOM-BFA is not perfect, it is not bug free as every other software.
 For fixing as much problems as possible we need as much bug reports as possible.
 We cannot fix anything if we do not know about the problems.
 
@@ -399,9 +418,9 @@ If you want to report an issue with the game, you should make sure that your rep
     * If appropriate, send a console log, a screenshot, an strace ..
     * If you are sending a console log, make sure to enable developer output:
 
-              RBDoom3BFG.exe +set developer 1 +set logfile 2
+              DoomBFA.exe +set developer 1 +set logfile 2
 			  
-		You can find your qconsole.log on Windows in C:\Users\<your user name>\Saved Games\id Software\RBDOOM 3 BFG\base\
+		You can find your qconsole.log on Windows in C:\Users\<your user name>\Saved Games\id Software\DOOM BFA\base\
 
 NOTE: We cannot help you with OS-specific issues like configuring OpenGL correctly, configuring ALSA or configuring the network.
 	
@@ -416,14 +435,14 @@ mod directory, you should first specify your mod directory adding the following 
 
 "+set fs_game modDirectoryName"
 
-so it would end up looking like: RBDoom3BFG +set fs_game modDirectoryName
+so it would end up looking like: DoomBFA +set fs_game modDirectoryName
 
 Also now you can package your mod in .resource files for more info check: https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/wiki
 
 Classic doom mods are enabled and can be used with the old "-file" parameter like this: RBDoom3BFG -file "classicmod.wad"
 
-IMPORTANT: RBDOOM-3-BFG does not support old Doom 3 modiciations that include sourcecode modifications in binary form (.dll)
-You can fork RBDOOM-3-BFG and create a new renamed binary that includes all required C++ game code modifications.
+IMPORTANT: DOOM-BFA does not support old Doom 3 (2004) modiciations that include sourcecode modifications in binary form (.dll)
+You can fork DOOM-BFA and create a new binary (.dll) that includes all required C++ game code modifications.
 	
 ____________________________________________________________________________________
 

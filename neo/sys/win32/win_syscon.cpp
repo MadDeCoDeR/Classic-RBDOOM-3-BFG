@@ -357,7 +357,7 @@ void Sys_CreateConsole()
 	
 	s_wcd.hWnd = CreateWindowEx( 0,
 								 DEDCLASS,
-		idLib::newd3 ? NEW_GAME_NAME : GAME_NAME,
+								 ENGINE_NAME,
 								 DEDSTYLE,
 								 ( swidth - 600 ) / 2, ( sheight - 450 ) / 2 , rect.right - rect.left + 1, rect.bottom - rect.top + 1,
 								 NULL,

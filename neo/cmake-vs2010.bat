@@ -1,6 +1,6 @@
 @ECHO OFF
 @ECHO --------------------------------------------------------------------------------
-@ECHO 		  	CLASSIC RBDOOM 3 BFG EDITION
+@ECHO 		  		DOOM BFA EDITION
 @ECHO			   VS 2010 PROJECT GENERATION FOR x86 - x64
 @ECHO --------------------------------------------------------------------------------
 cd ..

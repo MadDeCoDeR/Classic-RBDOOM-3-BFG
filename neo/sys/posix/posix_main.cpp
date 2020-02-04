@@ -97,14 +97,14 @@ static char exit_spawn[ 1024 ];
 const char* Sys_DefaultSavePath()
 {
 #if defined(__APPLE__)
-	char* base_path = SDL_GetPrefPath( "", "RBDOOM-3-BFG" );
+	char* base_path = SDL_GetPrefPath( "", "DOOM-BFA" );
 	if( base_path )
 	{
 		savepath = SDL_strdup( base_path );
 		SDL_free( base_path );
 	}
 #else
-	sprintf( savepath, "%s/.rbdoom3bfg", getenv( "HOME" ) );
+	sprintf( savepath, "%s/.doombfa", getenv( "HOME" ) );
 #endif
 	
 	return savepath.c_str();

@@ -62,7 +62,7 @@ struct version_s
 {
 	version_s()
 	{
-		sprintf( string, "%s.%d%s %s %s %s", idLib::newd3 ? NEW_ENGINE_NAME : ENGINE_NAME, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__ );
+		sprintf( string, "%s.%d%s %s %s %s", idLib::newd3 ? NEW_CONSOLE_NAME : CONSOLE_NAME, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__ );
 	}
 	char	string[256];
 } version;
@@ -246,6 +246,7 @@ void idCommonLocal::Quit()
 	{
 		Shutdown();
 	}
+	Printf("Something Went Wrong\n");
 	Sys_Quit();
 }
 
@@ -1344,7 +1345,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		idLib::Init();
 		
 		// clear warning buffer
-		ClearWarnings( GAME_NAME " initialization" );
+		ClearWarnings( ENGINE_NAME " initialization" );
 		
 		idLib::Printf( "Command line: %s\n", cmdline );
 		//::MessageBox( NULL, cmdline, "blah", MB_OK );
@@ -1494,7 +1495,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		photoimage->ActuallyLoadImage(true);
 		idLib::newd3 = photoimage->IsActuallyLoaded();
 
-		Sys_ChangeTitle(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
+		if (!(idLib::newd3 && com_game_mode.GetInteger() > 0)) {
+			Sys_ChangeTitle(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
+		}
 
 		const int legalMinTime = !idLib::newd3 ? 4000 : 8000;
 		
@@ -1702,6 +1705,14 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 	}
 }
 
+void minPrint(const char* msg) {
+#if defined(_WIN32)
+	OutputDebugString(msg);
+#else
+	printf("%s", msg);
+#endif
+}
+
 /*
 =================
 idCommonLocal::Shutdown
@@ -1718,11 +1729,11 @@ void idCommonLocal::Shutdown()
 	
 	
 	// Kill any pending saves...
-	printf( "session->GetSaveGameManager().CancelToTerminate();\n" );
+	minPrint( "session->GetSaveGameManager().CancelToTerminate();\n" );
 	session->GetSaveGameManager().CancelToTerminate();
 	
 	// kill sound first
-	printf( "soundSystem->StopAllSounds();\n" );
+	minPrint( "soundSystem->StopAllSounds();\n" );
 	soundSystem->StopAllSounds();
 	
 	// shutdown the script debugger
@@ -1730,122 +1741,122 @@ void idCommonLocal::Shutdown()
 	
 	if( aviCaptureMode )
 	{
-		printf( "EndAVICapture();\n" );
+		minPrint( "EndAVICapture();\n" );
 		EndAVICapture();
 	}
 	
-	printf( "Stop();\n" );
+	minPrint( "Stop();\n" );
 	Stop();
 	
-	printf( "CleanupShell();\n" );
+	minPrint( "CleanupShell();\n" );
 	CleanupShell();
 	
-	printf( "delete loadGUI;\n" );
+	minPrint( "delete loadGUI;\n" );
 	delete loadGUI;
 	loadGUI = NULL;
 	
-	printf( "delete renderWorld;\n" );
+	minPrint( "delete renderWorld;\n" );
 	delete renderWorld;
 	renderWorld = NULL;
 	
-	printf( "delete soundWorld;\n" );
+	minPrint( "delete soundWorld;\n" );
 	delete soundWorld;
 	soundWorld = NULL;
 	
-	printf( "delete menuSoundWorld;\n" );
+	minPrint( "delete menuSoundWorld;\n" );
 	delete menuSoundWorld;
 	menuSoundWorld = NULL;
 	
 	// shut down the session
-	printf( "session->ShutdownSoundRelatedSystems();\n" );
+	minPrint( "session->ShutdownSoundRelatedSystems();\n" );
 	session->ShutdownSoundRelatedSystems();
-	printf( "session->Shutdown();\n" );
+	minPrint( "session->Shutdown();\n" );
 	session->Shutdown();
 	
 	// shutdown, deallocate leaderboard definitions.
 	if( game != NULL )
 	{
-		printf( "game->Leaderboards_Shutdown();\n" );
+		minPrint( "game->Leaderboards_Shutdown();\n" );
 		game->Leaderboards_Shutdown();
 	}
 	
 	// shut down the user interfaces
-	printf( "uiManager->Shutdown();\n" );
+	minPrint( "uiManager->Shutdown();\n" );
 	uiManager->Shutdown();
 	
 	// shut down the sound system
-	printf( "soundSystem->Shutdown();\n" );
+	minPrint( "soundSystem->Shutdown();\n" );
 	soundSystem->Shutdown();
 	
 	// shut down the user command input code
-	printf( "usercmdGen->Shutdown();\n" );
+	minPrint( "usercmdGen->Shutdown();\n" );
 	usercmdGen->Shutdown();
 	
 	// shut down the event loop
-	printf( "eventLoop->Shutdown();\n" );
+	minPrint( "eventLoop->Shutdown();\n" );
 	eventLoop->Shutdown();
 	
 	// shutdown the decl manager
-	printf( "declManager->Shutdown();\n" );
+	minPrint( "declManager->Shutdown();\n" );
 	declManager->Shutdown();
 	if (::op) {
 		UnloadPlatformDLL();
 	}
 	
 	// shut down the renderSystem
-	printf( "renderSystem->Shutdown();\n" );
+	minPrint( "renderSystem->Shutdown();\n" );
 	renderSystem->Shutdown();
 	
-	printf( "commonDialog.Shutdown();\n" );
+	minPrint( "commonDialog.Shutdown();\n" );
 	commonDialog.Shutdown();
 	
 	// unload the game dll
-	printf( "UnloadGameDLL();\n" );
+	minPrint( "UnloadGameDLL();\n" );
 	UnloadGameDLL();
 	
-	printf( "saveFile.Clear( true );\n" );
+	minPrint( "saveFile.Clear( true );\n" );
 	saveFile.Clear( true );
-	printf( "stringsFile.Clear( true );\n" );
+	minPrint( "stringsFile.Clear( true );\n" );
 	stringsFile.Clear( true );
 	
 	// only shut down the log file after all output is done
-	printf( "CloseLogFile();\n" );
+	minPrint( "CloseLogFile();\n" );
 	CloseLogFile();
 	
 	// shut down the file system
-	printf( "fileSystem->Shutdown( false );\n" );
+	minPrint( "fileSystem->Shutdown( false );\n" );
 	fileSystem->Shutdown( false );
 	
 	// shut down non-portable system services
-	printf( "Sys_Shutdown();\n" );
+	minPrint( "Sys_Shutdown();\n" );
 	Sys_Shutdown();
 	
 	// shut down the console
-	printf( "console->Shutdown();\n" );
+	minPrint( "console->Shutdown();\n" );
 	console->Shutdown();
 	
 	// shut down the key system
-	printf( "idKeyInput::Shutdown();\n" );
+	minPrint( "idKeyInput::Shutdown();\n" );
 	idKeyInput::Shutdown();
 	
 	// shut down the cvar system
-	printf( "cvarSystem->Shutdown();\n" );
+	minPrint( "cvarSystem->Shutdown();\n" );
 	cvarSystem->Shutdown();
 	
 	// shut down the console command system
-	printf( "cmdSystem->Shutdown();\n" );
+	minPrint( "cmdSystem->Shutdown();\n" );
 	cmdSystem->Shutdown();
 	
 	// free any buffered warning messages
-	printf( "ClearWarnings( GAME_NAME \" shutdown\" );\n" );
+	minPrint( "ClearWarnings( GAME_NAME \" shutdown\" );\n" );
 	ClearWarnings(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME " shutdown" );
-	printf( "warningCaption.Clear();\n" );
+	minPrint( "warningCaption.Clear();\n" );
 	warningCaption.Clear();
-	printf( "errorList.Clear();\n" );
+	minPrint( "errorList.Clear();\n" );
 	errorList.Clear();
 	
 	// shutdown idLib
-	printf( "idLib::ShutDown();\n" );
+	minPrint( "idLib::ShutDown();\n" );
 	idLib::ShutDown();
 }
 

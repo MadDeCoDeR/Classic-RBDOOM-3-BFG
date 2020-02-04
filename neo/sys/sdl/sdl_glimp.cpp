@@ -240,7 +240,7 @@ bool GLimp_Init( glimpParms_t parms )
 		 */
 		
 		
-		window = SDL_CreateWindow(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME,
+		window = SDL_CreateWindow(ENGINE_NAME,
 								   windowPos,
 								   windowPos,
 								   parms.width, parms.height, flags );
@@ -266,7 +266,7 @@ bool GLimp_Init( glimpParms_t parms )
 #else
 		glConfig.driverType = GLDRV_OPENGL3X;
 		
-		SDL_WM_SetCaption(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME, idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
+		SDL_WM_SetCaption(ENGINE_NAME, ENGINE_NAME);
 		
 		if( SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, r_swapInterval.GetInteger() ) < 0 )
 			common->Warning( "SDL_GL_SWAP_CONTROL not supported" );

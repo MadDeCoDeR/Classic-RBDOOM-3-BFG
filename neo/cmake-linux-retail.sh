@@ -1,7 +1,7 @@
 clear
 echo --------------------------------------------------------------------------------
 COLUMNS=$(tput cols) 
-title="CLASSIC RBDOOM 3 BFG EDITION" 
+title="DOOM BFA EDITION" 
 printf "%*s\n" $(((${#title}+$COLUMNS)/2)) "$title"
 COLUMNS=$(tput cols) 
 title="UNIX MakeFile GENERATION FOR x86 - x64" 

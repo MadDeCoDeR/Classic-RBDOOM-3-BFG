@@ -35,21 +35,21 @@ If you have questions concerning this license or the applicable additional terms
 
 ===============================================================================
 */
-
+#define ENGINE_NAME						"DOOM: BFA Edition"
 #define GAME_NAME						"DOOM 3: BFG Edition"		// appears on window titles and errors
 #define NEW_GAME_NAME					"DOOM 3"
 
 // RB: changed home folder so we don't break the savegame of the original game
-#define SAVE_PATH						"\\id Software\\RBDOOM 3 BFG"
+#define SAVE_PATH						"\\id Software\\DOOM BFA"
 
-#define ENGINE_VERSION					"1.2.2"
-#define ENGINE_NAME					"Classic RBDOOM 3 BFG " ENGINE_VERSION	// printed in console
-#define NEW_ENGINE_NAME					"Classic RBDOOM 3 " ENGINE_VERSION	// printed in console
+#define ENGINE_VERSION					"1.2.3"
+#define CONSOLE_NAME					"DOOM BFA " ENGINE_VERSION	// printed in console
+#define NEW_CONSOLE_NAME					"DOOM 3 BFA " ENGINE_VERSION	// printed in console
 // RB end
 
 #define	BASE_GAMEDIR					"base"
 
-#define CONFIG_FILE						"D3BFGConfig.cfg"
+#define CONFIG_FILE						"DBFAConfig.cfg"
 
 // see ASYNC_PROTOCOL_VERSION
 // use a different major for each game
@@ -61,16 +61,16 @@ If you have questions concerning this license or the applicable additional terms
 #define RENDERDEMO_VERSION				3
 
 // win32 info
-#define WIN32_CONSOLE_CLASS				"D3BFG_WinConsole"
-#define	WIN32_WINDOW_CLASS_NAME			"D3BFG"
-#define	WIN32_FAKE_WINDOW_CLASS_NAME	"D3BFG_WGL_FAKE"
+#define WIN32_CONSOLE_CLASS				"DBFA_WinConsole"
+#define	WIN32_WINDOW_CLASS_NAME			"DBFA"
+#define	WIN32_FAKE_WINDOW_CLASS_NAME	"DBFA_WGL_FAKE"
 
 // RB begin
 // Default base path (used only if none could be found)
 #ifdef __APPLE__
-#define DEFAULT_BASEPATH				"/Applications/RBDOOM-3-BFG.app/Contents/Resources"
+#define DEFAULT_BASEPATH				"/Applications/DOOM-BFA.app/Contents/Resources"
 #else
-#define DEFAULT_BASEPATH				"/usr/share/games/doom3bfg"
+#define DEFAULT_BASEPATH				"/usr/share/games/doombfa"
 #endif
 // RB end
 

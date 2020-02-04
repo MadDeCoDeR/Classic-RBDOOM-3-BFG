@@ -87,7 +87,7 @@ struct netVersion_s
 {
 	netVersion_s()
 	{
-		sprintf( string, "%s.%d", idLib::newd3 ? NEW_ENGINE_NAME : ENGINE_NAME, BUILD_NUMBER );
+		sprintf( string, "%s.%d", idLib::newd3 ? NEW_CONSOLE_NAME : CONSOLE_NAME, BUILD_NUMBER );
 	}
 	char	string[256];
 } netVersion;

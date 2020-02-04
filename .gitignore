@@ -49,3 +49,4 @@ neo/neo.kdev4
 /.vs
 *.gch
 /.vscode/ipch
+/neo/.vs

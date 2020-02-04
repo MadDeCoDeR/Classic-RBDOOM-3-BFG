@@ -1137,10 +1137,10 @@ void Sys_Init() {
 		Sys_Error( "Couldn't get OS info" );
 
 	if ( win32.osversion.dwMajorVersion < 4 ) {
-		Sys_Error(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME " requires Windows version 4 (NT) or greater" );
+		Sys_Error(ENGINE_NAME " requires Windows version 4 (NT) or greater" );
 	}
 	if ( win32.osversion.dwPlatformId == VER_PLATFORM_WIN32s ) {
-		Sys_Error(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME " doesn't run on Win32s" );
+		Sys_Error(ENGINE_NAME " doesn't run on Win32s" );
 	}
 
 	if( win32.osversion.dwPlatformId == VER_PLATFORM_WIN32_NT ) {
