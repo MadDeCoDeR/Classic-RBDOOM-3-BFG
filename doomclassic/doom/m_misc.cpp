@@ -112,8 +112,9 @@ M_DrawText
 void M_DrawCross()
 {
 	if (cl_cursor.GetBool()) {
+		int xoffset = game->GetCVarBool("pm_thirdPerson") ? (game->GetCVarFloat("pm_thirdPersonXOff") / 4) : 0;
 		int yoffset = (20 / abs(::g->screenSize - 6)) - (5 * (::g->screenSize - 7));
-		V_DrawPatchDirect((ORIGINAL_WIDTH / 2) - 5, (BASEYCENTER)-yoffset, 0, img2lmp(W_CacheLumpName(::g->crossnames[::g->cross_state], PU_CACHE_SHARED),
+		V_DrawPatchDirect((ORIGINAL_WIDTH / 2) - 3 + xoffset, (BASEYCENTER)-yoffset + 2, 0, img2lmp(W_CacheLumpName(::g->crossnames[::g->cross_state], PU_CACHE_SHARED),
 			W_GetNumForName(::g->crossnames[::g->cross_state])));
 	}
 	if (::g->cross_state) {
