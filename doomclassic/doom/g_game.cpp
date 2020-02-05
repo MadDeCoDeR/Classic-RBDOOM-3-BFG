@@ -1539,6 +1539,14 @@ void G_WorldDone (void)
 		::g->players[::g->consoleplayer].didsecret = true; 
 
 	if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+		if (::g->gamemode == retail && ::g->clusters.size() >= ::g->gameepisode) {
+			if (::g->clusters[::g->gameepisode - 1].startmap > -1 && ::g->clusters[::g->gameepisode - 1].endmap > ::g->clusters[::g->gameepisode - 1].startmap) {
+				int map = (::g->clusters[::g->gameepisode - 1].startmap - 1) + ::g->gamemap;
+				if (map == ::g->clusters[::g->gameepisode - 1].endmap) {
+					F_StartFinale();
+				}
+			}
+		}
 		if (::g->gamemap == ::g->endmap || ::g->maps[::g->gamemap - 1].cluster != ::g->maps[::g->wminfo.next].cluster || ::g->maps[::g->gamemap - 1].ftext != NULL) {
 			if (!::g->secretexit == !::g->maps[::g->gamemap - 1].fsecret) {
 				F_StartFinale();
