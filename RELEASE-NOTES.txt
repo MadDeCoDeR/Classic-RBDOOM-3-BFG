@@ -1,6 +1,70 @@
-Classic RBDOOM-3-BFG Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG
+DOOM-BFA Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG
 
-Thank you for downloading Classic RBDOOM-3-BFG.
+Thank you for downloading DOOM-BFA.
+_______________________________________
+
+8 February 2020 - DOOM-BFA 1.2.3
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- DEHACKED can now extend frames and things
+
+- Added A_RandomJump CodePointer
+
+- Removed and suppressed some sprite check ups
+
+- Unmapped F12 from CLassic Doom's quick keys
+
+- Vastly improved sprite loading
+
+- When not in BFG mode Classic Doom errors will be treated as fatal errors
+
+- Add Resolution Setting on Classic Doom
+
+- When playing/recording Demos on Classic DOOM force framereate to 35FPS
+
+- Add new Menu Option on Classic Doom That allow you to change:
+    - Framerate (35FPS - 40 FPS)
+    - Keybindings
+    - Controlleer Rumble Effect
+    - Controller Layout
+
+- Performance optimization on Classic Doom
+
+- Ultimate Doom can load 10 map names per episode (instead of 9)
+
+- "PDA" bindable key can now open the Auto Map on Classic Doom
+
+- miniboss flag on EXPINFO can now be used on Ultimate Doom similarly to the mastermindboss and cyberboss
+
+- When launching Classic Doom use the in-game engine title name on the game's window
+
+- Supress Doom 3 messages on Classic Doom when running in 2019 mode
+
+- Made weapon switching faster and fixed the switch order
+
+- EXPINFO final_text can now get full text (one line with multiple \n).
+
+- Ultimate Doom Maps that have final_text defined will move to the next level if it isn't the EndGame
+
+- Allow to load Multiple EXPINFO
+
+- Reallign the crosshair on Classic Doom
+
+[DOOM3BFG]
+
+- Remove the usage of the display modelist in order to initialize fullscreen on game's startup
+
+- Use and PDA buttons can be used on UI for ENTER and TAB respectively
+
+- Made weapon switching faster and fixed the switch order
+
+- Project Rename
+
 _______________________________________
 
 21 December 2019 - Classic RBDOOM-3-BFG 1.2.2
