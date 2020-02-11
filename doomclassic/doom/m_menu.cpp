@@ -1649,6 +1649,7 @@ void M_Aspect(int choice) {
 	R_Initwidth(); //GK: Restart the classic Doom renderer
 	::g->reset = true;
 	R_Init();
+	ST_Start();
 	if (::g->automapactive) {
 		AM_Start();
 	}
@@ -2301,20 +2302,22 @@ M_WriteAspectText
 //
 void M_ResetGame(int ch)
 {
+	reset = false;
 	if (ch != KEY_ENTER)
 		return;
 	M_CloseGame();
 	currentGame_t current = (currentGame_t)DoomLib::expansionSelected;
 	DoomLib::SetCurrentExpansion(current);
-	reset = false;
+	
 
 }
 
 void M_HardResetGame(int ch)
 {
+	hardreset = false;
 	if (ch != KEY_ENTER)
 		return;
-	hardreset = false;
+	
 	M_CloseGame();
 	common->SwitchToGame(DOOM3_BFG);
 	Sys_ReLaunch();
