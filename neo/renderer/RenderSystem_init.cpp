@@ -321,7 +321,7 @@ GK: Ditch the r_vidMode since it is relying on the unreliable modelist
 void R_SetNewMode( const bool fullInit )
 {
 	// try up to three different configurations
-	
+	bool donethat = false;
 	for( int i = 0 ; i < 3 ; i++ )
 	{
 		if( i == 0 && stereoRender_enable.GetInteger() != STEREO3D_QUAD_BUFFER )
@@ -420,10 +420,15 @@ void R_SetNewMode( const bool fullInit )
 			} 
 			else
 			{
+				if (donethat) {
+					r_fullscreen.SetInteger(0);
+					continue;
+				}
 				//GK: Fullscreen Fallback
 				r_vidMode.SetInteger(0);
 				cvarSystem->SetCVarInteger("r_customWidth", 1280);
 				cvarSystem->SetCVarInteger("r_customHeight", 720);
+				donethat = true;
 			}
 		}
 		else
