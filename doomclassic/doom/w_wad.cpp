@@ -102,7 +102,7 @@ int filelength (FILE* handle)
 void
 ExtractFileBase
 ( const char*		path,
-  char*		dest )
+  char**		dest )
 {
 	const char*	src;
 	int		length;
@@ -118,14 +118,14 @@ ExtractFileBase
 	}
     
 	// copy up to eight characters
-	memset (dest,0,8);
+	memset (*dest,0,8);
 	length = 0;
 
-	if (!idStr::Icmp(path + strlen(path) - 3, "deh") || !idStr::Icmp(path + strlen(path), "bex")) {
-		dest = "DEHACKED";
+	if (!idStr::Icmp(path + strlen(path) - 3, "deh") || !idStr::Icmp(path + strlen(path) - 3, "bex")) {
+		*dest = "DEHACKED";
 	}
 	else if (!idStr::Icmp(path + strlen(path) - 3, "dlc")) {
-		dest = "EXPINFO";
+		*dest = "EXPINFO";
 	}
 	else {
 		while (*src && *src != '.')
@@ -133,7 +133,7 @@ ExtractFileBase
 			if (++length == 9)
 				I_Error("Filename base of %s >8 chars", path);
 
-			*dest++ = toupper((int)* src++);
+			**dest++ = toupper((int)* src++);
 		}
 	}
 }
@@ -397,7 +397,9 @@ void W_AddFile ( const char *filename)
 				}
 				std::ifstream inf(fname, std::ifstream::ate | std::ifstream::binary);
 				fileinfo[0].size = inf.tellg();
-				ExtractFileBase(filename, fileinfo[0].name);
+				char* tempname = new char();
+				ExtractFileBase(filename, &tempname);
+				strcpy(fileinfo[0].name, tempname);
 				numlumps++;
 				relp = false;
 			//	idLib::Printf("Added %s succesfully!\n", fname);
