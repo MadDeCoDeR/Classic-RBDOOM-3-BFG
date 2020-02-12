@@ -1090,7 +1090,8 @@ void M_DrawVideo(void)
 	int reallight = r_clight.GetInteger();
 	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : 0;
 	int blurryeffect = r_clblurry.GetInteger();
-	char* res = va("%4i x %4i", r_customWidth.GetInteger(), r_customHeight.GetInteger());
+	char* res = new char[11];
+	sprintf(res, "%4i x %4i", r_customWidth.GetInteger(), r_customHeight.GetInteger());
 	std::string fps = va("%d FPS", com_engineHz.GetInteger() > 60 ? 40 : 35);
 	if (cl_engineHz_interp.GetBool()) {
 		fps += "I";
@@ -2028,8 +2029,9 @@ void M_ChangeKeys(int choice) {
 	{
 		::g->bindIndex = choice;
 	}
-
-	M_StartMessage(va(KEYMSG, keyboardBinds[::g->bindIndex].display), NULL, false);
+	char* tempMsg = new char[128];
+	sprintf(tempMsg, KEYMSG, keyboardBinds[::g->bindIndex].display);
+	M_StartMessage(tempMsg, NULL, false);
 	
 }
 
@@ -3111,18 +3113,20 @@ void M_Remap(event_t* ev) {
 						break;
 					}
 				}
+				char* tempMsg = new char[128];
 				if (!idLib::joystick) {
-
-					M_StartMessage(va(REMAPKEY, bindName.c_str(), keyboardBinds[::g->bindIndex].display), M_RemapConfirm, true);
+					sprintf(tempMsg, REMAPKEY, bindName.c_str(), keyboardBinds[::g->bindIndex].display);
+					
 				}
 				else {
 					if (!in_joylayout.GetBool()) {
-						M_StartMessage(va(REMAPKEYGP, bindName.c_str(), keyboardBinds[::g->bindIndex].display), M_RemapConfirm, true);
+						sprintf(tempMsg, REMAPKEYGP, bindName.c_str(), keyboardBinds[::g->bindIndex].display);
 					}
 					else {
-						M_StartMessage(va(REMAPKEYGPX, bindName.c_str(), keyboardBinds[::g->bindIndex].display), M_RemapConfirm, true);
+						sprintf(tempMsg, REMAPKEYGPX, bindName.c_str(), keyboardBinds[::g->bindIndex].display);
 					}
 				}
+				M_StartMessage(tempMsg, M_RemapConfirm, true);
 			}
 		}
 	}
