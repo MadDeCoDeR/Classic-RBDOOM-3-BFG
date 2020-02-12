@@ -88,6 +88,7 @@ If you have questions concerning this license or the applicable additional terms
 extern bool waitingForWipe;
 extern idCVar in_alwaysRunCl;
 extern idCVar cl_jump;
+extern idCVar cl_engineHz_interp;
 
 bool	loadingGame = false;
 
@@ -125,6 +126,8 @@ bool demoDebugOn = false;
 #endif
 
 float ogHz = 0.0f;
+int ogFtr = 0;
+int ogStr = 0;
 // 
 // controls (have defaults) 
 // 
@@ -249,11 +252,17 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 	if (::g->demoplayback || ::g->demorecording) {
 		com_engineHz_denominator = 100LL * TICRATE;
 		com_engineHz_latched = TICRATE;
+		::g->firstticrate = 1;
+		::g->secondticrate = 1;
 	}
 	else if (ogHz){
-		com_engineHz_denominator = 100LL * ogHz;
+		com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? 60LL : ogHz);
 		com_engineHz_latched = ogHz;
 		ogHz = 0;
+		::g->firstticrate = ogFtr;
+		::g->secondticrate = ogStr;
+		ogFtr = 0;
+		ogStr = 0;
 	}
 
 	base = I_BaseTiccmd ();		// empty, or external driver
@@ -2244,6 +2253,8 @@ void G_RecordDemo (char* name)
 	demoversion = VERSION;
 	::g->demorecording = true;
 	ogHz = com_engineHz_latched;
+	ogFtr = ::g->firstticrate;
+	ogStr = ::g->secondticrate;
 } 
  
  
@@ -2409,6 +2420,8 @@ void G_DoPlayDemo (void)
 	::g->usergame = false;
 	::g->demoplayback = true;
 	ogHz = com_engineHz_latched;
+	ogFtr = ::g->firstticrate;
+	ogStr = ::g->secondticrate;
 } 
 
 //

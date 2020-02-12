@@ -832,3 +832,8 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->captureBind = false;
 
 	::g->bindIndex = -1;
+
+	::g->firstticrate = 1;
+	::g->secondticrate = 1;
+	::g->lastfirsttic = 0;
+	::g->lastsecondtic = 0;

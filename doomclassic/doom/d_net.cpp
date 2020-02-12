@@ -664,6 +664,33 @@ void D_QuitNetGame (void)
 		::g->nodeingame[i] = true;
 }
 
+//GK: Begin
+//
+//	InterpolateTics
+//
+// Check if the current tic must run or not.
+//
+bool InterpolateTics() {
+	if (!::g->lastfirsttic) {
+		::g->lastfirsttic = ::g->trt_entertic;
+		return true;
+	}
+	if (::g->trt_entertic - ::g->lastfirsttic < ::g->firstticrate) {
+		if (::g->trt_entertic - ::g->lastsecondtic < ::g->secondticrate) {
+			return false;
+		}
+		else {
+			::g->lastsecondtic = ::g->trt_entertic;
+			return true;
+		}
+	}
+	else {
+		::g->lastfirsttic = ::g->trt_entertic;
+		return true;
+	}
+	return false;
+}
+//GK: End
 
 
 //
@@ -807,19 +834,21 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 	// run the count * ::g->ticdup dics
 	while (::g->trt_counts--)
 	{
-		for (i=0 ; i < ::g->ticdup ; i++)
+		for (i = 0; i < ::g->ticdup; i++)
 		{
-			if (::g->gametic/::g->ticdup > ::g->trt_lowtic) {
-				I_Error ("gametic(%d) greater than trt_lowtic(%d), trt_counts(%d)", ::g->gametic, ::g->trt_lowtic, ::g->trt_counts );
+			if (::g->gametic / ::g->ticdup > ::g->trt_lowtic) {
+				I_Error("gametic(%d) greater than trt_lowtic(%d), trt_counts(%d)", ::g->gametic, ::g->trt_lowtic, ::g->trt_counts);
 				return false;
 			}
 
-			if (::g->advancedemo) {
-				D_DoAdvanceDemo ();
+			if (InterpolateTics()) {
+				if (::g->advancedemo) {
+					D_DoAdvanceDemo();
+				}
+				M_Ticker();
+				G_Ticker();
 			}
-
-			M_Ticker ();
-			G_Ticker ();
+			
 			::g->gametic++;
 
 			// modify command for duplicated tics

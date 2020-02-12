@@ -1068,6 +1068,11 @@ byte blurryoffsetmap[NUMPOWERS];
 bool captureBind;
 int bindIndex;
 
+int firstticrate;
+int secondticrate;
+int lastfirsttic;
+int lastsecondtic;
+
 // phares 3/21/98
 //
 // Maintain a freelist of msecnode_t's to reduce memory allocs and frees.

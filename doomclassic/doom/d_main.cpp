@@ -572,6 +572,33 @@ void FindResponseFile (void)
 {
 }
 
+//GK: Begin
+//
+//	CalculateInterpolation
+// Calculate the double logic frame frequency in case 
+// the denominator Hz is higher than the latched Hz.
+// 
+// For 60 FPS it ensures that in 1 second it will
+// successfilly run 35-40 logical frames.
+//
+// The first frequency is based on the half of the denominator Hz
+// and it is usually the higher of them both.
+// The second is based on the remaining frames from the first
+// frequency and is the lower one.
+void CalculateInterpolation() {
+	int engineHz_denominator = com_engineHz_denominator / 100LL;
+	if (engineHz_denominator > com_engineHz_latched) {
+		int firstclassicrate = engineHz_denominator;
+		while (firstclassicrate > com_engineHz_latched) {
+			firstclassicrate = firstclassicrate / 2;
+		}
+		::g->firstticrate = engineHz_denominator / firstclassicrate;
+
+		int secondclassicrate = com_engineHz_latched - firstclassicrate;
+		::g->secondticrate = engineHz_denominator / secondclassicrate;
+	}
+}
+//GK: End
 
 //
 // D_DoomMain
@@ -583,6 +610,8 @@ void D_DoomMain(void)
 	char                    file[256];
 	R_Initwidth(); //GK: Simplyfied
 	FindResponseFile();
+	CalculateInterpolation();
+
 
 	IdentifyVersion();
 	::g->modifiedtext = false;
