@@ -381,9 +381,11 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			int cimpulse = 0;
 			//I_Printf("Impulse seq %d", curTech5Command.impulseSequence);
 //			if( oldImpulseSequence != curTech5Command.impulseSequence ) {
+			int engineHz_denominator = com_engineHz_denominator / 100;
 				cimpulse = G_PerformImpulse( curTech5Command.buttons, cmd );
-				if (cimpulse > 0 && circleWeaponPacifier >= ( com_engineHz_latched / 2)) { //GK: Weapon change event happend
+				if (cimpulse > 0 && circleWeaponPacifier >= ( engineHz_denominator / 2)) { //GK: Weapon change event happend
 					circleWeaponPacifier = 0;
+					cmd = &::g->players[::g->consoleplayer].cmd;
 					cmd->buttons |= BT_CHANGE;
 					cmd->nextPrevWeapon = cimpulse;
 					P_PlayerThink(&::g->players[::g->consoleplayer]);
