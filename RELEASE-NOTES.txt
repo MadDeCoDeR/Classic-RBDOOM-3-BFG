@@ -3,6 +3,31 @@ DOOM-BFA Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG
 Thank you for downloading DOOM-BFA.
 _______________________________________
 
+15 February 2020 - DOOM-BFA 1.2.3.1
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- Relax the reset warnings on Classic DOOM Menu
+
+- Fix status bar when changing aspect ratio
+
+- Add Classic DOOM Framerate Interpolation (Optional 60FPS) (Check on FRAMERATE for FPSI)
+
+- Fixed issue wile loading Dehacked wild files (outside Wad)
+
+- Fixed issue of showing accidenatlly the framerate instead of remap messages on Classic Doom
+
+- Vastly improved sprite loading
+
+[DOOM3BFG]
+
+- If both Fullscreen and failsafe Fullscreen fails then revert to windowed mode
+_______________________________________
+
 8 February 2020 - DOOM-BFA 1.2.3
 _______________________________
 
