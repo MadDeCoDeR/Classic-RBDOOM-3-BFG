@@ -130,7 +130,7 @@ HSendPacket
 {
 	::g->netbuffer->checksum = NetbufferChecksum () | flags;
 
-	if (!::g->netgame || node == ::g->consoleplayer) //GK:Before it was expecting the local player to be the node 0 now it expects to be the proper player
+	if (!::g->netgame || ::g->demoplayback || node == ::g->consoleplayer) //GK:Before it was expecting the local player to be the node 0 now it expects to be the proper player
 	{
 		::g->reboundstore = *::g->netbuffer;
 		::g->reboundpacket = true;
@@ -261,7 +261,12 @@ void GetPackets (void)
 			continue;		// extra setup packet
 
 		netconsole = ::g->netbuffer->player & ~PL_DRONE;
-		netnode = ::g->doomcom.remotenode;
+		if (::g->demoplayback) {
+			netnode = 0;
+		}
+		else {
+			netnode = ::g->doomcom.remotenode;
+		}
 
 		// to save bytes, only the low byte of tic numbers are sent
 		// Figure out what the rest of the bytes are
