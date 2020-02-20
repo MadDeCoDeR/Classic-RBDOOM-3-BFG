@@ -668,15 +668,19 @@ void F_TextWrite (void)
 	c = *ch++;
 	if (!c)
 	    break;
+	//GK:For improved text parsing from the BEX text editor it replace the \\n with \n and \b and so it ignores the \b character
+	if (c == '\b') {
+		while (c == '\b') {
+			c = *ch++;
+		}
+		c = *ch--;
+		continue;
+	}
 	if (c == '\n')
 	{
 	    cx = 10;
 	    cy += 11;
 	    continue;
-	}
-	//GK:For improved text parsing from the BEX text editor it replace the \\n with \n and \b and so it ignores the \b character
-	if (c == '\b') {
-		continue;
 	}
 		
 	c = toupper(c) - HU_FONTSTART;
