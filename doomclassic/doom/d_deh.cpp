@@ -678,6 +678,30 @@ void setBText(char* varname, char* text) {
 		if (ttext[i] == '\\' && ttext[i+1] == 'n') {
 			ttext[i] = '\n';
 			ttext[i + 1] = '\b';
+			int j = 3;
+			if ( i + 2 < ttext.size() && ttext[i + 2] == '\\' ) {
+				if (i + j < ttext.size() && ttext[i + j] == 'n') {
+					ttext[i + 2] = '\n';
+					ttext[i + j] = '\b';
+					j++;
+					if (i + j < ttext.size() && ttext[i + j] == '\\') {
+						ttext[i + j] = '\b';
+						j++;
+					}
+				}
+				else {
+					ttext[i + 2] = '\b';
+				}
+			}
+			if (i + j < ttext.size()) {
+				while (ttext[i + j] == ' ') {
+					ttext[i + j] = '\b';
+					j++;
+					if (i + j > ttext.size()) {
+						break;
+					}
+				}
+			}
 		}
 	}
 	varname[strlen(varname) - 1] = '\0';
@@ -794,6 +818,7 @@ void parsetext(char* text) {
 	int varval;
 	int varval2 = -1;
 	char eq = '=';
+	std::string vartext = "";
 	for (int i = 0; i < linedtext.size(); i++) {
 		varval2 = -1;
 		//I_Printf("%s\n", linedtext[i].c_str());
@@ -807,8 +832,20 @@ void parsetext(char* text) {
 						varval = Generateflags(strdup(tv3.c_str()));
 					}
 				}
-				else {
+				else if (state == 6) {
 					varfunc = strdup(tv3.c_str());
+				}
+				else {
+					vartext += strdup(tv3.c_str());
+					i++;
+					while (linedtext[i].find(eq) == std::string::npos && linedtext[i] != "") {
+						vartext += strdup(linedtext[i].c_str());
+						if (i == linedtext.size() - 1) {
+							break;
+						}
+						i++;
+					}
+					i = i - 1;
 				}
 			}
 			//idLib::Printf("%s = %i\n", varname, varval);
@@ -838,7 +875,8 @@ void parsetext(char* text) {
 				setAmmo(statepos, varname, varval);
 				break;
 			case 9:
-				setBText(varname, varfunc);
+				setBText(varname, strdup(vartext.c_str()));
+				vartext = "";
 				break;
 				//More Headache than it's worth
 			case 10:
