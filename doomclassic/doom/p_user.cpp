@@ -53,6 +53,7 @@ If you have questions concerning this license or the applicable additional terms
 // 16 pixels of bob
 
 idCVar cl_jump("cl_jump", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable jumping on classic Doom");
+idCVar cl_freelookclamp("cl_freelookclamp", "550", CVAR_INTEGER | CVAR_ARCHIVE, "Set the absolute mousey clamp limit", -4000, 4000);
 
 //
 // P_Thrust
@@ -165,6 +166,7 @@ void P_MovePlayer (player_t* player)
 
 	player->mo->angle += (cmd->angleturn<<16);
 	player->mo->viewangle += (cmd->angleview << 16);
+	player->mo->viewangle = idMath::ClampInt((-1 * idMath::Abs(cl_freelookclamp.GetInteger())) << 19, idMath::Abs(cl_freelookclamp.GetInteger()) << 19, player->mo->viewangle);
 
 	// Do not let the player control movement
 	//  if not ::g->onground.
