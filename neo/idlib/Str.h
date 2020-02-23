@@ -148,6 +148,8 @@ public:
 	
 	char				operator[](int64 index ) const;
 	char& 				operator[](int64 index );
+	char				operator[](int index) const;
+	char&				operator[](int index);
 	
 	void				operator=( const idStr& text );
 	void				operator=( const char* text );
@@ -671,6 +673,18 @@ ID_INLINE char& idStr::operator[](int64 index )
 	return data[ index ];
 }
 
+ID_INLINE char idStr::operator[](int index) const
+{
+	assert((index >= 0) && (index <= len));
+	return data[index];
+}
+
+ID_INLINE char& idStr::operator[](int index)
+{
+	assert((index >= 0) && (index <= len));
+	return data[index];
+}
+
 ID_INLINE void idStr::operator=( const idStr& text )
 {
 	int64 l;
@@ -960,7 +974,7 @@ ID_INLINE void idStr::Append( const idStr& text )
 	EnsureAlloced( newLen + 1 );
 	for( i = 0; i < text.len; i++ )
 	{
-		data[ len + i ] = text[ i ];
+		data[ len + i ] = text[static_cast<int64> (i) ];
 	}
 	len = newLen;
 	data[ len ] = '\0';
@@ -1158,7 +1172,7 @@ ID_INLINE void idStr::ConvertToUTF8()
 	Clear();
 	for( int index = 0; index < temp.Length(); ++index )
 	{
-		AppendUTF8Char( temp[index] );
+		AppendUTF8Char( temp[static_cast<int64>(index)] );
 	}
 }
 
