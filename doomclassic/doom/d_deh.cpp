@@ -912,9 +912,9 @@ void parsetext(char* text) {
 							//I_Error("No such Frame found");
 							int oldsize = tempStates.size();
 							tempStates.resize(statepos + 1);
-							for (int i = oldsize; i < tempStates.size(); i++) {
+							/*for (int i = oldsize; i < tempStates.size(); i++) {
 								tempStates[i].nextstate = i + 1;
-							}
+							}*/
 						}
 						break;
 					case 3:
