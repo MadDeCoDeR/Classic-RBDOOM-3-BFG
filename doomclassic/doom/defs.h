@@ -208,9 +208,9 @@ If you have questions concerning this license or the applicable additional terms
 //  p_inter.defs begin // 
 #define BONUSADD	6
 // p_inter.defs end // 
-//  p_map.defs begin // 
-#define MAXSPECIALCROSS		8 //GK: No nedded anymore
-// p_map.defs end // 
+////  p_map.defs begin // 
+//#define MAXSPECIALCROSS		8 //GK: No nedded anymore
+//// p_map.defs end // 
 //  p_mobj.defs begin // 
 #define STOPSPEED		0x1000
 #define FRICTION		0xe800

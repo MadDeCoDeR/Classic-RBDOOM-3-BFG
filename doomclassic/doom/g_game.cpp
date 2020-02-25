@@ -252,8 +252,8 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 	if (::g->demoplayback || ::g->demorecording) {
 		com_engineHz_denominator = 100LL * TICRATE;
 		com_engineHz_latched = TICRATE;
-		::g->firstticrate = 1;
-		::g->secondticrate = 1;
+		::g->firstticrate = 0;
+		::g->secondticrate = 0;
 	}
 	else if (ogHz){
 		com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? 60LL : ogHz);
