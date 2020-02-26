@@ -838,14 +838,16 @@ void parsetext(char* text) {
 				else {
 					vartext += strdup(tv3.c_str());
 					i++;
-					while (linedtext[i].find(eq) == std::string::npos && linedtext[i] != "") {
-						vartext += strdup(linedtext[i].c_str());
-						if (i == linedtext.size() - 1) {
-							break;
+					if (i < linedtext.size()) {
+						while (linedtext[i].find(eq) == std::string::npos && linedtext[i] != "") {
+							vartext += strdup(linedtext[i].c_str());
+							if (i == linedtext.size() - 1) {
+								break;
+							}
+							i++;
 						}
-						i++;
+						i = i - 1;
 					}
-					i = i - 1;
 				}
 			}
 			//idLib::Printf("%s = %i\n", varname, varval);
