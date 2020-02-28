@@ -934,7 +934,7 @@ void D_DoomMain(void)
 
 	int* expinfoPointer = W_GetNumsForName("EXPINFO");
 	int expinfoSize = sizeof(expinfoPointer) / sizeof(int);
-	if (expinfoPointer > 0) {
+	if (expinfoPointer[0] >= 0) {
 		int expPrev = 0;
 		for (int i = 0; i < expinfoSize; i++) {
 			if (expinfoPointer[i] > expPrev && expinfoPointer[i] < W_GetLumpCount()) {

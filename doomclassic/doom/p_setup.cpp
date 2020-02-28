@@ -769,7 +769,7 @@ P_SetupLevel
 	P_ResetAct();
 	// Make sure all sounds are stopped before Z_FreeTags.
 	S_Start ();			
-	
+
 	Z_FreeTags( PU_LEVEL, PU_PURGELEVEL-1 );
 	//GK: New level new flips
 	::g->flip = false;
@@ -787,7 +787,7 @@ P_SetupLevel
 #endif
 	// UNUSED W_Profile ();
 	P_InitThinkers ();
-
+	
 	// if working with a devlopment map, reload it
 	// W_Reload ();
 
@@ -795,7 +795,7 @@ P_SetupLevel
 	{
 		void ST_loadData(void);
 		ST_loadData();
-
+		
 		void HU_Init(void);
 		HU_Init();
 	}
@@ -803,10 +803,7 @@ P_SetupLevel
 	// find map name
 	if ( ::g->gamemode == commercial)
 	{
-		if (map<10)
-			sprintf (lumpname,"map0%i", map);
-		else
-			sprintf (lumpname,"map%i", map);
+		sprintf (lumpname,"map%02i", map);
 
 		if (::g->gamemission == pack_custom ) { //GK:Custom expansion related stuff
 			sprintf(lumpname, "%s", ::g->maps[map-1].lumpname);
