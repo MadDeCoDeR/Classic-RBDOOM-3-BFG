@@ -3,6 +3,31 @@ DOOM-BFA Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG
 Thank you for downloading DOOM-BFA.
 _______________________________________
 
+29 February 2020 - DOOM-BFA 1.2.3.2
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- Fixed issue with net demo playback when the main player is not the first player
+
+- Add support for multiline BEX Strings 
+
+- Improved final text speed when using dummy characters 
+
+- Add Classic DOOM Freelook limiter (cl_freelookclamp defaut 550 max 4000) 
+
+- Fixed issue with loading an empty EXPINFO (DOOM 2 Game boot crash bug) 
+
+[DOOM3BFG]
+
+- Fixed 32-bit support 
+
+- Removed bad compile flag on retail linux cmake build 
+_______________________________________
+
 15 February 2020 - DOOM-BFA 1.2.3.1
 _______________________________
 
