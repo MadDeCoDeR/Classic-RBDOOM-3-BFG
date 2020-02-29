@@ -68,15 +68,19 @@ __________________________
 
 Minimum system requirements:
 
-	CPU: 2 GHz Intel compatible
-	System Memory: 512MB
-	Graphics card: Any graphics card that supports Direct3D 10 and OpenGL >= 3.2
+	CPU: 2 GHz dual core
+	System Memory: 3GB
+	Graphics card: NVIDIA GeForce 9800 GT / ATI Radeon HD 5750 / Intel HD graphics 530
 
 Recommended system requirements:
 
-	CPU: 3 GHz + Intel compatible
-	System Memory: 1024MB+
-	Graphics card: Geforce 9600 GT, ATI HD 5650 or higher. 
+	CPU: 3 GHz dual core
+	System Memory: 3GB
+	Graphics card: NVIDIA GeForce GTX 260 / ATI Radeon HD 5850 or higher
+
+
+Additional Requirements:
+	Windows: DirectX 2010 support
 
 
 
