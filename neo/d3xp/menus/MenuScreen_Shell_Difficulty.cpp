@@ -165,6 +165,8 @@ void idMenuScreen_Shell_Difficulty::Update()
 	}
 	
 	idMenuScreen::Update();
+
+	options->GetChildByIndex(3).SetState(nightmareUnlocked ? WIDGET_STATE_NORMAL : WIDGET_STATE_DISABLED);
 }
 
 /*
@@ -247,7 +249,7 @@ bool idMenuScreen_Shell_Difficulty::HandleAction( idWidgetAction& action, const 
 		return false;
 	}
 
-	this->Update();
+	
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
@@ -349,6 +351,6 @@ bool idMenuScreen_Shell_Difficulty::HandleAction( idWidgetAction& action, const 
 			return true;
 		}
 	}
-	
+	this->Update();
 	return idMenuWidget::HandleAction( action, event, widget, forceHandled );
 }
