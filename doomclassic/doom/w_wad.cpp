@@ -128,13 +128,16 @@ ExtractFileBase
 		*dest = "EXPINFO";
 	}
 	else {
+		char* temp = new char(8);
+		memset(temp, 0, 8);
 		while (*src && *src != '.')
 		{
 			if (++length == 9)
 				I_Error("Filename base of %s >8 chars", path);
 
-			**dest++ = toupper((int)* src++);
+			temp[length - 1] = toupper((int)*src++);
 		}
+		*dest = temp;
 	}
 }
 
