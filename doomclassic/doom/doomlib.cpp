@@ -610,7 +610,7 @@ void DoomLib::SetRumble(float high, int highDuration, float low, int lowDuration
 
 void DoomLib::ApplyRumble() {
 	if (idLib::joystick && in_joystickRumble.GetBool()) {
-		Sys_SetRumble(0, low, high);
+		Sys_SetRumble(session->GetSignInManager().GetMasterLocalUser()->GetInputDevice(), low, high);
 		highDuration--;
 		lowDuration--;
 		if (highDuration <= 0) {
