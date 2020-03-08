@@ -995,8 +995,6 @@ bool idMenuHandler_ShellLocal::HandleAction( idWidgetAction& action, const idWid
 	{
 		return true;
 	}
-
-	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
