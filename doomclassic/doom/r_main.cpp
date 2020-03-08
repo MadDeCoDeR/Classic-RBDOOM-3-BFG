@@ -1003,10 +1003,10 @@ void R_RenderPlayerView (player_t* player)
 void R_Initwidth() {
 	//GK: Calculate x-axis image scale and Rendering width
 	if (r_aspectcorrect.GetBool()) {
-		::g->ASPECT_IMAGE_SCALER = 4;
+		::g->ASPECT_IMAGE_SCALER = GLOBAL_IMAGE_SCALER + 1;
 	}
 	else {
-		::g->ASPECT_IMAGE_SCALER = 3;
+		::g->ASPECT_IMAGE_SCALER = GLOBAL_IMAGE_SCALER;
 	}
 
 	::g->SCREENWIDTH = ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER;

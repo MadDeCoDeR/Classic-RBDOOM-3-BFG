@@ -62,7 +62,7 @@ typedef unsigned int dword;
 //#define TEXTUREWIDTH		WIDTH
 #define TEXTUREHEIGHT		HEIGHT
 //GK: For Array initialization use the BASE_WIDTH which is equal to the WIDTH when aspect ratio correction is enabled
-#define ASPECT_OFFSET 4
+#define ASPECT_OFFSET (GLOBAL_IMAGE_SCALER + 1)
 
 #define	BASE_WIDTH			(ORIGINAL_WIDTH*ASPECT_OFFSET)
 //#define SCREENWIDTH			WIDTH
