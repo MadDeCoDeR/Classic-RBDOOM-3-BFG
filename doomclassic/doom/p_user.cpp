@@ -317,6 +317,9 @@ void P_PlayerThink (player_t* player)
 {
 	ticcmd_t*		cmd;
 	weapontype_t	newweapon = wp_fist;
+	if (player->mo == NULL) {
+		return;
+	}
 
 	// fixme: do this in the cheat code
 	if (player->cheats & CF_NOCLIP)
