@@ -486,6 +486,8 @@ bool idMenuScreen_Shell_Pause::HandleAction( idWidgetAction& action, const idWid
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

@@ -329,7 +329,7 @@ idMenuScreen_PDA_UserEmails::HandleAction
 */
 bool idMenuScreen_PDA_UserEmails::ScrollCorrectList( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget )
 {
-
+	this->Update();
 	bool handled = false;
 	bool leftScroll = false;
 	if( event.type == WIDGET_EVENT_SCROLL_UP_LSTICK || event.type == WIDGET_EVENT_SCROLL_DOWN_LSTICK ||
@@ -468,6 +468,8 @@ bool idMenuScreen_PDA_UserEmails::HandleAction( idWidgetAction& action, const id
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

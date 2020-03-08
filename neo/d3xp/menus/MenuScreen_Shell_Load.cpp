@@ -480,6 +480,8 @@ bool idMenuScreen_Shell_LoadLocal::HandleAction( idWidgetAction& action, const i
 			return false;
 		}
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

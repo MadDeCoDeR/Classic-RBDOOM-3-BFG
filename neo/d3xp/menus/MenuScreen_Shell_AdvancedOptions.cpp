@@ -266,6 +266,8 @@ bool idMenuScreen_Shell_AdvancedOptions::HandleAction( idWidgetAction& action, c
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

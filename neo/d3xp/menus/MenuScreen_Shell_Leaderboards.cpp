@@ -524,6 +524,8 @@ bool idMenuScreen_Shell_Leaderboards::HandleAction( idWidgetAction& action, cons
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

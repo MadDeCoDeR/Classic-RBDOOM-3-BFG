@@ -865,6 +865,8 @@ bool idMenuScreen_Shell_Credits::HandleAction( idWidgetAction& action, const idW
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	switch( actionType )

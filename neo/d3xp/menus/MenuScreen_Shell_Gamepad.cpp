@@ -275,6 +275,8 @@ bool idMenuScreen_Shell_Gamepad::HandleAction( idWidgetAction& action, const idW
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

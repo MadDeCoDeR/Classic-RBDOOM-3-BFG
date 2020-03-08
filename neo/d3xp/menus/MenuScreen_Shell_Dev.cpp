@@ -250,6 +250,8 @@ bool idMenuScreen_Shell_Dev::HandleAction( idWidgetAction& action, const idWidge
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

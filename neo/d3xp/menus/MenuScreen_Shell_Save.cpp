@@ -524,6 +524,8 @@ bool idMenuScreen_Shell_SaveLocal::HandleAction( idWidgetAction& action, const i
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

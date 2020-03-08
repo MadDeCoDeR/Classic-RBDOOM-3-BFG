@@ -284,6 +284,8 @@ bool idMenuScreen_Shell_Singleplayer::HandleAction( idWidgetAction& action, cons
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

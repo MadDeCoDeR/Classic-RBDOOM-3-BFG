@@ -144,7 +144,7 @@ idMenuScreen_Shell_Root::ShowScreen
 void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionType )
 {
 
-	if( menuData != NULL && (!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+	if( menuData != NULL && (!idLib::newd3 && menuData->GetPlatform() != 2) || idLib::newd3)
 	{
 		idList< idList< idStr, TAG_IDLIB_LIST_MENU >, TAG_IDLIB_LIST_MENU > menuOptions;
 		idList< idStr > option;
@@ -297,7 +297,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 	
 	idMenuScreen::ShowScreen( transitionType );
 	
-	if( menuData != NULL && (!idLib::newd3 && menuData->GetPlatform() == 2) || (idLib::newd3 && menuData->GetPlatform() == 5))
+	if( menuData != NULL && !idLib::newd3 && menuData->GetPlatform() == 2)
 	{
 		idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 		if( shell != NULL )
@@ -415,6 +415,8 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
@@ -433,7 +435,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 		}
 		case WIDGET_ACTION_PRESS_FOCUSED:
 		{
-			if((!idLib::newd3 && menuData->GetPlatform() == 2) || (idLib::newd3 && menuData->GetPlatform() == 5))
+			if(!idLib::newd3 && menuData->GetPlatform() == 2)
 			{
 			
 				idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
@@ -464,7 +466,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 		case WIDGET_ACTION_SCROLL_HORIZONTAL:
 		{
 		
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+			if((!idLib::newd3 && menuData->GetPlatform() != 2) || idLib::newd3)
 			{
 				return true;
 			}

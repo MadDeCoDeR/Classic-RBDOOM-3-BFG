@@ -365,6 +365,8 @@ bool idMenuScreen_PDA_Inventory::HandleAction( idWidgetAction& action, const idW
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

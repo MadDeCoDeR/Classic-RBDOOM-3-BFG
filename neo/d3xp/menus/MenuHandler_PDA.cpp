@@ -407,6 +407,8 @@ bool idMenuHandler_PDALocal::HandleAction( idWidgetAction& action, const idWidge
 		return true;
 	}
 	
+	this->Update();
+	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
 	

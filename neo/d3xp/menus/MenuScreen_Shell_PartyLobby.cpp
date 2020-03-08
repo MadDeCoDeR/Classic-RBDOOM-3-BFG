@@ -463,6 +463,8 @@ bool idMenuScreen_Shell_PartyLobby::HandleAction( idWidgetAction& action, const 
 	{
 		return false;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

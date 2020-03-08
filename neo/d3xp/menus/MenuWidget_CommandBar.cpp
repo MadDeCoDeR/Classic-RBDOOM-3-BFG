@@ -183,14 +183,8 @@ void idMenuWidget_CommandBar::Update()
 			}
 			else
 			{
-				imageSprite->SetVisible( true );
+				imageSprite->SetVisible( idLib::joystick );
 				imageSprite->StopFrame(menuData->GetPlatform() + in_joylayout.GetInteger() + 1);
-				/*if (!in_joylayout.GetBool()) {
-					imageSprite->StopFrame(menuData->GetPlatform() + 1);
-				}
-				else {
-					imageSprite->StopFrame(menuData->GetPlatform() + 2);
-				}*/
 				buttonSprite->SetVisible( true );
 				buttonSprite->SetXPos( xPos );
 				buttonText->SetText( buttons[ i ].label );

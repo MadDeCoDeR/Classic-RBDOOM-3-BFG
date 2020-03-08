@@ -785,7 +785,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 	
 	navOptions.Clear();
 	
-	if( ((!idLib::newd3 && GetPlatform() == 2) || (idLib::newd3 && GetPlatform() == 5)) && menuBar != NULL )
+	if( !idLib::newd3 && GetPlatform() == 2 && menuBar != NULL )
 	{
 		if( game->GetCVarBool("g_demoMode") )
 		{
@@ -906,21 +906,30 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 	
 	if( menuBar != NULL && gui != NULL )
 	{
-		idSWFScriptObject& root = gui->GetRootObject();
-		if( menuBar->BindSprite( root ) )
-		{
-			menuBar->GetSprite()->SetVisible( true );
-			menuBar->SetListHeadings( navOptions );
-			menuBar->Update();
-			
-			idMenuScreen_Shell_Root* menu = dynamic_cast< idMenuScreen_Shell_Root* >( menuScreens[ SHELL_AREA_ROOT ] );
-			if( menu != NULL )
+		if (!idLib::newd3 && GetPlatform() == 2) {
+			idSWFScriptObject& root = gui->GetRootObject();
+			if (menuBar->BindSprite(root))
 			{
-				const int activeIndex = menu->GetRootIndex();
-				menuBar->SetViewIndex( activeIndex );
-				menuBar->SetFocusIndex( activeIndex );
+				menuBar->GetSprite()->SetVisible(true);
+				menuBar->SetListHeadings(navOptions);
+				menuBar->Update();
+
+				idMenuScreen_Shell_Root* menu = dynamic_cast<idMenuScreen_Shell_Root*>(menuScreens[SHELL_AREA_ROOT]);
+				if (menu != NULL)
+				{
+					const int activeIndex = menu->GetRootIndex();
+					menuBar->SetViewIndex(activeIndex);
+					menuBar->SetFocusIndex(activeIndex);
+				}
+
 			}
-			
+		}
+		else {
+			idSWFScriptObject& root = gui->GetRootObject();
+			if (menuBar->BindSprite(root)) {
+				menuBar->GetSprite()->SetVisible(false);
+			}
+
 		}
 	}
 }
@@ -986,6 +995,8 @@ bool idMenuHandler_ShellLocal::HandleAction( idWidgetAction& action, const idWid
 	{
 		return true;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();

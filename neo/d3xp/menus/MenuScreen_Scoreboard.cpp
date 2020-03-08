@@ -408,6 +408,8 @@ bool idMenuScreen_Scoreboard::HandleAction( idWidgetAction& action, const idWidg
 	{
 		return true;
 	}
+
+	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
