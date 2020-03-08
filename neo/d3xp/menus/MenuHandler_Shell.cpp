@@ -1549,6 +1549,7 @@ idMenuHandler_Shell::ShowIntroVideo
 */
 void idMenuHandler_ShellLocal::ShowDoomIntro()
 {
+	skipIntro = false;
 	Sys_CreateThread((xthread_t)checkInput, NULL, THREAD_HIGHEST, "skip Input", CORE_ANY);
 
 	StopSound();
@@ -1622,6 +1623,7 @@ void idMenuHandler_ShellLocal::ShowDoomIntro()
 					idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 					{
 						if (skipIntro) {
+							skipIntro = false;
 							if (!hasEscaped) {
 								shell->StartGame(0);
 								hasEscaped = true;
@@ -1751,6 +1753,7 @@ idMenuHandler_Shell::ShowROEIntro
 */
 void idMenuHandler_ShellLocal::ShowROEIntro()
 {
+	skipIntro = false;
 	Sys_CreateThread((xthread_t)checkInput, NULL, THREAD_HIGHEST, "skip Input", CORE_ANY);
 
 	StopSound();
@@ -1827,6 +1830,7 @@ void idMenuHandler_ShellLocal::ShowROEIntro()
 					idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 					{
 						if (skipIntro) {
+							skipIntro = false;
 							if (!hasEscaped) {
 								shell->StartGame(1);
 								hasEscaped = true;
@@ -1949,6 +1953,7 @@ idMenuHandler_Shell::ShowLEIntro
 */
 void idMenuHandler_ShellLocal::ShowLEIntro()
 {
+	skipIntro = false;
 	Sys_CreateThread((xthread_t)checkInput, NULL, THREAD_HIGHEST, "skip Input", CORE_ANY);
 
 	StopSound();
@@ -1995,6 +2000,7 @@ void idMenuHandler_ShellLocal::ShowLEIntro()
 				idSWFScriptVar Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 				{
 					if (skipIntro) {
+						skipIntro = false;
 						if (!hasEscaped) {
 							shell->StartGame(2);
 							hasEscaped = true;
