@@ -47,6 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "renderer/RenderCommon.h"
 #include "sdl_local.h"
 #include "../posix/posix_public.h"
+#include "../common/localuser.h"
 
 #if !SDL_VERSION_ATLEAST(2, 0, 0)
 #define SDL_Keycode SDLKey
@@ -1867,6 +1868,7 @@ void Sys_EndJoystickInputEvents()
 static int	threadTimeDeltas[256];
 static int	threadPacket[256];
 static int	threadCount;
+static int	defaultAvailable;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 void JoystickSamplingThread(void* data){
 #else
@@ -1902,6 +1904,7 @@ int JoystickSamplingThread(void* data){
 		
 	SDL_GameController* controller = NULL;
 	int inactive = 0;
+	int available = -1;
 	for( int i = 0; i < MAX_JOYSTICKS; ++i )
 	{
 		if( SDL_IsGameController( i ) )
@@ -1909,11 +1912,13 @@ int JoystickSamplingThread(void* data){
 			controller = SDL_GameControllerOpen( i );
 			if( controller )
 			{
-				
-					nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
-					gcontroller[i]=controller;
-					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
-					haptic[i] = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller[i])); //GK: Make sure it mounted to the right controller
+				if (available < 0) {
+					available = i;
+				}
+				nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
+				gcontroller[i]=controller;
+				if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
+				haptic[i] = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller[i])); //GK: Make sure it mounted to the right controller
 	if(haptic[i]){
 		if(SDL_HapticRumbleInit( haptic[i] ) < 0){
 			//common->Printf("Failed to rumble\n");
@@ -1951,6 +1956,15 @@ int JoystickSamplingThread(void* data){
 	}
 	//GK: Enable controller layout if there is one controller connected
 	registeredControllers = 4-inactive;
+	if (registeredControllers > 0) {
+		if (session->GetSignInManager().GetMasterLocalUser() != NULL) {
+			idLocalUserWin* user = dynamic_cast<idLocalUserWin*>(session->GetSignInManager().GetMasterLocalUser());
+			user->SetInputDevice(available);
+		}
+		else {
+			defaultAvailable = available;
+		}
+	}
 	/*idLib::joystick = inactive >= 4 ? false : true;*/
 #else
 	// WM0110: Initialise SDL Joystick
@@ -1965,6 +1979,7 @@ int JoystickSamplingThread(void* data){
 	//common->Printf( "Sys_InitInput: Joystic - Found %i joysticks\n", numJoysticks );
 //#if !SDL_VERSION_ATLEAST(2, 0, 0)
 	int inactive = 0;
+	int available = -1;
 	for (i = 0; i < numJoysticks; i++) {
 		//common->Printf( " Joystick %i name '%s'\n", i, SDL_JoystickName( i ) );
 //#endif
@@ -1972,10 +1987,13 @@ int JoystickSamplingThread(void* data){
 	// Open first available joystick and use it
 		if (SDL_NumJoysticks() > 0)
 		{
-			joy = SDL_JoystickOpen(0);
+			joy = SDL_JoystickOpen(i);
 
 			if (joy)
 			{
+				if (available < 0) {
+					available = i;
+				}
 				nextCheck[0] = 0;
 				int num_hats;
 
@@ -2019,7 +2037,15 @@ int JoystickSamplingThread(void* data){
 		}
 	}
 	//GK: Enable controller layout if there is one controller connected
-	idLib::joystick = inactive >= 4 ? false : true;
+	if (inactive < MAX_JOYSTICKS) {
+		if (session->GetSignInManager().GetMasterLocalUser() != NULL) {
+			((idLocalUserWin*)session->GetSignInManager().GetMasterLocalUser())->SetInputDevice(available);
+		}
+		else {
+			defaultAvailable = available;
+		}
+	}
+	//idLib::joystick = inactive >= 4 ? false : true;
 	// WM0110
 #endif
 		}else{

@@ -756,6 +756,7 @@ JoystickSamplingThread
 static int	threadTimeDeltas[256];
 static int	threadPacket[256];
 static int	threadCount;
+static int	defaultAvailable;
 void JoystickSamplingThread( void* data )
 {
 	static int prevTime = 0;
@@ -806,6 +807,7 @@ void JoystickSamplingThread( void* data )
 			// do this short amount of processing inside a critical section
 			idScopedCriticalSection cs( win32.g_Joystick.mutexXis );
 			int inactive = 0;
+			int available = -1;
 			for( int i = 0 ; i < MAX_JOYSTICKS ; i++ )
 			{
 				
@@ -823,6 +825,10 @@ void JoystickSamplingThread( void* data )
 
 				cs->current = current;
 
+				if (available == -1) {
+					available = i;
+				}
+
 				// Switch from using cs->current to current to reduce chance of Load-Hit-Store on consoles
 
 				threadPacket[threadCount & 255] = current.dwPacketNumber;
@@ -835,6 +841,14 @@ void JoystickSamplingThread( void* data )
 				cs->buttonBits |= current.Gamepad.wButtons;
 			}
 			//GK: Enable controller layout if there is one controller connected
+			if (inactive < MAX_JOYSTICKS) {
+				if (session->GetSignInManager().GetMasterLocalUser() != NULL) {
+					((idLocalUserWin*)session->GetSignInManager().GetMasterLocalUser())->SetInputDevice(available);
+				}
+				else {
+					defaultAvailable = available;
+				}
+			}
 			/*idLib::joystick = inactive >= 4 ? false : true;*/
 		}
 
@@ -984,6 +998,10 @@ int idJoystickWin32::PollInputEvents( int inputDeviceNum )
 	}
 	
 	assert( inputDeviceNum < 4 );
+
+	if (inputDeviceNum < 0) {
+		inputDeviceNum = defaultAvailable;
+	}
 	
 //	if ( inputDeviceNum > in_joystick.GetInteger() ) {
 //		return numEvents;

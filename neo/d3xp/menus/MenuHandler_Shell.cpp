@@ -1507,7 +1507,7 @@ void checkInput( void* data)
 			}
 		}
 
-		int numJoystickEvents = Sys_PollJoystickInputEvents(0);
+		int numJoystickEvents = Sys_PollJoystickInputEvents(-1);
 		if (numJoystickEvents > 0)
 		{
 			int validevents = 0;
