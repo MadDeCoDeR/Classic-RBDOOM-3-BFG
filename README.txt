@@ -155,6 +155,8 @@ __________________________________________________________
 
 1. Download and install the Visual C++ 2013 Express Edition or newer Versions of Visual Studio Community.
 
+(NOTE: If you install it with Visual Studio Installer make sure to check "Desktop Development in C++")
+
 2. Download the DirectX SDK (June 2010) here:
 	http://www.microsoft.com/en-us/download/details.aspx?id=6812
 
@@ -163,7 +165,9 @@ __________________________________________________________
 4. Generate the VC projects using CMake by doubleclicking a matching configuration .bat file in the neo/ folder.
 
 5. Use the VC solution to compile  what you need:
-	Classic-RBDOOM-3-BFG/build/DoomBFA.sln
+	Classic-RBDOOM-3-BFG/build(Lib&cpuType)/DoomBFA.sln
+	
+(NOTE: The pre-built binaries are made wth buildAL(x64/x86))
 	
 6. Download the latest ffmpeg shared from https://ffmpeg.zeranoe.com/builds/ depending on the architecture you want to use
 
