@@ -60,6 +60,7 @@ void M_Aspect(int choice);
 void M_Light(int choice);
 void M_Resolution(int choice);
 void M_SetRes(int choice);
+void M_Refresh(int choice);
 void M_Framerate(int choice);
 void M_Blurry(int choice);
 void M_ChangeSensitivity(int choice);

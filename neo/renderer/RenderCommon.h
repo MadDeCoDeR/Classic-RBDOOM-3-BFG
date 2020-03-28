@@ -876,7 +876,7 @@ extern idCVar r_debugContext;				// enable various levels of context debug
 extern idCVar r_glDriver;					// "opengl32", etc
 extern idCVar r_skipIntelWorkarounds;		// skip work arounds for Intel driver bugs
 extern idCVar r_vidMode;					// video mode number
-extern idCVar r_displayRefresh;				// optional display refresh rate option for vid mode
+//extern idCVar r_displayRefresh;				// optional display refresh rate option for vid mode
 extern idCVar r_fullscreen;					// 0 = windowed, 1 = full screen
 extern idCVar r_antiAliasing;				// anti aliasing mode, SMAA, TXAA, MSAA etc.
 extern idCVar r_customWidth;
@@ -1102,8 +1102,8 @@ struct vidMode_t
 	// RB begin
 	vidMode_t()
 	{
-		width = 640;
-		height = 480;
+		width = 1280;
+		height = 720;
 		displayHz = 60;
 	}
 	
@@ -1121,6 +1121,8 @@ struct vidMode_t
 // displayNum is the 0 based value passed to EnumDisplayDevices(), you must add
 // 1 to this to get an r_fullScreen value.
 bool R_GetModeListForDisplay( const int displayNum, idList<vidMode_t>& modeList );
+
+bool R_GetRefreshListForDisplay(const int displayNum, idList<int>& refreshList);
 
 struct glimpParms_t
 {

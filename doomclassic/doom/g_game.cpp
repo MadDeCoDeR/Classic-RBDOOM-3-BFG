@@ -256,7 +256,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 		::g->secondticrate = 0;
 	}
 	else if (ogHz){
-		com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? 60LL : ogHz);
+		com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? com_engineHz.GetInteger() : ogHz);
 		com_engineHz_latched = ogHz;
 		ogHz = 0;
 		::g->firstticrate = ogFtr;

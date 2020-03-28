@@ -406,7 +406,7 @@ menuitem_t OptionsMenu[8];
 menu_t  OptionsDef;
 menuitem_t SoundMenu[6];
 menu_t  SoundDef;
-menuitem_t VideoMenu[5];
+menuitem_t VideoMenu[6];
 menu_t  VideoDef;
 menuitem_t LoadMenu[6];
 menu_t  LoadDef;

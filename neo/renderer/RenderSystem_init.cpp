@@ -61,7 +61,7 @@ idCVar r_skipIntelWorkarounds( "r_skipIntelWorkarounds", "0", CVAR_RENDERER | CV
 idCVar r_antiAliasing( "r_antiAliasing", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, " 0 = None\n 1 = SMAA 1x\n 2 = MSAA 2x\n 3 = MSAA 4x\n 4 = MSAA 8x\n", 0, ANTI_ALIASING_MSAA_8X );
 // RB end
 idCVar r_vidMode( "r_vidMode", "0", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_INTEGER, "fullscreen video mode number" );
-idCVar r_displayRefresh( "r_displayRefresh", "0", CVAR_RENDERER | CVAR_INTEGER | CVAR_NOCHEAT, "optional display refresh rate option for vid mode", 0.0f, 240.0f );
+//idCVar r_displayRefresh( "r_displayRefresh", "60", CVAR_RENDERER | CVAR_INTEGER | CVAR_NOCHEAT | CVAR_ARCHIVE, "optional display refresh rate option for vid mode", 0.0f, 240.0f );
 #ifdef WIN32
 idCVar r_fullscreen( "r_fullscreen", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "0 = windowed, 1 = full screen on monitor 1, 2 = full screen on monitor 2, etc" );
 #else
@@ -368,7 +368,7 @@ void R_SetNewMode( const bool fullInit )
 				// try forcing a specific mode, even if it isn't on the list
 				parms.width = r_customWidth.GetInteger();
 				parms.height = r_customHeight.GetInteger();
-				parms.displayHz = r_displayRefresh.GetInteger();
+				parms.displayHz = com_engineHz.GetInteger();//r_displayRefresh.GetInteger();
 			/*}
 			else
 			{
@@ -429,6 +429,8 @@ void R_SetNewMode( const bool fullInit )
 				cvarSystem->SetCVarInteger("r_customWidth", 1280);
 				cvarSystem->SetCVarInteger("r_customHeight", 720);
 				donethat = true;
+				stereoRender_enable.SetInteger(0);
+				continue;
 			}
 		}
 		else
@@ -457,7 +459,7 @@ safeMode:
 		// and try again
 		r_vidMode.SetInteger( 0 );
 		r_fullscreen.SetInteger( 1 );
-		r_displayRefresh.SetInteger( 0 );
+		com_engineHz.SetInteger( 60 );
 		r_antiAliasing.SetInteger( 0 );
 	}
 }

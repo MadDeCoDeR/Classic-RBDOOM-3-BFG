@@ -242,9 +242,10 @@ menu_t  temp_OptionsDef = {
 		0
 };
 memcpy( &::g->OptionsDef, &temp_OptionsDef, sizeof(temp_OptionsDef) );
-menuitem_t temp_VideoMenu[5] = {
+menuitem_t temp_VideoMenu[6] = {
 	{1,"M_GDHIGH",	M_FullScreen,'f'},
 	{1,"M_RES", M_Resolution, 'r'},
+	{1, "M_REF", M_Refresh, 'd'},
 	{1,"M_FPS", M_Framerate,'p'},
 	{1,"M_ASP", M_Aspect,'m'},//GK: Allow the player to switch aspect ratio
 	{1,"M_LGT", M_Light,'l'}//GK: Allow the player to switch lighting mode

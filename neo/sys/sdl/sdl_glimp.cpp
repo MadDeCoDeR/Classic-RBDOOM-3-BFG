@@ -683,6 +683,9 @@ bool R_GetModeListForDisplay( const int requestedDisplayNum, idList<vidMode_t>& 
 				common->Warning( "Can't get video mode no %i, because of %s\n", i, SDL_GetError() );
 				continue;
 			}
+			if (m.h < 720) {
+				continue;
+			}
 			
 			vidMode_t mode;
 			mode.width = m.w;
@@ -768,6 +771,137 @@ bool R_GetModeListForDisplay( const int requestedDisplayNum, idList<vidMode_t>& 
 		return true;
 	}
 	
+	return false;
+#endif
+}
+
+class idSort_int : public idSort_Quick< int, idSort_int >
+{
+public:
+	int Compare(const int a, const int b) const
+	{
+		int diff = a - b;
+		return diff;
+	}
+};
+
+/*
+====================
+R_GetModeListForDisplay
+====================
+*/
+bool R_GetRefreshListForDisplay(const int requestedDisplayNum, idList<int>& refreshList)
+{
+	assert(requestedDisplayNum >= 0);
+
+	refreshList.Clear();
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	// DG: SDL2 implementation
+	if (requestedDisplayNum >= SDL_GetNumVideoDisplays())
+	{
+		// requested invalid displaynum
+		return false;
+	}
+
+	int numModes = SDL_GetNumDisplayModes(requestedDisplayNum);
+	if (numModes > 0)
+	{
+		for (int i = 0; i < numModes; i++)
+		{
+			SDL_DisplayMode m;
+			int ret = SDL_GetDisplayMode(requestedDisplayNum, i, &m);
+			if (ret != 0)
+			{
+				common->Warning("Can't get video mode no %i, because of %s\n", i, SDL_GetError());
+				continue;
+			}
+			if (refreshList.Find(m.refresh_rate) != NULL) {
+				continue;
+			}
+			if (m.h < 720) {
+				continue;
+			}
+
+			refreshList.AddUnique(m.refresh_rate);
+		}
+
+		if (refreshList.Num() < 1)
+		{
+			common->Warning("Couldn't get a single video mode for display %i, using default ones..!\n", requestedDisplayNum);
+			return false;
+		}
+
+		// sort with lowest resolution first
+		refreshList.SortWithTemplate(idSort_int());
+	}
+	else
+	{
+		common->Warning("Can't get Video Info, using default modes...\n");
+		if (numModes < 0)
+		{
+			common->Warning("Reason was: %s\n", SDL_GetError());
+		}
+		return false;
+	}
+
+	return true;
+	// DG end
+
+#else // SDL 1
+
+	// DG: SDL1 only knows of one display - some functions rely on
+	// R_GetModeListForDisplay() returning false for invalid displaynum to iterate all displays
+	//if (requestedDisplayNum >= 1)
+	//{
+	//	return false;
+	//}
+	//// DG end
+
+	//const SDL_VideoInfo* videoInfo = SDL_GetVideoInfo();
+	//if (videoInfo == NULL)
+	//{
+	//	// DG: yes, this can actually fail, e.g. if SDL_Init( SDL_INIT_VIDEO ) wasn't called
+	//	common->Warning("Can't get Video Info, using default modes...\n");
+	//	//FillStaticVidModes(modeList);
+	//	return false;
+	//}
+
+	//SDL_Rect** modes = SDL_ListModes(videoInfo->vfmt, SDL_OPENGL | SDL_FULLSCREEN);
+
+	//if (!modes)
+	//{
+	//	common->Warning("Can't get list of available modes, using default ones...\n");
+	//	//FillStaticVidModes(modeList);
+	//	return false;
+	//}
+
+	//if (modes == (SDL_Rect**)-1)
+	//{
+	//	common->Printf("Display supports any resolution\n");
+	//	//FillStaticVidModes(modeList);
+	//	return false;
+	//}
+
+	//int numModes;
+	//for (numModes = 0; modes[numModes]; numModes++);
+
+	//if (numModes > 1)
+	//{
+	//	for (int i = 0; i < numModes; i++)
+	//	{
+	//		vidMode_t mode;
+	//		mode.width = modes[i]->w;
+	//		mode.height = modes[i]->h;
+	//		mode.displayHz = 60; // FIXME;
+	//		modeList.AddUnique(mode);
+	//	}
+
+	//	// sort with lowest resolution first
+	//	modeList.SortWithTemplate(idSort_VidMode());
+
+	//	return true;
+	//}
+
 	return false;
 #endif
 }

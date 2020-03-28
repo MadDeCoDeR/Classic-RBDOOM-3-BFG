@@ -40,6 +40,8 @@ extern idCVar r_exposure; // RB: use this to control HDR exposure or brightness 
 extern idCVar r_lightScale;
 //extern idCVar r_aspectratio; //GK: use forced aspect ratio
 
+idList<int> refreshList;
+
 /*
 ========================
 idMenuScreen_Shell_SystemOptions::Initialize
@@ -514,9 +516,14 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 	//GK: End
 		case SYSTEM_FIELD_FRAMERATE:
 		{
-			static const int numValues = 2;
-			static const int values[numValues] = { 60, 120 };
-			com_engineHz.SetInteger( AdjustOption( com_engineHz.GetInteger(), values, numValues, adjustAmount ) );
+			if (R_GetRefreshListForDisplay(0, refreshList)) {
+				com_engineHz.SetInteger(AdjustOption(com_engineHz.GetInteger(), refreshList.Ptr(), refreshList.Num(), adjustAmount));
+			}
+			else {
+				static const int numValues = 2;
+				static const int values[numValues] = { 60, 120 };
+				com_engineHz.SetInteger(AdjustOption(com_engineHz.GetInteger(), values, numValues, adjustAmount));
+			}
 			break;
 		}
 		case SYSTEM_FIELD_VSYNC:

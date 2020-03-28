@@ -297,7 +297,9 @@ bool idMenuScreen_Shell_Resolution::HandleAction( idWidgetAction& action, const 
 					r_vidMode.SetInteger( currentOption.vidmode );
 					r_customWidth.SetInteger(displays[0][currentOption.vidmode].width);
 					r_customHeight.SetInteger(displays[0][currentOption.vidmode].height);
-					r_displayRefresh.SetInteger(displays[0][currentOption.vidmode].displayHz);
+					if (displays[0][currentOption.vidmode].displayHz != 60) {
+						com_engineHz.SetInteger(displays[0][currentOption.vidmode].displayHz);
+					}
 					cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 					cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
 					

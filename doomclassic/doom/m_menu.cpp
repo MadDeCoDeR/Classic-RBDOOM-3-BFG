@@ -100,6 +100,7 @@ extern idCVar cl_showStats;
 extern idCVar cl_cursor;
 extern idCVar r_clblurry;
 extern idCVar cl_engineHz_interp;
+extern idCVar cl_engineHz;
 //
 // defaulted values
 //
@@ -192,6 +193,7 @@ void M_Aspect(int choice);
 void M_Light(int choice);
 void M_Resolution(int choice);
 void M_SetRes(int choice);
+void M_Refresh(int choice);
 void M_Framerate(int choice);
 void M_Blurry(int choice);
 void M_ChangeSensitivity(int choice);
@@ -275,6 +277,8 @@ menu_t extradef = {
 idCVar doomit("doomit","0",CVAR_GAME|CVAR_ARCHIVE|CVAR_NOCHEAT|CVAR_INTEGER|CVAR_ROM,"0 = no DOOM-IT, 1 = DOOM-IT");
 int state = 0;
 idList<vidMode_t>			modeList;
+idList<int>			classicRefreshList;
+int refreshIndex = 0;
 int modeSize = 0;
 bool nextpage = 0;
 //
@@ -1092,21 +1096,25 @@ void M_DrawVideo(void)
 	int blurryeffect = r_clblurry.GetInteger();
 	char* res = new char[11];
 	sprintf(res, "%4i x %4i", r_customWidth.GetInteger(), r_customHeight.GetInteger());
-	std::string fps = va("%d FPS", com_engineHz.GetInteger() > 60 ? 40 : 35);
+	std::string fps = va("%d FPS", cl_engineHz.GetInteger());
 	if (cl_engineHz_interp.GetBool()) {
 		fps += "I";
 	}
+	std::string refreshString = va("%d Hz", com_engineHz.GetInteger());
 
 	V_DrawPatchDirect(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * endgame, 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[fullscreenOnOff], PU_CACHE_SHARED), W_GetNumForName(msgNames[fullscreenOnOff])));
-	V_DrawPatchDirect(::g->VideoDef.x + asoffset, ::g->VideoDef.y + LINEHEIGHT * (detail), 0,
+	V_DrawPatchDirect(::g->VideoDef.x + asoffset, ::g->VideoDef.y + LINEHEIGHT * (detail - (cl_engineHz_interp.GetBool() ? 0 : 1)), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])));
-	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light), 0,
+	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light - (cl_engineHz_interp.GetBool() ? 0 : 1)), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])));
 	//V_DrawPatchDirect(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (blurry), 0,
 	//	/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[blurryeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[blurryeffect])));
 	M_WriteText(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * (resolution) + 6, res);
-	M_WriteText(::g->VideoDef.x + 133, ::g->VideoDef.y + LINEHEIGHT * (framerate) + 6, fps.c_str());
+	M_WriteText(::g->VideoDef.x + 133, ::g->VideoDef.y + LINEHEIGHT * (framerate - (cl_engineHz_interp.GetBool() ? 0 : 1)) + 6, fps.c_str());
+	if (cl_engineHz_interp.GetBool()) {
+		M_WriteText(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (refresh)+6, refreshString.c_str());
+	}
 }
 
 void M_Video(int choice)
@@ -1674,16 +1682,36 @@ void M_SetRes(int choice) {
 	r_vidMode.SetInteger(choice);
 	r_customWidth.SetInteger(modeList[choice].width);
 	r_customHeight.SetInteger(modeList[choice].height);
+	if (modeList[choice].displayHz != 60) {
+		com_engineHz.SetInteger(modeList[choice].displayHz);
+	}
 	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 	M_SetupNextMenu(::g->currentMenu->prevMenu);
 }
 
 void M_Framerate(int choice) {
-	int oldHz = com_engineHz.GetInteger();
-	com_engineHz.SetInteger(com_engineHz.GetInteger() > 60 ? 60 : 120);
-	if (oldHz > 60) {
+	int oldHz = cl_engineHz.GetInteger();
+	cl_engineHz.SetInteger(oldHz == 40 ? 35 : 40);
+	if (oldHz > 35) {
 		cl_engineHz_interp.SetBool(!cl_engineHz_interp.GetBool());
 	}
+
+	hardreset = true;
+}
+
+void M_Refresh(int choice) {
+	if (!R_GetRefreshListForDisplay(r_fullscreen.GetInteger() > 1 ? r_fullscreen.GetInteger() - 1 : 0, classicRefreshList)) {
+		classicRefreshList.Clear();
+		classicRefreshList.AddUnique(60);
+		classicRefreshList.AddUnique(120);
+	}
+	if (refreshIndex == classicRefreshList.Num() - 1) {
+		refreshIndex = 0;
+	}
+	else {
+		refreshIndex++;
+	}
+	com_engineHz.SetInteger(classicRefreshList[refreshIndex]);
 
 	hardreset = true;
 }
@@ -2736,12 +2764,16 @@ qboolean M_Responder (event_t* ev)
 			if (::g->itemOn + 1 > ::g->currentMenu->numitems - 1) {
 				::g->itemOn = 0;
 			} else
+				
 				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn + 1 >= modeSize) {
 					::g->itemOn = 0;
 				}
 				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && !aspect && ::g->itemOn + 1 >= 11) {
 					::g->itemOn = 0;
 			}
+				else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == resolution) {
+					::g->itemOn = framerate;
+				}
 			else ::g->itemOn++;
 			S_StartSound(NULL,sfx_pstop);
 		} while(::g->currentMenu->menuitems[::g->itemOn].status==-1);
@@ -2756,6 +2788,8 @@ qboolean M_Responder (event_t* ev)
 				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && !aspect)
 					::g->itemOn = 10;
 				else ::g->itemOn = ::g->currentMenu->numitems-1;
+			else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == framerate)
+				::g->itemOn = resolution;
 			else ::g->itemOn--;
 			S_StartSound(NULL,sfx_pstop);
 		} while(::g->currentMenu->menuitems[::g->itemOn].status==-1);
@@ -2934,6 +2968,9 @@ void M_Drawer (void)
 
 	for (i=0;i<max;i++)
 	{
+		if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && i == refresh) {
+			 continue;
+		}
 		if (::g->currentMenu->menuitems[i].name[0])
 			V_DrawPatchDirect (::g->md_x,::g->md_y,0,
 				/*(patch_t*)*/img2lmp(W_CacheLumpName(::g->currentMenu->menuitems[i].name ,PU_CACHE_SHARED), W_GetNumForName(::g->currentMenu->menuitems[i].name)));
@@ -2950,6 +2987,9 @@ void M_Drawer (void)
 		int lineoffs = ::g->itemOn*LINEHEIGHT;
 		if (::g->currentMenu == &::g->OptionsDef && ::g->itemOn > messages) {
 			lineoffs += (optoffs*LINEHEIGHT);
+		}
+		if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn > refresh) {
+			lineoffs = (::g->itemOn - 1) * LINEHEIGHT;
 		}
 		if ((::g->currentMenu->menuitems == ::g->ResDef.menuitems || ::g->currentMenu->menuitems == ::g->KeyDef.menuitems) && ::g->itemOn >= 10) {
 			lineoffs = LINEHEIGHT * (::g->itemOn - 10);

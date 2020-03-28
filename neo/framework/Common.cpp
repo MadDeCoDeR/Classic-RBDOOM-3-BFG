@@ -103,6 +103,7 @@ idCVar com_pausePlatform("com_pausePlatform", "0", CVAR_BOOL | CVAR_SYSTEM | CVA
 //extern idCVar g_demoMode; //GK: get it from game object
 
 idCVar com_engineHz( "com_engineHz", "60", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the engine runs at", 10.0f, 1024.0f );
+idCVar cl_engineHz("cl_engineHz", "35", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the classic engine runs at", 35.0f, 40.0f);
 idCVar cl_engineHz_interp("cl_engineHz_interp", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable Classic Doom Engine Iterpolation");
 float com_engineHz_latched = 60.0f; // Latched version of cvar, updated between map loads
 int64 com_engineHz_numerator = 100LL * 1000LL;
@@ -2202,16 +2203,18 @@ void idCommonLocal::PerformGameSwitch()
 		session->UpdateSignInManager();
 		session->GetSignInManager().RegisterLocalUser( 0 );
 		//GK:Re-stabilize the framerate on classic DOOM
-		int Hzstab = com_engineHz.GetFloat() / 60;
-		if (Hzstab == 1) {
-			com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? 60LL : DOOM_CLASSIC_HZ); //If we using 60FPS option run on defeault framerate
-			com_engineHz_latched = DOOM_CLASSIC_HZ;
-		}
-		else
-		{
-			com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? 60LL : (DOOM_CLASSIC_HZ+5)) ; //If we using 120FPS option run on 40 FPS (above 40FPS are too fast for classic DOOM)
-			com_engineHz_latched = (DOOM_CLASSIC_HZ + 5);
-		}
+		//int Hzstab = com_engineHz.GetFloat() / 60;
+		//if (Hzstab == 1) {
+		//	com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? r_displayRefresh.GetInteger() : DOOM_CLASSIC_HZ); //If we using 60FPS option run on defeault framerate
+		//	com_engineHz_latched = DOOM_CLASSIC_HZ;
+		//}
+		//else
+		//{
+		//	com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? r_displayRefresh.GetInteger() : (DOOM_CLASSIC_HZ+5)) ; //If we using 120FPS option run on 40 FPS (above 40FPS are too fast for classic DOOM)
+		//	com_engineHz_latched = (DOOM_CLASSIC_HZ + 5);
+		//}
+		com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? com_engineHz.GetInteger() : cl_engineHz.GetInteger());
+		com_engineHz_latched = cl_engineHz.GetInteger();
 		//GK: End
 		DoomLib::SetCurrentExpansion( idealCurrentGame );
 		

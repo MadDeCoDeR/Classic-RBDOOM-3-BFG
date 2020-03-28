@@ -588,14 +588,18 @@ void FindResponseFile (void)
 void CalculateInterpolation() {
 	int engineHz_denominator = com_engineHz_denominator / 100LL;
 	if (engineHz_denominator > com_engineHz_latched) {
-		int firstclassicrate = engineHz_denominator;
+		double firstclassicrate = engineHz_denominator;
 		while (firstclassicrate > com_engineHz_latched) {
 			firstclassicrate = firstclassicrate / 2;
 		}
-		::g->firstticrate = engineHz_denominator / firstclassicrate;
+		::g->firstticrate = floor(engineHz_denominator / firstclassicrate);
 
-		int secondclassicrate = com_engineHz_latched - firstclassicrate;
-		::g->secondticrate = engineHz_denominator / secondclassicrate;
+		I_Printf("First Tic rate: %d\n", ::g->firstticrate);
+
+		double secondclassicrate = com_engineHz_latched - firstclassicrate;
+		::g->secondticrate = ceil(engineHz_denominator / secondclassicrate);
+
+		I_Printf("Second Tic rate: %d\n", ::g->secondticrate);
 	}
 }
 //GK: End
