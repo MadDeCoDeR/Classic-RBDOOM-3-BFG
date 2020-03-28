@@ -516,7 +516,7 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 	//GK: End
 		case SYSTEM_FIELD_FRAMERATE:
 		{
-			if (R_GetRefreshListForDisplay(0, refreshList)) {
+			if (R_GetRefreshListForDisplay(r_fullscreen.GetInteger() > 0 ? r_fullscreen.GetInteger() - 1 : 0, refreshList)) {
 				com_engineHz.SetInteger(AdjustOption(com_engineHz.GetInteger(), refreshList.Ptr(), refreshList.Num(), adjustAmount));
 			}
 			else {
