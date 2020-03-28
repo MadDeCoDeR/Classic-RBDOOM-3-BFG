@@ -1132,6 +1132,28 @@ void D_DoomMain(void)
 	if (::g->gamemode == commercial && !initonce) {
 		initonce =true;
 	}
+
+	switch (::g->gamemission) {
+	case doom:
+		::g->acronymPrefix = "UD";
+		break;
+	case doom2:
+		::g->acronymPrefix = "D2";
+		break;
+	case pack_nerve:
+		::g->acronymPrefix = "D2:NERVE";
+		break;
+	case pack_tnt:
+		::g->acronymPrefix = "FD:TNT";
+		break;
+	case pack_plut:
+		::g->acronymPrefix = "FD:PLUT";
+		break;
+	case pack_master:
+		::g->acronymPrefix = "D2:MASTER";
+		break;
+
+	}
 }
 
 bool D_DoomMainPoll(void)
@@ -1192,6 +1214,7 @@ bool D_DoomMainPoll(void)
 		if (::g->autostart || ::g->netgame ) {
 			G_InitNew (::g->startskill, ::g->startepisode, ::g->startmap );
 		} else if(  ::g->gameaction != ga_newgame) {
+			::op->SetAdditionalInfo("status", va("%s:Title Menu",::g->acronymPrefix));
 			D_StartTitle ();                // start up intro loop
 		}
 	}

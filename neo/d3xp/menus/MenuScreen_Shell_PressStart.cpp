@@ -151,7 +151,7 @@ idMenuScreen_Shell_PressStart::ShowScreen
 */
 void idMenuScreen_Shell_PressStart::ShowScreen( const mainMenuTransition_t transitionType )
 {
-
+	::op->SetAdditionalInfo("status", "Game Selection Menu");
 	idSWFScriptObject& root = GetSWFObject()->GetRootObject();
 	if( BindSprite( root ) )
 	{

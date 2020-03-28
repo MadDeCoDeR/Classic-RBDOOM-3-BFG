@@ -44,6 +44,8 @@ public:
 	virtual bool isPlatformOverlayActive();
 	virtual void SetNotificationsPosition(unsigned int x, unsigned int y);
 	virtual unsigned long long CreateLobby(int type, int maxplayers);
+	virtual bool GetCloudStats(unsigned long long* totalBytes, unsigned long long* availableBytes);
+	virtual bool SetAdditionalInfo(const char* key, const char* value);
 };
 
 OPlatformLocal opl;
@@ -83,3 +85,12 @@ void OPlatformLocal::ShowUser( unsigned int id) {}
 bool OPlatformLocal::isPlatformOverlayActive() { return false; }
 void OPlatformLocal::SetNotificationsPosition(unsigned int x, unsigned int y) {}
 unsigned long long OPlatformLocal::CreateLobby(int type, int maxplayers) { return 0; }
+bool OPlatformLocal::GetCloudStats(unsigned long long* totalBytes, unsigned long long* availableBytes)
+{
+	return false;
+}
+
+bool OPlatformLocal::SetAdditionalInfo(const char* key, const char* value)
+{
+	return false;
+}

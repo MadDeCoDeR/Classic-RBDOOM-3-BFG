@@ -632,7 +632,7 @@ void HU_Start(void)
 			s = ::g->maps[::g->map - 1].realname;
 		}
 	}
-
+	::op->SetAdditionalInfo("status", va("%s:%s", ::g->acronymPrefix, s));
 	while (*s)
 		HUlib_addCharToTextLine(&::g->w_title, *(s++));
 

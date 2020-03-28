@@ -1073,6 +1073,8 @@ int secondticrate;
 int lastfirsttic;
 int lastsecondtic;
 
+const char* acronymPrefix;
+
 // phares 3/21/98
 //
 // Maintain a freelist of msecnode_t's to reduce memory allocs and frees.

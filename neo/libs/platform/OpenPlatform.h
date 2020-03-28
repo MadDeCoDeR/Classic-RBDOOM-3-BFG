@@ -40,6 +40,8 @@ public:
 	virtual bool isPlatformOverlayActive() = 0;
 	virtual void SetNotificationsPosition(unsigned int x, unsigned int y) = 0;
 	virtual unsigned long long CreateLobby(int type, int maxplayers) = 0;
+	virtual bool GetCloudStats(unsigned long long* totalBytes, unsigned long long* availableBytes) = 0;
+	virtual bool SetAdditionalInfo(const char* key, const char* value) = 0;
 };
 
 extern OPlatform* op;

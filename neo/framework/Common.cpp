@@ -2230,6 +2230,7 @@ void idCommonLocal::PerformGameSwitch()
 		// directly to the lobby.
 		if( session->GetState() <= idSession::IDLE )
 		{
+			::op->SetAdditionalInfo("status", "Game Selection Menu");
 			session->MoveToPressStart();
 		}
 		

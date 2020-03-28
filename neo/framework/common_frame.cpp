@@ -170,6 +170,8 @@ int idGameThread::Run()
 	SetThreadRenderTime( ( commonLocal.frameTiming.finishDrawTime - commonLocal.frameTiming.finishGameTime ) / 1000 );
 	
 	SetThreadTotalTime( ( commonLocal.frameTiming.finishDrawTime - commonLocal.frameTiming.startGameTime ) / 1000 );
+
+	//::op->SetAdditionalInfo("connect", "%status%|''");
 	
 	return 0;
 }
