@@ -867,14 +867,14 @@ void R_SetupThirdPersonView(player_t* player) {
 	//trueangle = (int)trueangle;
 	trueangle *= PI / 180;
 	//This static values are making the cvars to have some actual impact while calculating the offsets
-	fixed_t xposoffset = ((game->GetCVarFloat("pm_thirdPersonRange") * 40000)*cos(trueangle)) + ((game->GetCVarFloat("pm_thirdPersonXOff") * 80000)*sin(trueangle));
-	fixed_t yposoffset = ((game->GetCVarFloat("pm_thirdPersonRange") * 40000)*sin(trueangle)) - ((game->GetCVarFloat("pm_thirdPersonXOff") * 80000)*cos(trueangle));
+	fixed_t xposoffset = ((game->GetCVarFloat("pm_thirdPersonRange") * 60000)*cos(trueangle)) + ((game->GetCVarFloat("pm_thirdPersonXOff") * 60000)*sin(trueangle));
+	fixed_t yposoffset = ((game->GetCVarFloat("pm_thirdPersonRange") * 60000)*sin(trueangle)) - ((game->GetCVarFloat("pm_thirdPersonXOff") * 60000)*cos(trueangle));
 	SetViewX(player->mo->x - xposoffset);
 	SetViewY(player->mo->y - yposoffset);
 	
 	SetViewAngle( (pangle- tpviewangle) + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
 	int ogwidth = ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER;
-	int viewzoffset = ((::g->SCREENWIDTH - ogwidth) * 1000) + (game->GetCVarFloat("pm_thirdPersonHeight") * 100000);
+	int viewzoffset = ((::g->SCREENWIDTH - ogwidth) * 1000) + (game->GetCVarFloat("pm_thirdPersonHeight") * 80000);
 	::g->viewz = player->viewz + viewzoffset;
 }
 //GK: End
@@ -889,7 +889,7 @@ void R_SetupFrame (player_t* player)
 	int mousepos;
 
 	::g->viewplayer = player;
-	//GK: Either thirdPerson Camera or ForstPerson
+	//GK: Either thirdPerson Camera or FirstPerson
 	if (game->GetCVarBool("pm_thirdPerson")) {
 		R_SetupThirdPersonView(player);
 	}
