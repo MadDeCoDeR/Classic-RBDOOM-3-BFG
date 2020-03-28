@@ -1570,6 +1570,7 @@ idPlayer::idPlayer():
 	weapon_bloodstone_active2 = -1;
 	weapon_bloodstone_active3 = -1;
 	harvest_lock			= false;
+	circleWeaponPacifier	= 0;
 	
 	hudPowerup				= -1;
 	lastHudPowerup			= -1;
@@ -1777,6 +1778,7 @@ void idPlayer::Init()
 	weapon_bloodstone_active2 = SlotForWeapon( "weapon_bloodstone_active2" );
 	weapon_bloodstone_active3 = SlotForWeapon( "weapon_bloodstone_active3" );
 	harvest_lock			= false;
+	circleWeaponPacifier	= 0;
 	
 	lastDmgTime				= 0;
 	lastArmorPulse			= -10000;
@@ -1848,6 +1850,7 @@ void idPlayer::Init()
 	currentWeapon = -1;
 	previousWeapon = -1;
 	tweap = -1;
+	circleWeaponPacifier = 0;
 	
 	heartRate = BASE_HEARTRATE;
 	AdjustHeartRate( BASE_HEARTRATE, 0.0f, 0.0f, true );
@@ -7596,6 +7599,7 @@ void idPlayer::Spectate( bool spectate, bool force )
 	{
 		// put everything back together again
 		currentWeapon = -1;	// to make sure the def will be loaded if necessary
+		tweap = -1;
 		Show();
 		Event_EnableWeapon();
 		idLib::Printf( "DMP _ GENERAL :> Player %d Not Spectating \n", entityNumber );
@@ -12166,6 +12170,7 @@ void idPlayer::ReadFromSnapshot( const idBitMsg& msg )
 			weapon.GetEntity()->SetOwner( this );
 		}
 		currentWeapon = -1;
+		tweap = -1;
 	}
 	
 	if( flashlight.SetSpawnId( flashlightSpawnId ) )
