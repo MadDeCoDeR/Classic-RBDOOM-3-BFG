@@ -490,7 +490,7 @@ menu_t  temp_CtlDef = {
 };
 memcpy(&::g->CtlDef, &temp_CtlDef, sizeof(temp_CtlDef));
 
-menuitem_t temp_KeyMenu[20] = {
+menuitem_t temp_KeyMenu[30] = {
 	{ 1,"", M_ChangeKeys,'1' },
 { 1,"", M_ChangeKeys,'2' },
 { 1,"", M_ChangeKeys,'3' },
@@ -510,7 +510,17 @@ menuitem_t temp_KeyMenu[20] = {
 { 1,"", M_ChangeKeys,'g' },
 { 1,"", M_ChangeKeys,'h' },
 { 1,"", M_ChangeKeys,'i' },
-{ 1,"", M_ChangeKeys,'j' }
+{ 1,"", M_ChangeKeys,'j' },
+{ 1,"", M_ChangeKeys,'h' },
+{ 1,"", M_ChangeKeys,'i' },
+{ 1,"", M_ChangeKeys,'k' },
+{ 1,"", M_ChangeKeys,'l' },
+{ 1,"", M_ChangeKeys,'m' },
+{ 1,"", M_ChangeKeys,'n' },
+{ 1,"", M_ChangeKeys,'o' },
+{ 1,"", M_ChangeKeys,'p' },
+{ 1,"", M_ChangeKeys,'q' },
+{ 1,"", M_ChangeKeys,'r' }
 
 };
 memcpy(::g->KeyMenu, temp_KeyMenu, sizeof(temp_KeyMenu));

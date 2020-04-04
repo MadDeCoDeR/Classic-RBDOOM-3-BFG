@@ -280,7 +280,7 @@ idList<vidMode_t>			modeList;
 idList<int>			classicRefreshList;
 int refreshIndex = 0;
 int modeSize = 0;
-bool nextpage = 0;
+int pageIndex = 0;
 //
 // DOOM MENU
 //
@@ -363,6 +363,18 @@ static bindInfo_t keyboardBinds[] =
 	{ "Weap 5",	"_impulse6"							},	// CHAINGUN
 	{ "Weap 6",	"_impulse7"							},	// GRENADES
 	{ "Weap 7",	"_impulse8"							},	// PLASMA GUN
+
+	{ "Help Screen",	"help"							},	// NEXT WEAPON
+	{ "Save Game",	"savegame"						},	// USE
+	{ "Load Game",	"loadgame"							},	// PDA / SCOREBOARD
+	{ "Sound Settings",	"soundsetting"							},	// FISTS / GRABBER
+	{ "Real Light",	"rlight"							},	// PISTOL
+	{ "Quick Save",	"savegame quick"							},	// SHOTGUN / DOUBLE
+	{ "End Game",	"endgame"							},	// MACHINEGUN
+	{ "Messages",	"messages"							},	// CHAINGUN
+	{ "Quick Load",	"loadgame quick"							},	// GRENADES
+	{ "Exit Game",	"exitgame"							},	// PLASMA GUN
+	{ "Gamma Correction",	"gamma"							},	// PLASMA GUN
 };
 
 static const int numBinds = sizeof(keyboardBinds) / sizeof(keyboardBinds[0]);
@@ -1744,15 +1756,28 @@ void M_DrawCtl(void)
 	//	9,::g->screenSize);
 }
 
+const char* M_GetPageText(int i) {
+	switch (pageIndex) {
+	case 0:
+		return "next page";
+	case 1:
+		return i == 10 ? "next page" : "prev page";
+	case 2:
+		return "prev page";
+	}
+	return "";
+}
+
 void M_DrawKey(void) {
 	V_DrawPatchDirect(108, 10, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_KEY", PU_CACHE_SHARED), W_GetNumForName("M_KEY")));
 	int bindStart = 0;
-	int bindEnd = numBinds;
+	int bindEnd = 0;
 	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
-	if (!aspect && nextpage) {
-		bindStart = 10;
-		bindEnd = bindEnd + 1;
-	}
+	bindStart = pageIndex * 10;
+	int endOffs = bindStart == 0 ? 1 : 2;
+	I_Printf("%d\n", endOffs);
+	bindEnd = (bindStart + 10) + endOffs;
+	I_Printf("%d\n", bindEnd);
 	for (int i = bindStart; i < bindEnd; i++) {
 		std::string res;
 		if (i < numBinds) {
@@ -1844,7 +1869,7 @@ void M_DrawKey(void) {
 			bindings.ToUpper();
 			res = va("%s - %s", keyboardBinds[i].display, bindings.c_str());
 		}
-		if (aspect) {
+		/*if (aspect) {
 			if (i < 10) {
 				M_WriteAspectText(::g->KeyDef.x, ::g->KeyDef.y + LINEHEIGHT * i, res.c_str());
 			}
@@ -1852,14 +1877,13 @@ void M_DrawKey(void) {
 				M_WriteAspectText(::g->KeyDef.x + 220, ::g->KeyDef.y + LINEHEIGHT * (i - 10), res.c_str());
 			}
 		}
-		else
+		else*/
 		{
-			if ((!nextpage && i < 10) || (nextpage && i < numBinds)) {
-				M_WriteAspectText(::g->KeyDef.x, ::g->KeyDef.y + LINEHEIGHT * (nextpage ? i - 10 : i), res.c_str());
+			if ( (i < ((pageIndex + 1) * 10)) || (pageIndex == 2 && (i - bindStart) == 10)) {
+				M_WriteAspectText(::g->KeyDef.x + ((i - bindStart) < 10 ? 0 : (aspect ? 220 : 0)), ::g->KeyDef.y + LINEHEIGHT * ((i - bindStart) < 10 ? (i - bindStart) : (aspect ? ((i - bindStart) - 10) : (i - bindStart))), res.c_str());
 			}
 			else {
-				M_WriteAspectText(::g->KeyDef.x + 200, ::g->KeyDef.y + LINEHEIGHT * 0, !nextpage ? "next page" : "prev page");
-				break;
+				M_WriteAspectText(::g->KeyDef.x + (aspect ? 220 : 200), ::g->KeyDef.y + LINEHEIGHT * (pageIndex == 2 && !aspect ? ((i - bindStart) - 11) : ((i - bindStart) - 10)), M_GetPageText((i- bindStart)));
 			}
 		}
 	}
@@ -2044,19 +2068,31 @@ void M_Key(int choice)
 
 void M_ChangeKeys(int choice) {
 	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
-	if (!aspect && choice > 9) {
-		nextpage = !nextpage;
-		M_SetupNextMenu(&::g->KeyDef);
-		return;
+	if (choice == 10) {
+		if (pageIndex < 2) {
+			pageIndex++;
+			::g->itemOn = 0;
+			M_SetupNextMenu(&::g->KeyDef);
+			return;
+		}
+		
+	}
+	if (choice == 11) {
+		if (pageIndex > 0) {
+			pageIndex--;
+			::g->itemOn = 0;
+			M_SetupNextMenu(&::g->KeyDef);
+			return;
+		}
 	}
 	::g->captureBind = true;
-	if (!aspect) {
-		::g->bindIndex = !nextpage ? choice : choice + 10;
-	}
+	//if (!aspect) {
+		::g->bindIndex = choice + (pageIndex * 10);
+	/*}
 	else
 	{
 		::g->bindIndex = choice;
-	}
+	}*/
 	char* tempMsg = new char[128];
 	sprintf(tempMsg, KEYMSG, keyboardBinds[::g->bindIndex].display);
 	M_StartMessage(tempMsg, NULL, false);
@@ -2768,7 +2804,7 @@ qboolean M_Responder (event_t* ev)
 				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn + 1 >= modeSize) {
 					::g->itemOn = 0;
 				}
-				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && !aspect && ::g->itemOn + 1 >= 11) {
+				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && ::g->itemOn + 1 >= (pageIndex == 0 ? 11 : 12)) {
 					::g->itemOn = 0;
 			}
 				else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == resolution) {
@@ -2785,8 +2821,8 @@ qboolean M_Responder (event_t* ev)
 			if (!::g->itemOn)
 				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems)
 					::g->itemOn = modeSize - 1;
-				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && !aspect)
-					::g->itemOn = 10;
+				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems)
+					::g->itemOn = pageIndex == 0 ? 10 : 11;
 				else ::g->itemOn = ::g->currentMenu->numitems-1;
 			else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == framerate)
 				::g->itemOn = resolution;
@@ -2942,7 +2978,7 @@ void M_Drawer (void)
 
 	if (::g->currentMenu->routine)
 		::g->currentMenu->routine();         // call Draw routine
-
+	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
 	// DRAW MENU
 	::g->md_x = ::g->currentMenu->x;
 	::g->md_y = ::g->currentMenu->y;
@@ -2952,8 +2988,7 @@ void M_Drawer (void)
 	if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn >= 10) {
 		::g->md_x = ::g->currentMenu->x + 120;
 	}
-	if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && ::g->itemOn >= 10) {
-		int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+	if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && ::g->itemOn >= 10 ) {
 		if (!aspect) 
 		{
 			::g->md_x = ::g->currentMenu->x + 200;
@@ -2961,6 +2996,9 @@ void M_Drawer (void)
 		else 
 		{
 			::g->md_x = ::g->currentMenu->x + 165;
+		}
+		if (pageIndex == 2 && !aspect && ::g->itemOn == 10) {
+			::g->md_x = ::g->currentMenu->x;
 		}
 	}
 	max = ::g->currentMenu->numitems;
@@ -2993,6 +3031,15 @@ void M_Drawer (void)
 		}
 		if ((::g->currentMenu->menuitems == ::g->ResDef.menuitems || ::g->currentMenu->menuitems == ::g->KeyDef.menuitems) && ::g->itemOn >= 10) {
 			lineoffs = LINEHEIGHT * (::g->itemOn - 10);
+			if (pageIndex == 2 && !aspect ) {
+				if (::g->itemOn == 10) {
+					lineoffs = ::g->itemOn * LINEHEIGHT;
+				}
+				else if (::g->itemOn == 11) {
+					lineoffs = LINEHEIGHT * (::g->itemOn - 11);
+				}
+			}
+			
 		}
 		V_DrawPatchDirect(::g->md_x + SKULLXOFF, ::g->currentMenu->y - 5 + lineoffs, 0,
 			/*(patch_t*)*/img2lmp(W_CacheLumpName(skullName[::g->whichSkull], PU_CACHE_SHARED), W_GetNumForName(skullName[::g->whichSkull])));
@@ -3111,7 +3158,7 @@ void M_Remap(event_t* ev) {
 		M_StopMessage();
 		M_SetupNextMenu(&::g->KeyDef);
 	}
-	else if (ev->data1 != K_MINUS && ev->data1 != K_EQUALS && (ev->data1 < K_F1 || ev->data1 > K_F10) && ev->data1 != K_F11 && ev->data1 != K_F12 && (ev->data1 < K_JOY_STICK1_UP || ev->data1 > K_JOY_STICK2_RIGHT))
+	else if (ev->data1 != K_MINUS && ev->data1 != K_EQUALS && ev->data1 != K_F12 && (ev->data1 < K_JOY_STICK1_UP || ev->data1 > K_JOY_STICK2_RIGHT))
 	{
 		::g->captureBind = false;
 		if (idStr::Icmp(idKeyInput::GetBinding(ev->data1), "") == 0)  	// no existing binding found

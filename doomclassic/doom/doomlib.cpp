@@ -36,6 +36,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 #include <sys/types.h>
+#include <map>
 
 // Store master volume settings in archived cvars, becausue we want them to apply
 // even if a user isn't signed in.
@@ -123,6 +124,8 @@ namespace DoomLib
 	};
 
 	int classicRemap[K_LAST_KEY];
+
+	std::map<std::string, int> classicRemapMap;
 
 	const ExpansionData * GetCurrentExpansion() {
 		return &App_Expansion_Data_Local[ DoomLib::expansionSelected ];
@@ -300,18 +303,31 @@ void DoomLib::InitControlRemap() {
 	classicRemap[K_JOY_STICK1_RIGHT] = K_RIGHTARROW ;
 	classicRemap[K_JOY_DPAD_RIGHT] = K_RIGHTARROW ;	
 	classicRemap[K_JOY1] = K_ENTER;
-
+	classicRemapMap.insert(std::pair<std::string, int>("_impulse19", KEY_TAB));
+	classicRemapMap.insert(std::pair<std::string, int>("help", KEY_F1));
+	classicRemapMap.insert(std::pair<std::string, int>("savegame", KEY_F2));
+	classicRemapMap.insert(std::pair<std::string, int>("loadgame", KEY_F3));
+	classicRemapMap.insert(std::pair<std::string, int>("soundsetting", KEY_F4));
+	classicRemapMap.insert(std::pair<std::string, int>("rlight", KEY_F5));
+	classicRemapMap.insert(std::pair<std::string, int>("savegame quick", KEY_F6));
+	classicRemapMap.insert(std::pair<std::string, int>("endgame", KEY_F7));
+	classicRemapMap.insert(std::pair<std::string, int>("messages", KEY_F8));
+	classicRemapMap.insert(std::pair<std::string, int>("loadgame quick", KEY_F9));
+	classicRemapMap.insert(std::pair<std::string, int>("exitgame", KEY_F10));
+	classicRemapMap.insert(std::pair<std::string, int>("gamma", KEY_F11));
 
 }
 
 keyNum_t DoomLib::RemapControl( keyNum_t key ) {
 
-	if (!idStr::Icmp(idKeyInput::GetBinding(key), "_impulse19")) {
-		return K_TAB;
-	}
-
 	if( classicRemap[ key ] == K_NONE ) {
-		return key;
+		std::string s(idKeyInput::GetBinding(key));
+		if (classicRemapMap.find(s) != classicRemapMap.end()) {
+			return (keyNum_t)classicRemapMap[idKeyInput::GetBinding(key)];
+		}
+		else {
+			return key;
+		}
 	} else {
 
 		if( ::g->menuactive && key == K_JOY2 ) {

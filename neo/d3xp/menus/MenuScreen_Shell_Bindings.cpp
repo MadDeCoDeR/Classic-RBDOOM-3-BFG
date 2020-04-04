@@ -56,7 +56,7 @@ static bindInfo_t keyboardBinds[] =
 	{ "#str_swf_action_use",	"_use"						},	// USE
 	{ "#str_02116",	"_lookUp"								},	// LOOK UP
 	{ "#str_02117",	"_lookDown"								},	// LOOK DOWN
-    {"Zoom","_zoom"}, //GK: That simple
+    {"Zoom","_zoom"											}, //GK: That simple
 	{ "#str_02121",	"_impulse19"							},	// PDA / SCOREBOARD
 	
 	{ "#str_02093",			""								},	// HEADING

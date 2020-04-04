@@ -395,12 +395,18 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 //			oldImpulseSequence = curTech5Command.impulseSequence;
 
 			// weapon toggle
-			for (i=0 ; i<NUMWEAPONS-1 ; i++) 
+			for (i = UB_IMPULSE0 ; i < UB_IMPULSE10 ; i++) 
 			{   
-				if ( usercmdGen->KeyState( i + 1 ) ) 
+				if ( usercmdGen->ButtonState( i ) ) 
 				{ 
+					if (i >= UB_IMPULSE1) {
+						i = i - 1;
+					}
+					if (i >= UB_IMPULSE4) {
+						i = i - 1;
+					}
 					cmd->buttons |= BT_CHANGE; 
-					cmd->buttons |= (i - 1) <<BT_WEAPONSHIFT; 
+					cmd->buttons |= (i - UB_IMPULSE0) <<BT_WEAPONSHIFT; 
 					break; 
 				}
 			}
