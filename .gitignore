@@ -24,7 +24,6 @@ base/joy_lefty.cfg
 base/joy_righty.cfg
 base/maps/
 base/sound/
-base/strings/
 base/video/
 base/wads/*
 !base/wads/mlbls.wad

@@ -2048,7 +2048,7 @@ void idTarget_Checkpoint::Event_Activate( idEntity* activator )
 	if( g_checkpoints.GetBool() && !g_demoMode.GetBool() )
 	{
 		cmdSystem->AppendCommandText( "savegame autosave\n" );
-		game->GetLocalPlayer()->ShowTip("Auto Save", "Game Saved", true);
+		game->GetLocalPlayer()->ShowTip(idLocalization::GetString("#str_auto_save_title"), idLocalization::GetString("#str_auto_save_success"), true);
 	}
 }
 
