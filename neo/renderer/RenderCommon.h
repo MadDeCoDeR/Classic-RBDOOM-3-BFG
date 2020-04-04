@@ -1124,6 +1124,8 @@ bool R_GetModeListForDisplay( const int displayNum, idList<vidMode_t>& modeList 
 
 bool R_GetRefreshListForDisplay(const int displayNum, idList<int>& refreshList);
 
+bool R_GetScreenResolution(const int displayNum, int& w, int& h, int& hz);
+
 struct glimpParms_t
 {
 	int			x;				// ignored in fullscreen

@@ -1142,6 +1142,49 @@ bool R_GetRefreshListForDisplay(const int requestedDisplayNum, idList<int>& refr
 	// Never gets here
 }
 
+bool R_GetScreenResolution(const int requestedDisplayNum, int& w, int& h, int& hz) {
+	bool	verbose = false;
+
+	DWORD displayNum = requestedDisplayNum;
+	DISPLAY_DEVICE	device;
+	device.cb = sizeof(device);
+	while (EnumDisplayDevices(NULL, displayNum, &device, 0))
+	{
+		if (displayNum > requestedDisplayNum) {
+			break;
+		}
+		displayNum++;
+		// get the monitor for this display
+		if (!(device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP))
+		{
+			continue;
+		}
+
+		DISPLAY_DEVICE	monitor;
+		monitor.cb = sizeof(monitor);
+		if (!EnumDisplayDevices(
+			device.DeviceName,
+			0,
+			&monitor,
+			0))
+		{
+			continue;
+		}
+
+		DEVMODE	devmode;
+		devmode.dmSize = sizeof(devmode);
+		if (EnumDisplaySettings(device.DeviceName, ENUM_CURRENT_SETTINGS, &devmode))
+		{
+			w = devmode.dmPelsWidth;
+			h = devmode.dmPelsHeight;
+			hz = devmode.dmDisplayFrequency;
+			return true;
+		}
+
+	}
+	return false;
+}
+
 /*
 ====================
 GLW_GetWindowDimensions

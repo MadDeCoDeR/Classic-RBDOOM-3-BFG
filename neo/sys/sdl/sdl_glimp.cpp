@@ -906,6 +906,21 @@ bool R_GetRefreshListForDisplay(const int requestedDisplayNum, idList<int>& refr
 #endif
 }
 
+bool R_GetScreenResolution(const int displayNum, int& w, int& h, int& hz) {
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	SDL_DisplayMode current;
+	if (!SDL_GetCurrentDisplayMode(displayNum, &current)) {
+		w = current.w;
+		h = current.h;
+		hz = current.refresh_rate;
+		return true;
+	}
+	return false;
+#else
+	return false;
+#endif
+}
+
 /*
 ====================
 Sys_ChangeTitle
