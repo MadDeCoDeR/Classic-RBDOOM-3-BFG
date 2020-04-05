@@ -77,7 +77,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	idMenuWidget_ControlButton* control;
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "Soft Shadows" );
+	control->SetLabel( "#str_shadow_mapping" );
 	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPPING );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPPING);
@@ -85,7 +85,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_BAR);
-	control->SetLabel("Soft Shadows LOD");
+	control->SetLabel("#str_shadow_mapping_lod");
 	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPLOD);
 	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPLOD);
@@ -93,7 +93,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	//GK: Begin
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_TEXT);
-	control->SetLabel("HDR");
+	control->SetLabel("#str_hdr");
 	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_HDR);
 	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_HDR);
@@ -101,7 +101,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	//GK: End
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "Adaptive Tonemapping HDR" );
+	control->SetLabel( "#str_adaptive_hdr" );
 	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_ATHDR );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_ATHDR );
@@ -109,7 +109,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "SSAO" );
+	control->SetLabel( "#str_ssao" );
 	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SSAO );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SSAO );
@@ -117,34 +117,16 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "Filmic Post Proccess" );
+	control->SetLabel( "#str_filmic" );
 	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_FPPE );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_FPPE );
 	options->AddChild( control );
 	
-	// RB begin //GK: Some option had to be sacrificed and since it's available on the launcher and requires restart then it's the perfect candinate
-	/*control = new( TAG_SWF ) idMenuWidget_ControlButton();
-	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "Soft Shadows" );
-	control->SetDataSource( &systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_SHADOWMAPPING );
-	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_SHADOWMAPPING );
-	options->AddChild( control );*/
-	
-	/*control = new( TAG_SWF ) idMenuWidget_ControlButton();
-	control->SetOptionType( OPTION_SLIDER_BAR );
-	control->SetLabel( "#str_swf_lodbias" );
-	control->SetDataSource( &systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_LODBIAS );
-	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_LODBIAS );
-	options->AddChild( control );*/
-	// RB end
-	
 	if (!game->GetLocalPlayer()) {
 		control = new(TAG_SWF) idMenuWidget_ControlButton();
 		control->SetOptionType(OPTION_SLIDER_TEXT);
-		control->SetLabel("Flashlight mode");	// Volume
+		control->SetLabel("#str_flashlight");	// Flashlight
 		control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_FLASH);
 		control->SetupEvents(2, options->GetChildren().Num());
 		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_FLASH);
@@ -152,7 +134,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	}
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_BAR);
-	control->SetLabel("View Model Field of View");
+	control->SetLabel("#str_pm_fov");
 	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_VMFOV);
 	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_VMFOV);
@@ -201,7 +183,7 @@ void idMenuScreen_Shell_AdvancedOptions::Update()
 		idSWFTextInstance* heading = GetSprite()->GetScriptObject()->GetNestedText( "info", "txtHeading" );
 		if( heading != NULL )
 		{
-			heading->SetText( "ADVANCED OPTIONS" );	// FULLSCREEN
+			heading->SetText( "#str_advanced_heading" );	// ADVANCED
 			heading->SetStrokeInfo( true, 0.75f, 1.75f );
 		}
 		
@@ -547,11 +529,11 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 			switch (game->GetCVarInteger("flashlight_old"))
 			{
 			case 2:
-				return "BFG Mix";
+				return "#str_flashlight_bfg_mix";
 			case 1:
-				return "Original";
+				return "#str_flashlight_og";
 			case 0:
-				return "BFG";
+				return "#str_flashlight_bfg";
 			}
 		case ADV_FIELD_VMFOV:
 			return ReLinearAdjust(game->GetCVarInteger("pm_vmfov"), 0.0f, 64.0f, 0.0f, 100.0f);

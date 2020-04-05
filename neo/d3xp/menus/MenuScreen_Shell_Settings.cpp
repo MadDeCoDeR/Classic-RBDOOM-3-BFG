@@ -76,7 +76,7 @@ void idMenuScreen_Shell_Settings::Initialize( idMenuHandler* data )
 		menuOptions.Append( option );
 		option.Clear();
 	}
-	option.Append("Advanced Options");	// advanced
+	option.Append("#str_swf_advanced");	// advanced
 	menuOptions.Append(option);
 
 	options->SetListData( menuOptions );
@@ -89,7 +89,7 @@ void idMenuScreen_Shell_Settings::Initialize( idMenuHandler* data )
 	helpWidget->SetSpritePath( GetSpritePath(), "info", "helpTooltip" );
 	AddChild( helpWidget );
 	
-	const char* tips[] = { "#str_02166", "#str_02168", "#str_02170", "#str_swf_customize_3d","Change Advanced Settings" };
+	const char* tips[] = { "#str_02166", "#str_02168", "#str_02170", "#str_swf_customize_3d", "#str_swf_advanced_desc" };
 	
 	while( options->GetChildren().Num() < NUM_SETTING_OPTIONS )
 	{
