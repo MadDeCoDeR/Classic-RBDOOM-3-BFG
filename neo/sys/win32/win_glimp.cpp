@@ -1465,6 +1465,11 @@ bool GLimp_Init( glimpParms_t parms )
 	common->Printf( "Initializing OpenGL subsystem with multisamples:%i stereo:%i fullscreen:%i\n",
 					parms.multiSamples, parms.stereo, parms.fullScreen );
 #endif
+
+	if (IsWindows8OrGreater()) {
+		SetProcessDPIAware();
+	}
+	
 					
 	// check our desktop attributes
 	hDC = GetDC( GetDesktopWindow() );

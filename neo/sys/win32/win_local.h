@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #define __WIN_LOCAL_H__
 
 #include <windows.h>
+#include <VersionHelpers.h>
 
 // RB: replaced QGL with GLEW
 #if !defined(USE_VULKAN)
