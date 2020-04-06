@@ -85,7 +85,7 @@ void idMenuScreen_Shell_SystemOptions::Initialize( idMenuHandler* data )
 	//GK: Begin
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_TEXT);
-	control->SetLabel("Aspect Ratio");
+	control->SetLabel("#str_swf_aspect"); //Aspect Ratio
 	control->SetDataSource(&systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_ASPECTRATIO);
 	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_ASPECTRATIO);
@@ -629,7 +629,7 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 		case SYSTEM_FIELD_ASPECTRATIO:
 			if (game->GetCVarInteger("r_aspectratio"))
 			{
-				return "Dynamic";
+				return "#str_swf_aspect_dynamic";
 			}
 			else
 			{

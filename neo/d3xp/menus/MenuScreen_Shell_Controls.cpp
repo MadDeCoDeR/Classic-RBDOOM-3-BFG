@@ -98,7 +98,7 @@ void idMenuScreen_Shell_Controls::Initialize( idMenuHandler* data )
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TOGGLE );
-	control->SetLabel( "Crosshair" );	// Gamepad Enabled
+	control->SetLabel( "#str_swf_crosshair" );	// Crosshair
 	control->SetDataSource( &controlData, idMenuDataSource_ControlSettings::CONTROLS_FIELD_CROSSHAIR );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_CROSSHAIR );
@@ -125,7 +125,7 @@ void idMenuScreen_Shell_Controls::Initialize( idMenuHandler* data )
 
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_TEXT);
-	control->SetLabel("Controler Layout");	// Layout
+	control->SetLabel("#str_swf_layout");	// Layout
 	control->SetDataSource(&controlData, idMenuDataSource_ControlSettings::CONTROLS_FIELD_CONTROLLER_LAYOUT);
 	control->SetupEvents(2, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, CONTROLS_CMD_CONTROLLER_LAYOUT);
@@ -525,15 +525,15 @@ idSWFScriptVar idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::Ge
 	if (fieldIndex == CONTROLS_FIELD_CONTROLLER_LAYOUT) {
 		switch (fields[ fieldIndex ].ToInteger() + 1) {
 		case 1:
-			return "XBOX360";
+			return "#str_swf_x360";
 		case 2:
-			return "PS3";
+			return "#stf_swf_ps3";
 		case 3:
-			return "Xbox One";
+			return "#str_swf_xbone";
 		case 4:
-			return "Ps4";
+			return "#str_swf_ps4";
 		case 5:
-			return "Switch";
+			return "#str_swf_switch";
 		}
 	}
 	return fields[fieldIndex];
