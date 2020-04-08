@@ -1466,10 +1466,7 @@ bool GLimp_Init( glimpParms_t parms )
 					parms.multiSamples, parms.stereo, parms.fullScreen );
 #endif
 
-	if (IsWindows8OrGreater()) {
-		SetProcessDPIAware();
-	}
-	
+	SetProcessDPIAware();
 					
 	// check our desktop attributes
 	hDC = GetDC( GetDesktopWindow() );
