@@ -3,6 +3,53 @@ DOOM-BFA Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG
 Thank you for downloading DOOM-BFA.
 _______________________________________
 
+10 April 2020 - DOOM-BFA 1.2.4
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- Improve rumble effect
+
+- Improve Stability
+
+- Fixed issue loading wild files
+
+- Add Classic DOOM Freelook limiter (cl_freelookclamp defaut 550 max 4000) 
+
+- Fixed issue with loading an empty EXPINFO (DOOM 2 Game boot crash bug) 
+
+- the frame rate is now indepedent from DOOM 3
+but enabling Interpolation (FPSI) you can edit DOOM 3's framerate as Classic DOOM's Refresh rate
+
+- Re adjust ThirdPerson View constants
+
+- Made more keys remappable (namely the Function Keys)
+
+[DOOM3BFG]
+
+- Vastly improve SWF Ui
+
+- Improve Text intro skiping
+
+- Improve Controller support
+
+- Fixed weapon circling not working under random circustances
+
+- Reworked Frame Rate/ Refresh Rate on all games,
+on DOOM 3 the frame rate will have only the available resfresh rates of your monitor
+
+- Add additional translation strings including Zoom key binding title and advaced options
+
+- On the first run retrieve the monitor's resolution and resfresh rate and use them to setup the fullscreen
+
+- Update Open Platform to Version 0.4.7
+
+
+_______________________________________
+
 29 February 2020 - DOOM-BFA 1.2.3.2
 _______________________________
 
