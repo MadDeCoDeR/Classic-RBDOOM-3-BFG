@@ -238,9 +238,6 @@ __________________________________________
 If you use the prebuilt Win32 binaries then simply extract them to your
 C:\Program Files (x86)\Steam\SteamApps\common\Doom 3 BFG Edition\ directory and run DoomBFA.exe.
 
-
-
-
 The following instructions are primarily intented for Linux users and all hackers on other operating systems.
 
 To play the game, you need the game data from a legal copy of the game.
@@ -326,9 +323,25 @@ and extract it to the directory on your own
 
 Additionally for the Final DOOM wads you must legally own them (either aquired from retail,steam or GOG)
 and then copy the two WADs on the /path/to/Doom3BFG/base/wads.
+
 And for the Master Levels you must legally own them (either aquired from retail,steam or GOG),
 make a folder named "master" on /path/to/Doom3BFG/base/wads and copy all the 20 wad files on this folder.
+
 Otherwise the game wont let you play this expansions (because there are no files dah)
+
+For the zBFA.resources:
+
+1. Copy paste zBFA folder to your own 
+   Doom 3 BFG directory (/path/to/Doom3BFG)
+
+2. Open DoomBFA.exe with the launch argument +set com_allowConsole 1
+
+3. Open Doom 3 and activate the console (press ~ key)
+
+4. Type writeresourcefilewithdir zBFA
+
+5. Copy paste from C:\Users\<username>\Saved Games\Id Software\DOOM BFA\base\zBFA.resources to your own 
+   Doom 3 BFG directory (/path/to/Doom3BFG) \base\maps
 
 ___________________________________________________
 
