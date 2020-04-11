@@ -328,6 +328,8 @@ bool idMenuScreen_Shell_Resolution::HandleAction( idWidgetAction& action, const 
 							{
 								r_fullscreen.SetInteger( optionData.fullscreen );
 								r_vidMode.SetInteger( optionData.vidmode );
+								r_customWidth.SetInteger(displays[0][optionData.vidmode].width);
+								r_customHeight.SetInteger(displays[0][optionData.vidmode].height);
 								cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 								cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
 							}
