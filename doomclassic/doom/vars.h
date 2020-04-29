@@ -1068,10 +1068,15 @@ byte blurryoffsetmap[NUMPOWERS];
 bool captureBind;
 int bindIndex;
 
-int firstticrate;
-int secondticrate;
-int lastfirsttic;
-int lastsecondtic;
+int ticrate[3];
+int lasttic[3];
+bool ownedframe;
+int ownedtic;
+int counttics[3];
+
+int gameframecount;
+
+int firstClock;
 
 const char* acronymPrefix;
 

@@ -592,14 +592,19 @@ void CalculateInterpolation() {
 		while (firstclassicrate > com_engineHz_latched) {
 			firstclassicrate = firstclassicrate / 2;
 		}
-		::g->firstticrate = floor(engineHz_denominator / firstclassicrate);
+		::g->ticrate[0] = ceil(engineHz_denominator / firstclassicrate);
 
-		I_Printf("First Tic rate: %d\n", ::g->firstticrate);
+		int ff = ceil(engineHz_denominator / ((double)::g->ticrate[0]));
 
-		double secondclassicrate = com_engineHz_latched - firstclassicrate;
-		::g->secondticrate = ceil(engineHz_denominator / secondclassicrate);
-
-		I_Printf("Second Tic rate: %d\n", ::g->secondticrate);
+		double remainedticrate = com_engineHz_latched - ff;
+		for (int i = 1; i < 3; i++) {
+			::g->ticrate[i] = ceil(engineHz_denominator / remainedticrate);
+			int af = ceil(engineHz_denominator / ((double)::g->ticrate[i]));
+			if (remainedticrate - af == 0) {
+				break;
+			}
+			remainedticrate = abs(remainedticrate - af);
+		}
 	}
 }
 //GK: End

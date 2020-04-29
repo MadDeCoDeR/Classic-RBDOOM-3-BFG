@@ -844,7 +844,15 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 
 	::g->bindIndex = -1;
 
-	::g->firstticrate = 0;
-	::g->secondticrate = 0;
-	::g->lastfirsttic = 0;
-	::g->lastsecondtic = 0;
+	int tempticrate[3] = { -1, -1, -1 };
+	memcpy(::g->ticrate, tempticrate, sizeof(tempticrate));
+	int templasttic[3] = { 0, 0, 0 };
+	memcpy(::g->lasttic, templasttic, sizeof(templasttic));
+	::g->ownedframe = false;
+	::g->ownedtic = 0;
+	int tempcounttics[3] = { 0, 0, 0 };
+	memcpy(::g->counttics, tempcounttics, sizeof(tempcounttics));
+
+	::g->gameframecount = 0;
+
+	::g->firstClock = 0;

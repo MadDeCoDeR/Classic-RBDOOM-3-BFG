@@ -126,8 +126,7 @@ bool demoDebugOn = false;
 #endif
 
 float ogHz = 0.0f;
-int ogFtr = 0;
-int ogStr = 0;
+int ogtr[3] = { 0, 0, 0 };
 // 
 // controls (have defaults) 
 // 
@@ -252,17 +251,17 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 	if (::g->demoplayback || ::g->demorecording) {
 		com_engineHz_denominator = 100LL * TICRATE;
 		com_engineHz_latched = TICRATE;
-		::g->firstticrate = 0;
-		::g->secondticrate = 0;
+		int tempticrate[3] = { 0, -1, -1 };
+		memcpy(::g->ticrate, tempticrate, sizeof(tempticrate));
 	}
 	else if (ogHz){
 		com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? com_engineHz.GetInteger() : ogHz);
 		com_engineHz_latched = ogHz;
 		ogHz = 0;
-		::g->firstticrate = ogFtr;
-		::g->secondticrate = ogStr;
-		ogFtr = 0;
-		ogStr = 0;
+		for (int i = 0; i < 3; i++) {
+			::g->ticrate[i] = ogtr[i];
+			ogtr[i] = 0;
+		}
 	}
 
 	base = I_BaseTiccmd ();		// empty, or external driver
@@ -2261,8 +2260,9 @@ void G_RecordDemo (char* name)
 	demoversion = VERSION;
 	::g->demorecording = true;
 	ogHz = com_engineHz_latched;
-	ogFtr = ::g->firstticrate;
-	ogStr = ::g->secondticrate;
+	for (int i = 0; i < 3; i++) {
+		ogtr[i] = ::g->ticrate[i];
+	}
 } 
  
  
@@ -2428,8 +2428,9 @@ void G_DoPlayDemo (void)
 	::g->usergame = false;
 	::g->demoplayback = true;
 	ogHz = com_engineHz_latched;
-	ogFtr = ::g->firstticrate;
-	ogStr = ::g->secondticrate;
+	for (int i = 0; i < 3; i++) {
+		ogtr[i] = ::g->ticrate[i];
+	}
 } 
 
 //

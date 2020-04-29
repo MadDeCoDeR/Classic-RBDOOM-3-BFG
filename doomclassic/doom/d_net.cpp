@@ -676,8 +676,50 @@ void D_QuitNetGame (void)
 // Check if the current tic must run or not.
 //
 bool InterpolateTics() {
-	if (!::g->lastfirsttic) {
+	int notyet = 0;
+	if (::g->ownedframe) {
+		::g->ownedframe = false;
+		::g->lasttic[!::g->ownedtic] = ::g->lasttic[::g->ownedtic];
+		::g->counttics[!::g->ownedtic]++;
+		return true;
+	}
+	for (int i = 0; i < 3; i++) {
+		if (::g->ticrate[i] < 0) {
+			return false;
+		}
+		if (!::g->lasttic[i]) {
+			::g->lasttic[i] = ::g->trt_entertic;
+			::g->counttics[i]++;
+			return true;
+		}
+			if (::g->trt_entertic - ::g->lasttic[i] < ::g->ticrate[i]) {
+				notyet++;
+			}
+			else {
+				int j = !i;
+				if (::g->trt_entertic - ::g->lasttic[j] >= ::g->ticrate[j]) {
+					::g->ownedframe = true;
+					::g->ownedtic = i;
+				}
+				::g->lasttic[i] = ::g->trt_entertic;
+				::g->counttics[i]++;
+				return true;
+			}
+	}
+	
+	if (notyet == 3) {
+		notyet = 0;
+		return false;
+	}
+	/*if (!::g->lastfirsttic) {
 		::g->lastfirsttic = ::g->trt_entertic;
+		::g->gameframecount++;
+		return true;
+	}
+	if (::g->ownedsecondframe) {
+		::g->ownedsecondframe = false;
+		::g->lastsecondtic = ::g->lastfirsttic;
+		::g->gameframecount++;
 		return true;
 	}
 	if (::g->trt_entertic - ::g->lastfirsttic < ::g->firstticrate) {
@@ -686,14 +728,19 @@ bool InterpolateTics() {
 		}
 		else {
 			::g->lastsecondtic = ::g->trt_entertic;
+			::g->gameframecount++;
 			return true;
 		}
 	}
 	else {
+		if (::g->trt_entertic - ::g->lastsecondtic >= ::g->secondticrate) {
+			::g->ownedsecondframe = true;
+		}
 		::g->lastfirsttic = ::g->trt_entertic;
+		::g->gameframecount++;
 		return true;
-	}
-	return false;
+	}*/
+	//return false;
 }
 //GK: End
 
@@ -710,6 +757,24 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 	::g->trt_entertic = I_GetTime ()/::g->ticdup;
 	::g->trt_realtics = ::g->trt_entertic - ::g->oldtrt_entertics;
 	::g->oldtrt_entertics = ::g->trt_entertic;
+
+	//GK: Uncomment for DEBUG purposes ONLY
+	/*if (FRAME_TO_MSEC(::g->trt_entertic) - ::g->firstClock >= 1000) {
+		if (::g->ticrate[0] != 0 && ::g->ticrate[1] != 0 && ::g->ticrate[2] != 0) {
+			int engineHz_denominator = com_engineHz_denominator / 100LL;
+			int ff = ceil(engineHz_denominator / ((double)::g->ticrate[0]));
+			int sf = ceil(engineHz_denominator / ((double)::g->ticrate[1]));
+			int tf = ceil(engineHz_denominator / ((double)::g->ticrate[2]));
+			I_Printf("game framerate = %d, first freq = %d / %d, second freq = %d / %d, third freq = %d / %d\n", ::g->gameframecount, ::g->counttics[0], ff, ::g->counttics[1], sf, ::g->counttics[2], tf);
+		}
+		else {
+			I_Printf("game framerate = %d\n", ::g->gameframecount);
+		}
+		int tempcounttics[3] = { 0, 0, 0 };
+		memcpy(::g->counttics, tempcounttics, sizeof(tempcounttics));
+		::g->firstClock = FRAME_TO_MSEC(::g->trt_entertic);
+		::g->gameframecount = 0;
+	}*/
 
 	// get available tics
 	NetUpdate ( userCmdMgr );
@@ -846,12 +911,15 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 				return false;
 			}
 
-			if (InterpolateTics()) {
+			int engineHz_denominator = com_engineHz_denominator / 100LL;
+			int engine_diff = engineHz_denominator - com_engineHz_latched;
+			if (InterpolateTics() || !engine_diff) {
 				if (::g->advancedemo) {
 					D_DoAdvanceDemo();
 				}
 				M_Ticker();
 				G_Ticker();
+				::g->gameframecount++;
 			}
 			
 			::g->gametic++;
