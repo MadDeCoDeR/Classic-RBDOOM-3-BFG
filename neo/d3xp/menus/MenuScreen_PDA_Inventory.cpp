@@ -239,7 +239,7 @@ void idMenuScreen_PDA_Inventory::Update()
 		
 		if( !IsVisibleWeapon( j ) )
 		{
-			return;
+			continue;
 		}
 		
 		const idDeclEntityDef* weaponDef = game->FindEntityDef( weap, false );
