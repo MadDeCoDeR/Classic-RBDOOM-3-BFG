@@ -590,18 +590,18 @@ extern char* C2TEXT;
 #define C8TEXT \
 "CONGRATULATIONS YOU HAVE FINISHED... \n\n"\
 "MOST OF THE MASTER LEVELS\n\n"\
-"You have venture throught the most\n"\
+"You have venture through the most\n"\
 "twisted levels that hell had to\n"\
 "offer and you have survived.\n\n"\
 "But alas the demons laugh at you\n"\
-"since you shown cowardness and didn't \n"\
+"since you shown cowardice and didn't \n"\
 "reach the most hideous level\n"\
 "they had make for you."
 
 #define C9TEXT \
 "CONGRATULATIONS YOU HAVE FINISHED... \n\n"\
 "ALL THE MASTER LEVELS\n\n"\
-"You have venture throught all the\n"\
+"You have venture through all the\n"\
 "twisted levels that hell had to\n"\
 "offer and you have survived.\n\n"\
 "The Flames of rage flow through\n"\
@@ -758,11 +758,16 @@ extern char* C2TEXT;
 #define BTLTEXT \
 "CONGURATUATIONS!!!\n"\
 "\n"\
-"THE fish king salutes\nyou while chariots of\nboard games gallop on the\nbeautiful rad \"in\nmulticolor\" sky...\n"\
+"THE fish king salutes\n"\
+"you while chariots of\n"\
+"board games gallop on the\n"\
+"beautiful rad \"in multicolor\"\n"\
+" sky...\n"\
 "\n"\
 "If you expected something\n"\
 "better for reaching the final\n"\
-"map of this custom expansion\nyou have bigger\n"\
+"map of this custom expansion\n"\
+"you have bigger\n"\
 "halutinations than me..."
 
 //
