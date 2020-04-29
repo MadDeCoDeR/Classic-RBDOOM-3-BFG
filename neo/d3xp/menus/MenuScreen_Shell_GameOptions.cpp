@@ -239,7 +239,7 @@ bool idMenuScreen_Shell_GameOptions::HandleAction( idWidgetAction& action, const
 		return false;
 	}
 
-	this->Update();
+	bool updateUi = true;
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
@@ -276,6 +276,11 @@ bool idMenuScreen_Shell_GameOptions::HandleAction( idWidgetAction& action, const
 			
 			return true;
 		}
+		case WIDGET_ACTION_ADJUST_FIELD: 
+		{
+			updateUi = false;
+			break;
+		}
 		case WIDGET_ACTION_START_REPEATER:
 		{
 			if( parms.Num() == 4 )
@@ -287,8 +292,13 @@ bool idMenuScreen_Shell_GameOptions::HandleAction( idWidgetAction& action, const
 					options->SetFocusIndex( selectionIndex );
 				}
 			}
+			updateUi = false;
 			break;
 		}
+	}
+
+	if (updateUi) {
+		this->Update();
 	}
 	
 	return idMenuWidget::HandleAction( action, event, widget, forceHandled );

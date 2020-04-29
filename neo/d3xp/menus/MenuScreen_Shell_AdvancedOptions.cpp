@@ -249,7 +249,7 @@ bool idMenuScreen_Shell_AdvancedOptions::HandleAction( idWidgetAction& action, c
 		return false;
 	}
 
-	this->Update();
+	bool updateUi = true;
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
@@ -270,6 +270,7 @@ bool idMenuScreen_Shell_AdvancedOptions::HandleAction( idWidgetAction& action, c
 				menuData->SetNextScreen( SHELL_AREA_RESOLUTION, MENU_TRANSITION_SIMPLE );
 				return true;
 			}*/
+			updateUi = false;
 			break;
 		case WIDGET_ACTION_COMMAND:
 		{
@@ -324,8 +325,13 @@ bool idMenuScreen_Shell_AdvancedOptions::HandleAction( idWidgetAction& action, c
 					options->SetFocusIndex( selectionIndex );
 				}
 			}
+			updateUi = false;
 			break;
 		}
+	}
+
+	if (updateUi) {
+		this->Update();
 	}
 	
 	return idMenuWidget::HandleAction( action, event, widget, forceHandled );

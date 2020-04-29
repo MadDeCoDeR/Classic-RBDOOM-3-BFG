@@ -287,7 +287,7 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 		return false;
 	}
 
-	this->Update();
+	bool updateUi = true;
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
@@ -372,6 +372,11 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 			
 			return true;
 		}
+		case WIDGET_ACTION_ADJUST_FIELD:
+		{
+			updateUi = false;
+			break;
+		}
 		case WIDGET_ACTION_START_REPEATER:
 		{
 		
@@ -389,8 +394,13 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 					options->SetFocusIndex( selectionIndex );
 				}
 			}
+			updateUi = false;
 			break;
 		}
+	}
+
+	if (updateUi) {
+		this->Update();
 	}
 	
 	return idMenuWidget::HandleAction( action, event, widget, forceHandled );

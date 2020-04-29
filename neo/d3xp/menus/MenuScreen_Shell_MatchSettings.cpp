@@ -199,7 +199,7 @@ bool idMenuScreen_Shell_MatchSettings::HandleAction( idWidgetAction& action, con
 		return false;
 	}
 
-	this->Update();
+	bool updateUi = true;
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
@@ -223,6 +223,7 @@ bool idMenuScreen_Shell_MatchSettings::HandleAction( idWidgetAction& action, con
 					matchData.ClearMapChanged();
 				}
 			}
+			updateUi = false;
 			return true;
 		}
 		case WIDGET_ACTION_GO_BACK:
@@ -271,8 +272,13 @@ bool idMenuScreen_Shell_MatchSettings::HandleAction( idWidgetAction& action, con
 					options->SetFocusIndex( selectionIndex );
 				}
 			}
+			updateUi = false;
 			break;
 		}
+	}
+
+	if (updateUi) {
+		this->Update();
 	}
 	
 	return idMenuWidget::HandleAction( action, event, widget, forceHandled );

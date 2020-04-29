@@ -320,7 +320,7 @@ bool idMenuScreen_Shell_ControllerLayout::HandleAction( idWidgetAction& action, 
 		return false;
 	}
 
-	this->Update();
+	bool updateUi = true;
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
@@ -373,6 +373,7 @@ bool idMenuScreen_Shell_ControllerLayout::HandleAction( idWidgetAction& action, 
 					options->SetFocusIndex( selectionIndex );
 				}
 			}
+			updateUi = false;
 			break;
 		}
 		case WIDGET_ACTION_ADJUST_FIELD:
@@ -382,9 +383,14 @@ bool idMenuScreen_Shell_ControllerLayout::HandleAction( idWidgetAction& action, 
 				widget->GetDataSource()->AdjustField( widget->GetDataSourceFieldIndex(), parms[ 0 ].ToInteger() );
 				widget->Update();
 			}
+			updateUi = false;
 			UpdateBindingInfo();
 			return true;
 		}
+	}
+
+	if (updateUi) {
+		this->Update();
 	}
 	
 	return idMenuWidget::HandleAction( action, event, widget, forceHandled );
