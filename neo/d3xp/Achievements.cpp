@@ -376,7 +376,7 @@ void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
 	// If so, don't do again because we don't want to autosave every time a trigger is hit
 	if( localUser == NULL || localUser->GetProfile()->GetAchievement( id ) )
 	{
-		common->Printf("user already has the achievement");
+		common->Printf("You already have the Achievement\n");
 		return;
 	}
 	
