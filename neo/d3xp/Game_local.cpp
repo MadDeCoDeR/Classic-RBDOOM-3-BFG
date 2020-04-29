@@ -2938,6 +2938,9 @@ void idGameLocal::RunSingleUserCmd( usercmd_t& cmd, idPlayer& player )
 		const float forcedClientEngineHz = ( clientEngineHz < 90.0f ) ? 60.0f : 120.0f;
 		SetScriptFPS( forcedClientEngineHz );
 	}
+	else {
+		SetScriptFPS( com_engineHz_latched );
+	}
 	
 	if( !common->IsMultiplayer() || common->IsServer() )
 	{
