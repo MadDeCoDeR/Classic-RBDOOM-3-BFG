@@ -149,22 +149,22 @@ bool idPlayerProfile::Serialize( idSerializer& ser )
 	{
 		return false;
 	}
-	
+	//GK: NO MORE
 	// Archived cvars (all the menu settings for Doom3 are archived cvars)
-	idDict cvarDict;
-	cvarSystem->MoveCVarsToDict( CVAR_ARCHIVE, cvarDict );
-	cvarDict.Serialize( ser );
-	if( ser.IsReading() )
-	{
-		// Never sync these cvars with Steam because they require an engine or video restart
-		cvarDict.Delete( "r_fullscreen" );
-		cvarDict.Delete( "r_vidMode" );
-		cvarDict.Delete( "r_multisamples" );
-		cvarDict.Delete( "r_antiAliasing" );
-		cvarDict.Delete( "com_engineHz" );
-		cvarSystem->SetCVarsFromDict( cvarDict );
-		common->StartupVariable( NULL );
-	}
+	//idDict cvarDict;
+	//cvarSystem->MoveCVarsToDict( CVAR_ARCHIVE, cvarDict );
+	//cvarDict.Serialize( ser );
+	//if( ser.IsReading() )
+	//{
+	//	// Never sync these cvars with Steam because they require an engine or video restart
+	//	cvarDict.Delete( "r_fullscreen" );
+	//	cvarDict.Delete( "r_vidMode" );
+	//	cvarDict.Delete( "r_multisamples" );
+	//	cvarDict.Delete( "r_antiAliasing" );
+	//	cvarDict.Delete( "com_engineHz" );
+	//	cvarSystem->SetCVarsFromDict( cvarDict );
+	//	common->StartupVariable( NULL );
+	//}
 	
 	// The dlcReleaseVersion is used to determine that new content is available
 	ser.SerializePacked( dlcReleaseVersion );
