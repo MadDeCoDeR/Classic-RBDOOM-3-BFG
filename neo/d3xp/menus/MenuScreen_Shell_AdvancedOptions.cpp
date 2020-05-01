@@ -36,11 +36,13 @@ extern idCVar r_useShadowMapping;
 extern idCVar r_shadowMapLodScale;
 extern idCVar r_useHDR;
 extern idCVar r_hdrAutoExposure;
-extern idCVar r_useSSAO; // RB: use this to control HDR exposure or brightness in LDR mode
+extern idCVar r_useSSAO;
 extern idCVar r_useFilmicPostProcessEffects;
 //extern idCVar flashlight_old;
 //extern idCVar pm_vmfov;
 
+
+static bool hdrChanged = 0;
 
 /*
 ========================
@@ -77,7 +79,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	idMenuWidget_ControlButton* control;
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "#str_shadow_mapping" );
+	control->SetLabel( "#str_shadow_mapping" ); //Soft Shadows
 	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPPING );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPPING);
@@ -85,23 +87,23 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_BAR);
-	control->SetLabel("#str_shadow_mapping_lod");
+	control->SetLabel("#str_shadow_mapping_lod"); //Soft ShadowsLOD
 	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPLOD);
 	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPLOD);
 	options->AddChild(control);
-	//GK: Begin
+
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_TEXT);
-	control->SetLabel("#str_hdr");
+	control->SetLabel("#str_hdr"); //HDR
 	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_HDR);
 	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_HDR);
 	options->AddChild(control);
-	//GK: End
+
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "#str_adaptive_hdr" );
+	control->SetLabel( "#str_adaptive_hdr" ); //Adaptive Tonemapping HDR
 	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_ATHDR );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_ATHDR );
@@ -109,7 +111,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "#str_ssao" );
+	control->SetLabel( "#str_ssao" ); //SSAO
 	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SSAO );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SSAO );
@@ -117,7 +119,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "#str_filmic" );
+	control->SetLabel( "#str_filmic" ); //Filmic Post Process effect
 	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_FPPE );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_FPPE );
@@ -134,7 +136,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	}
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_BAR);
-	control->SetLabel("#str_pm_fov");
+	control->SetLabel("#str_pm_fov"); //Player Model FOV
 	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_VMFOV);
 	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_VMFOV);
@@ -253,6 +255,7 @@ bool idMenuScreen_Shell_AdvancedOptions::HandleAction( idWidgetAction& action, c
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
+	int index = widget->GetDataSourceFieldIndex();
 	
 	switch( actionType )
 	{
@@ -265,13 +268,20 @@ bool idMenuScreen_Shell_AdvancedOptions::HandleAction( idWidgetAction& action, c
 			return true;
 		}
 		case WIDGET_ACTION_ADJUST_FIELD:
-		/*	if( widget->GetDataSourceFieldIndex() == idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN )
-			{
-				menuData->SetNextScreen( SHELL_AREA_RESOLUTION, MENU_TRANSITION_SIMPLE );
-				return true;
-			}*/
+		{
+			switch (index) {
+				case idMenuDataSource_AdvancedSettings::ADV_FIELD_HDR:
+				{
+					if (hdrChanged) {
+						hdrChanged = false;
+						return false;
+					}
+					hdrChanged = true;
+				}
+			}
 			updateUi = false;
 			break;
+		}
 		case WIDGET_ACTION_COMMAND:
 		{
 		
@@ -291,20 +301,8 @@ bool idMenuScreen_Shell_AdvancedOptions::HandleAction( idWidgetAction& action, c
 				options->SetViewIndex( options->GetViewOffset() + selectionIndex );
 				options->SetFocusIndex( selectionIndex );
 			}
-			
-			switch( parms[0].ToInteger() )
-			{
-				/*case idMenuDataSource_AdvancedSettings:::
-				{
-					menuData->SetNextScreen( SHELL_AREA_RESOLUTION, MENU_TRANSITION_SIMPLE );
-					return true;
-				}*/
-				default:
-				{
-					advData.AdjustField( parms[0].ToInteger(), 1 );
-					options->Update();
-				}
-			}
+			advData.AdjustField( parms[0].ToInteger(), 1 );
+			options->Update();
 			
 			return true;
 		}
@@ -365,15 +363,6 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 	originalFlashlight = game->GetCVarInteger("flashlight_old");
 	originalVmfov = game->GetCVarInteger("pm_vmfov");
 	originalShadowMapLod = r_shadowMapLodScale.GetFloat();
-	/*const int fullscreen = r_fullscreen.GetInteger();
-	if( fullscreen > 0 )
-	{
-		R_GetModeListForDisplay( fullscreen - 1, modeList );
-	}
-	else
-	{
-		modeList.Clear();
-	}*/
 }
 
 /*
@@ -406,28 +395,21 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 {
 	switch( fieldIndex )
 	{
-	case ADV_FIELD_SHADOWMAPPING:
-	{
-		r_useShadowMapping.SetBool(!r_useShadowMapping.GetBool());
-		break;
-	}
-	case ADV_FIELD_SHADOWMAPLOD:
-	{
-		/*const float percent = ReLinearAdjust(r_shadowMapLodScale.GetFloat(), 0.1f, 20.0f, 0.0f, 100.0f);
-		const float adjusted = percent + (float)adjustAmount;
-		const float clamped = idMath::ClampFloat(0.0f, 100.0f, adjusted);
-
-		r_shadowMapLodScale.SetFloat(ReLinearAdjust(clamped, 0.0f, 100.0f, 0.1f, 20.0f));*/
-		r_shadowMapLodScale.SetFloat(r_shadowMapLodScale.GetFloat() + adjustAmount * 0.1f);
-		break;
-	}
-		//GK: BEgin
-	case ADV_FIELD_HDR:
-	{
-		r_useHDR.SetBool(!r_useHDR.GetBool());
-		break;
-	}
-	//GK: End
+		case ADV_FIELD_SHADOWMAPPING:
+		{
+			r_useShadowMapping.SetBool(!r_useShadowMapping.GetBool());
+			break;
+		}
+		case ADV_FIELD_SHADOWMAPLOD:
+		{
+			r_shadowMapLodScale.SetFloat(r_shadowMapLodScale.GetFloat() + adjustAmount * 0.1f);
+			break;
+		}
+		case ADV_FIELD_HDR:
+		{
+			r_useHDR.SetBool(!r_useHDR.GetBool());
+			break;
+		}
 		case ADV_FIELD_ATHDR:
 		{
 			r_hdrAutoExposure.SetBool( !r_hdrAutoExposure.GetBool() );
@@ -530,7 +512,6 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 				return "#str_swf_disabled";
 			}
 		}
-		//GK: Begin
 		case ADV_FIELD_FLASH:
 			switch (game->GetCVarInteger("flashlight_old"))
 			{
@@ -543,7 +524,6 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 			}
 		case ADV_FIELD_VMFOV:
 			return ReLinearAdjust(game->GetCVarInteger("pm_vmfov"), 0.0f, 64.0f, 0.0f, 100.0f);
-			//GK: End
 	}
 	return false;
 }
@@ -578,7 +558,6 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 	{
 		return true;
 	}
-	//GK begin
 	if( originalFlashlight != game->GetCVarInteger("flashlight_old"))
 	{
 		return true;
@@ -587,6 +566,5 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 	{
 		return true;
 	}
-	//GK end
 	return false;
 }

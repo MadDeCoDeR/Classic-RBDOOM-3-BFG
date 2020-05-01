@@ -1546,16 +1546,12 @@ public:
 		{
 			ADV_FIELD_SHADOWMAPPING,
 			ADV_FIELD_SHADOWMAPLOD,
-			//RB begin
 			ADV_FIELD_HDR,
-			//RB end
 			ADV_FIELD_ATHDR,
 			ADV_FIELD_SSAO,
 			ADV_FIELD_FPPE,
-			//GK begin
 			ADV_FIELD_FLASH,
 			ADV_FIELD_VMFOV,
-			//GK end
 			MAX_ADVANCED_FIELDS
 		};
 
