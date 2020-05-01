@@ -323,16 +323,16 @@ void R_SetNewMode( const bool fullInit )
 {
 	// try up to three different configurations
 	bool donethat = false;
-	for( int i = 0 ; i < 3 ; i++ )
+	for (int i = 0; i < 4; i++)
 	{
-		if( i == 0 && stereoRender_enable.GetInteger() != STEREO3D_QUAD_BUFFER )
+		if (i == 0 && stereoRender_enable.GetInteger() != STEREO3D_QUAD_BUFFER)
 		{
 			continue;		// don't even try for a stereo mode
 		}
-		
+
 		glimpParms_t	parms;
-		
-		if( r_fullscreen.GetInteger() <= 0 )
+
+		if (r_fullscreen.GetInteger() <= 0)
 		{
 			// use explicit position / size for window
 			parms.x = r_windowX.GetInteger() >= 0 ? r_windowX.GetInteger() : 0;
@@ -358,7 +358,7 @@ void R_SetNewMode( const bool fullInit )
 				idLib::Printf( "Going to safe mode because mode list failed." );
 				goto safeMode;
 			}*/
-			
+
 			parms.x = 0;		// ignored
 			parms.y = 0;		// ignored
 			parms.fullScreen = r_fullscreen.GetInteger();
@@ -367,13 +367,14 @@ void R_SetNewMode( const bool fullInit )
 			int height;
 			int hz;
 			if (!r_firstTime.GetBool() && R_GetScreenResolution(r_fullscreen.GetInteger() - 1, width, height, hz)) {
-				parms.width = width;
-				parms.height = height;
-				parms.displayHz = hz;
-				r_customWidth.SetInteger(width);
-				r_customHeight.SetInteger(height);
-				com_engineHz.SetInteger(hz);//r_displayRefresh.GetInteger();
-				r_firstTime.SetBool(true);
+					parms.width = width;
+					parms.height = height;
+					parms.displayHz = hz;
+					r_customWidth.SetInteger(width);
+					r_customHeight.SetInteger(height);
+					com_engineHz.SetInteger(hz);//r_displayRefresh.GetInteger();
+					r_firstTime.SetBool(true);
+					cvarSystem->SetModifiedFlags(CVAR_ARCHIVE);
 			}
 			else {
 
@@ -393,81 +394,77 @@ void R_SetNewMode( const bool fullInit )
 					idLib::Printf( "r_vidMode reset from %i to 0.\n", r_vidMode.GetInteger() );
 					r_vidMode.SetInteger( 0 );
 				}
-				
+
 				parms.width = modeList[ r_vidMode.GetInteger() ].width;
 				parms.height = modeList[ r_vidMode.GetInteger() ].height;
 				parms.displayHz = modeList[ r_vidMode.GetInteger() ].displayHz;
 			}*/
 		}
-		
-		switch( r_antiAliasing.GetInteger() )
+
+		switch (r_antiAliasing.GetInteger())
 		{
-			case ANTI_ALIASING_MSAA_2X:
-				parms.multiSamples = 2;
-				break;
-			case ANTI_ALIASING_MSAA_4X:
-				parms.multiSamples = 4;
-				break;
-			case ANTI_ALIASING_MSAA_8X:
-				parms.multiSamples = 8;
-				break;
-				
-			default:
-				parms.multiSamples = 0;
-				break;
+		case ANTI_ALIASING_MSAA_2X:
+			parms.multiSamples = 2;
+			break;
+		case ANTI_ALIASING_MSAA_4X:
+			parms.multiSamples = 4;
+			break;
+		case ANTI_ALIASING_MSAA_8X:
+			parms.multiSamples = 8;
+			break;
+
+		default:
+			parms.multiSamples = 0;
+			break;
 		}
-		
-		if( i == 0 )
+
+		if (i == 0)
 		{
-			parms.stereo = ( stereoRender_enable.GetInteger() == STEREO3D_QUAD_BUFFER );
+			parms.stereo = (stereoRender_enable.GetInteger() == STEREO3D_QUAD_BUFFER);
 		}
 		else
 		{
 			parms.stereo = false;
 		}
-		
-		if( fullInit )
+
+		if (fullInit)
 		{
 			// create the context as well as setting up the window
-			if( GLimp_Init( parms ) )
+			if (GLimp_Init(parms))
 			{
 				// it worked
 				break;
-			} 
-			else
-			{
-				if (donethat) {
-					r_fullscreen.SetInteger(0);
-					continue;
-				}
-				//GK: Fullscreen Fallback
-				r_vidMode.SetInteger(0);
-				cvarSystem->SetCVarInteger("r_customWidth", 1280);
-				cvarSystem->SetCVarInteger("r_customHeight", 720);
-				donethat = true;
-				stereoRender_enable.SetInteger(0);
-				continue;
 			}
 		}
 		else
 		{
 			// just rebuild the window
-			if( GLimp_SetScreenParms( parms ) )
+			if (GLimp_SetScreenParms(parms))
 			{
 				// it worked
 				break;
 			}
 		}
-		
-		if( i == 2 )
-		{
-			common->FatalError( "Unable to initialize OpenGL" );
-		}
-		
-		if( i == 0 )
-		{
-			// same settings, no stereo
-			continue;
+
+		switch (i) {
+			case 0: 
+				// same settings, no stereo
+				continue;
+			case 1:
+				//GK: Fullscreen Fallback
+				r_vidMode.SetInteger( 0 );
+				r_customWidth.SetInteger( 1280 );
+				r_customHeight.SetInteger( 720 );
+				com_engineHz.SetInteger( 60 );
+				stereoRender_enable.SetInteger( 0 );
+				cvarSystem->SetModifiedFlags(CVAR_ARCHIVE);
+				continue;
+			case 2:
+				//GK: Force Window mode
+				r_fullscreen.SetInteger( 0 );
+				continue;
+			case 3:
+				common->FatalError("Unable to initialize OpenGL");
 		}
 		
 safeMode:
