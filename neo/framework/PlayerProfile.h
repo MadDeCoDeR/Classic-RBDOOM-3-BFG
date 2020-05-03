@@ -160,6 +160,7 @@ protected:
 	state_t			state;
 	state_t			requestedState;
 	int				deviceNum;
+	int				changeSet;
 	
 	// Save:
 	uint64			achievementBits;

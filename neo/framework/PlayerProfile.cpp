@@ -106,6 +106,7 @@ void idPlayerProfile::SetDefaults()
 	leftyFlip = false;
 	customConfig = false;
 	configSet = 0;
+	changeSet = false;
 }
 
 /*
@@ -392,6 +393,7 @@ idPlayerProfile::SetConfig
 void idPlayerProfile::SetConfig( int config, bool save )
 {
 	configSet = config;
+	changeSet = true;
 	ExecConfig( save );
 }
 
@@ -446,8 +448,9 @@ void idPlayerProfile::ExecConfig( bool save, bool forceDefault )
 		cmdSystem->AppendCommandText( "exec joy_righty.cfg\n" );
 	}
 
-	if (!forceDefault) {
+	if (changeSet) {
 		cmdSystem->AppendCommandText(va("exec joy_360_%d.cfg\n", configSet));
+		changeSet = false;
 	}
 	
 	cmdSystem->ExecuteCommandBuffer();
