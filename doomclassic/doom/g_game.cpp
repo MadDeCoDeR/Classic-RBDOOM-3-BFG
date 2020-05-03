@@ -1440,8 +1440,8 @@ void G_DoCompleted (void)
 			}
 			else if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
 				FindNextMap(::g->gamemap - 1);
-				if (::g->maps[::g->gamemap - 1].nextmap < ::g->mapmax)
-					::g->wminfo.next = ::g->maps[::g->gamemap - 1].nextmap;
+				if ((::g->maps[::g->gamemap - 1].nextmap - 1) < ::g->mapmax)
+					::g->wminfo.next = ::g->maps[::g->gamemap - 1].nextmap - 1;
 				else
 					::g->wminfo.next = 0;
 			}
