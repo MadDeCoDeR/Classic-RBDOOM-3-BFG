@@ -434,6 +434,7 @@ void idPlayerProfile::ExecConfig( bool save, bool forceDefault )
 	{
 		cmdSystem->AppendCommandText( "exec default.cfg\n" );
 		cmdSystem->AppendCommandText("exec joy_360_0.cfg\n");
+		configSet = 0;
 	}
 	
 	if( leftyFlip )
