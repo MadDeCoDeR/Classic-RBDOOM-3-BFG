@@ -173,6 +173,7 @@ extern "C"
 	void A_SpawnFly(void *p1, void *p2);
 	void A_BrainExplode(void *p1, void *p2);
 	void A_RandomJump(void* p1, void* p2);
+	void A_Spawn(void* p1, void* p2);
 };
 
 
@@ -9455,7 +9456,8 @@ dehcptr cptrval[] = {
 { "SpawnSound",(actionf_p2)A_SpawnSound },
 { "SpawnFly",(actionf_p2)A_SpawnFly },
 { "BrainExplode",(actionf_p2)A_BrainExplode },
-{ "RandomJump", (actionf_p2)A_RandomJump }
+{ "RandomJump", (actionf_p2)A_RandomJump },
+{ "Spawn", (actionf_p2)A_Spawn }
 };
 
 actionf_p2 getFunc(char* func) {

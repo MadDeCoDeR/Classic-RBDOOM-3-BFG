@@ -2078,7 +2078,7 @@ void A_PlayerScream (mobj_t* mo, void * )
 		S_StartSound (mo, sound);
 }
 
-void A_RandomJump(mobj_t* actor, pspdef_t* psp)
+void A_RandomJump(mobj_t* mo, pspdef_t* psp)
 
 {
 	// [BH] allow A_RandomJump() to work for weapon states as well
@@ -2089,8 +2089,15 @@ void A_RandomJump(mobj_t* actor, pspdef_t* psp)
 	}
 	else
 	{
-		if (M_Random() < actor->state->misc2)
-			P_SetMobjState(actor, actor->state->misc1);
+		if (M_Random() < mo->state->misc2)
+			P_SetMobjState(mo, mo->state->misc1);
+	}
+}
+
+void A_Spawn(mobj_t* mo, void *) {
+
+	if (mo->state->misc1) {
+		mobj_t* newmobj = P_SpawnMobj(mo->x, mo->y, (mo->state->misc2 << FRACBITS) + mo->z, (mobjtype_t)(mo->state->misc1 - 1));
 	}
 }
 
