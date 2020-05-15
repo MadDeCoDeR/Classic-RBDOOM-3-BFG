@@ -856,3 +856,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->gameframecount = 0;
 
 	::g->firstClock = 0;
+
+	::g->extratics = 0;

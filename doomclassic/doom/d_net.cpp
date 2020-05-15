@@ -407,10 +407,10 @@ void NetUpdate ( idUserCmdMgr * userCmdMgr )
 
 		// Grab the latest tech5 command
 
-		G_BuildTiccmd (&::g->localcmds[::g->maketic%BACKUPTICS], userCmdMgr, newtics );
+		G_BuildTiccmd (&::g->localcmds[::g->maketic%BACKUPTICS], userCmdMgr, newtics + ::g->extratics );
 		::g->maketic++;
 	}
-
+	
 
 	if (::g->singletics)
 		return;         // singletic update is syncronous
@@ -914,12 +914,17 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 			int engineHz_denominator = com_engineHz_denominator / 100LL;
 			int engine_diff = engineHz_denominator - com_engineHz_latched;
 			if (InterpolateTics() || !engine_diff) {
+				::g->extratics = 0;
 				if (::g->advancedemo) {
 					D_DoAdvanceDemo();
 				}
 				M_Ticker();
 				G_Ticker();
 				::g->gameframecount++;
+			}
+			else {
+				::g->skiptics++;
+				::g->extratics++;
 			}
 			
 			::g->gametic++;

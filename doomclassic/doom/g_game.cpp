@@ -350,8 +350,12 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 		// We will be running a number of tics equal to newTics before we get a new command from tech5.
 		// So to keep input smooth, divide the angles between all the newTics.
 		if ( newTics > 0 ) {
+			//I_Printf("New Tics: %d\n", newTics);
 			angleDelta.yaw /= newTics;
+			angleDelta.pitch /= newTics;
 		}
+
+		//I_Printf("Mouse Pitch: %f, Mouse Yaw: %f\n", angleDelta.pitch, angleDelta.yaw);
 
 		// idAngles is stored in degrees. Convert to doom format.
 		cmd->angleturn = DegreesToDoomAngleTurn( angleDelta.yaw );
