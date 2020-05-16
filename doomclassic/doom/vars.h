@@ -1073,7 +1073,6 @@ int lasttic[3];
 bool ownedframe;
 int ownedtic;
 int counttics[3];
-int extratics;
 
 int gameframecount;
 
