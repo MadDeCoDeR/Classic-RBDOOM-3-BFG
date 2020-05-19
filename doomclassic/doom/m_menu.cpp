@@ -1775,9 +1775,7 @@ void M_DrawKey(void) {
 	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
 	bindStart = pageIndex * 10;
 	int endOffs = bindStart == 0 ? 1 : 2;
-	I_Printf("%d\n", endOffs);
 	bindEnd = (bindStart + 10) + endOffs;
-	I_Printf("%d\n", bindEnd);
 	for (int i = bindStart; i < bindEnd; i++) {
 		std::string res;
 		if (i < numBinds) {

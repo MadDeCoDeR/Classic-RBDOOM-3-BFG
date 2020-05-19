@@ -582,17 +582,17 @@ void R_InitTextures (void)
 		temp2 = W_GetNumForName ("S_END") - 1;
 		temp3 = ((temp2-temp1+63)/64) + ((::g->s_numtextures+63)/64);
 		I_Printf("[");
-		for (i = 0; i < temp3; i++)
+		/*for (i = 0; i < temp3; i++)
 			I_Printf(" ");
-		I_Printf("         ]");
-		for (i = 0; i < temp3; i++)
+		I_Printf("         ]");*/
+		/*for (i = 0; i < temp3; i++)
 			I_Printf("\x8");
-		I_Printf("\x8\x8\x8\x8\x8\x8\x8\x8\x8\x8");	
+		I_Printf("\x8\x8\x8\x8\x8\x8\x8\x8\x8\x8");	*/
 
 		for (i=0 ; i < ::g->s_numtextures ; i++, directory++)
 		{
-			if (!(i&63))
-				I_Printf (".");
+			if (!(i & 63))
+				I_Printf(".");
 
 			if (i == numtextures1)
 			{
@@ -643,6 +643,7 @@ void R_InitTextures (void)
 
 			totalwidth += texture->width;
 		}
+		I_Printf("]");
 
 		Z_Free(maptex1);
 		if (maptex2)
