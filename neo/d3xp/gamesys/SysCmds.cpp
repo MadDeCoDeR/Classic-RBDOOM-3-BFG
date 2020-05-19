@@ -32,6 +32,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../Game_local.h"
 
+#include "../Classic.h"
+#include "../../doomclassic/doom/globaldata.h"
+
+#define WRONGGAME "The cheat code is not implemented yet"
+
 /*
 ==================
 Cmd_GetFloatArg
@@ -238,6 +243,11 @@ void KillEntities( const idCmdArgs& args, const idTypeInfo& superClass )
 	const char* name;
 	int			i;
 	
+	Globals* classic = (Globals*)::GetClassicData();
+	if (classic != NULL) {
+		::common->Printf(WRONGGAME);
+		return;
+	}
 	if( !gameLocal.GetLocalPlayer() || !gameLocal.CheatsOk( false ) )
 	{
 		return;
@@ -278,6 +288,11 @@ Kills all the monsters in a level.
 */
 void Cmd_KillMonsters_f( const idCmdArgs& args )
 {
+	Globals* classic = (Globals*)::GetClassicData();
+	if (classic != NULL) {
+		::common->Printf(WRONGGAME);
+		return;
+	}
 	KillEntities( args, idAI::Type );
 	
 	// kill any projectiles as well since they have pointers to the monster that created them
@@ -293,6 +308,11 @@ Kills all the moveables in a level.
 */
 void Cmd_KillMovables_f( const idCmdArgs& args )
 {
+	Globals* classic = (Globals*)::GetClassicData();
+	if (classic != NULL) {
+		::common->Printf(WRONGGAME);
+		return;
+	}
 	if( !gameLocal.GetLocalPlayer() || !gameLocal.CheatsOk( false ) )
 	{
 		return;
@@ -332,6 +352,11 @@ void Cmd_Give_f( const idCmdArgs& args )
 	idPlayer*	player;
 	
 	player = gameLocal.GetLocalPlayer();
+	Globals* classic = (Globals*)::GetClassicData();
+	if (classic != NULL) {
+		::common->Printf(WRONGGAME);
+		return;
+	}
 	if( !player || !gameLocal.CheatsOk() )
 	{
 		return;
@@ -548,6 +573,11 @@ void Cmd_God_f( const idCmdArgs& args )
 	idPlayer*	player;
 	
 	player = gameLocal.GetLocalPlayer();
+	Globals* classic = (Globals*)::GetClassicData();
+	if (classic != NULL) {
+		::common->Printf(WRONGGAME);
+		return;
+	}
 	if( !player || !gameLocal.CheatsOk() )
 	{
 		return;
@@ -581,6 +611,11 @@ void Cmd_Notarget_f( const idCmdArgs& args )
 	const char*		msg;
 	idPlayer*	player;
 	
+	Globals* classic = (Globals*)::GetClassicData();
+	if (classic != NULL) {
+		::common->Printf(WRONGGAME);
+		return;
+	}
 	player = gameLocal.GetLocalPlayer();
 	if( !player || !gameLocal.CheatsOk() )
 	{
@@ -613,6 +648,11 @@ void Cmd_Noclip_f( const idCmdArgs& args )
 	const char*		msg;
 	idPlayer*	player;
 	
+	Globals* classic = (Globals*)::GetClassicData();
+	if (classic != NULL) {
+		::common->Printf(WRONGGAME);
+		return;
+	}
 	player = gameLocal.GetLocalPlayer();
 	if( !player || !gameLocal.CheatsOk() )
 	{

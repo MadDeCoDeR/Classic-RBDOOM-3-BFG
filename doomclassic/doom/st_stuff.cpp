@@ -1478,6 +1478,7 @@ CONSOLE_COMMAND_SHIP( idqd, "cheat for toggleable god mode", 0 ) {
 	int oldPlayer = DoomLib::GetPlayer();
 	DoomLib::SetPlayer( 0 );
 	if ( ::g == NULL ) {
+		::common->Printf(WRONGCHEATGAME);
 		return;
 	}
 
@@ -1504,6 +1505,7 @@ CONSOLE_COMMAND_SHIP( idfa, "cheat for killer fucking arsenal", 0 ) {
 	int oldPlayer = DoomLib::GetPlayer();
 	DoomLib::SetPlayer( 0 );
 	if ( ::g == NULL ) {
+		::common->Printf(WRONGCHEATGAME);
 		return;
 	}
 
@@ -1534,6 +1536,7 @@ CONSOLE_COMMAND_SHIP( idkfa, "cheat for key full ammo", 0 ) {
 	int oldPlayer = DoomLib::GetPlayer();
 	DoomLib::SetPlayer( 0 );
 	if ( ::g == NULL ) {
+		::common->Printf(WRONGCHEATGAME);
 		return;
 	}
 
@@ -1575,6 +1578,7 @@ CONSOLE_COMMAND_SHIP( idclip, "cheat for no clip", 0 ) {
 	int oldPlayer = DoomLib::GetPlayer();
 	DoomLib::SetPlayer( 0 );
 	if ( ::g == NULL ) {
+		::common->Printf(WRONGCHEATGAME);
 		return;
 	}
 
@@ -1595,6 +1599,7 @@ CONSOLE_COMMAND_SHIP( idmypos, "for player position", 0 ) {
 	int oldPlayer = DoomLib::GetPlayer();
 	DoomLib::SetPlayer( 0 );
 	if ( ::g == NULL ) {
+		::common->Printf(WRONGCHEATGAME);
 		return;
 	}
 
@@ -1616,6 +1621,7 @@ CONSOLE_COMMAND_SHIP( idclev, "warp to next level", 0 ) {
 	int oldPlayer = DoomLib::GetPlayer();
 	DoomLib::SetPlayer( 0 );
 	if ( ::g == NULL ) {
+		::common->Printf(WRONGCHEATGAME);
 		return;
 	}
 
