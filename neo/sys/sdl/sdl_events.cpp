@@ -48,6 +48,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "sdl_local.h"
 #include "../posix/posix_public.h"
 #include "../common/localuser.h"
+#include "../../framework/Common.h"
 
 #if !SDL_VERSION_ATLEAST(2, 0, 0)
 #define SDL_Keycode SDLKey
@@ -79,6 +80,7 @@ extern idCVar r_windowX;
 extern idCVar r_windowY;
 extern idCVar r_windowWidth;
 extern idCVar r_windowHeight;
+extern idCVar com_emergencyexit;
 // DG end
 //GK: This function will run as a thread in order to capture when a joystick is connected or disconnected
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -928,6 +930,13 @@ sysEvent_t Sys_GetEvent()
 						int y = ev.window.data2;
 						r_windowX.SetInteger( x );
 						r_windowY.SetInteger( y );
+						break;
+					}
+					case SDL_WINDOWEVENT_CLOSE:
+					{
+						com_emergencyexit.SetBool(true);
+						soundSystem->SetMute(true);
+						cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "quit\n");
 						break;
 					}
 				}

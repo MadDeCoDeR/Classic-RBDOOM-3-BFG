@@ -99,6 +99,8 @@ idCVar com_pause( "com_pause", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "set
 idCVar com_game_mode("com_game_mode", "0", CVAR_INTEGER | CVAR_SYSTEM | CVAR_NOCHEAT, "Set which game to run 1: DOOM 2:DOOM2 3:DOOM3");
 //GK: add cvar to pause the platform bump
 idCVar com_pausePlatform("com_pausePlatform", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "set to 1 to pause the platform bump, to 0 to unpause again");
+
+idCVar com_emergencyexit("com_emergencyexit", "0", CVAR_BOOL | CVAR_ROM, "Stops Engine Initiation for faster shutdown");
 //GK End
 //extern idCVar g_demoMode; //GK: get it from game object
 
@@ -1085,7 +1087,7 @@ void idCommonLocal::RenderBink( const char* path )
 			Sys_EndJoystickInputEvents();
 		}
 		
-		if( escapeEvent )
+		if( escapeEvent || com_emergencyexit.GetBool())
 		{
 			break;
 		}
@@ -1518,7 +1520,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			RenderSplash();
 			//RenderSplash();
 		}
-		
+		if (com_emergencyexit.GetBool()) {
+			return;
+		}
 		
 		int legalStartTime = sys->GetMilliseconds();
 		declManager->Init2();
@@ -1611,8 +1615,13 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			}
 			Sys_GenerateEvents();
 			Sys_Sleep( 10 );
+			if (com_emergencyexit.GetBool()) {
+				break;
+			}
 		};
-		
+		if (com_emergencyexit.GetBool()) {
+			return;
+		}
 		// print all warnings queued during initialization
 		PrintWarnings();
 		

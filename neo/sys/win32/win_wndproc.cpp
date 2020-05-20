@@ -32,6 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "win_local.h"
 #include "../../renderer/RenderCommon.h"
+#include "../../framework/Common.h"
 
 #include <windowsx.h>
 
@@ -43,6 +44,7 @@ extern idCVar r_windowX;
 extern idCVar r_windowY;
 extern idCVar r_windowWidth;
 extern idCVar r_windowHeight;
+extern idCVar com_emergencyexit;
 
 static void WIN_DisableAltTab()
 {
@@ -265,6 +267,7 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 			break;
 			
 		case WM_CLOSE:
+			com_emergencyexit.SetBool(true);
 			soundSystem->SetMute( true );
 			cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "quit\n" );
 			break;
