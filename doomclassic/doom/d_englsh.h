@@ -770,7 +770,7 @@ extern char* C2TEXT;
 "you have bigger\n"\
 "halutinations than me..."
 
-#define WRONGCHEATGAME "Your memory serves you well"
+#define WRONGCHEATGAME "your memory serves you well!"
 
 //
 // Character cast strings F_FINALE.C
