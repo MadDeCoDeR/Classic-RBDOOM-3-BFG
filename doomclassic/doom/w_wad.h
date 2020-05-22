@@ -37,6 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <vector>
+#include <string>
 //
 //
 // TYPES
