@@ -60,6 +60,9 @@ idCVar pm_clientInterpolation_Divergence( "pm_clientInterpolation_Divergence", "
 idCVar pm_clientAuthoritative_minSpeedSquared( "pm_clientAuthoritative_minSpeedSquared", "1000.0f", CVAR_FLOAT, "" );
 //GK: Internal CVar in order to keep track on whenever the character is flipped or not
 idCVar pm_flip("pm_flip", "0", CVAR_BOOL, "");
+
+extern idCVar pm_classicPose;
+
 extern idCVar pm_cursor;
 
 extern idCVar pm_vmfov;
@@ -10586,6 +10589,12 @@ void idPlayer::CalculateViewWeaponPos( idVec3& origin, idMat3& axis )
 	
 	float vmfov = pm_vmfov.GetInteger() / 12.0;
 	float classicOffs = 0.0;
+	if (pm_classicPose.GetBool()) {
+		const char* weaponDefName = va("def_weapon%d", this->currentWeapon);
+		const char* weap = this->spawnArgs.GetString(weaponDefName);
+		const idDeclEntityDef* classicDef = game->FindEntityDef("classic_pos", false);
+		classicOffs = classicDef->dict.GetFloat(weap, 0.0);
+	}
 	// these cvars are just for hand tweaking before moving a value to the weapon def
 	idVec3	gunpos( g_gun_x.GetFloat() + vmfov, g_gun_y.GetFloat() + classicOffs, g_gun_z.GetFloat() );
 	

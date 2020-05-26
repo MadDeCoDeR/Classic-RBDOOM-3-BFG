@@ -49,3 +49,5 @@ neo/neo.kdev4
 *.gch
 /.vscode/ipch
 /neo/.vs
+/base/renderprogs/.vs/renderprogs/v16
+/base/renderprogs/.vs

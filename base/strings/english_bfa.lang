@@ -18,6 +18,7 @@
 	"#str_swf_aspect" 	"Aspect Ratio"
 	"#str_swf_aspect_dynamic" 	"Dynamic"
 	"#str_swf_crosshair" 	"Crosshair"
+	"#str_swf_classic_pose"		"Classic Weapon View"
 	"#str_swf_layout" 	"Controller Interface"
 	"#str_swf_x360" 	"XBOX360"
 	"#stf_swf_ps3" 	"PS3"

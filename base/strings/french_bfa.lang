@@ -18,6 +18,7 @@
 	"#str_swf_aspect" "Proportions"
 	"#str_swf_aspect_dynamic" "Dynamique"
 	"#str_swf_crosshair" "Réticule"
+	"#str_swf_classic_pose"		"Vue d'arme classique"
 	"#str_swf_layout" "Interface du contrôleur"
 	"#str_swf_x360" "XBOX360"
 	"#stf_swf_ps3" "PS3"

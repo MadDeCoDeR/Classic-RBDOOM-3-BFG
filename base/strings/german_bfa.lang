@@ -18,6 +18,7 @@
 	"#str_swf_aspect" "Seitenverhältnis"
 	"#str_swf_aspect_dynamic" "Dynamic"
 	"#str_swf_crosshair" "Fadenkreuz"
+	"#str_swf_classic_pose"		"Klassische Waffenansicht"
 	"#str_swf_layout" "Controller-Schnittstelle"
 	"#str_swf_x360" "XBOX360"
 	"#stf_swf_ps3" "PS3"

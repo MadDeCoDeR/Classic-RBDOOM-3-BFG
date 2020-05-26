@@ -132,6 +132,7 @@ idCVar pm_cursor("pm_cursor", "1", CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE, "Enable
 idCVar aa_targetAimAssistEnable("aa_targetAimAssistEnable", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enables/Disables the entire Aim Assist system");
 idCVar g_checkpoints("g_checkpoints", "1", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable checkpoints");
 idCVar g_weaponShadows("g_weaponShadows", "0", CVAR_BOOL | CVAR_ARCHIVE, "Cast shadows from weapons");
+idCVar pm_classicPose("pm_classicPose", "0", CVAR_BOOL | CVAR_GAME | CVAR_ARCHIVE, "Toogle classic weapon pose");
 
 idCVar	stereoRender_interOccularCentimeters("stereoRender_interOccularCentimeters", "3.0", CVAR_ARCHIVE | CVAR_RENDERER, "Distance between eyes");
 
@@ -166,7 +167,8 @@ Var_t g_vars[] =
 	{"pm_thirdPersonRange",&pm_thirdPersonRange},
 	{"pm_thirdPersonXOff",&pm_thirdPersonXOff},
 	{"pm_thirdPersonHeight",&pm_thirdPersonHeight},
-	{"pm_jumpheight",&pm_jumpheight}
+	{"pm_jumpheight",&pm_jumpheight},
+	{"pm_classicPose", &pm_classicPose}
 };
 /*
 ===========

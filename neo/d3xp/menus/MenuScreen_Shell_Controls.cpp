@@ -38,6 +38,7 @@ enum contorlsMenuCmds_t
 	CONTROLS_CMD_BINDINGS,
 	CONTROLS_CMD_GAMEPAD,
 	CONTROLS_CMD_CROSSHAIR,
+	CONTROLS_CMD_CPOS,
 	CONTROLS_CMD_INVERT,
 	CONTROLS_CMD_MOUSE_SENS,
 	CONTROLS_CMD_CONTROLLER_LAYOUT
@@ -104,6 +105,15 @@ void idMenuScreen_Shell_Controls::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_CROSSHAIR );
 	control->RegisterEventObserver( helpWidget );
 	options->AddChild( control );
+
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TOGGLE);
+	control->SetLabel("#str_swf_classic_pose");	// Classic Pose
+	control->SetDataSource(&controlData, idMenuDataSource_ControlSettings::CONTROLS_FIELD_CPOSE);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, CONTROLS_CMD_CPOS);
+	control->RegisterEventObserver(helpWidget);
+	options->AddChild(control);
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TOGGLE );
@@ -359,6 +369,15 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 					}
 					break;
 				}
+				case CONTROLS_CMD_CPOS:
+				{
+					controlData.AdjustField(idMenuDataSource_ControlSettings::CONTROLS_FIELD_CPOSE, 1);
+					if (options != NULL)
+					{
+						options->Update();
+					}
+					break;
+				}
 				case CONTROLS_CMD_CONTROLLER_LAYOUT:
 				{
 					controlData.AdjustField(idMenuDataSource_ControlSettings::CONTROLS_FIELD_CONTROLLER_LAYOUT, 1);
@@ -437,6 +456,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::LoadData()
 	float mouseSpeed = ( ( in_mouseSpeed.GetFloat() - 0.25f ) / ( 4.0f - 0.25 ) ) * 100.0f;
 	fields[ CONTROLS_FIELD_MOUSE_SENS ].SetFloat( mouseSpeed );
 	fields[ CONTROLS_FIELD_CROSSHAIR ].SetBool(game->GetCVarBool("pm_cursor") );
+	fields[CONTROLS_FIELD_CPOSE].SetBool(game->GetCVarBool("pm_classicPose"));
 	fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].SetInteger(in_joylayout.GetInteger());
 	
 	originalFields = fields;
@@ -454,6 +474,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::CommitData()
 	float mouseSpeed = 0.25f + ( ( 4.0f - 0.25 ) * ( fields[ CONTROLS_FIELD_MOUSE_SENS ].ToFloat() / 100.0f ) );
 	in_mouseSpeed.SetFloat( mouseSpeed );
 	game->SetCVarBool("pm_cursor",fields[ CONTROLS_FIELD_CROSSHAIR ].ToBool() );
+	game->SetCVarBool("pm_classicPose", fields[CONTROLS_FIELD_CPOSE].ToBool());
 	in_joylayout.SetInteger( fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToInteger());
 	
 	cvarSystem->SetModifiedFlags( CVAR_ARCHIVE );
@@ -469,7 +490,7 @@ idMenuScreen_Shell_Controls::idMenuDataSource_AudioSettings::AdjustField
 */
 void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::AdjustField( const int fieldIndex, const int adjustAmount )
 {
-	if( fieldIndex == CONTROLS_FIELD_INVERT_MOUSE || fieldIndex == CONTROLS_FIELD_CROSSHAIR)
+	if( fieldIndex == CONTROLS_FIELD_INVERT_MOUSE || fieldIndex == CONTROLS_FIELD_CROSSHAIR || fieldIndex == CONTROLS_FIELD_CPOSE)
 	{
 		fields[ fieldIndex ].SetBool( !fields[ fieldIndex ].ToBool() );
 	}
@@ -518,6 +539,11 @@ bool idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::IsDataChange
 	}
 	
 	if( fields[ CONTROLS_FIELD_CROSSHAIR ].ToFloat() != originalFields[ CONTROLS_FIELD_CROSSHAIR ].ToFloat() )
+	{
+		return true;
+	}
+
+	if (fields[CONTROLS_FIELD_CPOSE].ToFloat() != originalFields[CONTROLS_FIELD_CPOSE].ToFloat())
 	{
 		return true;
 	}
