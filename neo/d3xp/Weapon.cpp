@@ -2653,13 +2653,10 @@ void idWeapon::PresentWeapon( bool showViewModel )
 			}
 		}
 		viewWeaponOrigin += hideOffset * viewWeaponAxis[ 2 ];
-		//GK: Complex Math stuff
-		double vmfov = (100.0 - pm_vmfov.GetInteger()) / 100.0;
-		viewWeaponAxis = viewWeaponAxis * vmfov;
+		
 		// kick up based on repeat firing
 		MuzzleRise( viewWeaponOrigin, viewWeaponAxis );
 	}
-	
 	// set the physics position and orientation
 	GetPhysics()->SetOrigin( viewWeaponOrigin );
 	GetPhysics()->SetAxis( viewWeaponAxis );

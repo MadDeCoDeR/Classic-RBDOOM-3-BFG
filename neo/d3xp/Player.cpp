@@ -62,6 +62,8 @@ idCVar pm_clientAuthoritative_minSpeedSquared( "pm_clientAuthoritative_minSpeedS
 idCVar pm_flip("pm_flip", "0", CVAR_BOOL, "");
 extern idCVar pm_cursor;
 
+extern idCVar pm_vmfov;
+
 extern idCVar g_demoMode;
 
 /*
@@ -10582,8 +10584,10 @@ void idPlayer::CalculateViewWeaponPos( idVec3& origin, idMat3& axis )
 	const idVec3& viewOrigin = firstPersonViewOrigin;
 	const idMat3& viewAxis = firstPersonViewAxis;
 	
+	float vmfov = pm_vmfov.GetInteger() / 12.0;
+	float classicOffs = 0.0;
 	// these cvars are just for hand tweaking before moving a value to the weapon def
-	idVec3	gunpos( g_gun_x.GetFloat(), g_gun_y.GetFloat(), g_gun_z.GetFloat() );
+	idVec3	gunpos( g_gun_x.GetFloat() + vmfov, g_gun_y.GetFloat() + classicOffs, g_gun_z.GetFloat() );
 	
 	// as the player changes direction, the gun will take a small lag
 	idVec3	gunOfs = GunAcceleratingOffset();
@@ -10814,7 +10818,7 @@ void idPlayer::CalculateFirstPersonView()
 	{
 		// offset for local bobbing and kicks
 		GetViewPos( firstPersonViewOrigin, firstPersonViewAxis );
-#if 0
+#if 1
 		// shakefrom sound stuff only happens in first person
 		firstPersonViewAxis = firstPersonViewAxis * playerView.ShakeAxis();
 #endif
