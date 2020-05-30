@@ -125,15 +125,17 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_FPPE );
 	options->AddChild( control );
 	
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TEXT);
+	control->SetLabel("#str_flashlight");	// Flashlight
+	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_FLASH);
+	control->SetDisabled(game->GetLocalPlayer());
 	if (!game->GetLocalPlayer()) {
-		control = new(TAG_SWF) idMenuWidget_ControlButton();
-		control->SetOptionType(OPTION_SLIDER_TEXT);
-		control->SetLabel("#str_flashlight");	// Flashlight
-		control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_FLASH);
 		control->SetupEvents(2, options->GetChildren().Num());
 		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_FLASH);
-		options->AddChild(control);
 	}
+	options->AddChild(control);
+
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_BAR);
 	control->SetLabel("#str_pm_fov"); //Player Model FOV
@@ -211,7 +213,6 @@ idMenuScreen_Shell_SystemOptions::ShowScreen
 */
 void idMenuScreen_Shell_AdvancedOptions::ShowScreen( const mainMenuTransition_t transitionType )
 {
-
 	advData.LoadData();
 	
 	idMenuScreen::ShowScreen( transitionType );
