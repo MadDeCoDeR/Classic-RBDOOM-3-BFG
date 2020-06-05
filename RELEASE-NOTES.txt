@@ -1,6 +1,60 @@
 DOOM-BFA Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG
 
 Thank you for downloading DOOM-BFA.
+
+_______________________________________
+
+05 June 2020 - DOOM-BFA 1.2.5
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- Overhaul and further stabilize framerate interpolation
+
+- Fixed spelling mistakes on the Master Levels ending messages
+
+- Fixed minor issue with EXPINFO
+
+- Add MBF's Spawn codepointer
+
+- Add console messages when trying to use cheat codes that are for the wrong game
+
+[DOOM3BFG]
+
+- Fixed issue with SWF Ui's dynamic updates on interactions
+
+- Fixed issue with PDA Inventory when having all the weapons
+
+- Improved achievement error message
+
+- Like in MP now in SP the game will enforce the script FPS to the current framerate the game is running on
+
+- Fixed issue while changing HDR on the in game menu
+
+- Add self drawn flashlight icon for PDA & HUD
+
+- Fighting the "good" fight againist the pleage known as profile.bin
+
+- Further improvments over  fullscreen mode
+
+- Fixed issue when switching between default and alternative controller configuration
+
+- Add console messages when trying to use cheat codes that are for the wrong game
+
+- Make the game to exit instantly if it is closed during the intro
+
+- Fix some translation errors (in english, used Google Translate for the other languages)
+
+- Moved d3le player definition to another resource folder in order zBFA to not break compatibility with DOOM 3 (2019)
+
+- By default Soft shadows and HDR will be disabled
+
+- Fixed Player model Field of view Lighting
+
+- Add option in the controls to toogle centered classic weapon view on DOOM 3
 _______________________________________
 
 10 April 2020 - DOOM-BFA 1.2.4
