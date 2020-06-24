@@ -407,6 +407,10 @@ void D_AdvanceDemo (void)
 //
 void D_DoAdvanceDemo (void)
 {
+
+	if (::g->paused)
+		return;
+
 	::g->players[::g->consoleplayer].playerstate = PST_LIVE;  // not reborn
 	::g->advancedemo = false;
 	::g->usergame = false;               // no save / end game here
@@ -422,7 +426,7 @@ void D_DoAdvanceDemo (void)
 	{
 	case 0:
 		if ( ::g->gamemode == commercial )
-			::g->pagetic = 35 * 11;
+			::g->pagetic = 11 * TICRATE;
 		else
 			::g->pagetic = 8 * TICRATE;
 
