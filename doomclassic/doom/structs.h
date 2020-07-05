@@ -605,3 +605,8 @@ typedef struct {
 	char* oldValue;
 	char* command;
 }actdef_t;
+
+typedef struct {
+	char* name;
+	actionf_p2 func;
+}dehcptr;

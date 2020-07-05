@@ -277,4 +277,6 @@ extern idCVar g_CTFArrows;
 
 extern idCVar	net_clientSelfSmoothing;
 
+extern idCVar cl_close;
+
 #endif /* !__SYS_CVAR_H__ */

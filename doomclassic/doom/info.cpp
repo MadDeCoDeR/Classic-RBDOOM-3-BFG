@@ -9375,12 +9375,9 @@ void resetValues() {
 	tempStates = ttempStates;
 }
 
-typedef struct {
-	char* name;
-	actionf_p2 func;
-}dehcptr;
 
-dehcptr cptrval[] = {
+
+std::vector<dehcptr> tempcptrval {
 	{ "NULL",NULL },
 { "Light0",(actionf_p2)A_Light0 },
 { "WeaponReady",(actionf_p2)A_WeaponReady },
@@ -9460,11 +9457,16 @@ dehcptr cptrval[] = {
 { "Spawn", (actionf_p2)A_Spawn }
 };
 
+void init_cptrs() {
+	::g->cptrval = tempcptrval;
+	tempcptrval.clear();
+	::g->cptrvalInitialized = 1;
+}
+
 actionf_p2 getFunc(char* func) {
-	int size = sizeof(cptrval)/ sizeof(*cptrval);
-	for (int i = 0; i < size; i++) {
-		if (!idStr::Icmp(func, cptrval[i].name)) {
-			return cptrval[i].func;
+	for (int i = 0; i < ::g->cptrval.size(); i++) {
+		if (!idStr::Icmp(func, ::g->cptrval[i].name)) {
+			return ::g->cptrval[i].func;
 		}
 	}
 	I_Printf("Code Pointer: %s is not supported.\n", func);

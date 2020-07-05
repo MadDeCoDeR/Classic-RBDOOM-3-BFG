@@ -352,6 +352,8 @@ unsigned int *ImageBuff;
 unsigned int *ImageBuffs[2];
 
 // i_video_xbox.vars end // 
+std::vector<dehcptr> cptrval;
+qboolean cptrvalInitialized;
 //  m_argv.vars begin // 
 int		myargc;
 char**		myargv;
@@ -1090,3 +1092,5 @@ const char* acronymPrefix;
 // when importing from other ports then put it HERE
 
 msecnode_t* headsecnode;
+
+

@@ -1369,6 +1369,7 @@ typedef struct
 extern /*const*/ std::vector<mobjinfo_t> mobjinfo;
 
 void resetValues();
+void init_cptrs();
 actionf_p2 getFunc(char* func);
 #endif
 

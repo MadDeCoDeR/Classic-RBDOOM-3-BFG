@@ -28,20 +28,55 @@
 #include "../../doomclassic/doom/globaldata.h"
 
 #ifdef GAME_DLL
-//GK: Declare the command fuctions
+//GK: Declare the fuctions here
 void idTest(const idCmdArgs& args);
+void setupCodePointers(void* data);
+void A_InstaKill(mobj_t* mo, void*);
+
+//GK: Declare custom Code Pointers here
+dehcptr customcptr[] = {
+	{"InstaKill", (actionf_p2)A_InstaKill}
+};
 #endif
 
 void InitClassic() {
 #ifdef GAME_DLL
 	//GK: Register the commands to the System
 	::cmdSystem->AddCommand("idtest", idTest, 0, "", 0);
+	Sys_CreateThread((xthread_t)setupCodePointers, NULL, THREAD_HIGHEST, "ClassicSDK", CORE_ANY);
 #endif
 }
 
 #ifdef GAME_DLL
+void setupCodePointers(void* data) {
+	bool isInitialized = false;
+	Globals* classic = (Globals*)::GetClassicData();
+	while (true) {
+		if (cvarSystem->GetCVarBool("cl_close")) {
+			break;
+		}
+		if (::GetClassicData != NULL) {
+			classic = (Globals*)::GetClassicData();
+			if (classic == NULL) {
+				isInitialized = false;
+				continue;
+			}
+			else {
+				if (classic->cptrvalInitialized == 1 && !isInitialized) {
+					//Add new codepointers
+					int size = sizeof(customcptr) / sizeof(dehcptr);
+					for (int i = 0; i < size; i++) {
+						classic->cptrval.push_back(customcptr[i]);
+					}
+					isInitialized = true;
+				}
+			}
+		}
+	}
+}
+
 //GK: Implement the command
-void idTest(const idCmdArgs &args) {
+void idTest(const idCmdArgs& args) {
 	Globals* classic = (Globals*)::GetClassicData();
 	if (classic == NULL) {
 		return;
@@ -50,5 +85,9 @@ void idTest(const idCmdArgs &args) {
 		return;
 	}
 	classic->plyr->message = "Hello World !!!";
+}
+
+void A_InstaKill(mobj_t* mo, void*) {
+	mo->health = 0;
 }
 #endif

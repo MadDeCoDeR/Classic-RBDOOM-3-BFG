@@ -279,6 +279,7 @@ void DoomLib::InitGlobals( void *ptr /* = NULL */ )
 	memset( globaldata[currentplayer], 0, sizeof(Globals) );
 	g = globaldata[currentplayer];
 	g->InitGlobals();
+	init_cptrs();
 	
 }
 
@@ -451,8 +452,9 @@ void DoomLib::Shutdown() {
 
 	// Delete the globals
 	if ( globaldata[currentplayer] ) {
-		delete globaldata[currentplayer];
+		Globals* glob = globaldata[currentplayer];
 		globaldata[currentplayer] = NULL;
+		delete glob;
 	}
 	//GK: No longer in classic Doom ? No need to check these.
 	idLib::classichUsed = false;
