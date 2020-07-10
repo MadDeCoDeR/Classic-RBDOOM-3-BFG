@@ -435,6 +435,8 @@ void idGameLocal::Init()
 		//We want to run this once after the base doom config file has run so we can
 		//have the correct xp binds
 		cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec default.cfg\n" );
+		cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "exec joy_360_0.cfg\n");
+		cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "exec joy_righty.cfg\n");
 		cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "seta g_xp_bind_run_once 1\n" );
 		cmdSystem->ExecuteCommandBuffer();
 	}

@@ -135,7 +135,7 @@ public:
 	// As a quick check for existance. -1 length == not present.
 	// A 0 byte will always be appended at the end, so string ops are safe.
 	// The buffer should be considered read-only, because it may be cached for other uses.
-	virtual int				ReadFile( const char* relativePath, void** buffer, ID_TIME_T* timestamp = NULL ) = 0;
+	virtual int				ReadFile( const char* relativePath, void** buffer, ID_TIME_T* timestamp = NULL, const char* gamedir = NULL ) = 0;
 	// Frees the memory allocated by ReadFile.
 	virtual void			FreeFile( void* buffer ) = 0;
 	// Writes a complete file, will create any needed subdirectories.

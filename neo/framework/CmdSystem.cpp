@@ -266,15 +266,20 @@ void idCmdSystemLocal::Exec_f( const idCmdArgs& args )
 	int		len;
 	idStr	filename;
 	
-	if( args.Argc() != 2 )
+	if( args.Argc() > 3 || args.Argc() < 2)
 	{
-		common->Printf( "exec <filename> : execute a script file\n" );
+		common->Printf( "exec <filename> <gamedir>: execute a script file\n" );
 		return;
 	}
 	
 	filename = args.Argv( 1 );
 	filename.DefaultFileExtension( ".cfg" );
-	len = fileSystem->ReadFile( filename, reinterpret_cast<void**>( &f ), NULL );
+	if (args.Argc() > 2) {
+		len = fileSystem->ReadFile(filename, reinterpret_cast<void**>(&f), NULL, args.Argv( 2 ));
+	}
+	else {
+		len = fileSystem->ReadFile(filename, reinterpret_cast<void**>(&f), NULL);
+	}
 	if( !f )
 	{
 		common->Printf( "couldn't exec %s\n", args.Argv( 1 ) );

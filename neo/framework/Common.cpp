@@ -1433,6 +1433,8 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// exec the startup scripts
 		cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec default.cfg\n" );
+		cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "exec joy_360_0.cfg\n");
+		cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "exec joy_righty.cfg\n");
 #ifndef __MONOLITH__ //GK: Non Monolithic doesn't have the game object until it loads the dll
 		// load the game dll
 		LoadGameDLL();	
@@ -1442,7 +1444,17 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		if( !SafeMode() && !game->GetCVarBool("g_demoMode") )
 		{
 			std::string configname = CONFIG_FILE;
-			std::string command = "exec " + configname + "\n";
+			std::string command = "exec " + configname;
+			//GK: Explicit load saved configurations from the current mod folder
+			if (cvarSystem->GetCVarString("fs_game") != NULL && cvarSystem->GetCVarString("fs_game")[0] != 0) {
+				command += " ";
+				command += cvarSystem->GetCVarString("fs_game");
+			}
+			else if (cvarSystem->GetCVarString("fs_game_base") != NULL && cvarSystem->GetCVarString("fs_game_base")[0] != 0) {
+				command += " ";
+				command += cvarSystem->GetCVarString("fs_game_base");
+			}
+			command += "\n";
 			cmdSystem->BufferCommandText( CMD_EXEC_APPEND, command.c_str() );
 		}
 #endif
@@ -1698,6 +1710,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 				}
 			}
 		}
+		/*idPlayerProfile* profile = session->GetProfileFromMasterLocalUser();
+		profile->SetLeftyFlip(profile->GetLeftyFlip());
+		cvarSystem->SetModifiedFlags(CVAR_ARCHIVE);*/
 		if (com_game_mode.GetInteger() == 1) {
 			SwitchToGame(DOOM_CLASSIC);
 		}

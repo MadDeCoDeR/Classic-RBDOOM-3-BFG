@@ -143,7 +143,7 @@ public:
 	virtual const char* 	BuildOSPath( const char* base, const char* game, const char* relativePath );
 	virtual const char* 	BuildOSPath( const char* base, const char* relativePath );
 	virtual void			CreateOSPath( const char* OSPath );
-	virtual int				ReadFile( const char* relativePath, void** buffer, ID_TIME_T* timestamp );
+	virtual int				ReadFile( const char* relativePath, void** buffer, ID_TIME_T* timestamp, const char* gamedir = NULL );
 	virtual void			FreeFile( void* buffer );
 	virtual int				WriteFile( const char* relativePath, const void* buffer, int size, const char* basePath = "fs_savepath" );
 	virtual void			RemoveFile( const char* relativePath );
@@ -1960,7 +1960,7 @@ a null buffer will just return the file length and time without loading
 timestamp can be NULL if not required
 ============
 */
-int idFileSystemLocal::ReadFile( const char* relativePath, void** buffer, ID_TIME_T* timestamp )
+int idFileSystemLocal::ReadFile( const char* relativePath, void** buffer, ID_TIME_T* timestamp, const char* gamedir )
 {
 
 	idFile* 	f;
@@ -2032,7 +2032,7 @@ int idFileSystemLocal::ReadFile( const char* relativePath, void** buffer, ID_TIM
 	}
 	
 	// look for it in the filesystem or pack files
-	f = OpenFileRead( relativePath, ( buffer != NULL ) );
+	f = OpenFileRead( relativePath, ( buffer != NULL ), gamedir );
 	if( f == NULL )
 	{
 		// RB: moved here

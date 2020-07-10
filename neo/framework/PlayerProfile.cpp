@@ -184,43 +184,44 @@ bool idPlayerProfile::Serialize( idSerializer& ser )
 		ser.SerializePacked( stats[i].i );
 	}
 	
-	ser.Serialize( leftyFlip );
-	ser.Serialize( configSet );
-	
-	if( ser.IsReading() )
-	{
-		// Which binding is used on the console?
-		ser.Serialize( customConfig );
-		
-		ExecConfig( false );
-		
-		if( customConfig )
-		{
-			for( int i = 0; i < K_LAST_KEY; ++i )
-			{
-				idStr bind;
-				ser.SerializeString( bind );
-				idKeyInput::SetBinding( i, bind.c_str() );
-			}
-		}
-	}
-	else
-	{
-	
-		if( !customConfig )
-		{
-			ExecConfig( false );
-		}
-		
-		customConfig = true;
-		ser.Serialize( customConfig );
-		
-		for( int i = 0; i < K_LAST_KEY; ++i )
-		{
-			idStr bind = idKeyInput::GetBinding( i );
-			ser.SerializeString( bind );
-		}
-	}
+	//ser.Serialize( leftyFlip );
+	//ser.Serialize( configSet );
+	//
+	//if( ser.IsReading() )
+	//{
+	//	// Which binding is used on the console?
+	//	ser.Serialize( customConfig );
+	//	changeSet = true;
+	//	ExecConfig( false );
+	//	
+	//	if( customConfig )
+	//	{
+	//		for( int i = 0; i < K_LAST_KEY; ++i )
+	//		{
+	//			idStr bind;
+	//			ser.SerializeString( bind );
+	//			idKeyInput::SetBinding( i, bind.c_str() );
+	//		}
+	//	}
+	//}
+	//else
+	//{
+	//
+	//	if( !customConfig )
+	//	{
+	//		changeSet = true;
+	//		ExecConfig( false );
+	//	}
+	//	
+	//	customConfig = true;
+	//	ser.Serialize( customConfig );
+	//	
+	//	for( int i = 0; i < K_LAST_KEY; ++i )
+	//	{
+	//		idStr bind = idKeyInput::GetBinding( i );
+	//		ser.SerializeString( bind );
+	//	}
+	//}
 	
 	return true;
 }
@@ -394,6 +395,7 @@ void idPlayerProfile::SetConfig( int config, bool save )
 {
 	configSet = config;
 	changeSet = true;
+	customConfig = true;
 	ExecConfig( save );
 }
 
@@ -415,6 +417,7 @@ idPlayerProfile::SetLeftyFlip
 void idPlayerProfile::SetLeftyFlip( bool lf )
 {
 	leftyFlip = lf;
+	customConfig = true;
 	ExecConfig( true );
 }
 
@@ -449,6 +452,9 @@ void idPlayerProfile::ExecConfig( bool save, bool forceDefault )
 	}
 
 	if (changeSet) {
+		if (configSet > 1) {
+			configSet = 0;
+		}
 		cmdSystem->AppendCommandText(va("exec joy_360_%d.cfg\n", configSet));
 		changeSet = false;
 	}
