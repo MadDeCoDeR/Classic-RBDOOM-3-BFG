@@ -803,7 +803,7 @@ P_SetupLevel
 	// find map name
 	if ( ::g->gamemode == commercial)
 	{
-		sprintf (lumpname,"map%02i", map);
+		sprintf (lumpname,"MAP%02i", map);
 
 		if (::g->gamemission == pack_custom ) { //GK:Custom expansion related stuff
 			sprintf(lumpname, "%s", ::g->maps[map-1].lumpname);

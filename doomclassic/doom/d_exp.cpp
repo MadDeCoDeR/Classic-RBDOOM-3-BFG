@@ -782,6 +782,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 						}
 						if (!idStr::Icmp(value, ::g->maps[j].lumpname)) {
 							*mapstr[i].ival = j;
+							break;
 						}
 					}
 					if (!*mapstr[i].ival) {
