@@ -99,6 +99,8 @@ void D_DoAdvanceDemo (void);
 
 bool initonce = false;
 
+idCVar cl_expMenu("cl_expMenu", "1", CVAR_INTEGER, "Change DOOM 2 Menu based on expansion 1 = DOOM 2, 2 = TNT: Evilution, 3 = The Plutonia Experiment, 4 = Master Levels, 5 = No Rest For the Living", 1, 5);
+
 const char*		wadfiles[MAXWADFILES] =
 {
 	0
@@ -1138,10 +1140,11 @@ void D_DoomMain(void)
 		MasterExport();
 	}
 
-	if (::g->gamemode == commercial && !initonce) {
-		initonce =true;
-	}
 
+	
+}
+
+void D_SetupAdditionalInfo() {
 	switch (::g->gamemission) {
 	case doom:
 		::g->acronymPrefix = "UD";
@@ -1221,8 +1224,16 @@ bool D_DoomMainPoll(void)
 	if ( ::g->gameaction != ga_loadgame && ::g->gameaction != ga_playdemo )
 	{
 		if (::g->autostart || ::g->netgame ) {
+			if (::g->gamemode == commercial && !initonce) {
+				initonce = true;
+			}
 			G_InitNew (::g->startskill, ::g->startepisode, ::g->startmap );
 		} else if(  ::g->gameaction != ga_newgame) {
+			if (::g->gamemode == commercial && !initonce) {
+				initonce = true;
+				M_ChangeMenuExp(cl_expMenu.GetInteger());
+			}
+			D_SetupAdditionalInfo();
 			::op->SetAdditionalInfo("status", va("%s:Title Menu",::g->acronymPrefix));
 			D_StartTitle ();                // start up intro loop
 		}

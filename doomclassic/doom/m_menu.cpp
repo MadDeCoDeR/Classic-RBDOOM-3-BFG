@@ -2538,45 +2538,17 @@ qboolean M_Responder (event_t* ev)
 						::g->cheat[::g->cheatind] = ev->data1;
 						::g->cheatind++;
 						::g->markfordelete = 0;
-					if (cht_CheckCheat(cheat_menu_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete, true)) {
-						::g->markfordelete = 0;
-						for (int o = 0; o < 3; o++) {
-							if (buf[o] == 11) { //0=11 so set it to 1
-								buf[o] = 1;
-							}
-						}
-
-						int expm = buf[1]-1;
-						if (expm > 0 && expm < 6) {
-							if (expm > 1) {
-								switch (expm) {
-								case 2:
-									if (DoomLib::hexp[0]) {
-										DoomLib::SetCurrentExpansion(expm);
-									}
-									break;
-								case 3:
-									if (DoomLib::hexp[1]) {
-										DoomLib::SetCurrentExpansion(expm);
-									}
-									break;
-								case 4:
-									if (DoomLib::hexp[2]) {
-										DoomLib::SetCurrentExpansion(expm);
-									}
-									break;
-								case 5:
-									if (DoomLib::hexp[3]) {
-										DoomLib::SetCurrentExpansion(expm);
-									}
-									break;
+						if (cht_CheckCheat(cheat_menu_seq, ::g->cheat, ::g->cheatind, ::g->markfordelete, true)) {
+							::g->markfordelete = 0;
+							for (int o = 0; o < 3; o++) {
+								if (buf[o] == 11) { //0=11 so set it to 1
+									buf[o] = 1;
 								}
 							}
-							else {
-								DoomLib::SetCurrentExpansion(expm);
-							}
+
+							int expm = buf[1] - 1;
+							M_ChangeMenuExp(expm);
 						}
-					}
 					if (!::g->markfordelete || ::g->cheatind>=14) {
 						for (int u = 0; u < 14; u++) {
 							::g->cheat[u] = NULL;
@@ -3226,4 +3198,36 @@ void M_Remap(event_t* ev) {
 	}
 
 
+}
+
+void M_ChangeMenuExp(int exp) {
+	if (exp > 0 && exp < 6) {
+		if (exp > 1) {
+			switch (exp) {
+			case 2:
+				if (DoomLib::hexp[0]) {
+					DoomLib::SetCurrentExpansion(exp);
+				}
+				break;
+			case 3:
+				if (DoomLib::hexp[1]) {
+					DoomLib::SetCurrentExpansion(exp);
+				}
+				break;
+			case 4:
+				if (DoomLib::hexp[2]) {
+					DoomLib::SetCurrentExpansion(exp);
+				}
+				break;
+			case 5:
+				if (DoomLib::hexp[3]) {
+					DoomLib::SetCurrentExpansion(exp);
+				}
+				break;
+			}
+		}
+		else {
+			DoomLib::SetCurrentExpansion(exp);
+		}
+	}
 }

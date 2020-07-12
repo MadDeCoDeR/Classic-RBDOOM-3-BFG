@@ -64,6 +64,8 @@ void M_StartMessage(const char *string, messageRoutine_t routine, qboolean input
 
 void M_Remap(event_t* ev);
 
+void M_ChangeMenuExp(int exp);
+
 
 #endif    
 
