@@ -1,6 +1,35 @@
 
 add_definitions( -DGAME_DLL -DGAME_VERSION="CustomDOOM-1")
 
+if(OPENAL)
+		add_definitions(-DUSE_OPENAL)
+	
+		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libs/openal-soft/include)
+		
+		if(CMAKE_CL_64)
+			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libs/openal-soft/libs/win64)
+		else()
+			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../libs/openal-soft/libs/win32)
+		endif()
+		
+		list(APPEND RBDOOM3_INCLUDES 
+			${OPENAL_INCLUDES}
+			${DOOMCLASSIC_OPENAL_INCLUDES})
+		list(APPEND RBDOOM3_SOURCES
+			${OPENAL_SOURCES}
+			${DOOMCLASSIC_OPENAL_SOURCES})
+		
+		set(OpenAL_LIBRARIES
+			OpenAL32)
+			
+		if(CMAKE_CL_64)
+			install(FILES ../libs/openal-soft/libs/win64/OpenAL32.dll DESTINATION .)
+		else()
+			install(FILES ../libs/openal-soft/libs/win32/OpenAL32.dll DESTINATION .)
+			install(FILES ../libs/openal-soft/libs/win32/OpenAL32.pdb DESTINATION .)
+		endif()
+endif()
+
 set(ID_GAME_INCLUDES
 	Achievements.h
 	Actor.h
@@ -97,6 +126,7 @@ file(GLOB ID_PHYSICS_INCLUDES physics/*.h)
 file(GLOB ID_PHYSICS_SOURCES physics/*.cpp)
 file(GLOB ID_SCRIPT_INCLUDES script/*.h)
 file(GLOB ID_SCRIPT_SOURCES script/*.cpp)
+
 
 set(ID_INCLUDES_ALL
 			${ID_GAME_INCLUDES}
