@@ -9459,7 +9459,7 @@ std::vector<dehcptr> tempcptrval {
 
 void init_cptrs() {
 	::g->cptrval = tempcptrval;
-	tempcptrval.clear();
+	//tempcptrval.clear();
 	::g->cptrvalInitialized = 1;
 }
 
