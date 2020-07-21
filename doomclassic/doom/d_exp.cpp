@@ -671,7 +671,8 @@ void setEXP(char* name, int value) {
 				char* tname = new char[6];
 				sprintf(tname, "MAP%02d", i + 1);
 				::g->maps[i].lumpname = tname;
-				::g->maps[i].nextmap = i + 1;
+				::g->maps[i].nextmap = i + 2;
+				::g->maps[i].index = i + 1;
 			}
 		return;
 	}
@@ -781,7 +782,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 							continue;
 						}
 						if (!idStr::Icmp(value, ::g->maps[j].lumpname)) {
-							*mapstr[i].ival = j;
+							*mapstr[i].ival = ::g->maps[j].index;
 							break;
 						}
 					}

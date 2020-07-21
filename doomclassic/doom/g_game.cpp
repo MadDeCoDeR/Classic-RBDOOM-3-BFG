@@ -1348,6 +1348,13 @@ void FindNextMap(int map,bool issecret = false) {
 			}
 		}
 	}
+	else {
+		for (int j = 0; j < ::g->maps.size(); j++) {
+			if (*nmap == ::g->maps[j].index) {
+				*nmap = j;
+			}
+		}
+	}
 }
 
 void G_DoCompleted (void) 

@@ -559,6 +559,7 @@ typedef struct
 // z_zone.structs end // 
 
 typedef struct {//GK:Store information for the custom expansion maps
+	int index;
 	int secretmap = 0;
 	int nextmap = 0;
 	bool miniboss;
