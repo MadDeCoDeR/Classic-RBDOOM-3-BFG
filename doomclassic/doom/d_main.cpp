@@ -1220,7 +1220,7 @@ bool D_DoomMainPoll(void)
 		G_LoadGame (file);
 	}
 
-
+	D_SetupAdditionalInfo();
 	if ( ::g->gameaction != ga_loadgame && ::g->gameaction != ga_playdemo )
 	{
 		if (::g->autostart || ::g->netgame ) {
@@ -1233,7 +1233,7 @@ bool D_DoomMainPoll(void)
 				initonce = true;
 				M_ChangeMenuExp(cl_expMenu.GetInteger());
 			}
-			D_SetupAdditionalInfo();
+			
 			::op->SetAdditionalInfo("status", va("%s:Title Menu",::g->acronymPrefix));
 			D_StartTitle ();                // start up intro loop
 		}
