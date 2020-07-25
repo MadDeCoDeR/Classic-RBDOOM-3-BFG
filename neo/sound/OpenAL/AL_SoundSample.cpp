@@ -338,14 +338,15 @@ void idSoundSample_OpenAL::CreateOpenALBuffer()
 		if( format.basic.formatTag == idWaveFile::FORMAT_ADPCM )
 		{
 			// RB: decode idWaveFile::FORMAT_ADPCM to idWaveFile::FORMAT_PCM
+			//GK: How about no. OpenAL-soft does support ADPCM
 			
 			buffer = buffers[0].buffer;
 			bufferSize = buffers[0].bufferSize;
 			
-			if( MS_ADPCM_decode( ( uint8** ) &buffer, &bufferSize ) < 0 )
+			/*if( MS_ADPCM_decode( ( uint8** ) &buffer, &bufferSize ) < 0 )
 			{
 				common->Error( "idSoundSample_OpenAL::CreateOpenALBuffer: could not decode ADPCM '%s' to 16 bit format", GetName() );
-			}
+			}*/
 			
 			buffers[0].buffer = buffer;
 			buffers[0].bufferSize = bufferSize;
@@ -390,6 +391,9 @@ void idSoundSample_OpenAL::CreateOpenALBuffer()
 		else
 #endif
 		{
+			if (format.basic.formatTag == idWaveFile::FORMAT_ADPCM) {
+				alBufferi(openalBuffer, AL_UNPACK_BLOCK_ALIGNMENT_SOFT, format.extra.adpcm.samplesPerBlock);
+			}
 			alBufferData( openalBuffer, GetOpenALBufferFormat(), buffer, bufferSize, format.basic.samplesPerSec );
 		}
 		
@@ -1077,23 +1081,25 @@ ALenum idSoundSample_OpenAL::GetOpenALBufferFormat() const
 {
 	ALenum alFormat;
 	
-	if( format.basic.formatTag == idWaveFile::FORMAT_PCM )
-	{
-		alFormat = NumChannels() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-	}
-	else if( format.basic.formatTag == idWaveFile::FORMAT_ADPCM )
+	if( format.basic.formatTag == idWaveFile::FORMAT_ADPCM )
 	{
 		//alFormat = NumChannels() == 1 ? AL_FORMAT_MONO8 : AL_FORMAT_STEREO8;
-		alFormat = NumChannels() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+		alFormat = NumChannels() == 1 ? AL_FORMAT_MONO_MSADPCM_SOFT : AL_FORMAT_STEREO_MSADPCM_SOFT;
 		//alFormat = NumChannels() == 1 ? AL_FORMAT_MONO_IMA4 : AL_FORMAT_STEREO_IMA4;
 	}
-	else if( format.basic.formatTag == idWaveFile::FORMAT_XMA2 )
+	else 
 	{
-		alFormat = NumChannels() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-	}
-	else
-	{
-		alFormat = NumChannels() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+		switch (format.basic.bitsPerSample) {
+			case 8:
+				alFormat = NumChannels() == 1 ? AL_FORMAT_MONO8 : AL_FORMAT_STEREO8;
+				break;
+			case 16:
+				alFormat = NumChannels() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+				break;
+			case 32:
+				alFormat = NumChannels() == 1 ? AL_FORMAT_MONO_FLOAT32 : AL_FORMAT_STEREO_FLOAT32;
+				break;
+		}
 	}
 	
 	return alFormat;

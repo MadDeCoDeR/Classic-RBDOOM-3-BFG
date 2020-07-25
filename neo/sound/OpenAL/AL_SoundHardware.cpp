@@ -412,7 +412,7 @@ idSoundVoice* idSoundHardware_OpenAL::AllocateVoice( const idSoundSample* leadin
 	}
 	if( voice != NULL )
 	{
-		voice->Create( leadinSample, loopingSample,channel );
+		voice->Create( leadinSample, loopingSample, channel );
 		freeVoices.Remove( voice );
 		return voice;
 	}

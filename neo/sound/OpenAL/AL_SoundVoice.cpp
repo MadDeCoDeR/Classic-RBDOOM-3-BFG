@@ -427,7 +427,7 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 		}
 		else if( sample->format.basic.formatTag == idWaveFile::FORMAT_ADPCM )
 		{
-			format = sample->NumChannels() == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+			format = sample->NumChannels() == 1 ? AL_FORMAT_MONO_MSADPCM_SOFT : AL_FORMAT_STEREO_MSADPCM_SOFT;
 		}
 		else if( sample->format.basic.formatTag == idWaveFile::FORMAT_XMA2 )
 		{
@@ -462,7 +462,9 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 			
 			
 			
-			
+			if (sample->format.basic.formatTag == idWaveFile::FORMAT_ADPCM) {
+				alBufferi(openalStreamingBuffer[j], AL_UNPACK_BLOCK_ALIGNMENT_SOFT, sample->format.extra.adpcm.samplesPerBlock);
+			}
 			alBufferData( openalStreamingBuffer[j], format, sample->buffers[bufferNumber].buffer, sample->buffers[bufferNumber].bufferSize, rate );
 			//openalStreamingOffset += MIXBUFFER_SAMPLES;
 		}
