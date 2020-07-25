@@ -26,6 +26,7 @@ class OPlatform
 {
 public:
 	virtual bool API_Init() = 0;
+	virtual bool API_Init(const char* data) = 0;
 	virtual void API_Shutdown() = 0;
 	virtual const char* GetPlatformUserName() = 0;
 	virtual bool GetAchievement(const char* name, bool* status) = 0;

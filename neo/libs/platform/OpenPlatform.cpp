@@ -30,6 +30,7 @@ class OPlatformLocal : public OPlatform
 {
 public:
 	virtual bool API_Init();
+	virtual bool API_Init(const char* data);
 	virtual void API_Shutdown();
 	virtual const char* GetPlatformUserName();
 	virtual bool GetAchievement(const char* name, bool* status);
@@ -71,6 +72,10 @@ extern "C" OPlatform* GetPlatformAPI()
 OPlatform* op = &opl;
 
 bool OPlatformLocal::API_Init() { return false; }
+bool OPlatformLocal::API_Init(const char* data)
+{
+	return false;
+}
 void  OPlatformLocal::API_Shutdown() {}
 const char* OPlatformLocal::GetPlatformUserName() { return ""; }
 bool OPlatformLocal::GetAchievement(const char* name, bool* status) { return false; }
