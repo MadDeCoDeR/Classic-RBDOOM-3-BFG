@@ -566,6 +566,9 @@ void parseexptext(char* text) {
 						varval = t;
 						setSAVEDIR(varval);
 					}
+					else if (!idStr::Icmp(varname, "rich_precense")) {
+						::g->acronymPrefix = t;
+					}
 					else {
 						setEXP(varname, val3);
 					}
@@ -607,6 +610,8 @@ std::vector<std::string> getexplines(char* text) {
 		qboolean ignore = false;
 		qboolean isname = false;
 		while (text[i] != '\n') {
+			if (text[i] == '#')
+				ignore = true;
 
 			if (!ignore) {
 				//replace spaces with ; if we found quotes(indicating a name)
