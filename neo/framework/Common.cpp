@@ -1159,6 +1159,9 @@ void LoadPlatformDLL()
 	}
 
 	if (::op->API_Init()) {
+		::op->SetAdditionalInfo("large image", "dbfa");
+		::op->SetAdditionalInfo("small image", "dbfa");
+		::op->SetAdditionalInfo("status", "Strting Game");
 		//::op->SetNotificationsPosition(0, 0); //GK: Who knows maybe someone want it on top left
 		common->Printf("Platform loaded sucessfully !!!\n");
 	}
@@ -2256,6 +2259,7 @@ void idCommonLocal::PerformGameSwitch()
 		if( session->GetState() <= idSession::IDLE )
 		{
 			::op->SetAdditionalInfo("status", "Game Selection Menu");
+			::op->SetAdditionalInfo("large image", "dbfa");
 			session->MoveToPressStart();
 		}
 		

@@ -143,7 +143,8 @@ idMenuScreen_Shell_Root::ShowScreen
 */
 void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionType )
 {
-	::op->SetAdditionalInfo("status", "d3:Main Menu");
+	::op->SetAdditionalInfo("status", "D3:Main Menu");
+	::op->SetAdditionalInfo("large image", "d3");
 	if( menuData != NULL && (!idLib::newd3 && menuData->GetPlatform() != 2) || idLib::newd3)
 	{
 		idList< idList< idStr, TAG_IDLIB_LIST_MENU >, TAG_IDLIB_LIST_MENU > menuOptions;
