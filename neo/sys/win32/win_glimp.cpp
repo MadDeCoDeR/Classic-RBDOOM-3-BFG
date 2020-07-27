@@ -51,7 +51,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 
-idCVar r_useOpenGL45( "r_useOpenGL45", "2", CVAR_INTEGER, "0 = OpenGL 4.0, 1 = OpenGL 4.5 compatibility profile, 2 = OpenGL 4.5 core profile", 0, 2 );
+idCVar r_useOpenGLProfile( "r_useOpenGLProfile", "2", CVAR_INTEGER, "0 = OpenGL 4.5 no profile, 1 = OpenGL 4.5 compatibility profile, 2 = OpenGL 4.5 core profile", 0, 2 );
 
 
 
@@ -341,7 +341,7 @@ CreateOpenGLContextOnDC
 #if !defined(USE_VULKAN)
 static HGLRC CreateOpenGLContextOnDC( const HDC hdc, const bool debugContext )
 {
-	int useCoreProfile = r_useOpenGL45.GetInteger();
+	int useCoreProfile = r_useOpenGLProfile.GetInteger();
 	HGLRC m_hrc = NULL;
 	
 	// RB: for GLintercept 1.2.0 or otherwise we can't diff the framebuffers using the XML log
@@ -354,7 +354,7 @@ static HGLRC CreateOpenGLContextOnDC( const HDC hdc, const bool debugContext )
 	for( int i = 0; i < 2; i++ )
 	{
 		const int glMajorVersion = 4;
-		const int glMinorVersion = ( useCoreProfile != 0 ) ? 4 : 0;
+		const int glMinorVersion = 5;
 		const int glDebugFlag = debugContext ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
 		const int glProfileMask = ( useCoreProfile != 0 ) ? WGL_CONTEXT_PROFILE_MASK_ARB : 0;
 		const int glProfile = ( useCoreProfile == 1 ) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : ( ( useCoreProfile == 2 ) ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : 0 );
