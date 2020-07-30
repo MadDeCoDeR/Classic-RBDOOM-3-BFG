@@ -70,13 +70,13 @@ Minimum system requirements:
 
 	CPU: 2 GHz dual core
 	System Memory: 3GB
-	Graphics card: NVIDIA GeForce 9800 GT / ATI Radeon HD 5750 / Intel HD graphics 530
+	Graphics card: (Windows) Any GLSL 4.5 Compatible GPU. (Linux) NVIDIA GeForce 9800 GT / ATI Radeon HD 5750 / Intel HD graphics 530
 
 Recommended system requirements:
 
 	CPU: 3 GHz dual core
 	System Memory: 3GB
-	Graphics card: NVIDIA GeForce GTX 260 / ATI Radeon HD 5850 or higher
+	Graphics card: (Linux) NVIDIA GeForce GTX 260 / ATI Radeon HD 5850 or higher
 
 
 Additional Requirements:
@@ -100,10 +100,12 @@ Steam store: http://store.steampowered.com/app/208200/
 
 GOG store: https://www.gog.com/game/doom_3_bfg_edition
 
-Bethesda.net store: https://store.bethesda.net/store/bethesda/en_IE/pd/productID.1268924300
+Bethesda.net store: https://bethesda.net/en/store/product/DO3CBFPCBG01
+
+Bethesda.net store (2019): https://bethesda.net/en/store/product/DO3GNGPCBG01
 
 
-Steam:
+Steam & GOG API:
 ------
 The Doom 3 BFG Edition GPL Source Code release does not include functionality for integrating with 
 Steam.  This includes roaming profiles, achievements, leaderboards, matchmaking, the overlay, or
@@ -390,23 +392,7 @@ ___________________________________________________
 9) CONSOLE VARIABLES
 __________________________________________
 
-r_antiAliasing - Different Anti-Aliasing modes
-
-r_useShadowMapping [0 or 1] - Use soft shadow mapping instead of hard stencil shadows
-
-r_useHDR [0 or 1] - Use High Dynamic Range lighting
-
-r_hdrAutoExposure [0 or 1] - Adaptive tonemapping with HDR
-	This allows to have very bright or very dark scenes but the camera will adopt to it so the scene won't loose details
-	
-r_exposure [0 .. 1] - Default 0.5, Controls brightness and affects HDR exposure key
-	This is what you change in the video brightness options
-
-r_useSSAO [0 .. 1] - Use Screen Space Ambient Occlusion to darken the corners in the scene
-	
-r_useFilmicPostProcessEffects [0 or 1] - Apply several post process effects to mimic a filmic look"
-
-See also the New-Parameters.txt for additional parameters
+Check here: https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/wiki/3.-New-Parameters
 
 
 ___________________________________________________

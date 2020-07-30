@@ -13,6 +13,255 @@
 <div>
     _______________________________________
 
+    31 July 2020 - DOOM-BFA 1.2.6
+    _______________________________
+
+    WARNING: The game dll support is nearly complete but
+    there are still bugs while using them.
+
+    [classicdoom]
+
+    - When the game pause, pause also demo playback
+
+    - Add support for custom code pointer on Classic DOOM through the SDK (game.dll)
+
+    - Fixed issue with EXPINFO on DOOM 2
+
+    - Add new CVar cl_expMenu, that allows DOOM 2 to open on a desired expansion menu
+
+    - Add "rich_precense" on EXPINFO in order to show custom rich precense prefix
+
+    [DOOM3BFG]
+
+    - Improve Classic Weapon View for shotgun and double barrel shotgun
+
+    - Fixed DOOM 3 Next/Previous Weapon Key binding
+
+    - Include OpenAL also on the SDK (fix stability issues)
+
+    - Replace ADPCM to PCM converter for OpenAL-soft with OpenAL-soft's built-in support
+
+    - Update Open Platform to Version 0.4.8
+
+    - Improved Additional info
+
+    - Set images on Open Platform rich precense (the API must provide them)
+
+    _______________________________________
+
+    05 June 2020 - DOOM-BFA 1.2.5
+    _______________________________
+
+    WARNING: The game dll support is nearly complete but
+    there are still bugs while using them.
+
+    [classicdoom]
+
+    - Overhaul and further stabilize framerate interpolation
+
+    - Fixed spelling mistakes on the Master Levels ending messages
+
+    - Fixed minor issue with EXPINFO
+
+    - Add MBF's Spawn codepointer
+
+    - Add console messages when trying to use cheat codes that are for the wrong game
+
+    [DOOM3BFG]
+
+    - Fixed issue with SWF Ui's dynamic updates on interactions
+
+    - Fixed issue with PDA Inventory when having all the weapons
+
+    - Improved achievement error message
+
+    - Like in MP now in SP the game will enforce the script FPS to the current framerate the game is running on
+
+    - Fixed issue while changing HDR on the in game menu
+
+    - Add self drawn flashlight icon for PDA & HUD
+
+    - Fighting the "good" fight againist the pleage known as profile.bin
+
+    - Further improvments over  fullscreen mode
+
+    - Fixed issue when switching between default and alternative controller configuration
+
+    - Add console messages when trying to use cheat codes that are for the wrong game
+
+    - Make the game to exit instantly if it is closed during the intro
+
+    - Fix some translation errors (in english, used Google Translate for the other languages)
+
+    - Moved d3le player definition to another resource folder in order zBFA to not break compatibility with DOOM 3 (2019)
+
+    - By default Soft shadows and HDR will be disabled
+
+    - Fixed Player model Field of view Lighting
+
+    - Add option in the controls to toogle centered classic weapon view on DOOM 3
+    _______________________________________
+
+    10 April 2020 - DOOM-BFA 1.2.4
+    _______________________________
+
+    WARNING: The game dll support is nearly complete but
+    there are still bugs while using them.
+
+    [classicdoom]
+
+    - Improve rumble effect
+
+    - Improve Stability
+
+    - Fixed issue loading wild files
+
+    - Add Classic DOOM Freelook limiter (cl_freelookclamp defaut 550 max 4000)
+
+    - Fixed issue with loading an empty EXPINFO (DOOM 2 Game boot crash bug)
+
+    - the frame rate is now indepedent from DOOM 3
+    but enabling Interpolation (FPSI) you can edit DOOM 3's framerate as Classic DOOM's Refresh rate
+
+    - Re adjust ThirdPerson View constants
+
+    - Made more keys remappable (namely the Function Keys)
+
+    [DOOM3BFG]
+
+    - Vastly improve SWF Ui
+
+    - Improve Text intro skiping
+
+    - Improve Controller support
+
+    - Fixed weapon circling not working under random circustances
+
+    - Reworked Frame Rate/ Refresh Rate on all games,
+    on DOOM 3 the frame rate will have only the available resfresh rates of your monitor
+
+    - Add additional translation strings including Zoom key binding title and advaced options
+
+    - On the first run retrieve the monitor's resolution and resfresh rate and use them to setup the fullscreen
+
+    - Update Open Platform to Version 0.4.7
+
+
+    _______________________________________
+
+    29 February 2020 - DOOM-BFA 1.2.3.2
+    _______________________________
+
+    WARNING: The game dll support is nearly complete but
+    there are still bugs while using them.
+
+    [classicdoom]
+
+    - Fixed issue with net demo playback when the main player is not the first player
+
+    - Add support for multiline BEX Strings
+
+    - Improved final text speed when using dummy characters
+
+    - Add Classic DOOM Freelook limiter (cl_freelookclamp defaut 550 max 4000)
+
+    - Fixed issue with loading an empty EXPINFO (DOOM 2 Game boot crash bug)
+
+    [DOOM3BFG]
+
+    - Fixed 32-bit support
+
+    - Removed bad compile flag on retail linux cmake build
+    _______________________________________
+
+    15 February 2020 - DOOM-BFA 1.2.3.1
+    _______________________________
+
+    WARNING: The game dll support is nearly complete but
+    there are still bugs while using them.
+
+    [classicdoom]
+
+    - Relax the reset warnings on Classic DOOM Menu
+
+    - Fix status bar when changing aspect ratio
+
+    - Add Classic DOOM Framerate Interpolation (Optional 60FPS) (Check on FRAMERATE for FPSI)
+
+    - Fixed issue wile loading Dehacked wild files (outside Wad)
+
+    - Fixed issue of showing accidenatlly the framerate instead of remap messages on Classic Doom
+
+    - Vastly improved sprite loading
+
+    [DOOM3BFG]
+
+    - If both Fullscreen and failsafe Fullscreen fails then revert to windowed mode
+    _______________________________________
+
+    8 February 2020 - DOOM-BFA 1.2.3
+    _______________________________
+
+    WARNING: The game dll support is nearly complete but
+    there are still bugs while using them.
+
+    [classicdoom]
+
+    - DEHACKED can now extend frames and things
+
+    - Added A_RandomJump CodePointer
+
+    - Removed and suppressed some sprite check ups
+
+    - Unmapped F12 from CLassic Doom's quick keys
+
+    - Vastly improved sprite loading
+
+    - When not in BFG mode Classic Doom errors will be treated as fatal errors
+
+    - Add Resolution Setting on Classic Doom
+
+    - When playing/recording Demos on Classic DOOM force framereate to 35FPS
+
+    - Add new Menu Option on Classic Doom That allow you to change:
+    - Framerate (35FPS - 40 FPS)
+    - Keybindings
+    - Controlleer Rumble Effect
+    - Controller Layout
+
+    - Performance optimization on Classic Doom
+
+    - Ultimate Doom can load 10 map names per episode (instead of 9)
+
+    - "PDA" bindable key can now open the Auto Map on Classic Doom
+
+    - miniboss flag on EXPINFO can now be used on Ultimate Doom similarly to the mastermindboss and cyberboss
+
+    - When launching Classic Doom use the in-game engine title name on the game's window
+
+    - Supress Doom 3 messages on Classic Doom when running in 2019 mode
+
+    - Made weapon switching faster and fixed the switch order
+
+    - EXPINFO final_text can now get full text (one line with multiple \n).
+
+    - Ultimate Doom Maps that have final_text defined will move to the next level if it isn't the EndGame
+
+    - Allow to load Multiple EXPINFO
+
+    - Reallign the crosshair on Classic Doom
+
+    [DOOM3BFG]
+
+    - Remove the usage of the display modelist in order to initialize fullscreen on game's startup
+
+    - Use and PDA buttons can be used on UI for ENTER and TAB respectively
+
+    - Made weapon switching faster and fixed the switch order
+
+    - Project Rename
+    _______________________________________
+
     21 December 2019 - Classic RBDOOM-3-BFG 1.2.2
     _______________________________
 

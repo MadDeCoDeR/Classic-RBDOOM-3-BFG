@@ -42,7 +42,7 @@ If you have questions concerning this license or the applicable additional terms
 // RB: changed home folder so we don't break the savegame of the original game
 #define SAVE_PATH						"\\id Software\\DOOM BFA"
 
-#define ENGINE_VERSION					"1.2.5"
+#define ENGINE_VERSION					"1.2.6"
 #define CONSOLE_NAME					"DOOM BFA " ENGINE_VERSION	// printed in console
 #define NEW_CONSOLE_NAME					"DOOM 3 BFA " ENGINE_VERSION	// printed in console
 // RB end

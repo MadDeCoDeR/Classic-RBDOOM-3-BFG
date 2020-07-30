@@ -4,6 +4,42 @@ Thank you for downloading DOOM-BFA.
 
 _______________________________________
 
+31 July 2020 - DOOM-BFA 1.2.6
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- When the game pause, pause also demo playback
+
+- Add support for custom code pointer on Classic DOOM through the SDK (game.dll)
+
+- Fixed issue with EXPINFO on DOOM 2
+
+- Add new CVar cl_expMenu, that allows DOOM 2 to open on a desired expansion menu
+
+- Add "rich_precense" on EXPINFO in order to show custom rich precense prefix
+
+[DOOM3BFG]
+
+- Improve Classic Weapon View for shotgun and double barrel shotgun
+
+- Fixed DOOM 3 Next/Previous Weapon Key binding
+
+- Include OpenAL also on the SDK (fix stability issues)
+
+- Replace ADPCM to PCM converter for OpenAL-soft with OpenAL-soft's built-in support
+
+- Update Open Platform to Version 0.4.8
+
+- Improved Additional info
+
+- Set images on Open Platform rich precense (the API must provide them)
+
+_______________________________________
+
 05 June 2020 - DOOM-BFA 1.2.5
 _______________________________
 
