@@ -32,20 +32,26 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 //GK: Include Sound local header for audio playback
 #include <../sound/snd_local.h>
+#include <queue>
 //GK:Also init variables for XAudio2
 #ifndef USE_OPENAL
 WAVEFORMATEX voiceFormatcine = { 0 };
 IXAudio2SourceVoice*	pMusicSourceVoice1;
 XAUDIO2_BUFFER Packet = { 0 };
 #else //GK: Add audio support for OpenAL
-#define NUM_BUFFERS 1
+#define NUM_BUFFERS 4
 static ALuint		alMusicSourceVoicecin;
 static ALuint		alMusicBuffercin[NUM_BUFFERS];
 ALenum av_sample_cin;
 int av_rate_cin;
-int alcount;
 bool trigger;
-uint8_t* tBuffer;
+//GK: Unlike XAudio2 which can accept buffer until the end of this world.
+//	  OpenAL can accept buffers as long as there are freely available buffers.
+//	  So, what happens if there are no freely available buffers but we still geting audio frames ? Loss of data.
+//	  That why now I am using two queues in order to store the frames (and their sizes) and when we have available buffers,
+//	  then start poping those frames instead of the current, so we don't lose any audio frames and the sound doesn't crack anymore.
+std::queue<uint8_t*> tBuffer[NUM_BUFFERS];
+std::queue<int> sizes[NUM_BUFFERS];
 int file_size;
 int offset;
 #endif
@@ -759,8 +765,8 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		common->Printf("Video audio stream found:\n\tSample Rate: %dHz\n\tSample Format: %s\n", av_rate_cin, GetSampleName(av_sample_cin));
 		alSourceRewind(alMusicSourceVoicecin);
 		alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
-		alcount = 0;
-		trigger = true;
+		offset = 0;
+		trigger = false;
 #endif
 	}
 	else {
@@ -1240,39 +1246,67 @@ void PlayAudio(uint8_t* data, int size) {
 		int fail = 1;
 	}
 #else //GK: But also it requires better coding DX
+	ALint processed, state;
 
-	if (!tBuffer) {
-		tBuffer = (uint8_t*)malloc(size * sizeof(uint8_t*));
+	alGetSourcei(alMusicSourceVoicecin, AL_SOURCE_STATE, &state);
+	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &processed);
+
+	if (trigger) {
+		tBuffer->push(data);
+		sizes->push(size);
+		while (processed > 0) {
+			ALuint bufid;
+
+			alSourceUnqueueBuffers(alMusicSourceVoicecin, 1, &bufid);
+			processed--;
+			int tempSize = sizes->front();
+			sizes->pop();
+			uint8_t* tempdata = tBuffer->front();
+			tBuffer->pop();
+			if (tempSize > 0) {
+				alBufferData(bufid, av_sample_cin, tempdata, tempSize, av_rate_cin);
+				alSourceQueueBuffers(alMusicSourceVoicecin, 1, &bufid);
+				ALenum error = alGetError();
+				if (error != AL_NO_ERROR) {
+					common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
+					return;
+				}
+			}
+			offset++;
+			if (offset == NUM_BUFFERS) {
+				offset = 0;
+			}
+		}
 	}
 	else {
-		tBuffer = (uint8_t*)realloc(tBuffer, (offset * sizeof(uint8_t*)) + (size * sizeof(uint8_t*)));
-	}
-	memcpy(tBuffer + offset, data, size);
-	offset += size;
-
-	ALint val2;
-	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &val2);
-	if ( val2 ) {
-		for (int i = 0; i < val2; i++) {
-			alSourceUnqueueBuffers(alMusicSourceVoicecin, 1, &alMusicBuffercin[0]);
+		alBufferData(alMusicBuffercin[offset], av_sample_cin, data, size, av_rate_cin);
+		offset++;
+		if (offset == NUM_BUFFERS) {
+			alSourceQueueBuffers(alMusicSourceVoicecin, offset, alMusicBuffercin);
+			ALenum error = alGetError();
+			if (error != AL_NO_ERROR) {
+				common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
+				return;
+			}
+			trigger = true;
+			offset = 0;
 		}
 	}
 
-	ALint val3;
-	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_QUEUED, &val3);
-
-	if (val2 || !val3) {
-		alBufferData(alMusicBuffercin[0], av_sample_cin, tBuffer, offset, av_rate_cin);
-		alSourceQueueBuffers(alMusicSourceVoicecin, 1, alMusicBuffercin);
-		offset = 0;
-		free(tBuffer);
-		tBuffer = NULL;
-	}
-
-	ALint state;
-	alGetSourcei(alMusicSourceVoicecin, AL_SOURCE_STATE, &state);
-	if (state != AL_PLAYING) {
-		alSourcePlay(alMusicSourceVoicecin);
+	if (trigger) {
+		if (state != AL_PLAYING) {
+			ALint queued;
+			alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_QUEUED, &queued);
+			if (queued == 0) {
+				return;
+			}
+			alSourcePlay(alMusicSourceVoicecin);
+			ALenum error = alGetError();
+			if (error != AL_NO_ERROR) {
+				common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
+				return;
+			}
+		}
 	}
 #endif
 }
@@ -1391,7 +1425,6 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 						av_rescale_rnd(frame3->nb_samples, frame3->sample_rate, frame3->sample_rate, AV_ROUND_UP),
 						dst_smp,
 						0);
-
 					int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame3->extended_data, frame3->nb_samples);
 					num_bytes = av_samples_get_buffer_size(&bufflinesize, frame3->channels,
 						res, dst_smp, 1);
