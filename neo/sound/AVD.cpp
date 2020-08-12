@@ -44,10 +44,14 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 	memcpy(avio_ctx_buffer, *audio, *len);
 	AVIOContext *avio_ctx = avio_alloc_context(avio_ctx_buffer, *len, 0, NULL, NULL, NULL, NULL);
 	fmt_ctx->pb = avio_ctx;
-	avformat_open_input(&fmt_ctx, "", NULL, NULL);
+	if ((ret = avformat_open_input(&fmt_ctx, "", NULL, NULL)) < 0) {
+		parseAVError(ret);
+		return false;
+	}
 
 	if ((ret = avformat_find_stream_info(fmt_ctx, NULL)) < 0)
 	{
+		parseAVError(ret);
 		return false;
 	}
 	ret = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
@@ -56,7 +60,7 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 	dec = avcodec_find_decoder(dec_ctx->codec_id);
 	if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0)
 	{
-
+		parseAVError(ret);
 		return false;
 	}
 	bool hasplanar = false;
@@ -223,10 +227,14 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	memcpy(avio_ctx_buffer, *audio, *len);
 	AVIOContext *avio_ctx = avio_alloc_context(avio_ctx_buffer, *len, 0, NULL, NULL, NULL, NULL);
 	fmt_ctx->pb = avio_ctx;
-	avformat_open_input(&fmt_ctx, "", NULL, NULL);
+	if ((ret = avformat_open_input(&fmt_ctx, "", NULL, NULL)) < 0) {
+		parseAVError(ret);
+		return false;
+	}
 
 	if ((ret = avformat_find_stream_info(fmt_ctx, NULL)) < 0)
 	{
+		parseAVError(ret);
 		return false;
 	}
 	ret = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
@@ -235,7 +243,7 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	dec = avcodec_find_decoder(dec_ctx->codec_id);
 	if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0)
 	{
-
+		parseAVError(ret);
 		return false;
 	}
 	bool hasplanar = false;
@@ -382,3 +390,9 @@ const char* GetSampleName(ALenum sample) {
 	}
 }
 #endif
+
+void parseAVError(int error) {
+	char* errorbuff = new char[256];
+	av_make_error_string(errorbuff, 256, error);
+	common->Printf("FFMPEG Error: %s\n", errorbuff);
+}

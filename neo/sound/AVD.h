@@ -29,6 +29,7 @@
 #if defined (USE_FFMPEG)
 extern "C"
 {
+#define __STDC_CONSTANT_MACROS
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavformat/avio.h>
@@ -37,6 +38,7 @@ extern "C"
 #endif
 
 #include "sound/snd_local.h"
+void parseAVError(int error);
 #ifndef USE_OPENAL
 #include <xaudio2.h>
 #include <x3daudio.h>
