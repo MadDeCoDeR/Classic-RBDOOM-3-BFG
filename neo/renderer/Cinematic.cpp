@@ -52,7 +52,6 @@ bool trigger;
 //	  then start poping those frames instead of the current, so we don't lose any audio frames and the sound doesn't crack anymore.
 std::queue<uint8_t*> tBuffer[NUM_BUFFERS];
 std::queue<int> sizes[NUM_BUFFERS];
-int file_size;
 int offset;
 #endif
 extern idCVar s_noSound;
@@ -582,6 +581,20 @@ idCinematicLocal::~idCinematicLocal()
 	if (alMusicBuffercin) {
 		alDeleteBuffers(NUM_BUFFERS, alMusicBuffercin);
 	}
+	if (!tBuffer->empty()) {
+		int buffersize = tBuffer->size();
+		while (buffersize > 0) {
+			tBuffer->pop();
+			buffersize--;
+		}
+	}
+	if (!sizes->empty()) {
+		int buffersize = sizes->size();
+		while (buffersize > 0) {
+			sizes->pop();
+			buffersize--;
+		}
+	}
 #endif
 	delete img;
 	img = NULL;
@@ -597,6 +610,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 {
 	int ret;
 	int ret2;
+	int file_size;
 	looping = amilooping;
 	startTime = 0;
 	isRoQ = false;
@@ -608,9 +622,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 	if( testFile )
 	{
 		fullpath = testFile->GetFullPath();
-#ifdef USE_OPENAL
 		file_size = testFile->Length();
-#endif
 		fileSystem->CloseFile( testFile );
 	}
 	// RB: case sensitivity HACK for Linux
@@ -623,9 +635,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		if( testFile )
 		{
 			fullpath = testFile->GetFullPath();
-#ifdef USE_OPENAL
 			file_size = testFile->Length();
-#endif
 			fileSystem->CloseFile( testFile );
 		}
 		else
@@ -793,6 +803,15 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 	 */
 	int ticksPerFrame = dec_ctx->ticks_per_frame;
 	float durationSec = static_cast<double>( fmt_ctx->streams[video_stream_index]->duration ) * static_cast<double>( ticksPerFrame ) / static_cast<double>( avr.den );
+	//GK: No duration is given. Check if we get at least bitrate to calculate the length, otherwise set it to fixed 1 minute (should be lower ?)
+	if (durationSec < 0) {
+		if (dec_ctx->bit_rate > 0) {
+			durationSec = file_size / dec_ctx->bit_rate;
+		}
+		else {
+			durationSec = 60;
+		}
+	}
 	animationLength = durationSec * 1000;
 	frameRate = av_q2d( fmt_ctx->streams[video_stream_index]->avg_frame_rate );
 	buf = NULL;
@@ -1259,22 +1278,24 @@ void PlayAudio(uint8_t* data, int size) {
 
 			alSourceUnqueueBuffers(alMusicSourceVoicecin, 1, &bufid);
 			processed--;
-			int tempSize = sizes->front();
-			sizes->pop();
-			uint8_t* tempdata = tBuffer->front();
-			tBuffer->pop();
-			if (tempSize > 0) {
-				alBufferData(bufid, av_sample_cin, tempdata, tempSize, av_rate_cin);
-				alSourceQueueBuffers(alMusicSourceVoicecin, 1, &bufid);
-				ALenum error = alGetError();
-				if (error != AL_NO_ERROR) {
-					common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
-					return;
+			if (!tBuffer->empty()) {
+				int tempSize = sizes->front();
+				sizes->pop();
+				uint8_t* tempdata = tBuffer->front();
+				tBuffer->pop();
+				if (tempSize > 0) {
+					alBufferData(bufid, av_sample_cin, tempdata, tempSize, av_rate_cin);
+					alSourceQueueBuffers(alMusicSourceVoicecin, 1, &bufid);
+					ALenum error = alGetError();
+					if (error != AL_NO_ERROR) {
+						common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
+						return;
+					}
 				}
-			}
-			offset++;
-			if (offset == NUM_BUFFERS) {
-				offset = 0;
+				offset++;
+				if (offset == NUM_BUFFERS) {
+					offset = 0;
+				}
 			}
 		}
 	}

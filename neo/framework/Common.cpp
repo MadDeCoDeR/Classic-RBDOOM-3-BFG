@@ -993,15 +993,20 @@ void idCommonLocal::RenderBink( const char* path )
 	
 	idMaterial* material = const_cast<idMaterial*>( declManager->FindMaterial( "splashbink" ) );
 	material->Parse( materialText.c_str(), materialText.Length(), false );
-	material->ResetCinematicTime( Sys_Milliseconds() );
 	
 	// RB: FFmpeg might return the wrong play length so I changed the intro video to play max 30 seconds until finished
-	int cinematicLength = 30000; //material->CinematicLength();
+	//GK: No it doesn't
+	int cinematicLength = material->CinematicLength();
 	int	mouseEvents[MAX_MOUSE_EVENTS][2];
 	
 	bool escapeEvent = false;
-	while( ( Sys_Milliseconds() <= ( material->GetCinematicStartTime() + cinematicLength ) ) && material->CinematicIsPlaying() )
+	//GK: expecting all the code in the loop to consume no time (especially the sleep) is wrong and it was causing the timer to be incorect on every loop, which resultedon the cinematic to cut before is finished
+	int elapsedTime = 0;
+	//GK: Set it here in order to be more accurate
+	material->ResetCinematicTime(Sys_Milliseconds());
+	while( ( (Sys_Milliseconds() - elapsedTime) <= ( material->GetCinematicStartTime() + cinematicLength ) ) && material->CinematicIsPlaying() )
 	{
+		int starttime = Sys_Milliseconds();
 		renderSystem->DrawStretchPic( chop, 0, imageWidth, renderSystem->GetVirtualHeight(), 0, 0, 1, 1, material );
 		const emptyCommand_t* cmd = renderSystem->SwapCommandBuffers( &time_frontend, &time_backend, &time_shadows, &time_gpu );
 		renderSystem->RenderCommandBuffers( cmd );
@@ -1094,6 +1099,8 @@ void idCommonLocal::RenderBink( const char* path )
 		}
 		
 		Sys_Sleep( 10 );
+		int endtime = Sys_Milliseconds();
+		elapsedTime += endtime - starttime;
 	}
 	// RB end
 	
