@@ -23,6 +23,7 @@
 */
 #pragma hdrstop
 #include "precompiled.h"
+#include <vector>
 
 #include <../neo/sound/AVD.h>
 
@@ -146,7 +147,8 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 	int num_bytes = 0;
 	int bufferoffset = format_byte * 10;
 	unsigned long long length = *len;
-	byte* tBuffer = (byte *)malloc(2 * length*bufferoffset);
+	std::vector<byte*> tBuffer;
+	std::vector<int> buffSizes;
 	uint8_t** tBuffer2 = NULL;
 	int  bufflinesize;
 
@@ -168,7 +170,9 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 					int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame->extended_data, frame->nb_samples);
 					num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
 						res, dst_smp, 1);
-					memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
+					tBuffer.push_back((byte*)malloc(num_bytes));
+					buffSizes.push_back(num_bytes);
+					memcpy(tBuffer.back(), tBuffer2[0], num_bytes);
 
 					offset += num_bytes;
 					av_freep(&tBuffer2[0]);
@@ -176,7 +180,9 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 				}
 				else {
 					num_bytes = frame->linesize[0];
-					memcpy(tBuffer + offset, frame->extended_data[0], num_bytes);
+					tBuffer.push_back((byte*)malloc(num_bytes));
+					buffSizes.push_back(num_bytes);
+					memcpy(tBuffer.back(), frame->extended_data[0], num_bytes);
 					offset += num_bytes;
 				}
 
@@ -191,9 +197,16 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 	}
 	*len = offset;
 	*audio = (byte *)malloc(offset);
-	memcpy(*audio, tBuffer, offset);
-	free(tBuffer);
-	tBuffer = NULL;
+	offset = 0;
+	for (int i = 0; i < tBuffer.size(); i++) {
+		memcpy(*audio + offset, tBuffer[i], buffSizes[i]);
+		offset += buffSizes[i];
+		byte* temp = tBuffer[i];
+		free(temp);
+		temp = NULL;
+	}
+	tBuffer.clear();
+	buffSizes.clear();
 	if (swr_ctx != NULL) {
 		swr_free(&swr_ctx);
 	}
@@ -304,7 +317,8 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	int num_bytes = 0;
 	int bufferoffset = format_byte * 10;
 	unsigned long long length = *len;
-	byte* tBuffer = (byte *)malloc(2* length * bufferoffset);
+	std::vector<byte*> tBuffer;
+	std::vector<int> buffSizes;
 	uint8_t** tBuffer2 = NULL;
 	int  bufflinesize;
 	while (av_read_frame(fmt_ctx, &packet) >= 0) {
@@ -324,7 +338,9 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 					int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame->extended_data, frame->nb_samples);
 					num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
 						res, dst_smp, 1);
-					memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
+					tBuffer.push_back((byte*)malloc(num_bytes));
+					buffSizes.push_back(num_bytes);
+					memcpy(tBuffer.back(), tBuffer2[0], num_bytes);
 
 					offset += num_bytes;
 					av_freep(&tBuffer2[0]);
@@ -332,10 +348,9 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 				}
 				else {
 					num_bytes = frame->linesize[0];
-					while (!tBuffer) {
-						tBuffer = (byte *)calloc(*len, sizeof(byte*));
-					}
-					memcpy(tBuffer + offset, frame->extended_data[0], num_bytes);
+					tBuffer.push_back((byte*)malloc(num_bytes));
+					buffSizes.push_back(num_bytes);
+					memcpy(tBuffer.back(), frame->extended_data[0], num_bytes);
 					offset += num_bytes;
 				}
 
@@ -350,9 +365,16 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	}
 	*len = offset;
 	*audio = (byte *)malloc(offset);
-	memcpy(*audio, tBuffer, offset);
-	free(tBuffer);
-	tBuffer = NULL;
+	offset = 0;
+	for (int i = 0; i < tBuffer.size(); i++) {
+		memcpy(*audio + offset, tBuffer[i], buffSizes[i]);
+		offset += buffSizes[i];
+		byte* temp = tBuffer[i];
+		free(temp);
+		temp = NULL;
+	}
+	tBuffer.clear();
+	buffSizes.clear();
 	if (swr_ctx != NULL) {
 		swr_free(&swr_ctx);
 	}
