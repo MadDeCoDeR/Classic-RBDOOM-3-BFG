@@ -809,7 +809,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 			durationSec = file_size / dec_ctx->bit_rate;
 		}
 		else {
-			durationSec = 60;
+			durationSec = 100;
 		}
 	}
 	animationLength = durationSec * 1000;
