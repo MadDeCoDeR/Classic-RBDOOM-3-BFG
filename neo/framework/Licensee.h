@@ -45,6 +45,7 @@ If you have questions concerning this license or the applicable additional terms
 #define ENGINE_VERSION					"1.2.6"
 #define CONSOLE_NAME					"DOOM BFA " ENGINE_VERSION	// printed in console
 #define NEW_CONSOLE_NAME					"DOOM 3 BFA " ENGINE_VERSION	// printed in console
+#define CLASSIC_ENGINE_SUFFIX					"-BFA_" ENGINE_VERSION
 // RB end
 
 #define	BASE_GAMEDIR					"base"
