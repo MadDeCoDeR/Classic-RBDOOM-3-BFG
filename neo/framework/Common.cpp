@@ -239,7 +239,7 @@ idCommonLocal::Quit
 */
 void idCommonLocal::Quit()
 {
-	if (currentGame == DOOM_CLASSIC || currentGame == DOOM2_CLASSIC) {
+	if ((currentGame == DOOM_CLASSIC || currentGame == DOOM2_CLASSIC) && ::g != NULL) {
 		//GK: Delete uncompressed files for classic DOOM mods AFTER un allocating them (since it is still in classic doom)
 		CleanUncompFiles(true);
 		game->SetCVarBool("cl_close", true);
