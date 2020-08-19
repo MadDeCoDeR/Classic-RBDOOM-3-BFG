@@ -702,8 +702,6 @@ void D_DoomMain(void)
 			VERSION / 100, VERSION % 100);
 		break;
 	}
-	Sys_ChangeTitle(::g->title);
-	I_Printf("                        %s                           \n", ::g->title);
 
 	if (::g->devparm)
 		I_Printf(D_DEVSTR);
@@ -971,6 +969,8 @@ void D_DoomMain(void)
 			}
 		}
 	}
+	Sys_ChangeTitle(::g->title);
+	I_Printf("                        %s                           \n", ::g->title);
 
 	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
 		p = M_CheckParm("-warp");

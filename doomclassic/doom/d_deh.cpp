@@ -22,6 +22,7 @@
 * SOFTWARE.
 */
 #include "Precompiled.h"
+#include "idlib/Str.h"
 
 #include "globaldata.h"
 
@@ -626,6 +627,19 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 				*strval[j].var=ntxt;
 				return;
 			}
+		}
+		std::string otxtfmt = otxt;
+		if (otxtfmt.find("%i") != std::string::npos) {
+			sprintf(otxt, otxtfmt.c_str(),
+				VERSION / 100, VERSION % 100);
+		}
+		char* prettyTitle = new char[100];
+		sprintf(prettyTitle, "                         %s                           ", ::g->title);
+		if (!idStr::Icmp(otxt, prettyTitle)) {
+			char* parsedTitle = ntxt + 25;
+			parsedTitle[strlen(parsedTitle) - 30] = '\0';
+			strcpy(::g->title, parsedTitle);
+			return;
 		}
 			for (int m = 0; m < NUMSPRITES - 1; m++) {
 				if (!idStr::Icmp(otxt, sprnames[m])) {
