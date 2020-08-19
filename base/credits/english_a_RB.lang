@@ -1,0 +1,16 @@
+//english - RBDOOM 3 BFG Credits
+{
+	"Header||RBDOOM 3 BFG EDITION"
+	""
+	"Title||Lead Programmer"
+	"Entry||Robert Beckebans - Renderer + engine upgrades, Linux"
+	""
+	"Title||Additional Programming"
+	"Entry||Daniel Gibson - Tons of code cleanups, netcode++"
+	"Entry||Jonathan Young - Bugfixes, misc improvements"
+	"Entry||Felix Rueegg - Doomclassic Linux support"
+	"Entry||Carl Kenner - Bink video support"
+	""
+	"Entry||For more see the GitHub stats ;)"
+	""
+}

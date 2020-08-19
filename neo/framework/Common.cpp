@@ -50,6 +50,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../sys/sys_savegame.h"
 
+#include "../swf/credits/CreditDict.h"
+
 
 
 #if defined( _DEBUG )
@@ -875,6 +877,49 @@ void idCommonLocal::InitLanguageDict()
 	fileSystem->FreeFileList( langFiles );
 }
 
+void idCommonLocal::InitCreditList()
+{
+	idStr fileName;
+
+	//D3XP: Instead of just loading a single lang file for each language
+	//we are going to load all files that begin with the language name
+	//similar to the way pak files work. So you can place english001.lang
+	//to add new strings to the english language dictionary
+	idFileList* langFiles;
+	langFiles = fileSystem->ListFilesTree("credits", ".lang", true);
+
+	idStrList langList = langFiles->GetList();
+
+	// Loop through the list and filter
+	idStrList currentLangList = langList;
+	FilterLangList(&currentLangList, sys_lang.GetString());
+
+	if (currentLangList.Num() == 0)
+	{
+		// reset to english and try to load again
+		sys_lang.SetString(ID_LANG_ENGLISH);
+		currentLangList = langList;
+		FilterLangList(&currentLangList, sys_lang.GetString());
+	}
+
+	idCredits::ClearList();
+	for (int i = currentLangList.Num() - 1; i >= 0; i--)
+	{
+		//common->Printf("%s\n", currentLangList[i].c_str());
+		const byte* buffer = NULL;
+		int len = fileSystem->ReadFile(currentLangList[i], (void**)&buffer);
+		if (len <= 0)
+		{
+			assert(false && "couldn't read the language dict file");
+			break;
+		}
+		idCredits::LoadCredits(buffer, len, currentLangList[i]);
+		fileSystem->FreeFile((void*)buffer);
+	}
+
+	fileSystem->FreeFileList(langFiles);
+}
+
 /*
 =================
 ReloadLanguage_f
@@ -1552,6 +1597,8 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// initialize string database so we can use it for loading messages
 		InitLanguageDict();
+
+		InitCreditList();
 		
 		// spawn the game thread, even if we are going to run without SMP
 		// one meg stack, because it can parse decls from gui surfaces (unfortunately)

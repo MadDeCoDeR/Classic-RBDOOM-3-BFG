@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #define __MENUSCREEN_H__
 
 #include "../../renderer/RenderCommon.h"
+#include "../../swf/credits/CreditDict.h"
 
 enum mainMenuTransition_t
 {
@@ -530,25 +531,6 @@ public:
 private:
 	idMenuWidget_DynamicList* 	options;
 	idMenuWidget_Button*			btnBack;
-};
-
-struct creditInfo_t
-{
-
-	creditInfo_t()
-	{
-		type = -1;
-		entry = "";
-	}
-	
-	creditInfo_t( int t, const char* val )
-	{
-		type = t;
-		entry = val;
-	}
-	
-	int type;
-	idStr entry;
 };
 
 //*

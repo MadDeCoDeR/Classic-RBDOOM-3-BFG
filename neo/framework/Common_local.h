@@ -372,6 +372,7 @@ public:	// These are public because they are called directly by static functions
 	
 	// localization
 	void	InitLanguageDict();
+	void	InitCreditList();
 	void	LocalizeGui( const char* fileName, idLangDict& langDict );
 	void	LocalizeMapData( const char* fileName, idLangDict& langDict );
 	void	LocalizeSpecificMapData( const char* fileName, idLangDict& langDict, const idLangDict& replaceArgs );
