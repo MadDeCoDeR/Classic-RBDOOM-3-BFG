@@ -29,7 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 #include "precompiled.h"
 #include "../Game_local.h"
-#include <swf\credits\CreditDict.h>
+#include "../swf/credits/CreditDict.h"
 
 static const int NUM_CREDIT_LINES = 16;
 

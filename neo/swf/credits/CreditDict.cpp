@@ -89,7 +89,7 @@ void idCredits::LoadCredits(const byte* buffer, const int bufferLen, const char*
 	int i = 0;
 	while (i < bufferLen)
 	{
-		boolean skipLine = false;
+		bool skipLine = false;
 		int tempType = -1;
 		idStr tempEntry;
 		uint32 c = buffer[i++];

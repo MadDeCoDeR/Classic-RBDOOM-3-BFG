@@ -666,6 +666,9 @@ file(GLOB UI_SOURCES ui/*.cpp)
 file(GLOB SWF_INCLUDES swf/*.h)
 file(GLOB SWF_SOURCES swf/*.cpp)
 
+file(GLOB CREDIT_INCLUDES swf/credits/*.h)
+file(GLOB CREDIT_SOURCES swf/credits/*.cpp)
+
 
 set(GAMED3XP_INCLUDES
 	d3xp/Achievements.h
@@ -1095,6 +1098,9 @@ source_group("ui" FILES ${UI_SOURCES})
 source_group("swf" FILES ${SWF_INCLUDES})
 source_group("swf" FILES ${SWF_SOURCES})
 
+source_group("swf\\credits" FILES ${CREDIT_INCLUDES})
+source_group("swf\\credits" FILES ${CREDIT_SOURCES})
+
 source_group("sys" FILES ${SYS_INCLUDES})
 source_group("sys" FILES ${SYS_SOURCES})
 
@@ -1229,6 +1235,7 @@ set(RBDOOM3_INCLUDES
 			#${OGGVORBIS_INCLUDES}
 			${UI_INCLUDES}
 			${SWF_INCLUDES}
+			${CREDIT_INCLUDES}
 			${COMMON_INCLUDES}
 			${DOOMCLASSIC_INCLUDES}
 			${TIMIDITY_INCLUDES}
@@ -1265,6 +1272,7 @@ set(RBDOOM3_SOURCES
 			#${OGGVORBIS_INCLUDES} ${OGGVORBIS_SOURCES}
 			${UI_SOURCES}
 			${SWF_SOURCES}
+			${CREDIT_SOURCES}
 			${COMMON_SOURCES}
 			${DOOMCLASSIC_SOURCES}
 			${TIMIDITY_SOURCES}
