@@ -31,7 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../snd_local.h"
 #include "../../../doomclassic/doom/i_sound.h"
-#include "../renderer/Cinematic.h"
 
 idCVar s_showLevelMeter( "s_showLevelMeter", "0", CVAR_BOOL | CVAR_ARCHIVE, "Show VU meter" );
 idCVar s_meterTopTime( "s_meterTopTime", "1000", CVAR_INTEGER | CVAR_ARCHIVE, "How long (in milliseconds) peaks are displayed on the VU meter" );
@@ -163,27 +162,30 @@ static void list_audio_devices(const ALCchar *devices)  //GK: Why not ?
 	size_t len = 0;
 
 	common->Printf( "Devices list:\n");
-	common->Printf( "----------\n");
+	common->Printf( "-------------\n");
 	while (device && *device != '\0' && next && *next != '\0') {
 		char *mbdevs=strdup(device);
 #ifdef WIN32
+		int wdev_size = MultiByteToWideChar(CP_UTF8, NULL, device, -1, NULL, 0);
 		//GK: just convert the name from UTF-8 char to wide char and then to ANSI char
-		wchar_t wdevs[512];
-		MultiByteToWideChar(CP_UTF8, NULL, device, strlen(device), wdevs, strlen(device));
-		WideCharToMultiByte(CP_ACP, NULL, wdevs, strlen(device), mbdevs, strlen(device), NULL, 0);
-		for (int i = 0; i < strlen(mbdevs);i++) {
-			if (mbdevs[i] == '?') {
-				mbdevs[i] = '\0';
-				break;
-			}
-		}
+		wchar_t* wdevs = new wchar_t[wdev_size];
+		MultiByteToWideChar(CP_UTF8, NULL, device, -1, wdevs, wdev_size);
+		WideCharToMultiByte(CP_ACP, NULL, wdevs, wdev_size, mbdevs, wdev_size, NULL, 0);
+		delete[] wdevs;
+#else
+		wchar_t* wdevs = new wchar_t[512];
+		int wdev_size = mbstowcs(wdevs, device, strlen(device));
+		wdevs[wdev_size] = '\0';
+		int mb_size = wcstombs(mbdevs, wdevs, wdev_size);
+		mbdevs[mb_size] = '\0';
+		delete[] wdevs;
 #endif
 		common->Printf( "%s\n", mbdevs);
 		len = strlen(device);
 		device += (len + 1);
 		next += (len + 2);
 	}
-	common->Printf( "----------\n");
+	common->Printf("-------------\n");
 }
 
 /*

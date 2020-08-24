@@ -344,15 +344,17 @@ static HGLRC CreateOpenGLContextOnDC( const HDC hdc, const bool debugContext )
 	int useCoreProfile = r_useOpenGLProfile.GetInteger();
 	HGLRC m_hrc = NULL;
 	
-	// RB: for GLintercept 1.2.0 or otherwise we can't diff the framebuffers using the XML log
-	if( !WGLEW_ARB_create_context || useCoreProfile == 0 )
-	{
-		return wglCreateContext( hdc );
-	}
-	// RB end
-	
 	for( int i = 0; i < 2; i++ )
 	{
+		//GK: Try to call that here so if the compatibility or core profiles fail then create a context without ARB
+		// RB: for GLintercept 1.2.0 or otherwise we can't diff the framebuffers using the XML log
+		if (!WGLEW_ARB_create_context || useCoreProfile == 0)
+		{
+			m_hrc = wglCreateContext(hdc);
+			break;
+		}
+		// RB end
+
 		const int glMajorVersion = 4;
 		const int glMinorVersion = 5;
 		const int glDebugFlag = debugContext ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
@@ -404,7 +406,7 @@ static HGLRC CreateOpenGLContextOnDC( const HDC hdc, const bool debugContext )
 				idLib::Printf( "ERROR_INVALID_PROFILE_ARB\n" );
 				break;
 			default:
-				idLib::Printf( "unknown error: 0x%x\n", err );
+				idLib::Printf( "unknown error: 0x%x - %s\n", err, glewGetErrorString(err));
 				break;
 		}
 	}
