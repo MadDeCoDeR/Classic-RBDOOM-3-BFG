@@ -553,7 +553,7 @@ void R_InitTextureMapping (void)
 	//
 	// Calc focallength
 	//  so FIELDOFVIEW angles covers SCREENWIDTH.
-	focallength = FixedDiv (::g->centerxfrac,
+	focallength = FixedDiv (::g->centerxfrac_ow,
 		finetangent[FINEANGLES/4+FIELDOFVIEW/2] );
 
 	for (i=0 ; i<FINEANGLES/2 ; i++)
@@ -676,13 +676,24 @@ R_SetViewSize
 }
 
 
+void R_SetupPlanes() {
+	fixed_t	dy;
+	int		i;
+	// planes
+	for (i = 0; i < ::g->viewheight; i++)
+	{
+		dy = ((i - ::g->centery) << FRACBITS) + FRACUNIT / 2;
+		dy = abs(dy);
+		::g->yslope[i] = FixedDiv((::g->ow << ::g->detailshift) / 2 * FRACUNIT, dy);
+	}
+}
+
 //
 // R_ExecuteSetViewSize
 //
 void R_ExecuteSetViewSize (void)
 {
 	fixed_t	cosadj;
-	fixed_t	dy;
 	int		i;
 	int		j;
 	int		level;
@@ -714,7 +725,8 @@ void R_ExecuteSetViewSize (void)
 	::g->centerx = ::g->viewwidth/2;
 	::g->centerxfrac = ::g->centerx<<FRACBITS;
 	::g->centeryfrac = ::g->centery<<FRACBITS;
-	::g->projection = ::g->centerxfrac;
+	::g->centerxfrac_ow = (::g->ow / 2) << FRACBITS;
+	::g->projection = ::g->centerxfrac_ow;
 
 	if (!::g->detailshift)
 	{
@@ -743,13 +755,7 @@ void R_ExecuteSetViewSize (void)
 	for (i=0 ; i < ::g->viewwidth ; i++)
 		::g->screenheightarray[i] = ::g->viewheight;
 
-	// planes
-	for (i=0 ; i < ::g->viewheight ; i++)
-	{
-		dy = ((i- ::g->centery)<<FRACBITS)+FRACUNIT/2;
-		dy = abs(dy);
-		::g->yslope[i] = FixedDiv ( (::g->viewwidth << ::g->detailshift)/2*FRACUNIT, dy);
-	}
+	R_SetupPlanes();
 
 	for (i=0 ; i < ::g->viewwidth ; i++)
 	{
@@ -764,7 +770,7 @@ void R_ExecuteSetViewSize (void)
 		nocollide_startmap = ((::g->reallightlevels -1-i)*2)*NUMCOLORMAPS/ ::g->reallightlevels;
 		for (j=0 ; j<::g->reallightscale ; j++)
 		{
-			level = nocollide_startmap - j* ::g->SCREENWIDTH/(::g->viewwidth << ::g->detailshift)/DISTMAP;
+			level = nocollide_startmap - j* (ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER)/(::g->ow << ::g->detailshift)/DISTMAP;
 
 			if (level < 0)
 				level = 0;
@@ -885,7 +891,6 @@ void R_SetupThirdPersonView(player_t* player) {
 void R_SetupFrame (player_t* player)
 {		
 	int		i;
-	fixed_t	dy;
 	int mousepos;
 
 	::g->viewplayer = player;
@@ -900,7 +905,7 @@ void R_SetupFrame (player_t* player)
 		SetViewAngle(player->mo->angle + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
 		//GK: Adjust the height if aspect ratio correction is on
 		int ogwidth = ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER;
-		::g->viewz = player->viewz + ((::g->SCREENWIDTH - ogwidth) * 1000);
+		::g->viewz = player->viewz /*+ ((::g->SCREENWIDTH - ogwidth) * 1000)*/;
 	}
 	::g->extralight = player->extralight;
 	
@@ -922,13 +927,7 @@ void R_SetupFrame (player_t* player)
 		if (::g->centery != tmpcy ) {
 			::g->centery = tmpcy;
 			::g->centeryfrac = ::g->centery << FRACBITS;
-			// planes
-			for (i = 0; i < ::g->viewheight; i++)
-			{
-				dy = ((i - ::g->centery) << FRACBITS) + FRACUNIT / 2;
-				dy = abs(dy);
-				::g->yslope[i] = FixedDiv((::g->viewwidth << ::g->detailshift) / 2 * FRACUNIT, dy);
-			}
+			R_SetupPlanes();
 		}
 		//GK: End
 	::g->viewsin = finesine[GetViewAngle()>>ANGLETOFINESHIFT];

@@ -713,7 +713,8 @@ int			extralight;
 qboolean		setsizeneeded;
 int		setblocks;
 int		setdetail;
-int ow; //GK: Make it global cause why not
+int ow; //GK: Make it global cause why not. This is the original view Width this port is using (ORIGINAL_WIDTH *GLOBAL_IMAGE_SCALE)
+fixed_t centerxfrac_ow;
 fixed_t		sprbotscreen;
 // r_main.vars end // 
 //  r_plane.vars begin // 
