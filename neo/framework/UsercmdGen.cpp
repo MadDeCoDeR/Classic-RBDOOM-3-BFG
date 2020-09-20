@@ -1055,7 +1055,7 @@ void idUsercmdGenLocal::JoystickMove2()
 	idVec2 leftMapped = JoypadFunction( leftRaw, 1.0f, threshold, range, shape, mergedThreshold );
 	idVec2 rightMapped = JoypadFunction( rightRaw, aimAssist, threshold, range, shape, mergedThreshold );
 	
-	// because idPhysics_Player::CmdScale scales mvoement values down so that 1,1 = sqrt(2), sqrt(2),
+	// because idPhysics_Player::CmdScale scales movement values down so that 1,1 = sqrt(2), sqrt(2),
 	// we need to expand our circular values out to a square
 	CircleToSquare( leftMapped.x, leftMapped.y );
 	
