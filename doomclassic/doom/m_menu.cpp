@@ -382,26 +382,27 @@ static const int numBinds = sizeof(keyboardBinds) / sizeof(keyboardBinds[0]);
 typedef struct
 {
 	const char* display;
-	const char* displayx;
-	const char* displaynx;
 	const char* bind;
 } layoutbindInfo_t;
 
 static layoutbindInfo_t joyLayoutBinds[] =
 {
-	{ "Btn_a", "Btn_X",	"Btn_B", "JOY1"								},	// A/X/B
-	{ "Btn_b", "Btn_O",	"Btn_A", "JOY2"									},	// B/O/A
-	{ "Btn_x", "Sqr", "Btn_Y", "JOY3"								},	// X/SQUARE/Y
-	{ "Btn_y", "Tri", "Btn_X", "JOY4"							},	// Y/TRIANGLE/X
-	{ "Lb", "L1", "Btn_L", "JOY5"								},	// LB/L1/L
-	{ "Rb", "R1", "Btn_R","JOY6"									},	// RB/R1/R
-	{ "Ls", "L3", "Ls", "JOY7"								},	// LS/L3
-	{ "Rs", "R3", "Rs", "JOY8"								},	// RS/R3
-	{ "Start", "Start",	"+", "JOY9"								},	// Start/+
-	{ "Select", "Select", "-", "JOY10"							},	// Select/-
-
-	{ "Lt", "L2", "ZL", "JOY_TRIGGER1"							},	// LT/L2/ZL
-	{ "Rt",	"R2", "ZR", "JOY_TRIGGER2"						},	// RT/R2/ZR
+	{ "#JOY01", "JOY1"								},	// A/X/B
+	{ "#JOY02", "JOY2"									},	// B/O/A
+	{ "#JOY03", "JOY3"								},	// X/SQUARE/Y
+	{ "#JOY04", "JOY4"							},	// Y/TRIANGLE/X
+	{ "#JOY06", "JOY5"								},	// LB/L1/L
+	{ "#JOY05","JOY6"									},	// RB/R1/R
+	{ "#JOY10", "JOY7"								},	// LS/L3
+	{ "#JOY09", "JOY8"								},	// RS/R3
+	{ "#JOY15", "JOY9"								},	// Start/+
+	{ "#JOY16", "JOY10"							},	// Select/-
+	{ "#JOY11", "JOY_DPAD_UP"								},	// Dpad up
+	{ "#JOY12", "JOY_DPAD_RIGHT"									},	// Dpad right
+	{ "#JOY13", "JOY_DPAD_DOWN"								},	// Dpad down
+	{ "#JOY14", "JOY_DPAD_LEFT"							},	// Dpad left
+	{ "#JOY08", "JOY_TRIGGER1"							},	// LT/L2/ZL
+	{ "#JOY07", "JOY_TRIGGER2"						},	// RT/R2/ZR
 };
 
 static const int numLayBinds = sizeof(joyLayoutBinds) / sizeof(joyLayoutBinds[0]);
@@ -527,12 +528,7 @@ void M_DrawLoad(void)
 		M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODEL);
 	}
 	else {
-		if (!in_joylayout.GetBool()) {
-			M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODEL);
-		}
-		else {
-			M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODELX);
-		}
+		M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODELGP);
 	}
 }
 
@@ -908,12 +904,7 @@ void M_QuickSave(void)
 		sprintf(::g->tempstring, QSPROMPT, ::g->savegamestrings[::g->quickSaveSlot]);
 	}
 	else {
-		if (!in_joylayout.GetBool()) {
-			sprintf(::g->tempstring, QSPROMPTGP, ::g->savegamestrings[::g->quickSaveSlot]);
-		}
-		else {
-			sprintf(::g->tempstring, QSPROMPTGPX, ::g->savegamestrings[::g->quickSaveSlot]);
-		}
+		sprintf(::g->tempstring, QSPROMPTGP, ::g->savegamestrings[::g->quickSaveSlot]);
 	}
 	M_StartMessage(::g->tempstring,M_QuickSaveResponse,true);
 }
@@ -954,12 +945,7 @@ void M_QuickLoad(void)
 		sprintf(::g->tempstring, QLPROMPT, ::g->savegamestrings[::g->quickSaveSlot]);
 	}
 	else {
-		if (!in_joylayout.GetBool()) {
-			sprintf(::g->tempstring, QLPROMPTGP, ::g->savegamestrings[::g->quickSaveSlot]);
-		}
-		else {
-			sprintf(::g->tempstring, QLPROMPTGPX, ::g->savegamestrings[::g->quickSaveSlot]);
-		}
+		sprintf(::g->tempstring, QLPROMPTGP, ::g->savegamestrings[::g->quickSaveSlot]);
 	}
 	M_StartMessage(::g->tempstring,M_QuickLoadResponse,true);
 }
@@ -1292,12 +1278,7 @@ void M_ChooseSkill(int choice)
 			M_StartMessage(NIGHTMARE, M_VerifyNightmare, true);
 		}
 		else {
-			if (!in_joylayout.GetBool()) {
-				M_StartMessage(NIGHTMAREGP, M_VerifyNightmare, true);
-			}
-			else {
-				M_StartMessage(NIGHTMAREGPX, M_VerifyNightmare, true);
-			}
+			M_StartMessage(NIGHTMAREGP, M_VerifyNightmare, true);
 		}
 		return;
 	}
@@ -1800,6 +1781,7 @@ void M_DrawKey(void) {
 				const char* buttonsWithImages[] =
 				{
 					"JOY1", "JOY2", "JOY3", "JOY4", "JOY5", "JOY6",
+					"JOY_DPAD_UP", "JOY_DPAD_LEFT", "JOY_DPAD_DOWN", "JOY_DPAD_RIGHT"
 					"JOY_TRIGGER1", "JOY_TRIGGER2", 0
 				};
 				for (int i = 0; i < joyBinds.Num(); i++)
@@ -1825,26 +1807,13 @@ void M_DrawKey(void) {
 					}
 					if (hasImage)
 					{
-						switch (in_joylayout.GetInteger()) {
-						case 0:
-						case 2:
-							bindings.Append(joyLayoutBinds[imageIndex].display);
-							break;
-						case 4:
-							bindings.Append(joyLayoutBinds[imageIndex].displaynx);
-							break;
-						case 1:
-						case 3:
-							bindings.Append(joyLayoutBinds[imageIndex].displayx);
-							break;
-						}
+						bindings.Append(joyLayoutBinds[imageIndex].display);
 					}
 					else
 					{
 						bindings.Append(joyBinds[i]);
 					}
 				}
-				bindings.Replace("JOY_DPAD", "DPAD");
 			}
 
 			if (!bind.keyboard.IsEmpty())
@@ -1917,12 +1886,7 @@ void M_EndGame(int choice)
 		M_StartMessage(ENDGAME, M_EndGameResponse, true);
 	}
 	else {
-		if (!in_joylayout.GetBool()) {
-			M_StartMessage(ENDGAMEGP, M_EndGameResponse, true);
-		}
-		else {
-			M_StartMessage(ENDGAMEGPX, M_EndGameResponse, true);
-		}
+		M_StartMessage(ENDGAMEGP, M_EndGameResponse, true);
 	}
 }
 
@@ -2105,6 +2069,7 @@ void M_Rumble(int choice)
 void M_Layout(int choice)
 {
 	in_joylayout.SetBool(!in_joylayout.GetBool());
+	HU_UpdateGlyphs();
 	if (!idLib::newd3) {
 		hardreset = true;
 	}
@@ -2304,6 +2269,23 @@ M_WriteText
 			cy += 12;
 			continue;
 		}
+		
+		
+		if (c == '#') {
+			char joybuffer[5];
+			strncpy(joybuffer, ch, 5);
+			if (!idStr::Icmpn(joybuffer, "JOY", 3)) {
+				char buffer[2];
+				strncpy(buffer, joybuffer + 3, 2);
+				int index = atoi(buffer);
+				V_DrawPatchDirect(cx, cy - (::g->hu_glyph[index -1]->height / 4), 0, ::g->hu_glyph[index - 1]);
+				for (int k = 0; k < 5; k++) {
+					c = *ch++;
+				}
+				cx += ::g->hu_glyph[index - 1]->width;
+				continue;
+			}
+		}
 
 		c = toupper(c) - HU_FONTSTART;
 		if (c < 0 || c>= HU_FONTSIZE)
@@ -2350,6 +2332,21 @@ M_WriteAspectText
 			cx = x;
 			cy += 12;
 			continue;
+		}
+		if (c == '#') {
+			char joybuffer[5];
+			strncpy(joybuffer, ch, 5);
+			if (!idStr::Icmpn(joybuffer, "JOY", 3)) {
+				char buffer[2];
+				strncpy(buffer, joybuffer + 3, 2);
+				int index = atoi(buffer);
+				V_DrawAspectPatch(cx, cy - (::g->hu_glyph[index - 1]->height / 4), 0, ::g->hu_glyph[index - 1]);
+				for (int k = 0; k < 5; k++) {
+					c = *ch++;
+				}
+				cx += ::g->hu_glyph[index - 1]->width;
+				continue;
+			}
 		}
 
 		c = toupper(c) - HU_FONTSTART;
@@ -2403,12 +2400,7 @@ void M_CheckReset()
 			M_StartMessage(RESETGAME, M_ResetGame, true);
 		}
 		else {
-			if (!in_joylayout.GetBool()) {
-				M_StartMessage(RESETGAMEGP, M_ResetGame, true);
-			}
-			else {
-				M_StartMessage(RESETGAMEGPX, M_ResetGame, true);
-			}
+			M_StartMessage(RESETGAMEGP, M_ResetGame, true);
 		}
 	}
 
@@ -2417,12 +2409,7 @@ void M_CheckReset()
 			M_StartMessage(HARDRESETGAME, M_HardResetGame, true);
 		}
 		else {
-			if (!in_joylayout.GetBool()) {
-				M_StartMessage(HARDRESETGAMEGP, M_HardResetGame, true);
-			}
-			else {
-				M_StartMessage(HARDRESETGAMEGPX, M_HardResetGame, true);
-			}
+			M_StartMessage(HARDRESETGAMEGP, M_HardResetGame, true);
 		}
 	}
 }
@@ -2750,12 +2737,7 @@ qboolean M_Responder (event_t* ev)
 					M_StartMessage(DELSAV, M_DeleteSelected, true);
 				}
 				else {
-					if (!in_joylayout.GetBool()) {
-						M_StartMessage(DELSAVGP, M_DeleteSelected, true);
-					}
-					else {
-						M_StartMessage(DELSAVGPX, M_DeleteSelected, true);
-					}
+					M_StartMessage(DELSAVGP, M_DeleteSelected, true);
 				}
 			}
 		}
@@ -3154,19 +3136,7 @@ void M_Remap(event_t* ev) {
 				{
 					if (bindName.Icmp(joyLayoutBinds[b].bind) == 0)
 					{
-						switch (in_joylayout.GetInteger()) {
-						case 0:
-						case 2:
-							bindName = joyLayoutBinds[b].display;
-							break;
-						case 4:
-							bindName = joyLayoutBinds[b].displaynx;
-							break;
-						case 1:
-						case 3:
-							bindName = joyLayoutBinds[b].displayx;
-							break;
-						}
+						bindName = joyLayoutBinds[b].display;
 						break;
 					}
 				}
@@ -3176,12 +3146,7 @@ void M_Remap(event_t* ev) {
 					
 				}
 				else {
-					if (!in_joylayout.GetBool()) {
-						sprintf(tempMsg, REMAPKEYGP, bindName.c_str(), keyboardBinds[::g->bindIndex].display);
-					}
-					else {
-						sprintf(tempMsg, REMAPKEYGPX, bindName.c_str(), keyboardBinds[::g->bindIndex].display);
-					}
+					sprintf(tempMsg, REMAPKEYGP, bindName.c_str(), keyboardBinds[::g->bindIndex].display);
 				}
 				M_StartMessage(tempMsg, M_RemapConfirm, true);
 			}

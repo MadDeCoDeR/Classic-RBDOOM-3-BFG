@@ -43,8 +43,9 @@ If you have questions concerning this license or the applicable additional terms
 //
 #define PRESSKEY 	"press any button."
 #define PRESSYN 	"press Enter or Esc."
-#define PRESSAB 	"press A or B."
-#define PRESSXO 	"press X or O."
+#define PRESSJOY1JOY2	\
+"\t\t\t\tpress #JOY01 or #JOY02."
+
 #define QUITMSG	"are you sure you want to\nquit this great game?"
 #define LOADNET 	"you can't do load while in a net game!\n\n" PRESSKEY
 #define QLOADNET	"you can't quickload during a netgame!\n\n" PRESSKEY
@@ -52,19 +53,15 @@ If you have questions concerning this license or the applicable additional terms
 #define QSAVESPOT	"you haven't have a quicksave yet!\n\n" PRESSKEY
 #define SAVEDEAD 	"you can't save if you aren't playing!\n\n" PRESSKEY
 #define QSPROMPT 	"quicksave over your game named\n\n'%s'?\n\n" PRESSYN
-#define QSPROMPTGP 	"quicksave over your game named\n\n'%s'?\n\n" PRESSAB
-#define QSPROMPTGPX 	"quicksave over your game named\n\n'%s'?\n\n" PRESSXO
+#define QSPROMPTGP 	"quicksave over your game named\n\n'%s'?\n\n" PRESSJOY1JOY2
 #define QLPROMPT	"do you want to quickload the game named\n\n'%s'?\n\n" PRESSYN
-#define QLPROMPTGP	"do you want to quickload the game named\n\n'%s'?\n\n" PRESSAB
-#define QLPROMPTGPX	"do you want to quickload the game named\n\n'%s'?\n\n" PRESSXO
+#define QLPROMPTGP	"do you want to quickload the game named\n\n'%s'?\n\n" PRESSJOY1JOY2
 #define DELSAV		"Are you sure you want to\ndelete this save file?\n\n" PRESSYN
-#define DELSAVGP	"Are you sure you want to\ndelete this save file?\n\n" PRESSAB
-#define DELSAVGPX	"Are you sure you want to\ndelete this save file?\n\n" PRESSXO
+#define DELSAVGP	"Are you sure you want to\ndelete this save file?\n\n" PRESSJOY1JOY2
 #define EXPROMT		"Missing Expansion File!\n\n" PRESSKEY
 #define	KEYMSG		"Press any key to remap '%s'.\nPress 'ESC' to go back\n" PRESSKEY
 #define REMAPKEY	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSYN
-#define REMAPKEYGP	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSAB
-#define REMAPKEYGPX	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSXO
+#define REMAPKEYGP	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSJOY1JOY2
 
 #define NEWGAME	\
 "you can't start a new game\n"\
@@ -75,10 +72,7 @@ If you have questions concerning this license or the applicable additional terms
 "isn't even remotely fair.\n\n" PRESSYN
 #define NIGHTMAREGP	\
 "are you sure? this skill level\n"\
-"isn't even remotely fair.\n\n" PRESSAB
-#define NIGHTMAREGPX	\
-"are you sure? this skill level\n"\
-"isn't even remotely fair.\n\n" PRESSXO
+"isn't even remotely fair.\n\n" PRESSJOY1JOY2
 
 #define SWSTRING	\
 "this is the shareware version of doom.\n\n"\
@@ -92,22 +86,19 @@ If you have questions concerning this license or the applicable additional terms
 #define MSGON		"Messages ON"
 #define NETEND	"you can't end a netgame!\n\n" PRESSKEY
 #define ENDGAME	"are you sure you want to end the game?\n\n" PRESSYN
-#define ENDGAMEGP	"are you sure you want to end the game?\n\n" PRESSAB
-#define ENDGAMEGPX	"are you sure you want to end the game?\n\n" PRESSXO
+#define ENDGAMEGP	"are you sure you want to end the game?\n\n" PRESSJOY1JOY2
 
 #define RESETGAMEBASE	\
 "you must restart the game. restart it now?\n"\
 "(if you don't the game might crash)\n\n"
 #define RESETGAME	RESETGAMEBASE PRESSYN
-#define RESETGAMEGP	RESETGAMEBASE PRESSAB
-#define RESETGAMEGPX	RESETGAMEBASE PRESSXO
+#define RESETGAMEGP	RESETGAMEBASE PRESSJOY1JOY2
 
 #define HARDRESETGAMEBASE	\
 "you must restart the engine. restart it now?\n"\
 "(if you don't the game might crash)\n\n"
 #define HARDRESETGAME	HARDRESETGAMEBASE PRESSYN
-#define HARDRESETGAMEGP	HARDRESETGAMEBASE PRESSAB
-#define HARDRESETGAMEGPX	HARDRESETGAMEBASE PRESSXO
+#define HARDRESETGAMEGP	HARDRESETGAMEBASE PRESSJOY1JOY2
 
 #define DOSY		"(press A to quit)"
 
@@ -120,8 +111,8 @@ If you have questions concerning this license or the applicable additional terms
 #define GAMMALVL4	"Gamma correction level 4"
 //#define EMPTYSTRING	"empty slot"
 #define EMPTYSTRING	"---"
-#define XTODEL		"press X to Delete save file"
-#define XTODELX		"press square to Delete save file"
+#define XTODEL		"press x to Delete save file"
+#define XTODELGP		"press #JOY03 to Delete save file"
 
 //
 //	P_inter.C

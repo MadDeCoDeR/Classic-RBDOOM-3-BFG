@@ -41,6 +41,8 @@ If you have questions concerning this license or the applicable additional terms
 // Calculate # of glyphs in font.
 #define HU_FONTSIZE	(HU_FONTEND - HU_FONTSTART + 1)	
 
+#define HU_GLYPHSIZE 16	
+
 #define HU_BROADCAST	5
 
 #define HU_MSGREFRESH	KEY_ENTER
@@ -69,6 +71,8 @@ void HU_Drawer(void);
 char HU_dequeueChatChar(void);
 void HU_Erase(void);
 
+
+void HU_UpdateGlyphs(void);
 
 #endif
 

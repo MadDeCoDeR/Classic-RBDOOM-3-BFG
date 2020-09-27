@@ -301,6 +301,7 @@ qboolean	lastautomapactive ;
 char			chat_char; // remove later.
 player_t*	plr;
 patch_t*		hu_font[HU_FONTSIZE];
+patch_t*		hu_glyph[HU_GLYPHSIZE];
 hu_textline_t	w_title;
 hu_textline_t	w_kills;
 hu_textline_t	w_items;

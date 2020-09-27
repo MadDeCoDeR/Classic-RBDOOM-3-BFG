@@ -53,6 +53,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "d_exp.h"
 
+extern idCVar in_joylayout;
+
 //
 // Locally used constants, shortcuts.
 //
@@ -506,7 +508,8 @@ void HU_Init(void)
 		sprintf(buffer, "STCFN%.3d", j++);
 		::g->hu_font[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(buffer, PU_LEVEL_SHARED), W_GetNumForName(buffer));
 	}
-
+	
+	HU_UpdateGlyphs();
 }
 
 void HU_Stop(void)
@@ -703,6 +706,17 @@ void HU_Erase(void)
 	HUlib_eraseTextLine(&::g->w_items);
 	HUlib_eraseTextLine(&::g->w_secrets);
 
+}
+
+void HU_UpdateGlyphs(void)
+{
+	char buffer[9];
+	for (int i = 0; i < HU_GLYPHSIZE; i++)
+	{
+		char joysuffix = in_joylayout.GetBool() ? 'P' : 'X';
+		sprintf(buffer, "STJOY%c%.2d", joysuffix, i + 1);
+		::g->hu_glyph[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(buffer, PU_LEVEL_SHARED), W_GetNumForName(buffer));
+	}
 }
 
 void HU_Ticker(void)
