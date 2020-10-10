@@ -75,6 +75,7 @@ void M_Sound(int choice);
 void M_Video(int choice);
 void M_Gameplay(int choice);
 void M_Freelook(int choice);
+void M_Autoaim(int choice);
 void M_Jump(int choice);
 void M_Cross(int choice);
 void M_Mapst(int choice);

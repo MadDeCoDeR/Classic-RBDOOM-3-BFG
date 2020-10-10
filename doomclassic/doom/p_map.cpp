@@ -60,7 +60,7 @@ If you have questions concerning this license or the applicable additional terms
 // but don't process them until the move is proven valid
 
 
-
+extern idCVar cl_freelook;
 
 //
 // TELEPORT MOVE
@@ -1136,7 +1136,17 @@ PTR_AimTraverse (intercept_t* in)
     if (thingbottomslope < ::g->bottomslope)
 	thingbottomslope = ::g->bottomslope;
 
-    ::g->aimslope = (thingtopslope+thingbottomslope)/2;
+	if (!cl_freelook.GetBool() || game->GetCVarBool("aa_targetAimAssistEnable")) {
+		::g->aimslope = (thingtopslope + thingbottomslope) / 2;
+	}
+	/*else {
+		if (game->GetCVarBool("aa_targetAimAssistEnable")) {
+			::g->assistslope = ((((thingtopslope + thingbottomslope) / 2) << ANGLETOFINESHIFT) >> FRACBITS) * 673;
+		}
+		else {
+			::g->assistslope = 0;
+		}
+	}*/
     ::g->linetarget = th;
 
     return false;			// don't go any farther
@@ -1210,7 +1220,7 @@ qboolean PTR_ShootTraverse (intercept_t* in)
 	frac = in->frac - FixedDiv (4*FRACUNIT,::g->attackrange);
 	x = ::g->trace.x + FixedMul (::g->trace.dx, frac);
 	y = ::g->trace.y + FixedMul (::g->trace.dy, frac);
-	z = ::g->shootz + FixedMul (::g->aimslope, FixedMul(frac, ::g->attackrange)) -(((::g->mouseposy) << FRACBITS) / 673);
+	z = ::g->shootz + FixedMul (::g->aimslope, FixedMul(frac, ::g->attackrange)) -(((::g->mouseposy) << FRACBITS) / 473);
 
 	if (li->frontsector->ceilingpic == ::g->skyflatnum)
 	{
@@ -1268,7 +1278,7 @@ qboolean PTR_ShootTraverse (intercept_t* in)
 
     x = ::g->trace.x + FixedMul (::g->trace.dx, frac);
     y = ::g->trace.y + FixedMul (::g->trace.dy, frac);
-    z = ::g->shootz + FixedMul (::g->aimslope, FixedMul(frac, ::g->attackrange)) - (((::g->mouseposy) << FRACBITS) / 673);
+    z = ::g->shootz + FixedMul (::g->aimslope, FixedMul(frac, ::g->attackrange)) - (((::g->mouseposy) << FRACBITS) / 473);
 
 	// check for friendly fire.
 #ifdef ID_ENABLE_DOOM_CLASSIC_NETWORKING

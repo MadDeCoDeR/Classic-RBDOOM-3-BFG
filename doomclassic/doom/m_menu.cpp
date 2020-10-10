@@ -210,6 +210,7 @@ void M_MasterSelect(int choice);
 void M_Doom_IT(int choice);
 void M_Gameplay(int choice);
 void M_Freelook(int choice);
+void M_Autoaim(int choice);
 void M_Jump(int choice);
 void M_Cross(int choice);
 void M_Mapst(int choice);
@@ -1131,17 +1132,24 @@ void M_DrawGame(void)
 	int jumping = cl_jump.GetBool();
 	int crosshair = cl_cursor.GetBool();
 	int mapstats = cl_showStats.GetBool();
+	int autoaim = game->GetCVarBool("aa_targetAimAssistEnable");
+
+	int aimOffset = cl_freelook.GetBool() ? 0 : 1;
 
 
 	V_DrawPatchDirect(::g->GameDef.x + 120, ::g->GameDef.y + LINEHEIGHT * run, 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[alwayrun], PU_CACHE_SHARED), W_GetNumForName(msgNames[alwayrun])));
 	V_DrawPatchDirect(::g->GameDef.x + 135, ::g->GameDef.y + LINEHEIGHT * (look), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[freelook], PU_CACHE_SHARED), W_GetNumForName(msgNames[freelook])));
-	V_DrawPatchDirect(::g->GameDef.x + 70, ::g->GameDef.y + LINEHEIGHT * (jump), 0,
+	if (cl_freelook.GetBool()) {
+		V_DrawPatchDirect(::g->GameDef.x + 120, ::g->GameDef.y + LINEHEIGHT * (aim), 0,
+			/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[autoaim], PU_CACHE_SHARED), W_GetNumForName(msgNames[autoaim])));
+	}
+	V_DrawPatchDirect(::g->GameDef.x + 70, ::g->GameDef.y + LINEHEIGHT * (jump - aimOffset), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[jumping], PU_CACHE_SHARED), W_GetNumForName(msgNames[jumping])));
-	V_DrawPatchDirect(::g->GameDef.x + 140, ::g->GameDef.y + LINEHEIGHT * (cross), 0,
+	V_DrawPatchDirect(::g->GameDef.x + 140, ::g->GameDef.y + LINEHEIGHT * (cross - aimOffset), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[crosshair], PU_CACHE_SHARED), W_GetNumForName(msgNames[crosshair])));
-	V_DrawPatchDirect(::g->GameDef.x + 121, ::g->GameDef.y + LINEHEIGHT * (mapst), 0,
+	V_DrawPatchDirect(::g->GameDef.x + 121, ::g->GameDef.y + LINEHEIGHT * (mapst - aimOffset), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[mapstats], PU_CACHE_SHARED), W_GetNumForName(msgNames[mapstats])));
 }
 
@@ -1609,6 +1617,11 @@ void M_Alwaysrun(int choice) {
 void M_Freelook(int choice) 
 {
 	cl_freelook.SetBool(cl_freelook.GetBool() ? 0 : 1);
+}
+
+void M_Autoaim(int choice)
+{
+	game->SetCVarBool("aa_targetAimAssistEnable", !game->GetCVarBool("aa_targetAimAssistEnable"));
 }
 
 void M_Jump(int choice)
@@ -2762,6 +2775,9 @@ qboolean M_Responder (event_t* ev)
 				else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == resolution) {
 					::g->itemOn = framerate;
 				}
+				else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == look) {
+					::g->itemOn = jump;
+				}
 			else ::g->itemOn++;
 			S_StartSound(NULL,sfx_pstop);
 		} while(::g->currentMenu->menuitems[::g->itemOn].status==-1);
@@ -2778,6 +2794,8 @@ qboolean M_Responder (event_t* ev)
 				else ::g->itemOn = ::g->currentMenu->numitems-1;
 			else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == framerate)
 				::g->itemOn = resolution;
+			else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == jump)
+				::g->itemOn = look;
 			else ::g->itemOn--;
 			S_StartSound(NULL,sfx_pstop);
 		} while(::g->currentMenu->menuitems[::g->itemOn].status==-1);
@@ -2961,6 +2979,9 @@ void M_Drawer (void)
 		if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && i == refresh) {
 			 continue;
 		}
+		if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && i == aim) {
+			continue;
+		}
 		if (::g->currentMenu->menuitems[i].name[0])
 			V_DrawPatchDirect (::g->md_x,::g->md_y,0,
 				/*(patch_t*)*/img2lmp(W_CacheLumpName(::g->currentMenu->menuitems[i].name ,PU_CACHE_SHARED), W_GetNumForName(::g->currentMenu->menuitems[i].name)));
@@ -2979,6 +3000,9 @@ void M_Drawer (void)
 			lineoffs += (optoffs*LINEHEIGHT);
 		}
 		if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn > refresh) {
+			lineoffs = (::g->itemOn - 1) * LINEHEIGHT;
+		}
+		if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn > aim) {
 			lineoffs = (::g->itemOn - 1) * LINEHEIGHT;
 		}
 		if ((::g->currentMenu->menuitems == ::g->ResDef.menuitems || ::g->currentMenu->menuitems == ::g->KeyDef.menuitems) && ::g->itemOn >= 10) {

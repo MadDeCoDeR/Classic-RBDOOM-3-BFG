@@ -46,6 +46,8 @@ If you have questions concerning this license or the applicable additional terms
 
 extern bool globalNetworking;
 
+extern idCVar cl_freelook;
+
 void G_PlayerReborn (int player);
 void P_SpawnMapThing (mapthing_t*	mthing);
 
@@ -984,17 +986,18 @@ P_SpawnPlayerMissile
 			an -= 2<<26;
 			slope = P_AimLineAttack (source, an, 16*64*FRACUNIT);
 		}
-
-		if (!::g->linetarget)
-		{
+	}
+	if (cl_freelook.GetBool())
+	{
+		if ((game->GetCVarBool("aa_targetAimAssistEnable") && !::g->linetarget) || !game->GetCVarBool("aa_targetAimAssistEnable")) {
 			an = source->angle;
-			slope = -(((::g->mouseposy) << FRACBITS) / 673); //GK: Taken from Heretic source and altered in order to work with idTech 5 input
+			slope = -(((::g->mouseposy) << FRACBITS) / 473); //GK: Taken from Heretic source and altered in order to work with idTech 5 input
 		}
 	}
 
 	x = source->x;
 	y = source->y;
-	z = source->z + 4*8*FRACUNIT - (((::g->mouseposy) << FRACBITS) / 673);
+	z = source->z + 4*8*FRACUNIT - (((::g->mouseposy) << FRACBITS) / 473);
 
 	th = P_SpawnMobj (x,y,z, type);
 

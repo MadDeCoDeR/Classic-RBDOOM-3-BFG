@@ -164,8 +164,9 @@ void P_MovePlayer (player_t* player)
 
 	cmd = &player->cmd;
 
-	player->mo->angle += (cmd->angleturn<<16);
-	player->mo->viewangle += (cmd->angleview << 16);
+	player->mo->angle += (cmd->angleturn << 16);
+	player->mo->viewangle += (cmd->angleview << 16) /*- ::g->assistslope*/;
+	//::g->assistslope = 0;
 	player->mo->viewangle = idMath::ClampInt((-1 * idMath::Abs(cl_freelookclamp.GetInteger())) << 19, idMath::Abs(cl_freelookclamp.GetInteger()) << 19, player->mo->viewangle);
 
 	// Do not let the player control movement

@@ -219,6 +219,7 @@ typedef enum
 {
 	run,
 	look,
+	aim,
 	jump,
 	cross,
 	mapst,

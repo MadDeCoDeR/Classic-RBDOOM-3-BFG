@@ -552,7 +552,7 @@ A_Punch
 	if (cl_freelook.GetBool())
 	{
 		angle -= 2 << 26;
-		slope = -(((::g->mouseposy) << FRACBITS) / 673);
+		slope = -(((::g->mouseposy) << FRACBITS) / 473);
 	}
 	P_LineAttack (player->mo, angle, MELEERANGE, slope, damage);
 
@@ -590,7 +590,7 @@ A_Saw
 	if (cl_freelook.GetBool())
 	{
 		angle -= 2 << 26;
-		slope = -(((::g->mouseposy) << FRACBITS) / 673);
+		slope = -(((::g->mouseposy) << FRACBITS) / 473);
 	}
 	P_LineAttack (player->mo, angle, MELEERANGE+1, slope, damage);
 
@@ -712,11 +712,13 @@ void P_BulletSlope (mobj_t*	mo)
 			an -= 2<<26;
 			::g->bulletslope = P_AimLineAttack (mo, an, 16*64*FRACUNIT);
 		}
-		//GK: Move puffs up and down based on player's view
-		if (cl_freelook.GetBool() && !::g->linetarget)
-		{
+	}
+	//GK: Move puffs up and down based on player's view
+	if (cl_freelook.GetBool())
+	{
+		if ((game->GetCVarBool("aa_targetAimAssistEnable") && !::g->linetarget) || !game->GetCVarBool("aa_targetAimAssistEnable")) {
 			an -= 2 << 26;
-			::g->bulletslope = -(((::g->mouseposy) << FRACBITS) / 673);
+			::g->bulletslope = -(((::g->mouseposy) << FRACBITS) / 473);
 		}
 	}
 }
