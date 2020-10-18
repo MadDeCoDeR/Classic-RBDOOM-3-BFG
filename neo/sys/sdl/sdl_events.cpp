@@ -81,6 +81,7 @@ extern idCVar r_windowY;
 extern idCVar r_windowWidth;
 extern idCVar r_windowHeight;
 extern idCVar com_emergencyexit;
+extern idCVar con_isActive;
 // DG end
 //GK: This function will run as a thread in order to capture when a joystick is connected or disconnected
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -871,6 +872,15 @@ sysEvent_t Sys_GetEvent()
 	// loop until there is an event we care about (will return then) or no more events
 	while( SDL_PollEvent( &ev ) )
 	{
+		if (con_isActive.GetBool()) {
+			if (!SDL_IsTextInputActive()) {
+				SDL_StartTextInput();
+			}
+		} else {
+			if (SDL_IsTextInputActive()) {
+				SDL_StopTextInput();
+			}
+		}
 		switch( ev.type )
 		{
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -1105,7 +1115,6 @@ sysEvent_t Sys_GetEvent()
 			
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 			case SDL_TEXTINPUT:
-				::common->Printf("I'm Here !!!");
 				if( ev.text.text[0] != '\0' )
 				{
 					// fill uniStr array for SE_CHAR events
