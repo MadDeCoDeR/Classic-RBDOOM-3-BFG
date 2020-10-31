@@ -460,6 +460,8 @@ void parseexptext(char* text) {
 	}*/
 
 	for (int i = 0; i < linedtext.size(); i++) {
+		varval = NULL;
+		varval2 = NULL;
 		char* t = strtok(strdup(linedtext[i].c_str()), " ");
 		if (t == NULL)
 			continue;
@@ -507,7 +509,7 @@ void parseexptext(char* text) {
 						if (t != NULL) {
 							varval2 = t;
 						}
-						setMAP(val1, varopt, varval,varval2);
+						setMAP(val1, varopt, varval, varval2);
 						break;
 					case 3:
 						if (val1 == -1) {
@@ -587,7 +589,7 @@ void parseexptext(char* text) {
 					break;
 				case 3:
 					varval = t;
-					setCluster(val1, varname, varval,varopt,i,linedtext );
+					setCluster(val1, varname, varval, varopt, i, linedtext );
 					break;
 				default:
 					varval = t;
