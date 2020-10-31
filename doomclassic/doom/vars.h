@@ -191,6 +191,7 @@ int		castframes;
 int		castonmelee;
 int		caststartmenu;
 qboolean		castattacking;
+qboolean		castcredit;
 int	laststage;
 // f_finale.vars end // 
 //  f_wipe.vars begin // 

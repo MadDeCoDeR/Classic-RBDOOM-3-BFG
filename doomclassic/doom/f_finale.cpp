@@ -782,8 +782,14 @@ void F_CastTicker (void)
 	// switch from deathstate to next monster
 	::g->castnum++;
 	::g->castdeath = false;
-	if (castorder[::g->castnum].name == NULL)
-	    ::g->castnum = 0;
+	if (castorder[::g->castnum].name == NULL && !::g->castcredit) {
+		::g->castcredit = true;
+		return;
+	}
+	else if (castorder[::g->castnum].name == NULL && ::g->castcredit) {
+		::g->castcredit = false;
+		::g->castnum = 0;
+	}
 	if (mobjinfo[castorder[::g->castnum].type].seesound)
 	    S_StartSound (NULL, mobjinfo[castorder[::g->castnum].type].seesound);
 	::g->caststate = &::g->states[mobjinfo[castorder[::g->castnum].type].seestate];
@@ -891,6 +897,12 @@ qboolean F_CastResponder (event_t* ev)
 		
     if (::g->castdeath)
 	return true;			// already in dying frames
+
+	if (::g->castcredit) {
+		::g->castnum = 0;
+		::g->castcredit = false;
+		return true;
+	}
 		
     // go into death frame
     ::g->castdeath = true;
@@ -973,6 +985,11 @@ void F_CastDrawer (void)
     int			lump;
     qboolean		flip;
     patch_t*		patch;
+
+	if (::g->castcredit) {
+		V_DrawPatch(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("CREDIT", PU_CACHE_SHARED), W_GetNumForName("CREDIT")));
+		return;
+	}
     
     // erase the entire screen to a background
     V_DrawPatch (0,0,0, /*(patch_t*)*/img2lmp(W_CacheLumpName (finaleflat[11], PU_CACHE_SHARED), W_GetNumForName(finaleflat[11])));
