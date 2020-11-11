@@ -581,12 +581,12 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 		// RB end
 		case SYSTEM_FIELD_BRIGHTNESS:
 		{
-			const float percent = LinearAdjust(r_lightScale.GetFloat(), 1.0f, 5.0f, 0.0f, 100.0f );
+			const float percent = LinearAdjust(r_lightScale.GetFloat(), 0.1f, 4.0f, 0.0f, 100.0f );
 			const float adjusted = percent + ( float )adjustAmount;
 			const float clamped = idMath::ClampFloat( 0.0f, 100.0f, adjusted );
 			//GK: Make lightScale and exposure independent
 			//r_exposure.SetFloat( LinearAdjust( clamped, 0.0f, 100.0f, 0.0f, 1.0f ) );
-			r_lightScale.SetFloat( LinearAdjust( clamped, 0.0f, 100.0f, 1.0f, 5.0f ) ); //GK: More light options
+			r_lightScale.SetFloat( LinearAdjust( clamped, 0.0f, 100.0f, 0.1f, 4.0f ) ); //GK: More light options
 			break;
 		}
 		case SYSTEM_FIELD_VOLUME:
