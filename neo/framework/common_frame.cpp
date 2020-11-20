@@ -791,6 +791,7 @@ void idCommonLocal::Frame()
 		}
 		else if (DoomLib::oldHDR){
 			r_useHDR.SetBool(DoomLib::oldHDR);
+			DoomLib::oldHDR = false;
 		}
 #endif
 		// RB end

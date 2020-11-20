@@ -1957,8 +1957,9 @@ void M_ExitGame(int choice)
 		DoomLib::Interface.QuitCurrentGame();
 	}
 	r_useHDR.SetBool(DoomLib::oldHDR);
-	r_useHDR.SetModified();
-	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
+	DoomLib::oldHDR = false;
+	/*r_useHDR.SetModified();
+	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");*/
 	common->Quit();
 }
 
