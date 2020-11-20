@@ -1,14 +1,36 @@
-entityDef classic_pos {
+entityDef classic_y_pos {
 
 "weapon_pistol"		"4.3"
 "weapon_flashlight"		"5"
 "weapon_machinegun"		"2.8"
-"weapon_shotgun"		"3.4"
-"weapon_shotgun_double"		"2.6"
+"weapon_shotgun"		"3.7"
+"weapon_shotgun_double"		"2.5"
 "weapon_chaingun"		"2.5"
 "weapon_rocketlauncher"		"2.8"
 "weapon_plasmagun"		"5.5"
 "weapon_bfg"		"8"
 "weapon_grabber"		"5"
+
+}
+
+entityDef classic_roll_angle {
+
+"weapon_shotgun"		"-4"
+"weapon_shotgun_double"		"2.3"
+"weapon_plasmagun"		"-4"
+
+}
+
+entityDef classic_yaw_angle {
+
+"weapon_flashlight"		"10"
+"weapon_shotgun"		"5.4"
+"weapon_shotgun_double"		"7"
+
+}
+
+entityDef classic_pitch_angle {
+
+"weapon_shotgun"		"2"
 
 }

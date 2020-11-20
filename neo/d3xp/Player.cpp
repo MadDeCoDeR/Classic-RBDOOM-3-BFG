@@ -10588,15 +10588,24 @@ void idPlayer::CalculateViewWeaponPos( idVec3& origin, idMat3& axis )
 	const idMat3& viewAxis = firstPersonViewAxis;
 	
 	float vmfov = pm_vmfov.GetInteger() / 12.0;
-	float classicOffs = 0.0;
+	float classicYOffs = 0.0;
+	float classicRoll = 0.0;
+	float classicYaw = 0.0;
+	float classicPitch = 0.0;
 	if (pm_classicPose.GetBool()) {
 		const char* weaponDefName = va("def_weapon%d", this->currentWeapon);
 		const char* weap = this->spawnArgs.GetString(weaponDefName);
-		const idDeclEntityDef* classicDef = game->FindEntityDef("classic_pos", false);
-		classicOffs = classicDef->dict.GetFloat(weap, 0.0);
+		const idDeclEntityDef* classicYDef = game->FindEntityDef("classic_y_pos", false);
+		classicYOffs = classicYDef->dict.GetFloat(weap, 0.0);
+		const idDeclEntityDef* classicRollDef = game->FindEntityDef("classic_roll_angle", false);
+		classicRoll = classicRollDef->dict.GetFloat(weap, 0.0);
+		const idDeclEntityDef* classicYawDef = game->FindEntityDef("classic_yaw_angle", false);
+		classicYaw = classicYawDef->dict.GetFloat(weap, 0.0);
+		const idDeclEntityDef* classicPitchDef = game->FindEntityDef("classic_pitch_angle", false);
+		classicPitch = classicPitchDef->dict.GetFloat(weap, 0.0);
 	}
 	// these cvars are just for hand tweaking before moving a value to the weapon def
-	idVec3	gunpos( g_gun_x.GetFloat() + vmfov, g_gun_y.GetFloat() + classicOffs, g_gun_z.GetFloat() );
+	idVec3	gunpos( g_gun_x.GetFloat() + vmfov, g_gun_y.GetFloat() + classicYOffs, g_gun_z.GetFloat() );
 	
 	// as the player changes direction, the gun will take a small lag
 	idVec3	gunOfs = GunAcceleratingOffset();
@@ -10611,11 +10620,13 @@ void idPlayer::CalculateViewWeaponPos( idVec3& origin, idMat3& axis )
 	{
 		scale = xyspeed;
 	}
+
+
 	
 	// gun angles from bobbing
-	angles.roll		= scale * bobfracsin * 0.005f;
-	angles.yaw		= scale * bobfracsin * 0.01f;
-	angles.pitch	= xyspeed * bobfracsin * 0.005f;
+	angles.roll		= scale * bobfracsin * 0.005f + classicRoll;
+	angles.yaw		= scale * bobfracsin * 0.01f + classicYaw;
+	angles.pitch	= xyspeed * bobfracsin * 0.005f + classicPitch;
 	
 	// gun angles from turning
 	if( common->IsMultiplayer() )
