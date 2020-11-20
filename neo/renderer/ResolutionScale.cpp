@@ -39,6 +39,7 @@ static const float MINIMUM_RESOLUTION_SCALE = 0.5f;
 static const float MAXIMUM_RESOLUTION_SCALE = 1.0f;
 
 // RB: turned this off. It is only useful on mobile devices or consoles
+//GK: This is broken. rendering effects are rendered out of place if the scale is less than 100%
 idCVar rs_enable( "rs_enable", "0", CVAR_INTEGER, "Enable dynamic resolution scaling, 0 - off, 1 - horz only, 2 - vert only, 3 - both" );
 // Rb end
 idCVar rs_forceFractionX( "rs_forceFractionX", "0", CVAR_FLOAT, "Force a specific 0.0 to 1.0 horizontal resolution scale" );
