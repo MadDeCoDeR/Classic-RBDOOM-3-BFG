@@ -1500,7 +1500,7 @@ void idRenderBackend::RenderInteractions( const drawSurf_t* surfList, const view
 	}
 	// RB end
 	
-	float lightScale = r_useHDR.GetBool() ? 3.0f : r_lightScale.GetFloat();
+	float lightScale = /*r_useHDR.GetBool() ? 3.0f :*/ r_lightScale.GetFloat(); //GK: Allow the ldr lightlevels to work also on HDR
 	
 	for( int lightStageNum = 0; lightStageNum < lightShader->GetNumStages(); lightStageNum++ )
 	{
@@ -2291,8 +2291,9 @@ void idRenderBackend::AmbientPass( const drawSurf_t* const* drawSurfs, int numDr
 	if( fillGbuffer )
 	{
 		// FIXME: this copies RGBA16F into _currentNormals if HDR is enabled
+		//GK: FIXED (?). Force to copy RGBA8 into _currentNormals if HDR is enabled
 		const idScreenRect& viewport = viewDef->viewport;
-		globalImages->currentNormalsImage->CopyFramebuffer( viewport.x1, viewport.y1, viewport.GetWidth(), viewport.GetHeight() );
+		globalImages->currentNormalsImage->CopyFramebuffer( viewport.x1, viewport.y1, viewport.GetWidth(), viewport.GetHeight(), true );
 		
 		//GL_Clear( true, false, false, STENCIL_SHADOW_TEST_VALUE, 0.0f, 0.0f, 0.0f, 1.0f, false );
 		

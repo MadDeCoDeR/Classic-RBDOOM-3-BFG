@@ -84,7 +84,7 @@ bool GL_CheckErrors_( const char* filename, int line )
 		}
 		
 		error = true;
-		switch( err )
+		/*switch( err )
 		{
 			case GL_INVALID_ENUM:
 				strcpy( s, "GL_INVALID_ENUM" );
@@ -109,8 +109,8 @@ bool GL_CheckErrors_( const char* filename, int line )
 			default:
 				idStr::snPrintf( s, sizeof( s ), "%i", err );
 				break;
-		}
-		
+		}*/
+		strcpy(s, (const char*)glewGetErrorString(err)); //GK: Better ?
 		common->Printf( "caught OpenGL error: %s in file %s line %i\n", s, filename, line );
 	}
 	

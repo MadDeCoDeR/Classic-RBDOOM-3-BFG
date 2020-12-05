@@ -264,7 +264,7 @@ public:
 	void		GenerateShadowArray( int width, int height, textureFilter_t filter, textureRepeat_t repeat, textureUsage_t usage );
 	// RB end
 	
-	void		CopyFramebuffer( int x, int y, int width, int height );
+	void		CopyFramebuffer( int x, int y, int width, int height, bool forceLDR = false );
 	void		CopyDepthbuffer( int x, int y, int width, int height );
 	
 	void		UploadScratch( const byte* pic, int width, int height );

@@ -189,7 +189,7 @@ void idImage::Bind()
 CopyFramebuffer
 ====================
 */
-void idImage::CopyFramebuffer( int x, int y, int imageWidth, int imageHeight )
+void idImage::CopyFramebuffer( int x, int y, int imageWidth, int imageHeight, bool forceLDR )
 {
 	int target = GL_TEXTURE_2D;
 	switch( opts.textureType )
@@ -243,14 +243,14 @@ void idImage::CopyFramebuffer( int x, int y, int imageWidth, int imageHeight )
 	
 			globalFramebuffers.hdrNonMSAAFBO->Bind();
 	
-			glCopyTexImage2D( target, 0, GL_RGBA16F, x, y, imageWidth, imageHeight, 0 );
+			glCopyTexImage2D( target, 0, forceLDR ? GL_RGBA8 : GL_RGBA16F, x, y, imageWidth, imageHeight, 0 );
 	
 			globalFramebuffers.hdrFBO->Bind();
 		}
 		else
 #endif
 		{
-			glCopyTexImage2D( target, 0, GL_RGBA16F, x, y, imageWidth, imageHeight, 0 );
+			glCopyTexImage2D( target, 0, forceLDR ? GL_RGBA8 : GL_RGBA16F, x, y, imageWidth, imageHeight, 0 );
 		}
 	}
 	else
