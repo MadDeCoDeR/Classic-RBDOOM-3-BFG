@@ -258,7 +258,7 @@ void idPlayerView::DamageImpulse( idVec3 localKickDir, const idDict* damageDef )
 	//
 	// save lastDamageTime for tunnel vision accentuation
 	//
-	lastDamageTimeEffect = MS2SEC(Sys_Milliseconds());
+	lastDamageTimeEffect = MS2SEC(sys->GetMilliseconds());
 
 	//
 	// double vision effect
