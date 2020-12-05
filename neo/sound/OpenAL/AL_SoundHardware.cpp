@@ -453,6 +453,22 @@ void idSoundHardware_OpenAL::Update()
 		}
 		return;
 	}
+
+	ALfloat listenerPosition[3];
+
+	listenerPosition[0] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.pos.y;
+	listenerPosition[1] = ((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.pos.z;
+	listenerPosition[2] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.pos.x;
+
+	ALfloat listenerOrientation[6];
+
+	listenerOrientation[0] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[0].y;
+	listenerOrientation[1] = ((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[0].z;
+	listenerOrientation[2] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[0].x;
+
+	listenerOrientation[3] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[2].y;
+	listenerOrientation[4] = ((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[2].z;
+	listenerOrientation[5] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[2].x;
 	
 	if( soundSystem->IsMuted() )
 	{
@@ -460,8 +476,13 @@ void idSoundHardware_OpenAL::Update()
 	}
 	else
 	{
-		alListenerf( AL_GAIN, DBtoLinear( s_volume_dB.GetFloat() ) );
+		alListenerf( AL_GAIN, common->GetCurrentGame() == DOOM3_BFG ? DBtoLinear( s_volume_dB.GetFloat() ) : 1.0f );
 	}
+	if (common->GetCurrentGame() == DOOM3_BFG) {
+		alListenerfv(AL_POSITION, listenerPosition);
+		alListenerfv(AL_ORIENTATION, listenerOrientation);
+	}
+	
 	
 	// IXAudio2SourceVoice::Stop() has been called for every sound on the
 	// zombie list, but it is documented as asyncronous, so we have to wait
