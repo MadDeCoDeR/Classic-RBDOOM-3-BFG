@@ -57,6 +57,9 @@ public:
 	// 32 bit writes and never read from it.
 	idDrawVert* AllocTris( int numVerts, const triIndex_t* indexes, int numIndexes, const idMaterial* material,
 						   const uint64 glState, const stereoDepthType_t stereoType );
+	//GK: Replace the first 4 shaderparams with the rgba values
+	void setColor(const idMaterial* material, const idVec4& rgba);
+	//GK: End
 						   
 	//---------------------------
 private:
@@ -66,6 +69,9 @@ private:
 	guiModelSurface_t* 			surf;
 	
 	float						shaderParms[ MAX_ENTITY_SHADER_PARMS ];
+	float						oldParams[ MAX_ENTITY_SHADER_PARMS ];
+
+	idDict* guiParams;
 	
 	static const float STEREO_DEPTH_NEAR;
 	static const float STEREO_DEPTH_MID;

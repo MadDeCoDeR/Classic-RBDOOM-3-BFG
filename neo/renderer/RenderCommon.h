@@ -737,6 +737,9 @@ public:
 	virtual void			PrintMemInfo( MemInfo_t* mi );
 	
 	virtual void			SetColor( const idVec4& color );
+	//GK: Begin
+	virtual void			SetGUIColor(const idMaterial* material, const idVec4& color);
+	//GK: End
 	virtual uint32			GetColor();
 	virtual void			SetGLState( const uint64 glState ) ;
 	virtual void			DrawFilled( const idVec4& color, float x, float y, float w, float h );

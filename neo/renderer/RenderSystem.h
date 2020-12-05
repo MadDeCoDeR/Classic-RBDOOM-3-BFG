@@ -287,7 +287,13 @@ public:
 	{
 		SetColor( idVec4( r, g, b, a ) );
 	}
-	
+	//GK: Set the Color also to the GUI Model (first 4 params)
+	virtual void			SetGUIColor(const idMaterial* material, const idVec4& rgba) = 0;
+	virtual void			SetGUIColor4(const idMaterial* material, float r, float g, float b, float a)
+	{
+		SetGUIColor(material, idVec4( r, g, b, a));
+	}
+	//GK: End
 	virtual uint32			GetColor() = 0;
 	
 	virtual void			SetGLState( const uint64 glState ) = 0;

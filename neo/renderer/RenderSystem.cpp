@@ -255,6 +255,19 @@ idRenderSystemLocal::~idRenderSystemLocal()
 
 /*
 =============
+idRenderSystemLocal::SetGUIColor
+
+GK: Pass through the rgba values to the GUI Model.
+Since some materials might depend on those parameters
+=============
+*/
+void idRenderSystemLocal::SetGUIColor(const idMaterial* material, const idVec4& rgba)
+{
+	guiModel->setColor(material, rgba);
+}
+//GK: End
+/*
+=============
 idRenderSystemLocal::SetColor
 =============
 */

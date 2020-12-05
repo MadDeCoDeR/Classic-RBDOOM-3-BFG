@@ -256,6 +256,11 @@ which will determine the head kick direction
 void idPlayerView::DamageImpulse( idVec3 localKickDir, const idDict* damageDef )
 {
 	//
+	// save lastDamageTime for tunnel vision accentuation
+	//
+	lastDamageTimeEffect = MS2SEC(Sys_Milliseconds());
+
+	//
 	// double vision effect
 	//
 	if( lastDamageTime > 0.0f && SEC2MS( lastDamageTime ) + IMPULSE_DELAY > gameLocal.slow.time )
@@ -331,11 +336,11 @@ void idPlayerView::DamageImpulse( idVec3 localKickDir, const idDict* damageDef )
 		blob->s2 = 1.0f;
 		blob->t2 = 1.0f;
 	}
-	
+
 	//
 	// save lastDamageTime for tunnel vision accentuation
 	//
-	lastDamageTime = MS2SEC( gameLocal.fast.time );
+	lastDamageTime = MS2SEC(gameLocal.fast.time);
 	
 }
 
@@ -437,7 +442,7 @@ void idPlayerView::SingleView( const renderView_t* view, idMenuHandler_HUD* hudM
 	}
 
 	// place the sound origin for the player
-	gameSoundWorld->PlaceListener( view->vieworg, view->viewaxis, player->entityNumber + 1,player->hud?player->hud->GetlocationName():"Undefined"); //GK: like OG Doom 3 keep the location name
+	gameSoundWorld->PlaceListener( view->vieworg, view->viewaxis, player->entityNumber + 1, player->hud? player->hud->GetlocationName() : "Undefined"); //GK: like OG Doom 3 keep the location name
 	
 	// if the objective system is up, don't do normal drawing
 	if( player->objectiveSystemOpen )
@@ -494,6 +499,7 @@ void idPlayerView::SingleView( const renderView_t* view, idMenuHandler_HUD* hudM
 				if( fade )
 				{
 					renderSystem->SetColor4( 1.0f, 1.0f, 1.0f, fade );
+					renderSystem->SetGUIColor4(blob->material, 1.0f, 1.0f, 1.0f, fade);
 					renderSystem->DrawStretchPic( blob->x, blob->y, blob->w, blob->h, blob->s1, blob->t1, blob->s2, blob->t2, blob->material );
 				}
 			}
@@ -511,6 +517,7 @@ void idPlayerView::SingleView( const renderView_t* view, idMenuHandler_HUD* hudM
 		if( armorPulse > 0.0f && armorPulse < 1.0f )
 		{
 			renderSystem->SetColor4( 1.0f, 1.0f, 1.0f, 1.0f - armorPulse );
+			renderSystem->SetGUIColor4(armorMaterial, 1.0f, 1.0f, 1.0f, 1.0f - armorPulse);
 			renderSystem->DrawStretchPic( 0.0f, 0.0f, renderSystem->GetVirtualWidth(), renderSystem->GetVirtualHeight(), 0.0f, 0.0f, 1.0f, 1.0f, armorMaterial );
 		}
 		
@@ -519,7 +526,10 @@ void idPlayerView::SingleView( const renderView_t* view, idMenuHandler_HUD* hudM
 		/*
 		RB: disabled tunnel vision because the renderer converts colors set by SetColor4 to bytes which are clamped to [0,255]
 		so materials that want to access float values greater than 1 with parm0 - parm3 are always broken
-		
+		GK: That is totally incorect. The color values in tunnel vision must affect ONLY the tunnel vision material and nothing
+		else. Also those color values where meant to be passed to the material and not for coloring the material unlike in most
+		other cases.
+		*/
 		float health = 0.0f;
 		if( g_testHealthVision.GetFloat() != 0.0f )
 		{
@@ -541,9 +551,10 @@ void idPlayerView::SingleView( const renderView_t* view, idMenuHandler_HUD* hudM
 		
 		if( alpha < 1.0f )
 		{
-			renderSystem->SetColor4( ( player->health <= 0.0f ) ? MS2SEC( gameLocal.slow.time ) : lastDamageTime, 1.0f, 1.0f, ( player->health <= 0.0f ) ? 0.0f : alpha );
+			renderSystem->SetGUIColor4(tunnelMaterial, ( player->health <= 0.0f ) ? MS2SEC( gameLocal.slow.time ) : lastDamageTimeEffect, 1.0f, 1.0f, ( player->health <= 0.0f ) ? 0.0f : alpha );
 			renderSystem->DrawStretchPic( 0.0f, 0.0f, renderSystem->GetVirtualWidth(), renderSystem->GetVirtualHeight(), 0.0f, 0.0f, 1.0f, 1.0f, tunnelMaterial );
 		}
+		/*
 		RB end
 		*/
 		
@@ -1531,11 +1542,13 @@ void FullscreenFX_DoubleVision::HighQuality()
 	float s1 = 1.0f;
 	float t1 = 0.0f;
 	
-	
+
 	renderSystem->SetColor4( color.x, color.y, color.z, 1.0f );
+	renderSystem->SetGUIColor4(material, color.x, color.y, color.z, 1.0f);
 	renderSystem->DrawStretchPic( 0.0f, 0.0f, renderSystem->GetVirtualWidth(), renderSystem->GetVirtualHeight(), s0, t0, s1, t1, material );
 	
 	renderSystem->SetColor4( color.x, color.y, color.z, 0.5f );
+	renderSystem->SetGUIColor4(material, color.x, color.y, color.z, 0.5f);
 	s0 = 0.0f;
 	t0 = 1.0f;
 	s1 = ( 1.0 - shift );
@@ -1600,6 +1613,7 @@ void FullscreenFX_InfluenceVision::HighQuality()
 	if( player->GetInfluenceMaterial() )
 	{
 		renderSystem->SetColor4( 1.0f, 1.0f, 1.0f, pct );
+		renderSystem->SetGUIColor4(player->GetInfluenceMaterial(), 1.0f, 1.0f, 1.0f, pct);
 		renderSystem->DrawStretchPic( 0.0f, 0.0f, renderSystem->GetVirtualWidth(), renderSystem->GetVirtualHeight(), 0.0f, 0.0f, 1.0f, 1.0f, player->GetInfluenceMaterial() );
 	}
 	else if( player->GetInfluenceEntity() == NULL )
@@ -1718,6 +1732,7 @@ void FullscreenFX_Bloom::HighQuality()
 		float yScale = 1.0f;
 		
 		renderSystem->SetColor4( alpha, alpha, alpha, 1 );
+		renderSystem->SetGUIColor4(drawMaterial, alpha, alpha, alpha, 1);
 		renderSystem->DrawStretchPic( 0.0f, 0.0f, renderSystem->GetVirtualWidth(), renderSystem->GetVirtualHeight(), s1, t2 * yScale, s2, t1 * yScale, drawMaterial );
 		
 		shift += currentIntensity;
@@ -1883,6 +1898,7 @@ void FullscreenFXManager::Blendback( float alpha )
 	if( alpha < 1.f )
 	{
 		renderSystem->SetColor4( 1.0f, 1.0f, 1.0f, 1.0f - alpha );
+		renderSystem->SetGUIColor4(blendBackMaterial, 1.0f, 1.0f, 1.0f, 1.0f - alpha);
 		float s0 = 0.0f;
 		float t0 = 1.0f;
 		float s1 = 1.0f;

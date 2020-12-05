@@ -42,6 +42,7 @@ idGuiModel::idGuiModel
 */
 idGuiModel::idGuiModel()
 {
+	guiParams = new idDict();
 	// identity color for drawsurf register evaluation
 	for( int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++ )
 	{
@@ -79,6 +80,17 @@ idGuiModel::ReadFromDemo
 void idGuiModel::ReadFromDemo( idDemoFile* demo )
 {
 }
+
+//GK: Begin
+/*
+================
+idGuiModel::setColor
+================
+*/
+void idGuiModel::setColor(const idMaterial* material, const idVec4& rgba) {
+	guiParams->SetVec4(material->base->GetName(), rgba);
+}
+//GK: End
 
 /*
 ================
@@ -176,7 +188,18 @@ void idGuiModel::EmitSurfaces( float modelMatrix[16], float modelViewMatrix[16],
 		{
 			float* regs = ( float* )R_FrameAlloc( shader->GetNumRegisters() * sizeof( float ), FRAME_ALLOC_SHADER_REGISTER );
 			drawSurf->shaderRegisters = regs;
+			bool markforReset = false;
+			idVec4 temp;
+			if (guiParams->GetVec4(shader->base->GetName(), (const char*)NULL, temp)) {
+				memcpy(oldParams, shaderParms, MAX_ENTITY_SHADER_PARMS * sizeof(float));
+				markforReset = true;
+				memcpy(shaderParms, &temp, sizeof(idVec4));
+			}
 			shader->EvaluateRegisters( regs, shaderParms, tr.viewDef->renderView.shaderParms, tr.viewDef->renderView.time[1] * 0.001f, NULL );
+			if (markforReset) {
+				memcpy(shaderParms, oldParams, MAX_ENTITY_SHADER_PARMS * sizeof(float));
+				markforReset = false;
+			}
 		}
 		R_LinkDrawSurfToView( drawSurf, tr.viewDef );
 		if( allowFullScreenStereoDepth )

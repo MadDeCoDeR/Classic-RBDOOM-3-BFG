@@ -465,6 +465,7 @@ public:
 	const idMaterial* 	bloodSprayMaterial; // blood spray
 	const idMaterial* 	bfgMaterial;		// when targeted with BFG
 	float				lastDamageTime;		// accentuate the tunnel effect for a while
+	float				lastDamageTimeEffect;// accentuate the tunnel effect for a while
 	
 	idVec4				fadeColor;			// fade color
 	idVec4				fadeToColor;		// color to fade to
