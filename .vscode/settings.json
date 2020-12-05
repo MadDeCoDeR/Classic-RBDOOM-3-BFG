@@ -1,5 +1,30 @@
 {
     "files.associations": {
         "fstream": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "${workspaceFolder}/neo",
+    "cmake.defaultVariants": {
+        "buildType": {
+            "default": "debug",
+            "description": "The build type.",
+            "choices": {
+                "debug": {
+                    "short": "Debug",
+                    "long": "Disable optimizations - include debug information.",
+                    "buildType": "Debug"
+                },
+                "release": {
+                    "short": "Release",
+                    "long": "Optimize for speed - exclude debug information.",
+                    "buildType": "Release"
+                },
+                "retail": {
+                    "short": "Retail",
+                    "long": "Optimize for speed - exclude debug information - use for Distribiution.",
+                    "buildType": "Retail"
+                }
+            }
+        }
+    },
+    "cmake.skipConfigureIfCachePresent": true
 }

@@ -1008,6 +1008,7 @@ file(GLOB COMMON_SOURCES sys/common/*.cpp)
 
 file(GLOB SDL_INCLUDES sys/sdl/*.h)
 file(GLOB SDL_SOURCES sys/sdl/*.cpp)
+file(GLOB SDL_RESOURCES sys/sdl/res/*.*)
 
 
 source_group("aas" FILES ${AAS_INCLUDES})
@@ -1152,6 +1153,7 @@ source_group("sys\\common" FILES ${COMMON_SOURCES})
 
 source_group("sys\\sdl" FILES ${SDL_INCLUDES})
 source_group("sys\\sdl" FILES ${SDL_SOURCES})
+source_group("sys\\sdl\\resources" FILES ${SDL_RESOURCES})
 
 
 source_group("tools\\compilers" FILES ${COMPILER_INCLUDES})
@@ -1607,7 +1609,7 @@ else()
 
 		list(APPEND RBDOOM3_SOURCES
 			${POSIX_INCLUDES} ${POSIX_SOURCES}
-			${SDL_INCLUDES} ${SDL_SOURCES})
+			${SDL_INCLUDES} ${SDL_SOURCES} ${SDL_RESOURCES})
 			
 		if(OPENAL)
 			find_package(OpenAL REQUIRED)

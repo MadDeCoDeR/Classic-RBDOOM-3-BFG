@@ -39,6 +39,7 @@ If you have questions concerning this license or the applicable additional terms
 // DG end
 
 #include <SDL.h>
+#include "res/doom_ico.cpp"
 
 #include "renderer/RenderCommon.h"
 #include "sdl_local.h"
@@ -254,7 +255,26 @@ bool GLimp_Init( glimpParms_t parms )
 							 channelcolorbits, tdepthbits, tstencilbits, SDL_GetError() );
 			continue;
 		}
+
+		Uint32 rmask, gmask, bmask, amask;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    	int shift = (doom_icon.bytes_per_pixel == 3) ? 8 : 0;
+    	rmask = 0xff000000 >> shift;
+    	gmask = 0x00ff0000 >> shift;
+    	bmask = 0x0000ff00 >> shift;
+    	amask = 0x000000ff >> shift;
+#else // little endian, like x86
+    	rmask = 0x000000ff;
+    	gmask = 0x0000ff00;
+    	bmask = 0x00ff0000;
+    	amask = (doom_icon.bytes_per_pixel == 3) ? 0 : 0xff000000;
+#endif
 		
+		SDL_Surface* surf = SDL_CreateRGBSurfaceFrom((void*)doom_icon.pixel_data, doom_icon.width, doom_icon.height,
+		 doom_icon.bytes_per_pixel * 8, doom_icon.bytes_per_pixel * doom_icon.width, rmask, gmask, bmask, amask);
+
+		 SDL_SetWindowIcon(window, surf);
+
 		if( SDL_GL_SetSwapInterval( r_swapInterval.GetInteger() ) < 0 )
 			common->Warning( "SDL_GL_SWAP_CONTROL not supported" );
 			
