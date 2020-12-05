@@ -46,7 +46,7 @@ bool idSWF::isMouseInClientArea = false;
 
 
 extern idCVar in_joylayout;
-
+extern idCVar in_joyjpn;
 
 /*
 ===================
@@ -687,6 +687,13 @@ idSWF::UseCircleForAccept
 */
 bool idSWF::UseCircleForAccept()
 {
+	int joynum = in_joylayout.GetInteger() + 1;
+	if (joynum == 2 || (idLib::newd3 && joynum == 4)) {
+		return in_joyjpn.GetBool();
+	}
+	else if (idLib::newd3 && joynum == 5) {
+		return true;
+	}
 	return false;
 }
 

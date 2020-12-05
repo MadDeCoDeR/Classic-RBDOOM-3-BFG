@@ -55,6 +55,7 @@ idCVar in_invertLook( "in_invertLook", "0", CVAR_ARCHIVE | CVAR_BOOL, "inverts t
 idCVar in_mouseInvertLook( "in_mouseInvertLook", "0", CVAR_ARCHIVE | CVAR_BOOL, "inverts the look controls so the forward looks up (flight controls) - the proper way to play games!" );
 //GK: in_joylayout
 idCVar in_joylayout("in_joylayout", "0", CVAR_ARCHIVE | CVAR_INTEGER, "Change controller layout", 0, 4);
+idCVar in_joyjpn("in_joyjpn", "0", CVAR_NOCHEAT | CVAR_BOOL, "Enable/Disable JPN controller for PS");
 //GK End
 /*
 ================

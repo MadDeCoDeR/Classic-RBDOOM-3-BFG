@@ -141,6 +141,7 @@ idCVar com_skipIntroVideos( "com_skipIntroVideos", "0", CVAR_BOOL , "skips intro
 // For doom classic
 struct Globals;
 extern idCVar r_aspectcorrect; //GK: And that is why you can't have cool stuff in the game
+extern idCVar in_joyjpn;
 
 /*
 ==================
@@ -1770,6 +1771,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		/*idPlayerProfile* profile = session->GetProfileFromMasterLocalUser();
 		profile->SetLeftyFlip(profile->GetLeftyFlip());
 		cvarSystem->SetModifiedFlags(CVAR_ARCHIVE);*/
+		in_joyjpn.SetBool(JapaneseCensorship());
 		if (com_game_mode.GetInteger() == 1) {
 			SwitchToGame(DOOM_CLASSIC);
 		}
@@ -1932,7 +1934,9 @@ void idCommonLocal::Shutdown()
 	cmdSystem->Shutdown();
 	
 	// free any buffered warning messages
-	minPrint( "ClearWarnings( GAME_NAME \" shutdown\" );\n" );
+	char* msg = new char[70];
+	sprintf(msg, "ClearWarnings( %s \" shutdown\" );\n", idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
+	minPrint( msg );
 	ClearWarnings(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME " shutdown" );
 	minPrint( "warningCaption.Clear();\n" );
 	warningCaption.Clear();
