@@ -57,6 +57,7 @@ EXPORTS
     av_buffer_get_ref_count
     av_buffer_is_writable
     av_buffer_make_writable
+    av_buffer_pool_buffer_get_opaque
     av_buffer_pool_get
     av_buffer_pool_init
     av_buffer_pool_init2
@@ -117,7 +118,10 @@ EXPORTS
     av_display_rotation_set
     av_div_i
     av_div_q
+    av_dovi_alloc
     av_downmix_info_update_side_data
+    av_dynamic_hdr_plus_alloc
+    av_dynamic_hdr_plus_create_side_data
     av_dynarray2_add
     av_dynarray_add
     av_dynarray_add_nofree
@@ -131,6 +135,8 @@ EXPORTS
     av_encryption_init_info_free
     av_encryption_init_info_get_side_data
     av_escape
+    av_expr_count_func
+    av_expr_count_vars
     av_expr_eval
     av_expr_free
     av_expr_parse
@@ -205,6 +211,7 @@ EXPORTS
     av_free
     av_freep
     av_gcd
+    av_gcd_q
     av_get_alt_sample_fmt
     av_get_bits_per_pixel
     av_get_bytes_per_sample
@@ -258,6 +265,7 @@ EXPORTS
     av_hwdevice_ctx_alloc
     av_hwdevice_ctx_create
     av_hwdevice_ctx_create_derived
+    av_hwdevice_ctx_create_derived_opts
     av_hwdevice_ctx_init
     av_hwdevice_find_type_by_name
     av_hwdevice_get_hwframe_constraints
@@ -301,6 +309,7 @@ EXPORTS
     av_log_format_line2
     av_log_get_flags
     av_log_get_level
+    av_log_once
     av_log_set_callback
     av_log_set_flags
     av_log_set_level
@@ -399,6 +408,7 @@ EXPORTS
     av_rc4_crypt
     av_rc4_init
     av_read_image_line
+    av_read_image_line2
     av_realloc
     av_realloc_array
     av_realloc_f
@@ -440,6 +450,7 @@ EXPORTS
     av_spherical_from_name
     av_spherical_projection_name
     av_spherical_tile_bounds
+    av_sscanf
     av_stereo3d_alloc
     av_stereo3d_create_side_data
     av_stereo3d_from_name
@@ -469,6 +480,7 @@ EXPORTS
     av_thread_message_flush
     av_thread_message_queue_alloc
     av_thread_message_queue_free
+    av_thread_message_queue_nb_elems
     av_thread_message_queue_recv
     av_thread_message_queue_send
     av_thread_message_queue_set_err_recv
@@ -493,13 +505,18 @@ EXPORTS
     av_twofish_crypt
     av_twofish_init
     av_twofish_size
+    av_tx_init
+    av_tx_uninit
     av_usleep
     av_utf8_decode
     av_util_ffversion
     av_vbprintf
     av_version_info
+    av_video_enc_params_alloc
+    av_video_enc_params_create_side_data
     av_vlog
     av_write_image_line
+    av_write_image_line2
     av_xtea_alloc
     av_xtea_crypt
     av_xtea_init

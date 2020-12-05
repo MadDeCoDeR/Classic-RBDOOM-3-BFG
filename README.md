@@ -172,8 +172,7 @@ __________________________________________________________
 	
 (NOTE: The pre-built binaries are made wth buildAL(x64/x86))
 	
-6. Download the latest ffmpeg shared from https://ffmpeg.zeranoe.com/builds/ depending on the architecture you want to use
-
+6. Download the latest stable ffmpeg shared from https://github.com/BtbN/FFmpeg-Builds/releases (only 64-bit available)
 7. Extract the FFmpeg DLLs to your current game directory 
 
 NOTE: The Working Directory has been set the default install directory of DOOM 3 BFG Edition on C: drive

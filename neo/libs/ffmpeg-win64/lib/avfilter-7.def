@@ -26,13 +26,11 @@ EXPORTS
     av_filter_ffversion
     av_filter_iterate
     avfilter_add_matrix
-    avfilter_all_channel_layouts
     avfilter_config_links
     avfilter_configuration
     avfilter_free
     avfilter_get_by_name
     avfilter_get_class
-    avfilter_get_matrix
     avfilter_graph_alloc
     avfilter_graph_alloc_filter
     avfilter_graph_config

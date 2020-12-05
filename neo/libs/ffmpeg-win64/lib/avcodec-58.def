@@ -6,6 +6,7 @@ EXPORTS
     av_bitstream_filter_init
     av_bitstream_filter_next
     av_bsf_alloc
+    av_bsf_flush
     av_bsf_free
     av_bsf_get_by_name
     av_bsf_get_class
@@ -79,6 +80,7 @@ EXPORTS
     av_mediacodec_default_free
     av_mediacodec_default_init
     av_mediacodec_release_buffer
+    av_mediacodec_render_buffer_at_time
     av_new_packet
     av_packet_add_side_data
     av_packet_alloc
@@ -204,6 +206,7 @@ EXPORTS
     avpriv_dca_parse_core_frame_header
     avpriv_dca_sample_rates
     avpriv_dnxhd_get_frame_size
+    avpriv_dnxhd_get_hr_frame_size
     avpriv_dnxhd_get_interlaced
     avpriv_do_elbg
     avpriv_exif_decode_ifd
@@ -224,6 +227,7 @@ EXPORTS
     avpriv_mpa_bitrate_tab
     avpriv_mpa_freq_tab
     avpriv_mpeg4audio_get_config
+    avpriv_mpeg4audio_get_config2
     avpriv_mpeg4audio_sample_rates
     avpriv_mpegaudio_decode_header
     avpriv_pix_fmt_bps_avi
