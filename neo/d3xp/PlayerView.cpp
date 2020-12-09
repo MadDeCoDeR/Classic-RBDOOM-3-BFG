@@ -287,27 +287,29 @@ void idPlayerView::DamageImpulse( idVec3 localKickDir, const idDict* damageDef )
 	//
 	// head angle kick
 	//
-	float kickTime = damageDef->GetFloat( "kick_time" );
-	if( kickTime )
-	{
-		kickFinishTime = gameLocal.slow.time + g_kickTime.GetFloat() * kickTime;
-		
-		// forward / back kick will pitch view
-		kickAngles[0] = localKickDir[0];
-		
-		// side kick will yaw view
-		kickAngles[1] = localKickDir[1] * 0.5f;
-		
-		// up / down kick will pitch view
-		kickAngles[0] += localKickDir[2];
-		
-		// roll will come from  side
-		kickAngles[2] = localKickDir[1];
-		
-		float kickAmplitude = damageDef->GetFloat( "kick_amplitude" );
-		if( kickAmplitude )
+	if (g_damageKickEffect.GetBool()) {
+		float kickTime = damageDef->GetFloat("kick_time");
+		if (kickTime)
 		{
-			kickAngles *= kickAmplitude;
+			kickFinishTime = gameLocal.slow.time + g_kickTime.GetFloat() * kickTime;
+
+			// forward / back kick will pitch view
+			kickAngles[0] = localKickDir[0];
+
+			// side kick will yaw view
+			kickAngles[1] = localKickDir[1] * 0.5f;
+
+			// up / down kick will pitch view
+			kickAngles[0] += localKickDir[2];
+
+			// roll will come from  side
+			kickAngles[2] = localKickDir[1];
+
+			float kickAmplitude = damageDef->GetFloat("kick_amplitude");
+			if (kickAmplitude)
+			{
+				kickAngles *= kickAmplitude;
+			}
 		}
 	}
 	
@@ -673,6 +675,7 @@ void idPlayerView::ScreenFade()
 	if( fadeColor[ 3 ] != 0.0f )
 	{
 		renderSystem->SetColor4( fadeColor[ 0 ], fadeColor[ 1 ], fadeColor[ 2 ], fadeColor[ 3 ] );
+		renderSystem->SetGUIColor4(declManager->FindMaterial("_white"), fadeColor[0], fadeColor[1], fadeColor[2], fadeColor[3]);
 		renderSystem->DrawStretchPic( 0.0f, 0.0f, renderSystem->GetVirtualWidth(), renderSystem->GetVirtualHeight(), 0.0f, 0.0f, 1.0f, 1.0f, declManager->FindMaterial( "_white" ) );
 	}
 }
@@ -1474,7 +1477,7 @@ FullscreenFX_DoubleVision::Active
 bool FullscreenFX_DoubleVision::Active()
 {
 
-	if( gameLocal.fast.time < fxman->GetPlayerView()->dvFinishTime )
+	if( (gameLocal.fast.time < fxman->GetPlayerView()->dvFinishTime) && g_damageKickEffect.GetBool())
 	{
 		return true;
 	}

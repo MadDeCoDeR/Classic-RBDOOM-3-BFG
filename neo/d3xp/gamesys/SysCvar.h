@@ -215,6 +215,7 @@ extern idCVar	g_fov;
 extern idCVar	g_testDeath;
 extern idCVar	g_skipViewEffects;
 extern idCVar   g_mpWeaponAngleScale;
+extern idCVar	g_damageKickEffect;
 
 extern idCVar	g_testParticle;
 extern idCVar	g_testParticleName;

@@ -103,10 +103,10 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "#str_adaptive_hdr" ); //Adaptive Tonemapping HDR
-	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_ATHDR );
+	control->SetLabel( "#str_damage_motion" ); //Damage Motion (Adaptive tone mapping HDR was depedent on HDR and not causing huge performace issues)
+	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_DAMMOT );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_ATHDR );
+	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_DAMMOT );
 	options->AddChild( control );
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
@@ -358,7 +358,7 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 {
 	originalShadowMapping = r_useShadowMapping.GetInteger();
 	originalHDR = r_useHDR.GetInteger();
-	originalATHDR = r_hdrAutoExposure.GetInteger();
+	originalATHDR = game->GetCVarInteger("g_damageKickEffect");
 	originalSSAO = r_useSSAO.GetInteger();
 	originalFilmic = r_useFilmicPostProcessEffects.GetInteger();
 	originalFlashlight = game->GetCVarInteger("flashlight_old");
@@ -411,9 +411,9 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 			r_useHDR.SetBool(!r_useHDR.GetBool());
 			break;
 		}
-		case ADV_FIELD_ATHDR:
+		case ADV_FIELD_DAMMOT:
 		{
-			r_hdrAutoExposure.SetBool( !r_hdrAutoExposure.GetBool() );
+			game->SetCVarBool("g_damageKickEffect", !game->GetCVarBool("g_damageKickEffect"));
 			break;
 		}
 		case ADV_FIELD_SSAO:
@@ -480,9 +480,9 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 				return "#str_swf_disabled";
 			}
 		}
-		case ADV_FIELD_ATHDR:
+		case ADV_FIELD_DAMMOT:
 		{
-			if (r_hdrAutoExposure.GetInteger() == 1)
+			if (game->GetCVarInteger("g_damageKickEffect") == 1)
 			{
 				return "#str_swf_enabled";
 			}
@@ -547,7 +547,7 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 	{
 		return true;
 	}
-	if( originalATHDR != r_hdrAutoExposure.GetInteger() )
+	if( originalATHDR != game->GetCVarInteger("g_damageKickEffect"))
 	{
 		return true;
 	}
