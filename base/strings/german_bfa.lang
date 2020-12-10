@@ -5,6 +5,7 @@
 	"#str_shadow_mapping_lod" "Soft Shadows LOD"
 	"#str_hdr" "HDR"
 	"#str_adaptive_hdr" "Adaptive Tonemapping HDR"
+	"#str_damage_motion" 	"Schadensbewegung"
 	"#str_ssao" "SSAO"
 	"#str_filmic" "Filmische Nachbearbeitung"
 	"#str_flashlight" "Taschenlampenmodus"

@@ -5,6 +5,7 @@
 	"#str_shadow_mapping_lod" "Distancia de sombras suaves"
 	"#str_hdr" "Alto rango dinámico (HDR)"
 	"#str_adaptive_hdr" "Mapeo tonal adaptativo (HDR)"
+	"#str_damage_motion" 	"Movimiento de daño"
 	"#str_ssao" "Oclusión ambiental (SSAO)"
 	"#str_filmic" "Postprocesamiento fílmico"
 	"#str_flashlight" "Tipo de linterna"

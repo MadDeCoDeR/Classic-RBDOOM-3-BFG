@@ -5,6 +5,7 @@
 	"#str_shadow_mapping_lod" "ソフトシャドウLOD"
 	"#str_hdr"	"HDR"
 	"#str_adaptive_hdr" "アダプティブトーンマッピングHDR"
+	"#str_damage_motion" 	"ダメージモーション"
 	"#str_ssao"	"SSAO"
 	"#str_filmic" "フィルム後処理"
 	"#str_flashlight" "懐中電灯モード"

@@ -5,6 +5,7 @@
 	"#str_shadow_mapping_lod" "Soft Shadows LOD"
 	"#Str_hdr" "HDR"
 	"#str_adaptive_hdr" "Tonemapping adattivo HDR"
+	"#str_damage_motion" 	"Movimento di danno"
 	"#str_ssao" "SSAO"
 	"#str_filmic" "Elaborazione della posta filmica"
 	"#str_flashlight" "Modalità torcia"
