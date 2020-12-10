@@ -468,7 +468,9 @@ void	idConsoleLocal::Open()
 	consoleField.Clear();
 	keyCatching = true;
 	SetDisplayFraction( 0.5f );
-	con_isActive.SetBool(true);
+	if (!common->IsMultiplayer()) {
+		con_isActive.SetBool(true);
+	}
 
 }
 
@@ -483,7 +485,9 @@ void	idConsoleLocal::Close()
 	SetDisplayFraction( 0 );
 	displayFrac = 0;	// don't scroll to that point, go immediately
 	ClearNotifyLines();
-	con_isActive.SetBool(false);
+	if (!common->IsMultiplayer()) {
+		con_isActive.SetBool(false);
+	}
 }
 
 /*
@@ -882,7 +886,9 @@ bool	idConsoleLocal::ProcessEvent( const sysEvent_t* event, bool forceAccept )
 		}
 		else
 		{
-			con_isActive.SetBool(true);
+			if (!common->IsMultiplayer()) {
+				con_isActive.SetBool(true);
+			}
 			consoleField.Clear();
 			keyCatching = true;
 			if( idKeyInput::IsDown( K_LSHIFT ) || idKeyInput::IsDown( K_RSHIFT ) )
