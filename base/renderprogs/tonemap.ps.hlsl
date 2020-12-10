@@ -111,7 +111,8 @@ void main( PS_IN fragment, out PS_OUT result )
 
 	float Ymax = hdrMaxLuminance;
 
-#define OPERATOR 2
+//GK: OPERATORS 0 & 1 seems to not ignore some transparency levels OPERATORS >= 2 do. But they make everything darker.
+#define OPERATOR 1
 	
 #if OPERATOR == 0
 	// advanced Reinhard operator, artistically desirable to burn out bright areas
