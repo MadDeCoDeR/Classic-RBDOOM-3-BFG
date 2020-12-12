@@ -325,7 +325,7 @@ void idSoundSample_OpenAL::CreateOpenALBuffer()
 	
 	if( CheckALErrors() != AL_NO_ERROR )
 	{
-		common->Error( "idSoundSample_OpenAL::CreateOpenALBuffer: error generating OpenAL hardware buffer" );
+		common->Warning( "idSoundSample_OpenAL::CreateOpenALBuffer: error generating OpenAL hardware buffer" );
 	}
 	
 	if( alIsBuffer( openalBuffer ) )
@@ -706,7 +706,7 @@ void idSoundSample_OpenAL::MakeDefault()
 	
 	if( CheckALErrors() != AL_NO_ERROR )
 	{
-		common->Error( "idSoundSample_OpenAL::MakeDefault: error generating OpenAL hardware buffer" );
+		common->Warning( "idSoundSample_OpenAL::MakeDefault: error generating OpenAL hardware buffer" );
 	}
 	
 	if( alIsBuffer( openalBuffer ) )

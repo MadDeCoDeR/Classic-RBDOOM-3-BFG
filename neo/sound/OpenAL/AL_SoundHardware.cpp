@@ -207,7 +207,7 @@ void idSoundHardware_OpenAL::Init()
 	openalDevice = alcOpenDevice( NULL );
 	if( openalDevice == NULL )
 	{
-		common->FatalError( "idSoundHardware_OpenAL::Init: alcOpenDevice() failed\n" );
+		common->Warning( "idSoundHardware_OpenAL::Init: alcOpenDevice() failed\n" );
 		return;
 	}
 	//GK: Set this for EFX support
