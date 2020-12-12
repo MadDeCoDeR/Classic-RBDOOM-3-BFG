@@ -58,6 +58,6 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	color.xyz = p;
 	color.w = 1.0;
 	color *= rpColor;
-		
+
 	result.color = sRGBAToLinearRGBA( color );
 }

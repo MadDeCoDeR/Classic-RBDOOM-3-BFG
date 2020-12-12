@@ -5,7 +5,7 @@ Doom 3 BFG Edition GPL Source Code
 Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 Copyright (C) 2013-2016 Robert Beckebans
 
-This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
+This file is part of the Doom 3 BFG Edition GPL Source Code (Doom 3 BFG Edition Source Code).  
 
 Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -131,38 +131,65 @@ static float dot4( float2 a, float4 b ) { return dot( float4( a, 0, 1 ), b ); }
 // sRGB <-> Linear RGB Color Conversion
 // ----------------------
 
+half LinearValue(half u)
+{
+	return (u <= 0.04045) ? u / 12.92 : pow(((u + 0.055) / 1.055), 2.4);
+}
+
 half3 sRGBToLinearRGB( half3 rgb )
 {
 #if defined( USE_LINEAR_RGB ) && !defined( USE_SRGB )
-	return max( pow( rgb, half3( 2.2 ) ), half3( 0.0 ) );
+	return half3(LinearValue(rgb.r), LinearValue(rgb.g), LinearValue(rgb.b));
 #else
 	return rgb;
 #endif
+}
+
+half3 sRGBToLinearRGBUnclamped( half3 rgb )
+{
+#if defined( USE_LINEAR_RGB ) && !defined( USE_SRGB )
+	rgb = clamp(rgb, 0.0, 1.0);
+#endif
+	return sRGBToLinearRGB( rgb );
 }
 
 half4 sRGBAToLinearRGBA( half4 rgba )
 {
 #if defined( USE_LINEAR_RGB ) && !defined( USE_SRGB )
-	return float4( max( pow( rgba.rgb, half3( 2.2 ) ), half3( 0.0 ) ), rgba.a );
+	return half4(LinearValue(rgba.r), LinearValue(rgba.g), LinearValue(rgba.b), LinearValue(rgba.a));
 #else
 	return rgba;
 #endif
 }
 
+half4 sRGBAToLinearRGBAUnclamped( half4 rgba )
+{
+#if defined( USE_LINEAR_RGB ) && !defined( USE_SRGB )
+	rgba = clamp(rgba, 0.0, 1.0);
+#endif
+	return sRGBAToLinearRGBA( rgba );
+}
+
+half sRGBValue(half u)
+{
+	return (u <= 0.0031308) ? 12.92 * u : pow(1.055 * u, (1 / 2.4)) * 0.055;
+}
+
 half3 LinearRGBToSRGB( half3 rgb )
 {
 #if defined( USE_LINEAR_RGB ) && !defined( USE_SRGB )
-	return pow( rgb, half3( 1.0 ) / half3( 2.2 ) );
+	rgb = clamp(rgb, 0.0, 1.0);
+	return half3(sRGBValue(rgb.r), sRGBValue(rgb.g), sRGBValue(rgb.b));
 #else
 	return rgb;
 #endif
 }
 
-half4 LinearRGBToSRGB( half4 rgba )
+half4 LinearRGBAToSRGBA( half4 rgba )
 {
 #if defined( USE_LINEAR_RGB ) && !defined( USE_SRGB )
-	rgba.rgb = pow( rgba.rgb, half3( 1.0 ) / half3( 2.2 ) );
-	return rgba; //pow( rgba, half4( 1.0 ) / half4( 2.2 ) );
+	rgba = clamp(rgba, 0.0, 1.0);
+	return half4(sRGBValue(rgba.r), sRGBValue(rgba.g), sRGBValue(rgba.b), sRGBValue(rgba.a));
 #else
 	return rgba;
 #endif

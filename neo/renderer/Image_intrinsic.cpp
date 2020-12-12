@@ -211,6 +211,11 @@ static void R_HierarchicalZBufferImage_ResNative( idImage* image )
 {
 	image->GenerateImage( NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_NEAREST_MIPMAP, TR_CLAMP, TD_R32F );
 }
+
+static void R_GeometryBufferImage_ResNative(idImage* image)
+{
+	image->GenerateImage(NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_LINEAR, TR_CLAMP, TD_RGBA16F );
+}
 // RB end
 
 static void R_AlphaNotchImage( idImage* image )
@@ -867,7 +872,7 @@ void idImageManager::CreateIntrinsicImages()
 	smaaEdgesImage = globalImages->ImageFromFunction( "_smaaEdges", R_SMAAImage_ResNative );
 	smaaBlendImage = globalImages->ImageFromFunction( "_smaaBlend", R_SMAAImage_ResNative );
 	
-	currentNormalsImage = ImageFromFunction( "_currentNormals", R_SMAAImage_ResNative );
+	currentNormalsImage = ImageFromFunction( "_currentNormals", R_GeometryBufferImage_ResNative );
 	
 	ambientOcclusionImage[0] = ImageFromFunction( "_ao0", R_SMAAImage_ResNative );
 	ambientOcclusionImage[1] = ImageFromFunction( "_ao1", R_SMAAImage_ResNative );

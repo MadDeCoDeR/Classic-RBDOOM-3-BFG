@@ -1952,14 +1952,12 @@ void M_QuitDOOM(int choice)
 void M_ExitGame(int choice)
 {
 	//CleanUncompFiles(true);
+	r_useHDR.SetBool(DoomLib::oldHDR);
+	//DoomLib::oldHDR = false;
 	//GK:logout properly from the netgame
 	if (::g->netgame) {
 		DoomLib::Interface.QuitCurrentGame();
 	}
-	r_useHDR.SetBool(DoomLib::oldHDR);
-	DoomLib::oldHDR = false;
-	/*r_useHDR.SetModified();
-	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");*/
 	common->Quit();
 }
 

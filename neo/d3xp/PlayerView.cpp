@@ -675,7 +675,6 @@ void idPlayerView::ScreenFade()
 	if( fadeColor[ 3 ] != 0.0f )
 	{
 		renderSystem->SetColor4( fadeColor[ 0 ], fadeColor[ 1 ], fadeColor[ 2 ], fadeColor[ 3 ] );
-		renderSystem->SetGUIColor4(declManager->FindMaterial("_white"), fadeColor[0], fadeColor[1], fadeColor[2], fadeColor[3]);
 		renderSystem->DrawStretchPic( 0.0f, 0.0f, renderSystem->GetVirtualWidth(), renderSystem->GetVirtualHeight(), 0.0f, 0.0f, 1.0f, 1.0f, declManager->FindMaterial( "_white" ) );
 	}
 }

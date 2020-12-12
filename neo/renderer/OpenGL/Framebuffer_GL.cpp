@@ -178,11 +178,13 @@ void Framebuffer::Init()
 	
 	// GEOMETRY BUFFER
 	
-	//globalFramebuffers.geometryBufferFBO = new Framebuffer( "_gbuffer", screenWidth, screenHeight );
-	//globalFramebuffers.geometryBufferFBO->Bind();
-	//globalFramebuffers.geometryBufferFBO->AddColorBuffer( GL_RGBA8, 0 );
-	//globalFramebuffers.geometryBufferFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->currentNormalsImage, 0 );
-	//globalFramebuffers.geometryBufferFBO->Check();
+	globalFramebuffers.geometryBufferFBO = new Framebuffer( "_gbuffer", screenWidth, screenHeight );
+	globalFramebuffers.geometryBufferFBO->Bind();
+	globalFramebuffers.geometryBufferFBO->AddColorBuffer( GL_RGBA16F, 0 );
+	globalFramebuffers.geometryBufferFBO->AddDepthBuffer(GL_DEPTH24_STENCIL8);
+	globalFramebuffers.geometryBufferFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->currentNormalsImage, 0 );
+	globalFramebuffers.geometryBufferFBO->AttachImageDepth(GL_TEXTURE_2D, globalImages->currentDepthImage);
+	globalFramebuffers.geometryBufferFBO->Check();
 	
 	// SMAA
 	
@@ -296,14 +298,15 @@ void Framebuffer::CheckFramebuffers()
 		
 		// GEOMETRY BUFFER
 		
-		//globalImages->currentNormalsImage->Resize( screenWidth, screenHeight );
+		globalImages->currentNormalsImage->Resize( screenWidth, screenHeight );
 		
-		//globalFramebuffers.geometryBufferFBO->width = screenWidth;
-		//globalFramebuffers.geometryBufferFBO->height = screenHeight;
+		globalFramebuffers.geometryBufferFBO->width = screenWidth;
+		globalFramebuffers.geometryBufferFBO->height = screenHeight;
 		
-		//globalFramebuffers.geometryBufferFBO->Bind();
-		//globalFramebuffers.geometryBufferFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->currentNormalsImage, 0 );
-		//globalFramebuffers.geometryBufferFBO->Check();
+		globalFramebuffers.geometryBufferFBO->Bind();
+		globalFramebuffers.geometryBufferFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->currentNormalsImage, 0 );
+		globalFramebuffers.geometryBufferFBO->AttachImageDepth(GL_TEXTURE_2D, globalImages->currentDepthImage);
+		globalFramebuffers.geometryBufferFBO->Check();
 		
 		// SMAA
 		
