@@ -197,6 +197,7 @@ void idGuiModel::EmitSurfaces( float modelMatrix[16], float modelViewMatrix[16],
 			}
 			shader->EvaluateRegisters( regs, shaderParms, tr.viewDef->renderView.shaderParms, tr.viewDef->renderView.time[1] * 0.001f, NULL );
 			if (markforReset) {
+				guiParams->SetVec4(shader->base->GetName(), idVec4(1.0f, 1.0f, 1.0f, 1.0f));
 				memcpy(shaderParms, oldParams, MAX_ENTITY_SHADER_PARMS * sizeof(float));
 				markforReset = false;
 			}
