@@ -30,7 +30,6 @@
 #ifdef GAME_DLL
 //GK: Declare the fuctions here
 void idTest(const idCmdArgs& args);
-void setupCodePointers(void* data);
 void A_InstaKill(mobj_t* mo, void*);
 
 //GK: Declare custom Code Pointers here
@@ -43,38 +42,36 @@ void InitClassic() {
 #ifdef GAME_DLL
 	//GK: Register the commands to the System
 	::cmdSystem->AddCommand("idtest", idTest, 0, "", 0);
-	Sys_CreateThread((xthread_t)setupCodePointers, NULL, THREAD_HIGHEST, "ClassicSDK", CORE_ANY);
+	//Sys_CreateThread((xthread_t)setupCodePointers, NULL, THREAD_HIGHEST, "ClassicSDK", CORE_ANY);
 #endif
 }
 
+void SetupCodePointers(/*void* data*/) {
 #ifdef GAME_DLL
-void setupCodePointers(void* data) {
-	bool isInitialized = false;
+	//bool isInitialized = false;
 	Globals* classic = (Globals*)::GetClassicData();
-	while (true) {
-		if (cvarSystem->GetCVarBool("cl_close")) {
+	//while (true) {
+		/*if (cvarSystem->GetCVarBool("cl_close")) {
 			break;
-		}
+		}*/
 		if (::GetClassicData != NULL) {
 			classic = (Globals*)::GetClassicData();
 			if (classic == NULL) {
-				isInitialized = false;
-				continue;
+				return;
+				//continue;
 			}
 			else {
-				if (classic->cptrvalInitialized == 1 && !isInitialized) {
-					//Add new codepointers
-					int size = sizeof(customcptr) / sizeof(dehcptr);
-					for (int i = 0; i < size; i++) {
-						classic->cptrval.push_back(customcptr[i]);
-					}
-					isInitialized = true;
+				//Add new codepointers
+				int size = sizeof(customcptr) / sizeof(dehcptr);
+				for (int i = 0; i < size; i++) {
+					classic->cptrval.push_back(customcptr[i]);
 				}
 			}
-		}
+		//}
 	}
+#endif
 }
-
+#ifdef GAME_DLL
 //GK: Implement the command
 void idTest(const idCmdArgs& args) {
 	Globals* classic = (Globals*)::GetClassicData();

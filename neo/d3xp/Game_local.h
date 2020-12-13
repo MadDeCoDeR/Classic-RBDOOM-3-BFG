@@ -690,6 +690,8 @@ public:
 	virtual const idMaterial*			GetVideoMaterial(idPlayer* player);
 	
 	const char* 			GetMPPlayerDefName() const;
+
+	virtual void				SetupClassicCodePointers();
 	
 private:
 	const static int		INITIAL_SPAWN_COUNT = 1;

@@ -31,4 +31,5 @@ extern "C" {
 extern GetClassicData_t	GetClassicData;
 
 extern void InitClassic();
+extern void SetupCodePointers();
 #endif

@@ -2170,6 +2170,11 @@ const char* idGameLocal::GetMPPlayerDefName() const
 	return "player_doommarine_mp";
 }
 
+void idGameLocal::SetupClassicCodePointers()
+{
+	SetupCodePointers();
+}
+
 /*
 ===========
 idGameLocal::SpawnPlayer

@@ -42,6 +42,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "p_mobj.h"
 #include "i_system.h"
 
+#include "../d3xp/Game.h"
+
 
 // RB: sprnames must be NULL-terminated
 //GK:NO CONSTANTS
@@ -9460,6 +9462,7 @@ std::vector<dehcptr> tempcptrval {
 void init_cptrs() {
 	::g->cptrval = tempcptrval;
 	//tempcptrval.clear();
+	game->SetupClassicCodePointers();
 	::g->cptrvalInitialized = 1;
 }
 

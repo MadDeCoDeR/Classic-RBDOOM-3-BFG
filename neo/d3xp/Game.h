@@ -271,6 +271,7 @@ public:
 	virtual void				SetCVarFloat(const char* var, float value) = 0;
 	virtual void				SetCVarBool(const char* var, bool value) = 0;
 	virtual const idMaterial*			GetVideoMaterial(idPlayer* player) = 0;
+	virtual void				SetupClassicCodePointers() = 0;
 };
 
 extern idGame* 					game;
