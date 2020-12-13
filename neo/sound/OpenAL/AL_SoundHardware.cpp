@@ -443,10 +443,10 @@ idSoundHardware_OpenAL::Update
 */
 void idSoundHardware_OpenAL::Update()
 {
-	if( openalDevice == NULL )
+	if (openalDevice == NULL)
 	{
 		int nowTime = Sys_Milliseconds();
-		if( lastResetTime + 1000 < nowTime )
+		if (lastResetTime + 1000 < nowTime)
 		{
 			lastResetTime = nowTime;
 			Init();
@@ -455,20 +455,20 @@ void idSoundHardware_OpenAL::Update()
 	}
 
 	ALfloat listenerPosition[3];
-
-	listenerPosition[0] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.pos.y;
-	listenerPosition[1] = ((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.pos.z;
-	listenerPosition[2] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.pos.x;
-
 	ALfloat listenerOrientation[6];
+	if (soundSystem->GetPlayingSoundWorld() != NULL) {
+		listenerPosition[0] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.pos.y;
+		listenerPosition[1] = ((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.pos.z;
+		listenerPosition[2] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.pos.x;
 
-	listenerOrientation[0] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[0].y;
-	listenerOrientation[1] = ((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[0].z;
-	listenerOrientation[2] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[0].x;
+		listenerOrientation[0] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[0].y;
+		listenerOrientation[1] = ((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[0].z;
+		listenerOrientation[2] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[0].x;
 
-	listenerOrientation[3] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[2].y;
-	listenerOrientation[4] = ((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[2].z;
-	listenerOrientation[5] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[2].x;
+		listenerOrientation[3] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[2].y;
+		listenerOrientation[4] = ((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[2].z;
+		listenerOrientation[5] = -((idSoundWorldLocal*)soundSystem->GetPlayingSoundWorld())->listener.axis[2].x;
+	}
 	
 	if( soundSystem->IsMuted() )
 	{
