@@ -1209,7 +1209,7 @@ void AM_drawMarks(void)
 			fx = CXMTOF(::g->markpoints[i].x);
 			fy = CYMTOF(::g->markpoints[i].y);
 			if (fx >= ::g->f_x && fx <= ::g->f_w - w && fy >= ::g->f_y && fy <= ::g->f_h - h)
-				V_DrawPatch(fx/GLOBAL_IMAGE_SCALER, fy/GLOBAL_IMAGE_SCALER, FB, ::g->marknums[i]);
+				V_DrawPatch(fx/GLOBAL_IMAGE_SCALER, fy/GLOBAL_IMAGE_SCALER, FB, ::g->marknums[i], false);
 		}
 	}
 

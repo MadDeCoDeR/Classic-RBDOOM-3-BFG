@@ -288,13 +288,13 @@ void WI_drawLF(void)
 
     // draw <LevelName> 
 	V_DrawPatch((ORIGINAL_WIDTH - SHORT(::g->lnames[::g->wbs->last]->width))/2,
-		y, FB, ::g->lnames[::g->wbs->last]);
+		y, FB, ::g->lnames[::g->wbs->last], false);
 
     // draw "Finished!"
     y += (5*SHORT(::g->lnames[::g->wbs->last]->height))/4;
     
     V_DrawPatch((ORIGINAL_WIDTH - SHORT(::g->finished->width))/2,
-		y, FB, ::g->finished);
+		y, FB, ::g->finished, false);
 }
 
 
@@ -306,13 +306,13 @@ void WI_drawEL(void)
 
     // draw "Entering"
     V_DrawPatch((ORIGINAL_WIDTH - SHORT(::g->entering->width))/2,
-		y, FB, ::g->entering);
+		y, FB, ::g->entering, false);
 
     // draw level
     y += (5*SHORT(::g->lnames[::g->wbs->next]->height))/4;
 
     V_DrawPatch((ORIGINAL_WIDTH - SHORT(::g->lnames[::g->wbs->next]->width))/2,
-		y, FB, ::g->lnames[::g->wbs->next]);
+		y, FB, ::g->lnames[::g->wbs->next], false);
 
 }
 
@@ -353,7 +353,7 @@ WI_drawOnLnode
     if (fits && i<2)
     {
 	V_DrawPatch(lnodes[::g->wbs->epsd][n].x, lnodes[::g->wbs->epsd][n].y,
-		    FB, c[i]);
+		    FB, c[i], false);
     }
     else
     {
@@ -460,7 +460,7 @@ void WI_drawAnimatedBack(void)
     {
 		 a = &::g->wi_stuff_anims[::g->wbs->epsd][i];
 		 if (a->ctr >= 0)
-			 V_DrawPatch(a->loc.x, a->loc.y, FB, a->p[a->ctr]);
+			 V_DrawPatch(a->loc.x, a->loc.y, FB, a->p[a->ctr], false);
     }
 }
 
@@ -516,13 +516,13 @@ WI_drawNum
     while (digits--)
     {
 	x -= fontwidth;
-	V_DrawPatch(x, y, FB, ::g->num[ n % 10 ]);
+	V_DrawPatch(x, y, FB, ::g->num[ n % 10 ], false);
 	n /= 10;
     }
 
     // draw a minus sign if necessary
     if (neg)
-	V_DrawPatch(x-=8, y, FB, ::g->wiminus);
+	V_DrawPatch(x-=8, y, FB, ::g->wiminus, false);
 
     return x;
 
@@ -537,7 +537,7 @@ WI_drawPercent
     if (p < 0)
 	return;
 
-    V_DrawPatch(x, y, FB, ::g->percent);
+    V_DrawPatch(x, y, FB, ::g->percent, false);
     WI_drawNum(x, y, p, -1);
 }
 
@@ -572,14 +572,14 @@ WI_drawTime
 
 	    // draw
 	    if (div==60 || t / div)
-		V_DrawPatch(x, y, FB, ::g->colon);
+		V_DrawPatch(x, y, FB, ::g->colon, false);
 	    
 	} while (t / div);
     }
     else
     {
 	// "sucks"
-	V_DrawPatch(x - SHORT(::g->sucks->width), y, FB, ::g->sucks); 
+	V_DrawPatch(x - SHORT(::g->sucks->width), y, FB, ::g->sucks, false);
     }
 }
 
@@ -968,10 +968,10 @@ void WI_drawDeathmatchStats(void)
     V_DrawPatch(DM_TOTALSX-SHORT(::g->total->width)/2,
 		DM_MATRIXY-WI_SPACINGY+10,
 		FB,
-		::g->total);
+		::g->total, false);
     
-    V_DrawPatch(DM_KILLERSX, DM_KILLERSY, FB, ::g->killers);
-    V_DrawPatch(DM_VICTIMSX, DM_VICTIMSY, FB, ::g->victims);
+    V_DrawPatch(DM_KILLERSX, DM_KILLERSY, FB, ::g->killers, false);
+    V_DrawPatch(DM_VICTIMSX, DM_VICTIMSY, FB, ::g->victims, false);
 
     // draw P?
     x = DM_MATRIXX + DM_SPACINGX;
@@ -984,12 +984,12 @@ void WI_drawDeathmatchStats(void)
 	    V_DrawPatch(x-SHORT(::g->wistuff_p[i]->width)/2,
 			DM_MATRIXY - WI_SPACINGY,
 			FB,
-			::g->wistuff_p[i]);
+			::g->wistuff_p[i], false);
 	    
 	    V_DrawPatch(DM_MATRIXX-SHORT(::g->wistuff_p[i]->width)/2,
 			y,
 			FB,
-			::g->wistuff_p[i]);
+			::g->wistuff_p[i], false);
 
 		// No splitscreen on PC currently
 	    if (i == ::g->me /* && !gameLocal->IsSplitscreen() */ )
@@ -997,12 +997,12 @@ void WI_drawDeathmatchStats(void)
 		V_DrawPatch(x-SHORT(::g->wistuff_p[i]->width)/2,
 			    DM_MATRIXY - WI_SPACINGY,
 			    FB,
-			    ::g->bstar);
+			    ::g->bstar, false);
 
 		V_DrawPatch(DM_MATRIXX-SHORT(::g->wistuff_p[i]->width)/2,
 			    y,
 			    FB,
-			    ::g->star);
+			    ::g->star, false);
 	    }
 	}
 	else
@@ -1268,17 +1268,17 @@ void WI_drawNetgameStats(void)
 
     // draw stat titles (top line)
     V_DrawPatch(NG_STATSX+NG_SPACINGX-SHORT(::g->kills->width),
-		NG_STATSY, FB, ::g->kills);
+		NG_STATSY, FB, ::g->kills, false);
 
     V_DrawPatch(NG_STATSX+2*NG_SPACINGX-SHORT(::g->items->width),
-		NG_STATSY, FB, ::g->items);
+		NG_STATSY, FB, ::g->items, false);
 
     V_DrawPatch(NG_STATSX+3*NG_SPACINGX-SHORT(::g->secret->width),
-		NG_STATSY, FB, ::g->secret);
+		NG_STATSY, FB, ::g->secret, false);
     
     if (::g->dofrags)
 	V_DrawPatch(NG_STATSX+4*NG_SPACINGX-SHORT(::g->wistuff_frags->width),
-		    NG_STATSY, FB, ::g->wistuff_frags);
+		    NG_STATSY, FB, ::g->wistuff_frags, false);
 
     // draw stats
     y = NG_STATSY + SHORT(::g->kills->height);
@@ -1289,11 +1289,11 @@ void WI_drawNetgameStats(void)
 	    continue;
 
 	x = NG_STATSX;
-	V_DrawPatch(x-SHORT(::g->wistuff_p[i]->width), y, FB, ::g->wistuff_p[i]);
+	V_DrawPatch(x-SHORT(::g->wistuff_p[i]->width), y, FB, ::g->wistuff_p[i], false);
 
 	// No splitscreen on PC
 	if (i == ::g->me /* && !gameLocal->IsSplitscreen() */ )
-	    V_DrawPatch(x-SHORT(::g->wistuff_p[i]->width), y, FB, ::g->star);
+	    V_DrawPatch(x-SHORT(::g->wistuff_p[i]->width), y, FB, ::g->star, false);
 
 	x += NG_SPACINGX;
 	WI_drawPercent(x-pwidth, y+10, ::g->cnt_kills[i]);	x += NG_SPACINGX;
@@ -1451,22 +1451,22 @@ void WI_drawStats(void)
     
     WI_drawLF();
 
-    V_DrawPatch(SP_STATSX, SP_STATSY, FB, ::g->kills);
+    V_DrawPatch(SP_STATSX, SP_STATSY, FB, ::g->kills, false);
     WI_drawPercent(ORIGINAL_WIDTH - SP_STATSX, SP_STATSY, ::g->cnt_kills[0]);
 
-    V_DrawPatch(SP_STATSX, SP_STATSY+lh, FB, ::g->items);
+    V_DrawPatch(SP_STATSX, SP_STATSY+lh, FB, ::g->items, false);
     WI_drawPercent(ORIGINAL_WIDTH - SP_STATSX, SP_STATSY+lh, ::g->cnt_items[0]);
 
-    V_DrawPatch(SP_STATSX, SP_STATSY+2*lh, FB, ::g->sp_secret);
+    V_DrawPatch(SP_STATSX, SP_STATSY+2*lh, FB, ::g->sp_secret, false);
     WI_drawPercent(ORIGINAL_WIDTH - SP_STATSX, SP_STATSY+2*lh, ::g->cnt_secret[0]);
 
-    V_DrawPatch(SP_TIMEX, SP_TIMEY, FB, ::g->time);
+    V_DrawPatch(SP_TIMEX, SP_TIMEY, FB, ::g->time, false);
     WI_drawTime(ORIGINAL_WIDTH/2 - SP_TIMEX, SP_TIMEY, ::g->cnt_time);
 
 	// DHM - Nerve :: Added episode 4 par times
     //if (::g->wbs->epsd < 3)
     //{
-	V_DrawPatch(ORIGINAL_WIDTH/2 + SP_TIMEX, SP_TIMEY, FB, ::g->par);
+	V_DrawPatch(ORIGINAL_WIDTH/2 + SP_TIMEX, SP_TIMEY, FB, ::g->par, false);
 	WI_drawTime(ORIGINAL_WIDTH - SP_TIMEX, SP_TIMEY, ::g->cnt_par);
     //}
 
@@ -1575,7 +1575,7 @@ void WI_loadData(void)
 	// background
 	::g->bg = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
 
-	V_DrawPatch(0, 0, 1, ::g->bg);
+	V_DrawPatch(0, 0, 1, ::g->bg, false);
 
 
     // UNUSED unsigned char *pic = ::g->screens[1];

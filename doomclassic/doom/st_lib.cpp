@@ -143,7 +143,7 @@ STlib_drawNum
     if (n->y - ST_Y < 0)
 	I_Error("drawNum: n->y - ST_Y < 0");
 
-    V_CopyAspectRect(x, n->y - ST_Y, BG, w*numdigits, h, x, n->y, FG);
+    V_CopyRect(x, n->y - ST_Y, BG, w*numdigits, h, x, n->y, FG, true);
 
     // if non-number, do not draw it
     if (num == 1994)
@@ -153,19 +153,19 @@ STlib_drawNum
 
     // in the special case of 0, you draw 0
     if (!num)
-	V_DrawAspectPatch(x - w, n->y, FG, n->p[ 0 ]);
+	V_DrawPatch(x - w, n->y, FG, n->p[ 0 ], true);
 
     // draw the new number
     while (num && numdigits--)
     {
 	x -= w;
-	V_DrawAspectPatch(x, n->y, FG, n->p[ num % 10 ]);
+	V_DrawPatch(x, n->y, FG, n->p[ num % 10 ], true);
 	num /= 10;
     }
 
     // draw a minus sign if necessary
     if (neg)
-	V_DrawAspectPatch(x - 8, n->y, FG, ::g->sttminus);
+	V_DrawPatch(x - 8, n->y, FG, ::g->sttminus, true);
 }
 
 
@@ -203,7 +203,7 @@ STlib_updatePercent
   int			refresh )
 {
     if (refresh && *per->n.on)
-	V_DrawAspectPatch(per->n.x, per->n.y, FG, per->p);
+	V_DrawPatch(per->n.x, per->n.y, FG, per->p, true);
     
     STlib_updateNum(&per->n, refresh);
 }
@@ -253,9 +253,9 @@ STlib_updateMultIcon
 	    if (y - ST_Y < 0)
 			I_Error("updateMultIcon: y - ST_Y < 0");
 
-	    V_CopyAspectRect(x, y-ST_Y, BG, w, h, x, y, FG);
+	    V_CopyRect(x, y-ST_Y, BG, w, h, x, y, FG, true);
 	}
-	V_DrawAspectPatch(mi->x, mi->y, FG, mi->p[*mi->inum]);
+	V_DrawPatch(mi->x, mi->y, FG, mi->p[*mi->inum], true);
 	mi->oldinum = *mi->inum;
     }
 }
@@ -303,9 +303,9 @@ STlib_updateBinIcon
 	    I_Error("updateBinIcon: y - ST_Y < 0");
 
 	if (*bi->val)
-	    V_DrawAspectPatch(bi->x, bi->y, FG, bi->p);
+	    V_DrawPatch(bi->x, bi->y, FG, bi->p, true);
 	else
-	    V_CopyAspectRect(x, y-ST_Y, BG, w, h, x, y, FG);
+	    V_CopyRect(x, y-ST_Y, BG, w, h, x, y, FG, true);
 
 	bi->oldval = *bi->val;
     }

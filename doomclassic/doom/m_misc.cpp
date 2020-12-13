@@ -94,9 +94,9 @@ M_DrawText
 	if (x+w > ::g->SCREENWIDTH)
 	    break;
 	if (direct)
-	    V_DrawPatchDirect(x, y, 0, ::g->hu_font[c]);
+	    V_DrawPatchDirect(x, y, 0, ::g->hu_font[c], false);
 	else
-	    V_DrawPatch(x, y, 0, ::g->hu_font[c]);
+	    V_DrawPatch(x, y, 0, ::g->hu_font[c], false);
 	x+=w;
     }
 
@@ -115,7 +115,7 @@ void M_DrawCross()
 		int xoffset = game->GetCVarBool("pm_thirdPerson") ? (game->GetCVarFloat("pm_thirdPersonXOff") / 4) : 0;
 		int yoffset = (20 / abs(::g->screenSize - 6)) - (5 * (::g->screenSize - 7));
 		V_DrawPatchDirect((ORIGINAL_WIDTH / 2) - 3 + xoffset, (BASEYCENTER)-yoffset + 2, 0, img2lmp(W_CacheLumpName(::g->crossnames[::g->cross_state], PU_CACHE_SHARED),
-			W_GetNumForName(::g->crossnames[::g->cross_state])));
+			W_GetNumForName(::g->crossnames[::g->cross_state])), false);
 	}
 	if (::g->cross_state) {
 		if (::g->cross_decay) {

@@ -162,7 +162,8 @@ V_CopyRect
   int		height,
   int		destx,
   int		desty,
-  int		destscrn ) 
+  int		destscrn,
+  bool      aspect) 
 { 
     byte*	src;
     byte*	dest; 
@@ -184,11 +185,11 @@ V_CopyRect
     V_MarkRect (destx, desty, width, height); 
 
 	// SMF - rewritten for scaling
-	srcx *= ::g->ASPECT_IMAGE_SCALER; //GK: For x-axis use the aspect image scaler and not the global
+	srcx *= (aspect ? GLOBAL_IMAGE_SCALER : ::g->ASPECT_IMAGE_SCALER); //GK: For x-axis use the aspect image scaler and not the global
 	srcy *= GLOBAL_IMAGE_SCALER;
-	destx *= ::g->ASPECT_IMAGE_SCALER;
+	destx *= (aspect ? GLOBAL_IMAGE_SCALER : ::g->ASPECT_IMAGE_SCALER);
 	desty *= GLOBAL_IMAGE_SCALER;
-	width *= ::g->ASPECT_IMAGE_SCALER;
+	width *= (aspect ? GLOBAL_IMAGE_SCALER : ::g->ASPECT_IMAGE_SCALER);
 	height *= GLOBAL_IMAGE_SCALER;
 
 	src = ::g->screens[srcscrn] + srcy * ::g->SCREENWIDTH + srcx;
@@ -200,59 +201,7 @@ V_CopyRect
 		dest += ::g->SCREENWIDTH;
 	} 
 } 
-
-//
-// V_CopyRect 
-// 
-void
-V_CopyAspectRect
-(int		srcx,
-    int		srcy,
-    int		srcscrn,
-    int		width,
-    int		height,
-    int		destx,
-    int		desty,
-    int		destscrn)
-{
-    byte* src;
-    byte* dest;
-
-#ifdef RANGECHECK 
-    if (srcx<0
-        || srcx + width >::g->SCREENWIDTH
-        || srcy<0
-        || srcy + height>ORIGINAL_HEIGHT
-        || destx<0 || destx + width >::g->SCREENWIDTH
-        || desty<0
-        || desty + height>ORIGINAL_HEIGHT
-        || (unsigned)srcscrn > 4
-        || (unsigned)destscrn > 4)
-    {
-        I_Error("Bad V_CopyRect");
-    }
-#endif 
-    V_MarkRect(destx, desty, width, height);
-
-    // SMF - rewritten for scaling
-    srcx *= GLOBAL_IMAGE_SCALER; //GK: For x-axis use the aspect image scaler and not the global
-    srcy *= GLOBAL_IMAGE_SCALER;
-    destx *= GLOBAL_IMAGE_SCALER;
-    desty *= GLOBAL_IMAGE_SCALER;
-    width *= GLOBAL_IMAGE_SCALER;
-    height *= GLOBAL_IMAGE_SCALER;
-
-    src = ::g->screens[srcscrn] + srcy* ::g->SCREENWIDTH + srcx;
-    dest = ::g->screens[destscrn] + desty * ::g->SCREENWIDTH + destx;
-
-    for (; height > 0; height--) {
-        memcpy(dest, src, width);
-        src += ::g->SCREENWIDTH;
-        dest += ::g->SCREENWIDTH;
-    }
-}
  
-
 //
 // V_DrawPatch
 // Masks a column based masked pic to the screen. 
@@ -262,7 +211,8 @@ V_DrawPatch
 ( int		x,
   int		y,
   int		scrn,
-  patch_t*	patch ) 
+  patch_t*	patch,
+  bool      aspect) 
 { 
 
     int				count;
@@ -300,7 +250,7 @@ V_DrawPatch
 	for ( ; col < w ; x++, col++ ) {
 		column = (postColumn_t *)((byte *)patch + LONG(patch->columnofs[col]));
 
-		destx = x;
+		destx = x * (aspect ? GLOBAL_IMAGE_SCALER : 1);
 
 		// step through the posts in a column
 		while (column->topdelta != 0xff ) {
@@ -310,7 +260,7 @@ V_DrawPatch
 
 			while (count--) {
 				int scaledx, scaledy;
-				scaledx = destx * ::g->ASPECT_IMAGE_SCALER;
+				scaledx = destx * (aspect ? 1 : ::g->ASPECT_IMAGE_SCALER);
 				scaledy = desty * GLOBAL_IMAGE_SCALER;
 				byte src = *source++;
 
@@ -328,81 +278,6 @@ V_DrawPatch
 	}
 } 
 
-//
-// V_DrawPatch
-// Masks a column based masked pic to the screen. 
-//
-void
-V_DrawAspectPatch
-(int		x,
-    int		y,
-    int		scrn,
-    patch_t* patch)
-{
-
-    int				count;
-    int				col;
-    postColumn_t* column;
-    byte* source;
-    int				w;
-
-    y -= SHORT(patch->topoffset);
-    x -= SHORT(patch->leftoffset);
-#ifdef RANGECHECK 
-    if (x<0
-        || x + SHORT(patch->width) >::g->SCREENWIDTH
-        || y<0
-        || y + SHORT(patch->height)>ORIGINAL_HEIGHT
-        || (unsigned)scrn > 4)
-    {
-        I_PrintfE("Patch at %d,%d exceeds LFB\n", x, y);
-        // No I_Error abort - what is up with TNT.WAD?
-        I_PrintfE("V_DrawPatch: bad patch (ignored)\n");
-        return;
-    }
-#endif 
-
-    if (!scrn)
-        V_MarkRect(x, y, SHORT(patch->width), SHORT(patch->height));
-
-    col = 0;
-    int destx = x;
-    int desty = y;
-
-    w = SHORT(patch->width);
-
-    // SMF - rewritten for scaling
-    for (; col < w; x++, col++) {
-        column = (postColumn_t*)((byte*)patch + LONG(patch->columnofs[col]));
-
-        destx = x * GLOBAL_IMAGE_SCALER;
-
-        // step through the posts in a column
-        while (column->topdelta != 0xff) {
-            source = (byte*)column + 3;
-            desty = y + column->topdelta;
-            count = column->length;
-
-            while (count--) {
-                int scaledx, scaledy;
-                scaledx = destx;
-                scaledy = desty * GLOBAL_IMAGE_SCALER;
-                byte src = *source++;
-
-                for (int i = 0; i < GLOBAL_IMAGE_SCALER; i++) {
-                    for (int j = 0; j < ::g->ASPECT_IMAGE_SCALER; j++) {
-                        ::g->screens[scrn][(scaledx + j) + (scaledy + i) * ::g->SCREENWIDTH] = src;
-                    }
-                }
-
-                desty++;
-            }
-
-            column = (postColumn_t*)((byte*)column + column->length + 4);
-        }
-    }
-}
- 
 //
 // V_DrawPatchFlipped 
 // Masks a column based masked pic to the screen.
@@ -489,9 +364,10 @@ V_DrawPatchDirect
 ( int		x,
   int		y,
   int		scrn,
-  patch_t*	patch ) 
+  patch_t*	patch,
+  bool  aspect) 
 {
-    V_DrawPatch (x,y,scrn, patch); 
+    V_DrawPatch (x,y,scrn, patch, aspect); 
 
     /*
     int		count;

@@ -364,19 +364,19 @@ void ST_refreshBackground(void)
 	{
 		short widthoffset = 0;
 		if (::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) {
-			V_DrawAspectPatch(ST_X, 0, BG, ::g->mapt);
+			V_DrawPatch(ST_X, 0, BG, ::g->mapt, true);
 			widthoffset += ::g->mapt->width;
-			V_DrawAspectPatch(ST_X + ST_WIDTH + widthoffset, 0, BG, ::g->spwr);
+			V_DrawPatch(ST_X + ST_WIDTH + widthoffset, 0, BG, ::g->spwr, true);
 			widthoffset += ::g->spwr->width;
 		}
 		
-		V_DrawAspectPatch(ST_X + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->sbar);
+		V_DrawPatch(ST_X + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->sbar, true);
 			
 
 		if (::g->netgame)
-			V_DrawAspectPatch(ST_FX + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->faceback);
+			V_DrawPatch(ST_FX + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->faceback, true);
 
-		V_CopyAspectRect(ST_X, 0, BG, ST_WIDTH + widthoffset, ST_HEIGHT, ST_X, ST_Y, FG);
+		V_CopyRect(ST_X, 0, BG, ST_WIDTH + widthoffset, ST_HEIGHT, ST_X, ST_Y, FG, true);
 	}
 
 }

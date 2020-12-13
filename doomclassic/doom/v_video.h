@@ -70,39 +70,24 @@ V_CopyRect
   int		height,
   int		destx,
   int		desty,
-  int		destscrn );
-
-void
-V_CopyAspectRect
-(int		srcx,
-    int		srcy,
-    int		srcscrn,
-    int		width,
-    int		height,
-    int		destx,
-    int		desty,
-    int		destscrn);
+  int		destscrn,
+  bool		aspect);
 
 void
 V_DrawPatch
 ( int		x,
   int		y,
   int		scrn,
-  patch_t*	patch);
-
-void
-V_DrawAspectPatch
-(int		x,
-    int		y,
-    int		scrn,
-    patch_t* patch);
+  patch_t*	patch,
+  bool      aspect);
 
 void
 V_DrawPatchDirect
 ( int		x,
   int		y,
   int		scrn,
-  patch_t*	patch );
+  patch_t*	patch,
+  bool      aspect);
 
 
 // Draw a linear block of pixels into the view buffer.

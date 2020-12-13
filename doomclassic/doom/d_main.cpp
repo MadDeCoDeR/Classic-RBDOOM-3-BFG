@@ -297,7 +297,7 @@ void D_Display (void)
 		else
 			y = ::g->viewwindowy+4;
 		V_DrawPatchDirect(::g->viewwindowx+(ORIGINAL_WIDTH-68)/2,
-			y,0,img2lmp((patch_t*)W_CacheLumpName ("M_PAUSE", PU_CACHE_SHARED),W_GetNumForName("M_PAUSE")));
+			y,0,img2lmp((patch_t*)W_CacheLumpName ("M_PAUSE", PU_CACHE_SHARED),W_GetNumForName("M_PAUSE")), false);
 	}
 
 
@@ -389,7 +389,7 @@ void D_PageTicker (void)
 //
 void D_PageDrawer (void)
 {
-	V_DrawPatch (0,0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName(::g->pagename, PU_CACHE_SHARED), W_GetNumForName(::g->pagename)));
+	V_DrawPatch (0,0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName(::g->pagename, PU_CACHE_SHARED), W_GetNumForName(::g->pagename)), false);
 }
 
 

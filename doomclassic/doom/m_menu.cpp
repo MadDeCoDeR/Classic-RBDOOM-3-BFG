@@ -251,8 +251,7 @@ void M_SetupNextMenu(menu_t *menudef);
 void M_DrawThermo(int x,int y,int thermWidth,int thermDot);
 void M_DrawEmptyCell(menu_t *menu,int item);
 void M_DrawSelCell(menu_t *menu,int item);
-void M_WriteText(int x, int y, const char *string);
-void M_WriteAspectText(int x, int y, const char* string);
+void M_WriteText(int x, int y, const char *string, bool aspect);
 int  M_StringWidth(const char *string);
 int  M_StringHeight(const char *string);
 void M_StartControlPanel(void);
@@ -519,17 +518,17 @@ void M_DrawLoad(void)
 {
 	int             i;
 
-	V_DrawPatchDirect (72,28,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LOADG",PU_CACHE_SHARED), W_GetNumForName("M_LOADG")));
+	V_DrawPatchDirect (72,28,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LOADG",PU_CACHE_SHARED), W_GetNumForName("M_LOADG")), false);
 	for (i = 0;i < load_end; i++)
 	{
 		M_DrawSaveLoadBorder(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i);
-		M_WriteText(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i,::g->savegamestrings[i]);
+		M_WriteText(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i,::g->savegamestrings[i], false);
 	}
 	if (!idLib::joystick) {
-		M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODEL);
+		M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODEL, false);
 	}
 	else {
-		M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODELGP);
+		M_WriteText(::g->LoadDef.x, ::g->LoadDef.y + LINEHEIGHT * load_end, XTODELGP, false);
 	}
 }
 
@@ -542,15 +541,15 @@ void M_DrawSaveLoadBorder(int x,int y)
 {
 	int             i;
 
-	V_DrawPatchDirect (x-8,y+7,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LSLEFT",PU_CACHE_SHARED), W_GetNumForName("M_LSLEFT")));
+	V_DrawPatchDirect (x-8,y+7,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LSLEFT",PU_CACHE_SHARED), W_GetNumForName("M_LSLEFT")), false);
 
 	for (i = 0;i < 28;i++)
 	{
-		V_DrawPatchDirect (x,y+7,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LSCNTR",PU_CACHE_SHARED), W_GetNumForName("M_LSCNTR")));
+		V_DrawPatchDirect (x,y+7,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LSCNTR",PU_CACHE_SHARED), W_GetNumForName("M_LSCNTR")), false);
 		x += 8;
 	}
 
-	V_DrawPatchDirect (x,y+7,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LSRGHT",PU_CACHE_SHARED), W_GetNumForName("M_LSRGHT")));
+	V_DrawPatchDirect (x,y+7,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_LSRGHT",PU_CACHE_SHARED), W_GetNumForName("M_LSRGHT")), false);
 }
 
 void M_DeleteSelected(int ch) {
@@ -667,17 +666,17 @@ void M_DrawSave(void)
 {
 	int             i;
 
-	V_DrawPatchDirect (72,28,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SAVEG",PU_CACHE_SHARED), W_GetNumForName("M_SAVEG")));
+	V_DrawPatchDirect (72,28,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SAVEG",PU_CACHE_SHARED), W_GetNumForName("M_SAVEG")), false);
 	for (i = 0;i < load_end; i++)
 	{
 		M_DrawSaveLoadBorder(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i);
-		M_WriteText(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i,::g->savegamestrings[i]);
+		M_WriteText(::g->LoadDef.x,::g->LoadDef.y+LINEHEIGHT*i,::g->savegamestrings[i], false);
 	}
 
 	if (::g->saveStringEnter)
 	{
 		i = M_StringWidth(::g->savegamestrings[::g->saveSlot]);
-		M_WriteText(::g->LoadDef.x + i,::g->LoadDef.y+LINEHEIGHT*::g->saveSlot,"_");
+		M_WriteText(::g->LoadDef.x + i,::g->LoadDef.y+LINEHEIGHT*::g->saveSlot,"_", false);
 	}
 }
 
@@ -964,12 +963,12 @@ void M_DrawReadThis1(void)
 	switch ( ::g->gamemode )
 	{
 	case commercial:
-		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("HELP",PU_CACHE_SHARED), W_GetNumForName("HELP")));
+		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("HELP",PU_CACHE_SHARED), W_GetNumForName("HELP")), false);
 		break;
 	case shareware:
 	case registered:
 	case retail:
-			V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP1", PU_CACHE_SHARED), W_GetNumForName("HELP1")));
+			V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP1", PU_CACHE_SHARED), W_GetNumForName("HELP1")), false);
 			//GK: For ultimate DOOM check if we are using mod that add additional HELP lumps. If not then instantly close "Read This!" 
 			if (W_GetNumForName("HELP2") <= -1 && W_GetNumForName("HELP01") <= -1) {
 				mh = -1;
@@ -990,7 +989,7 @@ void M_DrawExtraReadThis(int choice) {
 void M_DrawErt(void) {
 	::g->inhelpscreens = true;
 	if (W_GetNumForName("HELP02") > -1) {
-		V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP02", PU_CACHE_SHARED), W_GetNumForName("HELP02")));
+		V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP02", PU_CACHE_SHARED), W_GetNumForName("HELP02")), false);
 	}
 	mh = 0;
 	::g->ReadMenu2[0].routine = M_FinishReadThis;
@@ -1009,12 +1008,12 @@ void M_DrawReadThis2(void)
 	case retail:
 		//GK: In case we use mod that uses additional HELP lumps
 			if (W_GetNumForName("HELP2") > -1) {
-				V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP2", PU_CACHE_SHARED), W_GetNumForName("HELP2")));
+				V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP2", PU_CACHE_SHARED), W_GetNumForName("HELP2")), false);
 			}
 			else
 			{
 				if (W_GetNumForName("HELP01") > -1) {
-					V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP01", PU_CACHE_SHARED), W_GetNumForName("HELP01")));
+					V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP01", PU_CACHE_SHARED), W_GetNumForName("HELP01")), false);
 					mh = 1;
 
 				}
@@ -1026,11 +1025,11 @@ void M_DrawReadThis2(void)
 		break;
 	case commercial:
 		// This hack keeps us from having to change menus.
-		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("CREDIT",PU_CACHE_SHARED), W_GetNumForName("CREDIT")));
+		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("CREDIT",PU_CACHE_SHARED), W_GetNumForName("CREDIT")), false);
 		break;
 	case shareware:
 	case registered:
-		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("HELP2",PU_CACHE_SHARED), W_GetNumForName("HELP2")));
+		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("HELP2",PU_CACHE_SHARED), W_GetNumForName("HELP2")), false);
 		break;
 	default:
 		break;
@@ -1054,7 +1053,7 @@ void M_DrawSound(void)
 #ifdef USE_OPENAL
 	int musrev = S_museax.GetInteger() >= 1 ? 1 : 0;
 #endif
-	V_DrawPatchDirect (60,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SVOL",PU_CACHE_SHARED), W_GetNumForName("M_SVOL")));
+	V_DrawPatchDirect (60,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SVOL",PU_CACHE_SHARED), W_GetNumForName("M_SVOL")), false);
 
 	M_DrawThermo( ::g->SoundDef.x,::g->SoundDef.y+LINEHEIGHT*(sfx_vol+1),
 		16, s_volume_sound.GetInteger() );
@@ -1062,10 +1061,10 @@ void M_DrawSound(void)
 	M_DrawThermo(::g->SoundDef.x,::g->SoundDef.y+LINEHEIGHT*(music_vol+1),
 		16, s_volume_midi.GetInteger() );
 	V_DrawPatchDirect(::g->SoundDef.x + 200, ::g->SoundDef.y + LINEHEIGHT * sound_rp, 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[randpitch], PU_CACHE_SHARED), W_GetNumForName(msgNames[randpitch])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[randpitch], PU_CACHE_SHARED), W_GetNumForName(msgNames[randpitch])), false);
 #ifdef USE_OPENAL
 	V_DrawPatchDirect(::g->SoundDef.x + 170, ::g->SoundDef.y + LINEHEIGHT * music_rev, 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[musrev], PU_CACHE_SHARED), W_GetNumForName(msgNames[musrev])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[musrev], PU_CACHE_SHARED), W_GetNumForName(msgNames[musrev])), false);
 #endif
 }
 
@@ -1085,7 +1084,7 @@ char	lightNames[3][9] =
 //
 void M_DrawVideo(void)
 {
-	V_DrawPatchDirect(60, 38, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_VID", PU_CACHE_SHARED), W_GetNumForName("M_VID")));
+	V_DrawPatchDirect(60, 38, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_VID", PU_CACHE_SHARED), W_GetNumForName("M_VID")), false);
 
 	int aspect = r_aspect.GetInteger() >= 1 ? 1 : 0;
 	int correct = r_aspectcorrect.GetInteger();
@@ -1102,17 +1101,17 @@ void M_DrawVideo(void)
 	std::string refreshString = va("%d Hz", com_engineHz.GetInteger());
 
 	V_DrawPatchDirect(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * endgame, 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[fullscreenOnOff], PU_CACHE_SHARED), W_GetNumForName(msgNames[fullscreenOnOff])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[fullscreenOnOff], PU_CACHE_SHARED), W_GetNumForName(msgNames[fullscreenOnOff])), false);
 	V_DrawPatchDirect(::g->VideoDef.x + asoffset, ::g->VideoDef.y + LINEHEIGHT * (detail - (cl_engineHz_interp.GetBool() ? 0 : 1)), 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])), false);
 	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light - (cl_engineHz_interp.GetBool() ? 0 : 1)), 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])), false);
 	//V_DrawPatchDirect(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (blurry), 0,
 	//	/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[blurryeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[blurryeffect])));
-	M_WriteText(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * (resolution) + 6, res);
-	M_WriteText(::g->VideoDef.x + 133, ::g->VideoDef.y + LINEHEIGHT * (framerate - (cl_engineHz_interp.GetBool() ? 0 : 1)) + 6, fps.c_str());
+	M_WriteText(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * (resolution) + 6, res, false);
+	M_WriteText(::g->VideoDef.x + 133, ::g->VideoDef.y + LINEHEIGHT * (framerate - (cl_engineHz_interp.GetBool() ? 0 : 1)) + 6, fps.c_str(), false);
 	if (cl_engineHz_interp.GetBool()) {
-		M_WriteText(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (refresh)+6, refreshString.c_str());
+		M_WriteText(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (refresh)+6, refreshString.c_str(), false);
 	}
 }
 
@@ -1125,7 +1124,7 @@ void M_Video(int choice)
 //
 void M_DrawGame(void)
 {
-	V_DrawPatchDirect(60, 38, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_GM", PU_CACHE_SHARED), W_GetNumForName("M_GM")));
+	V_DrawPatchDirect(60, 38, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_GM", PU_CACHE_SHARED), W_GetNumForName("M_GM")), false);
 
 	int alwayrun = in_alwaysRunCl.GetInteger();
 	int freelook = cl_freelook.GetInteger();
@@ -1138,19 +1137,19 @@ void M_DrawGame(void)
 
 
 	V_DrawPatchDirect(::g->GameDef.x + 120, ::g->GameDef.y + LINEHEIGHT * run, 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[alwayrun], PU_CACHE_SHARED), W_GetNumForName(msgNames[alwayrun])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[alwayrun], PU_CACHE_SHARED), W_GetNumForName(msgNames[alwayrun])), false);
 	V_DrawPatchDirect(::g->GameDef.x + 135, ::g->GameDef.y + LINEHEIGHT * (look), 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[freelook], PU_CACHE_SHARED), W_GetNumForName(msgNames[freelook])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[freelook], PU_CACHE_SHARED), W_GetNumForName(msgNames[freelook])), false);
 	if (cl_freelook.GetBool()) {
 		V_DrawPatchDirect(::g->GameDef.x + 120, ::g->GameDef.y + LINEHEIGHT * (aim), 0,
-			/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[autoaim], PU_CACHE_SHARED), W_GetNumForName(msgNames[autoaim])));
+			/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[autoaim], PU_CACHE_SHARED), W_GetNumForName(msgNames[autoaim])), false);
 	}
 	V_DrawPatchDirect(::g->GameDef.x + 70, ::g->GameDef.y + LINEHEIGHT * (jump - aimOffset), 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[jumping], PU_CACHE_SHARED), W_GetNumForName(msgNames[jumping])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[jumping], PU_CACHE_SHARED), W_GetNumForName(msgNames[jumping])), false);
 	V_DrawPatchDirect(::g->GameDef.x + 140, ::g->GameDef.y + LINEHEIGHT * (cross - aimOffset), 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[crosshair], PU_CACHE_SHARED), W_GetNumForName(msgNames[crosshair])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[crosshair], PU_CACHE_SHARED), W_GetNumForName(msgNames[crosshair])), false);
 	V_DrawPatchDirect(::g->GameDef.x + 121, ::g->GameDef.y + LINEHEIGHT * (mapst - aimOffset), 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[mapstats], PU_CACHE_SHARED), W_GetNumForName(msgNames[mapstats])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[mapstats], PU_CACHE_SHARED), W_GetNumForName(msgNames[mapstats])), false);
 }
 
 void M_Gameplay(int choice)
@@ -1209,14 +1208,14 @@ void M_MusicRev(int choice) {
 //
 void M_DrawMainMenu(void)
 {
-	V_DrawPatchDirect (94,2,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_DOOM",PU_CACHE_SHARED), W_GetNumForName("M_DOOM")));
+	V_DrawPatchDirect (94,2,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_DOOM",PU_CACHE_SHARED), W_GetNumForName("M_DOOM")), false);
 }
 
 //
 // M_DrawQuit
 //
 void M_DrawQuit(void) {
-	V_DrawPatchDirect (54,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_EXITO",PU_CACHE_SHARED), W_GetNumForName("M_EXITO")));
+	V_DrawPatchDirect (54,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_EXITO",PU_CACHE_SHARED), W_GetNumForName("M_EXITO")), false);
 }
 
 
@@ -1226,8 +1225,8 @@ void M_DrawQuit(void) {
 //
 void M_DrawNewGame(void)
 {
-	V_DrawPatchDirect (96,14,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_NEWG",PU_CACHE_SHARED), W_GetNumForName("M_NEWG")));
-	V_DrawPatchDirect (54,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SKILL",PU_CACHE_SHARED), W_GetNumForName("M_SKILL")));
+	V_DrawPatchDirect (96,14,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_NEWG",PU_CACHE_SHARED), W_GetNumForName("M_NEWG")), false);
+	V_DrawPatchDirect (54,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SKILL",PU_CACHE_SHARED), W_GetNumForName("M_SKILL")), false);
 }
 
 void M_NewGame(int choice)
@@ -1251,7 +1250,7 @@ void M_NewGame(int choice)
 
 void M_DrawEpisode(void)
 {
-	V_DrawPatchDirect (54,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_EPISOD",PU_CACHE_SHARED), W_GetNumForName("M_EPISOD")));
+	V_DrawPatchDirect (54,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_EPISOD",PU_CACHE_SHARED), W_GetNumForName("M_EPISOD")), false);
 }
 
 void M_VerifyNightmare(int ch)
@@ -1431,10 +1430,10 @@ void M_MasterSelect(int choice) {
 void M_DrawMaster(void) {
 	for (int i = 0; i < master_end; i++) {
 		if (state == 0) {
-			M_WriteText(::g->MasterDef.x, ::g->MasterDef.y + LINEHEIGHT * i, MASTER[i]);
+			M_WriteText(::g->MasterDef.x, ::g->MasterDef.y + LINEHEIGHT * i, MASTER[i], false);
 		}
 		else {
-			M_WriteText(::g->MasterDef.x, ::g->MasterDef.y + LINEHEIGHT * i, M2[i]);
+			M_WriteText(::g->MasterDef.x, ::g->MasterDef.y + LINEHEIGHT * i, M2[i], false);
 		}
 	}
 }
@@ -1454,10 +1453,10 @@ void M_Doom_IT(int choice) {
 void M_DrawDoomIT(void) {
 	for (int i = 0; i < doomit_end/2; i++) {
 		if (state == 2) {
-			M_WriteText(::g->DOOMITDef.x, ::g->DOOMITDef.y + LINEHEIGHT * i, masterlist[i]);
+			M_WriteText(::g->DOOMITDef.x, ::g->DOOMITDef.y + LINEHEIGHT * i, masterlist[i], false);
 		}
 		else {
-			M_WriteText(::g->DOOMITDef.x, ::g->DOOMITDef.y + LINEHEIGHT * i, masterlist[i+10]);
+			M_WriteText(::g->DOOMITDef.x, ::g->DOOMITDef.y + LINEHEIGHT * i, masterlist[i+10], false);
 		}
 	}
 }
@@ -1478,13 +1477,13 @@ int M_GetMouseSpeedForMenu( float cvarValue ) {
 
 void M_DrawOptions(void)
 {
-	V_DrawPatchDirect (108,15,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_OPTTTL",PU_CACHE_SHARED), W_GetNumForName("M_OPTTTL")));
+	V_DrawPatchDirect (108,15,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_OPTTTL",PU_CACHE_SHARED), W_GetNumForName("M_OPTTTL")), false);
 
 	//V_DrawPatchDirect (::g->OptionsDef.x + 175,::g->OptionsDef.y+LINEHEIGHT*detail,0,
 	//	(patch_t*)W_CacheLumpName(detailNames[::g->detailLevel],PU_CACHE_SHARED));
 		
 	V_DrawPatchDirect (::g->OptionsDef.x + 120,::g->OptionsDef.y+LINEHEIGHT*messages,0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[m_show_messages.GetInteger()],PU_CACHE_SHARED), W_GetNumForName(msgNames[m_show_messages.GetInteger()])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[m_show_messages.GetInteger()],PU_CACHE_SHARED), W_GetNumForName(msgNames[m_show_messages.GetInteger()])), false);
 	//GK:begin
 	if (m_show_messages.GetInteger()) {
 		optoffs = 1;
@@ -1514,7 +1513,7 @@ void M_Options(int choice)
 }
 
 void M_DrawRes(void) {
-	V_DrawPatchDirect(108, 10, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_RES", PU_CACHE_SHARED), W_GetNumForName("M_RES")));
+	V_DrawPatchDirect(108, 10, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_RES", PU_CACHE_SHARED), W_GetNumForName("M_RES")), false);
 	modeList.Clear();
 	if (r_fullscreen.GetInteger() > 1) {
 		R_GetModeListForDisplay(r_fullscreen.GetInteger() - 1, modeList);
@@ -1531,10 +1530,10 @@ void M_DrawRes(void) {
 			res += va(" @ %dhz", modeList[i].displayHz);
 		}
 		if (i < 10) {
-			M_WriteText(::g->ResDef.x, ::g->ResDef.y + LINEHEIGHT * i, res.c_str());
+			M_WriteText(::g->ResDef.x, ::g->ResDef.y + LINEHEIGHT * i, res.c_str(), false);
 		}
 		else {
-			M_WriteText(::g->ResDef.x + 120, ::g->ResDef.y + LINEHEIGHT * (i - 10), res.c_str());
+			M_WriteText(::g->ResDef.x + 120, ::g->ResDef.y + LINEHEIGHT * (i - 10), res.c_str(), false);
 		}
 	}
 }
@@ -1733,7 +1732,7 @@ char	layNames[2][9] =
 
 void M_DrawCtl(void)
 {
-	V_DrawPatchDirect(58, 15, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_CTL", PU_CACHE_SHARED), W_GetNumForName("M_CTL")));
+	V_DrawPatchDirect(58, 15, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_CTL", PU_CACHE_SHARED), W_GetNumForName("M_CTL")), false);
 	//GK:End
 	extern idCVar in_mouseSpeed;
 	const int roundedMouseSpeed = M_GetMouseSpeedForMenu(in_mouseSpeed.GetFloat());
@@ -1741,9 +1740,9 @@ void M_DrawCtl(void)
 	bool layoutOnOff = in_joylayout.GetBool();
 
 	V_DrawPatchDirect(::g->CtlDef.x + 95, ::g->CtlDef.y + LINEHEIGHT * rumble, 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[rumbleOnOff], PU_CACHE_SHARED), W_GetNumForName(msgNames[rumbleOnOff])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[rumbleOnOff], PU_CACHE_SHARED), W_GetNumForName(msgNames[rumbleOnOff])), false);
 	V_DrawPatchDirect(::g->CtlDef.x + 99, ::g->CtlDef.y + LINEHEIGHT * layout, 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(layNames[layoutOnOff], PU_CACHE_SHARED), W_GetNumForName(layNames[layoutOnOff])));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(layNames[layoutOnOff], PU_CACHE_SHARED), W_GetNumForName(layNames[layoutOnOff])), false);
 	M_DrawThermo(::g->CtlDef.x, ::g->CtlDef.y + LINEHEIGHT * ctl_empty3, 16, roundedMouseSpeed);
 
 	//M_DrawThermo(::g->OptionsDef.x,::g->OptionsDef.y+LINEHEIGHT*(scrnsize+1),
@@ -1763,7 +1762,7 @@ const char* M_GetPageText(int i) {
 }
 
 void M_DrawKey(void) {
-	V_DrawPatchDirect(108, 10, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_KEY", PU_CACHE_SHARED), W_GetNumForName("M_KEY")));
+	V_DrawPatchDirect(108, 10, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_KEY", PU_CACHE_SHARED), W_GetNumForName("M_KEY")), false);
 	int bindStart = 0;
 	int bindEnd = 0;
 	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
@@ -1860,10 +1859,10 @@ void M_DrawKey(void) {
 		else*/
 		{
 			if ( (i < ((pageIndex + 1) * 10)) || (pageIndex == 2 && (i - bindStart) == 10)) {
-				M_WriteAspectText(::g->KeyDef.x + ((i - bindStart) < 10 ? 0 : (aspect ? 220 : 0)), ::g->KeyDef.y + LINEHEIGHT * ((i - bindStart) < 10 ? (i - bindStart) : (aspect ? ((i - bindStart) - 10) : (i - bindStart))), res.c_str());
+				M_WriteText(::g->KeyDef.x + ((i - bindStart) < 10 ? 0 : (aspect ? 220 : 0)), ::g->KeyDef.y + LINEHEIGHT * ((i - bindStart) < 10 ? (i - bindStart) : (aspect ? ((i - bindStart) - 10) : (i - bindStart))), res.c_str(), true);
 			}
 			else {
-				M_WriteAspectText(::g->KeyDef.x + (aspect ? 220 : 200), ::g->KeyDef.y + LINEHEIGHT * (pageIndex == 2 && !aspect ? ((i - bindStart) - 11) : ((i - bindStart) - 10)), M_GetPageText((i- bindStart)));
+				M_WriteText(::g->KeyDef.x + (aspect ? 220 : 200), ::g->KeyDef.y + LINEHEIGHT * (pageIndex == 2 && !aspect ? ((i - bindStart) - 11) : ((i - bindStart) - 10)), M_GetPageText((i- bindStart)), true);
 			}
 		}
 	}
@@ -2150,17 +2149,17 @@ M_DrawThermo
 	int		i;
 
 	xx = x;
-	V_DrawPatchDirect (xx,y,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERML",PU_CACHE_SHARED), W_GetNumForName("M_THERML")));
+	V_DrawPatchDirect (xx,y,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERML",PU_CACHE_SHARED), W_GetNumForName("M_THERML")), false);
 	xx += 8;
 	for (i=0;i<thermWidth;i++)
 	{
-		V_DrawPatchDirect (xx,y,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERMM",PU_CACHE_SHARED), W_GetNumForName("M_THERMM")));
+		V_DrawPatchDirect (xx,y,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERMM",PU_CACHE_SHARED), W_GetNumForName("M_THERMM")), false);
 		xx += 8;
 	}
-	V_DrawPatchDirect (xx,y,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERMR",PU_CACHE_SHARED), W_GetNumForName("M_THERMR")));
+	V_DrawPatchDirect (xx,y,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERMR",PU_CACHE_SHARED), W_GetNumForName("M_THERMR")), false);
 
 	V_DrawPatchDirect ((x+8) + thermDot*8,y,
-		0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERMO",PU_CACHE_SHARED), W_GetNumForName("M_THERMO")));
+		0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_THERMO",PU_CACHE_SHARED), W_GetNumForName("M_THERMO")), false);
 }
 
 
@@ -2171,7 +2170,7 @@ M_DrawEmptyCell
  int		item )
 {
 	V_DrawPatchDirect (menu->x - 10,        menu->y+item*LINEHEIGHT - 1, 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName("M_CELL1",PU_CACHE_SHARED), W_GetNumForName("M_CELL1")));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName("M_CELL1",PU_CACHE_SHARED), W_GetNumForName("M_CELL1")), false);
 }
 
 void
@@ -2180,7 +2179,7 @@ M_DrawSelCell
  int		item )
 {
 	V_DrawPatchDirect (menu->x - 10,        menu->y+item*LINEHEIGHT - 1, 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName("M_CELL2",PU_CACHE_SHARED), W_GetNumForName("M_CELL2")));
+		/*(patch_t*)*/img2lmp(W_CacheLumpName("M_CELL2",PU_CACHE_SHARED), W_GetNumForName("M_CELL2")), false);
 }
 
 
@@ -2257,7 +2256,8 @@ void
 M_WriteText
 ( int		x,
  int		y,
- const char*	string)
+ const char*	string,
+ bool			aspect)
 {
 	int		w;
 	const char*	ch;
@@ -2290,7 +2290,7 @@ M_WriteText
 				char buffer[2];
 				strncpy(buffer, joybuffer + 3, 2);
 				int index = atoi(buffer);
-				V_DrawPatchDirect(cx, cy - (::g->hu_glyph[index -1]->height / 4), 0, ::g->hu_glyph[index - 1]);
+				V_DrawPatchDirect(cx, cy - (::g->hu_glyph[index -1]->height / 4), 0, ::g->hu_glyph[index - 1], aspect);
 				for (int k = 0; k < 5; k++) {
 					c = *ch++;
 				}
@@ -2309,70 +2309,8 @@ M_WriteText
 		w = SHORT (::g->hu_font[c]->width);
 		if (cx+w > ::g->SCREENWIDTH)
 			break;
-		V_DrawPatchDirect(cx, cy, 0, ::g->hu_font[c]);
+		V_DrawPatchDirect(cx, cy, 0, ::g->hu_font[c], aspect);
 		cx+=w;
-	}
-}
-
-//
-//      Write a string using the ::g->hu_font
-//
-void
-M_WriteAspectText
-(int		x,
-	int		y,
-	const char* string)
-{
-	int		w;
-	const char* ch;
-	int		c;
-	int		cx;
-	int		cy;
-
-
-	ch = string;
-	cx = x;
-	cy = y;
-
-	while (1)
-	{
-		c = *ch++;
-		if (!c)
-			break;
-		if (c == '\n')
-		{
-			cx = x;
-			cy += 12;
-			continue;
-		}
-		if (c == '#') {
-			char joybuffer[5];
-			strncpy(joybuffer, ch, 5);
-			if (!idStr::Icmpn(joybuffer, "JOY", 3)) {
-				char buffer[2];
-				strncpy(buffer, joybuffer + 3, 2);
-				int index = atoi(buffer);
-				V_DrawAspectPatch(cx, cy - (::g->hu_glyph[index - 1]->height / 4), 0, ::g->hu_glyph[index - 1]);
-				for (int k = 0; k < 5; k++) {
-					c = *ch++;
-				}
-				cx += ::g->hu_glyph[index - 1]->width;
-				continue;
-			}
-		}
-
-		c = toupper(c) - HU_FONTSTART;
-		if (c < 0 || c >= HU_FONTSIZE)
-		{
-			cx += 4;
-			continue;
-		}
-
-		w = SHORT(::g->hu_font[c]->width);
-		if (cx + w > ::g->SCREENWIDTH)
-			break;
-		V_DrawAspectPatch(cx, cy, 0, ::g->hu_font[c]);
-		cx += w;
 	}
 }
 
@@ -2935,7 +2873,7 @@ void M_Drawer (void)
 				}
 
 				::g->md_x = 160 - M_StringWidth(string)/2;
-				M_WriteText(::g->md_x,::g->md_y,string);
+				M_WriteText(::g->md_x,::g->md_y,string, false);
 				::g->md_y += SHORT(::g->hu_font[0]->height);
 		}
 		return;
@@ -2983,7 +2921,7 @@ void M_Drawer (void)
 		}
 		if (::g->currentMenu->menuitems[i].name[0])
 			V_DrawPatchDirect (::g->md_x,::g->md_y,0,
-				/*(patch_t*)*/img2lmp(W_CacheLumpName(::g->currentMenu->menuitems[i].name ,PU_CACHE_SHARED), W_GetNumForName(::g->currentMenu->menuitems[i].name)));
+				/*(patch_t*)*/img2lmp(W_CacheLumpName(::g->currentMenu->menuitems[i].name ,PU_CACHE_SHARED), W_GetNumForName(::g->currentMenu->menuitems[i].name)), false);
 		if (::g->currentMenu == &::g->OptionsDef && i == messages) { //GK: This is where the real dynamic menu rendering happens
 			::g->md_y += LINEHEIGHT+(optoffs*LINEHEIGHT);
 		}
@@ -3017,7 +2955,7 @@ void M_Drawer (void)
 			
 		}
 		V_DrawPatchDirect(::g->md_x + SKULLXOFF, ::g->currentMenu->y - 5 + lineoffs, 0,
-			/*(patch_t*)*/img2lmp(W_CacheLumpName(skullName[::g->whichSkull], PU_CACHE_SHARED), W_GetNumForName(skullName[::g->whichSkull])));
+			/*(patch_t*)*/img2lmp(W_CacheLumpName(skullName[::g->whichSkull], PU_CACHE_SHARED), W_GetNumForName(skullName[::g->whichSkull])), false);
 	}
 }
 
