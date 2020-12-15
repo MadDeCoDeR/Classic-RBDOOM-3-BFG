@@ -206,7 +206,7 @@ void idRenderProgManager::Init()
 		{
 			shaderFeatures |= BIT( USE_GPU_SKINNING );
 		}
-		
+	
 		int vIndex = -1;
 		if( builtins[ i ].stages & SHADER_STAGE_VERTEX )
 		{
@@ -323,6 +323,8 @@ int idRenderProgManager::FindShader( const char* name, rpStage_t stage, const ch
 		shader_t& shader = shaders[ i ];
 		if( shader.name.Icmp( shaderName.c_str() ) == 0 && shader.stage == stage && shader.nameOutSuffix.Icmp( nameOutSuffix ) == 0 )
 		{
+			shaders[i].progId = INVALID_PROGID; //GK: HACK? Some shaders (namely texture_color with sRGB) have already a progID
+			shaders[i].shaderFeatures = features; //GK: This wasn't stored ???
 			LoadShader( i, stage );
 			return i;
 		}

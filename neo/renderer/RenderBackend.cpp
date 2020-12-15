@@ -3850,7 +3850,7 @@ int idRenderBackend::DrawShaderPasses( const drawSurf_t* const* const drawSurfs,
 						}
 						else
 						{
-							if( viewDef->is2Dgui )
+							if( viewDef->is2Dgui && r_useHDR.GetBool())
 							{
 								// RB: 2D fullscreen drawing like warp or damage blend effects
 								renderProgManager.BindShader_TextureVertexColor_sRGB();

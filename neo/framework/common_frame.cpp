@@ -789,10 +789,6 @@ void idCommonLocal::Frame()
 		{
 			RunDoomClassicFrame();
 		}
-		else if (DoomLib::oldHDR){
-			r_useHDR.SetBool(DoomLib::oldHDR);
-			DoomLib::oldHDR = false;
-		}
 #endif
 		// RB end
 		
@@ -933,10 +929,6 @@ idCommonLocal::RunDoomClassicFrame
 void idCommonLocal::RunDoomClassicFrame()
 {
 	static int doomTics = 0;
-	if (r_useHDR.GetBool()) {
-		DoomLib::oldHDR = r_useHDR.GetBool();
-		r_useHDR.SetBool(false);
-	}
 	
 	if( DoomLib::expansionDirty )
 	{
