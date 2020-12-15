@@ -170,10 +170,10 @@ V_CopyRect
 	 
 #ifdef RANGECHECK 
     if (srcx<0
-	||srcx+width >ORIGINAL_WIDTH
+	||srcx+width > (aspect ? ORIGINAL_WIDTH * 2 : ORIGINAL_WIDTH)
 	|| srcy<0
 	|| srcy+height>ORIGINAL_HEIGHT 
-	||destx<0||destx+width >ORIGINAL_WIDTH
+	||destx<0||destx+width >(aspect ? ORIGINAL_WIDTH * 2 : ORIGINAL_WIDTH)
 	|| desty<0
 	|| desty+height>ORIGINAL_HEIGHT
 	|| (unsigned)srcscrn>4
@@ -225,7 +225,7 @@ V_DrawPatch
     x -= SHORT(patch->leftoffset); 
 #ifdef RANGECHECK 
     if (x<0
-	||x+SHORT(patch->width) >ORIGINAL_WIDTH
+	||x+SHORT(patch->width) >(aspect ? ORIGINAL_WIDTH * 2 : ORIGINAL_WIDTH)
 	|| y<0
 	|| y+SHORT(patch->height)>ORIGINAL_HEIGHT
 	|| (unsigned)scrn>4)
