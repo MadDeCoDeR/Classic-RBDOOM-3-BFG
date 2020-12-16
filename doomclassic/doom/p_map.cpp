@@ -1136,7 +1136,7 @@ PTR_AimTraverse (intercept_t* in)
     if (thingbottomslope < ::g->bottomslope)
 	thingbottomslope = ::g->bottomslope;
 
-	if (!cl_freelook.GetBool() || game->GetCVarBool("aa_targetAimAssistEnable")) {
+	if (!cl_freelook.GetBool() || game->GetCVarBool("aa_targetAimAssistEnable") || ::g->demorecording || ::g->demoplayback) {
 		::g->aimslope = (thingtopslope + thingbottomslope) / 2;
 	}
 	/*else {
