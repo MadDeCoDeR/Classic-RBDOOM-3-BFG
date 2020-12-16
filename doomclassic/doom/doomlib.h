@@ -151,8 +151,6 @@ namespace DoomLib
 
 	extern idMatchParameters	matchParms;
 
-	extern bool					oldHDR;
-
 	const ExpansionData *		GetCurrentExpansion();
 	const ExpansionData*		GetDemo();
 	void						SetCurrentExpansion( int expansion );

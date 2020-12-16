@@ -182,8 +182,6 @@ namespace DoomLib
 
 	idMatchParameters				matchParms;
 
-	bool							oldHDR = false;
-
 	static float							high;
 	static int								highDuration;
 	static float							low;
