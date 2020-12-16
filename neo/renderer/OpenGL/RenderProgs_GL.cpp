@@ -172,12 +172,16 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 		if( hlslFileLength <= 0 )
 		{
 			// hlsl file doesn't even exist bail out
+#if 0
 			hlslFileBuffer = FindEmbeddedSourceShader( inFile.c_str() );
 			if( hlslFileBuffer == NULL )
 			{
+#endif
 				return;
+#if 0
 			}
 			len = strlen( hlslFileBuffer );
+#endif
 		}
 		else
 		{

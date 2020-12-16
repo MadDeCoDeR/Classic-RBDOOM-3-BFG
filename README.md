@@ -310,7 +310,7 @@ Anyway:
 	 -> swresample-3.dll
 	 -> swscale-5.dll
 	 
-5. Copy paste the base\wads directory from the source code directory to the base directory on your own 
+5. Copy paste the base directory from the source code directory to the base directory on your own 
    Doom 3 BFG directory (/path/to/Doom3BFG).
    
 (Optional if you want EAX on Doom 3) Download this addon https://www.moddb.com/mods/classic-rbdoom-3-bfg-edition/downloads/roe-addon
@@ -335,6 +335,7 @@ For the zBFA.resources:
 
 1. Copy paste zBFA folder to your own 
    Doom 3 BFG directory (/path/to/Doom3BFG)
+   (Optional) Copy paste the base/renderprogs folder in the zBFA folder 
 
 2. Open DoomBFA.exe with the launch argument +set com_allowConsole 1
 

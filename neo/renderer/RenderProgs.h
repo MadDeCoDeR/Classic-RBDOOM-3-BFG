@@ -629,8 +629,9 @@ public:
 	void		PrintPipelines();
 	void		ClearPipelines();
 #endif
-	
+#if 0
 	static const char* FindEmbeddedSourceShader( const char* name );
+#endif
 	
 private:
 	void		LoadShader( int index, rpStage_t stage );

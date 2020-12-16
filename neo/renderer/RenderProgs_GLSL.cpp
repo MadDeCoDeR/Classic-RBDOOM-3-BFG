@@ -32,7 +32,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 
 #include "RenderCommon.h"
+#if 0
 #include "RenderProgs_embedded.h"
+#endif
 
 idCVar r_skipStripDeadCode( "r_skipStripDeadCode", "0", CVAR_BOOL, "Skip stripping dead code" );
 
@@ -320,6 +322,7 @@ const char* idRenderProgManager::GLSLMacroNames[MAX_SHADER_MACRO_NAMES] =
 
 
 // RB: added embedded Cg shader resources
+#if 0
 const char* idRenderProgManager::FindEmbeddedSourceShader( const char* name )
 {
 	const char* embeddedSource = NULL;
@@ -334,6 +337,7 @@ const char* idRenderProgManager::FindEmbeddedSourceShader( const char* name )
 	
 	return embeddedSource;
 }
+#endif
 
 class idParser_EmbeddedGLSL : public idParser
 {
@@ -381,6 +385,7 @@ private:
 			path += *token;
 			
 			//if( !script->LoadFile( path, OSPath ) )
+#if 0
 			const char* embeddedSource = idRenderProgManager::FindEmbeddedSourceShader( path );
 			if( embeddedSource == NULL )
 			{
@@ -400,6 +405,7 @@ private:
 				delete script;
 				script = NULL;
 			}
+#endif
 		}
 		else if( token->type == TT_PUNCTUATION && *token == "<" )
 		{
@@ -430,8 +436,9 @@ private:
 			{
 				return true;
 			}
+#if 0
 			script = new idLexer;
-			
+
 			const char* embeddedSource = idRenderProgManager::FindEmbeddedSourceShader( includepath + path );
 			
 			if( embeddedSource == NULL || !script->LoadMemory( embeddedSource, strlen( embeddedSource ), path ) )
@@ -439,6 +446,7 @@ private:
 				delete script;
 				script = NULL;
 			}
+#endif
 		}
 		else
 		{
@@ -1685,7 +1693,6 @@ const char* idRenderProgManager::GetGLSLParmName( int rp ) const
 const char* idRenderProgManager::GetGLSLMacroName( shaderFeature_t sf ) const
 {
 	assert( sf < MAX_SHADER_MACRO_NAMES );
-	
 	return GLSLMacroNames[ sf ];
 }
 // RB end
