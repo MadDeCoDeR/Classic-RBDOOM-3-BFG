@@ -1555,8 +1555,6 @@ public:
 		// updates a particular field value
 		virtual void				AdjustField(const int fieldIndex, const int adjustAmount);
 
-		bool						IsRestartRequired() const;
-
 	private:
 		int originalShadowMapping;
 		int originalHDR;

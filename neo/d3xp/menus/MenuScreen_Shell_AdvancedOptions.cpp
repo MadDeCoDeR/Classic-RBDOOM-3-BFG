@@ -225,42 +225,6 @@ idMenuScreen_Shell_SystemOptions::HideScreen
 */
 void idMenuScreen_Shell_AdvancedOptions::HideScreen( const mainMenuTransition_t transitionType )
 {
-
-	if (advData.IsRestartRequired())
-	{
-		class idSWFScriptFunction_Restart : public idSWFScriptFunction_RefCounted
-		{
-		public:
-			idSWFScriptFunction_Restart(gameDialogMessages_t _msg, bool _restart)
-			{
-				msg = _msg;
-				restart = _restart;
-			}
-			idSWFScriptVar Call(idSWFScriptObject* thisObject, const idSWFParmList& parms)
-			{
-				common->Dialog().ClearDialog(msg);
-				if (restart)
-				{
-					// DG: Sys_ReLaunch() doesn't need any options anymore
-					//     (the old way would have been unnecessarily painful on POSIX systems)
-					Sys_ReLaunch();
-					// DG end
-				}
-				return idSWFScriptVar();
-			}
-		private:
-			gameDialogMessages_t msg;
-			bool restart;
-		};
-		idStaticList<idSWFScriptFunction*, 4> callbacks;
-		idStaticList<idStrId, 4> optionText;
-		callbacks.Append(new idSWFScriptFunction_Restart(GDM_GAME_RESTART_REQUIRED, false));
-		callbacks.Append(new idSWFScriptFunction_Restart(GDM_GAME_RESTART_REQUIRED, true));
-		optionText.Append(idStrId("#str_00100113")); // Continue
-		optionText.Append(idStrId("#str_02487")); // Restart Now
-		common->Dialog().AddDynamicDialog(GDM_GAME_RESTART_REQUIRED, callbacks, optionText, true, idStr());
-	}
-	
 	if( advData.IsDataChanged() )
 	{
 		advData.CommitData();
@@ -399,21 +363,6 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 	originalFlashlight = game->GetCVarInteger("flashlight_old");
 	originalVmfov = game->GetCVarInteger("pm_vmfov");
 	originalShadowMapLod = r_shadowMapLodScale.GetFloat();
-}
-
-/*
-========================
-idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsRestartRequired
-========================
-*/
-bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsRestartRequired() const
-{
-	if (originalHDR != r_useHDR.GetInteger())
-	{
-		return true;
-	}
-
-	return false;
 }
 
 /*

@@ -321,10 +321,8 @@ int idRenderProgManager::FindShader( const char* name, rpStage_t stage, const ch
 	for( int i = 0; i < shaders.Num(); i++ )
 	{
 		shader_t& shader = shaders[ i ];
-		if( shader.name.Icmp( shaderName.c_str() ) == 0 && shader.stage == stage && shader.nameOutSuffix.Icmp( nameOutSuffix ) == 0 )
+		if( shader.name.Icmp( shaderName.c_str() ) == 0 && shader.stage == stage && shader.nameOutSuffix.Icmp( nameOutSuffix ) == 0  && shader.shaderFeatures == features )
 		{
-			shaders[i].progId = INVALID_PROGID; //GK: HACK? Some shaders (namely texture_color with sRGB) have already a progID
-			shaders[i].shaderFeatures = features; //GK: This wasn't stored ???
 			LoadShader( i, stage );
 			return i;
 		}
