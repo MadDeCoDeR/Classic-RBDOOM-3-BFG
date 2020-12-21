@@ -965,7 +965,7 @@ P_DamageMobj
 			}
 	}
 	if (source != NULL) {
-		if (source->player || target-> player)
+		if ((source->player || target-> player) && !::g->demoplayback)
 			DoomLib::SetRumble(damage > 0 ? 65535 / damage : 0, 10, damage * 2500, 10);
 	}
 
