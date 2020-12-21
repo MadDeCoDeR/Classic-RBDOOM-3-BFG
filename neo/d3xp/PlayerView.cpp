@@ -55,6 +55,7 @@ idPlayerView::idPlayerView()
 	kickFinishTime = 0;
 	kickAngles.Zero();
 	lastDamageTime = 0.0f;
+	lastDamageTimeEffect = 0.0f;
 	fadeTime = 0;
 	fadeRate = 0.0;
 	fadeFromColor.Zero();
@@ -213,6 +214,8 @@ idPlayerView::ClearEffects
 void idPlayerView::ClearEffects()
 {
 	lastDamageTime = MS2SEC( gameLocal.slow.time - 99999 );
+
+	lastDamageTimeEffect = MS2SEC(sys->GetMilliseconds() - 99999);
 	
 	dvFinishTime = ( gameLocal.fast.time - 99999 );
 	kickFinishTime = ( gameLocal.slow.time - 99999 );
