@@ -46,6 +46,9 @@ If you have questions concerning this license or the applicable additional terms
 #define PRESSJOY1JOY2	\
 "\t\t\t\tpress #JOY01 or #JOY02."
 
+#define PRESSJOY2JOY1	\
+"\t\t\t\tpress #JOY02 or #JOY01."
+
 #define QUITMSG	"are you sure you want to\nquit this great game?"
 #define LOADNET 	"you can't do load while in a net game!\n\n" PRESSKEY
 #define QLOADNET	"you can't quickload during a netgame!\n\n" PRESSKEY
@@ -54,14 +57,18 @@ If you have questions concerning this license or the applicable additional terms
 #define SAVEDEAD 	"you can't save if you aren't playing!\n\n" PRESSKEY
 #define QSPROMPT 	"quicksave over your game named\n\n'%s'?\n\n" PRESSYN
 #define QSPROMPTGP 	"quicksave over your game named\n\n'%s'?\n\n" PRESSJOY1JOY2
+#define QSPROMPTGPJ "quicksave over your game named\n\n'%s'?\n\n" PRESSJOY2JOY1
 #define QLPROMPT	"do you want to quickload the game named\n\n'%s'?\n\n" PRESSYN
 #define QLPROMPTGP	"do you want to quickload the game named\n\n'%s'?\n\n" PRESSJOY1JOY2
+#define QLPROMPTGPJ	"do you want to quickload the game named\n\n'%s'?\n\n" PRESSJOY2JOY1
 #define DELSAV		"Are you sure you want to\ndelete this save file?\n\n" PRESSYN
 #define DELSAVGP	"Are you sure you want to\ndelete this save file?\n\n" PRESSJOY1JOY2
+#define DELSAVGPJ	"Are you sure you want to\ndelete this save file?\n\n" PRESSJOY2JOY1
 #define EXPROMT		"Missing Expansion File!\n\n" PRESSKEY
 #define	KEYMSG		"Press any key to remap '%s'.\nPress 'ESC' to go back\n" PRESSKEY
 #define REMAPKEY	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSYN
 #define REMAPKEYGP	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSJOY1JOY2
+#define REMAPKEYGPJ	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSJOY2JOY1
 
 #define NEWGAME	\
 "you can't start a new game\n"\
@@ -73,6 +80,9 @@ If you have questions concerning this license or the applicable additional terms
 #define NIGHTMAREGP	\
 "are you sure? this skill level\n"\
 "isn't even remotely fair.\n\n" PRESSJOY1JOY2
+#define NIGHTMAREGPJ	\
+"are you sure? this skill level\n"\
+"isn't even remotely fair.\n\n" PRESSJOY2JOY1
 
 #define SWSTRING	\
 "this is the shareware version of doom.\n\n"\
@@ -87,18 +97,21 @@ If you have questions concerning this license or the applicable additional terms
 #define NETEND	"you can't end a netgame!\n\n" PRESSKEY
 #define ENDGAME	"are you sure you want to end the game?\n\n" PRESSYN
 #define ENDGAMEGP	"are you sure you want to end the game?\n\n" PRESSJOY1JOY2
+#define ENDGAMEGPJ	"are you sure you want to end the game?\n\n" PRESSJOY2JOY1
 
 #define RESETGAMEBASE	\
 "you must restart the game. restart it now?\n"\
 "(if you don't the game might crash)\n\n"
 #define RESETGAME	RESETGAMEBASE PRESSYN
 #define RESETGAMEGP	RESETGAMEBASE PRESSJOY1JOY2
+#define RESETGAMEGPJ RESETGAMEBASE PRESSJOY2JOY1
 
 #define HARDRESETGAMEBASE	\
 "you must restart the engine. restart it now?\n"\
 "(if you don't the game might crash)\n\n"
 #define HARDRESETGAME	HARDRESETGAMEBASE PRESSYN
 #define HARDRESETGAMEGP	HARDRESETGAMEBASE PRESSJOY1JOY2
+#define HARDRESETGAMEGPJ HARDRESETGAMEBASE PRESSJOY2JOY1
 
 #define DOSY		"(press A to quit)"
 

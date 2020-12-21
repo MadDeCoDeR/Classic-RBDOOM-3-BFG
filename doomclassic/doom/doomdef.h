@@ -292,6 +292,7 @@ typedef enum
 #define KEY_RALT	K_RALT
 #define KEY_LALT	K_LALT
 
+#define KEY_X   K_X
 // DOOM basic types (qboolean),
 //  and max/min values.
 //#include "doomtype.h"

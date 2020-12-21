@@ -101,6 +101,7 @@ extern idCVar cl_cursor;
 extern idCVar r_clblurry;
 extern idCVar cl_engineHz_interp;
 extern idCVar cl_engineHz;
+extern idCVar in_joyjpn;
 //
 // defaulted values
 //
@@ -904,7 +905,7 @@ void M_QuickSave(void)
 		sprintf(::g->tempstring, QSPROMPT, ::g->savegamestrings[::g->quickSaveSlot]);
 	}
 	else {
-		sprintf(::g->tempstring, QSPROMPTGP, ::g->savegamestrings[::g->quickSaveSlot]);
+		sprintf(::g->tempstring, M_UseCircleForAccept() ? QSPROMPTGPJ : QSPROMPTGP, ::g->savegamestrings[::g->quickSaveSlot]);
 	}
 	M_StartMessage(::g->tempstring,M_QuickSaveResponse,true);
 }
@@ -945,7 +946,7 @@ void M_QuickLoad(void)
 		sprintf(::g->tempstring, QLPROMPT, ::g->savegamestrings[::g->quickSaveSlot]);
 	}
 	else {
-		sprintf(::g->tempstring, QLPROMPTGP, ::g->savegamestrings[::g->quickSaveSlot]);
+		sprintf(::g->tempstring, M_UseCircleForAccept() ? QLPROMPTGPJ : QLPROMPTGP, ::g->savegamestrings[::g->quickSaveSlot]);
 	}
 	M_StartMessage(::g->tempstring,M_QuickLoadResponse,true);
 }
@@ -1285,7 +1286,7 @@ void M_ChooseSkill(int choice)
 			M_StartMessage(NIGHTMARE, M_VerifyNightmare, true);
 		}
 		else {
-			M_StartMessage(NIGHTMAREGP, M_VerifyNightmare, true);
+			M_StartMessage(M_UseCircleForAccept() ? NIGHTMAREGPJ : NIGHTMAREGP, M_VerifyNightmare, true);
 		}
 		return;
 	}
@@ -1898,7 +1899,7 @@ void M_EndGame(int choice)
 		M_StartMessage(ENDGAME, M_EndGameResponse, true);
 	}
 	else {
-		M_StartMessage(ENDGAMEGP, M_EndGameResponse, true);
+		M_StartMessage(M_UseCircleForAccept() ? ENDGAMEGPJ : ENDGAMEGP, M_EndGameResponse, true);
 	}
 }
 
@@ -2348,7 +2349,7 @@ void M_CheckReset()
 			M_StartMessage(RESETGAME, M_ResetGame, true);
 		}
 		else {
-			M_StartMessage(RESETGAMEGP, M_ResetGame, true);
+			M_StartMessage(M_UseCircleForAccept() ? RESETGAMEGPJ : RESETGAMEGP, M_ResetGame, true);
 		}
 	}
 
@@ -2357,7 +2358,7 @@ void M_CheckReset()
 			M_StartMessage(HARDRESETGAME, M_HardResetGame, true);
 		}
 		else {
-			M_StartMessage(HARDRESETGAMEGP, M_HardResetGame, true);
+			M_StartMessage(M_UseCircleForAccept() ? HARDRESETGAMEGPJ : HARDRESETGAMEGP, M_HardResetGame, true);
 		}
 	}
 }
@@ -2462,8 +2463,16 @@ qboolean M_Responder (event_t* ev)
 				ch = ev->data1;
 				if (idLib::joystick) {
 					if (::g->currentMenu == &::g->LoadDef) {
-						if (ev->data1 == 15) {
-							ch = 45;
+						if (ch == KEY_TAB) {
+							ch = KEY_X;
+						}
+					}
+					if (M_UseCircleForAccept()) {
+						if (ch == KEY_ENTER) {
+							ch = KEY_BACKSPACE;
+						}
+						else if (ch == KEY_BACKSPACE) {
+							ch = KEY_ENTER;
 						}
 					}
 				}
@@ -2685,7 +2694,7 @@ qboolean M_Responder (event_t* ev)
 					M_StartMessage(DELSAV, M_DeleteSelected, true);
 				}
 				else {
-					M_StartMessage(DELSAVGP, M_DeleteSelected, true);
+					M_StartMessage(M_UseCircleForAccept() ? DELSAVGPJ : DELSAVGP, M_DeleteSelected, true);
 				}
 			}
 		}
@@ -2954,7 +2963,19 @@ void M_Drawer (void)
 		}
 		V_DrawPatchDirect(::g->md_x + SKULLXOFF, ::g->currentMenu->y - 5 + lineoffs, 0,
 			/*(patch_t*)*/img2lmp(W_CacheLumpName(skullName[::g->whichSkull], PU_CACHE_SHARED), W_GetNumForName(skullName[::g->whichSkull])), false);
+
+		if (idLib::joystick) {
+			if (M_UseCircleForAccept()) {
+				M_WriteText(ORIGINAL_WIDTH / 4 + 10, ORIGINAL_HEIGHT - 10, "#JOY02 - Select     #JOY01 - Back", false);
+			}
+			else {
+				M_WriteText(ORIGINAL_WIDTH / 4 + 10, ORIGINAL_HEIGHT - 10, "#JOY01 - Select     #JOY02 - Back", false);
+			}
+		}
+
 	}
+
+	
 }
 
 
@@ -3105,7 +3126,7 @@ void M_Remap(event_t* ev) {
 					
 				}
 				else {
-					sprintf(tempMsg, REMAPKEYGP, bindName.c_str(), keyboardBinds[::g->bindIndex].display);
+					sprintf(tempMsg, M_UseCircleForAccept() ? REMAPKEYGPJ : REMAPKEYGP, bindName.c_str(), keyboardBinds[::g->bindIndex].display);
 				}
 				M_StartMessage(tempMsg, M_RemapConfirm, true);
 			}
@@ -3154,4 +3175,17 @@ void M_ChangeMenuExp(int exp) {
 			DoomLib::SetCurrentExpansion(exp);
 		}
 	}
+}
+
+//GK: Direct copy from idSWF
+bool M_UseCircleForAccept()
+{
+	int joynum = in_joylayout.GetInteger() + 1;
+	if (joynum == 2 || (idLib::newd3 && joynum == 4)) {
+		return in_joyjpn.GetBool();
+	}
+	else if (idLib::newd3 && joynum == 5) {
+		return true;
+	}
+	return false;
 }

@@ -66,6 +66,7 @@ void M_Remap(event_t* ev);
 
 void M_ChangeMenuExp(int exp);
 
+bool M_UseCircleForAccept();
 
 #endif    
 
