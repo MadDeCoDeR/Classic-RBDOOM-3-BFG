@@ -169,24 +169,34 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 		const char* hlslFileBuffer = NULL;
 		int len = 0;
 		
-		if( hlslFileLength <= 0 )
+		if (hlslFileLength <= 0)
 		{
 			// hlsl file doesn't even exist bail out
 #if 0
-			hlslFileBuffer = FindEmbeddedSourceShader( inFile.c_str() );
-			if( hlslFileBuffer == NULL )
+			hlslFileBuffer = FindEmbeddedSourceShader(inFile.c_str());
+			if (hlslFileBuffer == NULL)
 			{
 #endif
-				return;
+				inFile.Format("renderprogs/bfa/%s", shader.name.c_str());
+				inFile.StripFileExtension();
+				if (shader.stage == SHADER_STAGE_FRAGMENT)
+				{
+					inFile += ".ps.hlsl";
+				}
+				else
+				{
+					inFile += ".vs.hlsl";
+				}
+				hlslFileLength = fileSystem->ReadFile(inFile.c_str(), NULL, &hlslTimeStamp);
+				if (hlslFileLength <= 0) {
+					return;
+				}
 #if 0
 			}
 			len = strlen( hlslFileBuffer );
 #endif
 		}
-		else
-		{
-			len = fileSystem->ReadFile( inFile.c_str(), ( void** ) &hlslFileBuffer );
-		}
+		len = fileSystem->ReadFile( inFile.c_str(), ( void** ) &hlslFileBuffer );
 		
 		if( len <= 0 )
 		{
