@@ -437,7 +437,7 @@ file(GLOB RENDERER_OPENGL_SOURCES renderer/OpenGL/*.cpp)
 file(GLOB RENDERER_VULKAN_INCLUDES renderer/Vulkan/*.h)
 file(GLOB RENDERER_VULKAN_SOURCES renderer/Vulkan/*.cpp)
 
-file(GLOB SHADERS ../base/renderprogs/*.hlsl ../base/renderprogs/*.inc )
+file(GLOB SHADERS ../base/renderprogs/bfa/*.hlsl ../base/renderprogs/bfa/*.inc )
 
 file(GLOB IRRXML_INCLUDES libs/irrxml/src/*.h)
 file(GLOB IRRXML_SOURCES libs/irrxml/src/*.cpp)

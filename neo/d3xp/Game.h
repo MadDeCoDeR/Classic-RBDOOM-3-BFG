@@ -404,7 +404,7 @@ extern idGameEdit* 				gameEdit;
 */
 //GK: Distinct OG dll from BFG dll
 //Update: added support for Classic Doom
-const int GAME_API_VERSION		= 13;
+const int GAME_API_VERSION		= 14;
 
 typedef struct
 {

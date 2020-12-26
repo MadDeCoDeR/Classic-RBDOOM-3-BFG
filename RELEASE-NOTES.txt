@@ -4,6 +4,62 @@ Thank you for downloading DOOM-BFA.
 
 _______________________________________
 
+26 December 2020 - DOOM-BFA 1.2.7
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- When using the Classic Version, show on the console the name of the classic game with the engine version
+
+- Allow to change the game title with DEHACKED (old Strings ONLY)
+
+- When using Aspect Ratio Correction adjust automatically and the FOV (using parts of Crispy Doom source code)
+
+- Add controller glyphs. The glyphs will be shown only on the menu and they support both Xbox and Playstation layouts
+
+- Disable aim assit when freelook is active. Also added the option to re-enable the aim assist if freelook is active.
+
+- In DOOM 2 (& Expansions) after the end game cast, show the game's Credits and if the player interact again restart the cast
+
+- Add support for JPN PS Controller layout on and added select and back messages for the menu with a controller
+
+- Silence haptic feedback on Demo playbacks
+
+[DOOM3BFG]
+
+- Fixed cinematic audio with OpenAL
+
+- Allow to modify the Credits with new .lang files in the credits folder, and include some DOOM 3 (2019) credits
+
+- Fix console text input on SDL2
+
+- Extend Vertex Cache and Save File maximum size for better mod support (Warning: It will break previous save files)
+
+- Allow to set brightness in lower than 1 from the Settings
+
+- Improve even further the classic weapon view
+
+- Restore Health tunnel Vision Effect
+
+- Add Japanese PS3 layout configuration (and switch) for the menus
+
+- Add window Icon to the SDL2
+
+- Add Option to the Advance Settings in order to enable/disable the damage motion (replaced Adaptive Tonemapping HDR)
+
+- Remove sys_lang value limitation
+
+- Fixed various issues related to the sRGB to RGB conversion (using code from RBDOOM)
+
+- Fix issue with missing textures on DOOM 3 (2019)
+
+- Remove embedded shaders (use the shaders from base/renderprogs)
+
+_______________________________________
+
 31 July 2020 - DOOM-BFA 1.2.6
 _______________________________
 
