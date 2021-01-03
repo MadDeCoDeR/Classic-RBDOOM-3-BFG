@@ -282,7 +282,7 @@ void P_Acts(player_t* player) {
 	int index = player->mo->subsector->sector->tag;
 	//first reset
 	if (index != ::g->oldsec) {
-		if (!::g->acts[::g->oldsec].empty()) {
+		if (::g->oldsec <= ::g->actind && !::g->acts[::g->oldsec].empty()) {
 			for (actdef_t* act : ::g->acts[::g->oldsec]) {
 				if (act->cvar) {
 					cvarSystem->SetCVarString(act->cvar, act->oldValue);
