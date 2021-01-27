@@ -1189,7 +1189,7 @@ typedef struct
 extern /*const*/ std::vector<state_t>	tempStates;
 extern /*const*/ std::vector<state_t>	origStates;
 extern bool inited;
-void init_states();
+void init_info();
 // RB: sprnames must be NULL-terminated
 //GK:For DeHackeD Text Editor
 extern /*const*/ std::vector <char *> /*const*/ sprnames;

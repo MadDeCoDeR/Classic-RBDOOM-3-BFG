@@ -647,7 +647,10 @@ void D_DoomMain(void)
 	//GK: Find the position of -doom,-doom2 and -both
 	M_initParam();
 	//GK: fix for Dehacked pointer editor
-	init_states();
+	init_info();
+	initWeapons();
+	initMapNames();
+	initModdableTexts();
 	setbuf(stdout, NULL);
 	::g->modifiedgame = false;
 

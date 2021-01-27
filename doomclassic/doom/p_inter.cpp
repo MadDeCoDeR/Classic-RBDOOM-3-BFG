@@ -966,7 +966,7 @@ P_DamageMobj
 	}
 	if (source != NULL) {
 		if ((source->player || target-> player) && !::g->demoplayback)
-			DoomLib::SetRumble(damage > 0 ? 65535 / damage : 0, 10, damage * 2500, 10);
+			DoomLib::SetRumble(damage > 0 ? 65535 / damage : 0, 10, idMath::ClampInt(0, 65535, damage * 5000), 10);
 	}
 
 	if ( target->flags & MF_SKULLFLY )

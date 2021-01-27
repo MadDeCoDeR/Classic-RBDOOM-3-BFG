@@ -60,7 +60,7 @@ extern char* mapnames[];
 extern char* mapnames2[];
 extern char* mapnamesp[];
 extern char* mapnamest[];
-void resetMapNames();
+void initMapNames();
 void HU_Init(void);
 void HU_Start(void);
 

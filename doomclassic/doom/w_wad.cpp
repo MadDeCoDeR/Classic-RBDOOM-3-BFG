@@ -703,11 +703,11 @@ void W_FreeWadFiles() {
 			::g->cpatch[i] = NULL;
 		}
 		resetValues();
-		resetWeapons();
+		//resetWeapons();
 		ResetAmmo();
-		resetMapNames();
+		//resetMapNames();
 		resetEndings();
-		resetTexts();
+		//resetTexts();
 		resetSprnames();
 		ResetPars();
 		ResetFinalflat();

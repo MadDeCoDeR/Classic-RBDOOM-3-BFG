@@ -1976,11 +1976,11 @@ void M_CloseGame()
 	alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
 #endif
 	resetValues();
-	resetWeapons();
+	//resetWeapons();
 	ResetAmmo();
-	resetMapNames();
+	//resetMapNames();
 	resetEndings();
-	resetTexts();
+	//resetTexts();
 	resetSprnames();
 	ResetPars();
 	ResetFinalflat();

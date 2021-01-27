@@ -49,6 +49,7 @@ typedef struct
 } weaponinfo_t;
 //GK: No more constant variable
 extern  /*const*/ weaponinfo_t    weaponinfo[NUMWEAPONS];
-void resetWeapons();
+void initWeapons();
+//void resetWeapons();
 #endif
 
