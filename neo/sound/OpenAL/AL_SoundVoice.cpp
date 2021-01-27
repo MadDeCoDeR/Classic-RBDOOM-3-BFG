@@ -186,6 +186,14 @@ void idSoundVoice_OpenAL::Create( const idSoundSample* leadinSample_, const idSo
 	
 	alSourcei( openalSource, AL_SOURCE_RELATIVE, AL_TRUE );
 	alSource3f( openalSource, AL_POSITION, 0.0f, 0.0f, 0.0f );
+	float orientation[6];
+	orientation[0] = 0.0f;
+	orientation[1] = 0.0f;
+	orientation[2] = -1.0f;
+	orientation[3] = 0.0f;
+	orientation[4] = 1.0f;
+	orientation[5] = 0.0f;
+	alSourcefv(openalSource, AL_ORIENTATION, orientation);
 	
 		// RB: FIXME 0.0f ? GK: Not needed anymore, the issue was with the buffers and is fixed long time ago
 		//alSourcef( openalSource, AL_GAIN, 1.0f );
@@ -629,14 +637,18 @@ void idSoundVoice_OpenAL::UnPause()
 	}
 	//GK: Set the EFX in the last moment
 	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
+	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 1, AL_FILTER_NULL);
 	if (alIsEffect(soundSystemLocal.EAX) && soundSystemLocal.EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
+		if (GetOcclusion() > 0.0f) {
+			alSourcei(openalSource, AL_DIRECT_FILTER, soundSystemLocal.hardware.voicefilter);
+		}
 		//GK: Audio Logs, PDA Videos and Radio Comms are supposed to be produced by the suit. 
 		//And they should not blend with Room's reverb (Plus some of these reverbs are making the voices harder to understand)
 		if (channel == 9 || channel == 10 || channel == 12) {
-			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.hardware.voiceslot, 0,AL_FILTER_NULL);
+			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.hardware.voiceslot, 1, AL_FILTER_NULL);
 		}
 		else {
-			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.hardware.slot, 0, AL_FILTER_NULL);
+			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.hardware.slot, 0, GetOcclusion() > 0.0f ? soundSystemLocal.hardware.voicefilter : AL_FILTER_NULL);
 		}
 	}
 	alSourcePlay( openalSource );

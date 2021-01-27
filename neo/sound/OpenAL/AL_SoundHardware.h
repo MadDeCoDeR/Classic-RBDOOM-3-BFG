@@ -75,6 +75,7 @@ public:
 	static void		PrintALInfo();
 	ALuint slot;
 	ALuint voiceslot;
+	ALuint voicefilter;
 protected:
 	friend class idSoundSample_OpenAL;
 	friend class idSoundVoice_OpenAL;

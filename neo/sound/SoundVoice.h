@@ -82,6 +82,12 @@ public:
 	{
 		occlusion = f;
 	}
+
+	// Controls the low pass filter, where 0.0f = no filtering, 1.0f = full filter
+	float		GetOcclusion()
+	{
+		return occlusion;
+	}
 	
 	float		GetGain()
 	{
