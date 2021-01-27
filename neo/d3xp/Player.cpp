@@ -7456,7 +7456,14 @@ void idPlayer::UpdateAir()
 	
 	if( hud )
 	{
-		hud->UpdateOxygen( airless, 100 * airMsec / pm_airMsec.GetInteger() );
+		if (PowerUpActive(ENVIROSUIT)) {
+			float envirotime = (float)(inventory.powerupEndTime[ENVIROTIME] - gameLocal.time);
+			envirotime = envirotime >= 0 ? envirotime : 0.0;
+			hud->UpdateOxygen(true, 100.0 * (envirotime / hudPowerupDuration));
+		}
+		else {
+			hud->UpdateOxygen(airless, 100 * airMsec / pm_airMsec.GetInteger());
+		}
 	}
 }
 

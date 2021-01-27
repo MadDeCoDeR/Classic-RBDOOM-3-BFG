@@ -1736,7 +1736,12 @@ void  idMenuScreen_HUDLocal::UpdateOxygen( bool show, int val )
 		idSWFTextInstance* txtVal = oxygen->GetScriptObject()->GetNestedText( "info", "txtHeading" );
 		if( txtVal != NULL )
 		{
-			txtVal->SetText( "#str_00100922" );
+			if ((game->GetLocalPlayer()->inventory.powerups & (1 << 6)) != 0) { //GK: Enviro Suit
+				txtVal->SetText("#str_00100204");
+			}
+			else {
+				txtVal->SetText("#str_00100922");
+			}
 			txtVal->SetStrokeInfo( true, 0.9f, 2.0f );
 		}
 		
