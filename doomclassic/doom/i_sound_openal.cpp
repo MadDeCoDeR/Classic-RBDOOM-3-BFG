@@ -356,9 +356,9 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 	}
 	alSource3f( sound->alSourceVoice, AL_POSITION, x, y, z );
 	//GK: Set the EFX in the last moment
-	alSource3i(sound->alSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
+	alSource3i(sound->alSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 2, AL_FILTER_NULL);
 	if (alIsEffect((ALuint)::g->clEAX) && ::g->clEAX > 0) {
-		alSource3i(sound->alSourceVoice, AL_AUXILIARY_SEND_FILTER, clslot, 0, AL_FILTER_NULL);
+		alSource3i(sound->alSourceVoice, AL_AUXILIARY_SEND_FILTER, clslot, 2, AL_FILTER_NULL);
 	}
 	alSourcePlay( sound->alSourceVoice );
 	
@@ -659,6 +659,10 @@ void I_ShutdownSoundHardware()
 	if (alIsAuxiliaryEffectSlot(clslot)) {
 		alDeleteAuxiliaryEffectSlots(1,&clslot);
 		clslot = 0;
+	}
+	if (alIsAuxiliaryEffectSlot(clmusslot)) {
+		alDeleteAuxiliaryEffectSlots(1, &clmusslot);
+		clmusslot = 0;
 	}
 }
 
@@ -968,9 +972,9 @@ void I_UpdateMusic( void )
 		return;
 	}
 
-	alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
+	alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 3, AL_FILTER_NULL);
 	if ((alIsEffect((ALuint)::g->clEAX) && ::g->clEAX > 0) || S_museax.GetBool()) {
-		alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, clmusslot, 0, AL_FILTER_NULL);
+		alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, clmusslot, 3, AL_FILTER_NULL);
 	}
 
 	if ( alMusicSourceVoice ) {
