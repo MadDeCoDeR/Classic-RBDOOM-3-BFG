@@ -161,7 +161,9 @@ __________________________________________________________
 (NOTE: If you install it with Visual Studio Installer make sure to check "Desktop Development in C++")
 
 2. Download the DirectX SDK (June 2010) here:
-	http://www.microsoft.com/en-us/download/details.aspx?id=6812
+	(Deprecated)nhttp://www.microsoft.com/en-us/download/details.aspx?id=6812
+
+	(The above url is no longer supported by Microsoft, the best alternative right now is the Steam Common Redistributable)
 
 3. Download and install the latest CMake (recommended 3.8 for compile and run out of the box).
 

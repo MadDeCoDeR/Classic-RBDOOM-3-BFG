@@ -128,7 +128,7 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 		else {
 			exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
 		}
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(*&pMusicSourceVoice, (WAVEFORMATEX *)&exvoice, XAUDIO2_VOICE_MUSIC);
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(*&pMusicSourceVoice, (WAVEFORMATEX *)&exvoice);
 	}
 	else {
 		if (!use_ext) {

@@ -702,11 +702,11 @@ void I_InitSoundChannel( int channel, int numOutputChannels_ ) {
 	activeSound_t	*soundchannel = &activeSounds[ channel ];
 	//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 	// RB: fixed non-aggregates cannot be initialized with initializer list
-//#if defined(USE_WINRT) //(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
-//	X3DAUDIO_VECTOR ZeroVector( 0.0f, 0.0f, 0.0f );
-///#else
+#if defined(USE_WINRT) //(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+	X3DAUDIO_VECTOR ZeroVector( 0.0f, 0.0f, 0.0f );
+#else
 	X3DAUDIO_VECTOR ZeroVector = { 0.0f, 0.0f, 0.0f };
-//#endif
+#endif
 	// RB end
 
 	// Set up emitter parameters
@@ -773,11 +773,11 @@ void I_InitSound() {
 		int i;
 
 		// RB: non-aggregates cannot be initialized with initializer list
-//#if defined(USE_WINRT) // (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
-//		X3DAUDIO_VECTOR ZeroVector( 0.0f, 0.0f, 0.0f );
-//#else
+#if defined(USE_WINRT) // (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+		X3DAUDIO_VECTOR ZeroVector( 0.0f, 0.0f, 0.0f );
+#else
 		X3DAUDIO_VECTOR ZeroVector = { 0.0f, 0.0f, 0.0f };
-//#endif
+#endif
 		// RB end
 
 		// Set up listener parameters
@@ -875,8 +875,9 @@ void I_InitMusic(void)
 		voiceFormat.cbSize = 0;
 
 // RB: XAUDIO2_VOICE_MUSIC not available on Windows 8 SDK
+//GK: Correction, according to MSDN XAUDIO2_VOICE_MUSIC is NOT supported by Windows
 //#if !defined(USE_WINRT) //(_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice( &pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat, XAUDIO2_VOICE_MUSIC );
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice( &pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat );
 //#endif
 // RB end
 
@@ -985,8 +986,9 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 		voiceFormat.cbSize = 0;
 
 		// RB: XAUDIO2_VOICE_MUSIC not available on Windows 8 SDK
+		//GK: Correction, according to MSDN XAUDIO2_VOICE_MUSIC is NOT supported by Windows
 		//#if !defined(USE_WINRT) //(_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat, XAUDIO2_VOICE_MUSIC);
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat);
 		//#endif
 		// RB end
 

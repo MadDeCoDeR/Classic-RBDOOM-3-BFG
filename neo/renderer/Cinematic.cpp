@@ -743,7 +743,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		exvoice.Samples.wValidBitsPerSample = voiceFormatcine.wBitsPerSample;
 		exvoice.Samples.wSamplesPerBlock = voiceFormatcine.wBitsPerSample;
 		exvoice.SubFormat = use_ext ? KSDATAFORMAT_SUBTYPE_IEEE_FLOAT : KSDATAFORMAT_SUBTYPE_PCM;
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice1, (WAVEFORMATEX*)&exvoice, XAUDIO2_VOICE_USEFILTER |  XAUDIO2_VOICE_MUSIC);//Use the XAudio2 that the game has initialized instead of making your own
+		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice1, (WAVEFORMATEX*)&exvoice, XAUDIO2_VOICE_USEFILTER);//Use the XAudio2 that the game has initialized instead of making your own
 #else //GK: Yep while in xaudio2 require so many line in OpenAL it require quite less
 		av_rate_cin = dec_ctx2->sample_rate;
 		int format_byte = 0;
