@@ -996,6 +996,9 @@ private:
 	void					Event_StopHelltime( int mode );
 	void					Event_ToggleBloom( int on );
 	void					Event_SetBloomParms( float speed, float intensity );
+
+	void					updateOxygen();
+	void					updateEnviro();
 };
 
 ID_INLINE bool idPlayer::IsRespawning()

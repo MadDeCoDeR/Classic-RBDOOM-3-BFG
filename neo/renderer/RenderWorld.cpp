@@ -1137,7 +1137,7 @@ int idRenderWorldLocal::PointInArea( const idVec3& point ) const
 		}
 		node = areaNodes + nodeNum;
 	}
-	
+
 	return -1;
 }
 

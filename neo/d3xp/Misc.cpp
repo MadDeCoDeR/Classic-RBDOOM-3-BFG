@@ -2539,6 +2539,91 @@ void idVacuumSeparatorEntity::Event_Activate( idEntity* activator )
 	gameLocal.SetPortalState( portal, PS_BLOCK_NONE );
 }
 
+/*
+===============================================================================
+
+	idHazardSeparatorEntity
+
+	Can be triggered to let vacuum through a portal (blown out window)
+
+===============================================================================
+*/
+
+CLASS_DECLARATION(idEntity, idHazardSeparatorEntity)
+EVENT(EV_Activate, idHazardSeparatorEntity::Event_Activate)
+END_CLASS
+
+
+/*
+================
+idHazardSeparatorEntity::idHazardSeparatorEntity
+================
+*/
+idHazardSeparatorEntity::idHazardSeparatorEntity()
+{
+	portal = 0;
+}
+
+/*
+================
+idHazardSeparatorEntity::Save
+================
+*/
+void idHazardSeparatorEntity::Save(idSaveGame* savefile) const
+{
+	savefile->WriteInt((int)portal);
+	savefile->WriteInt(gameRenderWorld->GetPortalState(portal));
+}
+
+/*
+================
+idHazardSeparatorEntity::Restore
+================
+*/
+void idHazardSeparatorEntity::Restore(idRestoreGame* savefile)
+{
+	int state;
+
+	savefile->ReadInt((int&)portal);
+	savefile->ReadInt(state);
+
+	gameLocal.SetPortalState(portal, state);
+}
+
+/*
+================
+idHazardSeparatorEntity::Spawn
+================
+*/
+void idHazardSeparatorEntity::Spawn()
+{
+	idBounds b;
+
+	b = idBounds(spawnArgs.GetVector("origin")).Expand(16);
+	portal = gameRenderWorld->FindPortal(b);
+	if (!portal)
+	{
+		gameLocal.Warning("VacuumSeparator '%s' didn't contact a portal", spawnArgs.GetString("name"));
+		return;
+	}
+	gameLocal.SetPortalState(portal, PS_BLOCK_HAZARD | PS_BLOCK_LOCATION);
+}
+
+/*
+================
+idHazardSeparatorEntity::Event_Activate
+================
+*/
+void idHazardSeparatorEntity::Event_Activate(idEntity* activator)
+{
+	if (!portal)
+	{
+		return;
+	}
+	gameLocal.SetPortalState(portal, PS_BLOCK_NONE);
+}
+
+
 
 /*
 ===============================================================================
@@ -2600,6 +2685,34 @@ void idVacuumEntity::Spawn()
 	
 	gameLocal.vacuumAreaNum = gameRenderWorld->PointInArea( org );
 }
+
+/*
+===============================================================================
+
+	idHazardEntity
+
+	Levels should only have a single vacuum entity.
+
+===============================================================================
+*/
+
+CLASS_DECLARATION(idEntity, idHazardEntity)
+END_CLASS
+
+int idHazardEntity::index = 0;
+/*
+================
+idHazardEntity::Spawn
+================
+*/
+void idHazardEntity::Spawn()
+{
+	
+	idVec3 org = spawnArgs.GetVector("origin");
+	gameLocal.hazardAreaNums[index] = gameRenderWorld->PointInArea(org);
+	index++;
+}
+
 
 
 /*

@@ -272,7 +272,7 @@ typedef struct modelTrace_s
 } modelTrace_t;
 
 
-static const int NUM_PORTAL_ATTRIBUTES = 3;
+static const int NUM_PORTAL_ATTRIBUTES = 4;
 
 typedef enum
 {
@@ -280,6 +280,7 @@ typedef enum
 	
 	PS_BLOCK_VIEW = 1,
 	PS_BLOCK_LOCATION = 2,		// game map location strings often stop in hallways
+	PS_BLOCK_HAZARD = 8,
 	PS_BLOCK_AIR = 4,			// windows between pressurized and unpresurized areas
 	
 	PS_BLOCK_ALL = ( 1 << NUM_PORTAL_ATTRIBUTES ) - 1

@@ -1,0 +1,9 @@
+entityDef info_hazard {
+	"editor_color"			"1 1 0"
+	"editor_mins"			"-4 -4 -4"
+	"editor_maxs"			"4 4 4"
+
+	"editor_usage"			"Place one of these in an hazard area in each map for hazard flooding"
+
+	"spawnclass"			"idHazardEntity"
+}
