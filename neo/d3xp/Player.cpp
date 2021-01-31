@@ -3923,7 +3923,7 @@ void idPlayer::FireWeapon()
 					else
 					{
 						//Since this is a toggle weapon just select itself and it will toggle to the last weapon
-						SelectWeapon( weapon_bloodstone, false );
+						SelectWeapon( previousWeapon, false );
 					}
 				}
 			}
