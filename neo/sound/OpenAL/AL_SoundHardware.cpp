@@ -156,37 +156,47 @@ void listDevices_f( const idCmdArgs& args )
 	idSoundHardware_OpenAL::PrintALCInfo( ( ALCdevice* )soundSystem->GetOpenALDevice() );
 }
 
-static void list_audio_devices(const ALCchar *devices)  //GK: Why not ?
+static void parseDeviceName(const ALCchar* wcDevice, char* mbDevice) {
+#ifdef WIN32
+	int wdev_size = MultiByteToWideChar(CP_UTF8, NULL, wcDevice, -1, NULL, 0);
+	//GK: just convert the name from UTF-8 char to wide char and then to ANSI char
+	wchar_t* wdevs = new wchar_t[wdev_size];
+	MultiByteToWideChar(CP_UTF8, NULL, wcDevice, -1, wdevs, wdev_size);
+	WideCharToMultiByte(CP_ACP, NULL, wdevs, wdev_size, mbDevice, wdev_size, NULL, 0);
+	delete[] wdevs;
+#else
+	wchar_t* wdevs = new wchar_t[512];
+	int wdev_size = mbstowcs(wdevs, wcDevice, strlen(wcDevice));
+	wdevs[wdev_size] = '\0';
+	int mb_size = wcstombs(mbDevice, wdevs, wdev_size);
+	mbdevs[mb_size] = '\0';
+	delete[] wdevs;
+#endif
+}
+
+static void list_audio_devices(const ALCchar *devices, const ALCchar *selectedDevice)  //GK: Why not ?
 {
 	const ALCchar *device = devices, *next = devices + 1;	
 	size_t len = 0;
+	int index = 0;
+	char* mbseldev = strdup(selectedDevice);
+	parseDeviceName(selectedDevice, mbseldev);
 
 	common->Printf( "Devices list:\n");
 	common->Printf( "-------------\n");
 	while (device && *device != '\0' && next && *next != '\0') {
+		index++;
 		char *mbdevs=strdup(device);
-#ifdef WIN32
-		int wdev_size = MultiByteToWideChar(CP_UTF8, NULL, device, -1, NULL, 0);
-		//GK: just convert the name from UTF-8 char to wide char and then to ANSI char
-		wchar_t* wdevs = new wchar_t[wdev_size];
-		MultiByteToWideChar(CP_UTF8, NULL, device, -1, wdevs, wdev_size);
-		WideCharToMultiByte(CP_ACP, NULL, wdevs, wdev_size, mbdevs, wdev_size, NULL, 0);
-		delete[] wdevs;
-#else
-		wchar_t* wdevs = new wchar_t[512];
-		int wdev_size = mbstowcs(wdevs, device, strlen(device));
-		wdevs[wdev_size] = '\0';
-		int mb_size = wcstombs(mbdevs, wdevs, wdev_size);
-		mbdevs[mb_size] = '\0';
-		delete[] wdevs;
-#endif
-		common->Printf( "%s\n", mbdevs);
+		parseDeviceName(device, mbdevs);
+		common->Printf( "%s	%3d: %s\n", !idStr::Icmp(mbdevs, mbseldev)? "*" : "", index,  mbdevs);
 		len = strlen(device);
 		device += (len + 1);
 		next += (len + 2);
 	}
 	common->Printf("-------------\n");
 }
+
+
 
 /*
 ========================
@@ -198,9 +208,6 @@ void idSoundHardware_OpenAL::Init()
 	cmdSystem->AddCommand( "listDevices", listDevices_f, 0, "Lists the connected sound devices", NULL );
 	ALboolean enumeration;
 	enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
-	if (enumeration == AL_TRUE) {
-		list_audio_devices(alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER));
-	}
 	
 	common->Printf( "Setup OpenAL device and context... " );
 	
@@ -288,6 +295,10 @@ void idSoundHardware_OpenAL::Init()
 	common->Printf( "OpenAL renderer: %s\n", alGetString( AL_RENDERER ) );
 	common->Printf( "OpenAL version: %s\n", alGetString( AL_VERSION ) );
 	common->Printf( "OpenAL extensions: %s\n", alGetString( AL_EXTENSIONS ) );
+
+	if (enumeration == AL_TRUE) {
+		list_audio_devices(alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER), alcGetString(openalDevice, ALC_ALL_DEVICES_SPECIFIER));
+	}
 	
 	//pMasterVoice->SetVolume( DBtoLinear( s_volume_dB.GetFloat() ) );
 	
