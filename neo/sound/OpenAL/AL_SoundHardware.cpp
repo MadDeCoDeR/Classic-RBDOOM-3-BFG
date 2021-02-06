@@ -169,7 +169,7 @@ static void parseDeviceName(const ALCchar* wcDevice, char* mbDevice) {
 	int wdev_size = mbstowcs(wdevs, wcDevice, strlen(wcDevice));
 	wdevs[wdev_size] = '\0';
 	int mb_size = wcstombs(mbDevice, wdevs, wdev_size);
-	mbdevs[mb_size] = '\0';
+	mbDevice[mb_size] = '\0';
 	delete[] wdevs;
 #endif
 }
