@@ -48,21 +48,19 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef _D3SDK
 #ifndef GAME_DLL
 
-#define WINVER				0x501
+#define WINVER				_WIN32_WINNT_WIN7
+#define _WIN32_WINNT				_WIN32_WINNT_WIN7
 
 #include <winsock2.h>
 #include <mmsystem.h>
 #include <mmreg.h>
 
 #define DIRECTINPUT_VERSION  0x0800			// was 0x0700 with the old mssdk
-#define DIRECTSOUND_VERSION  0x0800
 
-#ifdef _MSC_VER
-#include <dsound.h>
-#else
+#ifndef _MSC_VER
 #ifndef USE_OPENAL
 // DG: MinGW is incompatible with the original dsound.h because it contains MSVC specific annotations
-#include <wine-dsound.h>
+//#include <wine-dsound.h>
 
 // RB: was missing in MinGW/include/winuser.h
 #ifndef MAPVK_VSC_TO_VK_EX
