@@ -45,16 +45,24 @@ HRESULT GetAudioDeviceDetails( _In_ IMMDevice* immDevice, _Out_ AudioDevice* pIn
 {
 	IPropertyStore* propStore = nullptr;
 	PROPVARIANT     varName;
+#ifdef USE_XAUDIO2_PACKAGE
+	LPWSTR     varId;
+#else
 	PROPVARIANT     varId;
-	
-	PropVariantInit( &varId );
+	PropVariantInit(&varId);
+#endif
+
 	PropVariantInit( &varName );
 	
 	HRESULT hResult = immDevice->OpenPropertyStore( STGM_READ, &propStore );
 	
 	if( SUCCEEDED( hResult ) )
 	{
-		hResult = propStore->GetValue( PKEY_AudioEndpoint_Path, &varId );
+#ifdef USE_XAUDIO2_PACKAGE
+		hResult = immDevice->GetId(&varId);
+#else
+		hResult = propStore->GetValue(PKEY_AudioEndpoint_Path, &varId);
+#endif
 	}
 	
 	if( SUCCEEDED( hResult ) )
@@ -64,16 +72,24 @@ HRESULT GetAudioDeviceDetails( _In_ IMMDevice* immDevice, _Out_ AudioDevice* pIn
 	
 	if( SUCCEEDED( hResult ) )
 	{
+#ifndef USE_XAUDIO2_PACKAGE
 		assert( varId.vt == VT_LPWSTR );
+#endif
 		assert( varName.vt == VT_LPWSTR );
 		
 		// Now save somewhere the device display name & id
 		pInfo->name = varName.pwszVal;
+#ifdef USE_XAUDIO2_PACKAGE
+		pInfo->id = varId;
+#else
 		pInfo->id = varId.pwszVal;
+#endif
 	}
 	
 	PropVariantClear( &varName );
+#ifndef USE_XAUDIO2_PACKAGE
 	PropVariantClear( &varId );
+#endif
 	
 	if( propStore != nullptr )
 	{
@@ -207,10 +223,10 @@ void listDevices_f( const idCmdArgs& args )
 		char mbcsDisplayName[256];
 		char mbcsId[256];
 		//GK:wcstombs doen't read non-ASCII on windows so instead use this function in order to read them
-		int mbcsDisplayNameSize = WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].name.c_str(), lstrlenW(vAudioDevices[i].name.c_str()), NULL, NULL, NULL, 0);
-		WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].name.c_str(), lstrlenW(vAudioDevices[i].name.c_str()), mbcsDisplayName, mbcsDisplayNameSize, NULL, 0);
-		int mbcsIdSize = WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].id.c_str(), lstrlenW(vAudioDevices[i].id.c_str()), NULL, NULL, NULL, 0);
-		WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].id.c_str(), lstrlenW(vAudioDevices[i].id.c_str()), mbcsId, mbcsIdSize, NULL, 0);
+		int mbcsDisplayNameSize = WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].name.c_str(), -1, NULL, 0, NULL, 0);
+		WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].name.c_str(), mbcsDisplayNameSize, mbcsDisplayName, mbcsDisplayNameSize, NULL, 0);
+		int mbcsIdSize = WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].id.c_str(), -1, NULL, NULL, NULL, 0);
+		WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].id.c_str(), mbcsIdSize, mbcsId, mbcsIdSize, NULL, 0);
 		idLib::Printf( "%s %3d: %s %s\n", vAudioDevices[i].id == defaultDevice.id ? "*" : " ", i, mbcsDisplayName, mbcsId );
 	}
 #else
@@ -292,7 +308,8 @@ void listDevices_f( const idCmdArgs& args )
 		}
 		char mbcsDisplayName[ 256 ];
 		//GK:wcstombs doen't read non-ASCII on windows so instead use this function in order to read them
-		WideCharToMultiByte(CP_ACP, NULL, deviceDetails.DisplayName,lstrlenW(deviceDetails.DisplayName),mbcsDisplayName,  sizeof( mbcsDisplayName ),NULL,0 );
+		int mbSize = WideCharToMultiByte(CP_ACP, NULL, deviceDetails.DisplayName, -1, NULL, 0, NULL, 0);
+		WideCharToMultiByte(CP_ACP, NULL, deviceDetails.DisplayName, mbSize,mbcsDisplayName, mbSize,NULL,0 );
 		idLib::Printf( "%3d: %s\n", i, mbcsDisplayName );
 		idLib::Printf( "     %d channels, %d Hz\n", deviceDetails.OutputFormat.Format.nChannels, deviceDetails.OutputFormat.Format.nSamplesPerSec );
 		if( channelNames.Num() != deviceDetails.OutputFormat.Format.nChannels )
@@ -424,13 +441,14 @@ void idSoundHardware_XAudio2::Init()
 			selectedDevice = vAudioDevices[0];
 		}
 		
-		if( SUCCEEDED( pXAudio2->CreateMasteringVoice( &pMasterVoice,
-					   XAUDIO2_DEFAULT_CHANNELS,
-					   outputSampleRate,
-					   0,
-					   selectedDevice.id.c_str(),
-					   NULL,
-					   AudioCategory_GameEffects ) ) )
+		HRESULT masterVoice = pXAudio2->CreateMasteringVoice(&pMasterVoice,
+			XAUDIO2_DEFAULT_CHANNELS,
+			0,
+			0,
+			selectedDevice.id.c_str(),
+			NULL,
+			AudioCategory_GameEffects);
+		if( SUCCEEDED(masterVoice) )
 		{
 			XAUDIO2_VOICE_DETAILS deviceDetails;
 			pMasterVoice->GetVoiceDetails( &deviceDetails );
@@ -446,7 +464,9 @@ void idSoundHardware_XAudio2::Init()
 		}
 		else
 		{
-			idLib::Warning( "Failed to create master voice" );
+			char msgbuf[256];
+			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, masterVoice, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+			idLib::FatalError( "Failed to create master voice: %s", msgbuf );
 			pXAudio2->Release();
 			pXAudio2 = NULL;
 			return;

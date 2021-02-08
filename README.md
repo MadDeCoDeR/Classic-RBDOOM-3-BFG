@@ -160,10 +160,15 @@ __________________________________________________________
 
 (NOTE: If you install it with Visual Studio Installer make sure to check "Desktop Development in C++")
 
-2. Download the DirectX SDK (June 2010) here:
-	(Deprecated)nhttp://www.microsoft.com/en-us/download/details.aspx?id=6812
+2. Download and install DirectX SDK:
 
-	(The above url is no longer supported by Microsoft, the best alternative right now is the Steam Common Redistributable)
+	a. For DirectX SDK (June 2010): It should be available with the game files of DOOM 3 BFG Edition, 
+	or you can download the Steam Common Redistributable from Steam.
+
+	b. For alternative DirectX SDK: For Xinput and DirectInput, they are usually installed with Visual Studio Community,
+	but you can also find and download Windows SDK based on the version of Windows you are using. For XAudio2, the
+	only 2 alternatives are either the Windows 8 or later SDKs or XAudio2.9 which requires to download and set on your 
+	user/system PATH the nuget CLI Package Manager
 
 3. Download and install the latest CMake (recommended 3.8 for compile and run out of the box).
 

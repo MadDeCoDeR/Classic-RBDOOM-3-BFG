@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.15)
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 project(DoomBFA)
@@ -50,6 +50,9 @@ option(USE_SYSTEM_LIBGLEW
 
 option(USE_SYSTEM_RAPIDJSON
                 "Use the system rapidjson instead of the bundled one" OFF)
+				
+option (USE_XAUDIO2_PACKAGE
+				"Use XAudio 2.9 from nuget (requires nuget executable set on PATH)" OFF)
 
 set(CPU_TYPE "" CACHE STRING "When set, passes this string as CPU-ID which will be embedded into the binary.")
 
@@ -253,6 +256,10 @@ elseif(MSVC)
         ## Check for Version ##
         if( WINRT OR WINDOWS10 ) # Windows RT
 			add_definitions(-DUSE_WINRT)
+        endif()
+		
+		if( USE_XAUDIO2_PACKAGE ) # Windows RT
+			add_definitions(-DUSE_XAUDIO2_PACKAGE)
         endif()
 
         if (USE_INTRINSICS)
@@ -1356,19 +1363,27 @@ if(MSVC)
 		
 	# else()
 	#GK: DXSDK 2010 can STILL BEEN INSTALLED on Windows 10 and been used even by the LATEST VERSION OF VS
-	#if(WINDOWS10)
-	#	set(DirectX_LIBRARIES
-	#		dinput8
-	#		dsound
-	#		dxguid
+	if(WINRT AND OPENAL OR USE_XAUDIO2_PACKAGE)
+		set(DirectX_LIBRARIES
+			dinput8
+			#dsound
+			dxguid
 			#dxerr
-	#		Xinput
-	#		xaudio2.lib
-	#		)
-	#else()
+			Xinput
+			)
+	elseif(WINRT AND NOT OPENAL)
+		set(DirectX_LIBRARIES
+			dinput8
+			#dsound
+			dxguid
+			#dxerr
+			Xinput
+			xaudio2.lib
+			)
+	else()
 		find_package(DirectX REQUIRED)
 		include_directories(${DirectX_INCLUDE_DIR})
-		#endif
+	endif()
 	
 	if(USE_VULKAN)
 		list(APPEND RBDOOM3_INCLUDES ${RENDERER_VULKAN_INCLUDES})
@@ -1564,6 +1579,12 @@ if(MSVC)
         ${GLEW_LIBRARY}
 		${CMAKE_DL_LIBS}
 		)
+	if (USE_XAUDIO2_PACKAGE)
+		find_program(NUGET_EXE NAMES nuget)
+		exec_program(${NUGET_EXE}
+		ARGS install "Microsoft.XAudio2.Redist" -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
+		target_link_libraries(DoomBFA ${CMAKE_BINARY_DIR}/packages/Microsoft.XAudio2.Redist/build/native/Microsoft.XAudio2.Redist.targets)
+	endif()
 
 		
 	#CMAKE_BINARY_DIR
