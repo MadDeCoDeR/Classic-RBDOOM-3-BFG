@@ -948,8 +948,8 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 	idStr lumpName = "d_";
 	lumpName += static_cast< const char * >( songname );
 
-	unsigned char * musFile = static_cast< unsigned char * >( W_CacheLumpName( lumpName.c_str(), PU_CACHE_SHARED ) );
-	Z_Free(lumpcache[W_GetNumForName(lumpName.c_str())]);
+	unsigned char * musFile = static_cast< unsigned char * >(W_LoadLumpName( lumpName.c_str()/*, PU_CACHE_SHARED*/ ) );
+	//Z_Free(lumpcache[W_GetNumForName(lumpName.c_str())]);
 	//Z_FreeMemory();
 	int length = 0;
 	//GK: Capture it's return value and use it to determine if the file is mus or not
