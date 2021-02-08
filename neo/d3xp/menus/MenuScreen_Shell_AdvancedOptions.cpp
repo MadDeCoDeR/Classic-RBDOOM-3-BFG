@@ -544,6 +544,7 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 	}
 	if( originalHDR != r_useHDR.GetInteger() )
 	{
+		cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 		return true;
 	}
 	if( originalATHDR != game->GetCVarInteger("g_damageKickEffect"))
