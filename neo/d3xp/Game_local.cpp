@@ -696,6 +696,10 @@ void idGameLocal::SaveGame( idFile* f, idFile* strings )
 	savegame.WriteInt( time );
 	
 	savegame.WriteInt( vacuumAreaNum );
+
+	for (int i = 0; i < 32; i++) {
+		savegame.WriteInt( hazardAreaNums[i] );
+	}
 	
 	savegame.WriteInt( entityDefBits );
 	
@@ -1578,6 +1582,10 @@ bool idGameLocal::InitFromSaveGame( const char* mapName, idRenderWorld* renderWo
 	savegame.ReadInt( time );
 	
 	savegame.ReadInt( vacuumAreaNum );
+
+	for (int i = 0; i < 32; i++) {
+		savegame.ReadInt( hazardAreaNums[i] );
+	}
 	
 	savegame.ReadInt( entityDefBits );
 	

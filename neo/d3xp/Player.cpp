@@ -7515,7 +7515,9 @@ void idPlayer::updateEnviro() {
 		int dmgTiming = 1000 * ((damageDef) ? damageDef->GetFloat("delay", "1.25") : 1.25f);
 		if (gameLocal.time > lastAirDamage + dmgTiming)
 		{
-			Damage(NULL, NULL, vec3_origin, "damage_triggerhurt_5", 1.0f, 0);
+			if (lastAirDamage > 0) {
+				Damage(NULL, NULL, vec3_origin, "damage_triggerhurt_5", 1.0f, 0);
+			}
 			lastAirDamage = gameLocal.time;
 		}
 		
