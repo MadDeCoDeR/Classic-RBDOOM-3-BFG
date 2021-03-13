@@ -777,18 +777,20 @@ void F_CastTicker (void)
     if (--::g->casttics > 0)
 	return;			// not time to change state yet
 		
-    if (::g->caststate->tics == -1 || ::g->caststate->nextstate == S_NULL)
+    if (::g->caststate->tics == -1 || ::g->caststate->nextstate == S_NULL || ::g->castnum < 0)
     {
 	// switch from deathstate to next monster
 	::g->castnum++;
 	::g->castdeath = false;
-	if (castorder[::g->castnum].name == NULL && !::g->castcredit) {
-		::g->castcredit = true;
-		return;
+	if (::g->castnum >= (sizeof(castorder) / sizeof(castinfo_t))) {
+		::g->castnum = (sizeof(castorder) / sizeof(castinfo_t)) - 1;
 	}
-	else if (castorder[::g->castnum].name == NULL && ::g->castcredit) {
-		::g->castcredit = false;
-		::g->castnum = 0;
+	
+	if (castorder[::g->castnum].name == NULL) {
+		if (!::g->castcredit) {
+			::g->castcredit = true;
+		}
+		return;
 	}
 	if (mobjinfo[castorder[::g->castnum].type].seesound)
 	    S_StartSound (NULL, mobjinfo[castorder[::g->castnum].type].seesound);
@@ -899,7 +901,7 @@ qboolean F_CastResponder (event_t* ev)
 	return true;			// already in dying frames
 
 	if (::g->castcredit) {
-		::g->castnum = 0;
+		::g->castnum = -1;
 		::g->castcredit = false;
 		return true;
 	}
@@ -990,6 +992,9 @@ void F_CastDrawer (void)
 		V_DrawPatch(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("CREDIT", PU_CACHE_SHARED), W_GetNumForName("CREDIT")), false);
 		return;
 	}
+
+	if (::g->castnum < 0)
+		return;
     
     // erase the entire screen to a background
     V_DrawPatch (0,0,0, /*(patch_t*)*/img2lmp(W_CacheLumpName (finaleflat[11], PU_CACHE_SHARED), W_GetNumForName(finaleflat[11])), false);
