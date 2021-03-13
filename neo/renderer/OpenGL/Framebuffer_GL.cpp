@@ -357,7 +357,7 @@ void Framebuffer::Unbind()
 {
 	RENDERLOG_PRINTF( "Framebuffer::Unbind()\n" );
 	
-	//if(tr.backend.framebuffer != NULL)
+	//if(tr.backend.currentFramebuffer != NULL)
 	{
 		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 		glBindRenderbuffer( GL_RENDERBUFFER, 0 );

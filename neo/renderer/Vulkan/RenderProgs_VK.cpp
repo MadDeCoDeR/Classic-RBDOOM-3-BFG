@@ -602,15 +602,15 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 		
 		if( hlslFileLength <= 0 )
 		{
-			hlslFileBuffer = FindEmbeddedSourceShader( inFile.c_str() );
+			/*hlslFileBuffer = FindEmbeddedSourceShader( inFile.c_str() );
 			if( hlslFileBuffer == NULL )
-			{
+			{*/
 				// hlsl file doesn't even exist bail out
 				idLib::Error( "HLSL file %s could not be loaded and may be corrupt", inFile.c_str() );
 				return;
-			}
+			/*}
 			
-			len = strlen( hlslFileBuffer );
+			len = strlen( hlslFileBuffer );*/
 		}
 		else
 		{

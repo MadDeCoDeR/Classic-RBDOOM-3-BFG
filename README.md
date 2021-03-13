@@ -108,9 +108,8 @@ Bethesda.net store (2019): https://bethesda.net/en/store/product/DO3GNGPCBG01
 
 Steam & GOG API:
 ------
-The Doom 3 BFG Edition GPL Source Code release does not include functionality for integrating with 
-Steam.  This includes roaming profiles, achievements, leaderboards, matchmaking, the overlay, or
-any other Steam features.
+The Doom BFA Edition GPL Source Code release does include functionality for integrating with 
+Steam & Discord through Open Platform Api.  This includes only achievements and the overlay.
 
 
 Bink:
@@ -121,8 +120,13 @@ The RBDoom3BFG Edition GPL Source Code release includes functionality for render
 Back End Rendering of Stencil Shadows:
 --------------------------------------
 
-The Doom 3 BFG Edition GPL Source Code release does not include functionality enabling rendering
+The Doom BFA Edition GPL Source Code release does include functionality enabling rendering
 of stencil shadows via the "depth fail" method, a functionality commonly known as "Carmack's Reverse".
+
+This method was patented by Creative Labs and has finally expired on 2019-10-13.
+(see https://patents.google.com/patent/US6384822B1/en for expiration status)
+
+
 
 
 
