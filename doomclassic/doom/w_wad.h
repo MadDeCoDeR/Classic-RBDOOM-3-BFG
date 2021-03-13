@@ -78,7 +78,7 @@ typedef struct
 
 
 extern	void**		lumpcache;
-extern	lumpinfo_t*	lumpinfo;
+extern	std::vector<lumpinfo_t>	lumpinfo;
 extern	int		numlumps;
 
 void    W_InitMultipleFiles (const char** filenames);

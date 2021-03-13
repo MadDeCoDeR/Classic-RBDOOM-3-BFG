@@ -73,7 +73,7 @@ If you have questions concerning this license or the applicable additional terms
 // GLOBALS
 //
 
-lumpinfo_t*	lumpinfo = NULL;
+std::vector<lumpinfo_t>	lumpinfo;
 int			numlumps;
 void**		lumpcache;
 std::set<int> direct;
@@ -81,14 +81,14 @@ std::vector<std::string> fname;
 std::vector<std::string> foldername;
 //GK: Keep information retrieved from .zip and .pk3 files
 //inside those variables
-std::vector<filelump_t> zipfileinfo (1);
-std::vector<unz_file_pos> zippos(1);
+std::vector<filelump_t> zipfileinfo;
+std::vector<unz_file_pos> zippos;
 int zipind = 0;
 std::vector<std::string>wadsinzip;
 //GK: End
-bool OpenCompFile(const char* filename);
+bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads = true);
 void W_RemoveLump(int lump);
-bool W_InjectLump(filelump_t* file, int pos, idFile* handle);
+bool W_InjectLump(std::vector<filelump_t>::iterator file, int pos, idFile* handle);
 
 
 
@@ -149,7 +149,7 @@ ExtractFileBase
 // LUMP BASED ROUTINES.
 //
 
-void W_ReplaceLump(filelump_t* file, int pos, idFile* handle) {
+void W_ReplaceLump(std::vector<filelump_t>::iterator file, int pos, idFile* handle) {
 	lumpinfo_t* lump = &lumpinfo[pos];
 	lump->handle = handle;
 	strncpy(lump->name, file->name, 8);
@@ -188,22 +188,22 @@ bool W_CompareSprites(spritename_t* original, spritename_t* newname) {
 }
 
 void W_DeleteDuplicateSprites(spritename_t* newname, int pos, int start, int end) {
-	lumpinfo_t* lump = lumpinfo + pos;
+	lumpinfo_t lump = lumpinfo[pos];
 	for (int j = start; j < end; j++) {
-		lumpinfo_t* tlump = lumpinfo + j;
-		if (W_CompareSprites((spritename_t*)tlump->name, newname)) {
-			lumpinfo_t* dellump = lumpinfo + j;
-			if (idStr::Icmp(dellump->name, lump->name)) {
-				W_RemoveLump(j + 1);
+		lumpinfo_t tlump = lumpinfo[j];
+		if (W_CompareSprites((spritename_t*)tlump.name, newname)) {
+			lumpinfo_t dellump = lumpinfo[j];
+			if (idStr::Icmp(dellump.name, lump.name)) {
+				W_RemoveLump(j);
 				return;
 			}
 		}
 	}
 }
 
-bool W_ReplaceSprite(filelump_t* file, int pos, idFile* handle, int start, int end){
-	lumpinfo_t* lump = lumpinfo + pos;
-	spritename_t* original = (spritename_t*)lump->name;
+bool W_ReplaceSprite(std::vector<filelump_t>::iterator file, int pos, idFile* handle, int start, int end){
+	lumpinfo_t lump = lumpinfo[pos];
+	spritename_t* original = (spritename_t*)lump.name;
 	spritename_t* newname = (spritename_t*)file->name;
 	if (idStr::Icmpn(original->base, newname->base, 4)) {
 		return false;
@@ -240,16 +240,19 @@ bool W_ReplaceSprite(filelump_t* file, int pos, idFile* handle, int start, int e
 	if (framematch) {
 		if (originalRotations[framematchi] != '0' && newRotations[framematchj] == '0') {
 			for (int i = end; i > start; --i) {
-				lumpinfo_t* tlump = lumpinfo + i;
-				if (!idStr::Icmpn(tlump->name, "S_START", 7)) {
+				lumpinfo_t tlump = lumpinfo[i];
+				if (!idStr::Icmpn(tlump.name, "S_START", 7)) {
 					break;
 				}
-				if (!idStr::Icmpn(tlump->name, (char*)newname, 5)) {
-					W_RemoveLump(i + 1);
+				if (!idStr::Icmpn(tlump.name, (char*)newname, 5)) {
+					W_RemoveLump(i);
 					pos = i;
 				}
 			}
-			W_InjectLump(file, pos, handle);
+			if (!idStr::Icmpn(lump.name + 1, "_END", 4) || !idStr::Icmpn(lump.name + 2, "_END", 4)) {
+				pos--;
+			}
+			W_InjectLump(file, pos + 1, handle);
 			//W_DeleteDuplicateSprites(newname, pos, start, end);
 			return true;
 		}
@@ -263,57 +266,62 @@ bool W_ReplaceSprite(filelump_t* file, int pos, idFile* handle, int start, int e
 
 }
 
-void W_RemoveAnimatedFlats(int pos) {
-	lumpinfo_t* lump = lumpinfo + pos;
+int W_RemoveAnimatedFlats(int pos) {
+	lumpinfo_t lump = lumpinfo[pos];
 	int totalAnims = sizeof(::g->animdefs) / sizeof(animdef_t);
 	bool markForDelete = false;
 	animdef_t animdef;
+	int count = 0;
 	for (int i = 0; i < totalAnims; i++) {
-		if (!idStr::Icmp(::g->animdefs[i].startname, lump->name)) {
+		if (!idStr::Icmp(::g->animdefs[i].startname, lump.name)) {
 			animdef = ::g->animdefs[i];
 			markForDelete = true;
 			break;
 		}
 	}
 	while (markForDelete) {
-		lumpinfo_t* tlump = &lumpinfo[pos + 1];
-		if (!idStr::Icmp(animdef.endname, tlump->name)) {
+		lumpinfo_t tlump = lumpinfo[pos];
+		if (!idStr::Icmp(animdef.endname, tlump.name)) {
 			break;
 		}
-		W_RemoveLump(pos + 2);
+		W_RemoveLump(pos);
+		count++;
 	}
+	return count;
 }
 
-bool W_InjectLump(filelump_t* file, int pos, idFile* handle) {
-	lumpinfo_t* lump = &lumpinfo[pos + 1];
-	int epos = 0;
-	for (int i = pos + 1; i < numlumps; i++, lump++) {
-		if (lump->null) {
-			epos = i;
-			break;
-		}
-	}
-	if (epos > 0) {
-		lumpinfo_t* tl = &lumpinfo[epos - 1];
-		//GK:Actually make right shift of the lumpinfo array
-		for (int i = epos; i > pos + 1; --i, --lump, --tl) {
-			lump->handle = tl->handle;
-			lump->position = tl->position;
-			lump->size = tl->size;
-			strncpy(lump->name, tl->name, 8);
-			lump->null = tl->null;
-		}
+bool W_InjectLump(std::vector<filelump_t>::iterator file, int pos, idFile* handle) {
+	//lumpinfo_t* lump = &lumpinfo[pos + 1];
+	//int epos = 0;
+	//for (int i = pos + 1; i < numlumps; i++, lump++) {
+	//	if (lump->null) {
+	//		epos = i;
+	//		break;
+	//	}
+	//}
+	//if (epos > 0) {
+	//	lumpinfo_t* tl = &lumpinfo[epos - 1];
+	//	//GK:Actually make right shift of the lumpinfo array
+	//	for (int i = epos; i > pos + 1; --i, --lump, --tl) {
+	//		lump->handle = tl->handle;
+	//		lump->position = tl->position;
+	//		lump->size = tl->size;
+	//		strncpy(lump->name, tl->name, 8);
+	//		lump->null = tl->null;
+	//	}
 		//idLib::Printf("adding lump between markers %s\n", filelumpPointer->name); //for debug purposes
-		lumpinfo_t* lar = &lumpinfo[pos + 1];
-		lar->handle = handle;
-		lar->position = LONG(file->filepos);
-		lar->size = LONG(file->size);
-		strncpy(lar->name, file->name, 8);
-		lar->name[8] = '\0';
-		lar->null = false;
+	
+		lumpinfo_t lar;
+		lar.handle = handle;
+		lar.position = LONG(file->filepos);
+		lar.size = LONG(file->size);
+		strncpy(lar.name, file->name, 8);
+		lar.name[8] = '\0';
+		lar.null = false;
+		lumpinfo.insert(lumpinfo.begin() + pos, lar);
 		return true;
-	}
-	return false;
+	/*}
+	return false;*/
 }
 
 
@@ -342,8 +350,8 @@ bool inzip = false;
 void W_AddFile ( const char *filename)
 {
     wadinfo_t		header;
-    lumpinfo_t*		lump_p;
-	lumpinfo_t*		tlump;
+    std::vector<lumpinfo_t>::iterator	lump_p;
+	std::vector<lumpinfo_t>::iterator	tlump;
 	lumpinfo_t*		temlump;
 	lumpinfo_t*		tl;
 	lumpinfo_t*		lar;
@@ -375,9 +383,9 @@ void W_AddFile ( const char *filename)
     {
 		//GK: when loading archives return instandly don't add it to the lump list
 #ifdef _WINDOWS
-			if (OpenCompFile(filename)) {
+			if (OpenCompFile(filename, "/pwads/")) {
 #else //GK: Use the absolute path on linux because minizip might refuse to open it otherwise
-			if (OpenCompFile(handle->GetFullPath())) {
+			if (OpenCompFile(handle->GetFullPath(), "/pwads/")) {
 #endif
 				//handle=nullptr;
 				//fileSystem->CloseFile(handle);
@@ -434,51 +442,55 @@ void W_AddFile ( const char *filename)
 
     
 	// Fill in lumpinfo
-	if (lumpinfo == NULL) {
-		lumpinfo = (lumpinfo_t*)malloc( numlumps*sizeof(lumpinfo_t) );
-		//GK:Init some values and don't let null value in chance
-		all_lump = &lumpinfo[startlump];
-		for (int i = startlump; i < numlumps;i++ , all_lump++) {
-			strcpy(all_lump->name, "");
-			all_lump->null = true;
-		}
-	} else {
-		if (iwad) { //GK: Who knows better safe than sorry
-			free(&lumpinfo);
-			lumpinfo = NULL;
-			lumpinfo = (lumpinfo_t*)malloc(numlumps*sizeof(lumpinfo_t));
-			all_lump = &lumpinfo[startlump];
-			for (int i = startlump; i < numlumps; i++, all_lump++) {
-				strcpy(all_lump->name, "");
-				all_lump->null = true;
-			}
-		}
-		else {
-			lumpinfo = (lumpinfo_t*)realloc(lumpinfo, numlumps * sizeof(lumpinfo_t));
-			all_lump = &lumpinfo[startlump];
-			for (int i = startlump; i < numlumps; i++, all_lump++) {
-				strcpy(all_lump->name, "");
-				all_lump->null = true;
-			}
-		}
-	}
+	//if (lumpinfo == NULL) {
+	//	lumpinfo = (lumpinfo_t*)malloc( numlumps*sizeof(lumpinfo_t) );
+	//	//GK:Init some values and don't let null value in chance
+	//	all_lump = &lumpinfo[startlump];
+	//	for (int i = startlump; i < numlumps;i++ , all_lump++) {
+	//		strcpy(all_lump->name, "");
+	//		all_lump->null = true;
+	//	}
+	//} else {
+	//	if (iwad) { //GK: Who knows better safe than sorry
+	//		free(&lumpinfo);
+	//		lumpinfo = NULL;
+	//		lumpinfo = (lumpinfo_t*)malloc(numlumps*sizeof(lumpinfo_t));
+	//		all_lump = &lumpinfo[startlump];
+	//		for (int i = startlump; i < numlumps; i++, all_lump++) {
+	//			strcpy(all_lump->name, "");
+	//			all_lump->null = true;
+	//		}
+	//	}
+	//	else {
+	//		lumpinfo = (lumpinfo_t*)realloc(lumpinfo, numlumps * sizeof(lumpinfo_t));
+	//		all_lump = &lumpinfo[startlump];
+	//		for (int i = startlump; i < numlumps; i++, all_lump++) {
+	//			strcpy(all_lump->name, "");
+	//			all_lump->null = true;
+	//		}
+	//	}
+	//}
+	int oldSize = lumpinfo.size();
+	lumpinfo.reserve(numlumps);
 
-	if (!lumpinfo)
-		I_Error ("Couldn't realloc lumpinfo");
+	/*if (!lumpinfo)
+		I_Error ("Couldn't realloc lumpinfo");*/
 
-	lump_p = &lumpinfo[startlump];
+	lump_p = lumpinfo.begin() + oldSize;
 
 	::g->wadFileHandles[ ::g->numWadFiles++ ] = handle;
 	int epos = 0;
 	int reppos = 0;
+	int repposffs = 0;
 	int op = 0;
 	//GK: Know where the "_END" marker is on iwad list in order to reduce the loop
 	int ep = 0;
-	filelump_t * filelumpPointer = &fileinfo[0];
+	std::vector<filelump_t>::iterator filelumpPointer = fileinfo.begin();
 	rep = false;
 	bool sprite = false;
 	bool markfordelete = false; //GK:Mass murd-deletion flag
-	for (i=startlump ; i<numlumps ; i++,lump_p++, filelumpPointer++)
+	i = startlump;
+	for (; filelumpPointer < fileinfo.end() ; i++,lump_p++, filelumpPointer++)
 	{
 		//GK: replace lumps between "_START" and "_END" markers instead of append
 		if (!iwad) {	
@@ -512,6 +524,7 @@ void W_AddFile ( const char *filename)
 					}
 						rep = true;
 						reppos = op;
+						lump_p--;
 						continue;
 					
 				}
@@ -538,24 +551,29 @@ void W_AddFile ( const char *filename)
 					break;
 				}
 				else {
+					lump_p--;
 					continue;
 				}
 			}
 			if (rep) {
 					bool replaced = false;
-					tlump = lumpinfo + ep;	
+					tlump = lumpinfo.begin() + ep;	
 					for (int j = ep; j > op; j--, tlump--) {
 						if (!idStr::Icmpn(tlump->name + 2, "_START", 6) || !idStr::Icmpn(tlump->name + 1, "_START", 6) || !idStr::Icmpn(tlump->name + 2, "_END", 4) || !idStr::Icmpn(tlump->name + 1, "_END", 4)) {
+							if (lump_p != lumpinfo.begin()) {
+								lump_p--;
+							}
 							continue;
 						}
 						//GK: Lookup sprite animation frames in case of the modded one having scrambled frame name and rotation
 						if (!sprite) {
 							if (!idStr::Icmpn(filelumpPointer->name, tlump->name, 8)) {
 								//GK: find animation flats and delete their between frames
-								W_RemoveAnimatedFlats(j);
+								int offs = W_RemoveAnimatedFlats(j);
 								W_ReplaceLump(filelumpPointer, j, handle);
 								replaced = true;
 								reppos = j;
+								repposffs = offs;
 								break;
 							}
 						}
@@ -568,12 +586,12 @@ void W_AddFile ( const char *filename)
 						}
 					}
 					if (!replaced) {
-						lumpinfo_t* lump = &lumpinfo[reppos + 1];
-						if (!idStr::Icmpn(lump->name + 2, "_START", 6) || !idStr::Icmpn(lump->name + 2, "_END", 4)) {
-							reppos++;
-						}
+						lumpinfo_t lump = lumpinfo[reppos];
 						//GK:add aditional content in between the markers
-						if (W_InjectLump(filelumpPointer, reppos, handle)) {
+						if (!idStr::Icmpn(lump.name + 1, "_END", 4) || !idStr::Icmpn(lump.name + 2, "_END", 4)) {
+							reppos--;
+						}
+						if (W_InjectLump(filelumpPointer, reppos + 1, handle)) {
 							reppos++;
 							ep++;
 						}
@@ -581,12 +599,14 @@ void W_AddFile ( const char *filename)
 			}
 			else {
 					//idLib::Printf("adding lump %s\n", filelumpPointer->name); //for debug purposes
-					lump_p->handle = handle;
-					lump_p->position = LONG(filelumpPointer->filepos);
-					lump_p->size = LONG(filelumpPointer->size);
-					strncpy(lump_p->name, filelumpPointer->name, 8);
-					lump_p->name[8] = '\0';
-					lump_p->null = false;
+				lumpinfo_t tlump;
+					tlump.handle = handle;
+					tlump.position = LONG(filelumpPointer->filepos);
+					tlump.size = LONG(filelumpPointer->size);
+					strncpy(tlump.name, filelumpPointer->name, 8);
+					tlump.name[8] = '\0';
+					tlump.null = false;
+					lumpinfo.insert(lump_p, tlump);
 					//GK: Check for REVERBD lump and activate reverb check ups
 #ifdef USE_OPENAL
 					if (!idStr::Cmpn(filelumpPointer->name, "REVERBD", 7)) {
@@ -610,12 +630,14 @@ void W_AddFile ( const char *filename)
 			
 		}
 		else {
-			lump_p->handle = handle;
-			lump_p->position = LONG(filelumpPointer->filepos);
-			lump_p->size = LONG(filelumpPointer->size);
-			strncpy(lump_p->name, filelumpPointer->name, 8);
-			lump_p->name[8] = '\0';
-			lump_p->null = false;
+		lumpinfo_t tlump;
+			tlump.handle = handle;
+			tlump.position = LONG(filelumpPointer->filepos);
+			tlump.size = LONG(filelumpPointer->size);
+			strncpy(tlump.name, filelumpPointer->name, 8);
+			tlump.name[8] = '\0';
+			tlump.null = false;
+			lumpinfo.insert(lump_p, tlump);
 		}
 		//GK end
 	}
@@ -649,7 +671,7 @@ void W_Reload (void)
 //
 void W_FreeLumps() {
 	if ( lumpcache != NULL ) {
-		for ( int i = 0; i < numlumps; i++ ) {
+		for ( int i = 0; i < W_GetLumpCount(); i++ ) {
 			if ( lumpcache[i] && direct.find(i) == direct.end()) {
 				Z_Free( lumpcache[i] );
 			}
@@ -658,18 +680,29 @@ void W_FreeLumps() {
 				direct.erase(i);
 			}
 		}
-		if (direct.size() > 0) {
-			direct.clear();
-		}
+		std::set<int> tempDirect;
+		direct.clear();
+		direct.swap(tempDirect);
 		Z_Free( lumpcache );
 		lumpcache = NULL;
 	}
 
-	if ( lumpinfo != NULL ) {
+	/*if ( lumpinfo != NULL ) {
 		free( lumpinfo );
 		lumpinfo = NULL;
 		numlumps = 0;
-	}
+	}*/
+	std::vector<lumpinfo_t> tempLumpInfo;
+	lumpinfo.clear();
+	lumpinfo.swap(tempLumpInfo);
+	numlumps = 0;
+	std::vector<filelump_t> tempzipfileinfo;
+	zipfileinfo.clear();
+	zipfileinfo.swap(tempzipfileinfo);
+	std::vector<unz_file_pos> tempzippos;
+	zippos.clear();
+	zippos.swap(tempzippos);
+	zipind = 0;
 }
 
 //
@@ -688,11 +721,9 @@ void W_FreeWadFiles() {
 	extraWad = 0;
 	//GK: Clear the file position array that we retrive from multiple 
 	//.zip,.pk3 files
-	if (zippos.size() > 1) {
-		zipind = 0;
-		zippos.clear();
-		zippos.resize(1);
-	}
+	std::vector<std::string> tempwadsinzip;
+	wadsinzip.clear();
+	wadsinzip.swap(tempwadsinzip);
 	//GK: End
 	//GK: Game crashing bugfix (still need work)
 	::g->cpind = 0;
@@ -736,15 +767,14 @@ void W_InitMultipleFiles (const char** filenames)
 {
 	int		size;
 
-	if (lumpinfo == NULL)
+	if (lumpinfo.empty())
 	{
 		// open all the files, load headers, and count lumps
 		numlumps = 0;
 
 		// will be realloced as lumps are added
 		
-		free(lumpinfo);
-		lumpinfo = NULL;
+		lumpinfo.clear();
 		iwad = true;
 		for ( ; *filenames ; filenames++)
 		{
@@ -830,7 +860,7 @@ int* W_CheckNumsForName(const char* name)
 
 	int		v1;
 	int		v2;
-	lumpinfo_t* lump_p;
+	std::vector<lumpinfo_t>::iterator lump_p;
 	if (!name) { //GK: SANITY CHECK
 		
 		return result;
@@ -851,10 +881,10 @@ int* W_CheckNumsForName(const char* name)
 
 
 	// scan forwards so proper order of lump files take precedence
-	lump_p = lumpinfo;
+	lump_p = lumpinfo.begin();
 
 	int i = 0;
-	while (lump_p++ != lumpinfo + numlumps)
+	while (lump_p++ != lumpinfo.end() - 1)
 	{
 		if (*(int*)lump_p->name == v1
 			&& *(int*)& lump_p->name[4] == v2)
@@ -862,7 +892,7 @@ int* W_CheckNumsForName(const char* name)
 			if (i >= 1) {
 				result = (int*)realloc(result, (i + 1)*sizeof(int));
 			}
-			result[i] = lump_p - lumpinfo;
+			result[i] = lump_p - lumpinfo.begin();
 			i++;
 		}
 	}
@@ -881,7 +911,7 @@ int W_CheckNumForName (const char* name, int last)
 	const int NameLength = 9;
 
 	if (last < 0) {
-		last = numlumps;
+		last = lumpinfo.size();
 	}
 
     union {
@@ -892,7 +922,7 @@ int W_CheckNumForName (const char* name, int last)
     
     int		v1;
     int		v2;
-    lumpinfo_t*	lump_p;
+    std::vector<lumpinfo_t>::iterator	lump_p;
 	if (!name) //GK: SANITY CHECK
 		return -1;
     // make the name into two integers for easy compares
@@ -911,16 +941,22 @@ int W_CheckNumForName (const char* name, int last)
 
 
     // scan backwards so patch lump files take precedence
-    lump_p = lumpinfo + last;
+    lump_p = lumpinfo.begin() + last;
 
-    while (lump_p-- != lumpinfo)
+    while (--lump_p != lumpinfo.begin())
     {
 		if ( *(int *)lump_p->name == v1
 			&& *(int *)&lump_p->name[4] == v2)
 		{
-			return lump_p - lumpinfo;
+			return lump_p - lumpinfo.begin();
 		}
     }
+	//GK: Do one extra for luck ;)
+	if (*(int*)lump_p->name == v1
+		&& *(int*)&lump_p->name[4] == v2)
+	{
+		return lump_p - lumpinfo.begin();
+	}
 
     // TFB. Not found.
     return -1;
@@ -997,15 +1033,15 @@ W_ReadLump
   void*		dest )
 {
     int			c;
-    lumpinfo_t*	l;
+    lumpinfo_t	l;
     idFile *		handle;
 	
     if (lump >= numlumps)
 		I_Error ("W_ReadLump: %i >= numlumps",lump);
 
-    l = lumpinfo+lump;
+    l = lumpinfo[lump];
 	
-	handle = l->handle;
+	handle = l.handle;
 	//idLib::Printf("Reading %s from %s\n", l->name, handle->GetName());
 	//if (handle->GetName() != NULL && handle->GetName() != "" && handle->GetName() != " ") {
 	//GK: Check if the "wild" file is a zip file
@@ -1015,19 +1051,19 @@ W_ReadLump
 	}
 	//GK: End
 	if (zip == NULL) {
-		int r = handle->Seek(l->position, FS_SEEK_SET);
+		int r = handle->Seek(l.position, FS_SEEK_SET);
 		//GK: Additional checkups has never been bad
 		if (r == -1) {
-			common->FatalError("W_ReadLump: Failed to find %s on %s", l->name, l->handle->GetName());
+			common->FatalError("W_ReadLump: Failed to find %s on %s", l.name, l.handle->GetName());
 		}
-		c = handle->Read(dest, l->size);
+		c = handle->Read(dest, l.size);
 	}
 	//GK: Open and load to the returning buffer the desired file
 	//from the zip file
 	else {
-		unzGoToFilePos(zip, &zippos[l->position]); //GK: This is where zippos is saving the day
+		unzGoToFilePos(zip, &zippos[l.position]); //GK: This is where zippos is saving the day
 		if (unzOpenCurrentFile(zip) == UNZ_OK) {
-			c = unzReadCurrentFile(zip, dest, l->size);
+			c = unzReadCurrentFile(zip, dest, l.size);
 			unzCloseCurrentFile(zip);
 		}
 		else {
@@ -1037,8 +1073,8 @@ W_ReadLump
 	}
 	//GK: End
 
-		if (c < l->size)
-			I_Error("W_ReadLump: only read %i of %i on lump %i", c, l->size, lump);
+		if (c < l.size)
+			I_Error("W_ReadLump: only read %i of %i on lump %i", c, l.size, lump);
 }
 
 
@@ -1143,27 +1179,27 @@ void W_Profile (void)
 }
 
 //GK: Open archive files extract it's content and load it as files for DOOM
-bool OpenCompFile(const char* filename) {
+bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 	char* maindir = new char[MAX_FILENAME];
-	char* senddir = new char[MAX_FILENAME];
-	senddir = "/pwads/";
+	char* finalWadDir = new char[MAX_FILENAME];
 	char* fdir = new char[MAX_FILENAME];
 	zipfileinfo.clear();
-	zipfileinfo.resize(1);
+	zipfileinfo.shrink_to_fit();
 	if (inzip) {
 			sprintf(fdir, "%s%s", "base", filename);
 	}
 	else {
 		strcpy(fdir, filename);
 	}
+	sprintf(finalWadDir, "%s%s", "base", wadPath);
 	//idLib::Printf("Checking %s for compressed file\n",fdir);
 	unzFile zip = unzOpen(fdir);
 	if (zip != NULL) {
 		//idLib::Printf("found compressed file\n");
 #ifdef _WIN32
-		CreateDirectory("base/pwads",NULL);
+		CreateDirectory(finalWadDir,NULL);
 #else
-		mkdir("base/pwads/", S_IRWXU);
+		mkdir(finalWadDir, S_IRWXU);
 #endif
 		unz_global_info gi;
 		if (unzGetGlobalInfo(zip, &gi) == UNZ_OK) {
@@ -1172,10 +1208,10 @@ bool OpenCompFile(const char* filename) {
 			qboolean usegraphic = false; //GK: TODO Find out how to translate GRAPHICS folder to FLAT or PLANE flag
 			int indoffset = zipind;
 			zipind += gi.number_entry;
-			zipfileinfo.resize(gi.number_entry+10); //GK:Give a little bit more for flags
-			int k = 0; //GK: Use internal counter for stability
-			zippos.resize(zipind+10);
+			zipfileinfo.reserve(zipind); //GK:Give a little bit more for flags
+			zippos.reserve(zipind);
 			numlumps += gi.number_entry;
+			int k = 0;
 			for (int i = 0; i < gi.number_entry; i++) {
 				unz_file_info fi;
 				char* name = new char[MAX_FILENAME];
@@ -1185,9 +1221,8 @@ bool OpenCompFile(const char* filename) {
 					if (name[filename_length - 1] != '/') {
 						if (!idStr::Icmp(name+filename_length - 3, "wad")) {
 							if (unzOpenCurrentFile(zip) == UNZ_OK) {
-								zipfileinfo.resize(zipfileinfo.size() - 1);
 								char* path = new char[MAX_FILENAME];
-								sprintf(path, "%s%s", "base/pwads/", name);
+								sprintf(path, "%s%s", finalWadDir, name);
 								std::FILE *out = fopen(path, "wb");
 								if (out != NULL) {
 									int buff = UNZ_OK;
@@ -1199,15 +1234,19 @@ bool OpenCompFile(const char* filename) {
 									} while (buff > 0);
 									fclose(out);
 									unzCloseCurrentFile(zip);
-									fname.emplace_back(path);
+									if (loadWads) {
+										fname.emplace_back(path);
+									}
 									char* pname = new char[MAX_FILENAME];
-									sprintf(pname, "%s%s", senddir, name);
+									sprintf(pname, "%s%s", wadPath, name);
 									if (idStr::Icmp(name + strlen(name) - 3, "wad")) {
 										relp = true;
 									}
 									inzip = true;
 									//W_AddFile(pname);
-									wadsinzip.emplace_back(pname);//GK: Just store the file path for now
+									if (loadWads) {
+										wadsinzip.emplace_back(pname);//GK: Just store the file path for now
+									}
 
 								}
 								if (i + 1 < gi.number_entry) {
@@ -1217,63 +1256,71 @@ bool OpenCompFile(const char* filename) {
 						}
 						//GK: No wad file DONT extract
 						else {
-							//GK: Trim the filename from the path
-							char* t = strtok(name, "/");
-							char* tn = new char[512];
-							qboolean insprite = false;
-							while (t != NULL) {
-								if (!usesprites && !idStr::Icmp(t, "SPRITES")) { //GK: Set S_START Flag if we entered a SPRITES folder
-									strcpy(zipfileinfo[k].name, "S_START\0");
+							if (loadWads) {
+								//GK: Trim the filename from the path
+								filelump_t tfile;
+								zipfileinfo.emplace_back(tfile);
+								unz_file_pos pos;
+								zippos.emplace_back(pos);
+								char* t = strtok(name, "/");
+								char* tn = new char[512];
+								qboolean insprite = false;
+								while (t != NULL) {
+									if (!usesprites && !idStr::Icmp(t, "SPRITES")) { //GK: Set S_START Flag if we entered a SPRITES folder
+										strcpy(zipfileinfo[k].name, "S_START\0");
+										zipfileinfo[k].filepos = k;
+										insprite = true;
+										usesprites = true;
+										k++;
+									}
+									if (!insprite && !idStr::Icmp(t, "SPRITES")) {
+										insprite = true;
+									}
+									tn = t;
+									t = strtok(NULL, "/");
+								}
+								if (usesprites && !insprite) { //GK: And set a S_END flag once we exit the folder
+									strcpy(zipfileinfo[k].name, "S_END\0");
 									zipfileinfo[k].filepos = k;
-									insprite = true;
-									usesprites = true;
+									usesprites = false;
 									k++;
 								}
-								if (!insprite && !idStr::Icmp(t, "SPRITES")) {
-									insprite = true;
+								//GK: And also keep the file extension
+								char* fex = new char[5];
+								t = strtok(tn, ".");
+								while (t != NULL) {
+									fex = t;
+									t = strtok(NULL, ".");
+
 								}
-								tn = t;
-								t = strtok(NULL, "/");
-							}
-							if (usesprites && !insprite) { //GK: And set a S_END flag once we exit the folder
-								strcpy(zipfileinfo[k].name, "S_END\0");
-								zipfileinfo[k].filepos = k;
-								usesprites = false;
+								//GK: Give fake name based on the file extension
+								if (!idStr::Icmp(fex, "deh")) {
+									strcpy(zipfileinfo[k].name, "DEHACKED");
+								}
+								else if (!idStr::Icmp(fex, "dlc")) {
+									strcpy(zipfileinfo[k].name, "EXPINFO\0");
+								}
+								else {
+									strcpy(zipfileinfo[k].name, tn);
+									for (int j = strlen(tn); j >= 0; j--) {
+										if (zipfileinfo[k].name[j] == '.') {
+											zipfileinfo[k].name[j] = '\0';
+											break;
+										}
+									}
+									//GK: Make sure the name is always upper case
+									for (int j = 0; j < 8; j++) {
+										zipfileinfo[k].name[j] = toupper(zipfileinfo[k].name[j]);
+									}
+									zipfileinfo[k].name[8] = '\0';
+								}
+								int j = indoffset + k;
+								unzGetFilePos(zip, &zippos[j]);//GK: this is important DONT MESS WITH IT
+								zipfileinfo[k].filepos = j;//GK: Keep the zippos position here
+								zipfileinfo[k].size = fi.uncompressed_size;
 								k++;
-							}
-							//GK: And also keep the file extension
-							char* fex = new char[5];
-							t = strtok(tn, ".");
-							while (t != NULL) {
-								fex = t;
-								t = strtok(NULL, ".");
 								
 							}
-							//GK: Give fake name based on the file extension
-							if (!idStr::Icmp(fex, "deh")) {
-								strcpy(zipfileinfo[k].name, "DEHACKED");
-							}
-							else if (!idStr::Icmp(fex, "dlc")) {
-								strcpy(zipfileinfo[k].name, "EXPINFO\0");
-							}
-							else {
-								strcpy(zipfileinfo[k].name, tn);
-								for (int j = 7; j >= 0; j--) {
-									if (zipfileinfo[k].name[j] == '.') {
-										zipfileinfo[k].name[j] = '\0';
-										break;
-									}
-								}
-								//GK: Make sure the name is always upper case
-								for (int j = 0; j < 8; j++) {
-									zipfileinfo[k].name[j] = toupper(zipfileinfo[k].name[j]);
-								}
-							}
-							int j = indoffset + k;
-							unzGetFilePos(zip, &zippos[j]);//GK: this is important DONT MESS WITH IT
-							zipfileinfo[k].filepos = j;//GK: Keep the zippos position here
-							zipfileinfo[k].size = fi.uncompressed_size;
-							k++;
 							if (i + 1 < gi.number_entry) {
 								unzGoToNextFile(zip);
 							}
@@ -1282,7 +1329,7 @@ bool OpenCompFile(const char* filename) {
 					//GK: End
 					else {
 						//GK: If it found directory inside the archieve create it
-						strcpy(maindir, "base/pwads/");
+						strcpy(maindir, finalWadDir);
 						//idLib::Printf("found directory\n");
 						strcat(maindir, name);
 						if (!idStr::Icmp(name, "SPRITES/")) {
@@ -1310,16 +1357,19 @@ bool OpenCompFile(const char* filename) {
 				zipfileinfo[k].filepos = k;
 				usesprites = false;
 			}
-			while(1) { //GK: Remove unused entries
-				if (zipfileinfo.size() == 1) {
-					break;
-				}
-				int y = zipfileinfo.size() - 1;
-				if (!idStr::Icmp(zipfileinfo[y].name, "")) {
-					zipfileinfo.pop_back();
-				}
-				else {
-					break;
+			int y = zipfileinfo.size() - 1;
+			if (y > 0) {
+				while (1) { //GK: Remove unused entries
+					if (zipfileinfo.size() == 1) {
+						break;
+					}
+					if (!idStr::Icmp(zipfileinfo[y].name, "") || zipfileinfo[y].size < 0) {
+						zipfileinfo.pop_back();
+					}
+					else {
+						y--;
+						break;
+					}
 				}
 			}
 			unzClose(zip);
@@ -1357,7 +1407,9 @@ void CleanUncompFiles(bool unalloc) {
 	rmdir("base/pwads");
 #endif
 		fname.clear();
+		fname.shrink_to_fit();
 		foldername.clear();
+		foldername.shrink_to_fit();
 }
 //GK: Check for either the wad a folder or a zip file that contains ALL the Master Levels
 void MakeMaster_Wad() {
@@ -1368,8 +1420,8 @@ void MakeMaster_Wad() {
 		return;
 	}
 	if (FILE *f = fopen("base/wads/master.zip", "r")) {
-		uncompressMaster();
 		fclose(f);
+		OpenCompFile("base/wads/master.zip", "/wads/master/", false);
 	}
 	if (stat("base/wads/master/", &info) != 0)
 		return;
@@ -1380,64 +1432,6 @@ void MakeMaster_Wad() {
 		
 		return;
 	}
-}
-//GK: In case of zip file
-void uncompressMaster() {
-	char* sdir = "base/wads/master.zip";
-	char* ddir = "base/wads/master/";
-	unzFile zip = unzOpen(sdir);
-	if (zip != NULL) {
-		idLib::Printf("found compressed file\n");
-#ifdef _WIN32
-		CreateDirectory(ddir, NULL);
-#else
-		mkdir(ddir, S_IRWXU);
-#endif
-		unz_global_info gi;
-		if (unzGetGlobalInfo(zip, &gi) == UNZ_OK) {
-			char rb[READ_SIZE];
-			for (int i = 0; i < gi.number_entry; i++) {
-				unz_file_info fi;
-				char* name = new char[MAX_FILENAME];
-				if (unzGetCurrentFileInfo(zip, &fi, name, MAX_FILENAME, NULL, 0, NULL, 0) == UNZ_OK) {
-					//idLib::Printf("%s\n", name);
-					const size_t filename_length = strlen(name);
-					if (name[filename_length - 1] != '/') {
-						if (unzOpenCurrentFile(zip) == UNZ_OK) {
-							char* path = new char[MAX_FILENAME];
-							sprintf(path, "%s%s", ddir, name);
-							std::FILE *out = fopen(path, "wb");
-							if (out != NULL) {
-								int buff = UNZ_OK;
-								do {
-									buff = unzReadCurrentFile(zip, rb, READ_SIZE);
-									if (buff > 0) {
-										fwrite(rb, buff, 1, out);
-									}
-								} while (buff > 0);
-								fclose(out);
-								unzCloseCurrentFile(zip);
-								fname.emplace_back(path);
-								char* pname = new char[MAX_FILENAME];
-								sprintf(pname, "%s%s", ddir, name);
-
-							}
-							if (i + 1 < gi.number_entry) {
-								unzGoToNextFile(zip);
-							}
-						}
-					}
-
-				}
-			}
-
-			unzClose(zip);
-			inzip = false;
-			//MasterList();
-			return;
-		}
-	}
-	return;
 }
 //GK:Open all the wads and copy and rename their contents into one WAD file
 void MasterList() {
@@ -1936,51 +1930,43 @@ bool W_CheckMods(int sc, std::vector<std::string> filelist) {
 
 //GK:delete unwanted content in between the markers
 void W_RemoveLump(int lump) {
-	lumpinfo_t* temlump ,*tl;
-	int epos;
+	lumpinfo.erase(lumpinfo.begin() + lump);
+	//lumpinfo_t* temlump ,*tl;
+	//int epos;
 
-	
-	temlump = &lumpinfo[lump + 1];
-	epos = 0;
-	for (int k = lump + 1; k < numlumps; k++, temlump++) {
-		if (temlump->null) {
-			epos = k;
-			break;
-		}
-	}
-	if (epos > 0) {
-		//GK: Start from the exact previous file
-		temlump = &lumpinfo[lump - 1];
-		tl = &lumpinfo[lump];
-		//GK:Actually make left shift of the lumpinfo array
-		for (int k = lump - 1; k <= epos; k++, temlump++, tl++) {
-			temlump->handle = tl->handle;
-			temlump->position = tl->position;
-			temlump->size = tl->size;
-			strncpy(temlump->name, tl->name, 8);
-			temlump->null = tl->null;
-		}
-	}
+	//
+	//temlump = &lumpinfo[lump + 1];
+	//epos = 0;
+	//for (int k = lump + 1; k < numlumps; k++, temlump++) {
+	//	if (temlump->null) {
+	//		epos = k;
+	//		break;
+	//	}
+	//}
+	//if (epos > 0) {
+	//	//GK: Start from the exact previous file
+	//	temlump = &lumpinfo[lump - 1];
+	//	tl = &lumpinfo[lump];
+	//	//GK:Actually make left shift of the lumpinfo array
+	//	for (int k = lump - 1; k <= epos; k++, temlump++, tl++) {
+	//		temlump->handle = tl->handle;
+	//		temlump->position = tl->position;
+	//		temlump->size = tl->size;
+	//		strncpy(temlump->name, tl->name, 8);
+	//		temlump->null = tl->null;
+	//	}
+	//}
 }
 
 char* W_GetNameForNum(int lump) {
-	lumpinfo_t* l = lumpinfo + lump;
-	return l->name;
+	if (lump >= lumpinfo.size()) {
+		return "";
+	}
+	lumpinfo_t l = lumpinfo[lump];
+	return l.name;
 }
 
 int W_GetLumpCount()
 {
-	lumpinfo_t* temlump, * tl;
-	int epos;
-
-
-	temlump = &lumpinfo[numlumps];
-	epos = 0;
-	for (int k = numlumps; k >= 0; k--, temlump--) {
-		if (!temlump->null) {
-			epos = k + 1;
-			break;
-		}
-	}
-	return epos;
+	return lumpinfo.size();
 }
