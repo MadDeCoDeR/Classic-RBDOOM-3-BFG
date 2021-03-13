@@ -350,7 +350,7 @@ bool inzip = false;
 void W_AddFile ( const char *filename)
 {
     wadinfo_t		header;
-    std::vector<lumpinfo_t>::iterator	lump_p;
+   // std::vector<lumpinfo_t>::iterator	lump_p;
 	std::vector<lumpinfo_t>::iterator	tlump;
 	lumpinfo_t*		temlump;
 	lumpinfo_t*		tl;
@@ -476,7 +476,7 @@ void W_AddFile ( const char *filename)
 	/*if (!lumpinfo)
 		I_Error ("Couldn't realloc lumpinfo");*/
 
-	lump_p = lumpinfo.begin() + oldSize;
+	//lump_p = lumpinfo.begin() + oldSize;
 
 	::g->wadFileHandles[ ::g->numWadFiles++ ] = handle;
 	int epos = 0;
@@ -490,7 +490,7 @@ void W_AddFile ( const char *filename)
 	bool sprite = false;
 	bool markfordelete = false; //GK:Mass murd-deletion flag
 	i = startlump;
-	for (; filelumpPointer < fileinfo.end() ; i++,lump_p++, filelumpPointer++)
+	for (; filelumpPointer < fileinfo.end() ; i++,/*lump_p++,*/ filelumpPointer++)
 	{
 		//GK: replace lumps between "_START" and "_END" markers instead of append
 		if (!iwad) {	
@@ -506,6 +506,7 @@ void W_AddFile ( const char *filename)
 						strncpy(marker, filelumpPointer->name + 1, 7);
 					}
 					else {
+						//lump_p = lumpinfo.end() - 1;
 						continue;
 					}
 					break;
@@ -524,7 +525,7 @@ void W_AddFile ( const char *filename)
 					}
 						rep = true;
 						reppos = op;
-						lump_p--;
+						//lump_p = lumpinfo.end() - 1;
 						continue;
 					
 				}
@@ -551,7 +552,7 @@ void W_AddFile ( const char *filename)
 					break;
 				}
 				else {
-					lump_p--;
+					//lump_p = lumpinfo.end() - 1;
 					continue;
 				}
 			}
@@ -560,9 +561,7 @@ void W_AddFile ( const char *filename)
 					tlump = lumpinfo.begin() + ep;	
 					for (int j = ep; j > op; j--, tlump--) {
 						if (!idStr::Icmpn(tlump->name + 2, "_START", 6) || !idStr::Icmpn(tlump->name + 1, "_START", 6) || !idStr::Icmpn(tlump->name + 2, "_END", 4) || !idStr::Icmpn(tlump->name + 1, "_END", 4)) {
-							if (lump_p != lumpinfo.begin()) {
-								lump_p--;
-							}
+							//lump_p = lumpinfo.end() - 1;
 							continue;
 						}
 						//GK: Lookup sprite animation frames in case of the modded one having scrambled frame name and rotation
@@ -606,7 +605,7 @@ void W_AddFile ( const char *filename)
 					strncpy(tlump.name, filelumpPointer->name, 8);
 					tlump.name[8] = '\0';
 					tlump.null = false;
-					lumpinfo.insert(lump_p, tlump);
+					lumpinfo.emplace_back(tlump);
 					//GK: Check for REVERBD lump and activate reverb check ups
 #ifdef USE_OPENAL
 					if (!idStr::Cmpn(filelumpPointer->name, "REVERBD", 7)) {
@@ -637,7 +636,7 @@ void W_AddFile ( const char *filename)
 			strncpy(tlump.name, filelumpPointer->name, 8);
 			tlump.name[8] = '\0';
 			tlump.null = false;
-			lumpinfo.insert(lump_p, tlump);
+			lumpinfo.emplace_back(tlump);
 		}
 		//GK end
 	}
@@ -798,7 +797,7 @@ void W_InitMultipleFiles (const char** filenames)
 			I_Error ("W_InitMultipleFiles: no files found");
 
 		// set up caching
-		size = numlumps * sizeof(*lumpcache);
+		size = lumpinfo.size() * sizeof(*lumpcache);
 		lumpcache = (void**)DoomLib::Z_Malloc(size, PU_STATIC_SHARED, 0 );
 
 		if (!lumpcache)
@@ -807,7 +806,7 @@ void W_InitMultipleFiles (const char** filenames)
 		memset (lumpcache,0, size);
 	} else {
 		// set up caching
-		size = numlumps * sizeof(*lumpcache);
+		size = lumpinfo.size() * sizeof(*lumpcache);
 		lumpcache = (void**)DoomLib::Z_Malloc(size, PU_STATIC_SHARED, 0 );
 
 		if (!lumpcache)
@@ -1089,7 +1088,7 @@ W_CacheLumpNum
   int		tag )
 {
 #ifdef RANGECHECK
-	if (lump >= numlumps)
+	if (lump >= lumpinfo.size())
 		I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
 #endif
 
