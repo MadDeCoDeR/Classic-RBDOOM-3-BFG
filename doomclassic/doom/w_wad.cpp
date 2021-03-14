@@ -1205,7 +1205,7 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 			char rb[READ_SIZE];
 			qboolean usesprites = false;
 			qboolean usegraphic = false; //GK: TODO Find out how to translate GRAPHICS folder to FLAT or PLANE flag
-			int indoffset = zipind;
+			int indoffset = zippos.size();
 			zipind += gi.number_entry;
 			zipfileinfo.reserve(zipind); //GK:Give a little bit more for flags
 			zippos.reserve(zipind);
