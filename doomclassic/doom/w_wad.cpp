@@ -1830,20 +1830,20 @@ return;
 }
 
 void W_CheckExp() {
-	if (FILE *file = fopen("base/wads/TNT.WAD", "r")) {
-		fclose(file);
+	if (idFile *file = fileSystem->OpenFileRead("wads/TNT.WAD")) {
+		fileSystem->CloseFile(file);
 		DoomLib::hexp[0] = true;
 	}
-	if (FILE *file = fopen("base/wads/PLUTONIA.WAD", "r")) {
-		fclose(file);
+	if (idFile *file = fileSystem->OpenFileRead("wads/PLUTONIA.WAD")) {
+		fileSystem->CloseFile(file);
 		DoomLib::hexp[1] = true;
 	}
-	if (FILE *file = fopen("base/wads/MASTERLEVELS.wad", "r")) {
-		fclose(file);
+	if (idFile *file = fileSystem->OpenFileRead("wads/MASTERLEVELS.wad")) {
+		fileSystem->CloseFile(file);
 		DoomLib::hexp[2] = true;
 	}
-	if (FILE* file = fopen("base/wads/NERVE.WAD", "r")) {
-		fclose(file);
+	if (idFile* file = fileSystem->OpenFileRead("wads/NERVE.WAD")) {
+		fileSystem->CloseFile(file);
 		DoomLib::hexp[3] = true;
 	}
 }
