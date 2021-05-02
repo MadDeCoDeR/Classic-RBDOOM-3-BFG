@@ -55,6 +55,7 @@ idSWF::idSWF
 */
 idSWF::idSWF( const char* filename_, idSoundWorld* soundWorld_ )
 {
+	imageless = true;
 
 	atlasMaterial = NULL;
 	
@@ -212,137 +213,139 @@ idSWF::idSWF( const char* filename_, idSoundWorld* soundWorld_ )
 		WriteJSON( jsonFileName );
 	}
 	
-	idStr atlasFileName = binaryFileName;
-	atlasFileName.SetFileExtension( ".tga" );
-	atlasMaterial = declManager->FindMaterial( atlasFileName );
-	
-	byte* atlasExportImageRGBA = NULL;
-	int atlasExportImageWidth = 0;
-	int atlasExportImageHeight = 0;
-	
-	if( /*!loadedFromJSON &&*/ ( postLoadExportFlashToJSON.GetBool() || postLoadExportFlashAtlas.GetBool() || postLoadExportFlashToSWF.GetBool() ) )
-	{
-		idStrStatic< MAX_OSPATH > generatedName = atlasFileName;
-		generatedName.StripFileExtension();
-		idImage::GetGeneratedName( generatedName, TD_DEFAULT, CF_2D );
-		
-		idBinaryImage im( generatedName );
-		ID_TIME_T binaryFileTime = im.LoadFromGeneratedFile( FILE_NOT_FOUND_TIMESTAMP );
-		
-		if( binaryFileTime != FILE_NOT_FOUND_TIMESTAMP )
+	if (!imageless) {
+		idStr atlasFileName = binaryFileName;
+		atlasFileName.SetFileExtension( ".tga" );
+		atlasMaterial = declManager->FindMaterial( atlasFileName );
+
+		byte* atlasExportImageRGBA = NULL;
+		int atlasExportImageWidth = 0;
+		int atlasExportImageHeight = 0;
+
+		if( /*!loadedFromJSON &&*/ ( postLoadExportFlashToJSON.GetBool() || postLoadExportFlashAtlas.GetBool() || postLoadExportFlashToSWF.GetBool() ) )
 		{
-			const bimageFile_t& imgHeader = im.GetFileHeader();
-			const bimageImage_t& img = im.GetImageHeader( 0 );
-			
-			const byte* data = im.GetImageData( 0 );
-			
-			//( img.level, 0, 0, img.destZ, img.width, img.height, data );
-			
-			idTempArray<byte> rgba( img.width * img.height * 4 );
-			memset( rgba.Ptr(), 255, rgba.Size() );
-			
-			if( imgHeader.format == FMT_DXT1 )
+			idStrStatic< MAX_OSPATH > generatedName = atlasFileName;
+			generatedName.StripFileExtension();
+			idImage::GetGeneratedName( generatedName, TD_DEFAULT, CF_2D );
+
+			idBinaryImage im( generatedName );
+			ID_TIME_T binaryFileTime = im.LoadFromGeneratedFile( FILE_NOT_FOUND_TIMESTAMP );
+
+			if( binaryFileTime != FILE_NOT_FOUND_TIMESTAMP )
 			{
-				idDxtDecoder dxt;
-				dxt.DecompressImageDXT1( data, rgba.Ptr(), img.width, img.height );
-			}
-			else if( imgHeader.format == FMT_DXT5 )
-			{
-				idDxtDecoder dxt;
-				
-				if( imgHeader.colorFormat == CFM_NORMAL_DXT5 )
+				const bimageFile_t& imgHeader = im.GetFileHeader();
+				const bimageImage_t& img = im.GetImageHeader( 0 );
+
+				const byte* data = im.GetImageData( 0 );
+
+				//( img.level, 0, 0, img.destZ, img.width, img.height, data );
+
+				idTempArray<byte> rgba( img.width * img.height * 4 );
+				memset( rgba.Ptr(), 255, rgba.Size() );
+
+				if( imgHeader.format == FMT_DXT1 )
 				{
-					dxt.DecompressNormalMapDXT5( data, rgba.Ptr(), img.width, img.height );
+					idDxtDecoder dxt;
+					dxt.DecompressImageDXT1( data, rgba.Ptr(), img.width, img.height );
 				}
-				else if( imgHeader.colorFormat == CFM_YCOCG_DXT5 )
+				else if( imgHeader.format == FMT_DXT5 )
 				{
-					dxt.DecompressYCoCgDXT5( data, rgba.Ptr(), img.width, img.height );
+					idDxtDecoder dxt;
+
+					if( imgHeader.colorFormat == CFM_NORMAL_DXT5 )
+					{
+						dxt.DecompressNormalMapDXT5( data, rgba.Ptr(), img.width, img.height );
+					}
+					else if( imgHeader.colorFormat == CFM_YCOCG_DXT5 )
+					{
+						dxt.DecompressYCoCgDXT5( data, rgba.Ptr(), img.width, img.height );
+					}
+					else
+					{
+
+						dxt.DecompressImageDXT5( data, rgba.Ptr(), img.width, img.height );
+					}
+				}
+				else if( imgHeader.format == FMT_LUM8 || imgHeader.format == FMT_INT8 )
+				{
+					// LUM8 and INT8 just read the red channel
+					byte* pic = rgba.Ptr();
+					for( int i = 0; i < img.dataSize; i++ )
+					{
+						pic[ i * 4 ] = data[ i ];
+					}
+				}
+				else if( imgHeader.format == FMT_ALPHA )
+				{
+					// ALPHA reads the alpha channel
+					byte* pic = rgba.Ptr();
+					for( int i = 0; i < img.dataSize; i++ )
+					{
+						pic[ i * 4 + 3 ] = data[ i ];
+					}
+				}
+				else if( imgHeader.format == FMT_L8A8 )
+				{
+					// L8A8 reads the alpha and red channels
+					byte* pic = rgba.Ptr();
+					for( int i = 0; i < img.dataSize / 2; i++ )
+					{
+						pic[ i * 4 + 0 ] = data[ i * 2 + 0 ];
+						pic[ i * 4 + 3 ] = data[ i * 2 + 1 ];
+					}
+				}
+				else if( imgHeader.format == FMT_RGB565 )
+				{
+					// FIXME
+					/*
+					byte* pic = rgba.Ptr();
+					for( int i = 0; i < img.dataSize / 2; i++ )
+					{
+						unsigned short color = ( ( pic[ i * 4 + 0 ] >> 3 ) << 11 ) | ( ( pic[ i * 4 + 1 ] >> 2 ) << 5 ) | ( pic[ i * 4 + 2 ] >> 3 );
+						img.data[ i * 2 + 0 ] = ( color >> 8 ) & 0xFF;
+						img.data[ i * 2 + 1 ] = color & 0xFF;
+					}
+					*/
 				}
 				else
 				{
-				
-					dxt.DecompressImageDXT5( data, rgba.Ptr(), img.width, img.height );
+					byte* pic = rgba.Ptr();
+					for( int i = 0; i < img.dataSize; i++ )
+					{
+						pic[ i ] = data[ i ];
+					}
 				}
-			}
-			else if( imgHeader.format == FMT_LUM8 || imgHeader.format == FMT_INT8 )
-			{
-				// LUM8 and INT8 just read the red channel
-				byte* pic = rgba.Ptr();
-				for( int i = 0; i < img.dataSize; i++ )
+
+				idStr atlasFileNameExport = atlasFileName;
+				atlasFileNameExport.Replace( "generated/", "exported/" );
+				atlasFileNameExport.SetFileExtension( ".png" );
+
+				R_WritePNG( atlasFileNameExport, rgba.Ptr(), 4, img.width, img.height, true, "fs_basepath" );
+
+				if( postLoadExportFlashToSWF.GetBool() )
 				{
-					pic[ i * 4 ] = data[ i ];
+					atlasExportImageWidth = img.width;
+					atlasExportImageHeight = img.height;
+					atlasExportImageRGBA = ( byte* ) Mem_Alloc( rgba.Size(), TAG_TEMP );
+					memcpy( atlasExportImageRGBA, rgba.Ptr(), rgba.Size() );
 				}
-			}
-			else if( imgHeader.format == FMT_ALPHA )
-			{
-				// ALPHA reads the alpha channel
-				byte* pic = rgba.Ptr();
-				for( int i = 0; i < img.dataSize; i++ )
-				{
-					pic[ i * 4 + 3 ] = data[ i ];
-				}
-			}
-			else if( imgHeader.format == FMT_L8A8 )
-			{
-				// L8A8 reads the alpha and red channels
-				byte* pic = rgba.Ptr();
-				for( int i = 0; i < img.dataSize / 2; i++ )
-				{
-					pic[ i * 4 + 0 ] = data[ i * 2 + 0 ];
-					pic[ i * 4 + 3 ] = data[ i * 2 + 1 ];
-				}
-			}
-			else if( imgHeader.format == FMT_RGB565 )
-			{
-				// FIXME
-				/*
-				byte* pic = rgba.Ptr();
-				for( int i = 0; i < img.dataSize / 2; i++ )
-				{
-					unsigned short color = ( ( pic[ i * 4 + 0 ] >> 3 ) << 11 ) | ( ( pic[ i * 4 + 1 ] >> 2 ) << 5 ) | ( pic[ i * 4 + 2 ] >> 3 );
-					img.data[ i * 2 + 0 ] = ( color >> 8 ) & 0xFF;
-					img.data[ i * 2 + 1 ] = color & 0xFF;
-				}
-				*/
-			}
-			else
-			{
-				byte* pic = rgba.Ptr();
-				for( int i = 0; i < img.dataSize; i++ )
-				{
-					pic[ i ] = data[ i ];
-				}
-			}
-			
-			idStr atlasFileNameExport = atlasFileName;
-			atlasFileNameExport.Replace( "generated/", "exported/" );
-			atlasFileNameExport.SetFileExtension( ".png" );
-			
-			R_WritePNG( atlasFileNameExport, rgba.Ptr(), 4, img.width, img.height, true, "fs_basepath" );
-			
-			if( postLoadExportFlashToSWF.GetBool() )
-			{
-				atlasExportImageWidth = img.width;
-				atlasExportImageHeight = img.height;
-				atlasExportImageRGBA = ( byte* ) Mem_Alloc( rgba.Size(), TAG_TEMP );
-				memcpy( atlasExportImageRGBA, rgba.Ptr(), rgba.Size() );
 			}
 		}
-	}
-	
-	if( postLoadExportFlashToSWF.GetBool() )
-	{
-		idStr swfFileName = "exported/";
-		swfFileName += filename;
-		swfFileName.SetFileExtension( ".swf" );
-		
-		WriteSWF( swfFileName, atlasExportImageRGBA, atlasExportImageWidth, atlasExportImageHeight );
-	}
-	
-	if( atlasExportImageRGBA != NULL )
-	{
-		Mem_Free( atlasExportImageRGBA );
-		atlasExportImageRGBA = NULL;
+
+		if( postLoadExportFlashToSWF.GetBool() )
+		{
+			idStr swfFileName = "exported/";
+			swfFileName += filename;
+			swfFileName.SetFileExtension( ".swf" );
+
+			WriteSWF( swfFileName, atlasExportImageRGBA, atlasExportImageWidth, atlasExportImageHeight );
+		}
+
+		if( atlasExportImageRGBA != NULL )
+		{
+			Mem_Free( atlasExportImageRGBA );
+			atlasExportImageRGBA = NULL;
+		}
 	}
 	// RB end
 	

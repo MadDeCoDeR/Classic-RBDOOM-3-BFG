@@ -188,6 +188,9 @@ float RectPackingFraction( const idList<idVec2i>& inputSizes, const idVec2i tota
 
 void idSWF::WriteSwfImageAtlas( const char* filename )
 {
+	if (packImages.Num() == 0) {
+		return;
+	}
 	idList<idVec2i>	inputSizes;
 	inputSizes.SetNum( packImages.Num() );
 	for( int i = 0 ; i < packImages.Num() ; i++ )

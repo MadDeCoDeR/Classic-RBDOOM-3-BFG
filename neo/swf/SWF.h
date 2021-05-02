@@ -251,6 +251,8 @@ private:
 	static int		mouseX;		// mouse x coord for all flash files
 	static int		mouseY;		// mouse y coord for all flash files
 	static bool		isMouseInClientArea;
+
+	bool		imageless;
 	
 	idSWFScriptObject* 	mouseObject;
 	idSWFScriptObject* hoverObject;

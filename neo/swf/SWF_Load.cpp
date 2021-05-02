@@ -449,6 +449,7 @@ bool idSWF::LoadBinary( const char* bfilename, ID_TIME_T sourceTimeStamp )
 		{
 			case SWF_DICT_IMAGE:
 			{
+				imageless = false;
 				idStr imageName;
 				f->ReadString( imageName );
 				if( imageName[0] == '.' )
@@ -648,6 +649,7 @@ void idSWF::WriteBinary( const char* bfilename )
 		{
 			case SWF_DICT_IMAGE:
 			{
+				imageless = false;
 				if( dictionary[i].material )
 				{
 					file->WriteString( dictionary[i].material->GetName() );
@@ -889,6 +891,7 @@ bool idSWF::LoadJSON( const char* filename )
 		
 		if( type == "IMAGE" )
 		{
+			imageless = false;
 			//dictionary[i].type = SWF_DICT_IMAGE;
 			
 			idStrStatic< MAX_OSPATH > imageName = entry["imageFile"].GetString();
