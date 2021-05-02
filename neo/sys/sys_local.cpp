@@ -317,6 +317,10 @@ const char* Sys_DefaultLanguage()
 	{
 		return ID_LANG_ENGLISH;
 	}
+
+	if (idStr::Icmp(ID_LANG_ENGLISH, sys_lang.GetString()) != 0) {
+		return sys_lang.GetString();
+	}
 	
 	idStr fileName;
 	

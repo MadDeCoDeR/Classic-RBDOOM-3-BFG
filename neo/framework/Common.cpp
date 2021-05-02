@@ -898,9 +898,8 @@ void idCommonLocal::InitCreditList()
 	if (currentLangList.Num() == 0)
 	{
 		// reset to english and try to load again
-		sys_lang.SetString(ID_LANG_ENGLISH);
 		currentLangList = langList;
-		FilterLangList(&currentLangList, sys_lang.GetString());
+		FilterLangList(&currentLangList, ID_LANG_ENGLISH);
 	}
 
 	idCredits::ClearList();
