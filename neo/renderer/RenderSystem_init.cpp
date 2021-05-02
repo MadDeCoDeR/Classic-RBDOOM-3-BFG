@@ -323,6 +323,16 @@ void R_SetNewMode( const bool fullInit )
 {
 	// try up to three different configurations
 	bool donethat = false;
+#ifdef _UWP
+	if (r_fullscreen.GetInteger() > 0) {
+		r_fullscreen.SetInteger(-1);
+		r_windowWidth.SetInteger(r_customWidth.GetInteger() + 1);
+		r_windowHeight.SetInteger(r_customHeight.GetInteger() + 1);
+		r_windowX.SetInteger(0);
+		r_windowY.SetInteger(0);
+	}
+#endif // _UWP
+
 	for (int i = 0; i < 4; i++)
 	{
 		if (i == 0 && stereoRender_enable.GetInteger() != STEREO3D_QUAD_BUFFER)
@@ -460,10 +470,14 @@ void R_SetNewMode( const bool fullInit )
 				cvarSystem->SetModifiedFlags(CVAR_ARCHIVE);
 				continue;
 			case 2:
+				//GK: Force Borderless mode
+				r_fullscreen.SetInteger(-1);
+				continue;
+			case 3:
 				//GK: Force Window mode
 				r_fullscreen.SetInteger( 0 );
 				continue;
-			case 3:
+			case 4:
 				common->FatalError("Unable to initialize OpenGL");
 		}
 		

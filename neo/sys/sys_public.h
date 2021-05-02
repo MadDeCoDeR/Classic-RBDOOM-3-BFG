@@ -630,6 +630,7 @@ const char* 	Sys_TimeStampToStr( ID_TIME_T timeStamp );
 const char* 	Sys_SecToStr( int sec );
 
 const char* 	Sys_DefaultBasePath();
+const char*		Sys_DefaultAppPath();
 const char* 	Sys_DefaultSavePath();
 
 // know early if we are performing a fatal error shutdown so the error message doesn't get lost

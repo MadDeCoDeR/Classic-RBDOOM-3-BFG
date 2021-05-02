@@ -310,6 +310,7 @@ idCVar	idFileSystemLocal::fs_game( "fs_game", "", CVAR_SYSTEM | CVAR_INIT | CVAR
 idCVar  idFileSystemLocal::fs_game_base( "fs_game_base", "", CVAR_SYSTEM | CVAR_INIT | CVAR_SERVERINFO, "alternate mod path, searched after the main fs_game path, before the basedir" );
 
 idCVar	fs_basepath( "fs_basepath", "", CVAR_SYSTEM | CVAR_INIT, "" );
+idCVar	fs_apppath("fs_apppath", "", CVAR_SYSTEM | CVAR_INIT, "");
 idCVar	fs_savepath( "fs_savepath", "", CVAR_SYSTEM | CVAR_INIT, "" );
 idCVar	fs_resourceLoadPriority( "fs_resourceLoadPriority", "0", CVAR_SYSTEM , "if 1, open requests will be honored from resource files first; if 0, the resource files are checked after normal search paths" );
 idCVar	fs_enableBackgroundCaching( "fs_enableBackgroundCaching", "1", CVAR_SYSTEM , "if 1 allow the 360 to precache game files in the background" );
@@ -3080,6 +3081,12 @@ void idFileSystemLocal::SetupGameDirectories( const char* gameName )
 	{
 		AddGameDirectory( fs_basepath.GetString(), gameName );
 	}
+#ifdef _UWP
+	if (fs_apppath.GetString()[0])
+	{
+		AddGameDirectory(fs_apppath.GetString(), gameName);
+	}
+#endif
 	// setup savepath
 	if( fs_savepath.GetString()[0] )
 	{
@@ -3181,6 +3188,7 @@ void idFileSystemLocal::Init()
 	// line variable sets don't happen until after the filesystem
 	// has already been initialized
 	common->StartupVariable( "fs_basepath" );
+	common->StartupVariable("fs_apppath");
 	common->StartupVariable( "fs_savepath" );
 	common->StartupVariable( "fs_game" );
 	common->StartupVariable( "fs_game_base" );
@@ -3189,6 +3197,10 @@ void idFileSystemLocal::Init()
 	if( fs_basepath.GetString()[0] == '\0' )
 	{
 		fs_basepath.SetString( Sys_DefaultBasePath() );
+	}
+	if (fs_apppath.GetString()[0] == '\0')
+	{
+		fs_apppath.SetString(Sys_DefaultAppPath());
 	}
 	if( fs_savepath.GetString()[0] == '\0' )
 	{
@@ -3625,8 +3637,17 @@ idFile* idFileSystemLocal::OpenFileWrite( const char* relativePath, const char* 
 	{
 		common->FatalError( "Filesystem call made without initialization\n" );
 	}
-	
+	 
+#ifdef _UWP
+	if (!idStr::Icmp(basePath, "fs_basepath")) {
+		path = cvarSystem->GetCVarString("fs_savepath");
+	}
+	else {
+		path = cvarSystem->GetCVarString(basePath);
+	}
+#else
 	path = cvarSystem->GetCVarString( basePath );
+#endif
 	if( !path[0] )
 	{
 		path = fs_savepath.GetString();

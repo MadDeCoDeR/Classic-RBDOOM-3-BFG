@@ -420,7 +420,7 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::LoadData
 	// RB end
 	
 	const int fullscreen = r_fullscreen.GetInteger();
-	if( fullscreen > 0 )
+	if( fullscreen != 0 )
 	{
 		R_GetModeListForDisplay( fullscreen - 1, modeList );
 	}
@@ -617,11 +617,11 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 			{
 				return "#str_swf_disabled";
 			}
-			if( fullscreen < 0 || vidmode < 0 || vidmode >= modeList.Num() )
+			/*if( vidmode < 0 || vidmode >= modeList.Num() )
 			{
 				return "???";
-			}
-			if( modeList[vidmode].displayHz == 60 )
+			}*/
+			if( com_engineHz.GetInteger() == 60 || fullscreen < 0 )
 			{
 				return va( "%4i x %4i", r_customWidth.GetInteger(), r_customHeight.GetInteger());
 			}

@@ -1172,7 +1172,6 @@ void LoadPlatformDLL()
 
 	if (dllPath[0])
 	{
-
 		common->DPrintf("Loading Platform DLL: '%s'\n", dllPath);
 		platformDLL = sys->DLL_Load(dllPath);
 		if (platformDLL) //GK: If the library fail don't let it to take the game with it
@@ -1210,7 +1209,15 @@ void LoadPlatformDLL()
 
 		}
 	}
-
+#ifdef _UWP
+	int res = ::op->API_Init();
+	while (res == -1) {
+		res = ::op->API_Init();
+	}
+	if (res == 1) {
+		common->Printf("Platform loaded sucessfully !!!\n");
+	}
+#else
 	if (::op->API_Init()) {
 		::op->SetAdditionalInfo("large image", "dbfa");
 		::op->SetAdditionalInfo("small image", "dbfa");
@@ -1218,6 +1225,7 @@ void LoadPlatformDLL()
 		//::op->SetNotificationsPosition(0, 0); //GK: Who knows maybe someone want it on top left
 		common->Printf("Platform loaded sucessfully !!!\n");
 	}
+#endif
 	
 }
 
@@ -1525,11 +1533,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// if any archived cvars are modified after this, we will trigger a writing of the config file
 		cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
-		common->Printf("Initializing Platform\n");
-		LoadPlatformDLL();
-		if (::op == NULL) {
-			common->Printf("Failed to initialize\n");
-		}
+		
 
 		// init OpenGL, which will open a window and connect sound and input hardware
 		renderSystem->InitOpenGL();
@@ -1543,6 +1547,12 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// initialize the renderSystem data structures
 		renderSystem->Init();
+
+		common->Printf("Initializing Platform\n");
+		LoadPlatformDLL();
+		if (::op == NULL) {
+			common->Printf("Failed to initialize\n");
+		}
 		
 		whiteMaterial = declManager->FindMaterial( "_white" );
 		

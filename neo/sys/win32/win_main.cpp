@@ -48,6 +48,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../sys_local.h"
 #include "win_local.h"
 #include "../../renderer/RenderCommon.h"
+#include <string>
 
 idCVar Win32Vars_t::sys_arch( "sys_arch", "", CVAR_SYSTEM | CVAR_INIT, "" );
 idCVar Win32Vars_t::sys_cpustring( "sys_cpustring", "detect", CVAR_SYSTEM | CVAR_INIT, "" );
@@ -513,8 +514,13 @@ Sys_Cwd
 const char *Sys_Cwd() {
 	static char cwd[MAX_OSPATH];
 
+#ifndef _UWP
 	_getcwd( cwd, sizeof( cwd ) - 1 );
 	cwd[MAX_OSPATH-1] = 0;
+#else
+	strcpy(cwd, UWP_GAME_PATH);
+	//strcat(cwd, "\\gameFiles");
+#endif
 
 	return cwd;
 }
@@ -526,6 +532,19 @@ Sys_DefaultBasePath
 */
 const char *Sys_DefaultBasePath() {
 	return Sys_Cwd();
+}
+
+/*
+==============
+Sys_DefaultAppPath
+==============
+*/
+const char* Sys_DefaultAppPath() {
+	static char exe[MAX_OSPATH];
+	GetModuleFileName(NULL, exe, MAX_OSPATH);
+	std::size_t pos = std::string(exe).find_last_of("\\/");
+	strcpy(exe, std::string(exe).substr(0, pos).c_str());
+	return exe;
 }
 
 // Vista shit
