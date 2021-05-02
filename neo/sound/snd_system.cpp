@@ -165,7 +165,6 @@ void idSoundSystemLocal::Init()
 		alEAXSet = false;
 		common->Printf("No EAX support");
 	}
-	
 #endif
 	cmdSystem->AddCommand( "testSound", TestSound_f, 0, "tests a sound", idCmdSystem::ArgCompletion_SoundName );
 	cmdSystem->AddCommand( "s_restart", RestartSound_f, 0, "restart sound system" );
@@ -228,10 +227,11 @@ idSoundSystemLocal::Shutdown
 void idSoundSystemLocal::Shutdown()
 {
 	hardware.Shutdown();
-#ifdef USE_OPENAL
 	// EAX or not, the list needs to be cleared
 	EFXDatabase.Clear();
 	efxloaded = false;
+#ifdef USE_OPENAL
+	
 	alAuxiliaryEffectSloti(soundSystemLocal.hardware.slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
 	if (alIsEffect(EAX)) {
 		alDeleteEffects(1, &EAX);
@@ -574,14 +574,14 @@ void idSoundSystemLocal::BeginLevelLoad()
 		samples[i]->FreeData();
 		samples[i]->ResetLevelLoadReferenced();
 	}
-#ifdef USE_OPENAL
 	//GK: Like the OG Doom 3 make sure there are no efx data remained
 	if (efxloaded) {
 		EFXDatabase.UnloadFile();
 		efxloaded = false;
+#ifdef USE_OPENAL
 		alAuxiliaryEffectSloti(soundSystemLocal.hardware.slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
-	}
 #endif
+	}
 }
 
 
@@ -707,16 +707,18 @@ void idSoundSystemLocal::EndLevelLoad(const char* mapstring)
 		
 		samples[ preloadSort[ i ].idx ]->LoadResource();
 	}
-#ifdef USE_OPENAL
-	//GK: Just like the OG Doom 3
-	idStr efxname( "efxs/" );
-	idStr mapname( mapstring );
 
-	mapname.SetFileExtension( ".efx" );
+	//GK: Just like the OG Doom 3
+	idStr efxname("efxs/");
+	idStr mapname(mapstring);
+
+	mapname.SetFileExtension(".efx");
 	mapname.StripPath();
 	efxname += mapname;
 
-	efxloaded = EFXDatabase.LoadFile( efxname );
+	efxloaded = EFXDatabase.LoadFile(efxname);
+#ifdef USE_OPENAL
+	
 
 	if ( efxloaded ) {
 		common->Printf("sound: found %s\n", efxname.c_str() );
@@ -727,6 +729,10 @@ void idSoundSystemLocal::EndLevelLoad(const char* mapstring)
 			alDeleteEffects(1, &EAX);
 			EAX = 0;
 		}
+	}
+#else
+	if (!efxloaded) {
+		EAX = {};
 	}
 #endif
 	int	end = Sys_Milliseconds();

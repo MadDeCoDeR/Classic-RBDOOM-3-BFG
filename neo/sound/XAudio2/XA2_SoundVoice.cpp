@@ -77,9 +77,12 @@ idSoundVoice_XAudio2::idSoundVoice_XAudio2()
 	  numChannels( 0 ),
 	  sampleRate( 0 ),
 	  paused( true ),
-	  hasVUMeter( false )
+	  hasVUMeter( false ),
+	  chains(1)
 {
-
+	XAUDIO2FX_REVERB_I3DL2_PARAMETERS i3dl2parms = XAUDIO2FX_I3DL2_PRESET_AUDITORIUM;
+	ReverbConvertI3DL2ToNative(&i3dl2parms, &suitReverb, 1);
+	suitReverb.WetDryMix = 75.0f;
 }
 
 /*
@@ -112,7 +115,7 @@ bool idSoundVoice_XAudio2::CompatibleFormat( idSoundSample_XAudio2* s )
 idSoundVoice_XAudio2::Create
 ========================
 */
-void idSoundVoice_XAudio2::Create( const idSoundSample* leadinSample_, const idSoundSample* loopingSample_ )
+void idSoundVoice_XAudio2::Create( const idSoundSample* leadinSample_, const idSoundSample* loopingSample_, int channel_ )
 {
 	if( IsPlaying() )
 	{
@@ -120,6 +123,7 @@ void idSoundVoice_XAudio2::Create( const idSoundSample* leadinSample_, const idS
 		Stop();
 		return;
 	}
+	channel = channel_;
 	leadinSample = ( idSoundSample_XAudio2* )leadinSample_;
 	loopingSample = ( idSoundSample_XAudio2* )loopingSample_;
 	
@@ -170,6 +174,7 @@ void idSoundVoice_XAudio2::DestroyInternal()
 		{
 			idLib::Printf( "%dms: %p destroyed\n", Sys_Milliseconds(), pSourceVoice );
 		}
+		pSourceVoice->SetEffectChain(NULL);
 		pSourceVoice->DestroyVoice();
 		pSourceVoice = NULL;
 		hasVUMeter = false;
@@ -205,35 +210,58 @@ void idSoundVoice_XAudio2::Start( int offsetMS, int ssFlags )
 	
 	bool flicker = ( ssFlags & SSF_NO_FLICKER ) == 0;
 	
+	IUnknown* voiceReverb = NULL;
+	IUnknown* vuMeter = NULL;
+	if (FAILED(XAudio2CreateReverb(&voiceReverb))) {
+		common->FatalError("Failed to create Reverb");
+	}
+
+	XAUDIO2_EFFECT_DESCRIPTOR descriptors[] = { {voiceReverb, true, leadinSample->NumChannels()}, {} };
+	XAUDIO2_EFFECT_CHAIN chain;
 	if( flicker != hasVUMeter )
 	{
 		hasVUMeter = flicker;
 		
 		if( flicker )
 		{
-			IUnknown* vuMeter = NULL;
+			
 			if( XAudio2CreateVolumeMeter( &vuMeter, 0 ) == S_OK )
 			{
-			
-				XAUDIO2_EFFECT_DESCRIPTOR descriptor;
-				descriptor.InitialState = true;
-				descriptor.OutputChannels = leadinSample->NumChannels();
-				descriptor.pEffect = vuMeter;
-				
-				XAUDIO2_EFFECT_CHAIN chain;
-				chain.EffectCount = 1;
-				chain.pEffectDescriptors = &descriptor;
-				
-				pSourceVoice->SetEffectChain( &chain );
-				
-				vuMeter->Release();
+				descriptors[1].InitialState = true;
+				descriptors[1].OutputChannels = leadinSample->NumChannels();
+				descriptors[1].pEffect = vuMeter;
+				chains = 2;
 			}
 		}
-		else
-		{
-			pSourceVoice->SetEffectChain( NULL );
+	}
+	if (voiceReverb != NULL || vuMeter != NULL) {
+		if (vuMeter == NULL) {
+			descriptors[1] = {};
+			chains = 1;
+		}
+		chain.EffectCount = chains;
+		chain.pEffectDescriptors = &descriptors[0];
+		pSourceVoice->SetEffectChain(&chain);
+
+		if (voiceReverb != NULL) {
+			voiceReverb->Release();
+		}
+
+		if (vuMeter != NULL) {
+			vuMeter->Release();
+		}
+		if (channel == 9 || channel == 10 || channel == 12) {
+			if (FAILED(pSourceVoice->SetEffectParameters(0, &suitReverb, sizeof(suitReverb)))) {
+				common->Warning("Failed to set reverb parameters");
+			}
+		}
+		else {
+			if (FAILED(pSourceVoice->SetEffectParameters(0, &soundSystemLocal.EAX, sizeof(soundSystemLocal.EAX)))) {
+				common->Warning("Failed to set reverb parameters");
+			}
 		}
 	}
+	
 	
 	assert( offsetMS >= 0 );
 	int offsetSamples = MsecToSamples( offsetMS, leadinSample->SampleRate() );
@@ -358,6 +386,16 @@ bool idSoundVoice_XAudio2::Update()
 	
 	assert( idMath::Fabs( gain ) <= XAUDIO2_MAX_VOLUME_LEVEL );
 	pSourceVoice->SetVolume( gain, OPERATION_SET );
+	if (channel == 9 || channel == 10 || channel == 12) {
+		if (FAILED(pSourceVoice->SetEffectParameters(0, &suitReverb, sizeof(suitReverb)))) {
+			common->Warning("Failed to set reverb parameters");
+		}
+	}
+	else {
+		if (FAILED(pSourceVoice->SetEffectParameters(0, &soundSystemLocal.EAX, sizeof(soundSystemLocal.EAX)))) {
+			common->Warning("Failed to set reverb parameters");
+		}
+	}
 	
 	SetSampleRate( sampleRate, OPERATION_SET );
 	
@@ -480,7 +518,7 @@ float idSoundVoice_XAudio2::GetAmplitude()
 		levels.ChannelCount = MAX_CHANNELS_PER_VOICE;
 	}
 	
-	if( pSourceVoice->GetEffectParameters( 0, &levels, sizeof( levels ) ) != S_OK )
+	if( pSourceVoice->GetEffectParameters( 1, &levels, sizeof( levels ) ) != S_OK )
 	{
 		return 0.0f;
 	}

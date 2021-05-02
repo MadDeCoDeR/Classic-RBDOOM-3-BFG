@@ -56,6 +56,8 @@ option (USE_XAUDIO2_PACKAGE
 
 set(CPU_TYPE "" CACHE STRING "When set, passes this string as CPU-ID which will be embedded into the binary.")
 
+set(UWP_PATH "" CACHE STRING "When set, passes this string as the game's base search folder.")
+
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)")
 	set(CPU_OPTIMIZATION "-mmmx -msse -msse2" CACHE STRING "Which CPU specific optimitations should be used beside the compiler's default?")
 endif()
@@ -257,6 +259,11 @@ elseif(MSVC)
         if( WINRT OR WINDOWS10 ) # Windows RT
 			add_definitions(-DUSE_WINRT)
         endif()
+		
+		if (WINDOWS10)
+			add_definitions(-D_UWP)
+			add_definitions(-DUWP_GAME_PATH="${UWP_PATH}")
+		endif()
 		
 		if( USE_XAUDIO2_PACKAGE ) # Windows RT
 			add_definitions(-DUSE_XAUDIO2_PACKAGE)
@@ -582,6 +589,7 @@ set(FREETYPE_SOURCES
 	
 	
 set(SOUND_INCLUDES
+	sound/snd_efxfile.h
 	sound/snd_local.h
 	sound/sound.h
 	sound/SoundVoice.h
@@ -591,7 +599,7 @@ set(SOUND_INCLUDES
 set(SOUND_SOURCES
 	#sound/snd_cache.cpp
 	#sound/snd_decoder.cpp
-	#sound/snd_efxfile.cpp
+	sound/snd_efxfile.cpp
 	sound/snd_emitter.cpp
 	sound/snd_shader.cpp
 	sound/snd_system.cpp
@@ -615,18 +623,14 @@ set(OPENAL_INCLUDES
 	sound/OpenAL/AL_EAX.h
 	sound/OpenAL/AL_SoundHardware.h
 	sound/OpenAL/AL_SoundSample.h
-	sound/OpenAL/AL_SoundVoice.h
-	sound/OpenAL/efxlib.h)
+	sound/OpenAL/AL_SoundVoice.h)
 	
 set(OPENAL_SOURCES
 	sound/OpenAL/AL_EAX.cpp
 	sound/OpenAL/AL_SoundHardware.cpp
 	sound/OpenAL/AL_SoundSample.cpp
 	sound/OpenAL/AL_SoundVoice.cpp)
-	
-if(OPENAL)
-	list(APPEND SOUND_SOURCES sound/snd_efxfile.cpp)
-endif()
+
 set(STUBAUDIO_INCLUDES
 	sound/stub/SoundStub.h)
 

@@ -341,11 +341,10 @@ void idSoundWorldLocal::Update()
 	{
 		return;
 	}
-#ifdef USE_OPENAL
 	//GK: Check here if the player has change environment and re-set the effect slot
 	if (soundSystemLocal.efxloaded) {
 		int EnvironmentID = -1;
-		idSoundEffect *effect = NULL;
+		idSoundEffect* effect = NULL;
 		if (EAXarea != listener.area) {
 			idStr defaultStr("default");
 			idStr listenerAreaStr(listener.area);
@@ -358,16 +357,18 @@ void idSoundWorldLocal::Update()
 		else {
 			EnvironmentID = listener.id;
 		}
+#ifdef USE_OPENAL
+
 		// only update if change in settings 
 		if (/*soundSystemLocal.s_muteEAXReverb.GetBool()*/listener.id != EnvironmentID || soundSystemLocal.EAX == 0) {
 			EFXEAXREVERBPROPERTIES EnvironmentParameters;
 			if (alIsEffect(soundSystemLocal.EAX)) {
 				alDeleteEffects(1, &soundSystemLocal.EAX);
-				
+
 			}
 			soundSystemLocal.EAX = 0;
 			// get area reverb setting from EAX Manager
-			if ((effect) && (effect->data) ) {
+			if ((effect) && (effect->data)) {
 				memcpy(&EnvironmentParameters, effect->data, effect->datasize);
 				/*if (soundSystemLocal.s_muteEAXReverb.GetBool()) {
 					EnvironmentParameters.flGain = -10000;
@@ -381,6 +382,13 @@ void idSoundWorldLocal::Update()
 			}
 			listener.id = EnvironmentID;
 		}
+	}
+#else
+		if (effect && (effect->data)) {
+			memcpy(&soundSystemLocal.EAX, effect->data, sizeof(XAUDIO2FX_REVERB_PARAMETERS));
+			EAXarea = listener.area;
+		}
+		listener.id = EnvironmentID;
 	}
 #endif
 	// ------------------

@@ -84,9 +84,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "am_map.h"
 #ifdef USE_OPENAL
 #include "sound/OpenAL/AL_EAX.h"
-
-extern idCVar S_museax;
 #endif
+extern idCVar S_museax;
 
 extern idCVar cl_messages;
 extern idCVar cl_randpitch;
@@ -1051,9 +1050,7 @@ char	msgNames[2][9] =
 void M_DrawSound(void)
 {
 	int randpitch = cl_randpitch.GetInteger() >= 1 ? 1 : 0;
-#ifdef USE_OPENAL
 	int musrev = S_museax.GetInteger() >= 1 ? 1 : 0;
-#endif
 	V_DrawPatchDirect (60,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SVOL",PU_CACHE_SHARED), W_GetNumForName("M_SVOL")), false);
 
 	M_DrawThermo( ::g->SoundDef.x,::g->SoundDef.y+LINEHEIGHT*(sfx_vol+1),
@@ -1063,10 +1060,8 @@ void M_DrawSound(void)
 		16, s_volume_midi.GetInteger() );
 	V_DrawPatchDirect(::g->SoundDef.x + 200, ::g->SoundDef.y + LINEHEIGHT * sound_rp, 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[randpitch], PU_CACHE_SHARED), W_GetNumForName(msgNames[randpitch])), false);
-#ifdef USE_OPENAL
 	V_DrawPatchDirect(::g->SoundDef.x + 170, ::g->SoundDef.y + LINEHEIGHT * music_rev, 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[musrev], PU_CACHE_SHARED), W_GetNumForName(msgNames[musrev])), false);
-#endif
 }
 
 char    detailNames[3][9] =
@@ -1198,9 +1193,7 @@ void M_RandomPitch(int choice) {
 }
 
 void M_MusicRev(int choice) {
-#ifdef USE_OPENAL
 	S_museax.SetBool(!S_museax.GetBool());
-#endif
 }
 
 

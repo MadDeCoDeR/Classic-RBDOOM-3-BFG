@@ -41,7 +41,7 @@ public:
 	idSoundVoice_XAudio2();
 	~idSoundVoice_XAudio2();
 	
-	void					Create( const idSoundSample* leadinSample, const idSoundSample* loopingSample );
+	void					Create( const idSoundSample* leadinSample, const idSoundSample* loopingSample, int channel );
 	
 	// Start playing at a particular point in the buffer.  Does an Update() too
 	void					Start( int offsetMS, int ssFlags );
@@ -105,6 +105,9 @@ private:
 	
 	bool					hasVUMeter;
 	bool					paused;
+	int						channel;
+	int						chains;
+	XAUDIO2FX_REVERB_PARAMETERS suitReverb;
 };
 
 /*

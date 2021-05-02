@@ -62,6 +62,9 @@ If you have questions concerning this license or the applicable additional terms
 #include <x3daudio.h>
 #endif // DG end
 
+
+idCVar S_museax("S_museax", "0", CVAR_BOOL | CVAR_SOUND | CVAR_ARCHIVE, "Set music EAX for Classic Doom");
+
 #pragma warning ( disable : 4244 )
 
 #define	MIDI_CHANNELS		2
@@ -230,6 +233,26 @@ void* getsfx ( const char* sfxname, int* len, int sfxind ) //GK: Keep track whic
 		activeSounds[sfxind].m_Emitter.ChannelCount = 1;
 		activeSounds[sfxind].m_DSPSettings.SrcChannelCount = 1;
 	}
+
+	XAUDIO2_VOICE_DETAILS details;
+	activeSounds[sfxind].m_pSourceVoice->GetVoiceDetails(&details);
+	IUnknown* sfxReverb = NULL;
+	XAudio2CreateReverb(&sfxReverb);
+	XAUDIO2_EFFECT_DESCRIPTOR descriptor;
+	descriptor.InitialState = true;
+	descriptor.OutputChannels = details.InputChannels;
+	descriptor.pEffect = sfxReverb;
+	XAUDIO2_EFFECT_CHAIN chain;
+	chain.EffectCount = 1;
+	chain.pEffectDescriptors = &descriptor;
+
+	activeSounds[sfxind].m_pSourceVoice->SetEffectChain(&chain);
+
+	sfxReverb->Release();
+
+	XAUDIO2FX_REVERB_PARAMETERS sfxParameters;
+	sfxParameters.WetDryMix = 75.0F;
+	activeSounds[sfxind].m_pSourceVoice->SetEffectParameters(0, &sfxParameters, sizeof(sfxParameters));
 	// Allocate from zone memory.
 	//sfxmem = (float*)DoomLib::Z_Malloc( size*(sizeof(float)), PU_SOUND_SHARED, 0 );
 	sfxmem = (unsigned char*)malloc( size * sizeof(unsigned char) );
@@ -369,6 +392,13 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 
 	// Set voice volumes
 	sound->m_pSourceVoice->SetVolume( x_SoundVolume );
+
+	if (S_museax.GetBool()) {
+		sound->m_pSourceVoice->EnableEffect(0);
+	}
+	else {
+		sound->m_pSourceVoice->DisableEffect(0);
+	}
 
 	// Set voice pitch
 	sound->m_pSourceVoice->SetFrequencyRatio( 1 + ((float)pitch-128.f)/95.f );
@@ -579,6 +609,13 @@ void I_UpdateSound() {
 
 			// Pan the voice according to X3DAudio calculation
 			sound->m_pSourceVoice->SetOutputMatrix( NULL, sound->m_DSPSettings.SrcChannelCount, numOutputChannels, sound->m_DSPSettings.pMatrixCoefficients );
+
+			if (S_museax.GetBool()) {
+				sound->m_pSourceVoice->EnableEffect(0);
+			}
+			else {
+				sound->m_pSourceVoice->DisableEffect(0);
+			}
 		}
 	}
 }
@@ -682,6 +719,7 @@ void I_ShutdownSoundHardware() {
 			if ( sound->m_pSourceVoice ) {
 				sound->m_pSourceVoice->Stop();
 				sound->m_pSourceVoice->FlushSourceBuffers();
+				sound->m_pSourceVoice->SetEffectChain(NULL);
 				sound->m_pSourceVoice->DestroyVoice();
 				sound->m_pSourceVoice = NULL;
 			}
@@ -759,6 +797,7 @@ void I_InitSoundChannel( int channel, int numOutputChannels_ ) {
 		voiceFormat.cbSize = 0;
 
 		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice( &soundchannel->m_pSourceVoice, (WAVEFORMATEX *)&voiceFormat );
+
 	}
 }
 
@@ -898,6 +937,7 @@ void I_ShutdownMusic(void)
 		if ( pMusicSourceVoice ) {
 			pMusicSourceVoice->Stop();
 			pMusicSourceVoice->FlushSourceBuffers();
+			pMusicSourceVoice->SetEffectChain(NULL);
 			pMusicSourceVoice->DestroyVoice();
 			pMusicSourceVoice = NULL;
 		}
@@ -967,6 +1007,7 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 	if (pMusicSourceVoice) {
 		pMusicSourceVoice->Stop();
 		pMusicSourceVoice->FlushSourceBuffers();
+		pMusicSourceVoice->SetEffectChain(NULL);
 		pMusicSourceVoice->DestroyVoice();
 		pMusicSourceVoice = NULL;
 	}
@@ -1063,6 +1104,26 @@ void I_PlaySong( const char *songname, int looping)
 	I_LoadSong( (LPVOID)songname );
 	waitingForMusic = true;
 
+	IUnknown* musicReverb = NULL;
+	if (FAILED(XAudio2CreateReverb(&musicReverb))) {
+		I_Error("Failed to create Reverb");
+	}
+	XAUDIO2_VOICE_DETAILS details = {};
+	pMusicSourceVoice->GetVoiceDetails(&details);
+
+	XAUDIO2_EFFECT_DESCRIPTOR descriptors =  {musicReverb, true, details.InputChannels};
+	XAUDIO2_EFFECT_CHAIN chain;
+	chain.EffectCount = 1;
+	chain.pEffectDescriptors = &descriptors;
+	pMusicSourceVoice->SetEffectChain(&chain);
+	musicReverb->Release();
+
+	XAUDIO2FX_REVERB_PARAMETERS musicNative;
+	XAUDIO2FX_REVERB_I3DL2_PARAMETERS musicI3DL2 = XAUDIO2FX_I3DL2_PRESET_CONCERTHALL;
+	ReverbConvertI3DL2ToNative(&musicI3DL2, &musicNative, 1);
+	musicNative.WetDryMix = 75.0F;
+	pMusicSourceVoice->SetEffectParameters(0, &musicNative, sizeof(musicNative));
+
 	if ( DoomLib::GetPlayer() >= 0 ) {
 		::g->mus_looping = looping;
 	}
@@ -1112,6 +1173,12 @@ void I_UpdateMusic() {
 	}
 
 	if ( pMusicSourceVoice != NULL ) {
+		if (S_museax.GetBool()) {
+			pMusicSourceVoice->EnableEffect(0);
+		}
+		else {
+			pMusicSourceVoice->DisableEffect(0);
+		}
 		// Set the volume
 		pMusicSourceVoice->SetVolume( x_MusicVolume * GLOBAL_VOLUME_MULTIPLIER );
 	}

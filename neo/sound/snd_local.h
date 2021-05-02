@@ -93,6 +93,7 @@ typedef enum
 } soundDemoCommand_t;
 
 #include "SoundVoice.h"
+#include "snd_efxfile.h"
 
 #if defined(USE_OPENAL)
 
@@ -110,7 +111,6 @@ typedef enum
 #include "OpenAL/AL_SoundSample.h"
 #include "OpenAL/AL_SoundVoice.h"
 #include "OpenAL/AL_SoundHardware.h"
-#include "OpenAL/efxlib.h"
 #include "OpenAL/AL_EAX.h" //GK: Keep the Effect function definitions in separate files for better portability
 
 extern ALuint clslot;
@@ -584,11 +584,15 @@ public:
 	// Get a stream buffer from the free pool, returns NULL if none are available
 	bufferContext_t* 			ObtainStreamBufferContext();
 	void						ReleaseStreamBufferContext( bufferContext_t* p );
-#ifdef USE_OPENAL
 	idEFXFile				EFXDatabase;
 	bool					efxloaded;
+#ifdef USE_OPENAL
+	
+	
 	bool					alEAXSet;
 	ALuint					EAX;
+#else
+	XAUDIO2FX_REVERB_PARAMETERS EAX;
 #endif
 	idSysMutex					streamBufferMutex;
 	idStaticList< bufferContext_t*, MAX_SOUND_BUFFERS > freeStreamBufferContexts;

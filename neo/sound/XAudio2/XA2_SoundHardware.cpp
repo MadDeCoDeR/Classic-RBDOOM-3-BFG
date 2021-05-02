@@ -712,7 +712,7 @@ idSoundVoice* idSoundHardware_XAudio2::AllocateVoice( const idSoundSample* leadi
 	}
 	if( voice != NULL )
 	{
-		voice->Create( leadinSample, loopingSample );
+		voice->Create( leadinSample, loopingSample, channel );
 		freeVoices.Remove( voice );
 		return voice;
 	}

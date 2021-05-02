@@ -30,9 +30,11 @@ GK: I guess that will do
 #ifndef __EFXLIBH
 #define __EFXLIBH
 #include "precompiled.h"
+#ifdef USE_OPENAL
 #include "../openal-soft/include/AL/efx.h"
 #include "../openal-soft/include/AL/efx-creative.h"
 #include "../openal-soft/include/AL/efx-presets.h"
+#endif
 
 
 
