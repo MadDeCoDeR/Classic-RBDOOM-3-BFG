@@ -217,36 +217,7 @@ void D_Display (void)
 	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && ::g->gametic)
 		HU_Erase();
 
-	// do buffered drawing
-	switch (::g->gamestate)
-	{
-	case GS_DEMOLEVEL:
-	case GS_LEVEL:
-		if (!::g->gametic)
-			break;
-		if (::g->automapactive)
-			AM_Drawer ();
-		
-		if (::g->wipe || (::g->viewheight != 200 * scaler && ::g->fullscreen) )
-			redrawsbar = true;
-		if (::g->inhelpscreensstate && !::g->inhelpscreens)
-			redrawsbar = true;              // just put away the help screen
-		ST_Drawer ( ::g->viewheight == 200 * scaler, redrawsbar );
-		::g->fullscreen = ::g->viewheight == 200 * scaler;
-		break;
-
-	case GS_INTERMISSION:
-		WI_Drawer ();
-		break;
-
-	case GS_FINALE:
-		F_Drawer ();
-		break;
-
-	case GS_DEMOSCREEN:
-		D_PageDrawer ();
-		break;
-	}
+	
 
 	// draw buffered stuff to screen
 	I_UpdateNoBlit ();
@@ -255,9 +226,39 @@ void D_Display (void)
 	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && !::g->automapactive && ::g->gametic)
 		R_RenderPlayerView (&::g->players[::g->displayplayer]);
 
-	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && ::g->gametic)
-		HU_Drawer ();
+	// do buffered drawing
+	switch (::g->gamestate)
+	{
+	case GS_DEMOLEVEL:
+	case GS_LEVEL:
+		if (!::g->gametic)
+			break;
+		if (::g->automapactive)
+			AM_Drawer();
 
+		if (::g->wipe || (::g->viewheight != 200 * GLOBAL_IMAGE_SCALER && ::g->fullscreen))
+			redrawsbar = true;
+		if (::g->inhelpscreensstate && !::g->inhelpscreens)
+			redrawsbar = true;              // just put away the help screen
+		ST_Drawer(::g->viewheight == 200 * GLOBAL_IMAGE_SCALER, redrawsbar);
+		::g->fullscreen = ::g->viewheight == 200 * GLOBAL_IMAGE_SCALER;
+		break;
+
+	case GS_INTERMISSION:
+		WI_Drawer();
+		break;
+
+	case GS_FINALE:
+		F_Drawer();
+		break;
+
+	case GS_DEMOSCREEN:
+		D_PageDrawer();
+		break;
+	}
+
+	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && ::g->gametic)
+		HU_Drawer();
 	// clean up border stuff
 	if (::g->gamestate != ::g->oldgamestate && (::g->gamestate != GS_LEVEL && ::g->gamestate != GS_DEMOLEVEL))
 		I_SetPalette ((byte*)W_CacheLumpName ("PLAYPAL",PU_CACHE_SHARED), W_LumpLength(W_GetNumForName("PLAYPAL")));
@@ -418,7 +419,7 @@ void D_DoAdvanceDemo (void)
 	::g->usergame = false;               // no save / end game here
 	::g->paused = false;
 	::g->gameaction = ga_nothing;
-
+	M_SizeDisplay(0);
 	if ( ::g->gamemode == retail )
 		::g->demosequence = (::g->demosequence+1)%8;
 	else

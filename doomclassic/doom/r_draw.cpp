@@ -729,6 +729,8 @@ R_InitBuffer
 	//  e.g. smaller view windows
 	//  with border and/or status bar.
 	::g->viewwindowx = (::g->SCREENWIDTH-width) >> 1;
+	if (::g->viewwindowx < 0)
+		::g->viewwindowx = 0;
 
 	// Column offset. For windows.
 	for (i=0 ; i<width ; i++) 

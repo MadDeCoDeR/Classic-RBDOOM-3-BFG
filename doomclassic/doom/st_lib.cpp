@@ -138,12 +138,15 @@ STlib_drawNum
     }
 
     // clear the area
-    x = n->x - numdigits*w;
+    x = n->x > 0 ? n->x - numdigits*w : 0;
 
-    if (n->y - ST_Y < 0)
+    int calcY = ::g->st_statusbaron ? n->y - ST_Y : n->y;
+    if (calcY < 0)
 	I_Error("drawNum: n->y - ST_Y < 0");
 
-    V_CopyRect(x, n->y - ST_Y, BG, w*numdigits, h, x, n->y, FG, true);
+    if (::g->st_statusbaron) {
+        V_CopyRect(x, calcY, BG, w * numdigits, h, x, n->y, FG, true);
+    }
 
     // if non-number, do not draw it
     if (num == 1994)
@@ -153,19 +156,19 @@ STlib_drawNum
 
     // in the special case of 0, you draw 0
     if (!num)
-	V_DrawPatch(x - w, n->y, FG, n->p[ 0 ], true);
+	V_DrawPatch(x > 0 ? x - w : 0, n->y, FG, n->p[ 0 ], true);
 
     // draw the new number
     while (num && numdigits--)
     {
 	x -= w;
-	V_DrawPatch(x, n->y, FG, n->p[ num % 10 ], true);
+	V_DrawPatch(x > 0 ? x : 0, n->y, FG, n->p[ num % 10 ], true);
 	num /= 10;
     }
 
     // draw a minus sign if necessary
     if (neg)
-	V_DrawPatch(x - 8, n->y, FG, ::g->sttminus, true);
+	V_DrawPatch(x > 8 ? x - 8 : 0, n->y, FG, ::g->sttminus, true);
 }
 
 
@@ -227,6 +230,23 @@ STlib_initMultIcon
     i->p	= il;
 }
 
+void
+STlib_initAspectMultIcon
+(st_multicon_t* i,
+    int			x,
+    int			y,
+    patch_t** il,
+    int* inum,
+    qboolean* on)
+{
+    i->x = x;
+    i->y = y;
+    i->oldinum = -1;
+    i->inum = inum;
+    i->on = on;
+    i->p = il;
+}
+
 
 
 void
@@ -250,10 +270,12 @@ STlib_updateMultIcon
 	    w = SHORT(mi->p[mi->oldinum]->width);
 	    h = SHORT(mi->p[mi->oldinum]->height);
 
-	    if (y - ST_Y < 0)
-			I_Error("updateMultIcon: y - ST_Y < 0");
-
-	    V_CopyRect(x, y-ST_Y, BG, w, h, x, y, FG, true);
+        if (::g->st_statusbaron) {
+	        if (y - ST_Y < 0)
+			    I_Error("updateMultIcon: y - ST_Y < 0");
+       
+            V_CopyRect(x, y - ST_Y, BG, w, h, x, y, FG, true);
+        }
 	}
 	V_DrawPatch(mi->x, mi->y, FG, mi->p[*mi->inum], true);
 	mi->oldinum = *mi->inum;

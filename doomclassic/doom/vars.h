@@ -821,6 +821,7 @@ int		st_msgcounter;
 st_chatstateenum_t	st_chatstate;
 st_stateenum_t	st_gamestate;
 qboolean		st_statusbaron;
+qboolean		st_statusbaroff;
 qboolean		st_chat;
 qboolean		st_oldchat;
 qboolean		st_cursoron;
@@ -830,6 +831,9 @@ qboolean		st_fragson;
 patch_t*		sbar; // AffLANHACK IGNORE
 patch_t*		tallnum[10]; // AffLANHACK IGNORE
 patch_t*		tallpercent; // AffLANHACK IGNORE
+patch_t*		fullnum[10]; // AffLANHACK IGNORE
+patch_t*		fullpercent; // AffLANHACK IGNORE
+patch_t*		fullslash; // AffLANHACK IGNORE
 patch_t*		shortnum[10]; // AffLANHACK IGNORE
 patch_t*		keys[NUMCARDS];  // AffLANHACK IGNORE
 patch_t*		faces[ST_NUMFACES]; // AffLANHACK IGNORE
@@ -838,6 +842,10 @@ patch_t*		armsbg; // AffLANHACK IGNORE
 patch_t*		arms[6][3];  // AffLANHACK IGNORE //GkHACK More states
 patch_t*        mapt;
 patch_t*        spwr;
+patch_t*		hear;
+patch_t*		fullarms;
+patch_t*		fullkeys;
+patch_t*		fullpwr;
 st_number_t	w_time;
 st_number_t	w_ready;
 st_number_t	w_frags;
@@ -850,6 +858,15 @@ st_percent_t	w_armor;
 st_number_t	w_ammo[4];
 st_number_t	w_maxammo[4];
 st_number_t w_power[5];
+st_number_t	w_f_time;
+st_number_t	w_f_ready;
+st_number_t	w_f_frags;
+st_percent_t	w_f_health;
+st_multicon_t	w_f_arms[6];
+st_multicon_t	w_f_keyboxes[3];
+st_percent_t	w_f_armor;
+st_number_t	w_f_maxammo[4];
+st_number_t w_f_power[5];
 int	st_fragscount;
 int	st_oldhealth ;
 qboolean	oldweaponsowned[NUMWEAPONS]; 

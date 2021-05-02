@@ -378,6 +378,21 @@ void ST_refreshBackground(void)
 
 		V_CopyRect(ST_X, 0, BG, ST_WIDTH + widthoffset, ST_HEIGHT, ST_X, ST_Y, FG, true);
 	}
+	else {
+		V_DrawPatch(ST_X, ST_ARMORY, FG, ::g->hear, true);
+
+		V_DrawPatch(ST_AMMO0X + (::g->ASPECT_POS_OFFSET - 7) - ((4 - ::g->ASPECT_IMAGE_SCALER) * 50), ST_ARMORY + 4, FG, ::g->fullarms, true);
+
+		V_DrawPatch(ST_AMMO0X + (::g->ASPECT_POS_OFFSET + 36) - ((4 - ::g->ASPECT_IMAGE_SCALER) * 50), ST_ARMORY + 8, FG, ::g->fullslash, true);
+
+		V_DrawPatch(ST_X, ORIGINAL_HEIGHT - 11, FG, ::g->fullkeys, true);
+
+		int powerX = (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER) - 30;
+
+		V_DrawPatch(powerX, (ORIGINAL_HEIGHT / 2) - 5, FG, ::g->fullpwr, true);
+
+		//V_CopyRect(ST_X, 0, BG, (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER), (SCREENHEIGHT / GLOBAL_IMAGE_SCALER), ST_X, 0, FG, true);
+	}
 
 }
 
@@ -942,12 +957,77 @@ void ST_updateWidgets(void)
 
 }
 
+void ST_updateFullWidgets(void)
+{
+	int		i;
+
+	// must redirect the pointer if the ready weapon has changed.
+	//  if (::g->w_ready.data != ::g->plyr->readyweapon)
+	//  {
+	if (weaponinfo[::g->plyr->readyweapon].ammo == am_noammo)
+		::g->w_f_ready.num = &::g->largeammo;
+	else
+		::g->w_f_ready.num = &::g->plyr->ammo[weaponinfo[::g->plyr->readyweapon].ammo];
+	//{
+	// static int tic=0;
+	// static int dir=-1;
+	// if (!(tic&15))
+	//   ::g->plyr->ammo[weaponinfo[::g->plyr->readyweapon].ammo]+=dir;
+	// if (::g->plyr->ammo[weaponinfo[::g->plyr->readyweapon].ammo] == -100)
+	//   dir = 1;
+	// tic++;
+	// }
+	::g->w_f_ready.data = ::g->plyr->readyweapon;
+
+	// if (*::g->w_ready.on)
+	//  STlib_updateNum(&::g->w_ready, true);
+	// refresh weapon change
+	//  }
+
+	// update keycard multiple widgets
+	for (i = 0; i < 3; i++)
+	{
+		::g->keyboxes[i] = ::g->plyr->cards[i] ? i : -1;
+
+		if (::g->plyr->cards[i + 3])
+			::g->keyboxes[i] = i + 3;
+	}
+
+	// used by the ::g->w_armsbg widget
+	::g->st_notdeathmatch = !::g->deathmatch;
+
+	// used by ::g->w_arms[] widgets
+	::g->st_armson = true;
+
+	// used by ::g->w_frags widget
+	::g->st_fragson = ::g->deathmatch;
+	::g->st_fragscount = 0;
+
+	for (i = 0; i < MAXPLAYERS; i++)
+	{
+		if (i != ::g->consoleplayer)
+			::g->st_fragscount += ::g->plyr->frags[i];
+		else
+			::g->st_fragscount -= ::g->plyr->frags[i];
+	}
+
+	// get rid of chat window if up because of message
+	if (!--::g->st_msgcounter)
+		::g->st_chat = ::g->st_oldchat;
+
+}
+
 void ST_Ticker (void)
 {
 
 	::g->st_clock++;
 	::g->st_randomnumber = M_Random();
-	ST_updateWidgets();
+	if (::g->st_statusbaron) {
+		ST_updateWidgets();
+	}
+	else {
+		ST_updateFullWidgets();
+	}
 	::g->st_oldhealth = ::g->plyr->health;
 
 }
@@ -1053,6 +1133,62 @@ void ST_drawWidgets(qboolean refresh)
 
 }
 
+void ST_drawFullWidgets(qboolean refresh)
+{
+	int		i;
+
+	::g->st_notdeathmatch = !::g->deathmatch;
+
+	// used by ::g->w_arms[] widgets
+	::g->st_armson = true;
+
+	// used by ::g->w_frags widget
+	::g->st_fragson = ::g->deathmatch;
+	STlib_updateNum(&::g->w_f_time, refresh);
+	STlib_updateNum(&::g->w_f_ready, refresh);
+
+	int maxammoind = 0;
+	switch (::g->plyr->readyweapon)
+	{
+	case wp_pistol:
+	case wp_chaingun:
+		maxammoind = 0;
+		break;
+	case wp_shotgun:
+	case wp_supershotgun:
+		maxammoind = 1;
+		break;
+	case wp_plasma:
+	case wp_bfg:
+		maxammoind = 2;
+		break;
+	case wp_missile:
+		maxammoind = 3;
+		break;
+	default:
+		maxammoind = -1;
+		break;
+	}
+	if (maxammoind >= 0) {
+		STlib_updateNum(&::g->w_f_maxammo[maxammoind], refresh);
+	}
+
+	STlib_updatePercent(&::g->w_f_health, refresh);
+	STlib_updatePercent(&::g->w_f_armor, refresh);
+
+	for (i = 0; i < 6; i++)
+		STlib_updateMultIcon(&::g->w_f_arms[i], refresh);
+
+	for (i = 0; i < 3; i++)
+		STlib_updateMultIcon(&::g->w_f_keyboxes[i], refresh);
+
+	for (i = 0; i < 5; i++)
+		STlib_updateNum(&::g->w_f_power[i], refresh);
+
+	STlib_updateNum(&::g->w_f_frags, refresh);
+
+}
+
 void ST_doRefresh(void)
 {
 	::g->st_firsttime = false;
@@ -1061,18 +1197,29 @@ void ST_doRefresh(void)
 	ST_refreshBackground();
 
 	// and refresh all widgets
-	ST_drawWidgets(true);
+	if (::g->st_statusbaron) {
+		ST_drawWidgets(true);
+	}
+	else {
+		ST_drawFullWidgets(true);
+	}
 }
 
 void ST_diffDraw(void)
 {
 	// update all widgets
-	ST_drawWidgets(false);
+	if (::g->st_statusbaron) {
+		ST_drawWidgets(false);
+	}
+	else {
+		ST_drawFullWidgets(false);
+	}
 }
 
 void ST_Drawer (qboolean fullscreen, qboolean refresh)
 {
 	::g->st_statusbaron = (!fullscreen) || ::g->automapactive;
+	::g->st_statusbaroff = !::g->st_statusbaron;
 	::g->st_firsttime = ::g->st_firsttime || refresh;
 
 	// Do red-/gold-shifts from damage/items
@@ -1105,6 +1252,9 @@ void ST_loadGraphics(void)
 		sprintf(namebuf, "STTNUM%d", i);
 		::g->tallnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
 
+		sprintf(namebuf, "STCFN0%d", 48 + i);
+		::g->fullnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+
 		sprintf(namebuf, "STYSNUM%d", i);
 		::g->shortnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
 	}
@@ -1112,6 +1262,10 @@ void ST_loadGraphics(void)
 	// Load percent key.
 	//Note: why not load STMINUS here, too?
 	::g->tallpercent = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STTPRCNT", PU_LEVEL_SHARED), W_GetNumForName("STTPRCNT"));
+
+	::g->fullpercent = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STCFN037", PU_LEVEL_SHARED), W_GetNumForName("STCFN037"));
+
+	::g->fullslash = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STCFN047", PU_LEVEL_SHARED), W_GetNumForName("STCFN047"));
 
 	// key cards
 	for (i=0;i<NUMCARDS;i++)
@@ -1147,7 +1301,10 @@ void ST_loadGraphics(void)
 	::g->sbar = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STBAR", PU_LEVEL_SHARED), W_GetNumForName("STBAR"));
 	::g->mapt = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STMAPT", PU_LEVEL_SHARED), W_GetNumForName("STMAPT"));
 	::g->spwr = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STPWR", PU_LEVEL_SHARED), W_GetNumForName("STPWR"));
-
+	::g->hear = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_HEAR", PU_LEVEL_SHARED), W_GetNumForName("ST_HEAR"));
+	::g->fullarms = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_ARMS", PU_LEVEL_SHARED), W_GetNumForName("ST_ARMS"));
+	::g->fullkeys = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_KEYS", PU_LEVEL_SHARED), W_GetNumForName("ST_KEYS"));
+	::g->fullpwr = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_PWR", PU_LEVEL_SHARED), W_GetNumForName("ST_PWR"));
 	// face states
 	facenum = 0;
 	for (i=0;i<ST_NUMPAINFACES;i++)
@@ -1202,6 +1359,7 @@ void ST_initData(void)
 	::g->st_gamestate = FirstPersonState;
 
 	::g->st_statusbaron = true;
+	::g->st_statusbaroff = false;
 	::g->st_oldchat = ::g->st_chat = false;
 	::g->st_cursoron = false;
 
@@ -1227,7 +1385,7 @@ void ST_createWidgets(void)
 
 	int i;
 
-	// ready weapon ammo
+	// map time
 	STlib_initAspectNum(&::g->w_time,
 		ST_TIMEX,
 		ST_TIMEY,
@@ -1399,6 +1557,7 @@ void ST_createWidgets(void)
 		&::g->st_statusbaron,
 		ST_MAXAMMO3WIDTH);
 
+	// power up timers(all 5 of them)
 	STlib_initAspectNum(&::g->w_power[0],
 		ST_POWER0X,
 		ST_POWER0Y,
@@ -1441,6 +1600,177 @@ void ST_createWidgets(void)
 
 }
 
+void ST_createFullScreenWidgets() {
+
+	int xscale = (2 - (::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER));
+	int powerX = (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER) - 2;
+	int powerY = (SCREENHEIGHT / GLOBAL_IMAGE_SCALER) / 2;
+	int i;
+	// map time
+	STlib_initAspectNum(&::g->w_f_time,
+		powerX,
+		20,
+		::g->fullnum,
+		&::g->normaltime,
+		&::g->st_statusbaroff,
+		ST_TIMEWIDTH);
+
+	// ready weapon ammo
+	STlib_initNum(&::g->w_f_ready,
+		ST_ARMORX + (100 / xscale),
+		ST_AMMOY + 8,
+		::g->fullnum,
+		&::g->plyr->ammo[weaponinfo[::g->plyr->readyweapon].ammo],
+		&::g->st_statusbaroff,
+		ST_AMMOWIDTH);
+
+	// the last weapon type
+	::g->w_f_ready.data = ::g->plyr->readyweapon;
+
+	// health percentage
+	STlib_initPercent(&::g->w_f_health,
+		ST_HEALTHX - (35 / xscale) + (30 * (xscale - 1)),
+		ST_HEALTHY + 12,
+		::g->fullnum,
+		&::g->plyr->health,
+		&::g->st_statusbaroff,
+		::g->fullpercent);
+
+	// weapons owned
+	for (i = 0; i < 6; i++)
+	{
+		//GK: For the first time initialize it.
+		//Otherwise it might not work so well
+		if (::g->plyr->readyweapon == i + 1) {
+			::g->weaponcond[i + 1] = 2;
+		}
+		else {
+			::g->weaponcond[i + 1] = ::g->plyr->weaponowned[i + 1];
+		}
+		if (::g->plyr->readyweapon == wp_supershotgun) {
+			::g->weaponcond[wp_shotgun] = 2;
+		}
+		STlib_initMultIcon(&::g->w_f_arms[i],
+			ST_ARMORX + (66 / xscale) - (10 * (xscale - 1)) + (i * 13) - ((4 - ::g->ASPECT_IMAGE_SCALER) * 7),
+			ST_AMMOY + 20,
+			::g->arms[i], (int*)&::g->weaponcond[i + 1],
+			&::g->st_armson);
+	}
+
+	// frags sum
+	STlib_initNum(&::g->w_f_frags,
+		(powerX / 2) + 20,
+		ORIGINAL_HEIGHT - 20,
+		::g->fullnum,
+		&::g->st_fragscount,
+		&::g->st_fragson,
+		ST_FRAGSWIDTH);
+
+	// armor percentage - should be colored later
+	STlib_initPercent(&::g->w_f_armor,
+		ST_HEALTHX - (92 / xscale) + (4 * (xscale - 1)) + (2 * (xscale - 2)),
+		ST_ARMORY + 7,
+		::g->fullnum,
+		&::g->plyr->armorpoints,
+		&::g->st_statusbaroff, ::g->fullpercent);
+
+	// ::g->keyboxes 0-2
+	STlib_initAspectMultIcon(&::g->w_f_keyboxes[0],
+		3,
+		ORIGINAL_HEIGHT - 9,
+		::g->keys,
+		&::g->keyboxes[0],
+		&::g->st_statusbaroff);
+
+	STlib_initAspectMultIcon(&::g->w_f_keyboxes[1],
+		16,
+		ORIGINAL_HEIGHT - 9,
+		::g->keys,
+		&::g->keyboxes[1],
+		&::g->st_statusbaroff);
+
+	STlib_initAspectMultIcon(&::g->w_f_keyboxes[2],
+		29,
+		ORIGINAL_HEIGHT - 9,
+		::g->keys,
+		&::g->keyboxes[2],
+		&::g->st_statusbaroff);
+
+	// max ammo count (all four kinds)
+	STlib_initNum(&::g->w_f_maxammo[0],
+		ST_ARMORX + (135 / xscale) + (20 * (xscale - 1)),
+		ST_AMMOY + 8,
+		::g->fullnum,
+		&::g->plyr->maxammo[0],
+		&::g->st_statusbaroff,
+		ST_MAXAMMO0WIDTH);
+
+	STlib_initNum(&::g->w_f_maxammo[1],
+		ST_ARMORX + (135 / xscale) + (20 * (xscale - 1)),
+		ST_AMMOY + 8,
+		::g->fullnum,
+		&::g->plyr->maxammo[1],
+		&::g->st_statusbaroff,
+		ST_MAXAMMO1WIDTH);
+
+	STlib_initNum(&::g->w_f_maxammo[2],
+		ST_ARMORX + (135 / xscale) + (20 * (xscale - 1)),
+		ST_AMMOY + 8,
+		::g->fullnum,
+		&::g->plyr->maxammo[2],
+		&::g->st_statusbaroff,
+		ST_MAXAMMO2WIDTH);
+
+	STlib_initNum(&::g->w_f_maxammo[3],
+		ST_ARMORX + (135 / xscale) + (20 * (xscale - 1)),
+		ST_AMMOY + 8,
+		::g->fullnum,
+		&::g->plyr->maxammo[3],
+		&::g->st_statusbaroff,
+		ST_MAXAMMO3WIDTH);
+
+	// power up timers(all 5 of them)
+	STlib_initAspectNum(&::g->w_f_power[0],
+		powerX,
+		powerY,
+		::g->shortnum,
+		&::g->normalpowers[pw_invulnerability],
+		&::g->st_statusbaroff,
+		ST_POWER0WIDTH);
+
+	STlib_initAspectNum(&::g->w_f_power[1],
+		powerX,
+		powerY + 8,
+		::g->shortnum,
+		&::g->normalpowers[pw_strength],
+		&::g->st_statusbaroff,
+		ST_POWER1WIDTH);
+
+	STlib_initAspectNum(&::g->w_f_power[2],
+		powerX,
+		powerY + 16,
+		::g->shortnum,
+		&::g->normalpowers[pw_infrared],
+		&::g->st_statusbaroff,
+		ST_POWER2WIDTH);
+
+	STlib_initAspectNum(&::g->w_f_power[3],
+		powerX,
+		powerY + 24,
+		::g->shortnum,
+		&::g->normalpowers[pw_invisibility],
+		&::g->st_statusbaroff,
+		ST_POWER3WIDTH);
+
+	STlib_initAspectNum(&::g->w_f_power[4],
+		powerX,
+		powerY + 32,
+		::g->shortnum,
+		&::g->normalpowers[pw_ironfeet],
+		&::g->st_statusbaroff,
+		ST_POWER4WIDTH);
+}
+
 
 
 void ST_Start (void)
@@ -1451,6 +1781,7 @@ void ST_Start (void)
 
 	ST_initData();
 	ST_createWidgets();
+	ST_createFullScreenWidgets();
 	::g->st_stopped = false;
 
 }

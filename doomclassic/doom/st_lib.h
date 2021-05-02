@@ -214,6 +214,15 @@ STlib_initMultIcon
   int*			inum,
   qboolean*		on );
 
+void
+STlib_initAspectMultIcon
+(st_multicon_t* mi,
+    int			x,
+    int			y,
+    patch_t** il,
+    int* inum,
+    qboolean* on);
+
 
 void
 STlib_updateMultIcon

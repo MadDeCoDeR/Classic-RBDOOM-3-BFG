@@ -68,5 +68,7 @@ void M_ChangeMenuExp(int exp);
 
 bool M_UseCircleForAccept();
 
+void M_SizeDisplay(int choice);
+
 #endif    
 
