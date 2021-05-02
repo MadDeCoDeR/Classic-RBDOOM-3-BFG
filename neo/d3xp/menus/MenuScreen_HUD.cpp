@@ -76,6 +76,16 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	// Security Update
 	security = root.GetNestedSprite( "_center", "security" );
 	securityText = root.GetNestedText( "_center", "security", "info", "txtVal" );
+
+	// Subtitles Update
+	if (game->GetGameType() == GAME_SP) {
+		subtitles = root.GetNestedSprite("_center", "respawnMessage");
+		subtitlesText = root.GetNestedText("_center", "respawnMessage", "info", "txtMessage");
+		subtitles->SetYPos(subtitles->GetYPos() + 300.0f);
+		subtitles->SetXPos(subtitles->GetXPos() - 100.0f);
+		subtitlesText->editText->bounds.br.y = 100.0f;
+		subtitlesText->editText->bounds.br.x = 600.0f;
+	}
 	
 	// PDA Download
 	newPDADownload = root.GetNestedSprite( "_center", "pdaDownload" );
@@ -138,7 +148,6 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	mpWeapons = root.GetNestedObj( "_bottom", "mpWeapons" );
 	mpChatObject = root.GetNestedSprite( "_left", "mpChat" );
 	mpConnection = root.GetNestedSprite( "_center", "connectionMsg" );
-	
 	
 	// Functions
 	
@@ -206,7 +215,7 @@ void idMenuScreen_HUDLocal::Update()
 	{
 		return;
 	}
-	
+
 	idMenuScreen::Update();
 }
 
@@ -231,7 +240,7 @@ void idMenuScreen_HUDLocal::UpdateHealthArmor( idPlayer* player )
 	{
 		playerInfo->GetSprite()->SetYPos( 0.0f );
 	}
-	
+
 	idSWFTextInstance* txtVal = playerInfo->GetNestedText( "health", "txtVal" );
 	if( txtVal != NULL )
 	{
@@ -2399,5 +2408,36 @@ void idMenuScreen_HUDLocal::UpdateChattingHud( idPlayer* player )
 }
 
 const char*		idMenuScreen_HUDLocal::GetlocationName() {
-	return GetSWFObject()->GetRootObject().GetNestedText("_bottomLeft", "location", "txtVal")->text.c_str();
+	if (locationName == nullptr) {
+		return NULL;
+	}
+	return locationName->text.c_str();
+}
+
+void	idMenuScreen_HUDLocal::setCaption(idStr caption, idVec4 color, int priority) {
+	if (subtitles != NULL) {
+		if (!subtitles->IsVisible()) {
+			subtitles->SetVisible(true);
+			subtitles->PlayFrame("rollOn");
+		}
+		else {
+			if (priority > subtitlePriority) {
+				return;
+			}
+		}
+		subtitlesText->SetText(caption);
+		swfColorRGBA_t textColor;
+		textColor.r = color.x;
+		textColor.g = color.y;
+		textColor.b = color.z;
+		textColor.a = color.w;
+		subtitlesText->color = textColor;
+		subtitlePriority = priority;
+	}
+}
+
+void	idMenuScreen_HUDLocal::clearCaption() {
+	if (subtitles != NULL) {
+		subtitles->PlayFrame("rollOff");
+	}
 }

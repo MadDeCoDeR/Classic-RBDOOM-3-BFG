@@ -1729,6 +1729,8 @@ public:
 	virtual void					ShowNewItem(const char* name, const char* icon) = 0;
 	virtual void					UpdateFlashlight(idPlayer* player) = 0;
 	virtual void					UpdateChattingHud(idPlayer* player) = 0;
+	virtual void					setCaption(idStr caption, idVec4 color, int priority) = 0;
+	virtual void					clearCaption() = 0;
 };
 
 class idMenuScreen_HUDLocal : public idMenuScreen_HUD
@@ -1793,7 +1795,10 @@ public:
 		cursorItem(0),
 		cursorGrabber(0),
 		cursorNone(0),
-		showSoulCubeInfoOnLoad(false)
+		showSoulCubeInfoOnLoad(false),
+		subtitles(NULL),
+		subtitlesText(NULL),
+		subtitlePriority(-1)
 	{
 	}
 	
@@ -1851,6 +1856,8 @@ public:
 	virtual void					ShowNewItem( const char* name, const char* icon );
 	virtual void					UpdateFlashlight( idPlayer* player );
 	virtual void					UpdateChattingHud( idPlayer* player );
+	virtual void					setCaption(idStr caption, idVec4 color, int priority);
+	virtual void					clearCaption();
 	private:
 
 		idSWFScriptObject* 		weaponInfo;
@@ -1925,6 +1932,10 @@ public:
 		idStr					cursorFocus;
 
 		bool					showSoulCubeInfoOnLoad;
+
+		idSWFSpriteInstance*	subtitles;
+		idSWFTextInstance*		subtitlesText;
+		int						subtitlePriority;
 };
 
 //*
