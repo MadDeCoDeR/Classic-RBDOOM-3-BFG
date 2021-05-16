@@ -714,7 +714,7 @@ void P_BulletSlope (mobj_t*	mo)
 		}
 	}
 	//GK: Move puffs up and down based on player's view
-	if (cl_freelook.GetBool() && !::g->demoplayback && mo == ::g->viewplayer->mo)
+	if (cl_freelook.GetBool() && !::g->demoplayback && !::g->demorecording && mo == ::g->viewplayer->mo)
 	{
 		if ((game->GetCVarBool("aa_targetAimAssistEnable") && !::g->linetarget) || !game->GetCVarBool("aa_targetAimAssistEnable")) {
 			an -= 2 << 26;
