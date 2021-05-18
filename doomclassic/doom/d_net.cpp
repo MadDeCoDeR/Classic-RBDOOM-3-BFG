@@ -922,7 +922,9 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 				::g->gameframecount++;
 			}
 			
-			::g->gametic++;
+			if (!::g->paused) {
+				::g->gametic++;
+			}
 
 			// modify command for duplicated tics
 			if (i != ::g->ticdup-1)

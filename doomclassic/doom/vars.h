@@ -228,6 +228,7 @@ int             consoleplayer;          // player taking events and displaying
 int             displayplayer;          // view being displayed 
 int             gametic; 
 int             levelstarttic;          // gametic at level start 
+int             demostarttic;          // gametic at demo start 
 int             totalkills, totalitems, totalsecret;    // for intermission 
 char            demoname[32]; 
 qboolean        demoplayback;

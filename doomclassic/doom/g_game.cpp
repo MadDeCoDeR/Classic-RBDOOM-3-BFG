@@ -385,15 +385,23 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			//I_Printf("Impulse seq %d", curTech5Command.impulseSequence);
 //			if( oldImpulseSequence != curTech5Command.impulseSequence ) {
 			int engineHz_denominator = com_engineHz_denominator / 100;
-				cimpulse = G_PerformImpulse( curTech5Command.buttons, cmd );
-				if (cimpulse > 0 && circleWeaponPacifier >= ( engineHz_denominator / 2)) { //GK: Weapon change event happend
-					circleWeaponPacifier = 0;
-					cmd = &::g->players[::g->consoleplayer].cmd;
+			cimpulse = G_PerformImpulse( curTech5Command.buttons, cmd );
+			if (cimpulse > 0 && circleWeaponPacifier >= ( engineHz_denominator / 2)) { //GK: Weapon change event happend
+				circleWeaponPacifier = 0;
+				if (!::g->demorecording) {
+					//cmd = &::g->players[::g->consoleplayer].cmd;
 					cmd->buttons |= BT_CHANGE;
 					cmd->nextPrevWeapon = cimpulse;
-					P_PlayerThink(&::g->players[::g->consoleplayer]);
+					//P_PlayerThink(&::g->players[::g->consoleplayer]);
 				}
-				circleWeaponPacifier++;
+				else {
+					cmd->buttons |= BT_CHANGE;
+					//GK: Super duper circle weapon hack for DEMO Recording
+					int idealWeapon = cimpulse + wp_nochange;
+					cmd->buttons |= idealWeapon << BT_WEAPONSHIFT;
+				}
+			}
+			circleWeaponPacifier++;
 //			}
 //			oldImpulseSequence = curTech5Command.impulseSequence;
 
@@ -852,6 +860,14 @@ void G_Ticker (void)
 	int		buf; 
 	ticcmd_t*	cmd;
 
+	//GK: When Doom 3 says pause then pause
+	::g->paused = cvarSystem->GetCVarBool("com_pause");
+	if (::g->paused) {
+		S_PauseSound();
+		return;
+	} else
+		S_ResumeSound();
+
 	// do player reborns if needed
 	for (i=0 ; i<MAXPLAYERS ; i++) 
 		if (::g->playeringame[i] && ::g->players[i].playerstate == PST_REBORN) {
@@ -949,12 +965,7 @@ void G_Ticker (void)
 			} 
 		}
 	}
-	//GK: When Doom 3 says pause then pause
-	::g->paused = cvarSystem->GetCVarBool("com_pause");
-	if (::g->paused)
-		S_PauseSound();
-	else
-		S_ResumeSound();
+	
 
 	// check for special buttons
 	for (i=0 ; i<MAXPLAYERS ; i++)
@@ -2402,6 +2413,7 @@ void G_DoPlayDemo (void)
 
 	G_InitNew (skill, episode, map ); 
 	R_SetViewSize (::g->screenblocks + 1, ::g->detailLevel);
+	::g->demostarttic = ::g->gametic;
 	m_inDemoMode.SetBool( true );
 	::g->gamestate = GS_DEMOLEVEL;
 
@@ -2449,13 +2461,15 @@ void G_DoPlayDemo (void)
 //
 void G_TimeDemo (const char* name)
 { 	 
-	::g->nodrawers = M_CheckParm ("-nodraw"); 
-	::g->noblit = M_CheckParm ("-noblit"); 
-	::g->timingdemo = true; 
-	::g->singletics = true; 
+	if (::g->useDemo) {
+		::g->nodrawers = M_CheckParm("-nodraw");
+		::g->noblit = M_CheckParm("-noblit");
+		::g->timingdemo = true;
+		//::g->singletics = true;
 
-	::g->defdemoname = (char *)name;
-	::g->gameaction = ga_playdemo; 
+		::g->defdemoname = (char*)name;
+		::g->gameaction = ga_playdemo;
+	}
 } 
 
 
@@ -2477,6 +2491,18 @@ qboolean G_CheckDemoStatus (void)
 		::g->demobuffer = NULL;
 		::g->demo_p = NULL;
 		::g->demoend = NULL;
+
+		if (::g->timingdemo) {
+			char statname[32];
+			strcpy(statname, "DEMO\\");
+			strcat(statname, ::g->defdemoname);
+			strcat(statname, ".txt");
+			idStr buff;
+			int demotics = ::g->gametic - ::g->demostarttic;
+			sprintf(buff, "GameTics: %d\nLevel Tics: %d\nLevel Time: %d\nFPS: %d\0", ::g->gametic, demotics, ::g->normaltime, TICRATE);
+			M_WriteFile(statname, strdup(buff.c_str()), buff.Length());
+			::g->timingdemo = false;
+		}
 
 		::g->demoplayback = false; 
 		::g->netdemo = false;

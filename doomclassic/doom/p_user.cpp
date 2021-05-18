@@ -416,7 +416,11 @@ void P_PlayerThink (player_t* player)
 		// The actual changing of the weapon is done
 		//  when the weapon psprite can do it
 		//  (read: not in the middle of an attack).
-		which = ((cmd->buttons&BT_WEAPONMASK)>>BT_WEAPONSHIFT);
+		which = ((cmd->buttons)>>BT_WEAPONSHIFT);
+
+		if (which > wp_nochange) {
+			cmd->nextPrevWeapon = which - wp_nochange;
+		}
 
 		if ( cmd->nextPrevWeapon > 0) {
 			newweapon = player->readyweapon;
