@@ -424,6 +424,11 @@ void D_DoAdvanceDemo (void)
 		::g->demosequence = (::g->demosequence+1)%8;
 	else
 		::g->demosequence = (::g->demosequence+1)%6;
+
+	//GK: in case of Master Levels and No Rest for the Living there are no demos so keep looping the music
+	if (::g->gamemission == pack_master || ::g->gamemission == pack_nerve) {
+		::g->demosequence = 0;
+	}
 	//GK: Change "INTERPIC" with "TITLEPIC"
 	switch (::g->demosequence)
 	{
@@ -435,49 +440,33 @@ void D_DoAdvanceDemo (void)
 
 		::g->gamestate = GS_DEMOSCREEN;
 		//GK change INTERPIC with TITLEPIC
-::g->pagename = (char*)"TITLEPIC";
+		::g->pagename = (char*)"TITLEPIC";
 
-if (::g->gamemode == commercial)
-//GK: in case of Master Levels and No Rest for the Living there are no demos so keep looping the music
-S_ChangeMusic(mus_dm2ttl, true);
-else
-S_ChangeMusic(mus_intro, true);
+		if (::g->gamemode == commercial)
+		S_ChangeMusic(mus_dm2ttl, true);
+		else
+		S_ChangeMusic(mus_intro, true);
 
-break;
+		break;
 	case 1:
-		if (::g->gamemission != pack_master && ::g->gamemission != pack_nerve) {
-			G_DeferedPlayDemo("demo1");
-			break;
-		}
-		else {
-			S_ChangeMusic(mus_dm2ttl, true);
-		}
+		G_DeferedPlayDemo("demo1");
+		break;
 	case 2:
 		::g->pagetic = 3 * TICRATE;
 		::g->gamestate = GS_DEMOSCREEN;
 		::g->pagename = (char*)"TITLEPIC";
 		break;
 	case 3:
-		if (::g->gamemission != pack_master && ::g->gamemission != pack_nerve) {
-			G_DeferedPlayDemo("demo2");
-			break;
-		}
-		else {
-			S_ChangeMusic(mus_dm2ttl, true);
-		}
+		G_DeferedPlayDemo("demo2");
+		break;
 	case 4:
 		::g->pagetic = 3 * TICRATE;
 		::g->gamestate = GS_DEMOSCREEN;
 		::g->pagename = (char*)"TITLEPIC";
 		break;
 	case 5:
-		if (::g->gamemission != pack_master && ::g->gamemission != pack_nerve) {
-			G_DeferedPlayDemo("demo3");
-			break;
-		}
-		else {
-			S_ChangeMusic(mus_dm2ttl, true);
-		}
+		G_DeferedPlayDemo("demo3");
+		break;
 		// THE DEFINITIVE DOOM Special Edition demo
 	case 6:
 		::g->pagetic = 3 * TICRATE;
@@ -1210,8 +1199,8 @@ bool D_DoomMainPoll(void)
 	p = M_CheckParm ("-timedemo");
 	if (p && p < ::g->myargc-1)
 	{
-		G_TimeDemo ("nukage1");//::g->myargv[p+1]);
-		D_DoomLoop ();  // never returns
+		G_TimeDemo (::g->myargv[p+1]);//"nukage1");
+		//D_DoomLoop ();  // never returns
 	}
 
 	p = M_CheckParm ("-loadgame");
