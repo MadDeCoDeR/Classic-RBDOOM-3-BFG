@@ -1784,7 +1784,7 @@ int EV_DoDonut(line_t*	line)
 			s3 = s2->lines[i]->backsector;
 
 			//	Spawn rising slime
-			floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
+			floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_FLOOR, 0);
 			P_AddThinker (&floor->thinker);
 			s2->floordata = floor;
 			floor->thinker.function.acp1 = (actionf_p1) T_MoveFloor;
@@ -1798,7 +1798,7 @@ int EV_DoDonut(line_t*	line)
 			floor->floordestheight = s3->floorheight;
 
 			//	Spawn lowering donut-hole
-			floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_LEVEL, 0);
+			floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_FLOOR, 0);
 			P_AddThinker (&floor->thinker);
 			s1->floordata = floor;
 			floor->thinker.function.acp1 = (actionf_p1) T_MoveFloor;

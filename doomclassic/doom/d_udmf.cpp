@@ -449,13 +449,13 @@ void parseudmf(char* text) {
 	::g->numsectors = numsectors;
 	::g->numvertexes = numvertexes;
 	::g->nummapthings = numthings;
-	::g->lines =(line_t*) Z_Malloc(::g->numlines * sizeof(line_t), PU_LEVEL_SHARED, ::g->lines);
+	::g->lines =(line_t*) Z_Malloc(::g->numlines * sizeof(line_t), PU_LINES, ::g->lines);
 	memset(::g->lines, 0, ::g->numlines * sizeof(line_t));
-	::g->sides = (side_t*)Z_Malloc(::g->numsides * sizeof(side_t), PU_LEVEL_SHARED, ::g->sides);
+	::g->sides = (side_t*)Z_Malloc(::g->numsides * sizeof(side_t), PU_SIDES, ::g->sides);
 	memset(::g->sides, 0, ::g->numsides * sizeof(side_t));
-	::g->sectors = (sector_t*)Z_Malloc(::g->numsectors * sizeof(sector_t), PU_LEVEL, NULL);
+	::g->sectors = (sector_t*)Z_Malloc(::g->numsectors * sizeof(sector_t), PU_SECTORS, NULL);
 	memset(::g->sectors, 0, ::g->numsectors * sizeof(sector_t));
-	::g->vertexes = (vertex_t*)Z_Malloc(::g->numvertexes * sizeof(vertex_t), PU_LEVEL_SHARED, ::g->vertexes);
+	::g->vertexes = (vertex_t*)Z_Malloc(::g->numvertexes * sizeof(vertex_t), PU_VERTEX, ::g->vertexes);
 	memset(::g->vertexes, 0, ::g->numvertexes * sizeof(vertex_t));
 	::g->mapthings = (mapthing_t*)malloc(::g->nummapthings*sizeof(mapthing_t));
 	memset(::g->mapthings, 0, ::g->nummapthings * sizeof(mapthing_t));

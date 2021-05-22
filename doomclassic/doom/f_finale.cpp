@@ -1068,8 +1068,8 @@ void F_BunnyScroll (void)
     char	name[10];
     int		stage;
 		
-    p1 =  /*(patch_t*)*/img2lmp(W_CacheLumpName ("PFUB2", PU_LEVEL_SHARED), W_GetNumForName("PFUB2"));
-    p2 =  /*(patch_t*)*/img2lmp(W_CacheLumpName ("PFUB1", PU_LEVEL_SHARED), W_GetNumForName("PFUB1"));
+    p1 =  /*(patch_t*)*/img2lmp(W_CacheLumpName ("PFUB2", PU_FINALE), W_GetNumForName("PFUB2"));
+    p2 =  /*(patch_t*)*/img2lmp(W_CacheLumpName ("PFUB1", PU_FINALE), W_GetNumForName("PFUB1"));
 
     V_MarkRect (0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
 	

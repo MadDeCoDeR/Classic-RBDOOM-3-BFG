@@ -492,7 +492,7 @@ P_SpawnMobj
 	const state_t*	st;
 	const mobjinfo_t*	info;
 
-	mobj = (mobj_t*)DoomLib::Z_Malloc(sizeof(*mobj), PU_LEVEL, NULL);
+	mobj = (mobj_t*)DoomLib::Z_Malloc(sizeof(*mobj), PU_MOBJ, NULL);
 	memset (mobj, 0, sizeof (*mobj));
 	info = &mobjinfo[type];
 

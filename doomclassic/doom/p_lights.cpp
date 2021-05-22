@@ -77,7 +77,7 @@ void P_SpawnFireFlicker (sector_t*	sector)
     // Nothing special about it during gameplay.
     sector->special = 0; 
 	
-    flick = (fireflicker_t*)DoomLib::Z_Malloc( sizeof(*flick), PU_LEVEL, 0);
+    flick = (fireflicker_t*)DoomLib::Z_Malloc( sizeof(*flick), PU_LIGHTS, 0);
 
     P_AddThinker (&flick->thinker);
 
@@ -132,7 +132,7 @@ void P_SpawnLightFlash (sector_t*	sector)
     // nothing special about it during gameplay
     sector->special = 0;	
 	
-    flash = (lightflash_t*)DoomLib::Z_Malloc( sizeof(*flash), PU_LEVEL, 0);
+    flash = (lightflash_t*)DoomLib::Z_Malloc( sizeof(*flash), PU_LIGHTS, 0);
 
     P_AddThinker (&flash->thinker);
 
@@ -189,7 +189,7 @@ P_SpawnStrobeFlash
 {
     strobe_t*	flash;
 	
-    flash = (strobe_t*)DoomLib::Z_Malloc( sizeof(*flash), PU_LEVEL, 0);
+    flash = (strobe_t*)DoomLib::Z_Malloc( sizeof(*flash), PU_LIGHTS, 0);
 
     P_AddThinker (&flash->thinker);
 
@@ -346,7 +346,7 @@ void P_SpawnGlowingLight(sector_t*	sector)
 {
     glow_t*	g;
 	
-    g = (glow_t*)DoomLib::Z_Malloc( sizeof(*g), PU_LEVEL, 0);
+    g = (glow_t*)DoomLib::Z_Malloc( sizeof(*g), PU_LIGHTS, 0);
 
     P_AddThinker(&g->thinker);
 

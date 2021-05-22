@@ -115,7 +115,7 @@ void P_LoadVertexes (int lump)
 
 	// Allocate zone memory for buffer.
 //	::g->vertexes = (vertex_t*)Z_Malloc (::g->numvertexes*sizeof(vertex_t),PU_LEVEL,0);	
-	if (MallocForLump( lump, ::g->numvertexes*sizeof(vertex_t ), ::g->vertexes, PU_LEVEL_SHARED ))
+	if (MallocForLump( lump, ::g->numvertexes*sizeof(vertex_t ), ::g->vertexes, PU_VERTEX ))
 	{
 		// Load data into cache.
 		data = (byte*)W_CacheLumpNum (lump,PU_CACHE_SHARED); // ALAN: LOADTIME
@@ -154,7 +154,7 @@ void P_LoadSegs (int lump)
 	::g->numsegs = W_LumpLength (lump) / sizeof(mapseg_t);
 //	::g->segs = (seg_t*)Z_Malloc (::g->numsegs*sizeof(seg_t),PU_LEVEL,0);	
 
-	if (MallocForLump( lump, ::g->numsegs*sizeof(seg_t), ::g->segs, PU_LEVEL_SHARED ))
+	if (MallocForLump( lump, ::g->numsegs*sizeof(seg_t), ::g->segs, PU_SEGS ))
 	{
 		memset (::g->segs, 0, ::g->numsegs*sizeof(seg_t));
 		data = (byte*)W_CacheLumpNum (lump,PU_CACHE_SHARED); // ALAN: LOADTIME
@@ -197,7 +197,7 @@ void P_LoadSubsectors (int lump)
 
 	::g->numsubsectors = W_LumpLength (lump) / sizeof(mapsubsector_t);
 
-	if (MallocForLump( lump, ::g->numsubsectors*sizeof(subsector_t), ::g->subsectors, PU_LEVEL_SHARED ))
+	if (MallocForLump( lump, ::g->numsubsectors*sizeof(subsector_t), ::g->subsectors, PU_SECTORS ))
 	{
 		data = (byte*)W_CacheLumpNum (lump,PU_CACHE_SHARED); // ALAN: LOADTIME
 
@@ -229,7 +229,7 @@ void P_LoadSectors (int lump)
 
 	::g->numsectors = W_LumpLength (lump) / sizeof(mapsector_t);
 	
-	::g->sectors = (sector_t*)Z_Malloc( ::g->numsectors*sizeof(sector_t), PU_LEVEL, NULL );
+	::g->sectors = (sector_t*)Z_Malloc( ::g->numsectors*sizeof(sector_t), PU_SECTORS, NULL );
 	memset (::g->sectors, 0, ::g->numsectors*sizeof(sector_t));
 	data = (byte*)W_CacheLumpNum (lump,PU_CACHE_SHARED); // ALAN: LOADTIME
 
@@ -301,7 +301,7 @@ void P_LoadNodes (int lump)
 	node_t*	no;
 
 	::g->numnodes = W_LumpLength (lump) / sizeof(mapnode_t);
-	if (MallocForLump( lump, ::g->numnodes*sizeof(node_t), ::g->nodes, PU_LEVEL_SHARED ))
+	if (MallocForLump( lump, ::g->numnodes*sizeof(node_t), ::g->nodes, PU_NODE ))
 	{
 		data = (byte*)W_CacheLumpNum (lump,PU_CACHE_SHARED); // ALAN: LOADTIME
 
@@ -402,7 +402,7 @@ void P_LoadLineDefs (int lump)
 	vertex_t*		v2;
 
 	::g->numlines = W_LumpLength (lump) / sizeof(maplinedef_t);
-	if (MallocForLump( lump, ::g->numlines*sizeof(line_t), ::g->lines, PU_LEVEL_SHARED ))
+	if (MallocForLump( lump, ::g->numlines*sizeof(line_t), ::g->lines, PU_LINES ))
 	{
 		memset (::g->lines, 0, ::g->numlines*sizeof(line_t));
 		data = (byte*)W_CacheLumpNum (lump,PU_CACHE_SHARED); // ALAN: LOADTIME
@@ -482,7 +482,7 @@ void P_LoadSideDefs (int lump)
 	side_t*		sd;
 
 	::g->numsides = W_LumpLength (lump) / sizeof(mapsidedef_t);
-	if (MallocForLump( lump, ::g->numsides*sizeof(side_t), ::g->sides, PU_LEVEL_SHARED))
+	if (MallocForLump( lump, ::g->numsides*sizeof(side_t), ::g->sides, PU_SIDES))
 	{
 		memset (::g->sides, 0, ::g->numsides*sizeof(side_t));
 		data = (byte*)W_CacheLumpNum (lump,PU_CACHE_SHARED); // ALAN: LOADTIME
@@ -518,13 +518,13 @@ void P_LoadBlockMap (int lump)
 	}
 	//GK:Remove blockmap limit
 	short* bl;
-	bl = (short*)W_CacheLumpNum (lump,PU_LEVEL_SHARED); // ALAN: This is initialized somewhere else as shared...
+	bl = (short*)W_CacheLumpNum (lump,PU_BLOCKMAP); // ALAN: This is initialized somewhere else as shared...
 
 	
 	count = W_LumpLength (lump)/2;
 
 	if ( firstTime ) {				// SMF
-		::g->blockmaplump = (long*)Z_Malloc(sizeof(*::g->blockmaplump)*count, PU_LEVEL, 0);
+		::g->blockmaplump = (long*)Z_Malloc(sizeof(*::g->blockmaplump)*count, PU_BLOCKMAP, 0);
 		::g->blockmaplump[0] = SHORT(bl[0]);
 		::g->blockmaplump[1] = SHORT(bl[1]);
 		::g->blockmaplump[2] = (long)(SHORT(bl[2])) & 0xffff;
@@ -543,7 +543,7 @@ void P_LoadBlockMap (int lump)
 
 	// clear out mobj chains
 	count = sizeof(*::g->blocklinks)* ::g->bmapwidth*::g->bmapheight;
-	::g->blocklinks = (mobj_t**)Z_Malloc (count,PU_LEVEL, 0);
+	::g->blocklinks = (mobj_t**)Z_Malloc (count,PU_BLOCKMAP, 0);
 	memset (::g->blocklinks, 0, count);
 	::g->blockmap = ::g->blockmaplump + 4;
 }
@@ -617,7 +617,7 @@ void P_GroupLines (void)
 	}
 
 	// build line tables for each sector	
-	linebuffer = (line_t**)Z_Malloc (total*sizeof(line_t*), PU_LEVEL, 0);
+	linebuffer = (line_t**)Z_Malloc (total*sizeof(line_t*), PU_LINES, 0);
 	sector = ::g->sectors;
 	for (i=0 ; i < ::g->numsectors ; i++, sector++)
 	{
@@ -770,7 +770,7 @@ P_SetupLevel
 	// Make sure all sounds are stopped before Z_FreeTags.
 	S_Start ();			
 
-	Z_FreeTags( PU_LEVEL, PU_PURGELEVEL-1 );
+	Z_FreeTags( PU_MUSIC, PU_PURGELEVEL-1 );
 	//GK: New level new flips
 	::g->flip = false;
 	::g->isfliped = false;
@@ -915,7 +915,7 @@ P_SetupLevel
 				continue;
 
 			if (!idStr::Icmp(W_GetNameForNum(lumpnum+i - j), "REJECT"))
-				::g->rejectmatrix = (byte*)W_CacheLumpNum(lumpnum + ML_REJECT, PU_LEVEL);
+				::g->rejectmatrix = (byte*)W_CacheLumpNum(lumpnum + ML_REJECT, PU_REJECT);
 
 			j++;
 		}
@@ -934,7 +934,7 @@ P_SetupLevel
 		P_LoadNodes(lumpnum + ML_NODES);
 		P_LoadSegs(lumpnum + ML_SEGS);
 
-		::g->rejectmatrix = (byte*)W_CacheLumpNum(lumpnum + ML_REJECT, PU_LEVEL);
+		::g->rejectmatrix = (byte*)W_CacheLumpNum(lumpnum + ML_REJECT, PU_REJECT);
 	}
 
 	P_GroupLines ();

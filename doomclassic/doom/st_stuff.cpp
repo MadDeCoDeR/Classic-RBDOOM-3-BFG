@@ -391,6 +391,7 @@ void ST_refreshBackground(void)
 
 		V_DrawPatch(powerX, (ORIGINAL_HEIGHT / 2) - 5, FG, ::g->fullpwr, true);
 
+//		V_DrawPatch(powerX - 30, 10, FG, ::g->fulltime, true);
 		//V_CopyRect(ST_X, 0, BG, (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER), (SCREENHEIGHT / GLOBAL_IMAGE_SCALER), ST_X, 0, FG, true);
 	}
 
@@ -1250,32 +1251,32 @@ void ST_loadGraphics(void)
 	for (i=0;i<10;i++)
 	{
 		sprintf(namebuf, "STTNUM%d", i);
-		::g->tallnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+		::g->tallnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 
 		sprintf(namebuf, "STCFN0%d", 48 + i);
-		::g->fullnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+		::g->fullnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 
 		sprintf(namebuf, "STYSNUM%d", i);
-		::g->shortnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+		::g->shortnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 	}
 
 	// Load percent key.
 	//Note: why not load STMINUS here, too?
-	::g->tallpercent = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STTPRCNT", PU_LEVEL_SHARED), W_GetNumForName("STTPRCNT"));
+	::g->tallpercent = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STTPRCNT", PU_STATUS_FRONT), W_GetNumForName("STTPRCNT"));
 
-	::g->fullpercent = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STCFN037", PU_LEVEL_SHARED), W_GetNumForName("STCFN037"));
+	::g->fullpercent = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STCFN037", PU_STATUS_FRONT), W_GetNumForName("STCFN037"));
 
-	::g->fullslash = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STCFN047", PU_LEVEL_SHARED), W_GetNumForName("STCFN047"));
+	::g->fullslash = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STCFN047", PU_STATUS_FRONT), W_GetNumForName("STCFN047"));
 
 	// key cards
 	for (i=0;i<NUMCARDS;i++)
 	{
 		sprintf(namebuf, "STKEYS%d", i);
-		::g->keys[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+		::g->keys[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 	}
 
 	// ::g->arms background
-	::g->armsbg = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STARMS", PU_LEVEL_SHARED), W_GetNumForName("STARMS"));
+	::g->armsbg = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STARMS", PU_STATUS_BACK), W_GetNumForName("STARMS"));
 
 	// ::g->arms ownership widgets
 	for (i=0;i<6;i++)
@@ -1283,28 +1284,29 @@ void ST_loadGraphics(void)
 		sprintf(namebuf, "STGNUM%d", i+2);
 
 		// gray #
-		::g->arms[i][0] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+		::g->arms[i][0] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 
 		// yellow #
 		::g->arms[i][1] = ::g->shortnum[i+2]; 
 		//GK: pink-ish #
 		sprintf(namebuf, "STPNNUM%d", i + 2); //GK: That number indicating which weapon is in use on the status bar
 
-		::g->arms[i][2] = img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+		::g->arms[i][2] = img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 	}
 
 	// face backgrounds for different color ::g->players
 	sprintf(namebuf, "STFB%d", ::g->consoleplayer);
-	::g->faceback = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+	::g->faceback = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATUS_BACK), W_GetNumForName(namebuf));
 
 	// status bar background bits
-	::g->sbar = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STBAR", PU_LEVEL_SHARED), W_GetNumForName("STBAR"));
-	::g->mapt = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STMAPT", PU_LEVEL_SHARED), W_GetNumForName("STMAPT"));
-	::g->spwr = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STPWR", PU_LEVEL_SHARED), W_GetNumForName("STPWR"));
-	::g->hear = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_HEAR", PU_LEVEL_SHARED), W_GetNumForName("ST_HEAR"));
-	::g->fullarms = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_ARMS", PU_LEVEL_SHARED), W_GetNumForName("ST_ARMS"));
-	::g->fullkeys = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_KEYS", PU_LEVEL_SHARED), W_GetNumForName("ST_KEYS"));
-	::g->fullpwr = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_PWR", PU_LEVEL_SHARED), W_GetNumForName("ST_PWR"));
+	::g->sbar = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STBAR", PU_STATUS_BACK), W_GetNumForName("STBAR"));
+	::g->mapt = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STMAPT", PU_STATUS_BACK), W_GetNumForName("STMAPT"));
+	::g->spwr = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STPWR", PU_STATUS_BACK), W_GetNumForName("STPWR"));
+	::g->hear = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_HEAR", PU_STATUS_BACK), W_GetNumForName("ST_HEAR"));
+	::g->fullarms = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_ARMS", PU_STATUS_BACK), W_GetNumForName("ST_ARMS"));
+	::g->fullkeys = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_KEYS", PU_STATUS_BACK), W_GetNumForName("ST_KEYS"));
+	::g->fullpwr = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_PWR", PU_STATUS_BACK), W_GetNumForName("ST_PWR"));
+	//::g->fulltime = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_TIME", PU_STATUS_BACK), W_GetNumForName("ST_TIME"));
 	// face states
 	facenum = 0;
 	for (i=0;i<ST_NUMPAINFACES;i++)
@@ -1312,21 +1314,21 @@ void ST_loadGraphics(void)
 		for (j=0;j<ST_NUMSTRAIGHTFACES;j++)
 		{
 			sprintf(namebuf, "STFST%d%d", i, j);
-			::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+			::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 		}
 		sprintf(namebuf, "STFTR%d0", i);	// turn right
-		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 		sprintf(namebuf, "STFTL%d0", i);	// turn left
-		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 		sprintf(namebuf, "STFOUCH%d", i);	// ouch!
-		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 		sprintf(namebuf, "STFEVL%d", i);	// evil grin ;)
-		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 		sprintf(namebuf, "STFKILL%d", i);	// pissed off
-		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_LEVEL_SHARED), W_GetNumForName(namebuf));
+		::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 	}
-	::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName("STFGOD0", PU_LEVEL_SHARED), W_GetNumForName("STFGOD0"));
-	::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName("STFDEAD0", PU_LEVEL_SHARED), W_GetNumForName("STFDEAD0"));
+	::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName("STFGOD0", PU_STATUS_FRONT), W_GetNumForName("STFGOD0"));
+	::g->faces[facenum++] = /*(patch_t*)*/img2lmp(W_CacheLumpName("STFDEAD0", PU_STATUS_FRONT), W_GetNumForName("STFDEAD0"));
 
 }
 

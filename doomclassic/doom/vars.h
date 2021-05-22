@@ -847,6 +847,7 @@ patch_t*		hear;
 patch_t*		fullarms;
 patch_t*		fullkeys;
 patch_t*		fullpwr;
+patch_t*		fulltime;
 st_number_t	w_time;
 st_number_t	w_ready;
 st_number_t	w_frags;

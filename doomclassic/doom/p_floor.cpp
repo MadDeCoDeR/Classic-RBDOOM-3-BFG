@@ -304,7 +304,7 @@ EV_DoFloor
 	
 	// new floor thinker
 	rtn = 1;
-	floor = (floormove_t*)DoomLib::Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+	floor = (floormove_t*)DoomLib::Z_Malloc(sizeof(*floor), PU_FLOOR, 0);
 	P_AddThinker (&floor->thinker);
 	sec->floordata = floor;
 	floor->thinker.function.acp1 = (actionf_p1) T_MoveFloor;
@@ -507,7 +507,7 @@ EV_BuildStairs
 	
 	// new floor thinker
 	rtn = 1;
-	floor = (floormove_t*)DoomLib::Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+	floor = (floormove_t*)DoomLib::Z_Malloc(sizeof(*floor), PU_FLOOR, 0);
 	P_AddThinker (&floor->thinker);
 	sec->floordata = floor;
 	floor->thinker.function.acp1 = (actionf_p1) T_MoveFloor;
@@ -560,7 +560,7 @@ EV_BuildStairs
 					
 		sec = tsec;
 		secnum = newsecnum;
-		floor = (floormove_t*)DoomLib::Z_Malloc(sizeof(*floor), PU_LEVEL, 0);
+		floor = (floormove_t*)DoomLib::Z_Malloc(sizeof(*floor), PU_FLOOR, 0);
 
 		P_AddThinker (&floor->thinker);
 

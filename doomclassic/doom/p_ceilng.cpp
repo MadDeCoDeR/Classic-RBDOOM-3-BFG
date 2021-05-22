@@ -249,7 +249,7 @@ EV_DoCeiling
 	
 	// new door thinker
 	rtn = 1;
-	ceiling = (ceiling_t*)DoomLib::Z_Malloc(sizeof(*ceiling), PU_LEVEL, 0);
+	ceiling = (ceiling_t*)DoomLib::Z_Malloc(sizeof(*ceiling), PU_CEILING, 0);
 	P_AddThinker (&ceiling->thinker);
 	sec->ceilingdata = ceiling;
 	ceiling->thinker.function.acp1 = (actionf_p1)T_MoveCeiling;

@@ -38,6 +38,28 @@ If you have questions concerning this license or the applicable additional terms
 #define PU_STATIC		1	// static entire execution time
 #define PU_SOUND		2	// static while playing
 #define PU_MUSIC		3	// static while playing
+#define PU_STATUS_BACK  4
+#define PU_STATUS_FRONT 5
+#define PU_LINES        6
+#define PU_SECTORS      7
+#define PU_SIDES        8
+#define PU_VERTEX       9
+#define PU_FINALE       10
+#define PU_FONT         11
+#define PU_CEILING      12
+#define PU_DOOR         13
+#define PU_FLOOR        14
+#define PU_LIGHTS       15
+#define PU_MOBJ         16
+#define PU_PLATS        17
+#define PU_BLOCKMAP     18
+#define PU_REJECT       19
+#define PU_NODE         20
+#define PU_SEGS         21
+#define PU_SPRITE       22
+#define PU_WI_LNAME     23
+#define PU_WI_FRONT     24
+#define PU_WI_BACK      25
 #define PU_LEVEL		50	// static until level exited
 #define PU_LEVSPEC		51      // a special thinker in a level
 // Tags >= 100 are purgable whenever needed.

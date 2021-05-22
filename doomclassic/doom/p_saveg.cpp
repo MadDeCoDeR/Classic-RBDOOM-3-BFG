@@ -633,7 +633,7 @@ void P_UnArchiveThinkers (void)
 
 		case tc_mobj:
 			PADSAVEP();
-			mobj = (mobj_t*)DoomLib::Z_Malloc(sizeof(*mobj), PU_LEVEL, NULL);
+			mobj = (mobj_t*)DoomLib::Z_Malloc(sizeof(*mobj), PU_MOBJ, NULL);
 			memcpy (mobj, ::g->save_p, sizeof(*mobj));
 			::g->save_p += sizeof(*mobj);
 			mobj->state = &::g->states[(intptr_t)mobj->state];
@@ -705,7 +705,7 @@ void P_UnArchiveThinkers (void)
 
 		case tc_ceiling:
 			PADSAVEP();
-			ceiling = (ceiling_t*)DoomLib::Z_Malloc(sizeof(*ceiling), PU_LEVEL, NULL);
+			ceiling = (ceiling_t*)DoomLib::Z_Malloc(sizeof(*ceiling), PU_CEILING, NULL);
 			memcpy (ceiling, ::g->save_p, sizeof(*ceiling));
 			::g->save_p += sizeof(*ceiling);
 			ceiling->sector = &::g->sectors[(intptr_t)ceiling->sector];
@@ -720,7 +720,7 @@ void P_UnArchiveThinkers (void)
 
 		case tc_door:
 			PADSAVEP();
-			door = (vldoor_t*)DoomLib::Z_Malloc(sizeof(*door), PU_LEVEL, NULL);
+			door = (vldoor_t*)DoomLib::Z_Malloc(sizeof(*door), PU_DOOR, NULL);
 			memcpy (door, ::g->save_p, sizeof(*door));
 			::g->save_p += sizeof(*door);
 			door->sector = &::g->sectors[(intptr_t)door->sector];
@@ -731,7 +731,7 @@ void P_UnArchiveThinkers (void)
 
 		case tc_floor:
 			PADSAVEP();
-			floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_LEVEL, NULL);
+			floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_FLOOR, NULL);
 			memcpy (floor, ::g->save_p, sizeof(*floor));
 			::g->save_p += sizeof(*floor);
 			floor->sector = &::g->sectors[(intptr_t)floor->sector];
@@ -742,7 +742,7 @@ void P_UnArchiveThinkers (void)
 
 		case tc_plat:
 			PADSAVEP();
-			plat = (plat_t*)DoomLib::Z_Malloc (sizeof(*plat), PU_LEVEL, NULL);
+			plat = (plat_t*)DoomLib::Z_Malloc (sizeof(*plat), PU_PLATS, NULL);
 			memcpy (plat, ::g->save_p, sizeof(*plat));
 			::g->save_p += sizeof(*plat);
 			plat->sector = &::g->sectors[(intptr_t)plat->sector];
@@ -757,7 +757,7 @@ void P_UnArchiveThinkers (void)
 
 		case tc_fire:
 			PADSAVEP();
-			fire = (fireflicker_t*)DoomLib::Z_Malloc (sizeof(*fire), PU_LEVEL, NULL);
+			fire = (fireflicker_t*)DoomLib::Z_Malloc (sizeof(*fire), PU_LIGHTS, NULL);
 			memcpy (fire, ::g->save_p, sizeof(*fire));
 			::g->save_p += sizeof(*fire);
 			fire->sector = &::g->sectors[(intptr_t)fire->sector];
@@ -767,7 +767,7 @@ void P_UnArchiveThinkers (void)
 
 		case tc_flash:
 			PADSAVEP();
-			flash = (lightflash_t*)DoomLib::Z_Malloc (sizeof(*flash), PU_LEVEL, NULL);
+			flash = (lightflash_t*)DoomLib::Z_Malloc (sizeof(*flash), PU_LIGHTS, NULL);
 			memcpy (flash, ::g->save_p, sizeof(*flash));
 			::g->save_p += sizeof(*flash);
 			flash->sector = &::g->sectors[(intptr_t)flash->sector];
@@ -777,7 +777,7 @@ void P_UnArchiveThinkers (void)
 
 		case tc_strobe:
 			PADSAVEP();
-			strobe = (strobe_t*)DoomLib::Z_Malloc (sizeof(*strobe), PU_LEVEL, NULL);
+			strobe = (strobe_t*)DoomLib::Z_Malloc (sizeof(*strobe), PU_LIGHTS, NULL);
 			memcpy (strobe, ::g->save_p, sizeof(*strobe));
 			::g->save_p += sizeof(*strobe);
 			strobe->sector = &::g->sectors[(intptr_t)strobe->sector];
@@ -787,7 +787,7 @@ void P_UnArchiveThinkers (void)
 
 		case tc_glow:
 			PADSAVEP();
-			glow = (glow_t*)DoomLib::Z_Malloc (sizeof(*glow), PU_LEVEL, NULL);
+			glow = (glow_t*)DoomLib::Z_Malloc (sizeof(*glow), PU_LIGHTS, NULL);
 			memcpy (glow, ::g->save_p, sizeof(*glow));
 			::g->save_p += sizeof(*glow);
 			glow->sector = &::g->sectors[(intptr_t)glow->sector];
@@ -987,7 +987,7 @@ void P_UnArchiveSpecials (void)
 			
 	  case tc_ceiling:
 	    PADSAVEP();
-	    ceiling = (ceiling_t*)DoomLib::Z_Malloc(sizeof(*ceiling), PU_LEVEL, NULL);
+	    ceiling = (ceiling_t*)DoomLib::Z_Malloc(sizeof(*ceiling), PU_CEILING, NULL);
 	    memcpy (ceiling, ::g->save_p, sizeof(*ceiling));
 	    ::g->save_p += sizeof(*ceiling);
 	    ceiling->sector = &::g->sectors[(intptr_t)ceiling->sector];
@@ -1002,7 +1002,7 @@ void P_UnArchiveSpecials (void)
 				
 	  case tc_door:
 	    PADSAVEP();
-	    door = (vldoor_t*)DoomLib::Z_Malloc(sizeof(*door), PU_LEVEL, NULL);
+	    door = (vldoor_t*)DoomLib::Z_Malloc(sizeof(*door), PU_DOOR, NULL);
 	    memcpy (door, ::g->save_p, sizeof(*door));
 	    ::g->save_p += sizeof(*door);
 	    door->sector = &::g->sectors[(intptr_t)door->sector];
@@ -1013,7 +1013,7 @@ void P_UnArchiveSpecials (void)
 				
 	  case tc_floor:
 	    PADSAVEP();
-	    floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_LEVEL, NULL);
+	    floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_FLOOR, NULL);
 	    memcpy (floor, ::g->save_p, sizeof(*floor));
 	    ::g->save_p += sizeof(*floor);
 	    floor->sector = &::g->sectors[(intptr_t)floor->sector];
@@ -1024,7 +1024,7 @@ void P_UnArchiveSpecials (void)
 				
 	  case tc_plat:
 	    PADSAVEP();
-	    plat = (plat_t*)DoomLib::Z_Malloc (sizeof(*plat), PU_LEVEL, NULL);
+	    plat = (plat_t*)DoomLib::Z_Malloc (sizeof(*plat), PU_PLATS, NULL);
 	    memcpy (plat, ::g->save_p, sizeof(*plat));
 	    ::g->save_p += sizeof(*plat);
 	    plat->sector = &::g->sectors[(intptr_t)plat->sector];
@@ -1039,7 +1039,7 @@ void P_UnArchiveSpecials (void)
 				
 	  case tc_flash:
 	    PADSAVEP();
-	    flash = (lightflash_t*)DoomLib::Z_Malloc (sizeof(*flash), PU_LEVEL, NULL);
+	    flash = (lightflash_t*)DoomLib::Z_Malloc (sizeof(*flash), PU_LIGHTS, NULL);
 	    memcpy (flash, ::g->save_p, sizeof(*flash));
 	    ::g->save_p += sizeof(*flash);
 	    flash->sector = &::g->sectors[(intptr_t)flash->sector];
@@ -1049,7 +1049,7 @@ void P_UnArchiveSpecials (void)
 				
 	  case tc_strobe:
 	    PADSAVEP();
-	    strobe = (strobe_t*)DoomLib::Z_Malloc (sizeof(*strobe), PU_LEVEL, NULL);
+	    strobe = (strobe_t*)DoomLib::Z_Malloc (sizeof(*strobe), PU_LIGHTS, NULL);
 	    memcpy (strobe, ::g->save_p, sizeof(*strobe));
 	    ::g->save_p += sizeof(*strobe);
 	    strobe->sector = &::g->sectors[(intptr_t)strobe->sector];
@@ -1059,7 +1059,7 @@ void P_UnArchiveSpecials (void)
 				
 	  case tc_glow:
 	    PADSAVEP();
-	    glow = (glow_t*)DoomLib::Z_Malloc (sizeof(*glow), PU_LEVEL, NULL);
+	    glow = (glow_t*)DoomLib::Z_Malloc (sizeof(*glow), PU_LIGHTS, NULL);
 	    memcpy (glow, ::g->save_p, sizeof(*glow));
 	    ::g->save_p += sizeof(*glow);
 	    glow->sector = &::g->sectors[(intptr_t)glow->sector];
@@ -1069,7 +1069,7 @@ void P_UnArchiveSpecials (void)
 		//GK:BOOM's elevator and scroller related stuff
 	  case tc_elevator:
 		  PADSAVEP();
-		  elevator = (elevator_t*)DoomLib::Z_Malloc(sizeof(*elevator), PU_LEVEL, NULL);
+		  elevator = (elevator_t*)DoomLib::Z_Malloc(sizeof(*elevator), PU_DOOR, NULL);
 		  memcpy(elevator, ::g->save_p, sizeof(*elevator));
 		  ::g->save_p += sizeof(*elevator);
 		  elevator->sector = &::g->sectors[(intptr_t)elevator->sector];
@@ -1079,7 +1079,7 @@ void P_UnArchiveSpecials (void)
 
 	  case tc_scroll:
 		  PADSAVEP();
-		  scroll = (scroll_t*)DoomLib::Z_Malloc(sizeof(*scroll), PU_LEVEL, NULL);
+		  scroll = (scroll_t*)DoomLib::Z_Malloc(sizeof(*scroll), PU_DOOR, NULL);
 		  memcpy(scroll, ::g->save_p, sizeof(*scroll));
 		  ::g->save_p += sizeof(*scroll);
 		  scroll->thinker.function.acp1 = (actionf_p1)T_Scroll;

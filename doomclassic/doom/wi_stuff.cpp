@@ -1573,7 +1573,7 @@ void WI_loadData(void)
 	}
 
 	// background
-	::g->bg = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
+	::g->bg = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_BACK), W_GetNumForName(name));
 
 	V_DrawPatch(0, 0, 1, ::g->bg, false);
 
@@ -1595,36 +1595,50 @@ void WI_loadData(void)
 			::g->NUMCMAPS = ::g->maps.size()-1; //GK:UNLIMITED MAPS
 		}
 		else {
-			::g->NUMCMAPS = 32;
+			switch (::g->gamemission) {
+			case doom2:
+				::g->NUMCMAPS = ::g->isbfg ? 33 : 32;
+				break;
+			case pack_tnt:
+			case pack_plut:
+				::g->NUMCMAPS = 32;
+				break;
+			case pack_nerve:
+				::g->NUMCMAPS = 9;
+				break;
+			case pack_master:
+				::g->NUMCMAPS = 21;
+				break;
+			}
 		}
-		::g->lnames = (patch_t **) DoomLib::Z_Malloc(sizeof(patch_t*) * ::g->NUMCMAPS, PU_LEVEL_SHARED, 0);
-		for (i=0 ; i < ::g->NUMCMAPS+1 ; i++) //GK: The stupidiest game crashing bug in the world
+		::g->lnames = (patch_t **) DoomLib::Z_Malloc(sizeof(patch_t*) * ::g->NUMCMAPS, PU_WI_LNAME, 0);
+		for (i=0 ; i < ::g->NUMCMAPS ; i++) //GK: The stupidiest game crashing bug in the world
 		{
 			sprintf(name, "CWILV%2.2d", i);
 			if (W_CheckNumForName(name) > 0) {
-				::g->lnames[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
+				::g->lnames[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_LNAME), W_GetNumForName(name));
 			}
 		}					
 	}
 	else
 	{
-		::g->lnames = (patch_t **) DoomLib::Z_Malloc(sizeof(patch_t*) * ( NUMMAPS ), PU_LEVEL_SHARED, 0);
+		::g->lnames = (patch_t **) DoomLib::Z_Malloc(sizeof(patch_t*) * ( NUMMAPS ), PU_WI_LNAME, 0);
 		for (i=0 ; i<NUMMAPS ; i++)
 		{
 			sprintf(name, "WILV%d%d", ::g->wbs->epsd, i);
 			if (W_CheckNumForName(name) > 0) {
-				::g->lnames[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
+				::g->lnames[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_LNAME), W_GetNumForName(name));
 			}
 		}
 
 		// you are here
-		::g->yah[0] = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIURH0", PU_LEVEL_SHARED), W_GetNumForName("WIURH0"));
+		::g->yah[0] = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIURH0", PU_WI_FRONT), W_GetNumForName("WIURH0"));
 
 		// you are here (alt.)
-		::g->yah[1] = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIURH1", PU_LEVEL_SHARED), W_GetNumForName("WIURH1"));
+		::g->yah[1] = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIURH1", PU_WI_FRONT), W_GetNumForName("WIURH1"));
 
 		// splat
-		::g->splat = /*(patch_t*)*/img2lmp(W_CacheLumpName("WISPLAT", PU_LEVEL_SHARED), W_GetNumForName("WISPLAT"));
+		::g->splat = /*(patch_t*)*/img2lmp(W_CacheLumpName("WISPLAT", PU_WI_FRONT), W_GetNumForName("WISPLAT"));
 	
 		if (::g->wbs->epsd < 3)
 		{
@@ -1651,7 +1665,7 @@ void WI_loadData(void)
 					{
 						// animations
 						sprintf(name, "WIA%d%.2d%.2d", ::g->wbs->epsd, j, i);  
-						a->p[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
+						a->p[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_FRONT), W_GetNumForName(name));
 					}
 					else
 					{
@@ -1664,58 +1678,58 @@ void WI_loadData(void)
 	}
 
 	// More hacks on minus sign.
-	::g->wiminus = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIMINUS", PU_LEVEL_SHARED), W_GetNumForName("WIMINUS"));
+	::g->wiminus = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIMINUS", PU_WI_FRONT), W_GetNumForName("WIMINUS"));
 
 	for (i=0;i<10;i++)
 	{
 		// numbers 0-9
 		sprintf(name, "WINUM%d", i);     
-		::g->num[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
+		::g->num[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_FRONT), W_GetNumForName(name));
 	}
 
 	// percent sign
-	::g->percent = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIPCNT", PU_LEVEL_SHARED), W_GetNumForName("WIPCNT"));
+	::g->percent = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIPCNT", PU_WI_FRONT), W_GetNumForName("WIPCNT"));
 
 	// "finished"
-	::g->finished = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIF", PU_LEVEL_SHARED), W_GetNumForName("WIF"));
+	::g->finished = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIF", PU_WI_FRONT), W_GetNumForName("WIF"));
 
 	// "entering"
-	::g->entering = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIENTER", PU_LEVEL_SHARED), W_GetNumForName("WIENTER"));
+	::g->entering = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIENTER", PU_WI_FRONT), W_GetNumForName("WIENTER"));
 
 	// "kills"
-	::g->kills = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIOSTK", PU_LEVEL_SHARED), W_GetNumForName("WIOSTK"));
+	::g->kills = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIOSTK", PU_WI_FRONT), W_GetNumForName("WIOSTK"));
 
 	// "scrt"
-	::g->secret = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIOSTS", PU_LEVEL_SHARED), W_GetNumForName("WIOSTS"));
+	::g->secret = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIOSTS", PU_WI_FRONT), W_GetNumForName("WIOSTS"));
 
 	 // "secret"
-	::g->sp_secret = /*(patch_t*)*/img2lmp(W_CacheLumpName("WISCRT2", PU_LEVEL_SHARED), W_GetNumForName("WISCRT2"));
+	::g->sp_secret = /*(patch_t*)*/img2lmp(W_CacheLumpName("WISCRT2", PU_WI_FRONT), W_GetNumForName("WISCRT2"));
 
-	::g->items = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIOSTI", PU_LEVEL_SHARED), W_GetNumForName("WIOSTI"));
+	::g->items = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIOSTI", PU_WI_FRONT), W_GetNumForName("WIOSTI"));
 
 	// "frgs"
-	::g->wistuff_frags = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIFRGS", PU_LEVEL_SHARED), W_GetNumForName("WIFRGS"));
+	::g->wistuff_frags = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIFRGS", PU_WI_FRONT), W_GetNumForName("WIFRGS"));
 
 	// ":"
-	::g->colon = /*(patch_t*)*/img2lmp(W_CacheLumpName("WICOLON", PU_LEVEL_SHARED), W_GetNumForName("WICOLON"));
+	::g->colon = /*(patch_t*)*/img2lmp(W_CacheLumpName("WICOLON", PU_WI_FRONT), W_GetNumForName("WICOLON"));
 
 	// "time"
-	::g->time = /*(patch_t*)*/img2lmp(W_CacheLumpName("WITIME", PU_LEVEL_SHARED), W_GetNumForName("WITIME"));
+	::g->time = /*(patch_t*)*/img2lmp(W_CacheLumpName("WITIME", PU_WI_FRONT), W_GetNumForName("WITIME"));
 
 	// "sucks"
-	::g->sucks = /*(patch_t*)*/img2lmp(W_CacheLumpName("WISUCKS", PU_LEVEL_SHARED), W_GetNumForName("WISUCKS"));
+	::g->sucks = /*(patch_t*)*/img2lmp(W_CacheLumpName("WISUCKS", PU_WI_FRONT), W_GetNumForName("WISUCKS"));
 
 	// "par"
-	::g->par = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIPAR", PU_LEVEL_SHARED), W_GetNumForName("WIPAR"));
+	::g->par = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIPAR", PU_WI_FRONT), W_GetNumForName("WIPAR"));
 
 	// "killers" (vertical)
-	::g->killers = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIKILRS", PU_LEVEL_SHARED), W_GetNumForName("WIKILRS"));
+	::g->killers = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIKILRS", PU_WI_FRONT), W_GetNumForName("WIKILRS"));
 
 	// "victims" (horiz)
-	::g->victims = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIVCTMS", PU_LEVEL_SHARED), W_GetNumForName("WIVCTMS"));
+	::g->victims = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIVCTMS", PU_WI_FRONT), W_GetNumForName("WIVCTMS"));
 
 	// "total"
-	::g->total = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIMSTT", PU_LEVEL_SHARED), W_GetNumForName("WIMSTT"));
+	::g->total = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIMSTT", PU_WI_FRONT), W_GetNumForName("WIMSTT"));
 
 	// your face
 	::g->star = /*(patch_t*)*/img2lmp(W_CacheLumpName("STFST01", PU_STATIC_SHARED), W_GetNumForName("STFST01")); // ALAN: this is statically in the game...
@@ -1727,11 +1741,11 @@ void WI_loadData(void)
 	{
 		// "1,2,3,4"
 		sprintf(name, "STPB%d", i);      
-		::g->wistuff_p[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
+		::g->wistuff_p[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_FRONT), W_GetNumForName(name));
 
 		// "1,2,3,4"
 		sprintf(name, "WIBP%d", i+1);     
-		::g->wistuff_bp[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_LEVEL_SHARED), W_GetNumForName(name));
+		::g->wistuff_bp[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_FRONT), W_GetNumForName(name));
 	}
 
 }
