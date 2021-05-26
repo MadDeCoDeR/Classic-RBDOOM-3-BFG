@@ -389,10 +389,10 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			if (cimpulse > 0 && circleWeaponPacifier >= ( engineHz_denominator / 2)) { //GK: Weapon change event happend
 				circleWeaponPacifier = 0;
 				if (!::g->demorecording) {
-					//cmd = &::g->players[::g->consoleplayer].cmd;
-					cmd->buttons |= BT_CHANGE;
-					cmd->nextPrevWeapon = cimpulse;
-					//P_PlayerThink(&::g->players[::g->consoleplayer]);
+					/*cmd->buttons |= BT_CHANGE;
+					cmd->nextPrevWeapon = cimpulse;*/
+					//GK: Just call it directly no more stupid cmd hacks
+					P_CircleWeapons(&::g->players[::g->consoleplayer], cimpulse);
 				}
 				else {
 					cmd->buttons |= BT_CHANGE;

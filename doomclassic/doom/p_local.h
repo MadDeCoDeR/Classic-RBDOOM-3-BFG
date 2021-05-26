@@ -94,6 +94,7 @@ void P_SetPsprite(player_t* player, int position, int stnum);
 // P_USER
 //
 void	P_PlayerThink (player_t* player);
+void	P_CircleWeapons(player_t* player, int nextPrevWeapon);
 
 
 //

@@ -423,56 +423,33 @@ void P_PlayerThink (player_t* player)
 		}
 
 		if ( cmd->nextPrevWeapon > 0) {
-			newweapon = player->readyweapon;
-
-			for ( k = 0; k < NUMWEAPONS; ++k) 
-			{
-				newweapon = (weapontype_t)( (cmd->nextPrevWeapon - 1) ? (newweapon + 1) : (newweapon - 1));
-
-				if (newweapon == wp_nochange)
-					continue;
-
-				weapontype_t maxweapon = (::g->gamemode == retail) ? wp_chainsaw : wp_supershotgun;
-
-				if (newweapon < 0)
-					newweapon = maxweapon;
-
-				if (newweapon > maxweapon)
-					newweapon = wp_fist;
-				
-
-				if (player->weaponowned[newweapon] && newweapon != player->readyweapon)
-				{
-					player->pendingweapon = newweapon;
-					break;
-				}
-			}
+			P_CircleWeapons(player, cmd->nextPrevWeapon);
 		}
 		else {
 
 			newweapon = (weapontype_t)((cmd->buttons&BT_WEAPONMASK)>>BT_WEAPONSHIFT);
 
-			if (newweapon == wp_fist
-				&& player->weaponowned[wp_chainsaw]
-			&& !(player->readyweapon == wp_chainsaw
-				&& player->powers[pw_strength]))
-			{
-				newweapon = wp_chainsaw;
-			}
+				if (newweapon == wp_fist
+					&& player->weaponowned[wp_chainsaw]
+					&& !(player->readyweapon == wp_chainsaw
+						&& player->powers[pw_strength]))
+				{
+					newweapon = wp_chainsaw;
+				}
 
-			if ( (::g->gamemode == commercial)
-				&& newweapon == wp_shotgun 
-				&& player->weaponowned[wp_supershotgun]
-			&& player->readyweapon != wp_supershotgun)
-			{
-				newweapon = wp_supershotgun;
-			}
+				if ((::g->gamemode == commercial)
+					&& newweapon == wp_shotgun
+					&& player->weaponowned[wp_supershotgun]
+					&& player->readyweapon != wp_supershotgun)
+				{
+					newweapon = wp_supershotgun;
+				}
 
-			if ( player->weaponowned[ newweapon ] && newweapon != player->readyweapon ) {
-				player->pendingweapon = newweapon;
+				if (player->weaponowned[newweapon] && newweapon != player->readyweapon) {
+					player->pendingweapon = newweapon;
+				}
 			}
 		}
-	}
 
 	// check for use
 	if (cmd->buttons & BT_USE)
@@ -548,6 +525,44 @@ void P_PlayerThink (player_t* player)
 	}
 	else
 		player->fixedcolormap = 0;
+}
+
+/*
+P_CircleWeapons
+This is a direct copy of the original code. The reason why is separated is for the quick weapon circling.
+As it turns out the old method (to just call P_Ticker) was causing incompatibilities with Demo recording.
+That way it can be called directly from g_game once the input is detected or from the original place when
+recording and playing Demos.
+*/
+void P_CircleWeapons(player_t* player, int nextPrevWeapon) {
+	if (player->mo == NULL)
+		return;
+	weapontype_t newweapon = wp_fist;
+	newweapon = player->readyweapon;
+
+	for (int k = 0; k < NUMWEAPONS; ++k)
+	{
+		newweapon = (weapontype_t)((nextPrevWeapon - 1) ? (newweapon + 1) : (newweapon - 1));
+
+		if (newweapon == wp_nochange)
+			continue;
+
+		weapontype_t maxweapon = (::g->gamemode == retail) ? wp_chainsaw : wp_supershotgun;
+
+		if (newweapon < 0)
+			newweapon = maxweapon;
+
+		if (newweapon > maxweapon)
+			newweapon = wp_fist;
+
+
+		if (player->weaponowned[newweapon] && newweapon != player->readyweapon)
+		{
+			
+			player->pendingweapon = newweapon;
+			break;
+		}
+	}
 }
 
 
