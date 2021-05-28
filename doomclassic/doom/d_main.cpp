@@ -634,6 +634,10 @@ void D_DoomMain(void)
 	}
 	//GK: New pwad for compatibility with the original DOOM And DOOMII IWADs
 	D_AddFile("wads/newopt.wad");
+
+	//GK: Check if there is either a folder or a zip that is called "master" and create the MASTERLEVELS.wad
+	if (::g->gamemode == commercial && !DoomLib::hexp[2])
+		MakeMaster_Wad();
 	//GK: Find the position of -doom,-doom2 and -both
 	M_initParam();
 	//GK: fix for Dehacked pointer editor
@@ -724,48 +728,31 @@ void D_DoomMain(void)
 				DoomLib::SetIdealExpansion(doom2);
 				break;
 			case 2:
-				if (DoomLib::hexp[3]) {
-					DoomLib::SetIdealExpansion(pack_nerve);
-				}
-				else {
-					DoomLib::SetIdealExpansion(doom2);
-				}
+				DoomLib::SetIdealExpansion(pack_nerve);
 				break;
 			case 3:
-
-				if (DoomLib::hexp[0]) {
-					DoomLib::SetIdealExpansion(pack_tnt);
-				}
-				else {
-					DoomLib::SetIdealExpansion(doom2);
-				}
+				DoomLib::SetIdealExpansion(pack_tnt);
 				break;
 			case 4:
-
-				if (DoomLib::hexp[1]) {
-					DoomLib::SetIdealExpansion(pack_plut);
-				}
-				else {
-					DoomLib::SetIdealExpansion(doom2);
-				}
+				DoomLib::SetIdealExpansion(pack_plut);
 				break;
 			case 5:
-
-				if (DoomLib::hexp[2]) {
-					DoomLib::SetIdealExpansion(pack_master);
-				}
-				else {
-					DoomLib::SetIdealExpansion(doom2);
-				}
+				DoomLib::SetIdealExpansion(pack_master);
 				break;
 			default:
 				DoomLib::SetIdealExpansion(doom2);
 				break;
 			}
+			int expInd = DoomLib::idealExpansion - 2;
+			if (!DoomLib::hexp[expInd]) {
+				DoomLib::SetIdealExpansion(doom2);
+			}
 			DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
 			idLib::Printf("Loading %d\n", DoomLib::idealExpansion);
 			idLib::Printf("Loading %d\n", DoomLib::expansionSelected);
-			DoomLib::skipToNew = true;
+			::g->autostart = true;
+			::g->startmap = 1;
+			//DoomLib::skipToNew = true;
 			//GK: Re init wad files to apply the change
 			IdentifyVersion();
 			D_AddFile("wads/newopt.wad");
@@ -1124,9 +1111,6 @@ void D_DoomMain(void)
 
 	I_Printf ("D_CheckNetGame: Checking network game status.\n");
 	D_CheckNetGame ();
-	//GK: Check if there is either a folder or a zip that is called "master" and create the MASTERLEVELS.wad
-	if (::g->gamemode == commercial && !DoomLib::hexp[2])
-	    MakeMaster_Wad();
 	//GK: "Extract" the Master Levels in order to be used in other ports
 	int exm = M_CheckParm("-extractMaster");
 	if (exm && DoomLib::hexp[2]) {
