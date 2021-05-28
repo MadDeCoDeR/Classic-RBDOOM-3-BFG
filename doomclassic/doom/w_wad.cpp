@@ -90,7 +90,7 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads = tru
 void W_RemoveLump(int lump);
 bool W_InjectLump(std::vector<filelump_t>::iterator file, int pos, idFile* handle);
 
-
+extern idCVar fs_savepath;
 
 int filelength (FILE* handle) 
 { 
@@ -383,9 +383,9 @@ void W_AddFile ( const char *filename)
     {
 		//GK: when loading archives return instandly don't add it to the lump list
 #ifdef _WINDOWS
-			if (OpenCompFile(filename, "/pwads/")) {
+			if (OpenCompFile(filename, "pwads/")) {
 #else //GK: Use the absolute path on linux because minizip might refuse to open it otherwise
-			if (OpenCompFile(handle->GetFullPath(), "/pwads/")) {
+			if (OpenCompFile(handle->GetFullPath(), "pwads/")) {
 #endif
 				//handle=nullptr;
 				//fileSystem->CloseFile(handle);
@@ -1190,16 +1190,9 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 	else {
 		strcpy(fdir, filename);
 	}
-	sprintf(finalWadDir, "%s%s", "base", wadPath);
-	//idLib::Printf("Checking %s for compressed file\n",fdir);
+	sprintf(finalWadDir, "%s", wadPath);
 	unzFile zip = unzOpen(fdir);
 	if (zip != NULL) {
-		//idLib::Printf("found compressed file\n");
-#ifdef _WIN32
-		CreateDirectory(finalWadDir,NULL);
-#else
-		mkdir(finalWadDir, S_IRWXU);
-#endif
 		unz_global_info gi;
 		if (unzGetGlobalInfo(zip, &gi) == UNZ_OK) {
 			char rb[READ_SIZE];
@@ -1222,16 +1215,17 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 							if (unzOpenCurrentFile(zip) == UNZ_OK) {
 								char* path = new char[MAX_FILENAME];
 								sprintf(path, "%s%s", finalWadDir, name);
-								std::FILE *out = fopen(path, "wb");
+								idFile* out = fileSystem->OpenFileWrite(path);
 								if (out != NULL) {
 									int buff = UNZ_OK;
 									do {
 										buff = unzReadCurrentFile(zip, rb, READ_SIZE);
 										if (buff > 0) {
-											fwrite(rb, buff, 1, out);
+											out->Write(rb, buff);
 										}
 									} while (buff > 0);
-									fclose(out);
+									out->Flush();
+									fileSystem->CloseFile(out);
 									unzCloseCurrentFile(zip);
 									if (loadWads) {
 										fname.emplace_back(path);
@@ -1338,11 +1332,11 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 							k++;
 						}
 						//idLib::Printf("%s\n", maindir);
-							#ifdef _WIN32
+							/*#ifdef _WIN32
 													CreateDirectory(maindir, NULL);
 							#else
 													mkdir(maindir, S_IRWXU);
-							#endif
+							#endif*/
 						foldername.emplace_back(maindir);
 						if (i + 1 < gi.number_entry) {
 							unzGoToNextFile(zip);
@@ -1400,11 +1394,17 @@ void CleanUncompFiles(bool unalloc) {
 #endif
 
 }
-#ifdef _WIN32
-	RemoveDirectory("base/pwads");
-#else
-	rmdir("base/pwads");
-#endif
+//#ifdef _WIN32
+//	RemoveDirectory("base/pwads");
+//#else
+//	rmdir("base/pwads");
+//#endif
+	idFileList* deleteList = fileSystem->ListFilesTree("pwads", "*");
+	for (int i = 0; i < deleteList->GetNumFiles(); i++) {
+		char fileName[256];
+		strcpy(fileName, deleteList->GetFile(i));
+		fileSystem->RemoveFile(fileName);
+	}
 		fname.clear();
 		fname.shrink_to_fit();
 		foldername.clear();
@@ -1413,24 +1413,26 @@ void CleanUncompFiles(bool unalloc) {
 //GK: Check for either the wad a folder or a zip file that contains ALL the Master Levels
 void MakeMaster_Wad() {
 	struct stat info;
-	if (FILE *f = fopen("base/wads/MASTERLEVELS.wad", "r")) {
-		fclose(f);
+	if (idFile *f = fileSystem->OpenFileRead("wads/MASTERLEVELS.wad")) {
+		fileSystem->CloseFile(f);
 		DoomLib::hexp[2] = true;
 		return;
 	}
-	if (FILE *f = fopen("base/wads/master.zip", "r")) {
-		fclose(f);
-		OpenCompFile("base/wads/master.zip", "/wads/master/", false);
+	if (idFile *f = fileSystem->OpenFileRead("wads/master.zip")) {
+		char zipPath[256];
+		strcpy(zipPath, f->GetFullPath());
+		fileSystem->CloseFile(f);
+		OpenCompFile(zipPath, "wads/master/", false);
 	}
-	if (stat("base/wads/master/", &info) != 0)
+	if (!fileSystem->IsFolder("wads/master")) {
 		return;
-	else if (info.st_mode & S_IFDIR){
-		idLib::Printf("Found Directry\n");
-		DoomLib::hexp[2] = true;
-		MasterList();
+	}
+	
+	idLib::Printf("Found Directry\n");
+	DoomLib::hexp[2] = true;
+	MasterList();
 		
-		return;
-	}
+	return;
 }
 //GK:Open all the wads and copy and rename their contents into one WAD file
 void MasterList() {
@@ -1442,45 +1444,29 @@ void MasterList() {
 	int			length;
 	int			startlump;
 	int nlps = 0;
-	int cl = 0;
 	int remlmp = 0;
 	bool pushit = true;
 	std::vector<filelump_t>	fileinfo(1);
 	int count = 1;
 	int count2 = 1;
 	char* filename = new char[MAX_FILENAME];
-#ifdef _WIN32
-	char* dir = "base\\wads\\master\\*.wad";
-#else
-	char* dir = "base/wads/master/"; //GK: Otherwise it will crash once it will try to open them
-#endif
-#ifdef _WIN32
-	WIN32_FIND_DATA ffd;
-	HANDLE hFind = INVALID_HANDLE_VALUE;
-#else
-	DIR           *dirp;
-	struct dirent *directory;
-#endif
 	std::vector <int> fofs;
 	int offs = 12;
 	char* buffer = new char[512];
-	std::ofstream of("base//wads//MASTERLEVELS.wad", std::ios::binary);
-	of.write("PWAD", 4);
-#ifdef _WIN32
-	hFind = FindFirstFile(dir, &ffd);
-#else
-	dirp = opendir(dir);
-#endif
-	do {
+
+	idFile* master = fileSystem->OpenFileWrite("wads/MASTERLEVELS.WAD");
+	master->Write("PWAD", 4);
+	idFileList* masterList = fileSystem->ListFiles("wads/master", "wad");
+	for (int cl = 0; cl < masterList->GetNumFiles(); cl++) {
 		sprintf(filename, "wads/master/%s", masterlist[cl]);
 		idLib::Printf("%s\n", filename);
 		// open the file and add to directory
 		if ((handle = fileSystem->OpenFileRead(filename)) == 0)
 		{
 			idLib::Printf("Doom Classic Error : Master Levels generation failed\n");
-			of.close();
+			fileSystem->CloseFile(master);
 			DoomLib::hexp[2] = false;
-			remove("base//wads//MASTERLEVELS.wad");
+			fileSystem->RemoveFile("wads/MASTERLEVELS.WAD");
 			return;
 		}
 		startlump = nlps;
@@ -1523,7 +1509,7 @@ void MasterList() {
 
 			lump = &lumpnfo[startlump];
 
-			filelump_t * filelumpPointer = &fileinfo[0];
+			filelump_t* filelumpPointer = &fileinfo[0];
 			rep = false;
 
 			for (int i = startlump; i < nlps; i++, lump++, filelumpPointer++)
@@ -1580,7 +1566,7 @@ void MasterList() {
 				strncpy(lump->name, filelumpPointer->name, 8);
 				lump->name[8] = '\0';
 				if (!idStr::Cmpn(lump->name, "MAP", 3)) {
-					char * tm = new char[6];
+					char* tm = new char[6];
 					if (count < 10) {
 						sprintf(tm, "MAP0%i", count);
 						tm[5] = '\0';
@@ -1595,7 +1581,7 @@ void MasterList() {
 				}
 				if (!idStr::Cmpn(lump->name, "RSKY", 4)) {
 					if (count2 < 4) {
-						char * tm = new char[6];
+						char* tm = new char[6];
 						sprintf(tm, "STAR%i", count2);
 						tm[5] = '\0';
 						strcpy(lump->name, tm);
@@ -1604,7 +1590,7 @@ void MasterList() {
 				}
 				if (!idStr::Cmp(lump->name, "STARS")) {
 					if (count2 == 2) {
-						char * tm = new char[6];
+						char* tm = new char[6];
 						sprintf(tm, "STAR%i", count2);
 						tm[5] = '\0';
 						strcpy(lump->name, tm);
@@ -1615,17 +1601,11 @@ void MasterList() {
 
 			}
 		}
-		cl++;
-#ifdef _WIN32
-	} while (FindNextFile(hFind, &ffd) != 0);
-#else
-	}while ((directory = readdir(dirp)) != NULL && cl<20); //GK: Make sure there is no leak
-	closedir(dirp);
-#endif
+	}
 	lump = &lumpnfo[0];
 	nlps = nlps - remlmp;
-	of.write(reinterpret_cast<char*>(&nlps), 4);
-	of.write(reinterpret_cast<char*>(&offs), 4);
+	master->Write(reinterpret_cast<char*>(&nlps), 4);
+	master->Write(reinterpret_cast<char*>(&offs), 4);
 	//GK:The more the better
 	buffer = new char[offs];
 	try {
@@ -1636,7 +1616,7 @@ void MasterList() {
 			int c = handle->Read(buffer, lump->size);
 			if (!lump->null) {
 				if (idStr::Cmpn(buffer, "WARNING", 7)) {
-					of.write(buffer, lump->size);
+					master->Write(buffer, lump->size);
 				}
 			}
 		}
@@ -1649,16 +1629,17 @@ void MasterList() {
 
 	for (int i = 0; i < nlps; lump++) {
 		if (!lump->null) {
-			of.write(reinterpret_cast<char*>(&fofs[i]), 4);
-			of.write(reinterpret_cast<char*>(&lump->size), 4);
-			of.write(lump->name, 8);
+			master->Write(reinterpret_cast<char*>(&fofs[i]), 4);
+			master->Write(reinterpret_cast<char*>(&lump->size), 4);
+			master->Write(lump->name, 8);
 			i++;
 		}
 	}
 	lump = nullptr;
 	lumpnfo = nullptr;
 	delete[] buffer;
-	of.flush();
+	master->Flush();
+	fileSystem->CloseFile(master);
 	//GK: Nothing to see here (or close in that mater)
 	return;
 }
@@ -1681,21 +1662,14 @@ void MasterExport() {
 	int count2 = 1;
 	char* filename = new char[MAX_FILENAME];
 	char* file[3];
-	file[0] = "wads/MASTERLEVELS.wad"; //GK: Otherwise it will crash once it will try to open them
+	file[0] = "wads/MASTERLEVELS.wad";
 	file[1] = "wads/mlbls.wad";
 	file[2] = "wads/ua.wad";
-#ifdef _WIN32
-	WIN32_FIND_DATA ffd;
-	HANDLE hFind = INVALID_HANDLE_VALUE;
-#else
-	DIR           *dirp;
-	struct dirent *directory;
-#endif
 	std::vector <int> fofs;
 	int offs = 12;
 	char* buffer = new char[512];
-	std::ofstream of("base//wads//MASTERLEVELZ.wad", std::ios::binary);
-	of.write("PWAD", 4);
+	idFile* mazter = fileSystem->OpenFileWrite("wads/MASTERLEVELZ.WAD");
+	mazter->Write("PWAD", 4);
 	for (int i = 0; i < 3; i++) {
 		sprintf(filename, "%s", file[i]);
 		idLib::Printf("%s\n", filename);
@@ -1703,9 +1677,8 @@ void MasterExport() {
 		if ((handle = fileSystem->OpenFileRead(filename)) == 0)
 		{
 			idLib::Printf("Doom Classic Error : Master Levels generation failed\n");
-			of.close();
-			//DoomLib::hexp[2] = false;
-			remove("base//wads//MASTERLEVELZ.wad");
+			fileSystem->CloseFile(mazter);
+			fileSystem->RemoveFile("wads/MASTERLEVELZ.WAD");
 			return;
 		}
 		startlump = nlps;
@@ -1790,8 +1763,8 @@ void MasterExport() {
 	}
 lump = &lumpnfo[0];
 nlps = nlps - remlmp;
-of.write(reinterpret_cast<char*>(&nlps), 4);
-of.write(reinterpret_cast<char*>(&offs), 4);
+mazter->Write(reinterpret_cast<char*>(&nlps), 4);
+mazter->Write(reinterpret_cast<char*>(&offs), 4);
 //GK:The more the better
 buffer = new char[offs];
 try {
@@ -1802,7 +1775,7 @@ try {
 		int c = handle->Read(buffer, lump->size);
 		if (!lump->null) {
 			if (idStr::Cmpn(buffer, "WARNING", 7)) {
-				of.write(buffer, lump->size);
+				mazter->Write(buffer, lump->size);
 			}
 		}
 	}
@@ -1815,16 +1788,17 @@ lump = &lumpnfo[0];
 
 for (int i = 0; i < nlps; lump++) {
 	if (!lump->null) {
-		of.write(reinterpret_cast<char*>(&fofs[i]), 4);
-		of.write(reinterpret_cast<char*>(&lump->size), 4);
-		of.write(lump->name, 8);
+		mazter->Write(reinterpret_cast<char*>(&fofs[i]), 4);
+		mazter->Write(reinterpret_cast<char*>(&lump->size), 4);
+		mazter->Write(lump->name, 8);
 		i++;
 	}
 }
 lump = nullptr;
 lumpnfo = nullptr;
 delete[] buffer;
-of.flush();
+mazter->Flush();
+fileSystem->CloseFile(mazter);
 //GK: Nothing to see here (or close in that mater)
 return;
 }
