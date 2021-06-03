@@ -36,7 +36,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../d3xp/Game_local.h"
 
 idCVar s_singleEmitter( "s_singleEmitter", "0", CVAR_INTEGER, "mute all sounds but this emitter" );
-idCVar s_showStartSound( "s_showStartSound", "1", CVAR_BOOL, "print a message every time a sound starts/stops" );
+idCVar s_showStartSound( "s_showStartSound", "0", CVAR_BOOL, "print a message every time a sound starts/stops" );
 idCVar s_useOcclusion( "s_useOcclusion", "1", CVAR_BOOL, "Attenuate sounds based on walls" );
 idCVar s_centerFractionVO( "s_centerFractionVO", "0.75", CVAR_FLOAT, "Portion of VO sounds routed to the center channel" );
 
@@ -572,11 +572,11 @@ bool idSoundEmitterLocal::CheckForCompletion( int currentTime )
 		{
 			channels.RemoveIndex( i );
 			soundWorld->FreeSoundChannel( chan );
-			if (hasCaption) {
-				game->GetLocalPlayer()->hud->clearCaption();
-				hasCaption = false;
-			}
 		}
+	}
+	if (hasCaption && channels.Num() == 0) {
+		game->GetLocalPlayer()->hud->clearCaption(shaderName);
+		hasCaption = false;
 	}
 	return ( canFree && channels.Num() == 0 );
 }
@@ -598,12 +598,21 @@ void idSoundEmitterLocal::Update( int currentTime )
 		for (int i = 0; i < channels.Num(); i++) {
 			int time = currentTime - channels[i]->startTime;
 			if (soundSystemLocal.ccdecl.FindCaptionWithTimeCode(shaderName.c_str(), time, &caption)) {
-				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority());
+				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
+				subTimestamp = time;
 				break;
 			}
 		}
 	}
-	
+	else {
+		if (hasCaption && !game->GetLocalPlayer()->hud->hasCaption()) {
+			idCaption* caption;
+			if (soundSystemLocal.ccdecl.FindCaption(shaderName.c_str(), &caption)) {
+				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
+			}
+		}
+	}
+
 	directDistance = ( soundWorld->listener.pos - origin ).LengthFast() * DOOM_TO_METERS;
 	
 	spatializedDistance = directDistance;
@@ -804,8 +813,9 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 		}
 		else {
 			if (soundSystemLocal.ccdecl.FindCaption(shader->GetName(), &caption)) {
-				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority());
+				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shader->GetName());
 				hasCaption = true;
+				shaderName = shader->GetName();
 			}
 		}
 	}

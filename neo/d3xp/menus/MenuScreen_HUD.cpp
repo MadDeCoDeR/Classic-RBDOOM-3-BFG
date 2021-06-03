@@ -2414,8 +2414,9 @@ const char*		idMenuScreen_HUDLocal::GetlocationName() {
 	return locationName->text.c_str();
 }
 
-void	idMenuScreen_HUDLocal::setCaption(idStr caption, idVec4 color, int priority) {
+void	idMenuScreen_HUDLocal::setCaption(idStr caption, idVec4 color, int priority, idStr shaderName) {
 	if (subtitles != NULL) {
+		subtitleShaderName = shaderName;
 		if (!subtitles->IsVisible()) {
 			subtitles->SetVisible(true);
 			subtitles->PlayFrame("rollOn");
@@ -2433,12 +2434,19 @@ void	idMenuScreen_HUDLocal::setCaption(idStr caption, idVec4 color, int priority
 		textColor.a = color.w;
 		subtitlesText->color = textColor;
 		subtitlePriority = priority;
+		
 	}
 }
 
-void	idMenuScreen_HUDLocal::clearCaption() {
-	if (subtitles != NULL) {
+bool idMenuScreen_HUDLocal::hasCaption()
+{
+	return subtitles->IsVisible();
+}
+
+void	idMenuScreen_HUDLocal::clearCaption(idStr shaderName) {
+	if (subtitles != NULL && !shaderName.Icmp(this->subtitleShaderName)) {
 		subtitles->PlayFrame("rollOff");
+		subtitlePriority = 1000;
 	}
 }
 

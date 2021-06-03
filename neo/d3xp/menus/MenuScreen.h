@@ -1729,8 +1729,9 @@ public:
 	virtual void					ShowNewItem(const char* name, const char* icon) = 0;
 	virtual void					UpdateFlashlight(idPlayer* player) = 0;
 	virtual void					UpdateChattingHud(idPlayer* player) = 0;
-	virtual void					setCaption(idStr caption, idVec4 color, int priority) = 0;
-	virtual void					clearCaption() = 0;
+	virtual void					setCaption(idStr caption, idVec4 color, int priority, idStr shaderName) = 0;
+	virtual bool					hasCaption() = 0;
+	virtual void					clearCaption(idStr shaderName) = 0;
 	virtual void					setCinematic(bool value) = 0;
 };
 
@@ -1857,8 +1858,9 @@ public:
 	virtual void					ShowNewItem( const char* name, const char* icon );
 	virtual void					UpdateFlashlight( idPlayer* player );
 	virtual void					UpdateChattingHud( idPlayer* player );
-	virtual void					setCaption(idStr caption, idVec4 color, int priority);
-	virtual void					clearCaption();
+	virtual void					setCaption(idStr caption, idVec4 color, int priority, idStr shaderName);
+	virtual bool					hasCaption();
+	virtual void					clearCaption(idStr shaderName);
 	virtual void					setCinematic(bool value);
 	private:
 
@@ -1938,6 +1940,7 @@ public:
 		idSWFSpriteInstance*	subtitles;
 		idSWFTextInstance*		subtitlesText;
 		int						subtitlePriority;
+		idStr					subtitleShaderName;
 };
 
 //*

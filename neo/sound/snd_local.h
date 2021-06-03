@@ -454,9 +454,10 @@ public:
 	idVec3		spatializedOrigin;
 
 	//GK: has caption
-	bool hasCaption;
-	bool hasMultipleCaptions;
-	idStr	shaderName;
+	bool		hasCaption;
+	bool		hasMultipleCaptions;
+	idStr		shaderName;
+	int			subTimestamp;
 	
 	// sound emitters are only allocated by the soundWorld block allocator
 	idSoundEmitterLocal();
