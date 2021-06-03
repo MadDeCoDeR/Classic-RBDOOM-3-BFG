@@ -2519,14 +2519,8 @@ void idMenuScreen_HUDLocal::setCinematic(bool value)
 	if (newItem != NULL) {
 		newItem->SetVisible(!value);
 	}
-	if (talkCursor != NULL) {
-		talkCursor->SetVisible(!value);
-	}
 	if (combatCursor != NULL) {
 		combatCursor->SetVisible(!value);
-	}
-	if (grabberCursor != NULL) {
-		grabberCursor->SetVisible(!value);
 	}
 	if (weaponPills != NULL) {
 		weaponPills->GetSprite()->SetVisible(!value);
