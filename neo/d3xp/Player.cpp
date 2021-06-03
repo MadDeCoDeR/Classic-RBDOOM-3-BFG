@@ -3602,7 +3602,7 @@ void idPlayer::DrawHUD( idMenuHandler_HUD* _hudManager )
 {
 	SCOPED_PROFILE_EVENT( "idPlayer::DrawHUD" );
 	
-	if( !weapon.GetEntity() || influenceActive != INFLUENCE_NONE || privateCameraView || gameLocal.GetCamera() || !g_showHud.GetBool() )
+	if( !weapon.GetEntity() || influenceActive != INFLUENCE_NONE || privateCameraView || /*gameLocal.GetCamera() ||*/ !g_showHud.GetBool() )
 	{
 		return;
 	}
@@ -3699,6 +3699,7 @@ void idPlayer::EnterCinematic()
 	}
 	
 	Hide();
+	hud->setCinematic(true);
 	StopSound( SND_CHANNEL_PDA_AUDIO, false );
 	StopSound( SND_CHANNEL_PDA_VIDEO, false );
 	
@@ -3750,7 +3751,7 @@ idPlayer::ExitCinematic
 void idPlayer::ExitCinematic()
 {
 	Show();
-	
+	hud->setCinematic(false);
 	if( weaponEnabled && weapon.GetEntity() )
 	{
 		weapon.GetEntity()->ExitCinematic();

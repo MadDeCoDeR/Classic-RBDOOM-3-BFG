@@ -337,6 +337,11 @@ idSoundWorldLocal::Update
 void idSoundWorldLocal::Update()
 {
 
+	//game->GetLocalPlayer()->hud->clearCaption();
+
+	/*for (int i = 0; i < emitters.Num(); i++) {
+	}*/
+
 	if( s_noSound.GetBool() )
 	{
 		return;

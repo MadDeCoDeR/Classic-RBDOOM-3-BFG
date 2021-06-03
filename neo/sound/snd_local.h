@@ -94,6 +94,7 @@ typedef enum
 
 #include "SoundVoice.h"
 #include "snd_efxfile.h"
+#include "CCScriptDecl.h"
 
 #if defined(USE_OPENAL)
 
@@ -451,6 +452,11 @@ public:
 	float		directDistance;
 	float		spatializedDistance;
 	idVec3		spatializedOrigin;
+
+	//GK: has caption
+	bool hasCaption;
+	bool hasMultipleCaptions;
+	idStr	shaderName;
 	
 	// sound emitters are only allocated by the soundWorld block allocator
 	idSoundEmitterLocal();
@@ -586,6 +592,8 @@ public:
 	void						ReleaseStreamBufferContext( bufferContext_t* p );
 	idEFXFile				EFXDatabase;
 	bool					efxloaded;
+	CCScriptDecl			ccdecl;
+	bool					ccloaded;
 #ifdef USE_OPENAL
 	
 	

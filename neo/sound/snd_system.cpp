@@ -229,6 +229,7 @@ void idSoundSystemLocal::Shutdown()
 	hardware.Shutdown();
 	// EAX or not, the list needs to be cleared
 	EFXDatabase.Clear();
+	ccdecl.Clear();
 	efxloaded = false;
 #ifdef USE_OPENAL
 	
@@ -735,6 +736,14 @@ void idSoundSystemLocal::EndLevelLoad(const char* mapstring)
 		EAX = {};
 	}
 #endif
+
+	idStr ccname("cc/");
+	idStr ccmapname(mapstring);
+
+	ccmapname.SetFileExtension(".ccscript");
+	ccmapname.StripPath();
+	ccname += ccmapname;
+	ccloaded = ccdecl.LoadFile(ccname);
 	int	end = Sys_Milliseconds();
 	
 	common->Printf( "%5i sounds loaded in %5.1f seconds\n", loadCount, ( end - start ) * 0.001 );

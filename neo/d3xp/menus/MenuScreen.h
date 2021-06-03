@@ -1731,6 +1731,7 @@ public:
 	virtual void					UpdateChattingHud(idPlayer* player) = 0;
 	virtual void					setCaption(idStr caption, idVec4 color, int priority) = 0;
 	virtual void					clearCaption() = 0;
+	virtual void					setCinematic(bool value) = 0;
 };
 
 class idMenuScreen_HUDLocal : public idMenuScreen_HUD
@@ -1858,6 +1859,7 @@ public:
 	virtual void					UpdateChattingHud( idPlayer* player );
 	virtual void					setCaption(idStr caption, idVec4 color, int priority);
 	virtual void					clearCaption();
+	virtual void					setCinematic(bool value);
 	private:
 
 		idSWFScriptObject* 		weaponInfo;
