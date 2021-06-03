@@ -2522,6 +2522,12 @@ void idMenuScreen_HUDLocal::setCinematic(bool value)
 	if (combatCursor != NULL) {
 		combatCursor->SetVisible(!value);
 	}
+	if (talkCursor != NULL && value) {
+		talkCursor->SetVisible(!value);
+	}
+	if (grabberCursor != NULL && value) {
+		grabberCursor->SetVisible(!value);
+	}
 	if (weaponPills != NULL) {
 		weaponPills->GetSprite()->SetVisible(!value);
 		if (gameLocal.GetLocalPlayer()->inventory.weapons == 1) {
