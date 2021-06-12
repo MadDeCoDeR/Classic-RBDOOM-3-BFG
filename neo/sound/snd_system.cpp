@@ -583,6 +583,9 @@ void idSoundSystemLocal::BeginLevelLoad()
 		alAuxiliaryEffectSloti(soundSystemLocal.hardware.slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
 #endif
 	}
+	if (ccloaded) {
+		ccdecl.Clear();
+	}
 }
 
 

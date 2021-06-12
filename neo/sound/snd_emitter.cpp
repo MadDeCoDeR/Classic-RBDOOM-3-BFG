@@ -572,6 +572,9 @@ bool idSoundEmitterLocal::CheckForCompletion( int currentTime )
 		{
 			channels.RemoveIndex( i );
 			soundWorld->FreeSoundChannel( chan );
+			if (hasMultipleCaptions) {
+				game->GetLocalPlayer()->hud->clearCaption(shaderName);
+			}
 		}
 	}
 	if (hasCaption && channels.Num() == 0) {
@@ -810,8 +813,11 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 			hasCaption = true;
 			hasMultipleCaptions = true;
 			shaderName = shader->GetName();
+			if (soundSystemLocal.ccdecl.FindCaptionWithTimeCode(shaderName.c_str(), 0, &caption)) {
+				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shader->GetName());
+			}
 		}
-		else {
+		else{
 			if (soundSystemLocal.ccdecl.FindCaption(shader->GetName(), &caption)) {
 				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shader->GetName());
 				hasCaption = true;

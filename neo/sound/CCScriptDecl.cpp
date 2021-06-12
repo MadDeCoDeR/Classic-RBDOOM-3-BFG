@@ -6,8 +6,6 @@ bool CCScriptDecl::LoadFile(const char* fileName, bool OSPath)
 {
 	idLexer src;
 
-	Clear();
-
 	src.SetFlags(DECL_LEXER_FLAGS);
 	src.LoadFile(fileName, OSPath);
 	if (!src.IsLoaded()) {
@@ -89,6 +87,9 @@ bool CCScriptDecl::ReadCaption(idLexer& src, idCaption* caption)
 			int timecode = src.ParseInt();
 			if (timecode > 0) {
 				caption->SetTimeCode(timecode);
+			}
+			else {
+				caption->SetTimeCode(0);
 			}
 			src.ParseRestOfLine(token);
 			caption->SetCaption(idLocalization::FindString(token.c_str()));

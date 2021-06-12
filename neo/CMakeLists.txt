@@ -594,7 +594,8 @@ set(SOUND_INCLUDES
 	sound/sound.h
 	sound/SoundVoice.h
 	sound/WaveFile.h
-	sound/AVD.h)
+	sound/AVD.h
+	sound/CCScriptDecl.h)
 	
 set(SOUND_SOURCES
 	#sound/snd_cache.cpp
@@ -607,6 +608,7 @@ set(SOUND_SOURCES
 	sound/SoundVoice.cpp
 	sound/WaveFile.cpp
 	sound/AVD.cpp
+	sound/CCScriptDecl.cpp
 	)
 	
 set(XAUDIO2_INCLUDES
