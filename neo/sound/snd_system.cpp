@@ -585,6 +585,7 @@ void idSoundSystemLocal::BeginLevelLoad()
 	}
 	if (ccloaded) {
 		ccdecl.Clear();
+		ccloaded = false;
 	}
 }
 

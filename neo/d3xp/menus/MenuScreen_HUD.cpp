@@ -2434,7 +2434,7 @@ void	idMenuScreen_HUDLocal::setCaption(idStr caption, idVec4 color, int priority
 		textColor.a = color.w;
 		subtitlesText->color = textColor;
 		subtitlePriority = priority;
-		
+
 	}
 }
 
