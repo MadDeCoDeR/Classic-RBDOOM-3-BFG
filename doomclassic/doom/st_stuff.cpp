@@ -391,7 +391,7 @@ void ST_refreshBackground(void)
 
 		V_DrawPatch(powerX, (ORIGINAL_HEIGHT / 2) - 5, FG, ::g->fullpwr, true);
 
-//		V_DrawPatch(powerX - 30, 10, FG, ::g->fulltime, true);
+		V_DrawPatch(powerX - 10, 16, FG, ::g->fulltime, true);
 		//V_CopyRect(ST_X, 0, BG, (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER), (SCREENHEIGHT / GLOBAL_IMAGE_SCALER), ST_X, 0, FG, true);
 	}
 
@@ -1306,7 +1306,7 @@ void ST_loadGraphics(void)
 	::g->fullarms = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_ARMS", PU_STATUS_BACK), W_GetNumForName("ST_ARMS"));
 	::g->fullkeys = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_KEYS", PU_STATUS_BACK), W_GetNumForName("ST_KEYS"));
 	::g->fullpwr = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_PWR", PU_STATUS_BACK), W_GetNumForName("ST_PWR"));
-	//::g->fulltime = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_TIME", PU_STATUS_BACK), W_GetNumForName("ST_TIME"));
+	::g->fulltime = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_TIME", PU_STATUS_BACK), W_GetNumForName("ST_TIME"));
 	// face states
 	facenum = 0;
 	for (i=0;i<ST_NUMPAINFACES;i++)
