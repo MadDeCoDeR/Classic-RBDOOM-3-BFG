@@ -36,10 +36,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "p_local.h"
 
 #include "doomstat.h"
-#ifdef USE_OPENAL
+//#ifdef USE_OPENAL
 #include "s_efx.h"
 #include "sound/OpenAL/AL_EAX.h"
-#endif
+//#endif
 
 //extern idCVar pm_thirdPerson;
 
@@ -54,6 +54,9 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar cl_jump("cl_jump", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable jumping on classic Doom");
 idCVar cl_freelookclamp("cl_freelookclamp", "550", CVAR_INTEGER | CVAR_ARCHIVE, "Set the absolute mousey clamp limit", -4000, 4000);
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+extern idCVar s_useXAudio;
+#endif
 
 //
 // P_Thrust
@@ -249,7 +252,7 @@ void P_DeathThink (player_t* player)
 		player->playerstate = PST_REBORN;
 }
 
-#ifdef USE_OPENAL
+//#ifdef USE_OPENAL
 //P_Reverb
 //Check if the player has moved to
 //another sector and try to load
@@ -273,7 +276,7 @@ void P_Reverb(player_t* player) {
 		}
 	}
 }
-#endif
+//#endif
 
 //P_Acts
 //Change game CVars based on the
@@ -354,9 +357,13 @@ void P_PlayerThink (player_t* player)
 		P_MovePlayer (player);
 
 	P_CalcHeight (player);
-#ifdef USE_OPENAL
-	if (::g->hasreverb)
-		P_Reverb(player);
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (!s_useXAudio.GetBool()) {
+#endif
+		if (::g->hasreverb)
+			P_Reverb(player);
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	}
 #endif
 	if (::g->hasacts)
 		P_Acts(player);

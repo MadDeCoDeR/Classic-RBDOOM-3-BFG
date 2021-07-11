@@ -1057,7 +1057,7 @@ const char*		spritename;
 int ASPECT_IMAGE_SCALER;
 int SCREENWIDTH;
 int ASPECT_POS_OFFSET;
-#ifdef USE_OPENAL
+//#ifdef USE_OPENAL
 bool hasreverb;
 std::vector<EFXEAXREVERBPROPERTIES*>reverbs;
 int csec;
@@ -1065,7 +1065,7 @@ unsigned int clslot;
 unsigned int clEAX;
 int mapindex;
 std::string mapname;
-#endif
+//#endif
 //GK Cross starts
 char crossnames[2][9];
 int cross_state;

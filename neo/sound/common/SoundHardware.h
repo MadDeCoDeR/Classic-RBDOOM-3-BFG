@@ -1,8 +1,5 @@
-#pragma once
-#include "precompiled.h"
-#include <stdio.h>
 /**
-* Copyright (C) 2018 George Kalmpokis
+* Copyright (C) 2021 George Kalmpokis
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * this software and associated documentation files (the "Software"), to deal in
@@ -24,26 +21,58 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include <stdlib.h>
-#include <math.h>
-#if defined (USE_FFMPEG)
-extern "C"
+#include <sound/sound.h>
+#include <sound/common/CommonSoundVoice.h>
+#include <sound/snd_local.h>
+#ifndef __SOUNDHARDWARE_H__
+#define __SOUNDHARDWARE_H__
+
+class idSoundVoice;
+class idSoundSample;
+
+class idSoundHardware
 {
-#define __STDC_CONSTANT_MACROS
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavformat/avio.h>
-#include <libswresample/swresample.h>
-}
+public:
+
+	idSoundHardware() {
+		vuMeterRMS = NULL;
+		vuMeterPeak = NULL;
+
+		outputChannels = 0;
+		channelMask = 0;
+
+		lastResetTime = 0;
+	}
+
+	virtual void			Init() = 0;
+	virtual void			Shutdown() = 0;
+
+	virtual void			ShutdownReverbSystem() = 0;
+
+	virtual void 			Update() = 0;
+
+	virtual void			UpdateEAXEffect(idSoundEffect* effect) = 0;
+
+	virtual idSoundVoice* AllocateVoice(const idSoundSample* leadinSample, const idSoundSample* loopingSample, const int channel) = 0;
+	virtual void			FreeVoice(idSoundVoice* voice) = 0;
+
+	virtual int				GetNumZombieVoices() const = 0;
+	virtual int				GetNumFreeVoices() const = 0;
+
+	virtual bool			IsReverbSupported() = 0;
+
+protected:
+	friend class idSoundSample;
+	friend class idSoundVoice;
+	int					lastResetTime;
+
+	int					outputChannels;
+	int					channelMask;
+
+	idDebugGraph* vuMeterRMS;
+	idDebugGraph* vuMeterPeak;
+	int					vuMeterPeakTimes[8];
+
+	
+};
 #endif
-
-#include "sound/snd_local.h"
-void parseAVError(int error);
-#if defined(_MSC_VER) && defined(USE_XAUDIO2)
-#include <xaudio2.h>
-#include <x3daudio.h>
-bool DecodeXAudio(byte** audio, int* len, IXAudio2SourceVoice** pMusicSourceVoice,bool ext);
-#endif // !USE_OPENAL
-bool DecodeALAudio(byte** audio, int* len, int *rate ,ALenum *sample );
-const char* GetSampleName(ALenum sample);
-

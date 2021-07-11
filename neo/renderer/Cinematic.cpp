@@ -31,31 +31,20 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 #include "precompiled.h"
 //GK: Include Sound local header for audio playback
-#include <../sound/snd_local.h>
-#include <queue>
-//GK:Also init variables for XAudio2
-#ifndef USE_OPENAL
-WAVEFORMATEX voiceFormatcine = { 0 };
-IXAudio2SourceVoice*	pMusicSourceVoice1;
-XAUDIO2_BUFFER Packet = { 0 };
-#else //GK: Add audio support for OpenAL
-#define NUM_BUFFERS 4
-static ALuint		alMusicSourceVoicecin;
-static ALuint		alMusicBuffercin[NUM_BUFFERS];
-ALenum av_sample_cin;
-int av_rate_cin;
-bool trigger;
-//GK: Unlike XAudio2 which can accept buffer until the end of this world.
-//	  OpenAL can accept buffers as long as there are freely available buffers.
-//	  So, what happens if there are no freely available buffers but we still geting audio frames ? Loss of data.
-//	  That why now I am using two queues in order to store the frames (and their sizes) and when we have available buffers,
-//	  then start poping those frames instead of the current, so we don't lose any audio frames and the sound doesn't crack anymore.
-std::queue<uint8_t*> tBuffer[NUM_BUFFERS];
-std::queue<int> sizes[NUM_BUFFERS];
-int offset;
+#include <sound/snd_local.h>
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+#include <sound/XAudio2/XA2_CinematicAudio.h>
 #endif
+#include <sound/OpenAL/AL_CinematicAudio.h>
+
+//GK:Also init variables for XAudio2
+CinematicAudio* cinematicAudio;
+
 extern idCVar s_noSound;
 extern idCVar s_volume_dB;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+extern idCVar s_useXAudio;
+#endif
 
 #define JPEG_INTERNALS
 //extern "C" {
@@ -489,10 +478,13 @@ idCinematicLocal::idCinematicLocal()
 	
 #endif
 	
-
-#ifdef USE_OPENAL
-	InitCinematicAudio(); //GK: Make sure the cinematic voices are the first to be initialized
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (s_useXAudio.GetBool()) {
+		cinematicAudio = new(TAG_AUDIO) CinematicAudio_XAudio2;
+	} else
 #endif
+		cinematicAudio = new (TAG_AUDIO) CinematicAudio_OpenAL; //GK: Make sure the cinematic voices are the first to be initialized
+	
 
 	// Carl: Original Doom 3 RoQ files:
 	image = NULL;
@@ -565,38 +557,7 @@ idCinematicLocal::~idCinematicLocal()
 	imgCb = NULL;
 #endif
 	//GK: Properly close local XAudio2 voice
-#ifndef USE_OPENAL
-	if (pMusicSourceVoice1) {
-		pMusicSourceVoice1->Stop();
-		pMusicSourceVoice1->FlushSourceBuffers();
-		pMusicSourceVoice1->DestroyVoice();
-		pMusicSourceVoice1 = NULL;
-	}
-#else
-	if (alMusicSourceVoicecin) {
-		alSourceStop(alMusicSourceVoicecin);
-		alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
-		alDeleteSources(1, &alMusicSourceVoicecin);
-}
-
-	if (alMusicBuffercin) {
-		alDeleteBuffers(NUM_BUFFERS, alMusicBuffercin);
-	}
-	if (!tBuffer->empty()) {
-		int buffersize = tBuffer->size();
-		while (buffersize > 0) {
-			tBuffer->pop();
-			buffersize--;
-		}
-	}
-	if (!sizes->empty()) {
-		int buffersize = sizes->size();
-		while (buffersize > 0) {
-			sizes->pop();
-			buffersize--;
-		}
-	}
-#endif
+	cinematicAudio->ShutdownAudio();
 	delete img;
 	img = NULL;
 }
@@ -693,92 +654,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		else {
 			hasplanar = false;
 		}
-#ifndef USE_OPENAL
-		int format_byte = 0;
-		bool use_ext = false;
-		if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_U8P) {
-			format_byte = 1;
-		}
-		else if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S16P) {
-			format_byte = 2;
-		}
-		else if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S32P) {
-			format_byte = 4;
-		}
-		else {
-			//return false;
-			format_byte = 4;
-			use_ext = true;
-		}
-		WAVEFORMATEXTENSIBLE exvoice = { 0 };
-		voiceFormatcine.wFormatTag = WAVE_FORMAT_EXTENSIBLE; //Use extensible wave format in order to handle properly the audio
-		voiceFormatcine.nChannels = dec_ctx2->channels; //fixed
-		voiceFormatcine.nSamplesPerSec = dec_ctx2->sample_rate; //fixed
-		voiceFormatcine.wBitsPerSample = format_byte*8; //fixed
-		voiceFormatcine.nBlockAlign = format_byte* voiceFormatcine.nChannels; //fixed
-		voiceFormatcine.nAvgBytesPerSec = voiceFormatcine.nSamplesPerSec * voiceFormatcine.nBlockAlign; //fixed
-		voiceFormatcine.cbSize = 22; //fixed
-		exvoice.Format = voiceFormatcine;
-		switch (voiceFormatcine.nChannels) {
-		case 1:
-			exvoice.dwChannelMask = SPEAKER_MONO;
-			break;
-		case 2:
-			exvoice.dwChannelMask = SPEAKER_STEREO;
-			break;
-		case 4:
-			exvoice.dwChannelMask = SPEAKER_QUAD;
-			break;
-		case 5:
-			exvoice.dwChannelMask = SPEAKER_5POINT1_SURROUND;
-			break;
-		case 7:
-			exvoice.dwChannelMask = SPEAKER_7POINT1_SURROUND;
-			break;
-		default:
-			exvoice.dwChannelMask = SPEAKER_MONO;
-			break;
-		}
-		exvoice.Samples.wReserved = 0;
-		exvoice.Samples.wValidBitsPerSample = voiceFormatcine.wBitsPerSample;
-		exvoice.Samples.wSamplesPerBlock = voiceFormatcine.wBitsPerSample;
-		exvoice.SubFormat = use_ext ? KSDATAFORMAT_SUBTYPE_IEEE_FLOAT : KSDATAFORMAT_SUBTYPE_PCM;
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice1, (WAVEFORMATEX*)&exvoice, XAUDIO2_VOICE_USEFILTER);//Use the XAudio2 that the game has initialized instead of making your own
-#else //GK: Yep while in xaudio2 require so many line in OpenAL it require quite less
-		av_rate_cin = dec_ctx2->sample_rate;
-		int format_byte = 0;
-		bool use_ext = false;
-		if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_U8P) {
-			format_byte = 1;
-		}
-		else if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S16P) {
-			format_byte = 2;
-		}
-		else if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S32P) {
-			format_byte = 4;
-		}
-		else {
-			//return false;
-			format_byte = 4;
-			use_ext = true;
-		}
-		switch (format_byte) {
-		case 1:
-			av_sample_cin = dec_ctx2->channels == 2 ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
-			break;
-		case 2:
-			av_sample_cin = dec_ctx2->channels == 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
-			break;
-		case 4:
-			av_sample_cin = dec_ctx2->channels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
-			break;
-		}
-		common->Printf("Video audio stream found:\n\tSample Rate: %dHz\n\tSample Format: %s\n", av_rate_cin, GetSampleName(av_sample_cin));
-		alSourceRewind(alMusicSourceVoicecin);
-		alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
-		offset = 0;
-		trigger = false;
-#endif
+		cinematicAudio->InitAudio(dec_ctx2);
 	}
 	else {
 		common->Warning("idCinematic: Cannot find an audio stream in: '%s', %d\n", qpath, looping);
@@ -1244,94 +1120,6 @@ cinData_t idCinematicLocal::ImageForTime( int thisTime )
 }
 
 #if defined(USE_FFMPEG)
-void PlayAudio(uint8_t* data, int size) {
-#ifndef USE_OPENAL
-	//Store the data to XAudio2 buffer
-	Packet.Flags = XAUDIO2_END_OF_STREAM;
-	Packet.AudioBytes = size;
-	Packet.pAudioData = (BYTE*)data;
-	Packet.PlayBegin = 0;
-	Packet.PlayLength = 0;
-	Packet.LoopBegin = 0;
-	Packet.LoopLength = 0;
-	Packet.LoopCount = 0;
-	Packet.pContext = NULL;
-	HRESULT hr;
-	if (FAILED(hr = pMusicSourceVoice1->SubmitSourceBuffer(&Packet))) {
-		int fail = 1;
-	}
-
-	// Play the source voice
-	if (FAILED(hr = pMusicSourceVoice1->Start(0))) {
-		int fail = 1;
-	}
-#else //GK: But also it requires better coding DX
-	ALint processed, state;
-
-	alGetSourcei(alMusicSourceVoicecin, AL_SOURCE_STATE, &state);
-	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &processed);
-
-	if (trigger) {
-		tBuffer->push(data);
-		sizes->push(size);
-		while (processed > 0) {
-			ALuint bufid;
-
-			alSourceUnqueueBuffers(alMusicSourceVoicecin, 1, &bufid);
-			processed--;
-			if (!tBuffer->empty()) {
-				int tempSize = sizes->front();
-				sizes->pop();
-				uint8_t* tempdata = tBuffer->front();
-				tBuffer->pop();
-				if (tempSize > 0) {
-					alBufferData(bufid, av_sample_cin, tempdata, tempSize, av_rate_cin);
-					alSourceQueueBuffers(alMusicSourceVoicecin, 1, &bufid);
-					ALenum error = alGetError();
-					if (error != AL_NO_ERROR) {
-						common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
-						return;
-					}
-				}
-				offset++;
-				if (offset == NUM_BUFFERS) {
-					offset = 0;
-				}
-			}
-		}
-	}
-	else {
-		alBufferData(alMusicBuffercin[offset], av_sample_cin, data, size, av_rate_cin);
-		offset++;
-		if (offset == NUM_BUFFERS) {
-			alSourceQueueBuffers(alMusicSourceVoicecin, offset, alMusicBuffercin);
-			ALenum error = alGetError();
-			if (error != AL_NO_ERROR) {
-				common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
-				return;
-			}
-			trigger = true;
-			offset = 0;
-		}
-	}
-
-	if (trigger) {
-		if (state != AL_PLAYING) {
-			ALint queued;
-			alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_QUEUED, &queued);
-			if (queued == 0) {
-				return;
-			}
-			alSourcePlay(alMusicSourceVoicecin);
-			ALenum error = alGetError();
-			if (error != AL_NO_ERROR) {
-				common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
-				return;
-			}
-		}
-	}
-#endif
-}
 
 /*
 ==============
@@ -1480,7 +1268,7 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 	hasFrame = true;
 	cinData.image = img;
 	if (tBuffer2) {
-		PlayAudio(tBuffer2[0], num_bytes);
+		cinematicAudio->PlayAudio(tBuffer2[0], num_bytes);
 	}
 	
 	return cinData;
@@ -3153,15 +2941,3 @@ int idSndWindow::AnimationLength()
 {
 	return -1;
 }
-
-#ifdef USE_OPENAL //GK: Init OpenAL stuff here
-void			InitCinematicAudio() {
-	alGenSources(1, &alMusicSourceVoicecin);
-
-	alSource3i(alMusicSourceVoicecin, AL_POSITION, 0, 0, 0);
-	alSourcei(alMusicSourceVoicecin, AL_SOURCE_RELATIVE, AL_TRUE);
-	alSourcei(alMusicSourceVoicecin, AL_ROLLOFF_FACTOR, 0);
-	alListenerf(AL_GAIN, s_noSound.GetBool() ? 0.0f : DBtoLinear(s_volume_dB.GetFloat())); //GK: Set the sound volume the same that is used in DOOM 3
-	alGenBuffers(NUM_BUFFERS, &alMusicBuffercin[0]);
-}
-#endif

@@ -26,6 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
+#include "../common/SoundHardware.h"
 #ifndef __XA_SOUNDHARDWARE_H__
 #define __XA_SOUNDHARDWARE_H__
 
@@ -33,6 +34,9 @@ class idSoundSample_XAudio2;
 class idSoundVoice_XAudio2;
 // RB
 class idSoundHardware_XAudio2;
+class idSoundHardware;
+class idSoundSample;
+class idSoundVoice;
 
 /*
 ================================================
@@ -62,15 +66,18 @@ idSoundHardware_XAudio2
 ================================================
 */
 
-class idSoundHardware_XAudio2
+class idSoundHardware_XAudio2 : public idSoundHardware
 {
 public:
 	idSoundHardware_XAudio2();
 	
 	void			Init();
 	void			Shutdown();
+	void			ShutdownReverbSystem();
 	
 	void 			Update();
+
+	void			UpdateEAXEffect(idSoundEffect* effect);
 	
 	idSoundVoice* 	AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample, const int channel );
 	void			FreeVoice( idSoundVoice* voice );
@@ -80,7 +87,7 @@ public:
 	{
 		return pXAudio2;
 	};
-	
+
 	int				GetNumZombieVoices() const
 	{
 		return zombieVoices.Num();
@@ -89,10 +96,20 @@ public:
 	{
 		return freeVoices.Num();
 	}
+
+	bool	IsReverbSupported() {
+		return hasReverb;
+	}
+
+	IXAudio2SubmixVoice* GetSubMixVoice() {
+		return pSubmixVoice;
+	}
 	
 protected:
 	friend class idSoundSample_XAudio2;
 	friend class idSoundVoice_XAudio2;
+	friend class idSoundSample;
+	friend class idSoundVoice;
 	
 private:
 	IXAudio2* pXAudio2;
@@ -100,19 +117,13 @@ private:
 	IXAudio2SubmixVoice* pSubmixVoice;
 	
 	idSoundEngineCallback	soundEngineCallback;
-	int					lastResetTime;
-	
-	int					outputChannels;
-	int					channelMask;
-	
-	idDebugGraph* 		vuMeterRMS;
-	idDebugGraph* 		vuMeterPeak;
-	int					vuMeterPeakTimes[ 8 ];
-	
+
 	// Can't stop and start a voice on the same frame, so we have to double this to handle the worst case scenario of stopping all voices and starting a full new set
 	idStaticList<idSoundVoice_XAudio2, MAX_HARDWARE_VOICES * 2 > voices;
 	idStaticList<idSoundVoice_XAudio2*, MAX_HARDWARE_VOICES * 2 > zombieVoices;
 	idStaticList<idSoundVoice_XAudio2*, MAX_HARDWARE_VOICES * 2 > freeVoices;
+	bool	hasReverb;
+	XAUDIO2FX_REVERB_PARAMETERS EAX;
 };
 
 /*
@@ -120,8 +131,8 @@ private:
 idSoundHardware
 ================================================
 */
-class idSoundHardware : public idSoundHardware_XAudio2
-{
-};
+//class idSoundHardware : public idSoundHardware_XAudio2
+//{
+//};
 
 #endif

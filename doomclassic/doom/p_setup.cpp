@@ -51,11 +51,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "d_udmf.h"
 #include "d_act.h"
-#ifdef USE_OPENAL
+//#ifdef USE_OPENAL
 #include "s_efx.h"
 
 #include "sound/OpenAL/AL_EAX.h"
-#endif
+//#endif
 void	P_SpawnMapThing (mapthing_t*	mthing);
 
 //
@@ -63,8 +63,9 @@ void	P_SpawnMapThing (mapthing_t*	mthing);
 // Store VERTEXES, LINEDEFS, SIDEDEFS, etc.
 //
 
-
-
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+extern idCVar s_useXAudio;
+#endif
 
 
 
@@ -248,14 +249,18 @@ void P_LoadSectors (int lump)
 		ss->touching_thinglist = NULL;            // phares 3/14/98
 		//GK: Load the reverbs based on sector's index
 		ss->counter = i;
-#ifdef USE_OPENAL
-		if (::g->hasreverb) {
-			if (::g->reverbs.size() < i+1) {
-				::g->reverbs.push_back(GetReverb(strdup(::g->mapname.c_str()), i));
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+		if (!s_useXAudio.GetBool()) {
+#endif
+			if (::g->hasreverb) {
+				if (::g->reverbs.size() < i + 1) {
+					::g->reverbs.push_back(GetReverb(strdup(::g->mapname.c_str()), i));
+				}
+				else {
+					::g->reverbs[i] = GetReverb(strdup(::g->mapname.c_str()), i);
+				}
 			}
-			else {
-				::g->reverbs[i] = GetReverb(strdup(::g->mapname.c_str()), i);
-			}
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
 		}
 #endif
 	}
@@ -775,15 +780,19 @@ P_SetupLevel
 	::g->flip = false;
 	::g->isfliped = false;
 	//GK: Make sure previous reverb effects are freed
-#ifdef USE_OPENAL
-	if (::g->hasreverb) {
-		for (int i = ::g->reverbs.size() - 1; i >= 0; i--) {
-			Mem_Free(::g->reverbs[i]);
-			::g->reverbs.pop_back();
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (!s_useXAudio.GetBool()) {
+#endif
+		if (::g->hasreverb) {
+			for (int i = ::g->reverbs.size() - 1; i >= 0; i--) {
+				Mem_Free(::g->reverbs[i]);
+				::g->reverbs.pop_back();
+			}
+			alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
 		}
-		alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
+		::g->mapindex = 0;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
 	}
-	::g->mapindex = 0;
 #endif
 	// UNUSED W_Profile ();
 	P_InitThinkers ();
@@ -808,21 +817,25 @@ P_SetupLevel
 		if (::g->gamemission == pack_custom ) { //GK:Custom expansion related stuff
 			sprintf(lumpname, "%s", ::g->maps[map-1].lumpname);
 		}
-#ifdef USE_OPENAL
-		//GK: Get Map's name in order to check for reverbs
-		switch (::g->gamemission) {
-		case doom2:
-			::g->mapname = mapnames2[map - 1];
-			break;
-		case pack_tnt:
-			::g->mapname = mapnamest[map - 1];
-			break;
-		case pack_plut:
-			::g->mapname = mapnamesp[map - 1];
-			break;
-		default:
-			::g->mapname=DoomLib::GetCurrentExpansion()->mapNames[map - 1];
-			break;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+		if (!s_useXAudio.GetBool()) {
+#endif
+			//GK: Get Map's name in order to check for reverbs
+			switch (::g->gamemission) {
+			case doom2:
+				::g->mapname = mapnames2[map - 1];
+				break;
+			case pack_tnt:
+				::g->mapname = mapnamest[map - 1];
+				break;
+			case pack_plut:
+				::g->mapname = mapnamesp[map - 1];
+				break;
+			default:
+				::g->mapname = DoomLib::GetCurrentExpansion()->mapNames[map - 1];
+				break;
+			}
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
 		}
 #endif
 	}
@@ -837,9 +850,11 @@ P_SetupLevel
 
 			if (episode < 5 && map < 10) {
 				idLib::Printf("%s\n", mapnames[(episode - 1) * 9 + (map - 1)]);
-#ifdef USE_OPENAL
-				::g->mapname = mapnames[(episode - 1) * 9 + (map - 1)];
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+				if (!s_useXAudio.GetBool())
 #endif
+					::g->mapname = mapnames[(episode - 1) * 9 + (map - 1)];
+				
 			}
 			if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
 				if (::g->clusters.size() >= episode) {
@@ -857,9 +872,11 @@ P_SetupLevel
 					if (::g->maps[newmap - 1].lumpname != NULL) {
 						sprintf(lumpname, "%s", ::g->maps[newmap - 1].lumpname);
 						if (::g->maps[newmap - 1].realname != NULL) {
-#ifdef USE_OPENAL
-							::g->mapname = ::g->maps[newmap - 1].realname;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+							if (!s_useXAudio.GetBool()) 
 #endif
+								::g->mapname = ::g->maps[newmap - 1].realname;
+							
 						}
 					}
 				}

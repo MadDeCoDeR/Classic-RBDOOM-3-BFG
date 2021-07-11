@@ -15,8 +15,8 @@ option(USE_PRECOMPILED_HEADERS
 option(SDL2
 		"Use SDL2 instead of SDL1.2" ON)
 		
-option(OPENAL
-		"Use OpenAL soft instead of XAudio2" OFF)
+option(USE_XAUDIO2
+		"Use XAudio2 alongside OpenAL Soft" OFF)
 
 option(FFMPEG
 		"Use FMPEG to render Bink videos" ON)
@@ -75,10 +75,14 @@ if(FFMPEG AND BINKDEC)
 endif()
 
 if(UNIX)
-	set(OPENAL TRUE)
+	set(USE_XAUDIO2 FALSE)
+	set(USE_XAUDIO2_PACKAGE FALSE)
 endif()
 		
 if(MSVC)
+	if(USE_XAUDIO2_PACKAGE)
+		set(USE_XAUDIO2 TRUE)
+	endif()
 	#message(STATUS CMAKE_ROOT: ${CMAKE_ROOT})
 	
 	#if(CMAKE_CL_64)
@@ -221,18 +225,18 @@ elseif(MSVC)
     if(CMAKE_CONFIGURATION_TYPES) 
         set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Retail" CACHE STRING "" FORCE) 
     endif()
-	#GK: Fixe performance isse on classic doom for the debug build
-		set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /D _DEBUG /MP /Ob2 /Oi /Oy /MDd")
-		set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MP /Oi /Oy /MD")
+	#GK: Fix performance isse on classic doom for the debug build
+		set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /D _DEBUG /MP /Ob2 /Oi /Oy /MDd /std:c17")
+		set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MP /Oi /Oy /MD /std:c17")
 		#set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MP /Oi /MTd")
 		#set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
-		set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD")
+		set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD /std:c17")
 		
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /Ob2 /Oi /Oy /MDd")
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /Oi /Oy /MD")
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /Ob2 /Oi /Oy /MDd /std:c++17 /std:c17")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /Oi /Oy /MD /std:c++17 /std:c17")
 		#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MP /MTd")
 		#set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
-		set(CMAKE_CXX_FLAGS_RETAIL "${CMAKE_CXX_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD")
+		set(CMAKE_CXX_FLAGS_RETAIL "${CMAKE_CXX_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD /std:c++17 /std:c17")
 		# RB: without /SAFESEH:NO we can't link against ffmpeg libs and VS2013 or we have to build our own
 		# libs for newer compilers
 		set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG:FULL /SAFESEH:NO")
@@ -265,6 +269,10 @@ elseif(MSVC)
 			add_definitions(-DUWP_GAME_PATH="${UWP_PATH}")
 		endif()
 		
+		if(USE_XAUDIO2)
+			add_definitions(-DUSE_XAUDIO2)
+		endif()
+		
 		if( USE_XAUDIO2_PACKAGE ) # Windows RT
 			add_definitions(-DUSE_XAUDIO2_PACKAGE)
         endif()
@@ -285,6 +293,8 @@ elseif(MSVC)
 		# 2: Use MFC in a Shared DLL 
 		set(CMAKE_MFC_FLAG 2)
 	endif()
+	
+	
 	
 	if (MSVC_VERSION GREATER 1919)
 		add_definitions(-D_ITERATOR_DEBUG_LEVEL=1)
@@ -611,6 +621,14 @@ set(SOUND_SOURCES
 	sound/CCScriptDecl.cpp
 	)
 	
+set(SOUND_COMMON_INCLUDES
+	sound/common/SoundHardware.h
+	sound/common/SoundSample.h
+	sound/common/CommonSoundVoice.h)
+	
+set(SOUND_COMMON_SOURCES
+	sound/common/SoundCVars.cpp)
+	
 set(XAUDIO2_INCLUDES
 	sound/XAudio2/XA2_SoundHardware.h
 	sound/XAudio2/XA2_SoundSample.h
@@ -632,12 +650,6 @@ set(OPENAL_SOURCES
 	sound/OpenAL/AL_SoundHardware.cpp
 	sound/OpenAL/AL_SoundSample.cpp
 	sound/OpenAL/AL_SoundVoice.cpp)
-
-set(STUBAUDIO_INCLUDES
-	sound/stub/SoundStub.h)
-
-set(STUBAUDIO_SOURCES
-	sound/stub/SoundSample.cpp)
 	
 set(OGGVORBIS_INCLUDES
 	libs/oggvorbis/ogg/ogg.h
@@ -904,16 +916,24 @@ file(GLOB EDITOR_SOUND_SOURCES tools/sound/*.cpp)
 file(GLOB DOOMCLASSIC_INCLUDES ../doomclassic/doom/*.h)
 file(GLOB DOOMCLASSIC_SOURCES ../doomclassic/doom/*.cpp)
 
-set(DOOMCLASSIC_STUBAUDIO_SOURCES ../doomclassic/doom/i_sound_stub.cpp)
-set(DOOMCLASSIC_OPENAL_INCLUDES ../doomclassic/doom/s_efx.h)
-set(DOOMCLASSIC_OPENAL_SOURCES ../doomclassic/doom/i_sound_openal.cpp ../doomclassic/doom/s_efx.cpp)
-set(DOOMCLASSIC_XAUDIO2_SOURCES ../doomclassic/doom/i_sound_win32.cpp)
+set(DOOMCLASSIC_OPENAL_INCLUDES 
+	../doomclassic/doom/s_efx.h
+	../doomclassic/doom/i_sound_openal.h)
+set(DOOMCLASSIC_OPENAL_SOURCES 
+	../doomclassic/doom/i_sound_openal.cpp
+	../doomclassic/doom/s_efx.cpp)
+set(DOOMCLASSIC_XAUDIO2_SOURCES 
+	../doomclassic/doom/i_sound_win32.cpp)
+set(DOOMCLASSIC_XAUDIO2_INCLUDES 
+	../doomclassic/doom/i_sound_win32.h)
 
 list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_sound_stub.cpp)
 list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_sound_openal.cpp)
+list(REMOVE_ITEM DOOMCLASSIC_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_sound_openal.h)
 list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/s_efx.cpp)
 list(REMOVE_ITEM DOOMCLASSIC_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/s_efx.h)
 list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_sound_win32.cpp)
+list(REMOVE_ITEM DOOMCLASSIC_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_sound_win32.h)
 if(NOT MSVC)
 list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_net_win32.cpp)
 elseif(MSVC)
@@ -1104,8 +1124,8 @@ source_group("sound\\XAudio2" FILES ${XAUDIO2_SOURCES})
 source_group("sound\\OpenAL" FILES ${OPENAL_INCLUDES})
 source_group("sound\\OpenAL" FILES ${OPENAL_SOURCES})
 
-source_group("sound\\stub" FILES ${STUBAUDIO_INCLUDES})
-source_group("sound\\stub" FILES ${STUBAUDIO_SOURCES})
+source_group("sound\\Common" FILES ${SOUND_COMMON_INCLUDES})
+source_group("sound\\Common" FILES ${SOUND_COMMON_SOURCES})
 
 source_group("libs\\oggvorbis" FILES ${OGGVORBIS_INCLUDES})
 source_group("libs\\oggvorbis" FILES ${OGGVORBIS_SOURCES})
@@ -1129,6 +1149,7 @@ source_group("doomclassic" FILES ${DOOMCLASSIC_STUBAUDIO_SOURCES})
 source_group("doomclassic" FILES ${DOOMCLASSIC_OPENAL_INCLUDES})
 source_group("doomclassic" FILES ${DOOMCLASSIC_OPENAL_SOURCES})
 source_group("doomclassic" FILES ${DOOMCLASSIC_XAUDIO2_SOURCES})
+source_group("doomclassic" FILES ${DOOMCLASSIC_XAUDIO2_INCLUDES})
 
 source_group("libs\\timidity" FILES ${TIMIDITY_INCLUDES})
 source_group("libs\\timidity" FILES ${TIMIDITY_SOURCES})
@@ -1369,7 +1390,16 @@ if(MSVC)
 		
 	# else()
 	#GK: DXSDK 2010 can STILL BEEN INSTALLED on Windows 10 and been used even by the LATEST VERSION OF VS
-	if(WINRT AND OPENAL OR USE_XAUDIO2_PACKAGE)
+	#if(WINRT AND OPENAL OR USE_XAUDIO2_PACKAGE)
+	#	set(DirectX_LIBRARIES
+	#		dinput8
+			#dsound
+	#		dxguid
+			#dxerr
+	#		Xinput
+	#		)
+	#elseif(WINRT AND NOT OPENAL)
+	if (WINRT)
 		set(DirectX_LIBRARIES
 			dinput8
 			#dsound
@@ -1377,15 +1407,9 @@ if(MSVC)
 			#dxerr
 			Xinput
 			)
-	elseif(WINRT AND NOT OPENAL)
-		set(DirectX_LIBRARIES
-			dinput8
-			#dsound
-			dxguid
-			#dxerr
-			Xinput
-			xaudio2.lib
-			)
+		if(USE_XAUDIO2)
+			list(APPEND DirectX_LIBRARIES xaudio2.lib)
+		endif()
 	else()
 		find_package(DirectX REQUIRED)
 		include_directories(${DirectX_INCLUDE_DIR})
@@ -1414,7 +1438,12 @@ if(MSVC)
 			glu32)
 	endif()
 	
-	if(OPENAL)
+	list(APPEND RBDOOM3_INCLUDES 
+			${SOUND_COMMON_INCLUDES})
+	list(APPEND RBDOOM3_SOURCES
+			${SOUND_COMMON_SOURCES})
+	
+	#if(OPENAL)
 		add_definitions(-DUSE_OPENAL)
 	
 		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
@@ -1441,8 +1470,11 @@ if(MSVC)
 			install(FILES libs/openal-soft/libs/win32/OpenAL32.dll DESTINATION .)
 			install(FILES libs/openal-soft/libs/win32/OpenAL32.pdb DESTINATION .)
 		endif()
-	else()
-		list(APPEND RBDOOM3_INCLUDES ${XAUDIO2_INCLUDES})
+	#else()
+	if(USE_XAUDIO2)
+		list(APPEND RBDOOM3_INCLUDES 
+			${XAUDIO2_INCLUDES}
+			${DOOMCLASSIC_XAUDIO2_INCLUDES})
 		list(APPEND RBDOOM3_SOURCES
 			${XAUDIO2_SOURCES}
 			${DOOMCLASSIC_XAUDIO2_SOURCES})
@@ -1638,7 +1670,12 @@ else()
 			${POSIX_INCLUDES} ${POSIX_SOURCES}
 			${SDL_INCLUDES} ${SDL_SOURCES} ${SDL_RESOURCES})
 			
-		if(OPENAL)
+		list(APPEND RBDOOM3_INCLUDES 
+			${SOUND_COMMON_INCLUDES})
+		list(APPEND RBDOOM3_SOURCES
+			${SOUND_COMMON_SOURCES})
+			
+		#if(OPENAL)
 			find_package(OpenAL REQUIRED)
 			add_definitions(-DUSE_OPENAL)
 
@@ -1656,12 +1693,12 @@ else()
 			list(APPEND RBDOOM3_SOURCES
 				${OPENAL_SOURCES}
 				${DOOMCLASSIC_OPENAL_SOURCES})
-		else()
-			list(APPEND RBDOOM3_INCLUDES ${STUBAUDIO_INCLUDES})
-			list(APPEND RBDOOM3_SOURCES
-				${STUBAUDIO_SOURCES}
-				${DOOMCLASSIC_STUBAUDIO_SOURCES})
-		endif()
+		#else()
+		#	list(APPEND RBDOOM3_INCLUDES ${STUBAUDIO_INCLUDES})
+		#	list(APPEND RBDOOM3_SOURCES
+		#		${STUBAUDIO_SOURCES}
+		#		${DOOMCLASSIC_STUBAUDIO_SOURCES})
+		#endif()
 		
 		if(USE_VULKAN)
             list(APPEND RBDOOM3_INCLUDES ${RENDERER_VULKAN_INCLUDES})

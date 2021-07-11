@@ -91,6 +91,9 @@ void W_RemoveLump(int lump);
 bool W_InjectLump(std::vector<filelump_t>::iterator file, int pos, idFile* handle);
 
 extern idCVar fs_savepath;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+extern idCVar s_useXAudio;
+#endif
 
 int filelength (FILE* handle) 
 { 
@@ -607,9 +610,13 @@ void W_AddFile ( const char *filename)
 					tlump.null = false;
 					lumpinfo.emplace_back(tlump);
 					//GK: Check for REVERBD lump and activate reverb check ups
-#ifdef USE_OPENAL
-					if (!idStr::Cmpn(filelumpPointer->name, "REVERBD", 7)) {
-						::g->hasreverb = true;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+					if (!s_useXAudio.GetBool()) {
+#endif
+						if (!idStr::Cmpn(filelumpPointer->name, "REVERBD", 7)) {
+							::g->hasreverb = true;
+						}
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
 					}
 #endif
 					//GK: Check if it is a .deh file

@@ -41,9 +41,6 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
-#ifdef USE_OPENAL
-void			InitCinematicAudio();
-#endif
 // cinematic states
 typedef enum
 {

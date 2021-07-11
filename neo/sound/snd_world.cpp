@@ -45,6 +45,9 @@ idCVar s_drawSounds( "s_drawSounds", "0", CVAR_INTEGER, "", 0, 2, idCmdSystem::A
 idCVar s_showVoices( "s_showVoices", "0", CVAR_BOOL, "show active voices" );
 idCVar s_volume_dB( "s_volume_dB", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB" );
 extern idCVar s_noSound;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+extern idCVar s_useXAudio;
+#endif
 
 extern void WriteDeclCache( idDemoFile* f, int demoCategory, int demoCode, declType_t  declType );
 /*
@@ -342,7 +345,7 @@ void idSoundWorldLocal::Update()
 	/*for (int i = 0; i < emitters.Num(); i++) {
 	}*/
 
-	if( s_noSound.GetBool() )
+	if (s_noSound.GetBool())
 	{
 		return;
 	}
@@ -362,40 +365,15 @@ void idSoundWorldLocal::Update()
 		else {
 			EnvironmentID = listener.id;
 		}
-#ifdef USE_OPENAL
-
 		// only update if change in settings 
-		if (/*soundSystemLocal.s_muteEAXReverb.GetBool()*/listener.id != EnvironmentID || soundSystemLocal.EAX == 0) {
-			EFXEAXREVERBPROPERTIES EnvironmentParameters;
-			if (alIsEffect(soundSystemLocal.EAX)) {
-				alDeleteEffects(1, &soundSystemLocal.EAX);
-
-			}
-			soundSystemLocal.EAX = 0;
-			// get area reverb setting from EAX Manager
-			if ((effect) && (effect->data)) {
-				memcpy(&EnvironmentParameters, effect->data, effect->datasize);
-				/*if (soundSystemLocal.s_muteEAXReverb.GetBool()) {
-					EnvironmentParameters.flGain = -10000;
-					EnvironmentID = -2;
-				}*/
-				if (soundSystemLocal.alEAXSet) {
-					EAXarea = listener.area;
-					soundSystemLocal.SetEFX(&EnvironmentParameters);
-					alAuxiliaryEffectSloti(soundSystemLocal.hardware.slot, AL_EFFECTSLOT_EFFECT, soundSystemLocal.EAX);
-				}
+		if (/*soundSystemLocal.s_muteEAXReverb.GetBool()*/listener.id != EnvironmentID) {
+			soundSystemLocal.hardware->UpdateEAXEffect(effect);
+			if (soundSystemLocal.hardware->IsReverbSupported()) {
+				EAXarea = listener.area;
 			}
 			listener.id = EnvironmentID;
 		}
 	}
-#else
-		if (effect && (effect->data)) {
-			memcpy(&soundSystemLocal.EAX, effect->data, sizeof(XAUDIO2FX_REVERB_PARAMETERS));
-			EAXarea = listener.area;
-		}
-		listener.id = EnvironmentID;
-	}
-#endif
 	// ------------------
 	// Update emitters
 	//
@@ -450,9 +428,11 @@ void idSoundWorldLocal::Update()
 			const bool canMute = channel->CanMute();
 			if( canMute && channel->volumeDB <= DB_SILENCE )
 			{
-#if !defined(USE_OPENAL)
-				channel->Mute();
-				continue;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+				if (s_useXAudio.GetBool()) {
+					channel->Mute();
+					continue;
+				}
 #endif
 			}
 			
@@ -530,7 +510,7 @@ void idSoundWorldLocal::Update()
 	if( showVoices )
 	{
 		showVoiceTable.Format( "currentCushionDB: %5.1f  freeVoices: %i zombieVoices: %i buffers:%i/%i\n", currentCushionDB,
-							   soundSystemLocal.hardware.GetNumFreeVoices(), soundSystemLocal.hardware.GetNumZombieVoices(),
+							   soundSystemLocal.hardware->GetNumFreeVoices(), soundSystemLocal.hardware->GetNumZombieVoices(),
 							   soundSystemLocal.activeStreamBufferContexts.Num(), soundSystemLocal.freeStreamBufferContexts.Num() );
 	}
 	for( int i = 0; i < activeEmitterChannels.Num(); i++ )

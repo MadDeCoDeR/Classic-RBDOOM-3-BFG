@@ -47,6 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "z_zone.h"
 #include "i_system.h"
 #include "i_sound.h"
+#include "i_sound_win32.h"
 #include "m_argv.h"
 #include "m_misc.h"
 #include "w_wad.h"
@@ -63,7 +64,7 @@ If you have questions concerning this license or the applicable additional terms
 #endif // DG end
 
 
-idCVar S_museax("S_museax", "0", CVAR_BOOL | CVAR_SOUND | CVAR_ARCHIVE, "Set music EAX for Classic Doom");
+extern idCVar S_museax;
 
 #pragma warning ( disable : 4244 )
 
@@ -85,16 +86,16 @@ IXAudio2SourceVoice*	pMusicSourceVoice;
 
 #endif
 
-MidiSong*				doomMusic;
-byte*					musicBuffer;
-int						totalBufferSize;
+extern MidiSong* doomMusic;
+extern byte*					musicBuffer;
+extern int						totalBufferSize;
 
 HANDLE	hMusicThread;
-bool	waitingForMusic;
-bool	musicReady;
+extern bool	waitingForMusic;
+extern bool	musicReady;
 
 
-typedef struct tagActiveSound_t {
+typedef struct tagActiveSoundXA2_t {
 	IXAudio2SourceVoice*     m_pSourceVoice;         // Source voice
 	X3DAUDIO_DSP_SETTINGS   m_DSPSettings;
 	X3DAUDIO_EMITTER        m_Emitter;
@@ -105,36 +106,24 @@ typedef struct tagActiveSound_t {
 	int player;
 	bool localSound;
 	mobj_t *originator;
-} activeSound_t;
-
-
-// cheap little struct to hold a sound
-typedef struct {
-	int vol;
-	int player;
-	int pitch;
-	int priority;
-	mobj_t *originator;
-	mobj_t *listener;
-} soundEvent_t;
+} activeSoundXA2_t;
 
 // array of all the possible sounds
 // in split screen we only process the loudest sound of each type per frame
-soundEvent_t soundEvents[128];
+extern soundEvent_t soundEvents[128];
 extern int PLAYERCOUNT;
 
-// Real volumes
-const float		GLOBAL_VOLUME_MULTIPLIER = 0.5f;
+extern const float		GLOBAL_VOLUME_MULTIPLIER;
 
-float			x_SoundVolume = GLOBAL_VOLUME_MULTIPLIER;
-float			x_MusicVolume = GLOBAL_VOLUME_MULTIPLIER;
+extern float			x_SoundVolume;
+extern float			x_MusicVolume;
 
 // The actual lengths of all sound effects.
 static int 		lengths[NUMSFX];
-activeSound_t	activeSounds[NUM_SOUNDBUFFERS] = {0};
+activeSoundXA2_t	activeSounds[NUM_SOUNDBUFFERS] = {0};
 
-int				S_initialized = 0;
-bool			Music_initialized = false;
+extern int				S_initialized;
+extern bool			Music_initialized;
 
 // XAUDIO
 float			g_EmitterAzimuths [] = { 0.f };
@@ -152,7 +141,7 @@ X3DAUDIO_LISTENER				doom_Listener;
 float							localSoundVolumeEntries[] = { 0.8f, 0.8f, 0.8f, 0.8f, 0.8f, 0.8f, 0.8f, 0.8f, 0.8f, 0.8f, 0.8f };
 
 
-void							I_InitSoundChannel( int channel, int numOutputChannels_ );
+void							I_InitSoundChannelXA2( int channel, int numOutputChannels_ );
 
 /*
 ======================
@@ -229,7 +218,7 @@ void* getsfx ( const char* sfxname, int* len, int sfxind ) //GK: Keep track whic
 		voiceFormat.wBitsPerSample = 8;
 		voiceFormat.cbSize = 0;
 
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&activeSounds[sfxind].m_pSourceVoice, (WAVEFORMATEX *)&voiceFormat);
+		((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->GetIXAudio2()->CreateSourceVoice(&activeSounds[sfxind].m_pSourceVoice, (WAVEFORMATEX *)&voiceFormat);
 		activeSounds[sfxind].m_Emitter.ChannelCount = 1;
 		activeSounds[sfxind].m_DSPSettings.SrcChannelCount = 1;
 	}
@@ -251,7 +240,9 @@ void* getsfx ( const char* sfxname, int* len, int sfxind ) //GK: Keep track whic
 	sfxReverb->Release();
 
 	XAUDIO2FX_REVERB_PARAMETERS sfxParameters;
-	sfxParameters.WetDryMix = 75.0F;
+	XAUDIO2FX_REVERB_I3DL2_PARAMETERS sfxI3DL2 = XAUDIO2FX_I3DL2_PRESET_DEFAULT;
+	ReverbConvertI3DL2ToNative(&sfxI3DL2, &sfxParameters, 1);
+	sfxParameters.WetDryMix = 50.0F;
 	activeSounds[sfxind].m_pSourceVoice->SetEffectParameters(0, &sfxParameters, sizeof(sfxParameters));
 	// Allocate from zone memory.
 	//sfxmem = (float*)DoomLib::Z_Malloc( size*(sizeof(float)), PU_SOUND_SHARED, 0 );
@@ -277,7 +268,7 @@ void* getsfx ( const char* sfxname, int* len, int sfxind ) //GK: Keep track whic
 I_SetChannels
 ======================
 */
-void I_SetChannels() {
+void I_SetChannelsXA2() {
 	// Original Doom set up lookup tables here
 }	
 
@@ -286,7 +277,7 @@ void I_SetChannels() {
 I_SetSfxVolume
 ======================
 */
-void I_SetSfxVolume(int volume) {
+void I_SetSfxVolumeXA2(int volume) {
 	x_SoundVolume = ((float)volume / 15.f) * GLOBAL_VOLUME_MULTIPLIER;
 }
 
@@ -299,7 +290,7 @@ I_GetSfxLumpNum
 // Retrieve the raw data lump index
 //  for a given SFX name.
 //
-int I_GetSfxLumpNum(sfxinfo_t* sfx)
+int I_GetSfxLumpNumXA2(sfxinfo_t* sfx)
 {
 	char namebuf[9];
 	sprintf(namebuf, "ds%s", sfx->name);
@@ -321,14 +312,14 @@ I_StartSound2
 //  priority, it is ignored.
 // Pitching (that is, increased speed of playback) is set
 //
-int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin, int pitch, int priority ) {
+int I_StartSound2XA2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin, int pitch, int priority ) {
 	if ( !soundHardwareInitialized ) {
 		return id;
 	}
 	
 	int i;
 	 XAUDIO2_VOICE_STATE state;
-	activeSound_t* sound = 0;
+	activeSoundXA2_t* sound = 0;
 	int oldest = 0, oldestnum = -1;
 
 	// these id's should not overlap
@@ -339,7 +330,7 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 			sound = &activeSounds[i];
 
 			if (sound->valid && ( sound->id == id && sound->player == player ) ) {
-				I_StopSound( sound->id, player );
+				I_StopSoundXA2( sound->id, player );
 				break;
 			}
 		}
@@ -451,10 +442,10 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 I_ProcessSoundEvents
 ======================
 */
-void I_ProcessSoundEvents() {
+void I_ProcessSoundEventsXA2() {
 	for( int i = 0; i < 128; i++ ) {
 		if( soundEvents[i].pitch ) {
-			I_StartSound2( i, soundEvents[i].player, soundEvents[i].originator, soundEvents[i].listener, soundEvents[i].pitch, soundEvents[i].priority );
+			I_StartSound2XA2( i, soundEvents[i].player, soundEvents[i].originator, soundEvents[i].listener, soundEvents[i].pitch, soundEvents[i].priority );
 		}
 	}
 	memset( soundEvents, 0, sizeof( soundEvents ) );
@@ -465,7 +456,7 @@ void I_ProcessSoundEvents() {
 I_StartSound
 ======================
 */
-int I_StartSound ( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int pitch, int priority ) {
+int I_StartSoundXA2 ( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int pitch, int priority ) {
 	// only allow player 0s sounds in intermission and finale screens
 	if( ::g->gamestate != GS_LEVEL && DoomLib::GetPlayer() != 0 ) {
 		return 0;
@@ -474,7 +465,7 @@ int I_StartSound ( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int
 	// if we're only one player or we're trying to play the chainsaw sound, do it normal
 	// otherwise only allow one sound of each type per frame
 	if( PLAYERCOUNT == 1 || id == sfx_sawup || id == sfx_sawidl || id == sfx_sawful || id == sfx_sawhit ) {
-		return I_StartSound2( id, ::g->consoleplayer, origin, listener_origin, pitch, priority );
+		return I_StartSound2XA2( id, ::g->consoleplayer, origin, listener_origin, pitch, priority );
 	}
 	else {
 		if( soundEvents[ id ].vol < vol ) {
@@ -494,7 +485,7 @@ int I_StartSound ( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int
 I_StopSound
 ======================
 */
-void I_StopSound (int handle, int player)
+void I_StopSoundXA2 (int handle, int player)
 {
 	// You need the handle returned by StartSound.
 	// Would be looping all channels,
@@ -502,7 +493,7 @@ void I_StopSound (int handle, int player)
 	//  an setting the channel to zero.
 
 	int i;
-	activeSound_t* sound = 0;
+	activeSoundXA2_t* sound = 0;
 
 	for (i = 0; i < NUM_SOUNDBUFFERS; ++i)
 	{
@@ -529,14 +520,14 @@ void I_StopSound (int handle, int player)
 I_SoundIsPlaying
 ======================
 */
-int I_SoundIsPlaying(int handle) {
+int I_SoundIsPlayingXA2(int handle) {
 	if ( !soundHardwareInitialized ) {
 		return 0;
 	}
 
 	int i;
 	XAUDIO2_VOICE_STATE	state;
-	activeSound_t* sound;
+	activeSoundXA2_t* sound;
 
 	for (i = 0; i < NUM_SOUNDBUFFERS; ++i)
 	{
@@ -560,14 +551,14 @@ I_UpdateSound
 */
 // Update Listener Position and go through all the
 // channels and update speaker volumes for 3D sound.
-void I_UpdateSound() {
+void I_UpdateSoundXA2() {
 	if ( !soundHardwareInitialized ) {
 		return;
 	}
 
 	int i;
 	XAUDIO2_VOICE_STATE	state;
-	activeSound_t* sound;
+	activeSoundXA2_t* sound;
 
 	for ( i=0; i < NUM_SOUNDBUFFERS; i++ ) {
 		sound = &activeSounds[i];
@@ -625,7 +616,7 @@ void I_UpdateSound() {
 I_UpdateSoundParams
 ======================
 */
-void I_UpdateSoundParams( int handle, int vol, int sep, int pitch) {
+void I_UpdateSoundParamsXA2( int handle, int vol, int sep, int pitch) {
 }
 
 /*
@@ -633,20 +624,20 @@ void I_UpdateSoundParams( int handle, int vol, int sep, int pitch) {
 I_ShutdownSound
 ======================
 */
-void I_ShutdownSound(void) {
+void I_ShutdownSoundXA2(void) {
 	int done = 0;
 	int i;
 
 	if ( S_initialized ) {
 		// Stop all sounds, but don't destroy the XAudio2 buffers.
 		for ( i = 0; i < NUM_SOUNDBUFFERS; ++i ) {
-			activeSound_t * sound = &activeSounds[i];
+			activeSoundXA2_t * sound = &activeSounds[i];
 
 			if ( sound == NULL ) {
 				continue;
 			}
 
-			I_StopSound( sound->id, 0 );
+			I_StopSoundXA2( sound->id, 0 );
 
 			if ( sound->m_pSourceVoice ) {
 				sound->m_pSourceVoice->FlushSourceBuffers();
@@ -662,7 +653,7 @@ void I_ShutdownSound(void) {
 		}
 	}
 
-	I_StopSong( 0 );
+	I_StopSongXA2( 0 );
 	ResetSfx(); //GK: At last I found where I can reset the dehacked sound editor without screwing over the game
 	S_initialized = 0;
 	// Done.
@@ -677,7 +668,7 @@ Called from the tech4x initialization code. Sets up Doom classic's
 sound channels.
 ======================
 */
-void I_InitSoundHardware( int numOutputChannels_, int channelMask ) {
+void I_InitSoundHardwareXA2( int numOutputChannels_, int channelMask ) {
 	::numOutputChannels = numOutputChannels_;
 
 	// Initialize the X3DAudio
@@ -687,10 +678,10 @@ void I_InitSoundHardware( int numOutputChannels_, int channelMask ) {
 	X3DAudioInitialize( channelMask, 340.29f, X3DAudioInstance );
 	for ( int i = 0; i < NUM_SOUNDBUFFERS; ++i ) {
 		// Initialize source voices
-		I_InitSoundChannel( i, numOutputChannels );
+		I_InitSoundChannelXA2( i, numOutputChannels );
 	}
 
-	I_InitMusic();
+	I_InitMusicXA2();
 
 	soundHardwareInitialized = true;
 }
@@ -704,13 +695,13 @@ Called from the tech4x shutdown code. Tears down Doom classic's
 sound channels.
 ======================
 */
-void I_ShutdownSoundHardware() {
+void I_ShutdownSoundHardwareXA2() {
 	soundHardwareInitialized = false;
 
-	I_ShutdownMusic();
+	I_ShutdownMusicXA2();
 
 	for ( int i = 0; i < NUM_SOUNDBUFFERS; ++i ) {
-		activeSound_t * sound = &activeSounds[i];
+		activeSoundXA2_t * sound = &activeSounds[i];
 
 		if ( sound == NULL ) {
 			continue;
@@ -736,8 +727,8 @@ void I_ShutdownSoundHardware() {
 I_InitSoundChannel
 ======================
 */
-void I_InitSoundChannel( int channel, int numOutputChannels_ ) {
-	activeSound_t	*soundchannel = &activeSounds[ channel ];
+void I_InitSoundChannelXA2( int channel, int numOutputChannels_ ) {
+	activeSoundXA2_t	*soundchannel = &activeSounds[ channel ];
 	//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 	// RB: fixed non-aggregates cannot be initialized with initializer list
 #if defined(USE_WINRT) //(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
@@ -796,7 +787,7 @@ void I_InitSoundChannel( int channel, int numOutputChannels_ ) {
 		voiceFormat.wBitsPerSample = 8;
 		voiceFormat.cbSize = 0;
 
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice( &soundchannel->m_pSourceVoice, (WAVEFORMATEX *)&voiceFormat );
+		((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->GetIXAudio2()->CreateSourceVoice( &soundchannel->m_pSourceVoice, (WAVEFORMATEX *)&voiceFormat );
 
 	}
 }
@@ -806,7 +797,7 @@ void I_InitSoundChannel( int channel, int numOutputChannels_ ) {
 I_InitSound
 ======================
 */
-void I_InitSound() {
+void I_InitSoundXA2() {
 
 	if (S_initialized == 0) {
 		int i;
@@ -855,17 +846,17 @@ void I_InitSound() {
 I_SubmitSound
 ======================
 */
-void I_SubmitSound(void)
+void I_SubmitSoundXA2(void)
 {
 	// Only do this for player 0, it will still handle positioning
 	//		for other players, but it can't be outside the game 
 	//		frame like the soundEvents are.
 	if ( DoomLib::GetPlayer() == 0 ) {
 		// Do 3D positioning of sounds
-		I_UpdateSound();
+		I_UpdateSoundXA2();
 
 		// Check for XMP notifications
-		I_UpdateMusic();
+		I_UpdateMusicXA2();
 	}
 }
 
@@ -881,7 +872,7 @@ void I_SubmitSound(void)
 I_SetMusicVolume
 ======================
 */
-void I_SetMusicVolume(int volume)
+void I_SetMusicVolumeXA2(int volume)
 {
 	x_MusicVolume = (float)volume / 15.f;
 }
@@ -891,7 +882,7 @@ void I_SetMusicVolume(int volume)
 I_InitMusic
 ======================
 */
-void I_InitMusic(void)		
+void I_InitMusicXA2(void)		
 {
 	if ( !Music_initialized ) {
 		// Initialize Timidity
@@ -916,7 +907,7 @@ void I_InitMusic(void)
 // RB: XAUDIO2_VOICE_MUSIC not available on Windows 8 SDK
 //GK: Correction, according to MSDN XAUDIO2_VOICE_MUSIC is NOT supported by Windows
 //#if !defined(USE_WINRT) //(_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice( &pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat );
+		((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->GetIXAudio2()->CreateSourceVoice( &pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat );
 //#endif
 // RB end
 
@@ -929,9 +920,9 @@ void I_InitMusic(void)
 I_ShutdownMusic
 ======================
 */
-void I_ShutdownMusic(void)	
+void I_ShutdownMusicXA2(void)	
 {
-	I_StopSong( 0 );
+	I_StopSongXA2( 0 );
 
 	if ( Music_initialized ) {
 		if ( pMusicSourceVoice ) {
@@ -1029,7 +1020,7 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 		// RB: XAUDIO2_VOICE_MUSIC not available on Windows 8 SDK
 		//GK: Correction, according to MSDN XAUDIO2_VOICE_MUSIC is NOT supported by Windows
 		//#if !defined(USE_WINRT) //(_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat);
+		((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat);
 		//#endif
 		// RB end
 
@@ -1066,7 +1057,7 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 I_PlaySong
 ======================
 */
-void I_PlaySong( const char *songname, int looping)
+void I_PlaySongXA2( const char *songname, int looping)
 {
 	if ( !Music_initialized ) {
 		return;
@@ -1121,7 +1112,7 @@ void I_PlaySong( const char *songname, int looping)
 	XAUDIO2FX_REVERB_PARAMETERS musicNative;
 	XAUDIO2FX_REVERB_I3DL2_PARAMETERS musicI3DL2 = XAUDIO2FX_I3DL2_PRESET_CONCERTHALL;
 	ReverbConvertI3DL2ToNative(&musicI3DL2, &musicNative, 1);
-	musicNative.WetDryMix = 75.0F;
+	musicNative.WetDryMix = 50.0F;
 	pMusicSourceVoice->SetEffectParameters(0, &musicNative, sizeof(musicNative));
 
 	if ( DoomLib::GetPlayer() >= 0 ) {
@@ -1134,7 +1125,7 @@ void I_PlaySong( const char *songname, int looping)
 I_UpdateMusic
 ======================
 */
-void I_UpdateMusic() {
+void I_UpdateMusicXA2() {
 	if ( !Music_initialized ) {
 		return;
 	}
@@ -1189,7 +1180,7 @@ void I_UpdateMusic() {
 I_PauseSong
 ======================
 */
-void I_PauseSong (int handle)
+void I_PauseSongXA2 (int handle)
 {
 	if ( !Music_initialized ) {
 		return;
@@ -1206,7 +1197,7 @@ void I_PauseSong (int handle)
 I_ResumeSong
 ======================
 */
-void I_ResumeSong (int handle)
+void I_ResumeSongXA2 (int handle)
 {
 	if ( !Music_initialized ) {
 		return;
@@ -1223,7 +1214,7 @@ void I_ResumeSong (int handle)
 I_StopSong
 ======================
 */
-void I_StopSong(int handle)
+void I_StopSongXA2(int handle)
 {
 	if ( !Music_initialized ) {
 		return;
@@ -1240,7 +1231,7 @@ void I_StopSong(int handle)
 I_UnRegisterSong
 ======================
 */
-void I_UnRegisterSong(int handle)
+void I_UnRegisterSongXA2(int handle)
 {
 	// does nothing
 }
@@ -1250,7 +1241,7 @@ void I_UnRegisterSong(int handle)
 I_RegisterSong
 ======================
 */
-int I_RegisterSong(void* data, int length)
+int I_RegisterSongXA2(void* data, int length)
 {
 	// does nothing
 	return 0;

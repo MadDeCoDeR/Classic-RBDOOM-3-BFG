@@ -30,14 +30,14 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../snd_local.h"
 #if defined(USE_DOOMCLASSIC)
-#include "../../../doomclassic/doom/i_sound.h"
+#include "../../../doomclassic/doom/i_sound_win32.h"
 #endif
 
-idCVar s_showLevelMeter( "s_showLevelMeter", "0", CVAR_BOOL | CVAR_ARCHIVE, "Show VU meter" );
-idCVar s_meterTopTime( "s_meterTopTime", "1000", CVAR_INTEGER | CVAR_ARCHIVE, "How long (in milliseconds) peaks are displayed on the VU meter" );
-idCVar s_meterPosition( "s_meterPosition", "100 100 20 200", CVAR_ARCHIVE, "VU meter location (x y w h)" );
-idCVar s_device( "s_device", "-1", CVAR_INTEGER | CVAR_ARCHIVE, "Which audio device to use (listDevices to list, -1 for default)" );
-idCVar s_showPerfData( "s_showPerfData", "0", CVAR_BOOL, "Show XAudio2 Performance data" );
+extern idCVar s_showLevelMeter;
+extern idCVar s_meterTopTime;
+extern idCVar s_meterPosition;
+extern idCVar s_device;
+extern idCVar s_showPerfData;
 extern idCVar s_volume_dB;
 //GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 #if defined(USE_WINRT)
@@ -178,29 +178,22 @@ std::vector<AudioDevice> EnumerateAudioDevices( _Out_opt_ AudioDevice* defaultDe
 idSoundHardware_XAudio2::idSoundHardware_XAudio2
 ========================
 */
-idSoundHardware_XAudio2::idSoundHardware_XAudio2()
+idSoundHardware_XAudio2::idSoundHardware_XAudio2(): idSoundHardware()
 {
 	pXAudio2 = NULL;
 	pMasterVoice = NULL;
 	pSubmixVoice = NULL;
-	
-	vuMeterRMS = NULL;
-	vuMeterPeak = NULL;
-	
-	outputChannels = 0;
-	channelMask = 0;
-	
-	voices.SetNum( 0 );
-	zombieVoices.SetNum( 0 );
-	freeVoices.SetNum( 0 );
-	
-	lastResetTime = 0;
+
+	voices.SetNum(0);
+	zombieVoices.SetNum(0);
+	freeVoices.SetNum(0);
+
 }
 
-void listDevices_f( const idCmdArgs& args )
+void listDevices_f_XA2( const idCmdArgs& args )
 {
 
-	IXAudio2* pXAudio2 = soundSystemLocal.hardware.GetIXAudio2();
+	IXAudio2* pXAudio2 = ((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->GetIXAudio2();
 	
 	if( pXAudio2 == NULL )
 	{
@@ -363,37 +356,37 @@ idSoundHardware_XAudio2::Init
 void idSoundHardware_XAudio2::Init()
 {
 
-	cmdSystem->AddCommand( "listDevices", listDevices_f, 0, "Lists the connected sound devices", NULL );
-	
+	cmdSystem->AddCommand("listDevices", listDevices_f_XA2, 0, "Lists the connected sound devices", NULL);
+
 	DWORD xAudioCreateFlags = 0;
 	//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 // RB: not available on Windows 8 SDK
 #if !defined(USE_WINRT) && defined(_DEBUG) // (_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/) && defined(_DEBUG)
 	xAudioCreateFlags |= XAUDIO2_DEBUG_ENGINE;
 #endif
-// RB end
+	// RB end
 
 	XAUDIO2_PROCESSOR xAudioProcessor = XAUDIO2_DEFAULT_PROCESSOR;
 	//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 // RB: not available on Windows 8 SDK
-	if( FAILED( XAudio2Create( &pXAudio2, xAudioCreateFlags, xAudioProcessor ) ) )
+	if (FAILED(XAudio2Create(&pXAudio2, xAudioCreateFlags, xAudioProcessor)))
 	{
 #if !defined(USE_WINRT) && defined(_DEBUG) // (_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/) && defined(_DEBUG)
-		if( xAudioCreateFlags & XAUDIO2_DEBUG_ENGINE )
+		if (xAudioCreateFlags & XAUDIO2_DEBUG_ENGINE)
 		{
 			// in case the debug engine isn't installed
 			xAudioCreateFlags &= ~XAUDIO2_DEBUG_ENGINE;
-			if( FAILED( XAudio2Create( &pXAudio2, xAudioCreateFlags, xAudioProcessor ) ) )
+			if (FAILED(XAudio2Create(&pXAudio2, xAudioCreateFlags, xAudioProcessor)))
 			{
-				idLib::FatalError( "Failed to create XAudio2 engine.  Try installing the latest DirectX." );
+				idLib::FatalError("Failed to create XAudio2 engine.  Try installing the latest DirectX.");
 				return;
 			}
 		}
 		else
 #endif
-// RB end
+			// RB end
 		{
-			idLib::FatalError( "Failed to create XAudio2 engine.  Try installing the latest DirectX." );
+			idLib::FatalError("Failed to create XAudio2 engine.  Try installing the latest DirectX.");
 			return;
 		}
 	}
@@ -401,36 +394,36 @@ void idSoundHardware_XAudio2::Init()
 	XAUDIO2_DEBUG_CONFIGURATION debugConfiguration = { 0 };
 	debugConfiguration.TraceMask = XAUDIO2_LOG_WARNINGS;
 	debugConfiguration.BreakMask = XAUDIO2_LOG_ERRORS;
-	pXAudio2->SetDebugConfiguration( &debugConfiguration );
+	pXAudio2->SetDebugConfiguration(&debugConfiguration);
 #endif
-	
+
 	// Register the sound engine callback
-	pXAudio2->RegisterForCallbacks( &soundEngineCallback );
+	pXAudio2->RegisterForCallbacks(&soundEngineCallback);
 	soundEngineCallback.hardware = this;
 	DWORD outputSampleRate = 44100; // Max( (DWORD)XAUDIO2FX_REVERB_MIN_FRAMERATE, Min( (DWORD)XAUDIO2FX_REVERB_MAX_FRAMERATE, deviceDetails.OutputFormat.Format.nSamplesPerSec ) );
-	
+
 	idCmdArgs args;
-	listDevices_f( args );
+	listDevices_f_XA2(args);
 	//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 	// RB: not available on Windows 8 SDK
 #if defined(USE_WINRT) //(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
 	AudioDevice defaultDevice;
-	std::vector<AudioDevice> vAudioDevices = EnumerateAudioDevices( &defaultDevice );
-	
-	if( !vAudioDevices.empty() )
+	std::vector<AudioDevice> vAudioDevices = EnumerateAudioDevices(&defaultDevice);
+
+	if (!vAudioDevices.empty())
 	{
-	
+
 		AudioDevice selectedDevice;
-		
+
 		int preferredDevice = s_device.GetInteger();
-		bool validPreference = ( preferredDevice >= 0 && preferredDevice < ( int )vAudioDevices.size() );
+		bool validPreference = (preferredDevice >= 0 && preferredDevice < (int)vAudioDevices.size());
 		// Do we select a device automatically?
-		if( validPreference )
+		if (validPreference)
 		{
 			// Use the user's selected device
 			selectedDevice = vAudioDevices[preferredDevice];
 		}
-		else if( !defaultDevice.id.empty() )
+		else if (!defaultDevice.id.empty())
 		{
 			// Fall back to the default device if there is one
 			selectedDevice = defaultDevice;
@@ -440,7 +433,7 @@ void idSoundHardware_XAudio2::Init()
 			// Fall back to first device
 			selectedDevice = vAudioDevices[0];
 		}
-		
+
 		HRESULT masterVoice = pXAudio2->CreateMasteringVoice(&pMasterVoice,
 			XAUDIO2_DEFAULT_CHANNELS,
 			0,
@@ -448,169 +441,174 @@ void idSoundHardware_XAudio2::Init()
 			selectedDevice.id.c_str(),
 			NULL,
 			AudioCategory_GameEffects);
-		if( SUCCEEDED(masterVoice) )
+		if (SUCCEEDED(masterVoice))
 		{
 			XAUDIO2_VOICE_DETAILS deviceDetails;
-			pMasterVoice->GetVoiceDetails( &deviceDetails );
-			
-			pMasterVoice->SetVolume( DBtoLinear( s_volume_dB.GetFloat() ) );
-			
+			pMasterVoice->GetVoiceDetails(&deviceDetails);
+
+			pMasterVoice->SetVolume(DBtoLinear(s_volume_dB.GetFloat()));
+
 			outputChannels = deviceDetails.InputChannels;
 			DWORD win8_channelMask;
-			pMasterVoice->GetChannelMask( &win8_channelMask );
-			
-			channelMask = ( unsigned int )win8_channelMask;
-			idLib::Printf( "Using device %S\n", selectedDevice.name );
+			pMasterVoice->GetChannelMask(&win8_channelMask);
+
+			channelMask = (unsigned int)win8_channelMask;
+			idLib::Printf("Using device %S\n", selectedDevice.name);
 		}
 		else
 		{
 			char msgbuf[256];
 			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, masterVoice, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
-			idLib::FatalError( "Failed to create master voice: %s", msgbuf );
+			idLib::FatalError("Failed to create master voice: %s", msgbuf);
 			pXAudio2->Release();
 			pXAudio2 = NULL;
 			return;
 		}
 	}
-	
+
 #else
 	UINT32 deviceCount = 0;
-	if( pXAudio2->GetDeviceCount( &deviceCount ) != S_OK || deviceCount == 0 )
+	if (pXAudio2->GetDeviceCount(&deviceCount) != S_OK || deviceCount == 0)
 	{
-		idLib::Warning( "No audio devices found" );
+		idLib::Warning("No audio devices found");
 		pXAudio2->Release();
 		pXAudio2 = NULL;
 		return;
 	}
-	
+
 	int preferredDevice = s_device.GetInteger();
-	if( preferredDevice < 0 || preferredDevice >= ( int )deviceCount )
+	if (preferredDevice < 0 || preferredDevice >= (int)deviceCount)
 	{
 		int preferredChannels = 0;
-		for( unsigned int i = 0; i < deviceCount; i++ )
+		for (unsigned int i = 0; i < deviceCount; i++)
 		{
 			XAUDIO2_DEVICE_DETAILS deviceDetails;
-			if( pXAudio2->GetDeviceDetails( i, &deviceDetails ) != S_OK )
+			if (pXAudio2->GetDeviceDetails(i, &deviceDetails) != S_OK)
 			{
 				continue;
 			}
-	
-			if( deviceDetails.Role & DefaultGameDevice )
+
+			if (deviceDetails.Role & DefaultGameDevice)
 			{
 				// if we find a device the user marked as their preferred 'game' device, then always use that
 				preferredDevice = i;
 				preferredChannels = deviceDetails.OutputFormat.Format.nChannels;
 				break;
 			}
-	
-			if( deviceDetails.OutputFormat.Format.nChannels > preferredChannels )
+
+			if (deviceDetails.OutputFormat.Format.nChannels > preferredChannels)
 			{
 				preferredDevice = i;
 				preferredChannels = deviceDetails.OutputFormat.Format.nChannels;
 			}
 		}
 	}
-	
-	idLib::Printf( "Using device %d\n", preferredDevice );
-	
+
+	idLib::Printf("Using device %d\n", preferredDevice);
+
 	XAUDIO2_DEVICE_DETAILS deviceDetails;
-	if( pXAudio2->GetDeviceDetails( preferredDevice, &deviceDetails ) != S_OK )
+	if (pXAudio2->GetDeviceDetails(preferredDevice, &deviceDetails) != S_OK)
 	{
 		// One way this could happen is if a device is removed between the loop and this line of code
 		// Highly unlikely but possible
-		idLib::Warning( "Failed to get device details" );
+		idLib::Warning("Failed to get device details");
 		pXAudio2->Release();
 		pXAudio2 = NULL;
 		return;
 	}
-	
-	
-	if( FAILED( pXAudio2->CreateMasteringVoice( &pMasterVoice, XAUDIO2_DEFAULT_CHANNELS, outputSampleRate, 0, preferredDevice, NULL ) ) )
+
+
+	if (FAILED(pXAudio2->CreateMasteringVoice(&pMasterVoice, XAUDIO2_DEFAULT_CHANNELS, outputSampleRate, 0, preferredDevice, NULL)))
 	{
-		idLib::Warning( "Failed to create master voice" );
+		idLib::Warning("Failed to create master voice");
 		pXAudio2->Release();
 		pXAudio2 = NULL;
 		return;
 	}
-	pMasterVoice->SetVolume( DBtoLinear( s_volume_dB.GetFloat() ) );
-	
+	pMasterVoice->SetVolume(DBtoLinear(s_volume_dB.GetFloat()));
+
 	outputChannels = deviceDetails.OutputFormat.Format.nChannels;
 	channelMask = deviceDetails.OutputFormat.dwChannelMask;
-	
+
 #endif // #if (_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
-	
-	idSoundVoice::InitSurround( outputChannels, channelMask );
-	
+
+	idSoundVoice::InitSurround(outputChannels, channelMask);
+
 #if defined(USE_DOOMCLASSIC)
 	// ---------------------
 	// Initialize the Doom classic sound system.
 	// ---------------------
-	I_InitSoundHardware( outputChannels, channelMask );
+	I_InitSoundHardwareXA2(outputChannels, channelMask);
 #endif
-	
+
 	// ---------------------
 	// Create VU Meter Effect
 	// ---------------------
 	IUnknown* vuMeter = NULL;
-	XAudio2CreateVolumeMeter( &vuMeter, 0 );
-	
+	XAudio2CreateVolumeMeter(&vuMeter, 0);
+
 	XAUDIO2_EFFECT_DESCRIPTOR descriptor;
 	descriptor.InitialState = true;
 	descriptor.OutputChannels = outputChannels;
 	descriptor.pEffect = vuMeter;
-	
+
 	XAUDIO2_EFFECT_CHAIN chain;
 	chain.EffectCount = 1;
 	chain.pEffectDescriptors = &descriptor;
-	
-	pMasterVoice->SetEffectChain( &chain );
-	
+
+	pMasterVoice->SetEffectChain(&chain);
+
 	vuMeter->Release();
-	
+
 	// ---------------------
 	// Create VU Meter Graph
 	// ---------------------
-	
-	vuMeterRMS = console->CreateGraph( outputChannels );
-	vuMeterPeak = console->CreateGraph( outputChannels );
-	vuMeterRMS->Enable( false );
-	vuMeterPeak->Enable( false );
-	
-	memset( vuMeterPeakTimes, 0, sizeof( vuMeterPeakTimes ) );
-	
-	vuMeterPeak->SetFillMode( idDebugGraph::GRAPH_LINE );
-	vuMeterPeak->SetBackgroundColor( idVec4( 0.0f, 0.0f, 0.0f, 0.0f ) );
-	
-	vuMeterRMS->AddGridLine( 0.500f, idVec4( 0.5f, 0.5f, 0.5f, 1.0f ) );
-	vuMeterRMS->AddGridLine( 0.250f, idVec4( 0.5f, 0.5f, 0.5f, 1.0f ) );
-	vuMeterRMS->AddGridLine( 0.125f, idVec4( 0.5f, 0.5f, 0.5f, 1.0f ) );
-	
+
+	vuMeterRMS = console->CreateGraph(outputChannels);
+	vuMeterPeak = console->CreateGraph(outputChannels);
+	vuMeterRMS->Enable(false);
+	vuMeterPeak->Enable(false);
+
+	memset(vuMeterPeakTimes, 0, sizeof(vuMeterPeakTimes));
+
+	vuMeterPeak->SetFillMode(idDebugGraph::GRAPH_LINE);
+	vuMeterPeak->SetBackgroundColor(idVec4(0.0f, 0.0f, 0.0f, 0.0f));
+
+	vuMeterRMS->AddGridLine(0.500f, idVec4(0.5f, 0.5f, 0.5f, 1.0f));
+	vuMeterRMS->AddGridLine(0.250f, idVec4(0.5f, 0.5f, 0.5f, 1.0f));
+	vuMeterRMS->AddGridLine(0.125f, idVec4(0.5f, 0.5f, 0.5f, 1.0f));
+
 	const char* channelNames[] = { "L", "R", "C", "S", "Lb", "Rb", "Lf", "Rf", "Cb", "Ls", "Rs" };
-	for( int i = 0, ci = 0; ci < sizeof( channelNames ) / sizeof( channelNames[0] ); ci++ )
+	for (int i = 0, ci = 0; ci < sizeof(channelNames) / sizeof(channelNames[0]); ci++)
 	{
-		if( ( channelMask & BIT( ci ) ) == 0 )
+		if ((channelMask & BIT(ci)) == 0)
 		{
 			continue;
 		}
-		vuMeterRMS->SetLabel( i, channelNames[ ci ] );
+		vuMeterRMS->SetLabel(i, channelNames[ci]);
 		i++;
 	}
-	
+
 	// ---------------------
 	// Create submix buffer
 	// ---------------------
-	if( FAILED( pXAudio2->CreateSubmixVoice( &pSubmixVoice, 1, outputSampleRate, 0, 0, NULL, NULL ) ) )
+	if (FAILED(pXAudio2->CreateSubmixVoice(&pSubmixVoice, 1, outputSampleRate, 0, 0, NULL, NULL)))
 	{
-		idLib::FatalError( "Failed to create submix voice" );
+		idLib::FatalError("Failed to create submix voice");
 	}
-	
+
 	// XAudio doesn't really impose a maximum number of voices
-	voices.SetNum( voices.Max() );
-	freeVoices.SetNum( voices.Max() );
-	zombieVoices.SetNum( 0 );
-	for( int i = 0; i < voices.Num(); i++ )
+	voices.SetNum(voices.Max());
+	freeVoices.SetNum(voices.Max());
+	zombieVoices.SetNum(0);
+	for (int i = 0; i < voices.Num(); i++)
 	{
 		freeVoices[i] = &voices[i];
+	}
+	hasReverb = false;
+	IUnknown* reverb = NULL;
+	if (!FAILED(XAudio2CreateReverb(&reverb, 0))) {
+		hasReverb = true;
 	}
 // RB end
 }
@@ -624,7 +622,8 @@ void idSoundHardware_XAudio2::Shutdown()
 {
 	for( int i = 0; i < voices.Num(); i++ )
 	{
-		voices[ i ].DestroyInternal();
+		idSoundVoice_XAudio2* voice = (idSoundVoice_XAudio2*)&voices[i];
+		voice->DestroyInternal();
 	}
 	voices.Clear();
 	freeVoices.Clear();
@@ -634,7 +633,7 @@ void idSoundHardware_XAudio2::Shutdown()
 	// ---------------------
 	// Shutdown the Doom classic sound system.
 	// ---------------------
-	I_ShutdownSoundHardware();
+	I_ShutdownSoundHardwareXA2();
 #endif
 	
 	if( pXAudio2 != NULL )
@@ -675,6 +674,11 @@ void idSoundHardware_XAudio2::Shutdown()
 	}
 }
 
+void idSoundHardware_XAudio2::ShutdownReverbSystem()
+{
+	EAX = {};
+}
+
 /*
 ========================
 idSoundHardware_XAudio2::AllocateVoice
@@ -688,7 +692,7 @@ idSoundVoice* idSoundHardware_XAudio2::AllocateVoice( const idSoundSample* leadi
 	}
 	if( loopingSample != NULL )
 	{
-		if( ( leadinSample->format.basic.formatTag != loopingSample->format.basic.formatTag ) || ( leadinSample->format.basic.numChannels != loopingSample->format.basic.numChannels ) )
+		if( ( leadinSample->GetFormat().basic.formatTag != loopingSample->GetFormat().basic.formatTag ) || ( leadinSample->GetFormat().basic.numChannels != loopingSample->GetFormat().basic.numChannels ) )
 		{
 			idLib::Warning( "Leadin/looping format mismatch: %s & %s", leadinSample->GetName(), loopingSample->GetName() );
 			loopingSample = NULL;
@@ -697,14 +701,15 @@ idSoundVoice* idSoundHardware_XAudio2::AllocateVoice( const idSoundSample* leadi
 	
 	// Try to find a free voice that matches the format
 	// But fallback to the last free voice if none match the format
-	idSoundVoice* voice = NULL;
+	idSoundVoice_XAudio2* voice = NULL;
 	for( int i = 0; i < freeVoices.Num(); i++ )
 	{
-		if( freeVoices[i]->IsPlaying() )
+		voice = (idSoundVoice_XAudio2*)freeVoices[i];
+		if( voice->IsPlaying() )
 		{
 			continue;
 		}
-		voice = ( idSoundVoice* )freeVoices[i];
+		
 		if( voice->CompatibleFormat( ( idSoundSample_XAudio2* )leadinSample ) )
 		{
 			break;
@@ -731,7 +736,7 @@ void idSoundHardware_XAudio2::FreeVoice( idSoundVoice* voice )
 	
 	// Stop() is asyncronous, so we won't flush bufferes until the
 	// voice on the zombie channel actually returns !IsPlaying()
-	zombieVoices.Append( voice );
+	zombieVoices.Append( (idSoundVoice_XAudio2*)voice );
 }
 
 /*
@@ -767,8 +772,9 @@ void idSoundHardware_XAudio2::Update()
 	// until it actually reports that it is no longer playing.
 	for( int i = 0; i < zombieVoices.Num(); i++ )
 	{
-		zombieVoices[i]->FlushSourceBuffers();
-		if( !zombieVoices[i]->IsPlaying() )
+		idSoundVoice_XAudio2* xa2zombie = (idSoundVoice_XAudio2*)zombieVoices[i];
+		xa2zombie->FlushSourceBuffers();
+		if( !xa2zombie->IsPlaying() )
 		{
 			freeVoices.Append( zombieVoices[i] );
 			zombieVoices.RemoveIndexFast( i );
@@ -849,6 +855,13 @@ void idSoundHardware_XAudio2::Update()
 			vuMeterPeak->SetValue( i, peakLevels[ i ], colorRed );
 			vuMeterPeakTimes[i] = currentTime + s_meterTopTime.GetInteger();
 		}
+	}
+}
+
+void idSoundHardware_XAudio2::UpdateEAXEffect(idSoundEffect* effect)
+{
+	if (effect && (effect->data)) {
+		memcpy(&EAX, effect->data, sizeof(XAUDIO2FX_REVERB_PARAMETERS));
 	}
 }
 

@@ -1105,182 +1105,182 @@ ALenum idSoundSample_OpenAL::GetOpenALBufferFormat() const
 	return alFormat;
 }
 
-int32 idSoundSample_OpenAL::MS_ADPCM_nibble( MS_ADPCM_decodeState_t* state, int8 nybble )
-{
-	const int32 max_audioval = ( ( 1 << ( 16 - 1 ) ) - 1 );
-	const int32 min_audioval = -( 1 << ( 16 - 1 ) );
-	const int32 adaptive[] =
-	{
-		230, 230, 230, 230, 307, 409, 512, 614,
-		768, 614, 512, 409, 307, 230, 230, 230
-	};
-	
-	int32 new_sample, delta;
-	
-	new_sample = ( ( state->iSamp1 * state->coef1 ) +
-				   ( state->iSamp2 * state->coef2 ) ) / 256;
-				   
-	if( nybble & 0x08 )
-	{
-		new_sample += state->iDelta * ( nybble - 0x10 );
-	}
-	else
-	{
-		new_sample += state->iDelta * nybble;
-	}
-	
-	if( new_sample < min_audioval )
-	{
-		new_sample = min_audioval;
-	}
-	else if( new_sample > max_audioval )
-	{
-		new_sample = max_audioval;
-	}
-	
-	delta = ( ( int32 ) state->iDelta * adaptive[nybble] ) / 256;
-	if( delta < 16 )
-	{
-		delta = 16;
-	}
-	
-	state->iDelta = ( uint16 ) delta;
-	state->iSamp2 = state->iSamp1;
-	state->iSamp1 = ( int16 ) new_sample;
-	
-	return ( new_sample );
-}
-
-int idSoundSample_OpenAL::MS_ADPCM_decode( uint8** audio_buf, uint32* audio_len )
-{
-	static MS_ADPCM_decodeState_t	states[2];
-	MS_ADPCM_decodeState_t*			state[2];
-	
-	uint8* freeable, *encoded, *decoded;
-	int32 encoded_len, samplesleft;
-	int8 nybble;
-	int8 stereo;
-	int32 new_sample;
-	
-	// Allocate the proper sized output buffer
-	encoded_len = *audio_len;
-	encoded = *audio_buf;
-	freeable = *audio_buf;
-	
-	*audio_len = ( encoded_len / format.basic.blockSize ) * format.extra.adpcm.samplesPerBlock * format.basic.numChannels * sizeof( int16 );
-	
-	*audio_buf = ( uint8* ) Mem_Alloc( *audio_len, TAG_AUDIO );
-	if( *audio_buf == NULL )
-	{
-		//SDL_Error( SDL_ENOMEM );
-		return ( -1 );
-	}
-	decoded = *audio_buf;
-	
-	assert( format.basic.numChannels == 1 || format.basic.numChannels == 2 );
-	
-	// Get ready... Go!
-	stereo = ( format.basic.numChannels == 2 ) ? 1 : 0;
-	state[0] = &states[0];
-	state[1] = &states[stereo];
-	
-	while( encoded_len >= format.basic.blockSize )
-	{
-		// Grab the initial information for this block
-		state[0]->hPredictor = *encoded++;
-		
-		assert( state[0]->hPredictor < format.extra.adpcm.numCoef );
-		state[0]->hPredictor = idMath::ClampInt( 0, 6, state[0]->hPredictor );
-		
-		state[0]->coef1 = format.extra.adpcm.aCoef[state[0]->hPredictor].coef1;
-		state[0]->coef2 = format.extra.adpcm.aCoef[state[0]->hPredictor].coef2;
-		
-		if( stereo )
-		{
-			state[1]->hPredictor = *encoded++;
-			
-			assert( state[1]->hPredictor < format.extra.adpcm.numCoef );
-			state[1]->hPredictor = idMath::ClampInt( 0, 6, state[1]->hPredictor );
-			
-			state[1]->coef1 = format.extra.adpcm.aCoef[state[1]->hPredictor].coef1;
-			state[1]->coef2 = format.extra.adpcm.aCoef[state[1]->hPredictor].coef2;
-		}
-		
-		state[0]->iDelta = ( ( encoded[1] << 8 ) | encoded[0] );
-		encoded += sizeof( int16 );
-		if( stereo )
-		{
-			state[1]->iDelta = ( ( encoded[1] << 8 ) | encoded[0] );
-			encoded += sizeof( int16 );
-		}
-		
-		state[0]->iSamp1 = ( ( encoded[1] << 8 ) | encoded[0] );
-		encoded += sizeof( int16 );
-		if( stereo )
-		{
-			state[1]->iSamp1 = ( ( encoded[1] << 8 ) | encoded[0] );
-			encoded += sizeof( int16 );
-		}
-		
-		state[0]->iSamp2 = ( ( encoded[1] << 8 ) | encoded[0] );
-		encoded += sizeof( int16 );
-		if( stereo )
-		{
-			state[1]->iSamp2 = ( ( encoded[1] << 8 ) | encoded[0] );
-			encoded += sizeof( int16 );
-		}
-		
-		
-		
-		// Store the two initial samples we start with
-		decoded[0] = state[0]->iSamp2 & 0xFF;
-		decoded[1] = ( state[0]->iSamp2 >> 8 ) & 0xFF;
-		decoded += 2;
-		if( stereo )
-		{
-			decoded[0] = state[1]->iSamp2 & 0xFF;
-			decoded[1] = ( state[1]->iSamp2 >> 8 ) & 0xFF;
-			decoded += 2;
-		}
-		
-		decoded[0] = state[0]->iSamp1 & 0xFF;
-		decoded[1] = ( state[0]->iSamp1 >> 8 ) & 0xFF;
-		decoded += 2;
-		if( stereo )
-		{
-			decoded[0] = state[1]->iSamp1 & 0xFF;
-			decoded[1] = ( state[1]->iSamp1 >> 8 ) & 0xFF;
-			decoded += 2;
-		}
-		
-		// Decode and store the other samples in this block
-		samplesleft = ( format.extra.adpcm.samplesPerBlock - 2 ) * format.basic.numChannels;
-		
-		while( samplesleft > 0 )
-		{
-			nybble = ( *encoded ) >> 4;
-			new_sample = MS_ADPCM_nibble( state[0], nybble );
-			
-			decoded[0] = new_sample & 0xFF;
-			decoded[1] = ( new_sample >> 8 ) & 0xFF;
-			decoded += 2;
-			
-			nybble = ( *encoded ) & 0x0F;
-			new_sample = MS_ADPCM_nibble( state[1], nybble );
-			
-			decoded[0] = new_sample & 0xFF;
-			decoded[1] = ( new_sample >> 8 ) & 0xFF;
-			decoded += 2;
-			
-			++encoded;
-			samplesleft -= 2;
-		}
-		
-		encoded_len -= format.basic.blockSize;
-	}
-	
-	Mem_Free( freeable );
-	
-	return 0;
-}
+//int32 idSoundSample_OpenAL::MS_ADPCM_nibble( MS_ADPCM_decodeState_t* state, int8 nybble )
+//{
+//	const int32 max_audioval = ( ( 1 << ( 16 - 1 ) ) - 1 );
+//	const int32 min_audioval = -( 1 << ( 16 - 1 ) );
+//	const int32 adaptive[] =
+//	{
+//		230, 230, 230, 230, 307, 409, 512, 614,
+//		768, 614, 512, 409, 307, 230, 230, 230
+//	};
+//	
+//	int32 new_sample, delta;
+//	
+//	new_sample = ( ( state->iSamp1 * state->coef1 ) +
+//				   ( state->iSamp2 * state->coef2 ) ) / 256;
+//				   
+//	if( nybble & 0x08 )
+//	{
+//		new_sample += state->iDelta * ( nybble - 0x10 );
+//	}
+//	else
+//	{
+//		new_sample += state->iDelta * nybble;
+//	}
+//	
+//	if( new_sample < min_audioval )
+//	{
+//		new_sample = min_audioval;
+//	}
+//	else if( new_sample > max_audioval )
+//	{
+//		new_sample = max_audioval;
+//	}
+//	
+//	delta = ( ( int32 ) state->iDelta * adaptive[nybble] ) / 256;
+//	if( delta < 16 )
+//	{
+//		delta = 16;
+//	}
+//	
+//	state->iDelta = ( uint16 ) delta;
+//	state->iSamp2 = state->iSamp1;
+//	state->iSamp1 = ( int16 ) new_sample;
+//	
+//	return ( new_sample );
+//}
+//
+//int idSoundSample_OpenAL::MS_ADPCM_decode( uint8** audio_buf, uint32* audio_len )
+//{
+//	static MS_ADPCM_decodeState_t	states[2];
+//	MS_ADPCM_decodeState_t*			state[2];
+//	
+//	uint8* freeable, *encoded, *decoded;
+//	int32 encoded_len, samplesleft;
+//	int8 nybble;
+//	int8 stereo;
+//	int32 new_sample;
+//	
+//	// Allocate the proper sized output buffer
+//	encoded_len = *audio_len;
+//	encoded = *audio_buf;
+//	freeable = *audio_buf;
+//	
+//	*audio_len = ( encoded_len / format.basic.blockSize ) * format.extra.adpcm.samplesPerBlock * format.basic.numChannels * sizeof( int16 );
+//	
+//	*audio_buf = ( uint8* ) Mem_Alloc( *audio_len, TAG_AUDIO );
+//	if( *audio_buf == NULL )
+//	{
+//		//SDL_Error( SDL_ENOMEM );
+//		return ( -1 );
+//	}
+//	decoded = *audio_buf;
+//	
+//	assert( format.basic.numChannels == 1 || format.basic.numChannels == 2 );
+//	
+//	// Get ready... Go!
+//	stereo = ( format.basic.numChannels == 2 ) ? 1 : 0;
+//	state[0] = &states[0];
+//	state[1] = &states[stereo];
+//	
+//	while( encoded_len >= format.basic.blockSize )
+//	{
+//		// Grab the initial information for this block
+//		state[0]->hPredictor = *encoded++;
+//		
+//		assert( state[0]->hPredictor < format.extra.adpcm.numCoef );
+//		state[0]->hPredictor = idMath::ClampInt( 0, 6, state[0]->hPredictor );
+//		
+//		state[0]->coef1 = format.extra.adpcm.aCoef[state[0]->hPredictor].coef1;
+//		state[0]->coef2 = format.extra.adpcm.aCoef[state[0]->hPredictor].coef2;
+//		
+//		if( stereo )
+//		{
+//			state[1]->hPredictor = *encoded++;
+//			
+//			assert( state[1]->hPredictor < format.extra.adpcm.numCoef );
+//			state[1]->hPredictor = idMath::ClampInt( 0, 6, state[1]->hPredictor );
+//			
+//			state[1]->coef1 = format.extra.adpcm.aCoef[state[1]->hPredictor].coef1;
+//			state[1]->coef2 = format.extra.adpcm.aCoef[state[1]->hPredictor].coef2;
+//		}
+//		
+//		state[0]->iDelta = ( ( encoded[1] << 8 ) | encoded[0] );
+//		encoded += sizeof( int16 );
+//		if( stereo )
+//		{
+//			state[1]->iDelta = ( ( encoded[1] << 8 ) | encoded[0] );
+//			encoded += sizeof( int16 );
+//		}
+//		
+//		state[0]->iSamp1 = ( ( encoded[1] << 8 ) | encoded[0] );
+//		encoded += sizeof( int16 );
+//		if( stereo )
+//		{
+//			state[1]->iSamp1 = ( ( encoded[1] << 8 ) | encoded[0] );
+//			encoded += sizeof( int16 );
+//		}
+//		
+//		state[0]->iSamp2 = ( ( encoded[1] << 8 ) | encoded[0] );
+//		encoded += sizeof( int16 );
+//		if( stereo )
+//		{
+//			state[1]->iSamp2 = ( ( encoded[1] << 8 ) | encoded[0] );
+//			encoded += sizeof( int16 );
+//		}
+//		
+//		
+//		
+//		// Store the two initial samples we start with
+//		decoded[0] = state[0]->iSamp2 & 0xFF;
+//		decoded[1] = ( state[0]->iSamp2 >> 8 ) & 0xFF;
+//		decoded += 2;
+//		if( stereo )
+//		{
+//			decoded[0] = state[1]->iSamp2 & 0xFF;
+//			decoded[1] = ( state[1]->iSamp2 >> 8 ) & 0xFF;
+//			decoded += 2;
+//		}
+//		
+//		decoded[0] = state[0]->iSamp1 & 0xFF;
+//		decoded[1] = ( state[0]->iSamp1 >> 8 ) & 0xFF;
+//		decoded += 2;
+//		if( stereo )
+//		{
+//			decoded[0] = state[1]->iSamp1 & 0xFF;
+//			decoded[1] = ( state[1]->iSamp1 >> 8 ) & 0xFF;
+//			decoded += 2;
+//		}
+//		
+//		// Decode and store the other samples in this block
+//		samplesleft = ( format.extra.adpcm.samplesPerBlock - 2 ) * format.basic.numChannels;
+//		
+//		while( samplesleft > 0 )
+//		{
+//			nybble = ( *encoded ) >> 4;
+//			new_sample = MS_ADPCM_nibble( state[0], nybble );
+//			
+//			decoded[0] = new_sample & 0xFF;
+//			decoded[1] = ( new_sample >> 8 ) & 0xFF;
+//			decoded += 2;
+//			
+//			nybble = ( *encoded ) & 0x0F;
+//			new_sample = MS_ADPCM_nibble( state[1], nybble );
+//			
+//			decoded[0] = new_sample & 0xFF;
+//			decoded[1] = ( new_sample >> 8 ) & 0xFF;
+//			decoded += 2;
+//			
+//			++encoded;
+//			samplesleft -= 2;
+//		}
+//		
+//		encoded_len -= format.basic.blockSize;
+//	}
+//	
+//	Mem_Free( freeable );
+//	
+//	return 0;
+//}
 

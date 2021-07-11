@@ -1,8 +1,5 @@
-#pragma once
-#include "precompiled.h"
-#include <stdio.h>
 /**
-* Copyright (C) 2018 George Kalmpokis
+* Copyright (C) 2021 George Kalmpokis
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * this software and associated documentation files (the "Software"), to deal in
@@ -24,26 +21,13 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include <stdlib.h>
-#include <math.h>
-#if defined (USE_FFMPEG)
-extern "C"
-{
-#define __STDC_CONSTANT_MACROS
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavformat/avio.h>
-#include <libswresample/swresample.h>
-}
-#endif
+#include "precompiled.h"
 
-#include "sound/snd_local.h"
-void parseAVError(int error);
-#if defined(_MSC_VER) && defined(USE_XAUDIO2)
-#include <xaudio2.h>
-#include <x3daudio.h>
-bool DecodeXAudio(byte** audio, int* len, IXAudio2SourceVoice** pMusicSourceVoice,bool ext);
-#endif // !USE_OPENAL
-bool DecodeALAudio(byte** audio, int* len, int *rate ,ALenum *sample );
-const char* GetSampleName(ALenum sample);
 
+idCVar s_skipHardwareSets("s_skipHardwareSets", "0", CVAR_BOOL, "Do all calculation, but skip XA2 calls");
+idCVar s_debugHardware("s_debugHardware", "0", CVAR_BOOL, "Print a message any time a hardware voice changes");
+idCVar s_showLevelMeter("s_showLevelMeter", "0", CVAR_BOOL | CVAR_ARCHIVE, "Show VU meter");
+idCVar s_meterTopTime("s_meterTopTime", "1000", CVAR_INTEGER | CVAR_ARCHIVE, "How long (in milliseconds) peaks are displayed on the VU meter");
+idCVar s_meterPosition("s_meterPosition", "100 100 20 200", CVAR_ARCHIVE, "VU meter location (x y w h)");
+idCVar s_device("s_device", "-1", CVAR_INTEGER | CVAR_ARCHIVE, "Which audio device to use (listDevices to list, -1 for default)");
+idCVar s_showPerfData("s_showPerfData", "0", CVAR_BOOL, "Show XAudio2 Performance data");

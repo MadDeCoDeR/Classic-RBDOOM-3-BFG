@@ -96,7 +96,7 @@ typedef enum
 #include "snd_efxfile.h"
 #include "CCScriptDecl.h"
 
-#if defined(USE_OPENAL)
+//#if defined(USE_OPENAL)
 
 //#define AL_ALEXT_PROTOTYPES
 
@@ -137,7 +137,7 @@ ID_INLINE_EXTERN ALCenum CheckALCErrors_( ALCdevice* device, const char* filenam
 	return err;
 }
 #define CheckALCErrors(x) CheckALCErrors_((x), __FILE__, __LINE__)
-#elif defined(_MSC_VER) // DG: stub out xaudio for MinGW etc
+#if defined(_MSC_VER) && defined(USE_XAUDIO2) // DG: stub out xaudio for MinGW etc
 
 #define OPERATION_SET 1
 //GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
@@ -178,9 +178,6 @@ struct AudioDevice
 #include "XAudio2/XA2_SoundVoice.h"
 #include "XAudio2/XA2_SoundHardware.h"
 
-#else // not _MSC_VER => MinGW, GCC, ...
-// just a stub for now
-#include "stub/SoundStub.h"
 #endif // _MSC_VER ; DG end
 
 //------------------------
@@ -519,11 +516,7 @@ public:
 	virtual void			InitStreamBuffers();
 	virtual void			FreeStreamBuffers();
 	
-	virtual void* 			GetIXAudio2() const; // FIXME: stupid name; get rid of this? not sure if it's really needed..
-	
-	// RB begin
-	virtual void*			GetOpenALDevice() const;
-	// RB end
+	virtual void* 			GetInternal() const; // FIXME: stupid name; get rid of this? not sure if it's really needed..
 	
 	// for the sound level meter window
 	virtual cinData_t		ImageForTime( const int milliseconds, const bool waveform );
@@ -559,9 +552,6 @@ public:
 	idSoundSample* 			LoadSample( const char* name );
 	
 	virtual void			Preload( idPreloadManifest& preload );
-#ifdef USE_OPENAL
-	void					SetEFX(EFXEAXREVERBPROPERTIES* rev);
-#endif
 	struct bufferContext_t
 	{
 		bufferContext_t() :
@@ -570,20 +560,8 @@ public:
 			bufferNumber( 0 )
 		{ }
 		
-#if defined(USE_OPENAL)
-		idSoundVoice_OpenAL* 	voice;
-		idSoundSample_OpenAL*	sample;
-#elif defined(_MSC_VER) // XAudio backend
-		// DG: because the inheritance is kinda strange (idSoundVoice is derived
-		// from idSoundVoice_XAudio2), casting the latter to the former isn't possible
-		// so we need this ugly #ifdef ..
-		idSoundVoice_XAudio2* 	voice;
-		idSoundSample_XAudio2* sample;
-#else // not _MSC_VER
-		// from stub or something..
 		idSoundVoice* 	voice;
 		idSoundSample* sample;
-#endif // _MSC_VER ; DG end
 		
 		int bufferNumber;
 	};
@@ -595,14 +573,7 @@ public:
 	bool					efxloaded;
 	CCScriptDecl			ccdecl;
 	bool					ccloaded;
-#ifdef USE_OPENAL
-	
-	
-	bool					alEAXSet;
-	ALuint					EAX;
-#else
-	XAUDIO2FX_REVERB_PARAMETERS EAX;
-#endif
+
 	idSysMutex					streamBufferMutex;
 	idStaticList< bufferContext_t*, MAX_SOUND_BUFFERS > freeStreamBufferContexts;
 	idStaticList< bufferContext_t*, MAX_SOUND_BUFFERS > activeStreamBufferContexts;
@@ -614,7 +585,7 @@ public:
 	idList<idSoundSample*, TAG_AUDIO>		samples;
 	idHashIndex					sampleHash;
 	
-	idSoundHardware				hardware;
+	idSoundHardware*						hardware;
 	
 	idRandom2					random;
 	

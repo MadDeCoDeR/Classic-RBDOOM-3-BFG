@@ -25,17 +25,16 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
+#include "../common/CommonSoundVoice.h"
 #ifndef __XA2_SOUNDVOICE_H__
 #define __XA2_SOUNDVOICE_H__
-
-static const int MAX_QUEUED_BUFFERS = 3;
 
 /*
 ================================================
 idSoundVoice_XAudio2
 ================================================
 */
-class idSoundVoice_XAudio2 : public idSoundVoice_Base
+class idSoundVoice_XAudio2 : public idSoundVoice
 {
 public:
 	idSoundVoice_XAudio2();
@@ -61,7 +60,7 @@ public:
 	float					GetAmplitude();
 	
 	// returns true if we can re-use this voice
-	bool					CompatibleFormat( idSoundSample_XAudio2* s );
+	bool					CompatibleFormat( idSoundSample* s );
 	
 	uint32					GetSampleRate() const
 	{
@@ -69,7 +68,7 @@ public:
 	}
 	
 	// callback function
-	void					OnBufferStart( idSoundSample_XAudio2* sample, int bufferNumber );
+	void					OnBufferStart( idSoundSample* sample, int bufferNumber );
 	
 private:
 	friend class idSoundHardware_XAudio2;
@@ -87,26 +86,12 @@ private:
 	int						RestartAt( int offsetSamples );
 	
 	// Helper function to submit a buffer
-	int						SubmitBuffer( idSoundSample_XAudio2* sample, int bufferNumber, int offset );
+	int						SubmitBuffer( idSoundSample* sample, int bufferNumber, int offset );
 	
 	// Adjust the voice frequency based on the new sample rate for the buffer
 	void					SetSampleRate( uint32 newSampleRate, uint32 operationSet );
 	
 	IXAudio2SourceVoice* 	pSourceVoice;
-	idSoundSample_XAudio2* leadinSample;
-	idSoundSample_XAudio2* loopingSample;
-	
-	// These are the fields from the sample format that matter to us for voice reuse
-	uint16					formatTag;
-	uint16					numChannels;
-	
-	uint32					sourceVoiceRate;
-	uint32					sampleRate;
-	
-	bool					hasVUMeter;
-	bool					paused;
-	int						channel;
-	int						chains;
 	XAUDIO2FX_REVERB_PARAMETERS suitReverb;
 };
 
@@ -115,8 +100,8 @@ private:
 idSoundVoice
 ================================================
 */
-class idSoundVoice : public idSoundVoice_XAudio2
-{
-};
+//class idSoundVoice : public idSoundVoice_XAudio2
+//{
+//};
 
 #endif

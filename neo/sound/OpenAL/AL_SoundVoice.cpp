@@ -30,8 +30,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../snd_local.h"
 
-idCVar s_skipHardwareSets( "s_skipHardwareSets", "0", CVAR_BOOL, "Do all calculation, but skip XA2 calls" );
-idCVar s_debugHardware( "s_debugHardware", "0", CVAR_BOOL, "Print a message any time a hardware voice changes" );
+extern idCVar s_skipHardwareSets;
+extern idCVar s_debugHardware;
 
 // The whole system runs at this sample rate
 static int SYSTEM_SAMPLE_RATE = 44100;
@@ -47,14 +47,7 @@ idSoundVoice_OpenAL::idSoundVoice_OpenAL
 idSoundVoice_OpenAL::idSoundVoice_OpenAL()
 	:
 	triggered( false ),
-	openalSource( 0 ),
-	leadinSample( NULL ),
-	loopingSample( NULL ),
-	formatTag( 0 ),
-	numChannels( 0 ),
-	sampleRate( 0 ),
-	hasVUMeter( false ),
-	paused( true )
+	openalSource( 0 ), idSoundVoice()
 {
 
 }
@@ -74,7 +67,7 @@ idSoundVoice_OpenAL::~idSoundVoice_OpenAL()
 idSoundVoice_OpenAL::CompatibleFormat
 ========================
 */
-bool idSoundVoice_OpenAL::CompatibleFormat( idSoundSample_OpenAL* s )
+bool idSoundVoice_OpenAL::CompatibleFormat( idSoundSample* s )
 {
 	if( alIsSource( openalSource ) )
 	{
@@ -105,16 +98,16 @@ void idSoundVoice_OpenAL::Create( const idSoundSample* leadinSample_, const idSo
 	loopingSample = ( idSoundSample_OpenAL* )loopingSample_;
 	channel = channel_;
 	
-	if( alIsSource( openalSource ) && CompatibleFormat( leadinSample ) )
+	if( alIsSource( openalSource ) && CompatibleFormat( (idSoundSample_OpenAL*)leadinSample ) )
 	{
-		sampleRate = leadinSample->format.basic.samplesPerSec;
+		sampleRate = leadinSample->GetFormat().basic.samplesPerSec;
 	}
 	else
 	{
 		DestroyInternal();
-		formatTag = leadinSample->format.basic.formatTag;
-		numChannels = leadinSample->format.basic.numChannels;
-		sampleRate = leadinSample->format.basic.samplesPerSec;
+		formatTag = leadinSample->GetFormat().basic.formatTag;
+		numChannels = leadinSample->GetFormat().basic.numChannels;
+		sampleRate = leadinSample->GetFormat().basic.samplesPerSec;
 		
 		//soundSystemLocal.hardware.pXAudio2->CreateSourceVoice( &pSourceVoice, ( const WAVEFORMATEX* )&leadinSample->format, XAUDIO2_VOICE_USEFILTER, 4.0f, &streamContext );
 		
@@ -131,7 +124,7 @@ void idSoundVoice_OpenAL::Create( const idSoundSample* leadinSample_, const idSo
 		alSourcef( openalSource, AL_ROLLOFF_FACTOR, 0.0f );
 		
 		//if( ( loopingSample == NULL && leadinSample->openalBuffer != 0 ) || ( loopingSample != NULL && soundShader->entries[0]->hardwareBuffer ) )
-		if( leadinSample->openalBuffer != 0 )
+		if( alIsBuffer(((idSoundSample_OpenAL*)leadinSample)->openalBuffer) )
 		{
 			alSourcei( openalSource, AL_BUFFER, 0 );
 			
@@ -214,27 +207,28 @@ void idSoundVoice_OpenAL::DestroyInternal()
 		{
 			idLib::Printf( "%dms: %i destroyed\n", Sys_Milliseconds(), openalSource );
 		}
-
 		alSourcei(openalSource, AL_BUFFER, 0);
+
 		alDeleteSources( 1, &openalSource );
-		openalSource = 0;
+		if (CheckALErrors() == AL_NO_ERROR) {
+			openalSource = 0;
+		}
 		
-		if( openalStreamingBuffer[0] && openalStreamingBuffer[1] && openalStreamingBuffer[2] )
+		if( alIsBuffer(openalStreamingBuffer[0]) && alIsBuffer(openalStreamingBuffer[1]) && alIsBuffer(openalStreamingBuffer[2]) )
 		{
-			CheckALErrors();
 			
-			alDeleteBuffers( 3, &openalStreamingBuffer[0] );
+			alDeleteBuffers( 3, openalStreamingBuffer );
+
 			if( CheckALErrors() == AL_NO_ERROR )
 			{
 				openalStreamingBuffer[0] = openalStreamingBuffer[1] = openalStreamingBuffer[2] = 0;
 			}
 		}
 		
-		if( lastopenalStreamingBuffer[0] && lastopenalStreamingBuffer[1] && lastopenalStreamingBuffer[2] )
+		if(alIsBuffer(lastopenalStreamingBuffer[0]) && alIsBuffer(lastopenalStreamingBuffer[1]) && alIsBuffer(lastopenalStreamingBuffer[2]) )
 		{
-			CheckALErrors();
 			
-			alDeleteBuffers( 3, &lastopenalStreamingBuffer[0] );
+			alDeleteBuffers( 3, lastopenalStreamingBuffer );
 			if( CheckALErrors() == AL_NO_ERROR )
 			{
 				lastopenalStreamingBuffer[0] = lastopenalStreamingBuffer[1] = lastopenalStreamingBuffer[2] = 0;
@@ -311,7 +305,7 @@ void idSoundVoice_OpenAL::Start( int offsetMS, int ssFlags )
 	
 	assert( offsetMS >= 0 );
 	int offsetSamples = MsecToSamples( offsetMS, leadinSample->SampleRate() );
-	if( loopingSample == NULL && offsetSamples >= leadinSample->playLength )
+	if( loopingSample == NULL && offsetSamples >= leadinSample->GetPlayLength() )
 	{
 		return;
 	}
@@ -330,13 +324,13 @@ int idSoundVoice_OpenAL::RestartAt( int offsetSamples )
 {
 	offsetSamples &= ~127;
 	
-	idSoundSample_OpenAL* sample = leadinSample;
-	if( offsetSamples >= leadinSample->playLength )
+	idSoundSample_OpenAL* sample = (idSoundSample_OpenAL*)leadinSample;
+	if( offsetSamples >= leadinSample->GetPlayLength() )
 	{
 		if( loopingSample != NULL )
 		{
-			offsetSamples %= loopingSample->playLength;
-			sample = loopingSample;
+			offsetSamples %= loopingSample->GetPlayLength();
+			sample = (idSoundSample_OpenAL*)loopingSample;
 		}
 		else
 		{
@@ -382,7 +376,7 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 	bufferContext->bufferNumber = bufferNumber;
 #endif
 	
-	if( sample->openalBuffer != 0 )
+	if( alIsBuffer(sample->openalBuffer) )
 	{
 		alSourcei( openalSource, AL_BUFFER, sample->openalBuffer );
 		alSourcei( openalSource, AL_LOOPING, ( sample == loopingSample && loopingSample != NULL ? AL_TRUE : AL_FALSE ) );
@@ -409,7 +403,7 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 			finishedbuffers = 3;
 		}
 		//GK: Just make sure we don't get 0 buffers because it's result on silent audio
-		if (openalStreamingBuffer[0]==openalStreamingBuffer[1]==openalStreamingBuffer[2]==0) {
+		if (!alIsBuffer(openalStreamingBuffer[0]) && !alIsBuffer(openalStreamingBuffer[1]) && !alIsBuffer(openalStreamingBuffer[2])) {
 			alGenBuffers(3, &openalStreamingBuffer[0]);
 		}
 		ALenum format;
@@ -638,17 +632,17 @@ void idSoundVoice_OpenAL::UnPause()
 	//GK: Set the EFX in the last moment
 	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
 	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 1, AL_FILTER_NULL);
-	if (alIsEffect(soundSystemLocal.EAX) && soundSystemLocal.EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
+	if (alIsEffect(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX) && ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
 		if (GetOcclusion() > 0.0f) {
-			alSourcei(openalSource, AL_DIRECT_FILTER, soundSystemLocal.hardware.voicefilter);
+			alSourcei(openalSource, AL_DIRECT_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voicefilter);
 		}
 		//GK: Audio Logs, PDA Videos and Radio Comms are supposed to be produced by the suit. 
 		//And they should not blend with Room's reverb (Plus some of these reverbs are making the voices harder to understand)
 		if (channel == 9 || channel == 10 || channel == 12) {
-			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.hardware.voiceslot, 1, AL_FILTER_NULL);
+			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voiceslot, 1, AL_FILTER_NULL);
 		}
 		else {
-			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, soundSystemLocal.hardware.slot, 0, GetOcclusion() > 0.0f ? soundSystemLocal.hardware.voicefilter : AL_FILTER_NULL);
+			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->slot, 0, GetOcclusion() > 0.0f ? ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voicefilter : AL_FILTER_NULL);
 		}
 	}
 	alSourcePlay( openalSource );
@@ -787,13 +781,13 @@ void idSoundVoice_OpenAL::SetSampleRate( uint32 newSampleRate, uint32 operationS
 idSoundVoice_OpenAL::OnBufferStart
 ========================
 */
-void idSoundVoice_OpenAL::OnBufferStart( idSoundSample_OpenAL* sample, int bufferNumber )
+void idSoundVoice_OpenAL::OnBufferStart( idSoundSample* sample, int bufferNumber )
 {
 	//SetSampleRate( sample->SampleRate(), XAUDIO2_COMMIT_NOW );
 	
-	idSoundSample_OpenAL* nextSample = sample;
+	idSoundSample_OpenAL* nextSample = (idSoundSample_OpenAL*)sample;
 	int nextBuffer = bufferNumber + 1;
-	if( nextBuffer == sample->buffers.Num() )
+	if( nextBuffer == sample->GetBuffers().Num() )
 	{
 		if( sample == leadinSample )
 		{
@@ -801,7 +795,7 @@ void idSoundVoice_OpenAL::OnBufferStart( idSoundSample_OpenAL* sample, int buffe
 			{
 				return;
 			}
-			nextSample = loopingSample;
+			nextSample = (idSoundSample_OpenAL*)loopingSample;
 		}
 		nextBuffer = 0;
 	}

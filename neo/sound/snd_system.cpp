@@ -43,6 +43,10 @@ idCVar s_playDefaultSound( "s_playDefaultSound", "1", CVAR_BOOL, "play a beep fo
 idCVar s_maxSamples( "s_maxSamples", "5", CVAR_INTEGER, "max samples to load per shader" );
 #endif
 
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+idCVar s_useXAudio("s_useXAudio", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_ARCHIVE, "set in order to use XAudio 2");
+#endif
+
 idCVar preLoad_Samples( "preLoad_Samples", "1", CVAR_SYSTEM | CVAR_BOOL, "preload samples during beginlevelload" );
 
 idSoundSystemLocal soundSystemLocal;
@@ -126,11 +130,12 @@ void idSoundSystemLocal::Restart()
 		}
 	}
 	// Shutdown sound hardware
-	hardware.Shutdown();
+	hardware->Shutdown();
+
 	// Reinitialize sound hardware
 	if( !s_noSound.GetBool() )
 	{
-		hardware.Init();
+		hardware->Init();
 	}
 	
 	InitStreamBuffers();
@@ -150,22 +155,19 @@ void idSoundSystemLocal::Init()
 	
 	soundTime = Sys_Milliseconds();
 	random.SetSeed( soundTime );
+
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (s_useXAudio.GetBool()) {
+		hardware = new(TAG_AUDIO) idSoundHardware_XAudio2;
+	} else 
+#endif
+		hardware = new(TAG_AUDIO) idSoundHardware_OpenAL;
 	
 	if( !s_noSound.GetBool() )
 	{
-		hardware.Init();
+		hardware->Init();
 		InitStreamBuffers();
 	}
-#ifdef USE_OPENAL
-	//GK: And check if it works
-	alEAXSet = true;
-	ALCint size = 0;
-	alcGetIntegerv(hardware.GetOpenALDevice(), ALC_MAX_AUXILIARY_SENDS, 1, &size);
-	if (!alcIsExtensionPresent(hardware.GetOpenALDevice(), "ALC_EXT_EFX") || size == 0) {
-		alEAXSet = false;
-		common->Printf("No EAX support");
-	}
-#endif
 	cmdSystem->AddCommand( "testSound", TestSound_f, 0, "tests a sound", idCmdSystem::ArgCompletion_SoundName );
 	cmdSystem->AddCommand( "s_restart", RestartSound_f, 0, "restart sound system" );
 	cmdSystem->AddCommand( "listSamples", ListSamples_f, 0, "lists all loaded sound samples" );
@@ -226,19 +228,11 @@ idSoundSystemLocal::Shutdown
 */
 void idSoundSystemLocal::Shutdown()
 {
-	hardware.Shutdown();
+	hardware->Shutdown();
 	// EAX or not, the list needs to be cleared
 	EFXDatabase.Clear();
 	ccdecl.Clear();
 	efxloaded = false;
-#ifdef USE_OPENAL
-	
-	alAuxiliaryEffectSloti(soundSystemLocal.hardware.slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
-	if (alIsEffect(EAX)) {
-		alDeleteEffects(1, &EAX);
-		EAX = 0;
-	}
-#endif
 	FreeStreamBuffers();
 	samples.DeleteContents( true );
 	sampleHash.Free();
@@ -366,7 +360,7 @@ void idSoundSystemLocal::Render()
 		currentSoundWorld->Update();
 	}
 	
-	hardware.Update();
+	hardware->Update();
 	
 	// The sound system doesn't use game time or anything like that because the sounds are decoded in real time.
 	soundTime = Sys_Milliseconds();
@@ -400,40 +394,23 @@ void idSoundSystemLocal::StopAllSounds()
 			sw->StopAllSounds();
 		}
 	}
-	hardware.Update();
+	hardware->Update();
 }
 
 /*
 ========================
-idSoundSystemLocal::GetIXAudio2
+idSoundSystemLocal::GetInternal
 ========================
 */
-void* idSoundSystemLocal::GetIXAudio2() const
+void* idSoundSystemLocal::GetInternal() const
 {
-	// RB begin
-#if defined(USE_OPENAL)
-	return NULL;
-#else
-	return ( void* )hardware.GetIXAudio2();
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (s_useXAudio.GetBool()) {
+		return (void*)((idSoundHardware_XAudio2*)hardware)->GetIXAudio2();
+	} else
 #endif
-	// RB end
+		return (void*)((idSoundHardware_OpenAL*)hardware)->GetOpenALDevice();
 }
-
-/*
-========================
-idSoundSystemLocal::GetOpenALDevice
-========================
-*/
-// RB begin
-void* idSoundSystemLocal::GetOpenALDevice() const
-{
-#if defined(USE_OPENAL)
-	return ( void* )hardware.GetOpenALDevice();
-#else
-	return ( void* )hardware.GetIXAudio2();
-#endif
-}
-// RB end
 
 /*
 ========================
@@ -452,7 +429,7 @@ idSoundSystemLocal::AllocateVoice
 */
 idSoundVoice* idSoundSystemLocal::AllocateVoice( const idSoundSample* leadinSample, const idSoundSample* loopingSample, const int channel)
 {
-	return hardware.AllocateVoice( leadinSample, loopingSample,channel );
+	return hardware->AllocateVoice(leadinSample, loopingSample, channel);
 }
 
 /*
@@ -462,7 +439,7 @@ idSoundSystemLocal::FreeVoice
 */
 void idSoundSystemLocal::FreeVoice( idSoundVoice* voice )
 {
-	hardware.FreeVoice( voice );
+	hardware->FreeVoice( voice );
 }
 
 /*
@@ -485,7 +462,13 @@ idSoundSample* idSoundSystemLocal::LoadSample( const char* name )
 			return samples[i];
 		}
 	}
-	idSoundSample* sample = new( TAG_AUDIO ) idSoundSample;
+	idSoundSample* sample;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (s_useXAudio.GetBool()) {
+		sample = new(TAG_AUDIO) idSoundSample_XAudio2;
+	} else
+#endif
+		sample = new(TAG_AUDIO) idSoundSample_OpenAL;
 	sample->SetName( canonical );
 	sampleHash.Add( hashKey, samples.Append( sample ) );
 	if( !insideLevelLoad )
@@ -579,9 +562,7 @@ void idSoundSystemLocal::BeginLevelLoad()
 	if (efxloaded) {
 		EFXDatabase.UnloadFile();
 		efxloaded = false;
-#ifdef USE_OPENAL
-		alAuxiliaryEffectSloti(soundSystemLocal.hardware.slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
-#endif
+		hardware->ShutdownReverbSystem();
 	}
 	if (ccloaded) {
 		ccdecl.Clear();
@@ -722,24 +703,14 @@ void idSoundSystemLocal::EndLevelLoad(const char* mapstring)
 	efxname += mapname;
 
 	efxloaded = EFXDatabase.LoadFile(efxname);
-#ifdef USE_OPENAL
-	
+	if (efxloaded) {
+		common->Printf("sound: found %s\n", efxname.c_str());
+	}
+	else {
+		common->Printf("sound: missing %s\n", efxname.c_str());
+		hardware->ShutdownReverbSystem();
+	}
 
-	if ( efxloaded ) {
-		common->Printf("sound: found %s\n", efxname.c_str() );
-	} else {
-		common->Printf("sound: missing %s\n", efxname.c_str() );
-		alAuxiliaryEffectSloti(soundSystemLocal.hardware.slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
-		if (alIsEffect(EAX)) {
-			alDeleteEffects(1, &EAX);
-			EAX = 0;
-		}
-	}
-#else
-	if (!efxloaded) {
-		EAX = {};
-	}
-#endif
 
 	idStr ccname("cc/");
 	idStr ccmapname(mapstring);
@@ -764,122 +735,3 @@ idSoundSystemLocal::FreeVoice
 void idSoundSystemLocal::PrintMemInfo( MemInfo_t* mi )
 {
 }
-#ifdef USE_OPENAL
-//GK: In openAL-soft the EFX is quite different from the standard openAL
-/*
-========================
-idSoundSystemLocal::SetEFX
-========================
-*/
-void idSoundSystemLocal::SetEFX(EFXEAXREVERBPROPERTIES* rev)
-{
-	alGenEffects(1, &EAX);
-	if (alGetEnumValue("AL_EFFECT_EAXREVERB") != 0)
-
-	{
-
-		//common->Printf("Using EAX Reverb\n");
-
-
-
-		/* EAX Reverb is available. Set the EAX effect type then load the
-
-		 * reverb properties. */
-
-		alEffecti(EAX, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
-
-
-
-		alEffectf(EAX, AL_EAXREVERB_DENSITY, rev->flDensity);
-
-		alEffectf(EAX, AL_EAXREVERB_DIFFUSION, rev->flDiffusion);
-
-		alEffectf(EAX, AL_EAXREVERB_GAIN, rev->flGain);
-
-		alEffectf(EAX, AL_EAXREVERB_GAINHF, rev->flGainHF);
-
-		alEffectf(EAX, AL_EAXREVERB_GAINLF, rev->flGainLF);
-
-		alEffectf(EAX, AL_EAXREVERB_DECAY_TIME, rev->flDecayTime);
-
-		alEffectf(EAX, AL_EAXREVERB_DECAY_HFRATIO, rev->flDecayHFRatio);
-
-		alEffectf(EAX, AL_EAXREVERB_DECAY_LFRATIO, rev->flDecayLFRatio);
-
-		alEffectf(EAX, AL_EAXREVERB_REFLECTIONS_GAIN, rev->flReflectionsGain);
-
-		alEffectf(EAX, AL_EAXREVERB_REFLECTIONS_DELAY, rev->flReflectionsDelay);
-
-		alEffectfv(EAX, AL_EAXREVERB_REFLECTIONS_PAN, rev->flReflectionsPan);
-
-		alEffectf(EAX, AL_EAXREVERB_LATE_REVERB_GAIN, rev->flLateReverbGain);
-
-		alEffectf(EAX, AL_EAXREVERB_LATE_REVERB_DELAY, rev->flLateReverbDelay);
-
-		alEffectfv(EAX, AL_EAXREVERB_LATE_REVERB_PAN, rev->flLateReverbPan);
-
-		alEffectf(EAX, AL_EAXREVERB_ECHO_TIME, rev->flEchoTime);
-
-		alEffectf(EAX, AL_EAXREVERB_ECHO_DEPTH, rev->flEchoDepth);
-
-		alEffectf(EAX, AL_EAXREVERB_MODULATION_TIME, rev->flModulationTime);
-
-		alEffectf(EAX, AL_EAXREVERB_MODULATION_DEPTH, rev->flModulationDepth);
-
-		alEffectf(EAX, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, rev->flAirAbsorptionGainHF);
-
-		alEffectf(EAX, AL_EAXREVERB_HFREFERENCE, rev->flHFReference);
-
-		alEffectf(EAX, AL_EAXREVERB_LFREFERENCE, rev->flLFReference);
-
-		alEffectf(EAX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, rev->flRoomRolloffFactor);
-
-		alEffecti(EAX, AL_EAXREVERB_DECAY_HFLIMIT, rev->iDecayHFLimit);
-
-	}
-
-	else
-
-	{
-
-		//common->Printf("Using Standard Reverb\n");
-
-
-
-		/* No EAX Reverb. Set the standard reverb effect type then load the
-
-		 * available reverb properties. */
-
-		alEffecti(EAX, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
-
-
-
-		alEffectf(EAX, AL_REVERB_DENSITY, rev->flDensity);
-
-		alEffectf(EAX, AL_REVERB_DIFFUSION, rev->flDiffusion);
-
-		alEffectf(EAX, AL_REVERB_GAIN, rev->flGain);
-
-		alEffectf(EAX, AL_REVERB_GAINHF, rev->flGainHF);
-
-		alEffectf(EAX, AL_REVERB_DECAY_TIME, rev->flDecayTime);
-
-		alEffectf(EAX, AL_REVERB_DECAY_HFRATIO, rev->flDecayHFRatio);
-
-		alEffectf(EAX, AL_REVERB_REFLECTIONS_GAIN, rev->flReflectionsGain);
-
-		alEffectf(EAX, AL_REVERB_REFLECTIONS_DELAY, rev->flReflectionsDelay);
-
-		alEffectf(EAX, AL_REVERB_LATE_REVERB_GAIN, rev->flLateReverbGain);
-
-		alEffectf(EAX, AL_REVERB_LATE_REVERB_DELAY, rev->flLateReverbDelay);
-
-		alEffectf(EAX, AL_REVERB_AIR_ABSORPTION_GAINHF, rev->flAirAbsorptionGainHF);
-
-		alEffectf(EAX, AL_REVERB_ROOM_ROLLOFF_FACTOR, rev->flRoomRolloffFactor);
-
-		alEffecti(EAX, AL_REVERB_DECAY_HFLIMIT, rev->iDecayHFLimit);
-
-	}
-}
-#endif

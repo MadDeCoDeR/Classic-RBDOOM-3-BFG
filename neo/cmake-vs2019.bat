@@ -14,30 +14,30 @@ del /s /q buildx64 > NUL 2>&1
 mkdir buildx64 > NUL 2>&1
 cd buildx64
 @ECHO Generating x64 files
-cmake -G "Visual Studio 16" -A "x64" -DCMAKE_INSTALL_PREFIX=../bin/windows10-64 -DWINRT=ON -DUSE_XAUDIO2_PACKAGE=ON ../neo > ../buildlog/x64/log.txt
+cmake -G "Visual Studio 16" -A "x64" -DCMAKE_INSTALL_PREFIX=../bin/windows10-64 -DOPENAL=ON -DWINRT=ON -DUSE_XAUDIO2_PACKAGE=ON ../neo > ../buildlog/x64/log.txt
 if ERRORLEVEL == 1 goto ERRORX64
-cd ..
-mkdir buildlog > NUL 2>&1
-cd buildlog
-mkdir ALx64 > NUL 2>&1
-cd ..
-del /s /q buildALx64 >NUL 2>&1
-mkdir buildALx64 >NUL 2>&1
-cd buildALx64
-@ECHO Generating x64 with openAL files
-cmake -G "Visual Studio 16" -A "x64" -DCMAKE_INSTALL_PREFIX=../bin/windows10-64 -DOPENAL=ON -DWINRT=ON ../neo > ../buildlog/ALx64/log.txt 
-if ERRORLEVEL == 1 goto ERRORX64AL
-cd ..
-mkdir buildlog > NUL 2>&1
-cd buildlog
-mkdir VkALx64 > NUL 2>&1
-cd ..
-del /s /q buildVkALx64 >NUL 2>&1
-mkdir buildVkALx64 >NUL 2>&1
-cd buildVkALx64
-@ECHO Generating x64 with openAL and Vulkan files
-cmake -G "Visual Studio 16" -A "x64" -DCMAKE_INSTALL_PREFIX=../bin/windows10-64 -DOPENAL=ON -DUSE_VULKAN=ON -DWINRT=ON ../neo > ../buildlog/VkALx64/log.txt 
-if ERRORLEVEL == 1 goto ERRORX64ALVK
+::cd ..
+::mkdir buildlog > NUL 2>&1
+::cd buildlog
+::mkdir ALx64 > NUL 2>&1
+::cd ..
+::del /s /q buildALx64 >NUL 2>&1
+::mkdir buildALx64 >NUL 2>&1
+::cd buildALx64
+::@ECHO Generating x64 with openAL files
+::cmake -G "Visual Studio 16" -A "x64" -DCMAKE_INSTALL_PREFIX=../bin/windows10-64 -DOPENAL=ON -DWINRT=ON -DUSE_XAUDIO2_PACKAGE=ON ../neo > ../buildlog/ALx64/log.txt 
+::if ERRORLEVEL == 1 goto ERRORX64AL
+::cd ..
+::mkdir buildlog > NUL 2>&1
+::cd buildlog
+::mkdir VkALx64 > NUL 2>&1
+::cd ..
+::del /s /q buildVkALx64 >NUL 2>&1
+::mkdir buildVkALx64 >NUL 2>&1
+::cd buildVkALx64
+::@ECHO Generating x64 with openAL and Vulkan files
+::cmake -G "Visual Studio 16" -A "x64" -DCMAKE_INSTALL_PREFIX=../bin/windows10-64 -DOPENAL=ON -DUSE_VULKAN=ON -DWINRT=ON ../neo > ../buildlog/VkALx64/log.txt 
+::if ERRORLEVEL == 1 goto ERRORX64ALVK
 :x86
 cd ..
 mkdir buildlog > NUL 2>&1
@@ -48,19 +48,19 @@ del /s /q buildx86 > NUL 2>&1
 mkdir buildx86 > NUL 2>&1
 cd buildx86
 @ECHO Generating x86 files
-cmake -G "Visual Studio 16" -A "Win32" -DCMAKE_INSTALL_PREFIX=../bin/windows10-32 -DWINRT=ON -DUSE_XAUDIO2_PACKAGE=ON ../neo > ../buildlog/x86/log.txt
+cmake -G "Visual Studio 16" -A "Win32" -DCMAKE_INSTALL_PREFIX=../bin/windows10-32 -DOPENAL=ON -DWINRT=ON -DUSE_XAUDIO2_PACKAGE=ON ../neo > ../buildlog/x86/log.txt
 if ERRORLEVEL == 1 goto ERRORX86
-cd ..
-mkdir buildlog > NUL 2>&1
-cd buildlog
-mkdir ALx86 > NUL 2>&1
-cd ..
-del /s /q buildALx86 >NUL 2>&1
-mkdir buildALx86 >NUL 2>&1
-cd buildALx86
-@ECHO Generating x86 with openAL files
-cmake -G "Visual Studio 16" -A "Win32" -DCMAKE_INSTALL_PREFIX=../bin/windows10-32 -DOPENAL=ON -DWINRT=ON ../neo > ../buildlog/ALx86/log.txt 
-if ERRORLEVEL == 1 goto ERRORX86AL
+::cd ..
+::mkdir buildlog > NUL 2>&1
+::cd buildlog
+::mkdir ALx86 > NUL 2>&1
+::cd ..
+::del /s /q buildALx86 >NUL 2>&1
+::mkdir buildALx86 >NUL 2>&1
+::cd buildALx86
+::@ECHO Generating x86 with openAL files
+::cmake -G "Visual Studio 16" -A "Win32" -DCMAKE_INSTALL_PREFIX=../bin/windows10-32 -DOPENAL=ON -DWINRT=ON ../neo > ../buildlog/ALx86/log.txt 
+::if ERRORLEVEL == 1 goto ERRORX86AL
 pause
 exit
 

@@ -82,9 +82,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "p_setup.h"
 
 #include "am_map.h"
-#ifdef USE_OPENAL
+//#ifdef USE_OPENAL
 #include "sound/OpenAL/AL_EAX.h"
-#endif
+//#endif
 extern idCVar S_museax;
 
 extern idCVar cl_messages;
@@ -101,6 +101,9 @@ extern idCVar r_clblurry;
 extern idCVar cl_engineHz_interp;
 extern idCVar cl_engineHz;
 extern idCVar in_joyjpn;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+extern idCVar s_useXAudio;
+#endif
 //
 // defaulted values
 //
@@ -1965,9 +1968,13 @@ void M_CloseGame()
 		::g->cpatch[i] = NULL;
 	}
 	//GK: Make sure the other game wont start with reverb
-#ifdef USE_OPENAL
-	alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
+//#ifdef USE_OPENAL
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (s_useXAudio.GetBool()) 
 #endif
+		alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
+	
+//#endif
 	resetValues();
 	//resetWeapons();
 	ResetAmmo();

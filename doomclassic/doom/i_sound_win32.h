@@ -26,112 +26,86 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#ifndef __I_SOUND__
-#define __I_SOUND__
+#ifndef __I_SOUND_XA2__
+#define __I_SOUND_XA2__
 
 #include "doomdef.h"
-
-// UNIX hack, to be removed.
-#ifdef SNDSERV
-#include <stdio.h>
-extern FILE* sndserver;
-extern char* sndserver_filename;
-#endif
-
+//
+//// UNIX hack, to be removed.
+//#ifdef SNDSERV
+//#include <stdio.h>
+//extern FILE* sndserver;
+//extern char* sndserver_filename;
+//#endif
+//
 #include "doomstat.h"
 #include "sounds.h"
-#include "libs/timidity/timidity.h"
 
-
-extern MidiSong* doomMusic;
-extern byte* musicBuffer;
-extern int totalBufferSize;
-extern bool	waitingForMusic;
-extern bool	musicReady;
-extern float			x_SoundVolume;
-extern float			x_MusicVolume;
-extern const float		GLOBAL_VOLUME_MULTIPLIER;
-extern int				S_initialized;
-extern bool			Music_initialized;
 // Init at program start...
-void I_InitSound();
-void I_InitSoundHardware( int numOutputChannels_, int channelMask );
+void I_InitSoundXA2();
+void I_InitSoundHardwareXA2( int numOutputChannels_, int channelMask );
 
 // ... update sound buffer and audio device at runtime...
-void I_UpdateSound(void);
-void I_SubmitSound(void);
+void I_UpdateSoundXA2(void);
+void I_SubmitSoundXA2(void);
 
 // ... shut down and relase at program termination.
-void I_ShutdownSound(void);
-void I_ShutdownSoundHardware();
+void I_ShutdownSoundXA2(void);
+void I_ShutdownSoundHardwareXA2();
 
 //
 //  SFX I/O
 //
 
 // Initialize channels?
-void I_SetChannels();
+void I_SetChannelsXA2();
 
 // Get raw data lump index for sound descriptor.
-int I_GetSfxLumpNum (sfxinfo_t* sfxinfo );
+int I_GetSfxLumpNumXA2 (sfxinfo_t* sfxinfo );
 
 
 // Starts a sound in a particular sound channel.
-int I_StartSound( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int pitch, int priority );
+int I_StartSoundXA2( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int pitch, int priority );
 
 
 // Stops a sound channel.
-void I_StopSound(int handle, int player = -1);
+void I_StopSoundXA2(int handle, int player = -1);
 
 // Called by S_*() functions
 //  to see if a channel is still playing.
 // Returns 0 if no longer playing, 1 if playing.
-int I_SoundIsPlaying(int handle);
+int I_SoundIsPlayingXA2(int handle);
 
 // Updates the volume, separation,
 //  and pitch of a sound channel.
-void I_UpdateSoundParams( int handle, int vol, int sep, int pitch );
+void I_UpdateSoundParamsXA2( int handle, int vol, int sep, int pitch );
 
-void I_SetSfxVolume( int );
+void I_SetSfxVolumeXA2( int );
 //
 //  MUSIC I/O
 //
-void I_InitMusic(void);
-void I_ShutdownMusic(void);
+void I_InitMusicXA2(void);
+void I_ShutdownMusicXA2(void);
 // Volume.
-void I_SetMusicVolume(int volume);
+void I_SetMusicVolumeXA2(int volume);
 // PAUSE game handling.
-void I_PauseSong(int handle);
-void I_ResumeSong(int handle);
+void I_PauseSongXA2(int handle);
+void I_ResumeSongXA2(int handle);
 // Registers a song handle to song data.
-int I_RegisterSong(void *data, int length);
+int I_RegisterSongXA2(void *data, int length);
 // Called by anything that wishes to start music.
 //  plays a song, and when the song is done,
 //  starts playing it again in an endless loop.
 // Horrible thing to do, considering.
-void I_PlaySong( const char *songname, int looping );
+void I_PlaySongXA2( const char *songname, int looping );
 // Stops a song over 3 seconds.
-void I_StopSong(int handle);
+void I_StopSongXA2(int handle);
 // See above (register), then think backwards
-void I_UnRegisterSong(int handle);
+void I_UnRegisterSongXA2(int handle);
 // Update Music (XMP), check for notifications
-void I_UpdateMusic(void);
+void I_UpdateMusicXA2(void);
 
-void I_ProcessSoundEvents();
-
-// cheap little struct to hold a sound
-typedef struct {
-	int vol;
-	int player;
-	int pitch;
-	int priority;
-	mobj_t* originator;
-	mobj_t* listener;
-} soundEvent_t;
-
-extern soundEvent_t soundEvents[128];
-
-int Mus2Midi(unsigned char* bytes, unsigned char* out, int* len);
+void I_ProcessSoundEventsXA2();
 
 #endif
 

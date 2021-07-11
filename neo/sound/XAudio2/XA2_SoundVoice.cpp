@@ -29,8 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../snd_local.h"
 
-idCVar s_skipHardwareSets( "s_skipHardwareSets", "0", CVAR_BOOL, "Do all calculation, but skip XA2 calls" );
-idCVar s_debugHardware( "s_debugHardware", "0", CVAR_BOOL, "Print a message any time a hardware voice changes" );
+extern idCVar s_skipHardwareSets;
+extern idCVar s_debugHardware;
 
 // The whole system runs at this sample rate
 static int SYSTEM_SAMPLE_RATE = 44100;
@@ -50,7 +50,7 @@ public:
 	STDMETHOD_( void, OnBufferStart )( void* pContext )
 	{
 		idSoundSystemLocal::bufferContext_t* bufferContext = ( idSoundSystemLocal::bufferContext_t* ) pContext;
-		bufferContext->voice->OnBufferStart( bufferContext->sample, bufferContext->bufferNumber );
+		((idSoundVoice_XAudio2*)bufferContext->voice)->OnBufferStart( bufferContext->sample, bufferContext->bufferNumber );
 	}
 	STDMETHOD_( void, OnLoopEnd )( void* ) {}
 	STDMETHOD_( void, OnVoiceError )( void*, HRESULT hr )
@@ -70,19 +70,12 @@ idSoundVoice_XAudio2::idSoundVoice_XAudio2
 ========================
 */
 idSoundVoice_XAudio2::idSoundVoice_XAudio2()
-	:	pSourceVoice( NULL ),
-	  leadinSample( NULL ),
-	  loopingSample( NULL ),
-	  formatTag( 0 ),
-	  numChannels( 0 ),
-	  sampleRate( 0 ),
-	  paused( true ),
-	  hasVUMeter( false ),
-	  chains(1)
+	:	pSourceVoice( NULL ), idSoundVoice()
+	  
 {
 	XAUDIO2FX_REVERB_I3DL2_PARAMETERS i3dl2parms = XAUDIO2FX_I3DL2_PRESET_AUDITORIUM;
 	ReverbConvertI3DL2ToNative(&i3dl2parms, &suitReverb, 1);
-	suitReverb.WetDryMix = 75.0f;
+	suitReverb.WetDryMix = 50.0f;
 }
 
 /*
@@ -100,7 +93,7 @@ idSoundVoice_XAudio2::~idSoundVoice_XAudio2()
 idSoundVoice_XAudio2::CompatibleFormat
 ========================
 */
-bool idSoundVoice_XAudio2::CompatibleFormat( idSoundSample_XAudio2* s )
+bool idSoundVoice_XAudio2::CompatibleFormat( idSoundSample* s )
 {
 	if( pSourceVoice == NULL )
 	{
@@ -127,18 +120,18 @@ void idSoundVoice_XAudio2::Create( const idSoundSample* leadinSample_, const idS
 	leadinSample = ( idSoundSample_XAudio2* )leadinSample_;
 	loopingSample = ( idSoundSample_XAudio2* )loopingSample_;
 	
-	if( pSourceVoice != NULL && CompatibleFormat( leadinSample ) )
+	if( pSourceVoice != NULL && this->CompatibleFormat( leadinSample ) )
 	{
-		sampleRate = leadinSample->format.basic.samplesPerSec;
+		sampleRate = leadinSample->GetFormat().basic.samplesPerSec;
 	}
 	else
 	{
 		DestroyInternal();
-		formatTag = leadinSample->format.basic.formatTag;
-		numChannels = leadinSample->format.basic.numChannels;
-		sampleRate = leadinSample->format.basic.samplesPerSec;
+		formatTag = leadinSample->GetFormat().basic.formatTag;
+		numChannels = leadinSample->GetFormat().basic.numChannels;
+		sampleRate = leadinSample->GetFormat().basic.samplesPerSec;
 		
-		soundSystemLocal.hardware.pXAudio2->CreateSourceVoice( &pSourceVoice, ( const WAVEFORMATEX* )&leadinSample->format, XAUDIO2_VOICE_USEFILTER, 4.0f, &streamContext );
+		((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->pXAudio2->CreateSourceVoice( &pSourceVoice, ( const WAVEFORMATEX* )&leadinSample->GetFormat(), XAUDIO2_VOICE_USEFILTER, 4.0f, &streamContext );
 		if( pSourceVoice == NULL )
 		{
 			// If this hits, then we are most likely passing an invalid sample format, which should have been caught by the loader (and the sample defaulted)
@@ -250,22 +243,12 @@ void idSoundVoice_XAudio2::Start( int offsetMS, int ssFlags )
 		if (vuMeter != NULL) {
 			vuMeter->Release();
 		}
-		if (channel == 9 || channel == 10 || channel == 12) {
-			if (FAILED(pSourceVoice->SetEffectParameters(0, &suitReverb, sizeof(suitReverb)))) {
-				common->Warning("Failed to set reverb parameters");
-			}
-		}
-		else {
-			if (FAILED(pSourceVoice->SetEffectParameters(0, &soundSystemLocal.EAX, sizeof(soundSystemLocal.EAX)))) {
-				common->Warning("Failed to set reverb parameters");
-			}
-		}
 	}
 	
 	
 	assert( offsetMS >= 0 );
 	int offsetSamples = MsecToSamples( offsetMS, leadinSample->SampleRate() );
-	if( loopingSample == NULL && offsetSamples >= leadinSample->playLength )
+	if( loopingSample == NULL && offsetSamples >= leadinSample->GetPlayLength() )
 	{
 		return;
 	}
@@ -284,13 +267,13 @@ int idSoundVoice_XAudio2::RestartAt( int offsetSamples )
 {
 	offsetSamples &= ~127;
 	
-	idSoundSample_XAudio2* sample = leadinSample;
-	if( offsetSamples >= leadinSample->playLength )
+	idSoundSample_XAudio2* sample = (idSoundSample_XAudio2*) leadinSample;
+	if( offsetSamples >= leadinSample->GetPlayLength() )
 	{
 		if( loopingSample != NULL )
 		{
-			offsetSamples %= loopingSample->playLength;
-			sample = loopingSample;
+			offsetSamples %= loopingSample->GetPlayLength();
+			sample = (idSoundSample_XAudio2*) loopingSample;
 		}
 		else
 		{
@@ -316,10 +299,10 @@ int idSoundVoice_XAudio2::RestartAt( int offsetSamples )
 idSoundVoice_XAudio2::SubmitBuffer
 ========================
 */
-int idSoundVoice_XAudio2::SubmitBuffer( idSoundSample_XAudio2* sample, int bufferNumber, int offset )
+int idSoundVoice_XAudio2::SubmitBuffer( idSoundSample* sample, int bufferNumber, int offset )
 {
 
-	if( sample == NULL || ( bufferNumber < 0 ) || ( bufferNumber >= sample->buffers.Num() ) )
+	if( sample == NULL || ( bufferNumber < 0 ) || ( bufferNumber >= sample->GetBuffers().Num() ) )
 	{
 		return 0;
 	}
@@ -340,15 +323,15 @@ int idSoundVoice_XAudio2::SubmitBuffer( idSoundSample_XAudio2* sample, int buffe
 		int previousNumSamples = 0;
 		if( bufferNumber > 0 )
 		{
-			previousNumSamples = sample->buffers[bufferNumber - 1].numSamples;
+			previousNumSamples = sample->GetBuffers()[bufferNumber - 1].numSamples;
 		}
 		buffer.PlayBegin = offset;
-		buffer.PlayLength = sample->buffers[bufferNumber].numSamples - previousNumSamples - offset;
+		buffer.PlayLength = sample->GetBuffers()[bufferNumber].numSamples - previousNumSamples - offset;
 	}
-	buffer.AudioBytes = sample->buffers[bufferNumber].bufferSize;
-	buffer.pAudioData = ( BYTE* )sample->buffers[bufferNumber].buffer;
+	buffer.AudioBytes = sample->GetBuffers()[bufferNumber].bufferSize;
+	buffer.pAudioData = ( BYTE* )sample->GetBuffers()[bufferNumber].buffer;
 	buffer.pContext = bufferContext;
-	if( ( loopingSample == NULL ) && ( bufferNumber == sample->buffers.Num() - 1 ) )
+	if( ( loopingSample == NULL ) && ( bufferNumber == sample->GetBuffers().Num() - 1 ) )
 	{
 		buffer.Flags = XAUDIO2_END_OF_STREAM;
 	}
@@ -382,7 +365,7 @@ bool idSoundVoice_XAudio2::Update()
 		return true;
 	}
 	
-	pSourceVoice->SetOutputMatrix( soundSystemLocal.hardware.pMasterVoice, srcChannels, dstChannels, pLevelMatrix, OPERATION_SET );
+	pSourceVoice->SetOutputMatrix( ((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->pMasterVoice, srcChannels, dstChannels, pLevelMatrix, OPERATION_SET );
 	
 	assert( idMath::Fabs( gain ) <= XAUDIO2_MAX_VOLUME_LEVEL );
 	pSourceVoice->SetVolume( gain, OPERATION_SET );
@@ -392,7 +375,7 @@ bool idSoundVoice_XAudio2::Update()
 		}
 	}
 	else {
-		if (FAILED(pSourceVoice->SetEffectParameters(0, &soundSystemLocal.EAX, sizeof(soundSystemLocal.EAX)))) {
+		if (FAILED(pSourceVoice->SetEffectParameters(0, &((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->EAX, sizeof(((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->EAX)))) {
 			common->Warning("Failed to set reverb parameters");
 		}
 	}
@@ -589,13 +572,13 @@ void idSoundVoice_XAudio2::SetSampleRate( uint32 newSampleRate, uint32 operation
 idSoundVoice_XAudio2::OnBufferStart
 ========================
 */
-void idSoundVoice_XAudio2::OnBufferStart( idSoundSample_XAudio2* sample, int bufferNumber )
+void idSoundVoice_XAudio2::OnBufferStart( idSoundSample* sample, int bufferNumber )
 {
 	SetSampleRate( sample->SampleRate(), XAUDIO2_COMMIT_NOW );
 	
-	idSoundSample_XAudio2* nextSample = sample;
+	idSoundSample_XAudio2* nextSample = (idSoundSample_XAudio2*)sample;
 	int nextBuffer = bufferNumber + 1;
-	if( nextBuffer == sample->buffers.Num() )
+	if( nextBuffer == sample->GetBuffers().Num() )
 	{
 		if( sample == leadinSample )
 		{
@@ -603,7 +586,7 @@ void idSoundVoice_XAudio2::OnBufferStart( idSoundSample_XAudio2* sample, int buf
 			{
 				return;
 			}
-			nextSample = loopingSample;
+			nextSample = (idSoundSample_XAudio2*)loopingSample;
 		}
 		nextBuffer = 0;
 	}

@@ -1,8 +1,5 @@
-#pragma once
-#include "precompiled.h"
-#include <stdio.h>
 /**
-* Copyright (C) 2018 George Kalmpokis
+* Copyright (C) 2021 George Kalmpokis
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * this software and associated documentation files (the "Software"), to deal in
@@ -24,26 +21,15 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include <stdlib.h>
-#include <math.h>
-#if defined (USE_FFMPEG)
-extern "C"
-{
-#define __STDC_CONSTANT_MACROS
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavformat/avio.h>
-#include <libswresample/swresample.h>
-}
+#include <idlib/precompiled.h>
+#ifndef __CINEMATIC_AUDIO_H__
+#define __CINEMATIC_AUDIO_H__
+
+class CinematicAudio {
+public:
+	virtual void InitAudio(void* audioContext) = 0;
+	virtual void PlayAudio(uint8_t* data, int size) = 0;
+	virtual void ShutdownAudio() = 0;
+};
+
 #endif
-
-#include "sound/snd_local.h"
-void parseAVError(int error);
-#if defined(_MSC_VER) && defined(USE_XAUDIO2)
-#include <xaudio2.h>
-#include <x3daudio.h>
-bool DecodeXAudio(byte** audio, int* len, IXAudio2SourceVoice** pMusicSourceVoice,bool ext);
-#endif // !USE_OPENAL
-bool DecodeALAudio(byte** audio, int* len, int *rate ,ALenum *sample );
-const char* GetSampleName(ALenum sample);
-

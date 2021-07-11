@@ -31,15 +31,18 @@
 #include "m_bbox.h"
 #include "d_udmf.h"
 #include "m_swap.h"
-#ifdef USE_OPENAL
+//#ifdef USE_OPENAL
 #include "s_efx.h"
-#endif
+//#endif
 
 long numlinedefs;
 long numthings;
 long numsectors;
 long numsidedefs;
 long numvertexes;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+extern idCVar s_useXAudio;
+#endif
 
 typedef struct {
 	char* name;
@@ -275,14 +278,18 @@ void ParseSector(std::vector<std::string> lines, int index) {
 	};
 	//GK: Load the reverbs based on sector's index
 	::g->sectors[index].counter = index;
-#ifdef USE_OPENAL
-	if (::g->hasreverb) {
-		if (::g->reverbs.size() < index + 1) {
-			::g->reverbs.push_back(GetReverb(strdup(::g->mapname.c_str()), index));
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (!s_useXAudio.GetBool()) {
+#endif
+		if (::g->hasreverb) {
+			if (::g->reverbs.size() < index + 1) {
+				::g->reverbs.push_back(GetReverb(strdup(::g->mapname.c_str()), index));
+			}
+			else {
+				::g->reverbs[index] = GetReverb(strdup(::g->mapname.c_str()), index);
+			}
 		}
-		else {
-			::g->reverbs[index] = GetReverb(strdup(::g->mapname.c_str()), index);
-		}
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
 	}
 #endif
 	char* token1, *token2;

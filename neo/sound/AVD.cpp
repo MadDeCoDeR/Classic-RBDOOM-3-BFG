@@ -27,7 +27,7 @@
 
 #include <../neo/sound/AVD.h>
 
-#ifndef USE_OPENAL
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
 bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice,bool ext) {
 	if ( *len <= 0) {
 		return false;
@@ -128,7 +128,7 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 		else {
 			exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
 		}
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(*&pMusicSourceVoice, (WAVEFORMATEX *)&exvoice);
+		((IXAudio2*)soundSystemLocal.GetInternal())->CreateSourceVoice(*&pMusicSourceVoice, (WAVEFORMATEX *)&exvoice);
 	}
 	else {
 		if (!use_ext) {
@@ -138,7 +138,7 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 			voiceFormat.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
 		}
 		voiceFormat.cbSize = 0;
-		soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(*&pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat);
+		((IXAudio2*)soundSystemLocal.GetInternal())->CreateSourceVoice(*&pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat);
 	}
 	av_init_packet(&packet);
 	AVFrame *frame;
@@ -222,7 +222,7 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 
 	return true;
 }
-#else
+#endif
 bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	if ( *len <= 0) {
 		return false;
@@ -411,7 +411,6 @@ const char* GetSampleName(ALenum sample) {
 		return "Mono Float Point";
 	}
 }
-#endif
 
 void parseAVError(int error) {
 	char* errorbuff = new char[256];

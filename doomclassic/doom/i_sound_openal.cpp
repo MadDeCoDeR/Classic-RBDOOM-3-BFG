@@ -48,6 +48,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "z_zone.h"
 #include "i_system.h"
 #include "i_sound.h"
+#include "i_sound_openal.h"
 #include "m_argv.h"
 #include "m_misc.h"
 #include "w_wad.h"
@@ -72,16 +73,16 @@ If you have questions concerning this license or the applicable additional terms
 ALuint		alMusicSourceVoice;
 ALuint		alMusicBuffer;
 
-MidiSong*	doomMusic;
-byte*		musicBuffer;
-int		totalBufferSize;
+extern MidiSong* doomMusic;
+extern byte* musicBuffer;
+extern int		totalBufferSize;
 
 ALenum av_sample;
 int av_rate;
 bool use_avi;
 
-bool		waitingForMusic;
-bool		musicReady;
+extern bool		waitingForMusic;
+extern bool		musicReady;
 ALuint clslot=0;
 ALuint clmusslot = 0;
 typedef struct {
@@ -96,7 +97,7 @@ typedef struct {
 	vec3_t Position;
 } doomListener_t;
 
-typedef struct tagActiveSound_t {
+typedef struct tagActiveSoundAL_t {
 	ALuint alSourceVoice;
 	int id;
 	int valid;
@@ -106,21 +107,11 @@ typedef struct tagActiveSound_t {
 	mobj_t *originator;
 	int rate; //GK: Keep record of rate and sample for link sfx
 	ALenum sample;
-} activeSound_t;
-
-// cheap little struct to hold a sound
-typedef struct {
-	int vol;
-	int player;
-	int pitch;
-	int priority;
-	mobj_t *originator;
-	mobj_t *listener;
-} soundEvent_t;
+} activeSoundAL_t;
 
 // array of all the possible sounds
 // in split screen we only process the loudest sound of each type per frame
-soundEvent_t soundEvents[128];
+extern soundEvent_t soundEvents[128];
 extern int PLAYERCOUNT;
 
 // Source voice settings for all sound effects
@@ -128,27 +119,26 @@ const ALfloat		SFX_MAX_DISTANCE = 1200.f;
 const ALfloat		SFX_REFERENCE_DISTANCE = 100.f;
 const ALfloat		SFX_ROLLOFF_FACTOR = 0.2f;
 
-// Real volumes
-const float		GLOBAL_VOLUME_MULTIPLIER = 0.5f;
+extern const float		GLOBAL_VOLUME_MULTIPLIER;
 
-float			x_SoundVolume = GLOBAL_VOLUME_MULTIPLIER;
-float			x_MusicVolume = GLOBAL_VOLUME_MULTIPLIER;
+extern float			x_SoundVolume;
+extern float			x_MusicVolume;
 
 // The actual lengths of all sound effects.
 static int 		lengths[NUMSFX];
 ALuint			alBuffers[NUMSFX];
-activeSound_t		activeSounds[NUM_SOUNDBUFFERS] = {0};
+activeSoundAL_t		activeSounds[NUM_SOUNDBUFFERS] = {0};
 
-int			S_initialized = 0;
-bool			Music_initialized = false;
+extern int			S_initialized;
+extern bool		Music_initialized;
 static bool		soundHardwareInitialized = false;
 static int		numOutputChannels = 0;
 
 doomListener_t		doom_Listener;
 
-idCVar S_museax("S_museax","0",CVAR_BOOL|CVAR_SOUND|CVAR_ARCHIVE,"Set music EAX for Classic Doom");
+extern idCVar S_museax;
 
-void			I_InitSoundChannel( int channel, int numOutputChannels_ );
+void			I_InitSoundChannelAL( int channel, int numOutputChannels_ );
 
 /*
 ======================
@@ -224,7 +214,7 @@ void* getsfx ( const char* sfxname, int* len )
 I_SetChannels
 ======================
 */
-void I_SetChannels()
+void I_SetChannelsAL()
 {
 	// Original Doom set up lookup tables here
 }
@@ -234,7 +224,7 @@ void I_SetChannels()
 I_SetSfxVolume
 ======================
 */
-void I_SetSfxVolume( int volume )
+void I_SetSfxVolumeAL( int volume )
 {
 	x_SoundVolume = ((float)volume / 15.f) * GLOBAL_VOLUME_MULTIPLIER;
 }
@@ -248,7 +238,7 @@ I_GetSfxLumpNum
 // Retrieve the raw data lump index
 //  for a given SFX name.
 //
-int I_GetSfxLumpNum( sfxinfo_t* sfx )
+int I_GetSfxLumpNumAL( sfxinfo_t* sfx )
 {
 	char namebuf[9];
 	sprintf( namebuf, "ds%s", sfx->name );
@@ -277,7 +267,7 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 	}
 	
 	int i;
-	activeSound_t* sound = 0;
+	activeSoundAL_t* sound = 0;
 	int oldest = 0, oldestnum = -1;
 	
 	// these id's should not overlap
@@ -288,7 +278,7 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 			sound = &activeSounds[i];
 			
 			if ( sound->valid && ( sound->id == id && sound->player == player ) ) {
-				I_StopSound( sound->id, player );
+				I_StopSoundAL( sound->id, player );
 				break;
 			}
 		}
@@ -377,7 +367,7 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 I_ProcessSoundEvents
 ======================
 */
-void I_ProcessSoundEvents( void )
+void I_ProcessSoundEventsAL( void )
 {
 	for( int i = 0; i < 128; i++ ) {
 		if( soundEvents[i].pitch ) {
@@ -393,7 +383,7 @@ void I_ProcessSoundEvents( void )
 I_StartSound
 ======================
 */
-int I_StartSound ( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int pitch, int priority )
+int I_StartSoundAL ( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int pitch, int priority )
 {
 	// only allow player 0s sounds in intermission and finale screens
 	if( (::g->gamestate != GS_LEVEL && ::g->gamestate != GS_DEMOLEVEL) && DoomLib::GetPlayer() != 0 ) {
@@ -422,14 +412,14 @@ int I_StartSound ( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int
 I_StopSound
 ======================
 */
-void I_StopSound ( int handle, int player )
+void I_StopSoundAL ( int handle, int player )
 {
 	// You need the handle returned by StartSound.
 	// Would be looping all channels,
 	// tracking down the handle,
 	// and setting the channel to zero.
 	int i;
-	activeSound_t* sound = 0;
+	activeSoundAL_t* sound = 0;
 	
 	for ( i = 0; i < NUM_SOUNDBUFFERS; ++i ) {
 		sound = &activeSounds[i];
@@ -453,14 +443,14 @@ void I_StopSound ( int handle, int player )
 I_SoundIsPlaying
 ======================
 */
-int I_SoundIsPlaying( int handle )
+int I_SoundIsPlayingAL( int handle )
 {
 	if ( !soundHardwareInitialized ) {
 		return 0;
 	}
 	
 	int i;
-	activeSound_t* sound;
+	activeSoundAL_t* sound;
 	
 	for ( i = 0; i < NUM_SOUNDBUFFERS; ++i ) {
 		sound = &activeSounds[i];
@@ -484,7 +474,7 @@ I_UpdateSound
 */
 // Update listener position and go through all the
 // channels and update sound positions.
-void I_UpdateSound( void )
+void I_UpdateSoundAL( void )
 {
 	if ( !soundHardwareInitialized ) {
 		return;
@@ -525,7 +515,7 @@ void I_UpdateSound( void )
 	
 	// Update playing source voice positions
 	int i;
-	activeSound_t* sound;
+	activeSoundAL_t* sound;
 	for ( i=0; i < NUM_SOUNDBUFFERS; i++ ) {
 		sound = &activeSounds[i];
 		
@@ -555,7 +545,7 @@ void I_UpdateSound( void )
 I_UpdateSoundParams
 ======================
 */
-void I_UpdateSoundParams( int handle, int vol, int sep, int pitch )
+void I_UpdateSoundParamsAL( int handle, int vol, int sep, int pitch )
 {
 }
 
@@ -564,7 +554,7 @@ void I_UpdateSoundParams( int handle, int vol, int sep, int pitch )
 I_ShutdownSound
 ======================
 */
-void I_ShutdownSound( void )
+void I_ShutdownSoundAL( void )
 {
 	int done = 0;
 	int i;
@@ -572,13 +562,13 @@ void I_ShutdownSound( void )
 	if ( S_initialized ) {
 		// Stop all sounds
 		for ( i = 0; i < NUM_SOUNDBUFFERS; i++ ) {
-			activeSound_t * sound = &activeSounds[i];
+			activeSoundAL_t * sound = &activeSounds[i];
 			
 			if ( !sound ) {
 				continue;
 			}
 			
-			I_StopSound( sound->id, 0 );
+			I_StopSoundAL( sound->id, 0 );
 		}
 		
 		// Free allocated sound memory
@@ -592,7 +582,7 @@ void I_ShutdownSound( void )
 		}
 	}
 	
-	I_StopSong( 0 );
+	I_StopSongAL( 0 );
 	ResetSfx(); //GK: At last I found where I can reset the dehacked sound editor without screwing over the game
 	S_initialized = 0;
 }
@@ -605,13 +595,13 @@ Called from the tech4x initialization code. Sets up Doom classic's
 sound channels.
 ======================
 */
-void I_InitSoundHardware( int numOutputChannels_, int channelMask )
+void I_InitSoundHardwareAL( int numOutputChannels_, int channelMask )
 {
 	::numOutputChannels = numOutputChannels_;
-	I_InitMusic(); //GK: Just to be sure that music will play
+	I_InitMusicAL(); //GK: Just to be sure that music will play
 	// Initialize source voices
 	for ( int i = 0; i < NUM_SOUNDBUFFERS; i++ ) {
-		I_InitSoundChannel( i, numOutputChannels );
+		I_InitSoundChannelAL( i, numOutputChannels );
 	}
 
 	// Create OpenAL buffers for all sounds
@@ -631,15 +621,15 @@ Called from the tech4x shutdown code. Tears down Doom classic's
 sound channels.
 ======================
 */
-void I_ShutdownSoundHardware()
+void I_ShutdownSoundHardwareAL()
 {
 	soundHardwareInitialized = false;
 	
-	I_ShutdownMusic();
+	I_ShutdownMusicAL();
 	
 	// Delete all source voices
 	for ( int i = 0; i < NUM_SOUNDBUFFERS; ++i ) {
-		activeSound_t * sound = &activeSounds[i];
+		activeSoundAL_t * sound = &activeSounds[i];
 		
 		if ( !sound ) {
 			continue;
@@ -649,13 +639,15 @@ void I_ShutdownSoundHardware()
 			alSourceStop( sound->alSourceVoice );
 			alSourcei( sound->alSourceVoice, AL_BUFFER, 0 );
 			alDeleteSources( 1, &sound->alSourceVoice );
+			if (CheckALErrors() == AL_NO_ERROR) {
+				sound->alSourceVoice = 0;
+			}
 		}
 	}
 
 	// Delete OpenAL buffers for all sounds
-	for ( int i = 0; i < NUMSFX; i++ ) {
-		alDeleteBuffers( 1, &alBuffers[i] );
-	}
+	alDeleteBuffers(NUMSFX, alBuffers );
+	
 	if (alIsAuxiliaryEffectSlot(clslot)) {
 		alDeleteAuxiliaryEffectSlots(1,&clslot);
 		clslot = 0;
@@ -671,9 +663,9 @@ void I_ShutdownSoundHardware()
 I_InitSoundChannel
 ======================
 */
-void I_InitSoundChannel( int channel, int numOutputChannels_ )
+void I_InitSoundChannelAL( int channel, int numOutputChannels_ )
 {
-	activeSound_t *soundchannel = &activeSounds[ channel ];
+	activeSoundAL_t *soundchannel = &activeSounds[ channel ];
 	
 	alGenSources( (ALuint)1, &soundchannel->alSourceVoice );
 	
@@ -689,7 +681,7 @@ void I_InitSoundChannel( int channel, int numOutputChannels_ )
 I_InitSound
 ======================
 */
-void I_InitSound()
+void I_InitSoundAL()
 {
 	if ( S_initialized == 0 ) {
 		// Set up listener parameters
@@ -734,17 +726,17 @@ void I_InitSound()
 I_SubmitSound
 ======================
 */
-void I_SubmitSound( void )
+void I_SubmitSoundAL( void )
 {
 	// Only do this for player 0, it will still handle positioning
 	//		for other players, but it can't be outside the game
 	//		frame like the soundEvents are.
 	if ( DoomLib::GetPlayer() == 0 ) {
 		// Do 3D positioning of sounds
-		I_UpdateSound();
+		I_UpdateSoundAL();
 		
 		// Change music if required
-		I_UpdateMusic();
+		I_UpdateMusicAL();
 	}
 }
 
@@ -760,7 +752,7 @@ void I_SubmitSound( void )
 I_SetMusicVolume
 ======================
 */
-void I_SetMusicVolume( int volume )
+void I_SetMusicVolumeAL( int volume )
 {
 	x_MusicVolume = (float)volume / 15.f;
 }
@@ -770,7 +762,7 @@ void I_SetMusicVolume( int volume )
 I_InitMusic
 ======================
 */
-void I_InitMusic( void )
+void I_InitMusicAL( void )
 {
 	if ( !Music_initialized ) {
 		// Initialize Timidity
@@ -829,13 +821,16 @@ void I_InitMusic( void )
 I_ShutdownMusic
 ======================
 */
-void I_ShutdownMusic( void )
+void I_ShutdownMusicAL( void )
 {
 	if ( Music_initialized ) {
 		if ( alMusicSourceVoice ) {
-			I_StopSong( 0 );
+			I_StopSongAL( 0 );
 			alSourcei( alMusicSourceVoice, AL_BUFFER, 0 );
 			alDeleteSources( 1, &alMusicSourceVoice );
+			if (CheckALErrors() == AL_NO_ERROR) {
+				alMusicSourceVoice = 0;
+			}
 		}
 		
 		if ( alMusicBuffer ) {
@@ -937,13 +932,13 @@ bool I_LoadSong( const char * songname )
 I_PlaySong
 ======================
 */
-void I_PlaySong( const char *songname, int looping )
+void I_PlaySongAL( const char *songname, int looping )
 {
 	if ( !Music_initialized ) {
 		return;
 	}
 	
-	I_StopSong( 0 );
+	I_StopSongAL( 0 );
 	
 	// Clear old state
 	if ( musicBuffer ) {
@@ -966,7 +961,7 @@ void I_PlaySong( const char *songname, int looping )
 I_UpdateMusic
 ======================
 */
-void I_UpdateMusic( void )
+void I_UpdateMusicAL( void )
 {
 	if ( !Music_initialized ) {
 		return;
@@ -1011,7 +1006,7 @@ void I_UpdateMusic( void )
 I_PauseSong
 ======================
 */
-void I_PauseSong ( int handle )
+void I_PauseSongAL ( int handle )
 {
 	if ( !Music_initialized || !alMusicSourceVoice ) {
 		return;
@@ -1025,7 +1020,7 @@ void I_PauseSong ( int handle )
 I_ResumeSong
 ======================
 */
-void I_ResumeSong ( int handle )
+void I_ResumeSongAL ( int handle )
 {
 	if ( !Music_initialized || !alMusicSourceVoice ) {
 		return;
@@ -1039,7 +1034,7 @@ void I_ResumeSong ( int handle )
 I_StopSong
 ======================
 */
-void I_StopSong( int handle )
+void I_StopSongAL( int handle )
 {
 	if ( !Music_initialized || !alMusicSourceVoice ) {
 		return;
@@ -1058,7 +1053,7 @@ void I_StopSong( int handle )
 I_UnRegisterSong
 ======================
 */
-void I_UnRegisterSong( int handle )
+void I_UnRegisterSongAL( int handle )
 {
 	// does nothing
 }
@@ -1068,7 +1063,7 @@ void I_UnRegisterSong( int handle )
 I_RegisterSong
 ======================
 */
-int I_RegisterSong( void* data, int length )
+int I_RegisterSongAL( void* data, int length )
 {
 	// does nothing
 	return 0;

@@ -2,10 +2,9 @@
 ===========================================================================
 
 Doom 3 BFG Edition GPL Source Code
-Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company.
-Copyright (C) 2012 Daniel Gibson
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
 Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,91 +26,86 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-// DG: this is a stub implementing the classic doom sound interface so we don't need XAudio to compile
-// (that doesn't work with MinGW and is only available on Windows)
+#ifndef __I_SOUND_AL__
+#define __I_SOUND_AL__
 
-#include "Precompiled.h"
-#include "i_sound.h"
-#include "w_wad.h"
+#include "doomdef.h"
+//
+//// UNIX hack, to be removed.
+//#ifdef SNDSERV
+//#include <stdio.h>
+//extern FILE* sndserver;
+//extern char* sndserver_filename;
+//#endif
+//
+#include "doomstat.h"
+#include "sounds.h"
 
 // Init at program start...
-void I_InitSound(){}
-void I_InitSoundHardware( int numOutputChannels_, int channelMask ){}
+void I_InitSoundAL();
+void I_InitSoundHardwareAL( int numOutputChannels_, int channelMask );
 
 // ... update sound buffer and audio device at runtime...
-void I_UpdateSound(void){}
-void I_SubmitSound(void){}
+void I_UpdateSoundAL(void);
+void I_SubmitSoundAL(void);
 
 // ... shut down and relase at program termination.
-void I_ShutdownSound(void){}
-void I_ShutdownSoundHardware(){}
+void I_ShutdownSoundAL(void);
+void I_ShutdownSoundHardwareAL();
 
 //
 //  SFX I/O
 //
 
 // Initialize channels?
-void I_SetChannels(){}
+void I_SetChannelsAL();
 
 // Get raw data lump index for sound descriptor.
-int I_GetSfxLumpNum (sfxinfo_t* sfxinfo )
-{
-	char namebuf[9];
-	sprintf(namebuf, "ds%s", sfxinfo->name);
-	return W_GetNumForName(namebuf);
-}
+int I_GetSfxLumpNumAL (sfxinfo_t* sfxinfo );
 
-void I_ProcessSoundEvents( void ){}
 
 // Starts a sound in a particular sound channel.
-int I_StartSound( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int pitch, int priority )
-{ return 0; }
+int I_StartSoundAL( int id, mobj_t *origin, mobj_t *listener_origin, int vol, int pitch, int priority );
 
 
 // Stops a sound channel.
-void I_StopSound(int handle, int player){}
+void I_StopSoundAL(int handle, int player = -1);
 
 // Called by S_*() functions
 //  to see if a channel is still playing.
 // Returns 0 if no longer playing, 1 if playing.
-int I_SoundIsPlaying(int handle)
-{ return 0; }
+int I_SoundIsPlayingAL(int handle);
 
 // Updates the volume, separation,
 //  and pitch of a sound channel.
-void I_UpdateSoundParams( int handle, int vol, int sep, int pitch ){}
+void I_UpdateSoundParamsAL( int handle, int vol, int sep, int pitch );
 
-void I_SetSfxVolume( int ){}
+void I_SetSfxVolumeAL( int );
 //
 //  MUSIC I/O
 //
-void I_InitMusic(void){}
-
-void I_ShutdownMusic(void){}
-
+void I_InitMusicAL(void);
+void I_ShutdownMusicAL(void);
 // Volume.
-void I_SetMusicVolume(int volume){}
-
+void I_SetMusicVolumeAL(int volume);
 // PAUSE game handling.
-void I_PauseSong(int handle){}
-
-void I_ResumeSong(int handle){}
-
+void I_PauseSongAL(int handle);
+void I_ResumeSongAL(int handle);
 // Registers a song handle to song data.
-int I_RegisterSong(void *data, int length)
-{ return 0; }
-
+int I_RegisterSongAL(void *data, int length);
 // Called by anything that wishes to start music.
 //  plays a song, and when the song is done,
 //  starts playing it again in an endless loop.
 // Horrible thing to do, considering.
-void I_PlaySong( const char *songname, int looping ){}
-
+void I_PlaySongAL( const char *songname, int looping );
 // Stops a song over 3 seconds.
-void I_StopSong(int handle){}
-
+void I_StopSongAL(int handle);
 // See above (register), then think backwards
-void I_UnRegisterSong(int handle){}
-
+void I_UnRegisterSongAL(int handle);
 // Update Music (XMP), check for notifications
-void I_UpdateMusic(void){}
+void I_UpdateMusicAL(void);
+
+void I_ProcessSoundEventsAL();
+
+#endif
+

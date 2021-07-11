@@ -30,13 +30,13 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 #include "precompiled.h"
 #include "../snd_local.h"
-#include "../../../doomclassic/doom/i_sound.h"
+#include "../../../doomclassic/doom/i_sound_openal.h"
 
-idCVar s_showLevelMeter( "s_showLevelMeter", "0", CVAR_BOOL | CVAR_ARCHIVE, "Show VU meter" );
-idCVar s_meterTopTime( "s_meterTopTime", "1000", CVAR_INTEGER | CVAR_ARCHIVE, "How long (in milliseconds) peaks are displayed on the VU meter" );
-idCVar s_meterPosition( "s_meterPosition", "100 100 20 200", CVAR_ARCHIVE, "VU meter location (x y w h)" );
-idCVar s_device( "s_device", "-1", CVAR_INTEGER | CVAR_ARCHIVE, "Which audio device to use (listDevices to list, -1 for default)" );
-idCVar s_showPerfData( "s_showPerfData", "0", CVAR_BOOL, "Show XAudio2 Performance data" );
+extern idCVar s_showLevelMeter;
+extern idCVar s_meterTopTime;
+extern idCVar s_meterPosition;
+extern idCVar s_device;
+extern idCVar s_showPerfData;
 extern idCVar s_volume_dB;
 
 /*
@@ -44,7 +44,7 @@ extern idCVar s_volume_dB;
 idSoundHardware_OpenAL::idSoundHardware_OpenAL
 ========================
 */
-idSoundHardware_OpenAL::idSoundHardware_OpenAL()
+idSoundHardware_OpenAL::idSoundHardware_OpenAL(): idSoundHardware()
 {
 	openalDevice = NULL;
 	openalContext = NULL;
@@ -59,7 +59,7 @@ idSoundHardware_OpenAL::idSoundHardware_OpenAL()
 	zombieVoices.SetNum( 0 );
 	freeVoices.SetNum( 0 );
 	
-	lastResetTime = 0;
+	//lastResetTime = 0;
 }
 
 void idSoundHardware_OpenAL::PrintDeviceList( const char* list )
@@ -125,7 +125,7 @@ void idSoundHardware_OpenAL::PrintALInfo()
 	CheckALErrors();
 }
 
-void listDevices_f( const idCmdArgs& args )
+void listDevices_f_AL( const idCmdArgs& args )
 {
 	idLib::Printf( "Available playback devices:\n" );
 	if( alcIsExtensionPresent( NULL, "ALC_ENUMERATE_ALL_EXT" ) != AL_FALSE )
@@ -153,7 +153,7 @@ void listDevices_f( const idCmdArgs& args )
 	
 	idSoundHardware_OpenAL::PrintALCInfo( NULL );
 	
-	idSoundHardware_OpenAL::PrintALCInfo( ( ALCdevice* )soundSystem->GetOpenALDevice() );
+	idSoundHardware_OpenAL::PrintALCInfo( ( ALCdevice* )soundSystem->GetInternal() );
 }
 
 static void parseDeviceName(const ALCchar* wcDevice, char* mbDevice) {
@@ -205,7 +205,7 @@ idSoundHardware_OpenAL::Init
 */
 void idSoundHardware_OpenAL::Init()
 {
-	cmdSystem->AddCommand( "listDevices", listDevices_f, 0, "Lists the connected sound devices", NULL );
+	cmdSystem->AddCommand( "listDevices", listDevices_f_AL, 0, "Lists the connected sound devices", NULL );
 	ALboolean enumeration;
 	enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
 	
@@ -227,6 +227,14 @@ void idSoundHardware_OpenAL::Init()
 		common->FatalError( "idSoundHardware_OpenAL::Init: alcMakeContextCurrent( %p) failed\n", openalContext );
 		return;
 	}
+	//GK: And check if it works
+	hasEFX = true;
+	ALCint size = 0;
+	alcGetIntegerv(openalDevice, ALC_MAX_AUXILIARY_SENDS, 1, &size);
+	if (!alcIsExtensionPresent(openalDevice, "ALC_EXT_EFX") || size == 0) {
+		hasEFX = false;
+		common->Printf("No EAX support");
+	} else {
 	ALCint num_sends = 0;
 	alcGetIntegerv(openalDevice, ALC_MAX_AUXILIARY_SENDS, 1, &num_sends);
 	common->Printf("idSoundHardware_OpenAL::Init: Number of EAX sends: %d\n", num_sends);
@@ -269,7 +277,7 @@ void idSoundHardware_OpenAL::Init()
 			alEffectf(EFX, AL_EAXREVERB_LFREFERENCE, voicereverb2->flLFReference);
 			alEffectf(EFX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, voicereverb2->flRoomRolloffFactor);
 			alEffecti(EFX, AL_EAXREVERB_DECAY_HFLIMIT, voicereverb2->iDecayHFLimit);
-			alAuxiliaryEffectSloti(soundSystemLocal.hardware.voiceslot, AL_EFFECTSLOT_EFFECT, EFX);
+			alAuxiliaryEffectSloti(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voiceslot, AL_EFFECTSLOT_EFFECT, EFX);
 			alDeleteEffects(1, &EFX);
 		}
 
@@ -288,6 +296,7 @@ void idSoundHardware_OpenAL::Init()
 			// pow(10.0, -1150/2000.0)
 			alFilterf(voicefilter, AL_LOWPASS_GAINHF, 0.266073f);
 		}
+	}
 	}
 	common->Printf( "Done.\n" );
 	
@@ -311,7 +320,7 @@ void idSoundHardware_OpenAL::Init()
 	// Initialize the Doom classic sound system.
 	// ---------------------
 	
-	I_InitSoundHardware( voices.Max(), 0 );
+	I_InitSoundHardwareAL( voices.Max(), 0 );
 
 	// ---------------------
 	// Create VU Meter Effect
@@ -367,6 +376,9 @@ void idSoundHardware_OpenAL::Init()
 	
 	// OpenAL doesn't really impose a maximum number of sources
 	voices.SetNum( voices.Max() );
+	for (int i = 0; i < voices.Max(); i++) {
+		voices[i] = *(new idSoundVoice_OpenAL());
+	}
 	freeVoices.SetNum( voices.Max() );
 	zombieVoices.SetNum( 0 );
 	for( int i = 0; i < voices.Num(); i++ )
@@ -382,22 +394,25 @@ idSoundHardware_OpenAL::Shutdown
 */
 void idSoundHardware_OpenAL::Shutdown()
 {
+	// ---------------------
+	// Shutdown the Doom classic sound system.
+	// ---------------------
+	I_ShutdownSoundHardwareAL();
+
 	for( int i = 0; i < voices.Num(); i++ )
 	{
-		voices[ i ].DestroyInternal();
+		idSoundVoice_OpenAL* voice = (idSoundVoice_OpenAL*)&voices[i];
+		voice->DestroyInternal();
 	}
 	voices.Clear();
 	freeVoices.Clear();
 	zombieVoices.Clear();
-	
-	// ---------------------
-	// Shutdown the Doom classic sound system.
-	// ---------------------
-	I_ShutdownSoundHardware();
 
 	if (alIsFilter(voicefilter)) {
 		alDeleteFilters(1, &voicefilter);
 	}
+
+	ShutdownReverbSystem();
 	
 	alcMakeContextCurrent( NULL );
 	
@@ -406,6 +421,8 @@ void idSoundHardware_OpenAL::Shutdown()
 	
 	alcCloseDevice( openalDevice );
 	openalDevice = NULL;
+
+	
 	
 	/*
 	if( vuMeterRMS != NULL )
@@ -421,6 +438,15 @@ void idSoundHardware_OpenAL::Shutdown()
 	*/
 }
 
+void idSoundHardware_OpenAL::ShutdownReverbSystem()
+{
+	alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
+	if (alIsEffect(EAX)) {
+		alDeleteEffects(1, &EAX);
+		EAX = 0;
+	}
+}
+
 /*
 ========================
 idSoundHardware_OpenAL::AllocateVoice
@@ -434,7 +460,7 @@ idSoundVoice* idSoundHardware_OpenAL::AllocateVoice( const idSoundSample* leadin
 	}
 	if( loopingSample != NULL )
 	{
-		if( ( leadinSample->format.basic.formatTag != loopingSample->format.basic.formatTag ) || ( leadinSample->format.basic.numChannels != loopingSample->format.basic.numChannels ) )
+		if( ( leadinSample->GetFormat().basic.formatTag != loopingSample->GetFormat().basic.formatTag ) || ( leadinSample->GetFormat().basic.numChannels != loopingSample->GetFormat().basic.numChannels ) )
 		{
 			idLib::Warning( "Leadin/looping format mismatch: %s & %s", leadinSample->GetName(), loopingSample->GetName() );
 			loopingSample = NULL;
@@ -443,14 +469,15 @@ idSoundVoice* idSoundHardware_OpenAL::AllocateVoice( const idSoundSample* leadin
 	
 	// Try to find a free voice that matches the format
 	// But fallback to the last free voice if none match the format
-	idSoundVoice* voice = NULL;
+	idSoundVoice_OpenAL* voice = NULL;
 	for( int i = 0; i < freeVoices.Num(); i++ )
 	{
-		if( freeVoices[i]->IsPlaying() )
+		voice = (idSoundVoice_OpenAL*)freeVoices[i];
+		if( voice->IsPlaying() )
 		{
 			continue;
 		}
-		voice = ( idSoundVoice* )freeVoices[i];
+		
 		if( voice->CompatibleFormat( ( idSoundSample_OpenAL* )leadinSample ) )
 		{
 			break;
@@ -477,7 +504,7 @@ void idSoundHardware_OpenAL::FreeVoice( idSoundVoice* voice )
 	
 	// Stop() is asyncronous, so we won't flush bufferes until the
 	// voice on the zombie channel actually returns !IsPlaying()
-	zombieVoices.Append( voice );
+	zombieVoices.Append( (idSoundVoice_OpenAL*)voice );
 }
 
 /*
@@ -533,8 +560,9 @@ void idSoundHardware_OpenAL::Update()
 	// until it actually reports that it is no longer playing.
 	for( int i = 0; i < zombieVoices.Num(); i++ )
 	{
-		zombieVoices[i]->FlushSourceBuffers();
-		if( !zombieVoices[i]->IsPlaying() )
+		idSoundVoice_OpenAL* alZombieVoice = (idSoundVoice_OpenAL*)zombieVoices[i];
+		alZombieVoice->FlushSourceBuffers();
+		if( !alZombieVoice->IsPlaying() )
 		{
 			freeVoices.Append( zombieVoices[i] );
 			zombieVoices.RemoveIndexFast( i );
@@ -621,5 +649,149 @@ void idSoundHardware_OpenAL::Update()
 	}
 	*/
 }
+
+void idSoundHardware_OpenAL::UpdateEAXEffect(idSoundEffect* effect)
+{
+	EFXEAXREVERBPROPERTIES EnvironmentParameters;
+	if (alIsEffect(EAX)) {
+		alDeleteEffects(1, &EAX);
+
+	}
+	EAX = 0;
+	// get area reverb setting from EAX Manager
+	if ((effect) && (effect->data)) {
+		memcpy(&EnvironmentParameters, effect->data, effect->datasize);
+		/*if (soundSystemLocal.s_muteEAXReverb.GetBool()) {
+			EnvironmentParameters.flGain = -10000;
+			EnvironmentID = -2;
+		}*/
+		if (hasEFX) {
+			SetEFX(&EnvironmentParameters);
+			alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, EAX);
+		}
+	}
+}
+
+//#ifdef USE_OPENAL
+//GK: In openAL-soft the EFX is quite different from the standard openAL
+/*
+========================
+idSoundSystemLocal::SetEFX
+========================
+*/
+void idSoundHardware_OpenAL::SetEFX(EFXEAXREVERBPROPERTIES* rev)
+{
+	alGenEffects(1, &EAX);
+	if (alGetEnumValue("AL_EFFECT_EAXREVERB") != 0)
+
+	{
+
+		//common->Printf("Using EAX Reverb\n");
+
+
+
+		/* EAX Reverb is available. Set the EAX effect type then load the
+
+		 * reverb properties. */
+
+		alEffecti(EAX, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
+
+
+
+		alEffectf(EAX, AL_EAXREVERB_DENSITY, rev->flDensity);
+
+		alEffectf(EAX, AL_EAXREVERB_DIFFUSION, rev->flDiffusion);
+
+		alEffectf(EAX, AL_EAXREVERB_GAIN, rev->flGain);
+
+		alEffectf(EAX, AL_EAXREVERB_GAINHF, rev->flGainHF);
+
+		alEffectf(EAX, AL_EAXREVERB_GAINLF, rev->flGainLF);
+
+		alEffectf(EAX, AL_EAXREVERB_DECAY_TIME, rev->flDecayTime);
+
+		alEffectf(EAX, AL_EAXREVERB_DECAY_HFRATIO, rev->flDecayHFRatio);
+
+		alEffectf(EAX, AL_EAXREVERB_DECAY_LFRATIO, rev->flDecayLFRatio);
+
+		alEffectf(EAX, AL_EAXREVERB_REFLECTIONS_GAIN, rev->flReflectionsGain);
+
+		alEffectf(EAX, AL_EAXREVERB_REFLECTIONS_DELAY, rev->flReflectionsDelay);
+
+		alEffectfv(EAX, AL_EAXREVERB_REFLECTIONS_PAN, rev->flReflectionsPan);
+
+		alEffectf(EAX, AL_EAXREVERB_LATE_REVERB_GAIN, rev->flLateReverbGain);
+
+		alEffectf(EAX, AL_EAXREVERB_LATE_REVERB_DELAY, rev->flLateReverbDelay);
+
+		alEffectfv(EAX, AL_EAXREVERB_LATE_REVERB_PAN, rev->flLateReverbPan);
+
+		alEffectf(EAX, AL_EAXREVERB_ECHO_TIME, rev->flEchoTime);
+
+		alEffectf(EAX, AL_EAXREVERB_ECHO_DEPTH, rev->flEchoDepth);
+
+		alEffectf(EAX, AL_EAXREVERB_MODULATION_TIME, rev->flModulationTime);
+
+		alEffectf(EAX, AL_EAXREVERB_MODULATION_DEPTH, rev->flModulationDepth);
+
+		alEffectf(EAX, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, rev->flAirAbsorptionGainHF);
+
+		alEffectf(EAX, AL_EAXREVERB_HFREFERENCE, rev->flHFReference);
+
+		alEffectf(EAX, AL_EAXREVERB_LFREFERENCE, rev->flLFReference);
+
+		alEffectf(EAX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, rev->flRoomRolloffFactor);
+
+		alEffecti(EAX, AL_EAXREVERB_DECAY_HFLIMIT, rev->iDecayHFLimit);
+
+	}
+
+	else
+
+	{
+
+		//common->Printf("Using Standard Reverb\n");
+
+
+
+		/* No EAX Reverb. Set the standard reverb effect type then load the
+
+		 * available reverb properties. */
+
+		alEffecti(EAX, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
+
+
+
+		alEffectf(EAX, AL_REVERB_DENSITY, rev->flDensity);
+
+		alEffectf(EAX, AL_REVERB_DIFFUSION, rev->flDiffusion);
+
+		alEffectf(EAX, AL_REVERB_GAIN, rev->flGain);
+
+		alEffectf(EAX, AL_REVERB_GAINHF, rev->flGainHF);
+
+		alEffectf(EAX, AL_REVERB_DECAY_TIME, rev->flDecayTime);
+
+		alEffectf(EAX, AL_REVERB_DECAY_HFRATIO, rev->flDecayHFRatio);
+
+		alEffectf(EAX, AL_REVERB_REFLECTIONS_GAIN, rev->flReflectionsGain);
+
+		alEffectf(EAX, AL_REVERB_REFLECTIONS_DELAY, rev->flReflectionsDelay);
+
+		alEffectf(EAX, AL_REVERB_LATE_REVERB_GAIN, rev->flLateReverbGain);
+
+		alEffectf(EAX, AL_REVERB_LATE_REVERB_DELAY, rev->flLateReverbDelay);
+
+		alEffectf(EAX, AL_REVERB_AIR_ABSORPTION_GAINHF, rev->flAirAbsorptionGainHF);
+
+		alEffectf(EAX, AL_REVERB_ROOM_ROLLOFF_FACTOR, rev->flRoomRolloffFactor);
+
+		alEffecti(EAX, AL_REVERB_DECAY_HFLIMIT, rev->iDecayHFLimit);
+
+	}
+}
+//#endif
+
+
 
 

@@ -26,17 +26,16 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
+#include "../common/CommonSoundVoice.h"
 #ifndef __AL_SOUNDVOICE_H__
 #define __AL_SOUNDVOICE_H__
-
-static const int MAX_QUEUED_BUFFERS = 3;
 
 /*
 ================================================
 idSoundVoice_OpenAL
 ================================================
 */
-class idSoundVoice_OpenAL : public idSoundVoice_Base
+class idSoundVoice_OpenAL : public idSoundVoice
 {
 public:
 	idSoundVoice_OpenAL();
@@ -84,15 +83,10 @@ public:
 	float					GetAmplitude();
 	
 	// returns true if we can re-use this voice
-	bool					CompatibleFormat( idSoundSample_OpenAL* s );
-	
-	uint32					GetSampleRate() const
-	{
-		return sampleRate;
-	}
+	bool					CompatibleFormat( idSoundSample* s );
 	
 	// callback function
-	void					OnBufferStart( idSoundSample_OpenAL* sample, int bufferNumber );
+	void					OnBufferStart( idSoundSample* sample, int bufferNumber );
 	//GK: It might come handy in the future
 	int						GetChannel() {
 		return channel;
@@ -125,19 +119,6 @@ private:
 	ALuint					openalStreamingOffset;
 	ALuint					openalStreamingBuffer[3];
 	ALuint					lastopenalStreamingBuffer[3];
-	int						channel;
-	idSoundSample_OpenAL*	leadinSample;
-	idSoundSample_OpenAL*	loopingSample;
-	
-	// These are the fields from the sample format that matter to us for voice reuse
-	uint16					formatTag;
-	uint16					numChannels;
-	
-	uint32					sourceVoiceRate;
-	uint32					sampleRate;
-	
-	bool					hasVUMeter;
-	bool					paused;
 };
 
 /*
@@ -145,8 +126,8 @@ private:
 idSoundVoice
 ================================================
 */
-class idSoundVoice : public idSoundVoice_OpenAL
-{
-};
+//class idSoundVoice : public idSoundVoice_OpenAL
+//{
+//};
 
 #endif
