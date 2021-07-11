@@ -3198,10 +3198,12 @@ void idFileSystemLocal::Init()
 	{
 		fs_basepath.SetString( Sys_DefaultBasePath() );
 	}
+#ifdef _UWP
 	if (fs_apppath.GetString()[0] == '\0')
 	{
 		fs_apppath.SetString(Sys_DefaultAppPath());
 	}
+#endif
 	if( fs_savepath.GetString()[0] == '\0' )
 	{
 		fs_savepath.SetString( Sys_DefaultSavePath() );
