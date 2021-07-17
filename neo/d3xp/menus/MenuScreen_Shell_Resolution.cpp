@@ -295,11 +295,11 @@ bool idMenuScreen_Shell_Resolution::HandleAction( idWidgetAction& action, const 
 					// Changing to fullscreen mode
 					r_fullscreen.SetInteger( currentOption.fullscreen );
 					r_vidMode.SetInteger( currentOption.vidmode );
-					r_customWidth.SetInteger(displays[0][currentOption.vidmode].width);
-					r_customHeight.SetInteger(displays[0][currentOption.vidmode].height);
-					if (displays[0][currentOption.vidmode].displayHz != 60) {
-						com_engineHz.SetInteger(displays[0][currentOption.vidmode].displayHz);
-					}
+					r_customWidth.SetInteger(displays[currentOption.fullscreen - 1][currentOption.vidmode].width);
+					r_customHeight.SetInteger(displays[currentOption.fullscreen - 1][currentOption.vidmode].height);
+					//if (displays[currentOption.fullscreen - 1][currentOption.vidmode].displayHz != 60) {
+					r_displayRefresh.SetInteger(displays[currentOption.fullscreen - 1][currentOption.vidmode].displayHz);
+					//}
 					cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 					cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
 					

@@ -1684,9 +1684,9 @@ void M_SetRes(int choice) {
 	r_vidMode.SetInteger(choice);
 	r_customWidth.SetInteger(modeList[choice].width);
 	r_customHeight.SetInteger(modeList[choice].height);
-	if (modeList[choice].displayHz != 60) {
-		com_engineHz.SetInteger(modeList[choice].displayHz);
-	}
+	//if (modeList[choice].displayHz != 60) {
+		r_displayRefresh.SetInteger(modeList[choice].displayHz);
+	//}
 	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 	M_SetupNextMenu(::g->currentMenu->prevMenu);
 }
@@ -1704,16 +1704,20 @@ void M_Framerate(int choice) {
 void M_Refresh(int choice) {
 	if (!R_GetRefreshListForDisplay(r_fullscreen.GetInteger() > 1 ? r_fullscreen.GetInteger() - 1 : 0, classicRefreshList)) {
 		classicRefreshList.Clear();
-		classicRefreshList.AddUnique(60);
-		classicRefreshList.AddUnique(120);
 	}
-	if (refreshIndex == classicRefreshList.Num() - 1) {
+	idList<int> clasicFrameRate = classicRefreshList;
+	clasicFrameRate.AddUnique(60);
+	clasicFrameRate.AddUnique(120);
+	if (refreshIndex == clasicFrameRate.Num() - 1) {
 		refreshIndex = 0;
 	}
 	else {
 		refreshIndex++;
 	}
-	com_engineHz.SetInteger(classicRefreshList[refreshIndex]);
+	com_engineHz.SetInteger(clasicFrameRate[refreshIndex]);
+	if (classicRefreshList.Find(clasicFrameRate[refreshIndex]) != NULL) {
+		r_displayRefresh.SetInteger(clasicFrameRate[refreshIndex]);
+	}
 
 	hardreset = true;
 }
@@ -1970,7 +1974,7 @@ void M_CloseGame()
 	//GK: Make sure the other game wont start with reverb
 //#ifdef USE_OPENAL
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (s_useXAudio.GetBool()) 
+	if (!s_useXAudio.GetBool()) 
 #endif
 		alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
 	

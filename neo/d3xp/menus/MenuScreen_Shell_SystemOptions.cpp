@@ -410,6 +410,7 @@ idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::LoadData
 void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::LoadData()
 {
 	originalFramerate = com_engineHz.GetInteger();
+	originalRefreshRate = r_displayRefresh.GetInteger();
 	originalAntialias = r_antiAliasing.GetInteger();
 	originalMotionBlur = r_motionBlur.GetInteger();
 	originalVsync = r_swapInterval.GetInteger();
@@ -443,6 +444,11 @@ bool idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsRestar
 	}
 	
 	if( originalFramerate != com_engineHz.GetInteger() )
+	{
+		return true;
+	}
+
+	if (originalRefreshRate != r_displayRefresh.GetInteger())
 	{
 		return true;
 	}
@@ -523,7 +529,14 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 		case SYSTEM_FIELD_FRAMERATE:
 		{
 			if (R_GetRefreshListForDisplay(r_fullscreen.GetInteger() > 0 ? r_fullscreen.GetInteger() - 1 : 0, refreshList)) {
-				com_engineHz.SetInteger(AdjustOption(com_engineHz.GetInteger(), refreshList.Ptr(), refreshList.Num(), adjustAmount));
+				idList<int> framerateList = refreshList;
+				framerateList.AddUnique(60);
+				framerateList.AddUnique(120);
+				int fps = AdjustOption(com_engineHz.GetInteger(), framerateList.Ptr(), framerateList.Num(), adjustAmount);
+				com_engineHz.SetInteger(fps);
+				if (refreshList.Find(fps) != NULL) {
+					r_displayRefresh.SetInteger(fps);
+				}
 			}
 			else {
 				static const int numValues = 2;
@@ -621,13 +634,13 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 			{
 				return "???";
 			}*/
-			if( com_engineHz.GetInteger() == 60 || fullscreen < 0 )
+			if( r_displayRefresh.GetInteger() == 60 || fullscreen < 0 )
 			{
 				return va( "%4i x %4i", r_customWidth.GetInteger(), r_customHeight.GetInteger());
 			}
 			else
 			{
-				return va( "%4i x %4i @ %dhz", r_customWidth.GetInteger(), r_customHeight.GetInteger(), modeList[vidmode].displayHz );
+				return va( "%4i x %4i @ %dhz", r_customWidth.GetInteger(), r_customHeight.GetInteger(), r_displayRefresh.GetInteger()/*modeList[vidmode].displayHz*/ );
 			}
 		}
 		//GK: Begin
@@ -714,6 +727,10 @@ idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsDataChanged
 bool idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsDataChanged() const
 {
 	if( originalFramerate != com_engineHz.GetInteger() )
+	{
+		return true;
+	}
+	if (originalRefreshRate != r_displayRefresh.GetInteger())
 	{
 		return true;
 	}

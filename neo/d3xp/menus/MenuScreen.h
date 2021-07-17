@@ -1409,6 +1409,7 @@ public:
 		
 	private:
 		int originalFramerate;
+		int originalRefreshRate;
 		int originalAntialias;
 		int originalMotionBlur;
 		int originalVsync;
