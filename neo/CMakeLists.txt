@@ -624,7 +624,8 @@ set(SOUND_SOURCES
 set(SOUND_COMMON_INCLUDES
 	sound/common/SoundHardware.h
 	sound/common/SoundSample.h
-	sound/common/CommonSoundVoice.h)
+	sound/common/CommonSoundVoice.h
+	sound/common/CinematicAudio.h)
 	
 set(SOUND_COMMON_SOURCES
 	sound/common/SoundCVars.cpp)
@@ -632,24 +633,28 @@ set(SOUND_COMMON_SOURCES
 set(XAUDIO2_INCLUDES
 	sound/XAudio2/XA2_SoundHardware.h
 	sound/XAudio2/XA2_SoundSample.h
-	sound/XAudio2/XA2_SoundVoice.h)
+	sound/XAudio2/XA2_SoundVoice.h
+	sound/XAudio2/XA2_CinematicAudio.h)
 	
 set(XAUDIO2_SOURCES
 	sound/XAudio2/XA2_SoundHardware.cpp
 	sound/XAudio2/XA2_SoundSample.cpp
-	sound/XAudio2/XA2_SoundVoice.cpp)
+	sound/XAudio2/XA2_SoundVoice.cpp
+	sound/XAudio2/XA2_CinematicAudio.cpp)
 	#GK: Add EFX related files when using the openAL
 set(OPENAL_INCLUDES
 	sound/OpenAL/AL_EAX.h
 	sound/OpenAL/AL_SoundHardware.h
 	sound/OpenAL/AL_SoundSample.h
-	sound/OpenAL/AL_SoundVoice.h)
+	sound/OpenAL/AL_SoundVoice.h
+	sound/OpenAL/AL_CinematicAudio.h)
 	
 set(OPENAL_SOURCES
 	sound/OpenAL/AL_EAX.cpp
 	sound/OpenAL/AL_SoundHardware.cpp
 	sound/OpenAL/AL_SoundSample.cpp
-	sound/OpenAL/AL_SoundVoice.cpp)
+	sound/OpenAL/AL_SoundVoice.cpp
+	sound/OpenAL/AL_CinematicAudio.cpp)
 	
 set(OGGVORBIS_INCLUDES
 	libs/oggvorbis/ogg/ogg.h

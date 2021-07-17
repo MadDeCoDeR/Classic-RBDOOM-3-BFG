@@ -21,14 +21,10 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+#include "precompiled.h"
 #include "XA2_CinematicAudio.h"
 #include <sound/snd_local.h>
 #include <avformat.h>
-
-CinematicAudio_XAudio2::CinematicAudio_XAudio2():
-	pMusicSourceVoice1(NULL)
-{
-}
 
 void CinematicAudio_XAudio2::InitAudio(void* audioContext)
 {

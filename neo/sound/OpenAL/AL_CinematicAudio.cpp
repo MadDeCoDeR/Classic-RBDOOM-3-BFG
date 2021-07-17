@@ -21,6 +21,7 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+#include "precompiled.h"
 #include "AL_CinematicAudio.h"
 #include <sound/snd_local.h>
 #include <sound/AVD.h>
@@ -28,7 +29,7 @@
 extern idCVar s_noSound;
 extern idCVar s_volume_dB;
 
-CinematicAudio_OpenAL::CinematicAudio_OpenAL(): 
+CinematicAudio_OpenAL::CinematicAudio_OpenAL():
 	av_rate_cin(0),
 	av_sample_cin(0),
 	offset(0),

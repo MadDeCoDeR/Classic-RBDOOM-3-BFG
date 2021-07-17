@@ -29,7 +29,10 @@
 
 class CinematicAudio_XAudio2: public CinematicAudio {
 public:
-	CinematicAudio_XAudio2();
+	CinematicAudio_XAudio2():
+		pMusicSourceVoice1(NULL)
+	{
+	}
 	void InitAudio(void* audioContext);
 	void PlayAudio(uint8_t* data, int size);
 	void ShutdownAudio();
