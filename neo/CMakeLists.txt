@@ -78,6 +78,12 @@ if(UNIX)
 	set(USE_XAUDIO2 FALSE)
 	set(USE_XAUDIO2_PACKAGE FALSE)
 endif()
+
+if (CMAKE_CL_64)
+	set(OS_CPU Win64)
+else()
+	set(OS_CPU Win32)
+endif()
 		
 if(MSVC)
 	if(USE_XAUDIO2_PACKAGE)
@@ -1412,7 +1418,7 @@ if(MSVC)
 			#dxerr
 			Xinput
 			)
-		if(USE_XAUDIO2)
+		if(USE_XAUDIO2 AND NOT USE_XAUDIO2_PACKAGE)
 			list(APPEND DirectX_LIBRARIES xaudio2.lib)
 		endif()
 	else()
@@ -1453,11 +1459,8 @@ if(MSVC)
 	
 		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
 		
-		if(CMAKE_CL_64)
-			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/libs/win64)
-		else()
-			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/libs/win32)
-		endif()
+		link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/libs/${OS_CPU})
+		
 		
 		list(APPEND RBDOOM3_INCLUDES 
 			${OPENAL_INCLUDES}
@@ -1469,12 +1472,7 @@ if(MSVC)
 		set(OpenAL_LIBRARIES
 			OpenAL32)
 			
-		if(CMAKE_CL_64)
-			install(FILES libs/openal-soft/libs/win64/OpenAL32.dll DESTINATION .)
-		else()
-			install(FILES libs/openal-soft/libs/win32/OpenAL32.dll DESTINATION .)
-			install(FILES libs/openal-soft/libs/win32/OpenAL32.pdb DESTINATION .)
-		endif()
+		install(FILES libs/openal-soft/libs/${OS_CPU}/OpenAL32.dll DESTINATION .)
 	#else()
 	if(USE_XAUDIO2)
 		list(APPEND RBDOOM3_INCLUDES 
@@ -1489,24 +1487,19 @@ if(MSVC)
 		add_definitions(-DUSE_FFMPEG)
 	
 		if(CMAKE_CL_64)
-			include_directories(libs/ffmpeg-win64/include)
-			include_directories(libs/ffmpeg-win64/include/libswscale)
-			include_directories(libs/ffmpeg-win64/include/libavformat)
-			include_directories(libs/ffmpeg-win64/include/libavdevice)
-			include_directories(libs/ffmpeg-win64/include/libavcodec)
-			include_directories(libs/ffmpeg-win64/include/libswresample)
-			
-			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg-win64/lib)
+			set(FFMPEG_DIR ffmpeg-win64)
 		else()
-			include_directories(libs/ffmpeg-win32/include)
-			include_directories(libs/ffmpeg-win32/include/libswscale)
-			include_directories(libs/ffmpeg-win32/include/libavformat)
-			include_directories(libs/ffmpeg-win32/include/libavdevice)
-			include_directories(libs/ffmpeg-win32/include/libavcodec)
-			include_directories(libs/ffmpeg-win32/include/libswresample)
-			
-			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/ffmpeg-win32/lib)
+			set(FFMPEG_DIR ffmpeg-win32)
 		endif()
+		
+		include_directories(libs/${FFMPEG_DIR}/include)
+		include_directories(libs/${FFMPEG_DIR}/include/libswscale)
+		include_directories(libs/${FFMPEG_DIR}/include/libavformat)
+		include_directories(libs/${FFMPEG_DIR}/include/libavdevice)
+		include_directories(libs/${FFMPEG_DIR}/include/libavcodec)
+		include_directories(libs/${FFMPEG_DIR}/include/libswresample)
+			
+		link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/${FFMPEG_DIR}/lib)
 		
 		set(FFmpeg_LIBRARIES
 				avcodec
@@ -1593,14 +1586,16 @@ if(MSVC)
 	#GK: Allow to compile and run the game from VS
 	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT DoomBFA)
 	set_target_properties(DoomBFA PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "C:/Program Files (x86)/Steam/steamapps/common/DOOM 3 BFG Edition")
+	
 	#GK: TODO add +set r_fullscreen "0" command line (VS DEBUGGER and Fullscreen not a good mix)
 	#set_target_properties(RBDoom3BFG PROPERTIES COMMAND_LINE_ARGUMENTS " +set r_fullscreen 0")
-		
-	#add_custom_command(TARGET RBDoom3BFG
-    #               PRE_BUILD
-	#			   COMMAND nmake ARGS /f Makefile.vc6 CFG=release
-	#			   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/curl/lib
-    #               COMMENT "Compiling libcURL")
+	
+	add_custom_command(TARGET DoomBFA
+                   POST_BUILD
+				   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+				   ${CMAKE_SOURCE_DIR}/libs/openal-soft/${OS_CPU}/OpenAL32.dll 
+				   $<TARGET_FILE_DIR:DoomBFA>
+                   COMMENT "Copy OpenAL dll")
 		
 	add_dependencies(DoomBFA idlib)
 	target_link_libraries(DoomBFA
@@ -1623,21 +1618,33 @@ if(MSVC)
 		${CMAKE_DL_LIBS}
 		)
 	if (USE_XAUDIO2_PACKAGE)
+		set(XAUDIO2_REDIST Microsoft.XAudio2.Redist)
 		find_program(NUGET_EXE NAMES nuget)
 		exec_program(${NUGET_EXE}
-		ARGS install "Microsoft.XAudio2.Redist" -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
-		target_link_libraries(DoomBFA ${CMAKE_BINARY_DIR}/packages/Microsoft.XAudio2.Redist/build/native/Microsoft.XAudio2.Redist.targets)
+		ARGS install ${XAUDIO2_REDIST} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
+		target_link_libraries(DoomBFA ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/Microsoft.XAudio2.Redist.targets)
+		if (CMAKE_CL_64)
+			set(CPU_ARCH x64)
+		else()
+			set(CPU_ARCH x86)
+		endif()
+		set (XAUDIO2_REDIST_DEBUG_LIBRARIES 
+				debug ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/debug/lib/${CPU_ARCH}/xaudio2_9redist.lib
+				debug ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/debug/lib/${CPU_ARCH}/xapobaseredist.lib
+				debug ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/debug/lib/${CPU_ARCH}/xapobaseredist_md.lib
+		)
+		set (XAUDIO2_REDIST_RELEASE_LIBRARIES 
+				optimized ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/release/lib/${CPU_ARCH}/xaudio2_9redist.lib
+				optimized ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/release/lib/${CPU_ARCH}/xapobaseredist.lib
+				optimized ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/release/lib/${CPU_ARCH}/xapobaseredist_md.lib
+		)
+		target_link_libraries(DoomBFA ${XAUDIO2_REDIST_DEBUG_LIBRARIES} ${XAUDIO2_REDIST_RELEASE_LIBRARIES})
 	endif()
 
 		
 	#CMAKE_BINARY_DIR
-	if(CMAKE_CL_64)
-		install(TARGETS DoomBFA
+	install(TARGETS DoomBFA
 			RUNTIME DESTINATION .)
-	else()
-		install(TARGETS DoomBFA
-			RUNTIME DESTINATION .)
-	endif()
 else()
 
 	list(APPEND RBDOOM3_SOURCES
