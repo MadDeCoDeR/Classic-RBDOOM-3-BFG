@@ -242,7 +242,8 @@ void* getsfx ( const char* sfxname, int* len, int sfxind ) //GK: Keep track whic
 	XAUDIO2FX_REVERB_PARAMETERS sfxParameters;
 	XAUDIO2FX_REVERB_I3DL2_PARAMETERS sfxI3DL2 = XAUDIO2FX_I3DL2_PRESET_DEFAULT;
 	ReverbConvertI3DL2ToNative(&sfxI3DL2, &sfxParameters, 1);
-	sfxParameters.WetDryMix = 50.0F;
+	sfxParameters.WetDryMix = 75.0F;
+	sfxParameters.DisableLateField = XAUDIO2FX_REVERB_DEFAULT_DISABLE_LATE_FIELD;
 	activeSounds[sfxind].m_pSourceVoice->SetEffectParameters(0, &sfxParameters, sizeof(sfxParameters));
 	// Allocate from zone memory.
 	//sfxmem = (float*)DoomLib::Z_Malloc( size*(sizeof(float)), PU_SOUND_SHARED, 0 );
@@ -1112,7 +1113,8 @@ void I_PlaySongXA2( const char *songname, int looping)
 	XAUDIO2FX_REVERB_PARAMETERS musicNative;
 	XAUDIO2FX_REVERB_I3DL2_PARAMETERS musicI3DL2 = XAUDIO2FX_I3DL2_PRESET_CONCERTHALL;
 	ReverbConvertI3DL2ToNative(&musicI3DL2, &musicNative, 1);
-	musicNative.WetDryMix = 50.0F;
+	musicNative.WetDryMix = 75.0F;
+	musicNative.DisableLateField = XAUDIO2FX_REVERB_DEFAULT_DISABLE_LATE_FIELD;
 	pMusicSourceVoice->SetEffectParameters(0, &musicNative, sizeof(musicNative));
 
 	if ( DoomLib::GetPlayer() >= 0 ) {

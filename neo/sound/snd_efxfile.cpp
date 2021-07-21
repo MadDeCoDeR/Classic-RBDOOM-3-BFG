@@ -248,7 +248,7 @@ bool idEFXFile::ReadEffect( idLexer &src, idSoundEffect *effect ) {
 				reverb->PositionRight = XAUDIO2FX_REVERB_DEFAULT_POSITION;
 				reverb->RearDelay = XAUDIO2FX_REVERB_DEFAULT_7POINT1_REAR_DELAY;
 				reverb->SideDelay = XAUDIO2FX_REVERB_DEFAULT_7POINT1_SIDE_DELAY;
-				reverb->WetDryMix = 50.0F;
+				reverb->WetDryMix = 75.0F;
 				//GK: Thanks to Dhewm 3 I found a better way to parse these files
 				if (token == "environment") {
 					src.ReadTokenOnLine(&token);

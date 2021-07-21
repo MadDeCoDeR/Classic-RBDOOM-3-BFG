@@ -75,7 +75,8 @@ idSoundVoice_XAudio2::idSoundVoice_XAudio2()
 {
 	XAUDIO2FX_REVERB_I3DL2_PARAMETERS i3dl2parms = XAUDIO2FX_I3DL2_PRESET_AUDITORIUM;
 	ReverbConvertI3DL2ToNative(&i3dl2parms, &suitReverb, 1);
-	suitReverb.WetDryMix = 50.0f;
+	suitReverb.WetDryMix = 75.0f;
+	suitReverb.DisableLateField = XAUDIO2FX_REVERB_DEFAULT_DISABLE_LATE_FIELD;
 }
 
 /*
