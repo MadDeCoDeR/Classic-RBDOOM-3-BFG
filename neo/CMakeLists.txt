@@ -1418,7 +1418,7 @@ if(MSVC)
 			#dxerr
 			Xinput
 			)
-		if(USE_XAUDIO2 AND NOT USE_XAUDIO2_PACKAGE)
+		if(USE_XAUDIO2)
 			list(APPEND DirectX_LIBRARIES xaudio2.lib)
 		endif()
 	else()
@@ -1468,6 +1468,31 @@ if(MSVC)
 		list(APPEND RBDOOM3_SOURCES
 			${OPENAL_SOURCES}
 			${DOOMCLASSIC_OPENAL_SOURCES})
+			
+		if (USE_XAUDIO2_PACKAGE)
+		set(XAUDIO2_REDIST Microsoft.XAudio2.Redist)
+		find_program(NUGET_EXE NAMES nuget)
+		exec_program(${NUGET_EXE}
+		ARGS install ${XAUDIO2_REDIST} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
+		include_directories(${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/include)
+		#target_link_libraries(DoomBFA ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/Microsoft.XAudio2.Redist.targets)
+		#if (CMAKE_CL_64)
+		#	set(CPU_ARCH x64)
+		#else()
+		#	set(CPU_ARCH x86)
+		#endif()
+		#set (XAUDIO2_REDIST_DEBUG_LIBRARIES 
+		#		debug ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/debug/lib/${CPU_ARCH}/xaudio2_9redist.lib
+		#		debug ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/debug/lib/${CPU_ARCH}/xapobaseredist.lib
+		#		debug ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/debug/lib/${CPU_ARCH}/xapobaseredist_md.lib
+		#)
+		#set (XAUDIO2_REDIST_RELEASE_LIBRARIES 
+		#		optimized ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/release/lib/${CPU_ARCH}/xaudio2_9redist.lib
+		#		optimized ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/release/lib/${CPU_ARCH}/xapobaseredist.lib
+		#		optimized ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/release/lib/${CPU_ARCH}/xapobaseredist_md.lib
+		#)
+		#target_link_libraries(DoomBFA ${XAUDIO2_REDIST_DEBUG_LIBRARIES} ${XAUDIO2_REDIST_RELEASE_LIBRARIES})
+	endif()
 		
 		set(OpenAL_LIBRARIES
 			OpenAL32)
@@ -1617,29 +1642,7 @@ if(MSVC)
         ${GLEW_LIBRARY}
 		${CMAKE_DL_LIBS}
 		)
-	if (USE_XAUDIO2_PACKAGE)
-		set(XAUDIO2_REDIST Microsoft.XAudio2.Redist)
-		find_program(NUGET_EXE NAMES nuget)
-		exec_program(${NUGET_EXE}
-		ARGS install ${XAUDIO2_REDIST} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
-		target_link_libraries(DoomBFA ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/Microsoft.XAudio2.Redist.targets)
-		if (CMAKE_CL_64)
-			set(CPU_ARCH x64)
-		else()
-			set(CPU_ARCH x86)
-		endif()
-		set (XAUDIO2_REDIST_DEBUG_LIBRARIES 
-				debug ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/debug/lib/${CPU_ARCH}/xaudio2_9redist.lib
-				debug ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/debug/lib/${CPU_ARCH}/xapobaseredist.lib
-				debug ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/debug/lib/${CPU_ARCH}/xapobaseredist_md.lib
-		)
-		set (XAUDIO2_REDIST_RELEASE_LIBRARIES 
-				optimized ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/release/lib/${CPU_ARCH}/xaudio2_9redist.lib
-				optimized ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/release/lib/${CPU_ARCH}/xapobaseredist.lib
-				optimized ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/release/lib/${CPU_ARCH}/xapobaseredist_md.lib
-		)
-		target_link_libraries(DoomBFA ${XAUDIO2_REDIST_DEBUG_LIBRARIES} ${XAUDIO2_REDIST_RELEASE_LIBRARIES})
-	endif()
+	
 
 		
 	#CMAKE_BINARY_DIR
