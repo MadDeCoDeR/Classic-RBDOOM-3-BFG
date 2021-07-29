@@ -72,7 +72,11 @@ char* 		Mem_CopyString( const char* in );
 
 ID_INLINE void* operator new( size_t s )
 #if !defined(_MSC_VER)
+#if __cplusplus < 201703L
 throw( std::bad_alloc ) // DG: standard signature seems to include throw(..)
+#else
+noexcept(false)
+#endif
 #endif
 {
 	return Mem_Alloc( s, TAG_NEW );
@@ -80,14 +84,22 @@ throw( std::bad_alloc ) // DG: standard signature seems to include throw(..)
 
 ID_INLINE void operator delete( void* p )
 #if !defined(_MSC_VER)
+#if __cplusplus < 201703L
 throw() // DG: delete musn't throw
+#else
+noexcept(false)
+#endif
 #endif
 {
 	Mem_Free( p );
 }
 ID_INLINE void* operator new[]( size_t s )
 #if !defined(_MSC_VER)
+#if __cplusplus < 201703L
 throw( std::bad_alloc ) // DG: standard signature seems to include throw(..)
+#else
+noexcept(false)
+#endif
 #endif
 {
 	return Mem_Alloc( s, TAG_NEW );
@@ -95,7 +107,11 @@ throw( std::bad_alloc ) // DG: standard signature seems to include throw(..)
 
 ID_INLINE void operator delete[]( void* p )
 #if !defined(_MSC_VER)
+#if __cplusplus < 201703L
 throw() // DG: delete musn't throw
+#else
+noexcept(false)
+#endif
 #endif
 {
 	Mem_Free( p );
