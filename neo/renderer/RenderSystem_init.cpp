@@ -347,8 +347,8 @@ void R_SetNewMode( const bool fullInit )
 			// use explicit position / size for window
 			parms.x = r_windowX.GetInteger() >= 0 ? r_windowX.GetInteger() : 0;
 			parms.y = r_windowY.GetInteger() >= 0 ? r_windowY.GetInteger() : 0;
-			parms.width = r_windowWidth.GetInteger();
-			parms.height = r_windowHeight.GetInteger();
+			parms.width = r_fullscreen.GetInteger() == 1 ? r_windowWidth.GetInteger() : r_customWidth.GetInteger() + 1;
+			parms.height = r_fullscreen.GetInteger() == 1 ? r_windowHeight.GetInteger() : r_customHeight.GetInteger() + 1;
 			// may still be -1 to force a borderless window
 			parms.fullScreen = r_fullscreen.GetInteger();
 			parms.displayHz = 0;		// ignored
@@ -462,6 +462,10 @@ void R_SetNewMode( const bool fullInit )
 				// same settings, no stereo
 				continue;
 			case 1:
+				//GK: Force Borderless mode
+				r_fullscreen.SetInteger(-1);
+				continue;
+			case 2:
 				//GK: Fullscreen Fallback
 				r_vidMode.SetInteger( 0 );
 				r_customWidth.SetInteger( 1280 );
@@ -469,10 +473,6 @@ void R_SetNewMode( const bool fullInit )
 				com_engineHz.SetInteger( 60 );
 				stereoRender_enable.SetInteger( 0 );
 				cvarSystem->SetModifiedFlags(CVAR_ARCHIVE);
-				continue;
-			case 2:
-				//GK: Force Borderless mode
-				r_fullscreen.SetInteger(-1);
 				continue;
 			case 3:
 				//GK: Force Window mode
