@@ -1100,6 +1100,7 @@ int ownedtic;
 int counttics[3];
 
 int gameframecount;
+int dgameframe;
 
 int firstClock;
 

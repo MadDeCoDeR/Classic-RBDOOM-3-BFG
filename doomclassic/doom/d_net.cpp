@@ -758,23 +758,13 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 	::g->trt_realtics = ::g->trt_entertic - ::g->oldtrt_entertics;
 	::g->oldtrt_entertics = ::g->trt_entertic;
 
-	//GK: Uncomment for DEBUG purposes ONLY
-	/*if (FRAME_TO_MSEC(::g->trt_entertic) - ::g->firstClock >= 1000) {
-		if (::g->ticrate[0] != 0 && ::g->ticrate[1] != 0 && ::g->ticrate[2] != 0) {
-			int engineHz_denominator = com_engineHz_denominator / 100LL;
-			int ff = ceil(engineHz_denominator / ((double)::g->ticrate[0]));
-			int sf = ceil(engineHz_denominator / ((double)::g->ticrate[1]));
-			int tf = ceil(engineHz_denominator / ((double)::g->ticrate[2]));
-			I_Printf("game framerate = %d, first freq = %d / %d, second freq = %d / %d, third freq = %d / %d\n", ::g->gameframecount, ::g->counttics[0], ff, ::g->counttics[1], sf, ::g->counttics[2], tf);
-		}
-		else {
-			I_Printf("game framerate = %d\n", ::g->gameframecount);
-		}
+	if (FRAME_TO_MSEC(::g->trt_entertic) - ::g->firstClock >= 1000) {
 		int tempcounttics[3] = { 0, 0, 0 };
 		memcpy(::g->counttics, tempcounttics, sizeof(tempcounttics));
 		::g->firstClock = FRAME_TO_MSEC(::g->trt_entertic);
+		::g->dgameframe = ::g->gameframecount;
 		::g->gameframecount = 0;
-	}*/
+	}
 
 	// get available tics
 	NetUpdate ( userCmdMgr );
