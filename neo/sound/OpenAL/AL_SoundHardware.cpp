@@ -49,9 +49,6 @@ idSoundHardware_OpenAL::idSoundHardware_OpenAL(): idSoundHardware()
 	openalDevice = NULL;
 	openalContext = NULL;
 	
-	//vuMeterRMS = NULL;
-	//vuMeterPeak = NULL;
-	
 	//outputChannels = 0;
 	//channelMask = 0;
 	
@@ -309,70 +306,11 @@ void idSoundHardware_OpenAL::Init()
 		list_audio_devices(alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER), alcGetString(openalDevice, ALC_ALL_DEVICES_SPECIFIER));
 	}
 	
-	//pMasterVoice->SetVolume( DBtoLinear( s_volume_dB.GetFloat() ) );
-	
-	//outputChannels = deviceDetails.OutputFormat.Format.nChannels;
-	//channelMask = deviceDetails.OutputFormat.dwChannelMask;
-	
-	//idSoundVoice::InitSurround( outputChannels, channelMask );
-	
 	// ---------------------
 	// Initialize the Doom classic sound system.
 	// ---------------------
 	
 	I_InitSoundHardwareAL( voices.Max(), 0 );
-
-	// ---------------------
-	// Create VU Meter Effect
-	// ---------------------
-	/*
-	IUnknown* vuMeter = NULL;
-	XAudio2CreateVolumeMeter( &vuMeter, 0 );
-	
-	XAUDIO2_EFFECT_DESCRIPTOR descriptor;
-	descriptor.InitialState = true;
-	descriptor.OutputChannels = outputChannels;
-	descriptor.pEffect = vuMeter;
-	
-	XAUDIO2_EFFECT_CHAIN chain;
-	chain.EffectCount = 1;
-	chain.pEffectDescriptors = &descriptor;
-	
-	pMasterVoice->SetEffectChain( &chain );
-	
-	vuMeter->Release();
-	*/
-	
-	// ---------------------
-	// Create VU Meter Graph
-	// ---------------------
-	
-	/*
-	vuMeterRMS = console->CreateGraph( outputChannels );
-	vuMeterPeak = console->CreateGraph( outputChannels );
-	vuMeterRMS->Enable( false );
-	vuMeterPeak->Enable( false );
-	
-	memset( vuMeterPeakTimes, 0, sizeof( vuMeterPeakTimes ) );
-	
-	vuMeterPeak->SetFillMode( idDebugGraph::GRAPH_LINE );
-	vuMeterPeak->SetBackgroundColor( idVec4( 0.0f, 0.0f, 0.0f, 0.0f ) );
-	
-	vuMeterRMS->AddGridLine( 0.500f, idVec4( 0.5f, 0.5f, 0.5f, 1.0f ) );
-	vuMeterRMS->AddGridLine( 0.250f, idVec4( 0.5f, 0.5f, 0.5f, 1.0f ) );
-	vuMeterRMS->AddGridLine( 0.125f, idVec4( 0.5f, 0.5f, 0.5f, 1.0f ) );
-	
-	const char* channelNames[] = { "L", "R", "C", "S", "Lb", "Rb", "Lf", "Rf", "Cb", "Ls", "Rs" };
-	for( int i = 0, ci = 0; ci < sizeof( channelNames ) / sizeof( channelNames[0] ); ci++ )
-	{
-		if( ( channelMask & BIT( ci ) ) == 0 )
-		{
-			continue;
-		}
-		vuMeterRMS->SetLabel( i, channelNames[ ci ] );
-		i++;
-	}
-	*/
 	
 	// OpenAL doesn't really impose a maximum number of sources
 	voices.SetNum( voices.Max() );
@@ -421,21 +359,6 @@ void idSoundHardware_OpenAL::Shutdown()
 	
 	alcCloseDevice( openalDevice );
 	openalDevice = NULL;
-
-	
-	
-	/*
-	if( vuMeterRMS != NULL )
-	{
-		console->DestroyGraph( vuMeterRMS );
-		vuMeterRMS = NULL;
-	}
-	if( vuMeterPeak != NULL )
-	{
-		console->DestroyGraph( vuMeterPeak );
-		vuMeterPeak = NULL;
-	}
-	*/
 }
 
 void idSoundHardware_OpenAL::ShutdownReverbSystem()
@@ -574,80 +497,6 @@ void idSoundHardware_OpenAL::Update()
 			playingZombies++;
 		}
 	}
-	
-	/*
-	if( s_showPerfData.GetBool() )
-	{
-		XAUDIO2_PERFORMANCE_DATA perfData;
-		pXAudio2->GetPerformanceData( &perfData );
-		idLib::Printf( "Voices: %d/%d CPU: %.2f%% Mem: %dkb\n", perfData.ActiveSourceVoiceCount, perfData.TotalSourceVoiceCount, perfData.AudioCyclesSinceLastQuery / ( float )perfData.TotalCyclesSinceLastQuery, perfData.MemoryUsageInBytes / 1024 );
-	}
-	*/
-	
-	/*
-	if( vuMeterRMS == NULL )
-	{
-		// Init probably hasn't been called yet
-		return;
-	}
-	
-	vuMeterRMS->Enable( s_showLevelMeter.GetBool() );
-	vuMeterPeak->Enable( s_showLevelMeter.GetBool() );
-	
-	if( !s_showLevelMeter.GetBool() )
-	{
-		pMasterVoice->DisableEffect( 0 );
-		return;
-	}
-	else
-	{
-		pMasterVoice->EnableEffect( 0 );
-	}
-	
-	float peakLevels[ 8 ];
-	float rmsLevels[ 8 ];
-	
-	XAUDIO2FX_VOLUMEMETER_LEVELS levels;
-	levels.ChannelCount = outputChannels;
-	levels.pPeakLevels = peakLevels;
-	levels.pRMSLevels = rmsLevels;
-	
-	if( levels.ChannelCount > 8 )
-	{
-		levels.ChannelCount = 8;
-	}
-	
-	pMasterVoice->GetEffectParameters( 0, &levels, sizeof( levels ) );
-	
-	int currentTime = Sys_Milliseconds();
-	for( int i = 0; i < outputChannels; i++ )
-	{
-		if( vuMeterPeakTimes[i] < currentTime )
-		{
-			vuMeterPeak->SetValue( i, vuMeterPeak->GetValue( i ) * 0.9f, colorRed );
-		}
-	}
-	
-	float width = 20.0f;
-	float height = 200.0f;
-	float left = 100.0f;
-	float top = 100.0f;
-	
-	sscanf( s_meterPosition.GetString(), "%f %f %f %f", &left, &top, &width, &height );
-	
-	vuMeterRMS->SetPosition( left, top, width * levels.ChannelCount, height );
-	vuMeterPeak->SetPosition( left, top, width * levels.ChannelCount, height );
-	
-	for( uint32 i = 0; i < levels.ChannelCount; i++ )
-	{
-		vuMeterRMS->SetValue( i, rmsLevels[ i ], idVec4( 0.5f, 1.0f, 0.0f, 1.00f ) );
-		if( peakLevels[ i ] >= vuMeterPeak->GetValue( i ) )
-		{
-			vuMeterPeak->SetValue( i, peakLevels[ i ], colorRed );
-			vuMeterPeakTimes[i] = currentTime + s_meterTopTime.GetInteger();
-		}
-	}
-	*/
 }
 
 void idSoundHardware_OpenAL::UpdateEAXEffect(idSoundEffect* effect)

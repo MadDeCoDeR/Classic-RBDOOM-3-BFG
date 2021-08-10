@@ -733,47 +733,7 @@ idSoundVoice_OpenAL::ResetSampleRate
 */
 void idSoundVoice_OpenAL::SetSampleRate( uint32 newSampleRate, uint32 operationSet )
 {
-	/*
-	if( pSourceVoice == NULL || leadinSample == NULL )
-	{
-		return;
-	}
-	
-	sampleRate = newSampleRate;
-	
-	XAUDIO2_FILTER_PARAMETERS filter;
-	filter.Type = LowPassFilter;
-	filter.OneOverQ = 1.0f;			// [0.0f, XAUDIO2_MAX_FILTER_ONEOVERQ]
-	float cutoffFrequency = 1000.0f / Max( 0.01f, occlusion );
-	if( cutoffFrequency * 6.0f >= ( float )sampleRate )
-	{
-		filter.Frequency = XAUDIO2_MAX_FILTER_FREQUENCY;
-	}
-	else
-	{
-		filter.Frequency = 2.0f * idMath::Sin( idMath::PI * cutoffFrequency / ( float )sampleRate );
-	}
-	assert( filter.Frequency >= 0.0f && filter.Frequency <= XAUDIO2_MAX_FILTER_FREQUENCY );
-	filter.Frequency = idMath::ClampFloat( 0.0f, XAUDIO2_MAX_FILTER_FREQUENCY, filter.Frequency );
-	
-	pSourceVoice->SetFilterParameters( &filter, operationSet );
-	
-	float freqRatio = pitch * ( float )sampleRate / ( float )sourceVoiceRate;
-	assert( freqRatio >= XAUDIO2_MIN_FREQ_RATIO && freqRatio <= XAUDIO2_MAX_FREQ_RATIO );
-	freqRatio = idMath::ClampFloat( XAUDIO2_MIN_FREQ_RATIO, XAUDIO2_MAX_FREQ_RATIO, freqRatio );
-	
-	// if the value specified for maxFreqRatio is too high for the specified format, the call to CreateSourceVoice will fail
-	if( numChannels == 1 )
-	{
-		assert( freqRatio * ( float )SYSTEM_SAMPLE_RATE <= XAUDIO2_MAX_RATIO_TIMES_RATE_XMA_MONO );
-	}
-	else
-	{
-		assert( freqRatio * ( float )SYSTEM_SAMPLE_RATE <= XAUDIO2_MAX_RATIO_TIMES_RATE_XMA_MULTICHANNEL );
-	}
-	
-	pSourceVoice->SetFrequencyRatio( freqRatio, operationSet );
-	*/
+
 }
 
 /*
