@@ -1548,6 +1548,7 @@ idMenuHandler_Shell::ShowIntroVideo
 void idMenuHandler_ShellLocal::ShowDoomIntro()
 {
 	skipIntro = false;
+	Sys_ClearEvents();
 	Sys_CreateThread((xthread_t)checkInput, NULL, THREAD_HIGHEST, "skip Input", CORE_ANY);
 
 	StopSound();
@@ -1752,6 +1753,7 @@ idMenuHandler_Shell::ShowROEIntro
 void idMenuHandler_ShellLocal::ShowROEIntro()
 {
 	skipIntro = false;
+	Sys_ClearEvents();
 	Sys_CreateThread((xthread_t)checkInput, NULL, THREAD_HIGHEST, "skip Input", CORE_ANY);
 
 	StopSound();
@@ -1952,6 +1954,7 @@ idMenuHandler_Shell::ShowLEIntro
 void idMenuHandler_ShellLocal::ShowLEIntro()
 {
 	skipIntro = false;
+	Sys_ClearEvents();
 	Sys_CreateThread((xthread_t)checkInput, NULL, THREAD_HIGHEST, "skip Input", CORE_ANY);
 
 	StopSound();
