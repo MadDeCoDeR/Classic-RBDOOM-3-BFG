@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/RBDoom3BFG",
+            "program": "${workspaceFolder}/build/DoomBFA",
             "args": [],
             "stopAtEntry": false,
             "cwd": "/absolute/path/to/game/directory/",
