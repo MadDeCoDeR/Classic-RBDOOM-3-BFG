@@ -144,6 +144,7 @@ If you have questions concerning this license or the applicable additional terms
 // hu_stuff.defs end // 
 //  i_net.defs begin // 
 // SMF
+#if defined _MSC_VER
 //GK:Re-enable all the network related stuff
 #define ntohl(x) \
         ((unsigned long int)((((unsigned long int)(x) & 0x000000ffU) << 24) | \
@@ -168,6 +169,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #define htonl(x) ntohl(x)
 #define htons(x) ntohs(x)
+#endif
 
 #define IPPORT_USERRESERVED	5000
 // i_net_xbox.defs end // 
