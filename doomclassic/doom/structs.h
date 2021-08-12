@@ -208,6 +208,7 @@ typedef enum
 {
 	endgame,
 	resolution,
+	sync,
 	refresh,
 	framerate,
 	detail,	//GK: Use this value for aspect ratio option

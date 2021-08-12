@@ -101,6 +101,7 @@ extern idCVar r_clblurry;
 extern idCVar cl_engineHz_interp;
 extern idCVar cl_engineHz;
 extern idCVar in_joyjpn;
+extern idCVar r_swapInterval;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 extern idCVar s_useXAudio;
 #endif
@@ -195,6 +196,7 @@ void M_FullScreen(int choice);
 void M_Aspect(int choice);
 void M_Light(int choice);
 void M_Resolution(int choice);
+void M_Sync(int choice);
 void M_SetRes(int choice);
 void M_Refresh(int choice);
 void M_Framerate(int choice);
@@ -1077,6 +1079,11 @@ char	lightNames[3][9] =
 	"M_MSGOFF", "M_DARK", "M_LIGHT"
 };
 
+char	syncNames[3][9] =
+{
+	"M_MSGOFF", "M_SMART", "M_MSGON"
+};
+
 //GK:Begin
 //
 // Change aspect Ratio & lighting
@@ -1091,6 +1098,7 @@ void M_DrawVideo(void)
 	int reallight = r_clight.GetInteger();
 	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : 0;
 	int blurryeffect = r_clblurry.GetInteger();
+	int syncValue = r_swapInterval.GetInteger();
 	char* res = new char[11];
 	sprintf(res, "%4i x %4i", r_customWidth.GetInteger(), r_customHeight.GetInteger());
 	std::string fps = va("%d FPS", cl_engineHz.GetInteger());
@@ -1105,6 +1113,8 @@ void M_DrawVideo(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])), false);
 	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light - (cl_engineHz_interp.GetBool() ? 0 : 1)), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])), false);
+	V_DrawPatchDirect(::g->VideoDef.x + 105, ::g->VideoDef.y + LINEHEIGHT * sync, 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(syncNames[syncValue], PU_CACHE_SHARED), W_GetNumForName(syncNames[syncValue])), false);
 	//V_DrawPatchDirect(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (blurry), 0,
 	//	/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[blurryeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[blurryeffect])));
 	M_WriteText(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * (resolution) + 6, res, false);
@@ -1689,6 +1699,10 @@ void M_SetRes(int choice) {
 	//}
 	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 	M_SetupNextMenu(::g->currentMenu->prevMenu);
+}
+
+void M_Sync(int choice) {
+	r_swapInterval.SetInteger(r_swapInterval.GetInteger() == 2 ? 0 : r_swapInterval.GetInteger() + 1);
 }
 
 void M_Framerate(int choice) {
