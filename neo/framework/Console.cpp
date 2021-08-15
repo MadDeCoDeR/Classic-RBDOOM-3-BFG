@@ -253,7 +253,7 @@ float idConsoleLocal::DrawFPS( float y )
 	if (data != NULL) {
 		int engineHz_denominator = com_engineHz_denominator / 100LL;
 		if (engineHz_denominator > com_engineHz_latched) {
-			char s[6];
+			char s[9];
 			sprintf(s, "%igfps", data->dgameframe);
 			int w = strlen(s) * BIGCHAR_WIDTH;
 			renderSystem->DrawBigStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, s, colorWhite, true);
