@@ -21,7 +21,9 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include <idlib/precompiled.h>
+#include <precompiled.h>
+#include "../snd_local.h"
+
 #ifndef __SOUNDSAMPLE_H__
 #define __SOUNDSAMPLE_H__
 

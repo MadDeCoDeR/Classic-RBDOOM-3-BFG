@@ -1372,7 +1372,7 @@ list(APPEND RBDOOM3_INCLUDES
 endif()
 
 include_directories(
-			.
+			${CMAKE_CURRENT_SOURCE_DIR}
 			idlib
 			#libs/curl/include
 			#libs/openal/include

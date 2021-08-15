@@ -21,9 +21,9 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
-#include <sound/sound.h>
-#include <sound/common/CommonSoundVoice.h>
-#include <sound/snd_local.h>
+#include "../sound/sound.h"
+#include "../sound/common/CommonSoundVoice.h"
+#include "../sound/snd_local.h"
 #ifndef __SOUNDHARDWARE_H__
 #define __SOUNDHARDWARE_H__
 

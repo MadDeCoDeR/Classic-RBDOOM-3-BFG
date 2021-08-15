@@ -40,7 +40,7 @@ extern char* sndserver_filename;
 
 #include "doomstat.h"
 #include "sounds.h"
-#include "libs/timidity/timidity.h"
+#include "../libs/timidity/timidity.h"
 
 
 extern MidiSong* doomMusic;

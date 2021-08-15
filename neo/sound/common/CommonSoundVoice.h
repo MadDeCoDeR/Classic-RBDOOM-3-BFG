@@ -22,7 +22,7 @@
 * SOFTWARE.
 */
 #include "../SoundVoice.h"
-#include <sound/common/SoundSample.h>
+#include "../sound/common/SoundSample.h"
 #ifndef __COMMON_SOUNDVOICE_H__
 #define __COMMON_SOUNDVOICE_H__
 

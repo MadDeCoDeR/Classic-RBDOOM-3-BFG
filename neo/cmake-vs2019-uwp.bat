@@ -15,19 +15,19 @@ del /s /q buildUWPx64 >NUL 2>&1
 mkdir buildUWPx64 >NUL 2>&1
 cd buildUWPx64
 @ECHO Generating x64 for UWP files
-cmake -G "Visual Studio 16" -A "x64" -DCMAKE_INSTALL_PREFIX=../bin/windows10-64 -DUSE_XAUDIO2_PACKAGE=ON -DWINRT=ON -DWINDOWS10=ON -DUWP_PATH=%INPUT% ../neo > ../buildlog/UWPx64/log.txt 
+cmake -G "Visual Studio 16" -A "x64" -DCMAKE_INSTALL_PREFIX=../bin/windows10-64 -DOPENAL=ON -DUSE_XAUDIO2_PACKAGE=ON -DWINRT=ON -DWINDOWS10=ON -DUWP_PATH=%INPUT% ../neo > ../buildlog/UWPx64/log.txt 
 if ERRORLEVEL == 1 goto ERRORX64
-cd ..
-mkdir buildlog > NUL 2>&1
-cd buildlog
-mkdir ALUWPx64 > NUL 2>&1
-cd ..
-del /s /q buildALUWPx64 >NUL 2>&1
-mkdir buildALUWPx64 >NUL 2>&1
-cd buildALUWPx64
-@ECHO Generating x64 with openAL for UWP files
-cmake -G "Visual Studio 16" -A "x64" -DCMAKE_INSTALL_PREFIX=../bin/windows10-64 -DOPENAL=ON -DWINRT=ON -DWINDOWS10=ON -DUWP_PATH=%INPUT% ../neo > ../buildlog/ALUWPx64/log.txt 
-if ERRORLEVEL == 1 goto ERRORX64AL
+::cd ..
+::mkdir buildlog > NUL 2>&1
+::cd buildlog
+::mkdir ALUWPx64 > NUL 2>&1
+::cd ..
+::del /s /q buildALUWPx64 >NUL 2>&1
+::mkdir buildALUWPx64 >NUL 2>&1
+::cd buildALUWPx64
+::@ECHO Generating x64 with openAL for UWP files
+::cmake -G "Visual Studio 16" -A "x64" -DCMAKE_INSTALL_PREFIX=../bin/windows10-64 -DOPENAL=ON -DWINRT=ON -DWINDOWS10=ON -DUWP_PATH=%INPUT% ../neo > ../buildlog/ALUWPx64/log.txt 
+::if ERRORLEVEL == 1 goto ERRORX64AL
 :exit
 pause
 exit

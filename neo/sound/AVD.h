@@ -37,7 +37,7 @@ extern "C"
 }
 #endif
 
-#include "sound/snd_local.h"
+#include "snd_local.h"
 void parseAVError(int error);
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 #include <xaudio2.h>

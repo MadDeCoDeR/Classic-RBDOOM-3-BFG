@@ -55,8 +55,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "doomdef.h"
 #include "../timidity/timidity.h"
 #include "../timidity/controls.h"
-#include "sound/snd_local.h"
-#include "sound/AVD.h"
+#include "../sound/snd_local.h"
+#include "../sound/AVD.h"
 
 #ifdef _MSC_VER // DG: xaudio can only be used with MSVC
 #include <xaudio2.h>
