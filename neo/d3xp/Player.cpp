@@ -3699,6 +3699,7 @@ void idPlayer::EnterCinematic()
 	}
 	
 	Hide();
+	DrawHUD(hudManager); //GK: Just in case the cinematic starts before the player's view
 	hud->setCinematic(true);
 	StopSound( SND_CHANNEL_PDA_AUDIO, false );
 	StopSound( SND_CHANNEL_PDA_VIDEO, false );
