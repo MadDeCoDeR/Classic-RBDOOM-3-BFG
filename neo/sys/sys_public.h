@@ -31,6 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #define __SYS_PUBLIC__
 
 #include "../idlib/CmdArgs.h"
+#include "../idlib/precompiled.h"
 
 /*
 ===============================================================================
@@ -846,9 +847,6 @@ public:
 };
 
 extern idSys* 				sys;
-
-bool Sys_LoadOpenAL();
-void Sys_FreeOpenAL();
 
 
 #endif /* !__SYS_PUBLIC__ */
