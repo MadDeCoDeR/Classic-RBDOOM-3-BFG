@@ -2494,8 +2494,8 @@ void idMenuScreen_HUDLocal::setCinematic(bool value)
 	if (communication != NULL) {
 		communication->SetVisible(!value);
 	}
-	if (oxygen != NULL) {
-		oxygen->SetVisible(!value);
+	if (oxygen->IsVisible() == true) {
+		oxygen->SetVisible(false);
 	}
 	if (flashlight != NULL) {
 		flashlight->SetVisible(!value);
