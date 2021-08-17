@@ -368,7 +368,7 @@ void idImage::Bind()
 CopyFramebuffer
 ====================
 */
-void idImage::CopyFramebuffer( int x, int y, int imageWidth, int imageHeight )
+void idImage::CopyFramebuffer( int x, int y, int imageWidth, int imageHeight, bool LDR )
 {
 
 }
