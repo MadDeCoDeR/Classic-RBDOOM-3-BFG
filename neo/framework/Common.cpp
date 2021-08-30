@@ -1511,11 +1511,15 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			//GK: Explicit load saved configurations from the current mod folder
 			if (cvarSystem->GetCVarString("fs_game") != NULL && cvarSystem->GetCVarString("fs_game")[0] != 0) {
 				command += " ";
+				command += "\"";
 				command += cvarSystem->GetCVarString("fs_game");
+				command += "\"";
 			}
 			else if (cvarSystem->GetCVarString("fs_game_base") != NULL && cvarSystem->GetCVarString("fs_game_base")[0] != 0) {
 				command += " ";
+				command += "\"";
 				command += cvarSystem->GetCVarString("fs_game_base");
+				command += "\"";
 			}
 			command += "\n";
 			cmdSystem->BufferCommandText( CMD_EXEC_APPEND, command.c_str() );
