@@ -2734,8 +2734,8 @@ qboolean M_Responder (event_t* ev)
 				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && ::g->itemOn + 1 >= (pageIndex == 0 ? 11 : 12)) {
 					::g->itemOn = 0;
 			}
-				else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == resolution) {
-					::g->itemOn = framerate;
+				else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == sync) {
+					::g->itemOn = sync + 2;
 				}
 				else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == look) {
 					::g->itemOn = jump;
@@ -2755,7 +2755,7 @@ qboolean M_Responder (event_t* ev)
 					::g->itemOn = pageIndex == 0 ? 10 : 11;
 				else ::g->itemOn = ::g->currentMenu->numitems-1;
 			else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == framerate)
-				::g->itemOn = resolution;
+				::g->itemOn = framerate - 2;
 			else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == jump)
 				::g->itemOn = look;
 			else ::g->itemOn--;
