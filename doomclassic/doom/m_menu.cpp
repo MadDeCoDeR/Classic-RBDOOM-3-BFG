@@ -1113,7 +1113,7 @@ void M_DrawVideo(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])), false);
 	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light - (cl_engineHz_interp.GetBool() ? 0 : 1)), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])), false);
-	V_DrawPatchDirect(::g->VideoDef.x + 105, ::g->VideoDef.y + LINEHEIGHT * sync, 0,
+	V_DrawPatchDirect(::g->VideoDef.x + 105, ::g->VideoDef.y + LINEHEIGHT * vsync, 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(syncNames[syncValue], PU_CACHE_SHARED), W_GetNumForName(syncNames[syncValue])), false);
 	//V_DrawPatchDirect(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (blurry), 0,
 	//	/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[blurryeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[blurryeffect])));
@@ -2734,8 +2734,8 @@ qboolean M_Responder (event_t* ev)
 				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && ::g->itemOn + 1 >= (pageIndex == 0 ? 11 : 12)) {
 					::g->itemOn = 0;
 			}
-				else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == sync) {
-					::g->itemOn = sync + 2;
+				else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == vsync) {
+					::g->itemOn = vsync + 2;
 				}
 				else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == look) {
 					::g->itemOn = jump;

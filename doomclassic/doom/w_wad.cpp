@@ -1942,8 +1942,7 @@ char* W_GetNameForNum(int lump) {
 	if (lump >= lumpinfo.size()) {
 		return "";
 	}
-	lumpinfo_t l = lumpinfo[lump];
-	return l.name;
+	return lumpinfo[lump].name;
 }
 
 int W_GetLumpCount()
