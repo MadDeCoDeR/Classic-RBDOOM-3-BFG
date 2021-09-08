@@ -1588,10 +1588,12 @@ bool idGameLocal::InitFromSaveGame( const char* mapName, idRenderWorld* renderWo
 	
 	savegame.ReadInt( vacuumAreaNum );
 
-	savegame.ReadInt(hazardAreaNums[0]);
-	if (hazardAreaNums[0] != -1) {
-		for (int i = 1; i < 32; i++) {
-			savegame.ReadInt(hazardAreaNums[i]);
+	if (saveGameVersion >= 1404) {
+		savegame.ReadInt(hazardAreaNums[0]);
+		if (hazardAreaNums[0] != -1) {
+			for (int i = 1; i < 32; i++) {
+				savegame.ReadInt(hazardAreaNums[i]);
+			}
 		}
 	}
 	
