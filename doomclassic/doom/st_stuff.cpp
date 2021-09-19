@@ -392,6 +392,10 @@ void ST_refreshBackground(void)
 		V_DrawPatch(powerX, (ORIGINAL_HEIGHT / 2) - 5, FG, ::g->fullpwr, true);
 
 		V_DrawPatch(powerX - 10, 16, FG, ::g->fulltime, true);
+
+		if (::g->deathmatch) {
+			V_DrawPatch((::g->SCREENWIDTH / 2) - 30, (SCREENHEIGHT / GLOBAL_IMAGE_SCALER) - 20, FG, ::g->fullfrag, true);
+		}
 		//V_CopyRect(ST_X, 0, BG, (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER), (SCREENHEIGHT / GLOBAL_IMAGE_SCALER), ST_X, 0, FG, true);
 	}
 
@@ -1307,6 +1311,7 @@ void ST_loadGraphics(void)
 	::g->fullkeys = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_KEYS", PU_STATUS_BACK), W_GetNumForName("ST_KEYS"));
 	::g->fullpwr = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_PWR", PU_STATUS_BACK), W_GetNumForName("ST_PWR"));
 	::g->fulltime = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_TIME", PU_STATUS_BACK), W_GetNumForName("ST_TIME"));
+	::g->fullfrag = /*(patch_t *)*/ img2lmp(W_CacheLumpName("ST_FRAG", PU_STATUS_BACK), W_GetNumForName("ST_FRAG"));
 	// face states
 	facenum = 0;
 	for (i=0;i<ST_NUMPAINFACES;i++)
@@ -1661,8 +1666,8 @@ void ST_createFullScreenWidgets() {
 
 	// frags sum
 	STlib_initNum(&::g->w_f_frags,
-		(powerX / 2) + 20,
-		ORIGINAL_HEIGHT - 20,
+		(::g->SCREENWIDTH / 2) - ((67 / xscale) -  (16 * (xscale - 1))),
+		ORIGINAL_HEIGHT - 13,
 		::g->fullnum,
 		&::g->st_fragscount,
 		&::g->st_fragson,
