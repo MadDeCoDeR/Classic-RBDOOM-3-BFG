@@ -1272,6 +1272,8 @@ void ST_loadGraphics(void)
 
 	::g->fullslash = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STCFN047", PU_STATUS_FRONT), W_GetNumForName("STCFN047"));
 
+	::g->fullminus = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STCFN045", PU_STATUS_FRONT), W_GetNumForName("STCFN045"));
+
 	// key cards
 	for (i=0;i<NUMCARDS;i++)
 	{
@@ -1666,7 +1668,7 @@ void ST_createFullScreenWidgets() {
 
 	// frags sum
 	STlib_initNum(&::g->w_f_frags,
-		(::g->SCREENWIDTH / 2) - ((67 / xscale) -  (16 * (xscale - 1))),
+		(::g->SCREENWIDTH / 2) - ((45 / xscale) -  (30 * (xscale - 1))),
 		ORIGINAL_HEIGHT - 13,
 		::g->fullnum,
 		&::g->st_fragscount,

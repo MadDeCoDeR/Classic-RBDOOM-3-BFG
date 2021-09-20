@@ -167,8 +167,12 @@ STlib_drawNum
     }
 
     // draw a minus sign if necessary
-    if (neg)
-	V_DrawPatch(x > 8 ? x - 8 : 0, n->y, FG, ::g->sttminus, true);
+    if (neg && ::g->st_statusbaron) {
+        V_DrawPatch(x > 8 ? x - 8 : 0, n->y, FG, ::g->sttminus, true);
+    }
+    else if (neg && !::g->st_statusbaron) {
+        V_DrawPatch(x > 8 ? x - 8 : 0, n->y, FG, ::g->fullminus, true);
+    }
 }
 
 

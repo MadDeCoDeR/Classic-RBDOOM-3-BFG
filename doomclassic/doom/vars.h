@@ -835,6 +835,7 @@ patch_t*		tallpercent; // AffLANHACK IGNORE
 patch_t*		fullnum[10]; // AffLANHACK IGNORE
 patch_t*		fullpercent; // AffLANHACK IGNORE
 patch_t*		fullslash; // AffLANHACK IGNORE
+patch_t*		fullminus; // AffLANHACK IGNORE
 patch_t*		shortnum[10]; // AffLANHACK IGNORE
 patch_t*		keys[NUMCARDS];  // AffLANHACK IGNORE
 patch_t*		faces[ST_NUMFACES]; // AffLANHACK IGNORE
