@@ -49,7 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // in AM_map.c
 
-
+extern idCVar cl_HUD;
 
 
 //
@@ -170,7 +170,7 @@ STlib_drawNum
     if (neg && ::g->st_statusbaron) {
         V_DrawPatch(x > 8 ? x - 8 : 0, n->y, FG, ::g->sttminus, true);
     }
-    else if (neg && !::g->st_statusbaron) {
+    else if (neg && !::g->st_statusbaron && cl_HUD.GetBool()) {
         V_DrawPatch(x > 8 ? x - 8 : 0, n->y, FG, ::g->fullminus, true);
     }
 }

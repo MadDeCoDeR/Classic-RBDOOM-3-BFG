@@ -80,6 +80,7 @@ void M_Autoaim(int choice);
 void M_Jump(int choice);
 void M_Cross(int choice);
 void M_Mapst(int choice);
+void M_HUD(int choice);
 void M_Ctl(int choice);
 void M_Key(int choice);
 void M_ChangeKeys(int choice);

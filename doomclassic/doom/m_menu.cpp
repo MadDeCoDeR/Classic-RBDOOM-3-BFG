@@ -102,6 +102,7 @@ extern idCVar cl_engineHz_interp;
 extern idCVar cl_engineHz;
 extern idCVar in_joyjpn;
 extern idCVar r_swapInterval;
+extern idCVar cl_HUD;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 extern idCVar s_useXAudio;
 #endif
@@ -219,6 +220,7 @@ void M_Autoaim(int choice);
 void M_Jump(int choice);
 void M_Cross(int choice);
 void M_Mapst(int choice);
+void M_HUD(int choice);
 void M_Ctl(int choice);
 void M_Key(int choice);
 void M_ChangeKeys(int choice);
@@ -1141,6 +1143,7 @@ void M_DrawGame(void)
 	int crosshair = cl_cursor.GetBool();
 	int mapstats = cl_showStats.GetBool();
 	int autoaim = game->GetCVarBool("aa_targetAimAssistEnable");
+	int hudValue = cl_HUD.GetBool();
 
 	int aimOffset = cl_freelook.GetBool() ? 0 : 1;
 
@@ -1159,6 +1162,8 @@ void M_DrawGame(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[crosshair], PU_CACHE_SHARED), W_GetNumForName(msgNames[crosshair])), false);
 	V_DrawPatchDirect(::g->GameDef.x + 121, ::g->GameDef.y + LINEHEIGHT * (mapst - aimOffset), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[mapstats], PU_CACHE_SHARED), W_GetNumForName(msgNames[mapstats])), false);
+	V_DrawPatchDirect(::g->GameDef.x + 60, ::g->GameDef.y + LINEHEIGHT * (hud - aimOffset), 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[hudValue], PU_CACHE_SHARED), W_GetNumForName(msgNames[hudValue])), false);
 }
 
 void M_Gameplay(int choice)
@@ -1643,6 +1648,11 @@ void M_Cross(int choice)
 void M_Mapst(int choice)
 {
 	cl_showStats.SetBool(cl_showStats.GetBool() ? 0 : 1);
+}
+
+void M_HUD(int choice)
+{
+	cl_HUD.SetBool(cl_HUD.GetBool() ? 0 : 1);
 }
 //GK:End
 //

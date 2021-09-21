@@ -428,7 +428,7 @@ menuitem_t MasterMenu[2];
 menu_t  MasterDef;
 menuitem_t DOOMIT[20];
 menu_t  DOOMITDef;
-menuitem_t GameMenu[6];
+menuitem_t GameMenu[7];
 menu_t  GameDef;
 menuitem_t ResMenu[20];
 menu_t  ResDef;

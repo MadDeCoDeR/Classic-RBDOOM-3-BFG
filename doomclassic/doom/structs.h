@@ -224,6 +224,7 @@ typedef enum
 	jump,
 	cross,
 	mapst,
+	hud,
 	game_end
 } game_e;
 typedef enum

@@ -353,6 +353,8 @@ cheatseq_t	cheat_mypos = cheatseq_t( cheat_mypos_seq, 0 );
 /*const*/ extern char*	mapnames[];
 
 
+idCVar cl_HUD("cl_HUD", "0", CVAR_ARCHIVE | CVAR_BOOL, "Enable/Disable Heads up Display on Classic DOOM (if the status bar is hidden)");
+
 //
 // STATUS BAR CODE
 //
@@ -378,7 +380,7 @@ void ST_refreshBackground(void)
 
 		V_CopyRect(ST_X, 0, BG, ST_WIDTH + widthoffset, ST_HEIGHT, ST_X, ST_Y, FG, true);
 	}
-	else {
+	else if (cl_HUD.GetBool()) {
 		V_DrawPatch(ST_X, ST_ARMORY, FG, ::g->hear, true);
 
 		V_DrawPatch(ST_AMMO0X + (::g->ASPECT_POS_OFFSET - 7) - ((4 - ::g->ASPECT_IMAGE_SCALER) * 50), ST_ARMORY + 4, FG, ::g->fullarms, true);
@@ -1030,7 +1032,7 @@ void ST_Ticker (void)
 	if (::g->st_statusbaron) {
 		ST_updateWidgets();
 	}
-	else {
+	else if (cl_HUD.GetBool()){
 		ST_updateFullWidgets();
 	}
 	::g->st_oldhealth = ::g->plyr->health;
@@ -1145,10 +1147,10 @@ void ST_drawFullWidgets(qboolean refresh)
 	::g->st_notdeathmatch = !::g->deathmatch;
 
 	// used by ::g->w_arms[] widgets
-	::g->st_armson = true;
+	::g->st_armson = cl_HUD.GetBool();
 
 	// used by ::g->w_frags widget
-	::g->st_fragson = ::g->deathmatch;
+	::g->st_fragson = ::g->deathmatch && cl_HUD.GetBool();
 	STlib_updateNum(&::g->w_f_time, refresh);
 	STlib_updateNum(&::g->w_f_ready, refresh);
 
@@ -1205,7 +1207,7 @@ void ST_doRefresh(void)
 	if (::g->st_statusbaron) {
 		ST_drawWidgets(true);
 	}
-	else {
+	else if (cl_HUD.GetBool()) {
 		ST_drawFullWidgets(true);
 	}
 }
@@ -1216,7 +1218,7 @@ void ST_diffDraw(void)
 	if (::g->st_statusbaron) {
 		ST_drawWidgets(false);
 	}
-	else {
+	else if (cl_HUD.GetBool()){
 		ST_drawFullWidgets(false);
 	}
 }
@@ -1224,7 +1226,7 @@ void ST_diffDraw(void)
 void ST_Drawer (qboolean fullscreen, qboolean refresh)
 {
 	::g->st_statusbaron = (!fullscreen) || ::g->automapactive;
-	::g->st_statusbaroff = !::g->st_statusbaron;
+	::g->st_statusbaroff = !::g->st_statusbaron && cl_HUD.GetBool();
 	::g->st_firsttime = ::g->st_firsttime || refresh;
 
 	// Do red-/gold-shifts from damage/items
