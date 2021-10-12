@@ -603,8 +603,11 @@ public:
 		soundTime( 0 ),
 		muted( false ),
 		musicMuted( false ),
-		needsRestart( false )
+		needsRestart( false ),
+		initOnce( false )
 	{}
+	private:
+		bool initOnce;
 };
 
 extern	idSoundSystemLocal	soundSystemLocal;

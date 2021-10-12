@@ -71,6 +71,7 @@ public:
 	static void		PrintDeviceList( const char* list );
 	static void		PrintALCInfo( ALCdevice* device );
 	static void		PrintALInfo();
+	static void parseDeviceName(const ALCchar* wcDevice, char* mbDevice);
 	ALuint slot;
 	ALuint voiceslot;
 	ALuint voicefilter;

@@ -104,7 +104,11 @@ public:
 	IXAudio2SubmixVoice* GetSubMixVoice() {
 		return pSubmixVoice;
 	}
+
+	AudioDevice* GetSelectedDevice();
 	
+
+	static std::vector<AudioDevice> EnumerateAudioDevices(_Out_opt_ AudioDevice* defaultDevice = nullptr);
 protected:
 	friend class idSoundSample_XAudio2;
 	friend class idSoundVoice_XAudio2;
@@ -115,7 +119,7 @@ private:
 	IXAudio2* pXAudio2;
 	IXAudio2MasteringVoice* pMasterVoice;
 	IXAudio2SubmixVoice* pSubmixVoice;
-	
+	AudioDevice selectedDevice;
 	idSoundEngineCallback	soundEngineCallback;
 
 	// Can't stop and start a voice on the same frame, so we have to double this to handle the worst case scenario of stopping all voices and starting a full new set

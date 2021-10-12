@@ -43,7 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // Init at program start...
 void I_InitSoundXA2();
-void I_InitSoundHardwareXA2( int numOutputChannels_, int channelMask );
+void I_InitSoundHardwareXA2( int numOutputChannels_, int channelMask_ );
 
 // ... update sound buffer and audio device at runtime...
 void I_UpdateSoundXA2(void);

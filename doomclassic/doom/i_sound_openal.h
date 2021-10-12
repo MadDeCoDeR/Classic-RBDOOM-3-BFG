@@ -43,7 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // Init at program start...
 void I_InitSoundAL();
-void I_InitSoundHardwareAL( int numOutputChannels_, int channelMask );
+void I_InitSoundHardwareAL( int numOutputChannels_, int channelMask_ );
 
 // ... update sound buffer and audio device at runtime...
 void I_UpdateSoundAL(void);

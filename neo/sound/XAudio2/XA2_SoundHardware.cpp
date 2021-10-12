@@ -99,7 +99,7 @@ HRESULT GetAudioDeviceDetails( _In_ IMMDevice* immDevice, _Out_ AudioDevice* pIn
 	return hResult;
 }
 
-std::vector<AudioDevice> EnumerateAudioDevices( _Out_opt_ AudioDevice* defaultDevice = nullptr )
+std::vector<AudioDevice> idSoundHardware_XAudio2::EnumerateAudioDevices( _Out_opt_ AudioDevice* defaultDevice )
 {
 	UINT32                   deviceCount      = 0;
 	IMMDeviceEnumerator*     immDevEnum       = nullptr;
@@ -204,7 +204,7 @@ void listDevices_f_XA2( const idCmdArgs& args )
 // RB: not available on Windows 8 SDK
 #if defined(USE_WINRT) //(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
 	AudioDevice defaultDevice;
-	auto vAudioDevices = EnumerateAudioDevices( &defaultDevice );
+	auto vAudioDevices = idSoundHardware_XAudio2::EnumerateAudioDevices( &defaultDevice );
 	if( vAudioDevices.size() == 0 )
 	{
 		idLib::Warning( "No audio devices found" );
@@ -412,8 +412,6 @@ void idSoundHardware_XAudio2::Init()
 
 	if (!vAudioDevices.empty())
 	{
-
-		AudioDevice selectedDevice;
 
 		int preferredDevice = s_device.GetInteger();
 		bool validPreference = (preferredDevice >= 0 && preferredDevice < (int)vAudioDevices.size());
@@ -863,6 +861,10 @@ void idSoundHardware_XAudio2::UpdateEAXEffect(idSoundEffect* effect)
 	if (effect && (effect->data)) {
 		memcpy(&EAX, effect->data, sizeof(XAUDIO2FX_REVERB_PARAMETERS));
 	}
+}
+
+AudioDevice* idSoundHardware_XAudio2::GetSelectedDevice() {
+	return &selectedDevice;
 }
 
 

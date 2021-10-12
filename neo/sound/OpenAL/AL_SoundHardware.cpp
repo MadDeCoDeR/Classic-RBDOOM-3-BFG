@@ -153,7 +153,7 @@ void listDevices_f_AL( const idCmdArgs& args )
 	idSoundHardware_OpenAL::PrintALCInfo( ( ALCdevice* )soundSystem->GetInternal() );
 }
 
-static void parseDeviceName(const ALCchar* wcDevice, char* mbDevice) {
+void idSoundHardware_OpenAL::parseDeviceName(const ALCchar* wcDevice, char* mbDevice) {
 #ifdef WIN32
 	int wdev_size = MultiByteToWideChar(CP_UTF8, NULL, wcDevice, -1, NULL, 0);
 	//GK: just convert the name from UTF-8 char to wide char and then to ANSI char
@@ -177,20 +177,35 @@ static void list_audio_devices(const ALCchar *devices, const ALCchar *selectedDe
 	size_t len = 0;
 	int index = 0;
 	char* mbseldev = strdup(selectedDevice);
-	parseDeviceName(selectedDevice, mbseldev);
+	idSoundHardware_OpenAL::parseDeviceName(selectedDevice, mbseldev);
 
 	common->Printf( "Devices list:\n");
 	common->Printf( "-------------\n");
 	while (device && *device != '\0' && next && *next != '\0') {
 		index++;
 		char *mbdevs=strdup(device);
-		parseDeviceName(device, mbdevs);
+		idSoundHardware_OpenAL::parseDeviceName(device, mbdevs);
 		common->Printf( "%s	%3d: %s\n", !idStr::Icmp(mbdevs, mbseldev)? "*" : "", index,  mbdevs);
 		len = strlen(device);
 		device += (len + 1);
 		next += (len + 2);
 	}
 	common->Printf("-------------\n");
+}
+
+static const ALCchar* getDeviceByIndex(int index) {
+	const ALCchar* devices = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
+	const ALCchar* device = devices, * next = devices + 1;
+	size_t len = 0;
+	int internalIndex = 0;
+	while (device && *device != '\0' && next && *next != '\0' && index > internalIndex) {
+		internalIndex++;
+		len = strlen(device);
+		device += (len + 1);
+		next += (len + 2);
+	}
+
+	return device;
 }
 
 
@@ -208,7 +223,8 @@ void idSoundHardware_OpenAL::Init()
 	
 	common->Printf( "Setup OpenAL device and context... " );
 	
-	openalDevice = alcOpenDevice( NULL );
+	
+	openalDevice = alcOpenDevice( s_device.GetInteger() >= 0 ? getDeviceByIndex(s_device.GetInteger()) : NULL );
 	if( openalDevice == NULL )
 	{
 		common->Warning( "idSoundHardware_OpenAL::Init: alcOpenDevice() failed\n" );

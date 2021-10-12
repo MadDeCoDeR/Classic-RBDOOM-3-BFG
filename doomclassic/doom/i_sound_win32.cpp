@@ -128,6 +128,7 @@ extern bool			Music_initialized;
 // XAUDIO
 float			g_EmitterAzimuths [] = { 0.f };
 static int		numOutputChannels = 0;
+static int		channelMask = 0;
 static bool		soundHardwareInitialized = false;
 
 // DG: xaudio can only be used with MSVC
@@ -669,8 +670,9 @@ Called from the tech4x initialization code. Sets up Doom classic's
 sound channels.
 ======================
 */
-void I_InitSoundHardwareXA2( int numOutputChannels_, int channelMask ) {
+void I_InitSoundHardwareXA2( int numOutputChannels_, int channelMask_ ) {
 	::numOutputChannels = numOutputChannels_;
+	::channelMask = channelMask_;
 
 	// Initialize the X3DAudio
 	//  Speaker geometry configuration on the final mix, specifies assignment of channels

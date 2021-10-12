@@ -49,6 +49,8 @@ idCVar s_useXAudio("s_useXAudio", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_ARCHIVE, "
 
 idCVar preLoad_Samples( "preLoad_Samples", "1", CVAR_SYSTEM | CVAR_BOOL, "preload samples during beginlevelload" );
 
+extern idCVar s_device;
+
 idSoundSystemLocal soundSystemLocal;
 idSoundSystem* soundSystem = &soundSystemLocal;
 /*
@@ -141,6 +143,51 @@ void idSoundSystemLocal::Restart()
 	InitStreamBuffers();
 }
 
+void DefaultDeviceChangeThread(void* data) {
+
+	static int prevTime = 0;
+	static uint64 nextCheck = 0;
+	const uint64 waitTime = 5000;
+	while (1) {
+		int	now = Sys_Microseconds();
+		int	delta;
+		if (prevTime == 0)
+		{
+			delta = 4000;
+		}
+		else
+		{
+			delta = now - prevTime;
+		}
+		prevTime = now;
+		if (now >= nextCheck) {
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+			if (s_useXAudio.GetBool()) {
+				AudioDevice defaultDevice;
+				idSoundHardware_XAudio2::EnumerateAudioDevices(&defaultDevice);
+				if (defaultDevice.id != ((AudioDevice*)data)->id) {
+					soundSystemLocal.SetNeedsRestart();
+				}
+			} else
+#endif
+			{
+				ALCdevice* defaultALCDevice = alcOpenDevice(NULL);
+				const ALCchar* defaultDevice =  alcGetString(defaultALCDevice, ALC_ALL_DEVICES_SPECIFIER);
+				const ALCchar* selectedDevice = alcGetString((ALCdevice*)data, ALC_ALL_DEVICES_SPECIFIER);
+				char* mbdefdev = strdup(defaultDevice);
+				idSoundHardware_OpenAL::parseDeviceName(defaultDevice, mbdefdev);
+				char* mbseldev = strdup(selectedDevice);
+				idSoundHardware_OpenAL::parseDeviceName(selectedDevice, mbseldev);
+				if (idStr::Icmp(mbdefdev, mbseldev)) {
+					soundSystemLocal.SetNeedsRestart();
+				}
+			}
+			nextCheck = now + waitTime;
+		}
+	}
+
+}
+
 /*
 ========================
 idSoundSystemLocal::Init
@@ -174,6 +221,19 @@ void idSoundSystemLocal::Init()
 	
 	idLib::Printf( "sound system initialized.\n" );
 	idLib::Printf( "--------------------------------------\n" );
+	if (!initOnce && s_device.GetInteger() < 0) {
+		idLib::Printf("Creating Default Device Detection Thread\n");
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+		if (s_useXAudio.GetBool()) {
+			Sys_CreateThread((xthread_t)DefaultDeviceChangeThread, ((idSoundHardware_XAudio2*)hardware)->GetSelectedDevice(), THREAD_LOWEST, "Default Audio Device Change Listener", CORE_ANY);
+		}
+		else
+#endif
+		{
+			Sys_CreateThread((xthread_t)DefaultDeviceChangeThread, this->GetInternal(), THREAD_LOWEST, "Default Audio Device Change Listener", CORE_ANY);
+		}
+		initOnce = true;
+	}
 }
 
 /*

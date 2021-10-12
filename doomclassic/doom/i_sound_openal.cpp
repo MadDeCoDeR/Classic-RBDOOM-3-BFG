@@ -133,6 +133,7 @@ extern int			S_initialized;
 extern bool		Music_initialized;
 static bool		soundHardwareInitialized = false;
 static int		numOutputChannels = 0;
+static int		channelMask = 0;
 
 doomListener_t		doom_Listener;
 
@@ -595,9 +596,10 @@ Called from the tech4x initialization code. Sets up Doom classic's
 sound channels.
 ======================
 */
-void I_InitSoundHardwareAL( int numOutputChannels_, int channelMask )
+void I_InitSoundHardwareAL( int numOutputChannels_, int channelMask_ )
 {
 	::numOutputChannels = numOutputChannels_;
+	::channelMask = channelMask_;
 	I_InitMusicAL(); //GK: Just to be sure that music will play
 	// Initialize source voices
 	for ( int i = 0; i < NUM_SOUNDBUFFERS; i++ ) {
