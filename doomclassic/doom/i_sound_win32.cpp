@@ -892,10 +892,16 @@ void I_InitMusicXA2(void)
 		Timidity_Init( MIDI_RATE, MIDI_FORMAT, MIDI_CHANNELS, MIDI_RATE, "classicmusic/gravis.cfg" );
 
 		hMusicThread = NULL;
-		musicBuffer = NULL;
-		totalBufferSize = 0;
-		waitingForMusic = false;
-		musicReady = false;
+		if (!soundSystemLocal.needsRestart) {
+			musicBuffer = NULL;
+			totalBufferSize = 0;
+			waitingForMusic = false;
+			musicReady = false;
+		}
+		else {
+			waitingForMusic = true;
+			musicReady = true;
+		}
 
 		// Create Source voice
 		WAVEFORMATEX voiceFormat = {0};
@@ -948,7 +954,7 @@ void I_ShutdownMusicXA2(void)
 
 			CloseHandle( hMusicThread );
 		}
-		if ( musicBuffer ) {
+		if ( musicBuffer && !soundSystemLocal.needsRestart) {
 			free( musicBuffer );
 		}
 
@@ -957,11 +963,13 @@ void I_ShutdownMusicXA2(void)
 
 	pMusicSourceVoice = NULL;
 	hMusicThread = NULL;
-	musicBuffer = NULL;
+	if (!soundSystemLocal.needsRestart) {
+		musicBuffer = NULL;
 
-	totalBufferSize = 0;
-	waitingForMusic = false;
-	musicReady = false;
+		totalBufferSize = 0;
+		waitingForMusic = false;
+		musicReady = false;
+	}
 
 	Music_initialized = false;
 }

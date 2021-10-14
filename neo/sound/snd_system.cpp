@@ -161,10 +161,15 @@ void DefaultDeviceChangeThread(void* data) {
 			} else
 #endif
 			{
-				ALCdevice* defaultALCDevice = alcOpenDevice(NULL);
+				ALCdevice* defaultALCDevice = alcOpenDevice(NULL); //GK: Otherwise outside of an attached debugger it goes bananas with audio reset
 				const ALCchar* defaultDevice =  alcGetString(defaultALCDevice, ALC_ALL_DEVICES_SPECIFIER);
 				const ALCchar* selectedDevice = alcGetString((ALCdevice*)data, ALC_ALL_DEVICES_SPECIFIER);
-				if (idStr::Icmp(defaultDevice, selectedDevice)) {
+				char* mbdefdev = strdup(defaultDevice);
+				idSoundHardware_OpenAL::parseDeviceName(defaultDevice, mbdefdev);
+				char* mbseldev = strdup(selectedDevice);
+				idSoundHardware_OpenAL::parseDeviceName(selectedDevice, mbseldev);
+				idLib::Printf("Default Device: %s\nSelected Device: %s\n", mbdefdev, mbseldev); //GK: Otherwise outside of an attached debugger it only works once???
+				if (idStr::Icmp(mbdefdev, mbseldev)) {
 					soundSystemLocal.SetNeedsRestart();
 				}
 			}
@@ -396,7 +401,7 @@ void idSoundSystemLocal::Render()
 	if( needsRestart )
 	{
 		Restart();
-		needsRestart = false;
+		needsRestart = false; //GK: That way OpenAL can properly keep all it's existing audio buffer data
 	}
 	
 	SCOPED_PROFILE_EVENT( "SoundSystem::Render" );
