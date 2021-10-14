@@ -322,12 +322,6 @@ void idSoundHardware_OpenAL::Init()
 		list_audio_devices(alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER), alcGetString(openalDevice, ALC_ALL_DEVICES_SPECIFIER));
 	}
 	
-	// ---------------------
-	// Initialize the Doom classic sound system.
-	// ---------------------
-	
-	I_InitSoundHardwareAL( voices.Max(), 0 );
-	
 	// OpenAL doesn't really impose a maximum number of sources
 	voices.SetNum( voices.Max() );
 	for (int i = 0; i < voices.Max(); i++) {
@@ -339,6 +333,13 @@ void idSoundHardware_OpenAL::Init()
 	{
 		freeVoices[i] = &voices[i];
 	}
+#if defined(USE_DOOMCLASSIC)
+	// ---------------------
+	// Initialize the Doom classic sound system.
+	// ---------------------
+
+	I_InitSoundHardwareAL(voices.Max(), 0);
+#endif
 }
 
 /*
@@ -348,11 +349,6 @@ idSoundHardware_OpenAL::Shutdown
 */
 void idSoundHardware_OpenAL::Shutdown()
 {
-	// ---------------------
-	// Shutdown the Doom classic sound system.
-	// ---------------------
-	I_ShutdownSoundHardwareAL();
-
 	for( int i = 0; i < voices.Num(); i++ )
 	{
 		idSoundVoice_OpenAL* voice = (idSoundVoice_OpenAL*)&voices[i];
@@ -361,6 +357,13 @@ void idSoundHardware_OpenAL::Shutdown()
 	voices.Clear();
 	freeVoices.Clear();
 	zombieVoices.Clear();
+
+#if defined(USE_DOOMCLASSIC)
+	// ---------------------
+	// Shutdown the Doom classic sound system.
+	// ---------------------
+	I_ShutdownSoundHardwareAL();
+#endif
 
 	if (alIsFilter(voicefilter)) {
 		alDeleteFilters(1, &voicefilter);

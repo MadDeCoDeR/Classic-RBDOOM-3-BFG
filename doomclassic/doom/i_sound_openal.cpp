@@ -609,6 +609,9 @@ void I_InitSoundHardwareAL( int numOutputChannels_, int channelMask_ )
 	// Create OpenAL buffers for all sounds
 	for ( int i = 1; i < NUMSFX; i++ ) {
 		alGenBuffers( (ALuint)1, &alBuffers[i] );
+		if (S_sfx[i].data) {
+			alBufferData(alBuffers[i], activeSounds[i].sample, (byte*)S_sfx[i].data, lengths[i], activeSounds[i].rate);
+		}
 	}
 	
 	alGenAuxiliaryEffectSlots(1, &clslot);
@@ -770,10 +773,17 @@ void I_InitMusicAL( void )
 		// Initialize Timidity
 		Timidity_Init( MIDI_RATE, MIDI_FORMAT, MIDI_CHANNELS, MIDI_RATE, "classicmusic/gravis.cfg" );
 		
-		musicBuffer = NULL;
-		totalBufferSize = 0;
-		waitingForMusic = false;
-		musicReady = false;
+		if (!soundSystemLocal.needsRestart) {
+			musicBuffer = NULL;
+			totalBufferSize = 0;
+			waitingForMusic = false;
+			musicReady = false;
+		}
+		else {
+			waitingForMusic = true;
+			musicReady = true;
+		}
+		
 		
 		alGenSources( (ALuint)1, &alMusicSourceVoice );
 		
@@ -839,7 +849,7 @@ void I_ShutdownMusicAL( void )
 			alDeleteBuffers( 1, &alMusicBuffer );
 		}
 		
-		if ( musicBuffer ) {
+		if ( musicBuffer && !soundSystemLocal.needsRestart) {
 			free( musicBuffer );
 			musicBuffer = NULL;
 		}
@@ -851,9 +861,11 @@ void I_ShutdownMusicAL( void )
 		alDeleteAuxiliaryEffectSlots(1, &clmusslot);
 	}
 	
-	totalBufferSize = 0;
-	waitingForMusic = false;
-	musicReady = false;
+	if (!soundSystemLocal.needsRestart) {
+		totalBufferSize = 0;
+		waitingForMusic = false;
+		musicReady = false;
+	}
 	
 	Music_initialized = false;
 }
@@ -993,8 +1005,8 @@ void I_UpdateMusicAL( void )
 					alBufferData(alMusicBuffer, av_sample, musicBuffer, totalBufferSize, av_rate);
 				}
 				alSourcei( alMusicSourceVoice, AL_BUFFER, alMusicBuffer );
-				free(musicBuffer);
-				musicBuffer = NULL;
+				/*free(musicBuffer);
+				musicBuffer = NULL;*/
 				alSourcePlay( alMusicSourceVoice );
 			}
 			

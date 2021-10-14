@@ -207,6 +207,26 @@ void idSoundVoice_OpenAL::DestroyInternal()
 		{
 			idLib::Printf( "%dms: %i destroyed\n", Sys_Milliseconds(), openalSource );
 		}
+		if (alIsBuffer(openalStreamingBuffer[0]) && alIsBuffer(openalStreamingBuffer[1]) && alIsBuffer(openalStreamingBuffer[2]))
+		{
+
+			alDeleteBuffers(3, openalStreamingBuffer);
+
+			if (CheckALErrors() == AL_NO_ERROR)
+			{
+				openalStreamingBuffer[0] = openalStreamingBuffer[1] = openalStreamingBuffer[2] = 0;
+			}
+		}
+
+		if (alIsBuffer(lastopenalStreamingBuffer[0]) && alIsBuffer(lastopenalStreamingBuffer[1]) && alIsBuffer(lastopenalStreamingBuffer[2]))
+		{
+
+			alDeleteBuffers(3, lastopenalStreamingBuffer);
+			if (CheckALErrors() == AL_NO_ERROR)
+			{
+				lastopenalStreamingBuffer[0] = lastopenalStreamingBuffer[1] = lastopenalStreamingBuffer[2] = 0;
+			}
+		}
 		alSourcei(openalSource, AL_BUFFER, 0);
 
 		alDeleteSources( 1, &openalSource );
@@ -214,26 +234,7 @@ void idSoundVoice_OpenAL::DestroyInternal()
 			openalSource = 0;
 		}
 		
-		if( alIsBuffer(openalStreamingBuffer[0]) && alIsBuffer(openalStreamingBuffer[1]) && alIsBuffer(openalStreamingBuffer[2]) )
-		{
-			
-			alDeleteBuffers( 3, openalStreamingBuffer );
-
-			if( CheckALErrors() == AL_NO_ERROR )
-			{
-				openalStreamingBuffer[0] = openalStreamingBuffer[1] = openalStreamingBuffer[2] = 0;
-			}
-		}
 		
-		if(alIsBuffer(lastopenalStreamingBuffer[0]) && alIsBuffer(lastopenalStreamingBuffer[1]) && alIsBuffer(lastopenalStreamingBuffer[2]) )
-		{
-			
-			alDeleteBuffers( 3, lastopenalStreamingBuffer );
-			if( CheckALErrors() == AL_NO_ERROR )
-			{
-				lastopenalStreamingBuffer[0] = lastopenalStreamingBuffer[1] = lastopenalStreamingBuffer[2] = 0;
-			}
-		}
 		
 		openalStreamingOffset = 0;
 		
