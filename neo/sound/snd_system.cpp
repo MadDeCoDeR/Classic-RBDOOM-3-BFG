@@ -150,6 +150,9 @@ void DefaultDeviceChangeThread(void* data) {
 	const uint64 waitTime = 15000;
 	while (1) {
 		int	now = Sys_Microseconds();
+		if (!cvarSystem->IsInitialized()) {
+			break;
+		}
 		if (now >= nextCheck && !com_pause.GetBool()) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 			if (s_useXAudio.GetBool()) {

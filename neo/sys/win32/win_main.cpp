@@ -329,7 +329,11 @@ void Sys_Quit() {
 	timeEndPeriod( 1 );
 	Sys_ShutdownInput();
 	Sys_DestroyConsole();
+#ifdef _UWP
+	TerminateProcess(GetCurrentProcess(), 0);
+#else
 	ExitProcess( 0 );
+#endif
 }
 
 /*
@@ -1175,8 +1179,10 @@ void Sys_Init() {
 			win32.sys_arch.SetString( "Win7" );
 		} else if( win32.osversion.dwMajorVersion == 6 && win32.osversion.dwMinorVersion == 2 ) {
 			win32.sys_arch.SetString( "Win8" );
-		} else if( win32.osversion.dwMajorVersion == 6 && win32.osversion.dwMinorVersion == 3 ) {
-			win32.sys_arch.SetString( "Win8.1" );
+		} else if (win32.osversion.dwMajorVersion == 6 && win32.osversion.dwMinorVersion == 3) {
+			win32.sys_arch.SetString("Win8.1");
+		} else if (win32.osversion.dwMajorVersion == 10 && win32.osversion.dwMinorVersion == 0) {
+			win32.sys_arch.SetString("Win10");
 		} else {
 			win32.sys_arch.SetString( "Unknown NT variant" );
 		}
