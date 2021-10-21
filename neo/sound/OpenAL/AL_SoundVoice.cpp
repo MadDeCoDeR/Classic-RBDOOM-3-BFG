@@ -124,7 +124,7 @@ void idSoundVoice_OpenAL::Create( const idSoundSample* leadinSample_, const idSo
 		alSourcef( openalSource, AL_ROLLOFF_FACTOR, 0.0f );
 		
 		//if( ( loopingSample == NULL && leadinSample->openalBuffer != 0 ) || ( loopingSample != NULL && soundShader->entries[0]->hardwareBuffer ) )
-		if( alIsBuffer(((idSoundSample_OpenAL*)leadinSample)->openalBuffer) )
+		if( ((idSoundSample_OpenAL*)leadinSample)->openalBuffer != 0 )
 		{
 			alSourcei( openalSource, AL_BUFFER, 0 );
 			
@@ -203,11 +203,18 @@ void idSoundVoice_OpenAL::DestroyInternal()
 {
 	if( alIsSource( openalSource ) )
 	{
+		alSourcei(openalSource, AL_BUFFER, 0);
+
+		alDeleteSources(1, &openalSource);
+
+		if (CheckALErrors() == AL_NO_ERROR) {
+			openalSource = 0;
+		}
 		if( s_debugHardware.GetBool() )
 		{
 			idLib::Printf( "%dms: %i destroyed\n", Sys_Milliseconds(), openalSource );
 		}
-		if (alIsBuffer(openalStreamingBuffer[0]) && alIsBuffer(openalStreamingBuffer[1]) && alIsBuffer(openalStreamingBuffer[2]))
+		if (openalStreamingBuffer[0] && openalStreamingBuffer[1] && openalStreamingBuffer[2])
 		{
 
 			alDeleteBuffers(3, openalStreamingBuffer);
@@ -218,7 +225,7 @@ void idSoundVoice_OpenAL::DestroyInternal()
 			}
 		}
 
-		if (alIsBuffer(lastopenalStreamingBuffer[0]) && alIsBuffer(lastopenalStreamingBuffer[1]) && alIsBuffer(lastopenalStreamingBuffer[2]))
+		if (lastopenalStreamingBuffer[0] && lastopenalStreamingBuffer[1] && lastopenalStreamingBuffer[2])
 		{
 
 			alDeleteBuffers(3, lastopenalStreamingBuffer);
@@ -226,12 +233,6 @@ void idSoundVoice_OpenAL::DestroyInternal()
 			{
 				lastopenalStreamingBuffer[0] = lastopenalStreamingBuffer[1] = lastopenalStreamingBuffer[2] = 0;
 			}
-		}
-		alSourcei(openalSource, AL_BUFFER, 0);
-
-		alDeleteSources( 1, &openalSource );
-		if (CheckALErrors() == AL_NO_ERROR) {
-			openalSource = 0;
 		}
 		
 		
@@ -377,7 +378,7 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 	bufferContext->bufferNumber = bufferNumber;
 #endif
 	
-	if( alIsBuffer(sample->openalBuffer) )
+	if( sample->openalBuffer > 0 )
 	{
 		alSourcei( openalSource, AL_BUFFER, sample->openalBuffer );
 		alSourcei( openalSource, AL_LOOPING, ( sample == loopingSample && loopingSample != NULL ? AL_TRUE : AL_FALSE ) );
@@ -404,7 +405,7 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 			finishedbuffers = 3;
 		}
 		//GK: Just make sure we don't get 0 buffers because it's result on silent audio
-		if (!alIsBuffer(openalStreamingBuffer[0]) && !alIsBuffer(openalStreamingBuffer[1]) && !alIsBuffer(openalStreamingBuffer[2])) {
+		if (openalStreamingBuffer[0] == openalStreamingBuffer[1] == openalStreamingBuffer[2] == 0) {
 			alGenBuffers(3, &openalStreamingBuffer[0]);
 		}
 		ALenum format;

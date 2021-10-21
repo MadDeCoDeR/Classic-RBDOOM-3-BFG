@@ -348,8 +348,8 @@ void idSoundSample_OpenAL::CreateOpenALBuffer()
 				common->Error( "idSoundSample_OpenAL::CreateOpenALBuffer: could not decode ADPCM '%s' to 16 bit format", GetName() );
 			}*/
 			
-			buffers[0].buffer = buffer;
-			buffers[0].bufferSize = bufferSize;
+			//buffers[0].buffer = buffer;
+			//buffers[0].bufferSize = bufferSize;
 			
 			totalBufferSize = bufferSize;
 		}
