@@ -132,28 +132,35 @@ void idSoundSystemLocal::Restart()
 			}
 		}
 	}
-	// Shutdown sound hardware
-	hardware->Shutdown();
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (s_useXAudio.GetBool()) {
+		// Shutdown sound hardware
+		hardware->Shutdown();
 
-	// Reinitialize sound hardware
-	if( !s_noSound.GetBool() )
-	{
-		hardware->Init();
+		// Reinitialize sound hardware
+		if (!s_noSound.GetBool())
+		{
+			hardware->Init();
+		}
 	}
-	
+	else
+#endif
+	if (alcIsExtensionPresent((ALCdevice*)this->GetInternal(), "ALC_SOFTX_reopen_device")) {
+			((idSoundHardware_OpenAL*)hardware)->RestartHardware();
+	}
 	InitStreamBuffers();
 }
 
 void DefaultDeviceChangeThread(void* data) {
 
 	static uint64 nextCheck = 0;
-	const uint64 waitTime = 15000;
+	const uint64 waitTime = 5000;
 	while (1) {
 		int	now = Sys_Microseconds();
 		if (!cvarSystem->IsInitialized()) {
 			break;
 		}
-		if (now >= nextCheck && !com_pause.GetBool()) {
+		if (now >= nextCheck && !com_pause.GetBool() && !soundSystemLocal.needsRestart) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 			if (s_useXAudio.GetBool()) {
 				AudioDevice defaultDevice;
@@ -164,14 +171,14 @@ void DefaultDeviceChangeThread(void* data) {
 			} else
 #endif
 			{
-				ALCdevice* defaultALCDevice = alcOpenDevice(NULL); //GK: Otherwise outside of an attached debugger it goes bananas with audio reset
-				const ALCchar* defaultDevice =  alcGetString(defaultALCDevice, ALC_ALL_DEVICES_SPECIFIER);
+				//ALCdevice* defaultALCDevice = alcOpenDevice(NULL); //GK: Otherwise outside of an attached debugger it goes bananas with audio reset
+				const ALCchar* defaultDevice =  alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
 				const ALCchar* selectedDevice = alcGetString((ALCdevice*)data, ALC_ALL_DEVICES_SPECIFIER);
 				char* mbdefdev = strdup(defaultDevice);
 				idSoundHardware_OpenAL::parseDeviceName(defaultDevice, mbdefdev);
 				char* mbseldev = strdup(selectedDevice);
 				idSoundHardware_OpenAL::parseDeviceName(selectedDevice, mbseldev);
-				idLib::Printf("Default Device: %s\nSelected Device: %s\n", mbdefdev, mbseldev); //GK: Otherwise outside of an attached debugger it only works once???
+//				idLib::Printf("Default Device: %s\nSelected Device: %s\n", mbdefdev, mbseldev); //GK: Otherwise outside of an attached debugger it only works once???
 				if (idStr::Icmp(mbdefdev, mbseldev)) {
 					soundSystemLocal.SetNeedsRestart();
 				}
@@ -219,12 +226,12 @@ void idSoundSystemLocal::Init()
 		idLib::Printf("Creating Default Device Detection Thread\n");
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 		if (s_useXAudio.GetBool()) {
-			Sys_CreateThread((xthread_t)DefaultDeviceChangeThread, ((idSoundHardware_XAudio2*)hardware)->GetSelectedDevice(), THREAD_HIGHEST, "Default Audio Device Change Listener", CORE_ANY);
+			Sys_CreateThread((xthread_t)DefaultDeviceChangeThread, ((idSoundHardware_XAudio2*)hardware)->GetSelectedDevice(), THREAD_LOWEST, "Default Audio Device Change Listener", CORE_ANY);
 		}
 		else
 #endif
 		{
-			Sys_CreateThread((xthread_t)DefaultDeviceChangeThread, this->GetInternal(), THREAD_HIGHEST, "Default Audio Device Change Listener", CORE_ANY);
+			Sys_CreateThread((xthread_t)DefaultDeviceChangeThread, this->GetInternal(), THREAD_LOWEST, "Default Audio Device Change Listener", CORE_ANY);
 		}
 		initOnce = true;
 	}

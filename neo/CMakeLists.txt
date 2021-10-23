@@ -1694,7 +1694,7 @@ else()
 			find_package(OpenAL REQUIRED)
 			add_definitions(-DUSE_OPENAL)
 
-			#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
+			include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
 			
 			#if(CMAKE_CL_64)
 			#	link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/lib/win64)

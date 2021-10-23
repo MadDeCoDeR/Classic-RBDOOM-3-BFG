@@ -31,6 +31,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../snd_local.h"
 #include "../../../doomclassic/doom/i_sound_openal.h"
+#include "inprogext.h"
+
+LPALCREOPENDEVICESOFT alcReopenDeviceSOFT = (LPALCREOPENDEVICESOFT)alGetProcAddress("alcReopenDeviceSOFT");
 
 extern idCVar s_showLevelMeter;
 extern idCVar s_meterTopTime;
@@ -169,6 +172,20 @@ void idSoundHardware_OpenAL::parseDeviceName(const ALCchar* wcDevice, char* mbDe
 	mbDevice[mb_size] = '\0';
 	delete[] wdevs;
 #endif
+}
+
+void idSoundHardware_OpenAL::RestartHardware()
+{
+	const ALCchar* defaultDevice = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
+	char* mbdefdev = strdup(defaultDevice);
+	idSoundHardware_OpenAL::parseDeviceName(defaultDevice, mbdefdev);
+	ALCint att[4] = { 0 };
+	att[0] = ALC_MAX_AUXILIARY_SENDS;
+	att[1] = 4;
+	ALCboolean success = alcReopenDeviceSOFT(openalDevice, defaultDevice, att);
+	if (success == ALC_TRUE) {
+		idLib::Printf("Audio device restart completed\n");
+	}
 }
 
 static void list_audio_devices(const ALCchar *devices, const ALCchar *selectedDevice)  //GK: Why not ?
