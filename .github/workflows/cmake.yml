@@ -21,8 +21,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
+    - name: Set up GCC
+      uses: egor-tensin/setup-gcc@v1
+      with:
+        version: 11
+        platform: x64
+    
     - name: Download Depedencies
-      run: apt-get install libsdl2-dev libopenal-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
+      run: sudo apt-get install -y libsdl2-dev libopenal-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/neo
