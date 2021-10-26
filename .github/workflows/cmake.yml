@@ -20,6 +20,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Download Depedencies
+      run: apt-get install libsdl2-dev libopenal-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/neo
