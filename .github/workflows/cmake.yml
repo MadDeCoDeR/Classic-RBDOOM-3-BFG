@@ -40,3 +40,11 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: linux-retail
+        path: |
+          ${{github.workspace}}/build/DoomBFA
+          ${{github.workspace}}/build/d3xp/gamex64.so
+      
