@@ -42,8 +42,8 @@ jobs:
       with:
         name: linux-retail
         path: |
-          DoomBFA
-          d3xp/gamex86_x64.so
+          ./build/DoomBFA
+          ./build/d3xp/gamex86_x64.so
           
   windows-build:
     # The CMake configure and build commands are platform agnostic and should work equally
@@ -73,6 +73,6 @@ jobs:
       with:
         name: windows-retail
         path: |
-          Retail/DoomBFA.exe
-          d3xp/Retail/gamex64.dll
+          ./build/Retail/DoomBFA.exe
+          ./build/d3xp/Retail/gamex64.dll
       
