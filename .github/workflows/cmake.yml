@@ -43,5 +43,5 @@ jobs:
         name: linux-retail
         path: |
           ${{github.workspace}}/build/DoomBFA
-          ${{github.workspace}}/build/d3xp/gamex64.so
+          ${{github.workspace}}/build/d3xp/gamex86_x64.so
       
