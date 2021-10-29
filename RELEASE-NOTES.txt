@@ -4,6 +4,100 @@ Thank you for downloading DOOM-BFA.
 
 _______________________________________
 
+29 Octomber 2021 - DOOM-BFA 1.2.8
+_______________________________
+
+WARNING: The game dll support is nearly complete but
+there are still bugs while using them.
+
+[classicdoom]
+
+- Fix issue of hitscan NPCs not having aim slope when freelook without autoaim is active
+
+- Fix issue with empty ACT sectors on ACTMAP
+
+- Fix issue with loading huge audio files with XAudio2
+
+- Stabilize DOOM 2's finale
+
+- Fixed issue when loading multiple zip files on Classic Doom
+
+- Add fullscreen HUD
+
+- Allow to validate DOOM 2 expansons dynamically (can be loaded from other DOOM 3 mods)
+
+- Fix issue with freelook and demo recording
+
+- Reactivate -timedemo launch argument
+
+- Fix various DEMO desync issues NOTE: For compatibility with the vanilla engine (v1.11) avoid using weapon circling
+
+- Make zone memory tags more analytical
+
+- Fix an issue with DOOM 2 level labels
+
+- Fix issue with the -exp launch argument
+
+- Update and improve ThirdPerson View camera calculation
+
+- When framerate interpolation is active show logic Frame rate and interpolation frequensies with the com_showFPS
+
+- Add V-Sync option
+
+[DOOM3BFG]
+
+- Show properly enviro timer using the oxygen HUD
+
+- Add EAX occlusion (using Dhewm 3 occlusion calculations)
+
+- Make OpenAL initiation more safe and use multireverb
+
+- Add new map entity class "info_hazard", similar to "info_vacuum" it leaks on the map but caries the hazard logic from ROE's erebus5 hazard section
+
+- Display on console the audio device in use when initializing with OpenAL
+
+- After activating the ROE artifact (bloodstone) go back to the previous weapon
+
+- Add support for XAudio2.9
+
+- Fixed issue with texture vertexcolor shaders
+
+- Removed dsound (Direct Sound library is not used here) and updated WINVER to minimum on Win7
+
+- Restart video renderer when changing HDR
+
+- Update OpenAL-soft library
+
+- Add depth fail stencil shadows (Carmack's Reverse)
+
+- Force player shadow to be by default active
+
+- Add support for std 17
+
+- Add audio reverb support using XAudio2
+
+- Prevent sys_lang to revert to english if is set manually
+
+- Allow to load swf without images
+
+- Add support for subtitles (ccscript)
+
+- Allow to switch between XAudio2 and OpenAL-soft by using the launch argument "+set s_useXAudio" (OpenAL-soft is the default)
+
+- Restore r_displayRefresh, which can also change from the frame rate options and add back the original Frame rates (60, 120 FPS) alongsize with the monitor refresh rates
+
+- Improve borderless Fullscreen fallback
+
+- Fix issue with loading configuration files from mod folders with special characters
+
+- Add zBFA generation script on the source code
+
+- Add support for dynamic default audio device change
+
+- Allow OpenAL to init on a specific device using the s_device launch argument
+
+_______________________________________
+
 26 December 2020 - DOOM-BFA 1.2.7
 _______________________________
 
