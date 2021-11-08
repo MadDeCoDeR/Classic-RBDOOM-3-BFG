@@ -106,7 +106,7 @@ Bethesda.net store: https://bethesda.net/en/store/product/DO3CBFPCBG01
 Bethesda.net store (2019): https://bethesda.net/en/store/product/DO3GNGPCBG01
 
 
-Steam & GOG API:
+Steam API:
 ------
 The Doom BFA Edition GPL Source Code release does include functionality for integrating with 
 Steam & Discord through Open Platform Api.  This includes only achievements and the overlay.
