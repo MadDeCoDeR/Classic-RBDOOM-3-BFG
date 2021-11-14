@@ -1416,7 +1416,7 @@ if(MSVC)
 			#dsound
 			dxguid
 			#dxerr
-			Xinput
+			Xinput9_1_0 #GK: Win7 backwards compatibility
 			)
 		if(USE_XAUDIO2)
 			list(APPEND DirectX_LIBRARIES xaudio2.lib)
