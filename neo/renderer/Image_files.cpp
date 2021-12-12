@@ -636,9 +636,15 @@ extern "C"
 	
 	static void	png_ReadData( png_structp pngPtr, png_bytep data, png_size_t length )
 	{
-		memcpy( data, ( byte* )pngPtr->io_ptr, length );
-		
-		pngPtr->io_ptr = ( ( byte* ) pngPtr->io_ptr ) + length;
+#if PNG_LIBPNG_VER_MAJOR == 1 && PNG_LIBPNG_VER_MINOR < 4
+		memcpy(data, (byte*)pngPtr->io_ptr, length);
+
+		pngPtr->io_ptr = ((byte*)pngPtr->io_ptr) + length;
+#else
+		byte** ioptr = (byte**)png_get_io_ptr(pngPtr);
+		memcpy(*ioptr, data, length);
+		*ioptr += length;
+#endif
 	}
 	
 }
@@ -770,9 +776,15 @@ extern "C"
 	static int png_compressedSize = 0;
 	static void	png_WriteData( png_structp pngPtr, png_bytep data, png_size_t length )
 	{
-		memcpy( ( byte* )pngPtr->io_ptr, data, length );
-		
-		pngPtr->io_ptr = ( ( byte* ) pngPtr->io_ptr ) + length;
+#if PNG_LIBPNG_VER_MAJOR == 1 && PNG_LIBPNG_VER_MINOR < 4
+		memcpy((byte*)pngPtr->io_ptr, data, length);
+
+		pngPtr->io_ptr = ((byte*)pngPtr->io_ptr) + length;
+#else
+		byte** ioptr = (byte**)png_get_io_ptr(pngPtr);
+		memcpy(*ioptr, data, length);
+		*ioptr += length;
+#endif
 		
 		png_compressedSize += length;
 	}

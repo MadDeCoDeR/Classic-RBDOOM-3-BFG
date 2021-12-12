@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include "doomdef.h"
 #include "m_swap.h"
-#include "libs/png/png.h"
+#include <png.h>
 #include "i_video.h"
 #include <jpeglib.h>
 #include <jerror.h>
@@ -85,9 +85,16 @@ bool checkjpeg(unsigned char* buff) {
 void ReadDataFromInputStream(png_structp png_ptr, png_bytep outBytes,
 	png_size_t byteCountToRead)
 {
+#if PNG_LIBPNG_VER_MAJOR == 1 && PNG_LIBPNG_VER_MINOR < 4
 	memcpy(outBytes, (byte*)png_ptr->io_ptr, byteCountToRead);
 
 	png_ptr->io_ptr = ((byte*)png_ptr->io_ptr) + byteCountToRead;
+#else
+
+	byte** ioptr = (byte**)png_get_io_ptr(png_ptr);
+	memcpy(outBytes, *ioptr, byteCountToRead);
+	*ioptr += byteCountToRead;
+#endif
 }
 
 int Get_custom_chunk(png_structp png_ptr, png_unknown_chunkp chunk) {
@@ -306,7 +313,9 @@ patch_t* PNG2lmp(unsigned char* buffer) {
 	png_infop end_info;
 	end_info = png_create_info_struct(png_ptr);
 	png_read_end(png_ptr, end_info);
+#if PNG_LIBPNG_VER_MAJOR == 1 && PNG_LIBPNG_VER_MINOR < 4
 	png_read_destroy(png_ptr, info_ptr, end_info);
+#endif
 	png_ptr = NULL;
 	info_ptr = NULL;
 	end_info = NULL;
@@ -349,7 +358,7 @@ patch_t* JPEG2lmp(unsigned char* buffer) {
 	/* Step 2: specify data source (eg, a file) */
 
 #ifdef USE_NEWER_JPEG
-	jpeg_mem_src(&cinfo, fbuffer, len);
+	jpeg_mem_src(&cinfo, buffer, sizeof(buffer)/sizeof(unsigned char));
 #else
 	jpeg_stdio_src(&cinfo, buffer);
 #endif

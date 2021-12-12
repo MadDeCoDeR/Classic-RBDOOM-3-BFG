@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=RBDoom3BFG
-Exec=/absolute/path/to/game/directory/RBDoom3BFG
-Icon=/absolute/path/to/repo/directory/neo/sys/win32/rc/res/doom.ico
-Path=/absolute/path/to/game/directory/
-Terminal=false
-Type=Application
