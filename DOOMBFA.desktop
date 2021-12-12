@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=DOOM BFA
-Exec=/usr/bin/doomBFA
-Icon=doomBFA.ico
+Exec=/usr/bin/DoomBFA
+Icon=doomBFA
 Terminal=false
 Type=Application
 Categories=Games;
