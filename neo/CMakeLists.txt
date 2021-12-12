@@ -35,6 +35,8 @@ option(WINRT
 		
 option(WINDOWS10
 		"Build for Windows 10" OFF)
+option(PACKAGED
+		"Build for packaged environment" OFF)
 		
 option(USE_SYSTEM_ZLIB
                 "Use the system zlib instead of the bundled one" OFF)
@@ -179,6 +181,10 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
 	SET( CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo Retail."
     FORCE )
+
+	if(PACKAGED)
+		add_definitions(-DPACKAGED)
+	endif()
 #endif()
 elseif(MSVC)
 	
@@ -272,6 +278,7 @@ elseif(MSVC)
 		
 		if (WINDOWS10)
 			add_definitions(-D_UWP)
+			add_definitions(-DPACKAGED)
 			add_definitions(-DUWP_GAME_PATH="${UWP_PATH}")
 		endif()
 		

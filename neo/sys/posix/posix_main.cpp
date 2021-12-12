@@ -110,6 +110,15 @@ const char* Sys_DefaultSavePath()
 	return savepath.c_str();
 }
 
+const char* Sys_DefaultAppPath()
+{
+#if defined(__APPLE__)
+	return NULL;
+#else
+	return DEFAULT_BASEPATH;
+#endif
+}
+
 /*
 ================
 Posix_Exit
@@ -438,8 +447,8 @@ const char* Sys_DefaultBasePath()
 			common->Printf( "no '%s' directory in cwd path %s, skipping\n", BASE_GAMEDIR, basepath.c_str() );
 		}
 	}
-	common->Printf( "WARNING: using hardcoded default base path %s\n", DEFAULT_BASEPATH );
-	return DEFAULT_BASEPATH;
+	//common->Printf( "WARNING: using hardcoded default base path %s\n", DEFAULT_BASEPATH );
+	return NULL;
 }
 
 /*

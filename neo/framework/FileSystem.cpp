@@ -3198,7 +3198,7 @@ void idFileSystemLocal::Init()
 	{
 		fs_basepath.SetString( Sys_DefaultBasePath() );
 	}
-#ifdef _UWP
+#ifdef PACKAGED
 	if (fs_apppath.GetString()[0] == '\0')
 	{
 		fs_apppath.SetString(Sys_DefaultAppPath());
