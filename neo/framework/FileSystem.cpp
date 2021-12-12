@@ -3081,7 +3081,7 @@ void idFileSystemLocal::SetupGameDirectories( const char* gameName )
 	{
 		AddGameDirectory( fs_basepath.GetString(), gameName );
 	}
-#ifdef _UWP
+#ifdef PACKAGED
 	if (fs_apppath.GetString()[0])
 	{
 		AddGameDirectory(fs_apppath.GetString(), gameName);
