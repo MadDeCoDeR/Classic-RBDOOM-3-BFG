@@ -23,7 +23,7 @@
 */
 #include <idlib/precompiled.h>
 #include "../common/CinematicAudio.h"
-#include <libs/openal-soft/include/AL/al.h>
+#include <AL/al.h>
 #include <queue>
 #ifndef __CINEMATIC_AUDIO_AL_H__
 #define __CINEMATIC_AUDIO_AL_H__
