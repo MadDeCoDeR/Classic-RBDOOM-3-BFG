@@ -401,6 +401,32 @@ uint64 Sys_Microseconds()
 #endif
 }
 
+const char* findFile(const char* folder, const char* file, std::string path = "") {
+	std::string result = path + folder + "/";
+	DIR* parent = opendir(folder);
+	dirent* entry;
+	while ((entry = readdir(parent)) != NULL) {
+		switch (entry->d_type) {
+		case DT_DIR:
+			if (entry->d_name[0] != '.') {
+				result = findFile(entry->d_name, file, result);
+				if (result.rfind(file) != std::string::npos) {
+					closedir(parent);
+				}
+			}
+			break;
+		case DT_REG:
+			if (!idStr::Icmp(file, entry->d_name)) {
+				result = result + entry->d_name;
+				return result.c_str();
+			}
+			break;
+		}
+	}
+	result = result.substr(0, result.rfind('/') - 1);
+	return result.substr(0, result.rfind('/') - 1).c_str();
+}
+
 /*
 ================
 Sys_DefaultBasePath
@@ -450,29 +476,6 @@ const char* Sys_DefaultBasePath()
 	
 	//common->Printf( "WARNING: using hardcoded default base path %s\n", DEFAULT_BASEPATH );
 	return findFile(getenv("HOME"), "_common.resources");
-}
-
-const char* findFile(const char* folder, const char* file, std::string path = "") {
-	std::string result = path + folder + "/";
-	DIR* parent = opendir(folder);
-	dirent* entry = readdir(parent);
-	while (entry != NULL) {
-		switch(entry->d_type) {
-			case DT_DIR:
-			if (entry->d_name[0] != '.') {
-				result = findFile(entry->d_name, file, result);
-			}
-			break;
-			case DT_REG:
-			if (!idStr::Icmp(file, entry->d_name)) {
-				result = result + entry->d_name;
-				return result.c_str();
-			}
-
-		}
-	}
-	result = result.substr(0, result.rfind('/') -1);
-	return result.substr(0, result.rfind('/')-1).c_str();
 }
 
 /*
