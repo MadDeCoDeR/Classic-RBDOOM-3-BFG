@@ -406,25 +406,25 @@ const char* findFile(const char* folder, const char* file, std::string path = ""
 	DIR* parent = opendir(folder);
 	dirent* entry;
 	while ((entry = readdir(parent)) != NULL) {
-		switch (entry->d_type) {
-		case DT_DIR:
-			if (entry->d_name[0] != '.') {
-				result = findFile(entry->d_name, file, result);
-				if (result.rfind(file) != std::string::npos) {
+		if (entry->d_name[0] != '.') {
+			switch(entry->d_type) {
+				case DT_DIR:
+					result = findFile(entry->d_name, file, result);
+					if (result.rfind(file) != std::string::npos) {
+						closedir(parent);
+						result = result.substr(0, result.rfind('/') - 1);
+						return result.substr(0, result.rfind('/') - 1).c_str();
+					}
+					break;
+				case DT_REG:
 					closedir(parent);
-				}
+					result = result + "/" + entry->d_name;
+					return result.c_str();
 			}
-			break;
-		case DT_REG:
-			if (!idStr::Icmp(file, entry->d_name)) {
-				result = result + entry->d_name;
-				return result.c_str();
-			}
-			break;
 		}
 	}
-	result = result.substr(0, result.rfind('/') - 1);
-	return result.substr(0, result.rfind('/') - 1).c_str();
+	closedir(parent);
+	return result.c_str();
 }
 
 /*
