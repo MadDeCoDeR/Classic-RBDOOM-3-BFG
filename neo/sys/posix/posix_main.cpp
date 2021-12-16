@@ -401,30 +401,42 @@ uint64 Sys_Microseconds()
 #endif
 }
 
-const char* findFile(const char* folder, const char* file, std::string path = "") {
-	std::string result = path + folder + "/";
-	DIR* parent = opendir(folder);
-	dirent* entry;
-	while ((entry = readdir(parent)) != NULL) {
-		if (entry->d_name[0] != '.') {
-			switch(entry->d_type) {
+/*
+================
+findFile
+
+Recursively search for a specified file
+in a parent folder
+================
+*/
+std::string findFile(const char* folder, const char* file, std::string path = "") {
+	std::string result = path;
+	std::string rootPath = path + folder + "/";
+	DIR* parent = opendir(rootPath.c_str());
+	if (parent) {
+		dirent* entry;
+		while ((entry = readdir(parent)) != NULL) {
+			if (idStr::Icmp(entry->d_name, ".") && idStr::Icmp(entry->d_name, "..")) { //GK: Explicit exclusion in order to take into account and the hidden files
+				switch (entry->d_type) {
 				case DT_DIR:
-					result = findFile(entry->d_name, file, result);
+					result = findFile(entry->d_name, file, rootPath);
 					if (result.rfind(file) != std::string::npos) {
 						closedir(parent);
-						result = result.substr(0, result.rfind('/') - 1);
-						return result.substr(0, result.rfind('/') - 1).c_str();
+						return result;
 					}
 					break;
 				case DT_REG:
-					closedir(parent);
-					result = result + "/" + entry->d_name;
-					return result.c_str();
+					if (!idStr::Icmp(entry->d_name, file)) {
+						closedir(parent);
+						result = rootPath + entry->d_name;
+						return result;
+					}
+				}
 			}
 		}
+		closedir(parent);
 	}
-	closedir(parent);
-	return result.c_str();
+	return result;
 }
 
 /*
@@ -475,7 +487,15 @@ const char* Sys_DefaultBasePath()
 	}
 	
 	//common->Printf( "WARNING: using hardcoded default base path %s\n", DEFAULT_BASEPATH );
-	return findFile(getenv("HOME"), "_common.resources");
+	std::string foundPath = findFile(getenv("HOME"), "_common.resources");
+	if (foundPath.rfind("_common.resources") != std::string::npos) {
+		foundPath = foundPath.substr(0, foundPath.rfind("/"));
+		foundPath = foundPath.substr(0, foundPath.rfind("/"));
+	}
+	//GK: Crazy const char desease
+	char* finalPath = new char[foundPath.size() + 1];
+	strcpy(finalPath, foundPath.c_str());
+	return finalPath;
 }
 
 /*
