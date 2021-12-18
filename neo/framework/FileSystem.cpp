@@ -3640,7 +3640,7 @@ idFile* idFileSystemLocal::OpenFileWrite( const char* relativePath, const char* 
 		common->FatalError( "Filesystem call made without initialization\n" );
 	}
 	 
-#ifdef _UWP
+#ifdef PACKAGED
 	if (!idStr::Icmp(basePath, "fs_basepath")) {
 		path = cvarSystem->GetCVarString("fs_savepath");
 	}
