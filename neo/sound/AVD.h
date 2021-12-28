@@ -34,6 +34,7 @@ extern "C"
 #include <libavformat/avformat.h>
 #include <libavformat/avio.h>
 #include <libswresample/swresample.h>
+#include <libavcodec/version.h>
 }
 #endif
 
@@ -42,7 +43,7 @@ void parseAVError(int error);
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 #include <xaudio2.h>
 #include <x3daudio.h>
-bool DecodeXAudio(byte** audio, int* len, IXAudio2SourceVoice** pMusicSourceVoice,bool ext);
+bool DecodeXAudio(byte** audio, int* len, idWaveFile::waveFmt_t* format,bool ext);
 #endif // !USE_OPENAL
 bool DecodeALAudio(byte** audio, int* len, int *rate ,ALenum *sample );
 const char* GetSampleName(ALenum sample);

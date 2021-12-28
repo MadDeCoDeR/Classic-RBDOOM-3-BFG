@@ -195,8 +195,9 @@ void* getsfx ( const char* sfxname, int* len, int sfxind ) //GK: Keep track whic
 	}
 	if (h != 3) { //GK: Remeber the magic number is 3
 		sfxSampleStart = sfx;
-		
-		if (DecodeXAudio(&sfxSampleStart, &size,&activeSounds[sfxind].m_pSourceVoice,false)) {
+		idWaveFile::waveFmt_t format;
+		if (DecodeXAudio(&sfxSampleStart, &size, &format, false)) {
+			((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->GetIXAudio2()->CreateSourceVoice(&activeSounds[sfxind].m_pSourceVoice, (const WAVEFORMATEX*)&format);
 			XAUDIO2_VOICE_DETAILS details;
 			activeSounds[sfxind].m_pSourceVoice->GetVoiceDetails(&details);
 			activeSounds[sfxind].m_Emitter.ChannelCount = details.InputChannels;
@@ -1050,7 +1051,9 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 		Timidity_FreeSong( doomMusic );
 	}
 	else {
-		if (DecodeXAudio(&musFile, &mus_size, &pMusicSourceVoice,true)) { //GK: More simplified
+		idWaveFile::waveFmt_t format;
+		if (DecodeXAudio(&musFile, &mus_size, &format, true)) { //GK: More simplified
+			((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (const WAVEFORMATEX*)&format);
 			musicBuffer = musFile;
 			totalBufferSize = mus_size;
 		}

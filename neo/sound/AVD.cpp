@@ -25,22 +25,26 @@
 #include "precompiled.h"
 #include <vector>
 
-#include <../neo/sound/AVD.h>
+#include <sound/AVD.h>
+#include <queue>
 
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice,bool ext) {
+bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext) {
 	if ( *len <= 0) {
 		return false;
 	}
 	int ret = 0;
 	int avindx = 0;
 	AVFormatContext*		fmt_ctx = avformat_alloc_context();
-	AVCodec*				dec;
+#if LIBAVCODEC_VERSION_MAJOR > 58
+	const AVCodec* dec;
+#else
+	AVCodec* dec;
+#endif
 	AVCodecContext*			dec_ctx;
 	AVPacket packet;
 	SwrContext* swr_ctx = NULL;
 	unsigned char *avio_ctx_buffer = NULL;
-	av_register_all();
 	avio_ctx_buffer = static_cast<unsigned char *>(av_malloc((size_t)*len));
 	memcpy(avio_ctx_buffer, *audio, *len);
 	AVIOContext *avio_ctx = avio_alloc_context(avio_ctx_buffer, *len, 0, NULL, NULL, NULL, NULL);
@@ -57,7 +61,15 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 	}
 	ret = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
 	avindx = ret;
-	dec_ctx = fmt_ctx->streams[avindx]->codec;
+	dec_ctx = avcodec_alloc_context3(dec);
+	if ((ret = avcodec_parameters_to_context(dec_ctx, fmt_ctx->streams[avindx]->codecpar)) < 0) {
+		char* error = new char[256];
+		av_strerror(ret, error, 256);
+		common->Warning("AVD: Failed to create codec context from codec parameters with error: %s\n", error);
+	}
+	dec_ctx->time_base = fmt_ctx->streams[avindx]->time_base;
+	dec_ctx->framerate = fmt_ctx->streams[avindx]->avg_frame_rate;
+	dec_ctx->pkt_timebase = fmt_ctx->streams[avindx]->time_base;
 	dec = avcodec_find_decoder(dec_ctx->codec_id);
 	if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0)
 	{
@@ -72,7 +84,6 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 		int res = swr_init(swr_ctx);
 		hasplanar = true;
 	}
-	WAVEFORMATEX voiceFormat = { 0 };
 	int format_byte = 0;
 	bool use_ext = false;
 	if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8P) {
@@ -89,60 +100,63 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 		format_byte = 4;
 		use_ext = true;
 	}
-	voiceFormat.nSamplesPerSec = dec_ctx->sample_rate;
-	voiceFormat.nChannels = dec_ctx->channels;
-	voiceFormat.nAvgBytesPerSec = voiceFormat.nSamplesPerSec * format_byte * voiceFormat.nChannels;
-	voiceFormat.nBlockAlign = format_byte * voiceFormat.nChannels;
-	voiceFormat.wBitsPerSample = format_byte * 8;
+	*&format->basic.samplesPerSec = dec_ctx->sample_rate;
+	*&format->basic.numChannels = dec_ctx->channels;
+	*&format->basic.avgBytesPerSec = *&format->basic.samplesPerSec * format_byte * *&format->basic.numChannels;
+	*&format->basic.blockSize = format_byte * *&format->basic.numChannels;
+	*&format->basic.bitsPerSample = format_byte * 8;
 	if (ext) {
-		WAVEFORMATEXTENSIBLE exvoice = { 0 };
-		voiceFormat.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-		voiceFormat.cbSize = 22;
-		exvoice.Format = voiceFormat;
-		switch (voiceFormat.nChannels) {
+		*&format->basic.formatTag = WAVE_FORMAT_EXTENSIBLE;
+		*&format->extraSize = 22;
+		switch (*&format->basic.numChannels) {
 		case 1:
-			exvoice.dwChannelMask = SPEAKER_MONO;
+			*&format->extra.extensible.channelMask = SPEAKER_MONO;
 			break;
 		case 2:
-			exvoice.dwChannelMask = SPEAKER_STEREO;
+			*&format->extra.extensible.channelMask = SPEAKER_STEREO;
 			break;
 		case 4:
-			exvoice.dwChannelMask = SPEAKER_QUAD;
+			*&format->extra.extensible.channelMask = SPEAKER_QUAD;
 			break;
 		case 5:
-			exvoice.dwChannelMask = SPEAKER_5POINT1_SURROUND;
+			*&format->extra.extensible.channelMask = SPEAKER_5POINT1_SURROUND;
 			break;
 		case 7:
-			exvoice.dwChannelMask = SPEAKER_7POINT1_SURROUND;
+			*&format->extra.extensible.channelMask = SPEAKER_7POINT1_SURROUND;
 			break;
 		default:
-			exvoice.dwChannelMask = SPEAKER_MONO;
+			*&format->extra.extensible.channelMask = SPEAKER_MONO;
 			break;
 		}
-		exvoice.Samples.wReserved = 0;
-		exvoice.Samples.wSamplesPerBlock = voiceFormat.wBitsPerSample;
-		exvoice.Samples.wValidBitsPerSample = voiceFormat.wBitsPerSample;
+		*&format->extra.extensible.validBitsPerSample = *&format->basic.bitsPerSample;
 		if (!use_ext) {
-			exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
+			*&format->extra.extensible.subFormat.data1 = KSDATAFORMAT_SUBTYPE_PCM.Data1;
+			*&format->extra.extensible.subFormat.data2 = KSDATAFORMAT_SUBTYPE_PCM.Data2;
+			*&format->extra.extensible.subFormat.data3 = KSDATAFORMAT_SUBTYPE_PCM.Data3;
+			for (int i = 0; i < 8; i++) {
+				*&format->extra.extensible.subFormat.data4[i] = KSDATAFORMAT_SUBTYPE_PCM.Data4[i];
+			}
 		}
 		else {
-			exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
+			*&format->extra.extensible.subFormat.data1 = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT.Data1;
+			*&format->extra.extensible.subFormat.data2 = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT.Data2;
+			*&format->extra.extensible.subFormat.data3 = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT.Data3;
+			for (int i = 0; i < 8; i++) {
+				*&format->extra.extensible.subFormat.data4[i] = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT.Data4[i];
+			}
 		}
-		((IXAudio2*)soundSystemLocal.GetInternal())->CreateSourceVoice(*&pMusicSourceVoice, (WAVEFORMATEX *)&exvoice);
 	}
 	else {
 		if (!use_ext) {
-			voiceFormat.wFormatTag = WAVE_FORMAT_PCM;
+			*&format->basic.formatTag = WAVE_FORMAT_PCM;
 		}
 		else {
-			voiceFormat.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+			*&format->basic.formatTag = WAVE_FORMAT_IEEE_FLOAT;
 		}
-		voiceFormat.cbSize = 0;
-		((IXAudio2*)soundSystemLocal.GetInternal())->CreateSourceVoice(*&pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat);
+		*&format->extraSize = 0;
 	}
 	av_init_packet(&packet);
-	AVFrame *frame;
-	int frameFinished = 0;
+	AVFrame *frame = av_frame_alloc();
 	int offset = 0;
 	int num_bytes = 0;
 	int bufferoffset = format_byte * 10;
@@ -151,50 +165,65 @@ bool DecodeXAudio(byte** audio,int* len, IXAudio2SourceVoice** pMusicSourceVoice
 	std::vector<int> buffSizes;
 	uint8_t** tBuffer2 = NULL;
 	int  bufflinesize;
-
+	std::queue<AVPacket> packetQueue[4];
 	while (av_read_frame(fmt_ctx, &packet) >= 0) {
 		if (packet.stream_index == avindx) {
-			frame = av_frame_alloc();
-			frameFinished = 0;
-			avcodec_decode_audio4(dec_ctx, frame, &frameFinished, &packet);
-			if (frameFinished) {
-
-				if (hasplanar) {
-					av_samples_alloc_array_and_samples(&tBuffer2,
-						&bufflinesize,
-						voiceFormat.nChannels,
-						av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
-						dst_smp,
-						0);
-
-					int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame->extended_data, frame->nb_samples);
-					num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
-						res, dst_smp, 1);
-					tBuffer.push_back((byte*)malloc(num_bytes));
-					buffSizes.push_back(num_bytes);
-					memcpy(tBuffer.back(), tBuffer2[0], num_bytes);
-
-					offset += num_bytes;
-					av_freep(&tBuffer2[0]);
-
+			packetQueue->push(packet);
+			ret = avcodec_send_packet(dec_ctx, &packetQueue->front());
+			if (ret != 0 && ret != AVERROR(EAGAIN)) {
+				char* error = new char[256];
+				av_strerror(ret, error, 256);
+				common->Warning("AVD: Failed to send packet for decoding with message: %s\n", error);
+			}
+			else {
+				packet = packetQueue->front();
+				packetQueue->pop();
+				ret = avcodec_receive_frame(dec_ctx, frame);
+				if (ret != 0) {
+					char* error = new char[256];
+					av_strerror(ret, error, 256);
+					common->Warning("AVD: Failed to receive frame from decoding with message: %s\n", error);
 				}
 				else {
-					num_bytes = frame->linesize[0];
-					tBuffer.push_back((byte*)malloc(num_bytes));
-					buffSizes.push_back(num_bytes);
-					memcpy(tBuffer.back(), frame->extended_data[0], num_bytes);
-					offset += num_bytes;
+
+					if (hasplanar) {
+						av_samples_alloc_array_and_samples(&tBuffer2,
+							&bufflinesize,
+							*&format->basic.numChannels,
+							av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
+							dst_smp,
+							0);
+
+						int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t**)frame->extended_data, frame->nb_samples);
+						num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
+							res, dst_smp, 1);
+						tBuffer.push_back((byte*)malloc(num_bytes));
+						buffSizes.push_back(num_bytes);
+						memcpy(tBuffer.back(), tBuffer2[0], num_bytes);
+
+						offset += num_bytes;
+						av_freep(&tBuffer2[0]);
+
+					}
+					else {
+						num_bytes = frame->linesize[0];
+						tBuffer.push_back((byte*)malloc(num_bytes));
+						buffSizes.push_back(num_bytes);
+						memcpy(tBuffer.back(), frame->extended_data[0], num_bytes);
+						offset += num_bytes;
+					}
+
+
+
 				}
-
-
-
 			}
-			av_frame_free(&frame);
-			free(frame);
+			
 		}
 
-		av_free_packet(&packet);
+		av_packet_unref(&packet);
 	}
+	av_frame_free(&frame);
+	free(frame);
 	*len = offset;
 	*audio = (byte *)malloc(offset);
 	offset = 0;
@@ -230,12 +259,15 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	int ret = 0;
 	int avindx = 0;
 	AVFormatContext*		fmt_ctx = avformat_alloc_context();
-	AVCodec*				dec;
+#if LIBAVCODEC_VERSION_MAJOR > 58
+	const AVCodec* dec;
+#else
+	AVCodec* dec;
+#endif
 	AVCodecContext*			dec_ctx;
 	AVPacket packet;
 	SwrContext* swr_ctx = NULL;
 	unsigned char *avio_ctx_buffer = NULL;
-	av_register_all();
 	avio_ctx_buffer = static_cast<unsigned char *>(av_malloc((size_t)*len));
 	memcpy(avio_ctx_buffer, *audio, *len);
 	AVIOContext *avio_ctx = avio_alloc_context(avio_ctx_buffer, *len, 0, NULL, NULL, NULL, NULL);
@@ -252,7 +284,15 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	}
 	ret = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
 	avindx = ret;
-	dec_ctx = fmt_ctx->streams[avindx]->codec;
+	dec_ctx = avcodec_alloc_context3(dec);
+	if ((ret = avcodec_parameters_to_context(dec_ctx, fmt_ctx->streams[avindx]->codecpar)) < 0) {
+		char* error = new char[256];
+		av_strerror(ret, error, 256);
+		common->Warning("AVD: Failed to create codec context from codec parameters with error: %s\n", error);
+	}
+	dec_ctx->time_base = fmt_ctx->streams[avindx]->time_base;
+	dec_ctx->framerate = fmt_ctx->streams[avindx]->avg_frame_rate;
+	dec_ctx->pkt_timebase = fmt_ctx->streams[avindx]->time_base;
 	dec = avcodec_find_decoder(dec_ctx->codec_id);
 	if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0)
 	{
@@ -311,8 +351,7 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 		break;
 	}
 	av_init_packet(&packet);
-	AVFrame *frame;
-	int frameFinished = 0;
+	AVFrame *frame = av_frame_alloc();
 	int offset = 0;
 	int num_bytes = 0;
 	int bufferoffset = format_byte * 10;
@@ -321,48 +360,63 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	std::vector<int> buffSizes;
 	uint8_t** tBuffer2 = NULL;
 	int  bufflinesize;
+	std::queue<AVPacket> packetQueue[4];
 	while (av_read_frame(fmt_ctx, &packet) >= 0) {
 		if (packet.stream_index == avindx) {
-			frame = av_frame_alloc();
-			frameFinished = 0;
-			avcodec_decode_audio4(dec_ctx, frame, &frameFinished, &packet);
-			if (frameFinished) {
-
-				if (hasplanar) {
-					av_samples_alloc_array_and_samples(&tBuffer2,
-						&bufflinesize,
-						frame->channels,
-						av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
-						dst_smp,
-						0);
-					int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame->extended_data, frame->nb_samples);
-					num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
-						res, dst_smp, 1);
-					tBuffer.push_back((byte*)malloc(num_bytes));
-					buffSizes.push_back(num_bytes);
-					memcpy(tBuffer.back(), tBuffer2[0], num_bytes);
-
-					offset += num_bytes;
-					av_freep(&tBuffer2[0]);
-
+			packetQueue->push(packet);
+			ret = avcodec_send_packet(dec_ctx, &packetQueue->front());
+			if (ret != 0 && ret != AVERROR(EAGAIN)) {
+				char* error = new char[256];
+				av_strerror(ret, error, 256);
+				common->Warning("AVD: Failed to send packet for decoding with message: %s\n", error);
+			}
+			else {
+				packet = packetQueue->front();
+				packetQueue->pop();
+				ret = avcodec_receive_frame(dec_ctx, frame);
+				if (ret != 0) {
+					char* error = new char[256];
+					av_strerror(ret, error, 256);
+					common->Warning("AVD: Failed to receive frame from decoding with message: %s\n", error);
 				}
 				else {
-					num_bytes = frame->linesize[0];
-					tBuffer.push_back((byte*)malloc(num_bytes));
-					buffSizes.push_back(num_bytes);
-					memcpy(tBuffer.back(), frame->extended_data[0], num_bytes);
-					offset += num_bytes;
+
+					if (hasplanar) {
+						av_samples_alloc_array_and_samples(&tBuffer2,
+							&bufflinesize,
+							frame->channels,
+							av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
+							dst_smp,
+							0);
+						int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t**)frame->extended_data, frame->nb_samples);
+						num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
+							res, dst_smp, 1);
+						tBuffer.push_back((byte*)malloc(num_bytes));
+						buffSizes.push_back(num_bytes);
+						memcpy(tBuffer.back(), tBuffer2[0], num_bytes);
+
+						offset += num_bytes;
+						av_freep(&tBuffer2[0]);
+
+					}
+					else {
+						num_bytes = frame->linesize[0];
+						tBuffer.push_back((byte*)malloc(num_bytes));
+						buffSizes.push_back(num_bytes);
+						memcpy(tBuffer.back(), frame->extended_data[0], num_bytes);
+						offset += num_bytes;
+					}
+
+
+
 				}
-
-
-
 			}
-			av_frame_free(&frame);
-			free(frame);
 		}
 
-		av_free_packet(&packet);
+		av_packet_unref(&packet);
 	}
+	av_frame_free(&frame);
+	free(frame);
 	*len = offset;
 	*audio = (byte *)malloc(offset);
 	offset = 0;

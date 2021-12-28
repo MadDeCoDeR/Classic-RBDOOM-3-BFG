@@ -76,6 +76,7 @@ extern "C"
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
+#include <libavutil/imgutils.h>
 }
 bool hasplanar = true;
 #endif
@@ -116,7 +117,11 @@ private:
 	AVFrame*				frame;
 	AVFrame*				frame2;
 	AVFrame*				frame3; //GK: make extra frame for audio
-	AVCodec*				dec;
+#if LIBAVCODEC_VERSION_MAJOR > 58
+	const AVCodec*				dec;
+#else
+	AVCodec* dec;
+#endif
 	AVCodecContext*			dec_ctx;
 	AVCodecContext*			dec_ctx2;
 	SwsContext*				img_convert_ctx;
@@ -127,6 +132,7 @@ private:
 	cinData_t				ImageForTimeFFMPEG( int milliseconds );
 	bool					InitFromFFMPEGFile( const char* qpath, bool looping );
 	void					FFMPEGReset();
+	std::queue<AVPacket>	packets[NUM_BUFFERS];
 #endif
 #ifdef USE_BINKDEC
 	BinkHandle				binkHandle;
@@ -252,12 +258,6 @@ idCinematicLocal::InitCinematic
 // RB: 64 bit fixes, changed long to int
 void idCinematic::InitCinematic()
 {
-#if defined(USE_FFMPEG)
-	// Carl: ffmpeg for Bink and regular video files
-	//common->Warning( "Loading FFMPEG...\n" );
-	avcodec_register_all();
-	av_register_all();
-#endif
 
 	// Carl: Doom 3 ROQ:
 	float t_ub, t_vr, t_ug, t_vg;
@@ -436,6 +436,7 @@ idCinematicLocal::idCinematicLocal()
 #else
 	frame = avcodec_alloc_frame();
 	frame2 = avcodec_alloc_frame();
+	frame3 = avcodec_alloc_frame();
 #endif // LIBAVCODEC_VERSION_INT
 	dec_ctx = NULL;
 	dec_ctx2 = NULL;
@@ -527,6 +528,7 @@ idCinematicLocal::~idCinematicLocal()
 #if defined(_WIN32) || defined(_WIN64)
 	av_frame_free( &frame );
 	av_frame_free( &frame2 );
+	av_frame_free( &frame3 );
 #else
 	av_freep( &frame );
 	av_freep( &frame2 );
@@ -627,11 +629,21 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		return false;
 	}
 	video_stream_index = ret;
-	dec_ctx = fmt_ctx->streams[video_stream_index]->codec;
+	dec_ctx = avcodec_alloc_context3(dec);
+	if ((ret = avcodec_parameters_to_context(dec_ctx, fmt_ctx->streams[video_stream_index]->codecpar)) < 0) {
+		char* error = new char[256];
+		av_strerror(ret, error, 256);
+		common->Warning("idCinematic: Failed to create codec context from codec parameters with error: %s\n", error);
+	}
+	dec_ctx->time_base = fmt_ctx->streams[video_stream_index]->time_base;
+	dec_ctx->framerate = fmt_ctx->streams[video_stream_index]->avg_frame_rate;
+	dec_ctx->pkt_timebase = fmt_ctx->streams[video_stream_index]->time_base;
 	/* init the video decoder */
 	if( ( ret = avcodec_open2( dec_ctx, dec, NULL ) ) < 0 )
 	{
-		common->Warning( "idCinematic: Cannot open video decoder for: '%s', %d\n", qpath, looping );
+		char* error = new char[256];
+		av_strerror(ret, error, 256);
+		common->Warning( "idCinematic: Cannot open video decoder for: '%s', %d, with message: %s\n", qpath, looping, error );
 		return false;
 	}
 	//GK:Begin
@@ -639,7 +651,15 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 	ret2 = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
 	if (ret2 >= 0) { //Make audio optional (only intro video has audio no other)
 		audio_stream_index = ret2;
-		dec_ctx2 = fmt_ctx->streams[audio_stream_index]->codec;
+		dec_ctx2 = avcodec_alloc_context3(dec);
+		if ((ret2 = avcodec_parameters_to_context(dec_ctx2, fmt_ctx->streams[audio_stream_index]->codecpar)) < 0) {
+			char* error = new char[256];
+			av_strerror(ret2, error, 256);
+			common->Warning("idCinematic: Failed to create codec context from codec parameters with error: %s\n", error);
+		}
+		dec_ctx2->time_base = fmt_ctx->streams[audio_stream_index]->time_base;
+		dec_ctx2->framerate = fmt_ctx->streams[audio_stream_index]->avg_frame_rate;
+		dec_ctx2->pkt_timebase = fmt_ctx->streams[audio_stream_index]->time_base;
 		if ((ret2 = avcodec_open2(dec_ctx2, dec, NULL)) < 0)
 		{
 			common->Warning("idCinematic: Cannot open audio decoder for: '%s', %d\n", qpath, looping);
@@ -696,7 +716,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 	framePos = -1;
 	common->Printf( "Loaded FFMPEG file: '%s', looping=%d%dx%d, %f FPS, %f sec\n", qpath, looping, CIN_WIDTH, CIN_HEIGHT, frameRate, durationSec );
 	image = ( byte* )Mem_Alloc( CIN_WIDTH * CIN_HEIGHT * 4 * 2, TAG_CINEMATIC );
-	avpicture_fill( ( AVPicture* )frame2, image, AV_PIX_FMT_BGR32, CIN_WIDTH, CIN_HEIGHT );
+	av_image_fill_arrays(frame2->data, frame2->linesize, image, AV_PIX_FMT_BGR32, CIN_WIDTH, CIN_HEIGHT, 1); //GK: Straight out of the FFMPEG source code
 	if( img_convert_ctx )
 	{
 		sws_freeContext( img_convert_ctx );
@@ -1182,12 +1202,14 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 	AVPacket packet;
 	while( framePos < desiredFrame )
 	{
-		int frameFinished = 0;
+		int frameFinished = -1;
 		//GK: Separate frame finisher for audio in order to not have the video lagging
-		int frameFinished1 = 0;
+		int frameFinished1 = -1;
+
+		int res = 0;
 		
 		// Do a single frame by getting packets until we have a full frame
-		while( !frameFinished)
+		while( frameFinished != 0)
 		{
 			// if we got to the end or failed
 			if( av_read_frame( fmt_ctx, &packet ) < 0 )
@@ -1217,40 +1239,61 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 			if( packet.stream_index == video_stream_index )
 			{
 				// Decode video frame
-				avcodec_decode_video2( dec_ctx, frame, &frameFinished, &packet );
+				if ((res = avcodec_send_packet(dec_ctx, &packet)) != 0) {
+					char* error = new char[256];
+					av_strerror(res, error, 256);
+					common->Warning("idCinematic: Failed to send packet for decoding with message: %s\n", error);
+				}
+				else {
+					if ((frameFinished = avcodec_receive_frame(dec_ctx, frame)) != 0) {
+						char* error = new char[256];
+						av_strerror(frameFinished, error, 256);
+						common->Warning("idCinematic: Failed to receive frame from decoding with message: %s\n", error);
+					}
+				}
 			}
 			//GK:Begin
 			if (packet.stream_index == audio_stream_index) {//Check if it found any audio data
-				frame3 = av_frame_alloc();
-				frameFinished1 = 0;
-				avcodec_decode_audio4(dec_ctx2, frame3, &frameFinished1, &packet);
-				
-				int  bufflinesize;
-				if (frameFinished1) {
-					
-					if (hasplanar) {
-					av_samples_alloc_array_and_samples(&tBuffer2,
-						&bufflinesize,
-						frame3->channels,
-						av_rescale_rnd(frame3->nb_samples, frame3->sample_rate, frame3->sample_rate, AV_ROUND_UP),
-						dst_smp,
-						0);
-					int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame3->extended_data, frame3->nb_samples);
-					num_bytes = av_samples_get_buffer_size(&bufflinesize, frame3->channels,
-						res, dst_smp, 1);
+				packets->push(packet);
+				res = avcodec_send_packet(dec_ctx2, &packets->front());
+				if (res != 0 && res != AVERROR(EAGAIN)) {
+					char* error = new char[256];
+					av_strerror(res, error, 256);
+					common->Warning("idCinematic: Failed to send packet for decoding with message: %s\n", error);
 				}
 				else {
-					num_bytes = frame3->linesize[0];
-					tBuffer2 = (uint8_t**)malloc(sizeof(frame3->extended_data)/sizeof(uint8_t*));
-					tBuffer2[0] = (uint8_t *)malloc(num_bytes);
-					memcpy(tBuffer2[0], frame3->extended_data[0], num_bytes);
-				}
-					av_frame_free(&frame3);
+					packet = packets->front();
+					packets->pop();
+					if ((frameFinished1 = avcodec_receive_frame(dec_ctx2, frame3)) != 0) {
+						char* error = new char[256];
+						av_strerror(frameFinished1, error, 256);
+						common->Warning("idCinematic: Failed to receive frame from decoding with message: %s\n", error);
+					}
+					else {
+						int  bufflinesize;
+						if (hasplanar) {
+							av_samples_alloc_array_and_samples(&tBuffer2,
+								&bufflinesize,
+								frame3->channels,
+								av_rescale_rnd(frame3->nb_samples, frame3->sample_rate, frame3->sample_rate, AV_ROUND_UP),
+								dst_smp,
+								0);
+							int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t**)frame3->extended_data, frame3->nb_samples);
+							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame3->channels,
+								res, dst_smp, 1);
+						}
+						else {
+							num_bytes = frame3->linesize[0];
+							tBuffer2 = (uint8_t**)malloc(sizeof(frame3->extended_data) / sizeof(uint8_t*));
+							tBuffer2[0] = (uint8_t*)malloc(num_bytes);
+							memcpy(tBuffer2[0], frame3->extended_data[0], num_bytes);
+						}
+					}
 				}
 			}
 			//GK:End
 			// Free the packet that was allocated by av_read_frame
-			av_free_packet( &packet );
+			av_packet_unref( &packet );
 		}
 		
 

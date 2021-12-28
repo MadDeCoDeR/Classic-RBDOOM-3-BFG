@@ -24,7 +24,7 @@
 #include "precompiled.h"
 #include "XA2_CinematicAudio.h"
 #include <sound/snd_local.h>
-#include <avformat.h>
+#include <sound/AVD.h>
 
 void CinematicAudio_XAudio2::InitAudio(void* audioContext)
 {

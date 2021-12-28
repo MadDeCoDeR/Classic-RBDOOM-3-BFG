@@ -31,14 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 #include "precompiled.h"
 #include "../snd_local.h"
-#include "../AVD.h"
-extern "C"
-{
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavformat/avio.h>
-#include <libswresample/swresample.h>
-}
+#include <sound/AVD.h>
 
 extern idCVar s_useCompression;
 extern idCVar s_noSound;

@@ -28,13 +28,8 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 #include "precompiled.h"
 #include "../snd_local.h"
-extern "C"
-{
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-#include <libavformat/avio.h>
-#include <libswresample/swresample.h>
-}
+#include <sound/AVD.h>
+
 
 extern idCVar s_useCompression;
 extern idCVar s_noSound;
@@ -313,175 +308,28 @@ bool			idSoundSample_XAudio2::LoadAll(const idStr& name) { //GK:Decode and Demux
 	int mus_size = f->Length();
 	unsigned char* musFile=new unsigned char[mus_size];
 	f->Read(musFile, mus_size);
-	int ret = 0;
-	int avindx = 0;
-	AVFormatContext*		fmt_ctx = avformat_alloc_context();
-	AVCodec*				dec;
-	AVCodecContext*			dec_ctx;
-	AVPacket packet;
-	SwrContext* swr_ctx = NULL;
-	unsigned char *avio_ctx_buffer = NULL;
-	av_register_all();
-	avio_ctx_buffer = static_cast<unsigned char *>(av_malloc((size_t)mus_size));
-	memcpy(avio_ctx_buffer, musFile, mus_size);
-	AVIOContext *avio_ctx = avio_alloc_context(avio_ctx_buffer, mus_size, 0, NULL, NULL, NULL, NULL);
-	fmt_ctx->pb = avio_ctx;
-	avformat_open_input(&fmt_ctx, "", NULL, NULL);
+	bool use_avi = DecodeXAudio(&musFile, &mus_size, &format, true);
+	if (use_avi) {
+		totalBufferSize = mus_size;
+		playLength = (totalBufferSize) / format.basic.blockSize;
 
-	if ((ret = avformat_find_stream_info(fmt_ctx, NULL)) < 0)
-	{
-		return false;
-	}
-	ret = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
-	avindx = ret;
-	dec_ctx = fmt_ctx->streams[avindx]->codec;
-	dec = avcodec_find_decoder(dec_ctx->codec_id);
-	if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0)
-	{
-
-		return false;
-	}
-	bool hasplanar = false;
-	AVSampleFormat dst_smp;
-	if (dec_ctx->sample_fmt >= 5) {
-		dst_smp = static_cast<AVSampleFormat> (dec_ctx->sample_fmt - 5);
-		swr_ctx = swr_alloc_set_opts(NULL, dec_ctx->channel_layout, dst_smp, dec_ctx->sample_rate, dec_ctx->channel_layout, dec_ctx->sample_fmt, dec_ctx->sample_rate, 0, NULL);
-		int res = swr_init(swr_ctx);
-		hasplanar = true;
-	}
-	int format_byte = 0;
-	bool use_ext = false;
-	if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8P) {
-		format_byte = 1;
-	}
-	else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16P) {
-		format_byte = 2;
-	}
-	else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32P) {
-		format_byte = 4;
-	}
-	else {
-		//return false;
-		format_byte = 4;
-		use_ext = true;
-	}
-	if (!use_ext) {
-		format.basic.formatTag = idWaveFile::FORMAT_PCM;
-	}
-	else {
-		format.basic.formatTag = idWaveFile::FORMAT_FLOAT;
-	}
-	format.basic.samplesPerSec = dec_ctx->sample_rate;
-	format.basic.numChannels = dec_ctx->channels;
-	format.basic.avgBytesPerSec = format.basic.samplesPerSec * format_byte * format.basic.numChannels;
-	format.basic.blockSize = format_byte * format.basic.numChannels;
-	format.basic.bitsPerSample = format_byte * 8;
-	/*voiceFormat.cbSize = 22;
-	exvoice.Format = voiceFormat;
-	switch (voiceFormat.nChannels) {
-	case 1:
-		exvoice.dwChannelMask = SPEAKER_MONO;
-		break;
-	case 2:
-		exvoice.dwChannelMask = SPEAKER_STEREO;
-		break;
-	case 4:
-		exvoice.dwChannelMask = SPEAKER_QUAD;
-		break;
-	case 5:
-		exvoice.dwChannelMask = SPEAKER_5POINT1_SURROUND;
-		break;
-	case 7:
-		exvoice.dwChannelMask = SPEAKER_7POINT1_SURROUND;
-		break;
-	default:
-		exvoice.dwChannelMask = SPEAKER_MONO;
-		break;
-	}
-	exvoice.Samples.wReserved = 0;
-	exvoice.Samples.wSamplesPerBlock = voiceFormat.wBitsPerSample;
-	exvoice.Samples.wValidBitsPerSample = voiceFormat.wBitsPerSample;
-	if (!use_ext) {
-		exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
-	}
-	else {
-		exvoice.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
-	}
-	soundSystemLocal.hardware.GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (WAVEFORMATEX *)&exvoice, XAUDIO2_VOICE_MUSIC);*/
-	av_init_packet(&packet);
-	AVFrame *frame;
-	int frameFinished = 0;
-	int offset = 0;
-	int num_bytes = 0;
-	int bufferoffset = format_byte * 10;
-	byte* tBuffer = (byte *)malloc(2 * mus_size*bufferoffset);
-	uint8_t** tBuffer2 = NULL;
-	int  bufflinesize;
-
-	while (av_read_frame(fmt_ctx, &packet) >= 0) {
-		if (packet.stream_index == avindx) {
-			frame = av_frame_alloc();
-			frameFinished = 0;
-			avcodec_decode_audio4(dec_ctx, frame, &frameFinished, &packet);
-			if (frameFinished) {
-
-				if (hasplanar) {
-					av_samples_alloc_array_and_samples(&tBuffer2,
-						&bufflinesize,
-						format.basic.numChannels,
-						av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
-						dst_smp,
-						0);
-
-					int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t **)frame->extended_data, frame->nb_samples);
-					num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
-						res, dst_smp, 1);
-					memcpy(tBuffer + offset, tBuffer2[0], num_bytes);
-
-					offset += num_bytes;
-					av_freep(&tBuffer2[0]);
-
-				}
-				else {
-					num_bytes = frame->linesize[0];
-					memcpy(tBuffer + offset, frame->extended_data[0], num_bytes);
-					offset += num_bytes;
-				}
-
-
-
-			}
-			av_frame_free(&frame);
-			free(frame);
+		buffers.SetNum(1);
+		buffers[0].bufferSize = totalBufferSize;
+		buffers[0].numSamples = playLength;
+		buffers[0].buffer = AllocBuffer(totalBufferSize, GetName());
+		memcpy(buffers[0].buffer, musFile, mus_size);
+		free(musFile);
+		if (format.basic.bitsPerSample == 16)
+		{
+			idSwap::LittleArray((short*)buffers[0].buffer, totalBufferSize / sizeof(short));
 		}
-
-		av_free_packet(&packet);
+		buffers[0].buffer = GPU_CONVERT_CPU_TO_CPU_CACHED_READONLY_ADDRESS(buffers[0].buffer);
+		musFile = NULL;
+		return true;
 	}
-	totalBufferSize = offset;
-	playLength = (totalBufferSize) / format.basic.blockSize;
-
-	buffers.SetNum(1);
-	buffers[0].bufferSize = totalBufferSize;
-	buffers[0].numSamples = playLength;
-	buffers[0].buffer = AllocBuffer(totalBufferSize, GetName());
-	memcpy(buffers[0].buffer, tBuffer, offset);
-	free(tBuffer);
-	if (format.basic.bitsPerSample == 16)
-	{
-		idSwap::LittleArray((short*)buffers[0].buffer, totalBufferSize / sizeof(short));
+	else {
+		return false;
 	}
-	buffers[0].buffer = GPU_CONVERT_CPU_TO_CPU_CACHED_READONLY_ADDRESS(buffers[0].buffer);
-	tBuffer = NULL;
-	if (swr_ctx != NULL) {
-		swr_free(&swr_ctx);
-	}
-
-	avcodec_close(dec_ctx);
-
-	av_free(avio_ctx->buffer);
-	av_freep(avio_ctx);
-	av_free(fmt_ctx->pb);
-	avformat_close_input(&fmt_ctx);
 
 	
 	

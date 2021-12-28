@@ -287,15 +287,13 @@ const char* idWaveFile::ReadWaveFormat( waveFmt_t& format )
 		swap.Little( format.extra.extensible.subFormat.data1 );
 		swap.Little( format.extra.extensible.subFormat.data2 );
 		swap.Little( format.extra.extensible.subFormat.data3 );
-		swap.Little( format.extra.extensible.subFormat.data4 );
-		swap.LittleArray( format.extra.extensible.subFormat.data5, 6 );
+		swap.LittleArray( format.extra.extensible.subFormat.data4, 8 );
 		waveFmt_t::extra_t::extensible_t::guid_t pcmGuid =
 		{
-			FORMAT_PCM,
-			0x0000,
-			0x0010,
-			0x8000,
-			{ 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71 }
+			KSDATAFORMAT_SUBTYPE_PCM.Data1,
+			KSDATAFORMAT_SUBTYPE_PCM.Data2,
+			KSDATAFORMAT_SUBTYPE_PCM.Data3,
+			{ KSDATAFORMAT_SUBTYPE_PCM.Data4[0], KSDATAFORMAT_SUBTYPE_PCM.Data4[1], KSDATAFORMAT_SUBTYPE_PCM.Data4[2], KSDATAFORMAT_SUBTYPE_PCM.Data4[3], KSDATAFORMAT_SUBTYPE_PCM.Data4[4], KSDATAFORMAT_SUBTYPE_PCM.Data4[5], KSDATAFORMAT_SUBTYPE_PCM.Data4[6], KSDATAFORMAT_SUBTYPE_PCM.Data4[7] }
 		};
 		if( memcmp( &pcmGuid, &format.extra.extensible.subFormat, sizeof( pcmGuid ) ) != 0 )
 		{
@@ -387,15 +385,13 @@ bool idWaveFile::ReadWaveFormatDirect( waveFmt_t& format, idFile* file )
 		swap.Little( format.extra.extensible.subFormat.data1 );
 		swap.Little( format.extra.extensible.subFormat.data2 );
 		swap.Little( format.extra.extensible.subFormat.data3 );
-		swap.Little( format.extra.extensible.subFormat.data4 );
-		swap.LittleArray( format.extra.extensible.subFormat.data5, 6 );
+		swap.LittleArray( format.extra.extensible.subFormat.data4, 8 );
 		waveFmt_t::extra_t::extensible_t::guid_t pcmGuid =
 		{
-			FORMAT_PCM,
-			0x0000,
-			0x0010,
-			0x8000,
-			{ 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71 }
+			KSDATAFORMAT_SUBTYPE_PCM.Data1,
+			KSDATAFORMAT_SUBTYPE_PCM.Data2,
+			KSDATAFORMAT_SUBTYPE_PCM.Data3,
+			{ KSDATAFORMAT_SUBTYPE_PCM.Data4[0], KSDATAFORMAT_SUBTYPE_PCM.Data4[1], KSDATAFORMAT_SUBTYPE_PCM.Data4[2], KSDATAFORMAT_SUBTYPE_PCM.Data4[3], KSDATAFORMAT_SUBTYPE_PCM.Data4[4], KSDATAFORMAT_SUBTYPE_PCM.Data4[5], KSDATAFORMAT_SUBTYPE_PCM.Data4[6], KSDATAFORMAT_SUBTYPE_PCM.Data4[7] }
 		};
 		if( memcmp( &pcmGuid, &format.extra.extensible.subFormat, sizeof( pcmGuid ) ) != 0 )
 		{

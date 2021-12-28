@@ -136,8 +136,7 @@ public:
 					uint32 data1;
 					uint16 data2;
 					uint16 data3;
-					uint16 data4;
-					byte data5[ 6 ];
+					uint8 data4[ 8 ];
 				} subFormat;				// Format identifier GUID
 			} extensible;
 			// Valid if basic.formatTag == FORMAT_ADPCM
