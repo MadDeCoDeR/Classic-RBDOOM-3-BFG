@@ -347,8 +347,8 @@ void R_SetNewMode( const bool fullInit )
 			// use explicit position / size for window
 			parms.x = r_windowX.GetInteger() >= 0 ? r_windowX.GetInteger() : 0;
 			parms.y = r_windowY.GetInteger() >= 0 ? r_windowY.GetInteger() : 0;
-			parms.width = r_fullscreen.GetInteger() == 1 ? r_windowWidth.GetInteger() : r_customWidth.GetInteger() + 1;
-			parms.height = r_fullscreen.GetInteger() == 1 ? r_windowHeight.GetInteger() : r_customHeight.GetInteger() + 1;
+			parms.width = r_fullscreen.GetInteger() == 0 ? r_windowWidth.GetInteger() : r_customWidth.GetInteger() + 1;
+			parms.height = r_fullscreen.GetInteger() == 0 ? r_windowHeight.GetInteger() : r_customHeight.GetInteger() + 1;
 			// may still be -1 to force a borderless window
 			parms.fullScreen = r_fullscreen.GetInteger();
 			parms.displayHz = 0;		// ignored
