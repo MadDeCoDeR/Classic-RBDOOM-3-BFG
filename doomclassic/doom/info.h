@@ -1159,7 +1159,7 @@ typedef enum
 } statenum_t;
 
 
-typedef struct
+typedef struct state_s
 {
   int	sprite = SPR_TNT1;
   long			frame;

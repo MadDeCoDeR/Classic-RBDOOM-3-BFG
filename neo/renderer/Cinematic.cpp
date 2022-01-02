@@ -1286,7 +1286,9 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 							num_bytes = frame3->linesize[0];
 							tBuffer2 = (uint8_t**)malloc(sizeof(frame3->extended_data) / sizeof(uint8_t*));
 							tBuffer2[0] = (uint8_t*)malloc(num_bytes);
-							memcpy(tBuffer2[0], frame3->extended_data[0], num_bytes);
+							if (num_bytes > 0) {
+								memcpy(tBuffer2[0], frame3->extended_data[0], num_bytes);
+							}
 						}
 					}
 				}

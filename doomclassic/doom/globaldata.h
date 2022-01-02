@@ -62,7 +62,7 @@ struct Globals {
 
 extern Globals *g;
 
-#define GLOBAL( type, name ) type name
+#define GLOBAL_CLASSIC( type, name ) type name
 #define GLOBAL_ARRAY( type, name, count ) type name[count]
 
 extern void localCalculateAchievements(bool epComplete);

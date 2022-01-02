@@ -6323,6 +6323,8 @@ int					idGameLocal::GetCVarInteger(const char* var)
 			return g_cvar.CVar->GetInteger();
 		}
 	}
+
+	return std::numeric_limits<int>::min();
 }
 float				idGameLocal::GetCVarFloat(const char* var)
 {
@@ -6332,7 +6334,7 @@ float				idGameLocal::GetCVarFloat(const char* var)
 			return g_cvar.CVar->GetFloat();
 		}
 	}
-
+	return std::numeric_limits<float>::min();
 }
 bool				idGameLocal::GetCVarBool(const char* var)
 {
@@ -6342,6 +6344,7 @@ bool				idGameLocal::GetCVarBool(const char* var)
 			return g_cvar.CVar->GetBool();
 		}
 	}
+	return false;
 }
 void				idGameLocal::SetCVarInteger(const char* var, int value) 
 {

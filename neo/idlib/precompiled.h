@@ -56,9 +56,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../framework/CVarSystem.h"
 #include "../framework/Common.h"
 #include "../framework/KeyInput.h"
-// DG: needed for idFile_InZip in File.h
-#include "../framework/Unzip.h"
-// DG end
+#include "../libs/zlib/minizip/unzip.h"
 #include "../framework/File.h"
 #include "../framework/File_Manifest.h"
 #include "../framework/File_SaveGame.h"

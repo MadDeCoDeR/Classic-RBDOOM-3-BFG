@@ -124,7 +124,11 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			{
 				SetBkColor( ( HDC ) wParam, RGB( 0x00, 0x00, 0x80 ) );
 				SetTextColor( ( HDC ) wParam, RGB( 0xff, 0xff, 0x00 ) );
-				return ( long ) s_wcd.hbrEditBackground;
+#ifdef _WIN64
+				return ( long long ) s_wcd.hbrEditBackground;
+#else
+				return ( long )s_wcd.hbrEditBackground;
+#endif
 			}
 			else if( ( HWND ) lParam == s_wcd.hwndErrorBox )
 			{
@@ -138,7 +142,11 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 					SetBkColor( ( HDC ) wParam, RGB( 0x80, 0x80, 0x80 ) );
 					SetTextColor( ( HDC ) wParam, RGB( 0x00, 0x0, 0x00 ) );
 				}
-				return ( long ) s_wcd.hbrErrorBackground;
+#ifdef _WIN64
+				return ( long long ) s_wcd.hbrErrorBackground;
+#else
+				return (long)s_wcd.hbrErrorBackground;
+#endif
 			}
 			break;
 		case WM_SYSCOMMAND:
@@ -428,7 +436,7 @@ void Sys_CreateConsole()
 	
 	// RB begin
 #if defined(_WIN64)
-	s_wcd.SysInputLineWndProc = ( WNDPROC ) SetWindowLong( s_wcd.hwndInputLine, GWLP_WNDPROC, ( LONG_PTR ) InputLineWndProc );
+	s_wcd.SysInputLineWndProc = ( WNDPROC ) (INT64)SetWindowLong( s_wcd.hwndInputLine, GWLP_WNDPROC, ( LONG_PTR ) InputLineWndProc );
 #else
 	s_wcd.SysInputLineWndProc = ( WNDPROC ) SetWindowLong( s_wcd.hwndInputLine, GWL_WNDPROC, ( LONG ) InputLineWndProc );
 #endif

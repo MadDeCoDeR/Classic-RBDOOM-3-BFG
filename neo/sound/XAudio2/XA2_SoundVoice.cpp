@@ -210,7 +210,7 @@ void idSoundVoice_XAudio2::Start( int offsetMS, int ssFlags )
 		common->FatalError("Failed to create Reverb");
 	}
 
-	XAUDIO2_EFFECT_DESCRIPTOR descriptors[] = { {voiceReverb, true, leadinSample->NumChannels()}, {} };
+	XAUDIO2_EFFECT_DESCRIPTOR descriptors[] = { {voiceReverb, true, (UINT32) leadinSample->NumChannels()}, {} };
 	XAUDIO2_EFFECT_CHAIN chain;
 	if( flicker != hasVUMeter )
 	{

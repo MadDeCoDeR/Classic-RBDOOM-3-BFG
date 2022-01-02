@@ -56,7 +56,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "d_deh.h"
 #include "d_exp.h"
 
-#include "libs/zlib/minizip/unzip.h" //GK: Linux doesn't like the use of \ for file paths
+#include <libs/zlib/minizip/unzip.h> //GK: Linux doesn't like the use of \ for file paths
 #include "f_finale.h"
 #include "g_game.h"
 #include "p_setup.h"
@@ -161,13 +161,13 @@ void W_ReplaceLump(std::vector<filelump_t>::iterator file, int pos, idFile* hand
 	lump->size = file->size;
 }
 
-typedef struct spritename_t {
+typedef struct spritename_s {
 	char base[4];
 	char frame1;
 	char rotation1;
 	char frame2;
 	char rotation2;
-};
+}spritename_t;
 
 bool W_CompareSprites(spritename_t* original, spritename_t* newname) {
 	

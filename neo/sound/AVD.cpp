@@ -464,6 +464,7 @@ const char* GetSampleName(ALenum sample) {
 	case AL_FORMAT_MONO_FLOAT32:
 		return "Mono Float Point";
 	}
+	return "";
 }
 
 void parseAVError(int error) {

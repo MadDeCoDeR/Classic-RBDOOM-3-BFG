@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #pragma hdrstop
 
-#include "Unzip.h"
+#include <libs/zlib/minizip/unzip.h>
 #include "Zip.h"
 
 #ifdef WIN32

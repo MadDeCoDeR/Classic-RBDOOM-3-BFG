@@ -711,36 +711,7 @@ bool InterpolateTics() {
 		notyet = 0;
 		return false;
 	}
-	/*if (!::g->lastfirsttic) {
-		::g->lastfirsttic = ::g->trt_entertic;
-		::g->gameframecount++;
-		return true;
-	}
-	if (::g->ownedsecondframe) {
-		::g->ownedsecondframe = false;
-		::g->lastsecondtic = ::g->lastfirsttic;
-		::g->gameframecount++;
-		return true;
-	}
-	if (::g->trt_entertic - ::g->lastfirsttic < ::g->firstticrate) {
-		if (::g->trt_entertic - ::g->lastsecondtic < ::g->secondticrate) {
-			return false;
-		}
-		else {
-			::g->lastsecondtic = ::g->trt_entertic;
-			::g->gameframecount++;
-			return true;
-		}
-	}
-	else {
-		if (::g->trt_entertic - ::g->lastsecondtic >= ::g->secondticrate) {
-			::g->ownedsecondframe = true;
-		}
-		::g->lastfirsttic = ::g->trt_entertic;
-		::g->gameframecount++;
-		return true;
-	}*/
-	//return false;
+	return false;
 }
 //GK: End
 
