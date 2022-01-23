@@ -54,7 +54,11 @@ idGuiModel* tr_guiModel;
 glconfig_t	glConfig;
 
 idCVar r_requestStereoPixelFormat( "r_requestStereoPixelFormat", "1", CVAR_RENDERER, "Ask for a stereo GL pixel format on startup" );
+#ifdef _DEBUG
+idCVar r_debugContext("r_debugContext", "1", CVAR_RENDERER, "Enable various levels of context debug.");
+#else
 idCVar r_debugContext( "r_debugContext", "0", CVAR_RENDERER, "Enable various levels of context debug." );
+#endif
 idCVar r_glDriver( "r_glDriver", "", CVAR_RENDERER, "\"opengl32\", etc." );
 idCVar r_skipIntelWorkarounds( "r_skipIntelWorkarounds", "0", CVAR_RENDERER | CVAR_BOOL, "skip workarounds for Intel driver bugs" );
 // RB: disabled 16x MSAA
