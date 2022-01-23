@@ -292,7 +292,7 @@ void idVertexBuffer::UnmapBuffer()
 	assert( apiObject != 0xFFFF );
 	assert( IsMapped() );
 	
-	if (glConfig.glVersion < 4.5) {
+	if (!glConfig.directStateAccess) {
 		glBindBuffer(GL_ARRAY_BUFFER, apiObject);
 		if (!glUnmapBuffer(GL_ARRAY_BUFFER))
 		{
