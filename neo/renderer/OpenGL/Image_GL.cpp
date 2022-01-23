@@ -213,90 +213,83 @@ void idImage::CopyFramebuffer( int x, int y, int imageWidth, int imageHeight, bo
 		}
 
 		glBindTexture(target, texnum);
-	}
-	
 #if !defined(USE_GLES2)
-	if( Framebuffer::IsDefaultFramebufferActive() )
-	{
-		if (!glConfig.directStateAccess) {
+		if (Framebuffer::IsDefaultFramebufferActive())
+		{
 			glReadBuffer(GL_BACK);
 		}
-		else {
-			glNamedFramebufferReadBuffer(0, GL_BACK);
-		}
-	}
 #endif
-	if (opts.width != imageWidth || opts.height != imageHeight) {
 		opts.width = imageWidth;
 		opts.height = imageHeight;
-		//GK: Since DSA doesn't support muttable Textures 
-		//then every time we resize the texture we also have 
-		//to wipe the old one and create it as new
-		if (glConfig.directStateAccess) {
-			this->AllocImage();
-		}
-	}
 #if defined(USE_GLES2)
-	glCopyTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, x, y, imageWidth, imageHeight, 0 );
+		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, imageWidth, imageHeight, 0);
 #else
-	if( r_useHDR.GetBool() && globalFramebuffers.hdrFBO->IsBound() )
-	{
-	
-		//if( backEnd.glState.currentFramebuffer != NULL && backEnd.glState.currentFramebuffer->IsMultiSampled() )
-	
+		if (r_useHDR.GetBool() && globalFramebuffers.hdrFBO->IsBound())
+		{
+
+			//if( backEnd.glState.currentFramebuffer != NULL && backEnd.glState.currentFramebuffer->IsMultiSampled() )
+
 #if defined(USE_HDR_MSAA)
-		if( globalFramebuffers.hdrFBO->IsMultiSampled() )
-		{
-			glBindFramebuffer( GL_READ_FRAMEBUFFER, globalFramebuffers.hdrFBO->GetFramebuffer() );
-			glBindFramebuffer( GL_DRAW_FRAMEBUFFER, globalFramebuffers.hdrNonMSAAFBO->GetFramebuffer() );
-			glBlitFramebuffer( 0, 0, glConfig.nativeScreenWidth, glConfig.nativeScreenHeight,
-							   0, 0, glConfig.nativeScreenWidth, glConfig.nativeScreenHeight,
-							   GL_COLOR_BUFFER_BIT,
-							   GL_LINEAR );
-	
-			globalFramebuffers.hdrNonMSAAFBO->Bind();
-	
-			glCopyTexImage2D( target, 0, forceLDR ? GL_RGBA8 : GL_RGBA16F, x, y, imageWidth, imageHeight, 0 );
-	
-			globalFramebuffers.hdrFBO->Bind();
-		}
-		else
+			if (globalFramebuffers.hdrFBO->IsMultiSampled())
+			{
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, globalFramebuffers.hdrFBO->GetFramebuffer());
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, globalFramebuffers.hdrNonMSAAFBO->GetFramebuffer());
+				glBlitFramebuffer(0, 0, glConfig.nativeScreenWidth, glConfig.nativeScreenHeight,
+					0, 0, glConfig.nativeScreenWidth, glConfig.nativeScreenHeight,
+					GL_COLOR_BUFFER_BIT,
+					GL_LINEAR);
+
+				globalFramebuffers.hdrNonMSAAFBO->Bind();
+
+				glCopyTexImage2D(target, 0, forceLDR ? GL_RGBA8 : GL_RGBA16F, x, y, imageWidth, imageHeight, 0);
+
+				globalFramebuffers.hdrFBO->Bind();
+			}
+			else
 #endif
-		{
-			if (!glConfig.directStateAccess) {
+			{
 				glCopyTexImage2D(target, 0, forceLDR ? GL_RGBA8 : GL_RGBA16F, x, y, imageWidth, imageHeight, 0);
 			}
-			else {
-				glCopyTextureSubImage2D(texnum, 0, 0, 0, x, y, imageWidth, imageHeight);
-			}
 		}
-	}
-	else
-	{
-		if (!glConfig.directStateAccess) {
+		else
+		{
 			glCopyTexImage2D(target, 0, GL_RGBA8, x, y, imageWidth, imageHeight, 0);
 		}
-		else {
-			glCopyTextureSubImage2D(texnum, 0, 0, 0, x, y, imageWidth, imageHeight);
-		}
-	}
 #endif
-	
-	if (!glConfig.directStateAccess) {
+
 		// these shouldn't be necessary if the image was initialized properly
 		glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 		glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	}
-	else {
-		glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameterf(texnum, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glTextureParameterf(texnum, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTextureParameterf(texnum, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
+else {
+
+#if !defined(USE_GLES2)
+	if (Framebuffer::IsDefaultFramebufferActive())
+	{
+		glNamedFramebufferReadBuffer(0, GL_BACK);
 	}
+#endif
+	opts.width = imageWidth;
+	opts.height = imageHeight;
+	if (r_useHDR.GetBool() && globalFramebuffers.hdrFBO->IsBound() && !forceLDR) {
+		opts.format = FMT_RGBA16F;
+	}
+	//GK: Since DSA doesn't support muttable Textures 
+	//then every time we resize the texture we also have 
+	//to wipe the old one and create it as new
+	this->AllocImage();
+	glCopyTextureSubImage2D(texnum, 0, 0, 0, x, y, imageWidth, imageHeight);
+
+	glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTextureParameterf(texnum, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTextureParameterf(texnum, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTextureParameterf(texnum, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
 	
 	tr.backend.pc.c_copyFrameBuffer++;
 }
@@ -374,48 +367,80 @@ void idImage::SubImageUpload( int mipLevel, int x, int y, int z, int width, int 
 	
 	int target;
 	int uploadTarget;
-	
-	if (opts.textureType == TT_2D)
-	{
-		target = uploadTarget = GL_TEXTURE_2D;
-	}
-	else if (opts.textureType == TT_CUBIC)
-	{
-		target = GL_TEXTURE_CUBE_MAP;
-		uploadTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + z;
-	}
-	else
-	{
-		assert(!"invalid opts.textureType");
-		target = uploadTarget = GL_TEXTURE_2D;
-	}
 	if (!glConfig.directStateAccess) {
+		if (opts.textureType == TT_2D)
+		{
+			target = uploadTarget = GL_TEXTURE_2D;
+		}
+		else if (opts.textureType == TT_CUBIC)
+		{
+			target = GL_TEXTURE_CUBE_MAP;
+			uploadTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X + z;
+		}
+		else
+		{
+			assert(!"invalid opts.textureType");
+			target = uploadTarget = GL_TEXTURE_2D;
+		}
 		glBindTexture(target, texnum);
-	}
 
+		if (pixelPitch != 0)
+		{
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, pixelPitch);
+		}
 
-	
-	if( pixelPitch != 0 )
-	{
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, pixelPitch);
-	}
-	
-	if( opts.format == FMT_RGB565 )
-	{
+		if (opts.format == FMT_RGB565)
+		{
 #if !defined(USE_GLES3)
-		glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_TRUE);
+			glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_TRUE);
 #endif
-	}
-	
+		}
+
 #if defined(DEBUG) || defined(__ANDROID__)
-	GL_CheckErrors();
+		GL_CheckErrors();
 #endif
-	if( IsCompressed() )
-	{
-		if (!glConfig.directStateAccess) {
+		if (IsCompressed())
+		{
 			glCompressedTexSubImage2D(uploadTarget, mipLevel, x, y, width, height, internalFormat, compressedSize, pic);
 		}
-		else {
+		else
+		{
+
+			// make sure the pixel store alignment is correct so that lower mips get created
+			// properly for odd shaped textures - this fixes the mip mapping issues with
+			// fonts
+			int unpackAlignment = width * BitsForFormat((textureFormat_t)opts.format) / 8;
+			if ((unpackAlignment & 3) == 0)
+			{
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+			}
+			else
+			{
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			}
+
+			
+			glTexSubImage2D(uploadTarget, mipLevel, x, y, width, height, dataFormat, dataType, pic);
+		}
+	}
+	else {
+		if( pixelPitch != 0 )
+		{
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, pixelPitch);
+		}
+	
+		if( opts.format == FMT_RGB565 )
+		{
+	#if !defined(USE_GLES3)
+			glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_TRUE);
+	#endif
+		}
+	
+	#if defined(DEBUG) || defined(__ANDROID__)
+		GL_CheckErrors();
+	#endif
+		if( IsCompressed() )
+		{
 			if (opts.textureType == TT_CUBIC) {
 				glCompressedTextureSubImage3D(texnum, mipLevel, x, y, z, width, height, 1, internalFormat, compressedSize, pic);
 			}
@@ -423,33 +448,29 @@ void idImage::SubImageUpload( int mipLevel, int x, int y, int z, int width, int 
 				glCompressedTextureSubImage2D(texnum, mipLevel, x, y, width, height, internalFormat, compressedSize, pic);
 			}
 		}
-	}
-	else
-	{
-	
-		// make sure the pixel store alignment is correct so that lower mips get created
-		// properly for odd shaped textures - this fixes the mip mapping issues with
-		// fonts
-		int unpackAlignment = width * BitsForFormat( ( textureFormat_t )opts.format ) / 8;
-		if( ( unpackAlignment & 3 ) == 0 )
-		{
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-		}
 		else
 		{
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-		}
+	
+			// make sure the pixel store alignment is correct so that lower mips get created
+			// properly for odd shaped textures - this fixes the mip mapping issues with
+			// fonts
+			int unpackAlignment = width * BitsForFormat( ( textureFormat_t )opts.format ) / 8;
+			if( ( unpackAlignment & 3 ) == 0 )
+			{
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+			}
+			else
+			{
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+			}
 		
-		if (!glConfig.directStateAccess) {
-			glTexSubImage2D(uploadTarget, mipLevel, x, y, width, height, dataFormat, dataType, pic);
-		}
-		else {
 			if (opts.textureType == TT_CUBIC) {
 				glTextureSubImage3D(texnum, mipLevel, x, y, z, width, height, 1, dataFormat, dataType, pic);
 			}
 			else {
 				glTextureSubImage2D(texnum, mipLevel, x, y, width, height, dataFormat, dataType, pic);
 			}
+			
 		}
 	}
 	
@@ -671,50 +692,47 @@ void idImage::SetTexParameters()
 			glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 		}
 	}
- else {
- // ALPHA, LUMINANCE, LUMINANCE_ALPHA, and INTENSITY have been removed
+	 else {
+	 // ALPHA, LUMINANCE, LUMINANCE_ALPHA, and INTENSITY have been removed
 		// in OpenGL 3.2. In order to mimic those modes, we use the swizzle operators
-		if (opts.colorFormat == CFM_GREEN_ALPHA)
-		{
+		if (opts.colorFormat == CFM_GREEN_ALPHA) {
 			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_ONE);
 			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_ONE);
 			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_ONE);
 			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_GREEN);
 		}
-		else if (opts.format == FMT_LUM8)
-		{
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_ONE);
-		}
-		else if (opts.format == FMT_L8A8)
-		{
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_GREEN);
-		}
-		else if (opts.format == FMT_ALPHA)
-		{
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_ONE);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_ONE);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_ONE);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_RED);
-		}
-		else if (opts.format == FMT_INT8)
-		{
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_RED);
-		}
-		else
-		{
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+		else {
+			switch (opts.format) {
+			case FMT_LUM8:
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_ONE);
+				break;
+			case FMT_L8A8:
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_GREEN);
+				break;
+			case FMT_ALPHA:
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_ONE);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_ONE);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_ONE);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_RED);
+				break;
+			case FMT_INT8:
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_RED);
+				break;
+			default:
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+			}
 		}
 
 		switch (filter)
@@ -996,7 +1014,8 @@ void idImage::AllocImage()
 		assert(texnum != TEXTURE_NOT_LOADED);
 	}
 	
-	switch (opts.textureType) {
+	if (!glConfig.directStateAccess) {
+		switch (opts.textureType) {
 		case TT_2D_ARRAY:
 			if (!glConfig.directStateAccess) {
 				glTexImage3D(uploadTarget, 0, internalFormat, opts.width, opts.height, numSides, 0, dataFormat, GL_UNSIGNED_BYTE, NULL);
@@ -1016,77 +1035,83 @@ void idImage::AllocImage()
 		default:
 			int w = opts.width;
 			int h = opts.height;
-			if (glConfig.directStateAccess) {
-				if (numSides == 1) {
-					glTextureStorage2D(texnum, opts.numLevels, internalFormat, w, h);
-				}
-				else {
-					glTextureStorage3D(texnum, opts.numLevels, internalFormat, w, h, numSides);
-					glGenerateTextureMipmap(texnum);
-				}
-			}
-			else {
-				for (int side = 0; side < numSides; side++)
+			
+			for (int side = 0; side < numSides; side++)
+			{
+				if (opts.textureType == TT_CUBIC)
 				{
-					if (opts.textureType == TT_CUBIC)
+					h = w;
+				}
+				for (int level = 0; level < opts.numLevels; level++)
+				{
+
+					// clear out any previous error
+					GL_CheckErrors();
+
+					if (IsCompressed())
 					{
-						h = w;
-					}
-					for (int level = 0; level < opts.numLevels; level++)
-					{
+						int compressedSize = (((w + 3) / 4) * ((h + 3) / 4) * int64(16) * BitsForFormat(opts.format)) / 8;
 
-						// clear out any previous error
-						GL_CheckErrors();
+						// Even though the OpenGL specification allows the 'data' pointer to be NULL, for some
+						// drivers we actually need to upload data to get it to allocate the texture.
+						// However, on 32-bit systems we may fail to allocate a large block of memory for large
+						// textures. We handle this case by using HeapAlloc directly and allowing the allocation
+						// to fail in which case we simply pass down NULL to glCompressedTexImage2D and hope for the best.
+						// As of 2011-10-6 using NVIDIA hardware and drivers we have to allocate the memory with HeapAlloc
+						// with the exact size otherwise large image allocation (for instance for physical page textures)
+						// may fail on Vista 32-bit.
 
-						if (IsCompressed())
-						{
-							int compressedSize = (((w + 3) / 4) * ((h + 3) / 4) * int64(16) * BitsForFormat(opts.format)) / 8;
-
-							// Even though the OpenGL specification allows the 'data' pointer to be NULL, for some
-							// drivers we actually need to upload data to get it to allocate the texture.
-							// However, on 32-bit systems we may fail to allocate a large block of memory for large
-							// textures. We handle this case by using HeapAlloc directly and allowing the allocation
-							// to fail in which case we simply pass down NULL to glCompressedTexImage2D and hope for the best.
-							// As of 2011-10-6 using NVIDIA hardware and drivers we have to allocate the memory with HeapAlloc
-							// with the exact size otherwise large image allocation (for instance for physical page textures)
-							// may fail on Vista 32-bit.
-
-							// RB begin
+						// RB begin
 #if defined(_WIN32)
-							void* data = HeapAlloc(GetProcessHeap(), 0, compressedSize);
-							glCompressedTexImage2D(uploadTarget + side, level, internalFormat, w, h, 0, compressedSize, data);
-							if (data != NULL)
-							{
-								HeapFree(GetProcessHeap(), 0, data);
-							}
-#else
-							byte* data = (byte*)Mem_Alloc(compressedSize, TAG_TEMP);
-							glCompressedTexImage2D(uploadTarget + side, level, internalFormat, w, h, 0, compressedSize, data);
-							if (data != NULL)
-							{
-								Mem_Free(data);
-							}
-#endif
-							// RB end
-						}
-						else
+						void* data = HeapAlloc(GetProcessHeap(), 0, compressedSize);
+						glCompressedTexImage2D(uploadTarget + side, level, internalFormat, w, h, 0, compressedSize, data);
+						if (data != NULL)
 						{
-							glTexImage2D(uploadTarget + side, level, internalFormat, w, h, 0, dataFormat, dataType, NULL);
+							HeapFree(GetProcessHeap(), 0, data);
 						}
-
-						GL_CheckErrors();
-
-						w = Max(1, w >> 1);
-						h = Max(1, h >> 1);
+#else
+						byte* data = (byte*)Mem_Alloc(compressedSize, TAG_TEMP);
+						glCompressedTexImage2D(uploadTarget + side, level, internalFormat, w, h, 0, compressedSize, data);
+						if (data != NULL)
+						{
+							Mem_Free(data);
+						}
+#endif
+						// RB end
 					}
+					else
+					{
+						glTexImage2D(uploadTarget + side, level, internalFormat, w, h, 0, dataFormat, dataType, NULL);
+					}
+
+					w = Max(1, w >> 1);
+					h = Max(1, h >> 1);
 				}
 			}
-			if (!glConfig.directStateAccess) {
-				glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
+		}
+		glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
+
+	}
+	else {
+		switch (opts.textureType) {
+		case TT_2D_ARRAY:
+			glTextureStorage3D(texnum, opts.numLevels, internalFormat, opts.width, opts.height, numSides);
+			break;
+		case TT_2D_MULTISAMPLE:
+			glTextureStorage2DMultisample(texnum, opts.samples, internalFormat, opts.width, opts.height, GL_FALSE);
+			break;
+		default:
+			int w = opts.width;
+			int h = opts.height;
+			if (numSides == 1) {
+				glTextureStorage2D(texnum, opts.numLevels, internalFormat, w, h);
 			}
 			else {
-				glTextureParameteri(texnum, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
+				glTextureStorage3D(texnum, opts.numLevels, internalFormat, w, h, numSides);
+				glGenerateTextureMipmap(texnum);
 			}
+			glTextureParameteri(texnum, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
+		}
 	}
 	
 	// see if we messed anything up
