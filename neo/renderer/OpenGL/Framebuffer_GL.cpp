@@ -63,7 +63,12 @@ Framebuffer::Framebuffer( const char* name, int w, int h )
 	
 	msaaSamples = false;
 	
-	glGenFramebuffers( 1, &frameBuffer );
+	if (!glConfig.directStateAccess) {
+		glGenFramebuffers(1, &frameBuffer);
+	}
+	else {
+		glCreateFramebuffers(1, &frameBuffer);
+	}
 	
 	framebuffers.Append( this );
 }
@@ -99,7 +104,9 @@ void Framebuffer::Init()
 	int screenHeight = renderSystem->GetHeight();
 	
 	globalFramebuffers.hdrFBO = new Framebuffer( "_hdr", screenWidth, screenHeight );
-	globalFramebuffers.hdrFBO->Bind();
+	if (!glConfig.directStateAccess) {
+		globalFramebuffers.hdrFBO->Bind();
+	}
 	
 #if defined(USE_HDR_MSAA)
 	if( glConfig.multisamples )
@@ -136,7 +143,9 @@ void Framebuffer::Init()
 	// HDR DOWNSCALE
 	
 	globalFramebuffers.hdr64FBO = new Framebuffer( "_hdr64", 64, 64 );
-	globalFramebuffers.hdr64FBO->Bind();
+	if (!glConfig.directStateAccess) {
+		globalFramebuffers.hdr64FBO->Bind();
+	}
 	globalFramebuffers.hdr64FBO->AddColorBuffer( GL_RGBA16F, 0 );
 	globalFramebuffers.hdr64FBO->AttachImage2D( GL_TEXTURE_2D, globalImages->currentRenderHDRImage64, 0 );
 	
@@ -148,7 +157,9 @@ void Framebuffer::Init()
 	for( int i = 0; i < MAX_BLOOM_BUFFERS; i++ )
 	{
 		globalFramebuffers.bloomRenderFBO[i] = new Framebuffer( va( "_bloomRender%i", i ), screenWidth, screenHeight );
-		globalFramebuffers.bloomRenderFBO[i]->Bind();
+		if (!glConfig.directStateAccess) {
+			globalFramebuffers.bloomRenderFBO[i]->Bind();
+		}
 		globalFramebuffers.bloomRenderFBO[i]->AddColorBuffer( GL_RGBA8, 0 );
 		globalFramebuffers.bloomRenderFBO[i]->AttachImage2D( GL_TEXTURE_2D, globalImages->bloomRenderImage[i], 0 );
 		globalFramebuffers.bloomRenderFBO[i]->Check();
@@ -159,7 +170,9 @@ void Framebuffer::Init()
 	for( int i = 0; i < MAX_SSAO_BUFFERS; i++ )
 	{
 		globalFramebuffers.ambientOcclusionFBO[i] = new Framebuffer( va( "_aoRender%i", i ), screenWidth, screenHeight );
-		globalFramebuffers.ambientOcclusionFBO[i]->Bind();
+		if (!glConfig.directStateAccess) {
+			globalFramebuffers.ambientOcclusionFBO[i]->Bind();
+		}
 		globalFramebuffers.ambientOcclusionFBO[i]->AddColorBuffer( GL_RGBA8, 0 );
 		globalFramebuffers.ambientOcclusionFBO[i]->AttachImage2D( GL_TEXTURE_2D, globalImages->ambientOcclusionImage[i], 0 );
 		globalFramebuffers.ambientOcclusionFBO[i]->Check();
@@ -170,7 +183,9 @@ void Framebuffer::Init()
 	for( int i = 0; i < MAX_HIERARCHICAL_ZBUFFERS; i++ )
 	{
 		globalFramebuffers.csDepthFBO[i] = new Framebuffer( va( "_csz%i", i ), screenWidth / ( 1 << i ), screenHeight / ( 1 << i ) );
-		globalFramebuffers.csDepthFBO[i]->Bind();
+		if (!glConfig.directStateAccess) {
+			globalFramebuffers.csDepthFBO[i]->Bind();
+		}
 		globalFramebuffers.csDepthFBO[i]->AddColorBuffer( GL_R32F, 0 );
 		globalFramebuffers.csDepthFBO[i]->AttachImage2D( GL_TEXTURE_2D, globalImages->hierarchicalZbufferImage, 0, i );
 		globalFramebuffers.csDepthFBO[i]->Check();
@@ -179,7 +194,9 @@ void Framebuffer::Init()
 	// GEOMETRY BUFFER
 	
 	globalFramebuffers.geometryBufferFBO = new Framebuffer( "_gbuffer", screenWidth, screenHeight );
-	globalFramebuffers.geometryBufferFBO->Bind();
+	if (!glConfig.directStateAccess) {
+		globalFramebuffers.geometryBufferFBO->Bind();
+	}
 	globalFramebuffers.geometryBufferFBO->AddColorBuffer( GL_RGBA16F, 0 );
 	globalFramebuffers.geometryBufferFBO->AddDepthBuffer(GL_DEPTH24_STENCIL8);
 	globalFramebuffers.geometryBufferFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->currentNormalsImage, 0 );
@@ -189,13 +206,17 @@ void Framebuffer::Init()
 	// SMAA
 	
 	globalFramebuffers.smaaEdgesFBO = new Framebuffer( "_smaaEdges", screenWidth, screenHeight );
-	globalFramebuffers.smaaEdgesFBO->Bind();
+	if (!glConfig.directStateAccess) {
+		globalFramebuffers.smaaEdgesFBO->Bind();
+	}
 	globalFramebuffers.smaaEdgesFBO->AddColorBuffer( GL_RGBA8, 0 );
 	globalFramebuffers.smaaEdgesFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->smaaEdgesImage, 0 );
 	globalFramebuffers.smaaEdgesFBO->Check();
 	
 	globalFramebuffers.smaaBlendFBO = new Framebuffer( "_smaaBlend", screenWidth, screenHeight );
-	globalFramebuffers.smaaBlendFBO->Bind();
+	if (!glConfig.directStateAccess) {
+		globalFramebuffers.smaaBlendFBO->Bind();
+	}
 	globalFramebuffers.smaaBlendFBO->AddColorBuffer( GL_RGBA8, 0 );
 	globalFramebuffers.smaaBlendFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->smaaBlendImage, 0 );
 	globalFramebuffers.smaaBlendFBO->Check();
@@ -236,7 +257,9 @@ void Framebuffer::CheckFramebuffers()
 		else
 #endif
 		{
-			globalFramebuffers.hdrFBO->Bind();
+			if (!glConfig.directStateAccess) {
+				globalFramebuffers.hdrFBO->Bind();
+			}
 			globalFramebuffers.hdrFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->currentRenderHDRImage, 0 );
 			globalFramebuffers.hdrFBO->AttachImageDepth( GL_TEXTURE_2D, globalImages->currentDepthImage );
 			globalFramebuffers.hdrFBO->Check();
@@ -263,7 +286,9 @@ void Framebuffer::CheckFramebuffers()
 			globalFramebuffers.bloomRenderFBO[i]->width = screenWidth / 4;
 			globalFramebuffers.bloomRenderFBO[i]->height = screenHeight / 4;
 			
-			globalFramebuffers.bloomRenderFBO[i]->Bind();
+			if (!glConfig.directStateAccess) {
+				globalFramebuffers.bloomRenderFBO[i]->Bind();
+			}
 			globalFramebuffers.bloomRenderFBO[i]->AttachImage2D( GL_TEXTURE_2D, globalImages->bloomRenderImage[i], 0 );
 			globalFramebuffers.bloomRenderFBO[i]->Check();
 		}
@@ -277,7 +302,9 @@ void Framebuffer::CheckFramebuffers()
 			globalFramebuffers.ambientOcclusionFBO[i]->width = screenWidth;
 			globalFramebuffers.ambientOcclusionFBO[i]->height = screenHeight;
 			
-			globalFramebuffers.ambientOcclusionFBO[i]->Bind();
+			if (!glConfig.directStateAccess) {
+				globalFramebuffers.ambientOcclusionFBO[i]->Bind();
+			}
 			globalFramebuffers.ambientOcclusionFBO[i]->AttachImage2D( GL_TEXTURE_2D, globalImages->ambientOcclusionImage[i], 0 );
 			globalFramebuffers.ambientOcclusionFBO[i]->Check();
 		}
@@ -291,7 +318,9 @@ void Framebuffer::CheckFramebuffers()
 			globalFramebuffers.csDepthFBO[i]->width = screenWidth / ( 1 << i );
 			globalFramebuffers.csDepthFBO[i]->height = screenHeight / ( 1 << i );
 			
-			globalFramebuffers.csDepthFBO[i]->Bind();
+			if (!glConfig.directStateAccess) {
+				globalFramebuffers.csDepthFBO[i]->Bind();
+			}
 			globalFramebuffers.csDepthFBO[i]->AttachImage2D( GL_TEXTURE_2D, globalImages->hierarchicalZbufferImage, 0, i );
 			globalFramebuffers.csDepthFBO[i]->Check();
 		}
@@ -303,7 +332,9 @@ void Framebuffer::CheckFramebuffers()
 		globalFramebuffers.geometryBufferFBO->width = screenWidth;
 		globalFramebuffers.geometryBufferFBO->height = screenHeight;
 		
-		globalFramebuffers.geometryBufferFBO->Bind();
+		if (!glConfig.directStateAccess) {
+			globalFramebuffers.geometryBufferFBO->Bind();
+		}
 		globalFramebuffers.geometryBufferFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->currentNormalsImage, 0 );
 		globalFramebuffers.geometryBufferFBO->AttachImageDepth(GL_TEXTURE_2D, globalImages->currentDepthImage);
 		globalFramebuffers.geometryBufferFBO->Check();
@@ -315,7 +346,9 @@ void Framebuffer::CheckFramebuffers()
 		globalFramebuffers.smaaEdgesFBO->width = screenWidth;
 		globalFramebuffers.smaaEdgesFBO->height = screenHeight;
 		
-		globalFramebuffers.smaaEdgesFBO->Bind();
+		if (!glConfig.directStateAccess) {
+			globalFramebuffers.smaaEdgesFBO->Bind();
+		}
 		globalFramebuffers.smaaEdgesFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->smaaEdgesImage, 0 );
 		globalFramebuffers.smaaEdgesFBO->Check();
 		
@@ -324,7 +357,9 @@ void Framebuffer::CheckFramebuffers()
 		globalFramebuffers.smaaBlendFBO->width = screenWidth;
 		globalFramebuffers.smaaBlendFBO->height = screenHeight;
 		
-		globalFramebuffers.smaaBlendFBO->Bind();
+		if (!glConfig.directStateAccess) {
+			globalFramebuffers.smaaBlendFBO->Bind();
+		}
 		globalFramebuffers.smaaBlendFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->smaaBlendImage, 0 );
 		globalFramebuffers.smaaBlendFBO->Check();
 		
@@ -381,27 +416,51 @@ void Framebuffer::AddColorBuffer( int format, int index, int multiSamples )
 	colorFormat = format;
 	
 	bool notCreatedYet = colorBuffers[index] == 0;
-	if( notCreatedYet )
-	{
-		glGenRenderbuffers( 1, &colorBuffers[index] );
+	if (!glConfig.directStateAccess) {
+		if (notCreatedYet)
+		{
+			glGenRenderbuffers(1, &colorBuffers[index]);
+		}
+
+		glBindRenderbuffer(GL_RENDERBUFFER, colorBuffers[index]);
+
+		if (multiSamples > 0)
+		{
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, multiSamples, format, width, height);
+
+			msaaSamples = true;
+		}
+		else
+		{
+			glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
+		}
+
+		if (notCreatedYet)
+		{
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, GL_RENDERBUFFER, colorBuffers[index]);
+		}
 	}
-	
-	glBindRenderbuffer( GL_RENDERBUFFER, colorBuffers[index] );
-	
-	if( multiSamples > 0 )
-	{
-		glRenderbufferStorageMultisample( GL_RENDERBUFFER, multiSamples, format, width, height );
-		
-		msaaSamples = true;
-	}
-	else
-	{
-		glRenderbufferStorage( GL_RENDERBUFFER, format, width, height );
-	}
-	
-	if( notCreatedYet )
-	{
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, GL_RENDERBUFFER, colorBuffers[index] );
+	else {
+		if (notCreatedYet)
+		{
+			glCreateRenderbuffers(1, &colorBuffers[index]);
+		}
+
+		if (multiSamples > 0)
+		{
+			glNamedRenderbufferStorageMultisample(colorBuffers[index], multiSamples, format, width, height);
+
+			msaaSamples = true;
+		}
+		else
+		{
+			glNamedRenderbufferStorage(colorBuffers[index], format, width, height);
+		}
+
+		if (notCreatedYet)
+		{
+			glNamedFramebufferRenderbuffer(frameBuffer, GL_COLOR_ATTACHMENT0 + index, GL_RENDERBUFFER, colorBuffers[index]);
+		}
 	}
 	
 	GL_CheckErrors();
@@ -412,27 +471,51 @@ void Framebuffer::AddDepthBuffer( int format, int multiSamples )
 	depthFormat = format;
 	
 	bool notCreatedYet = depthBuffer == 0;
-	if( notCreatedYet )
-	{
-		glGenRenderbuffers( 1, &depthBuffer );
+	if (!glConfig.directStateAccess) {
+		if (notCreatedYet)
+		{
+			glGenRenderbuffers(1, &depthBuffer);
+		}
+
+		glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+
+		if (multiSamples > 0)
+		{
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, multiSamples, format, width, height);
+
+			msaaSamples = true;
+		}
+		else
+		{
+			glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
+		}
+
+		if (notCreatedYet)
+		{
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+		}
 	}
-	
-	glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
-	
-	if( multiSamples > 0 )
-	{
-		glRenderbufferStorageMultisample( GL_RENDERBUFFER, multiSamples, format, width, height );
-		
-		msaaSamples = true;
-	}
-	else
-	{
-		glRenderbufferStorage( GL_RENDERBUFFER, format, width, height );
-	}
-	
-	if( notCreatedYet )
-	{
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
+	else {
+		if (notCreatedYet)
+		{
+			glCreateRenderbuffers(1, &depthBuffer);
+		}
+
+		if (multiSamples > 0)
+		{
+			glNamedRenderbufferStorageMultisample(depthBuffer, multiSamples, format, width, height);
+
+			msaaSamples = true;
+		}
+		else
+		{
+			glNamedRenderbufferStorage(depthBuffer, format, width, height);
+		}
+
+		if (notCreatedYet)
+		{
+			glNamedFramebufferRenderbuffer(frameBuffer, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+		}
 	}
 	
 	GL_CheckErrors();
@@ -451,8 +534,12 @@ void Framebuffer::AttachImage2D( int target, const idImage* image, int index, in
 		common->Warning( "Framebuffer::AttachImage2D( %s ): bad index = %i", fboName.c_str(), index );
 		return;
 	}
-	
-	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, target, image->texnum, mipmapLod );
+	if (!glConfig.directStateAccess) {
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, target, image->texnum, mipmapLod);
+	}
+	else {
+		glNamedFramebufferTexture(frameBuffer, GL_COLOR_ATTACHMENT0 + index, image->texnum, mipmapLod);
+	}
 }
 
 void Framebuffer::AttachImageDepth( int target, const idImage* image )
@@ -462,27 +549,46 @@ void Framebuffer::AttachImageDepth( int target, const idImage* image )
 		common->Warning( "Framebuffer::AttachImageDepth( %s ): invalid target", fboName.c_str() );
 		return;
 	}
-	
-	glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, target, image->texnum, 0 );
+	if (!glConfig.directStateAccess) {
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, target, image->texnum, 0);
+	}
+	else {
+		glNamedFramebufferTexture(frameBuffer, GL_DEPTH_ATTACHMENT, image->texnum, 0);
+	}
 }
 
 void Framebuffer::AttachImageDepthLayer( const idImage* image, int layer )
 {
-	glFramebufferTextureLayer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, image->texnum, 0, layer );
+	if (!glConfig.directStateAccess) {
+		glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, image->texnum, 0, layer);
+	}
+	else {
+		glNamedFramebufferTextureLayer(frameBuffer, GL_DEPTH_ATTACHMENT, image->texnum, 0, layer);
+	}
 }
 
 void Framebuffer::Check()
 {
+	int status;
 	int prev;
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &prev );
-	
-	glBindFramebuffer( GL_FRAMEBUFFER, frameBuffer );
-	
-	int status = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-	if( status == GL_FRAMEBUFFER_COMPLETE )
-	{
-		glBindFramebuffer( GL_FRAMEBUFFER, prev );
-		return;
+	if (!glConfig.directStateAccess) {
+		
+		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prev);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+		status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (status == GL_FRAMEBUFFER_COMPLETE)
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, prev);
+			return;
+		}
+	}
+	else {
+		status = glCheckNamedFramebufferStatus(frameBuffer, GL_FRAMEBUFFER);
+		if (status == GL_FRAMEBUFFER_COMPLETE) {
+			return;
+		}
 	}
 	
 	// something went wrong
@@ -521,7 +627,9 @@ void Framebuffer::Check()
 			break;
 	};
 	
-	glBindFramebuffer( GL_FRAMEBUFFER, prev );
+	if (!glConfig.directStateAccess) {
+		glBindFramebuffer(GL_FRAMEBUFFER, prev);
+	}
 }
 
 #endif // #if !defined(USE_VULKAN)

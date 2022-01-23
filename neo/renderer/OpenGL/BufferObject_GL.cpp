@@ -55,8 +55,10 @@ UnbindBufferObjects
 */
 void UnbindBufferObjects()
 {
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+	if (!glConfig.directStateAccess) {
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
 }
 
 
@@ -107,15 +109,27 @@ bool idVertexBuffer::AllocBufferObject( const void* data, int allocSize, bufferU
 	// clear out any previous error
 	GL_CheckErrors();
 	
-	glGenBuffers( 1, ( GLuint* ) &apiObject );
-	if( apiObject == 0xFFFF )
-	{
-		idLib::FatalError( "idVertexBuffer::AllocBufferObject: failed" );
-	}
-	glBindBuffer( GL_ARRAY_BUFFER, apiObject );
 	
-	// these are rewritten every frame
-	glBufferDataARB( GL_ARRAY_BUFFER, numBytes, NULL, bufferUsage );
+
+	if (!glConfig.directStateAccess) {
+		glGenBuffers(1, (GLuint*)&apiObject);
+		if (apiObject == 0xFFFF)
+		{
+			idLib::FatalError("idVertexBuffer::AllocBufferObject: failed");
+		}
+		glBindBuffer(GL_ARRAY_BUFFER, apiObject);
+
+		// these are rewritten every frame
+		glBufferDataARB(GL_ARRAY_BUFFER, numBytes, NULL, bufferUsage);
+	}
+	else {
+		glCreateBuffers(1, (GLuint*)&apiObject);
+		if (apiObject == 0xFFFF)
+		{
+			idLib::FatalError("idVertexBuffer::AllocBufferObject: failed");
+		}
+		glNamedBufferData(apiObject, numBytes, NULL, bufferUsage);
+	}
 	
 	GLenum err = glGetError();
 	if( err == GL_OUT_OF_MEMORY )
@@ -196,8 +210,13 @@ void idVertexBuffer::Update( const void* data, int updateSize, int offset ) cons
 	}
 	else
 	{
-		glBindBuffer( GL_ARRAY_BUFFER, apiObject );
-		glBufferSubData( GL_ARRAY_BUFFER, GetOffset() + offset, ( GLsizeiptrARB )numBytes, data );
+		if (!glConfig.directStateAccess) {
+			glBindBuffer(GL_ARRAY_BUFFER, apiObject);
+			glBufferSubData(GL_ARRAY_BUFFER, GetOffset() + offset, (GLsizeiptrARB)numBytes, data);
+		}
+		else {
+			glNamedBufferSubData(apiObject, GetOffset() + offset, (GLsizeiptrARB)numBytes, data);
+		}
 	}
 }
 
@@ -212,29 +231,46 @@ void* idVertexBuffer::MapBuffer( bufferMapType_t mapType )
 	assert( IsMapped() == false );
 	
 	buffer = NULL;
-	
-	glBindBuffer( GL_ARRAY_BUFFER, apiObject );
-	if( mapType == BM_READ )
-	{
-		buffer = glMapBufferRange( GL_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
-		if( buffer != NULL )
+	if (!glConfig.directStateAccess) {
+		glBindBuffer(GL_ARRAY_BUFFER, apiObject);
+		if (mapType == BM_READ)
 		{
-			buffer = ( byte* )buffer + GetOffset();
+			buffer = glMapBufferRange(GL_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+			if (buffer != NULL)
+			{
+				buffer = (byte*)buffer + GetOffset();
+			}
+		}
+		else if (mapType == BM_WRITE)
+		{
+			// RB: removed GL_MAP_INVALIDATE_RANGE_BIT as it breaks with an optimization in the Nvidia WHQL drivers >= 344.11
+			buffer = glMapBufferRange(GL_ARRAY_BUFFER, 0, GetAllocedSize(), GL_MAP_WRITE_BIT /*| GL_MAP_INVALIDATE_RANGE_BIT*/ | GL_MAP_UNSYNCHRONIZED_BIT);
+			if (buffer != NULL)
+			{
+				buffer = (byte*)buffer + GetOffset();
+			}
+			// assert( IsWriteCombined( buffer ) ); // commented out because it spams the console
+		}
+		else
+		{
+			assert(false);
 		}
 	}
-	else if( mapType == BM_WRITE )
-	{
-		// RB: removed GL_MAP_INVALIDATE_RANGE_BIT as it breaks with an optimization in the Nvidia WHQL drivers >= 344.11
-		buffer = glMapBufferRange( GL_ARRAY_BUFFER, 0, GetAllocedSize(), GL_MAP_WRITE_BIT /*| GL_MAP_INVALIDATE_RANGE_BIT*/ | GL_MAP_UNSYNCHRONIZED_BIT );
-		if( buffer != NULL )
-		{
-			buffer = ( byte* )buffer + GetOffset();
+	else {
+		switch (mapType) {
+		case BM_READ:
+			buffer = glMapNamedBufferRange(apiObject, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+			break;
+		case BM_WRITE:
+			buffer = glMapNamedBufferRange(apiObject, 0, GetAllocedSize(), GL_MAP_WRITE_BIT /*| GL_MAP_INVALIDATE_RANGE_BIT*/ | GL_MAP_UNSYNCHRONIZED_BIT);
+			break;
+		default:
+			assert(false);
 		}
-		// assert( IsWriteCombined( buffer ) ); // commented out because it spams the console
-	}
-	else
-	{
-		assert( false );
+		if (buffer != NULL)
+		{
+			buffer = (byte*)buffer + GetOffset();
+		}
 	}
 	
 	SetMapped();
@@ -256,10 +292,17 @@ void idVertexBuffer::UnmapBuffer()
 	assert( apiObject != 0xFFFF );
 	assert( IsMapped() );
 	
-	glBindBuffer( GL_ARRAY_BUFFER, apiObject );
-	if( !glUnmapBuffer( GL_ARRAY_BUFFER ) )
-	{
-		idLib::Printf( "idVertexBuffer::UnmapBuffer failed\n" );
+	if (glConfig.glVersion < 4.5) {
+		glBindBuffer(GL_ARRAY_BUFFER, apiObject);
+		if (!glUnmapBuffer(GL_ARRAY_BUFFER))
+		{
+			idLib::Printf("idVertexBuffer::UnmapBuffer failed\n");
+		}
+	}
+	else {
+		if (!glUnmapNamedBuffer(apiObject)) {
+			idLib::Printf("idVertexBuffer::UnmapBuffer failed\n");
+		}
 	}
 	
 	SetUnmapped();
@@ -324,16 +367,27 @@ bool idIndexBuffer::AllocBufferObject( const void* data, int allocSize, bufferUs
 	// clear out any previous error
 	GL_CheckErrors();
 	
-	glGenBuffersARB( 1, ( GLuint* )&apiObject );
-	if( apiObject == 0xFFFF )
-	{
-		GLenum error = glGetError();
-		idLib::FatalError( "idIndexBuffer::AllocBufferObject: failed - GL_Error %d", error );
+	if (!glConfig.directStateAccess) {
+		glGenBuffersARB(1, (GLuint*)&apiObject);
+		if (apiObject == 0xFFFF)
+		{
+			GLenum error = glGetError();
+			idLib::FatalError("idIndexBuffer::AllocBufferObject: failed - GL_Error %d", error);
+		}
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, apiObject);
+
+		// these are rewritten every frame
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, numBytes, NULL, bufferUsage);
 	}
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, apiObject );
-	
-	// these are rewritten every frame
-	glBufferData( GL_ELEMENT_ARRAY_BUFFER, numBytes, NULL, bufferUsage );
+	else {
+		glCreateBuffers(1, (GLuint*)&apiObject);
+		if (apiObject == 0xFFFF)
+		{
+			GLenum error = glGetError();
+			idLib::FatalError("idIndexBuffer::AllocBufferObject: failed - GL_Error %d", error);
+		}
+		glNamedBufferData(apiObject, numBytes, NULL, bufferUsage);
+	}
 	
 	GLenum err = glGetError();
 	if( err == GL_OUT_OF_MEMORY )
@@ -414,8 +468,13 @@ void idIndexBuffer::Update( const void* data, int updateSize, int offset ) const
 	}
 	else
 	{
-		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, apiObject );
-		glBufferSubData( GL_ELEMENT_ARRAY_BUFFER, GetOffset() + offset, ( GLsizeiptrARB )numBytes, data );
+		if (!glConfig.directStateAccess) {
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, apiObject);
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, GetOffset() + offset, (GLsizeiptrARB)numBytes, data);
+		}
+		else {
+			glNamedBufferSubData(apiObject, GetOffset() + offset, (GLsizeiptrARB)numBytes, data);
+		}
 	}
 }
 
@@ -431,31 +490,49 @@ void* idIndexBuffer::MapBuffer( bufferMapType_t mapType )
 	
 	buffer = NULL;
 	
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, apiObject );
-	if( mapType == BM_READ )
-	{
-		//buffer = glMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GL_READ_ONLY_ARB );
-		buffer = glMapBufferRange( GL_ELEMENT_ARRAY_BUFFER, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
-		if( buffer != NULL )
+	if (!glConfig.directStateAccess) {
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, apiObject);
+		if (mapType == BM_READ)
 		{
-			buffer = ( byte* )buffer + GetOffset();
+			//buffer = glMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GL_READ_ONLY_ARB );
+			buffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+			if (buffer != NULL)
+			{
+				buffer = (byte*)buffer + GetOffset();
+			}
+		}
+		else if (mapType == BM_WRITE)
+		{
+			//buffer = glMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB );
+
+			// RB: removed GL_MAP_INVALIDATE_RANGE_BIT as it breaks with an optimization in the Nvidia WHQL drivers >= 344.11
+			buffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, GetAllocedSize(), GL_MAP_WRITE_BIT /*| GL_MAP_INVALIDATE_RANGE_BIT*/ | GL_MAP_UNSYNCHRONIZED_BIT);
+			if (buffer != NULL)
+			{
+				buffer = (byte*)buffer + GetOffset();
+			}
+			// assert( IsWriteCombined( buffer ) ); // commented out because it spams the console
+		}
+		else
+		{
+			assert(false);
 		}
 	}
-	else if( mapType == BM_WRITE )
-	{
-		//buffer = glMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB );
-		
-		// RB: removed GL_MAP_INVALIDATE_RANGE_BIT as it breaks with an optimization in the Nvidia WHQL drivers >= 344.11
-		buffer = glMapBufferRange( GL_ELEMENT_ARRAY_BUFFER, 0, GetAllocedSize(), GL_MAP_WRITE_BIT /*| GL_MAP_INVALIDATE_RANGE_BIT*/ | GL_MAP_UNSYNCHRONIZED_BIT );
-		if( buffer != NULL )
-		{
-			buffer = ( byte* )buffer + GetOffset();
+	else {
+		switch (mapType) {
+		case BM_READ:
+			buffer = glMapNamedBufferRange(apiObject, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+			break;
+		case BM_WRITE:
+			buffer = glMapNamedBufferRange(apiObject, 0, GetAllocedSize(), GL_MAP_WRITE_BIT /*| GL_MAP_INVALIDATE_RANGE_BIT*/ | GL_MAP_UNSYNCHRONIZED_BIT);
+			break;
+		default:
+			assert(false);
 		}
-		// assert( IsWriteCombined( buffer ) ); // commented out because it spams the console
-	}
-	else
-	{
-		assert( false );
+		if (buffer != NULL)
+		{
+			buffer = (byte*)buffer + GetOffset();
+		}
 	}
 	
 	SetMapped();
@@ -477,10 +554,18 @@ void idIndexBuffer::UnmapBuffer()
 	assert( apiObject != 0xFFFF );
 	assert( IsMapped() );
 	
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, apiObject );
-	if( !glUnmapBuffer( GL_ELEMENT_ARRAY_BUFFER ) )
-	{
-		idLib::Printf( "idIndexBuffer::UnmapBuffer failed\n" );
+	if (!glConfig.directStateAccess) {
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, apiObject);
+		if (!glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER))
+		{
+			idLib::Printf("idIndexBuffer::UnmapBuffer failed\n");
+		}
+	}
+	else {
+		if (!glUnmapNamedBuffer(apiObject))
+		{
+			idLib::Printf("idIndexBuffer::UnmapBuffer failed\n");
+		}
 	}
 	
 	buffer = NULL;
@@ -543,10 +628,16 @@ bool idUniformBuffer::AllocBufferObject( const void* data, int allocSize, buffer
 	
 	const int numBytes = GetAllocedSize();
 	
-	glGenBuffers( 1, ( GLuint* )&apiObject );
-	glBindBuffer( GL_UNIFORM_BUFFER, apiObject );
-	glBufferData( GL_UNIFORM_BUFFER, numBytes, NULL, GL_STREAM_DRAW_ARB );
-	glBindBuffer( GL_UNIFORM_BUFFER, 0 );
+	if (!glConfig.directStateAccess) {
+		glGenBuffers(1, (GLuint*)&apiObject);
+		glBindBuffer(GL_UNIFORM_BUFFER, apiObject);
+		glBufferData(GL_UNIFORM_BUFFER, numBytes, NULL, GL_STREAM_DRAW_ARB);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
+	else {
+		glCreateBuffers(1, (GLuint*)&apiObject);
+		glNamedBufferData(apiObject, numBytes, NULL, GL_STREAM_DRAW_ARB);
+	}
 	
 	if( r_showBuffers.GetBool() )
 	{
@@ -591,7 +682,9 @@ void idUniformBuffer::FreeBufferObject()
 		idLib::Printf( "joint buffer free %p, api %p (%i size)\n", this, ( GLuint* )&apiObject, GetSize() );
 	}
 	
-	glBindBuffer( GL_UNIFORM_BUFFER, 0 );
+	if (!glConfig.directStateAccess) {
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	}
 	glDeleteBuffers( 1, ( GLuint* )&apiObject );
 	
 	ClearWithoutFreeing();
@@ -621,8 +714,13 @@ void idUniformBuffer::Update( const void* data, int updateSize, int offset ) con
 	}
 	else
 	{
-		glBindBuffer( GL_ARRAY_BUFFER, apiObject );
-		glBufferSubData( GL_ARRAY_BUFFER, GetOffset() + offset, ( GLsizeiptr )numBytes, data );
+		if (!glConfig.directStateAccess) {
+			glBindBuffer(GL_ARRAY_BUFFER, apiObject);
+			glBufferSubData(GL_ARRAY_BUFFER, GetOffset() + offset, (GLsizeiptr)numBytes, data);
+		}
+		else {
+			glNamedBufferSubData(apiObject, GetOffset() + offset, (GLsizeiptr)numBytes, data);
+		}
 	}
 }
 
@@ -640,13 +738,19 @@ void* idUniformBuffer::MapBuffer( bufferMapType_t mapType )
 	int numBytes = GetAllocedSize();
 	
 	buffer = NULL;
-	
-	glBindBuffer( GL_UNIFORM_BUFFER, apiObject );
-	numBytes = numBytes;
-	assert( GetOffset() == 0 );
-	
-	// RB: removed GL_MAP_INVALIDATE_RANGE_BIT as it breaks with an optimization in the Nvidia WHQL drivers >= 344.11
-	buffer = glMapBufferRange( GL_UNIFORM_BUFFER, 0, GetAllocedSize(), GL_MAP_WRITE_BIT /*| GL_MAP_INVALIDATE_RANGE_BIT*/ | GL_MAP_UNSYNCHRONIZED_BIT );
+	if (!glConfig.directStateAccess) {
+		glBindBuffer(GL_UNIFORM_BUFFER, apiObject);
+		numBytes = numBytes;
+		assert(GetOffset() == 0);
+
+		// RB: removed GL_MAP_INVALIDATE_RANGE_BIT as it breaks with an optimization in the Nvidia WHQL drivers >= 344.11
+		buffer = glMapBufferRange(GL_UNIFORM_BUFFER, 0, GetAllocedSize(), GL_MAP_WRITE_BIT /*| GL_MAP_INVALIDATE_RANGE_BIT*/ | GL_MAP_UNSYNCHRONIZED_BIT);
+	}
+	else {
+		numBytes = numBytes;
+		assert(GetOffset() == 0);
+		buffer = glMapNamedBufferRange(apiObject, 0, GetAllocedSize(), GL_MAP_WRITE_BIT /*| GL_MAP_INVALIDATE_RANGE_BIT*/ | GL_MAP_UNSYNCHRONIZED_BIT);
+	}
 	if( buffer != NULL )
 	{
 		buffer = ( byte* )buffer + GetOffset();
@@ -671,10 +775,18 @@ void idUniformBuffer::UnmapBuffer()
 	assert( apiObject != 0xFFFF );
 	assert( IsMapped() );
 	
-	glBindBuffer( GL_UNIFORM_BUFFER, apiObject );
-	if( !glUnmapBuffer( GL_UNIFORM_BUFFER ) )
-	{
-		idLib::Printf( "idUniformBuffer::UnmapBuffer failed\n" );
+	if (!glConfig.directStateAccess) {
+		glBindBuffer(GL_UNIFORM_BUFFER, apiObject);
+		if (!glUnmapBuffer(GL_UNIFORM_BUFFER))
+		{
+			idLib::Printf("idUniformBuffer::UnmapBuffer failed\n");
+		}
+	}
+	else {
+		if (!glUnmapNamedBuffer(apiObject))
+		{
+			idLib::Printf("idUniformBuffer::UnmapBuffer failed\n");
+		}
 	}
 	
 	buffer = NULL;
