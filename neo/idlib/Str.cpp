@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #pragma hdrstop
 
+#include <vector>
 #ifdef USE_STRING_DATA_ALLOCATOR
 static idDynamicBlockAlloc < char, 1 << 18, 128, TAG_STRING >	stringDataAllocator;
 #endif
@@ -2544,6 +2545,47 @@ idStr idStr::FormatNumber( int number )
 	
 	return string;
 }
+
+//GK: Begin
+
+idStr* idStr::Split(const char* delimiter) {
+	int64 pos = 0;
+	int64 oldPos = -1;
+	std::vector<idStr> strings;
+	//For some reason calling the Find inside the while statement
+	//caused pos to return incorect value
+	//So put it inside the loop
+	while (pos > -1) {
+		//Always check + 1 otherwise it will get the previous delimiter
+		pos = Find(delimiter, false, oldPos + 1);
+		idStr token = SubStr(oldPos + 1, pos);
+		oldPos = pos;
+		strings.push_back(token);
+	}
+	if (!strings.empty()) {
+		return strings.data();
+	}
+	return { this };
+}
+
+idStr idStr::SubStr(int64 start, int64 end)
+{
+	if (end == -1) {
+		end = Length();
+	}
+	if ( start < 0 || start > Length() || end > Length() || end < start) {
+		idLib::common->Error("idStr::SubStr: Trying to get Sub String with invalid range");
+		return *this;
+	}
+	//This is how many characters we want to take (+1 for null termination)
+	int64 tmpLen = end - start;
+	char* tmpBuffer = (char*)malloc((tmpLen + 1) * sizeof(char));
+	memcpy(tmpBuffer, data + start, tmpLen);
+	tmpBuffer[tmpLen] = '\0';
+	return idStr(tmpBuffer);
+}
+
+//GK: End
 
 CONSOLE_COMMAND( testStrId, "prints a localized string", 0 )
 {
