@@ -432,8 +432,13 @@ static void R_CheckPortableExtensions()
 	}
 	
 	// generate one global Vertex Array Object (VAO)
-	glGenVertexArrays( 1, &glConfig.global_vao );
-	glBindVertexArray( glConfig.global_vao );
+	if (glConfig.directStateAccess) {
+		glCreateVertexArrays(1, &glConfig.global_vao);
+	}
+	else {
+		glGenVertexArrays(1, &glConfig.global_vao);
+		glBindVertexArray(glConfig.global_vao);
+	}
 }
 // RB end
 
@@ -623,54 +628,34 @@ void idRenderBackend::DrawElementsWithCounters( const drawSurf_t* surf )
 		}
 	}
 	
-	
-	if( surf->jointCache )
+	if (surf->jointCache)
 	{
 		idUniformBuffer jointBuffer;
-		if( !vertexCache.GetJointBuffer( surf->jointCache, &jointBuffer ) )
+		if (!vertexCache.GetJointBuffer(surf->jointCache, &jointBuffer))
 		{
-			idLib::Warning( "RB_DrawElementsWithCounters, jointBuffer == NULL" );
+			idLib::Warning("RB_DrawElementsWithCounters, jointBuffer == NULL");
 			return;
 		}
-		assert( ( jointBuffer.GetOffset() & ( glConfig.uniformBufferOffsetAlignment - 1 ) ) == 0 );
-		
+		assert((jointBuffer.GetOffset() & (glConfig.uniformBufferOffsetAlignment - 1)) == 0);
+
 		// RB: 64 bit fixes, changed GLuint to GLintptr
 		const GLintptr ubo = jointBuffer.GetAPIObject();
 		// RB end
-		
-		glBindBufferRange( GL_UNIFORM_BUFFER, 0, ubo, jointBuffer.GetOffset(), jointBuffer.GetSize() );
-	}
-	
-	renderProgManager.CommitUniforms( glStateBits );
-	
-	// RB: 64 bit fixes, changed GLuint to GLintptr
-	if( currentIndexBuffer != ( GLintptr )indexBuffer->GetAPIObject() || !r_useStateCaching.GetBool() )
-	{
-		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ( GLintptr )indexBuffer->GetAPIObject() );
-		currentIndexBuffer = ( GLintptr )indexBuffer->GetAPIObject();
-	}
-	
-	if( ( vertexLayout != LAYOUT_DRAW_VERT ) || ( currentVertexBuffer != ( GLintptr )vertexBuffer->GetAPIObject() ) || !r_useStateCaching.GetBool() )
-	{
-		if (!glConfig.directStateAccess) {
-			glBindBuffer(GL_ARRAY_BUFFER, (GLintptr)vertexBuffer->GetAPIObject());
-			currentVertexBuffer = (GLintptr)vertexBuffer->GetAPIObject();
 
-			glEnableVertexAttribArray(PC_ATTRIB_INDEX_VERTEX);
-			glEnableVertexAttribArray(PC_ATTRIB_INDEX_NORMAL);
-			glEnableVertexAttribArray(PC_ATTRIB_INDEX_COLOR);
-			glEnableVertexAttribArray(PC_ATTRIB_INDEX_COLOR2);
-			glEnableVertexAttribArray(PC_ATTRIB_INDEX_ST);
-			glEnableVertexAttribArray(PC_ATTRIB_INDEX_TANGENT);
+		glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, jointBuffer.GetOffset(), jointBuffer.GetSize());
+	}
 
-			glVertexAttribPointer(PC_ATTRIB_INDEX_VERTEX, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)(DRAWVERT_XYZ_OFFSET));
-			glVertexAttribPointer(PC_ATTRIB_INDEX_NORMAL, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)(DRAWVERT_NORMAL_OFFSET));
-			glVertexAttribPointer(PC_ATTRIB_INDEX_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)(DRAWVERT_COLOR_OFFSET));
-			glVertexAttribPointer(PC_ATTRIB_INDEX_COLOR2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)(DRAWVERT_COLOR2_OFFSET));
-			glVertexAttribPointer(PC_ATTRIB_INDEX_ST, 2, GL_HALF_FLOAT, GL_TRUE, sizeof(idDrawVert), (void*)(DRAWVERT_ST_OFFSET));
-			glVertexAttribPointer(PC_ATTRIB_INDEX_TANGENT, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)(DRAWVERT_TANGENT_OFFSET));
+	renderProgManager.CommitUniforms(glStateBits);
+	if (glConfig.directStateAccess) {
+		// RB: 64 bit fixes, changed GLuint to GLintptr
+		if (currentIndexBuffer != (GLintptr)indexBuffer->GetAPIObject() || !r_useStateCaching.GetBool())
+		{
+			glVertexArrayElementBuffer(glConfig.global_vao, indexBuffer->GetAPIObject());
+			currentIndexBuffer = (GLintptr)indexBuffer->GetAPIObject();
 		}
-		else {
+
+		if ((vertexLayout != LAYOUT_DRAW_VERT) || (currentVertexBuffer != (GLintptr)vertexBuffer->GetAPIObject()) || !r_useStateCaching.GetBool())
+		{
 			glVertexArrayVertexBuffer(glConfig.global_vao, 0, vertexBuffer->GetAPIObject(), 0, sizeof(idDrawVert));
 			currentVertexBuffer = (GLintptr)vertexBuffer->GetAPIObject();
 
@@ -694,9 +679,41 @@ void idRenderBackend::DrawElementsWithCounters( const drawSurf_t* surf )
 			glVertexArrayAttribBinding(glConfig.global_vao, PC_ATTRIB_INDEX_COLOR2, 0);
 			glVertexArrayAttribBinding(glConfig.global_vao, PC_ATTRIB_INDEX_ST, 0);
 			glVertexArrayAttribBinding(glConfig.global_vao, PC_ATTRIB_INDEX_TANGENT, 0);
+
+			vertexLayout = LAYOUT_DRAW_VERT;
 		}
-		
-		vertexLayout = LAYOUT_DRAW_VERT;
+		glBindVertexArray(glConfig.global_vao);
+	}
+	else {
+		// RB: 64 bit fixes, changed GLuint to GLintptr
+		if (currentIndexBuffer != (GLintptr)indexBuffer->GetAPIObject() || !r_useStateCaching.GetBool())
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (GLintptr)indexBuffer->GetAPIObject());
+			currentIndexBuffer = (GLintptr)indexBuffer->GetAPIObject();
+		}
+
+		if ((vertexLayout != LAYOUT_DRAW_VERT) || (currentVertexBuffer != (GLintptr)vertexBuffer->GetAPIObject()) || !r_useStateCaching.GetBool())
+		{
+			
+			glBindBuffer(GL_ARRAY_BUFFER, (GLintptr)vertexBuffer->GetAPIObject());
+			currentVertexBuffer = (GLintptr)vertexBuffer->GetAPIObject();
+
+			glEnableVertexAttribArray(PC_ATTRIB_INDEX_VERTEX);
+			glEnableVertexAttribArray(PC_ATTRIB_INDEX_NORMAL);
+			glEnableVertexAttribArray(PC_ATTRIB_INDEX_COLOR);
+			glEnableVertexAttribArray(PC_ATTRIB_INDEX_COLOR2);
+			glEnableVertexAttribArray(PC_ATTRIB_INDEX_ST);
+			glEnableVertexAttribArray(PC_ATTRIB_INDEX_TANGENT);
+
+			glVertexAttribPointer(PC_ATTRIB_INDEX_VERTEX, 3, GL_FLOAT, GL_FALSE, sizeof(idDrawVert), (void*)(DRAWVERT_XYZ_OFFSET));
+			glVertexAttribPointer(PC_ATTRIB_INDEX_NORMAL, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)(DRAWVERT_NORMAL_OFFSET));
+			glVertexAttribPointer(PC_ATTRIB_INDEX_COLOR, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)(DRAWVERT_COLOR_OFFSET));
+			glVertexAttribPointer(PC_ATTRIB_INDEX_COLOR2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)(DRAWVERT_COLOR2_OFFSET));
+			glVertexAttribPointer(PC_ATTRIB_INDEX_ST, 2, GL_HALF_FLOAT, GL_TRUE, sizeof(idDrawVert), (void*)(DRAWVERT_ST_OFFSET));
+			glVertexAttribPointer(PC_ATTRIB_INDEX_TANGENT, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idDrawVert), (void*)(DRAWVERT_TANGENT_OFFSET));
+
+			vertexLayout = LAYOUT_DRAW_VERT;
+		}
 	}
 	// RB end
 	
@@ -1516,7 +1533,12 @@ void idRenderBackend::DrawStencilShadowPass( const drawSurf_t* drawSurf, const b
 	// RB: 64 bit fixes, changed GLuint to GLintptr
 	if( currentIndexBuffer != ( GLintptr )indexBuffer->GetAPIObject() || !r_useStateCaching.GetBool() )
 	{
-		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, ( GLintptr )indexBuffer->GetAPIObject() );
+		if (glConfig.directStateAccess) {
+			glVertexArrayElementBuffer(glConfig.global_vao, indexBuffer->GetAPIObject());
+		}
+		else {
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, (GLintptr)indexBuffer->GetAPIObject());
+		}
 		currentIndexBuffer = ( GLintptr )indexBuffer->GetAPIObject();
 	}
 	
@@ -1558,7 +1580,8 @@ void idRenderBackend::DrawStencilShadowPass( const drawSurf_t* drawSurf, const b
 				glVertexAttribPointer(PC_ATTRIB_INDEX_COLOR2, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(idShadowVertSkinned), (void*)(SHADOWVERTSKINNED_COLOR2_OFFSET));
 #endif
 			}
-			else {
+			else 
+			{
 				glVertexArrayVertexBuffer(glConfig.global_vao, 0, vertexBuffer->GetAPIObject(), 0, sizeof(idShadowVertSkinned));
 				currentVertexBuffer = (GLintptr)vertexBuffer->GetAPIObject();
 
@@ -1580,7 +1603,7 @@ void idRenderBackend::DrawStencilShadowPass( const drawSurf_t* drawSurf, const b
 			
 			vertexLayout = LAYOUT_DRAW_SHADOW_VERT_SKINNED;
 		}
-		
+		glBindVertexArray(glConfig.global_vao);
 	}
 	else
 	{
@@ -1603,7 +1626,8 @@ void idRenderBackend::DrawStencilShadowPass( const drawSurf_t* drawSurf, const b
 				glVertexAttribPointer(PC_ATTRIB_INDEX_VERTEX, 4, GL_FLOAT, GL_FALSE, sizeof(idShadowVert), (void*)(SHADOWVERT_XYZW_OFFSET));
 #endif
 			}
-			else {
+			else 
+			{
 				glVertexArrayVertexBuffer(glConfig.global_vao, 0, vertexBuffer->GetAPIObject(), 0, sizeof(idShadowVert));
 				currentVertexBuffer = (GLintptr)vertexBuffer->GetAPIObject();
 

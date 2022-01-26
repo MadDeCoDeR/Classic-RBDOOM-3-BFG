@@ -101,84 +101,44 @@ void idImage::Bind()
 	}
 	
 	const int texUnit = tr.backend.GetCurrentTextureUnit();
-	
+
 	// RB: added support for more types
 	tmu_t* tmu = &glcontext.tmu[texUnit];
 	// bind the texture
-	if( opts.textureType == TT_2D )
-	{
-		if( tmu->current2DMap != texnum )
-		{
-			tmu->current2DMap = texnum;
-			
-#if !defined(USE_GLES2) && !defined(USE_GLES3)
-			if( glConfig.directStateAccess )
-			{
-				glBindTextureUnit(texUnit, texnum );
-			}
-			else
-#endif
-			{
-				glActiveTexture( GL_TEXTURE0 + texUnit );
-				glBindTexture( GL_TEXTURE_2D, texnum );
-			}
-		}
+	uint* currentMap = &tmu->current2DMap;
+	int target = GL_TEXTURE_2D;
+	switch (opts.textureType) {
+		case TT_2D:
+			target = GL_TEXTURE_2D;
+			currentMap = &tmu->current2DMap;
+			break;
+		case TT_CUBIC:
+			target = GL_TEXTURE_CUBE_MAP;
+			currentMap = &tmu->currentCubeMap;
+			break;
+		case TT_2D_ARRAY:
+			target = GL_TEXTURE_2D_ARRAY;
+			currentMap = &tmu->current2DArray;
+			break;
+		case TT_2D_MULTISAMPLE:
+			target = GL_TEXTURE_2D_MULTISAMPLE;
+			currentMap = &tmu->current2DMap;
+			break;
 	}
-	else if( opts.textureType == TT_CUBIC )
+	if( *currentMap != texnum )
 	{
-		if( tmu->currentCubeMap != texnum )
-		{
-			tmu->currentCubeMap = texnum;
-			
+		*currentMap = texnum;
+
 #if !defined(USE_GLES2) && !defined(USE_GLES3)
-			if( glConfig.directStateAccess )
-			{
-				glBindTextureUnit(texUnit, texnum );
-			}
-			else
-#endif
-			{
-				glActiveTexture( GL_TEXTURE0 + texUnit );
-				glBindTexture( GL_TEXTURE_CUBE_MAP, texnum );
-			}
+		if( glConfig.directStateAccess )
+		{
+			glBindTextureUnit( texUnit, texnum );
 		}
-	}
-	else if( opts.textureType == TT_2D_ARRAY )
-	{
-		if( tmu->current2DArray != texnum )
-		{
-			tmu->current2DArray = texnum;
-			
-#if !defined(USE_GLES2) && !defined(USE_GLES3)
-			if( glConfig.directStateAccess )
-			{
-				glBindTextureUnit(texUnit, texnum );
-			}
-			else
+		else
 #endif
-			{
-				glActiveTexture( GL_TEXTURE0 + texUnit );
-				glBindTexture( GL_TEXTURE_2D_ARRAY, texnum );
-			}
-		}
-	}
-	else if( opts.textureType == TT_2D_MULTISAMPLE )
-	{
-		if( tmu->current2DMap != texnum )
 		{
-			tmu->current2DMap = texnum;
-			
-#if !defined(USE_GLES2) && !defined(USE_GLES3)
-			if( glConfig.directStateAccess )
-			{
-				glBindTextureUnit(texUnit, texnum );
-			}
-			else
-#endif
-			{
-				glActiveTexture( GL_TEXTURE0 + texUnit );
-				glBindTexture( GL_TEXTURE_2D_MULTISAMPLE, texnum );
-			}
+			glActiveTexture( GL_TEXTURE0 + texUnit );
+			glBindTexture( target, texnum );
 		}
 	}
 	// RB end
@@ -189,99 +149,102 @@ void idImage::Bind()
 CopyFramebuffer
 ====================
 */
-void idImage::CopyFramebuffer( int x, int y, int imageWidth, int imageHeight, bool forceLDR )
-{
+
+void idImage::CopyFramebufferLegacy(int x, int y, int imageWidth, int imageHeight, bool forceLDR) {
 	int target = GL_TEXTURE_2D;
-	if (!glConfig.directStateAccess) {
-		switch (opts.textureType)
-		{
-		case TT_2D:
-			target = GL_TEXTURE_2D;
-			break;
-		case TT_CUBIC:
-			target = GL_TEXTURE_CUBE_MAP;
-			break;
-		case TT_2D_ARRAY:
-			target = GL_TEXTURE_2D_ARRAY;
-			break;
-		case TT_2D_MULTISAMPLE:
-			target = GL_TEXTURE_2D_MULTISAMPLE;
-			break;
-		default:
-			//idLib::FatalError( "%s: bad texture type %d", GetName(), opts.textureType );
-			return;
-		}
+	switch (opts.textureType)
+	{
+	case TT_2D:
+		target = GL_TEXTURE_2D;
+		break;
+	case TT_CUBIC:
+		target = GL_TEXTURE_CUBE_MAP;
+		break;
+	case TT_2D_ARRAY:
+		target = GL_TEXTURE_2D_ARRAY;
+		break;
+	case TT_2D_MULTISAMPLE:
+		target = GL_TEXTURE_2D_MULTISAMPLE;
+		break;
+	default:
+		//idLib::FatalError( "%s: bad texture type %d", GetName(), opts.textureType );
+		return;
+	}
 
-		glBindTexture(target, texnum);
+	glBindTexture(target, texnum);
 #if !defined(USE_GLES2)
-		if (Framebuffer::IsDefaultFramebufferActive())
-		{
-			glReadBuffer(GL_BACK);
-		}
+	if (Framebuffer::IsDefaultFramebufferActive())
+	{
+		glReadBuffer(GL_BACK);
+	}
 #endif
-		opts.width = imageWidth;
-		opts.height = imageHeight;
+	opts.width = imageWidth;
+	opts.height = imageHeight;
 #if defined(USE_GLES2)
-		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, imageWidth, imageHeight, 0);
+	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x, y, imageWidth, imageHeight, 0);
 #else
-		if (r_useHDR.GetBool() && globalFramebuffers.hdrFBO->IsBound())
-		{
+	if (r_useHDR.GetBool() && globalFramebuffers.hdrFBO->IsBound())
+	{
 
-			//if( backEnd.glState.currentFramebuffer != NULL && backEnd.glState.currentFramebuffer->IsMultiSampled() )
+		//if( backEnd.glState.currentFramebuffer != NULL && backEnd.glState.currentFramebuffer->IsMultiSampled() )
 
 #if defined(USE_HDR_MSAA)
-			if (globalFramebuffers.hdrFBO->IsMultiSampled())
-			{
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, globalFramebuffers.hdrFBO->GetFramebuffer());
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, globalFramebuffers.hdrNonMSAAFBO->GetFramebuffer());
-				glBlitFramebuffer(0, 0, glConfig.nativeScreenWidth, glConfig.nativeScreenHeight,
-					0, 0, glConfig.nativeScreenWidth, glConfig.nativeScreenHeight,
-					GL_COLOR_BUFFER_BIT,
-					GL_LINEAR);
+		if (globalFramebuffers.hdrFBO->IsMultiSampled())
+		{
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, globalFramebuffers.hdrFBO->GetFramebuffer());
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, globalFramebuffers.hdrNonMSAAFBO->GetFramebuffer());
+			glBlitFramebuffer(0, 0, glConfig.nativeScreenWidth, glConfig.nativeScreenHeight,
+				0, 0, glConfig.nativeScreenWidth, glConfig.nativeScreenHeight,
+				GL_COLOR_BUFFER_BIT,
+				GL_LINEAR);
 
-				globalFramebuffers.hdrNonMSAAFBO->Bind();
+			globalFramebuffers.hdrNonMSAAFBO->Bind();
 
-				glCopyTexImage2D(target, 0, forceLDR ? GL_RGBA8 : GL_RGBA16F, x, y, imageWidth, imageHeight, 0);
+			glCopyTexImage2D(target, 0, forceLDR ? GL_RGBA8 : GL_RGBA16F, x, y, imageWidth, imageHeight, 0);
 
-				globalFramebuffers.hdrFBO->Bind();
-			}
-			else
-#endif
-			{
-				glCopyTexImage2D(target, 0, forceLDR ? GL_RGBA8 : GL_RGBA16F, x, y, imageWidth, imageHeight, 0);
-			}
+			globalFramebuffers.hdrFBO->Bind();
 		}
 		else
+#endif
 		{
-			glCopyTexImage2D(target, 0, GL_RGBA8, x, y, imageWidth, imageHeight, 0);
+			glCopyTexImage2D(target, 0, forceLDR ? GL_RGBA8 : GL_RGBA16F, x, y, imageWidth, imageHeight, 0);
 		}
+	}
+	else
+	{
+		glCopyTexImage2D(target, 0, GL_RGBA8, x, y, imageWidth, imageHeight, 0);
+	}
 #endif
 
-		// these shouldn't be necessary if the image was initialized properly
-		glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// these shouldn't be necessary if the image was initialized properly
+	glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
+	glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
-else {
 
+void idImage::CopyFramebufferDSA(int x, int y, int imageWidth, int imageHeight, bool forceLDR) {
+	textureFormat_t HDRFormat = opts.format;
+
+	if (r_useHDR.GetBool() && globalFramebuffers.hdrFBO->IsBound() && !forceLDR) {
+		HDRFormat = FMT_RGBA16F;
+	}
+	if (opts.width != imageWidth || opts.height != imageHeight || opts.format != HDRFormat) {
+		opts.width = imageWidth;
+		opts.height = imageHeight;
+		opts.format = HDRFormat;
+		//GK: Since DSA doesn't support muttable Textures 
+		//then every time we resize the texture we also have 
+		//to wipe the old one and create it as new
+		AllocImage();
+	}
 #if !defined(USE_GLES2)
 	if (Framebuffer::IsDefaultFramebufferActive())
 	{
 		glNamedFramebufferReadBuffer(0, GL_BACK);
 	}
 #endif
-	opts.width = imageWidth;
-	opts.height = imageHeight;
-	if (r_useHDR.GetBool() && globalFramebuffers.hdrFBO->IsBound() && !forceLDR) {
-		opts.format = FMT_RGBA16F;
-	}
-	//GK: Since DSA doesn't support muttable Textures 
-	//then every time we resize the texture we also have 
-	//to wipe the old one and create it as new
-	this->AllocImage();
 	glCopyTextureSubImage2D(texnum, 0, 0, 0, x, y, imageWidth, imageHeight);
 
 	glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -290,7 +253,16 @@ else {
 	glTextureParameterf(texnum, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTextureParameterf(texnum, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
-	
+
+void idImage::CopyFramebuffer( int x, int y, int imageWidth, int imageHeight, bool forceLDR )
+{
+	if (!glConfig.directStateAccess) {
+		CopyFramebufferLegacy(x, y, imageWidth, imageHeight, forceLDR);
+	}
+	else {
+		CopyFramebufferDSA(x, y, imageWidth, imageHeight, forceLDR);
+	}
+
 	tr.backend.pc.c_copyFrameBuffer++;
 }
 
@@ -306,13 +278,13 @@ void idImage::CopyDepthbuffer( int x, int y, int imageWidth, int imageHeight )
 
 		opts.width = imageWidth;
 		opts.height = imageHeight;
-		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, x, y, imageWidth, imageHeight, 0);
+		glCopyTexImage2D((opts.textureType == TT_CUBIC) ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, x, y, imageWidth, imageHeight, 0);
 	}
 	else {
 		if (opts.width != imageWidth || opts.height != imageHeight) {
 			opts.width = imageWidth;
 			opts.height = imageHeight;
-			this->AllocImage();
+			AllocImage();
 		}
 		if (opts.textureType == TT_CUBIC) {
 			glCopyTextureSubImage3D(texnum, 0, 0, 0, 0, x, y, imageWidth, imageHeight);
@@ -321,7 +293,7 @@ void idImage::CopyDepthbuffer( int x, int y, int imageWidth, int imageHeight )
 			glCopyTextureSubImage2D(texnum, 0, 0, 0, x, y, imageWidth, imageHeight);
 		}
 	}
-	
+
 	tr.backend.pc.c_copyFrameBuffer++;
 }
 
@@ -522,316 +494,328 @@ void idImage::SetPixel( int mipLevel, int x, int y, const void* data, int dataSi
 idImage::SetTexParameters
 ========================
 */
-void idImage::SetTexParameters()
-{
+
+void idImage::SetTexParametersLegacy() {
 	int target = GL_TEXTURE_2D;
-	switch( opts.textureType )
+	switch (opts.textureType)
 	{
-		case TT_2D:
-			target = GL_TEXTURE_2D;
-			break;
-		case TT_CUBIC:
-			target = GL_TEXTURE_CUBE_MAP;
-			break;
+	case TT_2D:
+		target = GL_TEXTURE_2D;
+		break;
+	case TT_CUBIC:
+		target = GL_TEXTURE_CUBE_MAP;
+		break;
 		// RB begin
-		case TT_2D_ARRAY:
-			target = GL_TEXTURE_2D_ARRAY;
-			break;
-		case TT_2D_MULTISAMPLE:
-			//target = GL_TEXTURE_2D_MULTISAMPLE;
-			//break;
-			// no texture parameters for MSAA FBO textures
-			return;
+	case TT_2D_ARRAY:
+		target = GL_TEXTURE_2D_ARRAY;
+		break;
+	case TT_2D_MULTISAMPLE:
+		//target = GL_TEXTURE_2D_MULTISAMPLE;
+		//break;
+		// no texture parameters for MSAA FBO textures
+		return;
 		// RB end
-		default:
-			idLib::FatalError( "%s: bad texture type %d", GetName(), opts.textureType );
-			return;
+	default:
+		idLib::FatalError("%s: bad texture type %d", GetName(), opts.textureType);
+		return;
+	}
+	// ALPHA, LUMINANCE, LUMINANCE_ALPHA, and INTENSITY have been removed
+		// in OpenGL 3.2. In order to mimic those modes, we use the swizzle operators
+	if (opts.colorFormat == CFM_GREEN_ALPHA)
+	{
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_ONE);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_ONE);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_ONE);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_GREEN);
+	}
+	else if (opts.format == FMT_LUM8)
+	{
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_RED);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_RED);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_RED);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_ONE);
+	}
+	else if (opts.format == FMT_L8A8)
+	{
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_RED);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_RED);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_RED);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_GREEN);
+	}
+	else if (opts.format == FMT_ALPHA)
+	{
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_ONE);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_ONE);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_ONE);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_RED);
+	}
+	else if (opts.format == FMT_INT8)
+	{
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_RED);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_RED);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_RED);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_RED);
+	}
+	else
+	{
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_RED);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+		glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
 	}
 
-	if (!glConfig.directStateAccess) {
-
-		// ALPHA, LUMINANCE, LUMINANCE_ALPHA, and INTENSITY have been removed
-		// in OpenGL 3.2. In order to mimic those modes, we use the swizzle operators
-		if (opts.colorFormat == CFM_GREEN_ALPHA)
+	switch (filter)
+	{
+	case TF_DEFAULT:
+		if (r_useTrilinearFiltering.GetBool())
 		{
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_ONE);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_ONE);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_ONE);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_GREEN);
-		}
-		else if (opts.format == FMT_LUM8)
-		{
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_RED);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_RED);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_RED);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_ONE);
-		}
-		else if (opts.format == FMT_L8A8)
-		{
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_RED);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_RED);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_RED);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_GREEN);
-		}
-		else if (opts.format == FMT_ALPHA)
-		{
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_ONE);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_ONE);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_ONE);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_RED);
-		}
-		else if (opts.format == FMT_INT8)
-		{
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_RED);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_RED);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_RED);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_RED);
+			glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		}
 		else
 		{
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_R, GL_RED);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-			glTexParameteri(target, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
+			glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 		}
-
-		switch (filter)
-		{
-		case TF_DEFAULT:
-			if (r_useTrilinearFiltering.GetBool())
-			{
-				glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			}
-			else
-			{
-				glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-			}
-			glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			break;
-		case TF_LINEAR:
-			glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			break;
-		case TF_NEAREST:
-		case TF_NEAREST_MIPMAP:
-			glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			break;
-		default:
-			common->FatalError("%s: bad texture filter %d", GetName(), filter);
-		}
-
-		if (glConfig.anisotropicFilterAvailable)
-		{
-			// only do aniso filtering on mip mapped images
-			if (filter == TF_DEFAULT)
-			{
-				int aniso = r_maxAnisotropicFiltering.GetInteger();
-				if (aniso > glConfig.maxTextureAnisotropy)
-				{
-					aniso = glConfig.maxTextureAnisotropy;
-				}
-				if (aniso < 0)
-				{
-					aniso = 0;
-				}
-				glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
-			}
-			else
-			{
-				glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
-			}
-		}
-
-		// RB: disabled use of unreliable extension that can make the game look worse
-		/*
-		if( glConfig.textureLODBiasAvailable && ( usage != TD_FONT ) )
-		{
-			// use a blurring LOD bias in combination with high anisotropy to fix our aliasing grate textures...
-			glTexParameterf( target, GL_TEXTURE_LOD_BIAS_EXT, 0.5 ); //r_lodBias.GetFloat() );
-		}
-		*/
-		// RB end
-
-		// set the wrap/clamp modes
-		switch (repeat)
-		{
-		case TR_REPEAT:
-			glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			break;
-		case TR_CLAMP_TO_ZERO:
-		{
-			float color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-			glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, color);
-			glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		}
+		glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		break;
-		case TR_CLAMP_TO_ZERO_ALPHA:
-		{
-			float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-			glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, color);
-			glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		}
+	case TF_LINEAR:
+		glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		break;
-		case TR_CLAMP:
-			glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			break;
-		default:
-			common->FatalError("%s: bad texture repeat %d", GetName(), repeat);
-		}
+	case TF_NEAREST:
+	case TF_NEAREST_MIPMAP:
+		glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		break;
+	default:
+		common->FatalError("%s: bad texture filter %d", GetName(), filter);
+	}
 
-		// RB: added shadow compare parameters for shadow map textures
-		if (opts.format == FMT_SHADOW_ARRAY)
+	if (glConfig.anisotropicFilterAvailable)
+	{
+		// only do aniso filtering on mip mapped images
+		if (filter == TF_DEFAULT)
 		{
-			//glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-			glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-			glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+			int aniso = r_maxAnisotropicFiltering.GetInteger();
+			if (aniso > glConfig.maxTextureAnisotropy)
+			{
+				aniso = glConfig.maxTextureAnisotropy;
+			}
+			if (aniso < 0)
+			{
+				aniso = 0;
+			}
+			glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
+		}
+		else
+		{
+			glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
 		}
 	}
-	 else {
-	 // ALPHA, LUMINANCE, LUMINANCE_ALPHA, and INTENSITY have been removed
-		// in OpenGL 3.2. In order to mimic those modes, we use the swizzle operators
-		if (opts.colorFormat == CFM_GREEN_ALPHA) {
+
+	// RB: disabled use of unreliable extension that can make the game look worse
+	/*
+	if( glConfig.textureLODBiasAvailable && ( usage != TD_FONT ) )
+	{
+		// use a blurring LOD bias in combination with high anisotropy to fix our aliasing grate textures...
+		glTexParameterf( target, GL_TEXTURE_LOD_BIAS_EXT, 0.5 ); //r_lodBias.GetFloat() );
+	}
+	*/
+	// RB end
+
+	// set the wrap/clamp modes
+	switch (repeat)
+	{
+	case TR_REPEAT:
+		glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		break;
+	case TR_CLAMP_TO_ZERO:
+	{
+		float color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, color);
+		glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	}
+	break;
+	case TR_CLAMP_TO_ZERO_ALPHA:
+	{
+		float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, color);
+		glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	}
+	break;
+	case TR_CLAMP:
+		glTexParameterf(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		break;
+	default:
+		common->FatalError("%s: bad texture repeat %d", GetName(), repeat);
+	}
+
+	// RB: added shadow compare parameters for shadow map textures
+	if (opts.format == FMT_SHADOW_ARRAY)
+	{
+		//glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+		glTexParameteri(target, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+		glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	}
+}
+
+void idImage::SetTextureParameters() {
+	if (opts.textureType == TT_2D_MULTISAMPLE) {
+		return;
+	}
+	// ALPHA, LUMINANCE, LUMINANCE_ALPHA, and INTENSITY have been removed
+	// in OpenGL 3.2. In order to mimic those modes, we use the swizzle operators
+	if (opts.colorFormat == CFM_GREEN_ALPHA) {
+		glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_ONE);
+		glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_ONE);
+		glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_ONE);
+		glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_GREEN);
+	}
+	else {
+		switch (opts.format) {
+		case FMT_ALPHA:
 			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_ONE);
 			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_ONE);
 			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_ONE);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_RED);
+			break;
+		case FMT_L8A8:
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
 			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_GREEN);
-		}
-		else {
-			switch (opts.format) {
-			case FMT_LUM8:
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_ONE);
-				break;
-			case FMT_L8A8:
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_GREEN);
-				break;
-			case FMT_ALPHA:
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_ONE);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_ONE);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_ONE);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_RED);
-				break;
-			case FMT_INT8:
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_RED);
-				break;
-			default:
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
-				glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
-			}
-		}
-
-		switch (filter)
-		{
-		case TF_DEFAULT:
-			if (r_useTrilinearFiltering.GetBool())
-			{
-				glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			}
-			else
-			{
-				glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
-			}
-			glTextureParameterf(texnum, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			break;
-		case TF_LINEAR:
-			glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTextureParameterf(texnum, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		case FMT_LUM8:
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_ONE);
 			break;
-		case TF_NEAREST:
-		case TF_NEAREST_MIPMAP:
-			glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTextureParameterf(texnum, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		case FMT_INT8:
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_RED);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_RED);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_RED);
 			break;
 		default:
-			common->FatalError("%s: bad texture filter %d", GetName(), filter);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_R, GL_RED);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_G, GL_GREEN);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_B, GL_BLUE);
+			glTextureParameteri(texnum, GL_TEXTURE_SWIZZLE_A, GL_ALPHA);
 		}
+	}
 
-		if (glConfig.anisotropicFilterAvailable)
+	switch (filter)
+	{
+	case TF_DEFAULT:
+		if (r_useTrilinearFiltering.GetBool())
 		{
-			// only do aniso filtering on mip mapped images
-			if (filter == TF_DEFAULT)
-			{
-				int aniso = r_maxAnisotropicFiltering.GetInteger();
-				if (aniso > glConfig.maxTextureAnisotropy)
-				{
-					aniso = glConfig.maxTextureAnisotropy;
-				}
-				if (aniso < 0)
-				{
-					aniso = 0;
-				}
-				glTextureParameterf(texnum, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
-			}
-			else
-			{
-				glTextureParameterf(texnum, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
-			}
+			glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		}
-
-		// RB: disabled use of unreliable extension that can make the game look worse
-		/*
-		if( glConfig.textureLODBiasAvailable && ( usage != TD_FONT ) )
+		else
 		{
-			// use a blurring LOD bias in combination with high anisotropy to fix our aliasing grate textures...
-			glTexParameterf( target, GL_TEXTURE_LOD_BIAS_EXT, 0.5 ); //r_lodBias.GetFloat() );
+			glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 		}
-		*/
-		// RB end
-
-		// set the wrap/clamp modes
-		switch (repeat)
-		{
-		case TR_REPEAT:
-			glTextureParameterf(texnum, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTextureParameterf(texnum, GL_TEXTURE_WRAP_T, GL_REPEAT);
-			break;
-		case TR_CLAMP_TO_ZERO:
-		{
-			float color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
-			glTextureParameterfv(texnum, GL_TEXTURE_BORDER_COLOR, color);
-			glTextureParameterf(texnum, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTextureParameterf(texnum, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		}
+		glTextureParameterf(texnum, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		break;
-		case TR_CLAMP_TO_ZERO_ALPHA:
-		{
-			float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-			glTextureParameterfv(texnum, GL_TEXTURE_BORDER_COLOR, color);
-			glTextureParameterf(texnum, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-			glTextureParameterf(texnum, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-		}
+	case TF_LINEAR:
+		glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTextureParameterf(texnum, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		break;
-		case TR_CLAMP:
-			glTextureParameterf(texnum, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTextureParameterf(texnum, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			break;
-		default:
-			common->FatalError("%s: bad texture repeat %d", GetName(), repeat);
-		}
+	case TF_NEAREST:
+	case TF_NEAREST_MIPMAP:
+		glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTextureParameterf(texnum, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		break;
+	default:
+		common->FatalError("%s: bad texture filter %d", GetName(), filter);
+	}
 
-		// RB: added shadow compare parameters for shadow map textures
-		if (opts.format == FMT_SHADOW_ARRAY)
+	if (glConfig.anisotropicFilterAvailable)
+	{
+		// only do aniso filtering on mip mapped images
+		if (filter == TF_DEFAULT)
 		{
-			//glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-			glTextureParameteri(texnum, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-			glTextureParameteri(texnum, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+			int aniso = r_maxAnisotropicFiltering.GetInteger();
+			if (aniso > glConfig.maxTextureAnisotropy)
+			{
+				aniso = glConfig.maxTextureAnisotropy;
+			}
+			if (aniso < 0)
+			{
+				aniso = 0;
+			}
+			glTextureParameterf(texnum, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
 		}
+		else
+		{
+			glTextureParameterf(texnum, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+		}
+	}
+
+	// RB: disabled use of unreliable extension that can make the game look worse
+	/*
+	if( glConfig.textureLODBiasAvailable && ( usage != TD_FONT ) )
+	{
+		// use a blurring LOD bias in combination with high anisotropy to fix our aliasing grate textures...
+		glTexParameterf( target, GL_TEXTURE_LOD_BIAS_EXT, 0.5 ); //r_lodBias.GetFloat() );
+	}
+	*/
+	// RB end
+
+	// set the wrap/clamp modes
+	switch (repeat)
+	{
+	case TR_REPEAT:
+		glTextureParameterf(texnum, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameterf(texnum, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		break;
+	case TR_CLAMP_TO_ZERO:
+	{
+		float color[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		glTextureParameterfv(texnum, GL_TEXTURE_BORDER_COLOR, color);
+		glTextureParameterf(texnum, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTextureParameterf(texnum, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	}
+	break;
+	case TR_CLAMP_TO_ZERO_ALPHA:
+	{
+		float color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		glTextureParameterfv(texnum, GL_TEXTURE_BORDER_COLOR, color);
+		glTextureParameterf(texnum, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+		glTextureParameterf(texnum, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	}
+	break;
+	case TR_CLAMP:
+		glTextureParameterf(texnum, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTextureParameterf(texnum, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		break;
+	default:
+		common->FatalError("%s: bad texture repeat %d", GetName(), repeat);
+	}
+
+	// RB: added shadow compare parameters for shadow map textures
+	if (opts.format == FMT_SHADOW_ARRAY)
+	{
+		//glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+		glTextureParameteri(texnum, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+		glTextureParameteri(texnum, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	}
 }
+
+
+void idImage::SetTexParameters()
+{
+	if (!glConfig.directStateAccess) {
+		SetTexParametersLegacy();
+		
+	}
+	else {
+		SetTextureParameters();
+	}
 }
 
 /*
@@ -965,12 +949,7 @@ void idImage::AllocImage()
 	{
 		return;
 	}
-	
-	// generate the texture number
-	if (!glConfig.directStateAccess) {
-		glGenTextures(1, (GLuint*)&texnum);
-		assert(texnum != TEXTURE_NOT_LOADED);
-	}
+
 	//----------------------------------------------------
 	// allocate all the mip levels with NULL data
 	//----------------------------------------------------
@@ -1005,34 +984,17 @@ void idImage::AllocImage()
 			target = uploadTarget = GL_TEXTURE_2D;
 			numSides = 1;
 	}
-	
+
 	if (!glConfig.directStateAccess) {
-		glBindTexture(target, texnum);
-	}
-	else {
-		glCreateTextures(target, 1, (GLuint*)&texnum);
+		glGenTextures(1, (GLuint*)&texnum);
 		assert(texnum != TEXTURE_NOT_LOADED);
-	}
-	
-	if (!glConfig.directStateAccess) {
-		switch (opts.textureType) {
-		case TT_2D_ARRAY:
-			if (!glConfig.directStateAccess) {
-				glTexImage3D(uploadTarget, 0, internalFormat, opts.width, opts.height, numSides, 0, dataFormat, GL_UNSIGNED_BYTE, NULL);
-			}
-			else {
-				glTextureStorage3D(texnum, opts.numLevels, internalFormat, opts.width, opts.height, numSides);
-			}
-			break;
-		case TT_2D_MULTISAMPLE:
-			if (!glConfig.directStateAccess) {
-				glTexImage2DMultisample(uploadTarget, opts.samples, internalFormat, opts.width, opts.height, GL_FALSE);
-			}
-			else {
-				glTextureStorage2DMultisample(texnum, opts.samples, internalFormat, opts.width, opts.height, GL_FALSE);
-			}
-			break;
-		default:
+		glBindTexture(target, texnum);
+		if (opts.textureType == TT_2D_ARRAY) {
+			glTexImage3D(uploadTarget, 0, internalFormat, opts.width, opts.height, numSides, 0, dataFormat, GL_UNSIGNED_BYTE, NULL);
+		}
+		else if (opts.textureType == TT_2D_MULTISAMPLE) {
+			glTexImage2DMultisample(uploadTarget, opts.samples, internalFormat, opts.width, opts.height, GL_FALSE);
+		}else{
 			int w = opts.width;
 			int h = opts.height;
 			
@@ -1092,26 +1054,27 @@ void idImage::AllocImage()
 		glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
 
 	}
-	else {
-		switch (opts.textureType) {
-		case TT_2D_ARRAY:
-			glTextureStorage3D(texnum, opts.numLevels, internalFormat, opts.width, opts.height, numSides);
-			break;
-		case TT_2D_MULTISAMPLE:
+	else 
+	{
+		glCreateTextures(target, 1, (GLuint*)&texnum);
+		assert(texnum != TEXTURE_NOT_LOADED);
+		if (opts.textureType == TT_2D_MULTISAMPLE) {
 			glTextureStorage2DMultisample(texnum, opts.samples, internalFormat, opts.width, opts.height, GL_FALSE);
-			break;
-		default:
+		} else {
 			int w = opts.width;
 			int h = opts.height;
 			if (numSides == 1) {
 				glTextureStorage2D(texnum, opts.numLevels, internalFormat, w, h);
 			}
 			else {
+				if (opts.textureType == TT_CUBIC) {
+					h = w;
+				}
 				glTextureStorage3D(texnum, opts.numLevels, internalFormat, w, h, numSides);
-				glGenerateTextureMipmap(texnum);
 			}
-			glTextureParameteri(texnum, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
+			
 		}
+		glTextureParameteri(texnum, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
 	}
 	
 	// see if we messed anything up

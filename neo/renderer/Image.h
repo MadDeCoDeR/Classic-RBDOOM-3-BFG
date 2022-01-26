@@ -263,7 +263,7 @@ public:
 	// RB begin
 	void		GenerateShadowArray( int width, int height, textureFilter_t filter, textureRepeat_t repeat, textureUsage_t usage );
 	// RB end
-	
+
 	void		CopyFramebuffer( int x, int y, int width, int height, bool forceLDR = false );
 	void		CopyDepthbuffer( int x, int y, int width, int height );
 	
@@ -447,7 +447,14 @@ private:
 	GLuint				internalFormat;
 	GLuint				dataFormat;
 	GLuint				dataType;
-	
+
+	//GK: When they become too big separate them
+	void CopyFramebufferLegacy(int x, int y, int imageWidth, int imageHeight, bool forceLDR);
+	void CopyFramebufferDSA(int x, int y, int imageWidth, int imageHeight, bool forceLDR);
+
+	void SetTexParametersLegacy();
+	void SetTextureParameters();
+	//GK: End
 #endif
 	bool				actuallyloaded;
 };
