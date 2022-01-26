@@ -1173,7 +1173,7 @@ void Sys_Init() {
 			win32.sys_arch.SetString( "Win2K (NT)" );
 		} else if( win32.osversion.dwMajorVersion == 5 && win32.osversion.dwMinorVersion == 1 ) {
 			win32.sys_arch.SetString( "WinXP (NT)" );
-		} else if( win32.osversion.dwMajorVersion == 6 ) {
+		} else if( win32.osversion.dwMajorVersion == 6 && win32.osversion.dwMinorVersion == 0) {
 			win32.sys_arch.SetString( "Vista" );
 		} else if( win32.osversion.dwMajorVersion == 6 && win32.osversion.dwMinorVersion == 1 ) {
 			win32.sys_arch.SetString( "Win7" );
@@ -1210,7 +1210,7 @@ void Sys_Init() {
 	} else {
 		win32.sys_arch.SetString( "unknown Windows variant" );
 	}
-
+	common->Printf("%s\n", win32.sys_arch.GetString());
 	//
 	// CPU type
 	//
@@ -1254,6 +1254,8 @@ void Sys_Init() {
 		}
 		string.StripTrailing( " & " );
 		string.StripTrailing( " with " );
+		string += "\nCPU Name: ";
+		string += Sys_GetCPUName();
 		win32.sys_cpustring.SetString( string );
 	} else {
 		common->Printf( "forcing CPU type to " );

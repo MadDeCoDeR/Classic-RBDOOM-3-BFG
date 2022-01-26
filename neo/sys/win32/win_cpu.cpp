@@ -32,6 +32,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "win_local.h"
 
+#include <array>
+#include <vector>
+#include <string>
+#include <bitset>
+
 #pragma warning(disable:4740)	// warning C4740: flow in or out of inline asm code suppresses global optimization
 #pragma warning(disable:4731)	// warning C4731: 'XXX' : frame pointer register 'ebx' modified by inline assembly code
 
@@ -42,7 +47,118 @@ If you have questions concerning this license or the applicable additional terms
 
 ==============================================================
 */
+//GK: Direct copy from https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?view=msvc-170
 
+class InstructionSet_Internal
+{
+public:
+	InstructionSet_Internal()
+		: nIds_{ 0 },
+		nExIds_{ 0 },
+		isIntel_{ false },
+		isAMD_{ false },
+		f_1_ECX_{ 0 },
+		f_1_EDX_{ 0 },
+		f_7_EBX_{ 0 },
+		f_7_ECX_{ 0 },
+		f_81_ECX_{ 0 },
+		f_81_EDX_{ 0 },
+		data_{},
+		extdata_{}
+	{
+		//int cpuInfo[4] = {-1};
+		std::array<int, 4> cpui;
+
+		// Calling __cpuid with 0x0 as the function_id argument
+		// gets the number of the highest valid function ID.
+		__cpuid(cpui.data(), 0);
+		nIds_ = cpui[0];
+
+		for (int i = 0; i <= nIds_; ++i)
+		{
+			__cpuidex(cpui.data(), i, 0);
+			data_.push_back(cpui);
+		}
+
+		// Capture vendor string
+		char vendor[0x20];
+		memset(vendor, 0, sizeof(vendor));
+		*reinterpret_cast<int*>(vendor) = data_[0][1];
+		*reinterpret_cast<int*>(vendor + 4) = data_[0][3];
+		*reinterpret_cast<int*>(vendor + 8) = data_[0][2];
+		vendor_ = vendor;
+		if (vendor_ == "GenuineIntel")
+		{
+			isIntel_ = true;
+		}
+		else if (vendor_ == "AuthenticAMD")
+		{
+			isAMD_ = true;
+		}
+
+		// load bitset with flags for function 0x00000001
+		if (nIds_ >= 1)
+		{
+			f_1_ECX_ = data_[1][2];
+			f_1_EDX_ = data_[1][3];
+		}
+
+		// load bitset with flags for function 0x00000007
+		if (nIds_ >= 7)
+		{
+			f_7_EBX_ = data_[7][1];
+			f_7_ECX_ = data_[7][2];
+		}
+
+		// Calling __cpuid with 0x80000000 as the function_id argument
+		// gets the number of the highest valid extended ID.
+		__cpuid(cpui.data(), 0x80000000);
+		nExIds_ = cpui[0];
+
+		char brand[0x40];
+		memset(brand, 0, sizeof(brand));
+
+		for (int i = 0x80000000; i <= nExIds_; ++i)
+		{
+			__cpuidex(cpui.data(), i, 0);
+			extdata_.push_back(cpui);
+		}
+
+		// load bitset with flags for function 0x80000001
+		if (nExIds_ >= 0x80000001)
+		{
+			f_81_ECX_ = extdata_[1][2];
+			f_81_EDX_ = extdata_[1][3];
+		}
+
+		// Interpret CPU brand string if reported
+		if (nExIds_ >= 0x80000004)
+		{
+			memcpy(brand, extdata_[2].data(), sizeof(cpui));
+			memcpy(brand + 16, extdata_[3].data(), sizeof(cpui));
+			memcpy(brand + 32, extdata_[4].data(), sizeof(cpui));
+			brand_ = brand;
+		}
+	};
+
+	int nIds_;
+	int nExIds_;
+	std::string vendor_;
+	std::string brand_;
+	bool isIntel_;
+	bool isAMD_;
+	std::bitset<32> f_1_ECX_;
+	std::bitset<32> f_1_EDX_;
+	std::bitset<32> f_7_EBX_;
+	std::bitset<32> f_7_ECX_;
+	std::bitset<32> f_81_ECX_;
+	std::bitset<32> f_81_EDX_;
+	std::vector<std::array<int, 4>> data_;
+	std::vector<std::array<int, 4>> extdata_;
+};
+
+const InstructionSet_Internal CPU_Rep;
+//GK: End
 /*
 ================
 Sys_GetClockTicks
@@ -776,11 +892,52 @@ Sys_GetCPUId
 cpuid_t Sys_GetCPUId()
 {
 	// RB: we assume a modern x86 chip
+	//GK: Use conditions from Microsoft's example
 #if defined(_WIN64)
-	int flags = CPUID_GENERIC;
-	
-	flags |= CPUID_SSE;
-	flags |= CPUID_SSE2;
+	int flags;
+
+	// verify we're at least a Pentium or 486 with CPUID support
+	if (CPU_Rep.vendor_ == "") {
+		return CPUID_UNSUPPORTED;
+	}
+
+	// check for an AMD
+	if (CPU_Rep.isAMD_) {
+		flags = CPUID_AMD;
+	}
+	else {
+		flags = CPUID_INTEL;
+	}
+
+	// check for Multi Media Extensions
+	if (CPU_Rep.f_1_EDX_[23]) {
+		flags |= CPUID_MMX;
+	}
+
+	// check for 3DNow!
+	if (CPU_Rep.isAMD_ && CPU_Rep.f_81_EDX_[31]) {
+		flags |= CPUID_3DNOW;
+	}
+
+	// check for Streaming SIMD Extensions
+	if (CPU_Rep.f_1_EDX_[25]) {
+		flags |= CPUID_SSE | CPUID_FTZ;
+	}
+
+	// check for Streaming SIMD Extensions 2
+	if (CPU_Rep.f_1_EDX_[26]) {
+		flags |= CPUID_SSE2;
+	}
+
+	// check for Streaming SIMD Extensions 3 aka Prescott's New Instructions
+	if (CPU_Rep.f_1_ECX_[0]) {
+		flags |= CPUID_SSE3;
+	}
+
+	// check for Conditional Move (CMOV) and fast floating point comparison (FCOMI) instructions
+	if (CPU_Rep.f_1_EDX_[15]) {
+		flags |= CPUID_CMOV;
+	}
 
 	return (cpuid_t)flags;
 #else
@@ -840,6 +997,16 @@ cpuid_t Sys_GetCPUId()
 
 	return (cpuid_t)flags;
 #endif
+}
+
+/*
+================
+Sys_GetCPUIName
+================
+*/
+const char* Sys_GetCPUName()
+{
+	return CPU_Rep.brand_.c_str();
 }
 
 

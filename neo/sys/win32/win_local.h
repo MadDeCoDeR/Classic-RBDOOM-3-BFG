@@ -55,6 +55,8 @@ void	Win_SetErrorText( const char* text );
 
 cpuid_t	Sys_GetCPUId();
 
+const char*	Sys_GetCPUName();
+
 // Input subsystem
 
 void	IN_Init();
