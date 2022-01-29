@@ -455,7 +455,9 @@ void idSoundSystemLocal::StopAllSounds()
 			sw->StopAllSounds();
 		}
 	}
-	hardware->Update();
+	if (hardware != NULL) {
+		hardware->Update();
+	}
 }
 
 /*
