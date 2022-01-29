@@ -40,6 +40,8 @@ Contains the Image implementation for Vulkan
 #include "Staging_VK.h"
 
 int						idImage::garbageIndex = 0;
+
+extern idCVar r_useSRGB;
 #if defined( USE_AMD_ALLOCATOR )
 idList< VmaAllocation > idImage::allocationGarbage[ NUM_FRAME_DATA ];
 #else
@@ -49,6 +51,41 @@ idList< VkImage >		idImage::imageGarbage[ NUM_FRAME_DATA ];
 idList< VkImageView >	idImage::viewGarbage[ NUM_FRAME_DATA ];
 idList< VkSampler >		idImage::samplerGarbage[ NUM_FRAME_DATA ];
 
+//GK: Direct Copy from RBDOOM-3-BFG
+/*
+=============
+ChooseSupportedFormat
+=============
+*/
+static VkFormat ChooseSupportedFormat(VkFormat* formats, int numFormats, VkImageTiling tiling, VkFormatFeatureFlags features)
+{
+	for (int i = 0; i < numFormats; ++i)
+	{
+		VkFormat format = formats[i];
+
+		VkFormatProperties props;
+		vkGetPhysicalDeviceFormatProperties(vkcontext.physicalDevice, format, &props);
+
+		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+		{
+			return format;
+		}
+		else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+		{
+			return format;
+		}
+	}
+
+	idLib::FatalError("Failed to find a supported format.");
+
+	return VK_FORMAT_UNDEFINED;
+}
+
+static VkFormat formats[] =
+{
+	VK_FORMAT_D32_SFLOAT_S8_UINT,
+	VK_FORMAT_D24_UNORM_S8_UINT
+};
 
 /*
 ====================
@@ -60,11 +97,11 @@ static VkFormat VK_GetFormatFromTextureFormat( const textureFormat_t format )
 	switch( format )
 	{
 		case FMT_RGBA8:
-			return VK_FORMAT_R8G8B8A8_UNORM;
+			return (r_useSRGB.GetInteger() == 1 || r_useSRGB.GetInteger() == 3) ? VK_FORMAT_R8G8B8A8_SRGB : VK_FORMAT_R8G8B8A8_UNORM;
 		case FMT_XRGB8:
-			return VK_FORMAT_R8G8B8_UNORM;
+			return (r_useSRGB.GetInteger() == 1 || r_useSRGB.GetInteger() == 3) ? VK_FORMAT_R8G8B8_SRGB : VK_FORMAT_R8G8B8_UNORM;
 		case FMT_ALPHA:
-			return VK_FORMAT_R8_UNORM;
+			return (r_useSRGB.GetInteger() == 1 || r_useSRGB.GetInteger() == 3) ? VK_FORMAT_R8G8B8_SRGB : VK_FORMAT_R8_UNORM;
 		case FMT_L8A8:
 			return VK_FORMAT_R8G8_UNORM;
 		case FMT_LUM8:
@@ -72,11 +109,13 @@ static VkFormat VK_GetFormatFromTextureFormat( const textureFormat_t format )
 		case FMT_INT8:
 			return VK_FORMAT_R8_UNORM;
 		case FMT_DXT1:
-			return VK_FORMAT_BC1_RGB_UNORM_BLOCK;
+			return (r_useSRGB.GetInteger() == 1 || r_useSRGB.GetInteger() == 3) ? VK_FORMAT_BC1_RGBA_SRGB_BLOCK : VK_FORMAT_BC1_RGBA_UNORM_BLOCK;
 		case FMT_DXT5:
-			return VK_FORMAT_BC3_UNORM_BLOCK;
+			return (r_useSRGB.GetInteger() == 1 || r_useSRGB.GetInteger() == 3) ? VK_FORMAT_BC3_SRGB_BLOCK : VK_FORMAT_BC3_UNORM_BLOCK;
 		case FMT_DEPTH:
-			return vkcontext.depthFormat;
+			return ChooseSupportedFormat(formats, 3, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+		case FMT_SHADOW_ARRAY:
+			return ChooseSupportedFormat(formats, 3, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
 		case FMT_X16:
 			return VK_FORMAT_R16_UNORM;
 		case FMT_Y16_X16:
@@ -454,7 +493,7 @@ void idImage::AllocImage()
 	imageCreateInfo.extent.height = opts.height;
 	imageCreateInfo.extent.depth = 1;
 	imageCreateInfo.mipLevels = opts.numLevels;
-	imageCreateInfo.arrayLayers = ( opts.textureType == TT_CUBIC ) ? 6 : 1;
+	imageCreateInfo.arrayLayers = ( opts.textureType == TT_CUBIC || opts.textureType == TT_2D_ARRAY ) ? 6 : 1;
 	imageCreateInfo.samples = static_cast< VkSampleCountFlagBits >( opts.samples );
 	imageCreateInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
 	imageCreateInfo.usage = usageFlags;
@@ -482,7 +521,7 @@ void idImage::AllocImage()
 	ID_VK_CHECK( vkBindImageMemory( vkcontext.device, image, allocation.deviceMemory, allocation.offset ) );
 #endif
 	
-	idLib::Printf( "Vulkan Image alloc '%s': %p\n", GetName(), image );
+	//idLib::Printf( "Vulkan Image alloc '%s': %p\n", GetName(), image );
 	
 	// Create Image View
 	VkImageViewCreateInfo viewCreateInfo = {};
@@ -493,7 +532,7 @@ void idImage::AllocImage()
 	viewCreateInfo.components = VK_GetComponentMappingFromTextureFormat( opts.format, opts.colorFormat );
 	viewCreateInfo.subresourceRange.aspectMask = ( opts.format == FMT_DEPTH ) ? VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT : VK_IMAGE_ASPECT_COLOR_BIT;
 	viewCreateInfo.subresourceRange.levelCount = opts.numLevels;
-	viewCreateInfo.subresourceRange.layerCount = ( opts.textureType == TT_CUBIC ) ? 6 : 1;
+	viewCreateInfo.subresourceRange.layerCount = ( opts.textureType == TT_CUBIC || opts.textureType == TT_2D_ARRAY ) ? 6 : 1;
 	viewCreateInfo.subresourceRange.baseMipLevel = 0;
 	
 	ID_VK_CHECK( vkCreateImageView( vkcontext.device, &viewCreateInfo, NULL, &view ) );
@@ -536,7 +575,13 @@ idImage::Resize
 */
 void idImage::Resize( int width, int height )
 {
-
+	if (opts.width == width && opts.height == height)
+	{
+		return;
+	}
+	opts.width = width;
+	opts.height = height;
+	AllocImage();
 }
 
 /*
@@ -548,13 +593,18 @@ void idImage::SubImageUpload( int mipLevel, int x, int y, int z, int width, int 
 {
 	assert( x >= 0 && y >= 0 && mipLevel >= 0 && width >= 0 && height >= 0 && mipLevel < opts.numLevels );
 	
-	if( IsCompressed() )
+	// SRS - Calculate buffer size without changing original width and height dimensions for compressed images
+	int bufferW = width;
+	int bufferH = height;
+
+	if (IsCompressed())
 	{
-		width = ( width + 3 ) & ~3;
-		height = ( height + 3 ) & ~3;
+		bufferW = (width + 3) & ~3;
+		bufferH = (height + 3) & ~3;
 	}
-	
-	int size = width * height * BitsForFormat( opts.format ) / 8;
+
+	int size = bufferW * bufferH * BitsForFormat(opts.format) / 8;
+	// SRS end
 	
 	VkBuffer buffer;
 	VkCommandBuffer commandBuffer;
@@ -577,7 +627,7 @@ void idImage::SubImageUpload( int mipLevel, int x, int y, int z, int width, int 
 	VkBufferImageCopy imgCopy = {};
 	imgCopy.bufferOffset = offset;
 	imgCopy.bufferRowLength = pixelPitch;
-	imgCopy.bufferImageHeight = height;
+	imgCopy.bufferImageHeight = bufferH;
 	imgCopy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 	imgCopy.imageSubresource.layerCount = 1;
 	imgCopy.imageSubresource.mipLevel = mipLevel;
