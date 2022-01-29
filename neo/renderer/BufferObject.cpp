@@ -328,6 +328,9 @@ void idUniformBuffer::Reference( const idUniformBuffer& other, int refOffset, in
 	apiObject = other.apiObject;
 #if defined( USE_VULKAN )
 	allocation = other.allocation;
+#if defined (USE_AMD_ALLOCATOR)
+	vmaAllocation = other.vmaAllocation;
+#endif
 #endif
 	assert( OwnsBuffer() == false );
 }

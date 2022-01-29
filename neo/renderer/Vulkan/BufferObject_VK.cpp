@@ -243,6 +243,8 @@ idVertexBuffer::MapBuffer
 void* idVertexBuffer::MapBuffer( bufferMapType_t mapType )
 {
 	assert( apiObject != VK_NULL_HANDLE );
+	assert(IsMapped() == false);
+	assert(vmaAllocation != NULL);
 	
 	if( usage == BU_STATIC )
 	{
@@ -250,6 +252,7 @@ void* idVertexBuffer::MapBuffer( bufferMapType_t mapType )
 	}
 	
 #if defined( USE_AMD_ALLOCATOR )
+	vmaMapMemory(vmaAllocator, vmaAllocation, &allocation.pMappedData);
 	void* buffer = ( byte* )allocation.pMappedData + GetOffset();
 #else
 	void* buffer = allocation.data + GetOffset();
@@ -277,6 +280,10 @@ void idVertexBuffer::UnmapBuffer()
 	{
 		idLib::FatalError( "idVertexBuffer::UnmapBuffer: Cannot unmap a buffer marked as BU_STATIC." );
 	}
+
+#if defined( USE_AMD_ALLOCATOR )
+	vmaUnmapMemory(vmaAllocator, vmaAllocation);
+#endif
 	
 	SetUnmapped();
 }
@@ -495,6 +502,8 @@ idIndexBuffer::MapBuffer
 void* idIndexBuffer::MapBuffer( bufferMapType_t mapType )
 {
 	assert( apiObject != VK_NULL_HANDLE );
+	assert(IsMapped() == false);
+	assert(vmaAllocation != NULL);
 	
 	if( usage == BU_STATIC )
 	{
@@ -502,6 +511,7 @@ void* idIndexBuffer::MapBuffer( bufferMapType_t mapType )
 	}
 	
 #if defined( USE_AMD_ALLOCATOR )
+	vmaMapMemory(vmaAllocator, vmaAllocation, &allocation.pMappedData);
 	void* buffer = ( byte* )allocation.pMappedData + GetOffset();
 #else
 	void* buffer = allocation.data + GetOffset();
@@ -529,6 +539,10 @@ void idIndexBuffer::UnmapBuffer()
 	{
 		idLib::FatalError( "idIndexBuffer::UnmapBuffer: Cannot unmap a buffer marked as BU_STATIC." );
 	}
+
+#if defined( USE_AMD_ALLOCATOR )
+	vmaUnmapMemory(vmaAllocator, vmaAllocation);
+#endif
 	
 	SetUnmapped();
 }
@@ -749,6 +763,8 @@ void* idUniformBuffer::MapBuffer( bufferMapType_t mapType )
 {
 	assert( mapType == BM_WRITE );
 	assert( apiObject != VK_NULL_HANDLE );
+	assert(IsMapped() == false);
+	assert(vmaAllocation != NULL);
 	
 	if( usage == BU_STATIC )
 	{
@@ -756,6 +772,7 @@ void* idUniformBuffer::MapBuffer( bufferMapType_t mapType )
 	}
 	
 #if defined( USE_AMD_ALLOCATOR )
+	vmaMapMemory(vmaAllocator, vmaAllocation, &allocation.pMappedData);
 	void* buffer = ( byte* )allocation.pMappedData + GetOffset();
 #else
 	void* buffer = allocation.data + GetOffset();
@@ -784,6 +801,10 @@ void idUniformBuffer::UnmapBuffer()
 		idLib::FatalError( "idUniformBuffer::UnmapBuffer: Cannot unmap a buffer marked as BU_STATIC." );
 	}
 	
+#if defined( USE_AMD_ALLOCATOR )
+	vmaUnmapMemory(vmaAllocator, vmaAllocation);
+#endif
+
 	SetUnmapped();
 }
 
