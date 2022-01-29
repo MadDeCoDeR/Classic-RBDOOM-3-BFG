@@ -309,7 +309,7 @@ elseif(MSVC)
 	
 	
 	
-	if (MSVC_VERSION GREATER 1919)
+	if (MSVC_VERSION GREATER 1919 AND NOT USE_VULKAN)
 		add_definitions(-D_ITERATOR_DEBUG_LEVEL=1)
 	endif()
 	
@@ -363,6 +363,21 @@ macro(SET_OPTION option value)
 endmacro()
 
 if(USE_VULKAN)
+
+	# override Glslang build options
+	SET_OPTION(ENABLE_SPVREMAPPER OFF)
+	SET_OPTION(ENABLE_GLSLANG_BINARIES OFF)
+	SET_OPTION(ENABLE_HLSL OFF)
+	#SET_OPTION(ENABLE_OPT OFF)
+	SET_OPTION(ENABLE_OPT ON)
+	SET_OPTION(SPIRV_SKIP_EXECUTABLES ON)
+		
+	# options required by July 2020 release
+	SET_OPTION(ENABLE_PCH OFF)
+	SET_OPTION(ENABLE_CTEST OFF)
+	SET_OPTION(BUILD_EXTERNAL OFF)
+	SET_OPTION(SKIP_GLSLANG_INSTALL ON)
+	
 	# Use FindVulkan module added with CMAKE 3.7
 	if(NOT CMAKE_VERSION VERSION_LESS 3.7.0)
 		message( STATUS "Using module to find Vulkan" )
@@ -377,22 +392,7 @@ if(USE_VULKAN)
 	endif()
 	
 	add_definitions(-DUSE_VULKAN)
-	include_directories($ENV{VK_SDK_PATH}/Include)
-	
-	# override Glslang build options
-	SET_OPTION(ENABLE_SPVREMAPPER OFF)
-	SET_OPTION(ENABLE_GLSLANG_BINARIES OFF)
-	SET_OPTION(ENABLE_HLSL OFF)
-	#SET_OPTION(ENABLE_OPT OFF)
-	
-	#option(ENABLE_AMD_EXTENSIONS "Enables support of AMD-specific extensions" ON)
-	#option(ENABLE_NV_EXTENSIONS "Enables support of Nvidia-specific extensions" ON)
-	#option(ENABLE_OPT "Enables spirv-opt capability if present" ON)
-	
-	set(GLSLANG_DIR $ENV{VK_SDK_PATH}/glslang)
-	add_subdirectory(${GLSLANG_DIR} ${CMAKE_CURRENT_BINARY_DIR}/glslang)
-	
-	include_directories(${GLSLANG_DIR}/glslang)
+	include_directories($ENV{VULKAN_SDK}/Include)
 
 else()
 
@@ -1437,14 +1437,35 @@ if(MSVC)
 		list(APPEND RBDOOM3_INCLUDES ${RENDERER_VULKAN_INCLUDES})
 		list(APPEND RBDOOM3_SOURCES ${RENDERER_VULKAN_SOURCES})
 		
-		set(Vulkan_LIBRARIES
+		link_directories($ENV{VULKAN_SDK}/Lib)
+		set(Vulkan_RELEASE_LIBRARIES
 			${Vulkan_LIBRARY}
-			glslang
-			SPIRV
+			optimized glslang
+			optimized SPIRV
+			optimized MachineIndependent
+			optimized GenericCodeGen
+			optimized OGLCompiler
+			optimized OSDependent
+			optimized SPIRV-Tools-opt
+			optimized SPIRV-Tools
+			optimized SPVRemapper
+			)
+		set(Vulkan_DEBUG_LIBRARIES
+			${Vulkan_LIBRARY}
+			debug glslangd
+			debug SPIRVd
+			debug MachineIndependentd
+			debug GenericCodeGend
+			debug OGLCompilerd
+			debug OSDependentd
+			debug SPIRV-Tools-optd
+			debug SPIRV-Toolsd
+			debug SPVRemapperd
 			)
 			
 		if(ENABLE_GLSLANG_BINARIES)
-			list(APPEND Vulkan_LIBRARIES glslang-default-resource-limits)
+			list(APPEND Vulkan_RELEASE_LIBRARIES optimized glslang-default-resource-limits)
+			list(APPEND Vulkan_DEBUG_LIBRARIES debug glslang-default-resource-limitsd)
 		endif()
 		
 	else()
@@ -1639,7 +1660,8 @@ if(MSVC)
 		winmm
 		wsock32.lib
 		Ws2_32.lib
-		${Vulkan_LIBRARIES}
+		${Vulkan_RELEASE_LIBRARIES}
+		${Vulkan_DEBUG_LIBRARIES}
 		${OpenGL_LIBRARIES}
 		${OpenAL_LIBRARIES}
 		${FFmpeg_LIBRARIES}
@@ -1726,16 +1748,36 @@ else()
             list(APPEND RBDOOM3_INCLUDES ${RENDERER_VULKAN_INCLUDES})
             list(APPEND RBDOOM3_SOURCES ${RENDERER_VULKAN_SOURCES})
             
-            set(Vulkan_LIBRARIES
-                ${Vulkan_LIBRARY}
-                glslang
-                SPIRV
-                )
-                
-            if(ENABLE_GLSLANG_BINARIES)
-                list(APPEND Vulkan_LIBRARIES glslang-default-resource-limits)
-            endif()
-            
+            set(Vulkan_RELEASE_LIBRARIES
+				${Vulkan_LIBRARY}
+				optimized glslang
+				optimized SPIRV
+				optimized MachineIndependent
+				optimized GenericCodeGen
+				optimized OGLCompiler
+				optimized OSDependent
+				optimized SPIRV-Tools-opt
+				optimized SPIRV-Tools
+				optimized SPVRemapper
+			)
+			set(Vulkan_DEBUG_LIBRARIES
+				${Vulkan_LIBRARY}
+				debug glslangd
+				debug SPIRVd
+				debug MachineIndependentd
+				debug GenericCodeGend
+				debug OGLCompilerd
+				debug OSDependentd
+				debug SPIRV-Tools-optd
+				debug SPIRV-Toolsd
+				debug SPVRemapperd
+			)
+			
+			if(ENABLE_GLSLANG_BINARIES)
+				list(APPEND Vulkan_RELEASE_LIBRARIES optimized glslang-default-resource-limits)
+				list(APPEND Vulkan_DEBUG_LIBRARIES debug glslang-default-resource-limitsd)
+			endif()
+            set(Vulkan_LIBRARIES ${Vulkan_RELEASE_LIBRARIES} ${Vulkan_DEBUG_LIBRARIES})
         else()
             list(APPEND RBDOOM3_INCLUDES ${RENDERER_OPENGL_INCLUDES})
             list(APPEND RBDOOM3_SOURCES ${RENDERER_OPENGL_SOURCES})

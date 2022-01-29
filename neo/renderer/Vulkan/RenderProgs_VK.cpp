@@ -34,6 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../RenderCommon.h"
 #include "../RenderProgs.h"
 
+idCVar r_alwaysExportGLSL("r_alwaysExportGLSL", "0", CVAR_BOOL, "");
 
 void RpPrintState( uint64 stateBits, uint64* stencilBits );
 
@@ -343,8 +344,8 @@ CompileGLSLtoSPIRV
 
 #include <glslang/public/ShaderLang.h>
 #include <glslang/Include/ResourceLimits.h>
-#include <SPIRV/GlslangToSpv.h>
-#include <StandAlone/DirStackFileIncluder.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
+//#include <StandAlone/DirStackFileIncluder.h>
 
 namespace glslang
 {
@@ -355,7 +356,7 @@ namespace glslang
 #if 0
 extern const TBuiltInResource DefaultTBuiltInResource;
 #else
-const TBuiltInResource DefaultTBuiltInResource =
+	const TBuiltInResource DefaultTBuiltInResource =
 {
 	/* .MaxLights = */ 32,
 	/* .MaxClipPlanes = */ 6,
@@ -449,6 +450,7 @@ const TBuiltInResource DefaultTBuiltInResource =
 	/*maxTaskWorkGroupSizeY_NV = */1,
 	/*maxTaskWorkGroupSizeZ_NV = */1,
 	/*maxMeshViewCountNV = */4,
+	/*maxDualSourceDrawBuffersEXT = */1,
 	/* .limits = */ {
 		/* .nonInductiveForLoops = */ 1,
 		/* .whileLoops = */ 1,
@@ -564,9 +566,11 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 	
 	outFileGLSL.Format( "renderprogs/vkglsl/%s%s", shader.name.c_str(), shader.nameOutSuffix.c_str() );
 	outFileLayout.Format( "renderprogs/vkglsl/%s%s", shader.name.c_str(), shader.nameOutSuffix.c_str() );
+	outFileSPIRV.Format("renderprogs/spirv/%s%s", shader.name.c_str(), shader.nameOutSuffix.c_str());
 	
 	outFileGLSL.StripFileExtension();
 	outFileLayout.StripFileExtension();
+	outFileSPIRV.StripFileExtension();
 	
 	if( shader.stage == SHADER_STAGE_FRAGMENT )
 	{
@@ -595,27 +599,41 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 	// if the glsl file doesn't exist or we have a newer HLSL file we need to recreate the glsl file.
 	idStr programGLSL;
 	idStr programLayout;
-	//if( ( glslFileLength <= 0 ) || ( hlslTimeStamp != FILE_NOT_FOUND_TIMESTAMP && hlslTimeStamp > glslTimeStamp ) || r_alwaysExportGLSL.GetBool() )
+	uint32* spirvBuffer = NULL;
+	int spirvLen;
+	if ((glslFileLength <= 0) || (hlslTimeStamp != FILE_NOT_FOUND_TIMESTAMP && hlslTimeStamp > glslTimeStamp) || r_alwaysExportGLSL.GetBool())
 	{
 		const char* hlslFileBuffer = NULL;
 		int len = 0;
 		
-		if( hlslFileLength <= 0 )
+		if (hlslFileLength <= 0)
 		{
-			/*hlslFileBuffer = FindEmbeddedSourceShader( inFile.c_str() );
-			if( hlslFileBuffer == NULL )
-			{*/
-				// hlsl file doesn't even exist bail out
-				idLib::Error( "HLSL file %s could not be loaded and may be corrupt", inFile.c_str() );
-				return;
-			/*}
-			
-			len = strlen( hlslFileBuffer );*/
+			// hlsl file doesn't even exist bail out
+#if 0
+			hlslFileBuffer = FindEmbeddedSourceShader(inFile.c_str());
+			if (hlslFileBuffer == NULL)
+			{
+#endif
+				inFile.Format("renderprogs/bfa/%s", shader.name.c_str());
+				inFile.StripFileExtension();
+				if (shader.stage == SHADER_STAGE_FRAGMENT)
+				{
+					inFile += ".ps.hlsl";
+				}
+				else
+				{
+					inFile += ".vs.hlsl";
+				}
+				hlslFileLength = fileSystem->ReadFile(inFile.c_str(), NULL, &hlslTimeStamp);
+				if (hlslFileLength <= 0) {
+					return;
+				}
+#if 0
+			}
+			len = strlen(hlslFileBuffer);
+#endif
 		}
-		else
-		{
-			len = fileSystem->ReadFile( inFile.c_str(), ( void** ) &hlslFileBuffer );
-		}
+		len = fileSystem->ReadFile(inFile.c_str(), (void**)&hlslFileBuffer);
 		
 		if( len <= 0 )
 		{
@@ -652,95 +670,97 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 		fileSystem->WriteFile( outFileGLSL, programGLSL.c_str(), programGLSL.Length(), "fs_savepath" );
 		fileSystem->WriteFile( outFileLayout, programLayout.c_str(), programLayout.Length(), "fs_savepath" );
 	}
-	/*
 	else
 	{
 		// read in the glsl file
 		void* fileBufferGLSL = NULL;
-		int lengthGLSL = fileSystem->ReadFile( outFileGLSL.c_str(), &fileBufferGLSL );
-		if( lengthGLSL <= 0 )
+		int lengthGLSL = fileSystem->ReadFile(outFileGLSL.c_str(), &fileBufferGLSL);
+		if (lengthGLSL <= 0)
 		{
-			idLib::Error( "GLSL file %s could not be loaded and may be corrupt", outFileGLSL.c_str() );
+			idLib::Error("GLSL file %s could not be loaded and may be corrupt", outFileGLSL.c_str());
 		}
-		programGLSL = ( const char* ) fileBufferGLSL;
-		Mem_Free( fileBufferGLSL );
-	
-	
+		programGLSL = (const char*)fileBufferGLSL;
+		Mem_Free(fileBufferGLSL);
+
+
 		{
 			// read in the uniform file
 			void* fileBufferUniforms = NULL;
-			int lengthUniforms = fileSystem->ReadFile( outFileUniforms.c_str(), &fileBufferUniforms );
-			if( lengthUniforms <= 0 )
+			int lengthUniforms = fileSystem->ReadFile(outFileLayout.c_str(), &fileBufferUniforms);
+			if (lengthUniforms <= 0)
 			{
-				idLib::Error( "uniform file %s could not be loaded and may be corrupt", outFileUniforms.c_str() );
+				idLib::Error("uniform file %s could not be loaded and may be corrupt", outFileLayout.c_str());
 			}
-			programUniforms = ( const char* ) fileBufferUniforms;
-			Mem_Free( fileBufferUniforms );
+			programLayout = (const char*)fileBufferUniforms;
+			Mem_Free(fileBufferUniforms);
 		}
+		
+
 	}
-	*/
-	
+
 	// RB: find the uniforms locations in either the vertex or fragment uniform array
 	// this uses the new layout structure
 	{
-		idLexer src( programLayout, programLayout.Length(), "layout" );
+		idLexer src(programLayout, programLayout.Length(), "layout");
 		idToken token;
-		if( src.ExpectTokenString( "uniforms" ) )
+		if (src.ExpectTokenString("uniforms"))
 		{
-			src.ExpectTokenString( "[" );
-			
-			while( !src.CheckTokenString( "]" ) )
+			src.ExpectTokenString("[");
+
+			while (!src.CheckTokenString("]"))
 			{
-				src.ReadToken( &token );
-				
+				src.ReadToken(&token);
+
 				int index = -1;
-				for( int i = 0; i < RENDERPARM_TOTAL && index == -1; i++ )
+				for (int i = 0; i < RENDERPARM_TOTAL && index == -1; i++)
 				{
-					const char* parmName = GetGLSLParmName( i );
-					if( token == parmName )
+					const char* parmName = GetGLSLParmName(i);
+					if (token == parmName)
 					{
 						index = i;
 					}
 				}
-				
-				if( index == -1 )
+
+				if (index == -1)
 				{
-					idLib::Error( "couldn't find uniform %s for %s", token.c_str(), outFileGLSL.c_str() );
+					idLib::Error("couldn't find uniform %s for %s", token.c_str(), outFileGLSL.c_str());
 				}
-				shader.parmIndices.Append( index );
+				shader.parmIndices.Append(index);
 			}
 		}
-		
-		if( src.ExpectTokenString( "bindings" ) )
+
+		if (src.ExpectTokenString("bindings"))
 		{
-			src.ExpectTokenString( "[" );
-			
-			while( !src.CheckTokenString( "]" ) )
+			src.ExpectTokenString("[");
+
+			while (!src.CheckTokenString("]"))
 			{
-				src.ReadToken( &token );
-				
+				src.ReadToken(&token);
+
 				int index = -1;
-				for( int i = 0; i < BINDING_TYPE_MAX; ++i )
+				for (int i = 0; i < BINDING_TYPE_MAX; ++i)
 				{
-					if( token == renderProgBindingStrings[ i ] )
+					if (token == renderProgBindingStrings[i])
 					{
 						index = i;
 					}
 				}
-				
-				if( index == -1 )
+
+				if (index == -1)
 				{
-					idLib::Error( "Invalid binding %s", token.c_str() );
+					idLib::Error("Invalid binding %s", token.c_str());
 				}
-				
-				shader.bindings.Append( static_cast< rpBinding_t >( index ) );
+
+				shader.bindings.Append(static_cast<rpBinding_t>(index));
 			}
 		}
 	}
 	
+	
+
 	// TODO GLSL to SPIR-V compilation
-	uint32* spirvBuffer = NULL;
-	int spirvLen = CompileGLSLtoSPIRV( outFileGLSL.c_str(), programGLSL, shader.stage, &spirvBuffer );
+	spirvBuffer = NULL;
+	spirvLen = CompileGLSLtoSPIRV(outFileGLSL.c_str(), programGLSL, shader.stage, &spirvBuffer);
 	
 	VkShaderModuleCreateInfo shaderModuleCreateInfo = {};
 	shaderModuleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
