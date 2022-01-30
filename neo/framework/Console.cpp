@@ -71,6 +71,8 @@ public:
 	
 	void				Dump( const char* toFile );
 	void				Clear();
+
+	virtual int				GetHeight();
 	
 private:
 	void				Resize();
@@ -504,6 +506,13 @@ void	idConsoleLocal::Open()
 	if (!common->IsMultiplayer()) {
 		con_isActive.SetBool(true);
 	}
+	if (::op && ::op->IsPortable()) {
+		int xpos = renderSystem->GetWidth() / 2 - 320;
+		int ypos = renderSystem->GetHeight() / 2;
+		int width = 640;
+		int height = 480;
+		::op->ShowFloatingTextBox(1, xpos, ypos, width, height);
+	}
 
 }
 
@@ -538,6 +547,11 @@ void idConsoleLocal::Clear()
 	}
 	
 	Bottom();		// go to end
+}
+
+int idConsoleLocal::GetHeight()
+{
+	return LOCALSAFE_HEIGHT;
 }
 
 /*
@@ -921,6 +935,13 @@ bool	idConsoleLocal::ProcessEvent( const sysEvent_t* event, bool forceAccept )
 		{
 			if (!common->IsMultiplayer()) {
 				con_isActive.SetBool(true);
+			}
+			if (::op && ::op->IsPortable()) {
+				int xpos = renderSystem->GetWidth() / 2 - 320;
+				int ypos = renderSystem->GetHeight()/2;
+				int width = 640;
+				int height = 480;
+				::op->ShowFloatingTextBox(1, xpos, ypos, width, height);
 			}
 			consoleField.Clear();
 			keyCatching = true;

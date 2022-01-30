@@ -1913,7 +1913,9 @@ void M_EndGame(int choice)
 		S_StartSound(NULL,sfx_oof);
 		return;
 	}
-	::op->SetAdditionalInfo("status", va("%s:Title Menu", ::g->acronymPrefix));
+	if (::op) {
+		::op->SetAdditionalInfo("status", va("%s:Title Menu", ::g->acronymPrefix));
+	}
 	if (::g->netgame)
 	{
 		M_StartMessage(NETEND,NULL,false);

@@ -89,6 +89,8 @@ public:
 	
 	virtual idDebugGraph* 	CreateGraph( int numItems ) = 0;
 	virtual void			DestroyGraph( idDebugGraph* graph ) = 0;
+
+	virtual int				GetHeight() = 0;
 };
 
 extern idConsole* 	console;	// statically initialized to an idConsoleLocal

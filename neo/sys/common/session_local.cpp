@@ -296,8 +296,8 @@ void idSessionLocalWin::PlatformPump()
 {
 	//GK: Pause the game when the overlay is open
 	//It has lower priority when losing focus of the window
-	if (!cvarSystem->GetCVarBool("com_pausePlatform")) {
-		cvarSystem->SetCVarBool("com_pause", ::op->isPlatformOverlayActive());
+	if (!cvarSystem->GetCVarBool("com_pausePlatform") && ::op) {
+		cvarSystem->SetCVarBool("com_pause", ::op->API_pump());
 	}
 	//common->Printf("Pause = %s\n", cvarSystem->GetCVarBool("com_pause")?"true":"false"); //GK: for debug purposes ONLY
 }

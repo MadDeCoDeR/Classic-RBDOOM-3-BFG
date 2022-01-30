@@ -49,3 +49,4 @@ neo/neo.kdev4
 /base/renderprogs/bfa/.vs
 /MSIXBFA
 /BFA-installer/BFAInst
+/neo/libs/platform-*

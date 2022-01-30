@@ -366,8 +366,10 @@ void idCommonLocal::LoadLoadingGui( const char* mapName, bool& hellMap )
 				txtVal->SetText( subTitle );
 				txtVal->SetStrokeInfo( true, 1.75f, 0.75f );
 			}
-			::op->SetAdditionalInfo("status", va("D3:%s", displayName.c_str()));
-			::op->SetAdditionalInfo("large image", "d3");
+			if (::op) {
+				::op->SetAdditionalInfo("status", va("D3:%s", displayName.c_str()));
+				::op->SetAdditionalInfo("large image", "d3");
+			}
 			txtVal = loadGUI->GetRootObject().GetNestedText( "txtDesc" );
 			if( txtVal != NULL )
 			{

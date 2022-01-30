@@ -1,7 +1,7 @@
 /*
 Open Platform
 
-Copyright(C) 2019 George Kalmpokis
+Copyright(C) 2021 George Kalmpokis
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 and associated documentation files(the "Software"), to deal in the Software without
@@ -21,27 +21,54 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 #pragma once
+#include "OpenAchievement.h"
+#include "OpenDLC.h"
+#include "OpenApplication.h"
 
 class OPlatform
 {
 public:
+	/*
+	* Return the Name of the Implemented API
+	*/
+	virtual const char* API_Name() = 0;
+	/*
+	* Initialize the Implemented API, by using either a local file to determine the App Id or an environment variable with the App Id
+	*/
 	virtual bool API_Init() = 0;
+	/*
+	* Initialize the Implemented API, by getting directly the App Id
+	*/
 	virtual bool API_Init(const char* data) = 0;
+	/*
+	* Shuts down the implemented API
+	*/
 	virtual void API_Shutdown() = 0;
+	/*
+	* Get an Instance of the OpenAchievement Class. (for achievement functions)
+	*/
+	virtual OpenAchievement* openAchievement() = 0;
+	/*
+	* Get an Instance of the OpenDLC Class. (for Dlc functions)
+	*/
+	virtual OpenDLC* openDLC() = 0;
+	/*
+	* Get an Instance of the OpenApp Class. (for App functions)
+	*/
+	virtual OpenApp* openApp() = 0;
 	virtual const char* GetPlatformUserName() = 0;
-	virtual bool GetAchievement(const char* name, bool* status) = 0;
-	virtual const char* GetAchievementDevName(unsigned int id) = 0;
-	virtual bool GetAchievementPercent(const char* name, unsigned int progress, unsigned int max) = 0;
-	virtual bool UnlockAchievement(const char* name) = 0;
-	virtual bool LockAchievement(const char* name) = 0;
-	virtual const char* GetAchievementName(const char* name) = 0;
-	virtual const char* GetAchievementDescription(const char* name) = 0;
-	virtual bool GetAchievementHidden(const char* name) = 0;
 	virtual void ShowUser( unsigned int id) = 0;
-	virtual bool isPlatformOverlayActive() = 0;
+	/*
+	* Run Callbacks of the Implemented API and return if it's overlay is active or not
+	*/
+	virtual bool API_pump() = 0;
+	/*
+	* Check if the game runs on a portable device
+	*/
+	virtual bool IsPortable() = 0;
+	virtual bool ShowFloatingTextBox(int type, int xpos, int ypos, int width, int height) = 0;
 	virtual void SetNotificationsPosition(unsigned int x, unsigned int y) = 0;
 	virtual unsigned long long CreateLobby(int type, int maxplayers) = 0;
-	virtual bool GetCloudStats(unsigned long long* totalBytes, unsigned long long* availableBytes) = 0;
 	virtual bool SetAdditionalInfo(const char* key, const char* value) = 0;
 };
 

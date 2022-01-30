@@ -1210,13 +1210,14 @@ bool D_DoomMainPoll(void)
 				initonce = true;
 				M_ChangeMenuExp(cl_expMenu.GetInteger());
 			}
-			
-			::op->SetAdditionalInfo("status", va("%s:Title Menu",::g->acronymPrefix));
-			if (::g->gamemode == retail || ::g->gamemode == shareware || ::g->gamemode == registered) {
-				::op->SetAdditionalInfo("large image", "ud");
-			}
-			else if (::g->gamemode == commercial){
-				::op->SetAdditionalInfo("large image", "d2");
+			if (::op) {
+				::op->SetAdditionalInfo("status", va("%s:Title Menu", ::g->acronymPrefix));
+				if (::g->gamemode == retail || ::g->gamemode == shareware || ::g->gamemode == registered) {
+					::op->SetAdditionalInfo("large image", "ud");
+				}
+				else if (::g->gamemode == commercial) {
+					::op->SetAdditionalInfo("large image", "d2");
+				}
 			}
 			D_StartTitle ();                // start up intro loop
 		}

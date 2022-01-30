@@ -1,4 +1,0 @@
-INSTALLATION INSTRUCTIONS:
-Extract the desired .dll/.so to a directory your game can read and load files from. 
-In case you want to use additional libraries (eg. steam_api.dll) extract it to a directory
-your game can load libraries from (it might be different from the previous directory.)

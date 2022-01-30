@@ -132,6 +132,8 @@ intptr_t platformDLL = 0;
 idCommonLocal	commonLocal;
 idCommon* 		common = &commonLocal;
 
+OPlatform* op;
+
 GetClassicData_t GetClassicData = &GetClassicDoomData;
 
 // RB: defaulted this to 1 because we don't have a sound for the intro .bik video
@@ -1206,25 +1208,27 @@ void LoadPlatformDLL()
 
 			::op = GetPlatformAPI();
 
+
+
+#ifdef _UWP
+			int res = ::op->API_Init();
+			while (res == -1) {
+				res = ::op->API_Init();
+			}
+			if (res == 1) {
+				common->Printf("Platform loaded sucessfully !!!\n");
+			}
+#else
+			if (::op->API_Init()) {
+				::op->SetAdditionalInfo("large image", "dbfa");
+				::op->SetAdditionalInfo("small image", "dbfa");
+				::op->SetAdditionalInfo("status", "Strting Game");
+				//::op->SetNotificationsPosition(0, 0); //GK: Who knows maybe someone want it on top left
+				common->Printf("Platform loaded sucessfully !!!\n");
+			}
+#endif
 		}
 	}
-#ifdef _UWP
-	int res = ::op->API_Init();
-	while (res == -1) {
-		res = ::op->API_Init();
-	}
-	if (res == 1) {
-		common->Printf("Platform loaded sucessfully !!!\n");
-	}
-#else
-	if (::op->API_Init()) {
-		::op->SetAdditionalInfo("large image", "dbfa");
-		::op->SetAdditionalInfo("small image", "dbfa");
-		::op->SetAdditionalInfo("status", "Strting Game");
-		//::op->SetNotificationsPosition(0, 0); //GK: Who knows maybe someone want it on top left
-		common->Printf("Platform loaded sucessfully !!!\n");
-	}
-#endif
 	
 }
 
@@ -2319,8 +2323,10 @@ void idCommonLocal::PerformGameSwitch()
 		// directly to the lobby.
 		if( session->GetState() <= idSession::IDLE )
 		{
-			::op->SetAdditionalInfo("status", "Game Selection Menu");
-			::op->SetAdditionalInfo("large image", "dbfa");
+			if (::op) {
+				::op->SetAdditionalInfo("status", "Game Selection Menu");
+				::op->SetAdditionalInfo("large image", "dbfa");
+			}
 			session->MoveToPressStart();
 		}
 		
