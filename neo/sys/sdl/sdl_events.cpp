@@ -2069,6 +2069,9 @@ int JoystickSamplingThread(void* data){
 		}else{
 			continue;
 		}
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+		SDL_Delay(4);
+#endif
 	}
 	#if !SDL_VERSION_ATLEAST(2, 0, 0)
 	return 0; //GK: Don't forget SDL 1.2 require to return int value despite the fact that never does

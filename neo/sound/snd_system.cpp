@@ -31,6 +31,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "snd_local.h"
 
+#ifndef _WIN32
+#include <chrono>
+#include <thread>
+#endif
+
 idCVar s_noSound( "s_noSound", "0", CVAR_BOOL, "returns NULL for all sounds loaded and does not update the sound rendering" );
 
 #ifdef ID_RETAIL
@@ -155,12 +160,18 @@ void DefaultDeviceChangeThread(void* data) {
 
 	static uint64 nextCheck = 0;
 	const uint64 waitTime = 5000;
+#ifdef _WIN32
+	HANDLE timer = CreateWaitableTimer(NULL, FALSE, "AudioTimer");
+	LARGE_INTEGER dueTime;
+	dueTime.QuadPart = -1;
+	if (!SetWaitableTimer(timer, &dueTime, 4, NULL, NULL, FALSE))
+	{
+		idLib::FatalError("SetWaitableTimer for Audio failed");
+	}
+#endif
 	while (1) {
-		int	now = Sys_Microseconds();
-		if (!cvarSystem->IsInitialized()) {
-			break;
-		}
-		if (now >= nextCheck && !com_pause.GetBool() && !soundSystemLocal.needsRestart) {
+		int	now = Sys_Milliseconds();
+		if (now >= nextCheck) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 			if (s_useXAudio.GetBool()) {
 				AudioDevice defaultDevice;
@@ -174,17 +185,22 @@ void DefaultDeviceChangeThread(void* data) {
 				//ALCdevice* defaultALCDevice = alcOpenDevice(NULL); //GK: Otherwise outside of an attached debugger it goes bananas with audio reset
 				const ALCchar* defaultDevice =  alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
 				const ALCchar* selectedDevice = alcGetString((ALCdevice*)data, ALC_ALL_DEVICES_SPECIFIER);
-				char* mbdefdev = strdup(defaultDevice);
+				/*char* mbdefdev = strdup(defaultDevice);
 				idSoundHardware_OpenAL::parseDeviceName(defaultDevice, mbdefdev);
 				char* mbseldev = strdup(selectedDevice);
-				idSoundHardware_OpenAL::parseDeviceName(selectedDevice, mbseldev);
+				idSoundHardware_OpenAL::parseDeviceName(selectedDevice, mbseldev);*/
 //				idLib::Printf("Default Device: %s\nSelected Device: %s\n", mbdefdev, mbseldev); //GK: Otherwise outside of an attached debugger it only works once???
-				if (idStr::Icmp(mbdefdev, mbseldev)) {
+				if (idStr::Icmp(defaultDevice, selectedDevice)) {
 					soundSystemLocal.SetNeedsRestart();
 				}
 			}
 			nextCheck = now + waitTime;
 		}
+#ifdef _WIN32
+		WaitForSingleObject(timer, INFINITE);
+#else
+		std::this_thread::sleep_for(std::chrono::milliseconds(4));
+#endif
 	}
 
 }
