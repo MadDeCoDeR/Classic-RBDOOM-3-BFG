@@ -154,7 +154,11 @@ void CinematicAudio_OpenAL::ShutdownAudio()
 {
 	if (alIsSource(alMusicSourceVoicecin)) {
 		alSourceStop(alMusicSourceVoicecin);
-		alSourceUnqueueBuffers(alMusicSourceVoicecin, NUM_BUFFERS, alMusicBuffercin);
+		ALint queued;
+		alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_QUEUED, &queued);
+		if (queued > 0) {
+			alSourceUnqueueBuffers(alMusicSourceVoicecin, NUM_BUFFERS, alMusicBuffercin);
+		}
 		alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
 		alDeleteSources(1, &alMusicSourceVoicecin);
 		if (CheckALErrors() == AL_NO_ERROR) {

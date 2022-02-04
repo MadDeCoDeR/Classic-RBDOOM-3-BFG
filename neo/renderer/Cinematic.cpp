@@ -37,9 +37,6 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 #include <sound/OpenAL/AL_CinematicAudio.h>
 
-//GK:Also init variables for XAudio2
-CinematicAudio* cinematicAudio;
-
 extern idCVar s_noSound;
 extern idCVar s_volume_dB;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
@@ -80,7 +77,6 @@ extern "C"
 }
 bool hasplanar = true;
 #endif
-#include "sound/AVD.h"
 
 #ifdef USE_BINKDEC
 // DG: not sure how to use FFMPEG and BINKDEC at the same time.. it might be useful if someone wants to
@@ -117,6 +113,8 @@ private:
 	AVFrame*				frame;
 	AVFrame*				frame2;
 	AVFrame*				frame3; //GK: make extra frame for audio
+	//GK:Also init variables for XAudio2
+	CinematicAudio* cinematicAudio;
 #if LIBAVCODEC_VERSION_MAJOR > 58
 	const AVCodec*				dec;
 #else
