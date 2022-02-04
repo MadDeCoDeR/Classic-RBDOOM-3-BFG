@@ -29,6 +29,11 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../Game_local.h"
 
+#ifndef _WIN32
+#include <chrono>
+#include <thread>
+#endif
+
 
 //extern idCVar g_demoMode;
 
