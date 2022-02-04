@@ -1372,12 +1372,13 @@ public:
 		enum systemSettingFields_t
 		{
 			SYSTEM_FIELD_FULLSCREEN,
+			SYSTEM_FIELD_FULLSCREEN_MODE,
 			//GK begin
 			SYSTEM_FIELD_ASPECTRATIO,
 			//GK end
 			SYSTEM_FIELD_FRAMERATE,
 			SYSTEM_FIELD_VSYNC,
-			SYSTEM_FIELD_ANTIALIASING,
+			//SYSTEM_FIELD_ANTIALIASING,
 			SYSTEM_FIELD_MOTIONBLUR,
 			// RB begin
 			//SYSTEM_FIELD_SHADOWMAPPING,
@@ -1410,7 +1411,9 @@ public:
 	private:
 		int originalFramerate;
 		int originalRefreshRate;
-		int originalAntialias;
+		int originalFullscreen;
+		int originalScreenXpos;
+		int originalScreenYpos;
 		int originalMotionBlur;
 		int originalVsync;
 		float originalBrightness;
@@ -1420,6 +1423,9 @@ public:
 		// RB end
 		
 		idList<vidMode_t>			modeList;
+
+		int AdjustOption(int currentValue, const int values[], int numValues, int adjustment);
+		float LinearAdjust(float input, float currentMin, float currentMax, float desiredMin, float desiredMax) const;
 	};
 	
 	idMenuScreen_Shell_SystemOptions() :
@@ -1528,12 +1534,7 @@ public:
 	public:
 		enum advancedSettingFields_t
 		{
-			ADV_FIELD_SHADOWMAPPING,
-			ADV_FIELD_SHADOWMAPLOD,
-			ADV_FIELD_HDR,
 			ADV_FIELD_DAMMOT,
-			ADV_FIELD_SSAO,
-			ADV_FIELD_FPPE,
 			ADV_FIELD_FLASH,
 			ADV_FIELD_VMFOV,
 			MAX_ADVANCED_FIELDS
@@ -1557,14 +1558,9 @@ public:
 		virtual void				AdjustField(const int fieldIndex, const int adjustAmount);
 
 	private:
-		int originalShadowMapping;
-		int originalHDR;
 		int originalATHDR;
-		int originalSSAO;
-		int originalFilmic;
 		int originalFlashlight;
 		int originalVmfov;
-		float originalShadowMapLod;
 	};
 
 	idMenuScreen_Shell_AdvancedOptions() :
@@ -1583,6 +1579,85 @@ private:
 	idMenuDataSource_AdvancedSettings	advData;
 	idMenuWidget_Button*			btnBack;
 
+};
+//*
+//================================================
+//idMenuScreen_Shell_AdvancedGraphics
+//================================================
+//*/
+class idMenuScreen_Shell_AdvancedGraphics : public idMenuScreen
+{
+public:
+
+	/*
+	================================================
+	idMenuDataSource_AdvancedGraphics
+	================================================
+	*/
+	class idMenuDataSource_AdvancedGraphics : public idMenuDataSource
+	{
+	public:
+		enum advancedGraphicsFields_t
+		{
+			ADV_FIELD_SHADOWMAPPING,
+			ADV_FIELD_SHADOWMAPLOD,
+			ADV_FIELD_HDR,
+			ADV_FIELD_ANTIALIASING,
+			ADV_FIELD_SSAO,
+			ADV_FIELD_FPPE,
+			ADV_FIELD_SSGI,
+			ADV_FIELD_HALF_LIGHT,
+			MAX_ADVANCED_FIELDS
+		};
+
+		idMenuDataSource_AdvancedGraphics();
+
+		// loads data
+		virtual void				LoadData();
+
+		// submits data
+		virtual void				CommitData();
+
+		// says whether something changed with the data
+		virtual bool				IsDataChanged() const;
+
+		// retrieves a particular field for reading
+		virtual idSWFScriptVar		GetField(const int fieldIndex) const;
+
+		// updates a particular field value
+		virtual void				AdjustField(const int fieldIndex, const int adjustAmount);
+
+		bool						IsRestartRequired() const;
+
+	private:
+		int originalShadowMapping;
+		int originalHDR;
+		int originalAA;
+		int originalSSAO;
+		int originalFilmic;
+		int originalSSGI;
+		int originalColor;
+		float originalShadowMapLod;
+
+		int AdjustOption(int currentValue, const int values[], int numValues, int adjustment);
+		float LinearAdjust(float input, float currentMin, float currentMax, float desiredMin, float desiredMax) const;
+	};
+
+	idMenuScreen_Shell_AdvancedGraphics() :
+		options(NULL),
+		btnBack(NULL)
+	{
+	}
+	virtual void				Initialize(idMenuHandler* data);
+	virtual void				Update();
+	virtual void				ShowScreen(const mainMenuTransition_t transitionType);
+	virtual void				HideScreen(const mainMenuTransition_t transitionType);
+	virtual bool				HandleAction(idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled = false);
+
+private:
+	idMenuWidget_DynamicList* options;
+	idMenuDataSource_AdvancedGraphics	advData;
+	idMenuWidget_Button* btnBack;
 };
 //GK: End
 //*

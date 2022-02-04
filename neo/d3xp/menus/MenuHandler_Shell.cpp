@@ -477,6 +477,7 @@ void idMenuHandler_ShellLocal::Initialize( const char* swfFile, idSoundWorld* sw
 		BIND_SHELL_SCREEN( SHELL_AREA_SETTINGS, idMenuScreen_Shell_Settings, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_LOAD, idMenuScreen_Shell_LoadLocal, this );
 		BIND_SHELL_SCREEN(SHELL_AREA_ADVANCED, idMenuScreen_Shell_AdvancedOptions, this); //GK: New option stuff
+		BIND_SHELL_SCREEN(SHELL_AREA_ADV_GRAPHICS, idMenuScreen_Shell_AdvancedGraphics, this); //GK: New option stuff
 		BIND_SHELL_SCREEN( SHELL_AREA_SYSTEM_OPTIONS, idMenuScreen_Shell_SystemOptions, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_GAME_OPTIONS, idMenuScreen_Shell_GameOptions, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_SAVE, idMenuScreen_Shell_SaveLocal, this );
@@ -499,6 +500,7 @@ void idMenuHandler_ShellLocal::Initialize( const char* swfFile, idSoundWorld* sw
 		BIND_SHELL_SCREEN( SHELL_AREA_LOAD, idMenuScreen_Shell_LoadLocal, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_NEW_GAME, idMenuScreen_Shell_NewGame, this );
 		BIND_SHELL_SCREEN(SHELL_AREA_ADVANCED, idMenuScreen_Shell_AdvancedOptions, this); //GK: New option stuff
+		BIND_SHELL_SCREEN(SHELL_AREA_ADV_GRAPHICS, idMenuScreen_Shell_AdvancedGraphics, this); //GK: New option stuff
 		BIND_SHELL_SCREEN( SHELL_AREA_SYSTEM_OPTIONS, idMenuScreen_Shell_SystemOptions, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_GAME_OPTIONS, idMenuScreen_Shell_GameOptions, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_PARTY_LOBBY, idMenuScreen_Shell_PartyLobby, this );
@@ -1046,7 +1048,7 @@ bool idMenuHandler_ShellLocal::HandleAction( idWidgetAction& action, const idWid
 			}
 			
 			if( cmd != SHELL_CMD_QUIT && ( nextScreen == SHELL_AREA_STEREOSCOPICS || nextScreen == SHELL_AREA_SYSTEM_OPTIONS || nextScreen == SHELL_AREA_GAME_OPTIONS ||
-										   nextScreen == SHELL_AREA_GAMEPAD || nextScreen == SHELL_AREA_MATCH_SETTINGS || nextScreen == SHELL_AREA_ADVANCED ) )
+										   nextScreen == SHELL_AREA_GAMEPAD || nextScreen == SHELL_AREA_MATCH_SETTINGS || nextScreen == SHELL_AREA_ADVANCED || nextScreen == SHELL_AREA_ADV_GRAPHICS) )
 			{
 			
 				cvarSystem->SetModifiedFlags( CVAR_ARCHIVE );
@@ -1283,7 +1285,7 @@ void idMenuHandler_ShellLocal::UpdateBGState()
 		if( nextScreen != SHELL_AREA_PLAYSTATION && nextScreen != SHELL_AREA_SETTINGS && nextScreen != SHELL_AREA_CAMPAIGN && nextScreen != SHELL_AREA_DEV )
 		{
 			if( nextScreen != SHELL_AREA_RESOLUTION && nextScreen != SHELL_AREA_GAMEPAD && nextScreen != SHELL_AREA_DIFFICULTY && nextScreen != SHELL_AREA_SYSTEM_OPTIONS && nextScreen != SHELL_AREA_GAME_OPTIONS && nextScreen != SHELL_AREA_NEW_GAME && nextScreen != SHELL_AREA_STEREOSCOPICS &&
-					nextScreen != SHELL_AREA_CONTROLS && nextScreen != SHELL_AREA_ADVANCED )
+					nextScreen != SHELL_AREA_CONTROLS && nextScreen != SHELL_AREA_ADVANCED && nextScreen != SHELL_AREA_ADV_GRAPHICS)
 			{
 				ShowSmallFrame( false );
 			}
@@ -1447,6 +1449,15 @@ void idMenuHandler_ShellLocal::StartGame( int index )
 
 void checkInput( void* data)
 {
+#ifdef _WIN32
+	HANDLE timer = CreateWaitableTimer(NULL, FALSE, "IntroTimer");
+	LARGE_INTEGER dueTime;
+	dueTime.QuadPart = -1;
+	if (!SetWaitableTimer(timer, &dueTime, 1, NULL, NULL, FALSE))
+	{
+		idLib::FatalError("SetWaitableTimer for Intro failed");
+	}
+#endif
 	while (true) {
 		if (skipIntro) {
 			break;
@@ -1536,6 +1547,11 @@ void checkInput( void* data)
 		if (skipIntro) {
 			break;
 		}
+#ifdef _WIN32
+		WaitForSingleObject(timer, INFINITE);
+#else
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+#endif
 	}
 }
 

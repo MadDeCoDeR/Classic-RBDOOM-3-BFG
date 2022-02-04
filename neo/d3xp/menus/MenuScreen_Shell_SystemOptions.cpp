@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 
 const static int NUM_SYSTEM_OPTIONS_OPTIONS = 8;
 
-extern idCVar r_antiAliasing;
+extern idCVar r_fullscreen;
 extern idCVar r_motionBlur;
 extern idCVar r_swapInterval;
 extern idCVar s_volume_dB;
@@ -41,6 +41,8 @@ extern idCVar r_lightScale;
 //extern idCVar r_aspectratio; //GK: use forced aspect ratio
 
 idList<int> refreshList;
+int numOfDisplays;
+static bool resetVideo = false;
 
 /*
 ========================
@@ -51,9 +53,21 @@ void idMenuScreen_Shell_SystemOptions::Initialize( idMenuHandler* data )
 {
 	idMenuScreen::Initialize( data );
 	
+	resetVideo = false;
+
 	if( data != NULL )
 	{
 		menuGUI = data->GetGUI();
+	}
+
+	for (int displayNum = 0; ; displayNum++)
+	{
+		idList<vidMode_t> modeList;
+		if (!R_GetModeListForDisplay(displayNum, modeList))
+		{
+			numOfDisplays = displayNum;
+			break;
+		}
 	}
 	
 	SetSpritePath( "menuSystemOptions" );
@@ -83,6 +97,15 @@ void idMenuScreen_Shell_SystemOptions::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN );
 	options->AddChild( control );
 	//GK: Begin
+
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TEXT);
+	control->SetLabel("#str_fullscreen");
+	control->SetDataSource(&systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN_MODE);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN_MODE);
+	options->AddChild(control);
+
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_TEXT);
 	control->SetLabel("#str_swf_aspect"); //Aspect Ratio
@@ -107,13 +130,7 @@ void idMenuScreen_Shell_SystemOptions::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_VSYNC );
 	options->AddChild( control );
 	
-	control = new( TAG_SWF ) idMenuWidget_ControlButton();
-	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "#str_04128" );
-	control->SetDataSource( &systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_ANTIALIASING );
-	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_ANTIALIASING );
-	options->AddChild( control );
+	
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
@@ -411,11 +428,13 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::LoadData
 {
 	originalFramerate = com_engineHz.GetInteger();
 	originalRefreshRate = r_displayRefresh.GetInteger();
-	originalAntialias = r_antiAliasing.GetInteger();
+	originalFullscreen = r_fullscreen.GetInteger();
 	originalMotionBlur = r_motionBlur.GetInteger();
 	originalVsync = r_swapInterval.GetInteger();
 	originalBrightness = r_lightScale.GetFloat();
 	originalVolume = s_volume_dB.GetFloat();
+	originalScreenXpos = r_windowX.GetInteger();
+	originalScreenYpos = r_windowY.GetInteger();
 	// RB begin
 	//originalShadowMapping = r_useShadowMapping.GetInteger();
 	// RB end
@@ -438,10 +457,6 @@ idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsRestartRequ
 */
 bool idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsRestartRequired() const
 {
-	if( originalAntialias != r_antiAliasing.GetInteger() )
-	{
-		return true;
-	}
 	
 	if( originalFramerate != com_engineHz.GetInteger() )
 	{
@@ -469,6 +484,10 @@ idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::CommitData
 void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::CommitData()
 {
 	cvarSystem->SetModifiedFlags( CVAR_ARCHIVE );
+	if (resetVideo) {
+		resetVideo = false;
+		cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
+	}
 }
 
 /*
@@ -477,7 +496,7 @@ AdjustOption
 Given a current value in an array of possible values, returns the next n value
 ========================
 */
-int AdjustOption( int currentValue, const int values[], int numValues, int adjustment )
+int idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustOption( int currentValue, const int values[], int numValues, int adjustment )
 {
 	int index = 0;
 	for( int i = 0; i < numValues; i++ )
@@ -503,7 +522,7 @@ LinearAdjust
 Linearly converts a float from one scale to another
 ========================
 */
-float LinearAdjust( float input, float currentMin, float currentMax, float desiredMin, float desiredMax )
+float idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::LinearAdjust( float input, float currentMin, float currentMax, float desiredMin, float desiredMax ) const
 {
 	return ( ( input - currentMin ) / ( currentMax - currentMin ) ) * ( desiredMax - desiredMin ) + desiredMin;
 }
@@ -552,20 +571,16 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 			r_swapInterval.SetInteger( AdjustOption( r_swapInterval.GetInteger(), values, numValues, adjustAmount ) );
 			break;
 		}
-		case SYSTEM_FIELD_ANTIALIASING:
+		case SYSTEM_FIELD_FULLSCREEN_MODE:
 		{
-			// RB: disabled 16x MSAA
-			static const int numValues = 5;
-			static const int values[numValues] =
-			{
-				ANTI_ALIASING_NONE,
-				ANTI_ALIASING_SMAA_1X,
-				ANTI_ALIASING_MSAA_2X,
-				ANTI_ALIASING_MSAA_4X,
-				ANTI_ALIASING_MSAA_8X
-			};
-			// RB end
-			r_antiAliasing.SetInteger( AdjustOption( r_antiAliasing.GetInteger(), values, numValues, adjustAmount ) );
+			idList<int> screenValues;
+			screenValues.Clear();
+			screenValues.AddUnique(-1);
+			screenValues.AddUnique(0);
+			for (int i = 0; i < numOfDisplays; i++) {
+				screenValues.AddUnique(i + 1);
+			}
+			r_fullscreen.SetInteger(AdjustOption(r_fullscreen.GetInteger(), screenValues.Ptr(), screenValues.Num(), adjustAmount));
 			break;
 		}
 		case SYSTEM_FIELD_MOTIONBLUR:
@@ -669,26 +684,18 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 			{
 				return "#str_swf_disabled";
 			}
-		case SYSTEM_FIELD_ANTIALIASING:
+		case SYSTEM_FIELD_FULLSCREEN_MODE:
 		{
-			if( r_antiAliasing.GetInteger() == 0 )
-			{
-				return "#str_swf_disabled";
+			switch (r_fullscreen.GetInteger()) {
+				case -1:
+					return "#str_swf_borderless";
+				case 0:
+					return "#str_swf_windowed";
+				case 1:
+					return "#str_swf_exclusive_fullscreen";
+				default:
+					return va("%s %d", idLocalization::GetString("#str_swf_monitor"), r_fullscreen.GetInteger());
 			}
-			
-			static const int numValues = 5;
-			static const char* values[numValues] =
-			{
-				"None",
-				"SMAA 1X",
-				"MSAA 2X",
-				"MSAA 4X",
-				"MSAA 8X"
-			};
-			
-			compile_time_assert( numValues == ( ANTI_ALIASING_MSAA_8X + 1 ) );
-			
-			return values[ r_antiAliasing.GetInteger() ];
 		}
 		case SYSTEM_FIELD_MOTIONBLUR:
 			if( r_motionBlur.GetInteger() == 0 )
@@ -734,8 +741,17 @@ bool idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsDataCh
 	{
 		return true;
 	}
-	if( originalAntialias != r_antiAliasing.GetInteger() )
+	if( originalFullscreen != r_fullscreen.GetInteger() )
 	{
+		if (r_fullscreen.GetInteger() == -1) {
+			r_windowX.SetInteger(0);
+			r_windowY.SetInteger(0);
+		}
+		else {
+			r_windowX.SetInteger(originalScreenXpos);
+			r_windowY.SetInteger(originalScreenYpos);
+		}
+		resetVideo = true;
 		return true;
 	}
 	if( originalMotionBlur != r_motionBlur.GetInteger() )

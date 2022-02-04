@@ -32,17 +32,8 @@ If you have questions concerning this license or the applicable additional terms
 
 const static int NUM_ADVANCED_OPTIONS_OPTIONS = 8;
 
-extern idCVar r_useShadowMapping;
-extern idCVar r_shadowMapLodScale;
-extern idCVar r_useHDR;
-extern idCVar r_hdrAutoExposure;
-extern idCVar r_useSSAO;
-extern idCVar r_useFilmicPostProcessEffects;
 //extern idCVar flashlight_old;
 //extern idCVar pm_vmfov;
-
-
-static bool hdrChanged = 0;
 
 /*
 ========================
@@ -77,29 +68,6 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	AddChild( btnBack );
 	
 	idMenuWidget_ControlButton* control;
-	control = new( TAG_SWF ) idMenuWidget_ControlButton();
-	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "#str_shadow_mapping" ); //Soft Shadows
-	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPPING );
-	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPPING);
-	options->AddChild( control );
-
-	control = new(TAG_SWF) idMenuWidget_ControlButton();
-	control->SetOptionType(OPTION_SLIDER_BAR);
-	control->SetLabel("#str_shadow_mapping_lod"); //Soft ShadowsLOD
-	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPLOD);
-	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
-	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SHADOWMAPLOD);
-	options->AddChild(control);
-
-	control = new(TAG_SWF) idMenuWidget_ControlButton();
-	control->SetOptionType(OPTION_SLIDER_TEXT);
-	control->SetLabel("#str_hdr"); //HDR
-	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_HDR);
-	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
-	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_HDR);
-	options->AddChild(control);
 
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
@@ -107,22 +75,6 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_DAMMOT );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_DAMMOT );
-	options->AddChild( control );
-	
-	control = new( TAG_SWF ) idMenuWidget_ControlButton();
-	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "#str_ssao" ); //SSAO
-	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SSAO );
-	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SSAO );
-	options->AddChild( control );
-	
-	control = new( TAG_SWF ) idMenuWidget_ControlButton();
-	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "#str_filmic" ); //Filmic Post Process effect
-	control->SetDataSource( &advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_FPPE );
-	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_FPPE );
 	options->AddChild( control );
 	
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
@@ -269,16 +221,6 @@ bool idMenuScreen_Shell_AdvancedOptions::HandleAction( idWidgetAction& action, c
 		}
 		case WIDGET_ACTION_ADJUST_FIELD:
 		{
-			switch (index) {
-				case idMenuDataSource_AdvancedSettings::ADV_FIELD_HDR:
-				{
-					if (hdrChanged) {
-						hdrChanged = false;
-						return false;
-					}
-					hdrChanged = true;
-				}
-			}
 			updateUi = false;
 			break;
 		}
@@ -355,14 +297,9 @@ idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::LoadData
 */
 void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::LoadData()
 {
-	originalShadowMapping = r_useShadowMapping.GetInteger();
-	originalHDR = r_useHDR.GetInteger();
 	originalATHDR = game->GetCVarInteger("g_damageKickEffect");
-	originalSSAO = r_useSSAO.GetInteger();
-	originalFilmic = r_useFilmicPostProcessEffects.GetInteger();
 	originalFlashlight = game->GetCVarInteger("flashlight_old");
 	originalVmfov = game->GetCVarInteger("pm_vmfov");
-	originalShadowMapLod = r_shadowMapLodScale.GetFloat();
 }
 
 /*
@@ -395,34 +332,9 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 {
 	switch( fieldIndex )
 	{
-		case ADV_FIELD_SHADOWMAPPING:
-		{
-			r_useShadowMapping.SetBool(!r_useShadowMapping.GetBool());
-			break;
-		}
-		case ADV_FIELD_SHADOWMAPLOD:
-		{
-			r_shadowMapLodScale.SetFloat(r_shadowMapLodScale.GetFloat() + adjustAmount * 0.1f);
-			break;
-		}
-		case ADV_FIELD_HDR:
-		{
-			r_useHDR.SetBool(!r_useHDR.GetBool());
-			break;
-		}
 		case ADV_FIELD_DAMMOT:
 		{
 			game->SetCVarBool("g_damageKickEffect", !game->GetCVarBool("g_damageKickEffect"));
-			break;
-		}
-		case ADV_FIELD_SSAO:
-		{
-			r_useSSAO.SetBool( !r_useSSAO.GetBool() );
-			break;
-		}
-		case ADV_FIELD_FPPE:
-		{
-			r_useFilmicPostProcessEffects.SetBool( !r_useFilmicPostProcessEffects.GetBool() );
 			break;
 		}
 		case ADV_FIELD_FLASH:
@@ -453,57 +365,9 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 {
 	switch( fieldIndex )
 	{
-		case ADV_FIELD_SHADOWMAPPING:
-		{
-			if (r_useShadowMapping.GetInteger() == 1)
-			{
-				return "#str_swf_enabled";
-			}
-			else
-			{
-				return "#str_swf_disabled";
-			}
-		}
-		case ADV_FIELD_SHADOWMAPLOD:
-		{
-			return ReLinearAdjust(r_shadowMapLodScale.GetFloat(), 0.1f, 2.0f, 0.0f, 100.0f);
-		}
-		case ADV_FIELD_HDR:
-		{
-			if (r_useHDR.GetInteger() == 1)
-			{
-				return "#str_swf_enabled";
-			}
-			else
-			{
-				return "#str_swf_disabled";
-			}
-		}
 		case ADV_FIELD_DAMMOT:
 		{
 			if (game->GetCVarInteger("g_damageKickEffect") == 1)
-			{
-				return "#str_swf_enabled";
-			}
-			else
-			{
-				return "#str_swf_disabled";
-			}
-		}
-		case ADV_FIELD_SSAO:
-		{
-			if (r_useSSAO.GetInteger() == 1)
-			{
-				return "#str_swf_enabled";
-			}
-			else
-			{
-				return "#str_swf_disabled";
-			}
-		}
-		case ADV_FIELD_FPPE:
-		{
-			if (r_useFilmicPostProcessEffects.GetInteger() == 1)
 			{
 				return "#str_swf_enabled";
 			}
@@ -535,27 +399,7 @@ idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsDataChanged
 */
 bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDataChanged() const
 {
-	if( originalShadowMapping != r_useShadowMapping.GetInteger() )
-	{
-		return true;
-	}
-	if (originalShadowMapLod != r_shadowMapLodScale.GetFloat()) {
-		return true;
-	}
-	if( originalHDR != r_useHDR.GetInteger() )
-	{
-		cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
-		return true;
-	}
 	if( originalATHDR != game->GetCVarInteger("g_damageKickEffect"))
-	{
-		return true;
-	}
-	if( originalSSAO != r_useSSAO.GetInteger() )
-	{
-		return true;
-	}
-	if( originalFilmic != r_useFilmicPostProcessEffects.GetInteger() )
 	{
 		return true;
 	}

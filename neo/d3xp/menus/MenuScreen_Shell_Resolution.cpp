@@ -293,7 +293,7 @@ bool idMenuScreen_Shell_Resolution::HandleAction( idWidgetAction& action, const 
 				else
 				{
 					// Changing to fullscreen mode
-					r_fullscreen.SetInteger( currentOption.fullscreen );
+					r_fullscreen.SetInteger( originalOption.fullscreen > -1 ? currentOption.fullscreen : originalOption.fullscreen );
 					r_vidMode.SetInteger( currentOption.vidmode );
 					r_customWidth.SetInteger(displays[currentOption.fullscreen - 1][currentOption.vidmode].width);
 					r_customHeight.SetInteger(displays[currentOption.fullscreen - 1][currentOption.vidmode].height);
@@ -330,6 +330,9 @@ bool idMenuScreen_Shell_Resolution::HandleAction( idWidgetAction& action, const 
 								r_vidMode.SetInteger( optionData.vidmode );
 								r_customWidth.SetInteger(displays[0][optionData.vidmode].width);
 								r_customHeight.SetInteger(displays[0][optionData.vidmode].height);
+								if (optionData.fullscreen > 0) {
+									r_displayRefresh.SetInteger(displays[optionData.fullscreen - 1][optionData.vidmode].displayHz);
+								}
 								cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 								cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
 							}

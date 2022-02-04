@@ -1071,6 +1071,11 @@ void M_DrawSound(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[musrev], PU_CACHE_SHARED), W_GetNumForName(msgNames[musrev])), false);
 }
 
+char	fullNames[3][9] =
+{
+"M_MSGOFF","M_MSGON", "M_BORL"
+};
+
 char    detailNames[3][9] =
 {
 "M_GDLOW","M_DETAIL","M_DISOPT" //GK: Use unique values for aspect ratio
@@ -1098,7 +1103,7 @@ void M_DrawVideo(void)
 	int correct = r_aspectcorrect.GetInteger();
 	int asoffset = 165 - (6 * correct); //GK: The word "correct" is larger than the others and therefor it requires different x offset
 	int reallight = r_clight.GetInteger();
-	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : 0;
+	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : r_fullscreen.GetInteger() < 0 ? 2 : 0;
 	int blurryeffect = r_clblurry.GetInteger();
 	int syncValue = r_swapInterval.GetInteger();
 	char* res = new char[11];
@@ -1110,7 +1115,7 @@ void M_DrawVideo(void)
 	std::string refreshString = va("%d Hz", com_engineHz.GetInteger());
 
 	V_DrawPatchDirect(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * endgame, 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[fullscreenOnOff], PU_CACHE_SHARED), W_GetNumForName(msgNames[fullscreenOnOff])), false);
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(fullNames[fullscreenOnOff], PU_CACHE_SHARED), W_GetNumForName(fullNames[fullscreenOnOff])), false);
 	V_DrawPatchDirect(::g->VideoDef.x + asoffset, ::g->VideoDef.y + LINEHEIGHT * (detail - (cl_engineHz_interp.GetBool() ? 0 : 1)), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])), false);
 	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light - (cl_engineHz_interp.GetBool() ? 0 : 1)), 0,
@@ -1660,7 +1665,7 @@ void M_HUD(int choice)
 //
 void M_FullScreen( int choice ) {
 
-	r_fullscreen.SetInteger( r_fullscreen.GetInteger() ? 0: 1 );
+	r_fullscreen.SetInteger( r_fullscreen.GetInteger() == 0 ? 1 : r_fullscreen.GetInteger() == 1 ? -1 : 0 );
 	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
 }
 
