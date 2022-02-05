@@ -1664,8 +1664,11 @@ void M_HUD(int choice)
 //      Toggle Fullscreen
 //
 void M_FullScreen( int choice ) {
-
+#ifdef _WIN32
 	r_fullscreen.SetInteger( r_fullscreen.GetInteger() == 0 ? 1 : r_fullscreen.GetInteger() == 1 ? -1 : 0 );
+#else
+	r_fullscreen.SetInteger(r_fullscreen.GetInteger() ? 0 : 1);
+#endif
 	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
 }
 
