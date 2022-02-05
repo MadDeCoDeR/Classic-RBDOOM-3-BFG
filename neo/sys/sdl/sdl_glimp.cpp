@@ -111,7 +111,7 @@ bool GLimp_Init( glimpParms_t parms )
 		flags |= SDL_WINDOW_FULLSCREEN;
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
-	if (parms.fullscreen < 0)
+	if (parms.fullScreen < 0)
 		flags |= SDL_WINDOW_BORDERLESS;
 #endif
 		
