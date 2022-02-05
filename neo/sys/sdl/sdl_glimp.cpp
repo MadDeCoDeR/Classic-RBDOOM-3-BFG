@@ -109,6 +109,11 @@ bool GLimp_Init( glimpParms_t parms )
 	
 	if( parms.fullScreen )
 		flags |= SDL_WINDOW_FULLSCREEN;
+
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	if (parms.fullscreen < 0)
+		flags |= SDL_WINDOW_BORDERLESS;
+#endif
 		
 	int colorbits = 24;
 	int depthbits = 24;
