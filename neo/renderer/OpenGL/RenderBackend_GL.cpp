@@ -478,6 +478,7 @@ void idRenderBackend::Init()
 	// input and sound systems need to be tied to the new window
 	Sys_InitInput();
 	
+	glConfig.forceGLSLGeneration = false;
 	// get our config strings
 	glConfig.vendor_string = ( const char* )glGetString( GL_VENDOR );
 	glConfig.renderer_string = ( const char* )glGetString( GL_RENDERER );
@@ -1452,10 +1453,12 @@ void idRenderBackend::CheckCVars()
 	
 	if( r_useHDR.IsModified() || r_useHalfLambertLighting.IsModified() )
 	{
+		glConfig.forceGLSLGeneration = true;
 		r_useHDR.ClearModified();
 		r_useHalfLambertLighting.ClearModified();
 		renderProgManager.KillAllShaders();
 		renderProgManager.LoadAllShaders();
+		glConfig.forceGLSLGeneration = false;
 	}
 	
 	// RB: turn off shadow mapping for OpenGL drivers that are too slow

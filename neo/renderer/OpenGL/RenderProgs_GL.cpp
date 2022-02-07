@@ -35,7 +35,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 idCVar r_displayGLSLCompilerMessages( "r_displayGLSLCompilerMessages", "1", CVAR_BOOL | CVAR_ARCHIVE, "Show info messages the GPU driver outputs when compiling the shaders" );
-idCVar r_alwaysExportGLSL( "r_alwaysExportGLSL", "1", CVAR_BOOL, "" );
+idCVar r_alwaysExportGLSL( "r_alwaysExportGLSL", "0", CVAR_BOOL, "" );
 
 /*
 ========================
@@ -164,7 +164,7 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 	// if the glsl file doesn't exist or we have a newer HLSL file we need to recreate the glsl file.
 	idStr programGLSL;
 	idStr programUniforms;
-	if( ( glslFileLength <= 0 ) || ( hlslTimeStamp != FILE_NOT_FOUND_TIMESTAMP && hlslTimeStamp > glslTimeStamp ) || r_alwaysExportGLSL.GetBool() )
+	if( ( glslFileLength <= 0 ) || ( hlslTimeStamp != FILE_NOT_FOUND_TIMESTAMP && hlslTimeStamp > glslTimeStamp ) || r_alwaysExportGLSL.GetBool() || glConfig.forceGLSLGeneration )
 	{
 		const char* hlslFileBuffer = NULL;
 		int len = 0;
