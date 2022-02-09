@@ -963,7 +963,7 @@ void idImage::AllocImage()
 			numSides = 1;
 			break;
 		case TT_CUBIC:
-			target = glConfig.directStateAccess? GL_TEXTURE_CUBE_MAP_ARRAY: GL_TEXTURE_CUBE_MAP;
+			target = GL_TEXTURE_CUBE_MAP;
 			uploadTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 			numSides = 6;
 			break;
@@ -1050,29 +1050,24 @@ void idImage::AllocImage()
 					h = Max(1, h >> 1);
 				}
 			}
+			glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
 		}
-		glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
-
 	}
 	else 
 	{
 		glCreateTextures(target, 1, (GLuint*)&texnum);
 		assert(texnum != TEXTURE_NOT_LOADED);
-		if (opts.textureType == TT_2D_MULTISAMPLE) {
+		if (opts.textureType == TT_2D_ARRAY) {
+			glTextureStorage3D(texnum, opts.numLevels, internalFormat, opts.width, opts.height, numSides);
+		} else if (opts.textureType == TT_2D_MULTISAMPLE) {
 			glTextureStorage2DMultisample(texnum, opts.samples, internalFormat, opts.width, opts.height, GL_FALSE);
 		} else {
 			int w = opts.width;
 			int h = opts.height;
-			if (numSides == 1) {
-				glTextureStorage2D(texnum, opts.numLevels, internalFormat, w, h);
+			if (opts.textureType == TT_CUBIC) {
+				h = w;
 			}
-			else {
-				if (opts.textureType == TT_CUBIC) {
-					h = w;
-				}
-				glTextureStorage3D(texnum, opts.numLevels, internalFormat, w, h, numSides);
-			}
-			
+			glTextureStorage2D(texnum, opts.numLevels, internalFormat, w, h);
 		}
 		glTextureParameteri(texnum, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
 	}
