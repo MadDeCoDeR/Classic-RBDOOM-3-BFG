@@ -50,17 +50,20 @@ void CinematicAudio_OpenAL::InitAudio(void* audioContext)
 	av_rate_cin = dec_ctx2->sample_rate;
 	int format_byte = 0;
 	bool use_ext = false;
-	if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_U8P) {
+	switch (dec_ctx2->sample_fmt) {
+	case AV_SAMPLE_FMT_U8:
+	case AV_SAMPLE_FMT_U8P:
 		format_byte = 1;
-	}
-	else if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S16P) {
+		break;
+	case AV_SAMPLE_FMT_S16:
+	case AV_SAMPLE_FMT_S16P:
 		format_byte = 2;
-	}
-	else if (dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx2->sample_fmt == AV_SAMPLE_FMT_S32P) {
+		break;
+	case AV_SAMPLE_FMT_S32:
+	case AV_SAMPLE_FMT_S32P:
 		format_byte = 4;
-	}
-	else {
-		//return false;
+		break;
+	default:
 		format_byte = 4;
 		use_ext = true;
 	}

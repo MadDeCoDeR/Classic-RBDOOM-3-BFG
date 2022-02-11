@@ -86,17 +86,20 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 	}
 	int format_byte = 0;
 	bool use_ext = false;
-	if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8P) {
+	switch (dec_ctx->sample_fmt) {
+	case AV_SAMPLE_FMT_U8:
+	case AV_SAMPLE_FMT_U8P:
 		format_byte = 1;
-	}
-	else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16P) {
+		break;
+	case AV_SAMPLE_FMT_S16:
+	case AV_SAMPLE_FMT_S16P:
 		format_byte = 2;
-	}
-	else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32P) {
+		break;
+	case AV_SAMPLE_FMT_S32:
+	case AV_SAMPLE_FMT_S32P:
 		format_byte = 4;
-	}
-	else {
-		//return false;
+		break;
+	default:
 		format_byte = 4;
 		use_ext = true;
 	}
@@ -309,45 +312,33 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	}
 	int format_byte = 0;
 	bool use_ext = false;
-	if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_U8P) {
+	switch (dec_ctx->sample_fmt) {
+	case AV_SAMPLE_FMT_U8:
+	case AV_SAMPLE_FMT_U8P:
 		format_byte = 1;
-	}
-	else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S16P) {
+		break;
+	case AV_SAMPLE_FMT_S16:
+	case AV_SAMPLE_FMT_S16P:
 		format_byte = 2;
-	}
-	else if (dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32 || dec_ctx->sample_fmt == AV_SAMPLE_FMT_S32P) {
+		break;
+	case AV_SAMPLE_FMT_S32:
+	case AV_SAMPLE_FMT_S32P:
 		format_byte = 4;
-	}
-	else {
-		//return false;
+		break;
+	default:
 		format_byte = 4;
 		use_ext = true;
 	}
 	*rate = dec_ctx->sample_rate;
 	switch (format_byte) {
 	case 1:
-		if (dec_ctx->channels == 2) {
-			*sample = AL_FORMAT_STEREO8;
-		}
-		else {
-			*sample = AL_FORMAT_MONO8;
-		}
+		*sample = dec_ctx->channels == 2 ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
 		break;
 	case 2:
-		if (dec_ctx->channels == 2) {
-			*sample = AL_FORMAT_STEREO16;
-		}
-		else {
-			*sample = AL_FORMAT_MONO16;
-		}
+		*sample = dec_ctx->channels == 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
 		break;
 	case 4:
-		if (dec_ctx->channels == 2) {
-			*sample = AL_FORMAT_STEREO_FLOAT32;
-		}
-		else {
-			*sample = AL_FORMAT_MONO_FLOAT32;
-		}
+		*sample = dec_ctx->channels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
 		break;
 	}
 	av_init_packet(&packet);
