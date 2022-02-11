@@ -278,7 +278,7 @@ void idImage::CopyDepthbuffer( int x, int y, int imageWidth, int imageHeight )
 
 		opts.width = imageWidth;
 		opts.height = imageHeight;
-		glCopyTexImage2D((opts.textureType == TT_CUBIC) ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, x, y, imageWidth, imageHeight, 0);
+		glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, x, y, imageWidth, imageHeight, 0);
 	}
 	else {
 		if (opts.width != imageWidth || opts.height != imageHeight) {
@@ -995,11 +995,10 @@ void idImage::AllocImage()
 		else if (opts.textureType == TT_2D_MULTISAMPLE) {
 			glTexImage2DMultisample(uploadTarget, opts.samples, internalFormat, opts.width, opts.height, GL_FALSE);
 		}else{
-			int w = opts.width;
-			int h = opts.height;
-			
 			for (int side = 0; side < numSides; side++)
 			{
+				int w = opts.width;
+				int h = opts.height;
 				if (opts.textureType == TT_CUBIC)
 				{
 					h = w;
