@@ -31,6 +31,9 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifndef _WINDOWS //GK: Silence gcc 7 from warnings
 #pragma GCC diagnostic ignored "-Wdeprecated"
+#else
+//GK: This warning is triggered because of the inline new and delete functions
+#pragma warning(disable: 4595)
 #endif
 /*
 ===============================================================================

@@ -25,7 +25,7 @@ SOFTWARE.
 class OpenApp {
 public:
 	virtual const char* GetLocale() = 0;
-	virtual const char* GetBranch() = 0;
+	virtual bool GetBranch(char* name) = 0;
 	virtual bool GetCloudStats(unsigned long long* totalBytes, unsigned long long* availableBytes) = 0;
 };
 
