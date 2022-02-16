@@ -166,7 +166,8 @@ ID_INLINE void WriteIndexPair( triIndex_t* dest, const triIndex_t a, const triIn
 #define NODEFAULT	default: __assume( 0 )
 #else // not _MSVC
 // TODO: is that __assume an important optimization? if so, is there a gcc equivalent?
-#define NODEFAULT
+//GK: Found It?
+#define NODEFAULT	default: __builtin_unreachable()
 #endif
 #endif
 
