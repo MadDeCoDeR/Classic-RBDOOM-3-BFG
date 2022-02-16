@@ -45,7 +45,7 @@ If you have questions concerning this license or the applicable additional terms
 #ifdef _DEBUG
 #define NODEFAULT	default: assert( 0 )
 #else
-#ifdef _MSVC
+#ifdef _MSC_VER
 #define NODEFAULT	default: __assume( 0 )
 #else
 #define NODEFAULT	default: __builtin_unreachable()
