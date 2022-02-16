@@ -158,6 +158,16 @@ uintptr_t Sys_GetCurrentThreadID()
 
 /*
 ========================
+Sys_ThreadSleep
+========================
+*/
+void Sys_ThreadSleep(int milliseconds)
+{
+	Sleep(milliseconds);
+}
+
+/*
+========================
 Sys_DestroyThread
 ========================
 */

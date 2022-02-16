@@ -32,6 +32,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifndef _WIN32
 #include <sched.h>
+#include <chrono>
+#include <thread>
 #endif
 
 #ifdef __APPLE__
@@ -232,6 +234,10 @@ uintptr_t Sys_GetCurrentThreadID()
 	 *  -- Yamagi
 	 */
 	return ( uintptr_t )pthread_self();
+}
+
+void Sys_ThreadSleep(int milliseconds) {
+	std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
 /*

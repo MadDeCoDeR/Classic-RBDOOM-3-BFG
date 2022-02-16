@@ -29,11 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../Game_local.h"
 
-#ifndef _WIN32
-#include <chrono>
-#include <thread>
-#endif
-
 
 //extern idCVar g_demoMode;
 
@@ -1454,15 +1449,6 @@ void idMenuHandler_ShellLocal::StartGame( int index )
 
 void checkInput( void* data)
 {
-#ifdef _WIN32
-	HANDLE timer = CreateWaitableTimer(NULL, FALSE, "IntroTimer");
-	LARGE_INTEGER dueTime;
-	dueTime.QuadPart = -1;
-	if (!SetWaitableTimer(timer, &dueTime, 1, NULL, NULL, FALSE))
-	{
-		idLib::FatalError("SetWaitableTimer for Intro failed");
-	}
-#endif
 	while (true) {
 		if (skipIntro) {
 			break;
@@ -1552,11 +1538,7 @@ void checkInput( void* data)
 		if (skipIntro) {
 			break;
 		}
-#ifdef _WIN32
-		WaitForSingleObject(timer, INFINITE);
-#else
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-#endif
+		Sys_ThreadSleep(1);
 	}
 }
 

@@ -61,10 +61,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "g_game.h"
 #include "p_setup.h"
 
-#ifndef _WIN32
-#include <dirent.h>
-#include <unistd.h>
-#endif
 #include <set>
 
 #define READ_SIZE 8192
@@ -401,22 +397,22 @@ void W_AddFile ( const char *filename)
 				// single lump file
 				fileinfo[0].filepos = 0;
 				//GK: Allow to load "Wild" files
-				char* fname = new char[256];
+				char* filename = new char[256];
 				if(relp){
-					sprintf(fname, "./base%s", filename);
+					sprintf(filename, "./base%s", filename);
 					
 				}
 				else {
-					strcpy(fname, filename);
+					strcpy(filename, filename);
 				}
-				std::ifstream inf(fname, std::ifstream::ate | std::ifstream::binary);
+				std::ifstream inf(filename, std::ifstream::ate | std::ifstream::binary);
 				fileinfo[0].size = inf.tellg();
 				char* tempname = new char();
 				ExtractFileBase(filename, &tempname);
 				strcpy(fileinfo[0].name, tempname);
 				numlumps++;
 				relp = false;
-			//	idLib::Printf("Added %s succesfully!\n", fname);
+			//	idLib::Printf("Added %s succesfully!\n", filename);
 			}
     }
     else 
@@ -1339,11 +1335,6 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 							k++;
 						}
 						//idLib::Printf("%s\n", maindir);
-							/*#ifdef _WIN32
-													CreateDirectory(maindir, NULL);
-							#else
-													mkdir(maindir, S_IRWXU);
-							#endif*/
 						foldername.emplace_back(maindir);
 						if (i + 1 < gi.number_entry) {
 							unzGoToNextFile(zip);
@@ -1387,35 +1378,23 @@ void CleanUncompFiles(bool unalloc) {
 	}
 	for (int i = 0; i < fname.size(); i++) {
 		//idLib::Printf("Deleting File %s\n", fname[i].c_str());
-		do {
-
-		} while (remove(fname[i].c_str()) == 0);
-
+		fileSystem->RemoveFile(fname[i].c_str());
 	}
 	for (int i = 0; i < foldername.size(); i++) {
 		//idLib::Printf("Deleting Directory %s\n", foldername[i].c_str());
-#ifdef _WIN32
-		RemoveDirectory(foldername[i].c_str());
-#else
-		rmdir(foldername[i].c_str());
-#endif
-
-}
-//#ifdef _WIN32
-//	RemoveDirectory("base/pwads");
-//#else
-//	rmdir("base/pwads");
-//#endif
+		fileSystem->RemoveDir(foldername[i].c_str());
+	}
 	idFileList* deleteList = fileSystem->ListFilesTree("pwads", "*");
 	for (int i = 0; i < deleteList->GetNumFiles(); i++) {
 		char fileName[256];
 		strcpy(fileName, deleteList->GetFile(i));
 		fileSystem->RemoveFile(fileName);
 	}
-		fname.clear();
-		fname.shrink_to_fit();
-		foldername.clear();
-		foldername.shrink_to_fit();
+	fileSystem->RemoveDir("pwads");
+	fname.clear();
+	fname.shrink_to_fit();
+	foldername.clear();
+	foldername.shrink_to_fit();
 }
 //GK: Check for either the wad a folder or a zip file that contains ALL the Master Levels
 void MakeMaster_Wad() {
@@ -1840,13 +1819,13 @@ bool W_CheckMods(int sc, std::vector<std::string> filelist) {
 			while (wadfiles[f] != NULL) {
 				movetonext = false;
 
-				char* fname = strtok(strdup(wadfiles[f]), "\\");
+				char* filename = strtok(strdup(wadfiles[f]), "\\");
 				if (DoomLib::idealExpansion == DoomLib::expansionSelected) { //GK:No longer using ::g->gamemission here since the custom expansion addition might cause issues
-					if (idStr::Icmpn(fname, "wads", 4)) {
-						while (fname) {
+					if (idStr::Icmpn(filename, "wads", 4)) {
+						while (filename) {
 							char* tname = strtok(NULL, "\\");
 							if (tname) {
-								fname = tname;
+								filename = tname;
 							}
 							else {
 								break;
@@ -1854,7 +1833,7 @@ bool W_CheckMods(int sc, std::vector<std::string> filelist) {
 						}
 
 
-						if (!idStr::Icmp(filelist[mf].c_str(), fname)) {
+						if (!idStr::Icmp(filelist[mf].c_str(), filename)) {
 							ac++;
 							if (ac == sc) {
 								ok = true;

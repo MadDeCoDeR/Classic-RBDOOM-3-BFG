@@ -205,6 +205,7 @@ uintptr_t			Sys_CreateThread( xthread_t function, void* parms, xthreadPriority p
 
 // RB begin
 // removed unused Sys_WaitForThread
+void				Sys_ThreadSleep(int milliseconds);
 void				Sys_DestroyThread( uintptr_t threadHandle );
 void				Sys_SetCurrentThreadName( const char* name );
 

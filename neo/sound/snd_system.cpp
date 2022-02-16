@@ -31,11 +31,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "snd_local.h"
 
-#ifndef _WIN32
-#include <chrono>
-#include <thread>
-#endif
-
 idCVar s_noSound( "s_noSound", "0", CVAR_BOOL, "returns NULL for all sounds loaded and does not update the sound rendering" );
 
 #ifdef ID_RETAIL
@@ -160,15 +155,6 @@ void DefaultDeviceChangeThread(void* data) {
 
 	static uint64 nextCheck = 0;
 	const uint64 waitTime = 5000;
-#ifdef _WIN32
-	HANDLE timer = CreateWaitableTimer(NULL, FALSE, "AudioTimer");
-	LARGE_INTEGER dueTime;
-	dueTime.QuadPart = -1;
-	if (!SetWaitableTimer(timer, &dueTime, 4, NULL, NULL, FALSE))
-	{
-		idLib::FatalError("SetWaitableTimer for Audio failed");
-	}
-#endif
 	while (1) {
 		int	now = Sys_Milliseconds();
 		if (now >= nextCheck) {
@@ -196,11 +182,7 @@ void DefaultDeviceChangeThread(void* data) {
 			}
 			nextCheck = now + waitTime;
 		}
-#ifdef _WIN32
-		WaitForSingleObject(timer, INFINITE);
-#else
-		std::this_thread::sleep_for(std::chrono::milliseconds(4));
-#endif
+		Sys_ThreadSleep(4);
 	}
 
 }

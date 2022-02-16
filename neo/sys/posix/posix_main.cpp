@@ -518,6 +518,10 @@ bool Sys_Rmdir( const char* path )
 	return ( rmdir( path ) == 0 );
 }
 
+void Sys_RemoveFile(const char* path) {
+	remove(path);
+}
+
 /*
 ========================
 Sys_IsFileWritable

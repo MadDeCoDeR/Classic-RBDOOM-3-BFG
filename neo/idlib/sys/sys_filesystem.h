@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 
 void			Sys_Mkdir( const char* path );
 bool			Sys_Rmdir( const char* path );
+void			Sys_RemoveFile(const char* path);
 bool			Sys_IsFileWritable( const char* path );
 
 enum sysFolder_t

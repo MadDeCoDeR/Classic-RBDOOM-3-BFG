@@ -1915,25 +1915,11 @@ void idFileSystemLocal::RemoveFile( const char* relativePath )
 	if( fs_basepath.GetString()[0] )
 	{
 		OSPath = BuildOSPath( fs_basepath.GetString(), gameFolder, relativePath );
-		
-		// RB begin
-#if defined(_WIN32)
-		::DeleteFile( OSPath );
-#else
-		remove( OSPath );
-#endif
-		// RB end
+		Sys_RemoveFile(OSPath);
 	}
 	
 	OSPath = BuildOSPath( fs_savepath.GetString(), gameFolder, relativePath );
-	
-	// RB begin
-#if defined(_WIN32)
-	::DeleteFile( OSPath );
-#else
-	remove( OSPath );
-#endif
-	// RB end
+	Sys_RemoveFile(OSPath);
 }
 
 /*

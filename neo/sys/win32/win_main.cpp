@@ -433,7 +433,7 @@ Sys_Mkdir
 ==============
 */
 void Sys_Mkdir( const char *path ) {
-	_mkdir (path);
+	CreateDirectory(path, NULL);
 }
 
 /*
@@ -481,7 +481,48 @@ Sys_Rmdir
 ========================
 */
 bool Sys_Rmdir( const char *path ) {
-	return _rmdir( path ) == 0;
+#if _DEBUG
+	bool result = RemoveDirectory(path);
+	if (result == 0) {
+		int lastError = GetLastError();
+		char msgbuf[256];
+		FormatMessage(
+			FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL,
+			lastError,
+			MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
+			(LPTSTR)&msgbuf,
+			sizeof(msgbuf),
+			NULL
+		);
+		idLib::Warning("%s", msgbuf);
+	}
+	return result;
+#else
+	return RemoveDirectory( path ) == 0;
+#endif
+}
+
+void Sys_RemoveFile(const char* path) {
+#if _DEBUG
+	bool result = DeleteFile(path);
+	if (result == 0) {
+		int lastError = GetLastError();
+		char msgbuf[256];
+		FormatMessage(
+			FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL,
+			lastError,
+			MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
+			(LPTSTR)&msgbuf,
+			sizeof(msgbuf),
+			NULL
+		);
+		idLib::Warning("%s", msgbuf);
+	}
+#else
+	DeleteFile(path);
+#endif
 }
 
 /*
