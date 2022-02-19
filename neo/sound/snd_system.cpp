@@ -51,6 +51,7 @@ idCVar preLoad_Samples( "preLoad_Samples", "1", CVAR_SYSTEM | CVAR_BOOL, "preloa
 
 extern idCVar s_device;
 extern idCVar com_pause;
+extern idCVar sys_lang;
 
 idSoundSystemLocal soundSystemLocal;
 idSoundSystem* soundSystem = &soundSystemLocal;
@@ -778,6 +779,8 @@ void idSoundSystemLocal::EndLevelLoad(const char* mapstring)
 
 	ccmapname.SetFileExtension(".ccscript");
 	ccmapname.StripPath();
+	ccname += sys_lang.GetString();
+	ccname += "/";
 	ccname += ccmapname;
 	ccloaded = ccdecl.LoadFile(ccname);
 	int	end = Sys_Milliseconds();
