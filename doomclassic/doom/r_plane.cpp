@@ -473,7 +473,7 @@ void R_DrawPlanes (void)
 			
 		::g->dc_yl = ::g->visplanes[i]->top[x] - ::g->mouseposy;
 		::g->dc_yh = ::g->visplanes[i]->bottom[x];
-		int realheight = ::g->s_textureheight[::g->skytexture] >> FRACBITS;
+		int realheight = (::g->s_textureheight[::g->skytexture] >> FRACBITS) * 3;
 		int viewheight = ::g->visplanes[i]->bottom[x] - ::g->visplanes[i]->top[x];
 		if (::g->visplanes[i]->top[x] < mintop && ::g->visplanes[i]->top[x] <= realheight - ::g->visplanes[i]->top[x]) {
 			mintop = ::g->visplanes[i]->top[x];
@@ -502,7 +502,7 @@ void R_DrawPlanes (void)
 		}
 		else {
 			::g->dc_yl = ::g->visplanes[i]->top[x];
-			if (abs(viewheight) < (realheight * 3) && ::g->visplanes[i]->bottom[x] < mintop) {
+			if (abs(viewheight) < realheight && ::g->visplanes[i]->bottom[x] < mintop) {
 				R_DrawSkyPlane(x);
 			}
 			else {

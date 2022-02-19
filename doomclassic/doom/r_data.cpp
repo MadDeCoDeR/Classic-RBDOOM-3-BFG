@@ -440,7 +440,7 @@ void R_GenerateSkyHead(int lump) {
 	patch_t* patch = (patch_t *)W_CacheLumpNum(lump, PU_CACHE_SHARED);
 	::g->skybuffer = (byte*)malloc( 3 * sizeof(byte));
 	// SMF - rewritten for scaling
-		column = (postColumn_t *)((byte *)patch + LONG(patch->columnofs[M_Random()]));
+		column = (postColumn_t *)((byte *)patch + LONG(patch->columnofs[rand() % 8]));
 			source = (byte *)column + 3;
 			src = *source++;
 				::g->skybuffer[pos] = src;
