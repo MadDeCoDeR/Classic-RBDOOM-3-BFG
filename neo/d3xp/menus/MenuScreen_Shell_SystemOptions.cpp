@@ -575,9 +575,8 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 		{
 			idList<int> screenValues;
 			screenValues.Clear();
-#ifdef _WIN32
+
 			screenValues.AddUnique(-1);
-#endif
 			screenValues.AddUnique(0);
 			for (int i = 0; i < numOfDisplays; i++) {
 				screenValues.AddUnique(i + 1);
