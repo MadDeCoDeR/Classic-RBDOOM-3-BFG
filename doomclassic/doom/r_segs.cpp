@@ -62,7 +62,7 @@ If you have questions concerning this license or the applicable additional terms
 
 
 
-
+void AddDrawSeg();
 
 
 
@@ -363,8 +363,8 @@ R_StoreWallRange
     int			lightnum;
 
     // don't overflow and crash
-	if (::g->ds_p == &::g->drawsegs[MAXDRAWSEGS])
-		return;
+	/*if (::g->ds_p == &::g->drawsegs[MAXDRAWSEGS])
+		return;*/
 		
 #ifdef RANGECHECK
     if (start >=::g->viewwidth || start > stop)
@@ -393,7 +393,7 @@ R_StoreWallRange
     sineval = finesine[distangle>>ANGLETOFINESHIFT];
     ::g->rw_distance = FixedMul (hyp, sineval);
 		
-	
+	::g->ds_p = ::g->drawsegs[::g->drawsegind - 1];
     ::g->ds_p->x1 = ::g->rw_x = start;
     ::g->ds_p->x2 = stop;
     ::g->ds_p->curline = ::g->curline;
@@ -727,7 +727,15 @@ R_StoreWallRange
 	::g->ds_p->silhouette |= SIL_BOTTOM;
 	::g->ds_p->bsilheight = MAXINT;
     }
-    ::g->ds_p++;
+	AddDrawSeg();
+}
+
+
+void AddDrawSeg() {
+	if (::g->drawsegind >= ::g->drawsegs.Num()) {
+		::g->drawsegs.Append(new drawseg_t());
+	}
+	::g->drawsegind++;
 }
 
 

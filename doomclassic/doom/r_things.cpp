@@ -946,8 +946,9 @@ void R_DrawSprite (vissprite_t* spr)
     // Scan ::g->drawsegs from end to start for obscuring ::g->segs.
     // The first drawseg that has a greater scale
     //  is the clip seg.
-    for (ds=::g->ds_p-1 ; ds >= ::g->drawsegs ; ds--)
+    for (int i = ::g->drawsegind - 2; i >= 0; i--)
     {
+		ds = ::g->drawsegs[i];
 	// determine if the drawseg obscures the sprite
 	if (ds->x1 > spr->x2
 	    || ds->x2 < spr->x1
@@ -1064,9 +1065,11 @@ void R_DrawMasked (void)
     }
     
     // render any remaining masked mid textures
-    for (ds=::g->ds_p-1 ; ds >= ::g->drawsegs ; ds--)
-	if (ds->maskedtexturecol)
-	    R_RenderMaskedSegRange (ds, ds->x1, ds->x2);
+	for (int i = ::g->drawsegind - 2; i >= 0; i--) {
+		ds = ::g->drawsegs[i];
+		if (ds->maskedtexturecol)
+			R_RenderMaskedSegRange(ds, ds->x1, ds->x2);
+	}
     
     // draw the psprites on top of everything
     //  but does not draw on side views

@@ -621,7 +621,8 @@ side_t*		sidedef;
 line_t*		linedef;
 sector_t*	frontsector;
 sector_t*	backsector;
-drawseg_t	drawsegs[MAXDRAWSEGS];
+idList<drawseg_t*>	drawsegs;
+long	drawsegind;
 drawseg_t*	ds_p;
 cliprange_t*	newend;
 cliprange_t	solidsegs[MAXSEGS];
@@ -981,7 +982,7 @@ int texnum; //GK: Store pointer of current texture in order to take it's height 
 // r_data end //
 // r_plane begin //
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
-std::vector<visplane_t*>		visplanes; 
+idList<visplane_t*>		visplanes; 
 long			planeind;
 //visplane_t*		lastvisplane; 
 visplane_t*		floorplane; 

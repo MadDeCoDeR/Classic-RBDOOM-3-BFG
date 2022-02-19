@@ -64,7 +64,12 @@ R_StoreWallRange
 //
 void R_ClearDrawSegs (void)
 {
-    ::g->ds_p = ::g->drawsegs;
+    if (::g->drawsegs.Num() == 0) {
+        ::g->drawsegs.SetGranularity(MAXDRAWSEGS);
+        ::g->drawsegs.Append(new drawseg_t());
+    }
+    ::g->drawsegind = 1;
+    //::g->ds_p = ::g->drawsegs;
 }
 
 

@@ -194,9 +194,9 @@ void R_ClearPlanes (void)
 	//GK:Reset indexed vector
 	::g->planeind = 0;
 	//visplane_t* tplane = new visplane_t();
-	if (::g->visplanes.empty()) {
-		::g->visplanes.reserve(MAXVISPLANES);
-		::g->visplanes.emplace_back(new visplane_t());
+	if (::g->visplanes.Num() == 0) {
+		::g->visplanes.SetGranularity(MAXVISPLANES);
+		::g->visplanes.Append(new visplane_t());
 	}
 	::g->planeind++;
 	//::g->lastvisplane = ::g->visplanes;
@@ -221,7 +221,7 @@ void R_ClearPlanes (void)
 // R_FindPlane
 //
 visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel,fixed_t xoffs,fixed_t yoffs ) {
-    visplane_t*	check;
+	visplane_t*	check;
 	
     if (picnum == ::g->skyflatnum) {
 		height = 0;			// all skys map together
@@ -546,11 +546,8 @@ void R_DrawPlanes (void)
 }
 
 void AddNewVisplane() {
-	if (::g->planeind >= ::g->visplanes.size()) {
-		if (::g->visplanes.size() == ::g->visplanes.capacity()) {
-			::g->visplanes.reserve(::g->visplanes.size() + MAXVISPLANES);
-		}
-		::g->visplanes.emplace_back(new visplane_t());
+	if (::g->planeind >= ::g->visplanes.Num()) {
+		::g->visplanes.Append(new visplane_t());
 	}
 	else {
 		::g->visplanes[::g->planeind]->height = 0;

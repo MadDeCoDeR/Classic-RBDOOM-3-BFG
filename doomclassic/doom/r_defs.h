@@ -52,7 +52,7 @@ If you have questions concerning this license or the applicable additional terms
 #define SIL_TOP			2
 #define SIL_BOTH		3
 
-#define MAXDRAWSEGS		2560 //GK:The more the less HOMs we get
+#define MAXDRAWSEGS		256 //GK:The more the less HOMs we get
 
 
 
