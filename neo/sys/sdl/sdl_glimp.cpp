@@ -462,7 +462,7 @@ GLimp_SetScreenParms
 bool GLimp_SetScreenParms( glimpParms_t parms )
 {
 #if SDL_VERSION_ATLEAST(2, 0, 0)
-	if( parms.fullScreen > 0 || parms.fullScreen == -2 )
+	if( parms.fullScreen > 0 || parms.fullScreen < 0 )
 	{
 		if( !SetScreenParmsFullscreen( parms ) )
 			return false;
