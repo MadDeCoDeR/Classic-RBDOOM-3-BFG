@@ -72,6 +72,7 @@ If you have questions concerning this license or the applicable additional terms
 #define DEFAULT_BASEPATH				"/Applications/DOOM-BFA.app/Contents/Resources"
 #else
 #define DEFAULT_BASEPATH				"/usr/share/games/doombfa"
+#define DEFAULT_FLAT_BASEPATH				"/app/share/games/doombfa"
 #endif
 // RB end
 

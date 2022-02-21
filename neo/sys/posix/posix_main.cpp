@@ -115,6 +115,11 @@ const char* Sys_DefaultAppPath()
 #if defined(__APPLE__)
 	return NULL;
 #else
+	struct stat buf;
+	if (stat(DEFAULT_BASEPATH"/base/wads/newopt.wad", &buf) != -1 && !S_ISREG(buf.st_mode))
+	{
+		return DEFAULT_FLAT_BASEPATH;
+	}
 	return DEFAULT_BASEPATH;
 #endif
 }
