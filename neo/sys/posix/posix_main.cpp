@@ -116,7 +116,7 @@ const char* Sys_DefaultAppPath()
 	return NULL;
 #else
 	struct stat buf;
-	if (stat(DEFAULT_BASEPATH"/base/wads/newopt.wad", &buf) != -1 && !S_ISREG(buf.st_mode))
+	if (stat(DEFAULT_BASEPATH"/base/wads/newopt.wad", &buf) == -1)
 	{
 		return DEFAULT_FLAT_BASEPATH;
 	}
