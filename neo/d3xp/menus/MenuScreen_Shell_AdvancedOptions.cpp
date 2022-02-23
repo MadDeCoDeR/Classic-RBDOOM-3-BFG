@@ -95,6 +95,14 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_VMFOV);
 	options->AddChild(control);
+
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TEXT);
+	control->SetLabel("#str_FPS_counter");	// FPS Counter
+	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_FPS);
+	control->SetupEvents(2, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_FPS);
+	options->AddChild(control);
 	
 	options->AddEventAction( WIDGET_EVENT_SCROLL_DOWN ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_DOWN_START_REPEATER, WIDGET_EVENT_SCROLL_DOWN ) );
 	options->AddEventAction( WIDGET_EVENT_SCROLL_UP ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_UP_START_REPEATER, WIDGET_EVENT_SCROLL_UP ) );
@@ -300,6 +308,7 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 	originalATHDR = game->GetCVarInteger("g_damageKickEffect");
 	originalFlashlight = game->GetCVarInteger("flashlight_old");
 	originalVmfov = game->GetCVarInteger("pm_vmfov");
+	originalFPS = com_showFPS.GetInteger();
 }
 
 /*
@@ -310,6 +319,32 @@ idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::CommitData
 void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::CommitData()
 {
 	cvarSystem->SetModifiedFlags( CVAR_ARCHIVE );
+}
+
+/*
+========================
+AdjustOption
+Given a current value in an array of possible values, returns the next n value
+========================
+*/
+int idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::AdjustOption(int currentValue, const int values[], int numValues, int adjustment)
+{
+	int index = 0;
+	for (int i = 0; i < numValues; i++)
+	{
+		if (currentValue == values[i])
+		{
+			index = i;
+			break;
+		}
+	}
+	index += adjustment;
+	while (index < 0)
+	{
+		index += numValues;
+	}
+	index %= numValues;
+	return values[index];
 }
 
 /*
@@ -330,21 +365,26 @@ idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustField
 */
 void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::AdjustField( const int fieldIndex, const int adjustAmount )
 {
+	static const int genericNumValues = 2;
+	static const int genericValues[genericNumValues] = { 0, 1 };
+	static const int specializedNumValues = 3;
+	static const int specializedValues[specializedNumValues] = { 0, 1, 2 };
 	switch( fieldIndex )
 	{
 		case ADV_FIELD_DAMMOT:
 		{
-			game->SetCVarBool("g_damageKickEffect", !game->GetCVarBool("g_damageKickEffect"));
+			game->SetCVarBool("g_damageKickEffect", AdjustOption(game->GetCVarBool("g_damageKickEffect"), genericValues, genericNumValues, adjustAmount));
 			break;
 		}
 		case ADV_FIELD_FLASH:
 		{
-			if (game->GetCVarInteger("flashlight_old") == 2) {
+			game->SetCVarInteger("flashlight_old", AdjustOption(game->GetCVarInteger("flashlight_old"), specializedValues, specializedNumValues, adjustAmount));
+			/*if (game->GetCVarInteger("flashlight_old") == 2) {
 				game->SetCVarInteger("flashlight_old",idMath::ClampInt(0, 2, game->GetCVarInteger("flashlight_old") - 2));
 			}
 			else {
 				game->SetCVarInteger("flashlight_old",idMath::ClampInt(0, 2, game->GetCVarInteger("flashlight_old") + 1));
-			}
+			}*/
 			break;
 		}
 		case ADV_FIELD_VMFOV:
@@ -352,6 +392,9 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 			game->SetCVarInteger("pm_vmfov", game->GetCVarInteger("pm_vmfov") + adjustAmount);
 			break;
 		}
+		case ADV_FIELD_FPS:
+			com_showFPS.SetInteger(AdjustOption(com_showFPS.GetInteger(), specializedValues, specializedNumValues, adjustAmount));
+			break;
 	}
 	cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 }
@@ -388,6 +431,15 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 			}
 		case ADV_FIELD_VMFOV:
 			return ReLinearAdjust(game->GetCVarInteger("pm_vmfov"), 0.0f, 64.0f, 0.0f, 100.0f);
+		case ADV_FIELD_FPS:
+			switch (com_showFPS.GetInteger()) {
+			case 2:
+				return "#str_FPS_only";
+			case 1:
+				return "#str_FPS_all";
+			case 0:
+				return "#str_swf_disabled";
+			}
 	}
 	return false;
 }
@@ -409,6 +461,9 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 	}
 	if (originalVmfov != game->GetCVarInteger("pm_vmfov"))
 	{
+		return true;
+	}
+	if (originalFPS != com_showFPS.GetInteger()) {
 		return true;
 	}
 	return false;

@@ -1537,6 +1537,7 @@ public:
 			ADV_FIELD_DAMMOT,
 			ADV_FIELD_FLASH,
 			ADV_FIELD_VMFOV,
+			ADV_FIELD_FPS,
 			MAX_ADVANCED_FIELDS
 		};
 
@@ -1561,6 +1562,9 @@ public:
 		int originalATHDR;
 		int originalFlashlight;
 		int originalVmfov;
+		int originalFPS;
+
+		int AdjustOption(int currentValue, const int values[], int numValues, int adjustment);
 	};
 
 	idMenuScreen_Shell_AdvancedOptions() :
