@@ -41,27 +41,27 @@ else (FFMPEG_LIBRARIES AND FFMPEG_INCLUDE_DIR)
 
   find_library(FFMPEG_LIBAVCODEC
     NAMES avcodec
-    PATHS ${_FFMPEG_AVCODEC_LIBRARY_DIRS} /usr/lib /usr/local/lib /opt/local/lib /sw/lib
+    PATHS ${_FFMPEG_AVCODEC_LIBRARY_DIRS} /app/lib /usr/lib /usr/local/lib /opt/local/lib /sw/lib
   )
 
   find_library(FFMPEG_LIBAVFORMAT
     NAMES avformat
-    PATHS ${_FFMPEG_AVFORMAT_LIBRARY_DIRS} /usr/lib /usr/local/lib /opt/local/lib /sw/lib
+    PATHS ${_FFMPEG_AVFORMAT_LIBRARY_DIRS} /app/lib /usr/lib /usr/local/lib /opt/local/lib /sw/lib
   )
 
   find_library(FFMPEG_LIBAVUTIL
     NAMES avutil
-    PATHS ${_FFMPEG_AVUTIL_LIBRARY_DIRS} /usr/lib /usr/local/lib /opt/local/lib /sw/lib
+    PATHS ${_FFMPEG_AVUTIL_LIBRARY_DIRS} /app/lib /usr/lib /usr/local/lib /opt/local/lib /sw/lib
   )
 
   find_library(FFMPEG_LIBSWSCALE
 	NAMES swscale
-	PATHS ${_FFMPEG_SWSCALE_LIBRARY_DIRS} /usr/lib /usr/local/lib /opt/local/lib /sw/lib
+	PATHS ${_FFMPEG_SWSCALE_LIBRARY_DIRS} /app/lib /usr/lib /usr/local/lib /opt/local/lib /sw/lib
   )
   
   find_library(FFMPEG_LIBSWRESAMPLE
 	NAMES swresample
-	PATHS ${_FFMPEG_SWRESAMPLE_LIBRARY_DIRS} /usr/lib /usr/local/lib /opt/local/lib /sw/lib
+	PATHS ${_FFMPEG_SWRESAMPLE_LIBRARY_DIRS} /app/lib /usr/lib /usr/local/lib /opt/local/lib /sw/lib
   )
 
   if (FFMPEG_LIBAVCODEC AND FFMPEG_LIBAVFORMAT AND FFMPEG_LIBAVUTIL AND FFMPEG_LIBSWSCALE AND FFMPEG_LIBSWRESAMPLE)
