@@ -596,26 +596,6 @@ void idSoundEmitterLocal::Update( int currentTime )
 		return;
 	}
 
-	if (hasCaption && hasMultipleCaptions) {
-		idCaption* caption;
-		for (int i = 0; i < channels.Num(); i++) {
-			int time = currentTime - channels[i]->startTime;
-			if (soundSystemLocal.ccdecl.FindCaptionWithTimeCode(shaderName.c_str(), time, &caption)) {
-				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
-				subTimestamp = time;
-				break;
-			}
-		}
-	}
-	else {
-		if (hasCaption && !game->GetLocalPlayer()->hud->hasCaption()) {
-			idCaption* caption;
-			if (soundSystemLocal.ccdecl.FindCaption(shaderName.c_str(), &caption)) {
-				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
-			}
-		}
-	}
-
 	directDistance = ( soundWorld->listener.pos - origin ).LengthFast() * DOOM_TO_METERS;
 	
 	spatializedDistance = directDistance;
@@ -660,11 +640,36 @@ void idSoundEmitterLocal::Update( int currentTime )
 			}
 		}
 	}
-	if( maxDistanceValid && directDistance >= maxDistance )
+	if(maxDistanceValid && directDistance >= maxDistance)
 	{
 		// too far away to possibly hear it
+		//GK: In case captions are shown remove them
+		if (hasCaption) {
+			game->GetLocalPlayer()->hud->clearCaption(shaderName);
+		}
 		return;
 	}
+
+	if (hasCaption && hasMultipleCaptions) {
+		idCaption* caption;
+		for (int i = 0; i < channels.Num(); i++) {
+			int time = currentTime - channels[i]->startTime;
+			if (soundSystemLocal.ccdecl.FindCaptionWithTimeCode(shaderName.c_str(), time, &caption)) {
+				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
+				subTimestamp = time;
+				break;
+			}
+		}
+	}
+	else {
+		if (hasCaption && !game->GetLocalPlayer()->hud->hasCaption()) {
+			idCaption* caption;
+			if (soundSystemLocal.ccdecl.FindCaption(shaderName.c_str(), &caption)) {
+				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
+			}
+		}
+	}
+
 	if( useOcclusion && s_useOcclusion.GetBool() )
 	{
 		// work out virtual origin and distance, which may be from a portal instead of the actual origin

@@ -2446,6 +2446,7 @@ bool idMenuScreen_HUDLocal::hasCaption()
 void	idMenuScreen_HUDLocal::clearCaption(idStr shaderName) {
 	if (subtitles != NULL && !shaderName.Icmp(this->subtitleShaderName)) {
 		subtitles->PlayFrame("rollOff");
+		subtitlesText->SetText("");
 		subtitlePriority = 1000;
 	}
 }
