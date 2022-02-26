@@ -512,7 +512,6 @@ bool idMenuScreen_Shell_AdvancedGraphics::idMenuDataSource_AdvancedGraphics::IsR
 {
 	if (originalAA != r_antiAliasing.GetInteger())
 	{
-		common->Printf("Should Restart\n");
 		return true;
 	}
 	return false;
