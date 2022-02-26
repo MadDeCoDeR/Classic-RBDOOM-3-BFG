@@ -563,6 +563,15 @@ sysFolder_t	 Sys_IsFolder( const char* path )
 // RB end
 
 /*
+========================
+Sys_FileClose
+========================
+*/
+void Sys_FileClose(idFileHandle handle) {
+	fclose(handle);
+}
+
+/*
 ================
 Sys_ListFiles
 ================

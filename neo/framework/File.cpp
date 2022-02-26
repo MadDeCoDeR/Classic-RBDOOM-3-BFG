@@ -1301,11 +1301,7 @@ idFile_Permanent::~idFile_Permanent()
 	if( o )
 	{
 		// RB begin
-#if defined(_WIN32)
-		CloseHandle( o );
-#else
-		fclose( o );
-#endif
+		Sys_FileClose(o);
 		// RB end
 	}
 }

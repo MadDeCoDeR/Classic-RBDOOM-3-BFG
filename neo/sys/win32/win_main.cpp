@@ -552,6 +552,14 @@ sysFolder_t Sys_IsFolder( const char *path ) {
 }
 
 /*
+========================
+Sys_FileClose
+========================
+*/
+void Sys_FileClose(idFileHandle handle) {
+	CloseHandle(handle);
+}
+/*
 ==============
 Sys_Cwd
 ==============

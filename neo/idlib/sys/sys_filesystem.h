@@ -43,6 +43,8 @@ enum sysFolder_t
 // returns FOLDER_YES if the specified path is a folder
 sysFolder_t		Sys_IsFolder( const char* path );
 
+void Sys_FileClose(idFileHandle handle);
+
 // use fs_debug to verbose Sys_ListFiles
 // returns -1 if directory was not found (the list is cleared)
 int				Sys_ListFiles( const char* directory, const char* extension, idList<class idStr>& list );
