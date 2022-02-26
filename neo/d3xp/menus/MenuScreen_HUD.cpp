@@ -2489,10 +2489,10 @@ void idMenuScreen_HUDLocal::setCinematic(bool value)
 		newVideo->SetVisible(!value);
 	}
 	if (audioLog != NULL) {
-		audioLog->SetVisible(!value);
+		audioLog->SetVisible(false);
 	}
 	if (communication != NULL) {
-		communication->SetVisible(!value);
+		communication->SetVisible(false);
 	}
 	if (oxygen->IsVisible() == true) {
 		oxygen->SetVisible(false);
