@@ -2548,10 +2548,10 @@ idStr idStr::FormatNumber( int number )
 
 //GK: Begin
 
-idStr* idStr::Split(const char* delimiter) {
+idList<idStr> idStr::Split(const char* delimiter) {
 	int64 pos = 0;
 	int64 oldPos = -1;
-	std::vector<idStr> strings;
+	idList<idStr> strings;
 	//For some reason calling the Find inside the while statement
 	//caused pos to return incorect value
 	//So put it inside the loop
@@ -2560,12 +2560,13 @@ idStr* idStr::Split(const char* delimiter) {
 		pos = Find(delimiter, false, oldPos + 1);
 		idStr token = SubStr(oldPos + 1, pos);
 		oldPos = pos;
-		strings.push_back(token);
+		strings.AddUnique(token);
 	}
-	if (!strings.empty()) {
-		return strings.data();
+	//in case the split didn't work don't return empty handed. Return the original String.
+	if (strings.Num() == 0) {
+		strings.AddUnique(*this);
 	}
-	return { this };
+	return strings;
 }
 
 idStr idStr::SubStr(int64 start, int64 end)
@@ -2580,9 +2581,17 @@ idStr idStr::SubStr(int64 start, int64 end)
 	//This is how many characters we want to take (+1 for null termination)
 	int64 tmpLen = end - start;
 	char* tmpBuffer = (char*)malloc((tmpLen + 1) * sizeof(char));
-	memcpy(tmpBuffer, data + start, tmpLen);
-	tmpBuffer[tmpLen] = '\0';
-	return idStr(tmpBuffer);
+	//Out of memory (?) case acording to MS docs
+	if (tmpBuffer) {
+		memcpy(tmpBuffer, data + start, tmpLen);
+		tmpBuffer[tmpLen] = '\0';
+		return idStr(tmpBuffer);
+	}
+	else {
+		idLib::common->Error("idStr::SubStr: Failed to initialize temporary buffer");
+		return *this;
+	}
+	
 }
 
 //GK: End

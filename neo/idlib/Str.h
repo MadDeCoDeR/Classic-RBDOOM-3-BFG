@@ -357,7 +357,7 @@ public:
 	static idStr		FormatNumber( int number );
 
 	//GK: A little something from Higher level languages
-	idStr*				Split(const char* delimeter);
+	idList<idStr>		Split(const char* delimeter);
 	idStr				SubStr(int64 start, int64 end = -1);
 	//GK: End
 	
