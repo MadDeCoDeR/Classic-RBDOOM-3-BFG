@@ -161,7 +161,7 @@ typedef struct
 
 #define MAXINTERCEPTS	128 //GK:Not needed
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
-extern std::vector<intercept_t*>	intercepts;
+extern idList<intercept_t*>	intercepts;
 //extern intercept_t*	intercept_p;
 
 typedef qboolean (*traverser_t) (intercept_t *in);

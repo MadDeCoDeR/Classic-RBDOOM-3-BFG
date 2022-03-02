@@ -808,9 +808,9 @@ P_PathTraverse
 	//::g->intercepts.clear();
 	::g->interind = 0;
 	//intercept_t* tint = new intercept_t();
-	if (::g->intercepts.empty()) {
-        ::g->intercepts.reserve(MAXINTERCEPTS);
-		::g->intercepts.emplace_back(new intercept_t());
+	if (::g->intercepts.Num() == 0) {
+        ::g->intercepts.SetGranularity(MAXINTERCEPTS);
+		::g->intercepts.Append(new intercept_t());
 	}
 	::g->interind++;
 	
@@ -921,11 +921,8 @@ P_PathTraverse
 
 
 void AddNewIntercept() {
-	if (::g->interind >= ::g->intercepts.size()) {
-        if (::g->intercepts.size() == ::g->intercepts.capacity()) {
-            ::g->intercepts.reserve(::g->intercepts.size() + MAXINTERCEPTS);
-        }
-		::g->intercepts.emplace_back(new intercept_t());
+	if (::g->interind >= ::g->intercepts.Num()) {
+		::g->intercepts.Append(new intercept_t());
 	}
 	else {
 		::g->intercepts[::g->interind]->d.line = NULL;

@@ -1955,18 +1955,16 @@ void P_SpawnSpecials (void)
 
 	//	Init line EFFECTs
 	::g->numlinespecials = 0;
+	::g->linespeciallist.SetGranularity(MAXLINEANIMS);
 	for (i = 0;i < ::g->numlines; i++)
 	{
 		switch(::g->lines[i].special)
 		{
 		case 48:
 			// EFFECT FIRSTCOL SCROLL+
-			if (::g->numlinespecials >= ::g->linespeciallist.size()) {
+			if (::g->numlinespecials >= ::g->linespeciallist.Num()) {
 				//::g->linespeciallist.clear();
-				if (::g->linespeciallist.size() == ::g->linespeciallist.capacity()) {
-					::g->linespeciallist.reserve(::g->linespeciallist.size() + MAXLINEANIMS);
-				}
-				::g->linespeciallist.emplace_back(&::g->lines[i]);
+				::g->linespeciallist.Append(&::g->lines[i]);
 			}
 			else {
 				::g->linespeciallist[::g->numlinespecials] = &::g->lines[i];
@@ -2008,19 +2006,15 @@ void P_SpawnSpecials (void)
 		}
 	//	Init other misc stuff
 	::g->cellind = 0;
-	if (::g->cellind >= ::g->activeceilings.size()) {
-		if (::g->activeceilings.size() == ::g->activeceilings.capacity()) {
-			::g->activeceilings.reserve(::g->activeceilings.size() + MAXCEILINGS);
-		}
-		::g->activeceilings.emplace_back(new ceiling_t());
+	::g->activeceilings.SetGranularity(MAXCEILINGS);
+	if (::g->cellind >= ::g->activeceilings.Num()) {
+		::g->activeceilings.Append(new ceiling_t());
 	}
 	::g->cellind++;
 	::g->platind = 0;
-	if (::g->platind >= ::g->activeplats.size()) {
-		if (::g->activeplats.size() == ::g->activeplats.capacity()) {
-			::g->activeplats.reserve(::g->activeplats.size() + MAXPLATS);
-		}
-		::g->activeplats.emplace_back(new plat_t());
+	::g->activeplats.SetGranularity(MAXPLATS);
+	if (::g->platind >= ::g->activeplats.Num()) {
+		::g->activeplats.Append(new plat_t());
 	}
 	::g->platind++;
 

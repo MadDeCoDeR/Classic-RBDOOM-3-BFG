@@ -235,12 +235,9 @@ qboolean PIT_CheckLine (line_t* ld)
     if (ld->special /*&& ::g->numspechit < MAXSPECIALCROSS*/ )
     {
 		//GK:From now on it uses indexed vectors (for now until and if I found something better)
-		if (::g->numspechit >= ::g->spechit.size()) {
+		if (::g->numspechit >= ::g->spechit.Num()) {
 			//::g->specind = 0;
-			if (::g->spechit.size() == ::g->spechit.capacity()) {
-				::g->spechit.reserve(::g->spechit.size() + MAXSPECIALCROSS);
-			}
-			::g->spechit.emplace_back(ld);
+			::g->spechit.Append(ld);
 		}
 		else {
 			::g->spechit[::g->numspechit] = ld;

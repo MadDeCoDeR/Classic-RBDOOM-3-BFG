@@ -79,7 +79,7 @@ extern int		numspritelumps;
 //
 //GK:Don't mind me I just remove limits here and there
 extern long		numsprites;
-extern std::vector<spritedef_t*>	sprites;
+extern idList<spritedef_t*>	sprites;
 
 extern long		numvertexes;
 extern vertex_t*	vertexes;

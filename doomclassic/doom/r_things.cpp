@@ -181,8 +181,9 @@ void R_InitSpriteDefs (const std::vector <char*> namelist)
 		
 	//::g->sprites.clear();
 	::g->sprind = 0;
-	if (::g->sprites.empty()) {
-		::g->sprites.emplace_back(new spritedef_t());// = (spritedef_t*)DoomLib::Z_Malloc(::g->numsprites * sizeof(*::g->sprites), PU_STATIC, NULL);
+	if (::g->sprites.Num() == 0) {
+		::g->sprites.SetGranularity(MAXVISSPRITES);
+		::g->sprites.Append(new spritedef_t());// = (spritedef_t*)DoomLib::Z_Malloc(::g->numsprites * sizeof(*::g->sprites), PU_STATIC, NULL);
 	}
 	::g->sprind++;
 	
@@ -229,8 +230,8 @@ void R_InitSpriteDefs (const std::vector <char*> namelist)
 	if (::g->maxframe == -1)
 	{
 	    ::g->sprites[i]->numframes = 0;
-		if (::g->sprind >= ::g->sprites.size()) {
-			::g->sprites.emplace_back(new spritedef_t());
+		if (::g->sprind >= ::g->sprites.Num()) {
+			::g->sprites.Append(new spritedef_t());
 		}
 		::g->sprind++;
 	    continue;
@@ -270,8 +271,8 @@ void R_InitSpriteDefs (const std::vector <char*> namelist)
 			(spriteframe_t*)DoomLib::Z_Malloc(::g->maxframe * sizeof(spriteframe_t), PU_SPRITE, NULL);
 		memcpy(::g->sprites[i]->spriteframes, ::g->sprtemp, ::g->maxframe * sizeof(spriteframe_t));
 	
-	if (::g->sprind >= ::g->sprites.size()) {
-		::g->sprites.emplace_back(new spritedef_t());
+	if (::g->sprind >= ::g->sprites.Num()) {
+		::g->sprites.Append(new spritedef_t());
 	}
 	::g->sprind++;
     }
@@ -334,9 +335,9 @@ void R_ClearSprites (void)
 {
 	//::g->vissprites.clear();
 	::g->visspriteind = 0;
-	if (::g->vissprites.empty()) {
-		::g->vissprites.reserve(MAXVISSPRITES);
-		::g->vissprites.emplace_back(new vissprite_t());
+	if (::g->vissprites.Num() == 0) {
+		::g->vissprites.SetGranularity(MAXVISSPRITES);
+		::g->vissprites.Append(new vissprite_t());
 	}
 /*	else {
 		for (int i = 0; i < ::g->vissprites.size(); i++) {
@@ -356,11 +357,8 @@ vissprite_t* R_NewVisSprite (void)
     //if (::g->vissprite_p == &::g->vissprites[MAXVISSPRITES])
 	//return &::g->overflowsprite;
 	
-	if (::g->visspriteind >= ::g->vissprites.size()) {
-		if (::g->vissprites.size() == ::g->vissprites.capacity()) {
-			::g->vissprites.reserve(::g->vissprites.size() + MAXVISSPRITES);
-		}
-		::g->vissprites.emplace_back(new vissprite_t());
+	if (::g->visspriteind >= ::g->vissprites.Num()) {
+		::g->vissprites.Append(new vissprite_t());
 	}
 	else {
 		R_ZeroVisSprite(::g->visspriteind);
