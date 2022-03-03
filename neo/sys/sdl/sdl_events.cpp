@@ -1250,7 +1250,7 @@ sysEvent_t Sys_GetEvent()
 				return res;
 				
 			case SDL_CONTROLLERBUTTONDOWN:
-			case SDL_CONTROLLERBUTTONUP:
+			/*case SDL_CONTROLLERBUTTONUP:*/
 				static int controllerButtonRemap[][2] =
 				{
 					{K_JOY1, J_ACTION1},
