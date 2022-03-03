@@ -1275,7 +1275,7 @@ sysEvent_t Sys_GetEvent()
 				res.evValue = controllerButtonRemap[ev.cbutton.button][0];
 				res.evValue2 = ev.cbutton.state == SDL_PRESSED ? 1 : 0;
 				
-				joystick_polls.Append( joystick_poll_t( res.evValue, res.evValue2 ) );
+				//joystick_polls.Append( joystick_poll_t( res.evValue, res.evValue2 ) );
 				return res;
 #else
 			// WM0110
