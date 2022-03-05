@@ -50,8 +50,8 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag-name: test
-        release-name: linux-test-release
+        tag_name: test
+        release_name: linux-test-release
         body: |
           This is a test
         draft: true
