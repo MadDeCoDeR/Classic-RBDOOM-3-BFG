@@ -84,7 +84,7 @@ jobs:
       working-directory: ${{github.workspace}}/neo
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -G "Visual Studio 16" -A "x64" -DOPENAL=ON -DWINRT=ON -DUSE_XAUDIO2_PACKAGE=ON -DMAKE_DLL=OFF -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -G "Visual Studio 17" -A "x64" -DOPENAL=ON -DWINRT=ON -DUSE_XAUDIO2_PACKAGE=ON -DMAKE_DLL=OFF -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
       # Build your program with the given configuration
