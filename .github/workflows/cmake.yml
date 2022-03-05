@@ -1,7 +1,7 @@
 name: CMake
 
 on:
-  create
+  push
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -37,13 +37,16 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
-    - name: Archive production artifacts
-      uses: actions/upload-artifact@v2
+    - name: Create Test Release
+      uses: actions/create-release@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: linux-retail
-        path: |
-          ./build/d3xp/gamex86_x64.so
-          ./build/DoomBFA
+        tag-name: test
+        release-name: linux-test-release
+        body: |
+          This is a test
+        draft: true
   windows-build:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
