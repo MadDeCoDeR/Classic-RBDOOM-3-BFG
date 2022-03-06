@@ -1271,7 +1271,7 @@ sysEvent_t Sys_GetEvent()
 				{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
 			};
 
-			if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] != ev.cbutton.state) {
+			if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] == ev.cbutton.state) {
 				return res;
 			}
 			else {
