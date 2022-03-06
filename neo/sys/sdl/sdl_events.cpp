@@ -881,402 +881,404 @@ sysEvent_t Sys_GetEvent()
 				SDL_StopTextInput();
 			}
 		}
-		switch( ev.type )
+		switch (ev.type)
 		{
 #if SDL_VERSION_ATLEAST(2, 0, 0)
-			case SDL_WINDOWEVENT:
-				switch( ev.window.event )
-				{
-					case SDL_WINDOWEVENT_FOCUS_GAINED:
-					{
-						// unset modifier, in case alt-tab was used to leave window and ALT is still set
-						// as that can cause fullscreen-toggling when pressing enter...
-						SDL_Keymod currentmod = SDL_GetModState();
-						int newmod = KMOD_NONE;
-						if( currentmod & KMOD_CAPS ) // preserve capslock
-							newmod |= KMOD_CAPS;
-							
-						SDL_SetModState( ( SDL_Keymod )newmod );
-						
-						// DG: un-pause the game when focus is gained, that also re-grabs the input
-						//     disabling the cursor is now done once in GLimp_Init() because it should always be disabled
-						soundSystem->SetMute( false );
-						cvarSystem->SetCVarBool("com_pausePlatform", false);
-						cvarSystem->SetCVarBool( "com_pause", false );
-						// DG end
-						break;
-					}
-					
-					case SDL_WINDOWEVENT_FOCUS_LOST:
-						SDL_MinimizeWindow(window);
-						// DG: pause the game when focus is lost, that also un-grabs the input
-						soundSystem->SetMute( true );
-						cvarSystem->SetCVarBool("com_pausePlatform", true);
-						cvarSystem->SetCVarBool( "com_pause", true );
-						// DG end
-						break;
-						
-					case SDL_WINDOWEVENT_LEAVE:
-						// mouse has left the window
-						res.evType = SE_MOUSE_LEAVE;
-						return res;
-						
-					// DG: handle resizing and moving of window
-					case SDL_WINDOWEVENT_RESIZED:
-					{
-						int w = ev.window.data1;
-						int h = ev.window.data2;
-						r_windowWidth.SetInteger( w );
-						r_windowHeight.SetInteger( h );
-						
-						glConfig.nativeScreenWidth = w;
-						glConfig.nativeScreenHeight = h;
-						break;
-					}
-					
-					case SDL_WINDOWEVENT_MOVED:
-					{
-						int x = ev.window.data1;
-						int y = ev.window.data2;
-						r_windowX.SetInteger( x );
-						r_windowY.SetInteger( y );
-						break;
-					}
-					case SDL_WINDOWEVENT_CLOSE:
-					{
-						com_emergencyexit.SetBool(true);
-						soundSystem->SetMute(true);
-						cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "quit\n");
-						break;
-					}
-				}
-				
-				continue; // handle next event
-#else // SDL 1.2
-			case SDL_ACTIVEEVENT:
+		case SDL_WINDOWEVENT:
+			switch (ev.window.event)
 			{
-				// DG: (un-)pause the game when focus is gained, that also (un-)grabs the input
-				bool pause = true;
-			
-				if( ev.active.gain )
-				{
-			
-					pause = false;
-			
-					// unset modifier, in case alt-tab was used to leave window and ALT is still set
-					// as that can cause fullscreen-toggling when pressing enter...
-					SDLMod currentmod = SDL_GetModState();
-					int newmod = KMOD_NONE;
-					if( currentmod & KMOD_CAPS ) // preserve capslock
-						newmod |= KMOD_CAPS;
-			
-					SDL_SetModState( ( SDLMod )newmod );
-				}
-			
-				cvarSystem->SetCVarBool( "com_pause", pause );
-			
-				if( ev.active.state == SDL_APPMOUSEFOCUS && !ev.active.gain )
-				{
-					// the mouse has left the window.
-					res.evType = SE_MOUSE_LEAVE;
-					return res;
-				}
-			
+			case SDL_WINDOWEVENT_FOCUS_GAINED:
+			{
+				// unset modifier, in case alt-tab was used to leave window and ALT is still set
+				// as that can cause fullscreen-toggling when pressing enter...
+				SDL_Keymod currentmod = SDL_GetModState();
+				int newmod = KMOD_NONE;
+				if (currentmod & KMOD_CAPS) // preserve capslock
+					newmod |= KMOD_CAPS;
+
+				SDL_SetModState((SDL_Keymod)newmod);
+
+				// DG: un-pause the game when focus is gained, that also re-grabs the input
+				//     disabling the cursor is now done once in GLimp_Init() because it should always be disabled
+				soundSystem->SetMute(false);
+				cvarSystem->SetCVarBool("com_pausePlatform", false);
+				cvarSystem->SetCVarBool("com_pause", false);
+				// DG end
+				break;
 			}
-			
-			continue; // handle next event
-			
-			case SDL_VIDEOEXPOSE:
-				continue; // handle next event
-				
-			// DG: handle resizing and moving of window
-			case SDL_VIDEORESIZE:
+
+			case SDL_WINDOWEVENT_FOCUS_LOST:
+				SDL_MinimizeWindow(window);
+				// DG: pause the game when focus is lost, that also un-grabs the input
+				soundSystem->SetMute(true);
+				cvarSystem->SetCVarBool("com_pausePlatform", true);
+				cvarSystem->SetCVarBool("com_pause", true);
+				// DG end
+				break;
+
+			case SDL_WINDOWEVENT_LEAVE:
+				// mouse has left the window
+				res.evType = SE_MOUSE_LEAVE;
+				return res;
+
+				// DG: handle resizing and moving of window
+			case SDL_WINDOWEVENT_RESIZED:
 			{
-				int w = ev.resize.w;
-				int h = ev.resize.h;
-				r_windowWidth.SetInteger( w );
-				r_windowHeight.SetInteger( h );
-			
+				int w = ev.window.data1;
+				int h = ev.window.data2;
+				r_windowWidth.SetInteger(w);
+				r_windowHeight.SetInteger(h);
+
 				glConfig.nativeScreenWidth = w;
 				glConfig.nativeScreenHeight = h;
-			
-				// for some reason this needs a vid_restart in SDL1 but not SDL2 so GLimp_SetScreenParms() is called
-				PushConsoleEvent( "vid_restart" );
+				break;
+			}
+
+			case SDL_WINDOWEVENT_MOVED:
+			{
+				int x = ev.window.data1;
+				int y = ev.window.data2;
+				r_windowX.SetInteger(x);
+				r_windowY.SetInteger(y);
+				break;
+			}
+			case SDL_WINDOWEVENT_CLOSE:
+			{
+				com_emergencyexit.SetBool(true);
+				soundSystem->SetMute(true);
+				cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "quit\n");
+				break;
+			}
+			}
+
+			continue; // handle next event
+#else // SDL 1.2
+		case SDL_ACTIVEEVENT:
+		{
+			// DG: (un-)pause the game when focus is gained, that also (un-)grabs the input
+			bool pause = true;
+
+			if (ev.active.gain)
+			{
+
+				pause = false;
+
+				// unset modifier, in case alt-tab was used to leave window and ALT is still set
+				// as that can cause fullscreen-toggling when pressing enter...
+				SDLMod currentmod = SDL_GetModState();
+				int newmod = KMOD_NONE;
+				if (currentmod & KMOD_CAPS) // preserve capslock
+					newmod |= KMOD_CAPS;
+
+				SDL_SetModState((SDLMod)newmod);
+			}
+
+			cvarSystem->SetCVarBool("com_pause", pause);
+
+			if (ev.active.state == SDL_APPMOUSEFOCUS && !ev.active.gain)
+			{
+				// the mouse has left the window.
+				res.evType = SE_MOUSE_LEAVE;
+				return res;
+			}
+
+		}
+
+		continue; // handle next event
+
+		case SDL_VIDEOEXPOSE:
+			continue; // handle next event
+
+		// DG: handle resizing and moving of window
+		case SDL_VIDEORESIZE:
+		{
+			int w = ev.resize.w;
+			int h = ev.resize.h;
+			r_windowWidth.SetInteger(w);
+			r_windowHeight.SetInteger(h);
+
+			glConfig.nativeScreenWidth = w;
+			glConfig.nativeScreenHeight = h;
+
+			// for some reason this needs a vid_restart in SDL1 but not SDL2 so GLimp_SetScreenParms() is called
+			PushConsoleEvent("vid_restart");
+			continue; // handle next event
+		}
+		// DG end
+#endif // SDL1.2
+
+		case SDL_KEYDOWN:
+			if (ev.key.keysym.sym == SDLK_RETURN && (ev.key.keysym.mod & KMOD_ALT) > 0)
+			{
+				// DG: go to fullscreen on current display, instead of always first display
+				int fullscreen = 0;
+				if (!renderSystem->IsFullScreen())
+				{
+					// this will be handled as "fullscreen on current window"
+					// r_fullscreen 1 means "fullscreen on first window" in d3 bfg
+					fullscreen = -2;
+				}
+				cvarSystem->SetCVarInteger("r_fullscreen", fullscreen);
+				// DG end
+				PushConsoleEvent("vid_restart");
 				continue; // handle next event
 			}
-				// DG end
-#endif // SDL1.2
-			
-			case SDL_KEYDOWN:
-				if( ev.key.keysym.sym == SDLK_RETURN && ( ev.key.keysym.mod & KMOD_ALT ) > 0 )
-				{
-					// DG: go to fullscreen on current display, instead of always first display
-					int fullscreen = 0;
-					if( ! renderSystem->IsFullScreen() )
-					{
-						// this will be handled as "fullscreen on current window"
-						// r_fullscreen 1 means "fullscreen on first window" in d3 bfg
-						fullscreen = -2;
-					}
-					cvarSystem->SetCVarInteger( "r_fullscreen", fullscreen );
-					// DG end
-					PushConsoleEvent( "vid_restart" );
-					continue; // handle next event
-				}
-				
-				// DG: ctrl-g to un-grab mouse - yeah, left ctrl shoots, then just use right ctrl :)
-				if( ev.key.keysym.sym == SDLK_g && ( ev.key.keysym.mod & KMOD_CTRL ) > 0 )
-				{
-					bool grab = cvarSystem->GetCVarBool( "in_nograb" );
-					grab = !grab;
-					cvarSystem->SetCVarBool( "in_nograb", grab );
-					continue; // handle next event
-				}
-				// DG end
-				
+
+			// DG: ctrl-g to un-grab mouse - yeah, left ctrl shoots, then just use right ctrl :)
+			if (ev.key.keysym.sym == SDLK_g && (ev.key.keysym.mod & KMOD_CTRL) > 0)
+			{
+				bool grab = cvarSystem->GetCVarBool("in_nograb");
+				grab = !grab;
+				cvarSystem->SetCVarBool("in_nograb", grab);
+				continue; // handle next event
+			}
+			// DG end
+
 #if ! SDL_VERSION_ATLEAST(2, 0, 0)
 				// DG: only do this for key-down, don't care about isChar from SDL_KeyToDoom3Key.
 				//     if unicode is not 0  it should work..
-				if( ev.key.state == SDL_PRESSED )
-				{
-					uniChar = ev.key.keysym.sym; // for SE_CHAR
-				}
-				// DG end
-#endif // SDL 1.2
-				
-			// fall through
-			case SDL_KEYUP:
+			if (ev.key.state == SDL_PRESSED)
 			{
-				bool isChar;
-				
-				// DG: special case for SDL_SCANCODE_GRAVE - the console key under Esc
-				if( ev.key.keysym.scancode == SDL_SCANCODE_GRAVE )
-				{
-					key = K_GRAVE;
-					uniChar = K_BACKSPACE; // bad hack to get empty console inputline..
-				} // DG end, the original code is in the else case
-				else
-				{
+				uniChar = ev.key.keysym.sym; // for SE_CHAR
+			}
+			// DG end
+#endif // SDL 1.2
+
+			// fall through
+		case SDL_KEYUP:
+		{
+			bool isChar;
+
+			// DG: special case for SDL_SCANCODE_GRAVE - the console key under Esc
+			if (ev.key.keysym.scancode == SDL_SCANCODE_GRAVE)
+			{
+				key = K_GRAVE;
+				uniChar = K_BACKSPACE; // bad hack to get empty console inputline..
+			} // DG end, the original code is in the else case
+			else
+			{
 #if SDL_VERSION_ATLEAST(2, 0, 0)
-					key = SDLScanCodeToKeyNum( ev.key.keysym.scancode );
-					
-					if( key == 0 )
+				key = SDLScanCodeToKeyNum(ev.key.keysym.scancode);
+
+				if (key == 0)
+				{
+					// SDL2 has no ev.key.keysym.unicode anymore.. but the scancode should work well enough for console
+					if (ev.type == SDL_KEYDOWN) // FIXME: don't complain if this was an ASCII char and the console is open?
+						common->Warning("unmapped SDL key %d scancode %d", ev.key.keysym.sym, ev.key.keysym.scancode);
+
+					continue; // just handle next event
+				}
+#else // SDL1.2
+				key = SDL_KeyToDoom3Key(ev.key.keysym.sym, isChar);
+
+				if (key == 0)
+				{
+					unsigned char uc = ev.key.keysym.unicode & 0xff;
+					// check if its an unmapped console key
+					if (uc == Sys_GetConsoleKey(false) || uc == Sys_GetConsoleKey(true))
 					{
-						// SDL2 has no ev.key.keysym.unicode anymore.. but the scancode should work well enough for console
-						if( ev.type == SDL_KEYDOWN ) // FIXME: don't complain if this was an ASCII char and the console is open?
-							common->Warning( "unmapped SDL key %d scancode %d", ev.key.keysym.sym, ev.key.keysym.scancode );
-							
+						key = K_GRAVE;
+						uniChar = K_BACKSPACE; // bad hack to get empty console inputline..
+					}
+					else
+					{
+						if (uniChar)
+						{
+							res.evType = SE_CHAR;
+							res.evValue = uniChar;
+
+							uniChar = 0;
+
+							return res;
+						}
+
+						if (ev.type == SDL_KEYDOWN) // FIXME: don't complain if this was an ASCII char and the console is open?
+							common->Warning("unmapped SDL key %d (0x%x) scancode %d", ev.key.keysym.sym, ev.key.keysym.unicode, ev.key.keysym.scancode);
+
 						continue; // just handle next event
 					}
-#else // SDL1.2
-					key = SDL_KeyToDoom3Key( ev.key.keysym.sym, isChar );
-					
-					if( key == 0 )
-					{
-						unsigned char uc = ev.key.keysym.unicode & 0xff;
-						// check if its an unmapped console key
-						if( uc == Sys_GetConsoleKey( false ) || uc == Sys_GetConsoleKey( true ) )
-						{
-							key = K_GRAVE;
-							uniChar = K_BACKSPACE; // bad hack to get empty console inputline..
-						}
-						else
-						{
-							if( uniChar )
-							{
-								res.evType = SE_CHAR;
-								res.evValue = uniChar;
-					
-								uniChar = 0;
-					
-								return res;
-							}
-					
-							if( ev.type == SDL_KEYDOWN ) // FIXME: don't complain if this was an ASCII char and the console is open?
-								common->Warning( "unmapped SDL key %d (0x%x) scancode %d", ev.key.keysym.sym, ev.key.keysym.unicode, ev.key.keysym.scancode );
-					
-							continue; // just handle next event
-						}
-					}
-#endif // SDL 1.2
 				}
-				
-				res.evType = SE_KEY;
-				res.evValue = key;
-				res.evValue2 = ev.key.state == SDL_PRESSED ? 1 : 0;
-				
-				kbd_polls.Append( kbd_poll_t( key, ev.key.state == SDL_PRESSED ) );
-				
-				if( key == K_BACKSPACE && ev.key.state == SDL_PRESSED )
-					uniChar = key;
-					
+#endif // SDL 1.2
+			}
+
+			res.evType = SE_KEY;
+			res.evValue = key;
+			res.evValue2 = ev.key.state == SDL_PRESSED ? 1 : 0;
+
+			kbd_polls.Append(kbd_poll_t(key, ev.key.state == SDL_PRESSED));
+
+			if (key == K_BACKSPACE && ev.key.state == SDL_PRESSED)
+				uniChar = key;
+
+			return res;
+		}
+
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+		case SDL_TEXTINPUT:
+			if (ev.text.text[0] != '\0')
+			{
+				// fill uniStr array for SE_CHAR events
+				ConvertUTF8toUTF32(ev.text.text, uniStr);
+
+				// return an event with the first/only char
+				res.evType = SE_CHAR;
+				res.evValue = uniStr[0];
+
+				uniStrPos = 1;
+
+				if (uniStr[1] == 0)
+				{
+					// it's just this one character, clear uniStr
+					uniStr[0] = 0;
+					uniStrPos = 0;
+				}
 				return res;
 			}
-			
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-			case SDL_TEXTINPUT:
-				if( ev.text.text[0] != '\0' )
-				{
-					// fill uniStr array for SE_CHAR events
-					ConvertUTF8toUTF32( ev.text.text, uniStr );
-					
-					// return an event with the first/only char
-					res.evType = SE_CHAR;
-					res.evValue = uniStr[0];
-					
-					uniStrPos = 1;
-					
-					if( uniStr[1] == 0 )
-					{
-						// it's just this one character, clear uniStr
-						uniStr[0] = 0;
-						uniStrPos = 0;
-					}
-					return res;
-				}
-				
-				continue; // just handle next event
+
+			continue; // just handle next event
 #endif // SDL2
-				
-			case SDL_MOUSEMOTION:
-				// DG: return event with absolute mouse-coordinates when in menu
-				// to fix cursor problems in windowed mode
-				if( game && game->Shell_IsActive() )
-				{
-					res.evType = SE_MOUSE_ABSOLUTE;
-					res.evValue = ev.motion.x;
-					res.evValue2 = ev.motion.y;
-				}
-				else     // this is the old, default behavior
-				{
-					res.evType = SE_MOUSE;
-					res.evValue = ev.motion.xrel;
-					res.evValue2 = ev.motion.yrel;
-				}
-				// DG end
-				
-				mouse_polls.Append( mouse_poll_t( M_DELTAX, ev.motion.xrel ) );
-				mouse_polls.Append( mouse_poll_t( M_DELTAY, ev.motion.yrel ) );
-				
-				return res;
-				
+
+		case SDL_MOUSEMOTION:
+			// DG: return event with absolute mouse-coordinates when in menu
+			// to fix cursor problems in windowed mode
+			if (game && game->Shell_IsActive())
+			{
+				res.evType = SE_MOUSE_ABSOLUTE;
+				res.evValue = ev.motion.x;
+				res.evValue2 = ev.motion.y;
+			}
+			else     // this is the old, default behavior
+			{
+				res.evType = SE_MOUSE;
+				res.evValue = ev.motion.xrel;
+				res.evValue2 = ev.motion.yrel;
+			}
+			// DG end
+
+			mouse_polls.Append(mouse_poll_t(M_DELTAX, ev.motion.xrel));
+			mouse_polls.Append(mouse_poll_t(M_DELTAY, ev.motion.yrel));
+
+			return res;
+
 #if SDL_VERSION_ATLEAST(2, 0, 0)
-			case SDL_FINGERDOWN:
-			case SDL_FINGERUP:
-			case SDL_FINGERMOTION:
-				continue; // Avoid 'unknown event' spam when testing with touchpad by skipping this
-				
-			case SDL_MOUSEWHEEL:
-				res.evType = SE_KEY;
-				
-				res.evValue = ( ev.wheel.y > 0 ) ? K_MWHEELUP : K_MWHEELDOWN;
-				mouse_polls.Append( mouse_poll_t( M_DELTAZ, ev.wheel.y ) );
-				
-				res.evValue2 = 1; // for "pressed"
-				
-				// remember mousewheel direction to issue a "not pressed anymore" event
-				mwheelRel = res.evValue;
-				
-				return res;
+		case SDL_FINGERDOWN:
+		case SDL_FINGERUP:
+		case SDL_FINGERMOTION:
+			continue; // Avoid 'unknown event' spam when testing with touchpad by skipping this
+
+		case SDL_MOUSEWHEEL:
+			res.evType = SE_KEY;
+
+			res.evValue = (ev.wheel.y > 0) ? K_MWHEELUP : K_MWHEELDOWN;
+			mouse_polls.Append(mouse_poll_t(M_DELTAZ, ev.wheel.y));
+
+			res.evValue2 = 1; // for "pressed"
+
+			// remember mousewheel direction to issue a "not pressed anymore" event
+			mwheelRel = res.evValue;
+
+			return res;
 #endif // SDL2
-				
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
-				res.evType = SE_KEY;
-				
-				switch( ev.button.button )
-				{
-					case SDL_BUTTON_LEFT:
-						res.evValue = K_MOUSE1;
-						mouse_polls.Append( mouse_poll_t( M_ACTION1, ev.button.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-					case SDL_BUTTON_MIDDLE:
-						res.evValue = K_MOUSE3;
-						mouse_polls.Append( mouse_poll_t( M_ACTION3, ev.button.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-					case SDL_BUTTON_RIGHT:
-						res.evValue = K_MOUSE2;
-						mouse_polls.Append( mouse_poll_t( M_ACTION2, ev.button.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-						
+
+		case SDL_MOUSEBUTTONDOWN:
+		case SDL_MOUSEBUTTONUP:
+			res.evType = SE_KEY;
+
+			switch (ev.button.button)
+			{
+			case SDL_BUTTON_LEFT:
+				res.evValue = K_MOUSE1;
+				mouse_polls.Append(mouse_poll_t(M_ACTION1, ev.button.state == SDL_PRESSED ? 1 : 0));
+				break;
+			case SDL_BUTTON_MIDDLE:
+				res.evValue = K_MOUSE3;
+				mouse_polls.Append(mouse_poll_t(M_ACTION3, ev.button.state == SDL_PRESSED ? 1 : 0));
+				break;
+			case SDL_BUTTON_RIGHT:
+				res.evValue = K_MOUSE2;
+				mouse_polls.Append(mouse_poll_t(M_ACTION2, ev.button.state == SDL_PRESSED ? 1 : 0));
+				break;
+
 #if !SDL_VERSION_ATLEAST(2, 0, 0)
-					case SDL_BUTTON_WHEELUP:
-						res.evValue = K_MWHEELUP;
-						if( ev.button.state == SDL_PRESSED )
-							mouse_polls.Append( mouse_poll_t( M_DELTAZ, 1 ) );
-						break;
-					case SDL_BUTTON_WHEELDOWN:
-						res.evValue = K_MWHEELDOWN;
-						if( ev.button.state == SDL_PRESSED )
-							mouse_polls.Append( mouse_poll_t( M_DELTAZ, -1 ) );
-						break;
+			case SDL_BUTTON_WHEELUP:
+				res.evValue = K_MWHEELUP;
+				if (ev.button.state == SDL_PRESSED)
+					mouse_polls.Append(mouse_poll_t(M_DELTAZ, 1));
+				break;
+			case SDL_BUTTON_WHEELDOWN:
+				res.evValue = K_MWHEELDOWN;
+				if (ev.button.state == SDL_PRESSED)
+					mouse_polls.Append(mouse_poll_t(M_DELTAZ, -1));
+				break;
 #endif // SDL1.2
-						
-					default:
-						// handle X1 button and above
-						if( ev.button.button <= 16 ) // d3bfg doesn't support more than 16 mouse buttons
-						{
-							int buttonIndex = ev.button.button - SDL_BUTTON_LEFT;
-							res.evValue = K_MOUSE1 + buttonIndex;
-							mouse_polls.Append( mouse_poll_t( M_ACTION1 + buttonIndex, ev.button.state == SDL_PRESSED ? 1 : 0 ) );
-						}
-						else // unsupported mouse button
-						{
-							continue; // just ignore
-						}
+
+			default:
+				// handle X1 button and above
+				if (ev.button.button <= 16) // d3bfg doesn't support more than 16 mouse buttons
+				{
+					int buttonIndex = ev.button.button - SDL_BUTTON_LEFT;
+					res.evValue = K_MOUSE1 + buttonIndex;
+					mouse_polls.Append(mouse_poll_t(M_ACTION1 + buttonIndex, ev.button.state == SDL_PRESSED ? 1 : 0));
 				}
-				
-				res.evValue2 = ev.button.state == SDL_PRESSED ? 1 : 0;
-				
-				return res;
-				
+				else // unsupported mouse button
+				{
+					continue; // just ignore
+				}
+			}
+
+			res.evValue2 = ev.button.state == SDL_PRESSED ? 1 : 0;
+
+			return res;
+
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 			// GameController
-			case SDL_JOYAXISMOTION:
-			case SDL_JOYHATMOTION:
-			case SDL_JOYBUTTONDOWN:
-			case SDL_JOYBUTTONUP:
-			case SDL_JOYDEVICEADDED:
-			case SDL_JOYDEVICEREMOVED:
-				// Avoid 'unknown event' spam
-				continue;
-				
-			case SDL_CONTROLLERAXISMOTION:
-				res.evType = SE_JOYSTICK;
-				res.evValue = J_AXIS_LEFT_X + ( ev.caxis.axis - SDL_CONTROLLER_AXIS_LEFTX );
-				res.evValue2 = ev.caxis.value;
-				
-				joystick_polls.Append( joystick_poll_t( res.evValue, res.evValue2 ) );
-				return res;
-				
-			case SDL_CONTROLLERBUTTONDOWN:
-			case SDL_CONTROLLERBUTTONUP:
-				static int controllerButtonRemap[][2] =
-				{
-					{K_JOY1, J_ACTION1},
-					{K_JOY2, J_ACTION2},
-					{K_JOY3, J_ACTION3},
-					{K_JOY4, J_ACTION4},
-					{K_JOY9, J_ACTION9},
-					{K_JOY11, J_ACTION11},
-					{K_JOY10, J_ACTION10},
-					{K_JOY7, J_ACTION7},
-					{K_JOY8, J_ACTION8},
-					{K_JOY5, J_ACTION5},
-					{K_JOY6, J_ACTION6},
-					{K_JOY_DPAD_UP, J_DPAD_UP},
-					{K_JOY_DPAD_DOWN, J_DPAD_DOWN},
-					{K_JOY_DPAD_LEFT, J_DPAD_LEFT},
-					{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
-				};
-				joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], ev.cbutton.state == SDL_PRESSED ? 1 : 0));
-				
-				
+		case SDL_JOYAXISMOTION:
+		case SDL_JOYHATMOTION:
+		case SDL_JOYBUTTONDOWN:
+		case SDL_JOYBUTTONUP:
+		case SDL_JOYDEVICEADDED:
+		case SDL_JOYDEVICEREMOVED:
+			// Avoid 'unknown event' spam
+			continue;
+
+		case SDL_CONTROLLERAXISMOTION:
+			res.evType = SE_JOYSTICK;
+			res.evValue = J_AXIS_LEFT_X + (ev.caxis.axis - SDL_CONTROLLER_AXIS_LEFTX);
+			res.evValue2 = ev.caxis.value;
+
+			joystick_polls.Append(joystick_poll_t(res.evValue, res.evValue2));
+			return res;
+
+		case SDL_CONTROLLERBUTTONDOWN:
+		case SDL_CONTROLLERBUTTONUP:
+			static int controllerButtonRemap[][2] =
+			{
+				{K_JOY1, J_ACTION1},
+				{K_JOY2, J_ACTION2},
+				{K_JOY3, J_ACTION3},
+				{K_JOY4, J_ACTION4},
+				{K_JOY9, J_ACTION9},
+				{K_JOY11, J_ACTION11},
+				{K_JOY10, J_ACTION10},
+				{K_JOY7, J_ACTION7},
+				{K_JOY8, J_ACTION8},
+				{K_JOY5, J_ACTION5},
+				{K_JOY6, J_ACTION6},
+				{K_JOY_DPAD_UP, J_DPAD_UP},
+				{K_JOY_DPAD_DOWN, J_DPAD_DOWN},
+				{K_JOY_DPAD_LEFT, J_DPAD_LEFT},
+				{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
+			};
+			if (buttonStates[controllerButtonRemap[ev.cbutton.button][0]] != ev.cbutton.state) {
+				joystick_polls.Append(joystick_poll_t((ev.cbutton.button < 11? K_JOY1 : K_JOY_DPAD_UP) + (ev.cbutton.button - controllerButtonRemap[ev.cbutton.button][1]), ev.cbutton.state == SDL_PRESSED ? 1 : 0));
+				buttonStates[controllerButtonRemap[ev.cbutton.button][0]] = ev.cbutton.state;
+
 				res.evType = SE_KEY;
 				res.evValue = controllerButtonRemap[ev.cbutton.button][0];
 				res.evValue2 = ev.cbutton.state == SDL_PRESSED ? 1 : 0;
-				
-				joystick_polls.Append( joystick_poll_t( res.evValue, res.evValue2 ) );
+
+				//joystick_polls.Append(joystick_poll_t(res.evValue, res.evValue2));
+			}
 				return res;
 #else
 			// WM0110
