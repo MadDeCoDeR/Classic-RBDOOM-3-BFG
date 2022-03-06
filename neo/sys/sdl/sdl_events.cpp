@@ -1251,29 +1251,34 @@ sysEvent_t Sys_GetEvent()
 
 		case SDL_CONTROLLERBUTTONDOWN:
 		case SDL_CONTROLLERBUTTONUP:
-			static int controllerButtonRemap[][2] =
+			static int controllerButtonRemap[SDL_CONTROLLER_BUTTON_MAX][2] =
 			{
-				{K_JOY1, J_ACTION1},
-				{K_JOY2, J_ACTION2},
-				{K_JOY3, J_ACTION3},
-				{K_JOY4, J_ACTION4},
-				{K_JOY9, J_ACTION9},
-				{K_JOY11, J_ACTION11},
-				{K_JOY10, J_ACTION10},
-				{K_JOY7, J_ACTION7},
-				{K_JOY8, J_ACTION8},
-				{K_JOY5, J_ACTION5},
-				{K_JOY6, J_ACTION6},
-				{K_JOY_DPAD_UP, J_DPAD_UP},
-				{K_JOY_DPAD_DOWN, J_DPAD_DOWN},
-				{K_JOY_DPAD_LEFT, J_DPAD_LEFT},
-				{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
+				{K_NONE, SDL_CONTROLLER_BUTTON_INVALID},
+				{K_JOY1, SDL_CONTROLLER_BUTTON_A},
+				{K_JOY2, SDL_CONTROLLER_BUTTON_B},
+				{K_JOY3, SDL_CONTROLLER_BUTTON_X},
+				{K_JOY4, SDL_CONTROLLER_BUTTON_Y},
+				{K_JOY10, SDL_CONTROLLER_BUTTON_BACK},
+				{K_JOY11, SDL_CONTROLLER_BUTTON_GUIDE},
+				{K_JOY9, SDL_CONTROLLER_BUTTON_START},
+				{K_JOY7, SDL_CONTROLLER_BUTTON_LEFTSTICK},
+				{K_JOY8, SDL_CONTROLLER_BUTTON_RIGHTSTICK},
+				{K_JOY5, SDL_CONTROLLER_BUTTON_LEFTSHOULDER},
+				{K_JOY6, SDL_CONTROLLER_BUTTON_RIGHTSHOULDER},
+				
+				{K_JOY_DPAD_UP, SDL_CONTROLLER_BUTTON_DPAD_UP},
+				{K_JOY_DPAD_DOWN, SDL_CONTROLLER_BUTTON_DPAD_DOWN},
+				{K_JOY_DPAD_LEFT, SDL_CONTROLLER_BUTTON_DPAD_LEFT},
+				{K_JOY_DPAD_RIGHT, SDL_CONTROLLER_BUTTON_DPAD_RIGHT},
 			};
-			res.evType = SE_KEY;
-			res.evValue = controllerButtonRemap[ev.cbutton.button][0];
-			res.evValue2 = ev.cbutton.state == SDL_PRESSED ? 1 : 0;
+			if (buttonStates[controllerButtonRemap[ev.cbutton.button][0]] != ev.cbutton.state) {
+				res.evType = SE_KEY;
+				res.evValue = controllerButtonRemap[ev.cbutton.button][0];
+				res.evValue2 = ev.cbutton.state == SDL_PRESSED ? 1 : 0;
 
-			joystick_polls.Append(joystick_poll_t(res.evValue, res.evValue2));
+				joystick_polls.Append(joystick_poll_t(res.evValue, res.evValue2));
+				buttonStates[controllerButtonRemap[ev.cbutton.button][0]] = ev.cbutton.state;
+			}
 			return res;
 #else
 			// WM0110
