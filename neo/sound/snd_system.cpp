@@ -129,7 +129,12 @@ void idSoundSystemLocal::Restart()
 			idSoundEmitterLocal* emitter = sw->emitters[e];
 			for( int c = 0; c < emitter->channels.Num(); c++ )
 			{
-				emitter->channels[c]->Mute();
+				if (emitter->channels[c]->CanMute()) {
+					emitter->channels[c]->Mute();
+				}
+				else if (emitter->channels[c]->hardwareVoice != NULL){
+					emitter->channels[c]->hardwareVoice->Pause();
+				}
 			}
 		}
 	}

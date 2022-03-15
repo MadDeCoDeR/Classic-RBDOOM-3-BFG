@@ -706,6 +706,7 @@ void idSoundWorldLocal::Skip( int time )
 {
 	accumulatedPauseTime -= time;
 	pauseFade.SetVolume( DB_SILENCE );
+	//GK: Even through it does it's job, inactive channels are not affected resulting into some audio leaking into gameplay
 	pauseFade.Fade( 0.0f, s_unpauseFadeInTime.GetInteger(), GetSoundTime() );
 }
 

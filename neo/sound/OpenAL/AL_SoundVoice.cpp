@@ -275,34 +275,6 @@ void idSoundVoice_OpenAL::Start( int offsetMS, int ssFlags )
 	if( flicker != hasVUMeter )
 	{
 		hasVUMeter = flicker;
-		
-		/*
-		if( flicker )
-		{
-			IUnknown* vuMeter = NULL;
-		
-			if( XAudio2CreateVolumeMeter( &vuMeter, 0 ) == S_OK )
-			{
-		
-				XAUDIO2_EFFECT_DESCRIPTOR descriptor;
-				descriptor.InitialState = true;
-				descriptor.OutputChannels = leadinSample->NumChannels();
-				descriptor.pEffect = vuMeter;
-		
-				XAUDIO2_EFFECT_CHAIN chain;
-				chain.EffectCount = 1;
-				chain.pEffectDescriptors = &descriptor;
-		
-				pSourceVoice->SetEffectChain( &chain );
-		
-				vuMeter->Release();
-			}
-		}
-		else
-		{
-			pSourceVoice->SetEffectChain( NULL );
-		}
-		*/
 	}
 	
 	assert( offsetMS >= 0 );
@@ -377,12 +349,17 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 	bufferContext->sample = sample;
 	bufferContext->bufferNumber = bufferNumber;
 #endif
-	
+
 	if( sample->openalBuffer > 0 )
 	{
+		
 		alSourcei( openalSource, AL_BUFFER, sample->openalBuffer );
 		alSourcei( openalSource, AL_LOOPING, ( sample == loopingSample && loopingSample != NULL ? AL_TRUE : AL_FALSE ) );
-
+		//if (offset > 0)
+		//{
+		//	//alSourceRewind(openalSource);
+		//	alSourcei(openalSource, AL_BYTE_OFFSET, offset);
+		//}
 		return sample->totalBufferSize;
 	}
 	else
@@ -471,6 +448,12 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 			alBufferData( openalStreamingBuffer[j], format, sample->buffers[bufferNumber].buffer, sample->buffers[bufferNumber].bufferSize, rate );
 			//openalStreamingOffset += MIXBUFFER_SAMPLES;
 		}
+
+		//if (offset > 0)
+		//{
+		//	//alSourceRewind(openalSource);
+		//	alSourcei(openalSource, AL_BYTE_OFFSET, offset);
+		//}
 		
 		if( finishedbuffers > 0 )
 		{
@@ -490,31 +473,6 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 	// should never happen
 	return 0;
 	
-	/*
-	
-	XAUDIO2_BUFFER buffer = { 0 };
-	if( offset > 0 )
-	{
-		int previousNumSamples = 0;
-		if( bufferNumber > 0 )
-		{
-			previousNumSamples = sample->buffers[bufferNumber - 1].numSamples;
-		}
-		buffer.PlayBegin = offset;
-		buffer.PlayLength = sample->buffers[bufferNumber].numSamples - previousNumSamples - offset;
-	}
-	buffer.AudioBytes = sample->buffers[bufferNumber].bufferSize;
-	buffer.pAudioData = ( BYTE* )sample->buffers[bufferNumber].buffer;
-	buffer.pContext = bufferContext;
-	if( ( loopingSample == NULL ) && ( bufferNumber == sample->buffers.Num() - 1 ) )
-	{
-		buffer.Flags = XAUDIO2_END_OF_STREAM;
-	}
-	pSourceVoice->SubmitSourceBuffer( &buffer );
-	
-	return buffer.AudioBytes;
-	
-	*/
 }
 
 /*
@@ -524,35 +482,25 @@ idSoundVoice_OpenAL::Update
 */
 bool idSoundVoice_OpenAL::Update()
 {
-	/*
-	if( pSourceVoice == NULL || leadinSample == NULL )
-	{
+	if (!alIsSource(openalSource)) {
 		return false;
 	}
-	
-	XAUDIO2_VOICE_STATE state;
-	pSourceVoice->GetState( &state );
-	
-	const int srcChannels = leadinSample->NumChannels();
-	
-	float pLevelMatrix[ MAX_CHANNELS_PER_VOICE * MAX_CHANNELS_PER_VOICE ] = { 0 };
-	CalculateSurround( srcChannels, pLevelMatrix, 1.0f );
-	
-	if( s_skipHardwareSets.GetBool() )
-	{
-		return true;
+	//GK: Set the EFX in the last moment
+	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
+	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 1, AL_FILTER_NULL);
+	if (alIsEffect(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX) && ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
+		if (GetOcclusion() > 0.0f) {
+			alSourcei(openalSource, AL_DIRECT_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voicefilter);
+		}
+		//GK: Audio Logs, PDA Videos and Radio Comms are supposed to be produced by the suit. 
+		//And they should not blend with Room's reverb (Plus some of these reverbs are making the voices harder to understand)
+		if (channel == 9 || channel == 10 || channel == 12) {
+			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voiceslot, 1, AL_FILTER_NULL);
+		}
+		else {
+			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->slot, 0, GetOcclusion() > 0.0f ? ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voicefilter : AL_FILTER_NULL);
+		}
 	}
-	
-	pSourceVoice->SetOutputMatrix( soundSystemLocal.hardware.pMasterVoice, srcChannels, dstChannels, pLevelMatrix, OPERATION_SET );
-	
-	assert( idMath::Fabs( gain ) <= XAUDIO2_MAX_VOLUME_LEVEL );
-	pSourceVoice->SetVolume( gain, OPERATION_SET );
-	
-	SetSampleRate( sampleRate, OPERATION_SET );
-	
-	// we don't do this any longer because we pause and unpause explicitly when the soundworld is paused or unpaused
-	// UnPause();
-	*/
 	return true;
 }
 
@@ -589,7 +537,10 @@ void idSoundVoice_OpenAL::FlushSourceBuffers()
 {
 	if( alIsSource( openalSource ) )
 	{
-		//pSourceVoice->FlushSourceBuffers();
+		
+		//alSourcei(openalSource, AL_BUFFER, 0);
+		/*alDeleteBuffers(3, openalStreamingBuffer);
+		openalStreamingBuffer[0] = openalStreamingBuffer[1] = openalStreamingBuffer[2] = 0;*/
 	}
 }
 
@@ -631,22 +582,6 @@ void idSoundVoice_OpenAL::UnPause()
 	{
 		idLib::Printf( "%dms: %i unpausing %s\n", Sys_Milliseconds(), openalSource, leadinSample ? leadinSample->GetName() : "<null>" );
 	}
-	//GK: Set the EFX in the last moment
-	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
-	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 1, AL_FILTER_NULL);
-	if (alIsEffect(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX) && ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
-		if (GetOcclusion() > 0.0f) {
-			alSourcei(openalSource, AL_DIRECT_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voicefilter);
-		}
-		//GK: Audio Logs, PDA Videos and Radio Comms are supposed to be produced by the suit. 
-		//And they should not blend with Room's reverb (Plus some of these reverbs are making the voices harder to understand)
-		if (channel == 9 || channel == 10 || channel == 12) {
-			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voiceslot, 1, AL_FILTER_NULL);
-		}
-		else {
-			alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->slot, 0, GetOcclusion() > 0.0f ? ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voicefilter : AL_FILTER_NULL);
-		}
-	}
 	alSourcePlay( openalSource );
 	//pSourceVoice->Start( 0, OPERATION_SET );
 	paused = false;
@@ -672,7 +607,7 @@ void idSoundVoice_OpenAL::Stop()
 		}
 		
 		alSourceStop( openalSource );
-		alSourcei( openalSource, AL_BUFFER, 0 );
+		alSourcei(openalSource, AL_BUFFER, 0);
 		
 		//pSourceVoice->Stop( 0, OPERATION_SET );
 		paused = true;

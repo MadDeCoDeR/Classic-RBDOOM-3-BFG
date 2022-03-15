@@ -459,6 +459,7 @@ idSoundHardware_OpenAL::FreeVoice
 */
 void idSoundHardware_OpenAL::FreeVoice( idSoundVoice* voice )
 {
+	voice->UnPause(); //GK: Since in OpenAL we do actually pause the voice unpause it in order to avoid errors when freeing the samples
 	voice->Stop();
 	
 	// Stop() is asyncronous, so we won't flush bufferes until the
