@@ -225,7 +225,7 @@ void idImage::CopyFramebufferLegacy(int x, int y, int imageWidth, int imageHeigh
 }
 
 void idImage::CopyFramebufferDSA(int x, int y, int imageWidth, int imageHeight, bool forceLDR) {
-	textureFormat_t HDRFormat = opts.format;
+	textureFormat_t HDRFormat = FMT_RGBA8;
 
 	if (r_useHDR.GetBool() && globalFramebuffers.hdrFBO->IsBound() && !forceLDR) {
 		HDRFormat = FMT_RGBA16F;
