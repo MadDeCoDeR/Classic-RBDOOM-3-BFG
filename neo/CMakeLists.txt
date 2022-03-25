@@ -155,7 +155,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -DNDEBUG -no-pie -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
 	set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -g -O3 -DNDEBUG -no-pie -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
 	#set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -Os -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
-	set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RETAIL} -O3 -DID_RETAIL -DNDEBUG -no-pie -ffast-math -fno-strict-aliasing -flto ${my_warn_flags}" CACHE STRING "" FORCE)
+	set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RETAIL} -O3 -DID_RETAIL -DNDEBUG -no-pie -ffast-math -fno-strict-aliasing ${my_warn_flags}" CACHE STRING "" FORCE)
 	
 	
 
