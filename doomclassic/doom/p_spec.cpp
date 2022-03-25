@@ -2222,7 +2222,7 @@ static void P_SpawnScrollers(void)
 
 		switch (special)
 		{
-			register int s;
+			/*register*/ int s;
 
 		case 250:   // scroll effect ceiling
 			for (s = -1; (s = P_FindSectorFromLineTag(l, s)) >= 0;)

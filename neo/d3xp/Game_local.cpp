@@ -119,7 +119,7 @@ static const char* fastEntityList[] =
 //GK: Make a self contained CVarSystem in order to access the dll CVars
 typedef struct
 {
-	char* name;
+	const char* name;
 	idCVar* CVar;
 }Var_t;
 //GK: Init them here in order to get their values

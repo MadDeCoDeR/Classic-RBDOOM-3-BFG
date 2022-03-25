@@ -611,6 +611,6 @@ typedef struct {
 }actdef_t;
 
 typedef struct {
-	char* name;
+	const char* name;
 	actionf_p2 func;
 }dehcptr;

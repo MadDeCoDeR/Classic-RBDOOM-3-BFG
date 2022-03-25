@@ -32,7 +32,7 @@
 #include "sound/OpenAL/AL_EAX.h"
 
 typedef struct {
-	char* name;
+	const char* name;
 	float min;
 	float max;
 	float* flvalue;
