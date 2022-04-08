@@ -66,11 +66,8 @@ static VkFormat ChooseSupportedFormat(VkFormat* formats, int numFormats, VkImage
 		VkFormatProperties props;
 		vkGetPhysicalDeviceFormatProperties(vkcontext.physicalDevice, format, &props);
 
-		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
-		{
-			return format;
-		}
-		else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
+		if ((tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) 
+			|| (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features))
 		{
 			return format;
 		}
