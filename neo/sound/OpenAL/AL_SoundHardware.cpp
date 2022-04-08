@@ -162,7 +162,7 @@ void idSoundHardware_OpenAL::parseDeviceName(const ALCchar* wcDevice, char* mbDe
 	//GK: just convert the name from UTF-8 char to wide char and then to ANSI char
 	wchar_t* wdevs = new wchar_t[wdev_size];
 	MultiByteToWideChar(CP_UTF8, NULL, wcDevice, -1, wdevs, wdev_size);
-	WideCharToMultiByte(CP_ACP, NULL, wdevs, wdev_size, mbDevice, wdev_size, NULL, 0);
+	strcpy(mbDevice, Sys_Wcstrtombstr(wdevs));
 	delete[] wdevs;
 #else
 	wchar_t* wdevs = new wchar_t[512];

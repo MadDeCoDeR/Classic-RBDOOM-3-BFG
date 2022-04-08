@@ -68,7 +68,11 @@ void idMenuWidget_Shell_SaveInfo::Update()
 	{
 		const idSaveGameDetails& details = sortedSaves[ loadIndex ];
 		
-		info.Append( Sys_TimeStampToStr( details.date ) );
+#ifdef WIN32 //GK: TODO: Find linux equivilant
+		info.Append(Sys_GetSystemFormatedTime( details.date ) );
+#else
+		info.Append(Sys_TimeStampToStr(details.date));
+#endif
 		info.Append( "\n" );
 		
 		// PS3 only strings that use the dict just set

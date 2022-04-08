@@ -628,7 +628,16 @@ typedef FILE* idFileHandle;
 ID_TIME_T		Sys_FileTimeStamp( idFileHandle fp );
 // NOTE: do we need to guarantee the same output on all platforms?
 const char* 	Sys_TimeStampToStr( ID_TIME_T timeStamp );
+//GK: Begin
+#ifdef WIN32
+const char*		Sys_GetSystemFormatedTime(ID_TIME_T timeStamp);
+#endif
+//GK: End
 const char* 	Sys_SecToStr( int sec );
+
+//GK: Begin
+const char* Sys_Wcstrtombstr(const wchar_t* wstring);
+//GK: End
 
 const char* 	Sys_DefaultBasePath();
 const char*		Sys_DefaultAppPath();

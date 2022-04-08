@@ -227,3 +227,101 @@ char* Sys_GetCurrentUser()
 	return s_userName;
 }
 
+//GK: Begin
+
+/*
+================
+Sys_Wcstrtombstr
+
+	wcstombs is unreliable on Windows so instead it has to be done the Windows way in order to include the Sytem's ANSI code page
+================
+*/
+const char* Sys_Wcstrtombstr(const wchar_t* wstring) {
+	int wstrlen = lstrlenW(wstring);
+	int mbstrlen = WideCharToMultiByte(CP_ACP, NULL, wstring, wstrlen, NULL, 0, NULL, 0);
+	char* mbstring = new char[mbstrlen + 1];
+	if (WideCharToMultiByte(CP_ACP, NULL, wstring, wstrlen, mbstring, mbstrlen, NULL, 0) > 0) {
+		mbstring[mbstrlen] = '\0';
+		return mbstring;
+	}
+	return "";
+}
+
+/*
+================
+Sys_GetDateFormated
+
+	returns Date String formated by user's System Setings (short format)
+	
+	NOTE: It might not work well if user has set short date format with letters
+================
+*/
+const char* Sys_GetDateFormated(SYSTEMTIME* systime) {
+	int bufferSize = GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, LOCALE_USE_CP_ACP | DATE_SHORTDATE, systime, NULL, NULL, 0, NULL);
+
+	wchar_t* wdate = new wchar_t[bufferSize + 1];
+
+	if (GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, LOCALE_USE_CP_ACP | DATE_SHORTDATE, systime, NULL, wdate, bufferSize, NULL) > 0) {
+		wdate[bufferSize] = '\0';
+		return Sys_Wcstrtombstr(wdate);
+	}
+	return "";
+}
+
+
+/*
+================
+Sys_GetTimeFormated
+
+	returns Time String formated by user's System Setings (short format and ignore am pm sufix)
+
+	Unlike the Date, this one is not so prune to error since it uses only numbers
+================
+*/
+const char* Sys_GetTimeFormated(SYSTEMTIME* systime) {
+	int bufferSize = GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, LOCALE_USE_CP_ACP | TIME_NOSECONDS | TIME_FORCE24HOURFORMAT | TIME_NOTIMEMARKER, systime, NULL, NULL, 0);
+
+	wchar_t* wtime = new wchar_t[bufferSize + 1];
+
+	if (GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, LOCALE_USE_CP_ACP | TIME_NOSECONDS | TIME_FORCE24HOURFORMAT | TIME_NOTIMEMARKER, systime, NULL, wtime, bufferSize) > 0) {
+		wtime[bufferSize] = '\0';
+		return Sys_Wcstrtombstr(wtime);
+	}
+	return "";
+}
+
+/*
+================
+Sys_GetSystemFormatedTime
+
+	returns DateTime String formated by user's System Setings (short format and ignore am pm sufix)
+
+	This Combines the results of Sys_GetDateFormated and Sys_GetTimeFormated.
+	It returns a multibyte string
+================
+*/
+const char* Sys_GetSystemFormatedTime(ID_TIME_T timeInt) {
+
+	tm* time = localtime(&timeInt);
+	SYSTEMTIME* systime = new SYSTEMTIME();
+	systime->wYear = time->tm_year + 1900;
+	systime->wMonth = time->tm_mon + 1;
+	systime->wDay = time->tm_mday;
+	systime->wHour = time->tm_hour;
+	systime->wMinute = time->tm_min;
+	systime->wSecond = time->tm_sec;
+	systime->wDayOfWeek = time->tm_wday;
+	idStr finalDate;
+
+	finalDate += Sys_GetDateFormated(systime);
+	finalDate += " ";
+	finalDate += Sys_GetTimeFormated(systime);
+
+	char* finalBuffer = new char[finalDate.Length() + 1];
+	finalBuffer[0] = '\0';
+	idStr::Copynz(finalBuffer, finalDate, finalDate.Length() + 1);
+
+	return finalBuffer;
+}
+
+//GK: End

@@ -216,10 +216,8 @@ void listDevices_f_XA2( const idCmdArgs& args )
 		char mbcsDisplayName[256];
 		char mbcsId[256];
 		//GK:wcstombs doen't read non-ASCII on windows so instead use this function in order to read them
-		int mbcsDisplayNameSize = WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].name.c_str(), -1, NULL, 0, NULL, 0);
-		WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].name.c_str(), mbcsDisplayNameSize, mbcsDisplayName, mbcsDisplayNameSize, NULL, 0);
-		int mbcsIdSize = WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].id.c_str(), -1, NULL, NULL, NULL, 0);
-		WideCharToMultiByte(CP_ACP, NULL, vAudioDevices[i].id.c_str(), mbcsIdSize, mbcsId, mbcsIdSize, NULL, 0);
+		strcpy(mbcsDisplayName, Sys_Wcstrtombstr(vAudioDevices[i].name.c_str()));
+		strcpy(mbcsId, Sys_Wcstrtombstr(vAudioDevices[i].id.c_str()));
 		idLib::Printf( "%s %3d: %s %s\n", vAudioDevices[i].id == defaultDevice.id ? "*" : " ", i, mbcsDisplayName, mbcsId );
 	}
 #else
@@ -301,8 +299,7 @@ void listDevices_f_XA2( const idCmdArgs& args )
 		}
 		char mbcsDisplayName[ 256 ];
 		//GK:wcstombs doen't read non-ASCII on windows so instead use this function in order to read them
-		int mbSize = WideCharToMultiByte(CP_ACP, NULL, deviceDetails.DisplayName, -1, NULL, 0, NULL, 0);
-		WideCharToMultiByte(CP_ACP, NULL, deviceDetails.DisplayName, mbSize,mbcsDisplayName, mbSize,NULL,0 );
+		strcpy(mbcsDisplayName, Sys_Wcstrtombstr(deviceDetails.DisplayName));
 		idLib::Printf( "%3d: %s\n", i, mbcsDisplayName );
 		idLib::Printf( "     %d channels, %d Hz\n", deviceDetails.OutputFormat.Format.nChannels, deviceDetails.OutputFormat.Format.nSamplesPerSec );
 		if( channelNames.Num() != deviceDetails.OutputFormat.Format.nChannels )
