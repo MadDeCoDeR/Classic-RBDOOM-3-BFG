@@ -296,14 +296,14 @@ void I_ShutdownInput()
 {
 }
 
-
-static float _joyAxisConvert(short x, float xbxScale, float dScale, float deadZone)
-{
-	//const float signConverted = x - 127;
-	float y = x - 127;
-	y		= y / xbxScale;
-	return (fabs(y) < deadZone) ? 0.f : (y * dScale);
-}
+//GK: C4505
+//static float _joyAxisConvert(short x, float xbxScale, float dScale, float deadZone)
+//{
+//	//const float signConverted = x - 127;
+//	float y = x - 127;
+//	y		= y / xbxScale;
+//	return (fabs(y) < deadZone) ? 0.f : (y * dScale);
+//}
 
 
 int I_PollMouseInputEvents( controller_t *con) 

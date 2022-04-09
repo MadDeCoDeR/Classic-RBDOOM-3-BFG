@@ -1574,6 +1574,7 @@ void AddEdgeIfNotAlready( optVertex_t* v1, optVertex_t* v2 )
 DrawOriginalEdges
 =================
 */
+#if 0
 static void DrawOriginalEdges( int numOriginalEdges, originalEdges_t* originalEdges )
 {
 //	int		i;
@@ -1598,6 +1599,7 @@ static void DrawOriginalEdges( int numOriginalEdges, originalEdges_t* originalEd
 	qglFlush();
 #endif
 }
+#endif
 
 
 typedef struct edgeCrossing_s

@@ -736,7 +736,7 @@ void P_RemoveSlimeTrails(void)                // killough 10/98
 						v->y = (fixed_t)((dy2 * y0 + dx2 * y1 + dxy * (x0 - x1)) / s);
 					}
 				}  // Obfuscated C contest entry:   :)
-			while ((v != ::g->segs[i].v2) && (v = ::g->segs[i].v2));
+			while ((v != ::g->segs[i].v2) && ((v = ::g->segs[i].v2) != 0));
 		}
 	}
 	free(hit);

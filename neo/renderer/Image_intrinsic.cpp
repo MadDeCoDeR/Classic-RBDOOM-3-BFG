@@ -182,10 +182,12 @@ static void R_HDR_RGBA16FImage_ResNative( idImage* image )
 	image->GenerateImage(NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_NEAREST, TR_CLAMP, TD_RGBA16F);// , msaaSamples );
 }
 
+#if  defined(USE_HDR_MSAA)
 static void R_HDR_RGBA16FImage_ResNative_NoMSAA( idImage* image )
 {
 	image->GenerateImage( NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_NEAREST, TR_CLAMP, TD_RGBA16F );
 }
+#endif
 
 static void R_HDR_RGBA16FImage_ResQuarter( idImage* image )
 {

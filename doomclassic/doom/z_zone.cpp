@@ -311,7 +311,7 @@ Z_Malloc
     memblock_t* newblock;
     memblock_t*	base;
 #ifdef RANGECHECK
-	if (size < 0 || size > ::g->zonesize)
+	if (size < 0 || size > (unsigned)::g->zonesize)
 		I_Error("Z_Malloc: Trying to allocate %i on tag %d", size, tag);
 #endif
 		::g->NumAlloc += size;

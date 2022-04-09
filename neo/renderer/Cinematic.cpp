@@ -572,7 +572,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 {
 	int ret;
 	int ret2;
-	int file_size;
+	int file_size = 0;
 	looping = amilooping;
 	startTime = 0;
 	isRoQ = false;

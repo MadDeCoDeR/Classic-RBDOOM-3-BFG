@@ -239,7 +239,7 @@ int Mus2Midi(unsigned char* bytes, unsigned char* out, int* len)
 		byte event;
 		byte temp_buffer[32];	// temp buffer for current iterator
 		byte *out_local = temp_buffer;
-		byte status, bit1, bit2, bitc = 2;
+		byte status, bit1 = 0, bit2 = 0, bitc = 2;
 		
 		// Read in current bit
 		event		= *cur++;

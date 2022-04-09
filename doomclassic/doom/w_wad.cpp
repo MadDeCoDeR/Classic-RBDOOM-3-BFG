@@ -214,8 +214,8 @@ bool W_ReplaceSprite(std::vector<filelump_t>::iterator file, int pos, idFile* ha
 	char newRotations[2] = { newname->rotation1, newname->rotation2 };
 	int matchcount = 0;
 	bool framematch = false;
-	int framematchi;
-	int framematchj;
+	int framematchi = 0;
+	int framematchj = 0;
 	for (int i = 0; i < 2; i++) {
 		if (originalFrames[i]) {
 			for (int j = 0; j < 2; j++) {

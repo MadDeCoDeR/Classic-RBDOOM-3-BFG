@@ -616,7 +616,7 @@ void F_Ticker (void)
 
 void F_TextWrite (void)
 {
-    byte*	src;
+    byte*	src = NULL;
     byte*	dest;
     
     int		x,y,w;

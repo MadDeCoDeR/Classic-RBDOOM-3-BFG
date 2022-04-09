@@ -827,9 +827,9 @@ void parsetext(char* text) {
 	std::vector<std::string> linedtext = getlines(text);
 	int state = 0;
 	char* varname;
-	char* varfunc;
-	int statepos;
-	int varval;
+	char* varfunc = NULL;
+	int statepos = 0;
+	int varval = 0;
 	int varval2 = -1;
 	char eq = '=';
 	std::string vartext = "";

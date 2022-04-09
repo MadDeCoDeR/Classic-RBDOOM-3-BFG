@@ -120,7 +120,7 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 		//return; 
 
 	#ifdef RANGECHECK 
-		if ((unsigned)::g->dc_x >= ::g->SCREENWIDTH
+		if ((unsigned)::g->dc_x >= (unsigned)::g->SCREENWIDTH
 			|| ::g->dc_yl < 0
 			|| ::g->dc_yh >= SCREENHEIGHT) 
 			I_Error ("R_DrawColumn: %i to %i at %i", ::g->dc_yl, ::g->dc_yh, ::g->dc_x); 
@@ -263,7 +263,7 @@ void R_DrawColumnLow ( lighttable_t * dc_colormap,
 		return; 
 
 #ifdef RANGECHECK 
-	if ((unsigned)::g->dc_x >= ::g->SCREENWIDTH
+	if ((unsigned)::g->dc_x >= (unsigned)::g->SCREENWIDTH
 		|| ::g->dc_yl < 0
 		|| ::g->dc_yh >= SCREENHEIGHT)
 	{
@@ -333,7 +333,7 @@ void R_DrawFuzzColumn ( lighttable_t * dc_colormap,
 
 
 #ifdef RANGECHECK 
-	if ((unsigned)::g->dc_x >= ::g->SCREENWIDTH
+	if ((unsigned)::g->dc_x >= (unsigned)::g->SCREENWIDTH
 		|| ::g->dc_yl < 0 || ::g->dc_yh >= SCREENHEIGHT)
 	{
 		I_Error ("R_DrawFuzzColumn: %i to %i at %i",
@@ -421,7 +421,7 @@ void R_DrawTranslatedColumn ( lighttable_t * dc_colormap,
 		return; 
 
 #ifdef RANGECHECK 
-	if ((unsigned)::g->dc_x >= ::g->SCREENWIDTH
+	if ((unsigned)::g->dc_x >= (unsigned)::g->SCREENWIDTH
 		|| ::g->dc_yl < 0
 		|| ::g->dc_yh >= SCREENHEIGHT)
 	{

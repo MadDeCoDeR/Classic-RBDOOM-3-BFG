@@ -2311,12 +2311,12 @@ fixed_t P_FindNextLowestFloor(sector_t *sec, int currentheight)
 	int i;
 
 	for (i = 0; i < sec->linecount; i++)
-		if ((other = getNextSector(sec->lines[i], sec)) &&
+		if (((other = getNextSector(sec->lines[i], sec)) != 0) &&
 			other->floorheight < currentheight)
 		{
 			int height = other->floorheight;
 			while (++i < sec->linecount)
-				if ((other = getNextSector(sec->lines[i], sec)) &&
+				if (((other = getNextSector(sec->lines[i], sec)) != 0) &&
 					other->floorheight > height &&
 					other->floorheight < currentheight)
 					height = other->floorheight;
@@ -2462,12 +2462,12 @@ fixed_t P_FindNextHighestCeiling(sector_t *sec, int currentheight)
 	int i;
 
 	for (i = 0; i < sec->linecount; i++)
-		if ((other = getNextSector(sec->lines[i], sec)) &&
+		if (((other = getNextSector(sec->lines[i], sec)) != 0) &&
 			other->ceilingheight > currentheight)
 		{
 			int height = other->ceilingheight;
 			while (++i < sec->linecount)
-				if ((other = getNextSector(sec->lines[i], sec)) &&
+				if (((other = getNextSector(sec->lines[i], sec)) != 0) &&
 					other->ceilingheight < height &&
 					other->ceilingheight > currentheight)
 					height = other->ceilingheight;
@@ -2492,12 +2492,12 @@ fixed_t P_FindNextLowestCeiling(sector_t *sec, int currentheight)
 	int i;
 
 	for (i = 0; i < sec->linecount; i++)
-		if ((other = getNextSector(sec->lines[i], sec)) &&
+		if (((other = getNextSector(sec->lines[i], sec)) != 0) &&
 			other->ceilingheight < currentheight)
 		{
 			int height = other->ceilingheight;
 			while (++i < sec->linecount)
-				if ((other = getNextSector(sec->lines[i], sec)) &&
+				if (((other = getNextSector(sec->lines[i], sec)) != 0) &&
 					other->ceilingheight > height &&
 					other->ceilingheight < currentheight)
 					height = other->ceilingheight;

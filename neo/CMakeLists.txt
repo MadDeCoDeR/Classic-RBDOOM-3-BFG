@@ -245,12 +245,9 @@ elseif(MSVC)
 		set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD /std:c17")
 		
 		#GK: List of Warnings that are ignored:
-		#	C5033: The register keyword is still used by some libraries and is only marked as deprecated by std17
-		#	C5105: This is a possible issue between glew and Windows ignore
-		#	C4267: The conversion occur on libraries only and therefor can be ignored
 		#	C5205: Some abstract classes and their derivatives have no destructors, ignore until either destructors are added or is found that it does inded cause undefined behaviour
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /Ob2 /Oi /Oy /MDd /std:c++17 /std:c17 /wd5033 /wd5105 /wd4267 /wd5205 /W4")
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /Oi /Oy /MD /std:c++17 /std:c17 /wd5033 /wd5105 /wd4267 /wd5205 /WX /W4")
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /Ob2 /Oi /Oy /MDd /std:c++17 /std:c17 /wd5205 /W4")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /Oi /Oy /MD /std:c++17 /std:c17 /wd5205 /WX /W3")
 		#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MP /MTd")
 		#set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
 		set(CMAKE_CXX_FLAGS_RETAIL "${CMAKE_CXX_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD /std:c++17 /std:c17")
@@ -1268,6 +1265,32 @@ source_group("tools\\script" FILES ${EDITOR_SCRIPT_SOURCES})
 source_group("tools\\sound" FILES ${EDITOR_SOUND_INCLUDES})
 source_group("tools\\sound" FILES ${EDITOR_SOUND_SOURCES})
 
+set(LIB_INCLUDES
+			${IRRXML_INCLUDES}
+			${JPEG_INCLUDES}
+			${PNG_INCLUDES}
+			${ZLIB_INCLUDES}
+			${MINIZIP_INCLUDES}
+			${BINKDEC_INCLUDES}
+			${GLEW_INCLUDES}
+			${OPEN_PLATFORM_INCLUDES}
+			${RAPIDJSON_INCLUDES}
+			#${FREETYPE_SOURCES}
+			${TIMIDITY_INCLUDES}
+)
+
+set(LIB_SOURCES
+			${IRRXML_SOURCES}
+			${JPEG_SOURCES}
+			${PNG_SOURCES}
+			${ZLIB_SOURCES}
+			${MINIZIP_SOURCES}
+			${BINKDEC_SOURCES}
+			${GLEW_SOURCES}
+			#${OPEN_PLATFORM_SOURCES}
+			#${FREETYPE_SOURCES}
+			${TIMIDITY_SOURCES}
+)
 
 set(RBDOOM3_INCLUDES
 			${AAS_INCLUDES}
@@ -1284,16 +1307,7 @@ set(RBDOOM3_INCLUDES
 			
 			${SHADERS}
 			${RENDERER_SMAA_INCLUDES}
-			${IRRXML_INCLUDES}
-			${JPEG_INCLUDES}
-			${PNG_INCLUDES}
-			${ZLIB_INCLUDES}
-			${MINIZIP_INCLUDES}
-			${BINKDEC_INCLUDES}
-			${GLEW_INCLUDES}
-			${OPEN_PLATFORM_INCLUDES}
-			${RAPIDJSON_INCLUDES}
-			#${FREETYPE_SOURCES}
+			
 			${SOUND_INCLUDES}
 			#${OGGVORBIS_INCLUDES}
 			${UI_INCLUDES}
@@ -1301,7 +1315,7 @@ set(RBDOOM3_INCLUDES
 			${CREDIT_INCLUDES}
 			${COMMON_INCLUDES}
 			${DOOMCLASSIC_INCLUDES}
-			${TIMIDITY_INCLUDES}
+			
 			
 			${COMPILER_INCLUDES}
 			${COMPILER_AAS_INCLUDES} ${COMPILER_AAS_SOURCES}
@@ -1322,15 +1336,7 @@ set(RBDOOM3_SOURCES
 			${RENDERER_JOBS_DYNAMICSHADOWVOLUME_SOURCES}
 			${RENDERER_JOBS_PRELIGHTSHADOWVOLUME_SOURCES}
 			${RENDERER_JOBS_STATICSHADOWVOLUME_SOURCES}
-			${IRRXML_SOURCES}
-			${JPEG_SOURCES}
-			${PNG_SOURCES}
-			${ZLIB_SOURCES}
-			${MINIZIP_SOURCES}
-			${BINKDEC_SOURCES}
-			${GLEW_SOURCES}
-			#${OPEN_PLATFORM_SOURCES}
-			#${FREETYPE_SOURCES}
+			
 			${SOUND_SOURCES}
 			#${OGGVORBIS_INCLUDES} ${OGGVORBIS_SOURCES}
 			${UI_SOURCES}
@@ -1338,7 +1344,6 @@ set(RBDOOM3_SOURCES
 			${CREDIT_SOURCES}
 			${COMMON_SOURCES}
 			${DOOMCLASSIC_SOURCES}
-			${TIMIDITY_SOURCES}
 			
 			${COMPILER_AAS_SOURCES}
 			${COMPILER_DMAP_SOURCES}
@@ -1640,6 +1645,8 @@ if(MSVC)
 	set_source_files_properties( ${SHADERS} PROPERTIES VS_TOOL_OVERRIDE "None" )
 	
 	list(APPEND RBDOOM3_SOURCES ${WIN32_RESOURCES})
+	add_library(libs ${LIB_INCLUDES} ${LIB_SOURCES})
+	target_compile_options(libs PRIVATE /W0)
 	add_executable(DoomBFA WIN32 ${RBDOOM3_INCLUDES} ${RBDOOM3_SOURCES})
 	#GK: Allow to compile and run the game from VS
 	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT DoomBFA)
@@ -1655,9 +1662,10 @@ if(MSVC)
 				   $<TARGET_FILE_DIR:DoomBFA>
                    COMMENT "Copy OpenAL dll")
 		
-	add_dependencies(DoomBFA idlib)
+	add_dependencies(DoomBFA idlib libs)
 	target_link_libraries(DoomBFA
 		idlib
+		libs
 		${DirectX_LIBRARIES}
 		dbghelp
 		#eaxguid
@@ -1844,6 +1852,7 @@ else()
 	else()
 		set(remove_command "rm")
 	endif()
+	add_library(libs ${LIB_INCLUDES} ${LIB_SOURCES})
 	
 	if (USE_PRECOMPILED_HEADERS)
 		# it's ugly enough that the precompiled header binary needs to be in the 
@@ -1856,8 +1865,9 @@ else()
 				)
 				
 		# make sure this is run after creating idlib
-		add_dependencies(precomp_header_doombfa idlib)
+		add_dependencies(precomp_header_doombfa idlib libs)
 	endif()
+	
 	
 	add_executable(DoomBFA WIN32 ${RBDOOM3_SOURCES})
 
@@ -1876,6 +1886,7 @@ else()
 
 		target_link_libraries(DoomBFA
 			idlib
+			libs
 			${OPENGL_LIBRARIES}
 			pthread
 			${RT_LIBRARY}

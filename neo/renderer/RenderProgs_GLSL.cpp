@@ -355,7 +355,7 @@ private:
 			return true;
 		}
 		
-		idLexer* script;
+		idLexer* script = NULL;
 		
 		idStr path;
 		

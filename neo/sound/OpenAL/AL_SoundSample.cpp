@@ -1072,7 +1072,7 @@ ALenum idSoundSample_OpenAL::GetOpenALSoftFormat( ALenum channels, ALenum type )
 
 ALenum idSoundSample_OpenAL::GetOpenALBufferFormat() const
 {
-	ALenum alFormat;
+	ALenum alFormat = 0;
 	
 	if( format.basic.formatTag == idWaveFile::FORMAT_ADPCM )
 	{

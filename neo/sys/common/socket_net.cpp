@@ -849,11 +849,13 @@ void Net_SendUDPPacket( int netSocket, int length, const void* data, const netad
 	}
 }
 
+#ifndef  _WIN32
 static void ip_to_addr( const char ip[4], char* addr )
 {
 	idStr::snPrintf( addr, 16, "%d.%d.%d.%d", ( unsigned char )ip[0], ( unsigned char )ip[1],
 					 ( unsigned char )ip[2], ( unsigned char )ip[3] );
 }
+#endif // ! _WIN32
 
 /*
 ========================

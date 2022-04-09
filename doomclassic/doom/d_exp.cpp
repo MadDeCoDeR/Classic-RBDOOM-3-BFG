@@ -447,13 +447,13 @@ void EX_add(int lump) {
 void parseexptext(char* text) {
 	std::vector<std::string> linedtext = getexplines(text);
 	int state = 0;
-	int val1;
+	int val1 = 0;
 	//int val2;
 	int val3;
 	int mapcount = 0;
 	char* varname;
 	char* varval;
-	char* varopt;
+	char* varopt = 0;
 	char* varval2 = NULL; //SANITY CHECK
 	/*if (!::g->mapind) {
 		initMAPS(linedtext);

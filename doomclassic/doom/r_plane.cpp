@@ -221,7 +221,7 @@ void R_ClearPlanes (void)
 // R_FindPlane
 //
 visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel,fixed_t xoffs,fixed_t yoffs ) {
-	visplane_t*	check;
+	visplane_t*	check = NULL;
 	
     if (picnum == ::g->skyflatnum) {
 		height = 0;			// all skys map together

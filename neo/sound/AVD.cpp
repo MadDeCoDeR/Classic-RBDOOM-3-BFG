@@ -77,7 +77,7 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 		return false;
 	}
 	bool hasplanar = false;
-	AVSampleFormat dst_smp;
+	AVSampleFormat dst_smp = AV_SAMPLE_FMT_NONE;
 	if (dec_ctx->sample_fmt >= 5) {
 		dst_smp = static_cast<AVSampleFormat> (dec_ctx->sample_fmt - 5);
 		swr_ctx = swr_alloc_set_opts(NULL, dec_ctx->channel_layout, dst_smp, dec_ctx->sample_rate, dec_ctx->channel_layout, dec_ctx->sample_fmt, dec_ctx->sample_rate, 0, NULL);
@@ -305,7 +305,7 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 		return false;
 	}
 	bool hasplanar = false;
-	AVSampleFormat dst_smp;
+	AVSampleFormat dst_smp = AV_SAMPLE_FMT_NONE;
 	if (dec_ctx->sample_fmt >= 5) {
 		dst_smp = static_cast<AVSampleFormat> (dec_ctx->sample_fmt - 5);
 		swr_ctx = swr_alloc_set_opts(NULL, dec_ctx->channel_layout, dst_smp, dec_ctx->sample_rate, dec_ctx->channel_layout, dec_ctx->sample_fmt, dec_ctx->sample_rate, 0, NULL);

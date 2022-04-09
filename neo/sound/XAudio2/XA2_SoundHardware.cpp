@@ -46,7 +46,7 @@ HRESULT GetAudioDeviceDetails( _In_ IMMDevice* immDevice, _Out_ AudioDevice* pIn
 	IPropertyStore* propStore = nullptr;
 	PROPVARIANT     varName;
 #ifdef USE_XAUDIO2_PACKAGE
-	LPWSTR     varId;
+	LPWSTR     varId = NULL;
 #else
 	PROPVARIANT     varId;
 	PropVariantInit(&varId);
