@@ -132,7 +132,8 @@ void idSoundVoice_XAudio2::Create( const idSoundSample* leadinSample_, const idS
 		numChannels = leadinSample->GetFormat().basic.numChannels;
 		sampleRate = leadinSample->GetFormat().basic.samplesPerSec;
 		
-		((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->pXAudio2->CreateSourceVoice( &pSourceVoice, ( const WAVEFORMATEX* )&leadinSample->GetFormat(), XAUDIO2_VOICE_USEFILTER, 4.0f, &streamContext );
+		idWaveFile::waveFmt_t format = leadinSample->GetFormat();
+		((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->pXAudio2->CreateSourceVoice( &pSourceVoice, (const WAVEFORMATEX*)&format, XAUDIO2_VOICE_USEFILTER, 4.0f, &streamContext );
 		if( pSourceVoice == NULL )
 		{
 			// If this hits, then we are most likely passing an invalid sample format, which should have been caught by the loader (and the sample defaulted)
