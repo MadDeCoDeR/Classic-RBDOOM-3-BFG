@@ -98,12 +98,12 @@ void CinematicAudio_XAudio2::PlayAudio(uint8_t* data, int size)
 	Packet.pContext = NULL;
 	HRESULT hr;
 	if (FAILED(hr = pMusicSourceVoice1->SubmitSourceBuffer(&Packet))) {
-		int fail = 1;
+		//int fail = 1;
 	}
 
 	// Play the source voice
 	if (FAILED(hr = pMusicSourceVoice1->Start(0))) {
-		int fail = 1;
+		//int fail = 1;
 	}
 }
 

@@ -109,7 +109,7 @@ bool idSoundVoice_XAudio2::CompatibleFormat( idSoundSample* s )
 idSoundVoice_XAudio2::Create
 ========================
 */
-void idSoundVoice_XAudio2::Create( const idSoundSample* leadinSample_, const idSoundSample* loopingSample_, int channel_ )
+void idSoundVoice_XAudio2::Create( const idSoundSample* leadinSample_, const idSoundSample* loopingSample_, const int channel_ )
 {
 	if( IsPlaying() )
 	{

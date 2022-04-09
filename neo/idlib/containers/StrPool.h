@@ -112,9 +112,9 @@ private:
 idStrPool::SetCaseSensitive
 ================
 */
-ID_INLINE void idStrPool::SetCaseSensitive( bool caseSensitive )
+ID_INLINE void idStrPool::SetCaseSensitive( bool _caseSensitive )
 {
-	this->caseSensitive = caseSensitive;
+	this->caseSensitive = _caseSensitive;
 }
 
 /*

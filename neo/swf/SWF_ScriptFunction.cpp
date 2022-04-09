@@ -2043,6 +2043,7 @@ idStr idSWFScriptFunction_Script::ExportToScript( idSWFScriptObject* thisObject,
 				AddBlock( va( "if( %s ) then\n", stack.A().ToString().c_str() ) );
 				
 				int16 offset = bitstream.ReadS16();
+				if (offset) {}
 				//if( stack.A().ToBool() )
 				//{
 				//	bitstream.Seek( offset );

@@ -244,8 +244,14 @@ elseif(MSVC)
 		#set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
 		set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD /std:c17")
 		
-		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /Ob2 /Oi /Oy /MDd /std:c++17 /std:c17")
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /Oi /Oy /MD /std:c++17 /std:c17")
+		#GK: List of Warnings that are ignored:
+		#	C5033: The register keyword is still used by some libraries and is only marked as deprecated by std17
+		#	C5105: This is a possible issue between glew and Windows ignore
+		#	C4267: The conversion occur on libraries only and therefor can be ignored
+		#	C4238: idWave Format to WAVEFORMATEX conversion Hackery in place, until a better way to do this is found ignore
+		#	C5205: Some abstract classes and their derivatives have no destructors, ignore until either destructors are added or is found that it does inded cause undefined behaviour
+		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /Ob2 /Oi /Oy /MDd /std:c++17 /std:c17 /wd5033 /wd5105 /wd4267 /wd4238 /wd5205 /W4")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /Oi /Oy /MD /std:c++17 /std:c17 /wd5033 /wd5105 /wd4267 /wd4238 /wd5205 /WX /W3")
 		#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MP /MTd")
 		#set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
 		set(CMAKE_CXX_FLAGS_RETAIL "${CMAKE_CXX_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD /std:c++17 /std:c17")

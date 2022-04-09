@@ -2098,6 +2098,7 @@ void A_Spawn(mobj_t* mo, void *) {
 
 	if (mo->state->misc1) {
 		mobj_t* newmobj = P_SpawnMobj(mo->x, mo->y, (mo->state->misc2 << FRACBITS) + mo->z, (mobjtype_t)(mo->state->misc1 - 1));
+		if (!newmobj) {}
 	}
 }
 

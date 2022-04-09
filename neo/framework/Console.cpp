@@ -262,7 +262,7 @@ float idConsoleLocal::DrawFPS( float y )
 			y += BIGCHAR_HEIGHT + 4;
 			if (com_showFPS.GetInteger() == 1) {
 				if (data->ticrate[0] != 0 && data->ticrate[1] != 0 && data->ticrate[2] != 0) {
-					int engineHz_denominator = com_engineHz_denominator / 100LL;
+					//int engineHz_denominator = com_engineHz_denominator / 100LL;
 					int ff = ceil(engineHz_denominator / ((double)data->ticrate[0]));
 					int sf = ceil(engineHz_denominator / ((double)data->ticrate[1]));
 					int tf = ceil(engineHz_denominator / ((double)data->ticrate[2]));

@@ -187,7 +187,7 @@ namespace DoomLib
 	static float							low;
 	static int								lowDuration;
 
-	void * (*Z_Malloc)( int size, int tag, void* user ) = NULL;
+	void * (*Z_Malloc)( unsigned size, int tag, void* user ) = NULL;
 	void 	(*Z_FreeTag)(int lowtag );
 
 	idArray< idSysMutex, 4 >		playerScreenMutexes;
@@ -568,7 +568,7 @@ void DoomLib::PollNetwork() {
 			return;
 		}
 
-		int			c;
+		//int			c;
 		struct sockaddr	fromaddress;
 
 		socklen_t		fromlen;

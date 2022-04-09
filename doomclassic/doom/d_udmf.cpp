@@ -413,7 +413,7 @@ void ParseThing(std::vector<std::string> lines, int index) {
 }
 
 void ParseVertex(std::vector<std::string> lines, int index) {
-	short x, y;
+	//short x, y;
 	vertype vt[2] = {
 		{"x",&::g->vertexes[index].x},
 		{"y",&::g->vertexes[index].y}

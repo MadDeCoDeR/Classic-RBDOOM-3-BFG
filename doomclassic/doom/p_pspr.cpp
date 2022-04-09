@@ -608,7 +608,7 @@ A_Saw
 		::g->linetarget->x, ::g->linetarget->y);
 	if (angle - player->mo->angle > ANG180)
 	{
-		if (angle - player->mo->angle < -ANG90/20)
+		if (angle - player->mo->angle < (0 - ANG90)/20)//GKHACK W2 UNSIGNED FROM DOOMWORD FORUMS (circa 2009)
 			player->mo->angle = angle + ANG90/21;
 		else
 			player->mo->angle -= ANG90/20;
@@ -989,7 +989,7 @@ void P_MovePsprites (player_t* player)
 	for (i=0 ; i<NUMPSPRITES ; i++, psp++)
 	{
 		// a null state means not active
-		if ( (state = psp->state) )	
+		if ( (state = psp->state) != NULL )	
 		{
 			// drop tic count and possibly change state
 

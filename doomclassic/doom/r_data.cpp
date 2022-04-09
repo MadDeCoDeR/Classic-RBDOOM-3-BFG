@@ -258,7 +258,7 @@ void R_GenerateComposite (int texnum)
 					j++;
 				if (j >= texture->height)           // if at end of column
 				{
-					col->topdelta = -1;             // end-of-column marker
+					col->topdelta = (byte)-1;             // end-of-column marker
 					break;
 				}
 				col->topdelta = j;                  // starting offset of post
@@ -436,7 +436,7 @@ void R_GenerateSkyHead(int lump) {
 	byte*			source;
 	byte src = 0;
 	int pos = 0;
-	int col = 0;
+	//int col = 0;
 	patch_t* patch = (patch_t *)W_CacheLumpNum(lump, PU_CACHE_SHARED);
 	::g->skybuffer = (byte*)malloc( 3 * sizeof(byte));
 	// SMF - rewritten for scaling

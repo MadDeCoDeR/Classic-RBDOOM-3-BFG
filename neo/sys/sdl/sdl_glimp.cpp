@@ -680,7 +680,7 @@ static void FillStaticVidModes( idList<vidMode_t>& modeList )
 R_GetModeListForDisplay
 ====================
 */
-bool R_GetModeListForDisplay( const int requestedDisplayNum, idList<vidMode_t>& modeList )
+bool R_GetModeListForDisplay( const unsigned requestedDisplayNum, idList<vidMode_t>& modeList )
 {
 	assert( requestedDisplayNum >= 0 );
 	
@@ -812,7 +812,7 @@ public:
 R_GetModeListForDisplay
 ====================
 */
-bool R_GetRefreshListForDisplay(const int requestedDisplayNum, idList<int>& refreshList)
+bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>& refreshList)
 {
 	assert(requestedDisplayNum >= 0);
 
@@ -928,7 +928,7 @@ bool R_GetRefreshListForDisplay(const int requestedDisplayNum, idList<int>& refr
 #endif
 }
 
-bool R_GetScreenResolution(const int displayNum, int& w, int& h, int& hz) {
+bool R_GetScreenResolution(const unsigned displayNum, int& w, int& h, int& hz) {
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_DisplayMode current;
 	if (!SDL_GetCurrentDisplayMode(displayNum, &current)) {

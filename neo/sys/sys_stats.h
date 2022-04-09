@@ -88,9 +88,9 @@ public:
 	{
 		localIndex = localIndex_;
 	}
-	void							SetErrorCode( leaderboardError_t errorCode )
+	void							SetErrorCode( leaderboardError_t _errorCode )
 	{
-		this->errorCode = errorCode;
+		this->errorCode = _errorCode;
 	}
 	
 	// Used in user callback for information retrieval

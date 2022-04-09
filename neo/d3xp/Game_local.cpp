@@ -5034,8 +5034,8 @@ void idGameLocal::SetCamera( idCamera* cam )
 		{
 			if( entities[ i ] )
 			{
-				idPlayer* client = static_cast< idPlayer* >( entities[ i ] );
-				client->ExitCinematic();
+				idPlayer* client_ = static_cast< idPlayer* >( entities[ i ] );
+				client_->ExitCinematic();
 			}
 		}
 	}

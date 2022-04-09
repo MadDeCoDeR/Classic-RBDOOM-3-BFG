@@ -194,21 +194,21 @@ public:
 		return internalVar->floatValue;
 	}
 	
-	void					SetString( const char* value )
+	void					SetString( const char* _value )
 	{
-		internalVar->InternalSetString( value );
+		internalVar->InternalSetString( _value );
 	}
-	void					SetBool( const bool value )
+	void					SetBool( const bool _value )
 	{
-		internalVar->InternalSetBool( value );
+		internalVar->InternalSetBool( _value );
 	}
-	void					SetInteger( const int value )
+	void					SetInteger( const int _value )
 	{
-		internalVar->InternalSetInteger( value );
+		internalVar->InternalSetInteger( _value );
 	}
-	void					SetFloat( const float value )
+	void					SetFloat( const float _value )
 	{
-		internalVar->InternalSetFloat( value );
+		internalVar->InternalSetFloat( _value );
 	}
 	
 	void					SetInternalVar( idCVar* cvar )
@@ -352,18 +352,18 @@ extern idCVarSystem* 		cvarSystem;
 ===============================================================================
 */
 
-ID_INLINE void idCVar::Init( const char* name, const char* value, int flags, const char* description,
-							 float valueMin, float valueMax, const char** valueStrings, argCompletion_t valueCompletion )
+ID_INLINE void idCVar::Init( const char* _name, const char* _value, int _flags, const char* _description,
+							 float _valueMin, float _valueMax, const char** _valueStrings, argCompletion_t _valueCompletion )
 {
-	this->name = name;
-	this->value = value;
-	this->flags = flags;
-	this->description = description;
-	this->flags = flags | CVAR_STATIC;
-	this->valueMin = valueMin;
-	this->valueMax = valueMax;
-	this->valueStrings = valueStrings;
-	this->valueCompletion = valueCompletion;
+	this->name = _name;
+	this->value = _value;
+	this->flags = _flags;
+	this->description = _description;
+	this->flags = _flags | CVAR_STATIC;
+	this->valueMin = _valueMin;
+	this->valueMax = _valueMax;
+	this->valueStrings = _valueStrings;
+	this->valueCompletion = _valueCompletion;
 	this->integerValue = 0;
 	this->floatValue = 0.0f;
 	this->internalVar = this;

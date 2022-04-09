@@ -351,16 +351,16 @@ void W_AddFile ( const char *filename)
     wadinfo_t		header;
    // std::vector<lumpinfo_t>::iterator	lump_p;
 	std::vector<lumpinfo_t>::iterator	tlump;
-	lumpinfo_t*		temlump;
-	lumpinfo_t*		tl;
-	lumpinfo_t*		lar;
-	lumpinfo_t*		all_lump;
+	//lumpinfo_t*		temlump;
+	//lumpinfo_t*		tl;
+	//lumpinfo_t*		lar;
+	//lumpinfo_t*		all_lump;
     int		i;
     idFile *		handle;
     int			length;
     int			startlump;
     std::vector<filelump_t>	fileinfo( 1 );
-	char tn[9];
+	//char tn[9];
 
 	::g->isbfg = true;
     
@@ -397,18 +397,18 @@ void W_AddFile ( const char *filename)
 				// single lump file
 				fileinfo[0].filepos = 0;
 				//GK: Allow to load "Wild" files
-				char* filename = new char[256];
+				char* filename_ = new char[256];
 				if(relp){
-					sprintf(filename, "./base%s", filename);
+					sprintf(filename_, "./base%s", filename_);
 					
 				}
 				else {
-					strcpy(filename, filename);
+					strcpy(filename_, filename);
 				}
-				std::ifstream inf(filename, std::ifstream::ate | std::ifstream::binary);
+				std::ifstream inf(filename_, std::ifstream::ate | std::ifstream::binary);
 				fileinfo[0].size = inf.tellg();
 				char* tempname = new char();
-				ExtractFileBase(filename, &tempname);
+				ExtractFileBase(filename_, &tempname);
 				strcpy(fileinfo[0].name, tempname);
 				numlumps++;
 				relp = false;
@@ -469,7 +469,7 @@ void W_AddFile ( const char *filename)
 	//		}
 	//	}
 	//}
-	int oldSize = lumpinfo.size();
+	//int oldSize = lumpinfo.size();
 	lumpinfo.reserve(numlumps);
 
 	/*if (!lumpinfo)
@@ -478,7 +478,7 @@ void W_AddFile ( const char *filename)
 	//lump_p = lumpinfo.begin() + oldSize;
 
 	::g->wadFileHandles[ ::g->numWadFiles++ ] = handle;
-	int epos = 0;
+	//int epos = 0;
 	int reppos = 0;
 	int repposffs = 0;
 	int op = 0;
@@ -487,7 +487,7 @@ void W_AddFile ( const char *filename)
 	std::vector<filelump_t>::iterator filelumpPointer = fileinfo.begin();
 	rep = false;
 	bool sprite = false;
-	bool markfordelete = false; //GK:Mass murd-deletion flag
+	//bool markfordelete = false; //GK:Mass murd-deletion flag
 	i = startlump;
 	for (; filelumpPointer < fileinfo.end() ; i++,/*lump_p++,*/ filelumpPointer++)
 	{
@@ -1123,7 +1123,7 @@ W_LoadLumpNum
 
 	if (!lumpcache[lump])
 	{
-		byte* ptr;
+		//byte* ptr;
 		// read the lump in
 		//I_Printf ("cache miss on lump %i\n",lump);
 		lumpcache[lump] = (byte*)malloc(W_LumpLength(lump));
@@ -1200,14 +1200,14 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 		if (unzGetGlobalInfo(zip, &gi) == UNZ_OK) {
 			char rb[READ_SIZE];
 			qboolean usesprites = false;
-			qboolean usegraphic = false; //GK: TODO Find out how to translate GRAPHICS folder to FLAT or PLANE flag
+			//qboolean usegraphic = false; //GK: TODO Find out how to translate GRAPHICS folder to FLAT or PLANE flag
 			int indoffset = zippos.size();
 			zipind += gi.number_entry;
 			zipfileinfo.reserve(zipind); //GK:Give a little bit more for flags
 			zippos.reserve(zipind);
 			numlumps += gi.number_entry;
 			int k = 0;
-			for (int i = 0; i < gi.number_entry; i++) {
+			for (unsigned long i = 0; i < gi.number_entry; i++) {
 				unz_file_info fi;
 				char* name = new char[MAX_FILENAME];
 				if (unzGetCurrentFileInfo(zip, &fi, name, MAX_FILENAME, NULL, 0, NULL, 0) == UNZ_OK) {
@@ -1398,7 +1398,7 @@ void CleanUncompFiles(bool unalloc) {
 }
 //GK: Check for either the wad a folder or a zip file that contains ALL the Master Levels
 void MakeMaster_Wad() {
-	struct stat info;
+	//struct stat info;
 	if (idFile *f = fileSystem->OpenFileRead("wads/MASTERLEVELS.wad")) {
 		fileSystem->CloseFile(f);
 		DoomLib::hexp[2] = true;
@@ -1594,22 +1594,22 @@ void MasterList() {
 	master->Write(reinterpret_cast<char*>(&offs), 4);
 	//GK:The more the better
 	buffer = new char[offs];
-	try {
+	//try {
 		for (int i = 0; i < nlps+remlmp; i++, lump++) {
 
 			handle = lump->handle;
 			handle->Seek(lump->position, FS_SEEK_SET);
 			int c = handle->Read(buffer, lump->size);
-			if (!lump->null) {
+			if (c != 0 && !lump->null) {
 				if (idStr::Cmpn(buffer, "WARNING", 7)) {
 					master->Write(buffer, lump->size);
 				}
 			}
 		}
-	}
-	catch (int e) {
+	//}
+	/*catch (int e) {
 
-	}
+	}*/
 
 	lump = &lumpnfo[0];
 
@@ -1640,12 +1640,12 @@ void MasterExport() {
 	int			length;
 	int			startlump;
 	int nlps = 0;
-	int cl = 0;
+	//int cl = 0;
 	int remlmp = 0;
-	bool pushit = true;
+	//bool pushit = true;
 	std::vector<filelump_t>	fileinfo(1);
-	int count = 1;
-	int count2 = 1;
+	//int count = 1;
+	//int count2 = 1;
 	char* filename = new char[MAX_FILENAME];
 	char* file[3];
 	file[0] = "wads/MASTERLEVELS.wad";
@@ -1735,11 +1735,7 @@ void MasterExport() {
 					lump->name[1] = 'S';
 				}
 				if (!idStr::Cmpn(lump->name, "DNL", 3)) {
-#ifdef WIN32
-					sprintf(lump->name, "MAPINFO",7*sizeof(char));
-#else
-					sprintf(lump->name,"MAPINFO");
-#endif
+					sprintf(lump->name, "MAPINFO\0");
 				}
 				offs += lump->size;
 				lump++;
@@ -1753,22 +1749,22 @@ mazter->Write(reinterpret_cast<char*>(&nlps), 4);
 mazter->Write(reinterpret_cast<char*>(&offs), 4);
 //GK:The more the better
 buffer = new char[offs];
-try {
+//try {
 	for (int i = 0; i < nlps ; i++, lump++) {
 
 		handle = lump->handle;
 		handle->Seek(lump->position, FS_SEEK_SET);
 		int c = handle->Read(buffer, lump->size);
-		if (!lump->null) {
+		if (c != 0 && !lump->null) {
 			if (idStr::Cmpn(buffer, "WARNING", 7)) {
 				mazter->Write(buffer, lump->size);
 			}
 		}
 	}
-}
-catch (int e) {
-
-}
+//}
+//catch (int e) {
+//
+//}
 
 lump = &lumpnfo[0];
 

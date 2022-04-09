@@ -46,7 +46,7 @@ public:
 		hasVUMeter(false),
 		chains(1) {}
 
-	virtual void					Create(const idSoundSample* leadinSample, const idSoundSample* loopingSample, int channel) {}
+	virtual void					Create(const idSoundSample* leadinSample, const idSoundSample* loopingSample, const int channel) {}
 
 	// Start playing at a particular point in the buffer.  Does an Update() too
 	virtual void					Start(int offsetMS, int ssFlags){}

@@ -474,8 +474,8 @@ void M_ReadSaveStrings(void)
 bool M_CheckQuickSave(void)
 {
 	idFile*         handle;
-	int             count;
-	int             i;
+	//int             count;
+	//int             i;
 	char    name[256];
 
 	//for (i = 0; i < load_end; i++)
@@ -1104,7 +1104,7 @@ void M_DrawVideo(void)
 	int asoffset = 165 - (6 * correct); //GK: The word "correct" is larger than the others and therefor it requires different x offset
 	int reallight = r_clight.GetInteger();
 	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : r_fullscreen.GetInteger() < 0 ? 2 : 0;
-	int blurryeffect = r_clblurry.GetInteger();
+	//int blurryeffect = r_clblurry.GetInteger();
 	int syncValue = r_swapInterval.GetInteger();
 	char* res = new char[11];
 	sprintf(res, "%4i x %4i", r_customWidth.GetInteger(), r_customHeight.GetInteger());
@@ -2073,7 +2073,7 @@ void M_Key(int choice)
 }
 
 void M_ChangeKeys(int choice) {
-	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+	//int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
 	if (choice == 10) {
 		if (pageIndex < 2) {
 			pageIndex++;
@@ -2734,7 +2734,7 @@ qboolean M_Responder (event_t* ev)
 		}
 	}
 	// Keys usable within menu
-	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+	//int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
 	switch (ch)
 	{
 	case KEY_DOWNARROW:

@@ -36,7 +36,7 @@ std::vector<std::string> getactlines(char* text) {
 	int size = strlen(text);
 	for (int i = 0; i < size /*- 7*/; i++) {
 		std::string letter = "";
-		qboolean ignore = false;
+		//qboolean ignore = false;
 		while (text[i] != '\n') {
 				if (text[i] != '\r') {
 					letter += text[i];

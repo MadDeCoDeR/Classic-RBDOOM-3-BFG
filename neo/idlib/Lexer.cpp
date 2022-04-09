@@ -2082,7 +2082,7 @@ int idLexer::NumLinesCrossed()
 idLexer::LoadFile
 ================
 */
-int idLexer::LoadFile( const char* filename, bool OSPath )
+int idLexer::LoadFile( const char* _filename, bool OSPath )
 {
 	idFile* fp;
 	idStr pathname;
@@ -2097,11 +2097,11 @@ int idLexer::LoadFile( const char* filename, bool OSPath )
 	
 	if( !OSPath && ( baseFolder[0] != '\0' ) )
 	{
-		pathname = va( "%s/%s", baseFolder, filename );
+		pathname = va( "%s/%s", baseFolder, _filename );
 	}
 	else
 	{
-		pathname = filename;
+		pathname = _filename;
 	}
 	if( OSPath )
 	{

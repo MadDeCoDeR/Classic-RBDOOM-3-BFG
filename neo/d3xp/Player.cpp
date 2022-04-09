@@ -4753,8 +4753,8 @@ bool idPlayer::GiveInventoryItem( idDict* item, unsigned int giveFlags )
 		int powerCellCount = 0;
 		for( int j = 0; j < inventory.items.Num(); j++ )
 		{
-			idDict* item = inventory.items[ j ];
-			if( item->GetInt( "inv_powercell" ) )
+			idDict* item_ = inventory.items[ j ];
+			if( item_->GetInt( "inv_powercell" ) )
 			{
 				powerCellCount++;
 			}
@@ -5057,8 +5057,8 @@ void idPlayer::RemoveInventoryItem( idDict* item )
 		int powerCellCount = 0;
 		for( int j = 0; j < inventory.items.Num(); j++ )
 		{
-			idDict* item = inventory.items[ j ];
-			if( item->GetInt( "inv_powercell" ) )
+			idDict* item_ = inventory.items[ j ];
+			if( item_->GetInt( "inv_powercell" ) )
 			{
 				powerCellCount++;
 			}
@@ -6565,8 +6565,8 @@ void idPlayer::UpdateFocus()
 	// player identification -> names to the hud
 	if( common->IsMultiplayer() && IsLocallyControlled() )
 	{
-		idVec3 end = start + viewAngles.ToForward() * 768.0f;
-		gameLocal.GetClip()->TracePoint( trace, start, end, MASK_SHOT_BOUNDINGBOX, this );
+		idVec3 end_ = start + viewAngles.ToForward() * 768.0f;
+		gameLocal.GetClip()->TracePoint( trace, start, end_, MASK_SHOT_BOUNDINGBOX, this );
 		int iclient = -1;
 		if( ( trace.fraction < 1.0f ) && ( trace.c.entityNum < MAX_CLIENTS ) )
 		{

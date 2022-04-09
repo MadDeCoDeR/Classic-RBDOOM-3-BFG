@@ -578,9 +578,9 @@ void setSound(int pos, char* varname, int varval) {
 
 void setText(std::vector<std::string>lines, int i,int il,int nl) {
 	int op = i;
-	int size = 0;
-	int psize = 0;
-	int nsize = 0;
+	//int size = 0;
+	//int psize = 0;
+	//int nsize = 0;
 	std::string newline;
 	char* tst = strtok(strdup(lines[i].c_str()), " ");
 	//Dealing better with the memory
@@ -926,7 +926,7 @@ void parsetext(char* text) {
 					case 2:
 						if (statepos >= tempStates.size()) {
 							//I_Error("No such Frame found");
-							int oldsize = tempStates.size();
+							//int oldsize = tempStates.size();
 							tempStates.resize(statepos + 1);
 							/*for (int i = oldsize; i < tempStates.size(); i++) {
 								tempStates[i].nextstate = i + 1;

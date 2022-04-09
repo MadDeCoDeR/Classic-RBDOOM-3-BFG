@@ -318,7 +318,7 @@ R_PointToAngle
 			if (x>y)
 			{
 				// octant 8
-				return -tantoangle[SlopeDiv(y,x)]; // // ALANHACK UNSIGNED
+				return 0 - tantoangle[SlopeDiv(y,x)];// ALANHACK UNSIGNED GKHACK W2 UNSIGNED FROM DOOMWORD FORUMS (circa 2009)
 			}
 			else
 			{
@@ -695,7 +695,7 @@ void R_ExecuteSetViewSize (void)
 {
 	fixed_t	cosadj;
 	int		i;
-	int		j;
+	unsigned	j;
 	int		level;
 	int		nocollide_startmap; 	
 
@@ -890,7 +890,7 @@ void R_SetupThirdPersonView(player_t* player) {
 //
 void R_SetupFrame (player_t* player)
 {		
-	int		i;
+	unsigned		i;
 	int mousepos;
 
 	::g->viewplayer = player;
@@ -904,7 +904,7 @@ void R_SetupFrame (player_t* player)
 		SetViewY(player->mo->y);
 		SetViewAngle(player->mo->angle + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
 		//GK: Adjust the height if aspect ratio correction is on
-		int ogwidth = ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER;
+		//int ogwidth = ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER;
 		::g->viewz = player->viewz /*+ ((::g->SCREENWIDTH - ogwidth) * 1000)*/;
 	}
 	::g->extralight = player->extralight;

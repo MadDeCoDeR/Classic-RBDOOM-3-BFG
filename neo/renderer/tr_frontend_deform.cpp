@@ -492,13 +492,13 @@ static drawSurf_t* R_FlareDeform( drawSurf_t* surf )
 		const int index = ( i - 4 ) / 3;
 		idVec3 v = srcTri->verts[indexes[index]].xyz + spread * edgeDir[index][( i - 4 ) % 3];
 		
-		idVec3 dir = v - localViewer;
-		const float len = dir.Normalize();
-		const float ang = dir * plane.Normal();
+		idVec3 dir_ = v - localViewer;
+		const float len = dir_.Normalize();
+		const float ang = dir_ * plane.Normal();
 		const float newLen = -( distFromPlane / ang );
 		if( newLen > 0.0f && newLen < len )
 		{
-			v = localViewer + dir * newLen;
+			v = localViewer + dir_ * newLen;
 		}
 		
 		newVerts[i].Clear();

@@ -2269,7 +2269,7 @@ void ColladaParser::ReadPrimitives( Mesh* pMesh, idList<InputChannel>& pPerIndex
 		idToken token;
 		idLexer lexer( content, idStr::Length( content ), "indices" );
 		
-		for( unsigned int a = 0; a < indices.Num(); a++ )
+		for( unsigned int a = 0; a < (unsigned)indices.Num(); a++ )
 		{
 			int value = lexer.ParseInt();
 			
@@ -2344,7 +2344,7 @@ void ColladaParser::ReadPrimitives( Mesh* pMesh, idList<InputChannel>& pPerIndex
 	pMesh->mFaceSize.AssureSize( numPrimitives );
 	//pMesh->mFacePosIndices.AssureSize( indices.Num() / numOffsets );
 	
-	size_t appendedVerts = 0;
+	//size_t appendedVerts = 0;
 	for( size_t a = 0; a < numPrimitives; a++ )
 	{
 		// determine number of points for this primitive

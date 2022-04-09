@@ -1634,7 +1634,7 @@ static void Cmd_ListAnims_f( const idCmdArgs& args )
 	
 	if( args.Argc() > 1 )
 	{
-		idAnimator animator;
+		idAnimator animator_;
 		
 		classname = args.Argv( 1 );
 		
@@ -1644,13 +1644,13 @@ static void Cmd_ListAnims_f( const idCmdArgs& args )
 			gameLocal.Printf( "Entitydef '%s' not found\n", classname );
 			return;
 		}
-		animator.SetModel( dict->GetString( "model" ) );
+		animator_.SetModel( dict->GetString( "model" ) );
 		
 		gameLocal.Printf( "----------------\n" );
-		num = animator.NumAnims();
+		num = animator_.NumAnims();
 		for( i = 0; i < num; i++ )
 		{
-			gameLocal.Printf( "%s\n", animator.AnimFullName( i ) );
+			gameLocal.Printf( "%s\n", animator_.AnimFullName( i ) );
 		}
 		gameLocal.Printf( "%d anims\n", num );
 	}

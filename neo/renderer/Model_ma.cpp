@@ -715,36 +715,36 @@ void MA_ParseMesh( idParser& parser )
 		}
 		if( !token.Icmp( "setAttr" ) )
 		{
-			maAttribHeader_t header;
-			MA_ParseAttribHeader( parser, &header );
+			maAttribHeader_t header_;
+			MA_ParseAttribHeader( parser, &header_ );
 			
-			if( strstr( header.name, ".vt" ) )
+			if( strstr( header_.name, ".vt" ) )
 			{
-				MA_ParseVertex( parser, &header );
+				MA_ParseVertex( parser, &header_ );
 			}
-			else if( strstr( header.name, ".ed" ) )
+			else if( strstr( header_.name, ".ed" ) )
 			{
-				MA_ParseEdge( parser, &header );
+				MA_ParseEdge( parser, &header_ );
 			}
-			else if( strstr( header.name, ".pt" ) )
+			else if( strstr( header_.name, ".pt" ) )
 			{
-				MA_ParseVertexTransforms( parser, &header );
+				MA_ParseVertexTransforms( parser, &header_ );
 			}
-			else if( strstr( header.name, ".n" ) )
+			else if( strstr( header_.name, ".n" ) )
 			{
-				MA_ParseNormal( parser, &header );
+				MA_ParseNormal( parser, &header_ );
 			}
-			else if( strstr( header.name, ".fc" ) )
+			else if( strstr( header_.name, ".fc" ) )
 			{
-				MA_ParseFace( parser, &header );
+				MA_ParseFace( parser, &header_ );
 			}
-			else if( strstr( header.name, ".clr" ) )
+			else if( strstr( header_.name, ".clr" ) )
 			{
-				MA_ParseColor( parser, &header );
+				MA_ParseColor( parser, &header_ );
 			}
-			else if( strstr( header.name, ".uvst" ) )
+			else if( strstr( header_.name, ".uvst" ) )
 			{
-				MA_ParseTVert( parser, &header );
+				MA_ParseTVert( parser, &header_ );
 			}
 			else
 			{

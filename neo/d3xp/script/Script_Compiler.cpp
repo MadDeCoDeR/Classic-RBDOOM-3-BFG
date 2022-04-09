@@ -3229,21 +3229,21 @@ void idCompiler::CompileFile( const char* text, const char* filename, bool toCon
 #if defined(USE_EXCEPTIONS)
 	catch( idCompileError& err )
 	{
-		idStr error;
+		idStr error_;
 		
 		if( console )
 		{
 			// don't print line number of an error if were calling script from the console using the "script" command
-			sprintf( error, "Error: %s\n", err.GetError() );
+			sprintf( error_, "Error: %s\n", err.GetError() );
 		}
 		else
 		{
-			sprintf( error, "Error: file %s, line %d: %s\n", gameLocal.GetProgram()->GetFilename( currentFileNumber ), currentLineNumber, err.GetError() );
+			sprintf( error_, "Error: file %s, line %d: %s\n", gameLocal.GetProgram()->GetFilename( currentFileNumber ), currentLineNumber, err.GetError() );
 		}
 		
 		parser.FreeSource();
 		
-		throw idCompileError( error );
+		throw idCompileError( error_ );
 	}
 #else
 	// FIXME check for errors

@@ -300,7 +300,7 @@ Z_Realloc
 
 void*
 Z_Malloc
-( int		size,
+( unsigned	size,
   int		tag,
   void*		user )
 {

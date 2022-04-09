@@ -309,14 +309,14 @@ int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing,
 			// Exiting on side 1 slightly improves player viewing
 			// when going down a step on a non-reversed teleporter.
 
-			int side = reverse || (player && stepdown);
+			int side_ = reverse || (player && stepdown);
 
 			// Make sure we are on correct side of exit linedef.
-			while (P_PointOnLineSide(x, y, l) != side && --fudge >= 0)
+			while (P_PointOnLineSide(x, y, l) != side_ && --fudge >= 0)
 				if (abs(l->dx) > abs(l->dy))
-					y -= l->dx < 0 != side ? -1 : 1;
+					y -= l->dx < 0 != side_ ? -1 : 1;
 				else
-					x += l->dy < 0 != side ? -1 : 1;
+					x += l->dy < 0 != side_ ? -1 : 1;
 
 			// Attempt to teleport, aborting if blocked
 			if (!P_TeleportMove(thing, x, y))

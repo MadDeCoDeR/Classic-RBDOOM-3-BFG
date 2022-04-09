@@ -326,7 +326,7 @@ GK: Ditch the r_vidMode since it is relying on the unreliable modelist
 void R_SetNewMode( const bool fullInit )
 {
 	// try up to three different configurations
-	bool donethat = false;
+	//bool donethat = false;
 #ifdef _UWP
 	if (r_fullscreen.GetInteger() > 0) {
 		r_fullscreen.SetInteger(-1);
@@ -486,13 +486,13 @@ void R_SetNewMode( const bool fullInit )
 				common->FatalError("Unable to initialize OpenGL");
 		}
 		
-safeMode:
-		// if we failed, set everything back to "safe mode"
-		// and try again
-		r_vidMode.SetInteger( 0 );
-		r_fullscreen.SetInteger( 1 );
-		com_engineHz.SetInteger( 60 );
-		r_antiAliasing.SetInteger( 0 );
+//safeMode:
+//		// if we failed, set everything back to "safe mode"
+//		// and try again
+//		r_vidMode.SetInteger( 0 );
+//		r_fullscreen.SetInteger( 1 );
+//		com_engineHz.SetInteger( 60 );
+//		r_antiAliasing.SetInteger( 0 );
 	}
 }
 
@@ -875,7 +875,7 @@ If ref == NULL, common->UpdateScreen will be used
 // RB: changed .tga to .png
 void idRenderSystemLocal::TakeScreenshot( int width, int height, const char* fileName, int blends, renderView_t* ref, int exten )
 {
-	byte*		buffer;
+	byte*		buffer = NULL;
 	int			i, j, c, temp;
 	idStr finalFileName;
 	
@@ -1521,7 +1521,7 @@ void R_MakeAmbientMap_f( const idCmdArgs& args )
 		}
 	}
 	
-	bool pacifier = true;
+	//bool pacifier = true;
 	
 	// resample with hemispherical blending
 	int	samples = 1000;

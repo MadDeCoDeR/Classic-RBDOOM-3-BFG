@@ -276,12 +276,12 @@ ID_INLINE bool idQuat::operator!=( const idQuat& a ) const
 	return !Compare( a );
 }
 
-ID_INLINE void idQuat::Set( float x, float y, float z, float w )
+ID_INLINE void idQuat::Set( float _x, float _y, float _z, float _w )
 {
-	this->x = x;
-	this->y = y;
-	this->z = z;
-	this->w = w;
+	this->x = _x;
+	this->y = _y;
+	this->z = _z;
+	this->w = _w;
 }
 
 ID_INLINE idQuat idQuat::Inverse() const
@@ -317,7 +317,7 @@ ID_INLINE idQuat& idQuat::Normalize()
 ID_INLINE float idQuat::CalcW() const
 {
 	// take the absolute value because floating point rounding may cause the dot of x,y,z to be larger than 1
-	return sqrt( fabs( 1.0f - ( x * x + y * y + z * z ) ) );
+	return sqrtf( fabsf( 1.0f - ( x * x + y * y + z * z ) ) );
 }
 
 ID_INLINE int idQuat::GetDimension() const
@@ -392,18 +392,18 @@ ID_INLINE idCQuat::idCQuat()
 {
 }
 
-ID_INLINE idCQuat::idCQuat( float x, float y, float z )
+ID_INLINE idCQuat::idCQuat( float _x, float _y, float _z )
 {
-	this->x = x;
-	this->y = y;
-	this->z = z;
+	this->x = _x;
+	this->y = _y;
+	this->z = _z;
 }
 
-ID_INLINE void idCQuat::Set( float x, float y, float z )
+ID_INLINE void idCQuat::Set( float _x, float _y, float _z )
 {
-	this->x = x;
-	this->y = y;
-	this->z = z;
+	this->x = _x;
+	this->y = _y;
+	this->z = _z;
 }
 
 ID_INLINE float idCQuat::operator[]( int index ) const
@@ -458,7 +458,7 @@ ID_INLINE int idCQuat::GetDimension() const
 ID_INLINE idQuat idCQuat::ToQuat() const
 {
 	// take the absolute value because floating point rounding may cause the dot of x,y,z to be larger than 1
-	return idQuat( x, y, z, sqrt( fabs( 1.0f - ( x * x + y * y + z * z ) ) ) );
+	return idQuat( x, y, z, sqrtf( fabsf( 1.0f - ( x * x + y * y + z * z ) ) ) );
 }
 
 ID_INLINE const float* idCQuat::ToFloatPtr() const

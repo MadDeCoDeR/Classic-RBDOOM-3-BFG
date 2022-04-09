@@ -900,7 +900,7 @@ public:
 R_GetModeListForDisplay
 ====================
 */
-bool R_GetModeListForDisplay( const int requestedDisplayNum, idList<vidMode_t>& modeList )
+bool R_GetModeListForDisplay( const unsigned requestedDisplayNum, idList<vidMode_t>& modeList )
 {
 	modeList.Clear();
 	
@@ -957,8 +957,8 @@ bool R_GetModeListForDisplay( const int requestedDisplayNum, idList<vidMode_t>& 
 			common->Printf( "      DeviceID    : %s\n", monitor.DeviceID );
 			common->Printf( "      DeviceKey   : %s\n", monitor.DeviceKey );
 		}
-		int previousWidth = 0;
-		int previousHeight = 0;
+		unsigned previousWidth = 0;
+		unsigned previousHeight = 0;
 		for( int modeNum = 0 ; ; modeNum++ )
 		{
 			if( !EnumDisplaySettings( device.DeviceName, modeNum, &devmode ) )
@@ -1035,7 +1035,7 @@ public:
 R_GetRefreshListForDisplay
 ====================
 */
-bool R_GetRefreshListForDisplay(const int requestedDisplayNum, idList<int>& refreshList)
+bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>& refreshList)
 {
 	refreshList.Clear();
 
@@ -1092,8 +1092,8 @@ bool R_GetRefreshListForDisplay(const int requestedDisplayNum, idList<int>& refr
 			common->Printf("      DeviceID    : %s\n", monitor.DeviceID);
 			common->Printf("      DeviceKey   : %s\n", monitor.DeviceKey);
 		}
-		int previousWidth = 0;
-		int previousHeight = 0;
+		unsigned previousWidth = 0;
+		unsigned previousHeight = 0;
 		for (int modeNum = 0; ; modeNum++)
 		{
 			if (!EnumDisplaySettings(device.DeviceName, modeNum, &devmode))
@@ -1144,8 +1144,8 @@ bool R_GetRefreshListForDisplay(const int requestedDisplayNum, idList<int>& refr
 	// Never gets here
 }
 
-bool R_GetScreenResolution(const int requestedDisplayNum, int& w, int& h, int& hz) {
-	bool	verbose = false;
+bool R_GetScreenResolution(const unsigned requestedDisplayNum, int& w, int& h, int& hz) {
+	//bool	verbose = false;
 
 	DWORD displayNum = requestedDisplayNum;
 	DISPLAY_DEVICE	device;

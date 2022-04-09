@@ -811,19 +811,19 @@ void JoystickSamplingThread( void* data )
 			for( int i = 0 ; i < MAX_JOYSTICKS ; i++ )
 			{
 				
-				controllerState_t* cs = &win32.g_Joystick.controllers[i];
+				controllerState_t* cs_ = &win32.g_Joystick.controllers[i];
 				
 				if (!validData[i])
 				{
 					inactive++;
-					cs->valid = false;
+					cs_->valid = false;
 					continue;
 				}
-				cs->valid = true;
+				cs_->valid = true;
 
 				XINPUT_STATE& current = joyData[i];
 
-				cs->current = current;
+				cs_->current = current;
 
 				if (available == -1) {
 					available = i;
@@ -838,7 +838,7 @@ void JoystickSamplingThread( void* data )
 					return numEvents;
 				}
 #endif
-				cs->buttonBits |= current.Gamepad.wButtons;
+				cs_->buttonBits |= current.Gamepad.wButtons;
 			}
 			//GK: Enable controller layout if there is one controller connected
 			if (inactive < MAX_JOYSTICKS) {

@@ -593,9 +593,9 @@ void idListWindow::Draw( int time, float x, float y )
 			dc->DrawFilledRect( rect.x, rect.y + pixelOffset, rect.w, rect.h, borderColor );
 			if( flags & WIN_FOCUS )
 			{
-				idVec4 color = borderColor;
-				color.w = 1.0f;
-				dc->DrawRect( rect.x, rect.y + pixelOffset, rect.w, rect.h, 1.0f, color );
+				idVec4 color_ = borderColor;
+				color_.w = 1.0f;
+				dc->DrawRect( rect.x, rect.y + pixelOffset, rect.w, rect.h, 1.0f, color_ );
 			}
 		}
 		rect.y ++;

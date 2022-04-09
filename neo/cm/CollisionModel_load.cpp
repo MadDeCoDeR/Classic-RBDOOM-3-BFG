@@ -3182,7 +3182,7 @@ void idCollisionModelManagerLocal::ConvertMesh( cm_model_t* model, const MapPoly
 {
 	const idList<idDrawVert>& verts = mesh->GetDrawVerts();
 	
-	int numVerts = 0;
+	//int numVerts = 0;
 	
 	idFixedWinding w;
 	for( int i = 0; i < mesh->GetNumPolygons(); i++ )

@@ -1346,9 +1346,9 @@ void idWeapon::GetWeaponDef( const char* objectname, int ammoinclip )
 				args.Set( "model", particle.c_str() );
 				args.SetBool( "start_off", true );
 				
-				idEntity* ent;
-				gameLocal.SpawnEntityDef( args, &ent, false );
-				newParticle.emitter = ( idFuncEmitter* )ent;
+				idEntity* ent_;
+				gameLocal.SpawnEntityDef( args, &ent_, false );
+				newParticle.emitter = ( idFuncEmitter* )ent_;
 				
 				if( newParticle.emitter != NULL )
 				{

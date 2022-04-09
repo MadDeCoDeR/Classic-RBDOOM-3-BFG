@@ -1480,7 +1480,7 @@ ID_INLINE void idMatX::Multiply( idVecX& dst, const idVecX& vec ) const
 	const float* mPtr = mat;
 	const float* vPtr = vec.ToFloatPtr();
 	float* dstPtr = dst.ToFloatPtr();
-	float* temp = ( float* )_alloca16( numRows * sizeof( float ) );
+	float* _temp = ( float* )_alloca16( numRows * sizeof( float ) );
 	for( int i = 0; i < numRows; i++ )
 	{
 		float sum = mPtr[0] * vPtr[0];
@@ -1488,12 +1488,12 @@ ID_INLINE void idMatX::Multiply( idVecX& dst, const idVecX& vec ) const
 		{
 			sum += mPtr[j] * vPtr[j];
 		}
-		temp[i] = sum;
+		_temp[i] = sum;
 		mPtr += numColumns;
 	}
 	for( int i = 0; i < numRows; i++ )
 	{
-		dstPtr[i] = temp[i];
+		dstPtr[i] = _temp[i];
 	}
 }
 
@@ -1508,7 +1508,7 @@ ID_INLINE void idMatX::MultiplyAdd( idVecX& dst, const idVecX& vec ) const
 	const float* mPtr = mat;
 	const float* vPtr = vec.ToFloatPtr();
 	float* dstPtr = dst.ToFloatPtr();
-	float* temp = ( float* )_alloca16( numRows * sizeof( float ) );
+	float* _temp = ( float* )_alloca16( numRows * sizeof( float ) );
 	for( int i = 0; i < numRows; i++ )
 	{
 		float sum = mPtr[0] * vPtr[0];
@@ -1516,12 +1516,12 @@ ID_INLINE void idMatX::MultiplyAdd( idVecX& dst, const idVecX& vec ) const
 		{
 			sum += mPtr[j] * vPtr[j];
 		}
-		temp[i] = dstPtr[i] + sum;
+		_temp[i] = dstPtr[i] + sum;
 		mPtr += numColumns;
 	}
 	for( int i = 0; i < numRows; i++ )
 	{
-		dstPtr[i] = temp[i];
+		dstPtr[i] = _temp[i];
 	}
 }
 
@@ -1536,7 +1536,7 @@ ID_INLINE void idMatX::MultiplySub( idVecX& dst, const idVecX& vec ) const
 	const float* mPtr = mat;
 	const float* vPtr = vec.ToFloatPtr();
 	float* dstPtr = dst.ToFloatPtr();
-	float* temp = ( float* )_alloca16( numRows * sizeof( float ) );
+	float* _temp = ( float* )_alloca16( numRows * sizeof( float ) );
 	for( int i = 0; i < numRows; i++ )
 	{
 		float sum = mPtr[0] * vPtr[0];
@@ -1544,12 +1544,12 @@ ID_INLINE void idMatX::MultiplySub( idVecX& dst, const idVecX& vec ) const
 		{
 			sum += mPtr[j] * vPtr[j];
 		}
-		temp[i] = dstPtr[i] - sum;
+		_temp[i] = dstPtr[i] - sum;
 		mPtr += numColumns;
 	}
 	for( int i = 0; i < numRows; i++ )
 	{
-		dstPtr[i] = temp[i];
+		dstPtr[i] = _temp[i];
 	}
 }
 
@@ -1563,7 +1563,7 @@ ID_INLINE void idMatX::TransposeMultiply( idVecX& dst, const idVecX& vec ) const
 	dst.SetSize( numColumns );
 	const float* vPtr = vec.ToFloatPtr();
 	float* dstPtr = dst.ToFloatPtr();
-	float* temp = ( float* )_alloca16( numColumns * sizeof( float ) );
+	float* _temp = ( float* )_alloca16( numColumns * sizeof( float ) );
 	for( int i = 0; i < numColumns; i++ )
 	{
 		const float* mPtr = mat + i;
@@ -1573,11 +1573,11 @@ ID_INLINE void idMatX::TransposeMultiply( idVecX& dst, const idVecX& vec ) const
 			mPtr += numColumns;
 			sum += mPtr[0] * vPtr[j];
 		}
-		temp[i] = sum;
+		_temp[i] = sum;
 	}
 	for( int i = 0; i < numColumns; i++ )
 	{
-		dstPtr[i] = temp[i];
+		dstPtr[i] = _temp[i];
 	}
 }
 
@@ -1591,7 +1591,7 @@ ID_INLINE void idMatX::TransposeMultiplyAdd( idVecX& dst, const idVecX& vec ) co
 	assert( dst.GetSize() == numColumns );
 	const float* vPtr = vec.ToFloatPtr();
 	float* dstPtr = dst.ToFloatPtr();
-	float* temp = ( float* )_alloca16( numColumns * sizeof( float ) );
+	float* _temp = ( float* )_alloca16( numColumns * sizeof( float ) );
 	for( int i = 0; i < numColumns; i++ )
 	{
 		const float* mPtr = mat + i;
@@ -1601,11 +1601,11 @@ ID_INLINE void idMatX::TransposeMultiplyAdd( idVecX& dst, const idVecX& vec ) co
 			mPtr += numColumns;
 			sum += mPtr[0] * vPtr[j];
 		}
-		temp[i] = dstPtr[i] + sum;
+		_temp[i] = dstPtr[i] + sum;
 	}
 	for( int i = 0; i < numColumns; i++ )
 	{
-		dstPtr[i] = temp[i];
+		dstPtr[i] = _temp[i];
 	}
 }
 
@@ -1619,7 +1619,7 @@ ID_INLINE void idMatX::TransposeMultiplySub( idVecX& dst, const idVecX& vec ) co
 	assert( dst.GetSize() == numColumns );
 	const float* vPtr = vec.ToFloatPtr();
 	float* dstPtr = dst.ToFloatPtr();
-	float* temp = ( float* )_alloca16( numColumns * sizeof( float ) );
+	float* _temp = ( float* )_alloca16( numColumns * sizeof( float ) );
 	for( int i = 0; i < numColumns; i++ )
 	{
 		const float* mPtr = mat + i;
@@ -1629,11 +1629,11 @@ ID_INLINE void idMatX::TransposeMultiplySub( idVecX& dst, const idVecX& vec ) co
 			mPtr += numColumns;
 			sum += mPtr[0] * vPtr[j];
 		}
-		temp[i] = dstPtr[i] - sum;
+		_temp[i] = dstPtr[i] - sum;
 	}
 	for( int i = 0; i < numColumns; i++ )
 	{
-		dstPtr[i] = temp[i];
+		dstPtr[i] = _temp[i];
 	}
 }
 

@@ -82,7 +82,9 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 		dst_smp = static_cast<AVSampleFormat> (dec_ctx->sample_fmt - 5);
 		swr_ctx = swr_alloc_set_opts(NULL, dec_ctx->channel_layout, dst_smp, dec_ctx->sample_rate, dec_ctx->channel_layout, dec_ctx->sample_fmt, dec_ctx->sample_rate, 0, NULL);
 		int res = swr_init(swr_ctx);
-		hasplanar = true;
+		if (res >= 0) {
+			hasplanar = true;
+		}
 	}
 	int format_byte = 0;
 	bool use_ext = false;
@@ -162,8 +164,8 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 	AVFrame *frame = av_frame_alloc();
 	int offset = 0;
 	int num_bytes = 0;
-	int bufferoffset = format_byte * 10;
-	unsigned long long length = *len;
+	//int bufferoffset = format_byte * 10;
+	//unsigned long long length = *len;
 	std::vector<byte*> tBuffer;
 	std::vector<int> buffSizes;
 	uint8_t** tBuffer2 = NULL;
@@ -308,7 +310,9 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 		dst_smp = static_cast<AVSampleFormat> (dec_ctx->sample_fmt - 5);
 		swr_ctx = swr_alloc_set_opts(NULL, dec_ctx->channel_layout, dst_smp, dec_ctx->sample_rate, dec_ctx->channel_layout, dec_ctx->sample_fmt, dec_ctx->sample_rate, 0, NULL);
 		int res = swr_init(swr_ctx);
-		hasplanar = true;
+		if (res >= 0) {
+			hasplanar = true;
+		}
 	}
 	int format_byte = 0;
 	bool use_ext = false;
@@ -345,8 +349,8 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	AVFrame *frame = av_frame_alloc();
 	int offset = 0;
 	int num_bytes = 0;
-	int bufferoffset = format_byte * 10;
-	unsigned long long length = *len;
+	//int bufferoffset = format_byte * 10;
+	//unsigned long long length = *len;
 	std::vector<byte*> tBuffer;
 	std::vector<int> buffSizes;
 	uint8_t** tBuffer2 = NULL;

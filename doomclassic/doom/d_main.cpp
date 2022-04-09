@@ -196,7 +196,7 @@ void D_Display (void)
 		return;                    // for comparative timing / profiling
 
 	redrawsbar = false;
-	int scaler = GLOBAL_IMAGE_SCALER - (::g->ASPECT_IMAGE_SCALER-GLOBAL_IMAGE_SCALER);//GK: Calculate image scaling based on aspect ratio
+	//int scaler = GLOBAL_IMAGE_SCALER - (::g->ASPECT_IMAGE_SCALER-GLOBAL_IMAGE_SCALER);//GK: Calculate image scaling based on aspect ratio
 	// change the view size if needed
 	if (::g->setsizeneeded)
 	{

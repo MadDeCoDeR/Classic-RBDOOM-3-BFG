@@ -1021,14 +1021,14 @@ P_DamageMobj
 			damage = target->health - 1;
 		}
 
-		float baseShake_High = 0.5f;
-		int baseShake_High_Dur = 100;
-		float baseShake_Low = 0.5f;
-		int baseShake_Low_Dur = 100;
-		int damageClamp = Min( damage, 100 ); 
-		float damageFloat = std::min( (float)damageClamp / 100.0f, 100.0f );
-		float additional = 0.5f * damageFloat;
-		int additional_time = 500.0f * damageFloat;
+		//float baseShake_High = 0.5f;
+		//int baseShake_High_Dur = 100;
+		//float baseShake_Low = 0.5f;
+		//int baseShake_Low_Dur = 100;
+		//int damageClamp = Min( damage, 100 ); 
+		//float damageFloat = std::min( (float)damageClamp / 100.0f, 100.0f );
+		//float additional = 0.5f * damageFloat;
+		//int additional_time = 500.0f * damageFloat;
 
 		if( ::g->plyr == player ) {
 		}

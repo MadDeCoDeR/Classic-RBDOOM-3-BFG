@@ -1642,8 +1642,8 @@ void idMultiplayerGame::CycleTourneyPlayers( )
 	// if any, winner from last round will play again
 	if( lastWinner != -1 )
 	{
-		idEntity* ent = gameLocal.entities[ lastWinner ];
-		if( ent && ent->IsType( idPlayer::Type ) )
+		idEntity* ent_ = gameLocal.entities[ lastWinner ];
+		if( ent_ && ent_->IsType( idPlayer::Type ) )
 		{
 			currentTourneyPlayer[ 0 ] = lastWinner;
 		}
@@ -2195,8 +2195,8 @@ void idMultiplayerGame::UpdateHud( idPlayer* player, idMenuHandler_HUD* hudManag
 						continue;
 					}
 					
-					idPlayer* player = static_cast< idPlayer* >( ent );
-					hud->SetTeamScore( player->team, playerState[ player->entityNumber ].teamFragCount );
+					idPlayer* player_ = static_cast< idPlayer* >( ent );
+					hud->SetTeamScore( player_->team, playerState[ player_->entityNumber ].teamFragCount );
 				}
 			}
 		}

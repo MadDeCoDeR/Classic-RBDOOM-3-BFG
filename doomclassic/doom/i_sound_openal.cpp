@@ -557,7 +557,7 @@ I_ShutdownSound
 */
 void I_ShutdownSoundAL( void )
 {
-	int done = 0;
+	//int done = 0;
 	int i;
 	
 	if ( S_initialized ) {

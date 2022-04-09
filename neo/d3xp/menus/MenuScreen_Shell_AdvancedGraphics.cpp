@@ -291,7 +291,7 @@ bool idMenuScreen_Shell_AdvancedGraphics::HandleAction( idWidgetAction& action, 
 	
 	widgetAction_t actionType = action.GetType();
 	const idSWFParmList& parms = action.GetParms();
-	int index = widget->GetDataSourceFieldIndex();
+	//int index = widget->GetDataSourceFieldIndex();
 	
 	switch( actionType )
 	{

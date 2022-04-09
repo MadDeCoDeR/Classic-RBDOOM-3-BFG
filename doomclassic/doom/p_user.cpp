@@ -230,7 +230,7 @@ void P_DeathThink (player_t* player)
 
 		delta = angle - player->mo->angle;
 
-		if (delta < ANG5 || delta > (unsigned)-ANG5)
+		if (delta < ANG5 || delta > (unsigned)(0 - ANG5)) //GKHACK W2 UNSIGNED FROM DOOMWORD FORUMS (circa 2009)
 		{
 			// Looking at killer,
 			//  so fade damage flash down.
@@ -419,7 +419,7 @@ void P_PlayerThink (player_t* player)
 	}
 	else if ( cmd->buttons & BT_CHANGE )
 	{ 
-		int k, which;
+		int /*k,*/ which;
 		// The actual changing of the weapon is done
 		//  when the weapon psprite can do it
 		//  (read: not in the middle of an attack).

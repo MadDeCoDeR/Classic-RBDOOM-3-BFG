@@ -61,9 +61,9 @@ ID_INLINE idRandom::idRandom( int seed )
 	this->seed = seed;
 }
 
-ID_INLINE void idRandom::SetSeed( int seed )
+ID_INLINE void idRandom::SetSeed( int _seed )
 {
-	this->seed = seed;
+	this->seed = _seed;
 }
 
 ID_INLINE int idRandom::GetSeed() const
@@ -133,9 +133,9 @@ ID_INLINE idRandom2::idRandom2( unsigned int seed )
 	this->seed = seed;
 }
 
-ID_INLINE void idRandom2::SetSeed( unsigned int seed )
+ID_INLINE void idRandom2::SetSeed( unsigned int _seed )
 {
-	this->seed = seed;
+	this->seed = _seed;
 }
 
 ID_INLINE unsigned int idRandom2::GetSeed() const

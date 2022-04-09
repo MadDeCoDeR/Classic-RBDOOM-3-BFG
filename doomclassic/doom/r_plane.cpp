@@ -424,7 +424,7 @@ void R_DrawPlanes (void)
     int			light;
     int			x;
     int			stop;
-    int			angle;
+    //int			angle;
 				
 #ifdef RANGECHECK
   /*  if (::g->ds_p - ::g->drawsegs > MAXDRAWSEGS)

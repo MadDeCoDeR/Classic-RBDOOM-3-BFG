@@ -422,12 +422,12 @@ int I_StartSound2XA2 ( int id, int player, mobj_t *origin, mobj_t *listener_orig
 	// Submit packet
 	HRESULT hr;
 	if( FAILED( hr = sound->m_pSourceVoice->SubmitSourceBuffer( &Packet ) ) ) {
-		int fail = 1;
+		//int fail = 1;
 	}
 
 	// Play the source voice
 	if( FAILED( hr = sound->m_pSourceVoice->Start( 0 ) ) ) {
-		int fail = 1;
+		//int fail = 1;
 	}
 
 	// set id, and start time
@@ -628,7 +628,7 @@ I_ShutdownSound
 ======================
 */
 void I_ShutdownSoundXA2(void) {
-	int done = 0;
+	//int done = 0;
 	int i;
 
 	if ( S_initialized ) {
@@ -1085,7 +1085,7 @@ void I_PlaySongXA2( const char *songname, int looping)
 
 	// Make sure voice is stopped before we free the buffer
 	bool isStopped = false;
-	int d = 0;
+	//int d = 0;
 	while ( !isStopped ) {
 		XAUDIO2_VOICE_STATE test = {};
 
@@ -1165,12 +1165,12 @@ void I_UpdateMusicXA2() {
 				// Submit packet
 				HRESULT hr;
 				if( FAILED( hr = pMusicSourceVoice->SubmitSourceBuffer( &Packet ) ) ) {
-					int fail = 1;
+					//int fail = 1;
 				}
 
 				// Play the source voice
 				if( FAILED( hr = pMusicSourceVoice->Start( 0 ) ) ) {
-					int fail = 1;
+					//int fail = 1;
 				}
 			}
 

@@ -300,7 +300,7 @@ void R_AddLine (seg_t*	line)
 		// Totally off the left edge?
 		if (tspan >= span)
 			return;	
-		angle2 = -::g->clipangle; // ALANHACK UNSIGNED
+		angle2 = 0 - ::g->clipangle; // ALANHACK UNSIGNED GKHACK W2 UNSIGNED FROM DOOMWORD FORUMS (circa 2009)
     }
     
     // The seg is in the view range,
@@ -440,7 +440,7 @@ qboolean R_CheckBBox (fixed_t*	bspcoord)
 	if (tspan >= span)
 	    return false;
 	
-	angle2 = -::g->clipangle;// ALANHACK UNSIGNED
+	angle2 = 0 -::g->clipangle;// ALANHACK UNSIGNED GKHACK W2 UNSIGNED FROM DOOMWORD FORUMS (circa 2009)
     }
 
 

@@ -1123,11 +1123,11 @@ struct vidMode_t
 // the number of displays can be found by itterating this until it returns false
 // displayNum is the 0 based value passed to EnumDisplayDevices(), you must add
 // 1 to this to get an r_fullScreen value.
-bool R_GetModeListForDisplay( const int displayNum, idList<vidMode_t>& modeList );
+bool R_GetModeListForDisplay( const unsigned displayNum, idList<vidMode_t>& modeList );
 
-bool R_GetRefreshListForDisplay(const int displayNum, idList<int>& refreshList);
+bool R_GetRefreshListForDisplay(const unsigned displayNum, idList<int>& refreshList);
 
-bool R_GetScreenResolution(const int displayNum, int& w, int& h, int& hz);
+bool R_GetScreenResolution(const unsigned displayNum, int& w, int& h, int& hz);
 
 struct glimpParms_t
 {

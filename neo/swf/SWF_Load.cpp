@@ -844,7 +844,9 @@ bool idSWF::LoadJSON( const char* filename )
 	int fileLength = f->Length();
 	const char* fileData = ( const char* )Mem_Alloc( fileLength, TAG_SWF );
 	size_t fileSize = f->Read( ( byte* ) fileData, fileLength );
-	delete f;
+	if (fileSize > 0) {
+		delete f;
+	}
 	
 	rapidjson::Document d;
 	d.Parse( fileData );
@@ -857,7 +859,7 @@ bool idSWF::LoadJSON( const char* filename )
 		Value& s = d["version"];
 		int version = s.GetInt();
 		
-		//idLib::Printf( "version = %i", version );
+		idLib::Printf( "version = %i", version );
 	}
 	
 	//ID_TIME_T btimestamp = s.GetInt64();
@@ -953,10 +955,10 @@ bool idSWF::LoadJSON( const char* filename )
 			if( entry.HasMember( "fillDraws" ) )
 			{
 				shape->fillDraws.SetNum( entry["fillDraws"].Size() );
-				for( int d = 0; d < shape->fillDraws.Num(); d++ )
+				for( int d_ = 0; d_ < shape->fillDraws.Num(); d_++ )
 				{
-					idSWFShapeDrawFill& fillDraw = shape->fillDraws[d];
-					Value& jsonDraw = entry["fillDraws"][d];
+					idSWFShapeDrawFill& fillDraw = shape->fillDraws[d_];
+					Value& jsonDraw = entry["fillDraws"][d_];
 					
 					Value& style = jsonDraw["style"];
 					idStr type = style["type"].GetString();
@@ -1011,7 +1013,7 @@ bool idSWF::LoadJSON( const char* filename )
 						
 						if( style.HasMember( "endColor" ) )
 						{
-							Value& endColor = style["endColor"];
+							//Value& endColor = style["endColor"];
 							fillDraw.style.endColor.r = ( uint8 )( startColor[0].GetDouble() * 255 ) & 0xFF;
 							fillDraw.style.endColor.g = ( uint8 )( startColor[1].GetDouble() * 255 ) & 0xFF;
 							fillDraw.style.endColor.b = ( uint8 )( startColor[2].GetDouble() * 255 ) & 0xFF;
@@ -1070,7 +1072,7 @@ bool idSWF::LoadJSON( const char* filename )
 							gr.startColor.b = ( uint8 )( startColor[2].GetDouble() * 255 ) & 0xFF;
 							gr.startColor.a = ( uint8 )( startColor[3].GetDouble() * 255 ) & 0xFF;
 							
-							Value& endColor = gradientRecord["endColor"];
+							//Value& endColor = gradientRecord["endColor"];
 							gr.endColor.r = ( uint8 )( startColor[0].GetDouble() * 255 ) & 0xFF;
 							gr.endColor.g = ( uint8 )( startColor[1].GetDouble() * 255 ) & 0xFF;
 							gr.endColor.b = ( uint8 )( startColor[2].GetDouble() * 255 ) & 0xFF;
@@ -1154,10 +1156,10 @@ bool idSWF::LoadJSON( const char* filename )
 			if( entry.HasMember( "lineDraws" ) )
 			{
 				shape->lineDraws.SetNum( entry["lineDraws"].Size() );
-				for( int d = 0; d < shape->lineDraws.Num(); d++ )
+				for( int d_ = 0; d_ < shape->lineDraws.Num(); d_++ )
 				{
-					idSWFShapeDrawLine& lineDraw = shape->lineDraws[d];
-					Value& jsonDraw = entry["lineDraw"][d];
+					idSWFShapeDrawLine& lineDraw = shape->lineDraws[d_];
+					Value& jsonDraw = entry["lineDraw"][d_];
 					
 					Value& style = jsonDraw["style"];
 					lineDraw.style.startWidth = style["startWidth"].GetUint();
@@ -1171,7 +1173,7 @@ bool idSWF::LoadJSON( const char* filename )
 					
 					if( style.HasMember( "endColor" ) )
 					{
-						Value& endColor = style["endColor"];
+						//Value& endColor = style["endColor"];
 						lineDraw.style.endColor.r = ( uint8 )( startColor[0].GetDouble() * 255 ) & 0xFF;
 						lineDraw.style.endColor.g = ( uint8 )( startColor[1].GetDouble() * 255 ) & 0xFF;
 						lineDraw.style.endColor.b = ( uint8 )( startColor[2].GetDouble() * 255 ) & 0xFF;

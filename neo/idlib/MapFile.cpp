@@ -1229,13 +1229,13 @@ bool idMapFile::Parse( const char* filename, bool ignoreRegion, bool osPath )
 		if( entities.Num() > 0 && ( idStr::Icmp( entities[0]->epairs.GetString( "name" ), "worldspawn" ) != 0 ) )
 		{
 			// move world spawn to first place
-			for( int i = 1; i < entities.Num(); i++ )
+			for( int i_ = 1; i_ < entities.Num(); i_++ )
 			{
-				if( idStr::Icmp( entities[i]->epairs.GetString( "name" ), "worldspawn" ) == 0 )
+				if( idStr::Icmp( entities[i_]->epairs.GetString( "name" ), "worldspawn" ) == 0 )
 				{
 					idMapEntity* tmp = entities[0];
-					entities[0] = entities[i];
-					entities[i] = tmp;
+					entities[0] = entities[i_];
+					entities[i_] = tmp;
 					break;
 				}
 			}
@@ -1572,16 +1572,16 @@ void MapPolygonMesh::ConvertFromBrush( const idMapBrush* mapBrush, int entityNum
 	idBounds bounds;
 	bounds.Clear();
 	
-	int numVerts = 0;
-	int numIndexes = 0;
+	//int numVerts = 0;
+	//int numIndexes = 0;
 	
 	bool badBrush = false;
 	
 	for( int i = 0; i < mapBrush->GetNumSides(); i++ )
 	{
-		idMapBrushSide* mapSide = mapBrush->GetSide( i );
+		//idMapBrushSide* mapSide = mapBrush->GetSide( i );
 		
-		const idMaterial* material = declManager->FindMaterial( mapSide->GetMaterial() );
+		//const idMaterial* material = declManager->FindMaterial( mapSide->GetMaterial() );
 		//contents |= ( material->GetContentFlags() & CONTENTS_REMOVE_UTIL );
 		//materials.AddUnique( material );
 		

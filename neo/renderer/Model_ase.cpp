@@ -894,7 +894,7 @@ aseModel_t* ASE_Load( const char* fileName )
 {
 	char* buf;
 	ID_TIME_T timeStamp;
-	aseModel_t* ase;
+	aseModel_t* ase_;
 	
 	fileSystem->ReadFile( fileName, ( void** )&buf, &timeStamp );
 	if( !buf )
@@ -902,12 +902,12 @@ aseModel_t* ASE_Load( const char* fileName )
 		return NULL;
 	}
 	
-	ase = ASE_Parse( buf, false );
-	ase->timeStamp = timeStamp;
+	ase_ = ASE_Parse( buf, false );
+	ase_->timeStamp = timeStamp;
 	
 	fileSystem->FreeFile( buf );
 	
-	return ase;
+	return ase_;
 }
 
 /*

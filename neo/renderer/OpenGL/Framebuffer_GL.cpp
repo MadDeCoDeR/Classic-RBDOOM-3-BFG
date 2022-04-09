@@ -570,7 +570,7 @@ void Framebuffer::AttachImageDepthLayer( const idImage* image, int layer )
 void Framebuffer::Check()
 {
 	int status;
-	int prev;
+	int prev = -1;
 	if (!glConfig.directStateAccess) {
 		
 		glGetIntegerv(GL_FRAMEBUFFER_BINDING, &prev);

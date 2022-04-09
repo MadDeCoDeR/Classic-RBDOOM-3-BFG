@@ -1351,10 +1351,10 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 			}
 			
 			bool endFound = false;
-			int c = startCheckIndex;
-			while( c < text.Length() )
+			int c_ = startCheckIndex;
+			while( c_ < text.Length() )
 			{
-				uint32 tc = text.UTF8Char( c );
+				uint32 tc = text.UTF8Char( c_ );
 				scaledGlyphInfo_t glyph;
 				fontInfo->GetScaledGlyph( glyphScale, tc, glyph );
 				float glyphSkip = glyph.xSkip;
@@ -1365,14 +1365,14 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 				
 				if( left + glyphSkip > bounds.br.x )
 				{
-					if( cursorPos > c && cursorPos != endCharacter )
+					if( cursorPos > c_ && cursorPos != endCharacter )
 					{
 					
 						float removeSize = 0.0f;
 						
 						while( removeSize < glyphSkip )
 						{
-							if( endCharacter == c )
+							if( endCharacter == c_ )
 							{
 								break;
 							}
@@ -1385,7 +1385,7 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 					}
 					else
 					{
-						inputEndChar = c;
+						inputEndChar = c_;
 						endFound = true;
 						break;
 					}
@@ -1746,12 +1746,12 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 			float t2 = glyph.t2;
 			if( c > selStart && c <= selEnd )
 			{
-				idVec2 topl = matrix.Transform( idVec2( x, y ) );
-				idVec2 topr = matrix.Transform( idVec2( x + glyphSkip, y ) );
-				idVec2 br = matrix.Transform( idVec2( x + glyphSkip, y + linespacing ) );
-				idVec2 bl = matrix.Transform( idVec2( x, y + linespacing ) );
+				idVec2 topl_ = matrix.Transform( idVec2( x, y ) );
+				idVec2 topr_ = matrix.Transform( idVec2( x + glyphSkip, y ) );
+				idVec2 br_ = matrix.Transform( idVec2( x + glyphSkip, y + linespacing ) );
+				idVec2 bl_ = matrix.Transform( idVec2( x, y + linespacing ) );
 				gui->SetColor( selColor );
-				DrawStretchPic( idVec4( topl.x, topl.y, 0, 0 ), idVec4( topr.x, topr.y, 1, 0 ), idVec4( br.x, br.y, 1, 1 ), idVec4( bl.x, bl.y, 0, 1 ), white );
+				DrawStretchPic( idVec4( topl_.x, topl_.y, 0, 0 ), idVec4( topr_.x, topr_.y, 1, 0 ), idVec4( br_.x, br_.y, 1, 1 ), idVec4( bl_.x, bl_.y, 0, 1 ), white );
 				gui->SetColor( textColor );
 			}
 			
@@ -2174,7 +2174,7 @@ int idSWF::DrawText( idRenderSystem* gui, const char* text, float textScale, int
 	bool		wordBreak = false;
 	
 	float		rectWidth = fabs( rectDraw.br.x - rectDraw.tl.x );
-	float		rectHeight = fabs( rectDraw.br.y - rectDraw.tl.y );
+	//float		rectHeight = fabs( rectDraw.br.y - rectDraw.tl.y );
 	
 	idStr drawText = text;
 	idStr textBuffer;

@@ -324,7 +324,7 @@ void OutputSplitPlane( const node_t* node, idList<OBJGroup>& groups )
 	}
 	
 	OBJGroup* group = NULL;
-	bool reverse = false;
+	//bool reverse = false;
 	
 	if( node->planenum != PLANENUM_LEAF )
 	{
@@ -473,7 +473,7 @@ void WriteGLView( tree_t* tree, const char* source, int entityNum, bool force )
 	
 	int numLeafs = 0;
 	int numNodes = NumberNodes_r( tree->headnode, 0, numLeafs );
-	
+	idLib::Printf("Number of Nodes: %d\n", numNodes);
 	CollectNodes_r( tree->headnode, groups );
 	
 	if( entityNum == 0 )

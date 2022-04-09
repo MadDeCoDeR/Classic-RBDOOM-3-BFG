@@ -607,7 +607,7 @@ R_StoreWallRange
 		offsetangle = ::g->rw_normalangle-::g->rw_angle1;
 		
 		if (offsetangle > ANG180)
-			offsetangle = -offsetangle; // ALANHACK UNSIGNED
+			offsetangle = 0 - offsetangle; // ALANHACK UNSIGNED GKHACK W2 UNSIGNED FROM DOOMWORD FORUMS (circa 2009)
 
 		if (offsetangle > ANG90)
 			offsetangle = ANG90;

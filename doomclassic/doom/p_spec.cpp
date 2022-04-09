@@ -2380,7 +2380,7 @@ fixed_t P_FindShortestTextureAround(int secnum)
 //
 sector_t *P_FindModelCeilingSector(fixed_t ceildestheight, int secnum)
 {
-	int i;
+	//int i;
 	sector_t *sec = NULL;
 	int linecount;
 
@@ -2421,7 +2421,7 @@ sector_t *P_FindModelCeilingSector(fixed_t ceildestheight, int secnum)
 //
 sector_t *P_FindModelFloorSector(fixed_t floordestheight, int secnum)
 {
-	int i;
+	//int i;
 	sector_t *sec = NULL;
 	int linecount;
 

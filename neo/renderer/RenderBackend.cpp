@@ -2181,7 +2181,7 @@ void idRenderBackend::AmbientPass( const drawSurf_t* const* drawSurfs, int numDr
 		// we may have multiple alpha tested stages
 		// if the only alpha tested stages are condition register omitted,
 		// draw a normal opaque surface
-		bool didDraw = false;
+		//bool didDraw = false;
 		
 		drawInteraction_t inter = {};
 		inter.surf = drawSurf;
@@ -4343,7 +4343,7 @@ void idRenderBackend::CalculateAutomaticExposure()
 				maxLuminance = luminance;
 			}
 			
-			float logLuminance = log( luminance + 1 );
+			//float logLuminance = log( luminance + 1 );
 			//if( logLuminance > 0 )
 			{
 				sum += luminance;

@@ -420,11 +420,11 @@ void idTestModel::Think()
 		if( clip != NULL && animator.ModelDef() )
 		{
 			idVec3 neworigin;
-			idMat3 axis;
+			idMat3 axis_;
 			jointHandle_t joint;
 			
 			joint = animator.GetJointHandle( "origin" );
-			animator.GetJointTransform( joint, gameLocal.time, neworigin, axis );
+			animator.GetJointTransform( joint, gameLocal.time, neworigin, axis_ );
 			neworigin = ( ( neworigin - animator.ModelDef()->GetVisualOffset() ) * physicsObj.GetAxis() ) + GetPhysics()->GetOrigin();
 			clip->Link( *gameLocal.GetClip(), this, 0, neworigin, clip->GetAxis() );
 		}

@@ -959,7 +959,7 @@ int			reloadlump;
 //  z_zone.vars begin // 
 int sizes[NUM_ZONES+1];
 memzone_t*	zones[NUM_ZONES] ;
-int NumAlloc ;
+unsigned NumAlloc ;
 int CacheAlloc; //GK:Keep track of the allocated Cache on Z-Memory
 // z_zone.vars end // 
 // info vars begin //
@@ -991,7 +991,7 @@ visplane_t*		ceilingplane;
 
 // r_main begin //GK: Allowing to change constant on the go
 int reallightlevels;
-int reallightscale;
+unsigned reallightscale;
 int LIGHTZSHIFT;
 int reallightscaleshift;
 bool reset; //GK: Make sure every time the graphical options changes the Z-Memory doesn't allocate more memory

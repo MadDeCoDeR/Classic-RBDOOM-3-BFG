@@ -267,11 +267,11 @@ static int I_TrySetupNetwork(void) //GK:Manualy init winsock
 //
 void I_InitNetwork (void)
 {
-	qboolean		trueval = true;
+	//qboolean		trueval = true;
 	int			i;
 	int			p;
-	int a = 0;
-	    struct hostent*	hostentry;	// host information entry
+	//int a = 0;
+	//    struct hostent*	hostentry;	// host information entry
 
 	memset (&::g->doomcom, 0, sizeof(::g->doomcom) );
 

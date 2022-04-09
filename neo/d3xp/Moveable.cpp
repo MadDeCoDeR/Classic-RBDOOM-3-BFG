@@ -1314,17 +1314,17 @@ void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* attacker, int dam
 		if( debris_args )
 		{
 			idEntity* ent;
-			idVec3 dir;
+			idVec3 dir_;
 			idDebris* debris;
 			//if ( first ) {
-			dir = physicsObj.GetAxis()[1];
+			dir_ = physicsObj.GetAxis()[1];
 			//	first = false;
 			//} else {
-			dir.x += gameLocal.random.CRandomFloat() * 4.0f;
-			dir.y += gameLocal.random.CRandomFloat() * 4.0f;
+			dir_.x += gameLocal.random.CRandomFloat() * 4.0f;
+			dir_.y += gameLocal.random.CRandomFloat() * 4.0f;
 			//dir.z = gameLocal.random.RandomFloat() * 8.0f;
 			//}
-			dir.Normalize();
+			dir_.Normalize();
 			
 			gameLocal.SpawnEntityDef( *debris_args, &ent, false );
 			if( ent == NULL || !ent->IsType( idDebris::Type ) )

@@ -667,7 +667,9 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 			dst_smp = static_cast<AVSampleFormat> (dec_ctx2->sample_fmt - 5);
 			swr_ctx = swr_alloc_set_opts(NULL, dec_ctx2->channel_layout, dst_smp, dec_ctx2->sample_rate, dec_ctx2->channel_layout, dec_ctx2->sample_fmt, dec_ctx2->sample_rate, 0, NULL);
 			int res = swr_init(swr_ctx);
-			hasplanar = true;
+			if (res >= 0) {
+				hasplanar = true;
+			}
 		}
 		else {
 			hasplanar = false;
@@ -1148,7 +1150,7 @@ idCinematicLocal::ImageForTimeFFMPEG
 cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 {
 	cinData_t	cinData;
-	int i = 0;
+	//int i = 0;
 	uint8_t** tBuffer2 = NULL;
 	int num_bytes = 0;
 	if( thisTime <= 0 )

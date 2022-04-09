@@ -159,7 +159,7 @@ R_InstallSpriteLump
 //
 void R_InitSpriteDefs (const std::vector <char*> namelist) 
 { 
-    const char* const*	check;
+    //const char* const*	check;
     int		i;
     int		l;
     int		intname;
@@ -529,7 +529,7 @@ void R_ProjectSprite (mobj_t* thing)
     unsigned		rot;
     qboolean		flip;
     
-    int			index;
+    unsigned			index;
 
     vissprite_t*	vis;
     

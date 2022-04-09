@@ -1085,8 +1085,8 @@ static bool LDLT_Factor_SIMD( idMatX& mat, idVecX& invDiag, const int n )
 		_mm_store_ss( mptr + i, t0 );
 		_mm_store_ss( diag + i, t0 );
 		
-		__m128 d = _mm_rcp32_ps( t0 );
-		_mm_store_ss( invDiagPtr + i, d );
+		__m128 d_ = _mm_rcp32_ps( t0 );
+		_mm_store_ss( invDiagPtr + i, d_ );
 		
 		if( i + 1 >= n )
 		{
@@ -1150,7 +1150,7 @@ static bool LDLT_Factor_SIMD( idMatX& mat, idVecX& invDiag, const int n )
 			va = _mm_add_ps( va, vb );
 			vc = _mm_add_ps( vc, vd );
 			va = _mm_add_ps( va, vc );
-			va = _mm_mul_ps( va, d );
+			va = _mm_mul_ps( va, d_ );
 			
 			_mm_store_ss( ra + i, _mm_splat_ps( va, 0 ) );
 			_mm_store_ss( rb + i, _mm_splat_ps( va, 1 ) );
@@ -1181,7 +1181,7 @@ static bool LDLT_Factor_SIMD( idMatX& mat, idVecX& invDiag, const int n )
 			
 			va = _mm_add_ps( va, _mm_shuffle_ps( va, va, _MM_SHUFFLE( 1, 0, 3, 2 ) ) );
 			va = _mm_add_ps( va, _mm_shuffle_ps( va, va, _MM_SHUFFLE( 2, 3, 0, 1 ) ) );
-			va = _mm_mul_ps( va, d );
+			va = _mm_mul_ps( va, d_ );
 			
 			_mm_store_ss( mptr + i, va );
 		}
@@ -1942,10 +1942,10 @@ bool idLCP_Square::FactorClamped()
 idLCP_Square::SolveClamped
 ========================
 */
-void idLCP_Square::SolveClamped( idVecX& x, const float* b )
+void idLCP_Square::SolveClamped( idVecX& x, const float* _b )
 {
 	// solve L
-	LowerTriangularSolve( clamped, x.ToFloatPtr(), b, numClamped, 0 );
+	LowerTriangularSolve( clamped, x.ToFloatPtr(), _b, numClamped, 0 );
 	
 	// solve U
 	UpperTriangularSolve( clamped, diagonal.ToFloatPtr(), x.ToFloatPtr(), x.ToFloatPtr(), numClamped );
@@ -2642,11 +2642,11 @@ bool idLCP_Symmetric::FactorClamped()
 idLCP_Symmetric::SolveClamped
 ========================
 */
-void idLCP_Symmetric::SolveClamped( idVecX& x, const float* b )
+void idLCP_Symmetric::SolveClamped( idVecX& x, const float* _b )
 {
 
 	// solve L
-	LowerTriangularSolve( clamped, solveCache1.ToFloatPtr(), b, numClamped, clampedChangeStart );
+	LowerTriangularSolve( clamped, solveCache1.ToFloatPtr(), _b, numClamped, clampedChangeStart );
 	
 	// scale with D
 	Multiply( solveCache2.ToFloatPtr(), solveCache1.ToFloatPtr(), diagonal.ToFloatPtr(), numClamped );

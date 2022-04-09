@@ -317,8 +317,10 @@ void idImage::SubImageUpload( int mipLevel, int x, int y, int z, int width, int 
 		int quadH = ( height + 3 ) & ~3;
 		compressedSize = quadW * quadH * BitsForFormat( opts.format ) / 8;
 		
+#ifdef _DEBUG
 		int padW = ( opts.width + 3 ) & ~3;
 		int padH = ( opts.height + 3 ) & ~3;
+#endif
 		
 		assert( x + width <= padW && y + height <= padH );
 		// upload the non-aligned value, OpenGL understands that there

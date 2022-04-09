@@ -179,13 +179,13 @@ ID_INLINE int PC_NameHash( const char* name )
 idParser::AddDefineToHash
 ================
 */
-void idParser::AddDefineToHash( define_t* define, define_t** definehash )
+void idParser::AddDefineToHash( define_t* define, define_t** _definehash )
 {
 	int hash;
 	
 	hash = PC_NameHash( define->name );
-	define->hashnext = definehash[hash];
-	definehash[hash] = define;
+	define->hashnext = _definehash[hash];
+	_definehash[hash] = define;
 }
 
 /*
@@ -193,13 +193,13 @@ void idParser::AddDefineToHash( define_t* define, define_t** definehash )
 FindHashedDefine
 ================
 */
-define_t* idParser::FindHashedDefine( define_t** definehash, const char* name )
+define_t* idParser::FindHashedDefine( define_t** _definehash, const char* name )
 {
 	define_t* d;
 	int hash;
 	
 	hash = PC_NameHash( name );
-	for( d = definehash[hash]; d; d = d->hashnext )
+	for( d = _definehash[hash]; d; d = d->hashnext )
 	{
 		if( !strcmp( d->name, name ) )
 		{
@@ -2604,8 +2604,8 @@ int idParser::ReadDirective()
 			if( token == "include" )
 			{
 				// RB lets override for embedded shaders
-				idToken filename;
-				return Directive_include( &filename );
+				idToken filename_;
+				return Directive_include( &filename_ );
 				// RB end
 			}
 			else if( token == "define" )
@@ -3550,14 +3550,14 @@ void idParser::SetPunctuations( const punctuation_t* p )
 idParser::SetFlags
 ================
 */
-void idParser::SetFlags( int flags )
+void idParser::SetFlags( int _flags )
 {
 	idLexer* s;
 	
-	idParser::flags = flags;
+	idParser::flags = _flags;
 	for( s = idParser::scriptstack; s; s = s->next )
 	{
-		s->SetFlags( flags );
+		s->SetFlags( _flags );
 	}
 }
 
@@ -3576,7 +3576,7 @@ int idParser::GetFlags() const
 idParser::LoadFile
 ================
 */
-int idParser::LoadFile( const char* filename, bool OSPath )
+int idParser::LoadFile( const char* _filename, bool OSPath )
 {
 	idLexer* script;
 	
@@ -3585,7 +3585,7 @@ int idParser::LoadFile( const char* filename, bool OSPath )
 		idLib::common->FatalError( "idParser::loadFile: another source already loaded" );
 		return false;
 	}
-	script = new( TAG_IDLIB_PARSER ) idLexer( filename, 0, OSPath );
+	script = new( TAG_IDLIB_PARSER ) idLexer( _filename, 0, OSPath );
 	if( !script->IsLoaded() )
 	{
 		delete script;
@@ -3595,7 +3595,7 @@ int idParser::LoadFile( const char* filename, bool OSPath )
 	script->SetPunctuations( idParser::punctuations );
 	script->next = NULL;
 	idParser::OSPath = OSPath;
-	idParser::filename = filename;
+	idParser::filename = _filename;
 	idParser::scriptstack = script;
 	idParser::tokens = NULL;
 	idParser::indentstack = NULL;

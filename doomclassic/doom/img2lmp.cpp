@@ -166,12 +166,12 @@ patch_t* PNG2lmp(unsigned char* buffer) {
 		return NULL;
 	}
 
-	if (setjmp(png_jmpbuf(png_ptr)))
+	/*if (setjmp(png_jmpbuf(png_ptr)))
 	{
 		png_destroy_read_struct(&png_ptr, &info_ptr,
 			NULL);
 		return NULL;
-	}
+	}*/
 	
 	png_set_read_fn(png_ptr, buffer, ReadDataFromInputStream);
 
@@ -269,7 +269,7 @@ patch_t* PNG2lmp(unsigned char* buffer) {
 				}
 			}
 			tpat =(postColumn_t*) &((byte*)patch + LONG(patch->columnofs[oc]))[0];
-			int offs = 0;
+			//int offs = 0;
 			for (int o = 0; o < posc; o++) {
 				if (o > 0) {
 					tpat = (postColumn_t*)&((byte*)tpat + tpat->length + 4)[0];
@@ -443,7 +443,7 @@ patch_t* JPEG2lmp(unsigned char* buffer) {
 					}
 				}
 				tpat = (postColumn_t*) &((byte*)patch + LONG(patch->columnofs[oc]))[0];
-				int offs = 0;
+				//int offs = 0;
 				for (int o = 0; o < posc; o++) {
 					if (o > 0) {
 						tpat = (postColumn_t*)&((byte*)tpat + tpat->length + 4)[0];

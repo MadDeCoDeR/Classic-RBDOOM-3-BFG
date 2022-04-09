@@ -382,7 +382,7 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 			finishedbuffers = 3;
 		}
 		//GK: Just make sure we don't get 0 buffers because it's result on silent audio
-		if (openalStreamingBuffer[0] == openalStreamingBuffer[1] == openalStreamingBuffer[2] == 0) {
+		if (openalStreamingBuffer[0] == 0u && openalStreamingBuffer[1] == 0u && openalStreamingBuffer[2] == 0u) {
 			alGenBuffers(3, &openalStreamingBuffer[0]);
 		}
 		ALenum format;

@@ -289,7 +289,7 @@ void EV_StopPlat(line_t* line)
 
 void P_AddActivePlat(plat_t* plat)
 {
-    int		i;
+    //int		i;
     
    
 	if (::g->platind >= ::g->activeplats.Num()) {

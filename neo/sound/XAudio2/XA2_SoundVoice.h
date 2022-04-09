@@ -40,7 +40,7 @@ public:
 	idSoundVoice_XAudio2();
 	~idSoundVoice_XAudio2();
 	
-	void					Create( const idSoundSample* leadinSample, const idSoundSample* loopingSample, int channel );
+	void					Create( const idSoundSample* leadinSample, const idSoundSample* loopingSample, const int channel );
 	
 	// Start playing at a particular point in the buffer.  Does an Update() too
 	void					Start( int offsetMS, int ssFlags );

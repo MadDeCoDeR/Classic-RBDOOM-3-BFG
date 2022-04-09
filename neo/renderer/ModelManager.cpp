@@ -452,6 +452,7 @@ idRenderModel* idRenderModelManagerLocal::GetModel( const char* _modelName, bool
 		
 		ID_TIME_T sourceTimeStamp = fileSystem->GetTimestamp( canonical );
 		ID_TIME_T timeStamp = fileSystem->GetTimestamp( exportedFileName );
+		if (sourceTimeStamp == timeStamp) {}
 		
 		// TODO only update if generated has changed
 		

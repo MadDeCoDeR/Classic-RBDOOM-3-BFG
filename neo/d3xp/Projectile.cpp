@@ -1278,9 +1278,9 @@ void idProjectile::Explode( const trace_t& collision, idEntity* ignore )
 					return;
 				}
 				
-				idDebris* debris = static_cast<idDebris*>( ent );
-				debris->Create( owner.GetEntity(), physicsObj.GetOrigin(), dir.ToMat3() );
-				debris->Launch();
+				idDebris* debris_ = static_cast<idDebris*>( ent );
+				debris_->Create( owner.GetEntity(), physicsObj.GetOrigin(), dir.ToMat3() );
+				debris_->Launch();
 			}
 		}
 		debris = gameLocal.FindEntityDefDict( "projectile_shrapnel", false );
@@ -1303,9 +1303,9 @@ void idProjectile::Explode( const trace_t& collision, idEntity* ignore )
 					break;
 				}
 				
-				idDebris* debris = static_cast<idDebris*>( ent );
-				debris->Create( owner.GetEntity(), physicsObj.GetOrigin(), dir.ToMat3() );
-				debris->Launch();
+				idDebris* debris_ = static_cast<idDebris*>( ent );
+				debris_->Create( owner.GetEntity(), physicsObj.GetOrigin(), dir.ToMat3() );
+				debris_->Launch();
 			}
 		}
 	}
@@ -1989,9 +1989,9 @@ void idGuidedProjectile::Launch( const idVec3& start, const idVec3& dir, const i
 		{
 			trace_t tr;
 			idPlayer* player = static_cast<idPlayer*>( owner.GetEntity() );
-			idVec3 start = player->GetEyePosition();
-			idVec3 end = start + player->viewAxis[0] * 1000.0f;
-			gameLocal.GetClip()->TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL | CONTENTS_BODY, owner.GetEntity() );
+			idVec3 start_ = player->GetEyePosition();
+			idVec3 end = start_ + player->viewAxis[0] * 1000.0f;
+			gameLocal.GetClip()->TracePoint( tr, start_, end, MASK_SHOT_RENDERMODEL | CONTENTS_BODY, owner.GetEntity() );
 			if( tr.fraction < 1.0f )
 			{
 				enemy = gameLocal.GetTraceEntity( tr );
@@ -3361,9 +3361,9 @@ void idHomingProjectile::Launch( const idVec3& start, const idVec3& dir, const i
 		{
 			trace_t tr;
 			idPlayer* player = static_cast<idPlayer*>( owner.GetEntity() );
-			idVec3 start = player->GetEyePosition();
-			idVec3 end = start + player->viewAxis[0] * 1000.0f;
-			gameLocal.GetClip()->TracePoint( tr, start, end, MASK_SHOT_RENDERMODEL | CONTENTS_BODY, owner.GetEntity() );
+			idVec3 start_ = player->GetEyePosition();
+			idVec3 end = start_ + player->viewAxis[0] * 1000.0f;
+			gameLocal.GetClip()->TracePoint( tr, start_, end, MASK_SHOT_RENDERMODEL | CONTENTS_BODY, owner.GetEntity() );
 			if( tr.fraction < 1.0f )
 			{
 				enemy = gameLocal.GetTraceEntity( tr );

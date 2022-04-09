@@ -191,7 +191,7 @@ void OBJExporter::ConvertBrushToOBJ( OBJGroup& group, const idMapBrush* mapBrush
 	bounds.Clear();
 	
 	int numVerts = 0;
-	int numIndexes = 0;
+	//int numIndexes = 0;
 	
 	bool badBrush = false;
 	

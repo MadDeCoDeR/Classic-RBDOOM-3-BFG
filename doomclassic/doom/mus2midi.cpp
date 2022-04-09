@@ -182,7 +182,7 @@ int Mus2Midi(unsigned char* bytes, unsigned char* out, int* len)
 	int channel_volume[MIDI_MAXCHANNELS] = {0};
 	int bytes_written = 0;
 	int channelMap[MIDI_MAXCHANNELS], currentChannel = 0;
-	byte last_status = 0;
+	//byte last_status = 0;
 
 	// read the mus header
 	memcpy(&header, cur, sizeof(header));

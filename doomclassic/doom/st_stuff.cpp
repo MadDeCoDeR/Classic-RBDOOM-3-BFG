@@ -2082,7 +2082,7 @@ CONSOLE_COMMAND_SHIP(idmus, "change level music", 0) {
 	int		map;
 	int		epsd;
 
-	int oldPlayer = DoomLib::GetPlayer();
+	//int oldPlayer = DoomLib::GetPlayer();
 	DoomLib::SetPlayer(0);
 	if (::g == NULL) {
 		return;

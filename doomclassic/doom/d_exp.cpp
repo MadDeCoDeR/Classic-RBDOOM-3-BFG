@@ -329,7 +329,7 @@ char* removequotes(char* value) {
 }
 
 int calculateD1map(int map, int& counter) {
-	int endmap;
+	//int endmap;
 	int result = map;
 	
 	if (::g->clusters.size()) {
@@ -355,7 +355,7 @@ int calculateD1map(int map, int& counter) {
 
 void setMAP(int index,char* value1, char* value2, char* value3) {
 	int map;
-	int endmap;
+	//int endmap;
 	
 	if (::g->gamemode == retail) {
 		if (beginepisode) {
@@ -448,7 +448,7 @@ void parseexptext(char* text) {
 	std::vector<std::string> linedtext = getexplines(text);
 	int state = 0;
 	int val1;
-	int val2;
+	//int val2;
 	int val3;
 	int mapcount = 0;
 	char* varname;

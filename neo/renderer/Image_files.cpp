@@ -670,7 +670,7 @@ static void LoadPNG( const char* filename, unsigned char** pic, int* width, int*
 	// load the file
 	//
 	int fileSize = fileSystem->ReadFile( filename, ( void** )&fbuffer, timestamp );
-	if( !fbuffer )
+	if( fileSize <= 0 && !fbuffer )
 	{
 		return;
 	}
@@ -752,6 +752,7 @@ static void LoadPNG( const char* filename, unsigned char** pic, int* width, int*
 	*height = pngHeight;
 	
 	png_uint_32 rowBytes = png_get_rowbytes( pngPtr, infoPtr );
+	if (rowBytes) {}
 	
 	png_bytep* rowPointers = ( png_bytep* ) R_StaticAlloc( sizeof( png_bytep ) * pngHeight );
 	for( png_uint_32 row = 0; row < pngHeight; row++ )
