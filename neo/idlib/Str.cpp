@@ -723,11 +723,11 @@ void idStr::Format( const char* fmt, ... )
 	char text[MAX_PRINT_MSG];
 	
 	va_start( argptr, fmt );
-	int len = idStr::vsnPrintf( text, sizeof( text ) - 1, fmt, argptr );
+	int len_ = idStr::vsnPrintf( text, sizeof( text ) - 1, fmt, argptr );
 	va_end( argptr );
 	text[ sizeof( text ) - 1 ] = '\0';
 	
-	if( ( size_t )len >= sizeof( text ) - 1 )
+	if( ( size_t )len_ >= sizeof( text ) - 1 )
 	{
 		idLib::common->FatalError( "Tried to set a large buffer using %s", fmt );
 	}
@@ -744,8 +744,8 @@ Formats integers with commas for readability.
 idStr idStr::FormatInt( const int num, bool isCash )
 {
 	idStr val = va( "%d", num );
-	int len = val.Length();
-	for( int i = 0 ; i < ( ( len - 1 ) / 3 ); i++ )
+	int len_ = val.Length();
+	for( int i = 0 ; i < ( ( len_ - 1 ) / 3 ); i++ )
 	{
 		int pos = val.Length() - ( ( i + 1 ) * 3 + i );
 		if( pos > 1 || val[0] != '-' )
@@ -956,24 +956,24 @@ bool idStr::Replace( const char* old, const char* nw )
 idStr::Mid
 ============
 */
-const char* idStr::Mid(int64 start, int64 len, idStr& result ) const
+const char* idStr::Mid(int64 start, int64 _len, idStr& result ) const
 {
 	int64 i;
 	
 	result.Empty();
 	
 	i = Length();
-	if( i == 0 || len <= 0 || start >= i )
+	if( i == 0 || _len <= 0 || start >= i )
 	{
 		return NULL;
 	}
 	
-	if( start + len >= i )
+	if( start + _len >= i )
 	{
-		len = i - start;
+		_len = i - start;
 	}
 	
-	result.Append( &data[ start ], len );
+	result.Append( &data[ start ], _len );
 	return result;
 }
 
@@ -982,23 +982,23 @@ const char* idStr::Mid(int64 start, int64 len, idStr& result ) const
 idStr::Mid
 ============
 */
-idStr idStr::Mid(int64 start, int64 len ) const
+idStr idStr::Mid(int64 start, int64 _len ) const
 {
 	int64 i;
 	idStr result;
 	
 	i = Length();
-	if( i == 0 || len <= 0 || start >= i )
+	if( i == 0 || _len <= 0 || start >= i )
 	{
 		return result;
 	}
 	
-	if( start + len >= i )
+	if( start + _len >= i )
 	{
-		len = i - start;
+		_len = i - start;
 	}
 	
-	result.Append( &data[ start ], len );
+	result.Append( &data[ start ], _len );
 	return result;
 }
 

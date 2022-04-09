@@ -2178,9 +2178,9 @@ idCurve_BSpline::Basis
 ====================
 */
 template< class type >
-ID_INLINE float idCurve_BSpline<type>::Basis( const int index, const int order, const float t ) const
+ID_INLINE float idCurve_BSpline<type>::Basis( const int index, const int _order, const float t ) const
 {
-	if( order <= 1 )
+	if( _order <= 1 )
 	{
 		if( this->TimeForIndex( index ) < t && t <= this->TimeForIndex( index + 1 ) )
 		{
@@ -2194,16 +2194,16 @@ ID_INLINE float idCurve_BSpline<type>::Basis( const int index, const int order, 
 	else
 	{
 		float sum = 0.0f;
-		float d1 = this->TimeForIndex( index + order - 1 ) - this->TimeForIndex( index );
+		float d1 = this->TimeForIndex( index + _order - 1 ) - this->TimeForIndex( index );
 		if( d1 != 0.0f )
 		{
-			sum += ( float )( t - this->TimeForIndex( index ) ) * Basis( index, order - 1, t ) / d1;
+			sum += ( float )( t - this->TimeForIndex( index ) ) * Basis( index, _order - 1, t ) / d1;
 		}
 		
-		float d2 = this->TimeForIndex( index + order ) - this->TimeForIndex( index + 1 );
+		float d2 = this->TimeForIndex( index + _order ) - this->TimeForIndex( index + 1 );
 		if( d2 != 0.0f )
 		{
-			sum += ( float )( this->TimeForIndex( index + order ) - t ) * Basis( index + 1, order - 1, t ) / d2;
+			sum += ( float )( this->TimeForIndex( index + _order ) - t ) * Basis( index + 1, _order - 1, t ) / d2;
 		}
 		return sum;
 	}
@@ -2217,10 +2217,10 @@ idCurve_BSpline::BasisFirstDerivative
 ====================
 */
 template< class type >
-ID_INLINE float idCurve_BSpline<type>::BasisFirstDerivative( const int index, const int order, const float t ) const
+ID_INLINE float idCurve_BSpline<type>::BasisFirstDerivative( const int index, const int _order, const float t ) const
 {
-	return ( Basis( index, order - 1, t ) - Basis( index + 1, order - 1, t ) ) *
-		   ( float )( order - 1 ) / ( this->TimeForIndex( index + ( order - 1 ) - 2 ) - this->TimeForIndex( index - 2 ) );
+	return ( Basis( index, _order - 1, t ) - Basis( index + 1, _order - 1, t ) ) *
+		   ( float )( _order - 1 ) / ( this->TimeForIndex( index + ( _order - 1 ) - 2 ) - this->TimeForIndex( index - 2 ) );
 }
 
 /*
@@ -2231,10 +2231,10 @@ idCurve_BSpline::BasisSecondDerivative
 ====================
 */
 template< class type >
-ID_INLINE float idCurve_BSpline<type>::BasisSecondDerivative( const int index, const int order, const float t ) const
+ID_INLINE float idCurve_BSpline<type>::BasisSecondDerivative( const int index, const int _order, const float t ) const
 {
-	return ( BasisFirstDerivative( index, order - 1, t ) - BasisFirstDerivative( index + 1, order - 1, t ) ) *
-		   ( float )( order - 1 ) / ( this->TimeForIndex( index + ( order - 1 ) - 2 ) - this->TimeForIndex( index - 2 ) );
+	return ( BasisFirstDerivative( index, _order - 1, t ) - BasisFirstDerivative( index + 1, _order - 1, t ) ) *
+		   ( float )( _order - 1 ) / ( this->TimeForIndex( index + ( _order - 1 ) - 2 ) - this->TimeForIndex( index - 2 ) );
 }
 
 
@@ -2560,17 +2560,17 @@ idCurve_NonUniformBSpline::Basis
 ====================
 */
 template< class type >
-ID_INLINE void idCurve_NonUniformBSpline<type>::Basis( const int index, const int order, const float t, float* bvals ) const
+ID_INLINE void idCurve_NonUniformBSpline<type>::Basis( const int index, const int _order, const float t, float* bvals ) const
 {
 	int r, s, i;
 	float omega;
 	
-	bvals[order - 1] = 1.0f;
-	for( r = 2; r <= order; r++ )
+	bvals[_order - 1] = 1.0f;
+	for( r = 2; r <= _order; r++ )
 	{
 		i = index - r + 1;
-		bvals[order - r] = 0.0f;
-		for( s = order - r + 1; s < order; s++ )
+		bvals[_order - r] = 0.0f;
+		for( s = _order - r + 1; s < _order; s++ )
 		{
 			i++;
 			omega = ( float )( t - this->TimeForIndex( i ) ) / ( this->TimeForIndex( i + r - 1 ) - this->TimeForIndex( i ) );
@@ -2588,18 +2588,18 @@ idCurve_NonUniformBSpline::BasisFirstDerivative
 ====================
 */
 template< class type >
-ID_INLINE void idCurve_NonUniformBSpline<type>::BasisFirstDerivative( const int index, const int order, const float t, float* bvals ) const
+ID_INLINE void idCurve_NonUniformBSpline<type>::BasisFirstDerivative( const int index, const int _order, const float t, float* bvals ) const
 {
 	int i;
 	
-	Basis( index, order - 1, t, bvals + 1 );
+	Basis( index, _order - 1, t, bvals + 1 );
 	bvals[0] = 0.0f;
-	for( i = 0; i < order - 1; i++ )
+	for( i = 0; i < _order - 1; i++ )
 	{
 		bvals[i] -= bvals[i + 1];
-		bvals[i] *= ( float )( order - 1 ) / ( this->TimeForIndex( index + i + ( order - 1 ) - 2 ) - this->TimeForIndex( index + i - 2 ) );
+		bvals[i] *= ( float )( _order - 1 ) / ( this->TimeForIndex( index + i + ( _order - 1 ) - 2 ) - this->TimeForIndex( index + i - 2 ) );
 	}
-	bvals[i] *= ( float )( order - 1 ) / ( this->TimeForIndex( index + i + ( order - 1 ) - 2 ) - this->TimeForIndex( index + i - 2 ) );
+	bvals[i] *= ( float )( _order - 1 ) / ( this->TimeForIndex( index + i + ( _order - 1 ) - 2 ) - this->TimeForIndex( index + i - 2 ) );
 }
 
 /*
@@ -2610,18 +2610,18 @@ idCurve_NonUniformBSpline::BasisSecondDerivative
 ====================
 */
 template< class type >
-ID_INLINE void idCurve_NonUniformBSpline<type>::BasisSecondDerivative( const int index, const int order, const float t, float* bvals ) const
+ID_INLINE void idCurve_NonUniformBSpline<type>::BasisSecondDerivative( const int index, const int _order, const float t, float* bvals ) const
 {
 	int i;
 	
-	BasisFirstDerivative( index, order - 1, t, bvals + 1 );
+	BasisFirstDerivative( index, _order - 1, t, bvals + 1 );
 	bvals[0] = 0.0f;
-	for( i = 0; i < order - 1; i++ )
+	for( i = 0; i < _order - 1; i++ )
 	{
 		bvals[i] -= bvals[i + 1];
-		bvals[i] *= ( float )( order - 1 ) / ( this->TimeForIndex( index + i + ( order - 1 ) - 2 ) - this->TimeForIndex( index + i - 2 ) );
+		bvals[i] *= ( float )( _order - 1 ) / ( this->TimeForIndex( index + i + ( _order - 1 ) - 2 ) - this->TimeForIndex( index + i - 2 ) );
 	}
-	bvals[i] *= ( float )( order - 1 ) / ( this->TimeForIndex( index + i + ( order - 1 ) - 2 ) - this->TimeForIndex( index + i - 2 ) );
+	bvals[i] *= ( float )( _order - 1 ) / ( this->TimeForIndex( index + i + ( _order - 1 ) - 2 ) - this->TimeForIndex( index + i - 2 ) );
 }
 
 

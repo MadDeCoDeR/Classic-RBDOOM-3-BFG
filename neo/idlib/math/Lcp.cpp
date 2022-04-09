@@ -1112,30 +1112,30 @@ static bool LDLT_Factor_SIMD( idMatX& mat, idVecX& invDiag, const int n )
 			__m128 vc = _mm_load_ss( rc + i );
 			__m128 vd = _mm_load_ss( rd + i );
 			
-			__m128 v0 = _mm_load_ps( v + 0 );
+			__m128 v0_ = _mm_load_ps( v + 0 );
 			
-			va = _mm_sub_ps( va, _mm_mul_ps( _mm_load_ps( ra + 0 ), v0 ) );
-			vb = _mm_sub_ps( vb, _mm_mul_ps( _mm_load_ps( rb + 0 ), v0 ) );
-			vc = _mm_sub_ps( vc, _mm_mul_ps( _mm_load_ps( rc + 0 ), v0 ) );
-			vd = _mm_sub_ps( vd, _mm_mul_ps( _mm_load_ps( rd + 0 ), v0 ) );
+			va = _mm_sub_ps( va, _mm_mul_ps( _mm_load_ps( ra + 0 ), v0_ ) );
+			vb = _mm_sub_ps( vb, _mm_mul_ps( _mm_load_ps( rb + 0 ), v0_ ) );
+			vc = _mm_sub_ps( vc, _mm_mul_ps( _mm_load_ps( rc + 0 ), v0_ ) );
+			vd = _mm_sub_ps( vd, _mm_mul_ps( _mm_load_ps( rd + 0 ), v0_ ) );
 			
-			int k = 4;
-			for( ; k < i - 3; k += 4 )
+			int k_ = 4;
+			for( ; k_ < i - 3; k_ += 4 )
 			{
-				v0 = _mm_load_ps( v + k );
+				v0_ = _mm_load_ps( v + k_ );
 				
-				va = _mm_sub_ps( va, _mm_mul_ps( _mm_load_ps( ra + k ), v0 ) );
-				vb = _mm_sub_ps( vb, _mm_mul_ps( _mm_load_ps( rb + k ), v0 ) );
-				vc = _mm_sub_ps( vc, _mm_mul_ps( _mm_load_ps( rc + k ), v0 ) );
-				vd = _mm_sub_ps( vd, _mm_mul_ps( _mm_load_ps( rd + k ), v0 ) );
+				va = _mm_sub_ps( va, _mm_mul_ps( _mm_load_ps( ra + k_ ), v0_ ) );
+				vb = _mm_sub_ps( vb, _mm_mul_ps( _mm_load_ps( rb + k_ ), v0_ ) );
+				vc = _mm_sub_ps( vc, _mm_mul_ps( _mm_load_ps( rc + k_ ), v0_ ) );
+				vd = _mm_sub_ps( vd, _mm_mul_ps( _mm_load_ps( rd + k_ ), v0_ ) );
 			}
 			
-			v0 = _mm_load_ps( v + k );
+			v0_ = _mm_load_ps( v + k_ );
 			
-			va = _mm_sub_ps( va, _mm_mul_ps( _mm_and_ps( _mm_load_ps( ra + k ), mask ), v0 ) );
-			vb = _mm_sub_ps( vb, _mm_mul_ps( _mm_and_ps( _mm_load_ps( rb + k ), mask ), v0 ) );
-			vc = _mm_sub_ps( vc, _mm_mul_ps( _mm_and_ps( _mm_load_ps( rc + k ), mask ), v0 ) );
-			vd = _mm_sub_ps( vd, _mm_mul_ps( _mm_and_ps( _mm_load_ps( rd + k ), mask ), v0 ) );
+			va = _mm_sub_ps( va, _mm_mul_ps( _mm_and_ps( _mm_load_ps( ra + k_ ), mask ), v0_ ) );
+			vb = _mm_sub_ps( vb, _mm_mul_ps( _mm_and_ps( _mm_load_ps( rb + k_ ), mask ), v0_ ) );
+			vc = _mm_sub_ps( vc, _mm_mul_ps( _mm_and_ps( _mm_load_ps( rc + k_ ), mask ), v0_ ) );
+			vd = _mm_sub_ps( vd, _mm_mul_ps( _mm_and_ps( _mm_load_ps( rd + k_ ), mask ), v0_ ) );
 			
 			__m128 ta = _mm_unpacklo_ps( va, vc );		// x0, z0, x1, z1
 			__m128 tb = _mm_unpackhi_ps( va, vc );		// x2, z2, x3, z3
@@ -1159,31 +1159,31 @@ static bool LDLT_Factor_SIMD( idMatX& mat, idVecX& invDiag, const int n )
 		}
 		for( ; j < n; j++ )
 		{
-			float* mptr = mat[j];
+			float* mptr_ = mat[j];
 			
 			assert_16_byte_aligned( v );
-			assert_16_byte_aligned( mptr );
+			assert_16_byte_aligned( mptr_ );
 			
-			__m128 va = _mm_load_ss( mptr + i );
-			__m128 v0 = _mm_load_ps( v + 0 );
+			__m128 va = _mm_load_ss( mptr_ + i );
+			__m128 v0__ = _mm_load_ps( v + 0 );
 			
-			va = _mm_sub_ps( va, _mm_mul_ps( _mm_load_ps( mptr + 0 ), v0 ) );
+			va = _mm_sub_ps( va, _mm_mul_ps( _mm_load_ps( mptr_ + 0 ), v0__ ) );
 			
-			int k = 4;
-			for( ; k < i - 3; k += 4 )
+			int k__ = 4;
+			for( ; k__ < i - 3; k__ += 4 )
 			{
-				v0 = _mm_load_ps( v + k );
-				va = _mm_sub_ps( va, _mm_mul_ps( _mm_load_ps( mptr + k ), v0 ) );
+				v0__ = _mm_load_ps( v + k__ );
+				va = _mm_sub_ps( va, _mm_mul_ps( _mm_load_ps( mptr_ + k__ ), v0__ ) );
 			}
 			
-			v0 = _mm_load_ps( v + k );
-			va = _mm_sub_ps( va, _mm_mul_ps( _mm_and_ps( _mm_load_ps( mptr + k ), mask ), v0 ) );
+			v0__ = _mm_load_ps( v + k__ );
+			va = _mm_sub_ps( va, _mm_mul_ps( _mm_and_ps( _mm_load_ps( mptr_ + k__ ), mask ), v0__ ) );
 			
 			va = _mm_add_ps( va, _mm_shuffle_ps( va, va, _MM_SHUFFLE( 1, 0, 3, 2 ) ) );
 			va = _mm_add_ps( va, _mm_shuffle_ps( va, va, _MM_SHUFFLE( 2, 3, 0, 1 ) ) );
 			va = _mm_mul_ps( va, d_ );
 			
-			_mm_store_ss( mptr + i, va );
+			_mm_store_ss( mptr_ + i, va );
 		}
 	}
 	return true;

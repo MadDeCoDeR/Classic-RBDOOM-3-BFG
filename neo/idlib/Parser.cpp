@@ -387,14 +387,14 @@ void idParser::Warning( const char* str, ... ) const
 idParser::PushIndent
 ================
 */
-void idParser::PushIndent( int type, int skip )
+void idParser::PushIndent( int type, int _skip )
 {
 	indent_t* indent;
 	
 	indent = ( indent_t* ) Mem_Alloc( sizeof( indent_t ), TAG_IDLIB_PARSER );
 	indent->type = type;
 	indent->script = idParser::scriptstack;
-	indent->skip = ( skip != 0 );
+	indent->skip = ( _skip != 0 );
 	idParser::skip += indent->skip;
 	indent->next = idParser::indentstack;
 	idParser::indentstack = indent;
@@ -405,12 +405,12 @@ void idParser::PushIndent( int type, int skip )
 idParser::PopIndent
 ================
 */
-void idParser::PopIndent( int* type, int* skip )
+void idParser::PopIndent( int* type, int* _skip )
 {
 	indent_t* indent;
 	
 	*type = 0;
-	*skip = 0;
+	*_skip = 0;
 	
 	indent = idParser::indentstack;
 	if( !indent ) return;
@@ -422,7 +422,7 @@ void idParser::PopIndent( int* type, int* skip )
 	}
 	
 	*type = indent->type;
-	*skip = indent->skip;
+	*_skip = indent->skip;
 	idParser::indentstack = idParser::indentstack->next;
 	idParser::skip -= indent->skip;
 	Mem_Free( indent );
@@ -459,7 +459,7 @@ int idParser::ReadSourceToken( idToken* token )
 {
 	idToken* t;
 	idLexer* script;
-	int type, skip, changedScript;
+	int type, skip_, changedScript;
 	
 	if( !idParser::scriptstack )
 	{
@@ -489,7 +489,7 @@ int idParser::ReadSourceToken( idToken* token )
 			while( idParser::indentstack && idParser::indentstack->script == idParser::scriptstack )
 			{
 				idParser::Warning( "missing #endif" );
-				idParser::PopIndent( &type, &skip );
+				idParser::PopIndent( &type, &skip_ );
 			}
 			changedScript = 1;
 		}
@@ -650,7 +650,7 @@ int idParser::ReadDefineParms( define_t* define, idToken** parms, int maxparms )
 idParser::StringizeTokens
 ================
 */
-int idParser::StringizeTokens( idToken* tokens, idToken* token )
+int idParser::StringizeTokens( idToken* _tokens, idToken* token )
 {
 	idToken* t;
 	
@@ -658,7 +658,7 @@ int idParser::StringizeTokens( idToken* tokens, idToken* token )
 	token->whiteSpaceStart_p = NULL;
 	token->whiteSpaceEnd_p = NULL;
 	( *token ) = "";
-	for( t = tokens; t; t = t->next )
+	for( t = _tokens; t; t = t->next )
 	{
 		token->Append( t->c_str() );
 	}
@@ -1421,7 +1421,7 @@ int idParser::Directive_if_def( int type )
 {
 	idToken token;
 	define_t* d;
-	int skip;
+	int skip_;
 	
 	if( !idParser::ReadLine( &token ) )
 	{
@@ -1435,8 +1435,8 @@ int idParser::Directive_if_def( int type )
 		return false;
 	}
 	d = FindHashedDefine( idParser::definehash, token.c_str() );
-	skip = ( type == INDENT_IFDEF ) == ( d == NULL );
-	idParser::PushIndent( type, skip );
+	skip_ = ( type == INDENT_IFDEF ) == ( d == NULL );
+	idParser::PushIndent( type, skip_ );
 	return true;
 }
 
@@ -1467,9 +1467,9 @@ idParser::Directive_else
 */
 int idParser::Directive_else()
 {
-	int type, skip;
+	int type, skip_;
 	
-	idParser::PopIndent( &type, &skip );
+	idParser::PopIndent( &type, &skip_ );
 	if( !type )
 	{
 		idParser::Error( "misplaced #else" );
@@ -1480,7 +1480,7 @@ int idParser::Directive_else()
 		idParser::Error( "#else after #else" );
 		return false;
 	}
-	idParser::PushIndent( INDENT_ELSE, !skip );
+	idParser::PushIndent( INDENT_ELSE, !skip_ );
 	return true;
 }
 
@@ -1491,9 +1491,9 @@ idParser::Directive_endif
 */
 int idParser::Directive_endif()
 {
-	int type, skip;
+	int type, skip_;
 	
-	idParser::PopIndent( &type, &skip );
+	idParser::PopIndent( &type, &skip_ );
 	if( !type )
 	{
 		idParser::Error( "misplaced #endif" );
@@ -1523,9 +1523,9 @@ typedef struct value_s
 	struct value_s* prev, *next;
 } value_t;
 
-int PC_OperatorPriority( int op )
+int PC_OperatorPriority( int _op )
 {
-	switch( op )
+	switch( _op )
 	{
 		case P_MUL:
 			return 15;
@@ -1612,7 +1612,7 @@ int PC_OperatorPriority( int op )
 
 #define FreeOperator(op)
 
-int idParser::EvaluateTokens( idToken* tokens, signed int* intvalue, double* floatvalue, int integer )
+int idParser::EvaluateTokens( idToken* _tokens, signed int* intvalue, double* floatvalue, int integer )
 {
 	operator_t* o, *firstoperator, *lastoperator;
 	value_t* v, *firstvalue, *lastvalue, *v1, *v2;
@@ -1636,7 +1636,7 @@ int idParser::EvaluateTokens( idToken* tokens, signed int* intvalue, double* flo
 	firstvalue = lastvalue = NULL;
 	if( intvalue ) *intvalue = 0;
 	if( floatvalue ) *floatvalue = 0;
-	for( t = tokens; t; t = t->next )
+	for( t = _tokens; t; t = t->next )
 	{
 		switch( t->type )
 		{
@@ -2352,9 +2352,9 @@ idParser::Directive_elif
 int idParser::Directive_elif()
 {
 	signed int value; // DG: use int instead of long for 64bit compatibility
-	int type, skip;
+	int type, skip_;
 	
-	idParser::PopIndent( &type, &skip );
+	idParser::PopIndent( &type, &skip_ );
 	if( !type || type == INDENT_ELSE )
 	{
 		idParser::Error( "misplaced #elif" );
@@ -2364,8 +2364,8 @@ int idParser::Directive_elif()
 	{
 		return false;
 	}
-	skip = ( value == 0 );
-	idParser::PushIndent( INDENT_ELIF, skip );
+	skip_ = ( value == 0 );
+	idParser::PushIndent( INDENT_ELIF, skip_ );
 	return true;
 }
 
@@ -2377,14 +2377,14 @@ idParser::Directive_if
 int idParser::Directive_if()
 {
 	signed int value; // DG: use int instead of long for 64bit compatibility
-	int skip;
+	int skip_;
 	
 	if( !idParser::Evaluate( &value, NULL, true ) )
 	{
 		return false;
 	}
-	skip = ( value == 0 );
-	idParser::PushIndent( INDENT_IF, skip );
+	skip_ = ( value == 0 );
+	idParser::PushIndent( INDENT_IF, skip_ );
 	return true;
 }
 
@@ -3576,7 +3576,7 @@ int idParser::GetFlags() const
 idParser::LoadFile
 ================
 */
-int idParser::LoadFile( const char* _filename, bool OSPath )
+int idParser::LoadFile( const char* _filename, bool _OSPath )
 {
 	idLexer* script;
 	
@@ -3585,7 +3585,7 @@ int idParser::LoadFile( const char* _filename, bool OSPath )
 		idLib::common->FatalError( "idParser::loadFile: another source already loaded" );
 		return false;
 	}
-	script = new( TAG_IDLIB_PARSER ) idLexer( _filename, 0, OSPath );
+	script = new( TAG_IDLIB_PARSER ) idLexer( _filename, 0, _OSPath );
 	if( !script->IsLoaded() )
 	{
 		delete script;
@@ -3594,7 +3594,7 @@ int idParser::LoadFile( const char* _filename, bool OSPath )
 	script->SetFlags( idParser::flags );
 	script->SetPunctuations( idParser::punctuations );
 	script->next = NULL;
-	idParser::OSPath = OSPath;
+	idParser::OSPath = _OSPath;
 	idParser::filename = _filename;
 	idParser::scriptstack = script;
 	idParser::tokens = NULL;

@@ -34,13 +34,13 @@ If you have questions concerning this license or the applicable additional terms
 idSurface_SweptSpline::SetSpline
 ====================
 */
-void idSurface_SweptSpline::SetSpline( idCurve_Spline<idVec4>* spline )
+void idSurface_SweptSpline::SetSpline( idCurve_Spline<idVec4>* _spline )
 {
 	if( this->spline )
 	{
 		delete this->spline;
 	}
-	this->spline = spline;
+	this->spline = _spline;
 }
 
 /*
@@ -48,13 +48,13 @@ void idSurface_SweptSpline::SetSpline( idCurve_Spline<idVec4>* spline )
 idSurface_SweptSpline::SetSweptSpline
 ====================
 */
-void idSurface_SweptSpline::SetSweptSpline( idCurve_Spline<idVec4>* sweptSpline )
+void idSurface_SweptSpline::SetSweptSpline( idCurve_Spline<idVec4>* _sweptSpline )
 {
 	if( this->sweptSpline )
 	{
 		delete this->sweptSpline;
 	}
-	this->sweptSpline = sweptSpline;
+	this->sweptSpline = _sweptSpline;
 }
 
 /*

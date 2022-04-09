@@ -269,25 +269,25 @@ void idMatX::CopyLowerToUpperTriangle()
 			srcPtr += n4;
 			dstPtr += 4;
 			
-			__m128 r0 = _mm_load_ps( srcPtr + n0 );
-			__m128 r1 = _mm_load_ps( srcPtr + n1 );
-			__m128 r2 = _mm_load_ps( srcPtr + n2 );
-			__m128 r3 = _mm_load_ps( srcPtr + n3 );
+			__m128 r0_ = _mm_load_ps( srcPtr + n0 );
+			__m128 r1_ = _mm_load_ps( srcPtr + n1 );
+			__m128 r2_ = _mm_load_ps( srcPtr + n2 );
+			__m128 r3_ = _mm_load_ps( srcPtr + n3 );
 			
-			__m128 t0 = _mm_unpacklo_ps( r0, r2 );	// x0, z0, x1, z1
-			__m128 t1 = _mm_unpackhi_ps( r0, r2 );	// x2, z2, x3, z3
-			__m128 t2 = _mm_unpacklo_ps( r1, r3 );	// y0, w0, y1, w1
-			__m128 t3 = _mm_unpackhi_ps( r1, r3 );	// y2, w2, y3, w3
+			__m128 t0_ = _mm_unpacklo_ps( r0_, r2_ );	// x0, z0, x1, z1
+			__m128 t1_ = _mm_unpackhi_ps( r0_, r2_ );	// x2, z2, x3, z3
+			__m128 t2_ = _mm_unpacklo_ps( r1_, r3_ );	// y0, w0, y1, w1
+			__m128 t3_ = _mm_unpackhi_ps( r1_, r3_ );	// y2, w2, y3, w3
 			
-			r0 = _mm_unpacklo_ps( t0, t2 );			// x0, y0, z0, w0
-			r1 = _mm_unpackhi_ps( t0, t2 );			// x1, y1, z1, w1
-			r2 = _mm_unpacklo_ps( t1, t3 );			// x2, y2, z2, w2
-			r3 = _mm_unpackhi_ps( t1, t3 );			// x3, y3, z3, w3
+			r0_ = _mm_unpacklo_ps( t0_, t2_ );			// x0, y0, z0, w0
+			r1_ = _mm_unpackhi_ps( t0_, t2_ );			// x1, y1, z1, w1
+			r2_ = _mm_unpacklo_ps( t1_, t3_ );			// x2, y2, z2, w2
+			r3_ = _mm_unpackhi_ps( t1_, t3_ );			// x3, y3, z3, w3
 			
-			_mm_store_ps( dstPtr + n0, r0 );
-			_mm_store_ps( dstPtr + n1, r1 );
-			_mm_store_ps( dstPtr + n2, r2 );
-			_mm_store_ps( dstPtr + n3, r3 );
+			_mm_store_ps( dstPtr + n0, r0_ );
+			_mm_store_ps( dstPtr + n1, r1_ );
+			_mm_store_ps( dstPtr + n2, r2_ );
+			_mm_store_ps( dstPtr + n3, r3_ );
 		}
 		
 		// copy the last partial 4x4 block elements
@@ -296,25 +296,25 @@ void idMatX::CopyLowerToUpperTriangle()
 			srcPtr += n4;
 			dstPtr += 4;
 			
-			__m128 r0 = _mm_load_ps( srcPtr + n0 );
-			__m128 r1 = _mm_and_ps( _mm_load_ps( srcPtr + n1_masked ), bottomMask[b1] );
-			__m128 r2 = _mm_and_ps( _mm_load_ps( srcPtr + n2_masked ), bottomMask[b2] );
-			__m128 r3 = _mm_setzero_ps();
+			__m128 r0__ = _mm_load_ps( srcPtr + n0 );
+			__m128 r1__ = _mm_and_ps( _mm_load_ps( srcPtr + n1_masked ), bottomMask[b1] );
+			__m128 r2__ = _mm_and_ps( _mm_load_ps( srcPtr + n2_masked ), bottomMask[b2] );
+			__m128 r3__ = _mm_setzero_ps();
 			
-			__m128 t0 = _mm_unpacklo_ps( r0, r2 );	// x0, z0, x1, z1
-			__m128 t1 = _mm_unpackhi_ps( r0, r2 );	// x2, z2, x3, z3
-			__m128 t2 = _mm_unpacklo_ps( r1, r3 );	// y0, w0, y1, w1
-			__m128 t3 = _mm_unpackhi_ps( r1, r3 );	// y2, w2, y3, w3
+			__m128 t0__ = _mm_unpacklo_ps( r0__, r2__ );	// x0, z0, x1, z1
+			__m128 t1__ = _mm_unpackhi_ps( r0__, r2__ );	// x2, z2, x3, z3
+			__m128 t2__ = _mm_unpacklo_ps( r1__, r3__ );	// y0, w0, y1, w1
+			__m128 t3__ = _mm_unpackhi_ps( r1__, r3__ );	// y2, w2, y3, w3
 			
-			r0 = _mm_unpacklo_ps( t0, t2 );			// x0, y0, z0, w0
-			r1 = _mm_unpackhi_ps( t0, t2 );			// x1, y1, z1, w1
-			r2 = _mm_unpacklo_ps( t1, t3 );			// x2, y2, z2, w2
-			r3 = _mm_unpackhi_ps( t1, t3 );			// x3, y3, z3, w3
+			r0__ = _mm_unpacklo_ps( t0__, t2__ );			// x0, y0, z0, w0
+			r1__ = _mm_unpackhi_ps( t0__, t2__ );			// x1, y1, z1, w1
+			r2__ = _mm_unpacklo_ps( t1__, t3__ );			// x2, y2, z2, w2
+			r3__ = _mm_unpackhi_ps( t1__, t3__ );			// x3, y3, z3, w3
 			
-			_mm_store_ps( dstPtr + n0, r0 );
-			_mm_store_ps( dstPtr + n1, r1 );
-			_mm_store_ps( dstPtr + n2, r2 );
-			_mm_store_ps( dstPtr + n3, r3 );
+			_mm_store_ps( dstPtr + n0, r0__ );
+			_mm_store_ps( dstPtr + n1, r1__ );
+			_mm_store_ps( dstPtr + n2, r2__ );
+			_mm_store_ps( dstPtr + n3, r3__ );
 		}
 		
 		basePtr += n4 + 4;
@@ -323,27 +323,27 @@ void idMatX::CopyLowerToUpperTriangle()
 	// copy the lower right partial diagonal 4x4 block elements
 	if( m & 3 )
 	{
-		__m128 r0 = _mm_and_ps( _mm_load_ps( basePtr + n0 ), mask0 );
-		__m128 r1 = _mm_and_ps( _mm_load_ps( basePtr + n1_masked ), _mm_and_ps( mask1, bottomMask[b1] ) );
-		__m128 r2 = _mm_and_ps( _mm_load_ps( basePtr + n2_masked ), _mm_and_ps( mask2, bottomMask[b2] ) );
-		__m128 r3 = _mm_setzero_ps();
+		__m128 r0___ = _mm_and_ps( _mm_load_ps( basePtr + n0 ), mask0 );
+		__m128 r1___ = _mm_and_ps( _mm_load_ps( basePtr + n1_masked ), _mm_and_ps( mask1, bottomMask[b1] ) );
+		__m128 r2___ = _mm_and_ps( _mm_load_ps( basePtr + n2_masked ), _mm_and_ps( mask2, bottomMask[b2] ) );
+		__m128 r3___ = _mm_setzero_ps();
 		
-		__m128 t0 = _mm_unpacklo_ps( r0, r2 );	// x0, z0, x1, z1
-		__m128 t1 = _mm_unpackhi_ps( r0, r2 );	// x2, z2, x3, z3
-		__m128 t2 = _mm_unpacklo_ps( r1, r3 );	// y0, w0, y1, w1
-		__m128 t3 = _mm_unpackhi_ps( r1, r3 );	// y2, w2, y3, w3
+		__m128 t0___ = _mm_unpacklo_ps( r0___, r2___ );	// x0, z0, x1, z1
+		__m128 t1___ = _mm_unpackhi_ps( r0___, r2___ );	// x2, z2, x3, z3
+		__m128 t2___ = _mm_unpacklo_ps( r1___, r3___ );	// y0, w0, y1, w1
+		__m128 t3___ = _mm_unpackhi_ps( r1___, r3___ );	// y2, w2, y3, w3
 		
-		__m128 s0 = _mm_unpacklo_ps( t0, t2 );	// x0, y0, z0, w0
-		__m128 s1 = _mm_unpackhi_ps( t0, t2 );	// x1, y1, z1, w1
-		__m128 s2 = _mm_unpacklo_ps( t1, t3 );	// x2, y2, z2, w2
+		__m128 s0 = _mm_unpacklo_ps( t0___, t2___ );	// x0, y0, z0, w0
+		__m128 s1 = _mm_unpackhi_ps( t0___, t2___ );	// x1, y1, z1, w1
+		__m128 s2 = _mm_unpacklo_ps( t1___, t3___ );	// x2, y2, z2, w2
 		
-		r0 = _mm_or_ps( r0, s0 );
-		r1 = _mm_or_ps( r1, s1 );
-		r2 = _mm_or_ps( r2, s2 );
+		r0___ = _mm_or_ps( r0___, s0 );
+		r1___ = _mm_or_ps( r1___, s1 );
+		r2___ = _mm_or_ps( r2___, s2 );
 		
-		_mm_store_ps( basePtr + n2_masked, r2 );
-		_mm_store_ps( basePtr + n1_masked, r1 );
-		_mm_store_ps( basePtr + n0, r0 );
+		_mm_store_ps( basePtr + n2_masked, r2___ );
+		_mm_store_ps( basePtr + n1_masked, r1___ );
+		_mm_store_ps( basePtr + n0, r0___ );
 	}
 	
 #else
@@ -4496,24 +4496,24 @@ void idMatX::HessenbergReduction( idMatX& H )
 	
 	// accumulate transformations
 	Identity();
-	for( int m = high - 1; m >= low + 1; m-- )
+	for( int m_ = high - 1; m_ >= low + 1; m_-- )
 	{
-		if( H[m][m - 1] != 0.0f )
+		if( H[m_][m_ - 1] != 0.0f )
 		{
-			for( i = m + 1; i <= high; i++ )
+			for( i = m_ + 1; i <= high; i++ )
 			{
-				v[i] = H[i][m - 1];
+				v[i] = H[i][m_ - 1];
 			}
-			for( j = m; j <= high; j++ )
+			for( j = m_; j <= high; j++ )
 			{
 				g = 0.0f;
-				for( i = m; i <= high; i++ )
+				for( i = m_; i <= high; i++ )
 				{
 					g += v[i] * ( *this )[i][j];
 				}
 				// float division to avoid possible underflow
-				g = ( g / v[m] ) / H[m][m - 1];
-				for( i = m; i <= high; i++ )
+				g = ( g / v[m_] ) / H[m_][m_ - 1];
+				for( i = m_; i <= high; i++ )
 				{
 					( *this )[i][j] += g * v[i];
 				}

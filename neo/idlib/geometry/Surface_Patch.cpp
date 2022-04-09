@@ -565,7 +565,7 @@ void idSurface_Patch::SampleSinglePatchPoint( const idDrawVert ctrl[3][3], float
 idSurface_Patch::SampleSinglePatch
 ===================
 */
-void idSurface_Patch::SampleSinglePatch( const idDrawVert ctrl[3][3], int baseCol, int baseRow, int width, int horzSub, int vertSub, idDrawVert* outVerts ) const
+void idSurface_Patch::SampleSinglePatch( const idDrawVert ctrl[3][3], int baseCol, int baseRow, int _width, int horzSub, int vertSub, idDrawVert* outVerts ) const
 {
 	int		i, j;
 	float	u, v;
@@ -578,7 +578,7 @@ void idSurface_Patch::SampleSinglePatch( const idDrawVert ctrl[3][3], int baseCo
 		{
 			u = ( float ) i / ( horzSub - 1 );
 			v = ( float ) j / ( vertSub - 1 );
-			SampleSinglePatchPoint( ctrl, u, v, &outVerts[( ( baseRow + j ) * width ) + i + baseCol] );
+			SampleSinglePatchPoint( ctrl, u, v, &outVerts[( ( baseRow + j ) * _width ) + i + baseCol] );
 		}
 	}
 }

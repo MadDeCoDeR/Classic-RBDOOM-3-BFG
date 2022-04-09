@@ -34,19 +34,19 @@ If you have questions concerning this license or the applicable additional terms
 idShadowVert::CreateShadowCache
 ============
 */
-int idShadowVert::CreateShadowCache( idShadowVert* vertexCache, const idDrawVert* verts, const int numVerts )
+int idShadowVert::CreateShadowCache( idShadowVert* _vertexCache, const idDrawVert* verts, const int numVerts )
 {
 	for( int i = 0; i < numVerts; i++ )
 	{
-		vertexCache[i * 2 + 0].xyzw[0] = verts[i].xyz[0];
-		vertexCache[i * 2 + 0].xyzw[1] = verts[i].xyz[1];
-		vertexCache[i * 2 + 0].xyzw[2] = verts[i].xyz[2];
-		vertexCache[i * 2 + 0].xyzw[3] = 1.0f;
+		_vertexCache[i * 2 + 0].xyzw[0] = verts[i].xyz[0];
+		_vertexCache[i * 2 + 0].xyzw[1] = verts[i].xyz[1];
+		_vertexCache[i * 2 + 0].xyzw[2] = verts[i].xyz[2];
+		_vertexCache[i * 2 + 0].xyzw[3] = 1.0f;
 		
-		vertexCache[i * 2 + 1].xyzw[0] = verts[i].xyz[0];
-		vertexCache[i * 2 + 1].xyzw[1] = verts[i].xyz[1];
-		vertexCache[i * 2 + 1].xyzw[2] = verts[i].xyz[2];
-		vertexCache[i * 2 + 1].xyzw[3] = 0.0f;
+		_vertexCache[i * 2 + 1].xyzw[0] = verts[i].xyz[0];
+		_vertexCache[i * 2 + 1].xyzw[1] = verts[i].xyz[1];
+		_vertexCache[i * 2 + 1].xyzw[2] = verts[i].xyz[2];
+		_vertexCache[i * 2 + 1].xyzw[3] = 0.0f;
 	}
 	return numVerts * 2;
 }
@@ -56,25 +56,25 @@ int idShadowVert::CreateShadowCache( idShadowVert* vertexCache, const idDrawVert
 idShadowVertSkinned::CreateShadowCache
 ===================
 */
-int idShadowVertSkinned::CreateShadowCache( idShadowVertSkinned* vertexCache, const idDrawVert* verts, const int numVerts )
+int idShadowVertSkinned::CreateShadowCache( idShadowVertSkinned* _vertexCache, const idDrawVert* verts, const int numVerts )
 {
 	for( int i = 0; i < numVerts; i++ )
 	{
-		vertexCache[0].xyzw[0] = verts[i].xyz[0];
-		vertexCache[0].xyzw[1] = verts[i].xyz[1];
-		vertexCache[0].xyzw[2] = verts[i].xyz[2];
-		vertexCache[0].xyzw[3] = 1.0f;
-		*( unsigned int* )vertexCache[0].color = *( unsigned int* )verts[i].color;
-		*( unsigned int* )vertexCache[0].color2 = *( unsigned int* )verts[i].color2;
+		_vertexCache[0].xyzw[0] = verts[i].xyz[0];
+		_vertexCache[0].xyzw[1] = verts[i].xyz[1];
+		_vertexCache[0].xyzw[2] = verts[i].xyz[2];
+		_vertexCache[0].xyzw[3] = 1.0f;
+		*( unsigned int* )_vertexCache[0].color = *( unsigned int* )verts[i].color;
+		*( unsigned int* )_vertexCache[0].color2 = *( unsigned int* )verts[i].color2;
 		
-		vertexCache[1].xyzw[0] = verts[i].xyz[0];
-		vertexCache[1].xyzw[1] = verts[i].xyz[1];
-		vertexCache[1].xyzw[2] = verts[i].xyz[2];
-		vertexCache[1].xyzw[3] = 0.0f;
-		*( unsigned int* )vertexCache[1].color = *( unsigned int* )verts[i].color;
-		*( unsigned int* )vertexCache[1].color2 = *( unsigned int* )verts[i].color2;
+		_vertexCache[1].xyzw[0] = verts[i].xyz[0];
+		_vertexCache[1].xyzw[1] = verts[i].xyz[1];
+		_vertexCache[1].xyzw[2] = verts[i].xyz[2];
+		_vertexCache[1].xyzw[3] = 0.0f;
+		*( unsigned int* )_vertexCache[1].color = *( unsigned int* )verts[i].color;
+		*( unsigned int* )_vertexCache[1].color2 = *( unsigned int* )verts[i].color2;
 		
-		vertexCache += 2;
+		_vertexCache += 2;
 	}
 	return numVerts * 2;
 }

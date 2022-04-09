@@ -1104,15 +1104,15 @@ idJobThread::~idJobThread()
 idJobThread::Start
 ========================
 */
-void idJobThread::Start( core_t core, unsigned int threadNum )
+void idJobThread::Start( core_t core, unsigned int _threadNum )
 {
-	this->threadNum = threadNum;
+	this->threadNum = _threadNum;
 	// DG: change threadname from "JobListProcessor_%d" to "JLProc_%d", because Linux
 	// has a 15 (+ \0) char limit for threadnames.
 	// furthermore: va is not thread safe, use snPrintf instead
-	char name[16];
-	idStr::snPrintf( name, 16, "JLProc_%d", threadNum );
-	StartWorkerThread( name, core, THREAD_NORMAL, JOB_THREAD_STACK_SIZE );
+	char name_[16];
+	idStr::snPrintf( name_, 16, "JLProc_%d", _threadNum );
+	StartWorkerThread( name_, core, THREAD_NORMAL, JOB_THREAD_STACK_SIZE );
 	// DG end
 }
 

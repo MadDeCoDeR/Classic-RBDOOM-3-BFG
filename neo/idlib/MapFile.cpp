@@ -1457,12 +1457,12 @@ int idMapFile::AddEntity( idMapEntity* mapEnt )
 idMapFile::FindEntity
 ===============
 */
-idMapEntity* idMapFile::FindEntity( const char* name )
+idMapEntity* idMapFile::FindEntity( const char* _name )
 {
 	for( int i = 0; i < entities.Num(); i++ )
 	{
 		idMapEntity* ent = entities[i];
-		if( idStr::Icmp( ent->epairs.GetString( "name" ), name ) == 0 )
+		if( idStr::Icmp( ent->epairs.GetString( "name" ), _name ) == 0 )
 		{
 			return ent;
 		}
