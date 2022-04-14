@@ -4407,11 +4407,11 @@ void idAI::SetEnemyPosition()
 		
 		if( move.moveType == MOVETYPE_FLY )
 		{
-			predictedPath_t path;
+			predictedPath_t path_;
 			idVec3 end = move.moveDest;
 			end.z += enemyEnt->EyeOffset().z + fly_offset;
-			idAI::PredictPath( this, aas, move.moveDest, end - move.moveDest, 1000, 1000, SE_BLOCKED, path );
-			move.moveDest = path.endPos;
+			idAI::PredictPath( this, aas, move.moveDest, end - move.moveDest, 1000, 1000, SE_BLOCKED, path_ );
+			move.moveDest = path_.endPos;
 			move.toAreaNum = PointReachableAreaNum( move.moveDest, 1.0f );
 		}
 	}
@@ -5024,8 +5024,8 @@ void idAI::DirectDamage( const char* meleeDefName, idEntity* ent )
 	
 	if( !ent->fl.takedamage )
 	{
-		const idSoundShader* shader = declManager->FindSound( meleeDef->GetString( "snd_miss" ) );
-		StartSoundShader( shader, SND_CHANNEL_DAMAGE, 0, false, NULL );
+		const idSoundShader* shader_ = declManager->FindSound( meleeDef->GetString( "snd_miss" ) );
+		StartSoundShader( shader_, SND_CHANNEL_DAMAGE, 0, false, NULL );
 		return;
 	}
 	

@@ -185,16 +185,16 @@ manual_floor:
     {
       if (ChgM) // if a numeric model change
       {
-        sector_t *sec;
+        sector_t *sec_;
 
         //jff 5/23/98 find model with ceiling at target height if target
         //is a ceiling type
-        sec = (Targ==FtoLnC || Targ==FtoC)?
+        sec_ = (Targ==FtoLnC || Targ==FtoC)?
           P_FindModelCeilingSector(floor->floordestheight,secnum) :
           P_FindModelFloorSector(floor->floordestheight,secnum);
-        if (sec)
+        if (sec_)
         {
-          floor->texture = sec->floorpic;
+          floor->texture = sec_->floorpic;
           switch(ChgT)
           {
             case FChgZero:  // zero type
@@ -204,9 +204,9 @@ manual_floor:
               floor->type = genFloorChg0;
               break;
             case FChgTyp:   // copy type
-              floor->newspecial = sec->special;
+              floor->newspecial = sec_->special;
               //jff 3/14/98 change old field too
-              floor->oldspecial = sec->oldspecial;
+              floor->oldspecial = sec_->oldspecial;
               floor->type = genFloorChgT;
               break;
             case FChgTxt:   // leave type be
@@ -391,16 +391,16 @@ manual_ceiling:
     {
       if (ChgM)   // if a numeric model change
       {
-        sector_t *sec;
+        sector_t *sec2;
 
         //jff 5/23/98 find model with floor at target height if target
         //is a floor type
-        sec = (Targ==CtoHnF || Targ==CtoF)?         
+        sec2 = (Targ==CtoHnF || Targ==CtoF)?         
           P_FindModelFloorSector(targheight,secnum) :
           P_FindModelCeilingSector(targheight,secnum);
-        if (sec)
+        if (sec2)
         {
-          ceiling->texture = sec->ceilingpic;
+          ceiling->texture = sec2->ceilingpic;
           switch (ChgT)
           {
             case CChgZero:  // type is zeroed
@@ -410,9 +410,9 @@ manual_ceiling:
               ceiling->type = genCeilingChg0;
               break;
             case CChgTyp:   // type is copied
-              ceiling->newspecial = sec->special;
+              ceiling->newspecial = sec2->special;
               //jff 3/14/98 change old field too
-              ceiling->oldspecial = sec->oldspecial;
+              ceiling->oldspecial = sec2->oldspecial;
               ceiling->type = genCeilingChgT;
               break;
             case CChgTxt:   // type is left alone

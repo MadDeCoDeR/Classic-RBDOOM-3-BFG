@@ -597,14 +597,14 @@ void W_AddFile ( const char *filename)
 			}
 			else {
 					//idLib::Printf("adding lump %s\n", filelumpPointer->name); //for debug purposes
-				lumpinfo_t tlump;
-					tlump.handle = handle;
-					tlump.position = LONG(filelumpPointer->filepos);
-					tlump.size = LONG(filelumpPointer->size);
-					strncpy(tlump.name, filelumpPointer->name, 8);
-					tlump.name[8] = '\0';
-					tlump.null = false;
-					lumpinfo.emplace_back(tlump);
+				lumpinfo_t tlump_;
+					tlump_.handle = handle;
+					tlump_.position = LONG(filelumpPointer->filepos);
+					tlump_.size = LONG(filelumpPointer->size);
+					strncpy(tlump_.name, filelumpPointer->name, 8);
+					tlump_.name[8] = '\0';
+					tlump_.null = false;
+					lumpinfo.emplace_back(tlump_);
 					//GK: Check for REVERBD lump and activate reverb check ups
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 					if (!s_useXAudio.GetBool()) {
@@ -632,14 +632,14 @@ void W_AddFile ( const char *filename)
 			
 		}
 		else {
-		lumpinfo_t tlump;
-			tlump.handle = handle;
-			tlump.position = LONG(filelumpPointer->filepos);
-			tlump.size = LONG(filelumpPointer->size);
-			strncpy(tlump.name, filelumpPointer->name, 8);
-			tlump.name[8] = '\0';
-			tlump.null = false;
-			lumpinfo.emplace_back(tlump);
+		lumpinfo_t tlump__;
+			tlump__.handle = handle;
+			tlump__.position = LONG(filelumpPointer->filepos);
+			tlump__.size = LONG(filelumpPointer->size);
+			strncpy(tlump__.name, filelumpPointer->name, 8);
+			tlump__.name[8] = '\0';
+			tlump__.null = false;
+			lumpinfo.emplace_back(tlump__);
 		}
 		//GK end
 	}

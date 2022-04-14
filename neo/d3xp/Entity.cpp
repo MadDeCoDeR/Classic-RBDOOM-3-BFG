@@ -4183,12 +4183,12 @@ bool idEntity::HandleGuiCommands( idEntity* entityGui, const char* cmds )
 				{
 					while( src.CheckTokenString( "::" ) )
 					{
-						idToken token3;
-						if( !src.ReadToken( &token3 ) )
+						idToken token3_;
+						if( !src.ReadToken( &token3_ ) )
 						{
 							gameLocal.Error( "Expecting function name following '::' in gui for entity '%s'", entityGui->name.c_str() );
 						}
-						token2 += "::" + token3;
+						token2 += "::" + token3_;
 					}
 					const function_t* func = gameLocal.GetProgram()->FindFunction( token2 );
 					if( !func )

@@ -961,18 +961,18 @@ bool idSWF::LoadJSON( const char* filename )
 					Value& jsonDraw = entry["fillDraws"][d_];
 					
 					Value& style = jsonDraw["style"];
-					idStr type = style["type"].GetString();
+					idStr type1 = style["type"].GetString();
 					
 					// 0 = solid, 1 = gradient, 4 = bitmap
-					if( type == "gradient" )
+					if( type1 == "gradient" )
 					{
 						fillDraw.style.type = 1;
 					}
-					else if( type == "bitmap" )
+					else if( type1 == "bitmap" )
 					{
 						fillDraw.style.type = 4;
 					}
-					else if( type == "solid" )
+					else if( type1 == "solid" )
 					{
 						fillDraw.style.type = 0;
 					}

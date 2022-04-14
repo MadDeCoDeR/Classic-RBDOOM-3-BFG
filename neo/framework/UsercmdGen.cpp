@@ -951,9 +951,9 @@ void	DrawJoypadTexture(
 	{
 		float	s, c;
 		idMath::SinCos( rad, s, c );
-		for( int ringNum = 0 ; ringNum < NUM_RINGS ; ringNum++ )
+		for( int ringNum1 = 0 ; ringNum1 < NUM_RINGS ; ringNum1++ )
 		{
-			const float ringSize = ringSizes[ ringNum ];
+			const float ringSize = ringSizes[ ringNum1 ];
 			const int	ix = idMath::Floor( ringSize * c );
 			const int	iy = idMath::Floor( ringSize * s );
 #if 0

@@ -1411,14 +1411,14 @@ void idMultiplayerGame::NewState( gameState_t news, idPlayer* player )
 		}
 		case COUNTDOWN:
 		{
-			idBitMsg	outMsg;
+			idBitMsg	outMsg_;
 			byte		msgBuf[ 128 ];
 			
 			warmupEndTime = gameLocal.serverTime + 1000 * cvarSystem->GetCVarInteger( "g_countDown" );
 			
-			outMsg.InitWrite( msgBuf, sizeof( msgBuf ) );
-			outMsg.WriteLong( warmupEndTime );
-			session->GetActingGameStateLobbyBase().SendReliable( GAME_RELIABLE_MESSAGE_WARMUPTIME, outMsg, false );
+			outMsg_.InitWrite( msgBuf, sizeof( msgBuf ) );
+			outMsg_.WriteLong( warmupEndTime );
+			session->GetActingGameStateLobbyBase().SendReliable( GAME_RELIABLE_MESSAGE_WARMUPTIME, outMsg_, false );
 			
 			// Reset all the scores.
 			for( i = 0; i < gameLocal.numClients; i++ )
@@ -1772,8 +1772,8 @@ void idMultiplayerGame::Run()
 	idLobbyBase& lobby = session->GetActingGameStateLobbyBase();
 	for( i = 0; i < gameLocal.numClients; i++ )
 	{
-		idPlayer* player = static_cast<idPlayer*>( gameLocal.entities[i] );
-		if( player != NULL )
+		idPlayer* player_ = static_cast<idPlayer*>( gameLocal.entities[i] );
+		if( player_ != NULL )
 		{
 			playerState[i].ping = lobby.GetLobbyUserQoS( gameLocal.lobbyUserIDs[i] );
 		}

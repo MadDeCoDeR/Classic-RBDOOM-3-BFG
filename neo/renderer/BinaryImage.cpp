@@ -518,12 +518,12 @@ bool idBinaryImage::LoadFromGeneratedFile( idFile* bFile, ID_TIME_T sourceTimeSt
 		{
 			return false;
 		}
-		idSwapClass<bimageImage_t> swap;
-		swap.Big( img.level );
-		swap.Big( img.destZ );
-		swap.Big( img.width );
-		swap.Big( img.height );
-		swap.Big( img.dataSize );
+		idSwapClass<bimageImage_t> swap1;
+		swap1.Big( img.level );
+		swap1.Big( img.destZ );
+		swap1.Big( img.width );
+		swap1.Big( img.height );
+		swap1.Big( img.dataSize );
 		assert( img.level >= 0 && img.level < fileData.numLevels );
 		assert( img.destZ == 0 || fileData.textureType == TT_CUBIC );
 		assert( img.dataSize > 0 );

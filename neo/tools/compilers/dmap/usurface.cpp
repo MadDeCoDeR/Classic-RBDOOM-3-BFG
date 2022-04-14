@@ -790,7 +790,7 @@ void PutPrimitivesInAreas( uEntity_t* e )
 			for( i = 0 ; i < model->NumSurfaces() ; i++ )
 			{
 				const modelSurface_t* surface = model->Surface( i );
-				const srfTriangles_t* tri = surface->geometry;
+				const srfTriangles_t* tri1 = surface->geometry;
 				
 				mapTri_t	mapTri;
 				memset( &mapTri, 0, sizeof( mapTri ) );
@@ -800,16 +800,16 @@ void PutPrimitivesInAreas( uEntity_t* e )
 				{
 					mapTri.mergeGroup = ( void* )surface;
 				}
-				for( int j = 0 ; j < tri->numIndexes ; j += 3 )
+				for( int j = 0 ; j < tri1->numIndexes ; j += 3 )
 				{
 					for( int k = 0 ; k < 3 ; k++ )
 					{
-						idVec3 v = tri->verts[tri->indexes[j + k]].xyz;
+						idVec3 v = tri1->verts[tri1->indexes[j + k]].xyz;
 						
 						mapTri.v[k].xyz = v * axis + origin;
 						
-						mapTri.v[k].SetNormal( tri->verts[tri->indexes[j + k]].GetNormal() * axis );
-						mapTri.v[k].SetTexCoord( tri->verts[tri->indexes[j + k]].GetTexCoord() );
+						mapTri.v[k].SetNormal( tri1->verts[tri1->indexes[j + k]].GetNormal() * axis );
+						mapTri.v[k].SetTexCoord( tri1->verts[tri1->indexes[j + k]].GetTexCoord() );
 					}
 					AddMapTriToAreas( &mapTri, e );
 				}

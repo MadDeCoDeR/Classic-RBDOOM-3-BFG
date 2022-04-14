@@ -1377,8 +1377,8 @@ void idWeapon::GetWeaponDef( const char* objectname, int ammoinclip )
 			idStr jointName = weaponDef->dict.GetString( va( "%s_joint", name.c_str() ) );
 			newLight.joint = animator.GetJointHandle( jointName.c_str() );
 			
-			idStr shader = weaponDef->dict.GetString( va( "%s_shader", name.c_str() ) );
-			newLight.light.shader = declManager->FindMaterial( shader, false );
+			idStr shader_ = weaponDef->dict.GetString( va( "%s_shader", name.c_str() ) );
+			newLight.light.shader = declManager->FindMaterial( shader_, false );
 			
 			float radius = weaponDef->dict.GetFloat( va( "%s_radius", name.c_str() ) );
 			newLight.light.lightRadius[0] = newLight.light.lightRadius[1] = newLight.light.lightRadius[2] = radius;

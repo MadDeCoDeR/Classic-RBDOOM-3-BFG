@@ -1335,12 +1335,12 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 	{
 		if( textLines.Num() > 0 )
 		{
-			idStr& text = textLines[0];
+			idStr& text1 = textLines[0];
 			float left = bounds.tl.x;
 			
 			int startCheckIndex = textInstance->GetInputStartChar();
 			
-			if( startCheckIndex >= text.Length() )
+			if( startCheckIndex >= text1.Length() )
 			{
 				startCheckIndex = 0;
 			}
@@ -1352,9 +1352,9 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 			
 			bool endFound = false;
 			int c_ = startCheckIndex;
-			while( c_ < text.Length() )
+			while( c_ < text1.Length() )
 			{
-				uint32 tc = text.UTF8Char( c_ );
+				uint32 tc = text1.UTF8Char( c_ );
 				scaledGlyphInfo_t glyph;
 				fontInfo->GetScaledGlyph( glyphScale, tc, glyph );
 				float glyphSkip = glyph.xSkip;
@@ -1396,7 +1396,7 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 			
 			if( !endFound )
 			{
-				inputEndChar = text.Length();
+				inputEndChar = text1.Length();
 			}
 			
 			startCheckIndex += endCharacter;
@@ -1415,11 +1415,11 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 		
 		if( t < textLine )
 		{
-			idStr& text = textLines[t];
-			c += text.Length();
+			idStr& text2 = textLines[t];
+			c += text2.Length();
 			startCharacter = endCharacter;
-			endCharacter = startCharacter + text.Length();
-			overallIndex += text.Length();
+			endCharacter = startCharacter + text2.Length();
+			overallIndex += text2.Length();
 			
 			// find the right icon index if we scrolled passed the previous ones
 			for( int iconChar = curIcon; iconChar < tooltipIconList.Num(); ++iconChar )
@@ -1444,8 +1444,8 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 		
 		startCharacter = endCharacter;
 		
-		idStr& text = textLines[textLine];
-		int lastChar = text.Length();
+		idStr& text3 = textLines[textLine];
+		int lastChar = text3.Length();
 		if( textInstance->IsSubtitle() )
 		{
 			lastChar = textInstance->GetSubEndIndex();
@@ -1464,7 +1464,7 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 			cursorPos -= startCharacter;
 			endCharacter = inputEndChar;
 			lastChar = endCharacter;
-			text = text.Mid( startCharacter, endCharacter - startCharacter );
+			text3 = text3.Mid( startCharacter, endCharacter - startCharacter );
 		}
 		else
 		{
@@ -1493,10 +1493,10 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 			}
 			else
 			{
-				if( i < text.Length() )
+				if( i < text3.Length() )
 				{
 					scaledGlyphInfo_t glyph;
-					fontInfo->GetScaledGlyph( glyphScale, text.UTF8Char( i ), glyph );
+					fontInfo->GetScaledGlyph( glyphScale, text3.UTF8Char( i ), glyph );
 					width += glyph.xSkip;
 					if( textInstance->HasStroke() )
 					{
@@ -1530,7 +1530,7 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 			
 			int idx = 0;
 			scaledGlyphInfo_t glyph;
-			fontInfo->GetScaledGlyph( glyphScale, text.UTF8Char( idx ), glyph );
+			fontInfo->GetScaledGlyph( glyphScale, text3.UTF8Char( idx ), glyph );
 			
 			topSpace = ( ( biggestGlyphHeight * imageScale ) - glyph.height ) / 2.0f;
 			
@@ -1607,7 +1607,7 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 		while( i < lastChar )
 		{
 		
-			if( i >= text.Length() )
+			if( i >= text3.Length() )
 			{
 				break;
 			}
@@ -1615,18 +1615,18 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 			// Support colors
 			if( !textInstance->ignoreColor )
 			{
-				if( text[ i ] == C_COLOR_ESCAPE )
+				if( text3[ i ] == C_COLOR_ESCAPE )
 				{
-					if( idStr::IsColor( text.c_str() + i++ ) )
+					if( idStr::IsColor( text3.c_str() + i++ ) )
 					{
-						if( text[ i ] == C_COLOR_DEFAULT )
+						if( text3[ i ] == C_COLOR_DEFAULT )
 						{
 							i++;
 							textColor = defaultColor;
 						}
 						else
 						{
-							textColor = idStr::ColorForIndex( text[ i++ ] );
+							textColor = idStr::ColorForIndex( text3[ i++ ] );
 							textColor.w = defaultColor.w;
 						}
 						continue;
@@ -1634,7 +1634,7 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 				}
 			}
 			
-			uint32 character = text.UTF8Char( i );
+			uint32 character = text3.UTF8Char( i );
 			
 			if( character == '\n' )
 			{

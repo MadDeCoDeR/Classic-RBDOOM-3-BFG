@@ -535,15 +535,15 @@ void idGuiScript::FixupParms( idWindow* win )
 		int parmCount = parms.Num();
 		for( int i = 1; i < parmCount; i++ )
 		{
-			idWinStr* str = dynamic_cast<idWinStr*>( parms[i].var );
-			if( idStr::Icmpn( *str, "gui::", 5 ) == 0 )
+			idWinStr* str1 = dynamic_cast<idWinStr*>( parms[i].var );
+			if( idStr::Icmpn( *str1, "gui::", 5 ) == 0 )
 			{
 			
 				//  always use a string here, no point using a float if it is one
 				//  FIXME: This creates duplicate variables, while not technically a problem since they
 				//  are all bound to the same guiDict, it does consume extra memory and is generally a bad thing
 				idWinStr* defvar = new( TAG_OLD_UI ) idWinStr();
-				defvar->Init( *str, win );
+				defvar->Init( *str1, win );
 				win->AddDefinedVar( defvar );
 				delete parms[i].var;
 				parms[i].var = defvar;
@@ -557,11 +557,11 @@ void idGuiScript::FixupParms( idWindow* win )
 				//}
 				//
 			}
-			else if( ( *str[0] ) == '$' )
+			else if( ( *str1[0] ) == '$' )
 			{
 				//
 				//  dont include the $ when asking for variable
-				dest = win->GetGui()->GetDesktop()->GetWinVarByName( ( const char* )( *str ) + 1, true );
+				dest = win->GetGui()->GetDesktop()->GetWinVarByName( ( const char* )( *str1 ) + 1, true );
 				//
 				if( dest )
 				{
@@ -570,13 +570,13 @@ void idGuiScript::FixupParms( idWindow* win )
 					parms[i].own = false;
 				}
 			}
-			else if( idStr::Cmpn( str->c_str(), STRTABLE_ID, STRTABLE_ID_LENGTH ) == 0 )
+			else if( idStr::Cmpn( str1->c_str(), STRTABLE_ID, STRTABLE_ID_LENGTH ) == 0 )
 			{
-				str->Set( idLocalization::GetString( str->c_str() ) );
+				str1->Set( idLocalization::GetString( str1->c_str() ) );
 			}
 			else if( precacheBackground )
 			{
-				const idMaterial* mat = declManager->FindMaterial( str->c_str() );
+				const idMaterial* mat = declManager->FindMaterial( str1->c_str() );
 				mat->SetSort( SS_GUI );
 			}
 			else if( precacheSounds )
@@ -584,7 +584,7 @@ void idGuiScript::FixupParms( idWindow* win )
 				// Search for "play <...>"
 				idToken token;
 				idParser parser( LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT );
-				parser.LoadMemory( str->c_str(), str->Length(), "command" );
+				parser.LoadMemory( str1->c_str(), str1->Length(), "command" );
 				
 				while( parser.ReadToken( &token ) )
 				{

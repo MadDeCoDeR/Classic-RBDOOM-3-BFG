@@ -245,25 +245,25 @@ void idSWF::WriteSwfImageAtlas( const char* filename )
 		for( int j = 0 ; j < pack.trueSize.x * pack.trueSize.y * 4 ; j++ )
 		{
 			int	v = pack.imageData[ j ];
-			int	x = j & 3;
-			if( v < minV[x] )
+			int	x_ = j & 3;
+			if( v < minV[x_] )
 			{
-				minV[x] = v;
+				minV[x_] = v;
 			}
-			if( v > maxV[x] )
+			if( v > maxV[x_] )
 			{
-				maxV[x] = v;
+				maxV[x_] = v;
 			}
 		}
 //		idLib::Printf( "Color normalize: %3i:%3i  %3i:%3i  %3i:%3i  %3i:%3i\n",
 //			minV[0], maxV[0], minV[1], maxV[1], minV[2], maxV[2], minV[3], maxV[3] );
 
 		// don't divide by zero
-		for( int x = 0 ; x < 4 ; x++ )
+		for( int x__ = 0 ; x__ < 4 ; x++ )
 		{
-			if( maxV[x] == 0 )
+			if( maxV[x__] == 0 )
 			{
-				maxV[x] = 1;
+				maxV[x__] = 1;
 			}
 		}
 		// rescale the image
@@ -281,8 +281,8 @@ void idSWF::WriteSwfImageAtlas( const char* filename )
 			for( int j = 0; j < pack.trueSize.x * pack.trueSize.y * 4; j++ )
 			{
 				int	v = pack.imageData[ j ];
-				int	x = j & 3;
-				v = v * 255 / maxV[x];
+				int	x___ = j & 3;
+				v = v * 255 / maxV[x___];
 				pack.imageData[ j ] = v;
 			}
 		}

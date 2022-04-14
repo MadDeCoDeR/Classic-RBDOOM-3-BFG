@@ -1278,9 +1278,9 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 								av_rescale_rnd(frame3->nb_samples, frame3->sample_rate, frame3->sample_rate, AV_ROUND_UP),
 								dst_smp,
 								0);
-							int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t**)frame3->extended_data, frame3->nb_samples);
+							int res1 = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t**)frame3->extended_data, frame3->nb_samples);
 							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame3->channels,
-								res, dst_smp, 1);
+								res1, dst_smp, 1);
 						}
 						else {
 							num_bytes = frame3->linesize[0];

@@ -1766,10 +1766,10 @@ bool idRenderModelStatic::ConvertDAEToModelSurfaces( const ColladaParser* dae )
 			//if( mesh->numTVFaces == mesh->numFaces && mesh->numTVertexes != 0 )
 			if( ( *mesh )->mTexCoords.Num() > 0 )
 			{
-				const idVec2& tv = ( *mesh )->mTexCoords[ mv->tv ];
-				float u = tv.x * uTiling + uOffset;
-				float v = tv.y * vTiling + vOffset;
-				tri->verts[ j ].SetTexCoord( u * textureCos + v * textureSin, u * -textureSin + v * textureCos );
+				const idVec2& tv1 = ( *mesh )->mTexCoords[ mv->tv ];
+				float u = tv1.x * uTiling + uOffset;
+				float v_ = tv1.y * vTiling + vOffset;
+				tri->verts[ j ].SetTexCoord( u * textureCos + v_ * textureSin, u * -textureSin + v_ * textureCos );
 			}
 		}
 		
@@ -2131,10 +2131,10 @@ bool idRenderModelStatic::ConvertASEToModelSurfaces( const struct aseModel_s* as
 			*( unsigned* )tri->verts[j].color = *( unsigned* )mv->color;
 			if( mesh->numTVFaces == mesh->numFaces && mesh->numTVertexes != 0 )
 			{
-				const idVec2& tv = mesh->tvertexes[ mv->tv ];
-				float u = tv.x * uTiling + uOffset;
-				float v = tv.y * vTiling + vOffset;
-				tri->verts[j].SetTexCoord( u * textureCos + v * textureSin, u * -textureSin + v * textureCos );
+				const idVec2& tv1 = mesh->tvertexes[ mv->tv ];
+				float u = tv1.x * uTiling + uOffset;
+				float v_ = tv1.y * vTiling + vOffset;
+				tri->verts[j].SetTexCoord( u * textureCos + v_ * textureSin, u * -textureSin + v_ * textureCos );
 			}
 		}
 		
@@ -3135,10 +3135,10 @@ bool idRenderModelStatic::ConvertMAToModelSurfaces( const struct maModel_s* ma )
 			*( unsigned* )tri->verts[j].color = *( unsigned* )mv->color;
 			if( mesh->numTVertexes != 0 )
 			{
-				const idVec2& tv = mesh->tvertexes[ mv->tv ];
-				float u = tv.x * uTiling + uOffset;
-				float v = tv.y * vTiling + vOffset;
-				tri->verts[j].SetTexCoord( u * textureCos + v * textureSin, u * -textureSin + v * textureCos );
+				const idVec2& tv1 = mesh->tvertexes[ mv->tv ];
+				float u = tv1.x * uTiling + uOffset;
+				float v_ = tv1.y * vTiling + vOffset;
+				tri->verts[j].SetTexCoord( u * textureCos + v_ * textureSin, u * -textureSin + v_ * textureCos );
 			}
 		}
 		

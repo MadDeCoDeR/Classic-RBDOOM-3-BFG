@@ -2621,12 +2621,12 @@ void idBFGProjectile::Launch( const idVec3& start, const idVec3& dir, const idVe
 		SetTimeState	ts( maledict->timeGroup );
 		
 		idVec3			realPoint;
-		idMat3			temp;
+		idMat3			temp1;
 		float			dist;
 		jointHandle_t	bodyJoint;
 		
 		bodyJoint = maledict->GetAnimator()->GetJointHandle( "Chest1" );
-		maledict->GetJointWorldTransform( bodyJoint, gameLocal.time, realPoint, temp );
+		maledict->GetJointWorldTransform( bodyJoint, gameLocal.time, realPoint, temp1 );
 		
 		dist = idVec3( realPoint - GetPhysics()->GetOrigin() ).Length();
 		

@@ -674,9 +674,9 @@ idStr idRenderProgManager::StripDeadCode( const idStr& in, const char* name, con
 		int i = stack[stack.Num() - 1];
 		stack.SetNum( stack.Num() - 1 );
 		
-		idLexer src( LEXFL_NOFATALERRORS );
-		src.LoadMemory( blocks[i].postfix.c_str(), blocks[i].postfix.Length(), name );
-		while( src.ReadToken( &token ) )
+		idLexer src_( LEXFL_NOFATALERRORS );
+		src_.LoadMemory( blocks[i].postfix.c_str(), blocks[i].postfix.Length(), name );
+		while( src_.ReadToken( &token ) )
 		{
 			for( int j = 0; j < blocks.Num(); j++ )
 			{

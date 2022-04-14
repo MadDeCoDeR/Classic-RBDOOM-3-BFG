@@ -323,8 +323,8 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 				const char separator = '\n';
 				idList<idStr> lines;
 				lines.Clear();
-				idStr source( programGLSL );
-				lines.Append( source );
+				idStr source_( programGLSL );
+				lines.Append( source_ );
 				for( int index = 0, ofs = lines[index].Find( separator ); ofs != -1; index++, ofs = lines[index].Find( separator ) )
 				{
 					lines.Append( lines[index].c_str() + ofs + 1 );

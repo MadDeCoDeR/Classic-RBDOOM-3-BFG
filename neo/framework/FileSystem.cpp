@@ -1215,10 +1215,10 @@ void idFileSystemLocal::WriteResourcePacks()
 	// load all file manifests
 	for( int i = 0; i < manifestFiles.Num(); i++ )
 	{
-		idStr path = "maps/";
-		path += manifestFiles[ i ];
+		idStr path_ = "maps/";
+		path_ += manifestFiles[ i ];
 		idFileManifest manifest;
-		if( manifest.LoadManifest( path ) )
+		if( manifest.LoadManifest( path_ ) )
 		{
 			//manifest.Print();
 			manifest.RemoveAll( va( "strings/%s", ID_LANG_ENGLISH ) );	// remove all .lang files
@@ -1235,14 +1235,14 @@ void idFileSystemLocal::WriteResourcePacks()
 	// load all preload manifests
 	for( int i = 0; i < preloadFiles.Num(); i++ )
 	{
-		idStr path = "maps/";
-		path += preloadFiles[ i ];
-		if( path.Find( "_startup", false ) >= 0 )
+		idStr path__ = "maps/";
+		path__ += preloadFiles[ i ];
+		if( path__.Find( "_startup", false ) >= 0 )
 		{
 			continue;
 		}
 		idPreloadManifest preload;
-		if( preload.LoadManifest( path ) )
+		if( preload.LoadManifest( path__ ) )
 		{
 			preloadManifests.Append( preload );
 			//preload.Print();
