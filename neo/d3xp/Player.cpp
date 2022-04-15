@@ -2376,9 +2376,9 @@ void idPlayer::Save( idSaveGame* savefile ) const
 	inventory.Save( savefile );
 	weapon.Save( savefile );
 	
-	for( int i = 0; i < NUM_QUICK_SLOTS; ++i )
+	for( int i1 = 0; i1 < NUM_QUICK_SLOTS; ++i1 )
 	{
-		savefile->WriteInt( quickSlot[ i ] );
+		savefile->WriteInt( quickSlot[ i1 ] );
 	}
 	
 	savefile->WriteInt( weapon_soulcube );
@@ -2590,21 +2590,21 @@ void idPlayer::Save( idSaveGame* savefile ) const
 	savefile->WriteInt( playedTimeSecs );
 	savefile->WriteInt( playedTimeResidual );
 	
-	for( int i = 0; i < MAX_PLAYER_PDA; i++ )
+	for( int i2 = 0; i2 < MAX_PLAYER_PDA; i2++ )
 	{
-		savefile->WriteBool( pdaHasBeenRead[i] );
+		savefile->WriteBool( pdaHasBeenRead[i2] );
 	}
 	
-	for( int i = 0; i < MAX_PLAYER_VIDEO; i++ )
+	for( int i3 = 0; i3 < MAX_PLAYER_VIDEO; i3++ )
 	{
-		savefile->WriteBool( videoHasBeenViewed[i] );
+		savefile->WriteBool( videoHasBeenViewed[i3] );
 	}
 	
-	for( int i = 0; i < MAX_PLAYER_AUDIO; i++ )
+	for( int i4 = 0; i4 < MAX_PLAYER_AUDIO; i4++ )
 	{
 		for( int j = 0; j < MAX_PLAYER_AUDIO_ENTRIES; j++ )
 		{
-			savefile->WriteBool( audioHasBeenHeard[i][j] );
+			savefile->WriteBool( audioHasBeenHeard[i4][j] );
 		}
 	}
 }
@@ -2670,9 +2670,9 @@ void idPlayer::Restore( idRestoreGame* savefile )
 	}
 	
 	
-	for( int i = 0; i < NUM_QUICK_SLOTS; ++i )
+	for( int i5 = 0; i5 < NUM_QUICK_SLOTS; ++i5 )
 	{
-		savefile->ReadInt( quickSlot[ i ] );
+		savefile->ReadInt( quickSlot[ i5 ] );
 	}
 	
 	savefile->ReadInt( weapon_soulcube );
@@ -2938,21 +2938,21 @@ void idPlayer::Restore( idRestoreGame* savefile )
 	laserSightRenderEntity.hModel = renderModelManager->FindModel( "_BEAM" );
 	laserSightRenderEntity.customShader = declManager->FindMaterial( "stereoRenderLaserSight" );
 	
-	for( int i = 0; i < MAX_PLAYER_PDA; i++ )
+	for( int i6 = 0; i6 < MAX_PLAYER_PDA; i6++ )
 	{
-		savefile->ReadBool( pdaHasBeenRead[i] );
+		savefile->ReadBool( pdaHasBeenRead[i6] );
 	}
 	
-	for( int i = 0; i < MAX_PLAYER_VIDEO; i++ )
+	for( int i7 = 0; i7 < MAX_PLAYER_VIDEO; i7++ )
 	{
-		savefile->ReadBool( videoHasBeenViewed[i] );
+		savefile->ReadBool( videoHasBeenViewed[i7] );
 	}
 	
-	for( int i = 0; i < MAX_PLAYER_AUDIO; i++ )
+	for( int i8 = 0; i8 < MAX_PLAYER_AUDIO; i8++ )
 	{
 		for( int j = 0; j < MAX_PLAYER_AUDIO_ENTRIES; j++ )
 		{
-			savefile->ReadBool( audioHasBeenHeard[i][j] );
+			savefile->ReadBool( audioHasBeenHeard[i8][j] );
 		}
 	}
 	
@@ -10270,10 +10270,10 @@ void idPlayer::Damage( idEntity* inflictor, idEntity* attacker, const idVec3& di
 			attackerPushScale = 1.0f;
 		}
 		
-		idVec3 kick = dir;
-		kick.Normalize();
-		kick *= g_knockback.GetFloat() * knockback * attackerPushScale / 200.0f;
-		physicsObj.SetLinearVelocity( physicsObj.GetLinearVelocity() + kick );
+		idVec3 kick_ = dir;
+		kick_.Normalize();
+		kick_ *= g_knockback.GetFloat() * knockback * attackerPushScale / 200.0f;
+		physicsObj.SetLinearVelocity( physicsObj.GetLinearVelocity() + kick_ );
 		
 		// set the timer so that the player can't cancel out the movement immediately
 		physicsObj.SetKnockBack( idMath::ClampInt( 50, 200, knockback * 2 ) );

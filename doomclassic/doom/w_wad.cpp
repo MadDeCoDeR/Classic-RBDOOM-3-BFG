@@ -1710,7 +1710,7 @@ void MasterExport() {
 			filelump_t * filelumpPointer = &fileinfo[0];
 			rep = false;
 
-			for (int i = startlump; i < nlps; i++, filelumpPointer++)
+			for (int i_ = startlump; i_ < nlps; i_++, filelumpPointer++)
 			{
 				if (!idStr::Icmpn(filelumpPointer->name, "M_EPISOD",8) || !idStr::Icmp(filelumpPointer->name, "M_EPI1") || !idStr::Icmp(filelumpPointer->name, "M_EPI2") || !idStr::Icmp(filelumpPointer->name, "M_EPI3") || !idStr::Icmp(filelumpPointer->name, "M_EPI4")) {
 					remlmp++;

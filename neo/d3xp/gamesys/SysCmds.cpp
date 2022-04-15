@@ -495,9 +495,9 @@ void Cmd_Give_f( const idCmdArgs& args )
 		{
 			// Give the personal PDA first
 			player->GivePDA( NULL, NULL );
-			for( int i = 0; i < declManager->GetNumDecls( DECL_PDA ); i++ )
+			for( int i_ = 0; i_ < declManager->GetNumDecls( DECL_PDA ); i_++ )
 			{
-				player->GivePDA( static_cast<const idDeclPDA*>( declManager->DeclByIndex( DECL_PDA, i ) ), NULL );
+				player->GivePDA( static_cast<const idDeclPDA*>( declManager->DeclByIndex( DECL_PDA, i_ ) ), NULL );
 			}
 		}
 		else

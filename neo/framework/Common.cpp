@@ -1767,10 +1767,10 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		{
 			for( int i = 0; i < splashScreen->GetNumStages(); i++ )
 			{
-				idImage* image = splashScreen->GetStage( i )->texture.image;
-				if( image != NULL )
+				idImage* image1 = splashScreen->GetStage( i )->texture.image;
+				if( image1 != NULL )
 				{
-					image->PurgeImage();
+					image1->PurgeImage();
 				}
 			}
 		}
@@ -1778,10 +1778,10 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		{
 			for (int i = 0; i < photsensitivityscreen->GetNumStages(); i++)
 			{
-				idImage* image = photsensitivityscreen->GetStage(i)->texture.image;
-				if (image != NULL)
+				idImage* image2 = photsensitivityscreen->GetStage(i)->texture.image;
+				if (image2 != NULL)
 				{
-					image->PurgeImage();
+					image2->PurgeImage();
 				}
 			}
 		}

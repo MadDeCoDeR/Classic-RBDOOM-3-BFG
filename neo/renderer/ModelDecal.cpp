@@ -969,9 +969,9 @@ void idRenderModelDecal::WriteToDemoFile( idDemoFile* f ) const
 	f->WriteUnsignedInt( firstDecal );
 	f->WriteUnsignedInt( nextDecal );
 	
-	for( unsigned int i = firstDecal; i < nextDecal; i++ )
+	for( unsigned int i_ = firstDecal; i_ < nextDecal; i_++ )
 	{
-		const decal_t& decal = decals[ i & ( MAX_DECALS - 1 ) ];
+		const decal_t& decal = decals[ i_ & ( MAX_DECALS - 1 ) ];
 		
 		if( decal.writtenToDemo )
 		{

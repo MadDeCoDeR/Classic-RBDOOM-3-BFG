@@ -711,11 +711,11 @@ void idSWF::RenderShape( idRenderSystem* gui, const idSWFShape* shape, const swf
 			idSWFDictionaryEntry* entry = &dictionary[ fill.style.bitmapID ];
 			material = atlasMaterial;
 			idVec2i	atlasSize( material->GetImageWidth(), material->GetImageHeight() );
-			for( int i = 0 ; i < 2 ; i++ )
+			for( int i1 = 0 ; i1 < 2 ; i1++ )
 			{
-				size[i] = entry->imageSize[i];
-				atlasScale[i] = ( float )size[i] / atlasSize[i];
-				atlasBias[i] = ( float )entry->imageAtlasOffset[i] / atlasSize[i];
+				size[i1] = entry->imageSize[i1];
+				atlasScale[i1] = ( float )size[i1] / atlasSize[i1];
+				atlasBias[i1] = ( float )entry->imageAtlasOffset[i1] / atlasSize[i1];
 			}
 			// de-normalize color channels after DXT decompression
 			color.mul = entry->channelScale;
@@ -1778,10 +1778,10 @@ void idSWF::RenderEditText( idRenderSystem* gui, idSWFTextInstance* textInstance
 				idVec4 strokeColor = colorBlack;
 				strokeColor.w = textInstance->GetStrokeStrength() * defaultColor.w;
 				gui->SetColor( strokeColor );
-				for( int index = 0; index < 4; ++index )
+				for( int index_ = 0; index_ < 4; ++index_ )
 				{
-					float xPos = glyphX + ( ( strokeXOffsets[ index ] * textInstance->GetStrokeWeight() ) * glyphScale );
-					float yPos = glyphY + ( ( strokeYOffsets[ index ] * textInstance->GetStrokeWeight() ) * glyphScale );
+					float xPos = glyphX + ( ( strokeXOffsets[ index_ ] * textInstance->GetStrokeWeight() ) * glyphScale );
+					float yPos = glyphY + ( ( strokeYOffsets[ index_ ] * textInstance->GetStrokeWeight() ) * glyphScale );
 					idVec2 topLeft = matrix.Transform( idVec2( xPos, yPos ) );
 					idVec2 topRight = matrix.Transform( idVec2( xPos + glyphW, yPos ) );
 					idVec2 botRight = matrix.Transform( idVec2( xPos + glyphW, yPos + glyphH ) );
@@ -1976,9 +1976,9 @@ swfRect_t idSWF::CalcRect( const idSWFSpriteInstance* spriteInstance, const swfR
 		{
 			const idSWFShape* shape = entry->shape;
 			
-			for( int i = 0; i < shape->fillDraws.Num(); i++ )
+			for( int i2 = 0; i2 < shape->fillDraws.Num(); i2++ )
 			{
-				const idSWFShapeDrawFill& fill = shape->fillDraws[i];
+				const idSWFShapeDrawFill& fill = shape->fillDraws[i2];
 				
 				for( int j = 0; j < fill.startVerts.Num(); j++ )
 				{

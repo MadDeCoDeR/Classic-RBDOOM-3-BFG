@@ -210,9 +210,9 @@ void idRenderEntityLocal::ReadFromDemoFile( class idDemoFile* f )
 	if( ent.numJoints > 0 )
 	{
 		ent.joints = ( idJointMat* )Mem_Alloc16( SIMD_ROUND_JOINTS( ent.numJoints ) * sizeof( ent.joints[ 0 ] ), TAG_JOINTMAT );
-		for( int i = 0; i < ent.numJoints; i++ )
+		for( int i_ = 0; i_ < ent.numJoints; i_++ )
 		{
-			float* data = ent.joints[ i ].ToFloatPtr();
+			float* data = ent.joints[ i_ ].ToFloatPtr();
 			for( int j = 0; j < 12; ++j )
 			{
 				f->ReadFloat( data[ j ] );

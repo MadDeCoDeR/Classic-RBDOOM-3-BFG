@@ -1236,11 +1236,11 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 				}
 				case FC_START_EMITTER:
 				{
-					int index = command.string->Find( " " );
-					if( index >= 0 )
+					int index_ = command.string->Find( " " );
+					if( index_ >= 0 )
 					{
-						idStr name = command.string->Left( index );
-						idStr particle = command.string->Right( command.string->Length() - index - 1 );
+						idStr name = command.string->Left( index_ );
+						idStr particle = command.string->Right( command.string->Length() - index_ - 1 );
 						ent->ProcessEvent( &AI_StartEmitter, name.c_str(), modelDef->GetJointName( command.index ), particle.c_str() );
 					}
 				}

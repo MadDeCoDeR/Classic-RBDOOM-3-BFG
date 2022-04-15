@@ -745,8 +745,8 @@ void	idRenderWorldLocal::ReadRenderLight( )
 	common->ReadDemo()->ReadInt( light.lightId );
 	common->ReadDemo()->ReadInt( ( int& )light.prelightModel );
 	common->ReadDemo()->ReadInt( ( int& )light.shader );
-	for( int i = 0; i < MAX_ENTITY_SHADER_PARMS; i++ )
-		common->ReadDemo()->ReadFloat( light.shaderParms[ i ] );
+	for( int i_ = 0; i_ < MAX_ENTITY_SHADER_PARMS; i_++ )
+		common->ReadDemo()->ReadFloat( light.shaderParms[ i_ ] );
 	common->ReadDemo()->ReadInt( ( int& )light.referenceSound );
 	
 	common->ReadDemo()->ReadInt( i );
@@ -763,9 +763,9 @@ void	idRenderWorldLocal::ReadRenderLight( )
 	common->ReadDemo()->ReadInt( i );
 	if( i )
 	{
-		int	index;
-		common->ReadDemo()->ReadInt( index );
-		light.referenceSound = common->SW()->EmitterForIndex( index );
+		int	index1;
+		common->ReadDemo()->ReadInt( index1 );
+		light.referenceSound = common->SW()->EmitterForIndex( index1 );
 	}
 	
 	UpdateLightDef( index, &light );
@@ -862,21 +862,21 @@ void idRenderWorldLocal::ReadRenderEntity()
 	common->ReadDemo()->ReadBool( hasDecal );
 	if( hasDecal )
 	{
-		int index = 0;
-		common->ReadDemo()->ReadInt( index );
+		int index2 = 0;
+		common->ReadDemo()->ReadInt( index2 );
 		
 		if( r_writeDemoDecals.GetBool() )
-			def->decals = decals[ index ].decals;
+			def->decals = decals[ index2 ].decals;
 	}
 	
 	common->ReadDemo()->ReadBool( hasOverlay );
 	if( hasOverlay )
 	{
-		int index = 0;
-		common->ReadDemo()->ReadInt( index );
+		int index3 = 0;
+		common->ReadDemo()->ReadInt( index3 );
 		
 		if( r_writeDemoOverlays.GetBool() )
-			def->overlays = overlays[ index ].overlays;
+			def->overlays = overlays[ index3 ].overlays;
 	}
 }
 

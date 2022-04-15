@@ -1825,9 +1825,9 @@ void M_DrawKey(void) {
 					"JOY_DPAD_UP", "JOY_DPAD_LEFT", "JOY_DPAD_DOWN", "JOY_DPAD_RIGHT"
 					"JOY_TRIGGER1", "JOY_TRIGGER2", 0
 				};
-				for (int i = 0; i < joyBinds.Num(); i++)
+				for (int i_ = 0; i_ < joyBinds.Num(); i_++)
 				{
-					if (joyBinds[i].Icmpn("JOY_STICK", 9) == 0)
+					if (joyBinds[i_].Icmpn("JOY_STICK", 9) == 0)
 					{
 						continue; // Can't rebind the sticks, so don't even show them
 					}
@@ -1835,7 +1835,7 @@ void M_DrawKey(void) {
 					int imageIndex = -1;
 					for (int b = 0; b < numLayBinds; b++)
 					{
-						if (joyBinds[i].Icmp(joyLayoutBinds[b].bind) == 0)
+						if (joyBinds[i_].Icmp(joyLayoutBinds[b].bind) == 0)
 						{
 							hasImage = true;
 							imageIndex = b;
@@ -1852,7 +1852,7 @@ void M_DrawKey(void) {
 					}
 					else
 					{
-						bindings.Append(joyBinds[i]);
+						bindings.Append(joyBinds[i_]);
 					}
 				}
 			}

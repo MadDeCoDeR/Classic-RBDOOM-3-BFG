@@ -549,10 +549,10 @@ bool idMenuHandler_PDALocal::HandleAction( idWidgetAction& action, const idWidge
 					if( widget->GetParent() != NULL )
 					{
 						idMenuWidget_DynamicList* audioList = dynamic_cast< idMenuWidget_DynamicList* >( widget->GetParent() );
-						int index = parms[0].ToInteger();
+						int index_ = parms[0].ToInteger();
 						if( audioList != NULL )
 						{
-							audioList->SetFocusIndex( index );
+							audioList->SetFocusIndex( index_ );
 						}
 					}
 				}

@@ -212,8 +212,8 @@ void HUlib_addLineToSText(hu_stext_t* s)
 	//GK: Check if it is out of the line limit and remove the oldest message
 	if (++s->cl > s->h) {
 		s->cl = s->h;
-		for (int i = 0; i < s->h-1; i++)
-			s->l[i] = s->l[i + 1];
+		for (int i_ = 0; i_ < s->h-1; i_++)
+			s->l[i_] = s->l[i_ + 1];
 	}
 
     HUlib_clearTextLine(&s->l[s->cl-1]);

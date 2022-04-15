@@ -258,9 +258,9 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 		com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? com_engineHz.GetInteger() : ogHz);
 		com_engineHz_latched = ogHz;
 		ogHz = 0;
-		for (int i = 0; i < 3; i++) {
-			::g->ticrate[i] = ogtr[i];
-			ogtr[i] = 0;
+		for (int i1 = 0; i1 < 3; i1++) {
+			::g->ticrate[i1] = ogtr[i1];
+			ogtr[i1] = 0;
 		}
 	}
 
@@ -1863,9 +1863,9 @@ qboolean G_DoLoadGame ()
 	R_FillBackScreen ();
 	//GK: Make sure the status bar is showing properly the weapons that are owned and which one is used
 	//after it load a save file
-	for (int i = 0; i < NUMWEAPONS; i++) {
-		if (::g->players[::g->consoleplayer].weaponowned[i]) {
-			::g->weaponcond[i] = 1;
+	for (int i2 = 0; i2 < NUMWEAPONS; i2++) {
+		if (::g->players[::g->consoleplayer].weaponowned[i2]) {
+			::g->weaponcond[i2] = 1;
 		}
 	}
 	if (::g->players[::g->consoleplayer].readyweapon == wp_supershotgun) {
@@ -2451,8 +2451,8 @@ void G_DoPlayDemo (void)
 	::g->usergame = false;
 	::g->demoplayback = true;
 	ogHz = com_engineHz_latched;
-	for (int i = 0; i < 3; i++) {
-		ogtr[i] = ::g->ticrate[i];
+	for (int i3 = 0; i3 < 3; i3++) {
+		ogtr[i3] = ::g->ticrate[i3];
 	}
 } 
 

@@ -112,7 +112,7 @@ void idDedicatedServerSearch::HandleQueryAck( lobbyAddress_t& addr, idBitMsg& ms
 			
 			query.serverInfo.Read( msg );
 			query.connectedPlayers.Clear();
-			for( int i = 0; i < query.serverInfo.numPlayers; i++ )
+			for( int i_ = 0; i_ < query.serverInfo.numPlayers; i_++ )
 			{
 				idStr user;
 				msg.ReadString( user );

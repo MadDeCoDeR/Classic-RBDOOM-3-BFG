@@ -331,9 +331,9 @@ void idSWF::WriteSwfImageAtlas( const char* filename )
 		
 		if( swf_useChannelScale.GetBool() )
 		{
-			for( int i = 0; i < 4; i++ )
+			for( int i_ = 0; i_ < 4; i_++ )
 			{
-				entry->channelScale[i] = maxV[i] / 255.0f;
+				entry->channelScale[i_] = maxV[i_] / 255.0f;
 			}
 		}
 		

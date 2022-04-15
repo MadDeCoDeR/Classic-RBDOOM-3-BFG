@@ -867,9 +867,9 @@ void idRenderModelManagerLocal::PrintMemInfo( MemInfo_t* mi )
 	}
 	
 	// print next
-	for( int i = 0; i < localModelManager.models.Num(); i++ )
+	for( int i_ = 0; i_ < localModelManager.models.Num(); i_++ )
 	{
-		idRenderModel*	model = localModelManager.models[sortIndex[i]];
+		idRenderModel*	model = localModelManager.models[sortIndex[i_]];
 		int mem;
 		
 		if( !model->IsLoaded() )

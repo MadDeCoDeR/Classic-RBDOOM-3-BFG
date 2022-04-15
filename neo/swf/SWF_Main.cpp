@@ -206,11 +206,11 @@ idSWF::idSWF( const char* filename_, idSoundWorld* soundWorld_ )
 	
 	if( postLoadExportFlashToSWF.GetBool() )
 	{
-		idStr jsonFileName = "exported/";
-		jsonFileName += filename;
-		jsonFileName.SetFileExtension( ".json" );
+		idStr jsonFileName_ = "exported/";
+		jsonFileName_ += filename;
+		jsonFileName_.SetFileExtension( ".json" );
 		
-		WriteJSON( jsonFileName );
+		WriteJSON( jsonFileName_ );
 	}
 	
 	if (!imageless) {

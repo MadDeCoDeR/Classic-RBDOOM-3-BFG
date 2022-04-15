@@ -701,8 +701,8 @@ void idGameLocal::SaveGame( idFile* f, idFile* strings )
 		savegame.WriteInt(-1);
 	}
 	else {
-		for (int i = 0; i < 32; i++) {
-			savegame.WriteInt(hazardAreaNums[i]);
+		for (int i1 = 0; i1 < 32; i1++) {
+			savegame.WriteInt(hazardAreaNums[i1]);
 		}
 	}
 	
@@ -1502,13 +1502,13 @@ bool idGameLocal::InitFromSaveGame( const char* mapName, idRenderWorld* renderWo
 	int numLobbyUsers = lobby.GetNumLobbyUsers();
 	int lobbyUserNum = 0;
 	assert( numLobbyUsers == 1 );
-	for( int i = 0; i < MAX_PLAYERS && lobbyUserNum < numLobbyUsers; i++ )
+	for( int i2 = 0; i2 < MAX_PLAYERS && lobbyUserNum < numLobbyUsers; i2++ )
 	{
-		if( entities[i] == NULL )
+		if( entities[i2] == NULL )
 		{
 			continue;
 		}
-		lobbyUserIDs[i] = lobby.GetLobbyUserIdByOrdinal( lobbyUserNum++ );
+		lobbyUserIDs[i2] = lobby.GetLobbyUserIdByOrdinal( lobbyUserNum++ );
 	}
 	
 	savegame.ReadInt( firstFreeEntityIndex[0] );
@@ -1591,8 +1591,8 @@ bool idGameLocal::InitFromSaveGame( const char* mapName, idRenderWorld* renderWo
 	if (saveGameVersion >= 1404) {
 		savegame.ReadInt(hazardAreaNums[0]);
 		if (hazardAreaNums[0] != -1) {
-			for (int i = 1; i < 32; i++) {
-				savegame.ReadInt(hazardAreaNums[i]);
+			for (int i3 = 1; i3 < 32; i3++) {
+				savegame.ReadInt(hazardAreaNums[i3]);
 			}
 		}
 	}

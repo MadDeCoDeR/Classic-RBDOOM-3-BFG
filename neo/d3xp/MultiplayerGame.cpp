@@ -534,20 +534,20 @@ void idMultiplayerGame::UpdateScoreboard( idMenuHandler_Scoreboard* scoreboard, 
 			info.spectateData = spectateData;
 			
 			bool added = false;
-			for( int i = 0; i < scoreboardInfo.Num(); ++i )
+			for( int i1 = 0; i1 < scoreboardInfo.Num(); ++i1 )
 			{
-				if( info.team == scoreboardInfo[i].team )
+				if( info.team == scoreboardInfo[i1].team )
 				{
-					if( info.score > scoreboardInfo[i].score )
+					if( info.score > scoreboardInfo[i1].score )
 					{
-						scoreboardInfo.Insert( info, i );
+						scoreboardInfo.Insert( info, i1 );
 						added = true;
 						break;
 					}
 				}
-				else if( info.team < scoreboardInfo[i].team )
+				else if( info.team < scoreboardInfo[i1].team )
 				{
-					scoreboardInfo.Insert( info, i );
+					scoreboardInfo.Insert( info, i1 );
 					added = true;
 					break;
 				}
@@ -1412,11 +1412,11 @@ void idMultiplayerGame::NewState( gameState_t news, idPlayer* player )
 		case COUNTDOWN:
 		{
 			idBitMsg	outMsg_;
-			byte		msgBuf[ 128 ];
+			byte		msgBuf_[ 128 ];
 			
 			warmupEndTime = gameLocal.serverTime + 1000 * cvarSystem->GetCVarInteger( "g_countDown" );
 			
-			outMsg_.InitWrite( msgBuf, sizeof( msgBuf ) );
+			outMsg_.InitWrite( msgBuf_, sizeof( msgBuf_ ) );
 			outMsg_.WriteLong( warmupEndTime );
 			session->GetActingGameStateLobbyBase().SendReliable( GAME_RELIABLE_MESSAGE_WARMUPTIME, outMsg_, false );
 			
@@ -2361,9 +2361,9 @@ void idMultiplayerGame::WriteToSnapshot( idBitMsg& msg ) const
 	
 	// This is a hack - I need a place to read the lobby ids before the player entities are
 	// read (SpawnPlayer requires a valid lobby id for the player).
-	for( int i = 0; i < gameLocal.lobbyUserIDs.Num(); ++i )
+	for( int i2 = 0; i2 < gameLocal.lobbyUserIDs.Num(); ++i2 )
 	{
-		gameLocal.lobbyUserIDs[i].WriteToMsg( msg );
+		gameLocal.lobbyUserIDs[i2].WriteToMsg( msg );
 	}
 	
 	msg.WriteByte( gameState );
@@ -2401,9 +2401,9 @@ void idMultiplayerGame::ReadFromSnapshot( const idBitMsg& msg )
 	
 	// This is a hack - I need a place to read the lobby ids before the player entities are
 	// read (SpawnPlayer requires a valid lobby id for the player).
-	for( int i = 0; i < gameLocal.lobbyUserIDs.Num(); ++i )
+	for( int i3 = 0; i3 < gameLocal.lobbyUserIDs.Num(); ++i3 )
 	{
-		gameLocal.lobbyUserIDs[i].ReadFromMsg( msg );
+		gameLocal.lobbyUserIDs[i3].ReadFromMsg( msg );
 	}
 	
 	newState = ( idMultiplayerGame::gameState_t )msg.ReadByte();

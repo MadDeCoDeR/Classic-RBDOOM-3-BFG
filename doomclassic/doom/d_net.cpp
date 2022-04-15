@@ -835,11 +835,11 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 #endif
 				} else {
 					if (::g->nodeingame[lowtic_node]) {
-						int i, consoleNum = lowtic_node;
+						int i_, consoleNum = lowtic_node;
 
-						for ( i=0; i < ::g->doomcom.numnodes; i++ ) {
-							if ( ::g->nodeforplayer[i] == lowtic_node ) {
-								consoleNum = i;
+						for ( i_=0; i_ < ::g->doomcom.numnodes; i_++ ) {
+							if ( ::g->nodeforplayer[i_] == lowtic_node ) {
+								consoleNum = i_;
 								break;
 							}
 						}

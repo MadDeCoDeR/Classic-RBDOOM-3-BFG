@@ -784,8 +784,8 @@ P_SetupLevel
 	if (!s_useXAudio.GetBool()) {
 #endif
 		if (::g->hasreverb) {
-			for (int i = ::g->reverbs.size() - 1; i >= 0; i--) {
-				Mem_Free(::g->reverbs[i]);
+			for (int i1 = ::g->reverbs.size() - 1; i1 >= 0; i1--) {
+				Mem_Free(::g->reverbs[i1]);
 				::g->reverbs.pop_back();
 			}
 			alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
@@ -859,9 +859,9 @@ P_SetupLevel
 			if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
 				if (::g->clusters.size() >= episode) {
 					if (!::g->clusters[episode - 1].startmap && ::g->clusters[episode - 1].mapname != NULL) {
-						for (int i = 0; i < ::g->maps.size(); i++) {
-							if (!idStr::Icmp(::g->clusters[episode - 1].mapname, ::g->maps[i].lumpname)) {
-								::g->clusters[episode - 1].startmap = i;
+						for (int i2 = 0; i2 < ::g->maps.size(); i2++) {
+							if (!idStr::Icmp(::g->clusters[episode - 1].mapname, ::g->maps[i2].lumpname)) {
+								::g->clusters[episode - 1].startmap = i2;
 							}
 						}
 					}
@@ -887,8 +887,8 @@ P_SetupLevel
 	lumpnum = W_GetNumForName (lumpname);
 
 	::g->leveltime = 0;
-	for (int i = 0; i < 6; i++)
-		::g->normalpowers[i] = 0;
+	for (int i3 = 0; i3 < 6; i3++)
+		::g->normalpowers[i3] = 0;
 
 	bool isudmf = false;
 	//GK: Check if the map is udmf
@@ -912,17 +912,17 @@ P_SetupLevel
 			{"SECTORS",P_LoadSectors},
 			{"BLOCKMAP",P_LoadBlockMap}
 		};
-		int i = 2;
+		int i4 = 2;
 		int j = 1;
-		while (idStr::Icmp(W_GetNameForNum(lumpnum + i), "ENDMAP")) {
-			i++;
+		while (idStr::Icmp(W_GetNameForNum(lumpnum + i4), "ENDMAP")) {
+			i4++;
 		}
 		//GK: Get them from the end to the start for better stability
-		while (idStr::Icmp(W_GetNameForNum(lumpnum+i - j), "TEXTMAP")) {
+		while (idStr::Icmp(W_GetNameForNum(lumpnum+i4 - j), "TEXTMAP")) {
 			bool cont = false;
 			for (int k = 0; k < 9; k++) {
-				if (!idStr::Icmp(W_GetNameForNum(lumpnum+i - j), ld[k].name)) {
-					ld[k].func(lumpnum+i-j);
+				if (!idStr::Icmp(W_GetNameForNum(lumpnum+i4 - j), ld[k].name)) {
+					ld[k].func(lumpnum+i4-j);
 					j++;
 					cont = true;
 					break;
@@ -931,7 +931,7 @@ P_SetupLevel
 			if (cont)
 				continue;
 
-			if (!idStr::Icmp(W_GetNameForNum(lumpnum+i - j), "REJECT"))
+			if (!idStr::Icmp(W_GetNameForNum(lumpnum+i4 - j), "REJECT"))
 				::g->rejectmatrix = (byte*)W_CacheLumpNum(lumpnum + ML_REJECT, PU_REJECT);
 
 			j++;

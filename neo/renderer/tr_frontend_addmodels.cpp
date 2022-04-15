@@ -416,7 +416,14 @@ void R_AddSingleModel( viewEntity_t* vEntity )
 			renderEntity->hModel->ModelHasInteractingSurfaces() ||
 			renderEntity->hModel->ModelHasShadowCastingSurfaces() )
 	{
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4456) //GK: I don't know any better way to go around this :(
+#endif
 		SCOPED_PROFILE_EVENT( "Find lights" );
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 		for( viewLight_t* vLight = viewDef->viewLights; vLight != NULL; vLight = vLight->next )
 		{
 			if( vLight->scissorRect.IsEmpty() )
@@ -668,9 +675,14 @@ void R_AddSingleModel( viewEntity_t* vEntity )
 		{
 			shader = tr.primaryRenderView.globalMaterial;
 		}
-		
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4456) //GK: I don't know any better way to go around this :(
+#endif
 		SCOPED_PROFILE_EVENT( shader->GetName() );
-		
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 		// debugging tool to make sure we have the correct pre-calculated bounds
 		if( r_checkBounds.GetBool() )
 		{

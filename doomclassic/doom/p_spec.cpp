@@ -1677,9 +1677,9 @@ void P_UpdateSpecials (void)
 	if ( ::g->deathmatch && ::g->levelFragCount > 0 ) {
 		bool fragCountHit = false;
 
-		for ( int i=0; i<MAXPLAYERS; i++ ) {
-			if ( ::g->playeringame[i] ) {
-				if ( PlayerFrags(i) >= ::g->levelFragCount ) {
+		for ( int i_=0; i_<MAXPLAYERS; i_++ ) {
+			if ( ::g->playeringame[i_] ) {
+				if ( PlayerFrags(i_) >= ::g->levelFragCount ) {
 					fragCountHit = true;
 				}
 			}

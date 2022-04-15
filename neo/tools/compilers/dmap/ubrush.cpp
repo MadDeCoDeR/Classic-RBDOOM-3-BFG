@@ -737,15 +737,15 @@ void SplitBrush( uBrush_t* brush, int planenum, uBrush_t** front, uBrush_t** bac
 	
 	{
 		float	v1;
-		int		i;
+		int		i_;
 		
-		for( i = 0 ; i < 2 ; i++ )
+		for( i_ = 0 ; i_ < 2 ; i_++ )
 		{
-			v1 = BrushVolume( b[i] );
+			v1 = BrushVolume( b[i_] );
 			if( v1 < 1.0 )
 			{
-				FreeBrush( b[i] );
-				b[i] = NULL;
+				FreeBrush( b[i_] );
+				b[i_] = NULL;
 //			common->Printf ("tiny volume after clip\n");
 			}
 		}

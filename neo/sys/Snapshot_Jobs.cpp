@@ -217,11 +217,11 @@ void SnapshotObjectJob( objParms_t* parms )
 					*dataStart++ = ( ( 0xFF + 1 + ( newState.data[b] - oldState.data[b] ) ) & 0xFF );
 				}
 				// Get leftover
-				int leftOver = newState.size - compareSize;
+				int leftOver_ = newState.size - compareSize;
 				
-				if( leftOver > 0 )
+				if( leftOver_ > 0 )
 				{
-					memcpy( dataStart, newState.data + compareSize, leftOver );
+					memcpy( dataStart, newState.data + compareSize, leftOver_ );
 				}
 			}
 		}

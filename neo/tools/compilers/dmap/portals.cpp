@@ -704,10 +704,10 @@ bool FloodEntities( tree_t* tree )
 			common->Printf( "Entity classname was: %s\n", p );
 			mapEnt->epairs.GetString( "name", "", &p );
 			common->Printf( "Entity name was: %s\n", p );
-			idVec3 origin;
-			if( mapEnt->epairs.GetVector( "origin", "", origin ) )
+			idVec3 origin_;
+			if( mapEnt->epairs.GetVector( "origin", "", origin_ ) )
 			{
-				common->Printf( "Entity origin is: %f %f %f\n\n\n", origin.x, origin.y, origin.z );
+				common->Printf( "Entity origin is: %f %f %f\n\n\n", origin_.x, origin_.y, origin_.z );
 			}
 		}
 	}

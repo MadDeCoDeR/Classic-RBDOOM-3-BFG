@@ -600,8 +600,8 @@ void P_UnArchiveThinkers (void)
 					}
 
 					mo_index++;
-					mostuff mos;
-					unmo.push_back(mos);
+					mostuff mos_;
+					unmo.push_back(mos_);
 				}
 			}
 
@@ -698,8 +698,8 @@ void P_UnArchiveThinkers (void)
 			unmo[mo_index].mo_bhead = foundIndex == 1;
 
 			mo_index++;
-			mostuff mos;
-			unmo.push_back(mos);
+			mostuff mos__;
+			unmo.push_back(mos__);
 			P_AddThinker (&mobj->thinker);
 			break;
 

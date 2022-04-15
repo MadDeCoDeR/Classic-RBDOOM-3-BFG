@@ -869,25 +869,25 @@ bool idRenderWorldLocal::InitFromMap( const char* name )
 				type.ToLower();
 				if( type == "model" )
 				{
-					idRenderModel* lastModel = ReadBinaryModel( file );
-					if( lastModel == NULL )
+					idRenderModel* lastModel_ = ReadBinaryModel( file );
+					if( lastModel_ == NULL )
 					{
 						loaded = false;
 						break;
 					}
-					renderModelManager->AddModel( lastModel );
-					localModels.Append( lastModel );
+					renderModelManager->AddModel( lastModel_ );
+					localModels.Append( lastModel_ );
 				}
 				else if( type == "shadowmodel" )
 				{
-					idRenderModel* lastModel = ReadBinaryModel( file );
-					if( lastModel == NULL )
+					idRenderModel* lastModel__ = ReadBinaryModel( file );
+					if( lastModel__ == NULL )
 					{
 						loaded = false;
 						break;
 					}
-					renderModelManager->AddModel( lastModel );
-					localModels.Append( lastModel );
+					renderModelManager->AddModel( lastModel__ );
+					localModels.Append( lastModel__ );
 				}
 				else if( type == "interareaportals" )
 				{

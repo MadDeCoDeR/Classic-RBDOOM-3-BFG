@@ -557,9 +557,9 @@ void idAI::Save( idSaveGame* savefile ) const
 	savefile->WriteBool( GetPhysics() == static_cast<const idPhysics*>( &physicsObj ) );
 	
 	savefile->WriteInt( funcEmitters.Num() );
-	for( int i = 0; i < funcEmitters.Num(); i++ )
+	for( int i1 = 0; i1 < funcEmitters.Num(); i1++ )
 	{
-		funcEmitter_t* emitter = funcEmitters.GetIndex( i );
+		funcEmitter_t* emitter = funcEmitters.GetIndex( i1 );
 		savefile->WriteString( emitter->name );
 		savefile->WriteJoint( emitter->joint );
 		savefile->WriteObject( emitter->particle );
@@ -742,9 +742,9 @@ void idAI::Restore( idRestoreGame* savefile )
 	
 	
 	//Clean up the emitters
-	for( int i = 0; i < funcEmitters.Num(); i++ )
+	for( int i2 = 0; i2 < funcEmitters.Num(); i2++ )
 	{
-		funcEmitter_t* emitter = funcEmitters.GetIndex( i );
+		funcEmitter_t* emitter = funcEmitters.GetIndex( i2 );
 		if( emitter->particle )
 		{
 			//Destroy the emitters
@@ -755,7 +755,7 @@ void idAI::Restore( idRestoreGame* savefile )
 	
 	int emitterCount;
 	savefile->ReadInt( emitterCount );
-	for( int i = 0; i < emitterCount; i++ )
+	for( int i3 = 0; i3 < emitterCount; i3++ )
 	{
 		funcEmitter_t newEmitter;
 		memset( &newEmitter, 0, sizeof( newEmitter ) );
