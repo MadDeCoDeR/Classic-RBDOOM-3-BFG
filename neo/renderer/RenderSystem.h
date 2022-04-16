@@ -81,6 +81,7 @@ enum stereoDepthType_t
 
 enum graphicsVendor_t
 {
+	VENDOR_UNKNOWN,
 	VENDOR_NVIDIA,
 	VENDOR_AMD,
 	VENDOR_INTEL

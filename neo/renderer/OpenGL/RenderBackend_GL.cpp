@@ -157,18 +157,18 @@ static void R_CheckPortableExtensions()
 		idLib::FatalError( "%s", badVideoCard );
 	}
 	
-	if( idStr::Icmpn( glConfig.renderer_string, "ATI ", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "AMD ", 4 ) == 0 )
+	if( idStr::Icmpn( glConfig.vendor_string, "ATI ", 4 ) == 0 || idStr::Icmpn( glConfig.vendor_string, "AMD ", 4 ) == 0 )
 	{
 		glConfig.vendor = VENDOR_AMD;
 	}
-	else if( idStr::Icmpn( glConfig.renderer_string, "NVIDIA", 6 ) == 0 )
+	else if( idStr::Icmpn( glConfig.vendor_string, "NVIDIA", 6 ) == 0 )
 	{
 		glConfig.vendor = VENDOR_NVIDIA;
 	}
-	else if( idStr::Icmpn( glConfig.renderer_string, "Intel", 5 ) == 0 )
+	else if( idStr::Icmpn( glConfig.vendor_string, "Intel", 5 ) == 0 )
 	{
 		glConfig.vendor = VENDOR_INTEL;
-	}
+	} 
 	
 	// RB: Mesa support
 	if( idStr::Icmpn( glConfig.renderer_string, "Mesa", 4 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "X.org", 5 ) == 0 || idStr::Icmpn( glConfig.renderer_string, "Gallium", 7 ) == 0 ||
