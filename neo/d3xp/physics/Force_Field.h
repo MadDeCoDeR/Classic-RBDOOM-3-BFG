@@ -71,9 +71,9 @@ public:
 	// add random torque
 	void				RandomTorque( float force );
 	// should the force field apply a force, velocity or impulse
-	void				SetApplyType( const forceFieldApplyType type )
+	void				SetApplyType( const forceFieldApplyType _type )
 	{
-		applyType = type;
+		applyType = _type;
 	}
 	// make the force field only push players
 	void				SetPlayerOnly( bool set )

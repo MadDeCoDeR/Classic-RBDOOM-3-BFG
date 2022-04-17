@@ -137,9 +137,9 @@ public:
 	{
 		return parent;
 	}
-	void					SetContents( int contents )
+	void					SetContents( int _contents )
 	{
-		this->contents = contents;
+		this->contents = _contents;
 	}
 	int						GetContents() const
 	{

@@ -437,17 +437,17 @@ idAngles idPlayerView::AngleOffset() const
 idPlayerView::SingleView
 ==================
 */
-void idPlayerView::SingleView( const renderView_t* view, idMenuHandler_HUD* hudManager )
+void idPlayerView::SingleView( const renderView_t* _view, idMenuHandler_HUD* hudManager )
 {
 
 	// normal rendering
-	if( !view )
+	if( !_view )
 	{
 		return;
 	}
 
 	// place the sound origin for the player
-	gameSoundWorld->PlaceListener( view->vieworg, view->viewaxis, player->entityNumber + 1, player->hud? player->hud->GetlocationName() : "Undefined"); //GK: like OG Doom 3 keep the location name
+	gameSoundWorld->PlaceListener( _view->vieworg, _view->viewaxis, player->entityNumber + 1, player->hud? player->hud->GetlocationName() : "Undefined"); //GK: like OG Doom 3 keep the location name
 	
 	// if the objective system is up, don't do normal drawing
 	if( player->objectiveSystemOpen )
@@ -460,7 +460,7 @@ void idPlayerView::SingleView( const renderView_t* view, idMenuHandler_HUD* hudM
 	}
 	
 	// hack the shake in at the very last moment, so it can't cause any consistency problems
-	renderView_t hackedView = *view;
+	renderView_t hackedView = *_view;
 	hackedView.viewaxis = hackedView.viewaxis * ShakeAxis();
 	
 	if( gameLocal.portalSkyEnt.GetEntity() && gameLocal.IsPortalSkyAcive() && g_enablePortalSky.GetBool() )
@@ -768,19 +768,19 @@ idPlayerView::EmitStereoEyeView
 */
 void idPlayerView::EmitStereoEyeView( const int eye, idMenuHandler_HUD* hudManager )
 {
-	renderView_t* view = player->GetRenderView();
-	if( view == NULL )
+	renderView_t* view_ = player->GetRenderView();
+	if( view_ == NULL )
 	{
 		return;
 	}
 	
-	renderView_t eyeView = *view;
+	renderView_t eyeView = *view_;
 	
 	const stereoDistances_t dists = CaclulateStereoDistances(
 										stereoRender_interOccularCentimeters.GetFloat(),
 										renderSystem->GetPhysicalScreenWidthInCentimeters(),
 										stereoRender_convergence.GetFloat(),
-										view->fov_x );
+										view_->fov_x );
 										
 	eyeView.vieworg += eye * dists.worldSeparation * eyeView.viewaxis[1];
 	
@@ -818,7 +818,7 @@ idPlayerView::RenderPlayerView
 */
 void idPlayerView::RenderPlayerView( idMenuHandler_HUD* hudManager )
 {
-	const renderView_t* view = player->GetRenderView();
+	const renderView_t* view_ = player->GetRenderView();
 	if( renderSystem->GetStereo3DMode() != STEREO3D_OFF )
 	{
 		// render both eye views each frame on the PC
@@ -829,7 +829,7 @@ void idPlayerView::RenderPlayerView( idMenuHandler_HUD* hudManager )
 	}
 	else
 	{
-		SingleView( view, hudManager );
+		SingleView( view_, hudManager );
 	}
 	ScreenFade();
 }

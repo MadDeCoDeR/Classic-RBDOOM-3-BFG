@@ -203,14 +203,14 @@ public:
 		idWinVar::Init( _name, win );
 		if( guiDict )
 		{
-			const char* name = GetName();
-			if( name[0] == 0 )
+			const char* name_ = GetName();
+			if( name_[0] == 0 )
 			{
 				data = "";
 			}
 			else
 			{
-				data = guiDict->GetString( name );
+				data = guiDict->GetString( name_ );
 			}
 		}
 	}

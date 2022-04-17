@@ -435,9 +435,9 @@ public:
 	{
 		steerSpeed = speed;
 	}
-	void					SetEpsilon( const float e )
+	void					SetEpsilon( const float _e )
 	{
-		epsilon = e;
+		epsilon = _e;
 	}
 	bool					Add( idPhysics_AF* phys, float invTimeStep );
 	virtual void			Translate( const idVec3& translation );
@@ -612,9 +612,9 @@ public:
 								   const float coneAngle, const idVec3& body1Axis );
 	void					SetAnchor( const idVec3& coneAnchor );
 	void					SetBody1Axis( const idVec3& body1Axis );
-	void					SetEpsilon( const float e )
+	void					SetEpsilon( const float _e )
 	{
-		epsilon = e;
+		epsilon = _e;
 	}
 	bool					Add( idPhysics_AF* phys, float invTimeStep );
 	virtual void			DebugDraw();
@@ -648,9 +648,9 @@ public:
 								   const float pyramidAngle1, const float pyramidAngle2, const idVec3& body1Axis );
 	void					SetAnchor( const idVec3& pyramidAxis );
 	void					SetBody1Axis( const idVec3& body1Axis );
-	void					SetEpsilon( const float e )
+	void					SetEpsilon( const float _e )
 	{
-		epsilon = e;
+		epsilon = _e;
 	}
 	bool					Add( idPhysics_AF* phys, float invTimeStep );
 	virtual void			DebugDraw();
@@ -699,9 +699,9 @@ public:
 	{
 		motorVelocity = vel;
 	}
-	void					SetEpsilon( const float e )
+	void					SetEpsilon( const float _e )
 	{
-		epsilon = e;
+		epsilon = _e;
 	}
 	const idVec3			GetWheelOrigin() const;
 	

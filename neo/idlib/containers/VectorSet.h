@@ -88,7 +88,7 @@ ID_INLINE idVectorSet<type, dimension>::idVectorSet( const type& mins, const typ
 }
 
 template< class type, int dimension >
-ID_INLINE void idVectorSet<type, dimension>::Init( const type& mins, const type& maxs, const int boxHashSize, const int initialSize )
+ID_INLINE void idVectorSet<type, dimension>::Init( const type& _mins, const type& _maxs, const int _boxHashSize, const int initialSize )
 {
 	int i;
 	float boxSize;
@@ -96,15 +96,15 @@ ID_INLINE void idVectorSet<type, dimension>::Init( const type& mins, const type&
 	idList<type>::AssureSize( initialSize );
 	idList<type>::SetNum( 0 );
 	
-	hash.Clear( idMath::IPow( boxHashSize, dimension ), initialSize );
+	hash.Clear( idMath::IPow( _boxHashSize, dimension ), initialSize );
 	
-	this->mins = mins;
-	this->maxs = maxs;
-	this->boxHashSize = boxHashSize;
+	this->mins = _mins;
+	this->maxs = _maxs;
+	this->boxHashSize = _boxHashSize;
 	
 	for( i = 0; i < dimension; i++ )
 	{
-		boxSize = ( maxs[i] - mins[i] ) / ( float ) boxHashSize;
+		boxSize = ( _maxs[i] - _mins[i] ) / ( float ) _boxHashSize;
 		boxInvSize[i] = 1.0f / boxSize;
 		boxHalfSize[i] = boxSize * 0.5f;
 	}
@@ -238,20 +238,20 @@ ID_INLINE idVectorSubset<type, dimension>::idVectorSubset( const type& mins, con
 }
 
 template< class type, int dimension >
-ID_INLINE void idVectorSubset<type, dimension>::Init( const type& mins, const type& maxs, const int boxHashSize, const int initialSize )
+ID_INLINE void idVectorSubset<type, dimension>::Init( const type& _mins, const type& _maxs, const int _boxHashSize, const int initialSize )
 {
 	int i;
 	float boxSize;
 	
-	hash.Clear( idMath::IPow( boxHashSize, dimension ), initialSize );
+	hash.Clear( idMath::IPow( _boxHashSize, dimension ), initialSize );
 	
-	this->mins = mins;
-	this->maxs = maxs;
-	this->boxHashSize = boxHashSize;
+	this->mins = _mins;
+	this->maxs = _maxs;
+	this->boxHashSize = _boxHashSize;
 	
 	for( i = 0; i < dimension; i++ )
 	{
-		boxSize = ( maxs[i] - mins[i] ) / ( float ) boxHashSize;
+		boxSize = ( _maxs[i] - _mins[i] ) / ( float ) _boxHashSize;
 		boxInvSize[i] = 1.0f / boxSize;
 		boxHalfSize[i] = boxSize * 0.5f;
 	}

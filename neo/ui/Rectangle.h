@@ -57,10 +57,10 @@ public:
 	{
 		return x + w;
 	}
-	void Offset( float x, float y )
+	void Offset( float _x, float _y )
 	{
-		this->x += x;
-		this->y += y;
+		this->x += _x;
+		this->y += _y;
 	}
 	bool Contains( float xt, float yt )
 	{

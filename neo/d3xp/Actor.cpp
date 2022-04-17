@@ -3987,9 +3987,9 @@ void idActor::Event_SetDamageCap( float _damageCap )
 	damageCap = _damageCap;
 }
 
-void idActor::Event_SetWaitState( const char* waitState )
+void idActor::Event_SetWaitState( const char* _waitState )
 {
-	SetWaitState( waitState );
+	SetWaitState( _waitState );
 }
 
 void idActor::Event_GetWaitState()

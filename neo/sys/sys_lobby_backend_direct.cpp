@@ -50,7 +50,7 @@ idLobbyBackendDirect::idLobbyBackendDirect()
 idLobbyBackendDirect::StartHosting
 ========================
 */
-void idLobbyBackendDirect::StartHosting( const idMatchParameters& p, float skillLevel, lobbyBackendType_t type )
+void idLobbyBackendDirect::StartHosting( const idMatchParameters& p, float skillLevel, lobbyBackendType_t _type )
 {
 	NET_VERBOSE_PRINT( "idLobbyBackendDirect::StartHosting\n" );
 	

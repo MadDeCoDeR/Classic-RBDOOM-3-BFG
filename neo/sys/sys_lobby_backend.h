@@ -280,8 +280,8 @@ public:
 		return false;
 	}
 	
-	virtual void			RegisterUser( lobbyUser_t* user, bool isLocal ) {}
-	virtual void			UnregisterUser( lobbyUser_t* user, bool isLocal ) {}
+	virtual void			RegisterUser( lobbyUser_t* user, bool _isLocal ) {}
+	virtual void			UnregisterUser( lobbyUser_t* user, bool _isLocal ) {}
 	
 	virtual void			StartSession() {}
 	virtual void			EndSession() {}

@@ -48,11 +48,11 @@ public:
 		alSource3f( openalSource, AL_POSITION, -p.y, p.z, -p.x );
 	}
 	
-	void					SetGain( float gain )
+	void					SetGain( float _gain )
 	{
-		idSoundVoice_Base::SetGain( gain );
+		idSoundVoice_Base::SetGain( _gain );
 		
-		alSourcef( openalSource, AL_GAIN, ( gain ) < ( 1.0f ) ? ( gain ) : ( 1.0f ) );
+		alSourcef( openalSource, AL_GAIN, ( _gain ) < ( 1.0f ) ? ( _gain ) : ( 1.0f ) );
 	}
 	
 	void		SetPitch( float p )

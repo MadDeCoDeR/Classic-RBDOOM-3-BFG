@@ -48,17 +48,17 @@ public:
 	{
 		this->startTime = time;
 	}
-	void				SetDuration( int duration )
+	void				SetDuration( int _duration )
 	{
-		this->duration = duration;
+		this->duration = _duration;
 	}
-	void				SetStartValue( const type& startValue )
+	void				SetStartValue( const type& _startValue )
 	{
-		this->startValue = startValue;
+		this->startValue = _startValue;
 	}
-	void				SetEndValue( const type& endValue )
+	void				SetEndValue( const type& _endValue )
 	{
-		this->endValue = endValue;
+		this->endValue = _endValue;
 	}
 	
 	type				GetCurrentValue( int time ) const;
@@ -114,12 +114,12 @@ idInterpolate::Init
 ====================
 */
 template< class type >
-ID_INLINE void idInterpolate<type>::Init( const int startTime, const int duration, const type& startValue, const type& endValue )
+ID_INLINE void idInterpolate<type>::Init( const int _startTime, const int _duration, const type& _startValue, const type& _endValue )
 {
-	this->startTime = startTime;
-	this->duration = duration;
-	this->startValue = startValue;
-	this->endValue = endValue;
+	this->startTime = _startTime;
+	this->duration = _duration;
+	this->startValue = _startValue;
+	this->endValue = _endValue;
 }
 
 /*
@@ -168,9 +168,9 @@ public:
 		startTime = time;
 		Invalidate();
 	}
-	void				SetStartValue( const type& startValue )
+	void				SetStartValue( const type& _startValue )
 	{
-		this->startValue = startValue;
+		this->startValue = _startValue;
 		Invalidate();
 	}
 	void				SetEndValue( const type& endValue )
@@ -247,38 +247,38 @@ idInterpolateAccelDecelLinear::Init
 ====================
 */
 template< class type >
-ID_INLINE void idInterpolateAccelDecelLinear<type>::Init( const int startTime, const int accelTime, const int decelTime, const int duration, const type& startValue, const type& endValue )
+ID_INLINE void idInterpolateAccelDecelLinear<type>::Init( const int _startTime, const int _accelTime, const int _decelTime, const int _duration, const type& _startValue, const type& _endValue )
 {
-	this->startTime = startTime;
-	this->accelTime = accelTime;
-	this->decelTime = decelTime;
-	this->startValue = startValue;
-	this->endValue = endValue;
+	this->startTime = _startTime;
+	this->accelTime = _accelTime;
+	this->decelTime = _decelTime;
+	this->startValue = _startValue;
+	this->endValue = _endValue;
 	
-	if( duration <= 0 )
+	if( _duration <= 0 )
 	{
 		return;
 	}
 	
-	if( this->accelTime + this->decelTime > duration )
+	if( this->accelTime + this->decelTime > _duration )
 	{
-		this->accelTime = this->accelTime * duration / ( this->accelTime + this->decelTime );
-		this->decelTime = duration - this->accelTime;
+		this->accelTime = this->accelTime * _duration / ( this->accelTime + this->decelTime );
+		this->decelTime = _duration - this->accelTime;
 	}
-	this->linearTime = duration - this->accelTime - this->decelTime;
-	const type speed = ( endValue - startValue ) * ( 1000.0f / ( ( float ) this->linearTime + ( this->accelTime + this->decelTime ) * 0.5f ) );
+	this->linearTime = _duration - this->accelTime - this->decelTime;
+	const type speed = ( _endValue - _startValue ) * ( 1000.0f / ( ( float ) this->linearTime + ( this->accelTime + this->decelTime ) * 0.5f ) );
 	
 	if( this->accelTime )
 	{
-		extrapolate.Init( startTime, this->accelTime, startValue, ( startValue - startValue ), speed, EXTRAPOLATION_ACCELLINEAR ); //-V501
+		extrapolate.Init( _startTime, this->accelTime, _startValue, ( _startValue - _startValue ), speed, EXTRAPOLATION_ACCELLINEAR ); //-V501
 	}
 	else if( this->linearTime )
 	{
-		extrapolate.Init( startTime, this->linearTime, startValue, ( startValue - startValue ), speed, EXTRAPOLATION_LINEAR ); //-V501
+		extrapolate.Init( _startTime, this->linearTime, _startValue, ( _startValue - _startValue ), speed, EXTRAPOLATION_LINEAR ); //-V501
 	}
 	else
 	{
-		extrapolate.Init( startTime, this->decelTime, startValue, ( startValue - startValue ), speed, EXTRAPOLATION_DECELLINEAR ); //-V501
+		extrapolate.Init( _startTime, this->decelTime, _startValue, ( _startValue - _startValue ), speed, EXTRAPOLATION_DECELLINEAR ); //-V501
 	}
 }
 

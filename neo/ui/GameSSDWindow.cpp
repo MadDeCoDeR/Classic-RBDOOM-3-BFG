@@ -699,12 +699,12 @@ void SSDExplosion::ReadFromSaveGame( idFile* savefile,  idGameSSDWindow* _game )
 	savefile->Read( &endTime, sizeof( endTime ) );
 	savefile->Read( &explosionType, sizeof( explosionType ) );
 	
-	int type, id;
-	savefile->Read( &type, sizeof( type ) );
+	int type_, id;
+	savefile->Read( &type_, sizeof( type_ ) );
 	savefile->Read( &id, sizeof( id ) );
 	
 	//Get a pointer to my buddy
-	buddy = _game->GetSpecificEntity( type, id );
+	buddy = _game->GetSpecificEntity( type_, id );
 	
 	savefile->Read( &killBuddy, sizeof( killBuddy ) );
 	savefile->Read( &followBuddy, sizeof( followBuddy ) );
@@ -1673,9 +1673,9 @@ bool idGameSSDWindow::ParseInternalVar( const char* _name, idTokenParser* src )
 		idStr tempName = _name;
 		int weapon = atoi( tempName.Right( 2 ) ) - 1;
 		
-		idStr weaponData;
-		ParseString( src, weaponData );
-		ParseWeaponData( weapon, weaponData );
+		idStr weaponData_;
+		ParseString( src, weaponData_ );
+		ParseWeaponData( weapon, weaponData_ );
 		return true;
 	}
 	

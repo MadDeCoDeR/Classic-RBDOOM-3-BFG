@@ -108,9 +108,9 @@ public:
 	{
 		return next;
 	}
-	void		SetNext( type* next )
+	void		SetNext( type* _next )
 	{
-		this->next = next;
+		this->next = _next;
 	}
 	
 private:

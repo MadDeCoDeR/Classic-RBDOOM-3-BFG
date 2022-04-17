@@ -9499,12 +9499,12 @@ idPlayer::GetCurrentWeapon
 */
 idStr idPlayer::GetCurrentWeapon()
 {
-	const char* weapon;
+	const char* weapon_;
 	
 	if( currentWeapon >= 0 )
 	{
-		weapon = spawnArgs.GetString( va( "def_weapon%d", currentWeapon ) );
-		return weapon;
+		weapon_ = spawnArgs.GetString( va( "def_weapon%d", currentWeapon ) );
+		return weapon_;
 	}
 	else
 	{
@@ -10659,7 +10659,7 @@ void idPlayer::CalculateViewWeaponPos( idVec3& origin, idMat3& axis )
 	
 	// CalculateRenderView must have been called first
 	const idVec3& viewOrigin = firstPersonViewOrigin;
-	const idMat3& viewAxis = firstPersonViewAxis;
+	const idMat3& viewAxis_ = firstPersonViewAxis;
 	
 	float vmfov = pm_vmfov.GetInteger() / 12.0;
 	float classicYOffs = 0.0;
@@ -10683,7 +10683,7 @@ void idPlayer::CalculateViewWeaponPos( idVec3& origin, idMat3& axis )
 	
 	// as the player changes direction, the gun will take a small lag
 	idVec3	gunOfs = GunAcceleratingOffset();
-	origin = viewOrigin + ( gunpos + gunOfs ) * viewAxis;
+	origin = viewOrigin + ( gunpos + gunOfs ) * viewAxis_;
 	
 	// on odd legs, invert some angles
 	if( bobCycle & 128 )
@@ -10740,7 +10740,7 @@ void idPlayer::CalculateViewWeaponPos( idVec3& origin, idMat3& axis )
 	const idMat3	anglesMat = angles.ToMat3();
 	const idMat3	scaledMat = anglesMat * g_gunScale.GetFloat();
 	
-	axis = scaledMat * viewAxis;
+	axis = scaledMat * viewAxis_;
 }
 
 /*
@@ -11354,12 +11354,12 @@ idPlayer::Event_GetIdealWeapon
 */
 void idPlayer::Event_GetIdealWeapon()
 {
-	const char* weapon;
+	const char* weapon_;
 	
 	if( idealWeapon.Get() >= 0 )
 	{
-		weapon = spawnArgs.GetString( va( "def_weapon%d", idealWeapon.Get() ) );
-		idThread::ReturnString( weapon );
+		weapon_ = spawnArgs.GetString( va( "def_weapon%d", idealWeapon.Get() ) );
+		idThread::ReturnString( weapon_ );
 	}
 	else
 	{
@@ -11456,12 +11456,12 @@ idPlayer::Event_GetCurrentWeapon
 */
 void idPlayer::Event_GetCurrentWeapon()
 {
-	const char* weapon;
+	const char* weapon_;
 	
 	if( currentWeapon >= 0 )
 	{
-		weapon = spawnArgs.GetString( va( "def_weapon%d", currentWeapon ) );
-		idThread::ReturnString( weapon );
+		weapon_ = spawnArgs.GetString( va( "def_weapon%d", currentWeapon ) );
+		idThread::ReturnString( weapon_ );
 	}
 	else
 	{
@@ -11476,13 +11476,13 @@ idPlayer::Event_GetPreviousWeapon
 */
 void idPlayer::Event_GetPreviousWeapon()
 {
-	const char* weapon;
+	const char* weapon_;
 	
 	if( previousWeapon >= 0 )
 	{
 		int pw = ( gameLocal.world->spawnArgs.GetBool( "no_Weapons" ) ) ? 0 : previousWeapon;
-		weapon = spawnArgs.GetString( va( "def_weapon%d", pw ) );
-		idThread::ReturnString( weapon );
+		weapon_ = spawnArgs.GetString( va( "def_weapon%d", pw ) );
+		idThread::ReturnString( weapon_ );
 	}
 	else
 	{
