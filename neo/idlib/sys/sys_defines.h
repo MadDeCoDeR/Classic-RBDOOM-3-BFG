@@ -227,6 +227,15 @@ bulk of the codebase, so it is the best place for analyze pragmas.
 
 #pragma warning( disable: 4467 )	// .. Include\CodeAnalysis\SourceAnnotations.h(68): warning C4467: usage of ATL attributes is deprecated
 
+//GK: And the three of them requie major refactors which might break the engine
+#pragma warning( disable: 4456 )
+#pragma warning( disable: 4458 )
+#pragma warning( disable: 4459 )
+
+//GK: Classes that trigger the warning either rely on C++'s default destructor or they have protected destructors. 
+// Either way I might be dumb but when I tried to fix it, it cause link errors so ignore for now
+#pragma warning ( disable: 5205 )	
+
 #if !defined(VERIFY_FORMAT_STRING)
 // checking format strings catches a LOT of errors
 #include <CodeAnalysis\SourceAnnotations.h>
