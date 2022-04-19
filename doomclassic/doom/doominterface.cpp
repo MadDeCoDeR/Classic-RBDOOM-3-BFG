@@ -107,9 +107,9 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 			DoomLib::InitGame(mpArgc[i], mpArgVPtr[i] );
 		} else {
 			//GK begin
-			if (classicargv[1] != NULL && classicargv[1] != '\0') { //GK: Linux getting some things really seriously
+			if (classicargv[1] != NULL && classicargv[1][0] != '\0') { //GK: Linux getting some things really seriously
 				int o = 0;
-				while (classicargv[o] != NULL && classicargv[o] != '\0') {
+				while (classicargv[o] != NULL && classicargv[o][0] != '\0') {
 					o++;
 				}
 				localdargc = o;
