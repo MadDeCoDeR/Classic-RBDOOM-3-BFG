@@ -1735,7 +1735,7 @@ void MasterExport() {
 					lump->name[1] = 'S';
 				}
 				if (!idStr::Cmpn(lump->name, "DNL", 3)) {
-					sprintf(lump->name, "MAPINFO\0");
+					sprintf(lump->name, "MAPINFO");
 				}
 				offs += lump->size;
 				lump++;
