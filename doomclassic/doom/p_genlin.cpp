@@ -82,7 +82,7 @@ int EV_DoGenFloor
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
   {
-    if ((sec = line->backsector) <= 0)
+    if ((sec = line->backsector) == nullptr)
       return rtn;
     secnum = sec-::g->sectors;
     manual = true;
@@ -285,7 +285,7 @@ int EV_DoGenCeiling
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
   {
-    if ((sec = line->backsector) <= 0)
+    if ((sec = line->backsector) == nullptr)
       return rtn;
     secnum = sec-::g->sectors;
     manual = true;
@@ -491,7 +491,7 @@ int EV_DoGenLift
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
   {
-    if ((sec = line->backsector) <= 0)
+    if ((sec = line->backsector) == nullptr)
       return rtn;
     secnum = sec-::g->sectors;
     manual = true;
@@ -648,7 +648,7 @@ int EV_DoGenStairs
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
   {
-    if ((sec = line->backsector) <= 0)
+    if ((sec = line->backsector) == nullptr)
       return rtn;
     secnum = sec-::g->sectors;
     manual = true;
@@ -832,7 +832,7 @@ int EV_DoGenCrusher
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
   {
-    if ((sec = line->backsector) <= 0)
+    if ((sec = line->backsector) == nullptr)
       return rtn;
     secnum = sec-::g->sectors;
     manual = true;
@@ -926,7 +926,7 @@ int EV_DoGenLockedDoor
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
   {
-    if ((sec = line->backsector) <= 0)
+    if ((sec = line->backsector) == nullptr)
       return rtn;
     secnum = sec-::g->sectors;
     manual = true;
@@ -1029,7 +1029,7 @@ int EV_DoGenDoor
   manual = false;
   if (Trig==PushOnce || Trig==PushMany)
   {
-    if ((sec = line->backsector) <= 0)
+    if ((sec = line->backsector) == nullptr)
       return rtn;
     secnum = sec-::g->sectors;
     manual = true;
