@@ -821,6 +821,17 @@ sysEvent_t Sys_GetEvent()
 	
 	// WM0110: previous state of joystick hat
 	static int previous_hat_state = SDL_HAT_CENTERED;
+
+	if (con_isActive.GetBool()) {
+		if (!SDL_IsTextInputActive()) {
+			SDL_StartTextInput();
+		}
+	}
+	else {
+		if (SDL_IsTextInputActive()) {
+			SDL_StopTextInput();
+		}
+	}
 	
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 	// utf-32 version of the textinput event
@@ -872,15 +883,6 @@ sysEvent_t Sys_GetEvent()
 	// loop until there is an event we care about (will return then) or no more events
 	while( SDL_PollEvent( &ev ) )
 	{
-		if (con_isActive.GetBool()) {
-			if (!SDL_IsTextInputActive()) {
-				SDL_StartTextInput();
-			}
-		} else {
-			if (SDL_IsTextInputActive()) {
-				SDL_StopTextInput();
-			}
-		}
 		switch (ev.type)
 		{
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -1271,10 +1273,10 @@ sysEvent_t Sys_GetEvent()
 				{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
 			};
 
-			if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] == ev.cbutton.state) {
+			/*if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] == ev.cbutton.state) {
 				return res;
 			}
-			else {
+			else {*/
 				buttonStates[controllerButtonRemap[ev.cbutton.button][0]] = ev.cbutton.state;
 				res.evType = SE_KEY;
 				res.evValue = controllerButtonRemap[ev.cbutton.button][0];
@@ -1282,7 +1284,7 @@ sysEvent_t Sys_GetEvent()
 
 				joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], res.evValue2));
 				return res;
-			}
+			//}
 #else
 			// WM0110
 			// NOTE: it seems that the key bindings for the GUI and for the game are
