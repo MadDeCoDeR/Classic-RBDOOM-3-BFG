@@ -1276,7 +1276,7 @@ sysEvent_t Sys_GetEvent()
 			if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] == ev.cbutton.state) {
 				res.evType = SE_KEY;
 				res.evValue = controllerButtonRemap[ev.cbutton.button][0];
-				res.evValue2 = ev.cbutton.state == SDL_PRESSED ? 1 : 0;
+				res.evValue2 = 0;
 				return res;
 			}
 			else {
