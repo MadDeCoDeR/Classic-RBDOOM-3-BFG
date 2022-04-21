@@ -422,19 +422,22 @@ std::string findFile(const char* folder, const char* file, std::string path = ""
 		dirent* entry;
 		while ((entry = readdir(parent)) != NULL) {
 			if (idStr::Icmp(entry->d_name, ".") && idStr::Icmp(entry->d_name, "..")) { //GK: Explicit exclusion in order to take into account and the hidden files
-				switch (entry->d_type) {
-				case DT_DIR:
-					result = findFile(entry->d_name, file, rootPath);
-					if (result.rfind(file) != std::string::npos) {
-						closedir(parent);
-						return result;
-					}
-					break;
-				case DT_REG:
-					if (!idStr::Icmp(entry->d_name, file)) {
-						closedir(parent);
-						result = rootPath + entry->d_name;
-						return result;
+				struct stat file_info;
+				if (lstat(entry->d_name, &file_info) == 0) {
+					switch (file_info.st_mode & S_IFMT) {
+					case S_IFDIR:
+						result = findFile(entry->d_name, file, rootPath);
+						if (result.rfind(file) != std::string::npos) {
+							closedir(parent);
+							return result;
+						}
+						break;
+					case S_IFREG:
+						if (!idStr::Icmp(entry->d_name, file)) {
+							closedir(parent);
+							result = rootPath + entry->d_name;
+							return result;
+						}
 					}
 				}
 			}
