@@ -422,22 +422,19 @@ std::string findFile(const char* folder, const char* file, std::string path = ""
 		dirent* entry;
 		while ((entry = readdir(parent)) != NULL) {
 			if (idStr::Icmp(entry->d_name, ".") && idStr::Icmp(entry->d_name, "..")) { //GK: Explicit exclusion in order to take into account and the hidden files
-				struct stat file_info;
-				if (lstat(entry->d_name, &file_info) == 0) {
-					switch (file_info.st_mode & S_IFMT) {
-					case S_IFDIR:
-						result = findFile(entry->d_name, file, rootPath);
-						if (result.rfind(file) != std::string::npos) {
-							closedir(parent);
-							return result;
-						}
-						break;
-					case S_IFREG:
-						if (!idStr::Icmp(entry->d_name, file)) {
-							closedir(parent);
-							result = rootPath + entry->d_name;
-							return result;
-						}
+				switch (entry->d_type) {
+				case DT_DIR:
+					result = findFile(entry->d_name, file, rootPath);
+					if (result.rfind(file) != std::string::npos) {
+						closedir(parent);
+						return result;
+					}
+					break;
+				case DT_REG:
+					if (!idStr::Icmp(entry->d_name, file)) {
+						closedir(parent);
+						result = rootPath + entry->d_name;
+						return result;
 					}
 				}
 			}
@@ -463,39 +460,42 @@ const char* Sys_DefaultBasePath()
 	struct stat st;
 	idStr testbase;
 	basepath = Sys_EXEPath();
-	if( basepath.Length() )
+	if (basepath.Length())
 	{
 		basepath.StripFilename();
 		testbase = basepath;
 		testbase += "/";
 		testbase += BASE_GAMEDIR;
-		if( stat( testbase.c_str(), &st ) != -1 && S_ISDIR( st.st_mode ) )
+		if (stat(testbase.c_str(), &st) != -1 && S_ISDIR(st.st_mode))
 		{
 			return basepath.c_str();
 		}
 		else
 		{
-			common->Printf( "no '%s' directory in exe path %s, skipping\n", BASE_GAMEDIR, basepath.c_str() );
+			common->Printf("no '%s' directory in exe path %s, skipping\n", BASE_GAMEDIR, basepath.c_str());
 		}
 	}
-	if( basepath != Posix_Cwd() )
+	if (basepath != Posix_Cwd())
 	{
 		basepath = Posix_Cwd();
 		testbase = basepath;
 		testbase += "/";
 		testbase += BASE_GAMEDIR;
-		if( stat( testbase.c_str(), &st ) != -1 && S_ISDIR( st.st_mode ) )
+		if (stat(testbase.c_str(), &st) != -1 && S_ISDIR(st.st_mode))
 		{
 			return basepath.c_str();
 		}
 		else
 		{
-			common->Printf( "no '%s' directory in cwd path %s, skipping\n", BASE_GAMEDIR, basepath.c_str() );
+			common->Printf("no '%s' directory in cwd path %s, skipping\n", BASE_GAMEDIR, basepath.c_str());
 		}
 	}
-	
+
 	//common->Printf( "WARNING: using hardcoded default base path %s\n", DEFAULT_BASEPATH );
 	std::string foundPath = findFile(getenv("HOME"), "_common.resources");
+	if (stat(foundPath.c_str()) < 0) {
+		common->FatalError("Failed to find the Game's base path");
+	}
 	if (foundPath.rfind("_common.resources") != std::string::npos) {
 		foundPath = foundPath.substr(0, foundPath.rfind("/"));
 		foundPath = foundPath.substr(0, foundPath.rfind("/"));
