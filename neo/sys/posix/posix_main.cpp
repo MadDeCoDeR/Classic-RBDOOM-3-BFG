@@ -493,7 +493,8 @@ const char* Sys_DefaultBasePath()
 
 	//common->Printf( "WARNING: using hardcoded default base path %s\n", DEFAULT_BASEPATH );
 	std::string foundPath = findFile(getenv("HOME"), "_common.resources");
-	if (stat(foundPath.c_str()) < 0) {
+	struct stat commonStat;
+	if (stat(foundPath.c_str(), &commonStat) < 0) {
 		common->FatalError("Failed to find the Game's base path");
 	}
 	if (foundPath.rfind("_common.resources") != std::string::npos) {
