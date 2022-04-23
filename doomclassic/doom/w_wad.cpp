@@ -1410,7 +1410,7 @@ void MakeMaster_Wad() {
 		fileSystem->CloseFile(f);
 		OpenCompFile(zipPath, "wads/master/", false);
 	}
-	if (!fileSystem->IsFolder("wads/master")) {
+	if (fileSystem->IsFolder("wads/master") <= 0) {
 		return;
 	}
 	
@@ -1420,6 +1420,15 @@ void MakeMaster_Wad() {
 		
 	return;
 }
+
+//GK: Delete the bad MASTERLEVELS.WAD
+void ClearMaster(idFile* master) {
+	idLib::Printf("Doom Classic Error : Master Levels generation failed\n");
+	fileSystem->CloseFile(master);
+	DoomLib::hexp[2] = false;
+	fileSystem->RemoveFile("wads/MASTERLEVELS.WAD");
+}
+
 //GK:Open all the wads and copy and rename their contents into one WAD file
 void MasterList() {
 
@@ -1443,16 +1452,17 @@ void MasterList() {
 	idFile* master = fileSystem->OpenFileWrite("wads/MASTERLEVELS.WAD");
 	master->Write("PWAD", 4);
 	idFileList* masterList = fileSystem->ListFiles("wads/master", "wad");
+	if (masterList->GetNumFiles() == 0) {
+		ClearMaster(master);
+		return;
+	}
 	for (int cl = 0; cl < masterList->GetNumFiles(); cl++) {
 		sprintf(filename, "wads/master/%s", masterlist[cl]);
 		idLib::Printf("%s\n", filename);
 		// open the file and add to directory
 		if ((handle = fileSystem->OpenFileRead(filename)) == 0)
 		{
-			idLib::Printf("Doom Classic Error : Master Levels generation failed\n");
-			fileSystem->CloseFile(master);
-			DoomLib::hexp[2] = false;
-			fileSystem->RemoveFile("wads/MASTERLEVELS.WAD");
+			ClearMaster(master);
 			return;
 		}
 		startlump = nlps;
