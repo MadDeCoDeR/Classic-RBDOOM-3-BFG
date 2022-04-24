@@ -1376,9 +1376,9 @@ int idDxtEncoder::GetMinMaxNormalsDXT1HQ( const byte* colorBlock, byte* minColor
 		}
 	}
 	
-	for( int i = 0; i < 64; i++ )
+	for( int j = 0; j < 64; j++ )
 	{
-		intColorBlock[i] = colorBlock[i];
+		intColorBlock[j] = colorBlock[j];
 	}
 	
 	// decrease range for 565 encoding
@@ -1651,9 +1651,9 @@ int idDxtEncoder::GetMinMaxNormalsDXT5HQ( const byte* colorBlock, byte* minColor
 		}
 	}
 	
-	for( int i = 0; i < 64; i++ )
+	for( int j = 0; j < 64; j++ )
 	{
-		intColorBlock[i] = colorBlock[i];
+		intColorBlock[j] = colorBlock[j];
 	}
 	
 	// decrease range for 565 encoding
@@ -5363,15 +5363,15 @@ void idDxtEncoder::ConvertNormalMapDXN2_DXT5( const byte* inBuf, byte* outBuf, i
 			// get the min/max Y
 			byte minNormalY = 255;
 			byte maxNormalY = 0;
-			for( int i = 0; i < 16; i++ )
+			for( int p = 0; p < 16; p++ )
 			{
-				if( values[i] < minNormalY )
+				if( values[p] < minNormalY )
 				{
-					minNormalY = values[i];
+					minNormalY = values[p];
 				}
-				if( values[i] > maxNormalY )
+				if( values[p] > maxNormalY )
 				{
-					maxNormalY = values[i];
+					maxNormalY = values[p];
 				}
 			}
 			
@@ -5564,15 +5564,15 @@ void idDxtEncoder::ConvertImageDXN1_DXT1( const byte* inBuf, byte* outBuf, int w
 			// get the min/max
 			byte min = 255;
 			byte max = 0;
-			for( int i = 0; i < 16; i++ )
+			for( int p = 0; p < 16; p++ )
 			{
-				if( values[i] < min )
+				if( values[p] < min )
 				{
-					min = values[i];
+					min = values[p];
 				}
-				if( values[i] > max )
+				if( values[p] > max )
 				{
-					max = values[i];
+					max = values[p];
 				}
 			}
 			
