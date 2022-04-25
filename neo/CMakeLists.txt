@@ -1107,33 +1107,33 @@ source_group("renderer\\SMAA" FILES ${RENDERER_SMAA_INCLUDES})
 
 source_group("renderer\\Shaders" FILES ${SHADERS})
 
-source_group("libs\\irrxml" FILES ${IRRXML_INCLUDES})
-source_group("libs\\irrxml" FILES ${IRRXML_SOURCES})
+source_group("irrxml" FILES ${IRRXML_INCLUDES})
+source_group("irrxml" FILES ${IRRXML_SOURCES})
 
-source_group("libs\\jpeg-6" FILES ${JPEG_INCLUDES})
-source_group("libs\\jpeg-6" FILES ${JPEG_SOURCES})
+source_group("jpeg-6" FILES ${JPEG_INCLUDES})
+source_group("jpeg-6" FILES ${JPEG_SOURCES})
 
-source_group("libs\\libbinkdec" FILES ${BINKDEC_INCLUDES})
-source_group("libs\\libbinkdec" FILES ${BINKDEC_SOURCES})
+source_group("libbinkdec" FILES ${BINKDEC_INCLUDES})
+source_group("libbinkdec" FILES ${BINKDEC_SOURCES})
 
-source_group("libs\\png" FILES ${PNG_INCLUDES})
-source_group("libs\\png" FILES ${PNG_SOURCES})
+source_group("png" FILES ${PNG_INCLUDES})
+source_group("png" FILES ${PNG_SOURCES})
 
-source_group("libs\\zlib" FILES ${ZLIB_INCLUDES})
-source_group("libs\\zlib" FILES ${ZLIB_SOURCES})
+source_group("zlib" FILES ${ZLIB_INCLUDES})
+source_group("zlib" FILES ${ZLIB_SOURCES})
 
-source_group("libs\\zlib\\minizip" FILES ${MINIZIP_INCLUDES})
-source_group("libs\\zlib\\minizip" FILES ${MINIZIP_SOURCES})
+source_group("zlib\\minizip" FILES ${MINIZIP_INCLUDES})
+source_group("zlib\\minizip" FILES ${MINIZIP_SOURCES})
 
-source_group("libs\\glew" FILES ${GLEW_INCLUDES})
-source_group("libs\\glew" FILES ${GLEW_SOURCES})
+source_group("glew" FILES ${GLEW_INCLUDES})
+source_group("glew" FILES ${GLEW_SOURCES})
 
-source_group("libs\\rapidjson" FILES ${RAPIDJSON_INCLUDES})
+source_group("rapidjson" FILES ${RAPIDJSON_INCLUDES})
 
-source_group("libs\\freetype" FILES ${FREETYPE_SOURCES})
+source_group("freetype" FILES ${FREETYPE_SOURCES})
 
-source_group("libs\\platform" FILES ${OPEN_PLATFORM_INCLUDES})
-#source_group("libs\\platform" FILES ${OPEN_PLATFORM_SOURCES})
+source_group("platform" FILES ${OPEN_PLATFORM_INCLUDES})
+#source_group("platform" FILES ${OPEN_PLATFORM_SOURCES})
 
 source_group("sound" FILES ${SOUND_INCLUDES})
 source_group("sound" FILES ${SOUND_SOURCES})
@@ -1147,8 +1147,8 @@ source_group("sound\\OpenAL" FILES ${OPENAL_SOURCES})
 source_group("sound\\Common" FILES ${SOUND_COMMON_INCLUDES})
 source_group("sound\\Common" FILES ${SOUND_COMMON_SOURCES})
 
-source_group("libs\\oggvorbis" FILES ${OGGVORBIS_INCLUDES})
-source_group("libs\\oggvorbis" FILES ${OGGVORBIS_SOURCES})
+source_group("oggvorbis" FILES ${OGGVORBIS_INCLUDES})
+source_group("oggvorbis" FILES ${OGGVORBIS_SOURCES})
 
 source_group("ui" FILES ${UI_INCLUDES})
 source_group("ui" FILES ${UI_SOURCES})
@@ -1171,8 +1171,8 @@ source_group("doomclassic" FILES ${DOOMCLASSIC_OPENAL_SOURCES})
 source_group("doomclassic" FILES ${DOOMCLASSIC_XAUDIO2_SOURCES})
 source_group("doomclassic" FILES ${DOOMCLASSIC_XAUDIO2_INCLUDES})
 
-source_group("libs\\timidity" FILES ${TIMIDITY_INCLUDES})
-source_group("libs\\timidity" FILES ${TIMIDITY_SOURCES})
+source_group("timidity" FILES ${TIMIDITY_INCLUDES})
+source_group("timidity" FILES ${TIMIDITY_SOURCES})
 
 source_group("game-d3xp" FILES ${GAMED3XP_INCLUDES})
 source_group("game-d3xp" FILES ${GAMED3XP_SOURCES})
@@ -1645,8 +1645,8 @@ if(MSVC)
 	set_source_files_properties( ${SHADERS} PROPERTIES VS_TOOL_OVERRIDE "None" )
 	
 	list(APPEND RBDOOM3_SOURCES ${WIN32_RESOURCES})
-	add_library(libs ${LIB_INCLUDES} ${LIB_SOURCES})
-	target_compile_options(libs PRIVATE /W0)
+	add_library(external ${LIB_INCLUDES} ${LIB_SOURCES})
+	target_compile_options(external PRIVATE /WX- /W3)
 	add_executable(DoomBFA WIN32 ${RBDOOM3_INCLUDES} ${RBDOOM3_SOURCES})
 	#GK: Allow to compile and run the game from VS
 	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT DoomBFA)
@@ -1662,10 +1662,10 @@ if(MSVC)
 				   $<TARGET_FILE_DIR:DoomBFA>/OpenAL32.dll
                    COMMENT "Copy OpenAL dll")
 		
-	add_dependencies(DoomBFA idlib libs)
+	add_dependencies(DoomBFA idlib external)
 	target_link_libraries(DoomBFA
 		idlib
-		libs
+		external
 		${DirectX_LIBRARIES}
 		dbghelp
 		#eaxguid
@@ -1852,7 +1852,7 @@ else()
 	else()
 		set(remove_command "rm")
 	endif()
-	add_library(libs ${LIB_INCLUDES} ${LIB_SOURCES})
+	add_library(external ${LIB_INCLUDES} ${LIB_SOURCES})
 	
 	if (USE_PRECOMPILED_HEADERS)
 		# it's ugly enough that the precompiled header binary needs to be in the 
@@ -1865,7 +1865,7 @@ else()
 				)
 				
 		# make sure this is run after creating idlib
-		add_dependencies(precomp_header_doombfa idlib libs)
+		add_dependencies(precomp_header_doombfa idlib external)
 	endif()
 	
 	
@@ -1886,7 +1886,7 @@ else()
 
 		target_link_libraries(DoomBFA
 			idlib
-			libs
+			external
 			${OPENGL_LIBRARIES}
 			pthread
 			${RT_LIBRARY}
