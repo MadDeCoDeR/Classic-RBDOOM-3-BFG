@@ -1658,8 +1658,8 @@ if(MSVC)
 	add_custom_command(TARGET DoomBFA
                    POST_BUILD
 				   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				   ${CMAKE_SOURCE_DIR}/libs/openal-soft/${OS_CPU}/OpenAL32.dll 
-				   $<TARGET_FILE_DIR:DoomBFA>
+				   ${CMAKE_SOURCE_DIR}/libs/openal-soft/bin/${OS_CPU}/soft_oal.dll 
+				   $<TARGET_FILE_DIR:DoomBFA>/OpenAL32.dll
                    COMMENT "Copy OpenAL dll")
 		
 	add_dependencies(DoomBFA idlib libs)

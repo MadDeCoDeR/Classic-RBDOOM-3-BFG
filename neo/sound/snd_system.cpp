@@ -151,7 +151,7 @@ void idSoundSystemLocal::Restart()
 	}
 	else
 #endif
-	if (alcIsExtensionPresent((ALCdevice*)this->GetInternal(), "ALC_SOFTX_reopen_device")) {
+	if (alcIsExtensionPresent((ALCdevice*)this->GetInternal(), "ALC_SOFT_reopen_device")) {
 			((idSoundHardware_OpenAL*)hardware)->RestartHardware();
 	}
 	InitStreamBuffers();

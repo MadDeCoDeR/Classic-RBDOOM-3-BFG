@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../snd_local.h"
 #include "../../../doomclassic/doom/i_sound_openal.h"
-#include "inprogext.h"
+#include "AL/alext.h"
 
 LPALCREOPENDEVICESOFT alcReopenDeviceSOFT = (LPALCREOPENDEVICESOFT)alGetProcAddress("alcReopenDeviceSOFT");
 
