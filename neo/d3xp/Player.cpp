@@ -3613,9 +3613,10 @@ void idPlayer::DrawHUD( idMenuHandler_HUD* _hudManager )
 		UpdateSpectatingText();
 	}
 	
-	// Always draw the local client's messages so that chat works correctly while spectating another player.
-	idPlayer* localPlayer = static_cast< idPlayer* >( gameLocal.entities[ gameLocal.GetLocalClientNum() ] );
+	
 #ifndef GAME_DLL
+	// Always draw the local client's messages so that chat works correctly while spectating another player.
+	idPlayer* localPlayer = static_cast<idPlayer*>(gameLocal.entities[gameLocal.GetLocalClientNum()]);
 	if( localPlayer != NULL && localPlayer->mpMessages != NULL )
 	{
 		localPlayer->mpMessages->Render( renderSystem, sys->GetMilliseconds() );
