@@ -51,18 +51,22 @@
     <li><a id="toc-mp3decomp" href="#mp3decomp">2.19 mp3decomp</a></li>
     <li><a id="toc-mpeg2_005fmetadata" href="#mpeg2_005fmetadata">2.20 mpeg2_metadata</a></li>
     <li><a id="toc-mpeg4_005funpack_005fbframes" href="#mpeg4_005funpack_005fbframes">2.21 mpeg4_unpack_bframes</a></li>
-    <li><a id="toc-noise" href="#noise">2.22 noise</a></li>
+    <li><a id="toc-noise" href="#noise">2.22 noise</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Examples" href="#Examples">2.22.1 Examples</a></li>
+    </ul></li>
     <li><a id="toc-null" href="#null">2.23 null</a></li>
     <li><a id="toc-pcm_005frechunk" href="#pcm_005frechunk">2.24 pcm_rechunk</a></li>
     <li><a id="toc-prores_005fmetadata" href="#prores_005fmetadata">2.25 prores_metadata</a></li>
     <li><a id="toc-remove_005fextra" href="#remove_005fextra">2.26 remove_extra</a></li>
-    <li><a id="toc-text2movsub-1" href="#text2movsub-1">2.27 text2movsub</a></li>
-    <li><a id="toc-trace_005fheaders" href="#trace_005fheaders">2.28 trace_headers</a></li>
-    <li><a id="toc-truehd_005fcore" href="#truehd_005fcore">2.29 truehd_core</a></li>
-    <li><a id="toc-vp9_005fmetadata" href="#vp9_005fmetadata">2.30 vp9_metadata</a></li>
-    <li><a id="toc-vp9_005fsuperframe" href="#vp9_005fsuperframe">2.31 vp9_superframe</a></li>
-    <li><a id="toc-vp9_005fsuperframe_005fsplit" href="#vp9_005fsuperframe_005fsplit">2.32 vp9_superframe_split</a></li>
-    <li><a id="toc-vp9_005fraw_005freorder" href="#vp9_005fraw_005freorder">2.33 vp9_raw_reorder</a></li>
+    <li><a id="toc-setts" href="#setts">2.27 setts</a></li>
+    <li><a id="toc-text2movsub-1" href="#text2movsub-1">2.28 text2movsub</a></li>
+    <li><a id="toc-trace_005fheaders" href="#trace_005fheaders">2.29 trace_headers</a></li>
+    <li><a id="toc-truehd_005fcore" href="#truehd_005fcore">2.30 truehd_core</a></li>
+    <li><a id="toc-vp9_005fmetadata" href="#vp9_005fmetadata">2.31 vp9_metadata</a></li>
+    <li><a id="toc-vp9_005fsuperframe" href="#vp9_005fsuperframe">2.32 vp9_superframe</a></li>
+    <li><a id="toc-vp9_005fsuperframe_005fsplit" href="#vp9_005fsuperframe_005fsplit">2.33 vp9_superframe_split</a></li>
+    <li><a id="toc-vp9_005fraw_005freorder" href="#vp9_005fraw_005freorder">2.34 vp9_raw_reorder</a></li>
   </ul></li>
   <li><a id="toc-See-Also" href="#See-Also">3 See Also</a></li>
   <li><a id="toc-Authors" href="#Authors">4 Authors</a></li>
@@ -175,7 +179,7 @@ This can only be set for 4:2:0 streams.
 
 </dd>
 <dt><samp>tick_rate</samp></dt>
-<dd><p>Set the tick rate (<em>num_units_in_display_tick / time_scale</em>) in
+<dd><p>Set the tick rate (<em>time_scale / num_units_in_display_tick</em>) in
 the timing info in the sequence header.
 </p></dd>
 <dt><samp>num_ticks_per_picture</samp></dt>
@@ -362,7 +366,7 @@ E.2.1 and figure E-1).
 </p>
 </dd>
 <dt><samp>tick_rate</samp></dt>
-<dd><p>Set the tick rate (num_units_in_tick / time_scale) in the VUI
+<dd><p>Set the tick rate (time_scale / num_units_in_tick) in the VUI
 parameters.  This is the smallest time unit representable in the
 stream, and in many cases represents the field rate of the stream
 (double the frame rate).
@@ -372,6 +376,12 @@ stream, and in many cases represents the field rate of the stream
 that the framerate is exactly half the tick rate, but the exact
 meaning is dependent on interlacing and the picture structure (see
 H.264 section E.2.1 and table E-6).
+</p></dd>
+<dt><samp>zero_new_constraint_set_flags</samp></dt>
+<dd><p>Zero constraint_set4_flag and constraint_set5_flag in the SPS. These
+bits were reserved in a previous version of the H.264 spec, and thus
+some hardware decoders require these to be zero. The result of zeroing
+this is still a valid bitstream.
 </p>
 </dd>
 <dt><samp>crop_left</samp></dt>
@@ -479,8 +489,8 @@ E.3.1 and figure E.1).
 </p>
 </dd>
 <dt><samp>tick_rate</samp></dt>
-<dd><p>Set the tick rate in the VPS and VUI parameters (num_units_in_tick /
-time_scale).  Combined with <samp>num_ticks_poc_diff_one</samp>, this can
+<dd><p>Set the tick rate in the VPS and VUI parameters (time_scale /
+num_units_in_tick). Combined with <samp>num_ticks_poc_diff_one</samp>, this can
 set a constant framerate in the stream.  Note that it is likely to be
 overridden by container parameters when the stream is in a container.
 </p>
@@ -677,22 +687,83 @@ container. Can be used for fuzzing or testing error resilience/concealment.
 <p>Parameters:
 </p><dl compact="compact">
 <dt><samp>amount</samp></dt>
-<dd><p>A numeral string, whose value is related to how often output bytes will
-be modified. Therefore, values below or equal to 0 are forbidden, and
-the lower the more frequent bytes will be modified, with 1 meaning
-every byte is modified.
+<dd><p>Accepts an expression whose evaluation per-packet determines how often bytes in that
+packet will be modified. A value below 0 will result in a variable frequency.
+Default is 0 which results in no modification. However, if neither amount nor drop is specified,
+amount will be set to <var>-1</var>. See below for accepted variables.
+</p></dd>
+<dt><samp>drop</samp></dt>
+<dd><p>Accepts an expression evaluated per-packet whose value determines whether that packet is dropped.
+Evaluation to a positive value results in the packet being dropped. Evaluation to a negative
+value results in a variable chance of it being dropped, roughly inverse in proportion to the magnitude
+of the value. Default is 0 which results in no drops. See below for accepted variables.
 </p></dd>
 <dt><samp>dropamount</samp></dt>
-<dd><p>A numeral string, whose value is related to how often packets will be dropped.
-Therefore, values below or equal to 0 are forbidden, and the lower the more
-frequent packets will be dropped, with 1 meaning every packet is dropped.
+<dd><p>Accepts a non-negative integer, which assigns a variable chance of it being dropped, roughly inverse
+in proportion to the value. Default is 0 which results in no drops. This option is kept for backwards
+compatibility and is equivalent to setting drop to a negative value with the same magnitude
+i.e. <code>dropamount=4</code> is the same as <code>drop=-4</code>. Ignored if drop is also specified.
 </p></dd>
 </dl>
 
-<p>The following example applies the modification to every byte but does not drop
-any packets.
+<p>Both <code>amount</code> and <code>drop</code> accept expressions containing the following variables:
+</p>
+<dl compact="compact">
+<dt>&lsquo;<samp>n</samp>&rsquo;</dt>
+<dd><p>The index of the packet, starting from zero.
+</p></dd>
+<dt>&lsquo;<samp>tb</samp>&rsquo;</dt>
+<dd><p>The timebase for packet timestamps.
+</p></dd>
+<dt>&lsquo;<samp>pts</samp>&rsquo;</dt>
+<dd><p>Packet presentation timestamp.
+</p></dd>
+<dt>&lsquo;<samp>dts</samp>&rsquo;</dt>
+<dd><p>Packet decoding timestamp.
+</p></dd>
+<dt>&lsquo;<samp>nopts</samp>&rsquo;</dt>
+<dd><p>Constant representing AV_NOPTS_VALUE.
+</p></dd>
+<dt>&lsquo;<samp>startpts</samp>&rsquo;</dt>
+<dd><p>First non-AV_NOPTS_VALUE PTS seen in the stream.
+</p></dd>
+<dt>&lsquo;<samp>startdts</samp>&rsquo;</dt>
+<dd><p>First non-AV_NOPTS_VALUE DTS seen in the stream.
+</p></dd>
+<dt>&lsquo;<samp>duration</samp>&rsquo;</dt>
+<dt>&lsquo;<samp>d</samp>&rsquo;</dt>
+<dd><p>Packet duration, in timebase units.
+</p></dd>
+<dt>&lsquo;<samp>pos</samp>&rsquo;</dt>
+<dd><p>Packet position in input; may be -1 when unknown or not set.
+</p></dd>
+<dt>&lsquo;<samp>size</samp>&rsquo;</dt>
+<dd><p>Packet size, in bytes.
+</p></dd>
+<dt>&lsquo;<samp>key</samp>&rsquo;</dt>
+<dd><p>Whether packet is marked as a keyframe.
+</p></dd>
+<dt>&lsquo;<samp>state</samp>&rsquo;</dt>
+<dd><p>A pseudo random integer, primarily derived from the content of packet payload.
+</p></dd>
+</dl>
+
+<a name="Examples"></a>
+<h4 class="subsection">2.22.1 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples" aria-hidden="true">TOC</a></span></h4>
+<p>Apply modification to every byte but don&rsquo;t drop any packets.
 </p><div class="example">
-<pre class="example">ffmpeg -i INPUT -c copy -bsf noise[=1] output.mkv
+<pre class="example">ffmpeg -i INPUT -c copy -bsf noise=1 output.mkv
+</pre></div>
+
+<p>Drop every video packet not marked as a keyframe after timestamp 30s but do not
+modify any of the remaining packets.
+</p><div class="example">
+<pre class="example">ffmpeg -i INPUT -c copy -bsf:v noise=drop='gt(t\,30)*not(key)' output.mkv
+</pre></div>
+
+<p>Drop one second of audio every 10 seconds and add some random noise to the rest.
+</p><div class="example">
+<pre class="example">ffmpeg -i INPUT -c copy -bsf:a noise=amount=-1:drop='between(mod(t\,10)\,9\,10)' output.mkv
 </pre></div>
 
 <a name="null"></a>
@@ -850,8 +921,84 @@ Available values are:
 </dd>
 </dl>
 
+<a name="setts"></a>
+<h3 class="section">2.27 setts<span class="pull-right"><a class="anchor hidden-xs" href="#setts" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-setts" aria-hidden="true">TOC</a></span></h3>
+<p>Set PTS and DTS in packets.
+</p>
+<p>It accepts the following parameters:
+</p><dl compact="compact">
+<dt><samp>ts</samp></dt>
+<dt><samp>pts</samp></dt>
+<dt><samp>dts</samp></dt>
+<dd><p>Set expressions for PTS, DTS or both.
+</p></dd>
+</dl>
+
+<p>The expressions are evaluated through the eval API and can contain the following
+constants:
+</p>
+<dl compact="compact">
+<dt><samp>N</samp></dt>
+<dd><p>The count of the input packet. Starting from 0.
+</p>
+</dd>
+<dt><samp>TS</samp></dt>
+<dd><p>The demux timestamp in input in case of <code>ts</code> or <code>dts</code> option or presentation
+timestamp in case of <code>pts</code> option.
+</p>
+</dd>
+<dt><samp>POS</samp></dt>
+<dd><p>The original position in the file of the packet, or undefined if undefined
+for the current packet
+</p>
+</dd>
+<dt><samp>DTS</samp></dt>
+<dd><p>The demux timestamp in input.
+</p>
+</dd>
+<dt><samp>PTS</samp></dt>
+<dd><p>The presentation timestamp in input.
+</p>
+</dd>
+<dt><samp>STARTDTS</samp></dt>
+<dd><p>The DTS of the first packet.
+</p>
+</dd>
+<dt><samp>STARTPTS</samp></dt>
+<dd><p>The PTS of the first packet.
+</p>
+</dd>
+<dt><samp>PREV_INDTS</samp></dt>
+<dd><p>The previous input DTS.
+</p>
+</dd>
+<dt><samp>PREV_INPTS</samp></dt>
+<dd><p>The previous input PTS.
+</p>
+</dd>
+<dt><samp>PREV_OUTDTS</samp></dt>
+<dd><p>The previous output DTS.
+</p>
+</dd>
+<dt><samp>PREV_OUTPTS</samp></dt>
+<dd><p>The previous output PTS.
+</p>
+</dd>
+<dt><samp>TB</samp></dt>
+<dd><p>The timebase of stream packet belongs.
+</p>
+</dd>
+<dt><samp>SR</samp></dt>
+<dd><p>The sample rate of stream packet belongs.
+</p>
+</dd>
+<dt><samp>NOPTS</samp></dt>
+<dd><p>The AV_NOPTS_VALUE constant.
+</p></dd>
+</dl>
+
 <span id="text2movsub"></span><a name="text2movsub-1"></a>
-<h3 class="section">2.27 text2movsub<span class="pull-right"><a class="anchor hidden-xs" href="#text2movsub-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-text2movsub-1" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">2.28 text2movsub<span class="pull-right"><a class="anchor hidden-xs" href="#text2movsub-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-text2movsub-1" aria-hidden="true">TOC</a></span></h3>
 
 <p>Convert text subtitles to MOV subtitles (as used by the <code>mov_text</code>
 codec) with metadata headers.
@@ -859,7 +1006,7 @@ codec) with metadata headers.
 <p>See also the <a href="#mov2textsub">mov2textsub</a> filter.
 </p>
 <a name="trace_005fheaders"></a>
-<h3 class="section">2.28 trace_headers<span class="pull-right"><a class="anchor hidden-xs" href="#trace_005fheaders" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-trace_005fheaders" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">2.29 trace_headers<span class="pull-right"><a class="anchor hidden-xs" href="#trace_005fheaders" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-trace_005fheaders" aria-hidden="true">TOC</a></span></h3>
 
 <p>Log trace output containing all syntax elements in the coded stream
 headers (everything above the level of individual coded blocks).
@@ -869,12 +1016,12 @@ This can be useful for debugging low-level stream issues.
 on the build only a subset of these may be available.
 </p>
 <a name="truehd_005fcore"></a>
-<h3 class="section">2.29 truehd_core<span class="pull-right"><a class="anchor hidden-xs" href="#truehd_005fcore" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-truehd_005fcore" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">2.30 truehd_core<span class="pull-right"><a class="anchor hidden-xs" href="#truehd_005fcore" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-truehd_005fcore" aria-hidden="true">TOC</a></span></h3>
 
 <p>Extract the core from a TrueHD stream, dropping ATMOS data.
 </p>
 <a name="vp9_005fmetadata"></a>
-<h3 class="section">2.30 vp9_metadata<span class="pull-right"><a class="anchor hidden-xs" href="#vp9_005fmetadata" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-vp9_005fmetadata" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">2.31 vp9_metadata<span class="pull-right"><a class="anchor hidden-xs" href="#vp9_005fmetadata" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-vp9_005fmetadata" aria-hidden="true">TOC</a></span></h3>
 
 <p>Modify metadata embedded in a VP9 stream.
 </p>
@@ -905,19 +1052,19 @@ imposed by the color space will take precedence over this value.
 </dl>
 
 <a name="vp9_005fsuperframe"></a>
-<h3 class="section">2.31 vp9_superframe<span class="pull-right"><a class="anchor hidden-xs" href="#vp9_005fsuperframe" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-vp9_005fsuperframe" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">2.32 vp9_superframe<span class="pull-right"><a class="anchor hidden-xs" href="#vp9_005fsuperframe" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-vp9_005fsuperframe" aria-hidden="true">TOC</a></span></h3>
 
 <p>Merge VP9 invisible (alt-ref) frames back into VP9 superframes. This
 fixes merging of split/segmented VP9 streams where the alt-ref frame
 was split from its visible counterpart.
 </p>
 <a name="vp9_005fsuperframe_005fsplit"></a>
-<h3 class="section">2.32 vp9_superframe_split<span class="pull-right"><a class="anchor hidden-xs" href="#vp9_005fsuperframe_005fsplit" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-vp9_005fsuperframe_005fsplit" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">2.33 vp9_superframe_split<span class="pull-right"><a class="anchor hidden-xs" href="#vp9_005fsuperframe_005fsplit" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-vp9_005fsuperframe_005fsplit" aria-hidden="true">TOC</a></span></h3>
 
 <p>Split VP9 superframes into single frames.
 </p>
 <a name="vp9_005fraw_005freorder"></a>
-<h3 class="section">2.33 vp9_raw_reorder<span class="pull-right"><a class="anchor hidden-xs" href="#vp9_005fraw_005freorder" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-vp9_005fraw_005freorder" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">2.34 vp9_raw_reorder<span class="pull-right"><a class="anchor hidden-xs" href="#vp9_005fraw_005freorder" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-vp9_005fraw_005freorder" aria-hidden="true">TOC</a></span></h3>
 
 <p>Given a VP9 stream with correct timestamps but possibly out of order,
 insert additional show-existing-frame packets to correct the ordering.

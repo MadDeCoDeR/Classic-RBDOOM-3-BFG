@@ -283,6 +283,22 @@ enum AVPacketSideDataType {
     AV_PKT_DATA_DOVI_CONF,
 
     /**
+     * Timecode which conforms to SMPTE ST 12-1:2014. The data is an array of 4 uint32_t
+     * where the first uint32_t describes how many (1-3) of the other timecodes are used.
+     * The timecode format is described in the documentation of av_timecode_get_smpte_from_framenum()
+     * function in libavutil/timecode.h.
+     */
+    AV_PKT_DATA_S12M_TIMECODE,
+
+    /**
+     * HDR10+ dynamic metadata associated with a video frame. The metadata is in
+     * the form of the AVDynamicHDRPlus struct and contains
+     * information for color volume transform - application 4 of
+     * SMPTE 2094-40:2016 standard.
+     */
+    AV_PKT_DATA_DYNAMIC_HDR10_PLUS,
+
+    /**
      * The number of side data types.
      * This is not part of the public API/ABI in the sense that it may
      * change when new side data types are added.
@@ -297,7 +313,7 @@ enum AVPacketSideDataType {
 
 typedef struct AVPacketSideData {
     uint8_t *data;
-    int      size;
+    size_t   size;
     enum AVPacketSideDataType type;
 } AVPacketSideData;
 
@@ -311,10 +327,6 @@ typedef struct AVPacketSideData {
  * packets, with no compressed data, containing only side data
  * (e.g. to update some stream parameters at the end of encoding).
  *
- * AVPacket is one of the few structs in FFmpeg, whose size is a part of public
- * ABI. Thus it may be allocated on stack and no new fields can be added to it
- * without libavcodec and libavformat major bump.
- *
  * The semantics of data ownership depends on the buf field.
  * If it is set, the packet data is dynamically allocated and is
  * valid indefinitely until a call to av_packet_unref() reduces the
@@ -326,6 +338,12 @@ typedef struct AVPacketSideData {
  * The side data is always allocated with av_malloc(), copied by
  * av_packet_ref() and freed by av_packet_unref().
  *
+ * sizeof(AVPacket) being a part of the public ABI is deprecated. once
+ * av_init_packet() is removed, new packets will only be able to be allocated
+ * with av_packet_alloc(), and new fields may be added to the end of the struct
+ * with a minor bump.
+ *
+ * @see av_packet_alloc
  * @see av_packet_ref
  * @see av_packet_unref
  */
@@ -374,16 +392,38 @@ typedef struct AVPacket {
 
     int64_t pos;                            ///< byte position in stream, -1 if unknown
 
-#if FF_API_CONVERGENCE_DURATION
     /**
-     * @deprecated Same as the duration field, but as int64_t. This was required
-     * for Matroska subtitles, whose duration values could overflow when the
-     * duration field was still an int.
+     * for some private data of the user
      */
-    attribute_deprecated
-    int64_t convergence_duration;
-#endif
+    void *opaque;
+
+    /**
+     * AVBufferRef for free use by the API user. FFmpeg will never check the
+     * contents of the buffer ref. FFmpeg calls av_buffer_unref() on it when
+     * the packet is unreferenced. av_packet_copy_props() calls create a new
+     * reference with av_buffer_ref() for the target packet's opaque_ref field.
+     *
+     * This is unrelated to the opaque field, although it serves a similar
+     * purpose.
+     */
+    AVBufferRef *opaque_ref;
+
+    /**
+     * Time base of the packet's timestamps.
+     * In the future, this field may be set on packets output by encoders or
+     * demuxers, but its value will be by default ignored on input to decoders
+     * or muxers.
+     */
+    AVRational time_base;
 } AVPacket;
+
+#if FF_API_INIT_PACKET
+attribute_deprecated
+typedef struct AVPacketList {
+    AVPacket pkt;
+    struct AVPacketList *next;
+} AVPacketList;
+#endif
 
 #define AV_PKT_FLAG_KEY     0x0001 ///< The packet contains a keyframe
 #define AV_PKT_FLAG_CORRUPT 0x0002 ///< The packet content is corrupted
@@ -447,6 +487,7 @@ AVPacket *av_packet_clone(const AVPacket *src);
  */
 void av_packet_free(AVPacket **pkt);
 
+#if FF_API_INIT_PACKET
 /**
  * Initialize optional fields of a packet with default values.
  *
@@ -454,8 +495,16 @@ void av_packet_free(AVPacket **pkt);
  * initialized separately.
  *
  * @param pkt packet
+ *
+ * @see av_packet_alloc
+ * @see av_packet_unref
+ *
+ * @deprecated This function is deprecated. Once it's removed,
+               sizeof(AVPacket) will not be a part of the ABI anymore.
  */
+attribute_deprecated
 void av_init_packet(AVPacket *pkt);
+#endif
 
 /**
  * Allocate the payload of a packet and initialize its fields with
@@ -498,45 +547,6 @@ int av_grow_packet(AVPacket *pkt, int grow_by);
  */
 int av_packet_from_data(AVPacket *pkt, uint8_t *data, int size);
 
-#if FF_API_AVPACKET_OLD_API
-/**
- * @warning This is a hack - the packet memory allocation stuff is broken. The
- * packet is allocated if it was not really allocated.
- *
- * @deprecated Use av_packet_ref or av_packet_make_refcounted
- */
-attribute_deprecated
-int av_dup_packet(AVPacket *pkt);
-/**
- * Copy packet, including contents
- *
- * @return 0 on success, negative AVERROR on fail
- *
- * @deprecated Use av_packet_ref
- */
-attribute_deprecated
-int av_copy_packet(AVPacket *dst, const AVPacket *src);
-
-/**
- * Copy packet side data
- *
- * @return 0 on success, negative AVERROR on fail
- *
- * @deprecated Use av_packet_copy_props
- */
-attribute_deprecated
-int av_copy_packet_side_data(AVPacket *dst, const AVPacket *src);
-
-/**
- * Free a packet.
- *
- * @deprecated Use av_packet_unref
- *
- * @param pkt packet to free
- */
-attribute_deprecated
-void av_free_packet(AVPacket *pkt);
-#endif
 /**
  * Allocate new information of a packet.
  *
@@ -546,7 +556,7 @@ void av_free_packet(AVPacket *pkt);
  * @return pointer to fresh allocated data or NULL otherwise
  */
 uint8_t* av_packet_new_side_data(AVPacket *pkt, enum AVPacketSideDataType type,
-                                 int size);
+                                 size_t size);
 
 /**
  * Wrap an existing array as a packet side data.
@@ -573,26 +583,19 @@ int av_packet_add_side_data(AVPacket *pkt, enum AVPacketSideDataType type,
  * @return 0 on success, < 0 on failure
  */
 int av_packet_shrink_side_data(AVPacket *pkt, enum AVPacketSideDataType type,
-                               int size);
+                               size_t size);
 
 /**
  * Get side information from packet.
  *
  * @param pkt packet
  * @param type desired side information type
- * @param size pointer for side information size to store (optional)
+ * @param size If supplied, *size will be set to the size of the side data
+ *             or to zero if the desired side data is not present.
  * @return pointer to data if present or NULL otherwise
  */
 uint8_t* av_packet_get_side_data(const AVPacket *pkt, enum AVPacketSideDataType type,
-                                 int *size);
-
-#if FF_API_MERGE_SD_API
-attribute_deprecated
-int av_packet_merge_side_data(AVPacket *pkt);
-
-attribute_deprecated
-int av_packet_split_side_data(AVPacket *pkt);
-#endif
+                                 size_t *size);
 
 const char *av_packet_side_data_name(enum AVPacketSideDataType type);
 
@@ -603,7 +606,7 @@ const char *av_packet_side_data_name(enum AVPacketSideDataType type);
  * @param size pointer to store the size of the returned data
  * @return pointer to data if successful, NULL otherwise
  */
-uint8_t *av_packet_pack_dictionary(AVDictionary *dict, int *size);
+uint8_t *av_packet_pack_dictionary(AVDictionary *dict, size_t *size);
 /**
  * Unpack a dictionary from side_data.
  *
@@ -612,8 +615,8 @@ uint8_t *av_packet_pack_dictionary(AVDictionary *dict, int *size);
  * @param dict the metadata storage dictionary
  * @return 0 on success, < 0 on failure
  */
-int av_packet_unpack_dictionary(const uint8_t *data, int size, AVDictionary **dict);
-
+int av_packet_unpack_dictionary(const uint8_t *data, size_t size,
+                                AVDictionary **dict);
 
 /**
  * Convenience function to free all the side data stored.

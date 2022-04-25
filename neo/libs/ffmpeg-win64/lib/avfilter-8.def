@@ -25,9 +25,9 @@ EXPORTS
     av_buffersrc_write_frame
     av_filter_ffversion
     av_filter_iterate
-    avfilter_add_matrix
     avfilter_config_links
     avfilter_configuration
+    avfilter_filter_pad_count
     avfilter_free
     avfilter_get_by_name
     avfilter_get_class
@@ -53,17 +53,8 @@ EXPORTS
     avfilter_license
     avfilter_link
     avfilter_link_free
-    avfilter_link_get_channels
-    avfilter_link_set_closed
-    avfilter_make_format64_list
-    avfilter_mul_matrix
-    avfilter_next
     avfilter_pad_count
     avfilter_pad_get_name
     avfilter_pad_get_type
     avfilter_process_command
-    avfilter_register
-    avfilter_register_all
-    avfilter_sub_matrix
-    avfilter_transform
     avfilter_version

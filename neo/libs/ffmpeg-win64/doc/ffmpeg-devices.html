@@ -130,44 +130,49 @@
     <ul class="no-bullet">
       <li><a id="toc-Examples-8" href="#Examples-8">4.1.1 Examples</a></li>
     </ul></li>
-    <li><a id="toc-caca" href="#caca">4.2 caca</a>
+    <li><a id="toc-AudioToolbox" href="#AudioToolbox">4.2 AudioToolbox</a>
     <ul class="no-bullet">
       <li><a id="toc-Options-21" href="#Options-21">4.2.1 Options</a></li>
       <li><a id="toc-Examples-9" href="#Examples-9">4.2.2 Examples</a></li>
     </ul></li>
-    <li><a id="toc-decklink-1" href="#decklink-1">4.3 decklink</a>
+    <li><a id="toc-caca" href="#caca">4.3 caca</a>
     <ul class="no-bullet">
       <li><a id="toc-Options-22" href="#Options-22">4.3.1 Options</a></li>
       <li><a id="toc-Examples-10" href="#Examples-10">4.3.2 Examples</a></li>
     </ul></li>
-    <li><a id="toc-fbdev-1" href="#fbdev-1">4.4 fbdev</a>
+    <li><a id="toc-decklink-1" href="#decklink-1">4.4 decklink</a>
     <ul class="no-bullet">
       <li><a id="toc-Options-23" href="#Options-23">4.4.1 Options</a></li>
       <li><a id="toc-Examples-11" href="#Examples-11">4.4.2 Examples</a></li>
     </ul></li>
-    <li><a id="toc-opengl" href="#opengl">4.5 opengl</a>
+    <li><a id="toc-fbdev-1" href="#fbdev-1">4.5 fbdev</a>
     <ul class="no-bullet">
       <li><a id="toc-Options-24" href="#Options-24">4.5.1 Options</a></li>
       <li><a id="toc-Examples-12" href="#Examples-12">4.5.2 Examples</a></li>
     </ul></li>
-    <li><a id="toc-oss-1" href="#oss-1">4.6 oss</a></li>
-    <li><a id="toc-pulse-1" href="#pulse-1">4.7 pulse</a>
+    <li><a id="toc-opengl" href="#opengl">4.6 opengl</a>
     <ul class="no-bullet">
-      <li><a id="toc-Options-25" href="#Options-25">4.7.1 Options</a></li>
-      <li><a id="toc-Examples-13" href="#Examples-13">4.7.2 Examples</a></li>
+      <li><a id="toc-Options-25" href="#Options-25">4.6.1 Options</a></li>
+      <li><a id="toc-Examples-13" href="#Examples-13">4.6.2 Examples</a></li>
     </ul></li>
-    <li><a id="toc-sdl" href="#sdl">4.8 sdl</a>
+    <li><a id="toc-oss-1" href="#oss-1">4.7 oss</a></li>
+    <li><a id="toc-pulse-1" href="#pulse-1">4.8 pulse</a>
     <ul class="no-bullet">
       <li><a id="toc-Options-26" href="#Options-26">4.8.1 Options</a></li>
-      <li><a id="toc-Interactive-commands" href="#Interactive-commands">4.8.2 Interactive commands</a></li>
-      <li><a id="toc-Examples-14" href="#Examples-14">4.8.3 Examples</a></li>
+      <li><a id="toc-Examples-14" href="#Examples-14">4.8.2 Examples</a></li>
     </ul></li>
-    <li><a id="toc-sndio-1" href="#sndio-1">4.9 sndio</a></li>
-    <li><a id="toc-v4l2" href="#v4l2">4.10 v4l2</a></li>
-    <li><a id="toc-xv" href="#xv">4.11 xv</a>
+    <li><a id="toc-sdl" href="#sdl">4.9 sdl</a>
     <ul class="no-bullet">
-      <li><a id="toc-Options-27" href="#Options-27">4.11.1 Options</a></li>
-      <li><a id="toc-Examples-15" href="#Examples-15">4.11.2 Examples</a></li>
+      <li><a id="toc-Options-27" href="#Options-27">4.9.1 Options</a></li>
+      <li><a id="toc-Interactive-commands" href="#Interactive-commands">4.9.2 Interactive commands</a></li>
+      <li><a id="toc-Examples-15" href="#Examples-15">4.9.3 Examples</a></li>
+    </ul></li>
+    <li><a id="toc-sndio-1" href="#sndio-1">4.10 sndio</a></li>
+    <li><a id="toc-v4l2" href="#v4l2">4.11 v4l2</a></li>
+    <li><a id="toc-xv" href="#xv">4.12 xv</a>
+    <ul class="no-bullet">
+      <li><a id="toc-Options-28" href="#Options-28">4.12.1 Options</a></li>
+      <li><a id="toc-Examples-16" href="#Examples-16">4.12.2 Examples</a></li>
     </ul></li>
   </ul></li>
   <li><a id="toc-See-Also" href="#See-Also">5 See Also</a></li>
@@ -515,11 +520,37 @@ supports it.
 <dd><p>Set the pixel format of the captured video.
 Available values are:
 </p><dl compact="compact">
+<dt>&lsquo;<samp>auto</samp>&rsquo;</dt>
+<dd>
+<p>This is the default which means 8-bit YUV 422 or 8-bit ARGB if format
+autodetection is used, 8-bit YUV 422 otherwise.
+</p>
+</dd>
 <dt>&lsquo;<samp>uyvy422</samp>&rsquo;</dt>
+<dd>
+<p>8-bit YUV 422.
+</p>
+</dd>
 <dt>&lsquo;<samp>yuv422p10</samp>&rsquo;</dt>
+<dd>
+<p>10-bit YUV 422.
+</p>
+</dd>
 <dt>&lsquo;<samp>argb</samp>&rsquo;</dt>
+<dd>
+<p>8-bit RGB.
+</p>
+</dd>
 <dt>&lsquo;<samp>bgra</samp>&rsquo;</dt>
+<dd>
+<p>8-bit RGB.
+</p>
+</dd>
 <dt>&lsquo;<samp>rgb10</samp>&rsquo;</dt>
+<dd>
+<p>10-bit RGB.
+</p>
+</dd>
 </dl>
 
 </dd>
@@ -546,15 +577,34 @@ Defaults to &lsquo;<samp>2</samp>&rsquo;.
 </p>
 </dd>
 <dt><samp>duplex_mode</samp></dt>
-<dd><p>Sets the decklink device duplex mode. Must be &lsquo;<samp>unset</samp>&rsquo;, &lsquo;<samp>half</samp>&rsquo; or &lsquo;<samp>full</samp>&rsquo;.
+<dd><p>Sets the decklink device duplex/profile mode. Must be &lsquo;<samp>unset</samp>&rsquo;, &lsquo;<samp>half</samp>&rsquo;, &lsquo;<samp>full</samp>&rsquo;,
+&lsquo;<samp>one_sub_device_full</samp>&rsquo;, &lsquo;<samp>one_sub_device_half</samp>&rsquo;, &lsquo;<samp>two_sub_device_full</samp>&rsquo;,
+&lsquo;<samp>four_sub_device_half</samp>&rsquo;
 Defaults to &lsquo;<samp>unset</samp>&rsquo;.
+</p>
+<p>Note: DeckLink SDK 11.0 have replaced the duplex property by a profile property.
+For the DeckLink Duo 2 and DeckLink Quad 2, a profile is shared between any 2
+sub-devices that utilize the same connectors. For the DeckLink 8K Pro, a profile
+is shared between all 4 sub-devices. So DeckLink 8K Pro support four profiles.
+</p>
+<p>Valid profile modes for DeckLink 8K Pro(with DeckLink SDK &gt;= 11.0):
+&lsquo;<samp>one_sub_device_full</samp>&rsquo;, &lsquo;<samp>one_sub_device_half</samp>&rsquo;, &lsquo;<samp>two_sub_device_full</samp>&rsquo;,
+&lsquo;<samp>four_sub_device_half</samp>&rsquo;
+</p>
+<p>Valid profile modes for DeckLink Quad 2 and DeckLink Duo 2:
+&lsquo;<samp>half</samp>&rsquo;, &lsquo;<samp>full</samp>&rsquo;
 </p>
 </dd>
 <dt><samp>timecode_format</samp></dt>
 <dd><p>Timecode type to include in the frame and video stream metadata. Must be
 &lsquo;<samp>none</samp>&rsquo;, &lsquo;<samp>rp188vitc</samp>&rsquo;, &lsquo;<samp>rp188vitc2</samp>&rsquo;, &lsquo;<samp>rp188ltc</samp>&rsquo;,
-&lsquo;<samp>rp188any</samp>&rsquo;, &lsquo;<samp>vitc</samp>&rsquo;, &lsquo;<samp>vitc2</samp>&rsquo;, or &lsquo;<samp>serial</samp>&rsquo;. Defaults to
-&lsquo;<samp>none</samp>&rsquo; (not included).
+&lsquo;<samp>rp188hfr</samp>&rsquo;, &lsquo;<samp>rp188any</samp>&rsquo;, &lsquo;<samp>vitc</samp>&rsquo;, &lsquo;<samp>vitc2</samp>&rsquo;, or &lsquo;<samp>serial</samp>&rsquo;.
+Defaults to &lsquo;<samp>none</samp>&rsquo; (not included).
+</p>
+<p>In order to properly support 50/60 fps timecodes, the ordering of the queried
+timecode types for &lsquo;<samp>rp188any</samp>&rsquo; is HFR, VITC1, VITC2 and LTC for &gt;30 fps
+content. Note that this is slightly different to the ordering used by the
+DeckLink API, which is HFR, VITC1, LTC, VITC2.
 </p>
 </dd>
 <dt><samp>video_input</samp></dt>
@@ -624,6 +674,13 @@ isn&rsquo;t received with the first input frame. If that happens, the stored str
 timecode will be inaccurate. If this option is set to <samp>true</samp>, input frames
 are dropped till a frame with timecode is received.
 Option <var>timecode_format</var> must be specified.
+Defaults to <samp>false</samp>.
+</p>
+</dd>
+<dt><samp>enable_klv(<em>bool</em>)</samp></dt>
+<dd><p>If set to <samp>true</samp>, extracts KLV data from VANC and outputs KLV packets.
+KLV VANC packets are joined based on MID and PSC fields and aggregated into
+one KLV packet.
 Defaults to <samp>false</samp>.
 </p>
 </dd>
@@ -833,6 +890,13 @@ be anything even fake one.
 <dd><p>Save the currently used video capture filter device and its
 parameters (if the filter supports it) to a file.
 If a file with the same name exists it will be overwritten.
+</p>
+</dd>
+<dt><samp>use_video_device_timestamps</samp></dt>
+<dd><p>If set to <samp>false</samp>, the timestamp for video frames will be
+derived from the wallclock instead of the timestamp provided by
+the capture device. This allows working around devices that
+provide unreliable timestamps.
 </p>
 </dd>
 </dl>
@@ -1142,12 +1206,16 @@ DRM object that can be passed to other hardware functions.
 </p>
 </dd>
 <dt><samp>format</samp></dt>
-<dd><p>Pixel format of the framebuffer.  Defaults to <samp>bgr0</samp>.
+<dd><p>Pixel format of the framebuffer.  This can be autodetected if you are running Linux 5.7
+or later, but needs to be provided for earlier versions.  Defaults to <samp>bgr0</samp>,
+which is the most common format used by the Linux console and Xorg X server.
 </p>
 </dd>
 <dt><samp>format_modifier</samp></dt>
 <dd><p>Format modifier to signal on output frames.  This is necessary to import correctly into
-some APIs, but can&rsquo;t be autodetected.  See the libdrm documentation for possible values.
+some APIs.  It can be autodetected if you are running Linux 5.7 or later, but will need
+to be provided explicitly when needed in earlier versions.  See the libdrm documentation
+for possible values.
 </p>
 </dd>
 <dt><samp>crtc_id</samp></dt>
@@ -1793,6 +1861,15 @@ the properties of your X11 display (e.g. grep for &quot;name&quot; or
 <h4 class="subsection">3.21.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-20" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-20" aria-hidden="true">TOC</a></span></h4>
 
 <dl compact="compact">
+<dt><samp>select_region</samp></dt>
+<dd><p>Specify whether to select the grabbing area graphically using the pointer.
+A value of <code>1</code> prompts the user to select the grabbing area graphically
+by clicking and dragging. A single click with no dragging will select the
+whole screen. A region with zero width or height will also select the whole
+screen. This option overwrites the <var>video_size</var>, <var>grab_x</var>, and
+<var>grab_y</var> options. Default value is <code>0</code>.
+</p>
+</dd>
 <dt><samp>draw_mouse</samp></dt>
 <dd><p>Specify whether to draw the mouse pointer. A value of <code>0</code> specifies
 not to draw the pointer. Default value is <code>1</code>.
@@ -1846,8 +1923,22 @@ Range is 1 to 128 and default is 3 (XCB-based x11grab only).
 </pre></div>
 
 </dd>
+<dt><samp>window_id</samp></dt>
+<dd><p>Grab this window, instead of the whole screen. Default value is 0, which maps to
+the whole screen (root window).
+</p>
+<p>The id of a window can be found using the <code>xwininfo</code> program, possibly with options -tree and
+-root.
+</p>
+<p>If the window is later enlarged, the new area is not recorded. Video ends when
+the window is closed, unmapped (i.e., iconified) or shrunk beyond the video
+size (which defaults to the initial window size).
+</p>
+<p>This option disables options <samp>follow_mouse</samp> and <samp>select_region</samp>.
+</p>
+</dd>
 <dt><samp>video_size</samp></dt>
-<dd><p>Set the video frame size. Default is the full desktop.
+<dd><p>Set the video frame size. Default is the full desktop or window.
 </p>
 </dd>
 <dt><samp>grab_x</samp></dt>
@@ -1899,8 +1990,54 @@ enabled output devices.
 </pre></div>
 </li></ul>
 
+<a name="AudioToolbox"></a>
+<h3 class="section">4.2 AudioToolbox<span class="pull-right"><a class="anchor hidden-xs" href="#AudioToolbox" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-AudioToolbox" aria-hidden="true">TOC</a></span></h3>
+
+<p>AudioToolbox output device.
+</p>
+<p>Allows native output to CoreAudio devices on OSX.
+</p>
+<p>The output filename can be empty (or <code>-</code>) to refer to the default system output device or a number that refers to the device index as shown using: <code>-list_devices true</code>.
+</p>
+<p>Alternatively, the audio input device can be chosen by index using the
+<samp>
+    -audio_device_index &lt;INDEX&gt;
+</samp>
+, overriding any device name or index given in the input filename.
+</p>
+<p>All available devices can be enumerated by using <samp>-list_devices true</samp>, listing
+all device names, UIDs and corresponding indices.
+</p>
+<a name="Options-21"></a>
+<h4 class="subsection">4.2.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-21" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-21" aria-hidden="true">TOC</a></span></h4>
+
+<p>AudioToolbox supports the following options:
+</p>
+<dl compact="compact">
+<dt><samp>-audio_device_index &lt;INDEX&gt;</samp></dt>
+<dd><p>Specify the audio device by its index. Overrides anything given in the output filename.
+</p>
+</dd>
+</dl>
+
+<a name="Examples-9"></a>
+<h4 class="subsection">4.2.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-9" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-9" aria-hidden="true">TOC</a></span></h4>
+
+<ul>
+<li> Print the list of supported devices and output a sine wave to the default device:
+<div class="example">
+<pre class="example">$ ffmpeg -f lavfi -i sine=r=44100 -f audiotoolbox -list_devices true -
+</pre></div>
+
+</li><li> Output a sine wave to the device with the index 2, overriding any output filename:
+<div class="example">
+<pre class="example">$ ffmpeg -f lavfi -i sine=r=44100 -f audiotoolbox -audio_device_index 2 -
+</pre></div>
+
+</li></ul>
+
 <a name="caca"></a>
-<h3 class="section">4.2 caca<span class="pull-right"><a class="anchor hidden-xs" href="#caca" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-caca" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">4.3 caca<span class="pull-right"><a class="anchor hidden-xs" href="#caca" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-caca" aria-hidden="true">TOC</a></span></h3>
 
 <p>CACA output device.
 </p>
@@ -1915,8 +2052,8 @@ libcaca is a graphics library that outputs text instead of pixels.
 <p>For more information about libcaca, check:
 <a href="http://caca.zoy.org/wiki/libcaca">http://caca.zoy.org/wiki/libcaca</a>
 </p>
-<a name="Options-21"></a>
-<h4 class="subsection">4.2.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-21" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-21" aria-hidden="true">TOC</a></span></h4>
+<a name="Options-22"></a>
+<h4 class="subsection">4.3.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-22" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-22" aria-hidden="true">TOC</a></span></h4>
 
 <dl compact="compact">
 <dt><samp>window_title</samp></dt>
@@ -1968,8 +2105,8 @@ The argument must be one of <code>algorithms</code>, <code>antialiases</code>,
 </p></dd>
 </dl>
 
-<a name="Examples-9"></a>
-<h4 class="subsection">4.2.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-9" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-9" aria-hidden="true">TOC</a></span></h4>
+<a name="Examples-10"></a>
+<h4 class="subsection">4.3.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-10" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-10" aria-hidden="true">TOC</a></span></h4>
 
 <ul>
 <li> The following command shows the <code>ffmpeg</code> output is an
@@ -1990,7 +2127,7 @@ CACA window, forcing its size to 80x25:
 </li></ul>
 
 <a name="decklink-1"></a>
-<h3 class="section">4.3 decklink<span class="pull-right"><a class="anchor hidden-xs" href="#decklink-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-decklink-1" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">4.4 decklink<span class="pull-right"><a class="anchor hidden-xs" href="#decklink-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-decklink-1" aria-hidden="true">TOC</a></span></h3>
 
 <p>The decklink output device provides playback capabilities for Blackmagic
 DeckLink devices.
@@ -2004,8 +2141,8 @@ On Windows, you need to run the IDL files through <code>widl</code>.
 uyvy422, framerate, field order and video size must be determined for your
 device with <code>-list_formats 1</code>. Audio sample rate is always 48 kHz.
 </p>
-<a name="Options-22"></a>
-<h4 class="subsection">4.3.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-22" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-22" aria-hidden="true">TOC</a></span></h4>
+<a name="Options-23"></a>
+<h4 class="subsection">4.4.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-23" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-23" aria-hidden="true">TOC</a></span></h4>
 
 <dl compact="compact">
 <dt><samp>list_devices</samp></dt>
@@ -2025,8 +2162,22 @@ Defaults to <samp>0.5</samp>.
 </p>
 </dd>
 <dt><samp>duplex_mode</samp></dt>
-<dd><p>Sets the decklink device duplex mode. Must be &lsquo;<samp>unset</samp>&rsquo;, &lsquo;<samp>half</samp>&rsquo; or &lsquo;<samp>full</samp>&rsquo;.
+<dd><p>Sets the decklink device duplex/profile mode. Must be &lsquo;<samp>unset</samp>&rsquo;, &lsquo;<samp>half</samp>&rsquo;, &lsquo;<samp>full</samp>&rsquo;,
+&lsquo;<samp>one_sub_device_full</samp>&rsquo;, &lsquo;<samp>one_sub_device_half</samp>&rsquo;, &lsquo;<samp>two_sub_device_full</samp>&rsquo;,
+&lsquo;<samp>four_sub_device_half</samp>&rsquo;
 Defaults to &lsquo;<samp>unset</samp>&rsquo;.
+</p>
+<p>Note: DeckLink SDK 11.0 have replaced the duplex property by a profile property.
+For the DeckLink Duo 2 and DeckLink Quad 2, a profile is shared between any 2
+sub-devices that utilize the same connectors. For the DeckLink 8K Pro, a profile
+is shared between all 4 sub-devices. So DeckLink 8K Pro support four profiles.
+</p>
+<p>Valid profile modes for DeckLink 8K Pro(with DeckLink SDK &gt;= 11.0):
+&lsquo;<samp>one_sub_device_full</samp>&rsquo;, &lsquo;<samp>one_sub_device_half</samp>&rsquo;, &lsquo;<samp>two_sub_device_full</samp>&rsquo;,
+&lsquo;<samp>four_sub_device_half</samp>&rsquo;
+</p>
+<p>Valid profile modes for DeckLink Quad 2 and DeckLink Duo 2:
+&lsquo;<samp>half</samp>&rsquo;, &lsquo;<samp>full</samp>&rsquo;
 </p>
 </dd>
 <dt><samp>timing_offset</samp></dt>
@@ -2034,10 +2185,29 @@ Defaults to &lsquo;<samp>unset</samp>&rsquo;.
 Defaults to &lsquo;<samp>unset</samp>&rsquo;.
 </p>
 </dd>
+<dt><samp>link</samp></dt>
+<dd><p>Sets the SDI video link configuration on the used output. Must be
+&lsquo;<samp>unset</samp>&rsquo;, &lsquo;<samp>single</samp>&rsquo; link SDI, &lsquo;<samp>dual</samp>&rsquo; link SDI or &lsquo;<samp>quad</samp>&rsquo; link
+SDI.
+Defaults to &lsquo;<samp>unset</samp>&rsquo;.
+</p>
+</dd>
+<dt><samp>sqd</samp></dt>
+<dd><p>Enable Square Division Quad Split mode for Quad-link SDI output.
+Must be &lsquo;<samp>unset</samp>&rsquo;, &lsquo;<samp>true</samp>&rsquo; or &lsquo;<samp>false</samp>&rsquo;.
+Defaults to <samp>unset</samp>.
+</p>
+</dd>
+<dt><samp>level_a</samp></dt>
+<dd><p>Enable SMPTE Level A mode on the used output.
+Must be &lsquo;<samp>unset</samp>&rsquo;, &lsquo;<samp>true</samp>&rsquo; or &lsquo;<samp>false</samp>&rsquo;.
+Defaults to <samp>unset</samp>.
+</p>
+</dd>
 </dl>
 
-<a name="Examples-10"></a>
-<h4 class="subsection">4.3.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-10" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-10" aria-hidden="true">TOC</a></span></h4>
+<a name="Examples-11"></a>
+<h4 class="subsection">4.4.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-11" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-11" aria-hidden="true">TOC</a></span></h4>
 
 <ul>
 <li> List output devices:
@@ -2063,7 +2233,7 @@ Defaults to &lsquo;<samp>unset</samp>&rsquo;.
 </li></ul>
 
 <a name="fbdev-1"></a>
-<h3 class="section">4.4 fbdev<span class="pull-right"><a class="anchor hidden-xs" href="#fbdev-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-fbdev-1" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">4.5 fbdev<span class="pull-right"><a class="anchor hidden-xs" href="#fbdev-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-fbdev-1" aria-hidden="true">TOC</a></span></h3>
 
 <p>Linux framebuffer output device.
 </p>
@@ -2075,8 +2245,8 @@ console. It is accessed through a file device node, usually
 <p>For more detailed information read the file
 <samp>Documentation/fb/framebuffer.txt</samp> included in the Linux source tree.
 </p>
-<a name="Options-23"></a>
-<h4 class="subsection">4.4.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-23" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-23" aria-hidden="true">TOC</a></span></h4>
+<a name="Options-24"></a>
+<h4 class="subsection">4.5.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-24" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-24" aria-hidden="true">TOC</a></span></h4>
 <dl compact="compact">
 <dt><samp>xoffset</samp></dt>
 <dt><samp>yoffset</samp></dt>
@@ -2084,8 +2254,8 @@ console. It is accessed through a file device node, usually
 </p></dd>
 </dl>
 
-<a name="Examples-11"></a>
-<h4 class="subsection">4.4.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-11" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-11" aria-hidden="true">TOC</a></span></h4>
+<a name="Examples-12"></a>
+<h4 class="subsection">4.5.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-12" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-12" aria-hidden="true">TOC</a></span></h4>
 <p>Play a file on framebuffer device <samp>/dev/fb0</samp>.
 Required pixel format depends on current framebuffer settings.
 </p><div class="example">
@@ -2095,7 +2265,7 @@ Required pixel format depends on current framebuffer settings.
 <p>See also <a href="http://linux-fbdev.sourceforge.net/">http://linux-fbdev.sourceforge.net/</a>, and fbset(1).
 </p>
 <a name="opengl"></a>
-<h3 class="section">4.5 opengl<span class="pull-right"><a class="anchor hidden-xs" href="#opengl" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-opengl" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">4.6 opengl<span class="pull-right"><a class="anchor hidden-xs" href="#opengl" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-opengl" aria-hidden="true">TOC</a></span></h3>
 <p>OpenGL output device.
 </p>
 <p>To enable this output device you need to configure FFmpeg with <code>--enable-opengl</code>.
@@ -2110,8 +2280,8 @@ Context may be provided by application or default SDL window is created.
 <code>AV_DEV_TO_APP_DESTROY_WINDOW_BUFFER</code> - destroy OpenGL context.
 Application is also required to inform a device about current resolution by sending <code>AV_APP_TO_DEV_WINDOW_SIZE</code> message.
 </p>
-<a name="Options-24"></a>
-<h4 class="subsection">4.5.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-24" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-24" aria-hidden="true">TOC</a></span></h4>
+<a name="Options-25"></a>
+<h4 class="subsection">4.6.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-25" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-25" aria-hidden="true">TOC</a></span></h4>
 <dl compact="compact">
 <dt><samp>background</samp></dt>
 <dd><p>Set background color. Black is a default.
@@ -2132,20 +2302,20 @@ Mostly usable when <samp>no_window</samp> is not set.
 </dd>
 </dl>
 
-<a name="Examples-12"></a>
-<h4 class="subsection">4.5.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-12" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-12" aria-hidden="true">TOC</a></span></h4>
+<a name="Examples-13"></a>
+<h4 class="subsection">4.6.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-13" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-13" aria-hidden="true">TOC</a></span></h4>
 <p>Play a file on SDL window using OpenGL rendering:
 </p><div class="example">
 <pre class="example">ffmpeg  -i INPUT -f opengl &quot;window title&quot;
 </pre></div>
 
 <a name="oss-1"></a>
-<h3 class="section">4.6 oss<span class="pull-right"><a class="anchor hidden-xs" href="#oss-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-oss-1" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">4.7 oss<span class="pull-right"><a class="anchor hidden-xs" href="#oss-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-oss-1" aria-hidden="true">TOC</a></span></h3>
 
 <p>OSS (Open Sound System) output device.
 </p>
 <a name="pulse-1"></a>
-<h3 class="section">4.7 pulse<span class="pull-right"><a class="anchor hidden-xs" href="#pulse-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-pulse-1" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">4.8 pulse<span class="pull-right"><a class="anchor hidden-xs" href="#pulse-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-pulse-1" aria-hidden="true">TOC</a></span></h3>
 
 <p>PulseAudio output device.
 </p>
@@ -2153,8 +2323,8 @@ Mostly usable when <samp>no_window</samp> is not set.
 </p>
 <p>More information about PulseAudio can be found on <a href="http://www.pulseaudio.org">http://www.pulseaudio.org</a>
 </p>
-<a name="Options-25"></a>
-<h4 class="subsection">4.7.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-25" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-25" aria-hidden="true">TOC</a></span></h4>
+<a name="Options-26"></a>
+<h4 class="subsection">4.8.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-26" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-26" aria-hidden="true">TOC</a></span></h4>
 <dl compact="compact">
 <dt><samp>server</samp></dt>
 <dd><p>Connect to a specific PulseAudio server, specified by an IP address.
@@ -2208,15 +2378,15 @@ by the server.
 </dd>
 </dl>
 
-<a name="Examples-13"></a>
-<h4 class="subsection">4.7.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-13" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-13" aria-hidden="true">TOC</a></span></h4>
+<a name="Examples-14"></a>
+<h4 class="subsection">4.8.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-14" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-14" aria-hidden="true">TOC</a></span></h4>
 <p>Play a file on default device on default server:
 </p><div class="example">
 <pre class="example">ffmpeg  -i INPUT -f pulse &quot;stream name&quot;
 </pre></div>
 
 <a name="sdl"></a>
-<h3 class="section">4.8 sdl<span class="pull-right"><a class="anchor hidden-xs" href="#sdl" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-sdl" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">4.9 sdl<span class="pull-right"><a class="anchor hidden-xs" href="#sdl" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-sdl" aria-hidden="true">TOC</a></span></h3>
 
 <p>SDL (Simple DirectMedia Layer) output device.
 </p>
@@ -2232,8 +2402,8 @@ when configuring your build.
 <p>For more information about SDL, check:
 <a href="http://www.libsdl.org/">http://www.libsdl.org/</a>
 </p>
-<a name="Options-26"></a>
-<h4 class="subsection">4.8.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-26" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-26" aria-hidden="true">TOC</a></span></h4>
+<a name="Options-27"></a>
+<h4 class="subsection">4.9.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-27" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-27" aria-hidden="true">TOC</a></span></h4>
 
 <dl compact="compact">
 <dt><samp>window_title</samp></dt>
@@ -2271,7 +2441,7 @@ Default value is 1 (enable quit action)
 </dl>
 
 <a name="Interactive-commands"></a>
-<h4 class="subsection">4.8.2 Interactive commands<span class="pull-right"><a class="anchor hidden-xs" href="#Interactive-commands" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Interactive-commands" aria-hidden="true">TOC</a></span></h4>
+<h4 class="subsection">4.9.2 Interactive commands<span class="pull-right"><a class="anchor hidden-xs" href="#Interactive-commands" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Interactive-commands" aria-hidden="true">TOC</a></span></h4>
 
 <p>The window created by the device can be controlled through the
 following interactive commands.
@@ -2282,8 +2452,8 @@ following interactive commands.
 </p></dd>
 </dl>
 
-<a name="Examples-14"></a>
-<h4 class="subsection">4.8.3 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-14" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-14" aria-hidden="true">TOC</a></span></h4>
+<a name="Examples-15"></a>
+<h4 class="subsection">4.9.3 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-15" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-15" aria-hidden="true">TOC</a></span></h4>
 
 <p>The following command shows the <code>ffmpeg</code> output is an
 SDL window, forcing its size to the qcif format:
@@ -2292,25 +2462,25 @@ SDL window, forcing its size to the qcif format:
 </pre></div>
 
 <a name="sndio-1"></a>
-<h3 class="section">4.9 sndio<span class="pull-right"><a class="anchor hidden-xs" href="#sndio-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-sndio-1" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">4.10 sndio<span class="pull-right"><a class="anchor hidden-xs" href="#sndio-1" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-sndio-1" aria-hidden="true">TOC</a></span></h3>
 
 <p>sndio audio output device.
 </p>
 <a name="v4l2"></a>
-<h3 class="section">4.10 v4l2<span class="pull-right"><a class="anchor hidden-xs" href="#v4l2" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-v4l2" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">4.11 v4l2<span class="pull-right"><a class="anchor hidden-xs" href="#v4l2" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-v4l2" aria-hidden="true">TOC</a></span></h3>
 
 <p>Video4Linux2 output device.
 </p>
 <a name="xv"></a>
-<h3 class="section">4.11 xv<span class="pull-right"><a class="anchor hidden-xs" href="#xv" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-xv" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">4.12 xv<span class="pull-right"><a class="anchor hidden-xs" href="#xv" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-xv" aria-hidden="true">TOC</a></span></h3>
 
 <p>XV (XVideo) output device.
 </p>
 <p>This output device allows one to show a video stream in a X Window System
 window.
 </p>
-<a name="Options-27"></a>
-<h4 class="subsection">4.11.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-27" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-27" aria-hidden="true">TOC</a></span></h4>
+<a name="Options-28"></a>
+<h4 class="subsection">4.12.1 Options<span class="pull-right"><a class="anchor hidden-xs" href="#Options-28" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Options-28" aria-hidden="true">TOC</a></span></h4>
 
 <dl compact="compact">
 <dt><samp>display_name</samp></dt>
@@ -2363,8 +2533,8 @@ specified for the output device. Ignored when <var>window_id</var> is set.
 
 <p>For more information about XVideo see <a href="http://www.x.org/">http://www.x.org/</a>.
 </p>
-<a name="Examples-15"></a>
-<h4 class="subsection">4.11.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-15" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-15" aria-hidden="true">TOC</a></span></h4>
+<a name="Examples-16"></a>
+<h4 class="subsection">4.12.2 Examples<span class="pull-right"><a class="anchor hidden-xs" href="#Examples-16" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Examples-16" aria-hidden="true">TOC</a></span></h4>
 
 <ul>
 <li> Decode, display and encode video input with <code>ffmpeg</code> at the

@@ -33,7 +33,6 @@
 #include "log.h"
 #include "pixfmt.h"
 #include "samplefmt.h"
-#include "version.h"
 
 /**
  * @defgroup avoptions AVOptions
@@ -114,7 +113,7 @@
  *      libavcodec exports generic options, while its priv_data field exports
  *      codec-specific options). In such a case, it is possible to set up the
  *      parent struct to export a child's options. To do that, simply
- *      implement AVClass.child_next() and AVClass.child_class_next() in the
+ *      implement AVClass.child_next() and AVClass.child_class_iterate() in the
  *      parent struct's AVClass.
  *      Assuming that the test_struct from above now also contains a
  *      child_struct field:
@@ -143,23 +142,25 @@
  *              return t->child_struct;
  *          return NULL
  *      }
- *      const AVClass child_class_next(const AVClass *prev)
+ *      const AVClass child_class_iterate(void **iter)
  *      {
- *          return prev ? NULL : &child_class;
+ *          const AVClass *c = *iter ? NULL : &child_class;
+ *          *iter = (void*)(uintptr_t)c;
+ *          return c;
  *      }
  *      @endcode
- *      Putting child_next() and child_class_next() as defined above into
+ *      Putting child_next() and child_class_iterate() as defined above into
  *      test_class will now make child_struct's options accessible through
  *      test_struct (again, proper setup as described above needs to be done on
  *      child_struct right after it is created).
  *
  *      From the above example it might not be clear why both child_next()
- *      and child_class_next() are needed. The distinction is that child_next()
- *      iterates over actually existing objects, while child_class_next()
+ *      and child_class_iterate() are needed. The distinction is that child_next()
+ *      iterates over actually existing objects, while child_class_iterate()
  *      iterates over all possible child classes. E.g. if an AVCodecContext
  *      was initialized to use a codec which has private options, then its
  *      child_next() will return AVCodecContext.priv_data and finish
- *      iterating. OTOH child_class_next() on AVCodecContext.av_class will
+ *      iterating. OTOH child_class_iterate() on AVCodecContext.av_class will
  *      iterate over all available codecs with private options.
  *
  * @subsection avoptions_implement_named_constants Named constants
@@ -194,7 +195,7 @@
  * For enumerating there are basically two cases. The first is when you want to
  * get all options that may potentially exist on the struct and its children
  * (e.g.  when constructing documentation). In that case you should call
- * av_opt_child_class_next() recursively on the parent struct's AVClass.  The
+ * av_opt_child_class_iterate() recursively on the parent struct's AVClass.  The
  * second case is when you have an already initialized struct with all its
  * children and you want to get all options that can be actually written or read
  * from it. In that case you should call av_opt_child_next() recursively (and
@@ -649,10 +650,10 @@ void *av_opt_child_next(void *obj, void *prev);
 /**
  * Iterate over potential AVOptions-enabled children of parent.
  *
- * @param prev result of a previous call to this function or NULL
+ * @param iter a pointer where iteration state is stored.
  * @return AVClass corresponding to next potential child or NULL
  */
-const AVClass *av_opt_child_class_next(const AVClass *parent, const AVClass *prev);
+const AVClass *av_opt_child_class_iterate(const AVClass *parent, void **iter);
 
 /**
  * @defgroup opt_set_funcs Option setting functions
@@ -789,8 +790,15 @@ int av_opt_query_ranges(AVOptionRanges **, void *obj, const char *key, int flags
 /**
  * Copy options from src object into dest object.
  *
+ * The underlying AVClass of both src and dest must coincide. The guarantee
+ * below does not apply if this is not fulfilled.
+ *
  * Options that require memory allocation (e.g. string or binary) are malloc'ed in dest object.
  * Original memory allocated for such options is freed unless both src and dest options points to the same memory.
+ *
+ * Even on error it is guaranteed that allocated options from src and dest
+ * no longer alias each other afterwards; in particular calling av_opt_free()
+ * on both src and dest is safe afterwards if dest has been memdup'ed from src.
  *
  * @param dest Object to copy from
  * @param src  Object to copy into

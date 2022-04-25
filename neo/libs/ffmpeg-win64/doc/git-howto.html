@@ -40,9 +40,10 @@
     <li><a id="toc-Inspecting-the-changelog" href="#Inspecting-the-changelog">2.7 Inspecting the changelog</a></li>
     <li><a id="toc-Checking-source-tree-status" href="#Checking-source-tree-status">2.8 Checking source tree status</a></li>
     <li><a id="toc-Committing" href="#Committing">2.9 Committing</a></li>
-    <li><a id="toc-Preparing-a-patchset" href="#Preparing-a-patchset">2.10 Preparing a patchset</a></li>
-    <li><a id="toc-Sending-patches-for-review" href="#Sending-patches-for-review">2.11 Sending patches for review</a></li>
-    <li><a id="toc-Renaming_002fmoving_002fcopying-files-or-contents-of-files" href="#Renaming_002fmoving_002fcopying-files-or-contents-of-files">2.12 Renaming/moving/copying files or contents of files</a></li>
+    <li><a id="toc-Writing-a-commit-message" href="#Writing-a-commit-message">2.10 Writing a commit message</a></li>
+    <li><a id="toc-Preparing-a-patchset" href="#Preparing-a-patchset">2.11 Preparing a patchset</a></li>
+    <li><a id="toc-Sending-patches-for-review" href="#Sending-patches-for-review">2.12 Sending patches for review</a></li>
+    <li><a id="toc-Renaming_002fmoving_002fcopying-files-or-contents-of-files" href="#Renaming_002fmoving_002fcopying-files-or-contents-of-files">2.13 Renaming/moving/copying files or contents of files</a></li>
   </ul></li>
   <li><a id="toc-Git-configuration" href="#Git-configuration">3 Git configuration</a>
   <ul class="no-bullet">
@@ -276,18 +277,49 @@ set in your personal configuration file through
 <p>or set by one of the following environment variables:
 <var>GIT_EDITOR</var>, <var>VISUAL</var> or <var>EDITOR</var>.
 </p>
-<p>Log messages should be concise but descriptive. Explain why you made a change,
-what you did will be obvious from the changes themselves most of the time.
-Saying just &quot;bug fix&quot; or &quot;10l&quot; is bad. Remember that people of varying skill
-levels look at and educate themselves while reading through your code. Don&rsquo;t
-include filenames in log messages, Git provides that information.
+<a name="Writing-a-commit-message"></a>
+<h3 class="section">2.10 Writing a commit message<span class="pull-right"><a class="anchor hidden-xs" href="#Writing-a-commit-message" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Writing-a-commit-message" aria-hidden="true">TOC</a></span></h3>
+
+<p>Log messages should be concise but descriptive.
 </p>
-<p>Possibly make the commit message have a terse, descriptive first line, an
-empty line and then a full description. The first line will be used to name
+<p>The first line must contain the context, a colon and a very short
+summary of what the commit does. Details can be added, if necessary,
+separated by an empty line. These details should not exceed 60-72 characters
+per line, except when containing code.
+</p>
+<p>Example of a good commit message:
+</p>
+<div class="example">
+<pre class="example">avcodec/cbs: add a helper to read extradata within packet side data
+
+Using ff_cbs_read() on the raw buffer will not parse it as extradata,
+resulting in parsing errors for example when handling ISOBMFF avcC.
+This helper works around that.
+</pre></div>
+
+<div class="example">
+<pre class="example">ptr might be NULL
+</pre></div>
+
+<p>If the summary on the first line is not enough, in the body of the message,
+explain why you made a change, what you did will be obvious from the changes
+themselves most of the time. Saying just &quot;bug fix&quot; or &quot;10l&quot; is bad. Remember
+that people of varying skill levels look at and educate themselves while
+reading through your code. Don&rsquo;t include filenames in log messages except in
+the context, Git provides that information.
+</p>
+<p>If the commit fixes a registered issue, state it in a separate line of the
+body: <code>Fix Trac ticket #42.</code>
+</p>
+<p>The first line will be used to name
 the patch by <code>git format-patch</code>.
 </p>
+<p>Common mistakes for the first line, as seen in <code>git log --oneline</code>
+include: missing context at the beginning; description of what the code did
+before the patch; line too long or wrapped to the second line.
+</p>
 <a name="Preparing-a-patchset"></a>
-<h3 class="section">2.10 Preparing a patchset<span class="pull-right"><a class="anchor hidden-xs" href="#Preparing-a-patchset" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Preparing-a-patchset" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">2.11 Preparing a patchset<span class="pull-right"><a class="anchor hidden-xs" href="#Preparing-a-patchset" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Preparing-a-patchset" aria-hidden="true">TOC</a></span></h3>
 
 <div class="example">
 <pre class="example">git format-patch &lt;commit&gt; [-o directory]
@@ -312,7 +344,7 @@ A useful shortcut is also
 By default the patches are created in the current directory.
 </p>
 <a name="Sending-patches-for-review"></a>
-<h3 class="section">2.11 Sending patches for review<span class="pull-right"><a class="anchor hidden-xs" href="#Sending-patches-for-review" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Sending-patches-for-review" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">2.12 Sending patches for review<span class="pull-right"><a class="anchor hidden-xs" href="#Sending-patches-for-review" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Sending-patches-for-review" aria-hidden="true">TOC</a></span></h3>
 
 <div class="example">
 <pre class="example">git send-email &lt;commit list|directory&gt;
@@ -326,7 +358,7 @@ package on Debian-based distros).
 </p>
 
 <a name="Renaming_002fmoving_002fcopying-files-or-contents-of-files"></a>
-<h3 class="section">2.12 Renaming/moving/copying files or contents of files<span class="pull-right"><a class="anchor hidden-xs" href="#Renaming_002fmoving_002fcopying-files-or-contents-of-files" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Renaming_002fmoving_002fcopying-files-or-contents-of-files" aria-hidden="true">TOC</a></span></h3>
+<h3 class="section">2.13 Renaming/moving/copying files or contents of files<span class="pull-right"><a class="anchor hidden-xs" href="#Renaming_002fmoving_002fcopying-files-or-contents-of-files" aria-hidden="true">#</a> <a class="anchor hidden-xs"href="#toc-Renaming_002fmoving_002fcopying-files-or-contents-of-files" aria-hidden="true">TOC</a></span></h3>
 
 <p>Git automatically tracks such changes, making those normal commits.
 </p>

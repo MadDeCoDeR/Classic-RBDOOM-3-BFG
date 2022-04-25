@@ -163,11 +163,13 @@ maximum of 2 digits. The <var>m</var> at the end expresses decimal value for
 <p><em>or</em>
 </p>
 <div class="example">
-<pre class="example">[-]<var>S</var>+[.<var>m</var>...]
+<pre class="example">[-]<var>S</var>+[.<var>m</var>...][s|ms|us]
 </pre></div>
 
 <p><var>S</var> expresses the number of seconds, with the optional decimal part
-<var>m</var>.
+<var>m</var>.  The optional literal suffixes &lsquo;<samp>s</samp>&rsquo;, &lsquo;<samp>ms</samp>&rsquo; or &lsquo;<samp>us</samp>&rsquo;
+indicate to interpret the value as seconds, milliseconds or microseconds,
+respectively.
 </p>
 <p>In both expressions, the optional &lsquo;<samp>-</samp>&rsquo; indicates negative duration.
 </p>
@@ -1030,6 +1032,9 @@ following identifiers:
 </p></dd>
 <dt>&lsquo;<samp>downmix</samp>&rsquo;</dt>
 <dd><p>DL+DR
+</p></dd>
+<dt>&lsquo;<samp>22.2</samp>&rsquo;</dt>
+<dd><p>FL+FR+FC+LFE+BL+BR+FLC+FRC+BC+SL+SR+TC+TFL+TFC+TFR+TBL+TBC+TBR+LFE2+TSL+TSR+BFC+BFL+BFR
 </p></dd>
 </dl>
 

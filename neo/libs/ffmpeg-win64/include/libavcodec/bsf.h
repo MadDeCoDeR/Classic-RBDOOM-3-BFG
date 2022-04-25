@@ -34,8 +34,6 @@
  * @{
  */
 
-typedef struct AVBSFInternal AVBSFInternal;
-
 /**
  * The bitstream filter state.
  *
@@ -56,12 +54,6 @@ typedef struct AVBSFContext {
      * The bitstream filter this context is an instance of.
      */
     const struct AVBitStreamFilter *filter;
-
-    /**
-     * Opaque libavcodec internal data. Must not be touched by the caller in any
-     * way.
-     */
-    AVBSFInternal *internal;
 
     /**
      * Opaque filter-specific private data. If filter->priv_class is non-NULL,
@@ -215,7 +207,7 @@ int av_bsf_send_packet(AVBSFContext *ctx, AVPacket *pkt);
 int av_bsf_receive_packet(AVBSFContext *ctx, AVPacket *pkt);
 
 /**
- * Reset the internal bitstream filter state / flush internal buffers.
+ * Reset the internal bitstream filter state. Should be called e.g. when seeking.
  */
 void av_bsf_flush(AVBSFContext *ctx);
 
