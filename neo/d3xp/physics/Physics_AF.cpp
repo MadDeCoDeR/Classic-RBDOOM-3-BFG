@@ -671,15 +671,15 @@ void idAFConstraint_BallAndSocketJoint::SetPyramidLimit( const idVec3& pyramidAx
 idAFConstraint_BallAndSocketJoint::SetLimitEpsilon
 ================
 */
-void idAFConstraint_BallAndSocketJoint::SetLimitEpsilon( const float e )
+void idAFConstraint_BallAndSocketJoint::SetLimitEpsilon( const float _e )
 {
 	if( coneLimit )
 	{
-		coneLimit->SetEpsilon( e );
+		coneLimit->SetEpsilon( _e );
 	}
 	if( pyramidLimit )
 	{
-		pyramidLimit->SetEpsilon( e );
+		pyramidLimit->SetEpsilon( _e );
 	}
 }
 
@@ -1250,15 +1250,15 @@ void idAFConstraint_UniversalJoint::SetPyramidLimit( const idVec3& pyramidAxis, 
 idAFConstraint_UniversalJoint::SetLimitEpsilon
 ================
 */
-void idAFConstraint_UniversalJoint::SetLimitEpsilon( const float e )
+void idAFConstraint_UniversalJoint::SetLimitEpsilon( const float _e )
 {
 	if( coneLimit )
 	{
-		coneLimit->SetEpsilon( e );
+		coneLimit->SetEpsilon( _e );
 	}
 	if( pyramidLimit )
 	{
-		pyramidLimit->SetEpsilon( e );
+		pyramidLimit->SetEpsilon( _e );
 	}
 }
 
@@ -1943,11 +1943,11 @@ void idAFConstraint_Hinge::SetLimit( const idVec3& axis, const float angle, cons
 idAFConstraint_Hinge::SetLimitEpsilon
 ================
 */
-void idAFConstraint_Hinge::SetLimitEpsilon( const float e )
+void idAFConstraint_Hinge::SetLimitEpsilon( const float _e )
 {
 	if( coneLimit )
 	{
-		coneLimit->SetEpsilon( e );
+		coneLimit->SetEpsilon( _e );
 	}
 }
 
@@ -3081,13 +3081,13 @@ void idAFConstraint_Spring::SetAnchor( const idVec3& worldAnchor1, const idVec3&
 idAFConstraint_Spring::SetSpring
 ================
 */
-void idAFConstraint_Spring::SetSpring( const float stretch, const float compress, const float damping, const float restLength )
+void idAFConstraint_Spring::SetSpring( const float stretch, const float compress, const float _damping, const float _restLength )
 {
-	assert( stretch >= 0.0f && compress >= 0.0f && restLength >= 0.0f );
+	assert( stretch >= 0.0f && compress >= 0.0f && _restLength >= 0.0f );
 	this->kstretch = stretch;
 	this->kcompress = compress;
-	this->damping = damping;
-	this->restLength = restLength;
+	this->damping = _damping;
+	this->restLength = _restLength;
 }
 
 /*
@@ -3095,11 +3095,11 @@ void idAFConstraint_Spring::SetSpring( const float stretch, const float compress
 idAFConstraint_Spring::SetLimit
 ================
 */
-void idAFConstraint_Spring::SetLimit( const float minLength, const float maxLength )
+void idAFConstraint_Spring::SetLimit( const float _minLength, const float _maxLength )
 {
-	assert( minLength >= 0.0f && maxLength >= 0.0f && maxLength >= minLength );
-	this->minLength = minLength;
-	this->maxLength = maxLength;
+	assert( _minLength >= 0.0f && _maxLength >= 0.0f && _maxLength >= _minLength );
+	this->minLength = _minLength;
+	this->maxLength = _maxLength;
 }
 
 /*
@@ -3592,11 +3592,11 @@ idAFConstraint_ContactFriction::idAFConstraint_ContactFriction()
 idAFConstraint_ContactFriction::Setup
 ================
 */
-void idAFConstraint_ContactFriction::Setup( idAFConstraint_Contact* cc )
+void idAFConstraint_ContactFriction::Setup( idAFConstraint_Contact* _cc )
 {
-	this->cc = cc;
-	body1 = cc->GetBody1();
-	body2 = cc->GetBody2();
+	this->cc = _cc;
+	body1 = _cc->GetBody1();
+	body2 = _cc->GetBody2();
 }
 
 /*
@@ -3801,14 +3801,14 @@ idAFConstraint_ConeLimit::Setup
   the body1Axis is the axis in body1 space that should stay within the cone
 ================
 */
-void idAFConstraint_ConeLimit::Setup( idAFBody* b1, idAFBody* b2, const idVec3& coneAnchor, const idVec3& coneAxis, const float coneAngle, const idVec3& body1Axis )
+void idAFConstraint_ConeLimit::Setup( idAFBody* b1, idAFBody* b2, const idVec3& _coneAnchor, const idVec3& _coneAxis, const float coneAngle, const idVec3& _body1Axis )
 {
 	this->body1 = b1;
 	this->body2 = b2;
-	this->coneAxis = coneAxis;
+	this->coneAxis = _coneAxis;
 	this->coneAxis.Normalize();
-	this->coneAnchor = coneAnchor;
-	this->body1Axis = body1Axis;
+	this->coneAnchor = _coneAnchor;
+	this->body1Axis = _body1Axis;
 	this->body1Axis.Normalize();
 	this->cosAngle = ( float ) cos( DEG2RAD( coneAngle * 0.5f ) );
 	this->sinHalfAngle = ( float ) sin( DEG2RAD( coneAngle * 0.25f ) );
@@ -3820,9 +3820,9 @@ void idAFConstraint_ConeLimit::Setup( idAFBody* b1, idAFBody* b2, const idVec3& 
 idAFConstraint_ConeLimit::SetAnchor
 ================
 */
-void idAFConstraint_ConeLimit::SetAnchor( const idVec3& coneAnchor )
+void idAFConstraint_ConeLimit::SetAnchor( const idVec3& _coneAnchor )
 {
-	this->coneAnchor = coneAnchor;
+	this->coneAnchor = _coneAnchor;
 }
 
 /*
@@ -3830,9 +3830,9 @@ void idAFConstraint_ConeLimit::SetAnchor( const idVec3& coneAnchor )
 idAFConstraint_ConeLimit::SetBody1Axis
 ================
 */
-void idAFConstraint_ConeLimit::SetBody1Axis( const idVec3& body1Axis )
+void idAFConstraint_ConeLimit::SetBody1Axis( const idVec3& _body1Axis )
 {
-	this->body1Axis = body1Axis;
+	this->body1Axis = _body1Axis;
 }
 
 /*
@@ -4068,9 +4068,9 @@ idAFConstraint_PyramidLimit::idAFConstraint_PyramidLimit()
 idAFConstraint_PyramidLimit::Setup
 ================
 */
-void idAFConstraint_PyramidLimit::Setup( idAFBody* b1, idAFBody* b2, const idVec3& pyramidAnchor,
+void idAFConstraint_PyramidLimit::Setup( idAFBody* b1, idAFBody* b2, const idVec3& _pyramidAnchor,
 		const idVec3& pyramidAxis, const idVec3& baseAxis,
-		const float pyramidAngle1, const float pyramidAngle2, const idVec3& body1Axis )
+		const float pyramidAngle1, const float pyramidAngle2, const idVec3& _body1Axis )
 {
 	body1 = b1;
 	body2 = b2;
@@ -4082,7 +4082,7 @@ void idAFConstraint_PyramidLimit::Setup( idAFBody* b1, idAFBody* b2, const idVec
 	pyramidBasis[0].Normalize();
 	pyramidBasis[1] = pyramidBasis[0].Cross( pyramidBasis[2] );
 	// pyramid top
-	this->pyramidAnchor = pyramidAnchor;
+	this->pyramidAnchor = _pyramidAnchor;
 	// angles
 	cosAngle[0] = ( float ) cos( DEG2RAD( pyramidAngle1 * 0.5f ) );
 	cosAngle[1] = ( float ) cos( DEG2RAD( pyramidAngle2 * 0.5f ) );
@@ -4091,7 +4091,7 @@ void idAFConstraint_PyramidLimit::Setup( idAFBody* b1, idAFBody* b2, const idVec
 	cosHalfAngle[0] = ( float ) cos( DEG2RAD( pyramidAngle1 * 0.25f ) );
 	cosHalfAngle[1] = ( float ) cos( DEG2RAD( pyramidAngle2 * 0.25f ) );
 	
-	this->body1Axis = body1Axis;
+	this->body1Axis = _body1Axis;
 }
 
 /*
@@ -4099,9 +4099,9 @@ void idAFConstraint_PyramidLimit::Setup( idAFBody* b1, idAFBody* b2, const idVec
 idAFConstraint_PyramidLimit::SetAnchor
 ================
 */
-void idAFConstraint_PyramidLimit::SetAnchor( const idVec3& pyramidAnchor )
+void idAFConstraint_PyramidLimit::SetAnchor( const idVec3& _pyramidAnchor )
 {
-	this->pyramidAnchor = pyramidAnchor;
+	this->pyramidAnchor = _pyramidAnchor;
 }
 
 /*
@@ -4109,9 +4109,9 @@ void idAFConstraint_PyramidLimit::SetAnchor( const idVec3& pyramidAnchor )
 idAFConstraint_PyramidLimit::SetBody1Axis
 ================
 */
-void idAFConstraint_PyramidLimit::SetBody1Axis( const idVec3& body1Axis )
+void idAFConstraint_PyramidLimit::SetBody1Axis( const idVec3& _body1Axis )
 {
-	this->body1Axis = body1Axis;
+	this->body1Axis = _body1Axis;
 }
 
 /*
@@ -4397,9 +4397,9 @@ idAFConstraint_Suspension::idAFConstraint_Suspension()
 idAFConstraint_Suspension::Setup
 ================
 */
-void idAFConstraint_Suspension::Setup( const char* name, idAFBody* body, const idVec3& origin, const idMat3& axis, idClipModel* clipModel )
+void idAFConstraint_Suspension::Setup( const char* _name, idAFBody* body, const idVec3& origin, const idMat3& axis, idClipModel* clipModel )
 {
-	this->name = name;
+	this->name = _name;
 	body1 = body;
 	body2 = NULL;
 	localOrigin = ( origin - body->GetWorldOrigin() ) * body->GetWorldAxis().Transpose();
@@ -4740,13 +4740,13 @@ void idAFBody::Init()
 idAFBody::SetClipModel
 ================
 */
-void idAFBody::SetClipModel( idClipModel* clipModel )
+void idAFBody::SetClipModel( idClipModel* _clipModel )
 {
-	if( this->clipModel && this->clipModel != clipModel )
+	if( this->clipModel && this->clipModel != _clipModel )
 	{
 		delete this->clipModel;
 	}
-	this->clipModel = clipModel;
+	this->clipModel = _clipModel;
 }
 
 /*
@@ -6580,11 +6580,11 @@ void idPhysics_AF::SetSuspendTime( const float minTime, const float maxTime )
 idPhysics_AF::SetSuspendTolerance
 ================
 */
-void idPhysics_AF::SetSuspendTolerance( const float noMoveTime, const float noMoveTranslation, const float noMoveRotation )
+void idPhysics_AF::SetSuspendTolerance( const float _noMoveTime, const float _noMoveTranslation, const float _noMoveRotation )
 {
-	this->noMoveTime = noMoveTime;
-	this->noMoveTranslation = noMoveTranslation;
-	this->noMoveRotation = noMoveRotation;
+	this->noMoveTime = _noMoveTime;
+	this->noMoveTranslation = _noMoveTranslation;
+	this->noMoveRotation = _noMoveRotation;
 }
 
 /*
@@ -8322,7 +8322,7 @@ void idPhysics_AF::DeleteConstraint( const int id )
 idPhysics_AF::GetBodyContactConstraints
 ================
 */
-int idPhysics_AF::GetBodyContactConstraints( const int id, idAFConstraint_Contact* contacts[], int maxContacts ) const
+int idPhysics_AF::GetBodyContactConstraints( const int id, idAFConstraint_Contact* _contacts[], int maxContacts ) const
 {
 	int i, numContacts;
 	idAFBody* body;
@@ -8340,7 +8340,7 @@ int idPhysics_AF::GetBodyContactConstraints( const int id, idAFConstraint_Contac
 		contact = contactConstraints[i];
 		if( contact->body1 == body || contact->body2 == body )
 		{
-			contacts[numContacts++] = contact;
+			_contacts[numContacts++] = contact;
 			if( numContacts >= maxContacts )
 			{
 				return numContacts;

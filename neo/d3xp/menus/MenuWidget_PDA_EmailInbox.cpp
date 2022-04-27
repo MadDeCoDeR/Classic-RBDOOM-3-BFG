@@ -39,9 +39,9 @@ idMenuWidget_PDA_EmailInbox::Initialize
 void idMenuWidget_PDA_EmailInbox::Initialize( idMenuHandler* data )
 {
 
-	idMenuWidget_ScrollBar* scrollbar = new( TAG_SWF ) idMenuWidget_ScrollBar();
-	scrollbar->SetSpritePath( GetSpritePath(), "info", "scrollbar" );
-	scrollbar->Initialize( data );
+	idMenuWidget_ScrollBar* scrollbar_ = new( TAG_SWF ) idMenuWidget_ScrollBar();
+	scrollbar_->SetSpritePath( GetSpritePath(), "info", "scrollbar" );
+	scrollbar_->Initialize( data );
 	
 	emailList = new( TAG_SWF ) idMenuWidget_DynamicList();
 	emailList->SetSpritePath( GetSpritePath(), "info", "options" );
@@ -53,11 +53,11 @@ void idMenuWidget_PDA_EmailInbox::Initialize( idMenuHandler* data )
 		buttonWidget->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_PDA_SELECT_EMAIL, emailList->GetChildren().Num() );
 		buttonWidget->AddEventAction( WIDGET_EVENT_FOCUS_ON ).Set( WIDGET_ACTION_REFRESH );
 		buttonWidget->Initialize( data );
-		buttonWidget->RegisterEventObserver( scrollbar );
+		buttonWidget->RegisterEventObserver( scrollbar_ );
 		emailList->AddChild( buttonWidget );
 	}
 	emailList->Initialize( data );
-	emailList->AddChild( scrollbar );
+	emailList->AddChild( scrollbar_ );
 	
 	AddChild( emailList );
 }

@@ -465,19 +465,19 @@ void idRenderModelOverlay::CreateOverlay( const idRenderModel* model, const idPl
 				// keep this triangle
 				for( int j = 0; j < 3; j++ )
 				{
-					int index = tri->indexes[i + j];
-					if( vertexRemap[index] == ( triIndex_t ) - 1 )
+					int index_ = tri->indexes[i + j];
+					if( vertexRemap[index_] == ( triIndex_t ) - 1 )
 					{
-						vertexRemap[index] = numVerts;
+						vertexRemap[index_] = numVerts;
 						
-						overlayVerts[numVerts].vertexNum = index;
-						overlayVerts[numVerts].st[0] = texCoordS[index];
-						overlayVerts[numVerts].st[1] = texCoordT[index];
+						overlayVerts[numVerts].vertexNum = index_;
+						overlayVerts[numVerts].st[0] = texCoordS[index_];
+						overlayVerts[numVerts].st[1] = texCoordT[index_];
 						numVerts++;
 						
-						maxReferencedVertex = Max( maxReferencedVertex, index );
+						maxReferencedVertex = Max( maxReferencedVertex, index_ );
 					}
-					overlayIndexes[numIndexes] = vertexRemap[index];
+					overlayIndexes[numIndexes] = vertexRemap[index_];
 					numIndexes++;
 				}
 			}
@@ -666,9 +666,9 @@ unsigned int idRenderModelOverlay::GetNumOverlayDrawSurfs()
 idRenderModelOverlay::CreateOverlayDrawSurf
 ====================
 */
-drawSurf_t* idRenderModelOverlay::CreateOverlayDrawSurf( const viewEntity_t* space, const idRenderModel* baseModel, unsigned int index )
+drawSurf_t* idRenderModelOverlay::CreateOverlayDrawSurf( const viewEntity_t* space, const idRenderModel* baseModel, unsigned int index_ )
 {
-	if( index < 0 || index >= numOverlayMaterials )
+	if( index_ < 0 || index_ >= numOverlayMaterials )
 	{
 		return NULL;
 	}
@@ -683,7 +683,7 @@ drawSurf_t* idRenderModelOverlay::CreateOverlayDrawSurf( const viewEntity_t* spa
 	
 	const idRenderModelStatic* staticModel = static_cast< const idRenderModelStatic* >( baseModel );
 	
-	const idMaterial* material = overlayMaterials[index];
+	const idMaterial* material = overlayMaterials[index_];
 	
 	int maxVerts = 0;
 	int maxIndexes = 0;

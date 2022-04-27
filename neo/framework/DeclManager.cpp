@@ -2643,11 +2643,11 @@ const char* idDeclLocal::DefaultDefinition() const
 idDeclLocal::Parse
 =================
 */
-bool idDeclLocal::Parse( const char* text, const int textLength, bool allowBinaryVersion )
+bool idDeclLocal::Parse( const char* text, const int _textLength, bool allowBinaryVersion )
 {
 	idLexer src;
 	
-	src.LoadMemory( text, textLength, GetFileName(), GetLineNum() );
+	src.LoadMemory( text, _textLength, GetFileName(), GetLineNum() );
 	src.SetFlags( DECL_LEXER_FLAGS );
 	src.SkipUntilString( "{" );
 	src.SkipBracedSection( false );

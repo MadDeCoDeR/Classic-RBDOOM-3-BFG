@@ -100,9 +100,9 @@ size_t function_t::Allocated() const
 function_t::SetName
 ================
 */
-void function_t::SetName( const char* name )
+void function_t::SetName( const char* _name )
 {
-	this->name = name;
+	this->name = _name;
 }
 
 /*
@@ -324,7 +324,7 @@ idTypeDef::AddFunctionParm
 Adds a new parameter for a function type.
 ================
 */
-void idTypeDef::AddFunctionParm( idTypeDef* parmtype, const char* name )
+void idTypeDef::AddFunctionParm( idTypeDef* parmtype, const char* _name )
 {
 	if( type != ev_function )
 	{
@@ -337,7 +337,7 @@ void idTypeDef::AddFunctionParm( idTypeDef* parmtype, const char* name )
 	
 	parmTypes.Append( parmtype );
 	idStr& parmName = parmNames.Alloc();
-	parmName = name;
+	parmName = _name;
 }
 
 /*
@@ -347,7 +347,7 @@ idTypeDef::AddField
 Adds a new field to an object type.
 ================
 */
-void idTypeDef::AddField( idTypeDef* fieldtype, const char* name )
+void idTypeDef::AddField( idTypeDef* fieldtype, const char* _name )
 {
 	if( type != ev_object )
 	{
@@ -360,7 +360,7 @@ void idTypeDef::AddField( idTypeDef* fieldtype, const char* name )
 	
 	parmTypes.Append( fieldtype );
 	idStr& parmName = parmNames.Alloc();
-	parmName = name;
+	parmName = _name;
 	
 	if( fieldtype->FieldType()->Inherits( &type_object ) )
 	{
@@ -2212,17 +2212,17 @@ const function_t* idProgram::CompileFunction( const char* functionName, const ch
 idProgram::CompileFile
 ================
 */
-void idProgram::CompileFile( const char* filename )
+void idProgram::CompileFile( const char* _filename )
 {
 	char* src;
 	bool result;
 	
-	if( fileSystem->ReadFile( filename, ( void** )&src, NULL ) < 0 )
+	if( fileSystem->ReadFile( _filename, ( void** )&src, NULL ) < 0 )
 	{
-		gameLocal.Error( "Couldn't load %s\n", filename );
+		gameLocal.Error( "Couldn't load %s\n", _filename );
 	}
 	
-	result = CompileText( filename, src, false );
+	result = CompileText( _filename, src, false );
 	
 	fileSystem->FreeFile( src );
 	
@@ -2233,7 +2233,7 @@ void idProgram::CompileFile( const char* filename )
 	
 	if( !result )
 	{
-		gameLocal.Error( "Compile failed in file %s.", filename );
+		gameLocal.Error( "Compile failed in file %s.", _filename );
 	}
 }
 

@@ -1692,7 +1692,7 @@ int idEntity::GetModelDefHandle()
 idEntity::UpdateRenderEntity
 ================
 */
-bool idEntity::UpdateRenderEntity( renderEntity_s* renderEntity, const renderView_t* renderView )
+bool idEntity::UpdateRenderEntity( renderEntity_s* _renderEntity, const renderView_t* _renderView )
 {
 	if( gameLocal.inCinematic && gameLocal.skipCinematic )
 	{
@@ -1704,9 +1704,9 @@ bool idEntity::UpdateRenderEntity( renderEntity_s* renderEntity, const renderVie
 	{
 		SetTimeState ts( timeGroup );
 		int currentTime = gameLocal.time;
-		if( renderEntity != NULL )
+		if( _renderEntity != NULL )
 		{
-			currentTime = gameLocal.GetTimeGroupTime( renderEntity->timeGroup );
+			currentTime = gameLocal.GetTimeGroupTime( _renderEntity->timeGroup );
 		}
 		return animator->CreateFrame( currentTime, false );
 	}
@@ -3101,8 +3101,8 @@ bool idEntity::RunPhysics()
 			}
 			if( useAbnormalVelocityHack )
 			{
-				idPhysics_Player* physics = static_cast< idPhysics_Player* >( ent->physics );
-				physics->SetPushedWithAbnormalVelocityHack( GetPhysicsTimeStep() );
+				idPhysics_Player* physics_ = static_cast< idPhysics_Player* >( ent->physics );
+				physics_->SetPushedWithAbnormalVelocityHack( GetPhysicsTimeStep() );
 			}
 			else
 			{
@@ -4145,7 +4145,7 @@ bool idEntity::HandleGuiCommands( idEntity* entityGui, const char* cmds )
 			
 			if( token.Icmp( "activate" ) == 0 )
 			{
-				bool targets = true;
+				bool targets_ = true;
 				if( src.ReadToken( &token2 ) )
 				{
 					if( token2 == ";" )
@@ -4154,11 +4154,11 @@ bool idEntity::HandleGuiCommands( idEntity* entityGui, const char* cmds )
 					}
 					else
 					{
-						targets = false;
+						targets_ = false;
 					}
 				}
 				
-				if( targets )
+				if( targets_ )
 				{
 					entityGui->ActivateTargets( this );
 				}
@@ -4752,7 +4752,7 @@ void idEntity::Event_SpawnBind()
 {
 	idEntity*		parent;
 	const char*		bind, *joint, *bindanim;
-	jointHandle_t	bindJoint;
+	jointHandle_t	bindJoint_;
 	bool			bindOrientated;
 	int				id;
 	const idAnim*	anim;
@@ -4782,8 +4782,8 @@ void idEntity::Event_SpawnBind()
 					gameLocal.Error( "Cannot bind to joint '%s' on '%s'.  Entity does not support skeletal models.", joint, name.c_str() );
 					return;
 				}
-				bindJoint = parentAnimator->GetJointHandle( joint );
-				if( bindJoint == INVALID_JOINT )
+				bindJoint_ = parentAnimator->GetJointHandle( joint );
+				if( bindJoint_ == INVALID_JOINT )
 				{
 					gameLocal.Error( "Joint '%s' not found for bind on '%s'", joint, name.c_str() );
 				}
@@ -5510,11 +5510,11 @@ void idEntity::Event_Wait( float time )
 idEntity::Event_HasFunction
 =====================
 */
-void idEntity::Event_HasFunction( const char* name )
+void idEntity::Event_HasFunction( const char* _name )
 {
 	const function_t* func;
 	
-	func = scriptObject.GetFunction( name );
+	func = scriptObject.GetFunction( _name );
 	if( func )
 	{
 		idThread::ReturnInt( true );

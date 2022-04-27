@@ -833,9 +833,9 @@ void idSWF::SetBackgroundColor( idSWFBitStream& bitstream )
 idSWF::LoadJSON
 ===================
 */
-bool idSWF::LoadJSON( const char* filename )
+bool idSWF::LoadJSON( const char* _filename )
 {
-	idFile* f = fileSystem->OpenFileReadMemory( filename );
+	idFile* f = fileSystem->OpenFileReadMemory( _filename );
 	if( f == NULL || f->Length() <= 0 )
 	{
 		return false;
@@ -918,8 +918,8 @@ bool idSWF::LoadJSON( const char* filename )
 			
 			byte* imageData = NULL;
 			int width, height;
-			ID_TIME_T timestamp;
-			R_LoadImage( imageName.c_str(), &imageData, &width, &height, &timestamp, false );
+			ID_TIME_T timestamp_;
+			R_LoadImage( imageName.c_str(), &imageData, &width, &height, &timestamp_, false );
 			if( imageData != NULL )
 			{
 				LoadImage( i, imageData, width, height );
@@ -1319,7 +1319,7 @@ bool idSWF::LoadJSON( const char* filename )
 	
 	// now that all images have been loaded, write out the combined image
 	idStr atlasFileName = "generated/";
-	atlasFileName += filename;
+	atlasFileName += _filename;
 	atlasFileName.SetFileExtension( ".png" );
 	
 	WriteSwfImageAtlas( atlasFileName );

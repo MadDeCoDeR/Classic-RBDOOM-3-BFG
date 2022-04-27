@@ -191,9 +191,9 @@ void idMenuWidget::ReceiveEvent( const idWidgetEvent& event )
 	// If hitting this then more than likely you have a self-referential chain.  If that's not
 	// the case, then you may need to increase the size of the focusChain list.
 	assert( focusRunawayCounter != 0 );
-	for( int focusIndex = focusChain.Num() - 1; focusIndex >= 0; --focusIndex )
+	for( int focusIndex_ = focusChain.Num() - 1; focusIndex_ >= 0; --focusIndex_ )
 	{
-		idMenuWidget* const focusedWidget_ = focusChain[ focusIndex ];
+		idMenuWidget* const focusedWidget_ = focusChain[ focusIndex_ ];
 		
 		if( focusedWidget_->ExecuteEvent( event ) )
 		{

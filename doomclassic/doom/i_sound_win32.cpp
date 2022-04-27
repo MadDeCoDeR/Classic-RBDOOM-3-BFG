@@ -66,7 +66,7 @@ If you have questions concerning this license or the applicable additional terms
 
 extern idCVar S_museax;
 
-#pragma warning ( disable : 4244 )
+//#pragma warning ( disable : 4244 ) //GK: No longer thrown ???
 
 #define	MIDI_CHANNELS		2
 #if 1

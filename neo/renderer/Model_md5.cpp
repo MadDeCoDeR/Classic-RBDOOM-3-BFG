@@ -667,7 +667,7 @@ int idMD5Mesh::NearestJoint( int a, int b, int c ) const
 idRenderModelMD5::ParseJoint
 ====================
 */
-void idRenderModelMD5::ParseJoint( idLexer& parser, idMD5Joint* joint, idJointQuat* defaultPose )
+void idRenderModelMD5::ParseJoint( idLexer& parser, idMD5Joint* joint, idJointQuat* _defaultPose )
 {
 	//
 	// parse name
@@ -696,9 +696,9 @@ void idRenderModelMD5::ParseJoint( idLexer& parser, idMD5Joint* joint, idJointQu
 	//
 	// parse default pose
 	//
-	parser.Parse1DMatrix( 3, defaultPose->t.ToFloatPtr() );
-	parser.Parse1DMatrix( 3, defaultPose->q.ToFloatPtr() );
-	defaultPose->q.w = defaultPose->q.CalcW();
+	parser.Parse1DMatrix( 3, _defaultPose->t.ToFloatPtr() );
+	parser.Parse1DMatrix( 3, _defaultPose->q.ToFloatPtr() );
+	_defaultPose->q.w = _defaultPose->q.CalcW();
 }
 
 /*
@@ -1199,12 +1199,12 @@ void idRenderModelMD5::DrawJoints( const renderEntity_t* ent, const viewDef_t* v
 		common->RW()->DebugLine( colorBlue,	pos, pos + joint->ToMat3()[ 2 ] * 2.0f * ent->axis );
 	}
 	
-	idBounds bounds;
+	idBounds bounds_;
 	
-	bounds.FromTransformedBounds( ent->bounds, vec3_zero, ent->axis );
-	common->RW()->DebugBounds( colorMagenta, bounds, ent->origin );
+	bounds_.FromTransformedBounds( ent->bounds, vec3_zero, ent->axis );
+	common->RW()->DebugBounds( colorMagenta, bounds_, ent->origin );
 	
-	if( ( r_jointNameScale.GetFloat() != 0.0f ) && ( bounds.Expand( 128.0f ).ContainsPoint( view->renderView.vieworg - ent->origin ) ) )
+	if( ( r_jointNameScale.GetFloat() != 0.0f ) && ( bounds_.Expand( 128.0f ).ContainsPoint( view->renderView.vieworg - ent->origin ) ) )
 	{
 		idVec3	offset( 0, 0, r_jointNameOffset.GetFloat() );
 		float	scale;
@@ -1389,16 +1389,16 @@ idRenderModel* idRenderModelMD5::InstantiateDynamicModel( const struct renderEnt
 	}
 	
 	// update the GPU joints array
-	const int numInvertedJoints = SIMD_ROUND_JOINTS( joints.Num() );
+	const int numInvertedJoints_ = SIMD_ROUND_JOINTS( joints.Num() );
 	if( staticModel->jointsInverted == NULL )
 	{
-		staticModel->numInvertedJoints = numInvertedJoints;
-		staticModel->jointsInverted = ( idJointMat* )Mem_ClearedAlloc( numInvertedJoints * sizeof( idJointMat ), TAG_JOINTMAT );
+		staticModel->numInvertedJoints = numInvertedJoints_;
+		staticModel->jointsInverted = ( idJointMat* )Mem_ClearedAlloc( numInvertedJoints_ * sizeof( idJointMat ), TAG_JOINTMAT );
 		staticModel->jointsInvertedBuffer = 0;
 	}
 	else
 	{
-		assert( staticModel->numInvertedJoints == numInvertedJoints );
+		assert( staticModel->numInvertedJoints == numInvertedJoints_ );
 	}
 	
 	TransformJoints( staticModel->jointsInverted, joints.Num(), ent->joints, invertedDefaultPose.Ptr() );
@@ -1493,12 +1493,12 @@ const idJointQuat* idRenderModelMD5::GetDefaultPose() const
 idRenderModelMD5::GetJointHandle
 ====================
 */
-jointHandle_t idRenderModelMD5::GetJointHandle( const char* name ) const
+jointHandle_t idRenderModelMD5::GetJointHandle( const char* _name ) const
 {
 	const idMD5Joint* joint = joints.Ptr();
 	for( int i = 0; i < joints.Num(); i++, joint++ )
 	{
-		if( idStr::Icmp( joint->name.c_str(), name ) == 0 )
+		if( idStr::Icmp( joint->name.c_str(), _name ) == 0 )
 		{
 			return ( jointHandle_t )i;
 		}

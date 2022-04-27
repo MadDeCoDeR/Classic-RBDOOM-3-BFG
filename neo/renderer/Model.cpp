@@ -1062,7 +1062,7 @@ const idMD5Joint* idRenderModelStatic::GetJoints() const
 idRenderModelStatic::GetJointHandle
 ================
 */
-jointHandle_t idRenderModelStatic::GetJointHandle( const char* name ) const
+jointHandle_t idRenderModelStatic::GetJointHandle( const char* _name ) const
 {
 	return INVALID_JOINT;
 }

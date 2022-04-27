@@ -344,7 +344,7 @@ void idBrittleFracture::RemoveShard( int index )
 idBrittleFracture::UpdateRenderEntity
 ================
 */
-bool idBrittleFracture::UpdateRenderEntity( renderEntity_s* renderEntity, const renderView_t* renderView ) const
+bool idBrittleFracture::UpdateRenderEntity( renderEntity_s* _renderEntity, const renderView_t* _renderView ) const
 {
 	int i, j, k, n, msec, numTris, numDecalTris;
 	float fade;
@@ -357,7 +357,7 @@ bool idBrittleFracture::UpdateRenderEntity( renderEntity_s* renderEntity, const 
 	
 	// this may be triggered by a model trace or other non-view related source,
 	// to which we should look like an empty model
-	if( !renderView )
+	if( !_renderView )
 	{
 		return false;
 	}
@@ -391,11 +391,11 @@ bool idBrittleFracture::UpdateRenderEntity( renderEntity_s* renderEntity, const 
 	}
 	
 	// FIXME: re-use model surfaces
-	renderEntity->hModel->InitEmpty( brittleFracture_SnapshotName );
+	_renderEntity->hModel->InitEmpty( brittleFracture_SnapshotName );
 	
 	// allocate triangle surfaces for the fractures and decals
-	tris = renderEntity->hModel->AllocSurfaceTriangles( numTris * 3, material->ShouldCreateBackSides() ? numTris * 6 : numTris * 3 );
-	decalTris = renderEntity->hModel->AllocSurfaceTriangles( numDecalTris * 3, decalMaterial->ShouldCreateBackSides() ? numDecalTris * 6 : numDecalTris * 3 );
+	tris = _renderEntity->hModel->AllocSurfaceTriangles( numTris * 3, material->ShouldCreateBackSides() ? numTris * 6 : numTris * 3 );
+	decalTris = _renderEntity->hModel->AllocSurfaceTriangles( numDecalTris * 3, decalMaterial->ShouldCreateBackSides() ? numDecalTris * 6 : numDecalTris * 3 );
 	
 	for( i = 0; i < shards.Num(); i++ )
 	{
@@ -412,9 +412,9 @@ bool idBrittleFracture::UpdateRenderEntity( renderEntity_s* renderEntity, const 
 			}
 		}
 		
-		packedColor = PackColor( idVec4( renderEntity->shaderParms[ SHADERPARM_RED ] * fade,
-										 renderEntity->shaderParms[ SHADERPARM_GREEN ] * fade,
-										 renderEntity->shaderParms[ SHADERPARM_BLUE ] * fade,
+		packedColor = PackColor( idVec4( _renderEntity->shaderParms[ SHADERPARM_RED ] * fade,
+										 _renderEntity->shaderParms[ SHADERPARM_GREEN ] * fade,
+										 _renderEntity->shaderParms[ SHADERPARM_BLUE ] * fade,
 										 fade ) );
 										 
 		const idWinding& winding = shards[i]->winding;
@@ -524,13 +524,13 @@ bool idBrittleFracture::UpdateRenderEntity( renderEntity_s* renderEntity, const 
 	surface.shader = material;
 	surface.id = 0;
 	surface.geometry = tris;
-	renderEntity->hModel->AddSurface( surface );
+	_renderEntity->hModel->AddSurface( surface );
 	
 	memset( &surface, 0, sizeof( surface ) );
 	surface.shader = decalMaterial;
 	surface.id = 1;
 	surface.geometry = decalTris;
-	renderEntity->hModel->AddSurface( surface );
+	_renderEntity->hModel->AddSurface( surface );
 	
 	return true;
 }

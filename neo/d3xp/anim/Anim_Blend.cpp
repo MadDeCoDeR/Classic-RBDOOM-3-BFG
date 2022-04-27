@@ -117,11 +117,11 @@ idAnim::~idAnim()
 idAnim::SetAnim
 =====================
 */
-void idAnim::SetAnim( const idDeclModelDef* modelDef, const char* sourcename, const char* animname, int num, const idMD5Anim* md5anims[ ANIM_MaxSyncedAnims ] )
+void idAnim::SetAnim( const idDeclModelDef* _modelDef, const char* sourcename, const char* animname, int num, const idMD5Anim* md5anims[ ANIM_MaxSyncedAnims ] )
 {
 	int i;
 	
-	this->modelDef = modelDef;
+	this->modelDef = _modelDef;
 	
 	for( i = 0; i < numAnims; i++ )
 	{
@@ -310,7 +310,7 @@ idAnim::AddFrameCommand
 Returns NULL if no error.
 =====================
 */
-const char* idAnim::AddFrameCommand( const idDeclModelDef* modelDef, int framenum, idLexer& src, const idDict* def )
+const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framenum, idLexer& src, const idDict* def )
 {
 	int					i;
 	int					index;
@@ -679,7 +679,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* modelDef, int framenu
 		{
 			return "Unexpected end of line";
 		}
-		if( ( token != "" ) && !modelDef->FindJoint( token ) )
+		if( ( token != "" ) && !_modelDef->FindJoint( token ) )
 		{
 			return va( "Joint '%s' not found", token.c_str() );
 		}
@@ -692,7 +692,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* modelDef, int framenu
 		{
 			return "Unexpected end of line";
 		}
-		if( !modelDef->FindJoint( token ) )
+		if( !_modelDef->FindJoint( token ) )
 		{
 			return va( "Joint '%s' not found", token.c_str() );
 		}
@@ -705,7 +705,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* modelDef, int framenu
 		{
 			return "Unexpected end of line";
 		}
-		if( !modelDef->FindJoint( token ) )
+		if( !_modelDef->FindJoint( token ) )
 		{
 			return va( "Joint '%s' not found", token.c_str() );
 		}
@@ -718,7 +718,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* modelDef, int framenu
 		{
 			return "Unexpected end of line";
 		}
-		jointInfo = modelDef->FindJoint( token );
+		jointInfo = _modelDef->FindJoint( token );
 		if( !jointInfo )
 		{
 			return va( "Joint '%s' not found", token.c_str() );
@@ -751,7 +751,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* modelDef, int framenu
 		{
 			return "Unexpected end of line";
 		}
-		jointInfo = modelDef->FindJoint( token );
+		jointInfo = _modelDef->FindJoint( token );
 		if( !jointInfo )
 		{
 			return va( "Joint '%s' not found", token.c_str() );
@@ -784,7 +784,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* modelDef, int framenu
 		{
 			return "Unexpected end of line";
 		}
-		jointInfo = modelDef->FindJoint( token );
+		jointInfo = _modelDef->FindJoint( token );
 		if( !jointInfo )
 		{
 			return va( "Joint '%s' not found", token.c_str() );
@@ -1239,9 +1239,9 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 					int index_ = command.string->Find( " " );
 					if( index_ >= 0 )
 					{
-						idStr name = command.string->Left( index_ );
+						idStr name_ = command.string->Left( index_ );
 						idStr particle = command.string->Right( command.string->Length() - index_ - 1 );
-						ent->ProcessEvent( &AI_StartEmitter, name.c_str(), modelDef->GetJointName( command.index ), particle.c_str() );
+						ent->ProcessEvent( &AI_StartEmitter, name_.c_str(), modelDef->GetJointName( command.index ), particle.c_str() );
 					}
 				}
 				
@@ -1479,11 +1479,11 @@ idAnimBlend::Restore
 unarchives object from save game file
 =====================
 */
-void idAnimBlend::Restore( idRestoreGame* savefile, const idDeclModelDef* modelDef )
+void idAnimBlend::Restore( idRestoreGame* savefile, const idDeclModelDef* _modelDef )
 {
 	int	i;
 	
-	this->modelDef = modelDef;
+	this->modelDef = _modelDef;
 	
 	savefile->ReadInt( starttime );
 	savefile->ReadInt( endtime );
@@ -1502,13 +1502,13 @@ void idAnimBlend::Restore( idRestoreGame* savefile, const idDeclModelDef* modelD
 	savefile->ReadShort( cycle );
 	savefile->ReadShort( frame );
 	savefile->ReadShort( animNum );
-	if( !modelDef )
+	if( !_modelDef )
 	{
 		animNum = 0;
 	}
-	else if( ( animNum < 0 ) || ( animNum > modelDef->NumAnims() ) )
+	else if( ( animNum < 0 ) || ( animNum > _modelDef->NumAnims() ) )
 	{
-		gameLocal.Warning( "Anim number %d out of range for model '%s' during save game", animNum, modelDef->GetModelName() );
+		gameLocal.Warning( "Anim number %d out of range for model '%s' during save game", animNum, _modelDef->GetModelName() );
 		animNum = 0;
 	}
 	savefile->ReadBool( allowMove );
@@ -1705,24 +1705,24 @@ bool idAnimBlend::SetSyncedAnimWeight( int num, float weight )
 idAnimBlend::SetFrame
 =====================
 */
-void idAnimBlend::SetFrame( const idDeclModelDef* modelDef, int _animNum, int _frame, int currentTime, int blendTime )
+void idAnimBlend::SetFrame( const idDeclModelDef* _modelDef, int _animNum, int _frame, int currentTime, int blendTime )
 {
-	Reset( modelDef );
-	if( !modelDef )
+	Reset( _modelDef );
+	if( !_modelDef )
 	{
 		return;
 	}
 	
-	const idAnim* _anim = modelDef->GetAnim( _animNum );
+	const idAnim* _anim = _modelDef->GetAnim( _animNum );
 	if( !_anim )
 	{
 		return;
 	}
 	
 	const idMD5Anim* md5anim = _anim->MD5Anim( 0 );
-	if( modelDef->Joints().Num() != md5anim->NumJoints() )
+	if( _modelDef->Joints().Num() != md5anim->NumJoints() )
 	{
-		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", modelDef->GetModelName(), md5anim->Name() );
+		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", _modelDef->GetModelName(), md5anim->Name() );
 		return;
 	}
 	
@@ -1755,24 +1755,24 @@ void idAnimBlend::SetFrame( const idDeclModelDef* modelDef, int _animNum, int _f
 idAnimBlend::CycleAnim
 =====================
 */
-void idAnimBlend::CycleAnim( const idDeclModelDef* modelDef, int _animNum, int currentTime, int blendTime )
+void idAnimBlend::CycleAnim( const idDeclModelDef* _modelDef, int _animNum, int currentTime, int blendTime )
 {
-	Reset( modelDef );
-	if( !modelDef )
+	Reset( _modelDef );
+	if( !_modelDef )
 	{
 		return;
 	}
 	
-	const idAnim* _anim = modelDef->GetAnim( _animNum );
+	const idAnim* _anim = _modelDef->GetAnim( _animNum );
 	if( !_anim )
 	{
 		return;
 	}
 	
 	const idMD5Anim* md5anim = _anim->MD5Anim( 0 );
-	if( modelDef->Joints().Num() != md5anim->NumJoints() )
+	if( _modelDef->Joints().Num() != md5anim->NumJoints() )
 	{
-		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", modelDef->GetModelName(), md5anim->Name() );
+		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", _modelDef->GetModelName(), md5anim->Name() );
 		return;
 	}
 	
@@ -1802,24 +1802,24 @@ void idAnimBlend::CycleAnim( const idDeclModelDef* modelDef, int _animNum, int c
 idAnimBlend::PlayAnim
 =====================
 */
-void idAnimBlend::PlayAnim( const idDeclModelDef* modelDef, int _animNum, int currentTime, int blendTime )
+void idAnimBlend::PlayAnim( const idDeclModelDef* _modelDef, int _animNum, int currentTime, int blendTime )
 {
-	Reset( modelDef );
-	if( !modelDef )
+	Reset( _modelDef );
+	if( !_modelDef )
 	{
 		return;
 	}
 	
-	const idAnim* _anim = modelDef->GetAnim( _animNum );
+	const idAnim* _anim = _modelDef->GetAnim( _animNum );
 	if( !_anim )
 	{
 		return;
 	}
 	
 	const idMD5Anim* md5anim = _anim->MD5Anim( 0 );
-	if( modelDef->Joints().Num() != md5anim->NumJoints() )
+	if( _modelDef->Joints().Num() != md5anim->NumJoints() )
 	{
-		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", modelDef->GetModelName(), md5anim->Name() );
+		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", _modelDef->GetModelName(), md5anim->Name() );
 		return;
 	}
 	
@@ -4833,7 +4833,7 @@ idAnimator::FinishAFPose
 void idAnimator::FinishAFPose( int animNum, const idBounds& bounds, const int time )
 {
 	int					i, j;
-	int					numJoints;
+	int					numJoints_;
 	int					parentNum;
 	int					jointMod;
 	int					jointNum;
@@ -4850,8 +4850,8 @@ void idAnimator::FinishAFPose( int animNum, const idBounds& bounds, const int ti
 		return;
 	}
 	
-	numJoints = modelDef->Joints().Num();
-	if( !numJoints )
+	numJoints_ = modelDef->Joints().Num();
+	if( !numJoints_ )
 	{
 		return;
 	}
@@ -4859,13 +4859,13 @@ void idAnimator::FinishAFPose( int animNum, const idBounds& bounds, const int ti
 	idRenderModel*		md5 = modelDef->ModelHandle();
 	const idMD5Anim*		md5anim = anim->MD5Anim( 0 );
 	
-	if( numJoints != md5anim->NumJoints() )
+	if( numJoints_ != md5anim->NumJoints() )
 	{
 		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", md5->Name(), md5anim->Name() );
 		return;
 	}
 	
-	idJointQuat* jointFrame = ( idJointQuat* )_alloca16( numJoints * sizeof( *jointFrame ) );
+	idJointQuat* jointFrame = ( idJointQuat* )_alloca16( numJoints_ * sizeof( *jointFrame ) );
 	md5anim->GetSingleFrame( 0, jointFrame, modelDef->GetChannelJoints( ANIMCHANNEL_ALL ), modelDef->NumJointsOnChannel( ANIMCHANNEL_ALL ) );
 	
 	if( removeOriginOffset )
@@ -4877,10 +4877,10 @@ void idAnimator::FinishAFPose( int animNum, const idBounds& bounds, const int ti
 #endif
 	}
 	
-	idJointMat* joints = ( idJointMat* )_alloca16( numJoints * sizeof( *joints ) );
+	idJointMat* joints_ = ( idJointMat* )_alloca16( numJoints_ * sizeof( *joints_ ) );
 	
 	// convert the joint quaternions to joint matrices
-	SIMDProcessor->ConvertJointQuatsToJointMats( joints, jointFrame, numJoints );
+	SIMDProcessor->ConvertJointQuatsToJointMats( joints_, jointFrame, numJoints_ );
 	
 	// first joint is always root of entire hierarchy
 	if( AFPoseJoints.Num() && AFPoseJoints[0] == 0 )
@@ -4889,18 +4889,18 @@ void idAnimator::FinishAFPose( int animNum, const idBounds& bounds, const int ti
 		{
 			case AF_JOINTMOD_AXIS:
 			{
-				joints[0].SetRotation( AFPoseJointMods[0].axis );
+				joints_[0].SetRotation( AFPoseJointMods[0].axis );
 				break;
 			}
 			case AF_JOINTMOD_ORIGIN:
 			{
-				joints[0].SetTranslation( AFPoseJointMods[0].origin );
+				joints_[0].SetTranslation( AFPoseJointMods[0].origin );
 				break;
 			}
 			case AF_JOINTMOD_BOTH:
 			{
-				joints[0].SetRotation( AFPoseJointMods[0].axis );
-				joints[0].SetTranslation( AFPoseJointMods[0].origin );
+				joints_[0].SetRotation( AFPoseJointMods[0].axis );
+				joints_[0].SetTranslation( AFPoseJointMods[0].origin );
 				break;
 			}
 		}
@@ -4920,7 +4920,7 @@ void idAnimator::FinishAFPose( int animNum, const idBounds& bounds, const int ti
 		jointMod = AFPoseJoints[j];
 		
 		// transform any joints preceding the joint modifier
-		SIMDProcessor->TransformJoints( joints, jointParent, i, jointMod - 1 );
+		SIMDProcessor->TransformJoints( joints_, jointParent, i, jointMod - 1 );
 		i = jointMod;
 		
 		parentNum = jointParent[i];
@@ -4929,37 +4929,37 @@ void idAnimator::FinishAFPose( int animNum, const idBounds& bounds, const int ti
 		{
 			case AF_JOINTMOD_AXIS:
 			{
-				joints[i].SetRotation( AFPoseJointMods[jointMod].axis );
-				joints[i].SetTranslation( joints[parentNum].ToVec3() + joints[i].ToVec3() * joints[parentNum].ToMat3() );
+				joints_[i].SetRotation( AFPoseJointMods[jointMod].axis );
+				joints_[i].SetTranslation( joints_[parentNum].ToVec3() + joints_[i].ToVec3() * joints_[parentNum].ToMat3() );
 				break;
 			}
 			case AF_JOINTMOD_ORIGIN:
 			{
-				joints[i].SetRotation( joints[i].ToMat3() * joints[parentNum].ToMat3() );
-				joints[i].SetTranslation( AFPoseJointMods[jointMod].origin );
+				joints_[i].SetRotation( joints_[i].ToMat3() * joints_[parentNum].ToMat3() );
+				joints_[i].SetTranslation( AFPoseJointMods[jointMod].origin );
 				break;
 			}
 			case AF_JOINTMOD_BOTH:
 			{
-				joints[i].SetRotation( AFPoseJointMods[jointMod].axis );
-				joints[i].SetTranslation( AFPoseJointMods[jointMod].origin );
+				joints_[i].SetRotation( AFPoseJointMods[jointMod].axis );
+				joints_[i].SetTranslation( AFPoseJointMods[jointMod].origin );
 				break;
 			}
 		}
 	}
 	
 	// transform the rest of the hierarchy
-	SIMDProcessor->TransformJoints( joints, jointParent, i, numJoints - 1 );
+	SIMDProcessor->TransformJoints( joints_, jointParent, i, numJoints_ - 1 );
 	
 	// untransform hierarchy
-	SIMDProcessor->UntransformJoints( joints, jointParent, 1, numJoints - 1 );
+	SIMDProcessor->UntransformJoints( joints_, jointParent, 1, numJoints_ - 1 );
 	
 	// convert joint matrices back to joint quaternions
-	SIMDProcessor->ConvertJointMatsToJointQuats( AFPoseJointFrame.Ptr(), joints, numJoints );
+	SIMDProcessor->ConvertJointMatsToJointQuats( AFPoseJointFrame.Ptr(), joints_, numJoints_ );
 	
 	// find all modified joints and their parents
-	bool* blendJoints = ( bool* ) _alloca16( numJoints * sizeof( bool ) );
-	memset( blendJoints, 0, numJoints * sizeof( bool ) );
+	bool* blendJoints = ( bool* ) _alloca16( numJoints_ * sizeof( bool ) );
+	memset( blendJoints, 0, numJoints_ * sizeof( bool ) );
 	
 	// mark all modified joints and their parents
 	for( i = 0; i < AFPoseJoints.Num(); i++ )
@@ -4972,7 +4972,7 @@ void idAnimator::FinishAFPose( int animNum, const idBounds& bounds, const int ti
 	
 	// lock all parents of modified joints
 	AFPoseJoints.SetNum( 0 );
-	for( i = 0; i < numJoints; i++ )
+	for( i = 0; i < numJoints_; i++ )
 	{
 		if( blendJoints[i] )
 		{
@@ -5156,7 +5156,7 @@ idAnimator::CreateFrame
 bool idAnimator::CreateFrame( int currentTime, bool force )
 {
 	int					i, j;
-	int					numJoints;
+	int					numJoints_;
 	int					parentNum;
 	bool				hasAnim;
 	bool				debugInfo;
@@ -5222,9 +5222,9 @@ bool idAnimator::CreateFrame( int currentTime, bool force )
 		return false;
 	}
 	
-	numJoints = modelDef->Joints().Num();
-	idJointQuat* jointFrame = ( idJointQuat* )_alloca16( numJoints * sizeof( jointFrame[0] ) );
-	SIMDProcessor->Memcpy( jointFrame, defaultPose, numJoints * sizeof( jointFrame[0] ) );
+	numJoints_ = modelDef->Joints().Num();
+	idJointQuat* jointFrame = ( idJointQuat* )_alloca16( numJoints_ * sizeof( jointFrame[0] ) );
+	SIMDProcessor->Memcpy( jointFrame, defaultPose, numJoints_ * sizeof( jointFrame[0] ) );
 	
 	hasAnim = false;
 	
@@ -5233,7 +5233,7 @@ bool idAnimator::CreateFrame( int currentTime, bool force )
 	blend = channels[ ANIMCHANNEL_ALL ];
 	for( j = 0; j < ANIM_MaxAnimsPerChannel; j++, blend++ )
 	{
-		if( blend->BlendAnim( currentTime, ANIMCHANNEL_ALL, numJoints, jointFrame, baseBlend, removeOriginOffset, false, debugInfo ) )
+		if( blend->BlendAnim( currentTime, ANIMCHANNEL_ALL, numJoints_, jointFrame, baseBlend, removeOriginOffset, false, debugInfo ) )
 		{
 			hasAnim = true;
 			if( baseBlend >= 1.0f )
@@ -5261,7 +5261,7 @@ bool idAnimator::CreateFrame( int currentTime, bool force )
 			blend = channels[ i ];
 			for( j = 0; j < ANIM_MaxAnimsPerChannel; j++, blend++ )
 			{
-				if( blend->BlendAnim( currentTime, i, numJoints, jointFrame, blendWeight, removeOriginOffset, false, debugInfo ) )
+				if( blend->BlendAnim( currentTime, i, numJoints_, jointFrame, blendWeight, removeOriginOffset, false, debugInfo ) )
 				{
 					hasAnim = true;
 					if( blendWeight >= 1.0f )
@@ -5286,7 +5286,7 @@ bool idAnimator::CreateFrame( int currentTime, bool force )
 		blendWeight = baseBlend;
 		for( j = 0; j < ANIM_MaxAnimsPerChannel; j++, blend++ )
 		{
-			if( blend->BlendAnim( currentTime, ANIMCHANNEL_EYELIDS, numJoints, jointFrame, blendWeight, removeOriginOffset, true, debugInfo ) )
+			if( blend->BlendAnim( currentTime, ANIMCHANNEL_EYELIDS, numJoints_, jointFrame, blendWeight, removeOriginOffset, true, debugInfo ) )
 			{
 				hasAnim = true;
 				if( blendWeight >= 1.0f )
@@ -5311,7 +5311,7 @@ bool idAnimator::CreateFrame( int currentTime, bool force )
 	}
 	
 	// convert the joint quaternions to rotation matrices
-	SIMDProcessor->ConvertJointQuatsToJointMats( joints, jointFrame, numJoints );
+	SIMDProcessor->ConvertJointQuatsToJointMats( joints, jointFrame, numJoints_ );
 	
 	// check if we need to modify the origin
 	if( jointMods.Num() && ( jointMods[0]->jointnum == 0 ) )
@@ -5426,7 +5426,7 @@ bool idAnimator::CreateFrame( int currentTime, bool force )
 	}
 	
 	// transform the rest of the hierarchy
-	SIMDProcessor->TransformJoints( joints, jointParent, i, numJoints - 1 );
+	SIMDProcessor->TransformJoints( joints, jointParent, i, numJoints_ - 1 );
 	
 	return true;
 }
@@ -5612,9 +5612,9 @@ jointHandle_t idAnimator::GetFirstChild( jointHandle_t jointnum ) const
 idAnimator::GetJoints
 =====================
 */
-void idAnimator::GetJoints( int* numJoints, idJointMat** jointsPtr )
+void idAnimator::GetJoints( int* numJoints_, idJointMat** jointsPtr )
 {
-	*numJoints = this->numJoints;
+	*numJoints_ = this->numJoints;
 	*jointsPtr = this->joints;
 }
 

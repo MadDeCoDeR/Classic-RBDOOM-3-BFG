@@ -540,12 +540,12 @@ void idAASCluster::RemoveInvalidPortals()
 idAASCluster::Build
 ================
 */
-bool idAASCluster::Build( idAASFileLocal* file )
+bool idAASCluster::Build( idAASFileLocal* _file )
 {
 
 	common->Printf( "[Clustering]\n" );
 	
-	this->file = file;
+	this->file = _file;
 	this->noFaceFlood = true;
 	
 	RemoveInvalidPortals();
@@ -554,12 +554,12 @@ bool idAASCluster::Build( idAASFileLocal* file )
 	{
 	
 		// delete all existing clusters
-		file->DeleteClusters();
+		_file->DeleteClusters();
 		
 		// create the portals from the portal areas
 		CreatePortals();
 		
-		common->Printf( "\r%6d", file->portals.Num() );
+		common->Printf( "\r%6d", _file->portals.Num() );
 		
 		// find the clusters
 		if( !FindClusters() )
@@ -576,15 +576,15 @@ bool idAASCluster::Build( idAASFileLocal* file )
 		break;
 	}
 	
-	common->Printf( "\r%6d portals\n", file->portals.Num() );
-	common->Printf( "%6d clusters\n", file->clusters.Num() );
+	common->Printf( "\r%6d portals\n", _file->portals.Num() );
+	common->Printf( "%6d clusters\n", _file->clusters.Num() );
 	
-	for( int i = 0; i < file->clusters.Num(); i++ )
+	for( int i = 0; i < _file->clusters.Num(); i++ )
 	{
-		common->Printf( "%6d reachable areas in cluster %d\n", file->clusters[i].numReachableAreas, i );
+		common->Printf( "%6d reachable areas in cluster %d\n", _file->clusters[i].numReachableAreas, i );
 	}
 	
-	file->ReportRoutingEfficiency();
+	_file->ReportRoutingEfficiency();
 	
 	return true;
 }
@@ -594,52 +594,52 @@ bool idAASCluster::Build( idAASFileLocal* file )
 idAASCluster::BuildSingleCluster
 ================
 */
-bool idAASCluster::BuildSingleCluster( idAASFileLocal* file )
+bool idAASCluster::BuildSingleCluster( idAASFileLocal* _file )
 {
 	int i, numAreas;
 	aasCluster_t cluster;
 	
 	common->Printf( "[Clustering]\n" );
 	
-	this->file = file;
+	this->file = _file;
 	
 	// delete all existing clusters
-	file->DeleteClusters();
+	_file->DeleteClusters();
 	
 	cluster.firstPortal = 0;
 	cluster.numPortals = 0;
-	cluster.numAreas = file->areas.Num();
+	cluster.numAreas = _file->areas.Num();
 	cluster.numReachableAreas = 0;
 	// give all reachable areas in the cluster a number
-	for( i = 0; i < file->areas.Num(); i++ )
+	for( i = 0; i < _file->areas.Num(); i++ )
 	{
-		file->areas[i].cluster = file->clusters.Num();
-		if( file->areas[i].flags & ( AREA_REACHABLE_WALK | AREA_REACHABLE_FLY ) )
+		_file->areas[i].cluster = _file->clusters.Num();
+		if( _file->areas[i].flags & ( AREA_REACHABLE_WALK | AREA_REACHABLE_FLY ) )
 		{
-			file->areas[i].clusterAreaNum = cluster.numReachableAreas++;
+			_file->areas[i].clusterAreaNum = cluster.numReachableAreas++;
 		}
 	}
 	// give the remaining areas a number within the cluster
 	numAreas = cluster.numReachableAreas;
-	for( i = 0; i < file->areas.Num(); i++ )
+	for( i = 0; i < _file->areas.Num(); i++ )
 	{
-		if( file->areas[i].flags & ( AREA_REACHABLE_WALK | AREA_REACHABLE_FLY ) )
+		if( _file->areas[i].flags & ( AREA_REACHABLE_WALK | AREA_REACHABLE_FLY ) )
 		{
 			continue;
 		}
-		file->areas[i].clusterAreaNum = numAreas++;
+		_file->areas[i].clusterAreaNum = numAreas++;
 	}
-	file->clusters.Append( cluster );
+	_file->clusters.Append( cluster );
 	
-	common->Printf( "%6d portals\n", file->portals.Num() );
-	common->Printf( "%6d clusters\n", file->clusters.Num() );
+	common->Printf( "%6d portals\n", _file->portals.Num() );
+	common->Printf( "%6d clusters\n", _file->clusters.Num() );
 	
-	for( i = 0; i < file->clusters.Num(); i++ )
+	for( i = 0; i < _file->clusters.Num(); i++ )
 	{
-		common->Printf( "%6d reachable areas in cluster %d\n", file->clusters[i].numReachableAreas, i );
+		common->Printf( "%6d reachable areas in cluster %d\n", _file->clusters[i].numReachableAreas, i );
 	}
 	
-	file->ReportRoutingEfficiency();
+	_file->ReportRoutingEfficiency();
 	
 	return true;
 }

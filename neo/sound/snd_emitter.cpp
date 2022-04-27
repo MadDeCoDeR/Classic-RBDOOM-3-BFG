@@ -761,7 +761,7 @@ void idSoundEmitterLocal::Free( bool immediate )
 idSoundEmitterLocal::UpdateEmitter
 ========================
 */
-void idSoundEmitterLocal::UpdateEmitter( const idVec3& origin, int listenerId, const soundShaderParms_t* parms )
+void idSoundEmitterLocal::UpdateEmitter( const idVec3& _origin, int listenerId, const soundShaderParms_t* _parms )
 {
 	assert( soundWorld != NULL );
 	assert( soundWorld->emitters[this->index] == this );
@@ -771,19 +771,19 @@ void idSoundEmitterLocal::UpdateEmitter( const idVec3& origin, int listenerId, c
 		soundWorld->writeDemo->WriteInt( DS_SOUND );
 		soundWorld->writeDemo->WriteInt( SCMD_UPDATE );
 		soundWorld->writeDemo->WriteInt( index );
-		soundWorld->writeDemo->WriteVec3( origin );
+		soundWorld->writeDemo->WriteVec3( _origin );
 		soundWorld->writeDemo->WriteInt( listenerId );
-		soundWorld->writeDemo->WriteFloat( parms->minDistance );
-		soundWorld->writeDemo->WriteFloat( parms->maxDistance );
-		soundWorld->writeDemo->WriteFloat( parms->volume );
-		soundWorld->writeDemo->WriteFloat( parms->shakes );
-		soundWorld->writeDemo->WriteInt( parms->soundShaderFlags );
-		soundWorld->writeDemo->WriteInt( parms->soundClass );
+		soundWorld->writeDemo->WriteFloat( _parms->minDistance );
+		soundWorld->writeDemo->WriteFloat( _parms->maxDistance );
+		soundWorld->writeDemo->WriteFloat( _parms->volume );
+		soundWorld->writeDemo->WriteFloat( _parms->shakes );
+		soundWorld->writeDemo->WriteInt( _parms->soundShaderFlags );
+		soundWorld->writeDemo->WriteInt( _parms->soundClass );
 	}
 	
-	this->origin = origin;
+	this->origin = _origin;
 	this->emitterId = listenerId;
-	this->parms = *parms;
+	this->parms = *_parms;
 }
 
 /*
@@ -1098,7 +1098,7 @@ void idSoundEmitterLocal::StopSound( const s_channelType channel )
 idSoundEmitterLocal::ModifySound
 ========================
 */
-void idSoundEmitterLocal::ModifySound( const s_channelType channel, const soundShaderParms_t* parms )
+void idSoundEmitterLocal::ModifySound( const s_channelType channel, const soundShaderParms_t* _parms )
 {
 	assert( soundWorld != NULL );
 	assert( soundWorld->emitters[this->index] == this );
@@ -1109,12 +1109,12 @@ void idSoundEmitterLocal::ModifySound( const s_channelType channel, const soundS
 		soundWorld->writeDemo->WriteInt( SCMD_MODIFY );
 		soundWorld->writeDemo->WriteInt( index );
 		soundWorld->writeDemo->WriteInt( channel );
-		soundWorld->writeDemo->WriteFloat( parms->minDistance );
-		soundWorld->writeDemo->WriteFloat( parms->maxDistance );
-		soundWorld->writeDemo->WriteFloat( parms->volume );
-		soundWorld->writeDemo->WriteFloat( parms->shakes );
-		soundWorld->writeDemo->WriteInt( parms->soundShaderFlags );
-		soundWorld->writeDemo->WriteInt( parms->soundClass );
+		soundWorld->writeDemo->WriteFloat( _parms->minDistance );
+		soundWorld->writeDemo->WriteFloat( _parms->maxDistance );
+		soundWorld->writeDemo->WriteFloat( _parms->volume );
+		soundWorld->writeDemo->WriteFloat( _parms->shakes );
+		soundWorld->writeDemo->WriteInt( _parms->soundShaderFlags );
+		soundWorld->writeDemo->WriteInt( _parms->soundClass );
 	}
 	
 	for( int i = channels.Num() - 1; i >= 0; i-- )
@@ -1128,7 +1128,7 @@ void idSoundEmitterLocal::ModifySound( const s_channelType channel, const soundS
 		{
 			idLib::Printf( "%dms: ModifySound(%d:%d): %s\n", soundWorld->GetSoundTime(), index, channel, chan->soundShader->GetName() );
 		}
-		OverrideParms( &chan->parms, parms, &chan->parms );
+		OverrideParms( &chan->parms, _parms, &chan->parms );
 	}
 }
 

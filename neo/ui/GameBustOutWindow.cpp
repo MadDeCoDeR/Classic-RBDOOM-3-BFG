@@ -1002,11 +1002,11 @@ void idGameBustOutWindow::LoadBoardFiles()
 	for( i = 0; i < numLevels; i++ )
 	{
 		byte* pic;
-		idStr	name = "guis/assets/bustout/level";
-		name += ( i + 1 );
-		name += ".tga";
+		idStr	name_ = "guis/assets/bustout/level";
+		name_ += ( i + 1 );
+		name_ += ".tga";
 		
-		R_LoadImage( name, &pic, &w, &h, &time, false );
+		R_LoadImage( name_, &pic, &w, &h, &time, false );
 		
 		if( pic != NULL )
 		{

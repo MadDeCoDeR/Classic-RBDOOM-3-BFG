@@ -669,8 +669,8 @@ void idLobby::HandlePacket( lobbyAddress_t& remoteAddress, idBitMsg fragMsg, idP
 				
 				byte usercmdBuffer[idPacketProcessor::MAX_FINAL_PACKET_SIZE];
 				
-				lzwCompressionData_t lzwData;
-				idLZWCompressor lzwCompressor( &lzwData );
+				lzwCompressionData_t lzwData_;
+				idLZWCompressor lzwCompressor( &lzwData_ );
 				lzwCompressor.Start( const_cast<byte*>( msg.GetReadData() ) + msg.GetReadCount(), msg.GetRemainingData() );
 				lzwCompressor.ReadAgnostic( snapNum );
 				lzwCompressor.ReadAgnostic( receivedBps_quantized );

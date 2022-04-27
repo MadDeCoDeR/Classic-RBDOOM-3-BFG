@@ -153,7 +153,7 @@ Pure functional encapsulation of how to calculate a new index and offset based o
 chose to move through the list.
 ========================
 */
-void idMenuWidget_List::CalculatePositionFromIndexDelta( int& outIndex, int& outOffset, const int currentIndex, const int currentOffset, const int windowSize, const int maxSize, const int indexDelta, const bool allowWrapping, const bool wrapAround ) const
+void idMenuWidget_List::CalculatePositionFromIndexDelta( int& outIndex, int& outOffset, const int currentIndex, const int currentOffset, const int windowSize, const int maxSize, const int indexDelta, const bool _allowWrapping, const bool wrapAround ) const
 {
 	assert( indexDelta != 0 );
 	
@@ -165,7 +165,7 @@ void idMenuWidget_List::CalculatePositionFromIndexDelta( int& outIndex, int& out
 		// moving down the list
 		if( newIndex > maxSize - 1 )
 		{
-			if( allowWrapping )
+			if( _allowWrapping )
 			{
 				if( wrapAround )
 				{
@@ -188,7 +188,7 @@ void idMenuWidget_List::CalculatePositionFromIndexDelta( int& outIndex, int& out
 		// moving up the list
 		if( newIndex < 0 )
 		{
-			if( allowWrapping )
+			if( _allowWrapping )
 			{
 				if( wrapAround )
 				{

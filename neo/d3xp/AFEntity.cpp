@@ -157,7 +157,7 @@ idChain::BuildChain
   this allows an object to be attached to multiple chains while keeping a single tree structure
 ================
 */
-void idChain::BuildChain( const idStr& name, const idVec3& origin, float linkLength, float linkWidth, float density, int numLinks, bool bindToWorld )
+void idChain::BuildChain( const idStr& _name, const idVec3& origin, float linkLength, float linkWidth, float density, int numLinks, bool bindToWorld )
 {
 	int i;
 	float halfLinkLength = linkLength * 0.5f;
@@ -182,7 +182,7 @@ void idChain::BuildChain( const idStr& name, const idVec3& origin, float linkLen
 		clip = new( TAG_PHYSICS_CLIP_AF ) idClipModel( trm );
 		clip->SetContents( CONTENTS_SOLID );
 		clip->Link( *gameLocal.GetClip(), this, 0, org, mat3_identity );
-		body = new( TAG_PHYSICS_AF ) idAFBody( name + idStr( i ), clip, density );
+		body = new( TAG_PHYSICS_AF ) idAFBody( _name + idStr( i ), clip, density );
 		physicsObj.AddBody( body );
 		
 		// visual model for body
@@ -193,14 +193,14 @@ void idChain::BuildChain( const idStr& name, const idVec3& origin, float linkLen
 		{
 			if( !lastBody )
 			{
-				uj = new( TAG_PHYSICS_AF ) idAFConstraint_UniversalJoint( name + idStr( i ), body, lastBody );
+				uj = new( TAG_PHYSICS_AF ) idAFConstraint_UniversalJoint( _name + idStr( i ), body, lastBody );
 				uj->SetShafts( idVec3( 0, 0, -1 ), idVec3( 0, 0, 1 ) );
 				//uj->SetConeLimit( idVec3( 0, 0, -1 ), 30.0f );
 				//uj->SetPyramidLimit( idVec3( 0, 0, -1 ), idVec3( 1, 0, 0 ), 90.0f, 30.0f );
 			}
 			else
 			{
-				uj = new( TAG_PHYSICS_AF ) idAFConstraint_UniversalJoint( name + idStr( i ), lastBody, body );
+				uj = new( TAG_PHYSICS_AF ) idAFConstraint_UniversalJoint( _name + idStr( i ), lastBody, body );
 				uj->SetShafts( idVec3( 0, 0, 1 ), idVec3( 0, 0, -1 ) );
 				//uj->SetConeLimit( idVec3( 0, 0, 1 ), 30.0f );
 			}
@@ -307,12 +307,12 @@ void idAFAttachment::Spawn()
 idAFAttachment::SetBody
 =====================
 */
-void idAFAttachment::SetBody( idEntity* bodyEnt, const char* model, jointHandle_t attachJoint )
+void idAFAttachment::SetBody( idEntity* bodyEnt, const char* model, jointHandle_t _attachJoint )
 {
 	bool bleed;
 	
 	body = bodyEnt;
-	this->attachJoint = attachJoint;
+	this->attachJoint = _attachJoint;
 	SetModel( model );
 	fl.takedamage = true;
 	
@@ -1064,9 +1064,9 @@ void idAFEntity_Base::DropAFs( idEntity* ent, const char* type, idList<idEntity*
 idAFEntity_Base::Event_SetConstraintPosition
 ================
 */
-void idAFEntity_Base::Event_SetConstraintPosition( const char* name, const idVec3& pos )
+void idAFEntity_Base::Event_SetConstraintPosition( const char* name_, const idVec3& pos )
 {
-	af.SetConstraintPosition( name, pos );
+	af.SetConstraintPosition( name_, pos );
 }
 
 /*
@@ -2102,7 +2102,7 @@ idAFEntity_VehicleSimple::Think
 void idAFEntity_VehicleSimple::Think()
 {
 	int i;
-	float force = 0.0f, velocity = 0.0f, steerAngle = 0.0f;
+	float force = 0.0f, velocity = 0.0f, steerAngle_ = 0.0f;
 	idVec3 origin;
 	idMat3 axis;
 	idRotation wheelRotation, steerRotation;
@@ -2119,7 +2119,7 @@ void idAFEntity_VehicleSimple::Think()
 				velocity = -velocity;
 			}
 			force = idMath::Fabs( player->usercmd.forwardmove * g_vehicleForce.GetFloat() ) * ( 1.0f / 128.0f );
-			steerAngle = GetSteerAngle();
+			steerAngle_ = GetSteerAngle();
 		}
 		
 		// update the wheel motor force and steering
@@ -2139,15 +2139,15 @@ void idAFEntity_VehicleSimple::Think()
 			suspension[i]->SetMotorForce( force );
 			
 			// update the wheel steering
-			suspension[i]->SetSteerAngle( steerAngle );
+			suspension[i]->SetSteerAngle( steerAngle_ );
 		}
 		
 		// adjust wheel velocity for better steering because there are no differentials between the wheels
-		if( steerAngle < 0.0f )
+		if( steerAngle_ < 0.0f )
 		{
 			suspension[0]->SetMotorVelocity( velocity * 0.5f );
 		}
-		else if( steerAngle > 0.0f )
+		else if( steerAngle_ > 0.0f )
 		{
 			suspension[1]->SetMotorVelocity( velocity * 0.5f );
 		}
@@ -2181,7 +2181,7 @@ void idAFEntity_VehicleSimple::Think()
 			if( i < 2 )
 			{
 				// rotate the wheel for steering
-				steerRotation.SetAngle( steerAngle );
+				steerRotation.SetAngle( steerAngle_ );
 				steerRotation.SetVec( 0, 0, 1 );
 				// set wheel rotation
 				animator.SetJointAxis( wheelJoints[i], JOINTMOD_WORLD, wheelRotation.ToMat3() * steerRotation.ToMat3() );
@@ -2331,7 +2331,7 @@ idAFEntity_VehicleFourWheels::Think
 void idAFEntity_VehicleFourWheels::Think()
 {
 	int i;
-	float force = 0.0f, velocity = 0.0f, steerAngle = 0.0f;
+	float force = 0.0f, velocity = 0.0f, steerAngle_ = 0.0f;
 	idVec3 origin;
 	idMat3 axis;
 	idRotation rotation;
@@ -2348,7 +2348,7 @@ void idAFEntity_VehicleFourWheels::Think()
 				velocity = -velocity;
 			}
 			force = idMath::Fabs( player->usercmd.forwardmove * g_vehicleForce.GetFloat() ) * ( 1.0f / 128.0f );
-			steerAngle = GetSteerAngle();
+			steerAngle_ = GetSteerAngle();
 		}
 		
 		// update the wheel motor force
@@ -2359,18 +2359,18 @@ void idAFEntity_VehicleFourWheels::Think()
 		}
 		
 		// adjust wheel velocity for better steering because there are no differentials between the wheels
-		if( steerAngle < 0.0f )
+		if( steerAngle_ < 0.0f )
 		{
 			wheels[2]->SetContactMotorVelocity( velocity * 0.5f );
 		}
-		else if( steerAngle > 0.0f )
+		else if( steerAngle_ > 0.0f )
 		{
 			wheels[3]->SetContactMotorVelocity( velocity * 0.5f );
 		}
 		
 		// update the wheel steering
-		steering[0]->SetSteerAngle( steerAngle );
-		steering[1]->SetSteerAngle( steerAngle );
+		steering[0]->SetSteerAngle( steerAngle_ );
+		steering[1]->SetSteerAngle( steerAngle_ );
 		for( i = 0; i < 2; i++ )
 		{
 			steering[i]->SetSteerSpeed( 3.0f );
@@ -2379,7 +2379,7 @@ void idAFEntity_VehicleFourWheels::Think()
 		// update the steering wheel
 		animator.GetJointTransform( steeringWheelJoint, gameLocal.time, origin, axis );
 		rotation.SetVec( axis[2] );
-		rotation.SetAngle( -steerAngle );
+		rotation.SetAngle( -steerAngle_ );
 		animator.SetJointAxis( steeringWheelJoint, JOINTMOD_WORLD, rotation.ToMat3() );
 		
 		// run the physics

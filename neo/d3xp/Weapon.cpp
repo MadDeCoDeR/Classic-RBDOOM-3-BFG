@@ -676,11 +676,11 @@ void idWeapon::Restore( idRestoreGame* savefile )
 		WeaponParticle_t newParticle;
 		memset( &newParticle, 0, sizeof( newParticle ) );
 		
-		idStr name, particlename;
-		savefile->ReadString( name );
+		idStr name_, particlename;
+		savefile->ReadString( name_ );
 		savefile->ReadString( particlename );
 		
-		strcpy( newParticle.name, name.c_str() );
+		strcpy( newParticle.name, name_.c_str() );
 		strcpy( newParticle.particlename, particlename.c_str() );
 		
 		savefile->ReadBool( newParticle.active );
@@ -706,9 +706,9 @@ void idWeapon::Restore( idRestoreGame* savefile )
 		WeaponLight_t newLight;
 		memset( &newLight, 0, sizeof( newLight ) );
 		
-		idStr name;
-		savefile->ReadString( name );
-		strcpy( newLight.name, name.c_str() );
+		idStr name_;
+		savefile->ReadString( name_ );
+		strcpy( newLight.name, name_.c_str() );
 		
 		savefile->ReadBool( newLight.active );
 		savefile->ReadInt( newLight.startTime );
@@ -1320,17 +1320,17 @@ void idWeapon::GetWeaponDef( const char* objectname, int ammoinclip )
 			WeaponParticle_t newParticle;
 			memset( &newParticle, 0, sizeof( newParticle ) );
 			
-			idStr name = pkv->GetValue();
+			idStr name_ = pkv->GetValue();
 			
-			strcpy( newParticle.name, name.c_str() );
+			strcpy( newParticle.name, name_.c_str() );
 			
-			idStr jointName = weaponDef->dict.GetString( va( "%s_joint", name.c_str() ) );
+			idStr jointName = weaponDef->dict.GetString( va( "%s_joint", name_.c_str() ) );
 			newParticle.joint = animator.GetJointHandle( jointName.c_str() );
-			newParticle.smoke = weaponDef->dict.GetBool( va( "%s_smoke", name.c_str() ) );
+			newParticle.smoke = weaponDef->dict.GetBool( va( "%s_smoke", name_.c_str() ) );
 			newParticle.active = false;
 			newParticle.startTime = 0;
 			
-			idStr particle = weaponDef->dict.GetString( va( "%s_particle", name.c_str() ) );
+			idStr particle = weaponDef->dict.GetString( va( "%s_particle", name_.c_str() ) );
 			strcpy( newParticle.particlename, particle.c_str() );
 			
 			if( newParticle.smoke )
@@ -1356,7 +1356,7 @@ void idWeapon::GetWeaponDef( const char* objectname, int ammoinclip )
 				}
 			}
 			
-			weaponParticles.Set( name.c_str(), newParticle );
+			weaponParticles.Set( name_.c_str(), newParticle );
 			
 			pkv = weaponDef->dict.MatchPrefix( "weapon_particle", pkv );
 		}
@@ -1371,23 +1371,23 @@ void idWeapon::GetWeaponDef( const char* objectname, int ammoinclip )
 			newLight.active = false;
 			newLight.startTime = 0;
 			
-			idStr name = lkv->GetValue();
-			strcpy( newLight.name, name.c_str() );
+			idStr name_ = lkv->GetValue();
+			strcpy( newLight.name, name_.c_str() );
 			
-			idStr jointName = weaponDef->dict.GetString( va( "%s_joint", name.c_str() ) );
+			idStr jointName = weaponDef->dict.GetString( va( "%s_joint", name_.c_str() ) );
 			newLight.joint = animator.GetJointHandle( jointName.c_str() );
 			
-			idStr shader_ = weaponDef->dict.GetString( va( "%s_shader", name.c_str() ) );
+			idStr shader_ = weaponDef->dict.GetString( va( "%s_shader", name_.c_str() ) );
 			newLight.light.shader = declManager->FindMaterial( shader_, false );
 			
-			float radius = weaponDef->dict.GetFloat( va( "%s_radius", name.c_str() ) );
+			float radius = weaponDef->dict.GetFloat( va( "%s_radius", name_.c_str() ) );
 			newLight.light.lightRadius[0] = newLight.light.lightRadius[1] = newLight.light.lightRadius[2] = radius;
 			newLight.light.pointLight = true;
 			newLight.light.noShadows = true;
 			
 			newLight.light.allowLightInViewID = owner->entityNumber + 1;
 			
-			weaponLights.Set( name.c_str(), newLight );
+			weaponLights.Set( name_.c_str(), newLight );
 			
 			lkv = weaponDef->dict.MatchPrefix( "weapon_light", lkv );
 		}
@@ -1755,9 +1755,9 @@ bool idWeapon::GetGlobalJointTransform( bool viewModel, const jointHandle_t join
 idWeapon::SetPushVelocity
 ================
 */
-void idWeapon::SetPushVelocity( const idVec3& pushVelocity )
+void idWeapon::SetPushVelocity( const idVec3& _pushVelocity )
 {
-	this->pushVelocity = pushVelocity;
+	this->pushVelocity = _pushVelocity;
 }
 
 
@@ -4434,10 +4434,10 @@ void idWeapon::Event_StopWeaponSmoke()
 	weaponSmokeStartTime = 0;
 }
 
-void idWeapon::Event_StartWeaponParticle( const char* name )
+void idWeapon::Event_StartWeaponParticle( const char* _name )
 {
 	WeaponParticle_t* part;
-	weaponParticles.Get( name, &part );
+	weaponParticles.Get( _name, &part );
 	if( part )
 	{
 		part->active = true;
@@ -4452,10 +4452,10 @@ void idWeapon::Event_StartWeaponParticle( const char* name )
 	}
 }
 
-void idWeapon::Event_StopWeaponParticle( const char* name )
+void idWeapon::Event_StopWeaponParticle( const char* _name )
 {
 	WeaponParticle_t* part;
-	weaponParticles.Get( name, &part );
+	weaponParticles.Get( _name, &part );
 	if( part )
 	{
 		part->active = false;
@@ -4473,10 +4473,10 @@ void idWeapon::Event_StopWeaponParticle( const char* name )
 	}
 }
 
-void idWeapon::Event_StartWeaponLight( const char* name )
+void idWeapon::Event_StartWeaponLight( const char* _name )
 {
 	WeaponLight_t* light;
-	weaponLights.Get( name, &light );
+	weaponLights.Get( _name, &light );
 	if( light )
 	{
 		light->active = true;
@@ -4484,10 +4484,10 @@ void idWeapon::Event_StartWeaponLight( const char* name )
 	}
 }
 
-void idWeapon::Event_StopWeaponLight( const char* name )
+void idWeapon::Event_StopWeaponLight( const char* _name )
 {
 	WeaponLight_t* light;
-	weaponLights.Get( name, &light );
+	weaponLights.Get( _name, &light );
 	if( light )
 	{
 		light->active = false;

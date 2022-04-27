@@ -91,16 +91,16 @@ void idDxtEncoder::NV4XHardwareBugFix( byte* minColor, byte* maxColor ) const
 idDxtEncoder::HasConstantValuePer4x4Block
 ========================
 */
-bool idDxtEncoder::HasConstantValuePer4x4Block( const byte* inBuf, int width, int height, int channel ) const
+bool idDxtEncoder::HasConstantValuePer4x4Block( const byte* inBuf, int _width, int _height, int channel ) const
 {
-	if( width < 4 || height < 4 )
+	if( _width < 4 || _height < 4 )
 	{
 		byte value = inBuf[channel];
-		for( int k = 0; k < height; k++ )
+		for( int k = 0; k < _height; k++ )
 		{
-			for( int l = 0; l < width; l++ )
+			for( int l = 0; l < _width; l++ )
 			{
-				if( inBuf[( k * width + l ) * 4 + channel] != value )
+				if( inBuf[( k * _width + l ) * 4 + channel] != value )
 				{
 					return false;
 				}
@@ -109,9 +109,9 @@ bool idDxtEncoder::HasConstantValuePer4x4Block( const byte* inBuf, int width, in
 		return true;
 	}
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
 			const byte* inPtr = inBuf + i * 4;
 			byte value = inPtr[channel];
@@ -119,7 +119,7 @@ bool idDxtEncoder::HasConstantValuePer4x4Block( const byte* inBuf, int width, in
 			{
 				for( int l = 0; l < 4; l++ )
 				{
-					if( inPtr[( k * width + l ) * 4 + channel] != value )
+					if( inPtr[( k * _width + l ) * 4 + channel] != value )
 					{
 						return false;
 					}
@@ -136,10 +136,10 @@ bool idDxtEncoder::HasConstantValuePer4x4Block( const byte* inBuf, int width, in
 idDxtEncoder::WriteTinyColorDXT1
 ========================
 */
-void idDxtEncoder::WriteTinyColorDXT1( const byte* inBuf, int width, int height )
+void idDxtEncoder::WriteTinyColorDXT1( const byte* inBuf, int _width, int _height )
 {
-	int numBlocks = ( ( width + 3 ) / 4 ) * ( ( height + 3 ) / 4 );
-	int stride = ( ( width * height ) / numBlocks ) * 4;	// number of bytes from one block to the next
+	int numBlocks = ( ( _width + 3 ) / 4 ) * ( ( _height + 3 ) / 4 );
+	int stride = ( ( _width * _height ) / numBlocks ) * 4;	// number of bytes from one block to the next
 	// example: 2x8 pixels
 	// numBlocks = 2
 	// stride = 32 bytes (8 pixels)
@@ -160,10 +160,10 @@ void idDxtEncoder::WriteTinyColorDXT1( const byte* inBuf, int width, int height 
 idDxtEncoder::WriteTinyColorDXT5
 ========================
 */
-void idDxtEncoder::WriteTinyColorDXT5( const byte* inBuf, int width, int height )
+void idDxtEncoder::WriteTinyColorDXT5( const byte* inBuf, int _width, int _height )
 {
-	int numBlocks = ( ( width + 3 ) / 4 ) * ( ( height + 3 ) / 4 );
-	int stride = ( ( width * height ) / numBlocks ) * 4;	// number of bytes from one block to the next
+	int numBlocks = ( ( _width + 3 ) / 4 ) * ( ( _height + 3 ) / 4 );
+	int stride = ( ( _width * _height ) / numBlocks ) * 4;	// number of bytes from one block to the next
 	// example: 2x8 pixels
 	// numBlocks = 2
 	// stride = 32 bytes (8 pixels)
@@ -193,10 +193,10 @@ void idDxtEncoder::WriteTinyColorDXT5( const byte* inBuf, int width, int height 
 idDxtEncoder::WriteTinyColorCTX1DXT5A
 ========================
 */
-void idDxtEncoder::WriteTinyColorCTX1DXT5A( const byte* inBuf, int width, int height )
+void idDxtEncoder::WriteTinyColorCTX1DXT5A( const byte* inBuf, int _width, int _height )
 {
-	int numBlocks = ( ( width + 3 ) / 4 ) * ( ( height + 3 ) / 4 );
-	int stride = ( ( width * height ) / numBlocks ) * 4;	// number of bytes from one block to the next
+	int numBlocks = ( ( _width + 3 ) / 4 ) * ( ( _height + 3 ) / 4 );
+	int stride = ( ( _width * _height ) / numBlocks ) * 4;	// number of bytes from one block to the next
 	// example: 2x8 pixels
 	// numBlocks = 2
 	// stride = 32 bytes (8 pixels)
@@ -228,10 +228,10 @@ void idDxtEncoder::WriteTinyColorCTX1DXT5A( const byte* inBuf, int width, int he
 idDxtEncoder::WriteTinyNormalMapDXT5
 ========================
 */
-void idDxtEncoder::WriteTinyNormalMapDXT5( const byte* inBuf, int width, int height )
+void idDxtEncoder::WriteTinyNormalMapDXT5( const byte* inBuf, int _width, int _height )
 {
-	int numBlocks = ( ( width + 3 ) / 4 ) * ( ( height + 3 ) / 4 );
-	int stride = ( ( width * height ) / numBlocks ) * 4;	// number of bytes from one block to the next
+	int numBlocks = ( ( _width + 3 ) / 4 ) * ( ( _height + 3 ) / 4 );
+	int stride = ( ( _width * _height ) / numBlocks ) * 4;	// number of bytes from one block to the next
 	// example: 2x8 pixels
 	// numBlocks = 2
 	// stride = 32 bytes (8 pixels)
@@ -261,10 +261,10 @@ void idDxtEncoder::WriteTinyNormalMapDXT5( const byte* inBuf, int width, int hei
 idDxtEncoder::WriteTinyNormalMapDXN
 ========================
 */
-void idDxtEncoder::WriteTinyNormalMapDXN( const byte* inBuf, int width, int height )
+void idDxtEncoder::WriteTinyNormalMapDXN( const byte* inBuf, int _width, int _height )
 {
-	int numBlocks = ( ( width + 3 ) / 4 ) * ( ( height + 3 ) / 4 );
-	int stride = ( ( width * height ) / numBlocks ) * 4;	// number of bytes from one block to the next
+	int numBlocks = ( ( _width + 3 ) / 4 ) * ( ( _height + 3 ) / 4 );
+	int stride = ( ( _width * _height ) / numBlocks ) * 4;	// number of bytes from one block to the next
 	// example: 2x8 pixels
 	// numBlocks = 2
 	// stride = 32 bytes (8 pixels)
@@ -299,10 +299,10 @@ void idDxtEncoder::WriteTinyNormalMapDXN( const byte* inBuf, int width, int heig
 idDxtEncoder::WriteTinyDXT5A
 ========================
 */
-void idDxtEncoder::WriteTinyDXT5A( const byte* inBuf, int width, int height )
+void idDxtEncoder::WriteTinyDXT5A( const byte* inBuf, int _width, int _height )
 {
-	int numBlocks = ( ( width + 3 ) / 4 ) * ( ( height + 3 ) / 4 );
-	int stride = ( ( width * height ) / numBlocks ) * 4;	// number of bytes from one block to the next
+	int numBlocks = ( ( _width + 3 ) / 4 ) * ( ( _height + 3 ) / 4 );
+	int stride = ( ( _width * _height ) / numBlocks ) * 4;	// number of bytes from one block to the next
 	// example: 2x8 pixels
 	// numBlocks = 2
 	// stride = 32 bytes (8 pixels)
@@ -331,12 +331,12 @@ params:	inPtr		- input image, 4 bytes per pixel
 paramO:	colorBlock	- 4*4 output tile, 4 bytes per pixel
 ========================
 */
-ID_INLINE void idDxtEncoder::ExtractBlock( const byte* inPtr, int width, byte* colorBlock ) const
+ID_INLINE void idDxtEncoder::ExtractBlock( const byte* inPtr, int _width, byte* colorBlock ) const
 {
 	for( int j = 0; j < 4; j++ )
 	{
 		memcpy( &colorBlock[j * 4 * 4], inPtr, 4 * 4 );
-		inPtr += width * 4;
+		inPtr += _width * 4;
 	}
 }
 
@@ -2142,7 +2142,7 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressImageDXT1HQ( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressImageDXT1HQ( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	unsigned int colorIndices1;
@@ -2152,32 +2152,32 @@ void idDxtEncoder::CompressImageDXT1HQ( const byte* inBuf, byte* outBuf, int wid
 	int error1;
 	int error2;
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
-		return;
-	}
-	
-	if( width < 4 || height < 4 )
-	{
-		WriteTinyColorDXT1( inBuf, width, height );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	if( _width < 4 || _height < 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		WriteTinyColorDXT1( inBuf, _width, _height );
+		return;
+	}
+	
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
+	{
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxColorsHQ( block, col1, col2, false );
 			
@@ -2223,7 +2223,7 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressImageDXT5HQ( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressImageDXT5HQ( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	byte alphaIndices1[6];
@@ -2234,32 +2234,32 @@ void idDxtEncoder::CompressImageDXT5HQ( const byte* inBuf, byte* outBuf, int wid
 	int error1;
 	int error2;
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
-		return;
-	}
-	
-	if( width < 4 || height < 4 )
-	{
-		WriteTinyColorDXT5( inBuf, width, height );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	if( _width < 4 || _height < 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		WriteTinyColorDXT5( inBuf, _width, _height );
+		return;
+	}
+	
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
+	{
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxColorsHQ( block, col1, col2, true );
 			GetMinMaxAlphaHQ( block, 3, col1, col2 );
@@ -2327,39 +2327,39 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressImageCTX1HQ( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressImageCTX1HQ( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	unsigned int colorIndices;
 	byte col1[4];
 	byte col2[4];
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
-		return;
-	}
-	
-	if( width < 4 || height < 4 )
-	{
-		WriteTinyColorCTX1DXT5A( inBuf, width, height );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	if( _width < 4 || _height < 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		WriteTinyColorCTX1DXT5A( inBuf, _width, _height );
+		return;
+	}
+	
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
+	{
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxCTX1HQ( block, col1, col2 );
 			
@@ -2776,7 +2776,7 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressYCoCgDXT5HQ( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressYCoCgDXT5HQ( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	byte alphaIndices1[6];
@@ -2787,34 +2787,34 @@ void idDxtEncoder::CompressYCoCgDXT5HQ( const byte* inBuf, byte* outBuf, int wid
 	int error1;
 	int error2;
 	
-	assert( HasConstantValuePer4x4Block( inBuf, width, height, 2 ) );
+	assert( HasConstantValuePer4x4Block( inBuf, _width, _height, 2 ) );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
-		return;
-	}
-	
-	if( width < 4 || height < 4 )
-	{
-		WriteTinyColorDXT5( inBuf, width, height );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	if( _width < 4 || _height < 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		WriteTinyColorDXT5( inBuf, _width, _height );
+		return;
+	}
+	
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
+	{
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			ScaleYCoCg( block );
 			
 			GetMinMaxColorsHQ( block, col1, col2, true );
@@ -2883,7 +2883,7 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressYCoCgCTX1DXT5AHQ( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressYCoCgCTX1DXT5AHQ( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	byte alphaIndices1[6];
@@ -2894,34 +2894,34 @@ void idDxtEncoder::CompressYCoCgCTX1DXT5AHQ( const byte* inBuf, byte* outBuf, in
 	int error1;
 	int error2;
 	
-	assert( HasConstantValuePer4x4Block( inBuf, width, height, 2 ) );
+	assert( HasConstantValuePer4x4Block( inBuf, _width, _height, 2 ) );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
-		return;
-	}
-	
-	if( width < 4 || height < 4 )
-	{
-		WriteTinyColorCTX1DXT5A( inBuf, width, height );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	if( _width < 4 || _height < 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		WriteTinyColorCTX1DXT5A( inBuf, _width, _height );
+		return;
+	}
+	
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
+	{
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxAlphaHQ( block, 3, col1, col2 );
 			
@@ -3038,39 +3038,39 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressNormalMapDXT1HQ( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressNormalMapDXT1HQ( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	unsigned int colorIndices;
 	byte col1[4];
 	byte col2[4];
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
-		return;
-	}
-	
-	if( width < 4 || height < 4 )
-	{
-		WriteTinyColorDXT1( inBuf, width, height );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	if( _width < 4 || _height < 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		WriteTinyColorDXT1( inBuf, _width, _height );
+		return;
+	}
+	
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
+	{
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			for( int k = 0; k < 16; k++ )
 			{
@@ -3108,39 +3108,39 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressNormalMapDXT1RenormalizeHQ( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressNormalMapDXT1RenormalizeHQ( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	unsigned int colorIndices;
 	byte col1[4];
 	byte col2[4];
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
-		return;
-	}
-	
-	if( width < 4 || height < 4 )
-	{
-		WriteTinyColorDXT1( inBuf, width, height );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	if( _width < 4 || _height < 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		WriteTinyColorDXT1( inBuf, _width, _height );
+		return;
+	}
+	
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
+	{
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			// clear alpha channel
 			for( int k = 0; k < 16; k++ )
@@ -3361,7 +3361,7 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressNormalMapDXT5HQ( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressNormalMapDXT5HQ( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	byte alphaIndices1[6];
@@ -3372,32 +3372,32 @@ void idDxtEncoder::CompressNormalMapDXT5HQ( const byte* inBuf, byte* outBuf, int
 	int error1;
 	int error2;
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
-		return;
-	}
-	
-	if( width < 4 || height < 4 )
-	{
-		WriteTinyColorDXT5( inBuf, width, height );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	if( _width < 4 || _height < 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		WriteTinyColorDXT5( inBuf, _width, _height );
+		return;
+	}
+	
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
+	{
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			// swizzle components
 			for( int k = 0; k < 16; k++ )
@@ -3476,7 +3476,7 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressNormalMapDXT5RenormalizeHQ( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressNormalMapDXT5RenormalizeHQ( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	unsigned int colorIndices;
@@ -3484,32 +3484,32 @@ void idDxtEncoder::CompressNormalMapDXT5RenormalizeHQ( const byte* inBuf, byte* 
 	byte col1[4];
 	byte col2[4];
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
-		return;
-	}
-	
-	if( width < 4 || height < 4 )
-	{
-		WriteTinyColorDXT5( inBuf, width, height );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	if( _width < 4 || _height < 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		WriteTinyColorDXT5( inBuf, _width, _height );
+		return;
+	}
+	
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
+	{
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			// swizzle components
 			for( int k = 0; k < 16; k++ )
@@ -3561,7 +3561,7 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressNormalMapDXN2HQ( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressNormalMapDXN2HQ( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	byte alphaIndices1[6];
@@ -3571,32 +3571,32 @@ void idDxtEncoder::CompressNormalMapDXN2HQ( const byte* inBuf, byte* outBuf, int
 	int error1;
 	int error2;
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
-		return;
-	}
-	
-	if( width < 4 || height < 4 )
-	{
-		WriteTinyColorDXT5( inBuf, width, height );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	if( _width < 4 || _height < 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		WriteTinyColorDXT5( inBuf, _width, _height );
+		return;
+	}
+	
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
+	{
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			for( int k = 0; k < 2; k++ )
 			{
@@ -4339,26 +4339,26 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressImageDXT1Fast_Generic( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressImageDXT1Fast_Generic( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte minColor[4] );
 	ALIGN16( byte maxColor[4] );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxBBox( block, minColor, maxColor );
 			//SelectColorsDiagonal( block, minColor, maxColor );
@@ -4384,26 +4384,26 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressImageDXT1AlphaFast_Generic( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressImageDXT1AlphaFast_Generic( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte minColor[4] );
 	ALIGN16( byte maxColor[4] );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxBBox( block, minColor, maxColor );
 			byte minAlpha = minColor[3];
@@ -4438,26 +4438,26 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressImageDXT5Fast_Generic( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressImageDXT5Fast_Generic( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte minColor[4] );
 	ALIGN16( byte maxColor[4] );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxBBox( block, minColor, maxColor );
 			//SelectColorsDiagonal( block, minColor, maxColor );
@@ -4760,7 +4760,7 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressYCoCgDXT5Fast_Generic( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressYCoCgDXT5Fast_Generic( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte minColor[4] );
@@ -4768,20 +4768,20 @@ void idDxtEncoder::CompressYCoCgDXT5Fast_Generic( const byte* inBuf, byte* outBu
 	
 	//assert( HasConstantValuePer4x4Block( inBuf, width, height, 2 ) );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxBBox( block, minColor, maxColor );
 			ScaleYCoCg( block, minColor, maxColor );
@@ -4817,26 +4817,26 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressYCoCgAlphaDXT5Fast( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressYCoCgAlphaDXT5Fast( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte minColor[4] );
 	ALIGN16( byte maxColor[4] );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			// scale down the chroma of texels that are close to gray with low luminance
 			for( int k = 0; k < 16; k++ )
@@ -4883,28 +4883,28 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressYCoCgCTX1DXT5AFast_Generic( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressYCoCgCTX1DXT5AFast_Generic( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte minColor[4] );
 	ALIGN16( byte maxColor[4] );
 	
-	assert( HasConstantValuePer4x4Block( inBuf, width, height, 2 ) );
+	assert( HasConstantValuePer4x4Block( inBuf, _width, _height, 2 ) );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxBBox( block, minColor, maxColor );
 			SelectYCoCgDiagonal( block, minColor, maxColor );
@@ -5079,26 +5079,26 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressNormalMapDXT5Fast_Generic( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressNormalMapDXT5Fast_Generic( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte normal1[4] );
 	ALIGN16( byte normal2[4] );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxBBox( block, normal1, normal2 );
 			InsetNormalsBBoxDXT5( normal1, normal2 );
@@ -5128,26 +5128,26 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressImageDXN1Fast_Generic( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressImageDXN1Fast_Generic( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte min[4] );
 	ALIGN16( byte max[4] );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxBBox( block, min, max );
 			InsetNormalsBBox3Dc( min, max );
@@ -5172,26 +5172,26 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressNormalMapDXN2Fast_Generic( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressNormalMapDXN2Fast_Generic( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte normal1[4] );
 	ALIGN16( byte normal2[4] );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
-			ExtractBlock( inBuf + i * 4, width, block );
+			ExtractBlock( inBuf + i * 4, _width, block );
 			
 			GetMinMaxBBox( block, normal1, normal2 );
 			InsetNormalsBBox3Dc( normal1, normal2 );
@@ -5325,32 +5325,32 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::ConvertNormalMapDXN2_DXT5( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::ConvertNormalMapDXN2_DXT5( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte values[16] );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
 		return;
 	}
 	
-	if( width < 4 || height < 4 )
+	if( _width < 4 || _height < 4 )
 	{
 		assert( 0 );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4 )
+	for( int j = 0; j < _height; j += 4 )
 	{
-		for( int i = 0; i < width; i += 4, inBuf += 16, outBuf += 16 )
+		for( int i = 0; i < _width; i += 4, inBuf += 16, outBuf += 16 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
@@ -5476,33 +5476,33 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::ConvertNormalMapDXT5_DXN2( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::ConvertNormalMapDXT5_DXN2( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte values[16] );
 	byte minNormalY, maxNormalY;
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
 		return;
 	}
 	
-	if( width < 4 || height < 4 )
+	if( _width < 4 || _height < 4 )
 	{
 		assert( 0 );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4 )
+	for( int j = 0; j < _height; j += 4 )
 	{
-		for( int i = 0; i < width; i += 4, inBuf += 16, outBuf += 16 )
+		for( int i = 0; i < _width; i += 4, inBuf += 16, outBuf += 16 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			
@@ -5529,32 +5529,32 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::ConvertImageDXN1_DXT1( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::ConvertImageDXN1_DXT1( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte values[16] );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	if( width > 4 && ( width & 3 ) != 0 )
+	if( _width > 4 && ( _width & 3 ) != 0 )
 	{
 		return;
 	}
-	if( height > 4 && ( height & 3 ) != 0 )
+	if( _height > 4 && ( _height & 3 ) != 0 )
 	{
 		return;
 	}
 	
-	if( width < 4 || height < 4 )
+	if( _width < 4 || _height < 4 )
 	{
 		assert( 0 );
 		return;
 	}
 	
-	for( int j = 0; j < height; j += 4 )
+	for( int j = 0; j < _height; j += 4 )
 	{
-		for( int i = 0; i < width; i += 4, inBuf += 8, outBuf += 8 )
+		for( int i = 0; i < _width; i += 4, inBuf += 8, outBuf += 8 )
 		{
 			commonLocal.LoadPacifierBinarizeProgressIncrement( 16 );
 			

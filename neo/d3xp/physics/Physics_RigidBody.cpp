@@ -719,13 +719,13 @@ int idPhysics_RigidBody::GetNumClipModels() const
 idPhysics_RigidBody::SetMass
 ================
 */
-void idPhysics_RigidBody::SetMass( float mass, int id )
+void idPhysics_RigidBody::SetMass( float _mass, int id )
 {
-	assert( mass > 0.0f );
-	inertiaTensor *= mass / this->mass;
+	assert( _mass > 0.0f );
+	inertiaTensor *= _mass / this->mass;
 	inverseInertiaTensor = inertiaTensor.Inverse() * ( 1.0f / 6.0f );
-	this->mass = mass;
-	inverseMass = 1.0f / mass;
+	this->mass = _mass;
+	inverseMass = 1.0f / _mass;
 }
 
 /*

@@ -385,7 +385,7 @@ bool idMoveable::Collide( const trace_t& collision, const idVec3& velocity )
 idMoveable::Killed
 ============
 */
-void idMoveable::Killed( idEntity* inflictor, idEntity* attacker, int damage, const idVec3& dir, int location )
+void idMoveable::Killed( idEntity* inflictor, idEntity* _attacker, int _damage, const idVec3& dir, int location )
 {
 	if( unbindOnDeath )
 	{
@@ -1151,9 +1151,9 @@ void idExplodingBarrel::StopBurning()
 idExplodingBarrel::AddParticles
 ================
 */
-void idExplodingBarrel::AddParticles( const char* name, bool burn )
+void idExplodingBarrel::AddParticles( const char* _name, bool burn )
 {
-	if( name && *name )
+	if( _name && *_name )
 	{
 		int explicitTimeGroup = timeGroup;
 		SetTimeState explicitTS( explicitTimeGroup );
@@ -1162,7 +1162,7 @@ void idExplodingBarrel::AddParticles( const char* name, bool burn )
 			gameRenderWorld->FreeEntityDef( particleModelDefHandle );
 		}
 		memset( &particleRenderEntity, 0, sizeof( particleRenderEntity ) );
-		idRenderModel* modelDef = renderModelManager->FindModel( name );
+		idRenderModel* modelDef = renderModelManager->FindModel( _name );
 		if( modelDef )
 		{
 			particleRenderEntity.origin = physicsObj.GetAbsBounds().GetCenter();
@@ -1191,7 +1191,7 @@ void idExplodingBarrel::AddParticles( const char* name, bool burn )
 idExplodingBarrel::AddLight
 ================
 */
-void idExplodingBarrel::AddLight( const char* name, bool burn )
+void idExplodingBarrel::AddLight( const char* _name, bool burn )
 {
 	if( lightDefHandle >= 0 )
 	{
@@ -1204,7 +1204,7 @@ void idExplodingBarrel::AddLight( const char* name, bool burn )
 	light.origin = physicsObj.GetOrigin();
 	light.origin.z += 128;
 	light.pointLight = true;
-	light.shader = declManager->FindMaterial( name );
+	light.shader = declManager->FindMaterial( _name );
 	light.shaderParms[ SHADERPARM_RED ] = 2.0f;
 	light.shaderParms[ SHADERPARM_GREEN ] = 2.0f;
 	light.shaderParms[ SHADERPARM_BLUE ] = 2.0f;
@@ -1256,7 +1256,7 @@ void idExplodingBarrel::ExplodingEffects()
 idExplodingBarrel::Killed
 ================
 */
-void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* attacker, int damage, const idVec3& dir, int location )
+void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* _attacker, int _damage, const idVec3& dir, int location )
 {
 
 	if( IsHidden() || state == EXPLODING || state == BURNING )
@@ -1300,7 +1300,7 @@ void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* attacker, int dam
 	const char* splash = spawnArgs.GetString( "def_splash_damage", "damage_explosion" );
 	if( splash != NULL && *splash != '\0' )
 	{
-		gameLocal.RadiusDamage( GetPhysics()->GetOrigin(), this, attacker, this, this, splash );
+		gameLocal.RadiusDamage( GetPhysics()->GetOrigin(), this, _attacker, this, this, splash );
 	}
 	
 	ExplodingEffects( );
@@ -1375,7 +1375,7 @@ void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* attacker, int dam
 idExplodingBarrel::Damage
 ================
 */
-void idExplodingBarrel::Damage( idEntity* inflictor, idEntity* attacker, const idVec3& dir,
+void idExplodingBarrel::Damage( idEntity* inflictor, idEntity* _attacker, const idVec3& dir,
 								const char* damageDefName, const float damageScale, const int location )
 {
 
@@ -1391,7 +1391,7 @@ void idExplodingBarrel::Damage( idEntity* inflictor, idEntity* attacker, const i
 	}
 	else
 	{
-		idEntity::Damage( inflictor, attacker, dir, damageDefName, damageScale, location );
+		idEntity::Damage( inflictor, _attacker, dir, damageDefName, damageScale, location );
 	}
 }
 
@@ -1511,7 +1511,7 @@ void idExplodingBarrel::ReadFromSnapshot( const idBitMsg& msg )
 idExplodingBarrel::ClientReceiveEvent
 ================
 */
-bool idExplodingBarrel::ClientReceiveEvent( int event, int time, const idBitMsg& msg )
+bool idExplodingBarrel::ClientReceiveEvent( int event, int _time, const idBitMsg& msg )
 {
 
 	switch( event )
@@ -1526,7 +1526,7 @@ bool idExplodingBarrel::ClientReceiveEvent( int event, int time, const idBitMsg&
 		}
 		default:
 		{
-			return idBarrel::ClientReceiveEvent( event, time, msg );
+			return idBarrel::ClientReceiveEvent( event, _time, msg );
 		}
 	}
 }

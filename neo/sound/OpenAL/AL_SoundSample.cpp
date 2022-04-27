@@ -397,8 +397,8 @@ void idSoundSample_OpenAL::CreateOpenALBuffer()
 	}
 }
 //GK:Begin
-bool			idSoundSample_OpenAL::LoadAll(const idStr& name) { //GK:Decode and Demux pretty much any other audio file we are about to load
-	idFileLocal f(fileSystem->OpenFileRead(name));
+bool			idSoundSample_OpenAL::LoadAll(const idStr& _name) { //GK:Decode and Demux pretty much any other audio file we are about to load
+	idFileLocal f(fileSystem->OpenFileRead(_name));
 	if (f == NULL)
 	{
 		return false;
@@ -761,10 +761,10 @@ void idSoundSample_OpenAL::FreeData()
 idSoundSample_OpenAL::LoadAmplitude
 ========================
 */
-bool idSoundSample_OpenAL::LoadAmplitude( const idStr& name )
+bool idSoundSample_OpenAL::LoadAmplitude( const idStr& _name )
 {
 	amplitude.Clear();
-	idFileLocal f( fileSystem->OpenFileRead( name ) );
+	idFileLocal f( fileSystem->OpenFileRead( _name ) );
 	if( f == NULL )
 	{
 		return false;

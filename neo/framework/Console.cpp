@@ -178,12 +178,12 @@ idCVar idConsoleLocal::con_noPrint( "con_noPrint", "1", CVAR_BOOL | CVAR_SYSTEM 
 idConsoleLocal::DrawTextLeftAlign
 ==================
 */
-void idConsoleLocal::DrawTextLeftAlign( float _x, float& y, const char* text, ... )
+void idConsoleLocal::DrawTextLeftAlign( float _x, float& y, const char* _text, ... )
 {
 	char string[MAX_STRING_CHARS];
 	va_list argptr;
-	va_start( argptr, text );
-	idStr::vsnPrintf( string, sizeof( string ), text, argptr );
+	va_start( argptr, _text );
+	idStr::vsnPrintf( string, sizeof( string ), _text, argptr );
 	va_end( argptr );
 	renderSystem->DrawSmallStringExt( _x, y + 2, string, colorWhite, true );
 	y += SMALLCHAR_HEIGHT + 4;
@@ -194,12 +194,12 @@ void idConsoleLocal::DrawTextLeftAlign( float _x, float& y, const char* text, ..
 idConsoleLocal::DrawTextRightAlign
 ==================
 */
-void idConsoleLocal::DrawTextRightAlign( float _x, float& y, const char* text, ... )
+void idConsoleLocal::DrawTextRightAlign( float _x, float& y, const char* _text, ... )
 {
 	char string[MAX_STRING_CHARS];
 	va_list argptr;
-	va_start( argptr, text );
-	int i = idStr::vsnPrintf( string, sizeof( string ), text, argptr );
+	va_start( argptr, _text );
+	int i = idStr::vsnPrintf( string, sizeof( string ), _text, argptr );
 	va_end( argptr );
 	renderSystem->DrawSmallStringExt( _x - i * SMALLCHAR_WIDTH, y + 2, string, colorWhite, true );
 	y += SMALLCHAR_HEIGHT + 4;
@@ -1041,7 +1041,7 @@ void idConsoleLocal::Print( const char* txt )
 {
 	int		y;
 	int		c, l;
-	int		color;
+	int		color_;
 	
 	if( TOTAL_LINES == 0 )
 	{
@@ -1049,7 +1049,7 @@ void idConsoleLocal::Print( const char* txt )
 		return;
 	}
 	
-	color = idStr::ColorIndex( C_COLOR_CYAN );
+	color_ = idStr::ColorIndex( C_COLOR_CYAN );
 	
 	while( ( c = *( const unsigned char* )txt ) != 0 )
 	{
@@ -1057,11 +1057,11 @@ void idConsoleLocal::Print( const char* txt )
 		{
 			if( *( txt + 1 ) == C_COLOR_DEFAULT )
 			{
-				color = idStr::ColorIndex( C_COLOR_CYAN );
+				color_ = idStr::ColorIndex( C_COLOR_CYAN );
 			}
 			else
 			{
-				color = idStr::ColorIndex( *( txt + 1 ) );
+				color_ = idStr::ColorIndex( *( txt + 1 ) );
 			}
 			txt += 2;
 			continue;
@@ -1099,7 +1099,7 @@ void idConsoleLocal::Print( const char* txt )
 			case '\t':
 				do
 				{
-					text[y * LINE_WIDTH + x] = ( color << 8 ) | ' ';
+					text[y * LINE_WIDTH + x] = ( color_ << 8 ) | ' ';
 					x++;
 					if( x >= LINE_WIDTH )
 					{
@@ -1113,7 +1113,7 @@ void idConsoleLocal::Print( const char* txt )
 				x = 0;
 				break;
 			default:	// display character and advance
-				text[y * LINE_WIDTH + x] = ( color << 8 ) | c;
+				text[y * LINE_WIDTH + x] = ( color_ << 8 ) | c;
 				x++;
 				if( x >= LINE_WIDTH )
 				{
@@ -1439,7 +1439,7 @@ void idConsoleLocal::Draw( bool forceFullScreen )
 idConsoleLocal::PrintOverlay
 ========================
 */
-void idConsoleLocal::PrintOverlay( idOverlayHandle& handle, justify_t justify, const char* text, ... )
+void idConsoleLocal::PrintOverlay( idOverlayHandle& handle, justify_t justify, const char* _text, ... )
 {
 	if( handle.index >= 0 && handle.index < overlayText.Num() )
 	{
@@ -1451,8 +1451,8 @@ void idConsoleLocal::PrintOverlay( idOverlayHandle& handle, justify_t justify, c
 	
 	char string[MAX_PRINT_MSG];
 	va_list argptr;
-	va_start( argptr, text );
-	idStr::vsnPrintf( string, sizeof( string ), text, argptr );
+	va_start( argptr, _text );
+	idStr::vsnPrintf( string, sizeof( string ), _text, argptr );
 	va_end( argptr );
 	
 	overlayText_t& overlay = overlayText.Alloc();
@@ -1473,14 +1473,14 @@ void idConsoleLocal::DrawOverlayText( float& leftY, float& rightY, float& center
 {
 	for( int i = 0; i < overlayText.Num(); i++ )
 	{
-		const idStr& text = overlayText[i].text;
+		const idStr& text_ = overlayText[i].text;
 		
 		int maxWidth = 0;
 		int numLines = 0;
-		for( int j = 0; j < text.Length(); j++ )
+		for( int j = 0; j < text_.Length(); j++ )
 		{
 			int width = 1;
-			for( ; j < text.Length() && text[j] != '\n'; j++ )
+			for( ; j < text_.Length() && text_[j] != '\n'; j++ )
 			{
 				width++;
 			}
@@ -1514,12 +1514,12 @@ void idConsoleLocal::DrawOverlayText( float& leftY, float& rightY, float& center
 		}
 		
 		idStr singleLine;
-		for( int j = 0; j < text.Length(); j += singleLine.Length() + 1 )
+		for( int j = 0; j < text_.Length(); j += singleLine.Length() + 1 )
 		{
 			singleLine = "";
-			for( int k = j; k < text.Length() && text[k] != '\n'; k++ )
+			for( int k = j; k < text_.Length() && text_[k] != '\n'; k++ )
 			{
-				singleLine.Append( text[k] );
+				singleLine.Append( text_[k] );
 			}
 			if( overlayText[i].justify == JUSTIFY_LEFT )
 			{

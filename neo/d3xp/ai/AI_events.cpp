@@ -863,9 +863,9 @@ void idAI::Event_RandomPath()
 idAI::Event_BeginAttack
 =====================
 */
-void idAI::Event_BeginAttack( const char* name )
+void idAI::Event_BeginAttack( const char* _name )
 {
-	BeginAttack( name );
+	BeginAttack( _name );
 }
 
 /*
@@ -1616,14 +1616,14 @@ void idAI::Event_GetTalkTarget()
 idAI::Event_SetTalkState
 ================
 */
-void idAI::Event_SetTalkState( int state )
+void idAI::Event_SetTalkState( int _state )
 {
-	if( ( state < 0 ) || ( state >= NUM_TALK_STATES ) )
+	if( ( _state < 0 ) || ( _state >= NUM_TALK_STATES ) )
 	{
-		gameLocal.Error( "Invalid talk state (%d)", state );
+		gameLocal.Error( "Invalid talk state (%d)", _state );
 	}
 	
-	talk_state = static_cast<talkState_t>( state );
+	talk_state = static_cast<talkState_t>( _state );
 }
 
 /*
@@ -2766,22 +2766,22 @@ idAI::Event_ThrowAF
 void idAI::Event_ThrowAF()
 {
 	idEntity* ent;
-	idEntity* af = NULL;
+	idEntity* af_ = NULL;
 	
 	for( ent = GetNextTeamEntity(); ent != NULL; ent = ent->GetNextTeamEntity() )
 	{
 		if( ent->GetBindMaster() == this && ent->IsType( idAFEntity_Base::Type ) )
 		{
-			af = ent;
+			af_ = ent;
 			break;
 		}
 	}
-	if( af )
+	if( af_ )
 	{
-		af->Unbind();
+		af_->Unbind();
 		
 		// RB: 64 bit fixes, changed NULL to 0
-		af->PostEventMS( &EV_SetOwner, 200, 0 );
+		af_->PostEventMS( &EV_SetOwner, 200, 0 );
 		// RB end
 	}
 }
@@ -3284,20 +3284,20 @@ void idAI::Event_TriggerFX( const char* joint, const char* fx )
 	TriggerFX( joint, fx );
 }
 
-void idAI::Event_StartEmitter( const char* name, const char* joint, const char* particle )
+void idAI::Event_StartEmitter( const char* _name, const char* joint, const char* particle )
 {
-	idEntity* ent = StartEmitter( name, joint, particle );
+	idEntity* ent = StartEmitter( _name, joint, particle );
 	idThread::ReturnEntity( ent );
 }
 
-void idAI::Event_GetEmitter( const char* name )
+void idAI::Event_GetEmitter( const char* _name )
 {
-	idThread::ReturnEntity( GetEmitter( name ) );
+	idThread::ReturnEntity( GetEmitter( _name ) );
 }
 
-void idAI::Event_StopEmitter( const char* name )
+void idAI::Event_StopEmitter( const char* _name )
 {
-	StopEmitter( name );
+	StopEmitter( _name );
 }
 
 
@@ -3322,15 +3322,15 @@ void idAI::Event_LaunchHomingMissile()
 		return;
 	}
 	
-	idActor* enemy = GetEnemy();
-	if( enemy == NULL )
+	idActor* enemy_ = GetEnemy();
+	if( enemy_ == NULL )
 	{
 		idThread::ReturnEntity( NULL );
 		return;
 	}
 	
 	idVec3 org = GetPhysics()->GetOrigin() + idVec3( 0.0f, 0.0f, 250.0f );
-	idVec3 goal = enemy->GetPhysics()->GetOrigin();
+	idVec3 goal = enemy_->GetPhysics()->GetOrigin();
 	homingMissileGoal = goal;
 	
 //	axis = ( goal - org ).ToMat3();
@@ -3340,7 +3340,7 @@ void idAI::Event_LaunchHomingMissile()
 		idHomingProjectile* homing = ( idHomingProjectile* ) CreateProjectile( org, idVec3( 0.0f, 0.0f, 1.0f ) );
 		if( homing != NULL )
 		{
-			homing->SetEnemy( enemy );
+			homing->SetEnemy( enemy_ );
 			homing->SetSeekPos( homingMissileGoal );
 		}
 	}
@@ -3392,12 +3392,12 @@ idAI::Event_SetHomingMissileGoal
 */
 void idAI::Event_SetHomingMissileGoal()
 {
-	idActor* enemy = GetEnemy();
-	if( enemy == NULL )
+	idActor* enemy_ = GetEnemy();
+	if( enemy_ == NULL )
 	{
 		idThread::ReturnEntity( NULL );
 		return;
 	}
 	
-	homingMissileGoal = enemy->GetPhysics()->GetOrigin();
+	homingMissileGoal = enemy_->GetPhysics()->GetOrigin();
 }

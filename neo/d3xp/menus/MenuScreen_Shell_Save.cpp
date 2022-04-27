@@ -488,17 +488,17 @@ void idMenuScreen_Shell_SaveLocal::DeleteGame( int index )
 	};
 	
 	bool hasAutosave = false;
-	const saveGameDetailsList_t& saveInfo = session->GetSaveGameManager().GetEnumeratedSavegames();
-	for( int i = 0; i < saveInfo.Num(); ++i )
+	const saveGameDetailsList_t& saveInfo_ = session->GetSaveGameManager().GetEnumeratedSavegames();
+	for( int i = 0; i < saveInfo_.Num(); ++i )
 	{
-		if( saveInfo[i].slotName.Icmp( "autosave" ) == 0 )
+		if( saveInfo_[i].slotName.Icmp( "autosave" ) == 0 )
 		{
 			hasAutosave = true;
 			break;
 		}
 	}
 	
-	if( ( saveInfo.Num() < MAX_SAVEGAMES - 1 ) || ( ( saveInfo.Num() == MAX_SAVEGAMES - 1 ) && hasAutosave ) )
+	if( ( saveInfo_.Num() < MAX_SAVEGAMES - 1 ) || ( ( saveInfo_.Num() == MAX_SAVEGAMES - 1 ) && hasAutosave ) )
 	{
 		index--;	// Subtract 1 from the index for 'New Game'
 	}

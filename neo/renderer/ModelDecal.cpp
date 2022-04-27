@@ -781,14 +781,14 @@ unsigned int idRenderModelDecal::GetNumDecalDrawSurfs()
 idRenderModelDecal::CreateDecalDrawSurf
 =====================
 */
-drawSurf_t* idRenderModelDecal::CreateDecalDrawSurf( const viewEntity_t* space, unsigned int index )
+drawSurf_t* idRenderModelDecal::CreateDecalDrawSurf( const viewEntity_t* space, unsigned int _index )
 {
-	if( index < 0 || index >= numDecalMaterials )
+	if( _index < 0 || _index >= numDecalMaterials )
 	{
 		return NULL;
 	}
 	
-	const idMaterial* material = decalMaterials[index];
+	const idMaterial* material = decalMaterials[_index];
 	
 	int maxVerts = 0;
 	int maxIndexes = 0;

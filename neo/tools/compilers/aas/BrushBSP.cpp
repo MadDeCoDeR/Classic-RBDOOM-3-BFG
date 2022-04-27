@@ -328,7 +328,7 @@ bool idBrushBSPNode::TestLeafNode()
 	float d;
 	idBrushBSPPortal* p;
 	idVec3 center;
-	idPlane plane;
+	idPlane plane_;
 	
 	n = 0;
 	center = vec3_origin;
@@ -346,13 +346,13 @@ bool idBrushBSPNode::TestLeafNode()
 		s = ( p->nodes[1] == this );
 		if( s )
 		{
-			plane = -p->GetPlane();
+			plane_ = -p->GetPlane();
 		}
 		else
 		{
-			plane = p->GetPlane();
+			plane_ = p->GetPlane();
 		}
-		d = plane.Distance( center );
+		d = plane_.Distance( center );
 		if( d < 0.0f )
 		{
 			return false;
@@ -446,7 +446,7 @@ bool idBrushBSPNode::Split( const idPlane& splitPlane, int splitPlaneNum )
 idBrushBSPNode::PlaneSide
 ============
 */
-int idBrushBSPNode::PlaneSide( const idPlane& plane, float epsilon ) const
+int idBrushBSPNode::PlaneSide( const idPlane& _plane, float epsilon ) const
 {
 	int s, side;
 	idBrushBSPPortal* p;
@@ -457,7 +457,7 @@ int idBrushBSPNode::PlaneSide( const idPlane& plane, float epsilon ) const
 	{
 		s = ( p->nodes[1] == this );
 		
-		side = p->winding->PlaneSide( plane, epsilon );
+		side = p->winding->PlaneSide( _plane, epsilon );
 		if( side == SIDE_CROSS || side == SIDE_ON )
 		{
 			return side;

@@ -228,9 +228,9 @@ void idGrabber::SetDragDistance( float dist )
 idGrabber::StartDrag
 ==============
 */
-void idGrabber::StartDrag( idEntity* grabEnt, int id )
+void idGrabber::StartDrag( idEntity* grabEnt, int _id )
 {
-	int clipModelId = id;
+	int clipModelId = _id;
 	idPlayer* thePlayer = owner.GetEntity();
 	
 	holdingAF = false;

@@ -628,7 +628,7 @@ bool idCollisionModelManagerLocal::LoadCollisionModelFile( const char* name, uns
 	ID_TIME_T currentTimeStamp = fileSystem->GetTimestamp( fileName );
 	
 	// see if we have a generated version of this
-	bool loaded = false;
+	bool loaded_ = false;
 	idFileLocal file( fileSystem->OpenFileReadMemory( generatedFileName ) );
 	if( file != NULL )
 	{
@@ -642,7 +642,7 @@ bool idCollisionModelManagerLocal::LoadCollisionModelFile( const char* name, uns
 		file->ReadString( fileVersion );
 		if( fileID == CM_FILEID && fileVersion == CM_FILEVERSION && crc == mapFileCRC && numEntries > 0 )
 		{
-			loaded = true; // DG: moved this up here to prevent segfaults, see below
+			loaded_ = true; // DG: moved this up here to prevent segfaults, see below
 			for( int i = 0; i < numEntries; i++ )
 			{
 				cm_model_t* model = LoadBinaryModelFromFile( file, currentTimeStamp );
@@ -650,7 +650,7 @@ bool idCollisionModelManagerLocal::LoadCollisionModelFile( const char* name, uns
 				//     (otherwise we'll get a segfault when someone wants to use models[numModels])
 				if( model == NULL )
 				{
-					loaded = false;
+					loaded_ = false;
 					break;
 				}
 				// DG end
@@ -660,7 +660,7 @@ bool idCollisionModelManagerLocal::LoadCollisionModelFile( const char* name, uns
 		}
 	}
 	
-	if( !loaded )
+	if( !loaded_ )
 	{
 	
 		fileName.SetFileExtension( CM_FILE_EXT );

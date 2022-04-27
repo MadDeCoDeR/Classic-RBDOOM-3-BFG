@@ -517,13 +517,13 @@ idListWindow::InitScroller
 This is the same as in idEditWindow
 ================
 */
-void idListWindow::InitScroller( bool horizontal )
+void idListWindow::InitScroller( bool _horizontal )
 {
 	const char* thumbImage = "guis/assets/scrollbar_thumb.tga";
 	const char* barImage = "guis/assets/scrollbarv.tga";
 	const char* scrollerName = "_scrollerWinV";
 	
-	if( horizontal )
+	if( _horizontal )
 	{
 		barImage = "guis/assets/scrollbarh.tga";
 		scrollerName = "_scrollerWinH";
@@ -534,7 +534,7 @@ void idListWindow::InitScroller( bool horizontal )
 	sizeBias = mat->GetImageWidth();
 	
 	idRectangle scrollRect;
-	if( horizontal )
+	if( _horizontal )
 	{
 		sizeBias = mat->GetImageHeight();
 		scrollRect.x = 0;
@@ -550,7 +550,7 @@ void idListWindow::InitScroller( bool horizontal )
 		scrollRect.h = clientRect.h;
 	}
 	
-	scroller->InitWithDefaults( scrollerName, scrollRect, foreColor, matColor, mat->GetName(), thumbImage, !horizontal, true );
+	scroller->InitWithDefaults( scrollerName, scrollRect, foreColor, matColor, mat->GetName(), thumbImage, !_horizontal, true );
 	InsertChild( scroller, NULL );
 	scroller->SetBuddy( this );
 }
@@ -560,7 +560,7 @@ void idListWindow::Draw( int time, float x, float y )
 	idVec4 color;
 	idStr work;
 	int count = listItems.Num();
-	idRectangle rect = textRect;
+	idRectangle rect_ = textRect;
 	float scale = textScale;
 	float lineHeight = GetMaxCharHeight();
 	
@@ -576,7 +576,7 @@ void idListWindow::Draw( int time, float x, float y )
 		else
 		{
 			width -= sizeBias;
-			rect.w = width;
+			rect_.w = width;
 		}
 	}
 	
@@ -589,18 +589,18 @@ void idListWindow::Draw( int time, float x, float y )
 	{
 		if( IsSelected( i ) )
 		{
-			rect.h = lineHeight;
-			dc->DrawFilledRect( rect.x, rect.y + pixelOffset, rect.w, rect.h, borderColor );
+			rect_.h = lineHeight;
+			dc->DrawFilledRect( rect_.x, rect_.y + pixelOffset, rect_.w, rect_.h, borderColor );
 			if( flags & WIN_FOCUS )
 			{
 				idVec4 color_ = borderColor;
 				color_.w = 1.0f;
-				dc->DrawRect( rect.x, rect.y + pixelOffset, rect.w, rect.h, 1.0f, color_ );
+				dc->DrawRect( rect_.x, rect_.y + pixelOffset, rect_.w, rect_.h, 1.0f, color_ );
 			}
 		}
-		rect.y ++;
-		rect.h = lineHeight - 1;
-		if( hover && !noEvents && Contains( rect, gui->CursorX(), gui->CursorY() ) )
+		rect_.y ++;
+		rect_.h = lineHeight - 1;
+		if( hover && !noEvents && Contains( rect_, gui->CursorX(), gui->CursorY() ) )
 		{
 			color = hoverColor;
 		}
@@ -608,8 +608,8 @@ void idListWindow::Draw( int time, float x, float y )
 		{
 			color = foreColor;
 		}
-		rect.h = lineHeight + pixelOffset;
-		rect.y --;
+		rect_.h = lineHeight + pixelOffset;
+		rect_.y --;
 		
 		if( tabInfo.Num() > 0 )
 		{
@@ -625,13 +625,13 @@ void idListWindow::Draw( int time, float x, float y )
 				}
 				listItems[i].Mid( start, stop - start, work );
 				
-				rect.x = textRect.x + tabInfo[tab].x;
-				rect.w = ( tabInfo[tab].w == -1 ) ? width - tabInfo[tab].x : tabInfo[tab].w;
-				dc->PushClipRect( rect );
+				rect_.x = textRect.x + tabInfo[tab].x;
+				rect_.w = ( tabInfo[tab].w == -1 ) ? width - tabInfo[tab].x : tabInfo[tab].w;
+				dc->PushClipRect( rect_ );
 				
 				if( tabInfo[tab].type == TAB_TYPE_TEXT )
 				{
-					dc->DrawText( work, scale, tabInfo[tab].align, color, rect, false, -1 );
+					dc->DrawText( work, scale, tabInfo[tab].align, color, rect_, false, -1 );
 				}
 				else if( tabInfo[tab].type == TAB_TYPE_ICON )
 				{
@@ -658,28 +658,28 @@ void idListWindow::Draw( int time, float x, float y )
 						
 						if( tabInfo[tab].align == idDeviceContext::ALIGN_LEFT )
 						{
-							iconRect.x = rect.x;
+							iconRect.x = rect_.x;
 						}
 						else if( tabInfo[tab].align == idDeviceContext::ALIGN_CENTER )
 						{
-							iconRect.x = rect.x + rect.w / 2.0f - iconRect.w / 2.0f;
+							iconRect.x = rect_.x + rect_.w / 2.0f - iconRect.w / 2.0f;
 						}
 						else if( tabInfo[tab].align == idDeviceContext::ALIGN_RIGHT )
 						{
-							iconRect.x  = rect.x + rect.w - iconRect.w;
+							iconRect.x  = rect_.x + rect_.w - iconRect.w;
 						}
 						
 						if( tabInfo[tab].valign == 0 ) //Top
 						{
-							iconRect.y = rect.y + tabInfo[tab].iconVOffset;
+							iconRect.y = rect_.y + tabInfo[tab].iconVOffset;
 						}
 						else if( tabInfo[tab].valign == 1 )   //Center
 						{
-							iconRect.y = rect.y + rect.h / 2.0f - iconRect.h / 2.0f + tabInfo[tab].iconVOffset;
+							iconRect.y = rect_.y + rect_.h / 2.0f - iconRect.h / 2.0f + tabInfo[tab].iconVOffset;
 						}
 						else if( tabInfo[tab].valign == 2 )   //Bottom
 						{
-							iconRect.y = rect.y + rect.h - iconRect.h + tabInfo[tab].iconVOffset;
+							iconRect.y = rect_.y + rect_.h - iconRect.h + tabInfo[tab].iconVOffset;
 						}
 						
 						dc->DrawMaterial( iconRect.x, iconRect.y, iconRect.w, iconRect.h, iconMat, idVec4( 1.0f, 1.0f, 1.0f, 1.0f ), 1.0f, 1.0f );
@@ -697,15 +697,15 @@ void idListWindow::Draw( int time, float x, float y )
 				}
 				tab++;
 			}
-			rect.x = textRect.x;
-			rect.w = width;
+			rect_.x = textRect.x;
+			rect_.w = width;
 		}
 		else
 		{
-			dc->DrawText( listItems[i], scale, 0, color, rect, false, -1 );
+			dc->DrawText( listItems[i], scale, 0, color, rect_, false, -1 );
 		}
-		rect.y += lineHeight;
-		if( rect.y > bottom )
+		rect_.y += lineHeight;
+		if( rect_.y > bottom )
 		{
 			break;
 		}

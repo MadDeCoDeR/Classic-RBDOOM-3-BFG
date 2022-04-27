@@ -485,7 +485,7 @@ void idAASBuild::GetSizeEstimate_r( idBrushBSPNode* parent, idBrushBSPNode* node
 idAASBuild::SetSizeEstimate
 ================
 */
-void idAASBuild::SetSizeEstimate( const idBrushBSP& bsp, idAASFileLocal* file )
+void idAASBuild::SetSizeEstimate( const idBrushBSP& bsp, idAASFileLocal* _file )
 {
 	sizeEstimate_t size;
 	
@@ -496,14 +496,14 @@ void idAASBuild::SetSizeEstimate( const idBrushBSP& bsp, idAASFileLocal* file )
 	
 	GetSizeEstimate_r( NULL, bsp.GetRootNode(), size );
 	
-	file->planeList.Resize( size.numNodes / 2, 1024 );
-	file->vertices.Resize( size.numEdgeIndexes / 3, 1024 );
-	file->edges.Resize( size.numEdgeIndexes / 2, 1024 );
-	file->edgeIndex.Resize( size.numEdgeIndexes, 4096 );
-	file->faces.Resize( size.numFaceIndexes, 1024 );
-	file->faceIndex.Resize( size.numFaceIndexes, 4096 );
-	file->areas.Resize( size.numAreas, 1024 );
-	file->nodes.Resize( size.numNodes, 1024 );
+	_file->planeList.Resize( size.numNodes / 2, 1024 );
+	_file->vertices.Resize( size.numEdgeIndexes / 3, 1024 );
+	_file->edges.Resize( size.numEdgeIndexes / 2, 1024 );
+	_file->edgeIndex.Resize( size.numEdgeIndexes, 4096 );
+	_file->faces.Resize( size.numFaceIndexes, 1024 );
+	_file->faceIndex.Resize( size.numFaceIndexes, 4096 );
+	_file->areas.Resize( size.numAreas, 1024 );
+	_file->nodes.Resize( size.numNodes, 1024 );
 }
 
 /*

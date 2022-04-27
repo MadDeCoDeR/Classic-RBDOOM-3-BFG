@@ -186,7 +186,7 @@ and write it out.
 void RectAllocator( const idList<idVec2i>& inputSizes, idList<idVec2i>& outputPositions, idVec2i& totalSize );
 float RectPackingFraction( const idList<idVec2i>& inputSizes, const idVec2i totalSize );
 
-void idSWF::WriteSwfImageAtlas( const char* filename )
+void idSWF::WriteSwfImageAtlas( const char* _filename )
 {
 	if (packImages.Num() == 0) {
 		return;
@@ -342,7 +342,7 @@ void idSWF::WriteSwfImageAtlas( const char* filename )
 	}
 	
 	// the TGA is only for examination during development
-	R_WritePNG( filename, swfAtlas.Ptr(), 4, atlasWidth, atlasHeight, false, "fs_basepath" );
+	R_WritePNG( _filename, swfAtlas.Ptr(), 4, atlasWidth, atlasHeight, false, "fs_basepath" );
 }
 
 /*
@@ -440,12 +440,12 @@ void idSWF::DefineBitsJPEG2( idSWFBitStream& bitstream )
 {
 	uint16 characterID = bitstream.ReadU16();
 	
-	idDecompressJPEG jpeg;
+	idDecompressJPEG jpeg_;
 	
 	int jpegSize = bitstream.Length() - sizeof( uint16 );
 	
 	int width, height;
-	byte* imageData = jpeg.Load( bitstream.ReadData( jpegSize ), jpegSize, width, height );
+	byte* imageData = jpeg_.Load( bitstream.ReadData( jpegSize ), jpegSize, width, height );
 	if( imageData == NULL )
 	{
 		return;
@@ -467,10 +467,10 @@ void idSWF::DefineBitsJPEG3( idSWFBitStream& bitstream )
 	uint16 characterID = bitstream.ReadU16();
 	uint32 jpegSize = bitstream.ReadU32();
 	
-	idDecompressJPEG jpeg;
+	idDecompressJPEG jpeg_;
 	
 	int width, height;
-	byte* imageData = jpeg.Load( bitstream.ReadData( jpegSize ), jpegSize, width, height );
+	byte* imageData = jpeg_.Load( bitstream.ReadData( jpegSize ), jpegSize, width, height );
 	if( imageData == NULL )
 	{
 		return;

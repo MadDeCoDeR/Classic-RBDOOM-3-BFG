@@ -53,11 +53,11 @@ void idMenuHandler_ScoreboardLocal::Update()
 				menuScreens[ activeScreen ]->HideScreen( static_cast<mainMenuTransition_t>( transition ) );
 			}
 			
-			idMenuWidget_CommandBar* cmdBar = dynamic_cast< idMenuWidget_CommandBar* >( GetChildFromIndex( SCOREBOARD_WIDGET_CMD_BAR ) );
-			if( cmdBar != NULL )
+			idMenuWidget_CommandBar* cmdBar_ = dynamic_cast< idMenuWidget_CommandBar* >( GetChildFromIndex( SCOREBOARD_WIDGET_CMD_BAR ) );
+			if( cmdBar_ != NULL )
 			{
-				cmdBar->ClearAllButtons();
-				cmdBar->Update();
+				cmdBar_->ClearAllButtons();
+				cmdBar_->Update();
 			}
 			
 			idSWFSpriteInstance* bg = gui->GetRootObject().GetNestedSprite( "background" );
@@ -119,11 +119,11 @@ void idMenuHandler_ScoreboardLocal::ActivateMenu( bool show )
 	if( show )
 	{
 	
-		idMenuWidget_CommandBar* cmdBar = dynamic_cast< idMenuWidget_CommandBar* >( GetChildFromIndex( SCOREBOARD_WIDGET_CMD_BAR ) );
-		if( cmdBar != NULL )
+		idMenuWidget_CommandBar* cmdBar_ = dynamic_cast< idMenuWidget_CommandBar* >( GetChildFromIndex( SCOREBOARD_WIDGET_CMD_BAR ) );
+		if( cmdBar_ != NULL )
 		{
-			cmdBar->ClearAllButtons();
-			cmdBar->Update();
+			cmdBar_->ClearAllButtons();
+			cmdBar_->Update();
 		}
 		
 		nextScreen = SCOREBOARD_AREA_INVALID;

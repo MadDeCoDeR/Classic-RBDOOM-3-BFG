@@ -179,17 +179,17 @@ void idEditWindow::Draw( int time, float x, float y )
 		cursorPos = len;
 	}
 	
-	idRectangle rect = textRect;
+	idRectangle rect_ = textRect;
 	
-	rect.x -= paintOffset;
-	rect.w += paintOffset;
+	rect_.x -= paintOffset;
+	rect_.w += paintOffset;
 	
 	if( wrap && scroller->GetHigh() > 0.0f )
 	{
 		float lineHeight = GetMaxCharHeight( ) + 5;
-		rect.y -= scroller->GetValue() * lineHeight;
-		rect.w -= sizeBias;
-		rect.h = ( breaks.Num() + 1 ) * lineHeight;
+		rect_.y -= scroller->GetValue() * lineHeight;
+		rect_.w -= sizeBias;
+		rect_.h = ( breaks.Num() + 1 ) * lineHeight;
 	}
 	
 	if( hover && !noEvents && Contains( gui->CursorX(), gui->CursorY() ) )
@@ -205,7 +205,7 @@ void idEditWindow::Draw( int time, float x, float y )
 		color = hoverColor;
 	}
 	
-	dc->DrawText( buffer, scale, 0, color, rect, wrap, ( flags & WIN_FOCUS ) ? cursorPos : -1 );
+	dc->DrawText( buffer, scale, 0, color, rect_, wrap, ( flags & WIN_FOCUS ) ? cursorPos : -1 );
 }
 
 /*
@@ -654,9 +654,9 @@ void idEditWindow::EnsureCursorVisible()
 		// Word wrap
 		
 		breaks.Clear();
-		idRectangle rect = textRect;
-		rect.w -= sizeBias;
-		dc->DrawText( text, textScale, textAlign, colorWhite, rect, true, ( flags & WIN_FOCUS ) ? cursorPos : -1, true, &breaks );
+		idRectangle rect_ = textRect;
+		rect_.w -= sizeBias;
+		dc->DrawText( text, textScale, textAlign, colorWhite, rect_, true, ( flags & WIN_FOCUS ) ? cursorPos : -1, true, &breaks );
 		
 		int fit = textRect.h / ( GetMaxCharHeight() + 5 );
 		if( fit < breaks.Num() + 1 )

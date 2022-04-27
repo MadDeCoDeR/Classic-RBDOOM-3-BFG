@@ -1212,21 +1212,21 @@ idAF::SetConstraintPosition
   Only moves constraints that bind the entity to another entity.
 ================
 */
-void idAF::SetConstraintPosition( const char* name, const idVec3& pos )
+void idAF::SetConstraintPosition( const char* _name, const idVec3& pos )
 {
 	idAFConstraint* constraint;
 	
-	constraint = GetPhysics()->GetConstraint( name );
+	constraint = GetPhysics()->GetConstraint( _name );
 	
 	if( !constraint )
 	{
-		gameLocal.Warning( "can't find a constraint with the name '%s'", name );
+		gameLocal.Warning( "can't find a constraint with the name '%s'", _name );
 		return;
 	}
 	
 	if( constraint->GetBody2() != NULL )
 	{
-		gameLocal.Warning( "constraint '%s' does not bind to another entity", name );
+		gameLocal.Warning( "constraint '%s' does not bind to another entity", _name );
 		return;
 	}
 	
@@ -1252,7 +1252,7 @@ void idAF::SetConstraintPosition( const char* name, const idVec3& pos )
 		}
 		default:
 		{
-			gameLocal.Warning( "cannot set the constraint position for '%s'", name );
+			gameLocal.Warning( "cannot set the constraint position for '%s'", _name );
 			break;
 		}
 	}
@@ -1289,7 +1289,7 @@ idAF::LoadState
 void idAF::LoadState( const idDict& args )
 {
 	const idKeyValue* kv;
-	idStr name;
+	idStr name_;
 	idAFBody* body;
 	idVec3 origin;
 	idAngles angles;
@@ -1298,9 +1298,9 @@ void idAF::LoadState( const idDict& args )
 	while( kv )
 	{
 	
-		name = kv->GetKey();
-		name.Strip( "body " );
-		body = physicsObj.GetBody( name );
+		name_ = kv->GetKey();
+		name_.Strip( "body " );
+		body = physicsObj.GetBody( name_ );
 		if( body )
 		{
 			sscanf( kv->GetValue(), "%f %f %f %f %f %f", &origin.x, &origin.y, &origin.z, &angles.pitch, &angles.yaw, &angles.roll );
@@ -1309,7 +1309,7 @@ void idAF::LoadState( const idDict& args )
 		}
 		else
 		{
-			gameLocal.Warning( "Unknown body part %s in articulated figure %s", name.c_str(), this->name.c_str() );
+			gameLocal.Warning( "Unknown body part %s in articulated figure %s", name_.c_str(), this->name.c_str() );
 		}
 		
 		kv = args.MatchPrefix( "body ", kv );
@@ -1326,7 +1326,7 @@ idAF::AddBindConstraints
 void idAF::AddBindConstraints()
 {
 	const idKeyValue* kv;
-	idStr name;
+	idStr name_;
 	idAFBody* body;
 	idLexer lexer;
 	idToken type, bodyName, jointName;
@@ -1349,8 +1349,8 @@ void idAF::AddBindConstraints()
 	// parse all the bind constraints
 	for( kv = args.MatchPrefix( "bindConstraint ", NULL ); kv; kv = args.MatchPrefix( "bindConstraint ", kv ) )
 	{
-		name = kv->GetKey();
-		name.Strip( "bindConstraint " );
+		name_ = kv->GetKey();
+		name_.Strip( "bindConstraint " );
 		
 		lexer.LoadMemory( kv->GetValue(), kv->GetValue().Length(), kv->GetKey() );
 		lexer.ReadToken( &type );
@@ -1368,14 +1368,14 @@ void idAF::AddBindConstraints()
 		{
 			idAFConstraint_Fixed* c;
 			
-			c = new( TAG_PHYSICS_AF ) idAFConstraint_Fixed( name, body, NULL );
+			c = new( TAG_PHYSICS_AF ) idAFConstraint_Fixed( name_, body, NULL );
 			physicsObj.AddConstraint( c );
 		}
 		else if( type.Icmp( "ballAndSocket" ) == 0 )
 		{
 			idAFConstraint_BallAndSocketJoint* c;
 			
-			c = new( TAG_PHYSICS_AF ) idAFConstraint_BallAndSocketJoint( name, body, NULL );
+			c = new( TAG_PHYSICS_AF ) idAFConstraint_BallAndSocketJoint( name_, body, NULL );
 			physicsObj.AddConstraint( c );
 			lexer.ReadToken( &jointName );
 			
@@ -1392,7 +1392,7 @@ void idAF::AddBindConstraints()
 		{
 			idAFConstraint_UniversalJoint* c;
 			
-			c = new( TAG_PHYSICS_AF ) idAFConstraint_UniversalJoint( name, body, NULL );
+			c = new( TAG_PHYSICS_AF ) idAFConstraint_UniversalJoint( name_, body, NULL );
 			physicsObj.AddConstraint( c );
 			lexer.ReadToken( &jointName );
 			
@@ -1431,17 +1431,17 @@ void idAF::RemoveBindConstraints()
 	}
 	
 	const idDict& args = self->spawnArgs;
-	idStr name;
+	idStr name_;
 	
 	kv = args.MatchPrefix( "bindConstraint ", NULL );
 	while( kv )
 	{
-		name = kv->GetKey();
-		name.Strip( "bindConstraint " );
+		name_ = kv->GetKey();
+		name_.Strip( "bindConstraint " );
 		
-		if( physicsObj.GetConstraint( name ) )
+		if( physicsObj.GetConstraint( name_ ) )
 		{
-			physicsObj.DeleteConstraint( name );
+			physicsObj.DeleteConstraint( name_ );
 		}
 		
 		kv = args.MatchPrefix( "bindConstraint ", kv );

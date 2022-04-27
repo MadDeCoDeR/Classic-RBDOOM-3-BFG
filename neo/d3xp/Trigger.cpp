@@ -1484,11 +1484,11 @@ void idTrigger_Flag::Event_Touch( idEntity* other, trace_t* trace )
 		if( !other->IsType( idPlayer::Type ) )
 			return;
 			
-		idPlayer* player = static_cast<idPlayer*>( other );
-		if( player->carryingFlag == false )
+		idPlayer* player_ = static_cast<idPlayer*>( other );
+		if( player_->carryingFlag == false )
 			return;
 			
-		if( team != -1 && ( player->team != team || ( player->team != 0 && player->team != 1 ) ) )
+		if( team != -1 && ( player_->team != team || ( player_->team != 0 && player_->team != 1 ) ) )
 			return;
 			
 		idItemTeam* flags[2];
@@ -1496,8 +1496,8 @@ void idTrigger_Flag::Event_Touch( idEntity* other, trace_t* trace )
 		flags[0] = gameLocal.mpGame.GetTeamFlag( 0 );
 		flags[1] = gameLocal.mpGame.GetTeamFlag( 1 );
 		
-		int iFriend = 1 - player->team;			// index to the flag player team wants
-		int iOpp	= player->team;				// index to the flag opp team wants
+		int iFriend = 1 - player_->team;			// index to the flag player team wants
+		int iOpp	= player_->team;				// index to the flag opp team wants
 		
 		// flag is captured if :
 		// 1)flag is truely bound to the player

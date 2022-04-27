@@ -609,11 +609,11 @@ void idLobby::SendPeersMicStatusToNewUsers( int peerNumber )
 		}
 		
 		int talkerIndex = sessionCB->GetVoiceChat()->FindTalkerByUserId( user->lobbyUserID, lobbyType );
-		bool state = sessionCB->GetVoiceChat()->GetHeadsetState( talkerIndex );
+		bool state_ = sessionCB->GetVoiceChat()->GetHeadsetState( talkerIndex );
 		
-		idLib::Printf( "Packing headset state %d for user %d %s\n", state, i, user->gamertag );
+		idLib::Printf( "Packing headset state %d for user %d %s\n", state_, i, user->gamertag );
 		user->lobbyUserID.WriteToMsg( outmsg );
-		outmsg.WriteBool( state );
+		outmsg.WriteBool( state_ );
 	}
 	
 	
@@ -893,12 +893,12 @@ void idLobby::HandleHeadsetStateChange( int fromPeer, idBitMsg& msg )
 	{
 		lobbyUserID_t lobbyUserID;
 		lobbyUserID.ReadFromMsg( msg );
-		bool state = msg.ReadBool();
+		bool state_ = msg.ReadBool();
 		
 		int talkerIndex = sessionCB->GetVoiceChat()->FindTalkerByUserId( lobbyUserID, lobbyType );
-		sessionCB->GetVoiceChat()->SetHeadsetState( talkerIndex, state );
+		sessionCB->GetVoiceChat()->SetHeadsetState( talkerIndex, state_ );
 		
-		idLib::Printf( "User %d headset status: %d\n", talkerIndex, state );
+		idLib::Printf( "User %d headset status: %d\n", talkerIndex, state_ );
 		
 		// If we are the host, let the other clients know about the headset state of this peer
 		if( IsHost() )
@@ -911,7 +911,7 @@ void idLobby::HandleHeadsetStateChange( int fromPeer, idBitMsg& msg )
 			idBitMsg outMsg( buffer, sizeof( buffer ) );
 			outMsg.WriteLong( 1 );
 			lobbyUserID.WriteToMsg( outMsg );
-			outMsg.WriteBool( state );
+			outMsg.WriteBool( state_ );
 			
 			for( int j = 0; j < peers.Num(); ++j )
 			{

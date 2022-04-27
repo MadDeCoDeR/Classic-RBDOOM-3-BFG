@@ -250,7 +250,7 @@ void idLobbyBackendDirect::SetInGame( bool value )
 idLobbyBackendDirect::RegisterUser
 ========================
 */
-void idLobbyBackendDirect::RegisterUser( lobbyUser_t* user, bool isLocal )
+void idLobbyBackendDirect::RegisterUser( lobbyUser_t* user, bool _isLocal )
 {
 }
 
@@ -259,6 +259,6 @@ void idLobbyBackendDirect::RegisterUser( lobbyUser_t* user, bool isLocal )
 idLobbyBackendDirect::UnregisterUser
 ========================
 */
-void idLobbyBackendDirect::UnregisterUser( lobbyUser_t* user, bool isLocal )
+void idLobbyBackendDirect::UnregisterUser( lobbyUser_t* user, bool _isLocal )
 {
 }

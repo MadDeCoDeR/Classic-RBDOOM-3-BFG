@@ -970,22 +970,22 @@ void idAASReach::Reachability_WalkOffLedge( int areaNum )
 idAASReach::FlagReachableAreas
 ================
 */
-void idAASReach::FlagReachableAreas( idAASFileLocal* file )
+void idAASReach::FlagReachableAreas( idAASFileLocal* _file )
 {
 	int i, numReachableAreas;
 	
 	numReachableAreas = 0;
-	for( i = 1; i < file->areas.Num(); i++ )
+	for( i = 1; i < _file->areas.Num(); i++ )
 	{
 	
-		if( ( file->areas[i].flags & ( AREA_FLOOR | AREA_LADDER ) ) ||
-				( file->areas[i].contents & AREACONTENTS_WATER ) )
+		if( ( _file->areas[i].flags & ( AREA_FLOOR | AREA_LADDER ) ) ||
+				( _file->areas[i].contents & AREACONTENTS_WATER ) )
 		{
-			file->areas[i].flags |= AREA_REACHABLE_WALK;
+			_file->areas[i].flags |= AREA_REACHABLE_WALK;
 		}
-		if( file->GetSettings().allowFlyReachabilities )
+		if( _file->GetSettings().allowFlyReachabilities )
 		{
-			file->areas[i].flags |= AREA_REACHABLE_FLY;
+			_file->areas[i].flags |= AREA_REACHABLE_FLY;
 		}
 		numReachableAreas++;
 	}
@@ -998,28 +998,28 @@ void idAASReach::FlagReachableAreas( idAASFileLocal* file )
 idAASReach::Build
 ================
 */
-bool idAASReach::Build( const idMapFile* mapFile, idAASFileLocal* file )
+bool idAASReach::Build( const idMapFile* _mapFile, idAASFileLocal* _file )
 {
 	int i, j, lastPercent, percent;
 	
-	this->mapFile = mapFile;
-	this->file = file;
+	this->mapFile = _mapFile;
+	this->file = _file;
 	numReachabilities = 0;
 	
 	common->Printf( "[Reachability]\n" );
 	
 	// delete all existing reachabilities
-	file->DeleteReachabilities();
+	_file->DeleteReachabilities();
 	
-	FlagReachableAreas( file );
+	FlagReachableAreas( _file );
 	
-	for( i = 1; i < file->areas.Num(); i++ )
+	for( i = 1; i < _file->areas.Num(); i++ )
 	{
-		if( !( file->areas[i].flags & AREA_REACHABLE_WALK ) )
+		if( !( _file->areas[i].flags & AREA_REACHABLE_WALK ) )
 		{
 			continue;
 		}
-		if( file->GetSettings().allowSwimReachabilities )
+		if( _file->GetSettings().allowSwimReachabilities )
 		{
 			Reachability_Swim( i );
 		}
@@ -1027,22 +1027,22 @@ bool idAASReach::Build( const idMapFile* mapFile, idAASFileLocal* file )
 	}
 	
 	lastPercent = -1;
-	for( i = 1; i < file->areas.Num(); i++ )
+	for( i = 1; i < _file->areas.Num(); i++ )
 	{
 	
-		if( !( file->areas[i].flags & AREA_REACHABLE_WALK ) )
+		if( !( _file->areas[i].flags & AREA_REACHABLE_WALK ) )
 		{
 			continue;
 		}
 		
-		for( j = 0; j < file->areas.Num(); j++ )
+		for( j = 0; j < _file->areas.Num(); j++ )
 		{
 			if( i == j )
 			{
 				continue;
 			}
 			
-			if( !( file->areas[j].flags & AREA_REACHABLE_WALK ) )
+			if( !( _file->areas[j].flags & AREA_REACHABLE_WALK ) )
 			{
 				continue;
 			}
@@ -1059,7 +1059,7 @@ bool idAASReach::Build( const idMapFile* mapFile, idAASFileLocal* file )
 		
 		//Reachability_WalkOffLedge( i );
 		
-		percent = 100 * i / file->areas.Num();
+		percent = 100 * i / _file->areas.Num();
 		if( percent > lastPercent )
 		{
 			common->Printf( "\r%6d%%", percent );
@@ -1067,15 +1067,15 @@ bool idAASReach::Build( const idMapFile* mapFile, idAASFileLocal* file )
 		}
 	}
 	
-	if( file->GetSettings().allowFlyReachabilities )
+	if( _file->GetSettings().allowFlyReachabilities )
 	{
-		for( i = 1; i < file->areas.Num(); i++ )
+		for( i = 1; i < _file->areas.Num(); i++ )
 		{
 			Reachability_Fly( i );
 		}
 	}
 	
-	file->LinkReversedReachability();
+	_file->LinkReversedReachability();
 	
 	common->Printf( "\r%6d reachabilities\n", numReachabilities );
 	

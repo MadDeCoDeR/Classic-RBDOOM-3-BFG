@@ -98,7 +98,7 @@ void idFieldWindow::Draw( int time, float x, float y )
 	{
 		CalcPaintOffset( len );
 	}
-	idRectangle rect = textRect;
+	idRectangle rect_ = textRect;
 	if( paintOffset >= len )
 	{
 		paintOffset = 0;
@@ -107,6 +107,6 @@ void idFieldWindow::Draw( int time, float x, float y )
 	{
 		cursorPos = len;
 	}
-	dc->DrawText( &text[paintOffset], scale, 0, foreColor, rect, false, ( ( flags & WIN_FOCUS ) || showCursor ) ? cursorPos - paintOffset : -1 );
+	dc->DrawText( &text[paintOffset], scale, 0, foreColor, rect_, false, ( ( flags & WIN_FOCUS ) || showCursor ) ? cursorPos - paintOffset : -1 );
 }
 

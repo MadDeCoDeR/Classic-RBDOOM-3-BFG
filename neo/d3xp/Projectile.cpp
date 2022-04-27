@@ -224,7 +224,7 @@ idEntity* idProjectile::GetOwner() const
 idProjectile::Create
 ================
 */
-void idProjectile::Create( idEntity* owner, const idVec3& start, const idVec3& dir )
+void idProjectile::Create( idEntity* _owner, const idVec3& start, const idVec3& dir )
 {
 	idDict		args;
 	idStr		shaderName;
@@ -244,9 +244,9 @@ void idProjectile::Create( idEntity* owner, const idVec3& start, const idVec3& d
 	physicsObj.SetOrigin( start );
 	physicsObj.SetAxis( axis );
 	
-	physicsObj.GetClipModel()->SetOwner( owner );
+	physicsObj.GetClipModel()->SetOwner( _owner );
 	
-	this->owner = owner;
+	this->owner = _owner;
 	
 	memset( &renderLight, 0, sizeof( renderLight ) );
 	shaderName = spawnArgs.GetString( "mtr_light_shader" );
@@ -1450,9 +1450,9 @@ int idProjectile::GetProjectileState()
 idProjectile::Event_CreateProjectile
 ================
 */
-void idProjectile::Event_CreateProjectile( idEntity* owner, const idVec3& start, const idVec3& dir )
+void idProjectile::Event_CreateProjectile( idEntity* _owner, const idVec3& start, const idVec3& dir )
 {
-	Create( owner, start, dir );
+	Create( _owner, start, dir );
 }
 
 /*
@@ -2806,13 +2806,13 @@ void idDebris::Spawn()
 idDebris::Create
 ================
 */
-void idDebris::Create( idEntity* owner, const idVec3& start, const idMat3& axis )
+void idDebris::Create( idEntity* _owner, const idVec3& start, const idMat3& axis )
 {
 	Unbind();
 	GetPhysics()->SetOrigin( start );
 	GetPhysics()->SetAxis( axis );
 	GetPhysics()->SetContents( 0 );
-	this->owner = owner;
+	this->owner = _owner;
 	smokeFly = NULL;
 	smokeFlyTime = 0;
 	sndBounce = NULL;

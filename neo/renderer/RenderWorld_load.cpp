@@ -141,7 +141,7 @@ extern idCVar binaryLoadRenderModels;
 idRenderWorldLocal::ParseModel
 ================
 */
-idRenderModel* idRenderWorldLocal::ParseModel( idLexer* src, const char* mapName, ID_TIME_T mapTimeStamp, idFile* fileOut )
+idRenderModel* idRenderWorldLocal::ParseModel( idLexer* src, const char* _mapName, ID_TIME_T _mapTimeStamp, idFile* fileOut )
 {
 	idToken token;
 	
@@ -300,7 +300,7 @@ idRenderModel* idRenderWorldLocal::ParseModel( idLexer* src, const char* mapName
 	
 	if( fileOut != NULL && model->SupportsBinaryModel() && binaryLoadRenderModels.GetBool() )
 	{
-		model->WriteBinaryModel( fileOut, &mapTimeStamp );
+		model->WriteBinaryModel( fileOut, &_mapTimeStamp );
 	}
 	
 	return model;

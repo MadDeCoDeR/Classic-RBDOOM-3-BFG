@@ -4301,14 +4301,14 @@ void idCollisionModelManagerLocal::BuildModels( const idMapFile* mapFile )
 idCollisionModelManagerLocal::Preload
 ================
 */
-void idCollisionModelManagerLocal::Preload( const char* mapName )
+void idCollisionModelManagerLocal::Preload( const char* _mapName )
 {
 
 	if( !preLoad_Collision.GetBool() )
 	{
 		return;
 	}
-	idStrStatic< MAX_OSPATH > manifestName = mapName;
+	idStrStatic< MAX_OSPATH > manifestName = _mapName;
 	manifestName.Replace( "game/", "maps/" );
 	manifestName.Replace( "maps/maps/", "maps/" );
 	manifestName.SetFileExtension( ".preload" );

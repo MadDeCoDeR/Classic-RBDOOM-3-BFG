@@ -299,8 +299,8 @@ void idSoundSample_XAudio2::LoadResource()
 	return;
 }
 //GK:Begin
-bool			idSoundSample_XAudio2::LoadAll(const idStr& name) { //GK:Decode and Demux pretty much any other audio file we are about to load
-	idFileLocal f(fileSystem->OpenFileRead(name));
+bool			idSoundSample_XAudio2::LoadAll(const idStr& _name) { //GK:Decode and Demux pretty much any other audio file we are about to load
+	idFileLocal f(fileSystem->OpenFileRead(_name));
 	if (f == NULL)
 	{
 		return false;
@@ -585,10 +585,10 @@ void idSoundSample_XAudio2::FreeData()
 idSoundSample_XAudio2::LoadAmplitude
 ========================
 */
-bool idSoundSample_XAudio2::LoadAmplitude( const idStr& name )
+bool idSoundSample_XAudio2::LoadAmplitude( const idStr& _name )
 {
 	amplitude.Clear();
-	idFileLocal f( fileSystem->OpenFileRead( name ) );
+	idFileLocal f( fileSystem->OpenFileRead( _name ) );
 	if( f == NULL )
 	{
 		return false;

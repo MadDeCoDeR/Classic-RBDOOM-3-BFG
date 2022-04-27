@@ -431,7 +431,7 @@ bool idBrush::FromWinding( const idWinding& w, const idPlane& windingPlane )
 idBrush::FromBounds
 ============
 */
-bool idBrush::FromBounds( const idBounds& bounds )
+bool idBrush::FromBounds( const idBounds& _bounds )
 {
 	int axis, dir;
 	idVec3 normal;
@@ -444,7 +444,7 @@ bool idBrush::FromBounds( const idBounds& bounds )
 			normal = vec3_origin;
 			normal[axis] = dir;
 			plane.SetNormal( normal );
-			plane.SetDist( dir * bounds[( dir == 1 )][axis] );
+			plane.SetDist( dir * _bounds[( dir == 1 )][axis] );
 			sides.Append( new idBrushSide( plane, -1 ) );
 		}
 	}
@@ -1108,7 +1108,7 @@ void idBrush::AddBevelsForAxialBox()
 idBrush::ExpandForAxialBox
 ============
 */
-void idBrush::ExpandForAxialBox( const idBounds& bounds )
+void idBrush::ExpandForAxialBox( const idBounds& _bounds )
 {
 	int i, j;
 	idBrushSide* side;
@@ -1124,11 +1124,11 @@ void idBrush::ExpandForAxialBox( const idBounds& bounds )
 		{
 			if( side->plane.Normal()[j] > 0.0f )
 			{
-				v[j] = bounds[0][j];
+				v[j] = _bounds[0][j];
 			}
 			else
 			{
-				v[j] = bounds[1][j];
+				v[j] = _bounds[1][j];
 			}
 		}
 		

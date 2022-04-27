@@ -141,12 +141,12 @@ params:	inPtr		- input image, 4 bytes per pixel
 paramO:	colorBlock	- 4*4 output tile, 4 bytes per pixel
 ========================
 */
-ID_INLINE void idDxtEncoder::ExtractBlock_SSE2( const byte* inPtr, int width, byte* colorBlock ) const
+ID_INLINE void idDxtEncoder::ExtractBlock_SSE2( const byte* inPtr, int _width, byte* colorBlock ) const
 {
-	*( ( __m128i* )( &colorBlock[ 0] ) ) = _mm_load_si128( ( __m128i* )( inPtr + width * 4 * 0 ) );
-	*( ( __m128i* )( &colorBlock[16] ) ) = _mm_load_si128( ( __m128i* )( inPtr + width * 4 * 1 ) );
-	*( ( __m128i* )( &colorBlock[32] ) ) = _mm_load_si128( ( __m128i* )( inPtr + width * 4 * 2 ) );
-	*( ( __m128i* )( &colorBlock[48] ) ) = _mm_load_si128( ( __m128i* )( inPtr + width * 4 * 3 ) );
+	*( ( __m128i* )( &colorBlock[ 0] ) ) = _mm_load_si128( ( __m128i* )( inPtr + _width * 4 * 0 ) );
+	*( ( __m128i* )( &colorBlock[16] ) ) = _mm_load_si128( ( __m128i* )( inPtr + _width * 4 * 1 ) );
+	*( ( __m128i* )( &colorBlock[32] ) ) = _mm_load_si128( ( __m128i* )( inPtr + _width * 4 * 2 ) );
+	*( ( __m128i* )( &colorBlock[48] ) ) = _mm_load_si128( ( __m128i* )( inPtr + _width * 4 * 3 ) );
 }
 
 /*
@@ -940,27 +940,27 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressImageDXT1Fast_SSE2( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressImageDXT1Fast_SSE2( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte minColor[4] );
 	ALIGN16( byte maxColor[4] );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		commonLocal.LoadPacifierBinarizeProgressIncrement( width * 4 );
+		commonLocal.LoadPacifierBinarizeProgressIncrement( _width * 4 );
 		
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
-			ExtractBlock_SSE2( inBuf + i * 4, width, block );
+			ExtractBlock_SSE2( inBuf + i * 4, _width, block );
 			GetMinMaxBBox_SSE2( block, minColor, maxColor );
 			InsetColorsBBox_SSE2( minColor, maxColor );
 			
@@ -976,14 +976,14 @@ void idDxtEncoder::CompressImageDXT1Fast_SSE2( const byte* inBuf, byte* outBuf, 
 #ifdef TEST_COMPRESSION
 	int tmpDstPadding = dstPadding;
 	dstPadding = 0;
-	byte* testOutBuf = ( byte* ) _alloca16( width * height / 2 );
-	CompressImageDXT1Fast_Generic( inBuf, testOutBuf, width, height );
-	for( int j = 0; j < height / 4; j++ )
+	byte* testOutBuf = ( byte* ) _alloca16( _width * _height / 2 );
+	CompressImageDXT1Fast_Generic( inBuf, testOutBuf, _width, _height );
+	for( int j = 0; j < _height / 4; j++ )
 	{
-		for( int i = 0; i < width / 4; i++ )
+		for( int i = 0; i < _width / 4; i++ )
 		{
-			byte* ptr1 = outBuf + ( j * width / 4 + i ) * 8 + j * tmpDstPadding;
-			byte* ptr2 = testOutBuf + ( j * width / 4 + i ) * 8;
+			byte* ptr1 = outBuf + ( j * _width / 4 + i ) * 8 + j * tmpDstPadding;
+			byte* ptr2 = testOutBuf + ( j * _width / 4 + i ) * 8;
 			for( int k = 0; k < 8; k++ )
 			{
 				assert( ptr1[k] == ptr2[k] );
@@ -1004,25 +1004,25 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressImageDXT1AlphaFast_SSE2( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressImageDXT1AlphaFast_SSE2( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte minColor[4] );
 	ALIGN16( byte maxColor[4] );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		commonLocal.LoadPacifierBinarizeProgressIncrement( width * 4 );
-		for( int i = 0; i < width; i += 4 )
+		commonLocal.LoadPacifierBinarizeProgressIncrement( _width * 4 );
+		for( int i = 0; i < _width; i += 4 )
 		{
-			ExtractBlock_SSE2( inBuf + i * 4, width, block );
+			ExtractBlock_SSE2( inBuf + i * 4, _width, block );
 			GetMinMaxBBox_SSE2( block, minColor, maxColor );
 			byte minAlpha = minColor[3];
 			InsetColorsBBox_SSE2( minColor, maxColor );
@@ -1047,14 +1047,14 @@ void idDxtEncoder::CompressImageDXT1AlphaFast_SSE2( const byte* inBuf, byte* out
 #ifdef TEST_COMPRESSION
 	int tmpDstPadding = dstPadding;
 	dstPadding = 0;
-	byte* testOutBuf = ( byte* ) _alloca16( width * height / 2 );
-	CompressImageDXT1AlphaFast_Generic( inBuf, testOutBuf, width, height );
-	for( int j = 0; j < height / 4; j++ )
+	byte* testOutBuf = ( byte* ) _alloca16( _width * _height / 2 );
+	CompressImageDXT1AlphaFast_Generic( inBuf, testOutBuf, _width, _height );
+	for( int j = 0; j < _height / 4; j++ )
 	{
-		for( int i = 0; i < width / 4; i++ )
+		for( int i = 0; i < _width / 4; i++ )
 		{
-			byte* ptr1 = outBuf + ( j * width / 4 + i ) * 8 + j * tmpDstPadding;
-			byte* ptr2 = testOutBuf + ( j * width / 4 + i ) * 8;
+			byte* ptr1 = outBuf + ( j * _width / 4 + i ) * 8 + j * tmpDstPadding;
+			byte* ptr2 = testOutBuf + ( j * _width / 4 + i ) * 8;
 			for( int k = 0; k < 8; k++ )
 			{
 				assert( ptr1[k] == ptr2[k] );
@@ -1075,24 +1075,24 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressImageDXT5Fast_SSE2( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressImageDXT5Fast_SSE2( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte minColor[4] );
 	ALIGN16( byte maxColor[4] );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
-			ExtractBlock_SSE2( inBuf + i * 4, width, block );
+			ExtractBlock_SSE2( inBuf + i * 4, _width, block );
 			GetMinMaxBBox_SSE2( block, minColor, maxColor );
 			InsetColorsBBox_SSE2( minColor, maxColor );
 			
@@ -1113,14 +1113,14 @@ void idDxtEncoder::CompressImageDXT5Fast_SSE2( const byte* inBuf, byte* outBuf, 
 #ifdef TEST_COMPRESSION
 	int tmpDstPadding = dstPadding;
 	dstPadding = 0;
-	byte* testOutBuf = ( byte* ) _alloca16( width * height );
-	CompressImageDXT5Fast_Generic( inBuf, testOutBuf, width, height );
-	for( int j = 0; j < height / 4; j++ )
+	byte* testOutBuf = ( byte* ) _alloca16( _width * _height );
+	CompressImageDXT5Fast_Generic( inBuf, testOutBuf, _width, _height );
+	for( int j = 0; j < _height / 4; j++ )
 	{
-		for( int i = 0; i < width / 4; i++ )
+		for( int i = 0; i < _width / 4; i++ )
 		{
-			byte* ptr1 = outBuf + ( j * width / 4 + i ) * 16 + j * tmpDstPadding;
-			byte* ptr2 = testOutBuf + ( j * width / 4 + i ) * 16;
+			byte* ptr1 = outBuf + ( j * _width / 4 + i ) * 16 + j * tmpDstPadding;
+			byte* ptr2 = testOutBuf + ( j * _width / 4 + i ) * 16;
 			for( int k = 0; k < 16; k++ )
 			{
 				assert( ptr1[k] == ptr2[k] );
@@ -1350,27 +1350,27 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressYCoCgDXT5Fast_SSE2( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressYCoCgDXT5Fast_SSE2( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte minColor[4] );
 	ALIGN16( byte maxColor[4] );
 	
 	//assert( HasConstantValuePer4x4Block( inBuf, width, height, 2 ) );
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		commonLocal.LoadPacifierBinarizeProgressIncrement( width * 4 );
+		commonLocal.LoadPacifierBinarizeProgressIncrement( _width * 4 );
 		
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
-			ExtractBlock_SSE2( inBuf + i * 4, width, block );
+			ExtractBlock_SSE2( inBuf + i * 4, _width, block );
 			GetMinMaxBBox_SSE2( block, minColor, maxColor );
 			
 			ScaleYCoCg_SSE2( block, minColor, maxColor );
@@ -1394,14 +1394,14 @@ void idDxtEncoder::CompressYCoCgDXT5Fast_SSE2( const byte* inBuf, byte* outBuf, 
 #ifdef TEST_COMPRESSION
 	int tmpDstPadding = dstPadding;
 	dstPadding = 0;
-	byte* testOutBuf = ( byte* ) _alloca16( width * height );
-	CompressYCoCgDXT5Fast_Generic( inBuf, testOutBuf, width, height );
-	for( int j = 0; j < height / 4; j++ )
+	byte* testOutBuf = ( byte* ) _alloca16( _width * _height );
+	CompressYCoCgDXT5Fast_Generic( inBuf, testOutBuf, _width, _height );
+	for( int j = 0; j < _height / 4; j++ )
 	{
-		for( int i = 0; i < width / 4; i++ )
+		for( int i = 0; i < _width / 4; i++ )
 		{
-			byte* ptr1 = outBuf + ( j * width / 4 + i ) * 16 + j * tmpDstPadding;
-			byte* ptr2 = testOutBuf + ( j * width / 4 + i ) * 16;
+			byte* ptr1 = outBuf + ( j * _width / 4 + i ) * 16 + j * tmpDstPadding;
+			byte* ptr2 = testOutBuf + ( j * _width / 4 + i ) * 16;
 			for( int k = 0; k < 16; k++ )
 			{
 				assert( ptr1[k] == ptr2[k] );
@@ -1576,26 +1576,26 @@ params:	width		- width of image
 params:	height		- height of image
 ========================
 */
-void idDxtEncoder::CompressNormalMapDXT5Fast_SSE2( const byte* inBuf, byte* outBuf, int width, int height )
+void idDxtEncoder::CompressNormalMapDXT5Fast_SSE2( const byte* inBuf, byte* outBuf, int _width, int _height )
 {
 	ALIGN16( byte block[64] );
 	ALIGN16( byte normal1[4] );
 	ALIGN16( byte normal2[4] );
 	
-	assert( width >= 4 && ( width & 3 ) == 0 );
-	assert( height >= 4 && ( height & 3 ) == 0 );
+	assert( _width >= 4 && ( _width & 3 ) == 0 );
+	assert( _height >= 4 && ( _height & 3 ) == 0 );
 	
-	this->width = width;
-	this->height = height;
+	this->width = _width;
+	this->height = _height;
 	this->outData = outBuf;
 	
-	for( int j = 0; j < height; j += 4, inBuf += width * 4 * 4 )
+	for( int j = 0; j < _height; j += 4, inBuf += _width * 4 * 4 )
 	{
-		commonLocal.LoadPacifierBinarizeProgressIncrement( width * 4 );
+		commonLocal.LoadPacifierBinarizeProgressIncrement( _width * 4 );
 		
-		for( int i = 0; i < width; i += 4 )
+		for( int i = 0; i < _width; i += 4 )
 		{
-			ExtractBlock_SSE2( inBuf + i * 4, width, block );
+			ExtractBlock_SSE2( inBuf + i * 4, _width, block );
 			GetMinMaxBBox_SSE2( block, normal1, normal2 );
 			InsetNormalsBBoxDXT5_SSE2( normal1, normal2 );
 			
@@ -1616,14 +1616,14 @@ void idDxtEncoder::CompressNormalMapDXT5Fast_SSE2( const byte* inBuf, byte* outB
 #ifdef TEST_COMPRESSION
 	int tmpDstPadding = dstPadding;
 	dstPadding = 0;
-	byte* testOutBuf = ( byte* ) _alloca16( width * height );
-	CompressNormalMapDXT5Fast_Generic( inBuf, testOutBuf, width, height );
-	for( int j = 0; j < height / 4; j++ )
+	byte* testOutBuf = ( byte* ) _alloca16( _width * _height );
+	CompressNormalMapDXT5Fast_Generic( inBuf, testOutBuf, _width, _height );
+	for( int j = 0; j < _height / 4; j++ )
 	{
-		for( int i = 0; i < width / 4; i++ )
+		for( int i = 0; i < _width / 4; i++ )
 		{
-			byte* ptr1 = outBuf + ( j * width / 4 + i ) * 16 + j * tmpDstPadding;
-			byte* ptr2 = testOutBuf + ( j * width / 4 + i ) * 16;
+			byte* ptr1 = outBuf + ( j * _width / 4 + i ) * 16 + j * tmpDstPadding;
+			byte* ptr2 = testOutBuf + ( j * _width / 4 + i ) * 16;
 			for( int k = 0; k < 16; k++ )
 			{
 				assert( ptr1[k] == ptr2[k] );

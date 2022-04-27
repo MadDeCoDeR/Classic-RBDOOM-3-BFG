@@ -365,13 +365,13 @@ void idClipModel::LoadModel( const idTraceModel& trm, bool persistantThroughSave
 idClipModel::LoadModel
 ================
 */
-void idClipModel::LoadModel( const int renderModelHandle )
+void idClipModel::LoadModel( const int _renderModelHandle )
 {
 	collisionModelHandle = 0;
-	this->renderModelHandle = renderModelHandle;
-	if( renderModelHandle != -1 )
+	this->renderModelHandle = _renderModelHandle;
+	if( _renderModelHandle != -1 )
 	{
-		const renderEntity_t* renderEntity = gameRenderWorld->GetRenderEntity( renderModelHandle );
+		const renderEntity_t* renderEntity = gameRenderWorld->GetRenderEntity( _renderModelHandle );
 		if( renderEntity )
 		{
 			bounds = renderEntity->bounds;
@@ -762,17 +762,17 @@ void idClipModel::Link( idClip& clp )
 idClipModel::Link
 ===============
 */
-void idClipModel::Link( idClip& clp, idEntity* ent, int newId, const idVec3& newOrigin, const idMat3& newAxis, int renderModelHandle )
+void idClipModel::Link( idClip& clp, idEntity* ent, int newId, const idVec3& newOrigin, const idMat3& newAxis, int _renderModelHandle )
 {
 
 	this->entity = ent;
 	this->id = newId;
 	this->origin = newOrigin;
 	this->axis = newAxis;
-	if( renderModelHandle != -1 )
+	if( _renderModelHandle != -1 )
 	{
-		this->renderModelHandle = renderModelHandle;
-		const renderEntity_t* renderEntity = gameRenderWorld->GetRenderEntity( renderModelHandle );
+		this->renderModelHandle = _renderModelHandle;
+		const renderEntity_t* renderEntity = gameRenderWorld->GetRenderEntity( _renderModelHandle );
 		if( renderEntity )
 		{
 			this->bounds = renderEntity->bounds;
@@ -1690,7 +1690,7 @@ idClip::Contacts
 int idClip::Contacts( contactInfo_t* contacts, const int maxContacts, const idVec3& start, const idVec6& dir, const float depth,
 					  const idClipModel* mdl, const idMat3& trmAxis, int contentMask, const idEntity* passEntity )
 {
-	int i, j, num, n, numContacts;
+	int i, j, num, n, numContacts_;
 	idClipModel* touch, *clipModelList[MAX_GENTITIES];
 	idBounds traceBounds;
 	const idTraceModel* trm;
@@ -1701,22 +1701,22 @@ int idClip::Contacts( contactInfo_t* contacts, const int maxContacts, const idVe
 	{
 		// test world
 		idClip::numContacts++;
-		numContacts = collisionModelManager->Contacts( contacts, maxContacts, start, dir, depth, trm, trmAxis, contentMask, 0, vec3_origin, mat3_default );
+		numContacts_ = collisionModelManager->Contacts( contacts, maxContacts, start, dir, depth, trm, trmAxis, contentMask, 0, vec3_origin, mat3_default );
 	}
 	else
 	{
-		numContacts = 0;
+		numContacts_ = 0;
 	}
 	
-	for( i = 0; i < numContacts; i++ )
+	for( i = 0; i < numContacts_; i++ )
 	{
 		contacts[i].entityNum = ENTITYNUM_WORLD;
 		contacts[i].id = 0;
 	}
 	
-	if( numContacts >= maxContacts )
+	if( numContacts_ >= maxContacts )
 	{
-		return numContacts;
+		return numContacts_;
 	}
 	
 	if( !trm )
@@ -1747,24 +1747,24 @@ int idClip::Contacts( contactInfo_t* contacts, const int maxContacts, const idVe
 		}
 		
 		idClip::numContacts++;
-		n = collisionModelManager->Contacts( contacts + numContacts, maxContacts - numContacts,
+		n = collisionModelManager->Contacts( contacts + numContacts_, maxContacts - numContacts_,
 											 start, dir, depth, trm, trmAxis, contentMask,
 											 touch->Handle(), touch->origin, touch->axis );
 											 
 		for( j = 0; j < n; j++ )
 		{
-			contacts[numContacts].entityNum = touch->entity->entityNumber;
-			contacts[numContacts].id = touch->id;
-			numContacts++;
+			contacts[numContacts_].entityNum = touch->entity->entityNumber;
+			contacts[numContacts_].id = touch->id;
+			numContacts_++;
 		}
 		
-		if( numContacts >= maxContacts )
+		if( numContacts_ >= maxContacts )
 		{
 			break;
 		}
 	}
 	
-	return numContacts;
+	return numContacts_;
 }
 
 /*

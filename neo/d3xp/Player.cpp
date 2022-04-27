@@ -2891,9 +2891,9 @@ void idPlayer::Restore( idRestoreGame* savefile )
 		WeaponToggle_t newToggle;
 		memset( &newToggle, 0, sizeof( newToggle ) );
 		
-		idStr name;
-		savefile->ReadString( name );
-		strcpy( newToggle.name, name.c_str() );
+		idStr name_;
+		savefile->ReadString( name_ );
+		strcpy( newToggle.name, name_.c_str() );
 		
 		int indexCount;
 		savefile->ReadInt( indexCount );
@@ -3095,14 +3095,14 @@ use normal spawn selection.
 void idPlayer::SelectInitialSpawnPoint( idVec3& origin, idAngles& angles )
 {
 	idEntity* spot;
-	idStr skin;
+	idStr skin_;
 	
 	spot = gameLocal.SelectInitialSpawnPoint( this );
 	
 	// set the player skin from the spawn location
-	if( spot->spawnArgs.GetString( "skin", NULL, skin ) )
+	if( spot->spawnArgs.GetString( "skin", NULL, skin_ ) )
 	{
-		spawnArgs.Set( "spawn_skin", skin );
+		spawnArgs.Set( "spawn_skin", skin_ );
 	}
 	
 	// activate the spawn locations targets
@@ -3377,10 +3377,10 @@ void idPlayer::UpdateHudStats( idMenuHandler_HUD* _hudManager )
 	if( _hudManager && _hudManager->GetHud() )
 	{
 	
-		idMenuScreen_HUD* hud = _hudManager->GetHud();
-		hud->UpdateHealthArmor( this );
-		hud->UpdateStamina( this );
-		hud->UpdateWeaponInfo( this );
+		idMenuScreen_HUD* hud_ = _hudManager->GetHud();
+		hud_->UpdateHealthArmor( this );
+		hud_->UpdateStamina( this );
+		hud_->UpdateWeaponInfo( this );
 		
 		if( inventory.weaponPulse )
 		{
@@ -3390,13 +3390,13 @@ void idPlayer::UpdateHudStats( idMenuHandler_HUD* _hudManager )
 		
 		if( gameLocal.mpGame.IsGametypeFlagBased() )
 		{
-			hud->SetFlagState( 0, gameLocal.mpGame.GetFlagStatus( 0 ) );
-			hud->SetFlagState( 1, gameLocal.mpGame.GetFlagStatus( 1 ) );
+			hud_->SetFlagState( 0, gameLocal.mpGame.GetFlagStatus( 0 ) );
+			hud_->SetFlagState( 1, gameLocal.mpGame.GetFlagStatus( 1 ) );
 			
-			hud->SetTeamScore( 0, gameLocal.mpGame.GetFlagPoints( 0 ) );
-			hud->SetTeamScore( 1, gameLocal.mpGame.GetFlagPoints( 1 ) );
+			hud_->SetTeamScore( 0, gameLocal.mpGame.GetFlagPoints( 0 ) );
+			hud_->SetTeamScore( 1, gameLocal.mpGame.GetFlagPoints( 1 ) );
 			
-			hud->SetTeam( team );
+			hud_->SetTeam( team );
 		}
 		
 	}
@@ -3649,37 +3649,37 @@ void idPlayer::DrawHUD( idMenuHandler_HUD* _hudManager )
 		if( _hudManager && _hudManager->GetHud() )
 		{
 		
-			idMenuScreen_HUD* hud = _hudManager->GetHud();
+			idMenuScreen_HUD* hud_ = _hudManager->GetHud();
 			
 			if( weapon.GetEntity()->ShowCrosshair() && !IsGameStereoRendered() && pm_cursor.GetBool())
 			{
 				if( weapon.GetEntity()->GetGrabberState() == 1 || weapon.GetEntity()->GetGrabberState() == 2 )
 				{
-					hud->SetCursorState( this, CURSOR_GRABBER, 1 );
-					hud->SetCursorState( this, CURSOR_IN_COMBAT, 0 );
+					hud_->SetCursorState( this, CURSOR_GRABBER, 1 );
+					hud_->SetCursorState( this, CURSOR_IN_COMBAT, 0 );
 				}
 				else
 				{
-					hud->SetCursorState( this, CURSOR_GRABBER, 0 );
-					hud->SetCursorState( this, CURSOR_IN_COMBAT, 1 );
+					hud_->SetCursorState( this, CURSOR_GRABBER, 0 );
+					hud_->SetCursorState( this, CURSOR_IN_COMBAT, 1 );
 				}
 			}
 			else
 			{
-				hud->SetCursorState( this, CURSOR_NONE, 1 );
+				hud_->SetCursorState( this, CURSOR_NONE, 1 );
 			}
 			
-			hud->UpdateCursorState();
+			hud_->UpdateCursorState();
 			
 		}
 	}
 	else if( _hudManager && _hudManager->GetHud() )
 	{
 	
-		idMenuScreen_HUD* hud = _hudManager->GetHud();
+		idMenuScreen_HUD* hud_ = _hudManager->GetHud();
 		
-		hud->SetCursorState( this, CURSOR_NONE, 1 );
-		hud->UpdateCursorState();
+		hud_->SetCursorState( this, CURSOR_NONE, 1 );
+		hud_->UpdateCursorState();
 		if (pm_thirdPerson.GetBool()) {
 			pm_thirdPerson.SetBool(false);
 			istps = true;
@@ -4771,11 +4771,11 @@ bool idPlayer::GiveInventoryItem( idDict* item, unsigned int giveFlags )
 idPlayer::GiveInventoryItem
 ==============
 */
-bool idPlayer::GiveInventoryItem( const char* name )
+bool idPlayer::GiveInventoryItem( const char* _name )
 {
 	idDict args;
 	
-	args.Set( "classname", name );
+	args.Set( "classname", _name );
 	args.Set( "owner", this->name.c_str() );
 	gameLocal.SpawnEntityDef( args );
 	return true;
@@ -4984,14 +4984,14 @@ void idPlayer::GivePDA( const idDeclPDA* pda, const char* securityItem )
 idPlayer::FindInventoryItem
 ===============
 */
-idDict* idPlayer::FindInventoryItem( const char* name )
+idDict* idPlayer::FindInventoryItem( const char* _name )
 {
 	for( int i = 0; i < inventory.items.Num(); i++ )
 	{
 		const char* iname = inventory.items[i]->GetString( "inv_name" );
 		if( iname != NULL && *iname != '\0' )
 		{
-			if( idStr::Icmp( name, iname ) == 0 )
+			if( idStr::Icmp( _name, iname ) == 0 )
 			{
 				return inventory.items[i];
 			}
@@ -5029,14 +5029,14 @@ int idPlayer::GetNumInventoryItems()
 idPlayer::RemoveInventoryItem
 ===============
 */
-void idPlayer::RemoveInventoryItem( const char* name )
+void idPlayer::RemoveInventoryItem( const char* _name )
 {
 	//Hack for localization
-	if( !idStr::Icmp( name, "Pwr Cell" ) )
+	if( !idStr::Icmp( _name, "Pwr Cell" ) )
 	{
-		name = common->GetName( "#str_00101056" );
+		_name = common->GetName( "#str_00101056" );
 	}
-	idDict* item = FindInventoryItem( name );
+	idDict* item = FindInventoryItem( _name );
 	if( item )
 	{
 		RemoveInventoryItem( item );
@@ -9909,7 +9909,7 @@ would have killed the player, possibly allowing a "saving throw"
 =================
 */
 void idPlayer::CalcDamagePoints( idEntity* inflictor, idEntity* attacker, const idDict* damageDef,
-								 const float damageScale, const int location, int* health, int* armor )
+								 const float _damageScale, const int location, int* _health, int* armor )
 {
 	int		damage;
 	int		armorSave;
@@ -9943,7 +9943,7 @@ void idPlayer::CalcDamagePoints( idEntity* inflictor, idEntity* attacker, const 
 		}
 	}
 	
-	damage *= damageScale;
+	damage *= _damageScale;
 	
 	// always give half damage if hurting self
 	if( attacker == this )
@@ -10020,7 +10020,7 @@ void idPlayer::CalcDamagePoints( idEntity* inflictor, idEntity* attacker, const 
 		damage = 0;
 	}
 	
-	*health = damage;
+	*_health = damage;
 	*armor = armorSave;
 }
 
@@ -10207,7 +10207,7 @@ inflictor, attacker, dir, and point can be NULL for environmental effects
 ============
 */
 void idPlayer::Damage( idEntity* inflictor, idEntity* attacker, const idVec3& dir,
-					   const char* damageDefName, const float damageScale, const int location )
+					   const char* damageDefName, const float _damageScale, const int location )
 {
 	idVec3		kick;
 	int			damage;
@@ -10302,7 +10302,7 @@ void idPlayer::Damage( idEntity* inflictor, idEntity* attacker, const idVec3& di
 		return;
 	}
 	
-	CalcDamagePoints( inflictor, attacker, &damageDef->dict, damageScale, location, &damage, &armorSave );
+	CalcDamagePoints( inflictor, attacker, &damageDef->dict, _damageScale, location, &damage, &armorSave );
 	
 	// give feedback on the player view and audibly when armor is helping
 	if( armorSave )
@@ -10372,7 +10372,7 @@ void idPlayer::Damage( idEntity* inflictor, idEntity* attacker, const idVec3& di
 		msg.WriteShort( GetEntityNumber() );		// victim
 		msg.WriteVectorFloat( dir );
 		msg.WriteLong( damageDef->Index() );
-		msg.WriteFloat( damageScale );
+		msg.WriteFloat( _damageScale );
 		msg.WriteLong( location );
 		
 		idLobbyBase& lobby = session->GetActingGameStateLobbyBase();
@@ -11333,9 +11333,9 @@ void idPlayer::Event_DisableWeapon()
 idPlayer::Event_GiveInventoryItem
 ==================
 */
-void idPlayer::Event_GiveInventoryItem( const char* name )
+void idPlayer::Event_GiveInventoryItem( const char* _name )
 {
-	GiveInventoryItem( name );
+	GiveInventoryItem( _name );
 }
 
 /*
@@ -11343,9 +11343,9 @@ void idPlayer::Event_GiveInventoryItem( const char* name )
 idPlayer::Event_RemoveInventoryItem
 ==================
 */
-void idPlayer::Event_RemoveInventoryItem( const char* name )
+void idPlayer::Event_RemoveInventoryItem( const char* _name )
 {
-	RemoveInventoryItem( name );
+	RemoveInventoryItem( _name );
 }
 
 /*
@@ -11427,20 +11427,20 @@ void idPlayer::Event_StopHelltime( int mode )
 idPlayer::Event_WeaponAvailable
 ==================
 */
-void idPlayer::Event_WeaponAvailable( const char* name )
+void idPlayer::Event_WeaponAvailable( const char* _name )
 {
 
-	idThread::ReturnInt( WeaponAvailable( name ) ? 1 : 0 );
+	idThread::ReturnInt( WeaponAvailable( _name ) ? 1 : 0 );
 }
 
-bool idPlayer::WeaponAvailable( const char* name )
+bool idPlayer::WeaponAvailable( const char* _name )
 {
 	for( int i = 0; i < MAX_WEAPONS; i++ )
 	{
 		if( inventory.weapons & ( 1 << i ) )
 		{
 			const char* weap = spawnArgs.GetString( va( "def_weapon%d", i ) );
-			if( !idStr::Cmp( weap, name ) )
+			if( !idStr::Cmp( weap, _name ) )
 			{
 				return true;
 			}

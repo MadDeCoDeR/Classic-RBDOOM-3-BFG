@@ -59,7 +59,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "sound/snd_local.h"
 #include "sound/AVD.h"
 
-#pragma warning ( disable : 4244 )
+//#pragma warning ( disable : 4244 ) //GK: No longer thrown ???
 
 #define SFX_RATE		11050
 #define SFX_SAMPLETYPE		AL_FORMAT_MONO8

@@ -359,7 +359,7 @@ void idDragEntity::BindSelected()
 {
 	int num, largestNum;
 	idLexer lexer;
-	idToken type, bodyName;
+	idToken type, bodyName_;
 	idStr key, value, bindBodyName;
 	const idKeyValue* kv;
 	idAFEntity_Base* af;
@@ -390,11 +390,11 @@ void idDragEntity::BindSelected()
 		
 		lexer.LoadMemory( kv->GetValue(), kv->GetValue().Length(), kv->GetKey() );
 		lexer.ReadToken( &type );
-		lexer.ReadToken( &bodyName );
+		lexer.ReadToken( &bodyName_ );
 		lexer.FreeSource();
 		
 		// if there already exists a bind constraint for this body
-		if( bodyName.Icmp( bindBodyName ) == 0 )
+		if( bodyName_.Icmp( bindBodyName ) == 0 )
 		{
 			// delete the bind constraint
 			af->spawnArgs.Delete( kv->GetKey() );

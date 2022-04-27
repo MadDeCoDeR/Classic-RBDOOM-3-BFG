@@ -167,13 +167,13 @@ bool idAASFindCover::TestArea( const idAAS* aas, int areaNum )
 {
 	idVec3	areaCenter;
 	int		numPVSAreas;
-	int		PVSAreas[ idEntity::MAX_PVS_AREAS ];
+	int		PVSAreas_[ idEntity::MAX_PVS_AREAS ];
 	
 	areaCenter = aas->AreaCenter( areaNum );
 	areaCenter[ 2 ] += 1.0f;
 	
-	numPVSAreas = gameLocal.GetPvs()->GetPVSAreas( idBounds( areaCenter ).Expand( 16.0f ), PVSAreas, idEntity::MAX_PVS_AREAS );
-	if( !gameLocal.GetPvs()->InCurrentPVS( hidePVS, PVSAreas, numPVSAreas ) )
+	numPVSAreas = gameLocal.GetPvs()->GetPVSAreas( idBounds( areaCenter ).Expand( 16.0f ), PVSAreas_, idEntity::MAX_PVS_AREAS );
+	if( !gameLocal.GetPvs()->InCurrentPVS( hidePVS, PVSAreas_, numPVSAreas ) )
 	{
 		return true;
 	}
@@ -266,7 +266,7 @@ bool idAASFindAttackPosition::TestArea( const idAAS* aas, int areaNum )
 	idMat3	axis;
 	idVec3	areaCenter;
 	int		numPVSAreas;
-	int		PVSAreas[ idEntity::MAX_PVS_AREAS ];
+	int		PVSAreas_[ idEntity::MAX_PVS_AREAS ];
 	
 	areaCenter = aas->AreaCenter( areaNum );
 	areaCenter[ 2 ] += 1.0f;
@@ -277,8 +277,8 @@ bool idAASFindAttackPosition::TestArea( const idAAS* aas, int areaNum )
 		return false;
 	}
 	
-	numPVSAreas = gameLocal.GetPvs()->GetPVSAreas( idBounds( areaCenter ).Expand( 16.0f ), PVSAreas, idEntity::MAX_PVS_AREAS );
-	if( !gameLocal.GetPvs()->InCurrentPVS( targetPVS, PVSAreas, numPVSAreas ) )
+	numPVSAreas = gameLocal.GetPvs()->GetPVSAreas( idBounds( areaCenter ).Expand( 16.0f ), PVSAreas_, idEntity::MAX_PVS_AREAS );
+	if( !gameLocal.GetPvs()->InCurrentPVS( targetPVS, PVSAreas_, numPVSAreas ) )
 	{
 		return false;
 	}
@@ -760,10 +760,10 @@ void idAI::Restore( idRestoreGame* savefile )
 		funcEmitter_t newEmitter;
 		memset( &newEmitter, 0, sizeof( newEmitter ) );
 		
-		idStr name;
-		savefile->ReadString( name );
+		idStr name_;
+		savefile->ReadString( name_ );
 		
-		strcpy( newEmitter.name, name.c_str() );
+		strcpy( newEmitter.name, name_.c_str() );
 		
 		savefile->ReadJoint( newEmitter.joint );
 		savefile->ReadObject( reinterpret_cast<idClass*&>( newEmitter.particle ) );
@@ -4571,7 +4571,7 @@ void idAI::SetEnemy( idActor* newEnemy )
 idAI::FirstVisiblePointOnPath
 ============
 */
-idVec3 idAI::FirstVisiblePointOnPath( const idVec3 origin, const idVec3& target, int travelFlags ) const
+idVec3 idAI::FirstVisiblePointOnPath( const idVec3 origin, const idVec3& target, int _travelFlags ) const
 {
 	int i, areaNum, targetAreaNum, curAreaNum, travelTime;
 	idVec3 curOrigin;
@@ -4601,7 +4601,7 @@ idVec3 idAI::FirstVisiblePointOnPath( const idVec3 origin, const idVec3& target,
 	for( i = 0; i < 10; i++ )
 	{
 	
-		if( !aas->RouteToGoalArea( curAreaNum, curOrigin, targetAreaNum, travelFlags, travelTime, &reach ) )
+		if( !aas->RouteToGoalArea( curAreaNum, curOrigin, targetAreaNum, _travelFlags, travelTime, &reach ) )
 		{
 			break;
 		}
@@ -4761,9 +4761,9 @@ bool idAI::GetAimDir( const idVec3& firePos, idEntity* aimAtEnt, const idEntity*
 idAI::BeginAttack
 =====================
 */
-void idAI::BeginAttack( const char* name )
+void idAI::BeginAttack( const char* _name )
 {
-	attack = name;
+	attack = _name;
 	lastAttackTime = gameLocal.time;
 }
 
@@ -5591,10 +5591,10 @@ void idAI::TriggerFX( const char* joint, const char* fx )
 	}
 }
 
-idEntity* idAI::StartEmitter( const char* name, const char* joint, const char* particle )
+idEntity* idAI::StartEmitter( const char* _name, const char* joint, const char* particle )
 {
 
-	idEntity* existing = GetEmitter( name );
+	idEntity* existing = GetEmitter( _name );
 	if( existing )
 	{
 		return existing;
@@ -5646,7 +5646,7 @@ idEntity* idAI::StartEmitter( const char* name, const char* joint, const char* p
 	
 	//Keep a reference to the emitter so we can track it
 	funcEmitter_t newEmitter;
-	strcpy( newEmitter.name, name );
+	strcpy( newEmitter.name, _name );
 	newEmitter.particle = ( idFuncEmitter* )ent;
 	newEmitter.joint = jointNum;
 	funcEmitters.Set( newEmitter.name, newEmitter );
@@ -5659,10 +5659,10 @@ idEntity* idAI::StartEmitter( const char* name, const char* joint, const char* p
 	return newEmitter.particle;
 }
 
-idEntity* idAI::GetEmitter( const char* name )
+idEntity* idAI::GetEmitter( const char* _name )
 {
 	funcEmitter_t* emitter;
-	funcEmitters.Get( name, &emitter );
+	funcEmitters.Get( _name, &emitter );
 	if( emitter )
 	{
 		return emitter->particle;
@@ -5670,15 +5670,15 @@ idEntity* idAI::GetEmitter( const char* name )
 	return NULL;
 }
 
-void idAI::StopEmitter( const char* name )
+void idAI::StopEmitter( const char* _name )
 {
 	funcEmitter_t* emitter;
-	funcEmitters.Get( name, &emitter );
+	funcEmitters.Get( _name, &emitter );
 	if( emitter )
 	{
 		emitter->particle->Unbind();
 		emitter->particle->PostEventMS( &EV_Remove, 0 );
-		funcEmitters.Remove( name );
+		funcEmitters.Remove( _name );
 	}
 }
 

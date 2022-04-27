@@ -700,7 +700,7 @@ void idMenuScreen_Shell_Leaderboards::RefreshLeaderboard()
 	bool upArrow = false;
 	bool downArrow = false;
 	
-	int focusIndex = -1;
+	int focusIndex_ = -1;
 	idList< idList< idStr, TAG_IDLIB_LIST_MENU >, TAG_IDLIB_LIST_MENU > lbListings;
 	
 	if( !lbCache->IsLoadingNewLeaderboard() && lbCache->GetErrorCode() == LEADERBOARD_DISPLAY_ERROR_NONE )
@@ -722,7 +722,7 @@ void idMenuScreen_Shell_Leaderboards::RefreshLeaderboard()
 			
 			if( lbCache->GetEntryIndex() == addIndex )
 			{
-				focusIndex = addIndex;
+				focusIndex_ = addIndex;
 			}
 			
 			lbListings.Append( values );
@@ -745,9 +745,9 @@ void idMenuScreen_Shell_Leaderboards::RefreshLeaderboard()
 		lbHeading->SetStrokeInfo( true, 0.75f, 1.75f );
 	}
 	
-	if( focusIndex >= 0 )
+	if( focusIndex_ >= 0 )
 	{
-		options->SetFocusIndex( focusIndex );
+		options->SetFocusIndex( focusIndex_ );
 	}
 	
 	if( btnPageDwn != NULL && btnPageDwn->GetSprite() != NULL )
@@ -1128,9 +1128,9 @@ idLBRowBlock* idLBCache::FindFreeRowBlock()
 idLBCache::CallbackErrorToDisplayError
 ========================
 */
-leaderboardDisplayError_t idLBCache::CallbackErrorToDisplayError( leaderboardError_t errorCode )
+leaderboardDisplayError_t idLBCache::CallbackErrorToDisplayError( leaderboardError_t _errorCode )
 {
-	switch( errorCode )
+	switch( _errorCode )
 	{
 		case LEADERBOARD_ERROR_NONE:
 			return LEADERBOARD_DISPLAY_ERROR_NONE;

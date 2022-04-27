@@ -1982,7 +1982,7 @@ void idDeclAF::FreeData()
 idDeclAF::Finish
 ================
 */
-void idDeclAF::Finish( const getJointTransform_t GetJointTransform, const idJointMat* frame, void* model ) const
+void idDeclAF::Finish( const getJointTransform_t GetJointTransform, const idJointMat* frame, void* _model ) const
 {
 	int i;
 	
@@ -1990,21 +1990,21 @@ void idDeclAF::Finish( const getJointTransform_t GetJointTransform, const idJoin
 	for( i = 0; i < bodies.Num(); i++ )
 	{
 		idDeclAF_Body* body = bodies[i];
-		body->v1.Finish( name, GetJointTransform, frame, model );
-		body->v2.Finish( name, GetJointTransform, frame, model );
-		body->origin.Finish( name, GetJointTransform, frame, model );
-		body->frictionDirection.Finish( name, GetJointTransform, frame, model );
-		body->contactMotorDirection.Finish( name, GetJointTransform, frame, model );
+		body->v1.Finish( name, GetJointTransform, frame, _model );
+		body->v2.Finish( name, GetJointTransform, frame, _model );
+		body->origin.Finish( name, GetJointTransform, frame, _model );
+		body->frictionDirection.Finish( name, GetJointTransform, frame, _model );
+		body->contactMotorDirection.Finish( name, GetJointTransform, frame, _model );
 	}
 	for( i = 0; i < constraints.Num(); i++ )
 	{
 		idDeclAF_Constraint* constraint = constraints[i];
-		constraint->anchor.Finish( name, GetJointTransform, frame, model );
-		constraint->anchor2.Finish( name, GetJointTransform, frame, model );
-		constraint->shaft[0].Finish( name, GetJointTransform, frame, model );
-		constraint->shaft[1].Finish( name, GetJointTransform, frame, model );
-		constraint->axis.Finish( name, GetJointTransform, frame, model );
-		constraint->limitAxis.Finish( name, GetJointTransform, frame, model );
+		constraint->anchor.Finish( name, GetJointTransform, frame, _model );
+		constraint->anchor2.Finish( name, GetJointTransform, frame, _model );
+		constraint->shaft[0].Finish( name, GetJointTransform, frame, _model );
+		constraint->shaft[1].Finish( name, GetJointTransform, frame, _model );
+		constraint->axis.Finish( name, GetJointTransform, frame, _model );
+		constraint->limitAxis.Finish( name, GetJointTransform, frame, _model );
 	}
 }
 

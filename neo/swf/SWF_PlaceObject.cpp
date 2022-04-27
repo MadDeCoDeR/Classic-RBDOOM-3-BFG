@@ -43,7 +43,7 @@ void idSWFSpriteInstance::PlaceObject2( idSWFBitStream& bitstream )
 	c_PlaceObject2++;
 	
 	uint64 flags = bitstream.ReadU8();
-	int depth = bitstream.ReadU16();
+	int depth_ = bitstream.ReadU16();
 	
 	int characterID = -1;
 	if( ( flags & PlaceFlagHasCharacter ) != 0 )
@@ -56,10 +56,10 @@ void idSWFSpriteInstance::PlaceObject2( idSWFBitStream& bitstream )
 	if( ( flags & PlaceFlagMove ) != 0 )
 	{
 		// modify an existing entry
-		display = FindDisplayEntry( depth );
+		display = FindDisplayEntry( depth_ );
 		if( display == NULL )
 		{
-			idLib::Warning( "PlaceObject2: trying to modify entry %d, which doesn't exist", depth );
+			idLib::Warning( "PlaceObject2: trying to modify entry %d, which doesn't exist", depth_ );
 			return;
 		}
 		if( characterID >= 0 )
@@ -91,10 +91,10 @@ void idSWFSpriteInstance::PlaceObject2( idSWFBitStream& bitstream )
 			return;
 		}
 		// create a new entry
-		display = AddDisplayEntry( depth, characterID );
+		display = AddDisplayEntry( depth_, characterID );
 		if( display == NULL )
 		{
-			idLib::Warning( "PlaceObject2: trying to create a new entry at %d, but an item already exists there", depth );
+			idLib::Warning( "PlaceObject2: trying to create a new entry at %d, but an item already exists there", depth_ );
 			return;
 		}
 	}
@@ -112,15 +112,15 @@ void idSWFSpriteInstance::PlaceObject2( idSWFBitStream& bitstream )
 	}
 	if( ( flags & PlaceFlagHasName ) != 0 )
 	{
-		idStr name = bitstream.ReadString();
+		idStr name_ = bitstream.ReadString();
 		if( display->spriteInstance )
 		{
-			display->spriteInstance->name = name;
-			scriptObject->Set( name, display->spriteInstance->GetScriptObject() );
+			display->spriteInstance->name = name_;
+			scriptObject->Set( name_, display->spriteInstance->GetScriptObject() );
 		}
 		else if( display->textInstance )
 		{
-			scriptObject->Set( name, display->textInstance->GetScriptObject() );
+			scriptObject->Set( name_, display->textInstance->GetScriptObject() );
 		}
 	}
 	if( ( flags & PlaceFlagHasClipDepth ) != 0 )
@@ -144,7 +144,7 @@ void idSWFSpriteInstance::PlaceObject3( idSWFBitStream& bitstream )
 	
 	uint64 flags1 = bitstream.ReadU8();
 	uint64 flags2 = bitstream.ReadU8();
-	uint16 depth = bitstream.ReadU16();
+	uint16 depth_ = bitstream.ReadU16();
 	
 	if( ( flags2 & PlaceFlagHasClassName ) != 0 || ( ( ( flags2 & PlaceFlagHasImage ) != 0 ) && ( ( flags1 & PlaceFlagHasCharacter ) != 0 ) ) )
 	{
@@ -162,10 +162,10 @@ void idSWFSpriteInstance::PlaceObject3( idSWFBitStream& bitstream )
 	if( ( flags1 & PlaceFlagMove ) != 0 )
 	{
 		// modify an existing entry
-		display = FindDisplayEntry( depth );
+		display = FindDisplayEntry( depth_ );
 		if( display == NULL )
 		{
-			idLib::Warning( "PlaceObject3: trying to modify entry %d, which doesn't exist", depth );
+			idLib::Warning( "PlaceObject3: trying to modify entry %d, which doesn't exist", depth_ );
 			return;
 		}
 		if( characterID >= 0 )
@@ -197,10 +197,10 @@ void idSWFSpriteInstance::PlaceObject3( idSWFBitStream& bitstream )
 			return;
 		}
 		// create a new entry
-		display = AddDisplayEntry( depth, characterID );
+		display = AddDisplayEntry( depth_, characterID );
 		if( display == NULL )
 		{
-			idLib::Warning( "PlaceObject3: trying to create a new entry at %d, but an item already exists there", depth );
+			idLib::Warning( "PlaceObject3: trying to create a new entry at %d, but an item already exists there", depth_ );
 			return;
 		}
 	}
@@ -218,15 +218,15 @@ void idSWFSpriteInstance::PlaceObject3( idSWFBitStream& bitstream )
 	}
 	if( ( flags1 & PlaceFlagHasName ) != 0 )
 	{
-		idStr name = bitstream.ReadString();
+		idStr name_ = bitstream.ReadString();
 		if( display->spriteInstance )
 		{
-			display->spriteInstance->name = name;
-			scriptObject->Set( name, display->spriteInstance->GetScriptObject() );
+			display->spriteInstance->name = name_;
+			scriptObject->Set( name_, display->spriteInstance->GetScriptObject() );
 		}
 		else if( display->textInstance )
 		{
-			scriptObject->Set( name, display->textInstance->GetScriptObject() );
+			scriptObject->Set( name_, display->textInstance->GetScriptObject() );
 		}
 	}
 	if( ( flags1 & PlaceFlagHasClipDepth ) != 0 )

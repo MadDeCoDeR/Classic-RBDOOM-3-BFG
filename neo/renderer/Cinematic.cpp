@@ -1880,7 +1880,7 @@ void idCinematicLocal::blit2_32( byte* src, byte* dst, int spl )
 idCinematicLocal::blitVQQuad32fs
 ==============
 */
-void idCinematicLocal::blitVQQuad32fs( byte** status, unsigned char* data )
+void idCinematicLocal::blitVQQuad32fs( byte** _status, unsigned char* data )
 {
 	unsigned short	newd, celdata, code;
 	unsigned int	index, i;
@@ -1908,7 +1908,7 @@ void idCinematicLocal::blitVQQuad32fs( byte** status, unsigned char* data )
 		switch( code )
 		{
 			case	0x8000:													// vq code
-				blit8_32( ( byte* )&vq8[( *data ) * 128], status[index], samplesPerLine );
+				blit8_32( ( byte* )&vq8[( *data ) * 128], _status[index], samplesPerLine );
 				data++;
 				index += 5;
 				break;
@@ -1933,21 +1933,21 @@ void idCinematicLocal::blitVQQuad32fs( byte** status, unsigned char* data )
 					switch( code )  											// code in top two bits of code
 					{
 						case	0x8000:										// 4x4 vq code
-							blit4_32( ( byte* )&vq4[( *data ) * 32], status[index], samplesPerLine );
+							blit4_32( ( byte* )&vq4[( *data ) * 32], _status[index], samplesPerLine );
 							data++;
 							break;
 						case	0xc000:										// 2x2 vq code
-							blit2_32( ( byte* )&vq2[( *data ) * 8], status[index], samplesPerLine );
+							blit2_32( ( byte* )&vq2[( *data ) * 8], _status[index], samplesPerLine );
 							data++;
-							blit2_32( ( byte* )&vq2[( *data ) * 8], status[index] + 8, samplesPerLine );
+							blit2_32( ( byte* )&vq2[( *data ) * 8], _status[index] + 8, samplesPerLine );
 							data++;
-							blit2_32( ( byte* )&vq2[( *data ) * 8], status[index] + samplesPerLine * 2, samplesPerLine );
+							blit2_32( ( byte* )&vq2[( *data ) * 8], _status[index] + samplesPerLine * 2, samplesPerLine );
 							data++;
-							blit2_32( ( byte* )&vq2[( *data ) * 8], status[index] + samplesPerLine * 2 + 8, samplesPerLine );
+							blit2_32( ( byte* )&vq2[( *data ) * 8], _status[index] + samplesPerLine * 2 + 8, samplesPerLine );
 							data++;
 							break;
 						case	0x4000:										// motion compensation
-							move4_32( status[index] + mcomp[( *data )], status[index], samplesPerLine );
+							move4_32( _status[index] + mcomp[( *data )], _status[index], samplesPerLine );
 							data++;
 							break;
 					}
@@ -1955,7 +1955,7 @@ void idCinematicLocal::blitVQQuad32fs( byte** status, unsigned char* data )
 				}
 				break;
 			case	0x4000:													// motion compensation
-				move8_32( status[index] + mcomp[( *data )], status[index], samplesPerLine );
+				move8_32( _status[index] + mcomp[( *data )], _status[index], samplesPerLine );
 				data++;
 				index += 5;
 				break;
@@ -1964,7 +1964,7 @@ void idCinematicLocal::blitVQQuad32fs( byte** status, unsigned char* data )
 				break;
 		}
 	}
-	while( status[index] != NULL );
+	while( _status[index] != NULL );
 }
 
 #define VQ2TO4(a,b,c,d) { \
@@ -2060,22 +2060,22 @@ idCinematicLocal::decodeCodeBook
 ==============
 */
 // RB: 64 bit fixes, changed long to int
-void idCinematicLocal::decodeCodeBook( byte* input, unsigned short roq_flags )
+void idCinematicLocal::decodeCodeBook( byte* input, unsigned short _roq_flags )
 {
 	int	i, j, two, four;
 	unsigned short*	aptr, *bptr, *cptr, *dptr;
 	int	y0, y1, y2, y3, cr, cb;
 	unsigned int* iaptr, *ibptr, *icptr, *idptr;
 	
-	if( !roq_flags )
+	if( !_roq_flags )
 	{
 		two = four = 256;
 	}
 	else
 	{
-		two  = roq_flags >> 8;
+		two  = _roq_flags >> 8;
 		if( !two ) two = 256;
-		four = roq_flags & 0xff;
+		four = _roq_flags & 0xff;
 	}
 	
 	four *= 2;

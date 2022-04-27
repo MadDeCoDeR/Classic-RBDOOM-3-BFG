@@ -138,23 +138,23 @@ void idItem::Restore( idRestoreGame* savefile )
 idItem::UpdateRenderEntity
 ================
 */
-bool idItem::UpdateRenderEntity( renderEntity_s* renderEntity, const renderView_t* renderView ) const
+bool idItem::UpdateRenderEntity( renderEntity_s* _renderEntity, const renderView_t* _renderView ) const
 {
 
-	if( lastRenderViewTime == renderView->time[timeGroup] )
+	if( lastRenderViewTime == _renderView->time[timeGroup] )
 	{
 		return false;
 	}
 	
-	lastRenderViewTime = renderView->time[timeGroup];
+	lastRenderViewTime = _renderView->time[timeGroup];
 	
 	// check for glow highlighting if near the center of the view
-	idVec3 dir = renderEntity->origin - renderView->vieworg;
+	idVec3 dir = _renderEntity->origin - _renderView->vieworg;
 	dir.Normalize();
-	float d = dir * renderView->viewaxis[0];
+	float d = dir * _renderView->viewaxis[0];
 	
 	// two second pulse cycle
-	float cycle = ( renderView->time[timeGroup] - inViewTime ) / 2000.0f;
+	float cycle = ( _renderView->time[timeGroup] - inViewTime ) / 2000.0f;
 	
 	if( d > 0.94f )
 	{
@@ -164,7 +164,7 @@ bool idItem::UpdateRenderEntity( renderEntity_s* renderEntity, const renderView_
 			if( cycle > lastCycle )
 			{
 				// restart at the beginning
-				inViewTime = renderView->time[timeGroup];
+				inViewTime = _renderView->time[timeGroup];
 				cycle = 0.0f;
 			}
 		}
@@ -181,7 +181,7 @@ bool idItem::UpdateRenderEntity( renderEntity_s* renderEntity, const renderView_
 	// fade down after the last pulse finishes
 	if( !inView && cycle > lastCycle )
 	{
-		renderEntity->shaderParms[4] = 0.0f;
+		_renderEntity->shaderParms[4] = 0.0f;
 	}
 	else
 	{
@@ -189,20 +189,20 @@ bool idItem::UpdateRenderEntity( renderEntity_s* renderEntity, const renderView_
 		cycle -= ( int )cycle;
 		if( cycle < 0.1f )
 		{
-			renderEntity->shaderParms[4] = cycle * 10.0f;
+			_renderEntity->shaderParms[4] = cycle * 10.0f;
 		}
 		else if( cycle < 0.2f )
 		{
-			renderEntity->shaderParms[4] = 1.0f;
+			_renderEntity->shaderParms[4] = 1.0f;
 		}
 		else if( cycle < 0.3f )
 		{
-			renderEntity->shaderParms[4] = 1.0f - ( cycle - 0.2f ) * 10.0f;
+			_renderEntity->shaderParms[4] = 1.0f - ( cycle - 0.2f ) * 10.0f;
 		}
 		else
 		{
 			// stay off between pulses
-			renderEntity->shaderParms[4] = 0.0f;
+			_renderEntity->shaderParms[4] = 0.0f;
 		}
 	}
 	
@@ -1424,11 +1424,11 @@ void idItemTeam::SpawnNugget( idVec3 pos )
 	velocity *= spawnArgs.GetFloat( "nugget_velocity", "1" );
 	
 	idEntity* ent = idMoveableItem::DropItem( nuggetName, pos, GetPhysics()->GetAxis(), angle.ToMat3() * idVec3( velocity, velocity, velocity ), 0, spawnArgs.GetInt( "nugget_removedelay" ) );
-	idPhysics_RigidBody* physics = static_cast<idPhysics_RigidBody*>( ent->GetPhysics() );
+	idPhysics_RigidBody* physics_ = static_cast<idPhysics_RigidBody*>( ent->GetPhysics() );
 	
-	if( physics != NULL && physics->IsType( idPhysics_RigidBody::Type ) )
+	if( physics_ != NULL && physics_->IsType( idPhysics_RigidBody::Type ) )
 	{
-		physics->DisableImpact();
+		physics_->DisableImpact();
 	}
 }
 
@@ -2166,8 +2166,8 @@ void idMoveableItem::Gib( const idVec3& dir, const char* damageDefName )
 	const char* smokeName = spawnArgs.GetString( "smoke_gib" );
 	if( *smokeName != '\0' )
 	{
-		const idDeclParticle* smoke = static_cast<const idDeclParticle*>( declManager->FindType( DECL_PARTICLE, smokeName ) );
-		gameLocal.smokeParticles->EmitSmoke( smoke, gameLocal.time, gameLocal.random.CRandomFloat(), renderEntity.origin, renderEntity.axis, timeGroup /*_D3XP*/ );
+		const idDeclParticle* smoke_ = static_cast<const idDeclParticle*>( declManager->FindType( DECL_PARTICLE, smokeName ) );
+		gameLocal.smokeParticles->EmitSmoke( smoke_, gameLocal.time, gameLocal.random.CRandomFloat(), renderEntity.origin, renderEntity.axis, timeGroup /*_D3XP*/ );
 	}
 	// remove the entity
 	PostEventMS( &EV_Remove, 0 );

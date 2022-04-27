@@ -681,16 +681,16 @@ void idActor::Spawn()
 	blink_max = SEC2MS( spawnArgs.GetFloat( "blink_max", "8" ) );
 	
 	// set up the head anim if necessary
-	int headAnim = headAnimator->GetAnim( "def_head" );
-	if( headAnim )
+	int headAnim_ = headAnimator->GetAnim( "def_head" );
+	if( headAnim_ )
 	{
 		if( headEnt )
 		{
-			headAnimator->CycleAnim( ANIMCHANNEL_ALL, headAnim, gameLocal.time, 0 );
+			headAnimator->CycleAnim( ANIMCHANNEL_ALL, headAnim_, gameLocal.time, 0 );
 		}
 		else
 		{
-			headAnimator->CycleAnim( ANIMCHANNEL_HEAD, headAnim, gameLocal.time, 0 );
+			headAnimator->CycleAnim( ANIMCHANNEL_HEAD, headAnim_, gameLocal.time, 0 );
 		}
 	}
 	
@@ -2468,7 +2468,7 @@ calls Damage()
 */
 idCVar actor_noDamage(	"actor_noDamage",			"0",		CVAR_BOOL, "actors don't take damage -- for testing" );
 void idActor::Damage( idEntity* inflictor, idEntity* attacker, const idVec3& dir,
-					  const char* damageDefName, const float damageScale, const int location )
+					  const char* damageDefName, const float _damageScale, const int location )
 {
 	if( !fl.takedamage || actor_noDamage.GetBool() )
 	{
@@ -2517,7 +2517,7 @@ void idActor::Damage( idEntity* inflictor, idEntity* attacker, const idVec3& dir
 		return;
 	}
 	
-	int	damage = damageDef->GetInt( "damage" ) * damageScale;
+	int	damage = damageDef->GetInt( "damage" ) * _damageScale;
 	damage = GetDamageForLocation( damage, location );
 	
 	// inform the attacker that they hit someone
@@ -3609,10 +3609,10 @@ idActor::Event_GetAnimState
 */
 void idActor::Event_GetAnimState( int channel )
 {
-	const char* state;
+	const char* state_;
 	
-	state = GetAnimState( channel );
-	idThread::ReturnString( state );
+	state_ = GetAnimState( channel );
+	idThread::ReturnString( state_ );
 }
 
 /*
@@ -3885,9 +3885,9 @@ void idActor::Event_StopSound( int channel, int netSync )
 idActor::Event_SetNextState
 =====================
 */
-void idActor::Event_SetNextState( const char* name )
+void idActor::Event_SetNextState( const char* _name )
 {
-	idealState = GetScriptFunction( name );
+	idealState = GetScriptFunction( _name );
 	if( idealState == state )
 	{
 		state = NULL;
@@ -3899,9 +3899,9 @@ void idActor::Event_SetNextState( const char* name )
 idActor::Event_SetState
 =====================
 */
-void idActor::Event_SetState( const char* name )
+void idActor::Event_SetState( const char* _name )
 {
-	idealState = GetScriptFunction( name );
+	idealState = GetScriptFunction( _name );
 	if( idealState == state )
 	{
 		state = NULL;

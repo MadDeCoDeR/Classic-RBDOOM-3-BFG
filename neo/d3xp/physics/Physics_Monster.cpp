@@ -93,14 +93,14 @@ void idPhysics_Monster::CheckGround( monsterPState_t& state )
 idPhysics_Monster::SlideMove
 =====================
 */
-monsterMoveResult_t idPhysics_Monster::SlideMove( idVec3& start, idVec3& velocity, const idVec3& delta )
+monsterMoveResult_t idPhysics_Monster::SlideMove( idVec3& start, idVec3& velocity, const idVec3& _delta )
 {
 	int i;
 	trace_t tr;
 	idVec3 move;
 	
 	blockingEntity = NULL;
-	move = delta;
+	move = _delta;
 	for( i = 0; i < 3; i++ )
 	{
 		gameLocal.GetClip()->Translation( tr, start, start + move, clipModel, clipModel->GetAxis(), clipMask, self );
@@ -138,7 +138,7 @@ idPhysics_Monster::StepMove
   the velocity is clipped conform any collisions
 =====================
 */
-monsterMoveResult_t idPhysics_Monster::StepMove( idVec3& start, idVec3& velocity, const idVec3& delta )
+monsterMoveResult_t idPhysics_Monster::StepMove( idVec3& start, idVec3& velocity, const idVec3& _delta )
 {
 	trace_t tr;
 	idVec3 up, down, noStepPos, noStepVel, stepPos, stepVel;
@@ -146,7 +146,7 @@ monsterMoveResult_t idPhysics_Monster::StepMove( idVec3& start, idVec3& velocity
 	float	stepdist;
 	float	nostepdist;
 	
-	if( delta == vec3_origin )
+	if( _delta == vec3_origin )
 	{
 		return MM_OK;
 	}
@@ -154,7 +154,7 @@ monsterMoveResult_t idPhysics_Monster::StepMove( idVec3& start, idVec3& velocity
 	// try to move without stepping up
 	noStepPos = start;
 	noStepVel = velocity;
-	result1 = SlideMove( noStepPos, noStepVel, delta );
+	result1 = SlideMove( noStepPos, noStepVel, _delta );
 	if( result1 == MM_OK )
 	{
 		velocity = noStepVel;
@@ -207,7 +207,7 @@ monsterMoveResult_t idPhysics_Monster::StepMove( idVec3& start, idVec3& velocity
 	// try to move at the stepped up position
 	stepPos = tr.endpos;
 	stepVel = velocity;
-	result2 = SlideMove( stepPos, stepVel, delta );
+	result2 = SlideMove( stepPos, stepVel, _delta );
 	if( result2 == MM_BLOCKED )
 	{
 		start = noStepPos;

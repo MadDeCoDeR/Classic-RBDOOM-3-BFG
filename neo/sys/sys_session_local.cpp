@@ -2290,7 +2290,7 @@ idSessionLocal::sessionState_t idSessionLocal::GetState() const
 
 const char* idSessionLocal::GetStateString() const
 {
-	static const char* stateToString[] =
+	static const char* _stateToString[] =
 	{
 		ASSERT_ENUM_STRING( STATE_PRESS_START, 0 ),
 		ASSERT_ENUM_STRING( STATE_IDLE, 1 ),
@@ -2311,7 +2311,7 @@ const char* idSessionLocal::GetStateString() const
 		ASSERT_ENUM_STRING( STATE_LOADING, 16 ),
 		ASSERT_ENUM_STRING( STATE_INGAME, 17 )
 	};
-	return stateToString[ localState ];
+	return _stateToString[ localState ];
 }
 
 // idSession interface

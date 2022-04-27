@@ -434,7 +434,7 @@ void idMover::Show()
 idMover::Killed
 ============
 */
-void idMover::Killed( idEntity* inflictor, idEntity* attacker, int damage, const idVec3& dir, int location )
+void idMover::Killed( idEntity* inflictor, idEntity* attacker, int _damage, const idVec3& dir, int location )
 {
 	fl.takedamage = false;
 	ActivateTargets( this );
@@ -2223,16 +2223,16 @@ void idElevator::BeginMove( idThread* thread )
 idElevator::GetDoor
 ================
 */
-idDoor* idElevator::GetDoor( const char* name )
+idDoor* idElevator::GetDoor( const char* _name )
 {
 	idEntity*	ent;
 	idEntity*	master;
 	idDoor*		doorEnt;
 	
 	doorEnt = NULL;
-	if( name && *name )
+	if( _name && *_name )
 	{
-		ent = gameLocal.FindEntity( name );
+		ent = gameLocal.FindEntity( _name );
 		if( ent && ent->IsType( idDoor::Type ) )
 		{
 			doorEnt = static_cast<idDoor*>( ent );
@@ -4029,19 +4029,19 @@ void idDoor::Show()
 idDoor::GetLocalTriggerPosition
 ================
 */
-void idDoor::GetLocalTriggerPosition( const idClipModel* trigger )
+void idDoor::GetLocalTriggerPosition( const idClipModel* _trigger )
 {
 	idVec3 origin;
 	idMat3 axis;
 	
-	if( !trigger )
+	if( !_trigger )
 	{
 		return;
 	}
 	
 	GetMasterPosition( origin, axis );
-	localTriggerOrigin = ( trigger->GetOrigin() - origin ) * axis.Transpose();
-	localTriggerAxis = trigger->GetAxis() * axis.Transpose();
+	localTriggerOrigin = ( _trigger->GetOrigin() - origin ) * axis.Transpose();
+	localTriggerAxis = _trigger->GetAxis() * axis.Transpose();
 }
 
 /*
@@ -4973,19 +4973,19 @@ void idPlat::PostBind()
 idPlat::GetLocalTriggerPosition
 ================
 */
-void idPlat::GetLocalTriggerPosition( const idClipModel* trigger )
+void idPlat::GetLocalTriggerPosition( const idClipModel* _trigger )
 {
 	idVec3 origin;
 	idMat3 axis;
 	
-	if( !trigger )
+	if( !_trigger )
 	{
 		return;
 	}
 	
 	GetMasterPosition( origin, axis );
-	localTriggerOrigin = ( trigger->GetOrigin() - origin ) * axis.Transpose();
-	localTriggerAxis = trigger->GetAxis() * axis.Transpose();
+	localTriggerOrigin = ( _trigger->GetOrigin() - origin ) * axis.Transpose();
+	localTriggerAxis = _trigger->GetAxis() * axis.Transpose();
 }
 
 /*

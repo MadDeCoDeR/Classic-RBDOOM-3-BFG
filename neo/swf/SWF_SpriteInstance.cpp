@@ -134,7 +134,7 @@ void idSWFSpriteInstance::FreeDisplayList()
 idSWFSpriteInstance::FindDisplayEntry
 ========================
 */
-swfDisplayEntry_t* idSWFSpriteInstance::FindDisplayEntry( int depth )
+swfDisplayEntry_t* idSWFSpriteInstance::FindDisplayEntry( int depth_ )
 {
 	int len = displayList.Num();
 	int mid = len;
@@ -142,13 +142,13 @@ swfDisplayEntry_t* idSWFSpriteInstance::FindDisplayEntry( int depth )
 	while( mid > 0 )
 	{
 		mid = len >> 1;
-		if( displayList[offset + mid].depth <= depth )
+		if( displayList[offset + mid].depth <= depth_ )
 		{
 			offset += mid;
 		}
 		len -= mid;
 	}
-	if( displayList[offset].depth == depth )
+	if( displayList[offset].depth == depth_ )
 	{
 		return &displayList[offset];
 	}
@@ -160,23 +160,23 @@ swfDisplayEntry_t* idSWFSpriteInstance::FindDisplayEntry( int depth )
 idSWFSpriteInstance::AddDisplayEntry
 ========================
 */
-swfDisplayEntry_t* idSWFSpriteInstance::AddDisplayEntry( int depth, int characterID )
+swfDisplayEntry_t* idSWFSpriteInstance::AddDisplayEntry( int depth_, int characterID )
 {
 	int i = 0;
 	for( ; i < displayList.Num(); i++ )
 	{
-		if( displayList[i].depth == depth )
+		if( displayList[i].depth == depth_ )
 		{
 			return NULL;
 		}
-		if( displayList[i].depth > depth )
+		if( displayList[i].depth > depth_ )
 		{
 			break;
 		}
 	}
 	
 	swfDisplayEntry_t& display = displayList[ displayList.Insert( swfDisplayEntry_t(), i ) ];
-	display.depth = depth;
+	display.depth = depth_;
 	display.characterID = characterID;
 	
 	idSWFDictionaryEntry* dictEntry = sprite->swf->FindDictionaryEntry( characterID );
@@ -185,7 +185,7 @@ swfDisplayEntry_t* idSWFSpriteInstance::AddDisplayEntry( int depth, int characte
 		if( dictEntry->type == SWF_DICT_SPRITE )
 		{
 			display.spriteInstance = sprite->swf->spriteInstanceAllocator.Alloc();
-			display.spriteInstance->Init( dictEntry->sprite, this, depth );
+			display.spriteInstance->Init( dictEntry->sprite, this, depth_ );
 			display.spriteInstance->RunTo( 1 );
 		}
 		else if( dictEntry->type == SWF_DICT_EDITTEXT )
@@ -202,9 +202,9 @@ swfDisplayEntry_t* idSWFSpriteInstance::AddDisplayEntry( int depth, int characte
 idSWFSpriteInstance::RemoveDisplayEntry
 ========================
 */
-void idSWFSpriteInstance::RemoveDisplayEntry( int depth )
+void idSWFSpriteInstance::RemoveDisplayEntry( int _depth )
 {
-	swfDisplayEntry_t* entry = FindDisplayEntry( depth );
+	swfDisplayEntry_t* entry = FindDisplayEntry( _depth );
 	if( entry != NULL )
 	{
 		sprite->swf->spriteInstanceAllocator.Free( entry->spriteInstance );
