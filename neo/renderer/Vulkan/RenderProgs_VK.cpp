@@ -1555,7 +1555,7 @@ void idRenderProgManager::CachePipeline( uint64 stateBits )
 {
 	renderProg_t& prog = renderProgs[ current ];
 	
-	VkPipeline pipeline = prog.GetPipeline( stateBits, shaders[ prog.vertexShaderIndex ].module, shaders[ prog.fragmentShaderIndex ].module );
+	/*VkPipeline pipeline = */prog.GetPipeline( stateBits, shaders[ prog.vertexShaderIndex ].module, shaders[ prog.fragmentShaderIndex ].module );
 }
 
 

@@ -283,7 +283,7 @@ idVulkanBlock::Allocate
 */
 bool idVulkanBlock::Allocate(
 	const uint32 _size,
-	const uint32 align,
+	const VkDeviceSize align,
 	const VkDeviceSize granularity,
 	const vulkanAllocationType_t allocType,
 	vulkanAllocation_t& allocation )

@@ -95,7 +95,7 @@ public:
 	
 	bool				Allocate(
 		const uint32 size,
-		const uint32 align,
+		const VkDeviceSize align,
 		const VkDeviceSize granularity,
 		const vulkanAllocationType_t allocType,
 		vulkanAllocation_t& allocation );

@@ -1974,11 +1974,11 @@ void idRenderBackend::GL_Clear( bool color, bool depth, bool stencil, byte stenc
 		attachment.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		attachment.colorAttachment = 0;
 		
-		VkClearColorValue& color = attachment.clearValue.color;
-		color.float32[ 0 ] = r;
-		color.float32[ 1 ] = g;
-		color.float32[ 2 ] = b;
-		color.float32[ 3 ] = a;
+		VkClearColorValue& color_ = attachment.clearValue.color;
+		color_.float32[ 0 ] = r;
+		color_.float32[ 1 ] = g;
+		color_.float32[ 2 ] = b;
+		color_.float32[ 3 ] = a;
 	}
 	
 	if( depth || stencil )
