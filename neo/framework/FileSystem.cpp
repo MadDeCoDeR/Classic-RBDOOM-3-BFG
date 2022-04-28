@@ -3517,7 +3517,7 @@ idFile* idFileSystemLocal::OpenFileReadFlags( const char* relativePath, int sear
 								{
 									continue;
 								}
-								samplePath = relativePath;
+								samplePath = relativePath_;
 								samplePath.Replace( "/vo/", va( "/vo/%s/", lang ) );
 								samplePath.SetFileExtension( "idwav" );
 								if( samplePath.Find( "generated/" ) == -1 )
@@ -3537,7 +3537,7 @@ idFile* idFileSystemLocal::OpenFileReadFlags( const char* relativePath, int sear
 							const char* lang = Sys_Lang( i );
 							if( idStr::Icmp( lang, ID_LANG_ENGLISH ) == 0 )
 							{
-								fileManifest.Append( relativePath );
+								fileManifest.Append( relativePath_ );
 								continue;
 							}
 							idStrStatic< MAX_OSPATH > guiPath = relativePath_;

@@ -399,7 +399,7 @@ void W_AddFile ( const char *filename)
 				//GK: Allow to load "Wild" files
 				char* filename_ = new char[256];
 				if(relp){
-					sprintf(filename_, "./base%s", filename_);
+					sprintf(filename_, "./base%s", filename);
 					
 				}
 				else {

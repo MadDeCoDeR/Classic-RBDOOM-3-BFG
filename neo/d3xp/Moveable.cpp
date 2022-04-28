@@ -1322,7 +1322,7 @@ void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* _attacker, int _d
 			//} else {
 			dir_.x += gameLocal.random.CRandomFloat() * 4.0f;
 			dir_.y += gameLocal.random.CRandomFloat() * 4.0f;
-			//dir.z = gameLocal.random.RandomFloat() * 8.0f;
+			//dir_.z = gameLocal.random.RandomFloat() * 8.0f;
 			//}
 			dir_.Normalize();
 			
@@ -1334,7 +1334,7 @@ void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* _attacker, int _d
 			}
 			
 			debris = static_cast<idDebris*>( ent );
-			debris->Create( this, physicsObj.GetOrigin(), dir.ToMat3() );
+			debris->Create( this, physicsObj.GetOrigin(), dir_.ToMat3() );
 			debris->Launch();
 			debris->GetRenderEntity()->shaderParms[ SHADERPARM_TIME_OF_DEATH ] = ( gameLocal.time + 1500 ) * 0.001f;
 			debris->UpdateVisuals();
