@@ -210,7 +210,9 @@ bool idEFXFile::ReadEffect( idLexer &src, idSoundEffect *effect ) {
 						Mem_Free(reverb);
 					}
 				} while (1);
-
+				if (reverb->flAirAbsorptionGainHF < AL_EAXREVERB_MIN_AIR_ABSORPTION_GAINHF) {
+					reverb->flAirAbsorptionGainHF = AL_EAXREVERB_MIN_AIR_ABSORPTION_GAINHF;
+				}
 				return true;
 			}
 		
