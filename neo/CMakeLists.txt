@@ -244,8 +244,6 @@ elseif(MSVC)
 		#set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
 		set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD /std:c17")
 		
-		#GK: List of Warnings that are ignored:
-		#	C5205: Some abstract classes and their derivatives have no destructors, ignore until either destructors are added or is found that it does inded cause undefined behaviour
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /Ob2 /Oi /Oy /MDd /std:c++17 /std:c17 /W4")
 		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /Oi /Oy /MD /std:c++17 /std:c17 /WX /W4")
 		#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MP /MTd")
@@ -253,14 +251,14 @@ elseif(MSVC)
 		set(CMAKE_CXX_FLAGS_RETAIL "${CMAKE_CXX_FLAGS_RELEASE} /D ID_RETAIL")
 		# RB: without /SAFESEH:NO we can't link against ffmpeg libs and VS2013 or we have to build our own
 		# libs for newer compilers
-		set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG:FULL /SAFESEH:NO")
+		set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /DEBUG:FULL /STACK:16777216")
 		#set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /SAFESEH:NO")
-		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SAFESEH:NO")
+		set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /STACK:16777216 /OPT:REF /OPT:ICF")
 		#set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO} /SAFESEH:NO")
-		set(CMAKE_EXE_LINKER_FLAGS_RETAIL "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /SAFESEH:NO")
-		set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /DEF:../neo/d3xp/Game.def /SAFESEH:NO")
-		set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEF:../neo/d3xp/Game.def /SAFESEH:NO")
-		set(CMAKE_SHARED_LINKER_FLAGS_RETAIL "${CMAKE_SHARED_LINKER_FLAGS_RETAIL} /DEF:../neo/d3xp/Game.def /SAFESEH:NO")
+		set(CMAKE_EXE_LINKER_FLAGS_RETAIL "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+		set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /DEF:../neo/d3xp/Game.def")
+		set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEF:../neo/d3xp/Game.def")
+		set(CMAKE_SHARED_LINKER_FLAGS_RETAIL "${CMAKE_SHARED_LINKER_FLAGS_RETAIL} /DEF:../neo/d3xp/Game.def")
 		endif()
 	# endif()
 	
@@ -1105,7 +1103,7 @@ source_group("renderer\\Vulkan" FILES ${RENDERER_VULKAN_SOURCES})
 
 source_group("renderer\\SMAA" FILES ${RENDERER_SMAA_INCLUDES})
 
-source_group("renderer\\Shaders" FILES ${SHADERS})
+source_group("BFA" FILES ${SHADERS})
 
 source_group("irrxml" FILES ${IRRXML_INCLUDES})
 source_group("irrxml" FILES ${IRRXML_SOURCES})
@@ -1305,7 +1303,6 @@ set(RBDOOM3_INCLUDES
 			${RENDERER_JOBS_PRELIGHTSHADOWVOLUME_INCLUDES}
 			${RENDERER_JOBS_STATICSHADOWVOLUME_INCLUDES}
 			
-			${SHADERS}
 			${RENDERER_SMAA_INCLUDES}
 			
 			${SOUND_INCLUDES}
@@ -1647,13 +1644,13 @@ if(MSVC)
 	list(APPEND RBDOOM3_SOURCES ${WIN32_RESOURCES})
 	add_library(external ${LIB_INCLUDES} ${LIB_SOURCES})
 	target_compile_options(external PRIVATE /WX- /W3)
+	add_custom_target(shaders SOURCES ${SHADERS})
 	add_executable(DoomBFA WIN32 ${RBDOOM3_INCLUDES} ${RBDOOM3_SOURCES})
 	#GK: Allow to compile and run the game from VS
 	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT DoomBFA)
 	set_target_properties(DoomBFA PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "C:/Program Files (x86)/Steam/steamapps/common/DOOM 3 BFG Edition")
-	
-	#GK: TODO add +set r_fullscreen "0" command line (VS DEBUGGER and Fullscreen not a good mix)
-	#set_target_properties(RBDoom3BFG PROPERTIES COMMAND_LINE_ARGUMENTS " +set r_fullscreen 0")
+	#GK: add +set r_fullscreen "0" command line (VS DEBUGGER and Fullscreen not a good mix)
+	set_target_properties(DoomBFA PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "+set r_fullscreen 0")
 	
 	add_custom_command(TARGET DoomBFA
                    POST_BUILD
@@ -1853,7 +1850,7 @@ else()
 		set(remove_command "rm")
 	endif()
 	add_library(external ${LIB_INCLUDES} ${LIB_SOURCES})
-	
+	add_custom_target(shaders SOURCES ${SHADERS})
 	if (USE_PRECOMPILED_HEADERS)
 		# it's ugly enough that the precompiled header binary needs to be in the 
 		# source directory (instead of the build directory), so let's at least
