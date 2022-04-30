@@ -836,7 +836,7 @@ I_ShutdownMusic
 void I_ShutdownMusicAL( void )
 {
 	if ( Music_initialized ) {
-		if ( alMusicSourceVoice ) {
+		if ( alIsSource(alMusicSourceVoice) ) {
 			I_StopSongAL( 0 );
 			alSourcei( alMusicSourceVoice, AL_BUFFER, 0 );
 			alDeleteSources( 1, &alMusicSourceVoice );

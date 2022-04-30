@@ -214,26 +214,29 @@ void idSoundVoice_OpenAL::DestroyInternal()
 		{
 			idLib::Printf( "%dms: %i destroyed\n", Sys_Milliseconds(), openalSource );
 		}
-		if (openalStreamingBuffer[0] && openalStreamingBuffer[1] && openalStreamingBuffer[2])
-		{
-
-			alDeleteBuffers(3, openalStreamingBuffer);
-
-			if (CheckALErrors() == AL_NO_ERROR)
+		for (int i = 0; i < 3; i++) {
+			if (alIsBuffer(openalStreamingBuffer[i]))
 			{
-				openalStreamingBuffer[0] = openalStreamingBuffer[1] = openalStreamingBuffer[2] = 0;
+
+				alDeleteBuffers(1, &openalStreamingBuffer[i]);
+
+				if (CheckALErrors() == AL_NO_ERROR)
+				{
+					openalStreamingBuffer[i] = 0;
+				}
+			}
+
+			if (alIsBuffer(lastopenalStreamingBuffer[i]))
+			{
+
+				alDeleteBuffers(1, &lastopenalStreamingBuffer[i]);
+				if (CheckALErrors() == AL_NO_ERROR)
+				{
+					lastopenalStreamingBuffer[i] = 0;
+				}
 			}
 		}
-
-		if (lastopenalStreamingBuffer[0] && lastopenalStreamingBuffer[1] && lastopenalStreamingBuffer[2])
-		{
-
-			alDeleteBuffers(3, lastopenalStreamingBuffer);
-			if (CheckALErrors() == AL_NO_ERROR)
-			{
-				lastopenalStreamingBuffer[0] = lastopenalStreamingBuffer[1] = lastopenalStreamingBuffer[2] = 0;
-			}
-		}
+		
 		
 		
 		
