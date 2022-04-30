@@ -1062,46 +1062,46 @@ file(GLOB SDL_SOURCES sys/sdl/*.cpp)
 file(GLOB SDL_RESOURCES sys/sdl/res/*.*)
 
 
-source_group("aas" FILES ${AAS_INCLUDES})
-source_group("aas" FILES ${AAS_SOURCES})
+source_group("AAS" FILES ${AAS_INCLUDES})
+source_group("AAS" FILES ${AAS_SOURCES})
 
-source_group("cm" FILES ${CM_INCLUDES})
-source_group("cm" FILES ${CM_SOURCES})
+source_group("CM" FILES ${CM_INCLUDES})
+source_group("CM" FILES ${CM_SOURCES})
 
-source_group("framework" FILES ${FRAMEWORK_INCLUDES})
-source_group("framework" FILES ${FRAMEWORK_SOURCES})
+source_group("Framework" FILES ${FRAMEWORK_INCLUDES})
+source_group("Framework" FILES ${FRAMEWORK_SOURCES})
 
-source_group("framework\\async" FILES ${FRAMEWORK_ASYNC_INCLUDES})
-source_group("framework\\async" FILES ${FRAMEWORK_ASYNC_SOURCES})
+source_group("Framework\\async" FILES ${FRAMEWORK_ASYNC_INCLUDES})
+source_group("Framework\\async" FILES ${FRAMEWORK_ASYNC_SOURCES})
 
-source_group("renderer" FILES ${RENDERER_INCLUDES})
-source_group("renderer" FILES ${RENDERER_SOURCES})
+source_group("Renderer" FILES ${RENDERER_INCLUDES})
+source_group("Renderer" FILES ${RENDERER_SOURCES})
 
-source_group("renderer\\Color" FILES ${RENDERER_COLOR_INCLUDES})
-source_group("renderer\\Color" FILES ${RENDERER_COLOR_SOURCES})
+source_group("Renderer\\Color" FILES ${RENDERER_COLOR_INCLUDES})
+source_group("Renderer\\Color" FILES ${RENDERER_COLOR_SOURCES})
 
-source_group("renderer\\DXT" FILES ${RENDERER_DXT_INCLUDES})
-source_group("renderer\\DXT" FILES ${RENDERER_DXT_SOURCES})
+source_group("Renderer\\DXT" FILES ${RENDERER_DXT_INCLUDES})
+source_group("Renderer\\DXT" FILES ${RENDERER_DXT_SOURCES})
 
-source_group("renderer\\jobs" FILES ${RENDERER_JOBS_INCLUDES})
-source_group("renderer\\jobs" FILES ${RENDERER_JOBS_SOURCES})
+source_group("Renderer\\Jobs" FILES ${RENDERER_JOBS_INCLUDES})
+source_group("Renderer\\Jobs" FILES ${RENDERER_JOBS_SOURCES})
 
-source_group("renderer\\jobs\\dynamicshadowvolume" FILES ${RENDERER_JOBS_DYNAMICSHADOWVOLUME_INCLUDES})
-source_group("renderer\\jobs\\dynamicshadowvolume" FILES ${RENDERER_JOBS_DYNAMICSHADOWVOLUME_SOURCES})
+source_group("Renderer\\Jobs\\DynamicShadowVolume" FILES ${RENDERER_JOBS_DYNAMICSHADOWVOLUME_INCLUDES})
+source_group("Renderer\\Jobs\\DynamicShadowVolume" FILES ${RENDERER_JOBS_DYNAMICSHADOWVOLUME_SOURCES})
 
-source_group("renderer\\jobs\\prelightshadowvolume" FILES ${RENDERER_JOBS_PRELIGHTSHADOWVOLUME_INCLUDES})
-source_group("renderer\\jobs\\prelightshadowvolume" FILES ${RENDERER_JOBS_PRELIGHTSHADOWVOLUME_SOURCES})
+source_group("Renderer\\Jobs\\PrelightShadowVolume" FILES ${RENDERER_JOBS_PRELIGHTSHADOWVOLUME_INCLUDES})
+source_group("Renderer\\Jobs\\PrelightShadowVolume" FILES ${RENDERER_JOBS_PRELIGHTSHADOWVOLUME_SOURCES})
 
-source_group("renderer\\jobs\\staticshadowvolume" FILES ${RENDERER_JOBS_STATICSHADOWVOLUME_INCLUDES})
-source_group("renderer\\jobs\\staticshadowvolume" FILES ${RENDERER_JOBS_STATICSHADOWVOLUME_SOURCES})
+source_group("Renderer\\Jobs\\StaticShadowVolume" FILES ${RENDERER_JOBS_STATICSHADOWVOLUME_INCLUDES})
+source_group("Renderer\\Jobs\\StaticShadowVolume" FILES ${RENDERER_JOBS_STATICSHADOWVOLUME_SOURCES})
 
-source_group("renderer\\OpenGL" FILES ${RENDERER_OPENGL_INCLUDES})
-source_group("renderer\\OpenGL" FILES ${RENDERER_OPENGL_SOURCES})
+source_group("Renderer\\OpenGL" FILES ${RENDERER_OPENGL_INCLUDES})
+source_group("Renderer\\OpenGL" FILES ${RENDERER_OPENGL_SOURCES})
 
-source_group("renderer\\Vulkan" FILES ${RENDERER_VULKAN_INCLUDES})
-source_group("renderer\\Vulkan" FILES ${RENDERER_VULKAN_SOURCES})
+source_group("Renderer\\Vulkan" FILES ${RENDERER_VULKAN_INCLUDES})
+source_group("Renderer\\Vulkan" FILES ${RENDERER_VULKAN_SOURCES})
 
-source_group("renderer\\SMAA" FILES ${RENDERER_SMAA_INCLUDES})
+source_group("Renderer\\SMAA" FILES ${RENDERER_SMAA_INCLUDES})
 
 source_group("BFA" FILES ${SHADERS})
 
@@ -1133,135 +1133,135 @@ source_group("freetype" FILES ${FREETYPE_SOURCES})
 source_group("platform" FILES ${OPEN_PLATFORM_INCLUDES})
 #source_group("platform" FILES ${OPEN_PLATFORM_SOURCES})
 
-source_group("sound" FILES ${SOUND_INCLUDES})
-source_group("sound" FILES ${SOUND_SOURCES})
+source_group("Sound" FILES ${SOUND_INCLUDES})
+source_group("Sound" FILES ${SOUND_SOURCES})
 
-source_group("sound\\XAudio2" FILES ${XAUDIO2_INCLUDES})
-source_group("sound\\XAudio2" FILES ${XAUDIO2_SOURCES})
+source_group("Sound\\XAudio2" FILES ${XAUDIO2_INCLUDES})
+source_group("Sound\\XAudio2" FILES ${XAUDIO2_SOURCES})
 
-source_group("sound\\OpenAL" FILES ${OPENAL_INCLUDES})
-source_group("sound\\OpenAL" FILES ${OPENAL_SOURCES})
+source_group("Sound\\OpenAL" FILES ${OPENAL_INCLUDES})
+source_group("Sound\\OpenAL" FILES ${OPENAL_SOURCES})
 
-source_group("sound\\Common" FILES ${SOUND_COMMON_INCLUDES})
-source_group("sound\\Common" FILES ${SOUND_COMMON_SOURCES})
+source_group("Sound\\Common" FILES ${SOUND_COMMON_INCLUDES})
+source_group("Sound\\Common" FILES ${SOUND_COMMON_SOURCES})
 
 source_group("oggvorbis" FILES ${OGGVORBIS_INCLUDES})
 source_group("oggvorbis" FILES ${OGGVORBIS_SOURCES})
 
-source_group("ui" FILES ${UI_INCLUDES})
-source_group("ui" FILES ${UI_SOURCES})
+source_group("Ui" FILES ${UI_INCLUDES})
+source_group("Ui" FILES ${UI_SOURCES})
 
-source_group("swf" FILES ${SWF_INCLUDES})
-source_group("swf" FILES ${SWF_SOURCES})
+source_group("SWF" FILES ${SWF_INCLUDES})
+source_group("SWF" FILES ${SWF_SOURCES})
 
-source_group("swf\\credits" FILES ${CREDIT_INCLUDES})
-source_group("swf\\credits" FILES ${CREDIT_SOURCES})
+source_group("SWF\\Credits" FILES ${CREDIT_INCLUDES})
+source_group("SWF\\Credits" FILES ${CREDIT_SOURCES})
 
-source_group("sys" FILES ${SYS_INCLUDES})
-source_group("sys" FILES ${SYS_SOURCES})
+source_group("Sys" FILES ${SYS_INCLUDES})
+source_group("Sys" FILES ${SYS_SOURCES})
 
-source_group("doomclassic" FILES ${DOOMCLASSIC_INCLUDES})
-source_group("doomclassic" FILES ${DOOMCLASSIC_SOURCES})
+source_group("DOOMClassic" FILES ${DOOMCLASSIC_INCLUDES})
+source_group("DOOMClassic" FILES ${DOOMCLASSIC_SOURCES})
 
-source_group("doomclassic" FILES ${DOOMCLASSIC_STUBAUDIO_SOURCES})
-source_group("doomclassic" FILES ${DOOMCLASSIC_OPENAL_INCLUDES})
-source_group("doomclassic" FILES ${DOOMCLASSIC_OPENAL_SOURCES})
-source_group("doomclassic" FILES ${DOOMCLASSIC_XAUDIO2_SOURCES})
-source_group("doomclassic" FILES ${DOOMCLASSIC_XAUDIO2_INCLUDES})
+source_group("DOOMClassic" FILES ${DOOMCLASSIC_STUBAUDIO_SOURCES})
+source_group("DOOMClassic" FILES ${DOOMCLASSIC_OPENAL_INCLUDES})
+source_group("DOOMClassic" FILES ${DOOMCLASSIC_OPENAL_SOURCES})
+source_group("DOOMClassic" FILES ${DOOMCLASSIC_XAUDIO2_SOURCES})
+source_group("DOOMClassic" FILES ${DOOMCLASSIC_XAUDIO2_INCLUDES})
 
 source_group("timidity" FILES ${TIMIDITY_INCLUDES})
 source_group("timidity" FILES ${TIMIDITY_SOURCES})
 
-source_group("game-d3xp" FILES ${GAMED3XP_INCLUDES})
-source_group("game-d3xp" FILES ${GAMED3XP_SOURCES})
+source_group("Game-D3XP" FILES ${GAMED3XP_INCLUDES})
+source_group("Game-D3XP" FILES ${GAMED3XP_SOURCES})
 
-source_group("game-d3xp\\ai" FILES ${GAMED3XP_AI_INCLUDES})
-source_group("game-d3xp\\ai" FILES ${GAMED3XP_AI_SOURCES})
+source_group("Game-D3XP\\AI" FILES ${GAMED3XP_AI_INCLUDES})
+source_group("Game-D3XP\\AI" FILES ${GAMED3XP_AI_SOURCES})
 
-source_group("game-d3xp\\anim" FILES ${GAMED3XP_ANIM_INCLUDES})
-source_group("game-d3xp\\anim" FILES ${GAMED3XP_ANIM_SOURCES})
+source_group("Game-D3XP\\Anim" FILES ${GAMED3XP_ANIM_INCLUDES})
+source_group("Game-D3XP\\Anim" FILES ${GAMED3XP_ANIM_SOURCES})
 
-source_group("game-d3xp\\gamesys" FILES ${GAMED3XP_GAMESYS_INCLUDES})
-source_group("game-d3xp\\gamesys" FILES ${GAMED3XP_GAMESYS_SOURCES})
+source_group("Game-D3XP\\GameSys" FILES ${GAMED3XP_GAMESYS_INCLUDES})
+source_group("Game-D3XP\\GameSys" FILES ${GAMED3XP_GAMESYS_SOURCES})
 
-source_group("game-d3xp\\menus" FILES ${GAMED3XP_MENUS_INCLUDES})
-source_group("game-d3xp\\menus" FILES ${GAMED3XP_MENUS_SOURCES})
+source_group("Game-D3XP\\Menus" FILES ${GAMED3XP_MENUS_INCLUDES})
+source_group("Game-D3XP\\Menus" FILES ${GAMED3XP_MENUS_SOURCES})
 
-source_group("game-d3xp\\physics" FILES ${GAMED3XP_PHYSICS_INCLUDES})
-source_group("game-d3xp\\physics" FILES ${GAMED3XP_PHYSICS_SOURCES})
+source_group("Game-D3XP\\Physics" FILES ${GAMED3XP_PHYSICS_INCLUDES})
+source_group("Game-D3XP\\Physics" FILES ${GAMED3XP_PHYSICS_SOURCES})
 
-source_group("game-d3xp\\script" FILES ${GAMED3XP_SCRIPT_INCLUDES})
-source_group("game-d3xp\\script" FILES ${GAMED3XP_SCRIPT_SOURCES})
+source_group("Game-D3XP\\Script" FILES ${GAMED3XP_SCRIPT_INCLUDES})
+source_group("Game-D3XP\\Script" FILES ${GAMED3XP_SCRIPT_SOURCES})
 
-source_group("sys\\win32" FILES ${WIN32_INCLUDES})
-source_group("sys\\win32" FILES ${WIN32_SOURCES})
-source_group("sys\\win32\\Resources" FILES ${WIN32_RESOURCES})
+source_group("Sys\\Win32" FILES ${WIN32_INCLUDES})
+source_group("Sys\\Win32" FILES ${WIN32_SOURCES})
+source_group("Sys\\Win32\\Resources" FILES ${WIN32_RESOURCES})
 
-source_group("sys\\posix" FILES ${POSIX_INCLUDES})
-source_group("sys\\posix" FILES ${POSIX_SOURCES})
+source_group("Sys\\Posix" FILES ${POSIX_INCLUDES})
+source_group("Sys\\Posix" FILES ${POSIX_SOURCES})
 
-source_group("sys\\common" FILES ${COMMON_INCLUDES})
-source_group("sys\\common" FILES ${COMMON_SOURCES})
+source_group("Sys\\Common" FILES ${COMMON_INCLUDES})
+source_group("Sys\\Common" FILES ${COMMON_SOURCES})
 
-source_group("sys\\sdl" FILES ${SDL_INCLUDES})
-source_group("sys\\sdl" FILES ${SDL_SOURCES})
-source_group("sys\\sdl\\resources" FILES ${SDL_RESOURCES})
+source_group("Sys\\SDL" FILES ${SDL_INCLUDES})
+source_group("Sys\\SDL" FILES ${SDL_SOURCES})
+source_group("Sys\\SDL\\Resources" FILES ${SDL_RESOURCES})
 
 
-source_group("tools\\compilers" FILES ${COMPILER_INCLUDES})
+source_group("Tools\\Compilers" FILES ${COMPILER_INCLUDES})
 
-source_group("tools\\compilers\\aas" FILES ${COMPILER_AAS_INCLUDES})
-source_group("tools\\compilers\\aas" FILES ${COMPILER_AAS_SOURCES})
+source_group("Tools\\Compilers\\AAS" FILES ${COMPILER_AAS_INCLUDES})
+source_group("Tools\\Compilers\\AAS" FILES ${COMPILER_AAS_SOURCES})
 
-source_group("tools\\compilers\\dmap" FILES ${COMPILER_DMAP_INCLUDES})
-source_group("tools\\compilers\\dmap" FILES ${COMPILER_DMAP_SOURCES})
+source_group("Tools\\Compilers\\Dmap" FILES ${COMPILER_DMAP_INCLUDES})
+source_group("Tools\\Compilers\\Dmap" FILES ${COMPILER_DMAP_SOURCES})
 
-source_group("tools\\compilers\\renderbump" FILES ${COMPILER_RENDERBUMP_INCLUDES})
-source_group("tools\\compilers\\renderbump" FILES ${COMPILER_RENDERBUMP_SOURCES})
+source_group("Tools\\Compilers\\RenderBump" FILES ${COMPILER_RENDERBUMP_INCLUDES})
+source_group("Tools\\Compilers\\RenderBump" FILES ${COMPILER_RENDERBUMP_SOURCES})
 
-source_group("tools\\compilers\\roqvq" FILES ${COMPILER_ROQVQ_INCLUDES})
-source_group("tools\\compilers\\roqvq" FILES ${COMPILER_ROQVQ_SOURCES})
+source_group("Tools\\Compilers\\RoqVq" FILES ${COMPILER_ROQVQ_INCLUDES})
+source_group("Tools\\Compilers\\RoqVq" FILES ${COMPILER_ROQVQ_SOURCES})
 
-source_group("tools" FILES ${TOOLS_INCLUDES})
+source_group("Tools" FILES ${TOOLS_INCLUDES})
 
-source_group("tools\\comafx" FILES ${TOOLS_COMAFX_INCLUDES})
-source_group("tools\\comafx" FILES ${TOOLS_COMAFX_SOURCES})
+source_group("Tools\\ComaFX" FILES ${TOOLS_COMAFX_INCLUDES})
+source_group("Tools\\ComaFX" FILES ${TOOLS_COMAFX_SOURCES})
 
-source_group("tools\\common" FILES ${TOOLS_COMMON_INCLUDES})
-source_group("tools\\common" FILES ${TOOLS_COMMON_SOURCES})
+source_group("Tools\\Common" FILES ${TOOLS_COMMON_INCLUDES})
+source_group("Tools\\Common" FILES ${TOOLS_COMMON_SOURCES})
 
-source_group("tools\\common\\proptree" FILES ${TOOLS_COMMON_PROPTREE_INCLUDES})
-source_group("tools\\common\\proptree" FILES ${TOOLS_COMMON_PROPTREE_SOURCES})
+source_group("Tools\\Common\\PropTree" FILES ${TOOLS_COMMON_PROPTREE_INCLUDES})
+source_group("Tools\\Common\\PropTree" FILES ${TOOLS_COMMON_PROPTREE_SOURCES})
 
-source_group("tools\\af" FILES ${EDITOR_AF_INCLUDES})
-source_group("tools\\af" FILES ${EDITOR_AF_SOURCES})
+source_group("Tools\\AF" FILES ${EDITOR_AF_INCLUDES})
+source_group("Tools\\AF" FILES ${EDITOR_AF_SOURCES})
 
-source_group("tools\\debugger" FILES ${EDITOR_DEBUGGER_INCLUDES})
-source_group("tools\\debugger" FILES ${EDITOR_DEBUGGER_SOURCES})
+source_group("Tools\\Debugger" FILES ${EDITOR_DEBUGGER_INCLUDES})
+source_group("Tools\\Debugger" FILES ${EDITOR_DEBUGGER_SOURCES})
 
-source_group("tools\\decl" FILES ${EDITOR_DECL_INCLUDES})
-source_group("tools\\decl" FILES ${EDITOR_DECL_SOURCES})
+source_group("Tools\\Decl" FILES ${EDITOR_DECL_INCLUDES})
+source_group("Tools\\Decl" FILES ${EDITOR_DECL_SOURCES})
 
-source_group("tools\\guied" FILES ${EDITOR_GUIED_INCLUDES})
-source_group("tools\\guied" FILES ${EDITOR_GUIED_SOURCES})
+source_group("Tools\\GuiEd" FILES ${EDITOR_GUIED_INCLUDES})
+source_group("Tools\\GuiEd" FILES ${EDITOR_GUIED_SOURCES})
 
-source_group("tools\\materialeditor" FILES ${EDITOR_MATERIALEDITOR_INCLUDES})
-source_group("tools\\materialeditor" FILES ${EDITOR_MATERIALEDITOR_SOURCES})
+source_group("Tools\\MaterialEditor" FILES ${EDITOR_MATERIALEDITOR_INCLUDES})
+source_group("Tools\\MaterialEditor" FILES ${EDITOR_MATERIALEDITOR_SOURCES})
 
-source_group("tools\\particle" FILES ${EDITOR_PARTICLE_INCLUDES})
-source_group("tools\\particle" FILES ${EDITOR_PARTICLE_SOURCES})
+source_group("Tools\\Particle" FILES ${EDITOR_PARTICLE_INCLUDES})
+source_group("Tools\\Particle" FILES ${EDITOR_PARTICLE_SOURCES})
 
-source_group("tools\\pda" FILES ${EDITOR_PDA_INCLUDES})
-source_group("tools\\pda" FILES ${EDITOR_PDA_SOURCES})
+source_group("Tools\\PDA" FILES ${EDITOR_PDA_INCLUDES})
+source_group("Tools\\PDA" FILES ${EDITOR_PDA_SOURCES})
 
-source_group("tools\\radiant" FILES ${EDITOR_RADIANT_INCLUDES})
-source_group("tools\\radiant" FILES ${EDITOR_RADIANT_SOURCES})
+source_group("Tools\\Radiant" FILES ${EDITOR_RADIANT_INCLUDES})
+source_group("Tools\\Radiant" FILES ${EDITOR_RADIANT_SOURCES})
 
-source_group("tools\\script" FILES ${EDITOR_SCRIPT_INCLUDES})
-source_group("tools\\script" FILES ${EDITOR_SCRIPT_SOURCES})
+source_group("Tools\\Script" FILES ${EDITOR_SCRIPT_INCLUDES})
+source_group("Tools\\Script" FILES ${EDITOR_SCRIPT_SOURCES})
 
-source_group("tools\\sound" FILES ${EDITOR_SOUND_INCLUDES})
-source_group("tools\\sound" FILES ${EDITOR_SOUND_SOURCES})
+source_group("Tools\\Sound" FILES ${EDITOR_SOUND_INCLUDES})
+source_group("Tools\\Sound" FILES ${EDITOR_SOUND_SOURCES})
 
 set(LIB_INCLUDES
 			${IRRXML_INCLUDES}
