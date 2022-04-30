@@ -141,6 +141,16 @@ static void CALLBACK DebugCallback( unsigned int source, unsigned int type,
 	// RB end
 }
 
+static void R_PrintExtensionStatus(bool extBool, const char* extName) {
+	if (extBool) {
+		common->Printf("...using %s\n", extName);
+	}
+	else
+	{
+		common->Printf("X..%s not found\n", extName);
+	}
+}
+
 
 /*
 ==================
@@ -196,13 +206,6 @@ static void R_CheckPortableExtensions()
 		glConfig.multitextureAvailable = GLEW_ARB_multitexture != 0;
 	}
 	
-	// GL_ARB_direct_state_access
-	//GK: Use the core direct State Access intead (what purpose the EXT has?)
-	glConfig.directStateAccess = GLEW_ARB_direct_state_access != 0;
-
-	common->Printf("\nOpenGL DSA is %s\n", (glConfig.directStateAccess ? "active" : "inactive"));
-	
-	
 	// GL_ARB_texture_compression + GL_S3_s3tc
 	// DRI drivers may have GL_ARB_texture_compression but no GL_EXT_texture_compression_s3tc
 	if( glConfig.driverType == GLDRV_OPENGL_MESA_CORE_PROFILE )
@@ -224,19 +227,18 @@ static void R_CheckPortableExtensions()
 	{
 		glConfig.maxTextureAnisotropy = 1;
 	}
+
+	// GL_ARB_direct_state_access
+	//GK: Use the core direct State Access intead (what purpose the EXT has?)
+	glConfig.directStateAccess = GLEW_ARB_direct_state_access != 0;
+
+	R_PrintExtensionStatus(glConfig.directStateAccess, "GL_ARB_direct_state_access");
 	
 	// GL_EXT_texture_lod_bias
 	// The actual extension is broken as specificed, storing the state in the texture unit instead
 	// of the texture object.  The behavior in GL 1.4 is the behavior we use.
 	glConfig.textureLODBiasAvailable = ( glConfig.glVersion >= 1.4 || GLEW_EXT_texture_lod_bias != 0 );
-	if( glConfig.textureLODBiasAvailable )
-	{
-		common->Printf( "...using %s\n", "GL_EXT_texture_lod_bias" );
-	}
-	else
-	{
-		common->Printf( "X..%s not found\n", "GL_EXT_texture_lod_bias" );
-	}
+	R_PrintExtensionStatus(glConfig.textureLODBiasAvailable, "GL_EXT_texture_lod_bias");
 	
 	// GL_ARB_seamless_cube_map
 	glConfig.seamlessCubeMapAvailable = GLEW_ARB_seamless_cube_map != 0;
@@ -323,39 +325,20 @@ static void R_CheckPortableExtensions()
 	
 	// GREMEDY_string_marker
 	glConfig.gremedyStringMarkerAvailable = GLEW_GREMEDY_string_marker != 0;
-	if( glConfig.gremedyStringMarkerAvailable )
-	{
-		common->Printf( "...using %s\n", "GL_GREMEDY_string_marker" );
-	}
-	else
-	{
-		common->Printf( "X..%s not found\n", "GL_GREMEDY_string_marker" );
-	}
+	R_PrintExtensionStatus(glConfig.gremedyStringMarkerAvailable, "GL_GREMEDY_string_marker");
 	
 	// GL_ARB_framebuffer_object
 	glConfig.framebufferObjectAvailable = GLEW_ARB_framebuffer_object != 0;
+	R_PrintExtensionStatus(glConfig.framebufferObjectAvailable, "GL_ARB_framebuffer_object");
 	if( glConfig.framebufferObjectAvailable )
 	{
 		glGetIntegerv( GL_MAX_RENDERBUFFER_SIZE, &glConfig.maxRenderbufferSize );
 		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &glConfig.maxColorAttachments );
-		
-		common->Printf( "...using %s\n", "GL_ARB_framebuffer_object" );
-	}
-	else
-	{
-		common->Printf( "X..%s not found\n", "GL_ARB_framebuffer_object" );
 	}
 	
 	// GL_EXT_framebuffer_blit
 	glConfig.framebufferBlitAvailable = GLEW_EXT_framebuffer_blit != 0;
-	if( glConfig.framebufferBlitAvailable )
-	{
-		common->Printf( "...using %s\n", "GL_EXT_framebuffer_blit" );
-	}
-	else
-	{
-		common->Printf( "X..%s not found\n", "GL_EXT_framebuffer_blit" );
-	}
+	R_PrintExtensionStatus(glConfig.framebufferBlitAvailable, "GL_EXT_framebuffer_blit");
 	
 	// GL_ARB_debug_output
 	glConfig.debugOutputAvailable = GLEW_ARB_debug_output != 0;
