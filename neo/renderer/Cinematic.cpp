@@ -676,9 +676,9 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		}
 		cinematicAudio->InitAudio(dec_ctx2);
 	}
-	else {
+	/*else {
 		common->Warning("idCinematic: Cannot find an audio stream in: '%s', %d\n", qpath, looping);
-	}
+	}*/
 	//GK:End
 	CIN_WIDTH = dec_ctx->width;
 	CIN_HEIGHT = dec_ctx->height;
