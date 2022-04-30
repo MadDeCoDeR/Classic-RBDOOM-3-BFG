@@ -128,7 +128,7 @@ struct glconfig_t
 	float				glVersion;				// atof( version_string )
 	
 	int					maxTextureSize;			// queried from GL
-	int					maxTextureCoords;
+	int64				maxTextureCoords; //GK: Apparently OpenGL refuses to return this value except if it is 64-bit
 	int					maxTextureImageUnits;
 	int					uniformBufferOffsetAlignment;
 	float				maxTextureAnisotropy;

@@ -283,7 +283,7 @@ static void R_CheckPortableExtensions()
 	glConfig.fragmentProgramAvailable = GLEW_ARB_fragment_program != 0;
 	//if( glConfig.fragmentProgramAvailable )
 	{
-		glGetIntegerv( GL_MAX_TEXTURE_COORDS, ( GLint* )&glConfig.maxTextureCoords );
+		glGetInteger64v( GL_MAX_TEXTURE_COORDS, ( GLint64* )&glConfig.maxTextureCoords );
 		glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS, ( GLint* )&glConfig.maxTextureImageUnits );
 	}
 	
@@ -485,7 +485,7 @@ void idRenderBackend::Init()
 	glConfig.version_string = ( const char* )glGetString( GL_VERSION );
 	glConfig.shading_language_string = ( const char* )glGetString( GL_SHADING_LANGUAGE_VERSION );
 	glConfig.extensions_string = ( const char* )glGetString( GL_EXTENSIONS );
-	
+	GL_CheckErrors();
 	if( glConfig.extensions_string == NULL )
 	{
 		// As of OpenGL 3.2, glGetStringi is required to obtain the available extensions
