@@ -446,7 +446,7 @@ void idImage::SetTexParameters()
 idImage::SetSamplerState
 ====================
 */
-void idImage::SetSamplerState( textureFilter_t filter, textureRepeat_t repeat )
+void idImage::SetSamplerState( textureFilter_t _filter, textureRepeat_t _repeat )
 {
 
 }

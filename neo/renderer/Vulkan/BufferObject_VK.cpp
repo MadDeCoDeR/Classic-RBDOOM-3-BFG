@@ -196,15 +196,15 @@ void idVertexBuffer::FreeBufferObject()
 idVertexBuffer::Update
 ========================
 */
-void idVertexBuffer::Update( const void* data, int size, int offset ) const
+void idVertexBuffer::Update( const void* data, int _size, int offset ) const
 {
 	assert( apiObject != VK_NULL_HANDLE );
 	assert_16_byte_aligned( data );
 	assert( ( GetOffset() & 15 ) == 0 );
 	
-	if( size > GetSize() )
+	if( _size > GetSize() )
 	{
-		idLib::FatalError( "idVertexBuffer::Update: size overrun, %i > %i\n", size, GetSize() );
+		idLib::FatalError( "idVertexBuffer::Update: size overrun, %i > %i\n", _size, GetSize() );
 	}
 	
 	if( usage == BU_DYNAMIC )
@@ -215,21 +215,21 @@ void idVertexBuffer::Update( const void* data, int size, int offset ) const
 #else
 			allocation.data + GetOffset() + offset,
 #endif
-			( const byte* )data, size );
+			( const byte* )data, _size );
 	}
 	else
 	{
 		VkBuffer stageBuffer;
 		VkCommandBuffer commandBuffer;
 		int stageOffset = 0;
-		byte* stageData = stagingManager.Stage( size, 1, commandBuffer, stageBuffer, stageOffset );
+		byte* stageData = stagingManager.Stage( _size, 1, commandBuffer, stageBuffer, stageOffset );
 		
-		memcpy( stageData, data, size );
+		memcpy( stageData, data, _size );
 		
 		VkBufferCopy bufferCopy = {};
 		bufferCopy.srcOffset = stageOffset;
 		bufferCopy.dstOffset = GetOffset() + offset;
-		bufferCopy.size = size;
+		bufferCopy.size = _size;
 		
 		vkCmdCopyBuffer( commandBuffer, stageBuffer, apiObject, 1, &bufferCopy );
 	}
@@ -455,15 +455,15 @@ void idIndexBuffer::FreeBufferObject()
 idIndexBuffer::Update
 ========================
 */
-void idIndexBuffer::Update( const void* data, int size, int offset ) const
+void idIndexBuffer::Update( const void* data, int _size, int offset ) const
 {
 	assert( apiObject != VK_NULL_HANDLE );
 	assert_16_byte_aligned( data );
 	assert( ( GetOffset() & 15 ) == 0 );
 	
-	if( size > GetSize() )
+	if( _size > GetSize() )
 	{
-		idLib::FatalError( "idIndexBuffer::Update: size overrun, %i > %i\n", size, GetSize() );
+		idLib::FatalError( "idIndexBuffer::Update: size overrun, %i > %i\n", _size, GetSize() );
 	}
 	
 	if( usage == BU_DYNAMIC )
@@ -474,21 +474,21 @@ void idIndexBuffer::Update( const void* data, int size, int offset ) const
 #else
 			allocation.data + GetOffset() + offset,
 #endif
-			( const byte* )data, size );
+			( const byte* )data, _size );
 	}
 	else
 	{
 		VkBuffer stageBuffer;
 		VkCommandBuffer commandBuffer;
 		int stageOffset = 0;
-		byte* stageData = stagingManager.Stage( size, 1, commandBuffer, stageBuffer, stageOffset );
+		byte* stageData = stagingManager.Stage( _size, 1, commandBuffer, stageBuffer, stageOffset );
 		
-		memcpy( stageData, data, size );
+		memcpy( stageData, data, _size );
 		
 		VkBufferCopy bufferCopy = {};
 		bufferCopy.srcOffset = stageOffset;
 		bufferCopy.dstOffset = GetOffset() + offset;
-		bufferCopy.size = size;
+		bufferCopy.size = _size;
 		
 		vkCmdCopyBuffer( commandBuffer, stageBuffer, apiObject, 1, &bufferCopy );
 	}
@@ -715,15 +715,15 @@ void idUniformBuffer::FreeBufferObject()
 idUniformBuffer::Update
 ========================
 */
-void idUniformBuffer::Update( const void* data, int size, int offset ) const
+void idUniformBuffer::Update( const void* data, int _size, int offset ) const
 {
 	assert( apiObject != VK_NULL_HANDLE );
 	assert_16_byte_aligned( data );
 	assert( ( GetOffset() & 15 ) == 0 );
 	
-	if( size > GetSize() )
+	if( _size > GetSize() )
 	{
-		idLib::FatalError( "idUniformBuffer::Update: size overrun, %i > %i\n", size, size );
+		idLib::FatalError( "idUniformBuffer::Update: size overrun, %i > %i\n", _size, _size );
 	}
 	
 	if( usage == BU_DYNAMIC )
@@ -734,21 +734,21 @@ void idUniformBuffer::Update( const void* data, int size, int offset ) const
 #else
 			allocation.data + GetOffset() + offset,
 #endif
-			( const byte* )data, size );
+			( const byte* )data, _size );
 	}
 	else
 	{
 		VkBuffer stageBuffer;
 		VkCommandBuffer commandBuffer;
 		int stageOffset = 0;
-		byte* stageData = stagingManager.Stage( size, 1, commandBuffer, stageBuffer, stageOffset );
+		byte* stageData = stagingManager.Stage( _size, 1, commandBuffer, stageBuffer, stageOffset );
 		
-		memcpy( stageData, data, size );
+		memcpy( stageData, data, _size );
 		
 		VkBufferCopy bufferCopy = {};
 		bufferCopy.srcOffset = stageOffset;
 		bufferCopy.dstOffset = GetOffset() + offset;
-		bufferCopy.size = size;
+		bufferCopy.size = _size;
 		
 		vkCmdCopyBuffer( commandBuffer, stageBuffer, apiObject, 1, &bufferCopy );
 	}

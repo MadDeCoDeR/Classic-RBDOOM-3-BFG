@@ -1576,8 +1576,8 @@ idRenderBackend::ResizeImages
 */
 void idRenderBackend::ResizeImages()
 {
-	if( vkcontext.swapchainExtent.width == glConfig.nativeScreenWidth &&
-			vkcontext.swapchainExtent.height == glConfig.nativeScreenHeight &&
+	if( vkcontext.swapchainExtent.width == (uint)glConfig.nativeScreenWidth &&
+			vkcontext.swapchainExtent.height == (uint)glConfig.nativeScreenHeight &&
 			vkcontext.fullscreen == glConfig.isFullscreen )
 	{
 		return;

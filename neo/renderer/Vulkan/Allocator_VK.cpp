@@ -501,14 +501,14 @@ void idVulkanAllocator::Shutdown()
 	EmptyGarbage();
 	for( int i = 0; i < VK_MAX_MEMORY_TYPES; ++i )
 	{
-		idList< idVulkanBlock* >& blocks = this->blocks[ i ];
-		const int numBlocks = blocks.Num();
+		idList< idVulkanBlock* >& blocks_ = this->blocks[ i ];
+		const int numBlocks = blocks_.Num();
 		for( int j = 0; j < numBlocks; ++j )
 		{
-			delete blocks[ j ];
+			delete blocks_[ j ];
 		}
 		
-		blocks.Clear();
+		blocks_.Clear();
 	}
 }
 
@@ -533,11 +533,11 @@ vulkanAllocation_t idVulkanAllocator::Allocate(
 		idLib::FatalError( "idVulkanAllocator::Allocate: Unable to find a memoryTypeIndex for allocation request." );
 	}
 	
-	idList< idVulkanBlock* >& blocks = this->blocks[ memoryTypeIndex ];
-	const int numBlocks = blocks.Num();
+	idList< idVulkanBlock* >& blocks_ = this->blocks[ memoryTypeIndex ];
+	const int numBlocks = blocks_.Num();
 	for( int i = 0; i < numBlocks; ++i )
 	{
-		idVulkanBlock* block = blocks[ i ];
+		idVulkanBlock* block = blocks_[ i ];
 		
 		if( block->memoryTypeIndex != memoryTypeIndex )
 		{
@@ -555,7 +555,7 @@ vulkanAllocation_t idVulkanAllocator::Allocate(
 	idVulkanBlock* block = new idVulkanBlock( memoryTypeIndex, blockSize, usage );
 	if( block->Init() )
 	{
-		blocks.Append( block );
+		blocks_.Append( block );
 	}
 	else
 	{
@@ -586,12 +586,12 @@ void idVulkanAllocator::EmptyGarbage()
 {
 	garbageIndex = ( garbageIndex + 1 ) % NUM_FRAME_DATA;
 	
-	idList< vulkanAllocation_t >& garbage = this->garbage[ garbageIndex ];
+	idList< vulkanAllocation_t >& garbage_ = this->garbage[ garbageIndex ];
 	
-	const int numAllocations = garbage.Num();
+	const int numAllocations = garbage_.Num();
 	for( int i = 0; i < numAllocations; ++i )
 	{
-		vulkanAllocation_t allocation = garbage[ i ];
+		vulkanAllocation_t allocation = garbage_[ i ];
 		
 		allocation.block->Free( allocation );
 		
@@ -603,7 +603,7 @@ void idVulkanAllocator::EmptyGarbage()
 		}
 	}
 	
-	garbage.Clear();
+	garbage_.Clear();
 }
 
 CONSOLE_COMMAND( Vulkan_PrintHeapInfo, "Print out the heap information for this hardware.", 0 )
