@@ -81,7 +81,6 @@ extern idCVar r_windowY;
 extern idCVar r_windowWidth;
 extern idCVar r_windowHeight;
 extern idCVar com_emergencyexit;
-extern idCVar con_isActive;
 // DG end
 //GK: This function will run as a thread in order to capture when a joystick is connected or disconnected
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -822,7 +821,7 @@ sysEvent_t Sys_GetEvent()
 	// WM0110: previous state of joystick hat
 	static int previous_hat_state = SDL_HAT_CENTERED;
 
-	if (con_isActive.GetBool()) {
+	if (console->Active()) {
 		if (!SDL_IsTextInputActive()) {
 			SDL_StartTextInput();
 		}

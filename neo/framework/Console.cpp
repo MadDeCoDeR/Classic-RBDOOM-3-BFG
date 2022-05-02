@@ -158,7 +158,6 @@ idConsole* console = &localConsole;
 
 idCVar idConsoleLocal::con_speed( "con_speed", "3", CVAR_SYSTEM, "speed at which the console moves up and down" );
 idCVar idConsoleLocal::con_notifyTime( "con_notifyTime", "3", CVAR_SYSTEM, "time messages are displayed onscreen when console is pulled up" );
-idCVar con_isActive("con_isActive", "0", CVAR_SYSTEM | CVAR_BOOL, "Tell SDL to start or stop getting keyboard input as text" );
 #ifdef DEBUG
 idCVar idConsoleLocal::con_noPrint( "con_noPrint", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "print on the console but not onscreen when console is pulled up" );
 #else
@@ -505,9 +504,6 @@ void	idConsoleLocal::Open()
 	consoleField.Clear();
 	keyCatching = true;
 	SetDisplayFraction( 0.5f );
-	if (!common->IsMultiplayer()) {
-		con_isActive.SetBool(true);
-	}
 	if (::op && ::op->IsPortable()) {
 		int xpos = renderSystem->GetWidth() / 2 - 320;
 		int ypos = renderSystem->GetHeight() / 2;
@@ -529,9 +525,6 @@ void	idConsoleLocal::Close()
 	SetDisplayFraction( 0 );
 	displayFrac = 0;	// don't scroll to that point, go immediately
 	ClearNotifyLines();
-	if (!common->IsMultiplayer()) {
-		con_isActive.SetBool(false);
-	}
 }
 
 /*
@@ -935,9 +928,6 @@ bool	idConsoleLocal::ProcessEvent( const sysEvent_t* event, bool forceAccept )
 		}
 		else
 		{
-			if (!common->IsMultiplayer()) {
-				con_isActive.SetBool(true);
-			}
 			if (::op && ::op->IsPortable()) {
 				int xpos = renderSystem->GetWidth() / 2 - 320;
 				int ypos = renderSystem->GetHeight()/2;
