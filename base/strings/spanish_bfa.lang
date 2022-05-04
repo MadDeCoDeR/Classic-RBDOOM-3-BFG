@@ -42,6 +42,7 @@
 	"#str_weapon_flashlight_desc" "Fuente de luz estándar UAC. Este modelo usa corriente estática, de forma que no hace falta reponer las pilas."
 	"#str_auto_save_title" "Guardado automático"
 	"#str_auto_save_success" "Partida guardada"
+	"#str_lang_menu"	"Idioma"
 // 	"#str_swf_custom_game" "Nombre del mod"
 // 	"#str_swf_start_map" "Primer mapa para cargar"
 }

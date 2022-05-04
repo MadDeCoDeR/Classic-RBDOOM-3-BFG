@@ -42,6 +42,7 @@
 	"#str_weapon_flashlight_desc" "明るい暗い領域。かなり重く、他の人に危害を及ぼす可能性があります。"
 	"#str_auto_save_title" "自動保存"
 	"#str_auto_save_success" "ゲームが保存されました"
+	"#str_lang_menu"	"言語"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "最初にロードするマップ"
 }

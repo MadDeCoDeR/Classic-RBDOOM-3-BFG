@@ -35,6 +35,8 @@ const static int NUM_ADVANCED_OPTIONS_OPTIONS = 8;
 //extern idCVar flashlight_old;
 //extern idCVar pm_vmfov;
 
+extern idCVar sys_lang;
+
 /*
 ========================
 idMenuScreen_Shell_AdvancedOptions::Initialize
@@ -102,6 +104,14 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_FPS);
 	control->SetupEvents(2, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_FPS);
+	options->AddChild(control);
+
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TEXT);
+	control->SetLabel("#str_lang_menu");	// Language
+	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_LANG);
+	control->SetupEvents(2, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_LANG);
 	options->AddChild(control);
 	
 	options->AddEventAction( WIDGET_EVENT_SCROLL_DOWN ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_DOWN_START_REPEATER, WIDGET_EVENT_SCROLL_DOWN ) );
@@ -185,6 +195,41 @@ idMenuScreen_Shell_SystemOptions::HideScreen
 */
 void idMenuScreen_Shell_AdvancedOptions::HideScreen( const mainMenuTransition_t transitionType )
 {
+	if (advData.IsRestartRequired())
+	{
+		class idSWFScriptFunction_Restart : public idSWFScriptFunction_RefCounted
+		{
+		public:
+			idSWFScriptFunction_Restart(gameDialogMessages_t _msg, bool _restart)
+			{
+				msg = _msg;
+				restart = _restart;
+			}
+			idSWFScriptVar Call(idSWFScriptObject* thisObject, const idSWFParmList& parms)
+			{
+				common->Dialog().ClearDialog(msg);
+				if (restart)
+				{
+					// DG: Sys_ReLaunch() doesn't need any options anymore
+					//     (the old way would have been unnecessarily painful on POSIX systems)
+					Sys_ReLaunch();
+					// DG end
+				}
+				return idSWFScriptVar();
+			}
+		private:
+			gameDialogMessages_t msg;
+			bool restart;
+		};
+		idStaticList<idSWFScriptFunction*, 4> callbacks;
+		idStaticList<idStrId, 4> optionText;
+		callbacks.Append(new idSWFScriptFunction_Restart(GDM_GAME_RESTART_REQUIRED, false));
+		callbacks.Append(new idSWFScriptFunction_Restart(GDM_GAME_RESTART_REQUIRED, true));
+		optionText.Append(idStrId("#str_00100113")); // Continue
+		optionText.Append(idStrId("#str_02487")); // Restart Now
+		common->Dialog().AddDynamicDialog(GDM_GAME_RESTART_REQUIRED, callbacks, optionText, true, idStr());
+	}
+
 	if( advData.IsDataChanged() )
 	{
 		advData.CommitData();
@@ -309,6 +354,15 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 	originalFlashlight = game->GetCVarInteger("flashlight_old");
 	originalVmfov = game->GetCVarInteger("pm_vmfov");
 	originalFPS = com_showFPS.GetInteger();
+	originalLang = sys_lang.GetString();
+}
+
+bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsRestartRequired() const
+{
+	if (idStr::Icmp(originalLang, sys_lang.GetString()) != 0) {
+		return true;
+	}
+	return false;
 }
 
 /*
@@ -395,6 +449,15 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 		case ADV_FIELD_FPS:
 			com_showFPS.SetInteger(AdjustOption(com_showFPS.GetInteger(), specializedValues, specializedNumValues, adjustAmount));
 			break;
+		case ADV_FIELD_LANG:
+			idList<int> langValues;
+			langValues.Clear();
+
+			for (int i = 0; i < Sys_NumLangs(); i++) {
+				langValues.AddUnique(i);
+			}
+			sys_lang.SetString(Sys_Lang(AdjustOption(Sys_LangIndex(sys_lang.GetString()), langValues.Ptr(), Sys_NumLangs(), adjustAmount)));
+			break;
 	}
 	cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 }
@@ -440,6 +503,8 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 			case 0:
 				return "#str_swf_disabled";
 			}
+		case ADV_FIELD_LANG:
+			return va("#str_lang_%s", sys_lang.GetString());
 	}
 	return false;
 }
@@ -464,6 +529,9 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 		return true;
 	}
 	if (originalFPS != com_showFPS.GetInteger()) {
+		return true;
+	}
+	if (idStr::Icmp(originalLang, sys_lang.GetString()) != 0) {
 		return true;
 	}
 	return false;

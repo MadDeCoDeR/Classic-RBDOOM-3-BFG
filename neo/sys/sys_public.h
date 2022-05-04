@@ -667,6 +667,7 @@ bool Sys_Exec(	const char* appPath, const char* workingPath, const char* args,
 #define ID_LANG_JAPANESE	"japanese"
 int Sys_NumLangs();
 const char* Sys_Lang( int idx );
+int Sys_LangIndex(const char* lang);
 
 /*
 ==============================================================

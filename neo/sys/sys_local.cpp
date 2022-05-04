@@ -30,14 +30,12 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "sys_local.h"
 
-const char* sysLanguageNames[] =
+idStrList sysLanguageNames;/*=
 {
 	ID_LANG_ENGLISH, ID_LANG_FRENCH, ID_LANG_ITALIAN, ID_LANG_GERMAN, ID_LANG_SPANISH, ID_LANG_JAPANESE, NULL
-};
+}*/
 
-const int numLanguages = sizeof( sysLanguageNames ) / sizeof sysLanguageNames[ 0 ] - 1;
-
-idCVar sys_lang( "sys_lang", ID_LANG_ENGLISH, CVAR_SYSTEM | CVAR_INIT, ""/*, sysLanguageNames, idCmdSystem::ArgCompletion_String<sysLanguageNames>*/ );
+idCVar sys_lang( "sys_lang", ID_LANG_ENGLISH, CVAR_SYSTEM | CVAR_INIT | CVAR_ARCHIVE, ""/*, sysLanguageNames, idCmdSystem::ArgCompletion_String<sysLanguageNames>*/ );
 
 idSysLocal			sysLocal;
 idSys* 				sys = &sysLocal;
@@ -287,18 +285,30 @@ const char* Sys_SecToStr( int sec )
 // return number of supported languages
 int Sys_NumLangs()
 {
-	return numLanguages;
+	return sysLanguageNames.Num();
 }
 
 // get language name by index
 const char* Sys_Lang( int idx )
 {
-	if( idx >= 0 && idx < numLanguages )
+	if( idx >= 0 && idx < sysLanguageNames.Num())
 	{
 		return sysLanguageNames[ idx ];
 	}
 	return "";
 }
+
+//GK: Do what the above does in reverse
+int Sys_LangIndex(const char* lang)
+{
+	for (int i = 0; i < sysLanguageNames.Num(); i++) {
+		if (idStr::Icmp(lang, sysLanguageNames[i]) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+//GK: End
 
 const char* Sys_DefaultLanguage()
 {
@@ -343,6 +353,10 @@ const char* Sys_DefaultLanguage()
 		temp = temp.Right( temp.Length() - strlen( "strings/" ) );
 		temp = temp.Left( temp.Length() - strlen( ".lang" ) );
 		currentLangList[i] = temp;
+		//GK: Update available lang list with potentianly new languages
+		if (temp.Find("_") >= 0) {
+			sysLanguageNames.AddUnique(temp.SubStr(0, temp.Find("_")));
+		}
 	}
 	
 	if( currentLangList.Num() <= 0 )

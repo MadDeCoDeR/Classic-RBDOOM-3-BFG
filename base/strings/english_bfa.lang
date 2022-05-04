@@ -42,6 +42,7 @@
 	"#str_weapon_flashlight_desc"	"Light dark areas. It's quite heavy and could harm others."
 	"#str_auto_save_title"	"Auto Save"
 	"#str_auto_save_success"	"Game Saved"
+	"#str_lang_menu"	"Language"
 //	"#str_swf_custom_game"	"Mod Name"
 //	"#str_swf_start_map"	"First Map to load"
 }

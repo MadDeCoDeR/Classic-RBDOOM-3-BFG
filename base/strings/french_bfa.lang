@@ -42,6 +42,7 @@
 	"#str_weapon_flashlight_desc" "Zones sombres claires. Il est assez lourd et pourrait nuire aux autres."
 	"#str_auto_save_title" "Enregistrement automatique"
 	"#str_auto_save_success" "Jeu enregistré"
+	"#str_lang_menu"	"Langue"
 // 	"#str_swf_custom_game" "Nom du mod"
 // 	"#str_swf_start_map" "Première carte à charger"
 }

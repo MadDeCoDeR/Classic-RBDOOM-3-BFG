@@ -42,6 +42,7 @@
 	"#str_weapon_flashlight_desc" "Helle dunkle Bereiche. Es ist ziemlich schwer und könnte anderen schaden."
 	"#str_auto_save_title" "Automatisch speichern"
 	"#str_auto_save_success" "Spiel gespeichert"
+	"#str_lang_menu"	"Sprache"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "Erste zu ladende Karte"
 }

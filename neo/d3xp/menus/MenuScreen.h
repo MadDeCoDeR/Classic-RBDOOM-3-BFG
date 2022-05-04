@@ -1538,6 +1538,7 @@ public:
 			ADV_FIELD_FLASH,
 			ADV_FIELD_VMFOV,
 			ADV_FIELD_FPS,
+			ADV_FIELD_LANG,
 			MAX_ADVANCED_FIELDS
 		};
 
@@ -1558,11 +1559,14 @@ public:
 		// updates a particular field value
 		virtual void				AdjustField(const int fieldIndex, const int adjustAmount);
 
+		bool						IsRestartRequired() const;
+
 	private:
 		int originalATHDR;
 		int originalFlashlight;
 		int originalVmfov;
 		int originalFPS;
+		idStr originalLang;
 
 		int AdjustOption(int currentValue, const int values[], int numValues, int adjustment);
 	};
