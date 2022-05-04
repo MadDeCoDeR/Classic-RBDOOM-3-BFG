@@ -354,8 +354,8 @@ const char* Sys_DefaultLanguage()
 		temp = temp.Left( temp.Length() - strlen( ".lang" ) );
 		currentLangList[i] = temp;
 		//GK: Update available lang list with potentianly new languages
-		if (temp.Find("_") >= 0) {
-			sysLanguageNames.AddUnique(temp.SubStr(0, temp.Find("_")));
+		if (temp.Find("_") < 0) {
+			sysLanguageNames.AddUnique(temp);
 		}
 	}
 	
