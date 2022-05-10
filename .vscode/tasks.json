@@ -6,7 +6,7 @@
         {
             "label": "MakeFile",
             "type": "shell",
-            "command": "make",
+            "command": "make DoomBFA",
             "options": {
                 "cwd":"${workspaceRoot}/build"
             },

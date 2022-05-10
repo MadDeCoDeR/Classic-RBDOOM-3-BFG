@@ -50,3 +50,6 @@ neo/neo.kdev4
 /MSIXBFA
 /BFA-installer/BFAInst
 /neo/libs/platform-*
+/.vscode/targets.log
+/.vscode/dryrun.log
+/.vscode/configurationCache.log
