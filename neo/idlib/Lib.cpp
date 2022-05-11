@@ -200,6 +200,9 @@ void idLib::FatalError( const char* fmt, ... )
 	va_end( argptr );
 	
 	common->FatalError( "%s", text );
+#ifndef _WIN32 //GK: gcc noreturn returns warning
+	exit(1);
+#endif
 }
 
 /*
@@ -217,6 +220,9 @@ void idLib::Error( const char* fmt, ... )
 	va_end( argptr );
 	
 	common->Error( "%s", text );
+#ifndef _WIN32
+	exit(1);
+#endif
 }
 
 /*

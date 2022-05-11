@@ -61,64 +61,64 @@ If you have questions concerning this license or the applicable additional terms
 
 
 //GK: No constants
-/*const*/ char*	e1text = E1TEXT;
-/*const*/ char*	e2text = E2TEXT;
-/*const*/ char*	e3text = E3TEXT;
-/*const*/ char*	e4text = E4TEXT;
+/*const*/ char*	e1text = (char*) E1TEXT;
+/*const*/ char*	e2text = (char*) E2TEXT;
+/*const*/ char*	e3text = (char*) E3TEXT;
+/*const*/ char*	e4text = (char*) E4TEXT;
 
-/*const*/ char*	c1text = C1TEXT;
-/*const*/ char*	c2text = C2TEXT;
-/*const*/ char*	c3text = C3TEXT;
-/*const*/ char*	c4text = C4TEXT;
-/*const*/ char*	c5text = C5TEXT;
-/*const*/ char*	c6text = C6TEXT;
-/*const*/ char* c7text = C7TEXT;
-/*const*/ char* c8Text = C8TEXT;
-/*const*/ char* c9Text = C9TEXT;
+/*const*/ char*	c1text = (char*) C1TEXT;
+/*const*/ char*	c2text = (char*) C2TEXT;
+/*const*/ char*	c3text = (char*) C3TEXT;
+/*const*/ char*	c4text = (char*) C4TEXT;
+/*const*/ char*	c5text = (char*) C5TEXT;
+/*const*/ char*	c6text = (char*) C6TEXT;
+/*const*/ char* c7text = (char*) C7TEXT;
+/*const*/ char* c8Text = (char*) C8TEXT;
+/*const*/ char* c9Text = (char*) C9TEXT;
 
-/*const*/ char*	p1text = P1TEXT;
-/*const*/ char*	p2text = P2TEXT;
-/*const*/ char*	p3text = P3TEXT;
-/*const*/ char*	p4text = P4TEXT;
-/*const*/ char*	p5text = P5TEXT;
-/*const*/ char*	p6text = P6TEXT;
+/*const*/ char*	p1text = (char*) P1TEXT;
+/*const*/ char*	p2text = (char*) P2TEXT;
+/*const*/ char*	p3text = (char*) P3TEXT;
+/*const*/ char*	p4text = (char*) P4TEXT;
+/*const*/ char*	p5text = (char*) P5TEXT;
+/*const*/ char*	p6text = (char*) P6TEXT;
 
-/*const*/ char*	t1text = T1TEXT;
-/*const*/ char*	t2text = T2TEXT;
-/*const*/ char*	t3text = T3TEXT;
-/*const*/ char*	t4text = T4TEXT;
-/*const*/ char*	t5text = T5TEXT;
-/*const*/ char*	t6text = T6TEXT;
+/*const*/ char*	t1text = (char*) T1TEXT;
+/*const*/ char*	t2text = (char*) T2TEXT;
+/*const*/ char*	t3text = (char*) T3TEXT;
+/*const*/ char*	t4text = (char*) T4TEXT;
+/*const*/ char*	t5text = (char*) T5TEXT;
+/*const*/ char*	t6text = (char*) T6TEXT;
 
 void resetEndings() {
-	e1text = E1TEXT;
-	e2text = E2TEXT;
-    e3text = E3TEXT;
-    e4text = E4TEXT;
+	e1text = (char*) E1TEXT;
+	e2text = (char*) E2TEXT;
+    e3text = (char*) E3TEXT;
+    e4text = (char*) E4TEXT;
 
-	c1text = C1TEXT;
-    c2text = C2TEXT;
-	c3text = C3TEXT;
-	c4text = C4TEXT;
-	c5text = C5TEXT;
-	c6text = C6TEXT;
-	c7text = C7TEXT;
-	c8Text = C8TEXT; 
-	c9Text = C9TEXT;
+	c1text = (char*) C1TEXT;
+    c2text = (char*) C2TEXT;
+	c3text = (char*) C3TEXT;
+	c4text = (char*) C4TEXT;
+	c5text = (char*) C5TEXT;
+	c6text = (char*) C6TEXT;
+	c7text = (char*) C7TEXT;
+	c8Text = (char*) C8TEXT; 
+	c9Text = (char*) C9TEXT;
 
-	p1text = P1TEXT;
-	p2text = P2TEXT;
-	p3text = P3TEXT;
-	p4text = P4TEXT;
-	p5text = P5TEXT;
-	p6text = P6TEXT;
+	p1text = (char*) P1TEXT;
+	p2text = (char*) P2TEXT;
+	p3text = (char*) P3TEXT;
+	p4text = (char*) P4TEXT;
+	p5text = (char*) P5TEXT;
+	p6text = (char*) P6TEXT;
 
-	t1text = T1TEXT;
-	t2text = T2TEXT;
-	t3text = T3TEXT;
-	t4text = T4TEXT;
-	t5text = T5TEXT;
-	t6text = T6TEXT;
+	t1text = (char*) T1TEXT;
+	t2text = (char*) T2TEXT;
+	t3text = (char*) T3TEXT;
+	t4text = (char*) T4TEXT;
+	t5text = (char*) T5TEXT;
+	t6text = (char*) T6TEXT;
 }
 
 
@@ -127,34 +127,34 @@ const char*	finaletext;
 char* flt;//GK:use this to retrive custom expansion finale flat name
 int flatind = -1;
 /*const*/ char*	finaleflat[] = { //GK: Linux got issue with brackets inside brackets for char**
-	"FLOOR4_8",
- "SFLR6_1" ,
- "MFLR8_4" ,
- "MFLR8_3" ,
- "SLIME16" ,
- "RROCK14" ,
- "RROCK07" ,
- "RROCK17" ,
- "RROCK13" ,
- "RROCK19" ,
-"F_SKY1",
-"BOSSBACK" //GK:Make even the cast background modifiable by dehacked
+	(char*) "FLOOR4_8",
+ (char*) "SFLR6_1" ,
+ (char*) "MFLR8_4" ,
+ (char*) "MFLR8_3" ,
+ (char*) "SLIME16" ,
+ (char*) "RROCK14" ,
+ (char*) "RROCK07" ,
+ (char*) "RROCK17" ,
+ (char*) "RROCK13" ,
+ (char*) "RROCK19" ,
+(char*) "F_SKY1",
+(char*) "BOSSBACK" //GK:Make even the cast background modifiable by dehacked
 };
 
 void ResetFinalflat() {
 	/*const*/ char*	tfinaleflat[] = {
-		 "FLOOR4_8" ,
-	 "SFLR6_1" ,
-	 "MFLR8_4" ,
-	 "MFLR8_3" ,
-	 "SLIME16" ,
-	 "RROCK14" ,
-	 "RROCK07" ,
-	 "RROCK17" ,
-	 "RROCK13" ,
-	 "RROCK19" ,
-	 "F_SKY1" ,
-	 "BOSSBACK" 
+		 (char*) "FLOOR4_8" ,
+	 (char*) "SFLR6_1" ,
+	 (char*) "MFLR8_4" ,
+	 (char*) "MFLR8_3" ,
+	 (char*) "SLIME16" ,
+	 (char*) "RROCK14" ,
+	 (char*) "RROCK07" ,
+	 (char*) "RROCK17" ,
+	 (char*) "RROCK13" ,
+	 (char*) "RROCK19" ,
+	 (char*) "F_SKY1" ,
+	 (char*) "BOSSBACK" 
 	};
 	memcpy(finaleflat, tfinaleflat, sizeof(tfinaleflat));
 }
@@ -211,7 +211,7 @@ void F_StartFinale (void)
     // This has been changed severly, and
     //  some stuff might have changed in the process.
 	//GK: just something for the lols
-	char* fooltext = BTLTEXT;
+	const char* fooltext = BTLTEXT;
     switch ( ::g->gamemode )
     {
 

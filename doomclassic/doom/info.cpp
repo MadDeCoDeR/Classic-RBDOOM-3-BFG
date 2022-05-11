@@ -48,48 +48,48 @@ If you have questions concerning this license or the applicable additional terms
 // RB: sprnames must be NULL-terminated
 //GK:NO CONSTANTS
 /*const*/ std::vector <char *> /*const*/ sprnames {
-    "TROO","SHTG","PUNG","PISG","PISF","SHTF","SHT2","CHGG","CHGF","MISG",
-    "MISF","SAWG","PLSG","PLSF","BFGG","BFGF","BLUD","PUFF","BAL1","BAL2",
-    "PLSS","PLSE","MISL","BFS1","BFE1","BFE2","TFOG","IFOG","PLAY","POSS",
-    "SPOS","VILE","FIRE","FATB","FBXP","SKEL","MANF","FATT","CPOS","SARG",
-    "HEAD","BAL7","BOSS","BOS2","SKUL","SPID","BSPI","APLS","APBX","CYBR",
-    "PAIN","SSWV","KEEN","BBRN","BOSF","ARM1","ARM2","BAR1","BEXP","FCAN",
-    "BON1","BON2","BKEY","RKEY","YKEY","BSKU","RSKU","YSKU","STIM","MEDI",
-    "SOUL","PINV","PSTR","PINS","MEGA","SUIT","PMAP","PVIS","CLIP","AMMO",
-    "ROCK","BROK","CELL","CELP","SHEL","SBOX","BPAK","BFUG","MGUN","CSAW",
-    "LAUN","PLAS","SHOT","SGN2","COLU","SMT2","GOR1","POL2","POL5","POL4",
-    "POL3","POL1","POL6","GOR2","GOR3","GOR4","GOR5","SMIT","COL1","COL2",
-    "COL3","COL4","CAND","CBRA","COL6","TRE1","TRE2","ELEC","CEYE","FSKU",
-    "COL5","TBLU","TGRN","TRED","SMBT","SMGT","SMRT","HDB1","HDB2","HDB3",
-    "HDB4","HDB5","HDB6","POB1","POB2","BRS1","TLMP","TLP2",
-  "TNT1" // invisible sprite                                 phares 3/9/98
-  ,"DOGS","PLS1","PLS2","BON3","BON4",
+    (char*) "TROO",(char*) "SHTG",(char*) "PUNG",(char*) "PISG",(char*) "PISF",(char*) "SHTF",(char*) "SHT2",(char*) "CHGG",(char*) "CHGF",(char*) "MISG",
+    (char*) "MISF",(char*) "SAWG",(char*) "PLSG",(char*) "PLSF",(char*) "BFGG",(char*) "BFGF",(char*) "BLUD",(char*) "PUFF",(char*) "BAL1",(char*) "BAL2",
+    (char*) "PLSS",(char*) "PLSE",(char*) "MISL",(char*) "BFS1",(char*) "BFE1",(char*) "BFE2",(char*) "TFOG",(char*) "IFOG",(char*) "PLAY",(char*) "POSS",
+    (char*) "SPOS",(char*) "VILE",(char*) "FIRE",(char*) "FATB",(char*) "FBXP",(char*) "SKEL",(char*) "MANF",(char*) "FATT",(char*) "CPOS",(char*) "SARG",
+    (char*) "HEAD",(char*) "BAL7",(char*) "BOSS",(char*) "BOS2",(char*) "SKUL",(char*) "SPID",(char*) "BSPI",(char*) "APLS",(char*) "APBX",(char*) "CYBR",
+    (char*) "PAIN",(char*) "SSWV",(char*) "KEEN",(char*) "BBRN",(char*) "BOSF",(char*) "ARM1",(char*) "ARM2",(char*) "BAR1",(char*) "BEXP",(char*) "FCAN",
+    (char*) "BON1",(char*) "BON2",(char*) "BKEY",(char*) "RKEY",(char*) "YKEY",(char*) "BSKU",(char*) "RSKU",(char*) "YSKU",(char*) "STIM",(char*) "MEDI",
+    (char*) "SOUL",(char*) "PINV",(char*) "PSTR",(char*) "PINS",(char*) "MEGA",(char*) "SUIT",(char*) "PMAP",(char*) "PVIS",(char*) "CLIP",(char*) "AMMO",
+    (char*) "ROCK",(char*) "BROK",(char*) "CELL",(char*) "CELP",(char*) "SHEL",(char*) "SBOX",(char*) "BPAK",(char*) "BFUG",(char*) "MGUN",(char*) "CSAW",
+    (char*) "LAUN",(char*) "PLAS",(char*) "SHOT",(char*) "SGN2",(char*) "COLU",(char*) "SMT2",(char*) "GOR1",(char*) "POL2",(char*) "POL5",(char*) "POL4",
+    (char*) "POL3",(char*) "POL1",(char*) "POL6",(char*) "GOR2",(char*) "GOR3",(char*) "GOR4",(char*) "GOR5",(char*) "SMIT",(char*) "COL1",(char*) "COL2",
+    (char*) "COL3",(char*) "COL4",(char*) "CAND",(char*) "CBRA",(char*) "COL6",(char*) "TRE1",(char*) "TRE2",(char*) "ELEC",(char*) "CEYE",(char*) "FSKU",
+    (char*) "COL5",(char*) "TBLU",(char*) "TGRN",(char*) "TRED",(char*) "SMBT",(char*) "SMGT",(char*) "SMRT",(char*) "HDB1",(char*) "HDB2",(char*) "HDB3",
+    (char*) "HDB4",(char*) "HDB5",(char*) "HDB6",(char*) "POB1",(char*) "POB2",(char*) "BRS1",(char*) "TLMP",(char*) "TLP2",
+  (char*) "TNT1" // invisible sprite                                 phares 3/9/98
+  ,(char*) "DOGS",(char*) "PLS1",(char*) "PLS2",(char*) "BON3",(char*) "BON4",
 	// [BH] blood splats, [crispy] unused
-	"BLD2",
+	(char*) "BLD2",
 	//// [BH] 100 extra sprite names to use in dehacked patches
   (char*)NULL
 };
 // RB end
 void resetSprnames() {
 	std::vector <char *> tsprnames {
-		"TROO","SHTG","PUNG","PISG","PISF","SHTF","SHT2","CHGG","CHGF","MISG",
-		"MISF","SAWG","PLSG","PLSF","BFGG","BFGF","BLUD","PUFF","BAL1","BAL2",
-		"PLSS","PLSE","MISL","BFS1","BFE1","BFE2","TFOG","IFOG","PLAY","POSS",
-		"SPOS","VILE","FIRE","FATB","FBXP","SKEL","MANF","FATT","CPOS","SARG",
-		"HEAD","BAL7","BOSS","BOS2","SKUL","SPID","BSPI","APLS","APBX","CYBR",
-		"PAIN","SSWV","KEEN","BBRN","BOSF","ARM1","ARM2","BAR1","BEXP","FCAN",
-		"BON1","BON2","BKEY","RKEY","YKEY","BSKU","RSKU","YSKU","STIM","MEDI",
-		"SOUL","PINV","PSTR","PINS","MEGA","SUIT","PMAP","PVIS","CLIP","AMMO",
-		"ROCK","BROK","CELL","CELP","SHEL","SBOX","BPAK","BFUG","MGUN","CSAW",
-		"LAUN","PLAS","SHOT","SGN2","COLU","SMT2","GOR1","POL2","POL5","POL4",
-		"POL3","POL1","POL6","GOR2","GOR3","GOR4","GOR5","SMIT","COL1","COL2",
-		"COL3","COL4","CAND","CBRA","COL6","TRE1","TRE2","ELEC","CEYE","FSKU",
-		"COL5","TBLU","TGRN","TRED","SMBT","SMGT","SMRT","HDB1","HDB2","HDB3",
-		"HDB4","HDB5","HDB6","POB1","POB2","BRS1","TLMP","TLP2",
-  "TNT1" // invisible sprite                                 phares 3/9/98
-  ,"DOGS","PLS1","PLS2","BON3","BON4",
+		(char*) "TROO",(char*) "SHTG",(char*) "PUNG",(char*) "PISG",(char*) "PISF",(char*) "SHTF",(char*) "SHT2",(char*) "CHGG",(char*) "CHGF",(char*) "MISG",
+		(char*) "MISF",(char*) "SAWG",(char*) "PLSG",(char*) "PLSF",(char*) "BFGG",(char*) "BFGF",(char*) "BLUD",(char*) "PUFF",(char*) "BAL1",(char*) "BAL2",
+		(char*) "PLSS",(char*) "PLSE",(char*) "MISL",(char*) "BFS1",(char*) "BFE1",(char*) "BFE2",(char*) "TFOG",(char*) "IFOG",(char*) "PLAY",(char*) "POSS",
+		(char*) "SPOS",(char*) "VILE",(char*) "FIRE",(char*) "FATB",(char*) "FBXP",(char*) "SKEL",(char*) "MANF",(char*) "FATT",(char*) "CPOS",(char*) "SARG",
+		(char*) "HEAD",(char*) "BAL7",(char*) "BOSS",(char*) "BOS2",(char*) "SKUL",(char*) "SPID",(char*) "BSPI",(char*) "APLS",(char*) "APBX",(char*) "CYBR",
+		(char*) "PAIN",(char*) "SSWV",(char*) "KEEN",(char*) "BBRN",(char*) "BOSF",(char*) "ARM1",(char*) "ARM2",(char*) "BAR1",(char*) "BEXP",(char*) "FCAN",
+		(char*) "BON1",(char*) "BON2",(char*) "BKEY",(char*) "RKEY",(char*) "YKEY",(char*) "BSKU",(char*) "RSKU",(char*) "YSKU",(char*) "STIM",(char*) "MEDI",
+		(char*) "SOUL",(char*) "PINV",(char*) "PSTR",(char*) "PINS",(char*) "MEGA",(char*) "SUIT",(char*) "PMAP",(char*) "PVIS",(char*) "CLIP",(char*) "AMMO",
+		(char*) "ROCK",(char*) "BROK",(char*) "CELL",(char*) "CELP",(char*) "SHEL",(char*) "SBOX",(char*) "BPAK",(char*) "BFUG",(char*) "MGUN",(char*) "CSAW",
+		(char*) "LAUN",(char*) "PLAS",(char*) "SHOT",(char*) "SGN2",(char*) "COLU",(char*) "SMT2",(char*) "GOR1",(char*) "POL2",(char*) "POL5",(char*) "POL4",
+		(char*) "POL3",(char*) "POL1",(char*) "POL6",(char*) "GOR2",(char*) "GOR3",(char*) "GOR4",(char*) "GOR5",(char*) "SMIT",(char*) "COL1",(char*) "COL2",
+		(char*) "COL3",(char*) "COL4",(char*) "CAND",(char*) "CBRA",(char*) "COL6",(char*) "TRE1",(char*) "TRE2",(char*) "ELEC",(char*) "CEYE",(char*) "FSKU",
+		(char*) "COL5",(char*) "TBLU",(char*) "TGRN",(char*) "TRED",(char*) "SMBT",(char*) "SMGT",(char*) "SMRT",(char*) "HDB1",(char*) "HDB2",(char*) "HDB3",
+		(char*) "HDB4",(char*) "HDB5",(char*) "HDB6",(char*) "POB1",(char*) "POB2",(char*) "BRS1",(char*) "TLMP",(char*) "TLP2",
+  (char*) "TNT1" // invisible sprite                                 phares 3/9/98
+  ,(char*) "DOGS",(char*) "PLS1",(char*) "PLS2",(char*) "BON3",(char*) "BON4",
 		// [BH] blood splats, [crispy] unused
-		"BLD2",
+		(char*) "BLD2",
 		//// [BH] 100 extra sprite names to use in dehacked patches
 	  (char*)NULL
 	};

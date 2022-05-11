@@ -599,7 +599,7 @@ AM_Responder
 		}
 		if (!::g->ammarkfordelete || ::g->amcheatind >= 5) {
 			for (int u = 0; u < 5; u++) {
-				::g->amcheat[u] = NULL;
+				::g->amcheat[u] = '\0';
 			}
 			::g->amcheatind = 0;
 		}

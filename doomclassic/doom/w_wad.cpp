@@ -121,10 +121,10 @@ ExtractFileBase
 	length = 0;
 
 	if (!idStr::Icmp(path + strlen(path) - 3, "deh") || !idStr::Icmp(path + strlen(path) - 3, "bex")) {
-		*dest = "DEHACKED";
+		*dest = (char*) "DEHACKED";
 	}
 	else if (!idStr::Icmp(path + strlen(path) - 3, "dlc")) {
-		*dest = "EXPINFO";
+		*dest = (char*) "EXPINFO";
 	}
 	else {
 		char* temp = new char(8);
@@ -134,7 +134,7 @@ ExtractFileBase
 			if (++length == 9)
 				I_Error("Filename base of %s >8 chars", path);
 
-			temp[length - 1] = toupper((int)*src++);
+				temp[length - 1] = toupper((int)*src++);
 		}
 		*dest = temp;
 	}
@@ -1308,7 +1308,7 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 									for (int j = 0; j < 8; j++) {
 										zipfileinfo[k].name[j] = toupper(zipfileinfo[k].name[j]);
 									}
-									zipfileinfo[k].name[8] = '\0';
+									//zipfileinfo[k].name[7] = '\0';
 								}
 								int j = indoffset + k;
 								unzGetFilePos(zip, &zippos[j]);//GK: this is important DONT MESS WITH IT
@@ -1657,7 +1657,7 @@ void MasterExport() {
 	//int count = 1;
 	//int count2 = 1;
 	char* filename = new char[MAX_FILENAME];
-	char* file[3];
+	const char* file[3];
 	file[0] = "wads/MASTERLEVELS.wad";
 	file[1] = "wads/mlbls.wad";
 	file[2] = "wads/ua.wad";
@@ -1925,7 +1925,7 @@ void W_RemoveLump(int lump) {
 
 char* W_GetNameForNum(int lump) {
 	if (lump >= lumpinfo.size()) {
-		return "";
+		return (char*) "";
 	}
 	return lumpinfo[lump].name;
 }

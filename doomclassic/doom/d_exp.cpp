@@ -47,7 +47,7 @@
 #include "g_game.h"
 
 typedef struct {
-	char* name;
+	const char* name;
 	long limit;
 	char** sval;
 	int* ival;
@@ -81,7 +81,7 @@ bool BFGEpisodic = false;
 
 typedef struct {
 	char** var;
-	char* name;
+	const char* name;
 }fstr;
 //Allow map names to be retrieved from the base ones
 fstr expmapnames[] = {
@@ -645,7 +645,7 @@ std::vector<std::string> getexplines(char* text) {
 }
 
 int checkexpstate(char* text) {
-	char* extable[] = {
+	const char* extable[] = {
 		"EXP",
 		"MAP",
 		"clusterdef",

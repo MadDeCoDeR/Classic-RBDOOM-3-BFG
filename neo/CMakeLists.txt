@@ -155,7 +155,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -DNDEBUG -no-pie -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
 	set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -g -O3 -DNDEBUG -no-pie -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
 	#set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -Os -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
-	set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RETAIL} -O3 -DID_RETAIL -DNDEBUG -no-pie -ffast-math -fno-strict-aliasing ${my_warn_flags}" CACHE STRING "" FORCE)
+	set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RETAIL} -O3 -DID_RETAIL -DNDEBUG -no-pie -ffast-math -fno-strict-aliasing -Werror -Wno-error=invalid-pch -Wno-error=invalid-offsetof ${my_warn_flags}" CACHE STRING "" FORCE)
 	
 	
 
@@ -1850,6 +1850,7 @@ else()
 		set(remove_command "rm")
 	endif()
 	add_library(external ${LIB_INCLUDES} ${LIB_SOURCES})
+	target_compile_options(external PRIVATE "-Wno-error")
 	add_custom_target(shaders SOURCES ${SHADERS})
 	if (USE_PRECOMPILED_HEADERS)
 		# it's ugly enough that the precompiled header binary needs to be in the 
@@ -1866,7 +1867,7 @@ else()
 	endif()
 	
 	
-	add_executable(DoomBFA WIN32 ${RBDOOM3_SOURCES})
+	add_executable(DoomBFA WIN32 ${RBDOOM3_SOURCES} ${RBDOOM3_INCLUDES})
 
 	if (USE_PRECOMPILED_HEADERS)
 		# make sure precompiled header is created before executable is compiled

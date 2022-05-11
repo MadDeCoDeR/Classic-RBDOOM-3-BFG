@@ -106,86 +106,86 @@ char* PD_ALL6;
 
 void initModdableTexts() {
 	//GK:Use string values as varibles for DeHackeD string Editor
-	GOTARMOR = "Picked up the armor.";
-	GOTMEGA = "Picked up the MegaArmor!";
-	GOTHTHBONUS = "Picked up a health bonus.";
-	GOTARMBONUS = "Picked up an armor bonus.";
-	GOTSTIM = "Picked up a stimpack.";
-	GOTMEDINEED = "Picked up a medikit that you REALLY need!";
-	GOTMEDIKIT = "Picked up a medikit.";
-	GOTSUPER = "Supercharge!";
+	GOTARMOR = (char*)"Picked up the armor.";
+	GOTMEGA = (char*)"Picked up the MegaArmor!";
+	GOTHTHBONUS = (char*)"Picked up a health bonus.";
+	GOTARMBONUS = (char*)"Picked up an armor bonus.";
+	GOTSTIM = (char*)"Picked up a stimpack.";
+	GOTMEDINEED = (char*)"Picked up a medikit that you REALLY need!";
+	GOTMEDIKIT = (char*)"Picked up a medikit.";
+	GOTSUPER = (char*)"Supercharge!";
 
-	GOTBLUECARD = "Picked up a blue keycard.";
-	GOTYELWCARD = "Picked up a yellow keycard.";
-	GOTREDCARD = "Picked up a red keycard.";
-	GOTBLUESKUL = "Picked up a blue skull key.";
-	GOTYELWSKUL = "Picked up a yellow skull key.";
-	GOTREDSKULL = "Picked up a red skull key.";
+	GOTBLUECARD = (char*)"Picked up a blue keycard.";
+	GOTYELWCARD = (char*)"Picked up a yellow keycard.";
+	GOTREDCARD = (char*)"Picked up a red keycard.";
+	GOTBLUESKUL = (char*)"Picked up a blue skull key.";
+	GOTYELWSKUL = (char*)"Picked up a yellow skull key.";
+	GOTREDSKULL = (char*)"Picked up a red skull key.";
 
-	GOTINVUL = "Invulnerability!";
-	GOTBERSERK = "Berserk!";
-	GOTINVIS = "Partial Invisibility";
-	GOTSUIT = "Radiation Shielding Suit";
-	GOTMAP = "Computer Area Map";
-	GOTVISOR = "Light Amplification Visor";
-	GOTMSPHERE = "MegaSphere!";
+	GOTINVUL = (char*)"Invulnerability!";
+	GOTBERSERK = (char*)"Berserk!";
+	GOTINVIS = (char*)"Partial Invisibility";
+	GOTSUIT = (char*)"Radiation Shielding Suit";
+	GOTMAP = (char*)"Computer Area Map";
+	GOTVISOR = (char*)"Light Amplification Visor";
+	GOTMSPHERE = (char*)"MegaSphere!";
 
-	GOTCLIP = "Picked up a clip.";
-	GOTCLIPBOX = "Picked up a box of bullets.";
-	GOTROCKET = "Picked up a rocket.";
-	GOTROCKBOX = "Picked up a box of rockets.";
-	GOTCELL = "Picked up an energy cell.";
-	GOTCELLBOX = "Picked up an energy cell pack.";
-	GOTSHELLS = "Picked up 4 shotgun shells.";
-	GOTSHELLBOX = "Picked up a box of shotgun shells.";
-	GOTBACKPACK = "Picked up a backpack full of ammo!";
+	GOTCLIP = (char*)"Picked up a clip.";
+	GOTCLIPBOX = (char*)"Picked up a box of bullets.";
+	GOTROCKET = (char*)"Picked up a rocket.";
+	GOTROCKBOX = (char*)"Picked up a box of rockets.";
+	GOTCELL = (char*)"Picked up an energy cell.";
+	GOTCELLBOX = (char*)"Picked up an energy cell pack.";
+	GOTSHELLS = (char*)"Picked up 4 shotgun shells.";
+	GOTSHELLBOX = (char*)"Picked up a box of shotgun shells.";
+	GOTBACKPACK = (char*)"Picked up a backpack full of ammo!";
 
-	GOTBFG9000 = "You got the BFG9000!  Oh, yes.";
-	GOTCHAINGUN = "You got the chaingun!";
-	GOTCHAINSAW = "A chainsaw!  Find some meat!";
-	GOTLAUNCHER = "You got the rocket launcher!";
-	GOTPLASMA = "You got the plasma gun!";
-	GOTSHOTGUN = "You got the shotgun!";
-	GOTSHOTGUN2 = "You got the super shotgun!";
+	GOTBFG9000 = (char*)"You got the BFG9000!  Oh, yes.";
+	GOTCHAINGUN = (char*)"You got the chaingun!";
+	GOTCHAINSAW = (char*)"A chainsaw!  Find some meat!";
+	GOTLAUNCHER = (char*)"You got the rocket launcher!";
+	GOTPLASMA = (char*)"You got the plasma gun!";
+	GOTSHOTGUN = (char*)"You got the shotgun!";
+	GOTSHOTGUN2 = (char*)"You got the super shotgun!";
 
-	CC_ZOMBIE = "ZOMBIEMAN";
-	CC_SHOTGUN = "SHOTGUN GUY";
-	CC_HEAVY = "HEAVY WEAPON DUDE";
-	CC_IMP = "IMP";
-	CC_DEMON = "DEMON";
-	CC_LOST = "LOST SOUL";
-	CC_CACO = "CACODEMON";
-	CC_HELL = "HELL KNIGHT";
-	CC_BARON = "BARON OF HELL";
-	CC_ARACH = "ARACHNOTRON";
-	CC_PAIN = "PAIN ELEMENTAL";
-	CC_REVEN = "REVENANT";
-	CC_MANCU = "MANCUBUS";
-	CC_ARCH = "ARCH-VILE";
-	CC_SPIDER = "THE SPIDER MASTERMIND";
-	CC_CYBER = "THE CYBERDEMON";
-	CC_HERO = "OUR HERO";
-	PD_BLUEO = "You need a blue key to activate this object";
-	PD_REDO = "You need a red key to activate this object";
-	PD_YELLOWO = "You need a yellow key to activate this object";
-	PD_BLUEK = "You need a blue key to open this door";
-	PD_REDK = "You need a red key to open this door";
-	PD_YELLOWK = "You need a yellow key to open this door";
+	CC_ZOMBIE = (char*)"ZOMBIEMAN";
+	CC_SHOTGUN = (char*)"SHOTGUN GUY";
+	CC_HEAVY = (char*)"HEAVY WEAPON DUDE";
+	CC_IMP = (char*)"IMP";
+	CC_DEMON = (char*)"DEMON";
+	CC_LOST = (char*)"LOST SOUL";
+	CC_CACO = (char*)"CACODEMON";
+	CC_HELL = (char*)"HELL KNIGHT";
+	CC_BARON = (char*)"BARON OF HELL";
+	CC_ARACH = (char*)"ARACHNOTRON";
+	CC_PAIN = (char*)"PAIN ELEMENTAL";
+	CC_REVEN = (char*)"REVENANT";
+	CC_MANCU = (char*)"MANCUBUS";
+	CC_ARCH = (char*)"ARCH-VILE";
+	CC_SPIDER = (char*)"THE SPIDER MASTERMIND";
+	CC_CYBER = (char*)"THE CYBERDEMON";
+	CC_HERO = (char*)"OUR HERO";
+	PD_BLUEO = (char*)"You need a blue key to activate this object";
+	PD_REDO = (char*)"You need a red key to activate this object";
+	PD_YELLOWO = (char*)"You need a yellow key to activate this object";
+	PD_BLUEK = (char*)"You need a blue key to open this door";
+	PD_REDK = (char*)"You need a red key to open this door";
+	PD_YELLOWK = (char*)"You need a yellow key to open this door";
 	//GK:Add these text from BOOM for generalized switches
-	PD_BLUEC = "You need a blue card to open this door";
-	PD_REDC = "You need a red card to open this door";
-	PD_YELLOWC = "You need a yellow card to open this door";
-	PD_BLUES = "You need a blue skull to open this door";
-	PD_REDS = "You need a red skull to open this door";
-	PD_YELLOWS = "You need a yellow skull to open this door";
-	PD_ANY = "You need any key to open this door";
-	PD_ALL3 = "You need all 3 keys to open this door";
-	PD_ALL6 = "You need all 6 keys to open this door";
+	PD_BLUEC = (char*)"You need a blue card to open this door";
+	PD_REDC = (char*)"You need a red card to open this door";
+	PD_YELLOWC = (char*)"You need a yellow card to open this door";
+	PD_BLUES = (char*)"You need a blue skull to open this door";
+	PD_REDS = (char*)"You need a red skull to open this door";
+	PD_YELLOWS = (char*)"You need a yellow skull to open this door";
+	PD_ANY = (char*)"You need any key to open this door";
+	PD_ALL3 = (char*)"You need all 3 keys to open this door";
+	PD_ALL6 = (char*)"You need all 6 keys to open this door";
 
 }
 
-char* MASTER[] = { "All Maps","Select Map" };
-char* masterlist[] = { "ATTACK.WAD",
+const char* MASTER[] = { "All Maps","Select Map" };
+const char* masterlist[] = { "ATTACK.WAD",
 "CANYON.WAD",
 "CATWALK.WAD",
 "COMBINE.WAD",
@@ -206,4 +206,4 @@ char* masterlist[] = { "ATTACK.WAD",
 "BLACKTWR.WAD",
 "TEETH.WAD" };
 
-char* M2[] = { "1-10","11-20" };
+const char* M2[] = { "1-10","11-20" };

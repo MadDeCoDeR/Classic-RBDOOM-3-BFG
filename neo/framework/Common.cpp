@@ -309,7 +309,7 @@ void idCommonLocal::ParseCommandLine( int argc, const char* const* argv )
 	current_count = 0;
 	//GK begin
 	int j = 0;
-	classicargv[j] = "doomlauncher";
+	classicargv[j] = (char*)"doomlauncher";
 	j++;
 	//GK end
 	// API says no program path
@@ -1200,7 +1200,7 @@ void LoadPlatformDLL()
 				Sys_Error("Sys_DLL_: GetProcAddress failed - %s (%d)", msgbuf, lastError);
 #endif
 				Sys_DLL_Unload(platformDLL);
-				platformDLL = NULL;
+				platformDLL = -1;
 				//common->FatalError("couldn't find platform DLL API");
 				::op = NULL;
 				return;
@@ -1243,7 +1243,7 @@ void UnloadPlatformDLL()
 	if (platformDLL)
 	{
 		Sys_DLL_Unload(platformDLL);
-		platformDLL = NULL;
+		platformDLL = -1;
 	}
 	::op = NULL;
 
@@ -1301,7 +1301,7 @@ void idCommonLocal::LoadGameDLL()
 			Sys_Error("Sys_DLL_: GetProcAddress failed - %s (%d)", msgbuf, lastError);
 #endif
 			Sys_DLL_Unload(gameDLL);
-			gameDLL = NULL;
+			gameDLL = -1;
 			common->FatalError("couldn't find game DLL API");
 			return;
 		}
@@ -1327,7 +1327,7 @@ void idCommonLocal::LoadGameDLL()
 		if (gameExport.version != GAME_API_VERSION)
 		{
 			Sys_DLL_Unload(gameDLL);
-			gameDLL = NULL;
+			gameDLL = -1;
 			common->FatalError("wrong game DLL API version");
 			return;
 		}
@@ -1376,7 +1376,7 @@ void idCommonLocal::UnloadGameDLL()
 	if( gameDLL )
 	{
 		Sys_DLL_Unload( gameDLL );
-		gameDLL = NULL;
+		gameDLL = -1;
 	}
 	game = NULL;
 	gameEdit = NULL;

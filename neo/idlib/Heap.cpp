@@ -59,7 +59,7 @@ void* Mem_Alloc16( const size_t size, const memTag_t tag )
 #else // not _WIN32
 	// DG: the POSIX solution for linux etc
 	void* ret;
-	posix_memalign( &ret, 16, paddedSize );
+	int res = posix_memalign( &ret, 16, paddedSize );
 	return ret;
 	// DG end
 #endif // _WIN32

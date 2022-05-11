@@ -897,7 +897,7 @@ P_SetupLevel
 		LoadUdmf(lumpnum + 1);
 		typedef void(*loadaction)(int);
 		typedef struct {
-			char* name;
+			const char* name;
 			loadaction func;
 		}loaddata;
 		//GK: Check if other map lumps are present between the TEXTMAP and the ENDMAP lumps

@@ -171,9 +171,9 @@ extern char* GOTLAUNCHER;
 extern char* GOTPLASMA;
 extern char* GOTSHOTGUN;
 extern char* GOTSHOTGUN2;
-extern char* MASTER[2];
-extern char* masterlist[20];
-extern char* M2[2];
+extern const char* MASTER[2];
+extern const char* masterlist[20];
+extern const char* M2[2];
 //GK begin
 #define GOTSECRET	"You found A Secret!"
 //GK End

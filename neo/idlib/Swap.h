@@ -28,6 +28,12 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __SWAP_H__
 #define __SWAP_H__
 
+#ifndef _WIN32
+//GK: This warning should be trown from here ONLY by savegame.
+//For some reason it's getting triggered when idMat3's float values are getting swapped
+#pragma GCC diagnostic warning "-Wstringop-overflow"
+#endif
+
 /*
 ================================================================================================
 Contains the Swap class, for CrossPlatform endian conversion.

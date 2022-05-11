@@ -767,7 +767,7 @@ const char* Posix_Cwd()
 {
 	static char cwd[MAX_OSPATH];
 	
-	getcwd( cwd, sizeof( cwd ) - 1 );
+	char* res = getcwd( cwd, sizeof( cwd ) - 1 );
 	cwd[MAX_OSPATH - 1] = 0;
 	
 	return cwd;
@@ -1158,24 +1158,24 @@ void tty_Del()
 {
 	char key;
 	key = '\b';
-	write( STDOUT_FILENO, &key, 1 );
+	ssize_t res1 = write( STDOUT_FILENO, &key, 1 );
 	key = ' ';
-	write( STDOUT_FILENO, &key, 1 );
+	ssize_t res2 = write( STDOUT_FILENO, &key, 1 );
 	key = '\b';
-	write( STDOUT_FILENO, &key, 1 );
+	ssize_t res3 = write( STDOUT_FILENO, &key, 1 );
 }
 
 void tty_Left()
 {
 	char key = '\b';
-	write( STDOUT_FILENO, &key, 1 );
+	ssize_t res = write( STDOUT_FILENO, &key, 1 );
 }
 
 void tty_Right()
 {
 	char key = 27;
-	write( STDOUT_FILENO, &key, 1 );
-	write( STDOUT_FILENO, "[C", 2 );
+	ssize_t res1 = write( STDOUT_FILENO, &key, 1 );
+	ssize_t res2 = write( STDOUT_FILENO, "[C", 2 );
 }
 
 // clear the display of the line currently edited
@@ -1223,7 +1223,7 @@ void tty_Show()
 		char* buf = input_field.GetBuffer();
 		if( buf[0] )
 		{
-			write( STDOUT_FILENO, buf, strlen( buf ) );
+			ssize_t res = write( STDOUT_FILENO, buf, strlen( buf ) );
 			
 			// RB begin
 #if defined(__ANDROID__)
@@ -1263,6 +1263,7 @@ char* Posix_ConsoleInput()
 	if( tty_enabled )
 	{
 		int		ret;
+		ssize_t res;
 		char	key;
 		bool	hidden = false;
 		while( ( ret = read( STDIN_FILENO, &key, 1 ) ) > 0 )
@@ -1288,7 +1289,7 @@ char* Posix_ConsoleInput()
 					idStr::Copynz( input_ret, input_field.GetBuffer(), sizeof( input_ret ) );
 					assert( hidden );
 					tty_Show();
-					write( STDOUT_FILENO, &key, 1 );
+					res = write( STDOUT_FILENO, &key, 1 );
 					input_field.Clear();
 					if( history_count < COMMAND_HISTORY )
 					{

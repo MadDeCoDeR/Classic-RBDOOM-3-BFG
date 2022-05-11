@@ -50,11 +50,11 @@
 
 typedef struct {
 	char** var;
-	char* name;
+	const char* name;
 }dehstr;
 //TODO: Use this more
 typedef struct{
-	char* name;
+	const char* name;
 	long limit;
 	char** sval;
 	int* ival;
@@ -384,7 +384,7 @@ dehbits mobfl[] = {
 };
 
 int checkstate(char* text) {
-	char* stable[11] = {
+	const char* stable[11] = {
 		"Thing",
 		"Frame",
 		"Text",
@@ -546,7 +546,7 @@ void setAmmo(int pos, char* varname, int varval) {
 	}
 }
 //More Headache than it's worth
-char* Soundtable[6] = { //Textoffset, Zero 1 and Zero 4 are wildcards you don't wanna play with
+const char* Soundtable[6] = { //Textoffset, Zero 1 and Zero 4 are wildcards you don't wanna play with
 	"Zero/One ",
 	"Value ",
 	"Neg. One 1 ",
@@ -749,7 +749,7 @@ int Generateflags(char* text) {
 	return flags;
 }
 
-char* misctable[15] = { //It's not more than the Things editor but still so many repetive values
+const char* misctable[15] = { //It's not more than the Things editor but still so many repetive values
 	"Initial Health ",
 	"Max Health ",
 	"Initial Bullets ",

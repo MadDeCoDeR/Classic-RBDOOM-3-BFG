@@ -135,7 +135,7 @@ idBufferObject::idBufferObject()
 #endif
 	
 #else
-	apiObject = NULL;
+	apiObject = -1;
 	buffer = NULL;
 #endif
 }

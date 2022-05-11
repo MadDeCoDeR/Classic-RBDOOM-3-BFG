@@ -700,7 +700,7 @@ ST_Responder (event_t* ev)
 		//GK end
 		if (!::g->markfordelete || ::g->cheatind>=14) {
 			for (int u = 0; u < 14; u++) {
-				::g->cheat[u] = NULL;
+				::g->cheat[u] = '\0';
 			}
 			::g->cheatind = 0;
 		}

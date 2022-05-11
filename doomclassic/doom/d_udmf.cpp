@@ -45,7 +45,7 @@ extern idCVar s_useXAudio;
 #endif
 
 typedef struct {
-	char* name;
+	const char* name;
 	fixed_t* value;
 	short* svalue;
 	vertex_t** vvalue;
@@ -65,7 +65,7 @@ std::vector<std::string> getudmflines(char* text) {
 	numvertexes=0;
 	std::vector<std::string> lines;
 	typedef struct {
-		char* name;
+		const char* name;
 		long* count;
 	}Comp;
 	Comp nets[5] = {
@@ -440,7 +440,7 @@ void parseudmf(char* text) {
 	long vc = numvertexes-1;
 	typedef void(*parseaction)(std::vector<std::string> lines, int index);
 	typedef struct {
-		char* name;
+		const char* name;
 		parseaction func;
 		long* counter;
 	}udmftype;
