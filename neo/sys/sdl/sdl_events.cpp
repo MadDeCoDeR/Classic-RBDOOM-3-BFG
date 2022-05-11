@@ -1692,6 +1692,7 @@ void Sys_ClearEvents()
 		
 	kbd_polls.SetNum( 0 );
 	mouse_polls.SetNum( 0 );
+	joystick_polls.SetNum( 0 );
 }
 
 /*
