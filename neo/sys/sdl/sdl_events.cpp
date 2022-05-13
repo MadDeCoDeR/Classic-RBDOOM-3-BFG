@@ -1244,10 +1244,29 @@ sysEvent_t Sys_GetEvent()
 
 		case SDL_CONTROLLERAXISMOTION:
 			res.evType = SE_JOYSTICK;
-			res.evValue = J_AXIS_LEFT_X + (ev.caxis.axis - SDL_CONTROLLER_AXIS_LEFTX);
+			switch(ev.caxis.axis) {
+				case SDL_CONTROLLER_AXIS_LEFTX:
+					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_RIGHT : K_JOY_STICK1_LEFT;
+					break;
+				case SDL_CONTROLLER_AXIS_LEFTY:
+					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_DOWN : K_JOY_STICK1_UP;
+					break;
+				case SDL_CONTROLLER_AXIS_RIGHTX:
+					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_RIGHT : K_JOY_STICK2_LEFT;
+					break;
+				case SDL_CONTROLLER_AXIS_RIGHTY:
+					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_DOWN : K_JOY_STICK2_UP;
+					break;
+				case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
+					res.evValue = K_JOY_TRIGGER1;
+					break;
+				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
+					res.evValue = K_JOY_TRIGGER2;
+					break;
+			}
 			res.evValue2 = ev.caxis.value;
 
-			joystick_polls.Append(joystick_poll_t(res.evValue, res.evValue2));
+			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, res.evValue2));
 			return res;
 
 		case SDL_CONTROLLERBUTTONDOWN:
