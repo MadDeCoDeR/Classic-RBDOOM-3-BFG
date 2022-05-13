@@ -1243,28 +1243,54 @@ sysEvent_t Sys_GetEvent()
 			continue;
 
 		case SDL_CONTROLLERAXISMOTION:
+			int range = 16384;
 			res.evType = SE_KEY;
+			res.evValue = K_NONE;
 			switch(ev.caxis.axis) {
 				case SDL_CONTROLLER_AXIS_LEFTX:
-					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_RIGHT : K_JOY_STICK1_LEFT;
+					if (ev.caxis.value > range) {
+						res.evValue = K_JOY_STICK1_RIGHT;
+					}
+					if (ev.caxis.value < -range) {
+						res.evValue = K_JOY_STICK1_LEFT;
+					}
 					break;
 				case SDL_CONTROLLER_AXIS_LEFTY:
-					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_DOWN : K_JOY_STICK1_UP;
+					if (ev.caxis.value > range) {
+						res.evValue = K_JOY_STICK1_DOWN;
+					}
+					if (ev.caxis.value < -range) {
+						res.evValue = K_JOY_STICK1_UP;
+					}
 					break;
 				case SDL_CONTROLLER_AXIS_RIGHTX:
-					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_RIGHT : K_JOY_STICK2_LEFT;
+					if (ev.caxis.value > range) {
+						res.evValue = K_JOY_STICK2_RIGHT;
+					}
+					if (ev.caxis.value < -range) {
+						res.evValue = K_JOY_STICK2_LEFT;
+					}
 					break;
 				case SDL_CONTROLLER_AXIS_RIGHTY:
-					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_DOWN : K_JOY_STICK2_UP;
+					if (ev.caxis.value > range) {
+						res.evValue = K_JOY_STICK2_DOWN;
+					}
+					if (ev.caxis.value < -range) {
+						res.evValue = K_JOY_STICK2_UP;
+					}
 					break;
 				case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-					res.evValue = K_JOY_TRIGGER1;
+					if (ev.caxis.value > range) {
+						res.evValue = K_JOY_TRIGGER1;
+					}
 					break;
 				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-					res.evValue = K_JOY_TRIGGER2;
+					if (ev.caxis.value > range) {
+						res.evValue = K_JOY_TRIGGER2;
+					}
 					break;
 			}
-			res.evValue2 = 1;
+			res.evValue2 = res.evValue != K_NONE ? 1 : 0;
 
 			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
 			return res;
