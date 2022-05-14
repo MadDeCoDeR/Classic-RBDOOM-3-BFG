@@ -1293,11 +1293,17 @@ sysEvent_t Sys_GetEvent()
 			res.evValue2 = res.evValue != K_NONE ? 1 : 0;
 
 			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
-			if (buttonStates[res.evValue] == ev.caxis.value) {
+
+			for (int i = K_JOY_STICK1_UP; i < K_JOY_DPAD_UP; i++) {
+				if (i != res.evValue) {
+					buttonStates[i] = 0;
+				}
+			}
+			if (buttonStates[res.evValue] == res.evValue2) {
 				continue;
 			}
 			else {
-				buttonStates[res.evValue] = ev.caxis.value;
+				buttonStates[res.evValue] = res.evValue2;
 				return res;
 			}
 			break;
