@@ -1292,9 +1292,14 @@ sysEvent_t Sys_GetEvent()
 			}
 			res.evValue2 = res.evValue != K_NONE ? 1 : 0;
 
+			//GK: In order to keep the consistency in game always poll
 			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
-
+			//GK: Clear the existing button states
 			for (int i = K_JOY_STICK1_UP; i < K_JOY_DPAD_UP; i++) {
+				//There was one pressed but now is none so unpress it
+				if (res.evValue == K_NONE && buttonStates[i] != 0) {
+					res.evValue = i;
+				} 
 				if (i != res.evValue) {
 					buttonStates[i] = 0;
 				}
