@@ -1293,7 +1293,14 @@ sysEvent_t Sys_GetEvent()
 			res.evValue2 = res.evValue != K_NONE ? 1 : 0;
 
 			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
-			return res;
+			if (buttonStates[res.evValue] == ev.caxis.value) {
+				continue;
+			}
+			else {
+				buttonStates[res.evValue] = ev.caxis.value;
+				return res;
+			}
+			break;
 
 		case SDL_CONTROLLERBUTTONDOWN:
 		case SDL_CONTROLLERBUTTONUP:
@@ -1318,10 +1325,6 @@ sysEvent_t Sys_GetEvent()
 			};
 
 			if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] == ev.cbutton.state) {
-				/*res.evType = SE_KEY;
-				res.evValue = controllerButtonRemap[ev.cbutton.button][0];
-				res.evValue2 = 0;
-				return res;*/
 				continue;
 			}
 			else {
@@ -1333,6 +1336,7 @@ sysEvent_t Sys_GetEvent()
 				joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], res.evValue2));
 				return res;
 			}
+			break;
 #else
 			// WM0110
 			// NOTE: it seems that the key bindings for the GUI and for the game are
