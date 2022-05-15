@@ -1299,15 +1299,10 @@ sysEvent_t Sys_GetEvent()
 				//There was one pressed but now is none so unpress it
 				if (res.evValue == K_NONE && buttonStates[i] != 0) {
 					res.evValue = i;
-				} 
-				if (i != res.evValue) {
-					buttonStates[i] = 0;
+					break;
 				}
 			}
-			if (buttonStates[res.evValue] == res.evValue2) {
-				continue;
-			}
-			else {
+			if (buttonStates[res.evValue] != res.evValue2)  {
 				buttonStates[res.evValue] = res.evValue2;
 				return res;
 			}
