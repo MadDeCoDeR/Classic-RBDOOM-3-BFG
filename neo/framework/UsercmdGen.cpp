@@ -135,6 +135,7 @@ userCmdString_t	userCmdStrings[] =
 	{ "_zoom",			UB_ZOOM },
 	{ "_showScores",	UB_SHOWSCORES },
 	{ "_use",			UB_USE },
+	{ "_thirdperson",	UB_THIRDPERSON},
 	
 	{ "_impulse0",		UB_IMPULSE0 },
 	{ "_impulse1",		UB_IMPULSE1 },
@@ -285,6 +286,8 @@ private:
 	buttonState_t	toggled_crouch;
 	buttonState_t	toggled_run;
 	buttonState_t	toggled_zoom;
+
+	int				oldTPButtonState;
 	
 	int				buttonState[UB_MAX_BUTTONS];
 	bool			keyState[K_LAST_KEY];
@@ -356,6 +359,8 @@ idUsercmdGenLocal::idUsercmdGenLocal()
 	toggled_run.Clear();
 	toggled_zoom.Clear();
 	toggled_run.on = false;
+
+	oldTPButtonState = -1;
 	
 	ClearAngles();
 	Clear();
@@ -1159,6 +1164,12 @@ void idUsercmdGenLocal::MakeCurrent()
 		toggled_crouch.SetKeyState( ButtonState( UB_MOVEDOWN ), in_toggleCrouch.GetBool() );
 		toggled_run.SetKeyState( ButtonState( UB_SPEED ), in_toggleRun.GetBool() && common->IsMultiplayer() );
 		toggled_zoom.SetKeyState( ButtonState( UB_ZOOM ), in_toggleZoom.GetBool() );
+
+		int TPButtonState = ButtonState(UB_THIRDPERSON);
+		if (oldTPButtonState != TPButtonState) {
+			game->SetCVarBool("pm_thirdPerson", TPButtonState ? !game->GetCVarBool("pm_thirdPerson") : game->GetCVarBool("pm_thirdPerson"));
+			oldTPButtonState = TPButtonState;
+		}
 		
 		// get basic movement from mouse
 		MouseMove();

@@ -382,6 +382,8 @@ static bindInfo_t keyboardBinds[] =
 	{ "Quick Load",	"loadgame quick"							},	// GRENADES
 	{ "Exit Game",	"exitgame"							},	// PLASMA GUN
 	{ "Gamma Correction",	"gamma"							},	// PLASMA GUN
+
+	{ "Third Person",	"_thirdperson"							},	// ThirdPerson
 };
 
 static const int numBinds = sizeof(keyboardBinds) / sizeof(keyboardBinds[0]);
@@ -1783,8 +1785,9 @@ const char* M_GetPageText(int i) {
 	case 0:
 		return "next page";
 	case 1:
-		return i == 10 ? "next page" : "prev page";
 	case 2:
+		return i == 10 ? "next page" : "prev page";
+	case 3:
 		return "prev page";
 	}
 	return "";
@@ -1887,11 +1890,11 @@ void M_DrawKey(void) {
 		}
 		else*/
 		{
-			if ( (i < ((pageIndex + 1) * 10)) || (pageIndex == 2 && (i - bindStart) == 10)) {
+			if ( (i < ((pageIndex + 1) * 10)) || (pageIndex == 3 && (i - bindStart) == 10)) {
 				M_WriteText(::g->KeyDef.x + ((i - bindStart) < 10 ? 0 : (aspect ? 220 : 0)), ::g->KeyDef.y + LINEHEIGHT * ((i - bindStart) < 10 ? (i - bindStart) : (aspect ? ((i - bindStart) - 10) : (i - bindStart))), res.c_str(), true);
 			}
 			else {
-				M_WriteText(::g->KeyDef.x + (aspect ? 220 : 200), ::g->KeyDef.y + LINEHEIGHT * (pageIndex == 2 && !aspect ? ((i - bindStart) - 11) : ((i - bindStart) - 10)), M_GetPageText((i- bindStart)), true);
+				M_WriteText(::g->KeyDef.x + (aspect ? 220 : 200), ::g->KeyDef.y + LINEHEIGHT * (pageIndex == 3 && !aspect ? ((i - bindStart) - 11) : ((i - bindStart) - 10)), M_GetPageText((i- bindStart)), true);
 			}
 		}
 	}
@@ -2075,9 +2078,10 @@ void M_Key(int choice)
 void M_ChangeKeys(int choice) {
 	//int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
 	if (choice == 10) {
-		if (pageIndex < 2) {
+		if (pageIndex < 3) {
 			pageIndex++;
 			::g->itemOn = 0;
+			::g->currentMenu->lastOn = 0;
 			M_SetupNextMenu(&::g->KeyDef);
 			return;
 		}
@@ -2087,6 +2091,7 @@ void M_ChangeKeys(int choice) {
 		if (pageIndex > 0) {
 			pageIndex--;
 			::g->itemOn = 0;
+			::g->currentMenu->lastOn = 0;
 			M_SetupNextMenu(&::g->KeyDef);
 			return;
 		}
@@ -2396,6 +2401,8 @@ void M_CheckReset()
 		}
 	}
 }
+
+boolean isTPPressed = false;
 
 //
 // M_Responder
@@ -2749,7 +2756,10 @@ qboolean M_Responder (event_t* ev)
 				}
 				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && ::g->itemOn + 1 >= (pageIndex == 0 ? 11 : 12)) {
 					::g->itemOn = 0;
-			}
+				}
+				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems &&  pageIndex == 3 && ::g->itemOn + 1 >= 2) {
+					::g->itemOn += 10;
+				}
 				else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == vsync) {
 					::g->itemOn = vsync + 2;
 				}
@@ -2774,6 +2784,9 @@ qboolean M_Responder (event_t* ev)
 				::g->itemOn = framerate - 2;
 			else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == jump)
 				::g->itemOn = look;
+			else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && pageIndex == 3 && ::g->itemOn == 11) {
+				::g->itemOn -= 10;
+			}
 			else ::g->itemOn--;
 			S_StartSound(NULL,sfx_pstop);
 		} while(::g->currentMenu->menuitems[::g->itemOn].status==-1);
@@ -2856,6 +2869,15 @@ qboolean M_Responder (event_t* ev)
 
 	}
 
+	std::string s(idKeyInput::GetBinding(ch));
+
+	if (!idStr::Icmp("_thirdperson", s.c_str()) && !isTPPressed) {
+		game->SetCVarBool("pm_thirdPerson", !game->GetCVarBool("pm_thirdPerson"));
+		isTPPressed = true;
+		return true;
+	}
+
+	isTPPressed = false;
 	return false;
 }
 
@@ -2945,7 +2967,7 @@ void M_Drawer (void)
 		{
 			::g->md_x = ::g->currentMenu->x + 165;
 		}
-		if (pageIndex == 2 && !aspect && ::g->itemOn == 10) {
+		if (pageIndex == 3 && !aspect && ::g->itemOn == 10) {
 			::g->md_x = ::g->currentMenu->x;
 		}
 	}
@@ -2985,7 +3007,7 @@ void M_Drawer (void)
 		}
 		if ((::g->currentMenu->menuitems == ::g->ResDef.menuitems || ::g->currentMenu->menuitems == ::g->KeyDef.menuitems) && ::g->itemOn >= 10) {
 			lineoffs = LINEHEIGHT * (::g->itemOn - 10);
-			if (pageIndex == 2 && !aspect ) {
+			if (pageIndex == 3 && !aspect ) {
 				if (::g->itemOn == 10) {
 					lineoffs = ::g->itemOn * LINEHEIGHT;
 				}

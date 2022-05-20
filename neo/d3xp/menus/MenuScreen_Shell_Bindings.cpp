@@ -78,6 +78,7 @@ static bindInfo_t keyboardBinds[] =
 	{ "#str_04069",	"screenshot"							},	// SCREENSHOT
 	{ "#str_02068",	"clientMessageMode"						},	// SCREENSHOT
 	{ "#str_02122",	"clientMessageMode 1"					},	// SCREENSHOT
+	{ "#str_swf_tp_buton",	"_thirdperson"							},	// Third Person
 	//{ "#str_04071",	"clientDropWeapon"						}	// DROP WEAPON
 };
 
