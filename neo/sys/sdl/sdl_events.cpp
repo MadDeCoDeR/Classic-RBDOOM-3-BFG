@@ -1302,9 +1302,17 @@ sysEvent_t Sys_GetEvent()
 					break;
 				}
 			}
-			if (buttonStates[res.evValue] != res.evValue2)  {
-				buttonStates[res.evValue] = res.evValue2;
+			// for (int i = K_JOY_STICK1_UP; i < K_JOY_DPAD_UP; i++) {
+			// 	//There was one pressed but now is none so unpress it
+			// 	if (res.evValue != i && buttonStates[i] != 0) {
+			// 		buttonStates[i] = 0;
+			// 	}
+			// }
+			if (buttonStates[res.evValue] != ev.caxis.value) {
+				buttonStates[res.evValue] = ev.caxis.value;
 				return res;
+			} else {
+				continue;
 			}
 			break;
 
