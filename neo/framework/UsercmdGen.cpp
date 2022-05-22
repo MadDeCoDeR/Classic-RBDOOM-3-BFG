@@ -1364,7 +1364,7 @@ void idUsercmdGenLocal::Key( int keyNum, bool down )
 		buttonState[ action ]++;
 		if( !Inhibited() )
 		{//GK: Make sure impulse 14 and impulse 15 are NOT recorded as impulse events
-			if( (action >= UB_IMPULSE0 && action <= UB_IMPULSE31) && action != 30 && action != 31 )
+			if( (action >= UB_IMPULSE0 && action <= UB_IMPULSE31) && action != UB_IMPULSE14 && action != UB_IMPULSE15 )
 			{
 				cmd.impulse = action - UB_IMPULSE0;
 				cmd.impulseSequence++;
