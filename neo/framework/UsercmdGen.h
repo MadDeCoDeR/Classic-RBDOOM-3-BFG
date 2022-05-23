@@ -154,7 +154,6 @@ typedef enum
 	UB_ZOOM,
 	UB_SHOWSCORES,
 	UB_USE,
-	UB_THIRDPERSON,
 	
 	UB_IMPULSE0,
 	UB_IMPULSE1,
@@ -188,6 +187,8 @@ typedef enum
 	UB_IMPULSE29,
 	UB_IMPULSE30,
 	UB_IMPULSE31,
+
+	UB_THIRDPERSON,
 	
 	UB_MAX_BUTTONS
 } usercmdButton_t;

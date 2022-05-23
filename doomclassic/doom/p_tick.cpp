@@ -35,6 +35,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "doomstat.h"
 
 
+extern idCVar in_photomode;
 
 //
 // THINKERS
@@ -154,6 +155,10 @@ void P_Ticker (void)
     {
 	return;
     }
+
+	if (in_photomode.GetBool()) {
+		return;
+	}
 
 
 	for (i=0 ; i<MAXPLAYERS ; i++) {

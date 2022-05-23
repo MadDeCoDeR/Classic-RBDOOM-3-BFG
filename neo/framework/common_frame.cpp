@@ -82,6 +82,7 @@ idCVar timescale( "timescale", "1", CVAR_SYSTEM | CVAR_FLOAT, "Number of game fr
 extern idCVar in_joystickRumble;
 extern idCVar r_aspectcorrect; //GK: also here
 extern idCVar r_clblurry;
+extern idCVar in_photomode;
 /*
 ===============
 idGameThread::Run
@@ -527,7 +528,7 @@ void idCommonLocal::Frame()
 		
 		// RB begin
 #if defined(USE_DOOMCLASSIC)
-		const bool pauseGame = ( !mapSpawned
+		const bool pauseGame = (in_photomode.GetBool() || !mapSpawned
 								 || ( !IsMultiplayer()
 									  && ( Dialog().IsDialogPausing() || session->IsSystemUIShowing()
 										   || ( game && game->Shell_IsActive() ) || com_pause.GetInteger() ) ) )
@@ -539,6 +540,8 @@ void idCommonLocal::Frame()
 										   || ( game && game->Shell_IsActive() ) || com_pause.GetInteger() ) ) );
 #endif
 		// RB end
+
+		
 		
 		// save the screenshot and audio from the last draw if needed
 		if( aviCaptureMode )

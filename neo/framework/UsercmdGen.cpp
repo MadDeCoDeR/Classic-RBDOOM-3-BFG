@@ -53,9 +53,14 @@ idCVar in_alwaysRunCl("in_alwaysRunCl", "0", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_B
 idCVar in_joystickRumble( "in_joystickRumble", "1", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_BOOL, "enable joystick rumble" );
 idCVar in_invertLook( "in_invertLook", "0", CVAR_ARCHIVE | CVAR_BOOL, "inverts the look controls so the forward looks up (flight controls) - the proper way to play games!" );
 idCVar in_mouseInvertLook( "in_mouseInvertLook", "0", CVAR_ARCHIVE | CVAR_BOOL, "inverts the look controls so the forward looks up (flight controls) - the proper way to play games!" );
-//GK: in_joylayout
+//GK: in_joylayout & photomode
 idCVar in_joylayout("in_joylayout", "0", CVAR_ARCHIVE | CVAR_INTEGER, "Change controller layout", 0, 4);
 idCVar in_joyjpn("in_joyjpn", "0", CVAR_NOCHEAT | CVAR_BOOL, "Enable/Disable JPN controller for PS");
+
+
+idCVar in_photomode("in_photomode", "0", CVAR_NOCHEAT | CVAR_BOOL, "Enable/Disable Photo Mode");
+
+extern idCVar com_pause;
 //GK End
 /*
 ================
@@ -1167,44 +1172,74 @@ void idUsercmdGenLocal::MakeCurrent()
 
 		int TPButtonState = ButtonState(UB_THIRDPERSON);
 		if (oldTPButtonState != TPButtonState) {
-			game->SetCVarBool("pm_thirdPerson", TPButtonState ? !game->GetCVarBool("pm_thirdPerson") : game->GetCVarBool("pm_thirdPerson"));
+			in_photomode.SetBool(TPButtonState ? !in_photomode.GetBool() : in_photomode.GetBool());
+			game->SetCVarBool("pm_thirdPerson", in_photomode.GetBool());
 			oldTPButtonState = TPButtonState;
+		}		
+
+		if (in_photomode.GetBool()) {
+			int forwardState = ButtonState(UB_MOVEFORWARD);
+			int backwardState = ButtonState(UB_MOVEBACK);
+			int offset = forwardState ? forwardState : backwardState ? -backwardState : 0;
+
+			game->SetCVarFloat("pm_thirdPersonRange", game->GetCVarFloat("pm_thirdPersonRange") + offset);
+
+			int starfeLeftState = ButtonState(UB_MOVELEFT);
+			int starfeRightState = ButtonState(UB_MOVERIGHT);
+			offset = starfeLeftState ? starfeLeftState : starfeRightState ? -starfeRightState : 0;
+
+			game->SetCVarFloat("pm_thirdPersonXOff", game->GetCVarFloat("pm_thirdPersonXOff") + offset);
+
+			int lookLeftState = ButtonState(UB_LOOKLEFT);
+			int lookRightState = ButtonState(UB_LOOKRIGHT);
+			offset = lookLeftState ? lookLeftState : lookRightState ? -lookRightState : 0;
+
+			game->SetCVarFloat("pm_thirdPersonAngle", game->GetCVarFloat("pm_thirdPersonAngle") + offset);
+
+			int moveUpState = ButtonState(UB_MOVEUP);
+			int moveDownState = ButtonState(UB_MOVEDOWN);
+			offset = moveUpState ? moveUpState : moveDownState ? -moveDownState : 0;
+
+			game->SetCVarFloat("pm_thirdPersonHeight", game->GetCVarFloat("pm_thirdPersonHeight") + offset);
+
 		}
-		
-		// get basic movement from mouse
-		MouseMove();
-		
-		// get basic movement from joystick and set key bits
-		// must be done before CmdButtons!
-		if( joy_newCode.GetBool() )
-		{
-			JoystickMove2();
-		}
-		else
-		{
-			JoystickMove();
-		}
-		
-		// keyboard angle adjustment
-		AdjustAngles();
-		
-		// set button bits
-		CmdButtons();
-		
-		// get basic movement from keyboard
-		KeyMove();
-		
-		// aim assist
-		AimAssist();
-		
-		// check to make sure the angles haven't wrapped
-		if( viewangles[PITCH] - oldAngles[PITCH] > 90 )
-		{
-			viewangles[PITCH] = oldAngles[PITCH] + 90;
-		}
-		else if( oldAngles[PITCH] - viewangles[PITCH] > 90 )
-		{
-			viewangles[PITCH] = oldAngles[PITCH] - 90;
+		else {
+
+			// get basic movement from mouse
+			MouseMove();
+
+			// get basic movement from joystick and set key bits
+			// must be done before CmdButtons!
+			if (joy_newCode.GetBool())
+			{
+				JoystickMove2();
+			}
+			else
+			{
+				JoystickMove();
+			}
+
+			// keyboard angle adjustment
+			AdjustAngles();
+
+			// set button bits
+			CmdButtons();
+
+			// get basic movement from keyboard
+			KeyMove();
+
+			// aim assist
+			AimAssist();
+
+			// check to make sure the angles haven't wrapped
+			if (viewangles[PITCH] - oldAngles[PITCH] > 90)
+			{
+				viewangles[PITCH] = oldAngles[PITCH] + 90;
+			}
+			else if (oldAngles[PITCH] - viewangles[PITCH] > 90)
+			{
+				viewangles[PITCH] = oldAngles[PITCH] - 90;
+			}
 		}
 	}
 	else

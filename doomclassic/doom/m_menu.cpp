@@ -2402,8 +2402,6 @@ void M_CheckReset()
 	}
 }
 
-boolean isTPPressed = false;
-
 //
 // M_Responder
 //
@@ -2869,15 +2867,6 @@ qboolean M_Responder (event_t* ev)
 
 	}
 
-	std::string s(idKeyInput::GetBinding(ch));
-
-	if (!idStr::Icmp("_thirdperson", s.c_str()) && !isTPPressed) {
-		game->SetCVarBool("pm_thirdPerson", !game->GetCVarBool("pm_thirdPerson"));
-		isTPPressed = true;
-		return true;
-	}
-
-	isTPPressed = false;
 	return false;
 }
 
