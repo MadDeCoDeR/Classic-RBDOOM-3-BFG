@@ -627,6 +627,9 @@ void idCommonLocal::Frame()
 			
 			gameTimeResidual += clampedDeltaMilliseconds * timescale.GetFloat();
 			
+			if (in_photomode.GetBool()) {
+				game->UpdateRenderView();
+			}
 			// don't run any frames when paused
 			// jpcy: the game is paused when playing a demo, but playDemo should wait like the game does
 			if( pauseGame && !( readDemo && !timeDemo ) )

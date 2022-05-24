@@ -2203,6 +2203,13 @@ void idGameLocal::SetupClassicCodePointers()
 	SetupCodePointers();
 }
 
+void idGameLocal::UpdateRenderView()
+{
+	if (this->GetLocalPlayer() != NULL) {
+		this->GetLocalPlayer()->CalculateRenderView();
+	}
+}
+
 /*
 ===========
 idGameLocal::SpawnPlayer

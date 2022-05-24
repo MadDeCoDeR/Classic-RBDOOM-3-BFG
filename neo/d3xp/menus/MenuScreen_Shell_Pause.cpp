@@ -409,6 +409,10 @@ void idMenuScreen_Shell_Pause::HandleExitGameBtn()
 			if( accept )
 			{
 				cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "disconnect\n" );
+				if (cvarSystem->GetCVarBool("in_photomode")) {
+					cvarSystem->SetCVarBool("in_photomode", false);
+					pm_thirdPerson.SetBool(false);
+				}
 			}
 			return idSWFScriptVar();
 		}

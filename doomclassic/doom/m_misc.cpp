@@ -69,6 +69,7 @@ If you have questions concerning this license or the applicable additional terms
 //
 
 idCVar cl_cursor("cl_cursor", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Classic Doom crosshair");
+extern idCVar in_photomode;
 
 int
 M_DrawText
@@ -111,7 +112,7 @@ M_DrawText
 
 void M_DrawCross()
 {
-	if (cl_cursor.GetBool()) {
+	if (cl_cursor.GetBool() && !in_photomode.GetBool()) {
 		int xoffset = game->GetCVarBool("pm_thirdPerson") ? (game->GetCVarFloat("pm_thirdPersonXOff") / 4) : 0;
 		int yoffset = (20 / abs(::g->screenSize - 6)) - (5 * (::g->screenSize - 7));
 		V_DrawPatchDirect((ORIGINAL_WIDTH / 2) - 3 + xoffset, (BASEYCENTER)-yoffset + 2, 0, img2lmp(W_CacheLumpName(::g->crossnames[::g->cross_state], PU_CACHE_SHARED),

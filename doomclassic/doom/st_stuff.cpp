@@ -354,6 +354,7 @@ cheatseq_t	cheat_mypos = cheatseq_t( cheat_mypos_seq, 0 );
 
 
 idCVar cl_HUD("cl_HUD", "0", CVAR_ARCHIVE | CVAR_BOOL, "Enable/Disable Heads up Display on Classic DOOM (if the status bar is hidden)");
+extern idCVar in_photomode;
 
 //
 // STATUS BAR CODE
@@ -362,43 +363,45 @@ void ST_Stop(void);
 
 void ST_refreshBackground(void)
 {
-	if (::g->st_statusbaron)
-	{
-		short widthoffset = 0;
-		if (::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) {
-			V_DrawPatch(ST_X, 0, BG, ::g->mapt, true);
-			widthoffset += ::g->mapt->width;
-			V_DrawPatch(ST_X + ST_WIDTH + widthoffset, 0, BG, ::g->spwr, true);
-			widthoffset += ::g->spwr->width;
+	if (!in_photomode.GetBool()) {
+		if (::g->st_statusbaron)
+		{
+			short widthoffset = 0;
+			if (::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) {
+				V_DrawPatch(ST_X, 0, BG, ::g->mapt, true);
+				widthoffset += ::g->mapt->width;
+				V_DrawPatch(ST_X + ST_WIDTH + widthoffset, 0, BG, ::g->spwr, true);
+				widthoffset += ::g->spwr->width;
+			}
+
+			V_DrawPatch(ST_X + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->sbar, true);
+
+
+			if (::g->netgame)
+				V_DrawPatch(ST_FX + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->faceback, true);
+
+			V_CopyRect(ST_X, 0, BG, ST_WIDTH + widthoffset, ST_HEIGHT, ST_X, ST_Y, FG, true);
 		}
-		
-		V_DrawPatch(ST_X + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->sbar, true);
-			
+		else if (cl_HUD.GetBool()) {
+			V_DrawPatch(ST_X, ST_ARMORY, FG, ::g->hear, true);
 
-		if (::g->netgame)
-			V_DrawPatch(ST_FX + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->faceback, true);
+			V_DrawPatch(ST_AMMO0X + (::g->ASPECT_POS_OFFSET - 7) - ((4 - ::g->ASPECT_IMAGE_SCALER) * 50), ST_ARMORY + 4, FG, ::g->fullarms, true);
 
-		V_CopyRect(ST_X, 0, BG, ST_WIDTH + widthoffset, ST_HEIGHT, ST_X, ST_Y, FG, true);
-	}
-	else if (cl_HUD.GetBool()) {
-		V_DrawPatch(ST_X, ST_ARMORY, FG, ::g->hear, true);
+			V_DrawPatch(ST_AMMO0X + (::g->ASPECT_POS_OFFSET + 36) - ((4 - ::g->ASPECT_IMAGE_SCALER) * 50), ST_ARMORY + 8, FG, ::g->fullslash, true);
 
-		V_DrawPatch(ST_AMMO0X + (::g->ASPECT_POS_OFFSET - 7) - ((4 - ::g->ASPECT_IMAGE_SCALER) * 50), ST_ARMORY + 4, FG, ::g->fullarms, true);
+			V_DrawPatch(ST_X, ORIGINAL_HEIGHT - 11, FG, ::g->fullkeys, true);
 
-		V_DrawPatch(ST_AMMO0X + (::g->ASPECT_POS_OFFSET + 36) - ((4 - ::g->ASPECT_IMAGE_SCALER) * 50), ST_ARMORY + 8, FG, ::g->fullslash, true);
+			int powerX = (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER) - 30;
 
-		V_DrawPatch(ST_X, ORIGINAL_HEIGHT - 11, FG, ::g->fullkeys, true);
+			V_DrawPatch(powerX, (ORIGINAL_HEIGHT / 2) - 5, FG, ::g->fullpwr, true);
 
-		int powerX = (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER) - 30;
+			V_DrawPatch(powerX - 10, 16, FG, ::g->fulltime, true);
 
-		V_DrawPatch(powerX, (ORIGINAL_HEIGHT / 2) - 5, FG, ::g->fullpwr, true);
-
-		V_DrawPatch(powerX - 10, 16, FG, ::g->fulltime, true);
-
-		if (::g->deathmatch) {
-			V_DrawPatch((::g->SCREENWIDTH / 2) - 30, (SCREENHEIGHT / GLOBAL_IMAGE_SCALER) - 20, FG, ::g->fullfrag, true);
+			if (::g->deathmatch) {
+				V_DrawPatch((::g->SCREENWIDTH / 2) - 30, (SCREENHEIGHT / GLOBAL_IMAGE_SCALER) - 20, FG, ::g->fullfrag, true);
+			}
+			//V_CopyRect(ST_X, 0, BG, (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER), (SCREENHEIGHT / GLOBAL_IMAGE_SCALER), ST_X, 0, FG, true);
 		}
-		//V_CopyRect(ST_X, 0, BG, (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER), (SCREENHEIGHT / GLOBAL_IMAGE_SCALER), ST_X, 0, FG, true);
 	}
 
 }
@@ -1029,11 +1032,13 @@ void ST_Ticker (void)
 
 	::g->st_clock++;
 	::g->st_randomnumber = M_Random();
-	if (::g->st_statusbaron) {
-		ST_updateWidgets();
-	}
-	else if (cl_HUD.GetBool()){
-		ST_updateFullWidgets();
+	if (!in_photomode.GetBool()) {
+		if (::g->st_statusbaron) {
+			ST_updateWidgets();
+		}
+		else if (cl_HUD.GetBool()) {
+			ST_updateFullWidgets();
+		}
 	}
 	::g->st_oldhealth = ::g->plyr->health;
 
@@ -1203,23 +1208,27 @@ void ST_doRefresh(void)
 	// draw status bar background to off-screen buff
 	ST_refreshBackground();
 
-	// and refresh all widgets
-	if (::g->st_statusbaron) {
-		ST_drawWidgets(true);
-	}
-	else if (cl_HUD.GetBool()) {
-		ST_drawFullWidgets(true);
+	if (!in_photomode.GetBool()) {
+		// and refresh all widgets
+		if (::g->st_statusbaron) {
+			ST_drawWidgets(true);
+		}
+		else if (cl_HUD.GetBool()) {
+			ST_drawFullWidgets(true);
+		}
 	}
 }
 
 void ST_diffDraw(void)
 {
-	// update all widgets
-	if (::g->st_statusbaron) {
-		ST_drawWidgets(false);
-	}
-	else if (cl_HUD.GetBool()){
-		ST_drawFullWidgets(false);
+	if (!in_photomode.GetBool()) {
+		// update all widgets
+		if (::g->st_statusbaron) {
+			ST_drawWidgets(false);
+		}
+		else if (cl_HUD.GetBool()) {
+			ST_drawFullWidgets(false);
+		}
 	}
 }
 

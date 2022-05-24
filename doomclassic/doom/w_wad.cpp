@@ -91,6 +91,8 @@ extern idCVar fs_savepath;
 extern idCVar s_useXAudio;
 #endif
 
+extern idCVar in_photomode;
+
 int filelength (FILE* handle) 
 { 
 	// DHM - not used :: development tool (loading single lump not in a WAD file)
@@ -746,6 +748,11 @@ void W_FreeWadFiles() {
 		ResetFinalflat();
 		P_ResetAct();
 		I_Printf("Reset Completed!!\n");
+
+		if (in_photomode.GetBool()) {
+			in_photomode.SetBool(false);
+			game->SetCVarBool("pm_thirdPerson", false);
+		}
 	}
 	//GK End
 }

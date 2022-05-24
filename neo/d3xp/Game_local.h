@@ -694,6 +694,8 @@ public:
 	const char* 			GetMPPlayerDefName() const;
 
 	virtual void				SetupClassicCodePointers();
+
+	virtual void				UpdateRenderView();
 	
 private:
 	const static int		INITIAL_SPAWN_COUNT = 1;

@@ -106,6 +106,8 @@ extern idCVar cl_HUD;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 extern idCVar s_useXAudio;
 #endif
+
+extern idCVar in_photomode;
 //
 // defaulted values
 //
@@ -2032,6 +2034,10 @@ void M_CloseGame()
 	if (::g->netgame) {
 		DoomLib::Interface.QuitCurrentGame();
 	}
+	if (in_photomode.GetBool()) {
+		in_photomode.SetBool(false);
+		game->SetCVarBool("pm_thirdPerson", false);
+	}
 }
 
 void M_GameSelection(int choice)
@@ -2616,7 +2622,7 @@ qboolean M_Responder (event_t* ev)
 		switch(ch)
 	{
 		case KEY_MINUS:         // Screen size down
-			if (::g->automapactive || ::g->chat_on)
+			if (::g->automapactive || ::g->chat_on || in_photomode.GetBool())
 				return false;
 			M_SizeDisplay(0);
 			//M_Aspect(0); //GK: Screen size doesn't work
@@ -2624,7 +2630,7 @@ qboolean M_Responder (event_t* ev)
 			return true;
 
 		case KEY_EQUALS:        // Screen size up
-			if (::g->automapactive || ::g->chat_on)
+			if (::g->automapactive || ::g->chat_on || in_photomode.GetBool())
 				return false;
 			M_SizeDisplay(1);
 			//M_Aspect(1); //GK: It doesn't circle through

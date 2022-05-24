@@ -509,7 +509,9 @@ void idPlayerView::SingleView( const renderView_t* _view, idMenuHandler_HUD* hud
 				}
 			}
 		}
-		player->DrawHUD( hudManager );
+		if (!cvarSystem->GetCVarBool("in_photomode")) {
+			player->DrawHUD(hudManager);
+		}
 		
 		if( player->spectating )
 		{
