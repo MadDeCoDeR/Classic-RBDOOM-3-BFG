@@ -1173,11 +1173,6 @@ void idUsercmdGenLocal::MakeCurrent()
 	
 	if( !Inhibited() )
 	{
-		// update toggled key states
-		toggled_crouch.SetKeyState( ButtonState( UB_MOVEDOWN ), in_toggleCrouch.GetBool() );
-		toggled_run.SetKeyState( ButtonState( UB_SPEED ), in_toggleRun.GetBool() && common->IsMultiplayer() );
-		toggled_zoom.SetKeyState( ButtonState( UB_ZOOM ), in_toggleZoom.GetBool() );
-
 		int TPButtonState = ButtonState(UB_THIRDPERSON);
 		if (oldTPButtonState != TPButtonState) {
 			in_photomode.SetBool(TPButtonState ? !in_photomode.GetBool() : in_photomode.GetBool());
@@ -1229,6 +1224,11 @@ void idUsercmdGenLocal::MakeCurrent()
 
 		}
 		else {
+
+			// update toggled key states
+			toggled_crouch.SetKeyState(ButtonState(UB_MOVEDOWN), in_toggleCrouch.GetBool());
+			toggled_run.SetKeyState(ButtonState(UB_SPEED), in_toggleRun.GetBool() && common->IsMultiplayer());
+			toggled_zoom.SetKeyState(ButtonState(UB_ZOOM), in_toggleZoom.GetBool());
 
 			// get basic movement from mouse
 			MouseMove();
