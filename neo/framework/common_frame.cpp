@@ -759,7 +759,7 @@ void idCommonLocal::Frame()
 				Sys_EndJoystickInputEvents();
 			}
 		}
-		if( pauseGame )
+		if( pauseGame && !in_photomode.GetBool() )
 		{
 			usercmdGen->Clear();
 		}
