@@ -314,6 +314,14 @@ private:
 	int				lastPollTime;
 	float			lastLookValuePitch;
 	float			lastLookValueYaw;
+
+	//GK: Keep the original values of the pm_thirdPerson CVars when entering photomode
+	bool		oldpmtp; //pm_thirdPerson
+	float	oldpmtpangl; //pm_thirdPersonAngle
+	float	oldpmtprangle; //pm_thirdPersonRange
+	float	oldpmtpxoffs; //pm_thirdPersonXoff
+	float	oldpmtpheight; //pm_thirdPersonHeight
+	//GK: End
 	
 	static idCVar	in_yawSpeed;
 	static idCVar	in_pitchSpeed;
@@ -1173,6 +1181,23 @@ void idUsercmdGenLocal::MakeCurrent()
 		int TPButtonState = ButtonState(UB_THIRDPERSON);
 		if (oldTPButtonState != TPButtonState) {
 			in_photomode.SetBool(TPButtonState ? !in_photomode.GetBool() : in_photomode.GetBool());
+			game->SetCVarBool("pm_thirdPerson", in_photomode.GetBool());
+			if (TPButtonState) {
+				if (in_photomode.GetBool()) {
+					oldpmtp = game->GetCVarBool("pm_thirdPerson");
+					oldpmtpangl = game->GetCVarFloat("pm_thirdPersonAngle");
+					oldpmtprangle = game->GetCVarFloat("pm_thirdPersonRange");
+					oldpmtpxoffs = game->GetCVarFloat("pm_thirdPersonXOff");
+					oldpmtpheight = game->GetCVarFloat("pm_thirdPersonHeight");
+				}
+				else {
+					game->SetCVarBool("pm_thirdPerson", oldpmtp);
+					game->SetCVarFloat("pm_thirdPersonRange", oldpmtprangle);
+					game->SetCVarFloat("pm_thirdPersonXOff", oldpmtpxoffs);
+					game->SetCVarFloat("pm_thirdPersonAngle", oldpmtpangl);
+					game->SetCVarFloat("pm_thirdPersonHeight", oldpmtpheight);
+				}
+			}
 			game->SetCVarBool("pm_thirdPerson", in_photomode.GetBool());
 			oldTPButtonState = TPButtonState;
 		}		
