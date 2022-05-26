@@ -27,6 +27,7 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 #include "precompiled.h"
+#include "../doomclassic/doom/doomlib.h"
 #pragma hdrstop
 
 idCVar joy_mergedThreshold( "joy_mergedThreshold", "1", CVAR_BOOL | CVAR_ARCHIVE, "If the thresholds aren't merged, you drift more off center" );
@@ -321,6 +322,7 @@ private:
 	float	oldpmtprangle; //pm_thirdPersonRange
 	float	oldpmtpxoffs; //pm_thirdPersonXoff
 	float	oldpmtpheight; //pm_thirdPersonHeight
+	idVec3			oldTPViewAngles; //In order to prevent the camera of the player to follow the camera of the photo mode
 	//GK: End
 	
 	static idCVar	in_yawSpeed;
@@ -1169,8 +1171,6 @@ creates the current command for this frame
 */
 void idUsercmdGenLocal::MakeCurrent()
 {
-	idVec3 oldAngles = viewangles;
-	
 	if( !Inhibited() )
 	{
 		int TPButtonState = ButtonState(UB_THIRDPERSON);
@@ -1179,6 +1179,7 @@ void idUsercmdGenLocal::MakeCurrent()
 			game->SetCVarBool("pm_thirdPerson", in_photomode.GetBool());
 			if (TPButtonState) {
 				if (in_photomode.GetBool()) {
+					oldTPViewAngles = viewangles;
 					oldpmtp = game->GetCVarBool("pm_thirdPerson");
 					oldpmtpangl = game->GetCVarFloat("pm_thirdPersonAngle");
 					oldpmtprangle = game->GetCVarFloat("pm_thirdPersonRange");
@@ -1191,6 +1192,9 @@ void idUsercmdGenLocal::MakeCurrent()
 					game->SetCVarFloat("pm_thirdPersonXOff", oldpmtpxoffs);
 					game->SetCVarFloat("pm_thirdPersonAngle", oldpmtpangl);
 					game->SetCVarFloat("pm_thirdPersonHeight", oldpmtpheight);
+					if (DoomLib::GetGlobalData(0) == NULL) {
+						viewangles = oldTPViewAngles;
+					}
 				}
 			}
 			game->SetCVarBool("pm_thirdPerson", in_photomode.GetBool());
@@ -1198,21 +1202,40 @@ void idUsercmdGenLocal::MakeCurrent()
 		}		
 
 		if (in_photomode.GetBool()) {
-			int forwardState = ButtonState(UB_MOVEFORWARD);
-			int backwardState = ButtonState(UB_MOVEBACK);
-			int offset = forwardState ? forwardState : backwardState ? -backwardState : 0;
 
-			game->SetCVarFloat("pm_thirdPersonRange", game->GetCVarFloat("pm_thirdPersonRange") + offset);
+			idVec3 oldPMAngles = viewangles;
 
-			int starfeLeftState = ButtonState(UB_MOVELEFT);
-			int starfeRightState = ButtonState(UB_MOVERIGHT);
-			offset = starfeLeftState ? starfeLeftState : starfeRightState ? -starfeRightState : 0;
+			// get basic movement from mouse
+			MouseMove();
 
-			game->SetCVarFloat("pm_thirdPersonXOff", game->GetCVarFloat("pm_thirdPersonXOff") + offset);
+			// get basic movement from joystick and set key bits
+			// must be done before CmdButtons!
+			if (joy_newCode.GetBool())
+			{
+				JoystickMove2();
+			}
+			else
+			{
+				JoystickMove();
+			}
 
-			int lookLeftState = ButtonState(UB_LOOKLEFT);
-			int lookRightState = ButtonState(UB_LOOKRIGHT);
-			offset = lookLeftState ? lookLeftState : lookRightState ? -lookRightState : 0;
+
+			// keyboard angle adjustment
+			AdjustAngles();
+
+			// get basic movement from keyboard
+			KeyMove();
+
+			int offset = cmd.forwardmove / (cmd.forwardmove !=0 ? abs(cmd.forwardmove) : 1);
+
+			game->SetCVarFloat("pm_thirdPersonRange", game->GetCVarFloat("pm_thirdPersonRange") - offset);
+
+			offset = cmd.rightmove / (cmd.rightmove != 0 ? abs(cmd.rightmove) : 1);
+
+			game->SetCVarFloat("pm_thirdPersonXOff", game->GetCVarFloat("pm_thirdPersonXOff") - offset);
+
+			int delta = viewangles[YAW] - oldPMAngles[YAW];
+			offset = delta; /*/ (delta != 0 ? abs(delta) : 1);*/
 
 			game->SetCVarFloat("pm_thirdPersonAngle", game->GetCVarFloat("pm_thirdPersonAngle") + offset);
 
@@ -1224,6 +1247,8 @@ void idUsercmdGenLocal::MakeCurrent()
 
 		}
 		else {
+
+			idVec3 oldAngles = viewangles;
 
 			// update toggled key states
 			toggled_crouch.SetKeyState(ButtonState(UB_MOVEDOWN), in_toggleCrouch.GetBool());
