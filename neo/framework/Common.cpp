@@ -231,6 +231,8 @@ idCommonLocal::idCommonLocal() :
 	
 	saveFile = NULL;
 	stringsFile = NULL;
+
+	photoMode = new PhotoMode();
 	
 	ClearWipe();
 }

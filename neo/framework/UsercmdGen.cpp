@@ -316,14 +316,7 @@ private:
 	float			lastLookValuePitch;
 	float			lastLookValueYaw;
 
-	//GK: Keep the original values of the pm_thirdPerson CVars when entering photomode
-	bool		oldpmtp; //pm_thirdPerson
-	float	oldpmtpangl; //pm_thirdPersonAngle
-	float	oldpmtprangle; //pm_thirdPersonRange
-	float	oldpmtpxoffs; //pm_thirdPersonXoff
-	float	oldpmtpheight; //pm_thirdPersonHeight
-	idVec3			oldTPViewAngles; //In order to prevent the camera of the player to follow the camera of the photo mode
-	//GK: End
+	
 	
 	static idCVar	in_yawSpeed;
 	static idCVar	in_pitchSpeed;
@@ -1176,25 +1169,12 @@ void idUsercmdGenLocal::MakeCurrent()
 		int TPButtonState = ButtonState(UB_THIRDPERSON);
 		if (oldTPButtonState != TPButtonState) {
 			in_photomode.SetBool(TPButtonState ? !in_photomode.GetBool() : in_photomode.GetBool());
-			game->SetCVarBool("pm_thirdPerson", in_photomode.GetBool());
 			if (TPButtonState) {
 				if (in_photomode.GetBool()) {
-					oldTPViewAngles = viewangles;
-					oldpmtp = game->GetCVarBool("pm_thirdPerson");
-					oldpmtpangl = game->GetCVarFloat("pm_thirdPersonAngle");
-					oldpmtprangle = game->GetCVarFloat("pm_thirdPersonRange");
-					oldpmtpxoffs = game->GetCVarFloat("pm_thirdPersonXOff");
-					oldpmtpheight = game->GetCVarFloat("pm_thirdPersonHeight");
+					common->GetPhotoMode()->Start(&viewangles);
 				}
 				else {
-					game->SetCVarBool("pm_thirdPerson", oldpmtp);
-					game->SetCVarFloat("pm_thirdPersonRange", oldpmtprangle);
-					game->SetCVarFloat("pm_thirdPersonXOff", oldpmtpxoffs);
-					game->SetCVarFloat("pm_thirdPersonAngle", oldpmtpangl);
-					game->SetCVarFloat("pm_thirdPersonHeight", oldpmtpheight);
-					if (DoomLib::GetGlobalData(0) == NULL) {
-						viewangles = oldTPViewAngles;
-					}
+					common->GetPhotoMode()->End(&viewangles);
 				}
 			}
 			game->SetCVarBool("pm_thirdPerson", in_photomode.GetBool());
@@ -1226,24 +1206,13 @@ void idUsercmdGenLocal::MakeCurrent()
 			// get basic movement from keyboard
 			KeyMove();
 
-			int offset = cmd.forwardmove / (cmd.forwardmove !=0 ? abs(cmd.forwardmove) : 1);
-
-			game->SetCVarFloat("pm_thirdPersonRange", game->GetCVarFloat("pm_thirdPersonRange") - offset);
-
-			offset = cmd.rightmove / (cmd.rightmove != 0 ? abs(cmd.rightmove) : 1);
-
-			game->SetCVarFloat("pm_thirdPersonXOff", game->GetCVarFloat("pm_thirdPersonXOff") - offset);
-
 			int delta = viewangles[YAW] - oldPMAngles[YAW];
-			offset = delta; /*/ (delta != 0 ? abs(delta) : 1);*/
-
-			game->SetCVarFloat("pm_thirdPersonAngle", game->GetCVarFloat("pm_thirdPersonAngle") + offset);
 
 			int moveUpState = ButtonState(UB_MOVEUP);
 			int moveDownState = ButtonState(UB_MOVEDOWN);
-			offset = moveUpState ? moveUpState : moveDownState ? -moveDownState : 0;
+			int offset = moveUpState ? moveUpState : moveDownState ? -moveDownState : 0;
 
-			game->SetCVarFloat("pm_thirdPersonHeight", game->GetCVarFloat("pm_thirdPersonHeight") + offset);
+			common->GetPhotoMode()->AdjustCamera(delta, offset, cmd);
 
 		}
 		else {

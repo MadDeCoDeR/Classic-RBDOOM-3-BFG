@@ -65,6 +65,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../framework/UsercmdGen.h"
 #include "../framework/Serializer.h"
 #include "../framework/PlayerProfile.h"
+#include "../framework/PhotoMode.h"
 
 // decls
 #include "../framework/TokenParser.h"

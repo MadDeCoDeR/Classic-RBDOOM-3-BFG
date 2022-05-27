@@ -295,6 +295,10 @@ public:
 	}
 	virtual void WriteDemoInt(int value);
 	virtual int ReadDemoInt(int& var);
+
+	virtual PhotoMode* GetPhotoMode() {
+		return photoMode;
+	}
 	
 	
 public:
@@ -442,6 +446,8 @@ private:
 	
 	int					nextUsercmdSendTime;	// Next time to send usercmds
 	int					nextSnapshotSendTime;	// Next time to send a snapshot
+
+	PhotoMode*			photoMode;
 	
 	idSnapShot			lastSnapShot;		// last snapshot we received from the server
 	struct reliableMsg_t

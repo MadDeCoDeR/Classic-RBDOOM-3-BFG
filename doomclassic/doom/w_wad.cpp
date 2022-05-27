@@ -751,7 +751,8 @@ void W_FreeWadFiles() {
 
 		if (in_photomode.GetBool()) {
 			in_photomode.SetBool(false);
-			game->SetCVarBool("pm_thirdPerson", false);
+			idVec3 viewangles;
+			common->GetPhotoMode()->End(&viewangles);
 		}
 	}
 	//GK End

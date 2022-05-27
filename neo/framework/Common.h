@@ -44,6 +44,7 @@ extern float com_engineHz_latched;
 extern int64 com_engineHz_numerator;
 extern int64 com_engineHz_denominator;
 class idUserCmdMgr;
+class PhotoMode; //GK
 
 // Returns the msec the frame starts on
 ID_INLINE int FRAME_TO_MSEC( int64 frame )
@@ -350,6 +351,8 @@ public:
 	virtual idUserCmdMgr& GetUCmdMgr() = 0;
 	virtual void WriteDemoInt(int value) = 0;
 	virtual int ReadDemoInt(int& var) = 0;
+
+	virtual PhotoMode* GetPhotoMode() = 0;
 	
 };
 
