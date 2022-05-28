@@ -1,7 +1,10 @@
 name: CMake
 
 on:
-  create
+  push:
+    paths:
+    - .github/workflows/cmake.yml
+  
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
@@ -43,27 +46,7 @@ jobs:
         name: linux-retail
         path: |
           ./build/Retail/DoomBFA
-      
-    - name: Create Test Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: test
-        release_name: linux-test-release
-        body: |
-          This is a test
-        draft: true
-    - name: Upload file on release
-      uses: actions/upload-release-asset@v1
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./linux-retail.zip
-        asset_name: my-artifact.zip
-        asset_content_type: application/zip
+          ./build/d3xp/Retail/gamex64_86.so
   windows-build:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
