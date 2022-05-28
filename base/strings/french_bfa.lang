@@ -43,7 +43,7 @@
 	"#str_auto_save_title" "Enregistrement automatique"
 	"#str_auto_save_success" "Jeu enregistré"
 	"#str_lang_menu"	"Langue"
-	"#str_swf_tp_buton"	"Toogle à la troisième personne"
+	"#str_swf_tp_buton"	"Photo Mode"
 // 	"#str_swf_custom_game" "Nom du mod"
 // 	"#str_swf_start_map" "Première carte à charger"
 }

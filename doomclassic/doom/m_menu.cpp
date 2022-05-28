@@ -385,7 +385,7 @@ static bindInfo_t keyboardBinds[] =
 	{ "Exit Game",	"exitgame"							},	// PLASMA GUN
 	{ "Gamma Correction",	"gamma"							},	// PLASMA GUN
 
-	{ "Third Person",	"_thirdperson"							},	// ThirdPerson
+	{ "Photo Mode",	"_thirdperson"							},	// Photo Mode
 };
 
 static const int numBinds = sizeof(keyboardBinds) / sizeof(keyboardBinds[0]);

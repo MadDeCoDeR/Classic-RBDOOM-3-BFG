@@ -43,7 +43,7 @@
 	"#str_auto_save_title" "Guardado automático"
 	"#str_auto_save_success" "Partida guardada"
 	"#str_lang_menu"	"Idioma"
-	"#str_swf_tp_buton"	"Toogle en tercera persona"
+	"#str_swf_tp_buton"	"Modo Foto"
 // 	"#str_swf_custom_game" "Nombre del mod"
 // 	"#str_swf_start_map" "Primer mapa para cargar"
 }

@@ -43,7 +43,7 @@
 	"#str_auto_save_title" "Automatisch speichern"
 	"#str_auto_save_success" "Spiel gespeichert"
 	"#str_lang_menu"	"Sprache"
-	"#str_swf_tp_buton"	"Dritte Person Toogle"
+	"#str_swf_tp_buton"	"Fotomodus"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "Erste zu ladende Karte"
 }
