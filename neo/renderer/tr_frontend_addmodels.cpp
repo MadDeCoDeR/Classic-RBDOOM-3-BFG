@@ -347,7 +347,7 @@ void R_SetupDrawSurfJoints( drawSurf_t* drawSurf, const srfTriangles_t* tri, con
 	
 	if( !vertexCache.CacheIsCurrent( model->jointsInvertedBuffer ) )
 	{
-		const int alignment = glConfig.uniformBufferOffsetAlignment;
+		//const int alignment = glConfig.uniformBufferOffsetAlignment;
 		model->jointsInvertedBuffer = vertexCache.AllocJoint( model->jointsInverted, model->numInvertedJoints );
 	}
 	drawSurf->jointCache = model->jointsInvertedBuffer;

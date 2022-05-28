@@ -2285,7 +2285,7 @@ void idCommonLocal::PerformGameSwitch()
 		return;
 	}
 	
-	const int DOOM_CLASSIC_HZ = 35;
+	//const int DOOM_CLASSIC_HZ = 35;
 	
 	if( idealCurrentGame == DOOM_CLASSIC || idealCurrentGame == DOOM2_CLASSIC )
 	{

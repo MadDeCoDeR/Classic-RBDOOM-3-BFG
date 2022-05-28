@@ -641,7 +641,7 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 		case SYSTEM_FIELD_FULLSCREEN:
 		{
 			const int fullscreen = r_fullscreen.GetInteger();
-			const int vidmode = r_vidMode.GetInteger();
+			//const int vidmode = r_vidMode.GetInteger();
 			if( fullscreen == 0 )
 			{
 				return "#str_swf_disabled";
