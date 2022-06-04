@@ -131,7 +131,7 @@ idCVar pm_vmfov("pm_vmfov", "0", CVAR_INTEGER | CVAR_GAME | CVAR_ARCHIVE, "Adjus
 idCVar pm_cursor("pm_cursor", "1", CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE, "Enable/disable Crosshair");
 idCVar aa_targetAimAssistEnable("aa_targetAimAssistEnable", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enables/Disables the entire Aim Assist system");
 idCVar g_checkpoints("g_checkpoints", "1", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable checkpoints");
-idCVar g_weaponShadows("g_weaponShadows", "0", CVAR_BOOL | CVAR_ARCHIVE, "Cast shadows from weapons");
+idCVar g_weaponShadows("g_weaponShadows", "1", CVAR_BOOL | CVAR_ARCHIVE, "Cast shadows from weapons");
 idCVar pm_classicPose("pm_classicPose", "0", CVAR_BOOL | CVAR_GAME | CVAR_ARCHIVE, "Toogle classic weapon pose");
 
 idCVar	stereoRender_interOccularCentimeters("stereoRender_interOccularCentimeters", "3.0", CVAR_ARCHIVE | CVAR_RENDERER, "Distance between eyes");
