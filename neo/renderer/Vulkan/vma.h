@@ -3230,7 +3230,7 @@ bool VmaBlock::CheckAllocation(
 	*pOffset = suballoc.offset;
 	
 	// Apply VMA_DEBUG_MARGIN at the beginning.
-	if( ( VMA_DEBUG_MARGIN > 0 ) && freeSuballocItem != m_Suballocations.cbegin() )
+	if( /*( VMA_DEBUG_MARGIN > 0 ) &&*/ freeSuballocItem != m_Suballocations.cbegin() ) //C4127: VMA_DEBUG_MARGIN is preprocessor definition and is already 0 plus addition to 0 is always netural
 	{
 		*pOffset += VMA_DEBUG_MARGIN;
 	}
@@ -5356,6 +5356,10 @@ void vmaGetAllocationInfo(
 	allocator->GetAllocationInfo( allocation, pAllocationInfo );
 }
 
+#ifdef _MSC_VER //GK: Disable that warning here since allocator is used for assertion (which might not work on release and retail builds)
+#pragma warning(push)
+#pragma warning(disable: 4100)
+#endif
 void vmaSetAllocationUserData(
 	VmaAllocator allocator,
 	VmaAllocation allocation,
@@ -5367,6 +5371,9 @@ void vmaSetAllocationUserData(
 	
 	allocation->SetUserData( pUserData );
 }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 VkResult vmaMapMemory(
 	VmaAllocator allocator,
