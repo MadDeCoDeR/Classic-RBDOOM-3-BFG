@@ -167,6 +167,7 @@ Var_t g_vars[] =
 	{"pm_thirdPersonRange",&pm_thirdPersonRange},
 	{"pm_thirdPersonXOff",&pm_thirdPersonXOff},
 	{"pm_thirdPersonHeight",&pm_thirdPersonHeight},
+	{"pm_thirdPersonClip", &pm_thirdPersonClip},
 	{"pm_jumpheight",&pm_jumpheight},
 	{"pm_classicPose", &pm_classicPose},
 	{"cl_close", &cl_close},

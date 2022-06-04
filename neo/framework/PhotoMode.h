@@ -13,6 +13,7 @@ private:
 	float	oldpmtpxoffs; //pm_thirdPersonXoff
 	float	oldpmtpheight; //pm_thirdPersonHeight
 	idVec3			oldTPViewAngles; //In order to prevent the camera of the player to follow the camera of the photo mode
+	bool	oldtpclip;	//pm_thirdPersonClip
 	//GK: End
 };
 

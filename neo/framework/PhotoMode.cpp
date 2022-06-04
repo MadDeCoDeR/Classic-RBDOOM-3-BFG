@@ -10,6 +10,8 @@ void PhotoMode::Start(idVec3* viewangles) {
 	oldpmtprangle = game->GetCVarFloat("pm_thirdPersonRange");
 	oldpmtpxoffs = game->GetCVarFloat("pm_thirdPersonXOff");
 	oldpmtpheight = game->GetCVarFloat("pm_thirdPersonHeight");
+	oldtpclip = game->GetCVarBool("pm_thirdPersonClip");
+	game->SetCVarBool("pm_thirdPersonClip", false);
 }
 
 void PhotoMode::End(idVec3* viewangles)
@@ -22,6 +24,7 @@ void PhotoMode::End(idVec3* viewangles)
 	if (DoomLib::GetGlobalData(0) == NULL) {
 		*viewangles = oldTPViewAngles;
 	}
+	game->SetCVarBool("pm_thirdPersonClip", oldtpclip);
 }
 
 void PhotoMode::AdjustCamera(int viewDelta, int heightDelta, usercmd_t cmd)
