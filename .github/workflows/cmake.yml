@@ -74,9 +74,10 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
     - name: Download FFMPEG
+      working-directory: ${{github.workspace}}/.github/tools
       shell: pwsh
       run: |
-        ..\tools\download-ffmpeg.ps1
+        .\download-ffmpeg.ps1
       
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
@@ -86,5 +87,5 @@ jobs:
           ./build/Retail/DoomBFA.exe
           ./build/Retail/OpenAl32.dll
           ./build/ffmpeg/*.dll
-          ./base
+          ./base/*
       
