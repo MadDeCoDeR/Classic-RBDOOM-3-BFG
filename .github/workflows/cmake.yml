@@ -9,6 +9,7 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Retail
+  VERSION: 1.2.9-RC1
 
 jobs:
   linux-build:
@@ -34,7 +35,7 @@ jobs:
       working-directory: ${{github.workspace}}/neo
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DSDL2=ON -DUSE_PRECOMPILED_HEADERS=OFF -DMAKE_DLL=OFF -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -DSDL2=ON -DMAKE_DLL=OFF -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
       # Build your program with the given configuration
@@ -43,7 +44,7 @@ jobs:
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: linux-retail
+        name: linux-${{env.VERSION}}-retail
         path: |
           ./build/DoomBFA
           ./base/*
@@ -82,7 +83,7 @@ jobs:
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: windows-retail
+        name: windows-${{env.VERSION}}-retail
         path: |
           ./build/Retail/DoomBFA.exe
           ./build/Retail/OpenAl32.dll
