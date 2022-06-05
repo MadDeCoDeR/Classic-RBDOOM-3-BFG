@@ -73,11 +73,18 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
+    - name: Download FFMPEG
+      shell: pwsh
+      run: |
+        ..\tools\download-ffmpeg.ps1
+      
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
       with:
         name: windows-retail
         path: |
           ./build/Retail/DoomBFA.exe
-          ./build/d3xp/Retail/gamex64.dll
+          ./build/Retail/OpenAl32.dll
+          ./build/ffmpeg/*.dll
+          ./base
       
