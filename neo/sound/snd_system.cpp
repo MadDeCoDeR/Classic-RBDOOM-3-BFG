@@ -181,7 +181,7 @@ void DefaultDeviceChangeThread(void* data) {
 				idSoundHardware_OpenAL::parseDeviceName(defaultDevice, mbdefdev);
 				char* mbseldev = strdup(selectedDevice);
 				idSoundHardware_OpenAL::parseDeviceName(selectedDevice, mbseldev);*/
-//				idLib::Printf("Default Device: %s\nSelected Device: %s\n", mbdefdev, mbseldev); //GK: Otherwise outside of an attached debugger it only works once???
+				//idLib::Printf("Default Device: %s\nSelected Device: %s\n", mbdefdev, mbseldev); //GK: Otherwise outside of an attached debugger it only works once???
 				if (idStr::Icmp(defaultDevice, selectedDevice)) {
 					soundSystemLocal.SetNeedsRestart();
 				}

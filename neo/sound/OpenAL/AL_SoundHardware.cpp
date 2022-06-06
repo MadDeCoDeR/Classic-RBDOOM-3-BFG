@@ -177,8 +177,6 @@ void idSoundHardware_OpenAL::parseDeviceName(const ALCchar* wcDevice, char* mbDe
 void idSoundHardware_OpenAL::RestartHardware()
 {
 	const ALCchar* defaultDevice = alcGetString(NULL, ALC_ALL_DEVICES_SPECIFIER);
-	char* mbdefdev = strdup(defaultDevice);
-	idSoundHardware_OpenAL::parseDeviceName(defaultDevice, mbdefdev);
 	ALCint att[4] = { 0 };
 	att[0] = ALC_MAX_AUXILIARY_SENDS;
 	att[1] = 4;
@@ -193,8 +191,6 @@ static void list_audio_devices(const ALCchar *devices, const ALCchar *selectedDe
 	const ALCchar *device = devices, *next = devices + 1;	
 	size_t len = 0;
 	int index = 0;
-	char* mbseldev = strdup(selectedDevice);
-	idSoundHardware_OpenAL::parseDeviceName(selectedDevice, mbseldev);
 
 	common->Printf( "Devices list:\n");
 	common->Printf( "-------------\n");
@@ -202,7 +198,7 @@ static void list_audio_devices(const ALCchar *devices, const ALCchar *selectedDe
 		index++;
 		char *mbdevs=strdup(device);
 		idSoundHardware_OpenAL::parseDeviceName(device, mbdevs);
-		common->Printf( "%s	%3d: %s\n", !idStr::Icmp(mbdevs, mbseldev)? "*" : "", index,  mbdevs);
+		common->Printf( "%s	%3d: %s\n", !idStr::Icmp(device, selectedDevice)? "*" : "", index,  mbdevs);
 		len = strlen(device);
 		device += (len + 1);
 		next += (len + 2);
