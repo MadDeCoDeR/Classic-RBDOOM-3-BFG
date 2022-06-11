@@ -26,8 +26,9 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#pragma hdrstop
+
 #include "precompiled.h"
+#pragma hdrstop
 
 #include <float.h>
 
@@ -49,7 +50,7 @@ idAngles& idAngles::Normalize360()
 	{
 		if( ( ( *this )[i] >= 360.0f ) || ( ( *this )[i] < 0.0f ) )
 		{
-			( *this )[i] -= floor( ( *this )[i] / 360.0f ) * 360.0f;
+			( *this )[i] -= floorf( ( *this )[i] / 360.0f ) * 360.0f;
 			
 			if( ( *this )[i] >= 360.0f )
 			{

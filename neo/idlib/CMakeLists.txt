@@ -100,6 +100,7 @@ if(MSVC)
             )
 
     add_library(idlib ${ID_SOURCES_ALL} ${ID_INCLUDES_ALL})
+	target_include_directories(idlib PRIVATE .)
 else()
 #GK: RBDoom3BFG doesn't seems to care if this is here but game does
 add_compile_options(-fPIC)
