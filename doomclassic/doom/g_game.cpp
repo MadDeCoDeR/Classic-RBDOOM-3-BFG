@@ -355,6 +355,13 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			angleDelta.pitch /= newTics;
 		}
 
+		
+		float engineHz_denominator = com_engineHz_denominator / 100.0f;
+		float accelerator = engineHz_denominator / com_engineHz_latched;
+
+		angleDelta.yaw *= accelerator;
+		angleDelta.pitch *= accelerator;
+
 		//I_Printf("Mouse Pitch: %f, Mouse Yaw: %f\n", angleDelta.pitch, angleDelta.yaw);
 
 		// idAngles is stored in degrees. Convert to doom format.
@@ -384,7 +391,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			int cimpulse = 0;
 			//I_Printf("Impulse seq %d", curTech5Command.impulseSequence);
 //			if( oldImpulseSequence != curTech5Command.impulseSequence ) {
-			int engineHz_denominator = com_engineHz_denominator / 100;
+			//int engineHz_denominator = com_engineHz_denominator / 100;
 			cimpulse = G_PerformImpulse( curTech5Command.buttons, cmd );
 			if (cimpulse > 0 && circleWeaponPacifier >= ( engineHz_denominator / 2)) { //GK: Weapon change event happend
 				circleWeaponPacifier = 0;
