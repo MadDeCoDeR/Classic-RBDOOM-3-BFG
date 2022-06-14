@@ -1250,6 +1250,7 @@ sysEvent_t Sys_GetEvent()
 				case SDL_CONTROLLER_AXIS_LEFTX:
 					if (ev.caxis.value > range) {
 						res.evValue = K_JOY_STICK1_RIGHT;
+						break;
 					}
 					if (ev.caxis.value < -range) {
 						res.evValue = K_JOY_STICK1_LEFT;
@@ -1258,6 +1259,7 @@ sysEvent_t Sys_GetEvent()
 				case SDL_CONTROLLER_AXIS_LEFTY:
 					if (ev.caxis.value > range) {
 						res.evValue = K_JOY_STICK1_DOWN;
+						break;
 					}
 					if (ev.caxis.value < -range) {
 						res.evValue = K_JOY_STICK1_UP;
@@ -1266,6 +1268,7 @@ sysEvent_t Sys_GetEvent()
 				case SDL_CONTROLLER_AXIS_RIGHTX:
 					if (ev.caxis.value > range) {
 						res.evValue = K_JOY_STICK2_RIGHT;
+						break;
 					}
 					if (ev.caxis.value < -range) {
 						res.evValue = K_JOY_STICK2_LEFT;
@@ -1274,6 +1277,7 @@ sysEvent_t Sys_GetEvent()
 				case SDL_CONTROLLER_AXIS_RIGHTY:
 					if (ev.caxis.value > range) {
 						res.evValue = K_JOY_STICK2_DOWN;
+						break;
 					}
 					if (ev.caxis.value < -range) {
 						res.evValue = K_JOY_STICK2_UP;
@@ -1308,7 +1312,7 @@ sysEvent_t Sys_GetEvent()
 			// 		buttonStates[i] = 0;
 			// 	}
 			// }
-			if (buttonStates[res.evValue] != ev.caxis.value) {
+			if (buttonStates[res.evValue] != ev.caxis.value || res.evValue == K_NONE) {
 				buttonStates[res.evValue] = ev.caxis.value;
 				return res;
 			} else {
