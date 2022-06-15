@@ -1302,10 +1302,14 @@ sysEvent_t Sys_GetEvent()
 			if (res.evValue == K_NONE) {
 				for (int i = K_JOY_STICK1_UP; i < K_JOY_DPAD_UP; i++) {
 					//There was one pressed but now is none so unpress it
-					buttonStates[i] = 0;
+					if (buttonStates[i] != 0) {
+						res.evValue = i;
+					}
 				}
-				res = no_more_events;
-				return res;
+				if (res.evValue == K_NONE) {
+					res = no_more_events;
+					return res;
+				}
 			}
 			if (buttonStates[res.evValue] != ev.caxis.value) {
 				buttonStates[res.evValue] = ev.caxis.value;
