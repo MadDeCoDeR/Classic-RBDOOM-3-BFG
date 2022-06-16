@@ -153,7 +153,9 @@ SDL_Joystick* joy = NULL;
 static SDL_GameController* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
 static SDL_Haptic *haptic[MAX_JOYSTICKS] = {NULL}; //GK: Joystick rumble support
 static int registeredControllers = 0;
+static int prevJoyAxis = K_NONE;
 #endif
+static bool joyThreadKill = false;
 int SDL_joystick_has_hat = 0;
 bool buttonStates[K_LAST_KEY];	// For keeping track of button up/down events
 
@@ -690,6 +692,7 @@ void Sys_ShutdownInput()
 	kbd_polls.Clear();
 	mouse_polls.Clear();
 	joystick_polls.Clear();
+	joyThreadKill = true;
 	
 	memset( buttonStates, 0, sizeof( buttonStates ) );
 	
@@ -814,7 +817,7 @@ sysEvent_t Sys_GetEvent()
 	
 	SDL_Event ev;
 	int key;
-	int range = 16384;
+	int range = 32760;
 	
 	// when this is returned, it's assumed that there are no more events!
 	static const sysEvent_t no_more_events = { SE_NONE, 0, 0, 0, NULL };
@@ -1245,43 +1248,21 @@ sysEvent_t Sys_GetEvent()
 
 		case SDL_CONTROLLERAXISMOTION:
 			res.evType = SE_KEY;
-			res.evValue = K_NONE;
-			switch(ev.caxis.axis) {
+			res.evValue = prevJoyAxis;
+			res.evValue2 = 0;
+			if (abs(ev.caxis.value) > range) {
+				switch (ev.caxis.axis) {
 				case SDL_CONTROLLER_AXIS_LEFTX:
-					if (ev.caxis.value > range) {
-						res.evValue = K_JOY_STICK1_RIGHT;
-						break;
-					}
-					if (ev.caxis.value < -range) {
-						res.evValue = K_JOY_STICK1_LEFT;
-					}
+					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_RIGHT : K_JOY_STICK1_LEFT;
 					break;
 				case SDL_CONTROLLER_AXIS_LEFTY:
-					if (ev.caxis.value > range) {
-						res.evValue = K_JOY_STICK1_DOWN;
-						break;
-					}
-					if (ev.caxis.value < -range) {
-						res.evValue = K_JOY_STICK1_UP;
-					}
+					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_DOWN : K_JOY_STICK1_UP;
 					break;
 				case SDL_CONTROLLER_AXIS_RIGHTX:
-					if (ev.caxis.value > range) {
-						res.evValue = K_JOY_STICK2_RIGHT;
-						break;
-					}
-					if (ev.caxis.value < -range) {
-						res.evValue = K_JOY_STICK2_LEFT;
-					}
+					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_RIGHT : K_JOY_STICK2_LEFT;
 					break;
 				case SDL_CONTROLLER_AXIS_RIGHTY:
-					if (ev.caxis.value > range) {
-						res.evValue = K_JOY_STICK2_DOWN;
-						break;
-					}
-					if (ev.caxis.value < -range) {
-						res.evValue = K_JOY_STICK2_UP;
-					}
+					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_DOWN : K_JOY_STICK2_UP;
 					break;
 				case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
 					if (ev.caxis.value > range) {
@@ -1293,30 +1274,33 @@ sysEvent_t Sys_GetEvent()
 						res.evValue = K_JOY_TRIGGER2;
 					}
 					break;
+				}
+				prevJoyAxis = res.evValue;
+				res.evValue2 = 1;
 			}
-			res.evValue2 = res.evValue != K_NONE ? 1 : 0;
 
 			//GK: In order to keep the consistency in game always poll
 			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
 			//GK: Clear the existing button states
-			if (res.evValue == K_NONE) {
-				for (int i = K_JOY_STICK1_UP; i < K_JOY_DPAD_UP; i++) {
-					//There was one pressed but now is none so unpress it
-					if (buttonStates[i] != 0) {
-						res.evValue = i;
-					}
-				}
-				if (res.evValue == K_NONE) {
-					res = no_more_events;
-					return res;
-				}
-			}
-			if (buttonStates[res.evValue] != ev.caxis.value) {
-				buttonStates[res.evValue] = ev.caxis.value;
-				return res;
-			} else {
-				continue;
-			}
+			// if (res.evValue == K_NONE) {
+			// 	for (int i = K_JOY_STICK1_UP; i < K_JOY_DPAD_UP; i++) {
+			// 		//There was one pressed but now is none so unpress it
+			// 		if (buttonStates[i] != 0) {
+			// 			res.evValue = i;
+			// 		}
+			// 	}
+			// 	if (res.evValue == K_NONE) {
+			// 		res = no_more_events;
+			// 		return res;
+			// 	}
+			// }
+			// if (buttonStates[res.evValue] != ev.caxis.value) {
+			// 	buttonStates[res.evValue] = ev.caxis.value;
+			// 	return res;
+			// } else {
+			// 	continue;
+			// }
+			return res;
 			break;
 
 		case SDL_CONTROLLERBUTTONDOWN:
@@ -1975,6 +1959,9 @@ int JoystickSamplingThread(void* data){
 	static uint64 nextCheck[MAX_JOYSTICKS] = { 0 };
 	const uint64 waitTime = 5000;// 000; // poll every 5 seconds to see if a controller was connected
 	while(1){
+		if (joyThreadKill) {
+			break;
+		}
 		int	now = Sys_Microseconds();
 		int	delta;
 		if( prevTime == 0 )
