@@ -731,7 +731,12 @@ void idRenderBackend::GL_StartFrame()
 	// If we have a stereo pixel format, this will draw to both
 	// the back left and back right buffers, which will have a
 	// performance penalty.
-	glDrawBuffer( GL_BACK );
+	if (glConfig.directStateAccess) {
+		glNamedFramebufferDrawBuffer(0, GL_BACK);
+	}
+	else {
+		glDrawBuffer(GL_BACK);
+	}
 }
 
 /*
