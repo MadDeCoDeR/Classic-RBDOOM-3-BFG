@@ -82,6 +82,12 @@ int BitsForFormat( textureFormat_t format )
 			return 16;
 		case FMT_Y16_X16:
 			return 32;
+		//SP Begin
+		case FMT_DEPTH_STENCIL: 
+			return 32;
+		case FMT_R8:
+			return 4;
+		//SP End
 		default:
 			assert( 0 );
 			return 0;
@@ -109,6 +115,12 @@ ID_INLINE void idImage::DeriveOpts()
 			case TD_DEPTH:
 				opts.format = FMT_DEPTH;
 				break;
+
+				// sp begin
+			case TD_DEPTH_STENCIL:
+				opts.format = FMT_DEPTH_STENCIL;
+				break;
+				// sp end
 				
 			case TD_SHADOW_ARRAY:
 				opts.format = FMT_SHADOW_ARRAY;
@@ -125,6 +137,12 @@ ID_INLINE void idImage::DeriveOpts()
 			case TD_R32F:
 				opts.format = FMT_R32F;
 				break;
+
+			//SP Begin
+			case TD_R8F:
+				opts.format = FMT_R8;
+				break;
+			//SP End
 				
 			case TD_DIFFUSE:
 				// TD_DIFFUSE gets only set to when its a diffuse texture for an interaction
@@ -277,11 +295,11 @@ void idImage::ActuallyLoadImage( bool fromBackEnd )
 		{
 			opts.textureType = TT_2D_ARRAY;
 		}
-		else if( cubeFiles != CF_2D )
+		else if (cubeFiles == CF_NATIVE || cubeFiles == CF_CAMERA || cubeFiles == CF_SINGLE)
 		{
 			opts.textureType = TT_CUBIC;
 			repeat = TR_CLAMP;
-			R_LoadCubeImages( GetName(), cubeFiles, NULL, NULL, &sourceFileTime );
+			R_LoadCubeImages( GetName(), cubeFiles, NULL, NULL, &sourceFileTime, cubeMapSize );
 		}
 		else
 		{
@@ -385,12 +403,12 @@ void idImage::ActuallyLoadImage( bool fromBackEnd )
 		//else if( toolUsage )
 		//	binarizeReason = va( "binarize: tool usage '%s'", generatedName.c_str() );
 		
-		if( cubeFiles != CF_2D )
+		if (cubeFiles == CF_NATIVE || cubeFiles == CF_CAMERA || cubeFiles == CF_SINGLE)
 		{
 			int size;
 			byte* pics[6];
 			
-			if( !R_LoadCubeImages( GetName(), cubeFiles, pics, &size, &sourceFileTime ) || size == 0 )
+			if( !R_LoadCubeImages( GetName(), cubeFiles, pics, &size, &sourceFileTime, cubeMapSize ) || size == 0 )
 			{
 				idLib::Warning( "Couldn't load cube image: %s", GetName() );
 				actuallyloaded = false;
@@ -648,7 +666,7 @@ void idImage::Reload( bool force )
 	if( !force )
 	{
 		ID_TIME_T current;
-		if( cubeFiles != CF_2D )
+		if (cubeFiles == CF_NATIVE || cubeFiles == CF_CAMERA || cubeFiles == CF_SINGLE)
 		{
 			R_LoadCubeImages( imgName, cubeFiles, NULL, NULL, &current );
 		}
@@ -676,7 +694,7 @@ void idImage::Reload( bool force )
 GenerateImage
 ================
 */
-void idImage::GenerateImage( const byte* pic, int width, int height, textureFilter_t filterParm, textureRepeat_t repeatParm, textureUsage_t usageParm, textureSamples_t samples )
+void idImage::GenerateImage( const byte* pic, int width, int height, textureFilter_t filterParm, textureRepeat_t repeatParm, textureUsage_t usageParm, textureSamples_t samples, bool isRenderTarget)
 {
 	PurgeImage();
 	
@@ -690,6 +708,7 @@ void idImage::GenerateImage( const byte* pic, int width, int height, textureFilt
 	opts.height = height;
 	opts.numLevels = 0;
 	opts.samples = samples;
+	opts.isRenderTarget = isRenderTarget;
 	DeriveOpts();
 	
 	// RB: allow pic == NULL for internal framebuffer images
@@ -800,6 +819,7 @@ void idImage::GenerateShadowArray( int width, int height, textureFilter_t filter
 	opts.width = width;
 	opts.height = height;
 	opts.numLevels = 0;
+	opts.isRenderTarget = true;
 	DeriveOpts();
 	
 	// if we don't have a rendering context, just return after we

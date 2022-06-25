@@ -26,9 +26,9 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-#pragma hdrstop
-#include "precompiled.h"
 
+#include "precompiled.h"
+#pragma hdrstop
 /*
 ================================================================================================
 Contains the Image implementation for OpenGL.
@@ -53,6 +53,7 @@ idImage::idImage( const char* name ) : imgName( name )
 	repeat = TR_REPEAT;
 	usage = TD_DEFAULT;
 	cubeFiles = CF_2D;
+	cubeMapSize = 0;
 	
 	referencedOutsideLevelLoad = false;
 	levelLoadReferenced = false;
@@ -904,6 +905,14 @@ void idImage::AllocImage()
 			dataFormat = GL_DEPTH_COMPONENT;
 			dataType = GL_UNSIGNED_BYTE;
 			break;
+
+		//SP Begin
+		case FMT_DEPTH_STENCIL:
+			internalFormat = GL_DEPTH24_STENCIL8;
+			dataFormat = GL_DEPTH_STENCIL;
+			dataType = GL_UNSIGNED_INT_24_8;
+			break;
+		//SP End
 			
 		case FMT_SHADOW_ARRAY:
 			internalFormat = glConfig.directStateAccess? GL_DEPTH_COMPONENT24 : GL_DEPTH_COMPONENT;

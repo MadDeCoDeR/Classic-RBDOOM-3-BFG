@@ -455,6 +455,7 @@ struct viewDef_t
 	bool				isEditor;
 	bool				is2Dgui;
 	
+	bool                isObliqueProjection;    // true if this view has an oblique projection //SP
 	int					numClipPlanes;			// mirrors will often use a single clip plane
 	idPlane				clipPlanes[MAX_CLIP_PLANES];		// in world space, the positive side
 	// of the plane is the visible side
@@ -493,6 +494,8 @@ struct viewDef_t
 	// crossing a closed door.  This is used to avoid drawing interactions
 	// when the light is behind a closed door.
 	bool* 				connectedAreas;
+
+	Framebuffer* targetRender;				// The framebuffer to render to
 };
 
 
@@ -1279,6 +1282,10 @@ TR_FRONTEND_DEFORM
 */
 
 drawSurf_t* R_DeformDrawSurf( drawSurf_t* drawSurf );
+
+//SP Begin
+drawSurf_t* R_DeformDrawSurf(drawSurf_t* drawSurf, deform_t deformType);
+//SP End
 
 /*
 =============================================================

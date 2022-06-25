@@ -167,7 +167,7 @@ static void R_DepthImage( idImage* image )
 #if defined(USE_HDR_MSAA)
 	textureSamples_t msaaSamples = r_useHDR.GetBool() ? static_cast<textureSamples_t>(glConfig.multisamples) : SAMPLE_1;
 #endif
-	image->GenerateImage( NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_NEAREST, TR_CLAMP, TD_DEPTH );//, msaaSamples );
+	image->GenerateImage( NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_NEAREST, TR_CLAMP, TD_DEPTH_STENCIL);//, msaaSamples );
 	// RB end
 }
 
@@ -213,6 +213,21 @@ static void R_HierarchicalZBufferImage_ResNative( idImage* image )
 {
 	image->GenerateImage( NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_NEAREST_MIPMAP, TR_CLAMP, TD_R32F );
 }
+
+//SP Begin
+static void R_R8Image_ResNative_Linear(idImage* image)
+{
+	image->GenerateImage(NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_LINEAR, TR_CLAMP, TD_LOOKUP_TABLE_MONO);
+}
+
+static void R_HDR_RGBA8Image_ResNative(idImage* image)
+{
+#if defined(USE_HDR_MSAA)
+	textureSamples_t msaaSamples = r_useHDR.GetBool() ? static_cast<textureSamples_t>(glConfig.multisamples) : SAMPLE_1;
+#endif
+	image->GenerateImage(NULL, renderSystem->GetWidth(), renderSystem->GetHeight(), TF_NEAREST, TR_CLAMP, TD_LOOKUP_TABLE_RGBA); //, msaaSamples );
+}
+//SP End
 
 static void R_GeometryBufferImage_ResNative(idImage* image)
 {

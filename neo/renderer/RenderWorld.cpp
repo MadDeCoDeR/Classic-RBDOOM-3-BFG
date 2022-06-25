@@ -925,6 +925,7 @@ void idRenderWorldLocal::RenderScene( const renderView_t* renderView )
 	// setup view parms for the initial view
 	viewDef_t* parms = ( viewDef_t* )R_ClearedFrameAlloc( sizeof( *parms ), FRAME_ALLOC_VIEW_DEF );
 	parms->renderView = *renderView;
+	parms->targetRender = nullptr; //SP
 	
 	if( tr.takingScreenshot )
 	{
@@ -953,6 +954,7 @@ void idRenderWorldLocal::RenderScene( const renderView_t* renderView )
 	parms->scissor.y2 = parms->viewport.y2 - parms->viewport.y1;
 	
 	parms->isSubview = false;
+	parms->isObliqueProjection = false; //SP
 	parms->initialViewAreaOrigin = renderView->vieworg;
 	parms->renderWorld = this;
 	

@@ -198,7 +198,7 @@ void Framebuffer::Init()
 		globalFramebuffers.geometryBufferFBO->Bind();
 	}
 	globalFramebuffers.geometryBufferFBO->AddColorBuffer( GL_RGBA16F, 0 );
-	globalFramebuffers.geometryBufferFBO->AddDepthBuffer(GL_DEPTH24_STENCIL8);
+	globalFramebuffers.geometryBufferFBO->AddStencilBuffer(GL_DEPTH24_STENCIL8);
 	globalFramebuffers.geometryBufferFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->currentNormalsImage, 0 );
 	globalFramebuffers.geometryBufferFBO->AttachImageDepth(GL_TEXTURE_2D, globalImages->currentDepthImage);
 	globalFramebuffers.geometryBufferFBO->Check();
@@ -492,7 +492,7 @@ void Framebuffer::AddDepthBuffer( int format, int multiSamples )
 
 		if (notCreatedYet)
 		{
-			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 		}
 	}
 	else {
@@ -514,12 +514,70 @@ void Framebuffer::AddDepthBuffer( int format, int multiSamples )
 
 		if (notCreatedYet)
 		{
-			glNamedFramebufferRenderbuffer(frameBuffer, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+			glNamedFramebufferRenderbuffer(frameBuffer, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 		}
 	}
 	
 	GL_CheckErrors();
 }
+
+//SP Begin
+void Framebuffer::AddStencilBuffer(int format, int multiSamples)
+{
+	stencilFormat = format;
+
+	bool notCreatedYet = stencilBuffer == 0;
+	if (notCreatedYet)
+	{
+		if (glConfig.directStateAccess) {
+			glCreateFramebuffers(1, &stencilBuffer);
+		}
+		else {
+			glGenFramebuffers(1, &stencilBuffer);
+		}
+	}
+
+	if (!glConfig.directStateAccess) {
+		glBindRenderbuffer(GL_RENDERBUFFER, stencilBuffer);
+
+
+		if (multiSamples > 0)
+		{
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, multiSamples, format, width, height);
+
+			msaaSamples = true;
+		}
+		else
+		{
+			glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
+		}
+
+		if (notCreatedYet)
+		{
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
+		}
+	}
+	else {
+		if (multiSamples > 0)
+		{
+			glNamedRenderbufferStorageMultisample(stencilBuffer, multiSamples, format, width, height);
+
+			msaaSamples = true;
+		}
+		else
+		{
+			glNamedRenderbufferStorage(stencilBuffer, format, width, height);
+		}
+
+		if (notCreatedYet)
+		{
+			glNamedFramebufferRenderbuffer(frameBuffer, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, stencilBuffer);
+		}
+	}
+
+	GL_CheckErrors();
+}
+//SP End
 
 void Framebuffer::AttachImage2D( int target, const idImage* image, int index, int mipmapLod )
 {
@@ -550,10 +608,10 @@ void Framebuffer::AttachImageDepth( int target, const idImage* image )
 		return;
 	}
 	if (!glConfig.directStateAccess) {
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, target, image->texnum, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, target, image->texnum, 0);
 	}
 	else {
-		glNamedFramebufferTexture(frameBuffer, GL_DEPTH_ATTACHMENT, image->texnum, 0);
+		glNamedFramebufferTexture(frameBuffer, GL_DEPTH_STENCIL_ATTACHMENT, image->texnum, 0);
 	}
 }
 

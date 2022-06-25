@@ -99,6 +99,10 @@ enum textureFormat_t
 	FMT_RGBA16F,		// 64 bpp
 	FMT_RGBA32F,		// 128 bpp
 	FMT_R32F,			// 32 bpp
+	//SP Begin
+	FMT_R8,
+	FMT_DEPTH_STENCIL,  // 32 bpp
+	//SP End
 	// RB end
 };
 
@@ -155,6 +159,7 @@ public:
 	int					numLevels;		// if 0, will be 1 for NEAREST / LINEAR filters, otherwise based on size
 	bool				gammaMips;		// if true, mips will be generated with gamma correction
 	bool				readback;		// 360 specific - cpu reads back from this texture, so allocate with cached memory
+	bool				isRenderTarget; //SP
 };
 
 /*
@@ -173,7 +178,7 @@ ID_INLINE idImageOpts::idImageOpts()
 	textureType		= TT_2D;
 	gammaMips		= false;
 	readback		= false;
-	
+	isRenderTarget = false; //SP
 };
 
 /*
@@ -221,6 +226,11 @@ typedef enum
 	TD_RGBA32F,
 	TD_R32F,
 	// RB end
+	//SP Begin
+	TD_R8F,					// Stephen: Added for ambient occlusion render target.
+	TD_DEPTH_STENCIL,       // depth buffer and stencil buffer
+	TD_HIGHQUALITY_CUBE,
+	//SP End
 } textureUsage_t;
 
 typedef enum
@@ -228,7 +238,8 @@ typedef enum
 	CF_2D,			// not a cube map
 	CF_NATIVE,		// _px, _nx, _py, etc, directly sent to GL
 	CF_CAMERA,		// _forward, _back, etc, rotated and flipped as needed before sending to GL
-	CF_2D_ARRAY		// not a cube map but not a single 2d texture either
+	CF_2D_ARRAY,		// not a cube map but not a single 2d texture either
+	CF_SINGLE,      // SP: A single texture cubemap. All six sides in one image.
 } cubeFiles_t;
 
 enum imageFileType_t
@@ -378,7 +389,8 @@ public:
 							   textureFilter_t filter,
 							   textureRepeat_t repeat,
 							   textureUsage_t usage,
-							   textureSamples_t samples = SAMPLE_1 );
+							   textureSamples_t samples = SAMPLE_1,
+							   bool isRenderTarget = false); //SP
 							   
 	void		GenerateCubeImage( const byte* pic[6], int size,
 								   textureFilter_t filter, textureUsage_t usage );
@@ -400,6 +412,7 @@ private:
 	// parameters that define this image
 	idStr				imgName;				// game path, including extension (except for cube maps), may be an image program
 	cubeFiles_t			cubeFiles;				// If this is a cube map, and if so, what kind
+	int                 cubeMapSize; //SP
 	void	( *generatorFunction )( idImage* image );	// NULL for files
 	textureUsage_t		usage;					// Used to determine the type of compression to use
 	idImageOpts			opts;					// Parameters that determine the storage method
@@ -488,7 +501,7 @@ public:
 	// grid pattern.
 	// Will automatically execute image programs if needed.
 	idImage* 			ImageFromFile( const char* name,
-									   textureFilter_t filter, textureRepeat_t repeat, textureUsage_t usage, cubeFiles_t cubeMap = CF_2D );
+									   textureFilter_t filter, textureRepeat_t repeat, textureUsage_t usage, cubeFiles_t cubeMap = CF_2D, int cubeMapSize = 0);
 									   
 	// look for a loaded image, whatever the parameters
 	idImage* 			GetImage( const char* name ) const;
@@ -606,6 +619,11 @@ void R_HorizontalFlip( byte* data, int width, int height );
 void R_VerticalFlip( byte* data, int width, int height );
 void R_RotatePic( byte* data, int width );
 void R_ApplyCubeMapTransforms( int i, byte* data, int size );
+// SP begin
+// This method takes in a cubemap from a single image. Depending on the side (0-5),
+// the image will be extracted from data and returned. The dimensions will be size x size.
+byte* R_GenerateCubeMapSideFromSingleImage(byte* data, int srcWidth, int srcHeight, int size, int side);
+// SP end
 
 /*
 ====================================================================
@@ -617,7 +635,7 @@ IMAGEFILES
 
 void R_LoadImage( const char* name, byte** pic, int* width, int* height, ID_TIME_T* timestamp, bool makePowerOf2 );
 // pic is in top to bottom raster format
-bool R_LoadCubeImages( const char* cname, cubeFiles_t extensions, byte* pic[6], int* size, ID_TIME_T* timestamp );
+bool R_LoadCubeImages( const char* cname, cubeFiles_t extensions, byte* pic[6], int* size, ID_TIME_T* timestamp, int cubeMapSize = 0);
 
 /*
 ====================================================================

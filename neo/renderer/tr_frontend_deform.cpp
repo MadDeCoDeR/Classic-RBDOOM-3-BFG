@@ -1128,12 +1128,23 @@ drawSurf_t* R_DeformDrawSurf( drawSurf_t* drawSurf )
 	{
 		return NULL;
 	}
+
+	return R_DeformDrawSurf(drawSurf, drawSurf->material->Deform());
+}
+
+/*
+=================
+R_DeformDrawSurf
+=================
+*/
+drawSurf_t* R_DeformDrawSurf(drawSurf_t* drawSurf, deform_t deformType)
+{
 	
 	if( r_skipDeforms.GetBool() )
 	{
 		return drawSurf;
 	}
-	switch( drawSurf->material->Deform() )
+	switch(deformType)
 	{
 		case DFRM_SPRITE:
 			return R_AutospriteDeform( drawSurf );

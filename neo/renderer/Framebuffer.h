@@ -55,6 +55,10 @@ public:
 	
 	// deletes OpenGL object but leaves structure intact for reloading
 	void					PurgeFramebuffer();
+	//SP Begin
+	static Framebuffer*		Find(const char* name);
+	static void				ResizeFramebuffers();
+	//SP End
 	
 	void					Bind();
 	bool					IsBound();
@@ -63,6 +67,9 @@ public:
 	
 	void					AddColorBuffer( int format, int index, int multiSamples = 0 );
 	void					AddDepthBuffer( int format, int multiSamples = 0 );
+	//SP Begin
+	void					AddStencilBuffer(int format, int multiSamples = 0);
+	//SP End
 	
 	void					AttachImage2D( int target, const idImage* image, int index, int mipmapLod = 0 );
 	void					AttachImage3D( const idImage* image );

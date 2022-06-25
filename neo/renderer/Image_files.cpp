@@ -1017,7 +1017,7 @@ R_LoadCubeImages
 Loads six files with proper extensions
 =======================
 */
-bool R_LoadCubeImages( const char* imgName, cubeFiles_t extensions, byte* pics[6], int* outSize, ID_TIME_T* timestamp )
+bool R_LoadCubeImages( const char* imgName, cubeFiles_t extensions, byte* pics[6], int* outSize, ID_TIME_T* timestamp, int cubeMapSize)
 {
 	int		i, j;
 	const char*	cameraSides[6] =  { "_forward.tga", "_back.tga", "_left.tga", "_right.tga",
@@ -1048,6 +1048,76 @@ bool R_LoadCubeImages( const char* imgName, cubeFiles_t extensions, byte* pics[6
 	{
 		*timestamp = 0;
 	}
+
+	//SP Begin
+	if (extensions == CF_SINGLE && cubeMapSize != 0)
+	{
+		ID_TIME_T thisTime;
+		byte* thisPic[1];
+		thisPic[0] = nullptr;
+
+		if (pics)
+		{
+			R_LoadImageProgram(imgName, thisPic, &width, &height, &thisTime);
+		}
+		else
+		{
+			// load just the timestamps
+			R_LoadImageProgram(imgName, nullptr, &width, &height, &thisTime);
+		}
+
+
+		if (thisTime == FILE_NOT_FOUND_TIMESTAMP)
+		{
+			return false;
+		}
+
+		if (timestamp)
+		{
+			if (thisTime > *timestamp)
+			{
+				*timestamp = thisTime;
+			}
+		}
+
+		if (pics)
+		{
+			*outSize = cubeMapSize;
+
+			for (int i1 = 0; i1 < 6; i1++)
+			{
+				pics[i1] = R_GenerateCubeMapSideFromSingleImage(thisPic[0], width, height, cubeMapSize, i1);
+				switch (i1)
+				{
+				case 0:	// forward
+					R_RotatePic(pics[i1], cubeMapSize);
+					break;
+				case 1:	// back
+					R_RotatePic(pics[i1], cubeMapSize);
+					R_HorizontalFlip(pics[i1], cubeMapSize, cubeMapSize);
+					R_VerticalFlip(pics[i1], cubeMapSize, cubeMapSize);
+					break;
+				case 2:	// left
+					R_VerticalFlip(pics[i1], cubeMapSize, cubeMapSize);
+					break;
+				case 3:	// right
+					R_HorizontalFlip(pics[i1], cubeMapSize, cubeMapSize);
+					break;
+				case 4:	// up
+					R_RotatePic(pics[i1], cubeMapSize);
+					break;
+				case 5: // down
+					R_RotatePic(pics[i1], cubeMapSize);
+					break;
+				}
+			}
+
+			R_StaticFree(thisPic[0]);
+		}
+
+		return true;
+	}
+	//SP End
 	
 	for( i = 0 ; i < 6 ; i++ )
 	{
