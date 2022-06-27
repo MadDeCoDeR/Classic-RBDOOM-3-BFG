@@ -1,0 +1,130 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 19,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "windows-base",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "OPENAL": "ON",
+        "WINRT": "ON",
+        "USE_XAUDIO2_PACKAGE": "ON"
+      }
+    },
+    {
+      "name": "windows-x64-base",
+      "hidden": true,
+      "binaryDir": "${sourceParentDir}/buildx64",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "x64",
+        "strategy": "set"
+      }
+    },
+    {
+      "name": "windows-x64-vulkan-base",
+      "hidden": true,
+      "binaryDir": "${sourceParentDir}/buildVKx64",
+      "inherits": "windows-x64-base",
+      "cacheVariables": {
+        "USE_VULKAN": "ON"
+      }
+    },
+    {
+      "name": "windows-x86-base",
+      "hidden": true,
+      "binaryDir": "${sourceParentDir}/buildx86",
+      "inherits": "windows-base",
+      "architecture": {
+        "value": "Win32",
+        "strategy": "set"
+      }
+    },
+    {
+      "name": "windows-x64-2019",
+      "displayName": "VS2019: 64-bit Windows",
+      "inherits": "windows-x64-base",
+      "generator": "Visual Studio 16"
+    },
+    {
+      "name": "windows-x64-vulkan-2019",
+      "displayName": "VS2019: 64-bit Windows With Vulkan",
+      "inherits": "windows-x64-vulkan-base",
+      "generator": "Visual Studio 16"
+    },
+    {
+      "name": "windows-x86-2019",
+      "displayName": "VS2019: 32-bit Windows",
+      "inherits": "windows-x86-base",
+      "generator": "Visual Studio 16"
+    },
+    {
+      "name": "windows-x64-2022",
+      "displayName": "VS2022: 64-bit Windows",
+      "inherits": "windows-x64-base",
+      "generator": "Visual Studio 17"
+    },
+    {
+      "name": "windows-x64-vulkan-2022",
+      "displayName": "VS2022: 64-bit Windows With Vulkan",
+      "inherits": "windows-x64-vulkan-base",
+      "generator": "Visual Studio 17"
+    },
+    {
+      "name": "windows-x86-2022",
+      "displayName": "VS2022: 32-bit Windows",
+      "inherits": "windows-x86-base",
+      "generator": "Visual Studio 17"
+    },
+    {
+      "name": "linux-base",
+      "hidden": true,
+      "generator": "Unix Makefiles",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "OPENAL": "ON"
+      }
+    },
+    {
+      "name": "linux-debug",
+      "displayName": "Linux Debug",
+      "binaryDir": "${sourceParentDir}/buildDebug",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Linux Release",
+      "binaryDir": "${sourceParentDir}/buildRelease",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "linux-retail",
+      "displayName": "Linux Retail",
+      "binaryDir": "${sourceParentDir}/buildRetail",
+      "generator": "Unix Makefiles",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Retail"
+      }
+    }
+  ]
+}
