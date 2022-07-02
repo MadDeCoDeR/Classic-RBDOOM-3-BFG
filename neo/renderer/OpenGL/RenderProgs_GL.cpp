@@ -36,6 +36,7 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar r_displayGLSLCompilerMessages( "r_displayGLSLCompilerMessages", "1", CVAR_BOOL | CVAR_ARCHIVE, "Show info messages the GPU driver outputs when compiling the shaders" );
 idCVar r_alwaysExportGLSL( "r_alwaysExportGLSL", "0", CVAR_BOOL, "" );
+idCVar r_oldGLSLVersion("r_oldGLSLVersion", "0.0", CVAR_FLOAT | CVAR_ARCHIVE | CVAR_RENDERER | CVAR_ROM, "Internal use ONLY: Stores and checks if the version of GLSL is changed");
 
 /*
 ========================
@@ -128,8 +129,8 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 		
 		default:
 		{
-			outFileGLSL.Format( "renderprogs/glsl-4_50/%s%s", shader.name.c_str(), shader.nameOutSuffix.c_str() );
-			outFileUniforms.Format( "renderprogs/glsl-4_50/%s%s", shader.name.c_str(), shader.nameOutSuffix.c_str() );
+			outFileGLSL.Format( "renderprogs/glsl/%s%s", shader.name.c_str(), shader.nameOutSuffix.c_str() );
+			outFileUniforms.Format( "renderprogs/glsl/%s%s", shader.name.c_str(), shader.nameOutSuffix.c_str() );
 		}
 	}
 	

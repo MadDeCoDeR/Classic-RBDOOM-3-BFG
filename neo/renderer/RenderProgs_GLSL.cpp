@@ -774,7 +774,7 @@ struct typeConversion_t
 
 const char* vertexInsert =
 {
-	"#version 450\n"
+	"#version %d\n"
 	"#pragma shader_stage( vertex )\n"
 	"#extension GL_ARB_separate_shader_objects : enable\n"
 	//"#define PC\n"
@@ -789,7 +789,7 @@ const char* vertexInsert =
 
 const char* fragmentInsert =
 {
-	"#version 450\n"
+	"#version %d\n"
 	"#pragma shader_stage( fragment )\n"
 	"#extension GL_ARB_separate_shader_objects : enable\n"
 	//"#define PC\n"
@@ -1517,9 +1517,12 @@ idStr idRenderProgManager::ConvertCG2GLSL( const idStr& in, const char* name, rp
 			
 			default:
 			{
-				out.ReAllocate( idStr::Length( vertexInsert ) + in.Length() * 2, false );
+				int glslVersion = glConfig.glVersion * 100;
+				char* tvertexInsert = new char[idStr::Length(vertexInsert)];
+				sprintf(tvertexInsert, vertexInsert, glslVersion);
+				out.ReAllocate( idStr::Length( tvertexInsert ) + in.Length() * 2, false );
 				out += filenameHint;
-				out += vertexInsert;
+				out += tvertexInsert;
 				break;
 			}
 		}
@@ -1540,9 +1543,12 @@ idStr idRenderProgManager::ConvertCG2GLSL( const idStr& in, const char* name, rp
 			
 			default:
 			{
-				out.ReAllocate( idStr::Length( fragmentInsert ) + in.Length() * 2, false );
+				int glslVersion = glConfig.glVersion * 100;
+				char* tfragmentInsert = new char[idStr::Length(fragmentInsert)];
+				sprintf(tfragmentInsert, fragmentInsert, glslVersion);
+				out.ReAllocate( idStr::Length( tfragmentInsert ) + in.Length() * 2, false );
 				out += filenameHint;
-				out += fragmentInsert;
+				out += tfragmentInsert;
 				break;
 			}
 		}

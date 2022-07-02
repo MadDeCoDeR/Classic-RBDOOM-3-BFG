@@ -28,8 +28,9 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#pragma hdrstop
+
 #include "precompiled.h"
+#pragma hdrstop
 
 #include "../RenderCommon.h"
 #include "../RenderBackend.h"
@@ -47,6 +48,8 @@ idCVar stereoRender_warpTargetFraction( "stereoRender_warpTargetFraction", "1.0"
 
 idCVar r_showSwapBuffers( "r_showSwapBuffers", "0", CVAR_BOOL, "Show timings from GL_BlockingSwapBuffers" );
 idCVar r_syncEveryFrame( "r_syncEveryFrame", "1", CVAR_BOOL, "Don't let the GPU buffer execution past swapbuffers" );
+
+extern idCVar r_oldGLSLVersion;
 
 static int		swapIndex;		// 0 or 1 into renderSync
 static GLsync	renderSync[2];
@@ -498,7 +501,13 @@ void idRenderBackend::Init()
 	idLib::Printf( "OpenGL Renderer  : %s\n", glConfig.renderer_string );
 	idLib::Printf( "OpenGL GLSL      : %3.1f\n", glslVersion );
 	idLib::Printf( "OpenGL Extensions: %s\n", glConfig.extensions_string );
-	
+	if (r_oldGLSLVersion.GetFloat() != glslVersion) {
+		idFileList* listOfGLSLProgs = fileSystem->ListFilesTree("renderprogs/glsl", "*");
+		for (int i = 0; i < listOfGLSLProgs->GetNumFiles(); i++) {
+			fileSystem->RemoveFile(listOfGLSLProgs->GetFile(i));
+		}
+	}
+	r_oldGLSLVersion.SetFloat(glslVersion);
 	// OpenGL driver constants
 	GLint temp;
 	glGetIntegerv( GL_MAX_TEXTURE_SIZE, &temp );

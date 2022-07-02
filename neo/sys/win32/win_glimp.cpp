@@ -354,9 +354,8 @@ static HGLRC CreateOpenGLContextOnDC( const HDC hdc, const bool debugContext )
 			break;
 		}
 		// RB end
-
 		const int glMajorVersion = 4;
-		const int glMinorVersion = 5;
+		const int glMinorVersion = 6;
 		const int glDebugFlag = debugContext ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
 		const int glProfileMask = ( useCoreProfile != 0 ) ? WGL_CONTEXT_PROFILE_MASK_ARB : 0;
 		const int glProfile = ( useCoreProfile == 1 ) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : ( ( useCoreProfile == 2 ) ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : 0 );
