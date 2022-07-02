@@ -364,11 +364,13 @@ void idMenuScreen_Shell_Root::HandleExitGameBtn()
 	if (!idLib::newd3) {
 		callbacks.Append(new(TAG_SWF) idSWFScriptFunction_QuitDialog(GDM_QUIT_GAME, -1));
 	}
+	callbacks.Append(nullptr);
 	optionText.Append( idStrId( "#STR_SWF_ACCEPT" ) );
 	optionText.Append( idStrId( "#STR_SWF_CANCEL" ) );
 	if (!idLib::newd3) {
 		optionText.Append(idStrId("#str_swf_change_game"));
 	}
+	optionText.Append(idStrId());
 	
 	common->Dialog().AddDynamicDialog( GDM_QUIT_GAME, callbacks, optionText, true, "" );
 }
