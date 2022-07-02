@@ -501,6 +501,9 @@ void idRenderBackend::Init()
 	idLib::Printf( "OpenGL Renderer  : %s\n", glConfig.renderer_string );
 	idLib::Printf( "OpenGL GLSL      : %3.1f\n", glslVersion );
 	idLib::Printf( "OpenGL Extensions: %s\n", glConfig.extensions_string );
+	if (glslVersion < 3.3f) {
+		idLib::FatalError("System doesn't support minimum required OpenGL Version 3.3");
+	}
 	if (r_oldGLSLVersion.GetFloat() != glslVersion) {
 		idFileList* listOfGLSLProgs = fileSystem->ListFilesTree("renderprogs/glsl", "*");
 		for (int i = 0; i < listOfGLSLProgs->GetNumFiles(); i++) {
