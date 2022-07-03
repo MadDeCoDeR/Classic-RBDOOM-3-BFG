@@ -470,7 +470,7 @@ void idRenderBackend::Init()
 	glConfig.renderer_string = ( const char* )glGetString( GL_RENDERER );
 	glConfig.version_string = ( const char* )glGetString( GL_VERSION );
 	glConfig.shading_language_string = ( const char* )glGetString( GL_SHADING_LANGUAGE_VERSION );
-	glConfig.extensions_string = ( const char* )glGetString( GL_EXTENSIONS );
+	//glConfig.extensions_string = ( const char* )glGetString( GL_EXTENSIONS );
 	GL_CheckErrors();
 	if( glConfig.extensions_string == NULL )
 	{
@@ -494,15 +494,28 @@ void idRenderBackend::Init()
 	}
 	
 	
-	float glVersion = atof( glConfig.version_string );
+	float glVersion = atof( idStr(glConfig.version_string).SubStr(0, 3) );
 	float glslVersion = atof( glConfig.shading_language_string );
-	idLib::Printf( "OpenGL Version   : %3.1f\n", glVersion );
+	
+	GLint glslMax;
+	glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &glslMax);
+	int glslNormVersion = glslVersion * 100;
+	bool isES = false;
+	for (int i = 0; i < glslMax; i++) {
+		idStr glslCVersionString = idStr((const char*)glGetStringi(GL_SHADING_LANGUAGE_VERSION, i));
+		int glslcVersion = atoi(glslCVersionString.SubStr(0, 3));
+		if (glslNormVersion == glslcVersion && glslCVersionString.Length() > 4) {
+			isES = !glslCVersionString.SubStr(4).Cmp("es");
+			break;
+		}
+	}
+	idLib::Printf( "OpenGL Version   : %1.1f\n", glVersion );
 	idLib::Printf( "OpenGL Vendor    : %s\n", glConfig.vendor_string );
 	idLib::Printf( "OpenGL Renderer  : %s\n", glConfig.renderer_string );
-	idLib::Printf( "OpenGL GLSL      : %3.1f\n", glslVersion );
+	idLib::Printf( "OpenGL GLSL      : %1.1f\n", glslVersion );
 	idLib::Printf( "OpenGL Extensions: %s\n", glConfig.extensions_string );
-	if (glslVersion < 3.3f) {
-		idLib::FatalError("System doesn't support minimum required OpenGL Version 3.3");
+	if ((glslVersion < 3.3f && !isES) || (glslVersion < 3.0f && isES)) {
+		idLib::FatalError("System doesn't support minimum required OpenGL Version 3.3 or OpenGL ES 3.0");
 	}
 	if (r_oldGLSLVersion.GetFloat() != glslVersion) {
 		idFileList* listOfGLSLProgs = fileSystem->ListFilesTree("renderprogs/glsl", "*");
