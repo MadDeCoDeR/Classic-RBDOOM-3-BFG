@@ -530,7 +530,7 @@ void Framebuffer::AddStencilBuffer(int format, int multiSamples)
 	if (notCreatedYet)
 	{
 		if (glConfig.directStateAccess) {
-			glCreateFramebuffers(1, &stencilBuffer);
+			glCreateRenderbuffers(1, &stencilBuffer);
 		}
 		else {
 			glGenFramebuffers(1, &stencilBuffer);
