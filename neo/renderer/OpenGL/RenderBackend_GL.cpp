@@ -496,25 +496,12 @@ void idRenderBackend::Init()
 	
 	float glVersion = atof( idStr(glConfig.version_string).SubStr(0, 3) );
 	float glslVersion = atof( glConfig.shading_language_string );
-	
-	GLint glslMax;
-	glGetIntegerv(GL_NUM_SHADING_LANGUAGE_VERSIONS, &glslMax);
-	int glslNormVersion = glslVersion * 100;
-	bool isES = false;
-	for (int i = 0; i < glslMax; i++) {
-		idStr glslCVersionString = idStr((const char*)glGetStringi(GL_SHADING_LANGUAGE_VERSION, i));
-		int glslcVersion = atoi(glslCVersionString.SubStr(0, 3));
-		if (glslNormVersion == glslcVersion && glslCVersionString.Length() > 4) {
-			isES = !glslCVersionString.SubStr(4).Cmp("es");
-			break;
-		}
-	}
 	idLib::Printf( "OpenGL Version   : %1.1f\n", glVersion );
 	idLib::Printf( "OpenGL Vendor    : %s\n", glConfig.vendor_string );
 	idLib::Printf( "OpenGL Renderer  : %s\n", glConfig.renderer_string );
 	idLib::Printf( "OpenGL GLSL      : %1.1f\n", glslVersion );
 	idLib::Printf( "OpenGL Extensions: %s\n", glConfig.extensions_string );
-	if ((glslVersion < 3.3f && !isES) || (glslVersion < 3.0f && isES)) {
+	if (glslVersion < 3.0f) { //GK: GLSL Version HACK. After GLSL 1.50 (GL 3.2) GLSL and GL Versions come in sync so there is no GLSL 3.00 but there is 3.00 es
 		idLib::FatalError("System doesn't support minimum required OpenGL Version 3.3 or OpenGL ES 3.0");
 	}
 	if (r_oldGLSLVersion.GetFloat() != glslVersion) {
