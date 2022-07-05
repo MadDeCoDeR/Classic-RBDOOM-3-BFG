@@ -178,7 +178,7 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 			if (hlslFileBuffer == NULL)
 			{
 #endif
-				inFile.Format("renderprogs/bfa/%s", shader.name.c_str());
+				inFile.Format("renderprogs/%s", shader.name.c_str());
 				inFile.StripFileExtension();
 				if (shader.stage == SHADER_STAGE_FRAGMENT)
 				{
