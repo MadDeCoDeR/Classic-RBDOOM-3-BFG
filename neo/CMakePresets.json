@@ -15,10 +15,19 @@
         "rhs": "Windows"
       },
       "cacheVariables": {
-        "OPENAL": "ON",
-        "WINRT": "ON",
-        "USE_XAUDIO2_PACKAGE": "ON"
-      }
+        "OPENAL": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "WINRT": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_XAUDIO2_PACKAGE": {
+          "type": "BOOL",
+          "value": "ON"
+        }
+        }
     },
     {
       "name": "windows-x64-base",
@@ -36,7 +45,10 @@
       "binaryDir": "${sourceParentDir}/buildVKx64",
       "inherits": "windows-x64-base",
       "cacheVariables": {
-        "USE_VULKAN": "ON"
+        "USE_VULKAN": {
+          "type": "BOOL",
+          "value": "ON"
+        }
       }
     },
     {
@@ -95,7 +107,30 @@
         "rhs": "Linux"
       },
       "cacheVariables": {
-        "OPENAL": "ON"
+        "OPENAL": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_SYSTEM_ZLIB": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_SYSTEM_LIBPNG": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_SYSTEM_LIBJPEG": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_SYSTEM_LIBGLEW": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_SYSTEM_RAPIDJSON": {
+          "type": "BOOL",
+          "value": "ON"
+        }
       }
     },
     {
