@@ -28,8 +28,9 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#pragma hdrstop
+
 #include "precompiled.h"
+#pragma hdrstop
 
 #include "../RenderCommon.h"
 #include "../RenderProgs.h"
@@ -507,7 +508,7 @@ static int CompileGLSLtoSPIRV( const char* filename, const idStr& dataGLSL, cons
 	resources = glslang::DefaultTBuiltInResource;
 	EShMessages messages = ( EShMessages )( EShMsgSpvRules | EShMsgVulkanRules );
 	
-	const int defaultVersion = 100;
+	//const int defaultVersion = 100;
 	
 	if( !shader.parse( &resources, 100, false, messages ) )
 	{
