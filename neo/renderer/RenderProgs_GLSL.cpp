@@ -1517,7 +1517,11 @@ idStr idRenderProgManager::ConvertCG2GLSL( const idStr& in, const char* name, rp
 			
 			default:
 			{
+#ifndef USE_VULKAN
 				int glslVersion = glConfig.glVersion * 100;
+#else
+				int glslVersion = 450;
+#endif
 				char* tvertexInsert = new char[idStr::Length(vertexInsert)];
 				sprintf(tvertexInsert, vertexInsert, glslVersion);
 				out.ReAllocate( idStr::Length( tvertexInsert ) + in.Length() * 2, false );
@@ -1543,7 +1547,11 @@ idStr idRenderProgManager::ConvertCG2GLSL( const idStr& in, const char* name, rp
 			
 			default:
 			{
+#ifndef USE_VULKAN
 				int glslVersion = glConfig.glVersion * 100;
+#else
+				int glslVersion = 450;
+#endif
 				char* tfragmentInsert = new char[idStr::Length(fragmentInsert)];
 				sprintf(tfragmentInsert, fragmentInsert, glslVersion);
 				out.ReAllocate( idStr::Length( tfragmentInsert ) + in.Length() * 2, false );
