@@ -1031,7 +1031,7 @@ void R_ScreenshotFilename( int& lastNumber, const char* base, idStr& fileName )
 		time( &aclock );
 		struct tm* t = localtime( &aclock );
 		
-		sprintf( fileName, "%s%s-%04d%02d%02d-%02d%02d%02d-%03d", base, "rbdoom-3-bfg",
+		sprintf( fileName, "%s%s-%04d%02d%02d-%02d%02d%02d-%03d", base, "doom-bfa",
 				 1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, lastNumber );
 #endif
 		// RB end
