@@ -388,11 +388,11 @@ const char* Sys_DefaultLanguage()
 		}
 		else if( currentLangList.Find( ID_LANG_ITALIAN ) )
 		{
-			sys_lang.SetString( ID_LANG_GERMAN );
+			sys_lang.SetString( ID_LANG_ITALIAN );
 		}
 		else if( currentLangList.Find( ID_LANG_SPANISH ) )
 		{
-			sys_lang.SetString( ID_LANG_GERMAN );
+			sys_lang.SetString( ID_LANG_SPANISH );
 		}
 		else
 		{
