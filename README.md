@@ -71,7 +71,7 @@ Minimum system requirements:
 
 	CPU: 2 GHz dual core
 	System Memory: 3GB
-	Graphics card: (Windows) Any GLSL 4.5 Compatible GPU. (Linux) NVIDIA GeForce 9800 GT / ATI Radeon HD 5750 / Intel HD graphics 530
+	Graphics card: (Windows) Any GLSL 3.3 Compatible GPU. (Linux) NVIDIA GeForce 9800 GT / ATI Radeon HD 5750 / Intel HD graphics 530
 
 Recommended system requirements:
 
@@ -157,51 +157,88 @@ If you don't want to use git, you can download the source as a zip file at
 
 ___________________________________________________________________
 
-5) COMPILING ON WIN32 WITH VISUAL C++ 2013 EXPRESS EDITION OR NEWER VERSIONS
+5) COMPILING ON WINDOWS WITH VISUAL STUDIO
 __________________________________________________________
 
-1. Download and install the Visual C++ 2013 Express Edition or newer Versions of Visual Studio Community.
+___________________________________________________________________
 
-(NOTE: If you install it with Visual Studio Installer make sure to check "Desktop Development in C++")
+	A) Preperation
+__________________________________________________________
+
+1. Download and install Visual Studio (For new Version make sure the "Desktop Development with C++" component is checked on the installer)
 
 2. Download and install DirectX SDK:
 
-	a. For DirectX SDK (June 2010): It should be available with the game files of DOOM 3 BFG Edition, 
-	or you can download the Steam Common Redistributable from Steam.
+	a. For June 2010 Release (Windows XP compatible/Legacy): Download and Install it from Microsoft's website https://www.microsoft.com/en-us/download/details.aspx?id=8109
 
-	b. For alternative DirectX SDK: For Xinput and DirectInput, they are usually installed with Visual Studio Community,
-	but you can also find and download Windows SDK based on the version of Windows you are using. For XAudio2, the
-	only 2 alternatives are either the Windows 8 or later SDKs or XAudio2.9 which requires to download and set on your 
-	user/system PATH the nuget CLI Package Manager
+	b. For Modern DirectX: 
+	
+		I) XInput 9.1.0 and Direct Input comes pre-installed on Windows 7 and later (.dll that the game will load). 
+	
+		II) XAudio2. It has two versions 2.8 (only for Windows 8 and later) and XAudio 2.9 (backwards compatilble with Windows 7).
+			2.8 like with XInput comes pre-installed with the OS. For 2.9 you must download it using NuGet's package manager
 
-3. Download and install the latest CMake (recommended 3.8 for compile and run out of the box).
+3. (Optional if you want to use cmake presets with Visual Studio) Download and install the latest CMake (recommended 3.8 for compile and run out of the box).
 
-4. Generate the VC projects using CMake by doubleclicking a matching configuration .bat file in the neo/ folder.
+4. (For Xaudio 2.9) Download, install and set to your PATH the NuGet CLI.
 
-5. Use the VC solution to compile  what you need:
+5. Download the latest stable ffmpeg (5.0) shared from https://github.com/BtbN/FFmpeg-Builds/releases (only 64-bit available) and put them on the game's folder (where the origianal .exe is)
+
+___________________________________________________________________
+
+	B) Project Configuration and Genenration
+__________________________________________________________
+
+For old Versions of Visual Studio.
+	1) Generate the VC projects using CMake by doubleclicking a matching configuration .bat file in the neo/ folder.
+
+For Visual Studio 2019 and newer. 
+	1) Open the repository folder on Visual Studio and set the CMake source the neo folder (it will prompt you to set it)
+	2) Select the desired preset.
+		Available Presets:
+			64-bit Windows: Actively used, uses OpenGL, OpenAL and XAudio2.9
+			64-bit Windows with Vulkan: Expirimental FOR DEVS ONLY. uses Vulkan, OpenAL and XAudio2.9
+			32-bit Windows: Deprecated, many of the currently used libs are 64-bit
+
+___________________________________________________________________
+
+	C) Compiling Project
+__________________________________________________________
+
+1. Use the VC solution to compile  what you need:
 	Classic-RBDOOM-3-BFG/build(Lib&cpuType)/DoomBFA.sln
 	
-(NOTE: The pre-built binaries are made wth buildAL(x64/x86))
-	
-6. Download the latest stable ffmpeg shared from https://github.com/BtbN/FFmpeg-Builds/releases (only 64-bit available)
-7. Extract the FFmpeg DLLs to your current game directory 
+(NOTE: The pre-built binaries are made wth buildx64)
+
+2. Select Desired Profile and compile (either by right clicking the DoomBFA project and selecting 'Build' or by running the debugger (F5))
+	Avalable Profiles:
+		Debug: No Optimizations and with Debug symbols, used ONLY for debuging
+		Release: With Optimizationd and with some Debug elements
+		Retail: With Optimizations and without any Debug element, used for distributing pre-build binaries
 
 NOTE: The Working Directory has been set the default install directory of DOOM 3 BFG Edition on C: drive
-NOTE 2: Compiling and running it under Visual Studio Debugger it also requires to run the game on windowed mode
-(VS Debugger + Fullscreen = not a good mix) so you must Right Click on RBDoom3BFG Solution in Solution Explorer go to Properties select
-Debugging and put on Command Arguments +set r_fullscreen "0"
+NOTE 2: By default the launch argument "+set r_fullscreen 0" is used. If you are in a single monitor system is HEAVILY recommented to be left on
 
 __________________________________
 
 6) COMPILING ON GNU/LINUX
 _________________________
 
+___________________________________________________________________
 
-1. You need the following dependencies in order to compile RBDoom3BFG with all features:
+	A) Preperation
+__________________________________________________________
+
+1. Make sure you have installed GNU GCC on your system.
+	In order to check it, open a terminal and type 'gcc -v', if it returns an output then it is intstalled.
+	If it doesn't then try to install gcc using the package manager of your system (Some distros might support also the 'build-essentials' which might include some addons)
+	NOTE: You need GCC 11 or newer in order to compile the code
+
+1. Install required packages in order to compile and run the game:
  
 	On Debian or Ubuntu:
 
-		> apt-get install cmake libsdl2-dev libopenal-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
+		> apt-get install cmake libsdl2-dev libopenal-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
 	
 	On Fedora
 
@@ -215,8 +252,9 @@ _________________________
 	
 	On openSUSE (tested in 13.1)
 	
-		> zypper in openal-soft-devel cmake libSDL-devel libffmpeg1-devel
+		> zypper in openal-soft-devel cmake libSDL2-devel libffmpeg1-devel
 	
+		NOTE: SDL 1 is not so well supported and it's missing various features and optimizations
 		For SDL 2 replace "libSDL-devel" with "libSDL2-devel".
 		"libffmpeg1-devel" requires the PackMan repository. If you don't have that repo, and don't want to add it, remove the "libffmpeg1-devel" option and compile without ffmpeg support.
 		If you have the repo and compiles with ffmpeg support, make sure you download "libffmpeg1-devel", and not "libffmpeg-devel".
@@ -226,16 +264,44 @@ _________________________
 	SDL2 has better input support (especially in the console) and better 
 	support for multiple displays (especially in fullscreen mode).
 	
+___________________________________________________________________
 
-2. Generate the Makefiles using CMake:
+	B) Project Configuration and Genenration
+__________________________________________________________
+
+Without cmake presets:
+
+1. To Generate the Makefiles using CMake:
 
 	> cd neo/
-	> ./cmake-linux-profile.sh(recommended retail profile)
+	> ./cmake-linux-<profile>.sh(recommended retail profile)
+
+With CMake presets:
+
+CMake GUI (also applies to Windows):
+	- Open GUI
+	- Select the neo folder as source
+	- The dropdown below the source will become active
+	- Select profile
+	- Press Config and then Generate
+
+Visual Studio Code IDE (might apply to other IDE's with similar CMake support):
+	- Make sure you have installed Microsoft's C/C++ - Extension Pack
+	- Open the repository folder
+	- Select desired Profile
+
+Available Profiles: See 5.C.2
+
+___________________________________________________________________
+
+	C) Compiling Project
+__________________________________________________________
+
 	
-3. Compile RBDOOM-3-BFG targets with
+1.To Compile DOOM BFA
 
 	> cd ../build
-	> make
+	> make (add DoomBFA in order to skip game.so's compilation)
 	
 	or
 	
