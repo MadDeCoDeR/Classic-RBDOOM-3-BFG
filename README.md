@@ -22,50 +22,39 @@ DOOM: BFA (Big Freaking Anniversary) Edition is a source port based on RBDOOM-3-
 Ultimate DOOM, DOOM 2 and DOOM 3.
 
 
-
-_______________________________________
-
-CONTENTS
-_______________________________
-
-
+## CONTENTS
 
 This file contains the following sections:
 
-	1) SYSTEM REQUIREMENT
+[1) SYSTEM REQUIREMENT](#1-system-requirements)
 
-	2) GENERAL NOTES
-	
-	3) LICENSE
-	
-	4) GETTING THE SOURCE CODE
+[2) GENERAL NOTES](#2-general-notes)
 
-	5) COMPILING ON WIN32 WITH VISUAL C++ 2013 EXPRESS EDITION OR NEWER VERSIONS
+[3) LICENSE](#3-license)
 
-	6) COMPILING ON GNU/LINUX
-	
-	7) INSTALLATION, GETTING THE GAMEDATA, RUNNING THE GAME
-	
-	8) OVERALL CHANGES
-	
-	9) CONSOLE VARIABLES
-	
-	10) KNOWN ISSUES
-	
-	11) BUG REPORTS
-	
-	12) GAME MODIFICATIONS
-	
-	13) CODE LICENSE EXCEPTIONS
+[4) GETTING THE SOURCE CODE](#4-getting-the-source-code)
 
+[5) COMPILING ON WINDOWS WITH VISUAL STUDIO](#5-compiling-on-windows-with-visual-studio)
 
+[6) COMPILING ON GNU/LINUX](#6-compiling-on-gnulinux)
 
-___________________________________
+[7) INSTALLATION, GETTING THE GAMEDATA, RUNNING THE GAME](#7-installation-getting-the-gamedata-running-the-game)
 
-1) SYSTEM REQUIREMENTS
-__________________________
+[8) OVERALL CHANGES](#8-overall-changes)
+
+[9) CONSOLE VARIABLES](#9-console-variables)
+
+[10) KNOWN ISSUES](#10-known-issues)
+
+[11) BUG REPORTS](#11-bug-reports)
+
+[12) GAME MODIFICATIONS](#12-game-modifications)
+
+[13) CODE LICENSE EXCEPTIONS](#13-code-license-exceptions---the-parts-that-are-not-covered-by-the-gpl)
 
 
+
+## 1) SYSTEM REQUIREMENTS
 
 Minimum system requirements:
 
@@ -84,12 +73,7 @@ Additional Requirements:
 	Windows: DirectX 2010 support
 
 
-
-
-_______________________________
-
-2) GENERAL NOTES
-______________________
+## 2) GENERAL NOTES
 
 This release does not contain any game data, the game data is still
 covered by the original EULA and must be obeyed as usual.
@@ -128,23 +112,13 @@ This method was patented by Creative Labs and has finally expired on 2019-10-13.
 
 
 
-
-
-_______________________________
-
-3) LICENSE
-______________________
-
+## 3) LICENSE
 
 See COPYING.txt for the GNU GENERAL PUBLIC LICENSE
 
 ADDITIONAL TERMS:  The Doom 3 BFG Edition GPL Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU GPL which accompanied the Doom 3 BFG Edition GPL Source Code.  If not, please request a copy in writing from id Software at id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
-
-____________________________________________
-
-4) GETTING THE SOURCE CODE
-___________________________________
+## 4) GETTING THE SOURCE CODE
 
 This project's GitHub.net Git repository can be checked out through Git with the following instruction set: 
 
@@ -154,16 +128,10 @@ If you don't want to use git, you can download the source as a zip file at
 	https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/archive/master.zip
 
 
+## 5) COMPILING ON WINDOWS WITH VISUAL STUDIO
 
-___________________________________________________________________
-
-5) COMPILING ON WINDOWS WITH VISUAL STUDIO
-__________________________________________________________
-
-___________________________________________________________________
-
-	A) Preperation
-__________________________________________________________
+A) Preperation
+--------------
 
 1. Download and install Visual Studio (For new Version make sure the "Desktop Development with C++" component is checked on the installer)
 
@@ -184,15 +152,16 @@ __________________________________________________________
 
 5. Download the latest stable ffmpeg (5.0) shared from https://github.com/BtbN/FFmpeg-Builds/releases (only 64-bit available) and put them on the game's folder (where the origianal .exe is)
 
-___________________________________________________________________
 
-	B) Project Configuration and Genenration
-__________________________________________________________
+B) Project Configuration and Genenration
+-----------------------------------------
 
 For old Versions of Visual Studio.
+
 	1) Generate the VC projects using CMake by doubleclicking a matching configuration .bat file in the neo/ folder.
 
 For Visual Studio 2019 and newer. 
+
 	1) Open the repository folder on Visual Studio and set the CMake source the neo folder (it will prompt you to set it)
 	2) Select the desired preset.
 		Available Presets:
@@ -200,10 +169,9 @@ For Visual Studio 2019 and newer.
 			64-bit Windows with Vulkan: Expirimental FOR DEVS ONLY. uses Vulkan, OpenAL and XAudio2.9
 			32-bit Windows: Deprecated, many of the currently used libs are 64-bit
 
-___________________________________________________________________
 
-	C) Compiling Project
-__________________________________________________________
+C) Compiling Project
+--------------------
 
 1. Use the VC solution to compile  what you need:
 	Classic-RBDOOM-3-BFG/build(Lib&cpuType)/DoomBFA.sln
@@ -211,26 +179,27 @@ __________________________________________________________
 (NOTE: The pre-built binaries are made wth buildx64)
 
 2. Select Desired Profile and compile (either by right clicking the DoomBFA project and selecting 'Build' or by running the debugger (F5))
-	Avalable Profiles:
+
+	Available Profiles:
+	------------------
 		Debug: No Optimizations and with Debug symbols, used ONLY for debuging
 		Release: With Optimizationd and with some Debug elements
 		Retail: With Optimizations and without any Debug element, used for distributing pre-build binaries
 
 NOTE: The Working Directory has been set the default install directory of DOOM 3 BFG Edition on C: drive
+
 NOTE 2: By default the launch argument "+set r_fullscreen 0" is used. If you are in a single monitor system is HEAVILY recommented to be left on
 
-__________________________________
 
-6) COMPILING ON GNU/LINUX
-_________________________
+## 6) COMPILING ON GNU/LINUX
 
-___________________________________________________________________
-
-	A) Preperation
-__________________________________________________________
+A) Preperation
+--------------
 
 1. Make sure you have installed GNU GCC on your system.
+
 	In order to check it, open a terminal and type 'gcc -v', if it returns an output then it is intstalled.
+	
 	If it doesn't then try to install gcc using the package manager of your system (Some distros might support also the 'build-essentials' which might include some addons)
 	NOTE: You need GCC 11 or newer in order to compile the code
 
@@ -264,10 +233,9 @@ __________________________________________________________
 	SDL2 has better input support (especially in the console) and better 
 	support for multiple displays (especially in fullscreen mode).
 	
-___________________________________________________________________
 
-	B) Project Configuration and Genenration
-__________________________________________________________
+B) Project Configuration and Genenration
+----------------------------------------
 
 Without cmake presets:
 
@@ -279,6 +247,7 @@ Without cmake presets:
 With CMake presets:
 
 CMake GUI (also applies to Windows):
+
 	- Open GUI
 	- Select the neo folder as source
 	- The dropdown below the source will become active
@@ -286,17 +255,15 @@ CMake GUI (also applies to Windows):
 	- Press Config and then Generate
 
 Visual Studio Code IDE (might apply to other IDE's with similar CMake support):
+
 	- Make sure you have installed Microsoft's C/C++ - Extension Pack
 	- Open the repository folder
 	- Select desired Profile
 
-Available Profiles: See 5.C.2
+Available Profiles: See [5.C.2](#available-profiles)
 
-___________________________________________________________________
-
-	C) Compiling Project
-__________________________________________________________
-
+C) Compiling Project
+--------------------
 	
 1.To Compile DOOM BFA
 
@@ -308,11 +275,7 @@ __________________________________________________________
 	> make -j <number of CPU cores> (for faster compiles)
 
 
-___________________________________________________
-
-7) INSTALLATION, GETTING THE GAMEDATA, RUNNING THE GAME
-__________________________________________
-
+## 7) INSTALLATION, GETTING THE GAMEDATA, RUNNING THE GAME
 
 If you use the prebuilt Win32 binaries then simply extract them to your
 C:\Program Files (x86)\Steam\SteamApps\common\Doom 3 BFG Edition\ directory and run DoomBFA.exe.
@@ -423,10 +386,7 @@ For the zBFA.resources:
 5. Copy paste from C:\Users\<username>\Saved Games\Id Software\DOOM BFA\base\zBFA.resources to your own 
    Doom 3 BFG directory (/path/to/Doom3BFG) \base\maps
 
-___________________________________________________
-
-8) OVERALL CHANGES
-__________________________________________
+## 8) OVERALL CHANGES
 
 - Flexible build system using CMake
 
@@ -465,25 +425,15 @@ __________________________________________
 
 - Additional ambient render pass to make the game less dark similar to the Quake 4 r_forceAmbient technique
 
-___________________________________________________
-
-9) CONSOLE VARIABLES
-__________________________________________
+## 9) CONSOLE VARIABLES
 
 Check here: https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/wiki/3.-New-Parameters
 
-
-___________________________________________________
-
-10) KNOWN ISSUES
-__________________________________________
+## 10) KNOWN ISSUES
 
 None.
 
-___________________________________________________
-
-11) BUG REPORTS
-__________________________________________
+## 11) BUG REPORTS
 
 DOOM-BFA is not perfect, it is not bug free as every other software.
 For fixing as much problems as possible we need as much bug reports as possible.
@@ -508,12 +458,8 @@ If you want to report an issue with the game, you should make sure that your rep
 		You can find your qconsole.log on Windows in C:\Users\<your user name>\Saved Games\id Software\DOOM BFA\base\
 
 NOTE: We cannot help you with OS-specific issues like configuring OpenGL correctly, configuring ALSA or configuring the network.
-	
 
-___________________________________________________
-
-12) GAME MODIFCATIONS
-__________________________________________
+## 12) GAME MODIFICATIONS
 	
 The Doom 3 BFG Edition GPL Source Code release allows mod editing, in order for it to accept any change in your
 mod directory, you should first specify your mod directory adding the following command to the launcher:
@@ -528,11 +474,9 @@ Classic doom mods are enabled and can be used with the old "-file" parameter lik
 
 IMPORTANT: DOOM-BFA does not support old Doom 3 (2004) modiciations that include sourcecode modifications in binary form (.dll)
 You can fork DOOM-BFA and create a new binary (.dll) that includes all required C++ game code modifications.
-	
-____________________________________________________________________________________
 
-13) CODE LICENSE EXCEPTIONS - The parts that are not covered by the GPL:
-_______________________________________________________________________
+
+## 13) CODE LICENSE EXCEPTIONS - The parts that are not covered by the GPL:
 
 
 EXCLUDED CODE:  The code described below and contained in the Doom 3 BFG Edition GPL Source Code release
