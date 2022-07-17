@@ -1943,6 +1943,22 @@ void Sys_EndJoystickInputEvents()
 	// all joystick events have been read using Sys_ReturnJoystickInputEvent()
 	joystick_polls.SetNum( 0 );
 }
+
+bool Sys_hasConnectedController() {
+	bool hasConnected = false;
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	for (int i = 0; i < MAX_JOYSTICKS; i++) {
+		if (gcontroller[i]) {
+			hasConnected = true;
+			break;
+		}
+	}
+#else
+	hasConnected = joy != NULL;
+#endif
+	return hasConnected;
+}
+
 //GK: This is the controller state detection thread. It can check whenever a controller is connected or not.
 //Most of the console outputs have been disabled since this thread runs from the begining of the game and never stops.
 static int	threadTimeDeltas[256];
@@ -2002,17 +2018,17 @@ int JoystickSamplingThread(void* data){
 				gcontroller[i]=controller;
 				if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
 				haptic[i] = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller[i])); //GK: Make sure it mounted to the right controller
-	if(haptic[i]){
-		if(SDL_HapticRumbleInit( haptic[i] ) < 0){
-			//common->Printf("Failed to rumble\n");
-		}
-	if ((SDL_HapticQuery(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
-  		SDL_HapticClose(haptic[i]);
-		  haptic[i] = NULL;
-		 // common->Printf("Failed to find rumble effect\n");
-	}
-	common->Printf("Found haptic Device %d\n",SDL_HapticNumEffects(haptic[i]));
-	}
+				if(haptic[i]){
+					if(SDL_HapticRumbleInit( haptic[i] ) < 0){
+						//common->Printf("Failed to rumble\n");
+					}
+				if ((SDL_HapticQuery(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
+					SDL_HapticClose(haptic[i]);
+					haptic[i] = NULL;
+					// common->Printf("Failed to find rumble effect\n");
+				}
+				common->Printf("Found haptic Device %d\n",SDL_HapticNumEffects(haptic[i]));
+				}
 			}
 					continue;
 				//common->Printf( "GameController %i name: %s\n", i, SDL_GameControllerName( controller ) );

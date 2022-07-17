@@ -598,6 +598,8 @@ const char*		Sys_GetKeyName( keyNum_t keynum );
 static const int MAX_MOUSE_EVENTS = 256;
 int				Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] );
 
+//GK: Check if there is any connected controller to the system
+bool			Sys_hasConnectedController();
 // joystick input polling
 void			Sys_SetRumble( int device, int low, int hi );
 int				Sys_PollJoystickInputEvents( int deviceNum );

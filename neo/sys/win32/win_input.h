@@ -73,6 +73,9 @@ public:
 	virtual int		PollInputEvents( int inputDeviceNum );
 	virtual int		ReturnInputEvent( const int n, int& action, int& value );
 	virtual void	EndInputEvents() {}
+	virtual bool	GetControllerState(int index) {
+		return controllers[index].valid;
+	}
 	
 protected:
 	friend void		JoystickSamplingThread( void* data );

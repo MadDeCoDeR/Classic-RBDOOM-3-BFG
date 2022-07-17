@@ -726,6 +726,18 @@ int Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] )
 //=====================================================================================
 
 
+bool Sys_hasConnectedController()
+{
+	bool isConnected = false;
+	for (int i = 0; i < MAX_JOYSTICKS; i++) {
+		if (win32.g_Joystick.GetControllerState(i)) {
+			isConnected = true;
+			break;
+		}
+	}
+	return isConnected;
+}
+
 void Sys_SetRumble( int device, int low, int hi )
 {
 	return win32.g_Joystick.SetRumble( device, low, hi );

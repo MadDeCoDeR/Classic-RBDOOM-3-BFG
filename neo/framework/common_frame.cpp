@@ -490,6 +490,11 @@ void idCommonLocal::Frame()
 		WriteConfiguration();
 		
 		eventLoop->RunEventLoop();
+
+		//GK: Pause game if the controller unexpectedly disconnects
+		if (game && idLib::joystick && !Sys_hasConnectedController()) {
+			game->Shell_Show(true);
+		}
 		
 		// Activate the shell if it's been requested
 		if( showShellRequested && game )

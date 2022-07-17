@@ -33,6 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "p_local.h"
 
 #include "doomstat.h"
+#include "m_menu.h"
 
 
 extern idCVar in_photomode;
@@ -157,6 +158,12 @@ void P_Ticker (void)
     }
 
 	if (in_photomode.GetBool()) {
+		return;
+	}
+
+	//GK: Pause game if the controller unexpectedly disconnects
+	if (idLib::joystick && !Sys_hasConnectedController()) {
+		M_StartControlPanel();
 		return;
 	}
 
