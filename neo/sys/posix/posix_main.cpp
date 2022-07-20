@@ -451,7 +451,7 @@ Sys_DefaultBasePath
 Get the default base path
 - binary image path
 - current directory
-- hardcoded
+- Search for  the _common.resources in selected locations (User's Home folder, Secondary/external drive root directory (/media) and SD card root directory (/run/media))
 Try to be intelligent: if there is no BASE_GAMEDIR, try the next path
 ================
 */
@@ -492,8 +492,19 @@ const char* Sys_DefaultBasePath()
 	}
 
 	//common->Printf( "WARNING: using hardcoded default base path %s\n", DEFAULT_BASEPATH );
-	std::string foundPath = findFile(getenv("HOME"), "_common.resources");
+	idList<idStr> basePaths;
+	basePaths.Append(idStr(getenv("HOME")));
+	basePaths.Append(idStr("/run/media/"));
+	basePaths.Append(idStr("/media/"));
+	std::string foundPath = "";
 	struct stat commonStat;
+	for (int i = 0; i < 3; i++) {
+		foundPath = findFile(basePaths[i].c_str(), "_common.resources");
+		
+		if (stat(foundPath.c_str(), &commonStat) >= 0) {
+			break;
+		}
+	}
 	if (stat(foundPath.c_str(), &commonStat) < 0) {
 		common->FatalError("Failed to find the Game's base path");
 	}
