@@ -245,7 +245,7 @@ elseif(MSVC)
 		set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RELEASE} /D ID_RETAIL /MP /Oi /Oy /MD /std:c17")
 		
 		set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MP /Ob2 /Oi /Oy /MDd /std:c++17 /std:c17 /W4")
-		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /Oi /Oy /MD /std:c++17 /std:c17 /WX /W4")
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MP /Oi /Oy /MD /std:c++17 /std:c17 /WX /W4 /sdl")
 		#set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MP /MTd")
 		#set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MP /Oi /Oy /MT")
 		set(CMAKE_CXX_FLAGS_RETAIL "${CMAKE_CXX_FLAGS_RELEASE} /D ID_RETAIL")
@@ -1641,7 +1641,7 @@ if(MSVC)
 	
 	list(APPEND RBDOOM3_SOURCES ${WIN32_RESOURCES})
 	add_library(external ${LIB_INCLUDES} ${LIB_SOURCES})
-	target_compile_options(external PRIVATE /WX- /W3)
+	target_compile_options(external PRIVATE /WX- /W3 /sdl-)
 	add_custom_target(shaders SOURCES ${SHADERS})
 	add_executable(DoomBFA WIN32 ${RBDOOM3_INCLUDES} ${RBDOOM3_SOURCES})
 	#GK: Allow to compile and run the game from VS

@@ -40,12 +40,14 @@ Note that other POSIX systems may need some small changes, e.g. in Sys_InitNetwo
 #include "precompiled.h"
 
 #ifdef _WIN32
-
+#include <WinSock2.h>
+#include <WS2tcpip.h>
 #include <iptypes.h>
 #include <iphlpapi.h>
 // force these libs to be included, so users of idLib don't need to add them to every project
 #pragma comment(lib, "iphlpapi.lib" )
 #pragma comment(lib, "wsock32.lib" )
+#pragma comment (lib, "Ws2_32.lib")
 
 #else // ! _WIN32
 
@@ -359,7 +361,9 @@ static bool Net_StringToSockaddr( const char* s, sockaddr_in* sadr, bool doDNSRe
 	 * 2. gethostbyname() works fine for IPs and doesn't do a lookup if the passed string
 	 *    is an IP
 	 */
-	struct hostent*	h;
+	struct addrinfo*	h = NULL;
+	struct addrinfo*	ptr = NULL;
+	struct addrinfo*	hint;
 	char buf[256];
 	int port;
 	
@@ -375,13 +379,16 @@ static bool Net_StringToSockaddr( const char* s, sockaddr_in* sadr, bool doDNSRe
 		sadr->sin_port = htons( port );
 	}
 	// buf contains the host, even if Net_ExtractPort returned false
-	h = gethostbyname( buf );
-	if( h == NULL )
+	hint = (addrinfo*)calloc(1, sizeof(addrinfo));
+	hint->ai_flags = AI_NUMERICHOST;
+	hint->ai_family = AF_INET;
+	int res = getaddrinfo( buf, NULL, hint, &h );
+	if( res != 0 )
 	{
 		return false;
 	}
-	sadr->sin_addr.s_addr = *( in_addr_t* ) h->h_addr_list[0];
-	
+	ptr = h->ai_next;
+	sadr->sin_addr.s_addr = *(in_addr_t*)ptr->ai_addr->sa_data;
 	return true;
 }
 
@@ -500,7 +507,9 @@ NET_OpenSocks
 void NET_OpenSocks( int port )
 {
 	sockaddr_in			address;
-	struct hostent*		h;
+	struct addrinfo*	h = NULL;
+	struct addrinfo*	ptr = NULL;
+	struct addrinfo*	hint = (addrinfo*)calloc(1, sizeof(addrinfo));
 	int					len;
 	bool				rfc1929;
 	unsigned char		buf[64];
@@ -514,20 +523,22 @@ void NET_OpenSocks( int port )
 		idLib::Printf( "WARNING: NET_OpenSocks: socket: %s\n", NET_ErrorString() );
 		return;
 	}
-	
-	h = gethostbyname( net_socksServer.GetString() );
-	if( h == NULL )
+	hint->ai_flags = AI_NUMERICHOST;
+	hint->ai_flags = AF_INET;
+	int res = getaddrinfo( net_socksServer.GetString(), NULL, hint, &h );
+	if( res != 0 )
 	{
 		idLib::Printf( "WARNING: NET_OpenSocks: gethostbyname: %s\n", NET_ErrorString() );
 		return;
 	}
-	if( h->h_addrtype != AF_INET )
+	ptr = h->ai_next;
+	if( ptr->ai_family != AF_INET )
 	{
 		idLib::Printf( "WARNING: NET_OpenSocks: gethostbyname: address type was not AF_INET\n" );
 		return;
 	}
 	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = *( in_addr_t* )h->h_addr_list[0];
+	address.sin_addr.s_addr = *( in_addr_t* )ptr->ai_addr->sa_data;
 	address.sin_port = htons( ( short )net_socksPort.GetInteger() );
 	
 	if( connect( socks_socket, ( sockaddr* )&address, sizeof( address ) ) == SOCKET_ERROR )
@@ -929,8 +940,10 @@ void Sys_InitNetworking()
 				{
 					foundloopback = true;
 				}
-				ip_a = ntohl( inet_addr( pIPAddrString->IpAddress.String ) );
-				ip_m = ntohl( inet_addr( pIPAddrString->IpMask.String ) );
+				inet_pton(AF_INET, pIPAddrString->IpAddress.String, &ip_a);
+				ip_a = ntohl( ip_a );
+				inet_pton(AF_INET, pIPAddrString->IpMask.String, &ip_m);
+				ip_m = ntohl( ip_m );
 				//skip null netmasks
 				if( !ip_m )
 				{
@@ -1104,8 +1117,10 @@ void Sys_InitNetworking()
 	if( !foundloopback && num_interfaces < MAX_INTERFACES )
 	{
 		idLib::Printf( "Sys_InitNetworking: adding loopback interface\n" );
-		netint[num_interfaces].ip = ntohl( inet_addr( "127.0.0.1" ) );
-		netint[num_interfaces].mask = ntohl( inet_addr( "255.0.0.0" ) );
+		inet_pton(AF_INET, "127.0.0.1", &netint[num_interfaces].ip);
+		netint[num_interfaces].ip = ntohl(netint[num_interfaces].ip);
+		inet_pton(AF_INET, "255.0.0.0", &netint[num_interfaces].mask);
+		netint[num_interfaces].mask = ntohl(netint[num_interfaces].mask);
 		num_interfaces++;
 	}
 }

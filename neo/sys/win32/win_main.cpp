@@ -1204,7 +1204,7 @@ void Sys_Init() {
 	//
 	// Windows version
 	//
-	win32.osversion.dwOSVersionInfoSize = sizeof( win32.osversion );
+	/*win32.osversion.dwOSVersionInfoSize = sizeof(win32.osversion);
 
 	if ( !GetVersionEx( (LPOSVERSIONINFO)&win32.osversion ) )
 		Sys_Error( "Couldn't get OS info" );
@@ -1259,6 +1259,29 @@ void Sys_Init() {
 		}
 	} else {
 		win32.sys_arch.SetString( "unknown Windows variant" );
+	}*/
+
+	if (!IsWindowsVersionOrGreater(4, 0, 0)) {
+		Sys_Error(ENGINE_NAME " requires Windows version 4 (NT) or greater");
+	}
+	win32.sys_arch.SetString("unknown Windows variant");
+	if (IsWindowsXPOrGreater()) {
+		win32.sys_arch.SetString("WinXP (NT)");
+	}
+	if (IsWindowsVistaOrGreater()) {
+		win32.sys_arch.SetString("Vista");
+	}
+	if (IsWindows7OrGreater()) {
+		win32.sys_arch.SetString("Win7");
+	}
+	if (IsWindows8OrGreater()) {
+		win32.sys_arch.SetString("Win8");
+	}
+	if (IsWindows8Point1OrGreater()) {
+		win32.sys_arch.SetString("Win8.1");
+	}
+	if (IsWindows10OrGreater()) {
+		win32.sys_arch.SetString("Win10");
 	}
 	common->Printf("%s\n", win32.sys_arch.GetString());
 	//

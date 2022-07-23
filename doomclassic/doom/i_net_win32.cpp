@@ -47,6 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "i_net.h"
 
 #include "doomlib.h"
+#include <WS2tcpip.h>
 
 void	NetSend (void);
 qboolean NetListen (void);
@@ -352,7 +353,8 @@ void I_InitNetwork (void)
 				ipOnly = ipAddressWithPort;
 			}
 
-			in_addr_t ipAddress = inet_addr( ipOnly.c_str() );
+			in_addr_t ipAddress;
+			inet_pton(AF_INET, ipOnly.c_str(),  &ipAddress);
 
 			if ( ipAddress == INADDR_NONE ) {
 				I_Error( "Invalid IP Address: %s\n", ipOnly.c_str() );
