@@ -130,6 +130,10 @@
         "USE_SYSTEM_RAPIDJSON": {
           "type": "BOOL",
           "value": "ON"
+        },
+        "USE_PRECOMPILED_HEADERS": {
+          "type": "BOOL",
+          "value": "OFF"
         }
       }
     },
