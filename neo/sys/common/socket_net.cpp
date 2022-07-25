@@ -362,7 +362,6 @@ static bool Net_StringToSockaddr( const char* s, sockaddr_in* sadr, bool doDNSRe
 	 *    is an IP
 	 */
 	struct addrinfo*	h = NULL;
-	struct addrinfo*	ptr = NULL;
 	struct addrinfo*	hint;
 	char buf[256];
 	int port;
@@ -387,8 +386,7 @@ static bool Net_StringToSockaddr( const char* s, sockaddr_in* sadr, bool doDNSRe
 	{
 		return false;
 	}
-	ptr = h->ai_next;
-	sadr->sin_addr.s_addr = *(in_addr_t*)ptr->ai_addr->sa_data;
+	sadr->sin_addr.s_addr = *(in_addr_t*)h->ai_addr->sa_data;
 	return true;
 }
 
@@ -508,7 +506,6 @@ void NET_OpenSocks( int port )
 {
 	sockaddr_in			address;
 	struct addrinfo*	h = NULL;
-	struct addrinfo*	ptr = NULL;
 	struct addrinfo*	hint = (addrinfo*)calloc(1, sizeof(addrinfo));
 	int					len;
 	bool				rfc1929;
@@ -531,14 +528,13 @@ void NET_OpenSocks( int port )
 		idLib::Printf( "WARNING: NET_OpenSocks: gethostbyname: %s\n", NET_ErrorString() );
 		return;
 	}
-	ptr = h->ai_next;
-	if( ptr->ai_family != AF_INET )
+	if( h->ai_family != AF_INET )
 	{
 		idLib::Printf( "WARNING: NET_OpenSocks: gethostbyname: address type was not AF_INET\n" );
 		return;
 	}
 	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = *( in_addr_t* )ptr->ai_addr->sa_data;
+	address.sin_addr.s_addr = *( in_addr_t* )h->ai_addr->sa_data;
 	address.sin_port = htons( ( short )net_socksPort.GetInteger() );
 	
 	if( connect( socks_socket, ( sockaddr* )&address, sizeof( address ) ) == SOCKET_ERROR )
