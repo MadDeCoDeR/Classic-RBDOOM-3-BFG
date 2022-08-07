@@ -321,7 +321,7 @@ Once this is complete, by default you can find your Doom 3 BFG "base/" directory
 
 Extra:
 
-Additionally in Ubuntu you can open the RBDoom3BFG file with the text editor and add the missing paths on it and save it as .desktop.
+Additionally in Ubuntu you can open the DoomBFA file with the text editor and add the missing paths on it and save it as .desktop.
 This will give you a desktop shortcut for Ubuntu. (NOTE: I don't know if other operating systems support this file)
 
 Also you can install www.mono-project.com. Which allow you to use CDL.exe natively on linux.
@@ -395,7 +395,7 @@ For the zBFA.resources:
 
 - Win64 support
 
-- OS X support
+- OS X support (untested on this fork)
 
 - OpenAL Soft sound backend primarily developed for Linux but works on Windows as well
 
