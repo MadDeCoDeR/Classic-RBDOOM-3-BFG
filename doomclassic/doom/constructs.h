@@ -767,7 +767,7 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	wi_stuff_anims[2] = ::g->epsd2animinfo;*/
 // wi_stuff.constructs end // 
 //  z_zone.constructs begin // 
-	::g->zones[NUM_ZONES] = NULL;
+	::g->zones[NUM_ZONES - 1] = NULL;
 	::g->NumAlloc = 0;
 	::g->CacheAlloc = 0;
 // z_zone.constructs end // 

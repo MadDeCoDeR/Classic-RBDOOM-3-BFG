@@ -184,7 +184,7 @@ idMenuHandler_HUD::ShowTip
 */
 void idMenuHandler_HUDLocal::ShowTip( const char* title, const char* tip, bool autoHide )
 {
-	autoHideTip = autoHideTip;
+	autoHideTip = autoHide;
 	tipStartTime = game->GetTime();
 	hiding = false;
 	idMenuScreen_HUD* screen = GetHud();

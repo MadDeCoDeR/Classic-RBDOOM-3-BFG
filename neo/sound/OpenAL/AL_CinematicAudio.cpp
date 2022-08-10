@@ -169,7 +169,7 @@ void CinematicAudio_OpenAL::ShutdownAudio()
 		}
 	}
 
-	if (alMusicBuffercin) {
+	if (alIsBuffer(alMusicBuffercin[0])) {
 		alDeleteBuffers(NUM_BUFFERS, alMusicBuffercin);
 	}
 	if (!tBuffer->empty()) {

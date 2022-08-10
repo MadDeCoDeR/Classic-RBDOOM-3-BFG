@@ -857,11 +857,11 @@ int W_NumLumps (void)
 // W_CheckNumsForName
 // Returns -1 if name not found.
 //
-int* W_CheckNumsForName(const char* name)
+idList<int> W_CheckNumsForName(const char* name)
 {
 	const int NameLength = 9;
-	int* result = (int*)malloc(sizeof(int));
-	result[0] = -1;
+	idList<int> result;
+	result.Append(-1);
 	union {
 		char	s[NameLength];
 		int	x[2];
@@ -900,7 +900,7 @@ int* W_CheckNumsForName(const char* name)
 			&& *(int*)& lump_p->name[4] == v2)
 		{
 			if (i >= 1) {
-				result = (int*)realloc(result, (i + 1)*sizeof(int));
+				result.Append(result);
 			}
 			result[i] = lump_p - lumpinfo.begin();
 			i++;
@@ -1001,11 +1001,10 @@ int W_GetNumForName ( const char* name)
 // W_GetNumForName
 // Calls W_CheckNumForName, but bombs out if not found.
 //
-int* W_GetNumsForName(const char* name)
+idList<int> W_GetNumsForName(const char* name)
 {
-	int*	i;
 
-	i = W_CheckNumsForName(name);
+	idList<int> i = W_CheckNumsForName(name);
 	//GK begin
 	if (i[0] == -1 && idStr::Icmp("TITLEPIC", name) 
 		&& idStr::Icmp("HELP2", name)

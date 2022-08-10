@@ -268,7 +268,7 @@ bool idMenuWidget_ScrollBar::HandleAction( idWidgetAction& action, const idWidge
 			CalculatePosition( x, y );
 			return true;
 		}
-		case WIDGET_ACTION_EVENT_DRAG_STOP:
+		case WIDGET_ACTION_JOY3_ON_PRESS: //GK: Enum Hack, both that enum and the WIDGET_ACTION_DRAG_STOP have the same value
 		{
 			dragging = false;
 			return true;

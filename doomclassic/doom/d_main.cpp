@@ -925,11 +925,10 @@ void D_DoomMain(void)
 	I_Printf ("W_Init: Init WADfiles.\n");
 	W_InitMultipleFiles (wadfiles);
 
-	int* expinfoPointer = W_GetNumsForName("EXPINFO");
-	int expinfoSize = sizeof(expinfoPointer) / sizeof(int);
+	idList<int> expinfoPointer = W_GetNumsForName("EXPINFO");
 	if (expinfoPointer[0] >= 0) {
 		int expPrev = 0;
-		for (int i = 0; i < expinfoSize; i++) {
+		for (int i = 0; i < expinfoPointer.Num(); i++) {
 			if (expinfoPointer[i] > expPrev && expinfoPointer[i] < W_GetLumpCount()) {
 				::g->gamemission = pack_custom;
 				expPrev = expinfoPointer[i];
@@ -938,11 +937,10 @@ void D_DoomMain(void)
 		}
 	}
 
-	int* dehackeds = W_GetNumsForName("DEHACKED");
-	int dehackedsSize = sizeof(dehackeds) / sizeof(int);
+	idList<int> dehackeds = W_GetNumsForName("DEHACKED");
 	if (dehackeds[0] >= 0) {
 		int prev = 0;
-		for (int i = 0; i < dehackedsSize; i++) {
+		for (int i = 0; i < dehackeds.Num(); i++) {
 			if (dehackeds[i] >= prev && dehackeds[i] < W_GetLumpCount()) {
 				prev = dehackeds[i];
 				loaddeh(dehackeds[i]);

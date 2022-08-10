@@ -110,7 +110,7 @@ public:
 		buffer[ 0 ] = '\0';
 		SetStaticBuffer( buffer, _size_ );
 #ifndef _WINDOWS
-		idStr::operator=((const char*)c);
+		idStr::operator=(&c);
 #else
 		idStr::operator=( c );
 #endif
@@ -122,7 +122,9 @@ public:
 		buffer[ 0 ] = '\0';
 		SetStaticBuffer( buffer, _size_ );
 #ifndef _WINDOWS
-		idStr::operator=((const char*)i);
+		char c[4];
+		sprintf(c, "%i", i);
+		idStr::operator=(c);
 #else
 		idStr::operator=( i );
 #endif
@@ -134,7 +136,9 @@ public:
 		buffer[ 0 ] = '\0';
 		SetStaticBuffer( buffer, _size_ );
 #ifndef _WINDOWS
-		idStr::operator=((const char*)u);
+		char c[6];
+		sprintf(c, "%u", u);
+		idStr::operator=(c);
 #else
 		idStr::operator=( u );
 #endif
@@ -146,7 +150,9 @@ public:
 		buffer[ 0 ] = '\0';
 		SetStaticBuffer( buffer, _size_ );
 #ifndef _WINDOWS
-		idStr::operator=((const char*)f);
+		char c[12];
+		sprintf(c, "%f", f);
+		idStr::operator=(c);
 #else
 		idStr::operator=( f );
 #endif

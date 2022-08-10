@@ -89,7 +89,7 @@ ID_INLINE void operator delete( void* p )
 #if __cplusplus < 201703L
 throw() // DG: delete musn't throw
 #else
-noexcept(false)
+noexcept(true)
 #endif
 #endif
 {
@@ -112,7 +112,7 @@ ID_INLINE void operator delete[]( void* p )
 #if __cplusplus < 201703L
 throw() // DG: delete musn't throw
 #else
-noexcept(false)
+noexcept(true)
 #endif
 #endif
 {
@@ -388,7 +388,7 @@ ID_INLINE _type_* idBlockAlloc<_type_, _blockSize_, memTag>::Alloc()
 	_type_ * t = ( _type_* ) element->buffer;
 	if( clearAllocs )
 	{
-		memset( t, 0, sizeof( _type_ ) );
+		memset( (void*)t, 0, sizeof( _type_ ) );
 	}
 	new( t ) _type_;
 	return t;

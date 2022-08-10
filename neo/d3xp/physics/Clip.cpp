@@ -911,7 +911,7 @@ idClip::Shutdown
 */
 void idClip::Shutdown()
 {
-	if (this != NULL) {
+	//if (this != NULL) {
 		delete[] clipSectors;
 		clipSectors = NULL;
 
@@ -930,7 +930,7 @@ void idClip::Shutdown()
 		}
 
 		clipLinkAllocator.Shutdown();
-	}
+	//}
 }
 
 /*

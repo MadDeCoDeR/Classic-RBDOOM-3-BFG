@@ -150,7 +150,7 @@ Note:	The data is merely moved around the list, so any pointers to data within t
 template< class type, int size >
 ID_INLINE void idStaticList<type, size>::Sort( const idSort<type>& sort )
 {
-	if( list == NULL )
+	if( size < 1 )
 	{
 		return;
 	}

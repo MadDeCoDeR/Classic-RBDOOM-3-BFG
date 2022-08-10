@@ -740,8 +740,8 @@ void G_DoLoadLevel ()
 	::g->joyxmove = ::g->joyymove = 0; 
 	::g->mousex = ::g->mousey = 0; 
 	::g->sendpause = ::g->sendsave = ::g->paused = false; 
-	memset (::g->mousebuttons, 0, sizeof(::g->mousebuttons)); 
-	memset (::g->joybuttons, 0, sizeof(::g->joybuttons));
+	memset (::g->mousebuttons, 0, sizeof(::g->mousearray) / sizeof(qboolean)); 
+	memset (::g->joybuttons, 0, sizeof(::g->joyarray) / sizeof(qboolean));
 }
 
 //
@@ -1962,7 +1962,7 @@ qboolean G_DoSaveGame (void)
 	//GK: if the game uses mods store their names on the save file header
 	if (M_CheckParm("-file")) {
 		name2 = new char[256];
-		memset(name2, 0, sizeof(name2));
+		memset(name2, 0, strlen(name2));
 		sprintf(name2, "version %i files ", VERSION);
 		for (int f=1; f<20; f++) {
 			if (wadfiles[f] != NULL) {
@@ -1987,7 +1987,7 @@ qboolean G_DoSaveGame (void)
 	else {
 		//GK: allow unmodded saves
 		name2 = new char[VERSIONSIZE];
-		memset(name2, 0, sizeof(name2));
+		memset(name2, 0, strlen(name2));
 		sprintf(name2, "version %i", VERSION);
 	}
 	memcpy (::g->save_p, name2, strlen(name2));

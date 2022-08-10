@@ -990,7 +990,7 @@ idPVS::Shutdown
 */
 void idPVS::Shutdown()
 {
-	if (this != NULL) {
+	//if (this != NULL) {
 		if (connectedAreas)
 		{
 			delete connectedAreas;
@@ -1011,7 +1011,7 @@ void idPVS::Shutdown()
 			delete currentPVS[i].pvs;
 			currentPVS[i].pvs = NULL;
 		}
-	}
+	//}
 }
 
 /*

@@ -140,7 +140,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
 	if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
 		# add clang-specific settings for warnings (the second one make sure clang doesn't complain
 		# about unknown -W flags, like -Wno-unused-but-set-variable)
-		add_compile_options(-Wno-local-type-template-args -Wno-unknown-warning-option -Wno-inline-new-delete -Wno-switch-enum)
+		add_compile_options(-Wno-local-type-template-args -Wno-unknown-warning-option -Wno-inline-new-delete -Wno-switch-enum -Wno-varargs -Wno-delete-abstract-non-virtual-dtor -Wno-shift-negative-value -Wno-comment)
 	endif()
 	
 	if(NOT CMAKE_CROSSCOMPILING AND ONATIVE)

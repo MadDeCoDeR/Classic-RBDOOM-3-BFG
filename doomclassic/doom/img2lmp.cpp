@@ -346,7 +346,7 @@ patch_t* PNG2lmp(unsigned char* buffer) {
 	return GetPreloaded();
 }
 
-patch_t* JPEG2lmp(unsigned char* buffer) {
+patch_t* JPEG2lmp(unsigned char* buffer, int size) {
 	struct jpeg_decompress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 	/* More stuff */
@@ -358,7 +358,7 @@ patch_t* JPEG2lmp(unsigned char* buffer) {
 	/* Step 2: specify data source (eg, a file) */
 
 #ifdef USE_NEWER_JPEG
-	jpeg_mem_src(&cinfo, buffer, sizeof(buffer)/sizeof(unsigned char));
+	jpeg_mem_src(&cinfo, buffer, size);
 #else
 	jpeg_stdio_src(&cinfo, buffer);
 #endif
@@ -544,7 +544,7 @@ patch_t* img2lmp(void* buff,int lump) {
 			}
 			else {
 				InitColorMap();
-				return JPEG2lmp(imgbuf);
+				return JPEG2lmp(imgbuf, W_LumpLength(lump));
 			}
 		}
 	}

@@ -88,7 +88,7 @@ void	W_FreeWadFiles();
 
 int	W_CheckNumForName (const char* name, int last = -1);
 int	W_GetNumForName (const char* name);
-int* W_GetNumsForName(const char* name);
+idList<int> W_GetNumsForName(const char* name);
 
 int	W_LumpLength (int lump);
 void    W_ReadLump (int lump, void *dest);

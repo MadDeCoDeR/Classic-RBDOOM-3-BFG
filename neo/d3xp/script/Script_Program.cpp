@@ -764,7 +764,7 @@ idVarDef::SetObject
 void idVarDef::SetObject( idScriptObject* object )
 {
 	assert( typeDef );
-	initialized = initialized;
+	//initialized = initialized; //GK: OOP lesson 101: When you set an object value it better to be a different value than itself from the same object context
 	assert( typeDef->Inherits( &type_object ) );
 	*value.objectPtrPtr = object;
 }
