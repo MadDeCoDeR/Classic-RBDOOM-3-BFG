@@ -43,7 +43,7 @@ extern idCVar s_volume_dB;
 extern idCVar s_useXAudio;
 #endif
 
-#define JPEG_INTERNALS
+//#define JPEG_INTERNALS
 //extern "C" {
 #include <jpeglib.h>
 //}

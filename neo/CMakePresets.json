@@ -26,8 +26,32 @@
         "USE_XAUDIO2_PACKAGE": {
           "type": "BOOL",
           "value": "ON"
+        },
+        "CMAKE_TOOLCHAIN_FILE": {
+          "type": "PATH",
+          "value": "..\\..\\vcpkg\\scripts\\buildSystems\\vcpkg.cmake"
+        },
+        "USE_SYSTEM_ZLIB": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_SYSTEM_LIBPNG": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_SYSTEM_LIBJPEG": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_SYSTEM_LIBGLEW": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_SYSTEM_RAPIDJSON": {
+          "type": "BOOL",
+          "value": "ON"
         }
-        }
+      }
     },
     {
       "name": "windows-x64-base",

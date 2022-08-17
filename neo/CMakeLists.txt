@@ -699,7 +699,9 @@ set(OGGVORBIS_SOURCES
 	libs/oggvorbis/vorbissrc/bitrate.c
 	libs/oggvorbis/vorbissrc/vorbisfile.c)
 
-file(GLOB RAPIDJSON_INCLUDES libs/rapidjson/include/rapidjson/*.h)
+	if (NOT RAPIDJSON_FOUND) 
+		file(GLOB RAPIDJSON_INCLUDES libs/rapidjson/include/rapidjson/*.h)
+	endif()
 
 file(GLOB OPEN_PLATFORM_INCLUDES libs/platform/*.h)
 #file(GLOB OPEN_PLATFORM_SOURCES libs/platform/*.cpp)
@@ -1503,11 +1505,18 @@ if(MSVC)
 			${DOOMCLASSIC_OPENAL_SOURCES})
 			
 		if (USE_XAUDIO2_PACKAGE)
-		set(XAUDIO2_REDIST Microsoft.XAudio2.Redist)
-		find_program(NUGET_EXE NAMES nuget)
-		exec_program(${NUGET_EXE}
-		ARGS install ${XAUDIO2_REDIST} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
-		include_directories(${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/include)
+			find_package(xaudi2redist)
+			if (CMAKE_CL_64)
+				set(CPU_ARCH x64)
+			else()
+				set(CPU_ARCH x86)
+			endif()
+			include_directories(${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows/include/xaudio2redist)
+		#set(XAUDIO2_REDIST Microsoft.XAudio2.Redist)
+		#find_program(NUGET_EXE NAMES nuget)
+		#exec_program(${NUGET_EXE}
+		#ARGS install ${XAUDIO2_REDIST} -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
+		#include_directories(${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/include)
 		#target_link_libraries(DoomBFA ${CMAKE_BINARY_DIR}/packages/${XAUDIO2_REDIST}/build/native/Microsoft.XAudio2.Redist.targets)
 		#if (CMAKE_CL_64)
 		#	set(CPU_ARCH x64)
