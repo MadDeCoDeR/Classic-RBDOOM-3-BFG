@@ -3052,7 +3052,7 @@ int ColladaParser::GetAttribute( const char* pAttr ) const
 		
 	// attribute not found -> throw an exception
 	ThrowException( va( "Expected attribute \"%s\" at element \"%s\".", pAttr, mReader->getNodeName() ) );
-	return -1;
+	//return -1;
 }
 
 // ------------------------------------------------------------------------------------------------

@@ -75,7 +75,7 @@ static VkFormat ChooseSupportedFormat(VkFormat* formats, int numFormats, VkImage
 
 	idLib::FatalError("Failed to find a supported format.");
 
-	return VK_FORMAT_UNDEFINED;
+//	return VK_FORMAT_UNDEFINED;
 }
 
 static VkFormat formats[] =

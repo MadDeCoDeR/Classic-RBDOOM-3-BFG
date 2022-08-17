@@ -535,7 +535,7 @@ P_LookForPlayers
 	return true;
     }
 
-    return false;
+    //return false;
 }
 
 

@@ -218,7 +218,7 @@ static VkDescriptorType GetDescriptorType( rpBinding_t type )
 			
 		default:
 			idLib::Error( "Unknown rpBinding_t %d", static_cast< int >( type ) );
-			return VK_DESCRIPTOR_TYPE_MAX_ENUM;
+//			return VK_DESCRIPTOR_TYPE_MAX_ENUM;
 	}
 }
 

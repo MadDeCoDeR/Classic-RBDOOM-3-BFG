@@ -363,7 +363,7 @@ R_PointToAngle
 			}
 		}
 	}
-	return 0;
+	//return 0;
 }
 
 
