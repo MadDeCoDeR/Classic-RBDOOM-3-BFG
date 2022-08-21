@@ -41,9 +41,9 @@ If you have questions concerning this license or the applicable additional terms
 ** Note that the GLW_xxx functions are Windows specific GL-subsystem
 ** related functions that are relevant ONLY to win_glimp.c
 */
-#pragma hdrstop
-#include "precompiled.h"
 
+#include "precompiled.h"
+#pragma hdrstop
 #include "win_local.h"
 #include "rc/doom_resource.h"
 #include "../../renderer/RenderCommon.h"
@@ -319,7 +319,9 @@ static void GLW_GetWGLExtensionsWithFakeWindow()
 	wglDeleteContext( gRC );
 	ReleaseDC( hWnd, hDC );
 	
-	DestroyWindow( hWnd );
+	if (hWnd != 0) {
+		DestroyWindow(hWnd);
+	}
 	while( GetMessage( &msg, NULL, 0, 0 ) )
 	{
 		TranslateMessage( &msg );
@@ -595,7 +597,7 @@ static void GLW_CreateWindowClasses()
 	
 	memset( &wc, 0, sizeof( wc ) );
 	
-	wc.style         = 0;
+	wc.style         = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc   = ( WNDPROC ) MainWndProc;
 	wc.cbClsExtra    = 0;
 	wc.cbWndExtra    = 0;
@@ -1270,7 +1272,7 @@ static bool GLW_CreateWindow( glimpParms_t parms )
 	}
 	else
 	{
-		exstyle = 0;
+		exstyle = WS_EX_APPWINDOW;
 		stylebits = WINDOW_STYLE | WS_SYSMENU;
 	}
 	
@@ -1479,7 +1481,7 @@ bool GLimp_Init( glimpParms_t parms )
 			SetProcessDpiAwarenessContext((BFA_DPI_AWARENESS_CONTEXT)-4); //DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
 		}
 	} else {
-	SetProcessDPIAware();
+		SetProcessDPIAware();
 	}
 					
 	// check our desktop attributes
@@ -1602,7 +1604,7 @@ bool GLimp_SetScreenParms( glimpParms_t parms )
 	}
 	else
 	{
-		exstyle = 0;
+		exstyle = WS_EX_APPWINDOW;
 		stylebits = WINDOW_STYLE | WS_SYSMENU;
 	}
 	
