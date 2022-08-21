@@ -472,27 +472,6 @@ void idRenderBackend::Init()
 	glConfig.shading_language_string = ( const char* )glGetString( GL_SHADING_LANGUAGE_VERSION );
 	//glConfig.extensions_string = ( const char* )glGetString( GL_EXTENSIONS );
 	GL_CheckErrors();
-	if( glConfig.extensions_string == NULL )
-	{
-		// As of OpenGL 3.2, glGetStringi is required to obtain the available extensions
-		//glGetStringi = ( PFNGLGETSTRINGIPROC )GLimp_ExtensionPointer( "glGetStringi" );
-		
-		// Build the extensions string
-		GLint numExtensions;
-		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
-		extensions_string.Clear();
-		for( int i = 0; i < numExtensions; i++ )
-		{
-			extensions_string.Append( ( const char* )glGetStringi( GL_EXTENSIONS, i ) );
-			// the now deprecated glGetString method usaed to create a single string with each extension separated by a space
-			if( i < numExtensions - 1 )
-			{
-				extensions_string.Append( ' ' );
-			}
-		}
-		glConfig.extensions_string = extensions_string.c_str();
-	}
-	
 	
 	float glVersion = atof( idStr(glConfig.version_string).SubStr(0, 3) );
 	float glslVersion = atof( glConfig.shading_language_string );
@@ -500,7 +479,29 @@ void idRenderBackend::Init()
 	idLib::Printf( "OpenGL Vendor    : %s\n", glConfig.vendor_string );
 	idLib::Printf( "OpenGL Renderer  : %s\n", glConfig.renderer_string );
 	idLib::Printf( "OpenGL GLSL      : %1.1f\n", glslVersion );
-	idLib::Printf( "OpenGL Extensions: %s\n", glConfig.extensions_string );
+	idLib::Printf( "OpenGL Extensions: ");
+	//GK: The number of extensions is ridiculusly long the idLib::Print can't output all of it
+	// therefor print it one by one.
+
+	// As of OpenGL 3.2, glGetStringi is required to obtain the available extensions
+	//glGetStringi = ( PFNGLGETSTRINGIPROC )GLimp_ExtensionPointer( "glGetStringi" );
+
+	// Build the extensions string
+	GLint numExtensions;
+	glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
+	//extensions_string.Clear();
+	for (int i = 0; i < numExtensions; i++)
+	{
+		//extensions_string.Append((const char*)glGetStringi(GL_EXTENSIONS, i));
+		idLib::Printf("%s", (const char*)glGetStringi(GL_EXTENSIONS, i));
+		// the now deprecated glGetString method usaed to create a single string with each extension separated by a space
+		if (i < numExtensions - 1)
+		{
+			idLib::Printf(" ");
+			//extensions_string.Append(' ');
+		}
+	}
+	idLib::Printf("\n");
 	if (glslVersion < 3.0f) { //GK: GLSL Version HACK. After GLSL 1.50 (GL 3.2) GLSL and GL Versions come in sync so there is no GLSL 3.00 but there is 3.00 es
 		idLib::FatalError("System doesn't support minimum required OpenGL Version 3.3 or OpenGL ES 3.0");
 	}
