@@ -49,6 +49,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../renderer/RenderCommon.h"
 
 
+//GK: Win 7 compatibility hack. Re-declare the HANDLE DPI_AWARENESS_CONTEXT in order to avoid issues with older SDK's
+//Also change the name in order to avoid redefinition errors
+DECLARE_HANDLE(BFA_DPI_AWARENESS_CONTEXT);
+typedef HRESULT(WINAPI* SetProcessDPIAwarenessContext_t)(BFA_DPI_AWARENESS_CONTEXT value);
 
 
 idCVar r_useOpenGLProfile( "r_useOpenGLProfile", "2", CVAR_INTEGER, "0 = OpenGL 4.5 no profile, 1 = OpenGL 4.5 compatibility profile, 2 = OpenGL 4.5 core profile", 0, 2 );
@@ -1467,7 +1471,16 @@ bool GLimp_Init( glimpParms_t parms )
 					parms.multiSamples, parms.stereo, parms.fullScreen );
 #endif
 
+	HMODULE hShell = LoadLibrary("user32.dll");
+	if (hShell) {
+		SetProcessDPIAwarenessContext_t SetProcessDpiAwarenessContext = (SetProcessDPIAwarenessContext_t)GetProcAddress(hShell, "SetProcessDpiAwarenessContext");
+		if (SetProcessDpiAwarenessContext) {
+
+			SetProcessDpiAwarenessContext((BFA_DPI_AWARENESS_CONTEXT)-4); //DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+		}
+	} else {
 	SetProcessDPIAware();
+	}
 					
 	// check our desktop attributes
 	hDC = GetDC( GetDesktopWindow() );
