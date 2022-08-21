@@ -28,8 +28,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#pragma hdrstop
 #include "precompiled.h"
+#pragma hdrstop
 
 #include "RenderCommon.h"
 
@@ -55,7 +55,7 @@ glconfig_t	glConfig;
 
 idCVar r_requestStereoPixelFormat( "r_requestStereoPixelFormat", "1", CVAR_RENDERER, "Ask for a stereo GL pixel format on startup" );
 #ifdef _DEBUG
-idCVar r_debugContext("r_debugContext", "1", CVAR_RENDERER, "Enable various levels of context debug.");
+idCVar r_debugContext("r_debugContext", "5", CVAR_RENDERER, "Enable various levels of context debug.");
 #else
 idCVar r_debugContext( "r_debugContext", "0", CVAR_RENDERER, "Enable various levels of context debug." );
 #endif
