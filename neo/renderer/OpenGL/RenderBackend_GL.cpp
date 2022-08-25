@@ -49,6 +49,10 @@ idCVar stereoRender_warpTargetFraction( "stereoRender_warpTargetFraction", "1.0"
 idCVar r_showSwapBuffers( "r_showSwapBuffers", "0", CVAR_BOOL, "Show timings from GL_BlockingSwapBuffers" );
 idCVar r_syncEveryFrame( "r_syncEveryFrame", "1", CVAR_BOOL, "Don't let the GPU buffer execution past swapbuffers" );
 
+//GK: Begin
+idCVar r_showGLExt("r_showGLExt", "0", CVAR_RENDERER | CVAR_BOOL, "Shows the OpenGL Extensions on the logfile");
+//GK: End
+
 extern idCVar r_oldGLSLVersion;
 
 static int		swapIndex;		// 0 or 1 into renderSync
@@ -479,29 +483,31 @@ void idRenderBackend::Init()
 	idLib::Printf( "OpenGL Vendor    : %s\n", glConfig.vendor_string );
 	idLib::Printf( "OpenGL Renderer  : %s\n", glConfig.renderer_string );
 	idLib::Printf( "OpenGL GLSL      : %1.1f\n", glslVersion );
-	idLib::Printf( "OpenGL Extensions: ");
-	//GK: The number of extensions is ridiculusly long the idLib::Print can't output all of it
-	// therefor print it one by one.
+	if (r_showGLExt.GetBool()) {
+		idLib::Printf("OpenGL Extensions: ");
+		//GK: The number of extensions is ridiculusly long the idLib::Print can't output all of it
+		// therefor print it one by one.
 
-	// As of OpenGL 3.2, glGetStringi is required to obtain the available extensions
-	//glGetStringi = ( PFNGLGETSTRINGIPROC )GLimp_ExtensionPointer( "glGetStringi" );
+		// As of OpenGL 3.2, glGetStringi is required to obtain the available extensions
+		//glGetStringi = ( PFNGLGETSTRINGIPROC )GLimp_ExtensionPointer( "glGetStringi" );
 
-	// Build the extensions string
-	GLint numExtensions;
-	glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
-	//extensions_string.Clear();
-	for (int i = 0; i < numExtensions; i++)
-	{
-		//extensions_string.Append((const char*)glGetStringi(GL_EXTENSIONS, i));
-		idLib::Printf("%s", (const char*)glGetStringi(GL_EXTENSIONS, i));
-		// the now deprecated glGetString method usaed to create a single string with each extension separated by a space
-		if (i < numExtensions - 1)
+		// Build the extensions string
+		GLint numExtensions;
+		glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
+		//extensions_string.Clear();
+		for (int i = 0; i < numExtensions; i++)
 		{
-			idLib::Printf(" ");
-			//extensions_string.Append(' ');
+			//extensions_string.Append((const char*)glGetStringi(GL_EXTENSIONS, i));
+			idLib::Printf("%s", (const char*)glGetStringi(GL_EXTENSIONS, i));
+			// the now deprecated glGetString method usaed to create a single string with each extension separated by a space
+			if (i < numExtensions - 1)
+			{
+				idLib::Printf(" ");
+				//extensions_string.Append(' ');
+			}
 		}
+		idLib::Printf("\n");
 	}
-	idLib::Printf("\n");
 	if (glslVersion < 3.0f) { //GK: GLSL Version HACK. After GLSL 1.50 (GL 3.2) GLSL and GL Versions come in sync so there is no GLSL 3.00 but there is 3.00 es
 		idLib::FatalError("System doesn't support minimum required OpenGL Version 3.3 or OpenGL ES 3.0");
 	}
