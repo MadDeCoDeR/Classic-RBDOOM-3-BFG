@@ -363,7 +363,9 @@ R_PointToAngle
 			}
 		}
 	}
-	//return 0;
+#ifndef _MSC_VER
+	return 0;
+#endif
 }
 
 

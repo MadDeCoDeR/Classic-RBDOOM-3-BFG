@@ -392,7 +392,9 @@ ID_INLINE float idCompiler::Divide( float numerator, float denominator )
 	if( denominator == 0 )
 	{
 		Error( "Divide by zero" );
-		//return 0;
+#ifndef _MSC_VER
+		return 0;
+#endif
 	}
 	
 	return numerator / denominator;

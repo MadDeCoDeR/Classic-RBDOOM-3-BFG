@@ -534,8 +534,9 @@ P_LookForPlayers
 	actor->target = player->mo;
 	return true;
     }
-
-    //return false;
+#ifndef _MSC_VER
+    return false;
+#endif
 }
 
 

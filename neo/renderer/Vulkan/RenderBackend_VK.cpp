@@ -886,8 +886,9 @@ static VkFormat ChooseSupportedFormat( VkFormat* formats, int numFormats, VkImag
 	}
 	
 	idLib::FatalError( "Failed to find a supported format." );
-	
-//	return VK_FORMAT_UNDEFINED;
+#ifndef _MSC_VER
+	return VK_FORMAT_UNDEFINED;
+#endif
 }
 
 /*

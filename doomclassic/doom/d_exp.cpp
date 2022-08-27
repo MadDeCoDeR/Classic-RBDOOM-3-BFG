@@ -294,7 +294,9 @@ char* getFinalText(char* value)
 		for (int j = 0; j < 24; j++) {
 			if (!idStr::Icmp(mval[j].name, value)) {
 				return *mval[j].var;
-				//found = true;
+#ifndef _MSC_VER
+				found = true;
+#endif
 				break;
 			}
 		}
