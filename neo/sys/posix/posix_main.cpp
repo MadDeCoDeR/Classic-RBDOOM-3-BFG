@@ -501,7 +501,7 @@ const char* Sys_DefaultBasePath()
 	for (int i = 0; i < 3; i++) {
 		foundPath = findFile(basePaths[i].c_str(), "_common.resources");
 		
-		if (stat(foundPath.c_str(), &commonStat) >= 0) {
+		if (foundPath.rfind("_common.resources") != std::string::npos) {
 			break;
 		}
 	}
