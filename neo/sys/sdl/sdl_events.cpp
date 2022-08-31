@@ -1339,6 +1339,10 @@ sysEvent_t Sys_GetEvent()
 			}
 			return res;
 			break;
+		//GK: Steam Deck Hack: For some reason Steam Deck spams these two events
+		case SDL_CONTROLLERDEVICEADDED:
+		case SDL_CONTROLLERDEVICEREMAPPED:
+			break;
 #else
 			// WM0110
 			// NOTE: it seems that the key bindings for the GUI and for the game are
