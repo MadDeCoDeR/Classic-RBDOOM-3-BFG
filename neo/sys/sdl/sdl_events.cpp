@@ -1332,7 +1332,7 @@ sysEvent_t Sys_GetEvent()
 			joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], res.evValue2));
 
 			if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] == ev.cbutton.state) {
-				res = no_more_events;
+				continue;
 			}
 			else {
 				buttonStates[controllerButtonRemap[ev.cbutton.button][0]] = ev.cbutton.state;
