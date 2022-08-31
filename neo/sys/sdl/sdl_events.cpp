@@ -1325,18 +1325,19 @@ sysEvent_t Sys_GetEvent()
 				{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
 			};
 
-			/*if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] == ev.cbutton.state) {
-				continue;
-			}
-			else {*/
-				buttonStates[controllerButtonRemap[ev.cbutton.button][0]] = ev.cbutton.state;
-				res.evType = SE_KEY;
-				res.evValue = controllerButtonRemap[ev.cbutton.button][0];
-				res.evValue2 = ev.cbutton.state == SDL_PRESSED ? 1 : 0;
+			res.evType = SE_KEY;
+			res.evValue = controllerButtonRemap[ev.cbutton.button][0];
+			res.evValue2 = ev.cbutton.state == SDL_PRESSED ? 1 : 0;
 
-				joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], res.evValue2));
-				return res;
-			//}
+			joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], res.evValue2));
+
+			if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] == ev.cbutton.state) {
+				res = no_more_events;
+			}
+			else {
+				buttonStates[controllerButtonRemap[ev.cbutton.button][0]] = ev.cbutton.state;
+			}
+			return res;
 			break;
 #else
 			// WM0110
