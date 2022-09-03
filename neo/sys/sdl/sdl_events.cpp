@@ -1300,6 +1300,9 @@ sysEvent_t Sys_GetEvent()
 			// } else {
 			// 	continue;
 			// }
+			if (res.evValue2 == 0) {
+				continue;
+			}
 			return res;
 
 		case SDL_CONTROLLERBUTTONDOWN:
