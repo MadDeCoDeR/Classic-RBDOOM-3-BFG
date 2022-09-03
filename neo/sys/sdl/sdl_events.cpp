@@ -154,6 +154,7 @@ static SDL_GameController* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the S
 static SDL_Haptic *haptic[MAX_JOYSTICKS] = {NULL}; //GK: Joystick rumble support
 static int registeredControllers = 0;
 static int prevJoyAxis = K_NONE;
+static bool stopEventPosting = false;
 #endif
 static bool joyThreadKill = false;
 int SDL_joystick_has_hat = 0;
@@ -1277,6 +1278,7 @@ sysEvent_t Sys_GetEvent()
 				}
 				prevJoyAxis = res.evValue;
 				res.evValue2 = 1;
+				stopEventPosting = false;
 			}
 
 			//GK: In order to keep the consistency in game always poll
@@ -1300,8 +1302,11 @@ sysEvent_t Sys_GetEvent()
 			// } else {
 			// 	continue;
 			// }
-			if (res.evValue2 == 0) {
+			if (stopEventPosting) {
 				continue;
+			}
+			if (res.evValue2 == 0 && stopEventPosting == false) {
+				stopEventPosting = true;
 			}
 			return res;
 
