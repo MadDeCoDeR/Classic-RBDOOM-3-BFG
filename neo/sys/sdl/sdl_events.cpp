@@ -1301,7 +1301,6 @@ sysEvent_t Sys_GetEvent()
 			// 	continue;
 			// }
 			return res;
-			break;
 
 		case SDL_CONTROLLERBUTTONDOWN:
 		case SDL_CONTROLLERBUTTONUP:
@@ -1338,11 +1337,10 @@ sysEvent_t Sys_GetEvent()
 				buttonStates[controllerButtonRemap[ev.cbutton.button][0]] = ev.cbutton.state;
 			}
 			return res;
-			break;
 		//GK: Steam Deck Hack: For some reason Steam Deck spams these two events
 		case SDL_CONTROLLERDEVICEADDED:
 		case SDL_CONTROLLERDEVICEREMAPPED:
-			break;
+			continue;
 #else
 			// WM0110
 			// NOTE: it seems that the key bindings for the GUI and for the game are
@@ -2009,6 +2007,7 @@ int JoystickSamplingThread(void* data){
 	SDL_GameController* controller = NULL;
 	int inactive = 0;
 	int available = -1;
+	bool alreadyConnected = false;
 	for( int i = 0; i < MAX_JOYSTICKS; ++i )
 	{
 		if( SDL_IsGameController( i ) )
@@ -2020,19 +2019,23 @@ int JoystickSamplingThread(void* data){
 					available = i;
 				}
 				nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
-				gcontroller[i]=controller;
-				if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
-				haptic[i] = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller[i])); //GK: Make sure it mounted to the right controller
-				if(haptic[i]){
-					if(SDL_HapticRumbleInit( haptic[i] ) < 0){
-						//common->Printf("Failed to rumble\n");
+				if (!gcontroller[i]) {
+					gcontroller[i]=controller;
+					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
+					haptic[i] = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller[i])); //GK: Make sure it mounted to the right controller
+					if(haptic[i]){
+						if(SDL_HapticRumbleInit( haptic[i] ) < 0){
+							//common->Printf("Failed to rumble\n");
+						}
+					if ((SDL_HapticQuery(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
+						SDL_HapticClose(haptic[i]);
+						haptic[i] = NULL;
+						// common->Printf("Failed to find rumble effect\n");
 					}
-				if ((SDL_HapticQuery(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
-					SDL_HapticClose(haptic[i]);
-					haptic[i] = NULL;
-					// common->Printf("Failed to find rumble effect\n");
-				}
-				common->Printf("Found haptic Device %d\n",SDL_HapticNumEffects(haptic[i]));
+					common->Printf("Found haptic Device %d\n",SDL_HapticNumEffects(haptic[i]));
+					}
+				} else {
+					alreadyConnected = true;
 				}
 			}
 					continue;
@@ -2058,15 +2061,17 @@ int JoystickSamplingThread(void* data){
 					continue;
 		}
 	}
-	//GK: Enable controller layout if there is one controller connected
-	registeredControllers = 4-inactive;
-	if (registeredControllers > 0) {
-		if (session->GetSignInManager().GetMasterLocalUser() != NULL) {
-			idLocalUserWin* user = dynamic_cast<idLocalUserWin*>(session->GetSignInManager().GetMasterLocalUser());
-			user->SetInputDevice(available);
-		}
-		else {
-			defaultAvailable = available;
+	if (!alreadyConnected) {
+		//GK: Enable controller layout if there is one controller connected
+		registeredControllers = 4-inactive;
+		if (registeredControllers > 0) {
+			if (session->GetSignInManager().GetMasterLocalUser() != NULL) {
+				idLocalUserWin* user = dynamic_cast<idLocalUserWin*>(session->GetSignInManager().GetMasterLocalUser());
+				user->SetInputDevice(available);
+			}
+			else {
+				defaultAvailable = available;
+			}
 		}
 	}
 	/*idLib::joystick = inactive >= 4 ? false : true;*/
