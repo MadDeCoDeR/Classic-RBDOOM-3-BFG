@@ -1248,34 +1248,33 @@ sysEvent_t Sys_GetEvent()
 
 		case SDL_CONTROLLERAXISMOTION:
 			res.evType = SE_KEY;
-			res.evValue = prevJoyAxis;
+			//res.evValue = prevJoyAxis;
 			res.evValue2 = 0;
-			if (abs(ev.caxis.value) > range) {
-				switch (ev.caxis.axis) {
-				case SDL_CONTROLLER_AXIS_LEFTX:
-					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_RIGHT : K_JOY_STICK1_LEFT;
-					break;
-				case SDL_CONTROLLER_AXIS_LEFTY:
-					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_DOWN : K_JOY_STICK1_UP;
-					break;
-				case SDL_CONTROLLER_AXIS_RIGHTX:
-					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_RIGHT : K_JOY_STICK2_LEFT;
-					break;
-				case SDL_CONTROLLER_AXIS_RIGHTY:
-					res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_DOWN : K_JOY_STICK2_UP;
-					break;
-				case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-					if (ev.caxis.value > range) {
-						res.evValue = K_JOY_TRIGGER1;
-					}
-					break;
-				case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-					if (ev.caxis.value > range) {
-						res.evValue = K_JOY_TRIGGER2;
-					}
-					break;
+			switch (ev.caxis.axis) {
+					case SDL_CONTROLLER_AXIS_LEFTX:
+						res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_RIGHT : K_JOY_STICK1_LEFT;
+						break;
+					case SDL_CONTROLLER_AXIS_LEFTY:
+						res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_DOWN : K_JOY_STICK1_UP;
+						break;
+					case SDL_CONTROLLER_AXIS_RIGHTX:
+						res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_RIGHT : K_JOY_STICK2_LEFT;
+						break;
+					case SDL_CONTROLLER_AXIS_RIGHTY:
+						res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_DOWN : K_JOY_STICK2_UP;
+						break;
+					case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
+						if (ev.caxis.value > range) {
+							res.evValue = K_JOY_TRIGGER1;
+						}
+						break;
+					case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
+						if (ev.caxis.value > range) {
+							res.evValue = K_JOY_TRIGGER2;
+						}
+						break;
 				}
-				prevJoyAxis = res.evValue;
+			if (abs(ev.caxis.value) > range) {
 				res.evValue2 = 1;
 			}
 
