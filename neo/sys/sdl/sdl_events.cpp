@@ -817,7 +817,7 @@ sysEvent_t Sys_GetEvent()
 	
 	SDL_Event ev;
 	int key;
-	int range = 32755;
+	int range = 16384;
 	
 	// when this is returned, it's assumed that there are no more events!
 	static const sysEvent_t no_more_events = { SE_NONE, 0, 0, 0, NULL };
