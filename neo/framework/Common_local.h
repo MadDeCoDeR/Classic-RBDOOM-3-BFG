@@ -287,6 +287,10 @@ public:
 		return currentGame;
 	}
 	virtual void				SwitchToGame( currentGame_t newGame );
+	virtual bool	IsPlayingDoomClassic() const
+	{
+		return GetCurrentGame() != DOOM3_BFG;
+	}
 #endif
 	// RB end
 	virtual idUserCmdMgr& GetUCmdMgr()
@@ -663,10 +667,6 @@ private:
 	// Doom classic support
 	void	RunDoomClassicFrame();
 	void	RenderDoomClassic();
-	bool	IsPlayingDoomClassic() const
-	{
-		return GetCurrentGame() != DOOM3_BFG;
-	}
 	void	PerformGameSwitch();
 #endif
 	// RB end

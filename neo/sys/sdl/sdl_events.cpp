@@ -1299,7 +1299,7 @@ sysEvent_t Sys_GetEvent()
 			// } else {
 			// 	continue;
 			// }
-			if (buttonStates[res.evValue] == res.evValue2) {
+			if (buttonStates[res.evValue] == res.evValue2 || (game && (!game->Shell_IsActive() || !game->IsPDAOpen())) || (common->IsPlayingDoomClassic() && ev.caxis.axis > SDL_CONTROLLER_AXIS_LEFTY)) {
 				continue;
 			}
 			buttonStates[res.evValue] = res.evValue2;

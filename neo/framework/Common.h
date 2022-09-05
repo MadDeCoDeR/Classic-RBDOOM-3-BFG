@@ -345,6 +345,7 @@ public:
 #if defined(USE_DOOMCLASSIC)
 	virtual currentGame_t		GetCurrentGame() const = 0;
 	virtual void				SwitchToGame( currentGame_t newGame ) = 0;
+	virtual bool	IsPlayingDoomClassic() const = 0;
 #endif
 	// RB end
 	//GK: Neither ucmdMgr
