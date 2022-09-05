@@ -1248,7 +1248,6 @@ sysEvent_t Sys_GetEvent()
 
 		case SDL_CONTROLLERAXISMOTION:
 			res.evType = SE_KEY;
-			//res.evValue = prevJoyAxis;
 			res.evValue2 = 0;
 			switch (ev.caxis.axis) {
 					case SDL_CONTROLLER_AXIS_LEFTX:
@@ -1280,25 +1279,6 @@ sysEvent_t Sys_GetEvent()
 
 			//GK: In order to keep the consistency in game always poll
 			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
-			//GK: Clear the existing button states
-			// if (res.evValue == K_NONE) {
-			// 	for (int i = K_JOY_STICK1_UP; i < K_JOY_DPAD_UP; i++) {
-			// 		//There was one pressed but now is none so unpress it
-			// 		if (buttonStates[i] != 0) {
-			// 			res.evValue = i;
-			// 		}
-			// 	}
-			// 	if (res.evValue == K_NONE) {
-			// 		res = no_more_events;
-			// 		return res;
-			// 	}
-			// }
-			// if (buttonStates[res.evValue] != ev.caxis.value) {
-			// 	buttonStates[res.evValue] = ev.caxis.value;
-			// 	return res;
-			// } else {
-			// 	continue;
-			// }
 			if (buttonStates[res.evValue] == res.evValue2 ) {
 				continue;
 			}
