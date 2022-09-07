@@ -28,6 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "precompiled.h"
 #include "../doomclassic/doom/doomlib.h"
+#include "../doomclassic/doom/globaldata.h"
 #pragma hdrstop
 
 idCVar joy_mergedThreshold( "joy_mergedThreshold", "1", CVAR_BOOL | CVAR_ARCHIVE, "If the thresholds aren't merged, you drift more off center" );
@@ -1167,7 +1168,12 @@ void idUsercmdGenLocal::MakeCurrent()
 	if( !Inhibited() )
 	{
 		int TPButtonState = ButtonState(UB_THIRDPERSON);
-		if (oldTPButtonState != TPButtonState) {
+		Globals* gl = (Globals*)DoomLib::GetGlobalData(0);
+		bool inClassicDemo = false;
+		if (gl != NULL) {
+			inClassicDemo = gl->demoplayback || gl->demorecording;
+		}
+		if (oldTPButtonState != TPButtonState && !inClassicDemo) {
 			in_photomode.SetBool(TPButtonState ? !in_photomode.GetBool() : in_photomode.GetBool());
 			if (TPButtonState) {
 				if (in_photomode.GetBool()) {
