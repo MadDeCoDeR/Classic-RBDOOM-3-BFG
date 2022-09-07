@@ -1728,7 +1728,7 @@ void Sys_ClearEvents()
 		
 	kbd_polls.SetNum( 0 );
 	mouse_polls.SetNum( 0 );
-	joystick_polls.SetNum( 0 );
+	joystick_polls.Clear();
 }
 
 /*
@@ -1927,7 +1927,7 @@ void Sys_EndJoystickInputEvents()
 {
 	// Empty the joystick event container. This is called after
 	// all joystick events have been read using Sys_ReturnJoystickInputEvent()
-	joystick_polls.SetNum( 0 );
+	joystick_polls.Clear();
 }
 
 bool Sys_hasConnectedController() {
