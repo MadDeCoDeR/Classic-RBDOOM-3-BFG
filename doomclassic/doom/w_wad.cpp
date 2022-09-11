@@ -1458,7 +1458,7 @@ void MasterList() {
 
 	idFile* master = fileSystem->OpenFileWrite("wads/MASTERLEVELS.WAD");
 	master->Write("PWAD", 4);
-	idFileList* masterList = fileSystem->ListFiles("wads/master", "wad");
+	idFileList* masterList = fileSystem->ListFiles("wads/master", "wad|WAD");
 	if (masterList->GetNumFiles() == 0) {
 		ClearMaster(master);
 		return;
@@ -1665,7 +1665,7 @@ void MasterExport() {
 	//int count2 = 1;
 	char* filename = new char[MAX_FILENAME];
 	const char* file[3];
-	file[0] = "wads/MASTERLEVELS.wad";
+	file[0] = "wads/MASTERLEVELS.WAD";
 	file[1] = "wads/mlbls.wad";
 	file[2] = "wads/ua.wad";
 	std::vector <int> fofs;
