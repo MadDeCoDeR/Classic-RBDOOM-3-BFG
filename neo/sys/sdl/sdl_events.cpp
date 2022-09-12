@@ -662,8 +662,9 @@ void Sys_InitInput()
 {
 	int numJoysticks, i;
 	
-	kbd_polls.SetGranularity( 64 );
-	mouse_polls.SetGranularity( 64 );
+	kbd_polls.SetGranularity( 256 );
+	mouse_polls.SetGranularity( 256 );
+	joystick_polls.SetGranularity( 42 );
 	
 	memset( buttonStates, 0, sizeof( buttonStates ) );
 	
