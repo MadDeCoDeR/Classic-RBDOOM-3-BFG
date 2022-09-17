@@ -120,7 +120,7 @@ jobs:
       working-directory: ${{github.workspace}}
       run: |
         mv ./build/DoomBFA DoomBFA
-        rm -f ./build
+        rm -d ./build
         zip -m -r linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Linux Artifact to release
       uses: actions/upload-release-asset@v1
@@ -143,7 +143,7 @@ jobs:
       run: |
         mv ./build/${{env.BUILD_TYPE}}/* .
         mv ./build/ffmpeg/* .
-        rm -rf ./build
+        rm -d -rf ./build
         zip -m -r windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Windows Artifact to release
       uses: actions/upload-release-asset@v1
