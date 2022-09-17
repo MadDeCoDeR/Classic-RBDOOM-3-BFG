@@ -6,14 +6,10 @@
     "libpng",
     "libjpeg-turbo",
     "glew",
-    "rapidjson"
-  ],
-  "default-features": ["xaudio2"],
-  "features": {
-    "xaudio2": {
-      "description": "Adds support for XAudio 2.9",
-      "supports": "windows & !linux & !osx & !android",
-      "dependencies": [ "xaudio2redist" ]
+    "rapidjson",
+    {
+      "name": "xaudio2redist",
+      "platform": "windows"
     }
-  }
+  ]
 }
