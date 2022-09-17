@@ -41,7 +41,7 @@ jobs:
 
     - name: Build
       # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --parallel=4
+      run: cmake --build ${{github.workspace}}/build --parallel=8
       
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
