@@ -101,7 +101,7 @@ jobs:
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H-%M-%s')"
     - name: Download artifacts
-      uses: actions/download-artifacts@v3
+      uses: actions/download-artifact@v3
       with:
         path: artifacts
     - name: Make release
