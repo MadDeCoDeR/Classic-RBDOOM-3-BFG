@@ -12,7 +12,7 @@
   "features": {
     "xaudio2": {
       "description": "Adds support for XAudio 2.9",
-      "supports": "windows",
+      "supports": "windows & !linux & !osx & !android",
       "dependencies": [ "xaudio2redist" ]
     }
   }
