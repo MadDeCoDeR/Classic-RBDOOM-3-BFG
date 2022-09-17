@@ -94,16 +94,12 @@ jobs:
           ./build/ffmpeg/*.dll
           ./base/*
   make-release:
-    if: ${{ success() }} 
+    needs: [ linux-build, windows-build ]
     runs-on: ubuntu-latest
     steps:
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H-%M-%s')"
-    - name: Download artifacts
-      uses: actions/download-artifact@v3
-      with:
-        path: artifacts
     - name: Make release
       id: create_release
       uses: actions/create-release@v1
@@ -116,6 +112,10 @@ jobs:
           latest build
         draft: false
         prerelease: true
+    - name: Download linux artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: linux-${{env.VERSION}}-retail
     - name: Upload Linux Artifact to release
       uses: actions/upload-release-asset@v1
       env:
@@ -125,6 +125,10 @@ jobs:
         asset_path: ./artifacts/linux-${{env.VERSION}}-retail.zip
         asset_name: linux-${{env.VERSION}}-retail.zip
         asset_content_type: application/zip
+    - name: Download windows artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: windows-${{env.VERSION}}-retail
     - name: Upload Windows Artifact to release
       uses: actions/upload-release-asset@v1
       env:
