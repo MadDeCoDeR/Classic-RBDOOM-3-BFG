@@ -27,10 +27,6 @@
           "type": "BOOL",
           "value": "ON"
         },
-        "CMAKE_TOOLCHAIN_FILE": {
-          "type": "PATH",
-          "value": "..\\..\\vcpkg\\scripts\\buildSystems\\vcpkg.cmake"
-        },
         "USE_SYSTEM_ZLIB": {
           "type": "BOOL",
           "value": "ON"
