@@ -21,6 +21,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
     
     - name: Set up GCC
       uses: egor-tensin/setup-gcc@v1
@@ -57,6 +59,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
     
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1.1
