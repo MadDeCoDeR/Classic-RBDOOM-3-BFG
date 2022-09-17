@@ -94,7 +94,7 @@ jobs:
           ./build/ffmpeg/*.dll
           ./base/*
   make-release:
-    if: ${{needs.linux-build.result == 'success' && needs.windows-build.result == 'success'}} 
+    if: ${{ success() }} 
     runs-on: ubuntu-latest
     steps:
     - name: Get current date
