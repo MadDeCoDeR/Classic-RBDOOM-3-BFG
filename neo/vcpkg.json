@@ -5,7 +5,10 @@
     "zlib",
     "libpng",
     "libjpeg-turbo",
-    "glew",
+    {
+      "name": "glew",
+      "platform": "windows"
+    },
     "rapidjson",
     {
       "name": "xaudio2redist",
