@@ -1,7 +1,7 @@
 name: CMake
 
 on:
-  push
+  push:
     # paths:
     # - .github/workflows/cmake.yml
   
@@ -119,8 +119,8 @@ jobs:
     - name: Zip linux artifact files
       working-directory: ${{github.workspace}}
       run: |
-      mv build/DoomBFA DoomBFA
-      rm build
+      mv ./build/DoomBFA DoomBFA
+      rm ./build
       zip -m -r linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Linux Artifact to release
       uses: actions/upload-release-asset@v1
@@ -141,9 +141,9 @@ jobs:
     - name: Zip Windows artifact files
       working-directory: ${{github.workspace}}
       run: |
-      mv build/${{env.BUILD_TYPE}}/* .
-      mv build/ffmpeg/* .
-      rm -rf build
+      mv ./build/${{env.BUILD_TYPE}}/* .
+      mv ./build/ffmpeg/* .
+      rm -rf ./build
       zip -m -r windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Windows Artifact to release
       uses: actions/upload-release-asset@v1
