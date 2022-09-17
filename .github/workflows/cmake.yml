@@ -116,6 +116,9 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: linux-${{env.VERSION}}-retail
+    - name: Display structure of downloaded files\
+      working-directory: ${{github.workspace}}
+      run: ls -a
     - name: Upload Linux Artifact to release
       uses: actions/upload-release-asset@v1
       env:
