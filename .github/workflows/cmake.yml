@@ -48,7 +48,7 @@ jobs:
       with:
         name: linux-${{env.VERSION}}-retail
         path: |
-          ./build/*
+          ./build/DoomBFA
           ./base/*
   windows-build:
     # The CMake configure and build commands are platform agnostic and should work equally
@@ -89,7 +89,8 @@ jobs:
       with:
         name: windows-${{env.VERSION}}-retail
         path: |
-          ./build/Retail/*
+          ./build/${{env.BUILD_TYPE}}/DoomBFA.exe
+          ./build/${{env.BUILD_TYPE}}/*.dll
           ./build/ffmpeg/*.dll
           ./base/*
       
