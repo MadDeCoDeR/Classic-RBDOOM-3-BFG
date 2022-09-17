@@ -2,8 +2,8 @@ name: CMake
 
 on:
   push:
-    paths:
-    - .github/workflows/cmake.yml
+    # paths:
+    # - .github/workflows/cmake.yml
   
 
 env:
@@ -46,7 +46,7 @@ jobs:
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: linux-${{env.VERSION}}-retail
+        name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}
         path: |
           ./build/DoomBFA
           ./base/*
@@ -87,7 +87,7 @@ jobs:
     - name: Archive production artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: windows-${{env.VERSION}}-retail
+        name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}
         path: |
           ./build/${{env.BUILD_TYPE}}/DoomBFA.exe
           ./build/${{env.BUILD_TYPE}}/*.dll
@@ -115,35 +115,42 @@ jobs:
     - name: Download linux artifact
       uses: actions/download-artifact@v3
       with:
-        name: linux-${{env.VERSION}}-retail
+        name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}
     - name: Zip linux artifact files
       working-directory: ${{github.workspace}}
-      run: zip -m -r linux-${{env.VERSION}}-retail.zip .
+      run: |
+      mv build/DoomBFA DoomBFA
+      rm build
+      zip -m -r linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Linux Artifact to release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ${{github.workspace}}/linux-${{env.VERSION}}-retail.zip
-        asset_name: linux-${{env.VERSION}}-retail.zip
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{github.workspace}}/linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
+        asset_name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
         asset_content_type: application/zip
     - name: Delete linux artifact zip file
       working-directory: ${{github.workspace}}
-      run: rm linux-${{env.VERSION}}-retail.zip
+      run: rm linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
     - name: Download windows artifact
       uses: actions/download-artifact@v3
       with:
-        name: windows-${{env.VERSION}}-retail
-    - name: Zip linux artifact files
+        name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}
+    - name: Zip Windows artifact files
       working-directory: ${{github.workspace}}
-      run: zip -m -r windows-${{env.VERSION}}-retail.zip .
+      run: |
+      mv build/${{env.BUILD_TYPE}}/* .
+      mv build/ffmpeg/* .
+      rm -rf build
+      zip -m -r windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Windows Artifact to release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ${{github.workspace}}/windows-${{env.VERSION}}-retail.zip
-        asset_name: windows-${{env.VERSION}}-retail.zip
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{github.workspace}}/windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
+        asset_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
         asset_content_type: application/zip
