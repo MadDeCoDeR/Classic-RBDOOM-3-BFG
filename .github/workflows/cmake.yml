@@ -116,28 +116,34 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: linux-${{env.VERSION}}-retail
-    - name: Display structure of downloaded files\
+    - name: Zip linux artifact files
       working-directory: ${{github.workspace}}
-      run: ls -a
+      run: zip -m -r linux-${{env.VERSION}}-retail.zip .
     - name: Upload Linux Artifact to release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ${{github.workspace}}
+        asset_path: ${{github.workspace}}/
         asset_name: linux-${{env.VERSION}}-retail.zip
         asset_content_type: application/zip
+    - name: Delete linux artifact zip file
+      working-directory: ${{github.workspace}}
+      run: rm linux-${{env.VERSION}}-retail.zip
     - name: Download windows artifact
       uses: actions/download-artifact@v3
       with:
         name: windows-${{env.VERSION}}-retail
+    - name: Zip linux artifact files
+      working-directory: ${{github.workspace}}
+      run: zip -m -r windows-${{env.VERSION}}-retail.zip .
     - name: Upload Windows Artifact to release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ${{github.workspace}}
+        asset_path: ${{github.workspace}}/windows-${{env.VERSION}}-retail.zip
         asset_name: windows-${{env.VERSION}}-retail.zip
         asset_content_type: application/zip
