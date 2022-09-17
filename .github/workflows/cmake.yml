@@ -93,4 +93,44 @@ jobs:
           ./build/${{env.BUILD_TYPE}}/*.dll
           ./build/ffmpeg/*.dll
           ./base/*
-      
+  make-release:
+    if: ${{needs.linux-build.result == 'success' && needs.windows-build.result == 'success'}} 
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H-%M-%s')"
+    - name: Download artifacts
+      uses: actions/download-artifacts@v3
+      with:
+        path: artifacts
+    - name: Make release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: nightly-${{ steps.date.outputs.date }}
+        release_name: DOOM BFA Nigthly ${{ steps.date.outputs.date }}
+        body: |
+          latest build
+        draft: false
+        prerelease: true
+    - name: Upload Linux Artifact to release
+      uses: actions/upload-release-asset@v1
+       env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./artifacts/linux-${{env.VERSION}}-retail.zip
+        asset_name: linux-${{env.VERSION}}-retail.zip
+        asset_content_type: application/zip
+    - name: Upload Windows Artifact to release
+      uses: actions/upload-release-asset@v1
+       env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./artifacts/windows-${{env.VERSION}}-retail.zip
+        asset_name: windows-${{env.VERSION}}-retail.zip
+        asset_content_type: application/zip
