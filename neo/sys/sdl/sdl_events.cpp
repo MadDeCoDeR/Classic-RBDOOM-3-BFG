@@ -820,6 +820,8 @@ sysEvent_t Sys_GetEvent()
 	SDL_Event ev;
 	int key;
 	int range = 16384;
+	int axis = 0;
+	int percent;
 	
 	// when this is returned, it's assumed that there are no more events!
 	static const sysEvent_t no_more_events = { SE_NONE, 0, 0, 0, NULL };
@@ -1279,8 +1281,8 @@ sysEvent_t Sys_GetEvent()
 				res.evValue2 = 1;
 			}
 
-			int axis = ev.caxis.axis;
-			int percent = (ev.caxis.value * 16) / range;
+			axis = ev.caxis.axis;
+			percent = (ev.caxis.value * 16) / range;
 
 			if (joyAxis[axis] == percent) {
 				continue;
