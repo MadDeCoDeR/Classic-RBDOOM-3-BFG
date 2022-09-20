@@ -148,12 +148,12 @@ struct joystick_poll_t
 	}
 };
 static idList<joystick_poll_t> joystick_polls;
+static idList<int> joyAxis;
 SDL_Joystick* joy = NULL;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 static SDL_GameController* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
 static SDL_Haptic *haptic[MAX_JOYSTICKS] = {NULL}; //GK: Joystick rumble support
 static int registeredControllers = 0;
-static int prevJoyAxis = K_NONE;
 #endif
 static bool joyThreadKill = false;
 int SDL_joystick_has_hat = 0;
@@ -665,6 +665,7 @@ void Sys_InitInput()
 	kbd_polls.SetGranularity( 256 );
 	mouse_polls.SetGranularity( 256 );
 	joystick_polls.SetGranularity( 42 );
+	joyAxis.SetGranularity( 6 );
 	
 	memset( buttonStates, 0, sizeof( buttonStates ) );
 	
@@ -1278,8 +1279,15 @@ sysEvent_t Sys_GetEvent()
 				res.evValue2 = 1;
 			}
 
+			int axis = ev.caxis.axis;
+			int percent = (ev.caxis.value * 16) / range;
+
+			if (joyAxis[axis] == percent) {
+				continue;
+			}
+			joyAxis[axis] = percent;
 			//GK: In order to keep the consistency in game always poll
-			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
+			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, percent));
 			if (buttonStates[res.evValue] == res.evValue2 ) {
 				continue;
 			}
@@ -1312,12 +1320,11 @@ sysEvent_t Sys_GetEvent()
 			res.evValue = controllerButtonRemap[ev.cbutton.button][0];
 			res.evValue2 = ev.cbutton.state == SDL_PRESSED ? 1 : 0;
 
-			joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], res.evValue2));
-
 			if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] == ev.cbutton.state) {
 				continue;
 			}
 			else {
+				joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], res.evValue2));
 				buttonStates[controllerButtonRemap[ev.cbutton.button][0]] = ev.cbutton.state;
 			}
 			return res;
