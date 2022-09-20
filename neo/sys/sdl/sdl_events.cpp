@@ -148,7 +148,7 @@ struct joystick_poll_t
 	}
 };
 static idList<joystick_poll_t> joystick_polls;
-static idList<int> joyAxis;
+int joyAxis[6];
 SDL_Joystick* joy = NULL;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 static SDL_GameController* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
@@ -665,9 +665,9 @@ void Sys_InitInput()
 	kbd_polls.SetGranularity( 256 );
 	mouse_polls.SetGranularity( 256 );
 	joystick_polls.SetGranularity( 42 );
-	joyAxis.SetGranularity( 6 );
 	
 	memset( buttonStates, 0, sizeof( buttonStates ) );
+	memset( joyAxis, 0, sizeof( joyAxis ) );
 	
 #if !SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_EnableUNICODE( 1 );
@@ -697,6 +697,7 @@ void Sys_ShutdownInput()
 	joyThreadKill = true;
 	
 	memset( buttonStates, 0, sizeof( buttonStates ) );
+	memset( joyAxis, 0, sizeof( joyAxis ) );
 	
 	// Close any opened SDL Joystic
 	if( joy )
