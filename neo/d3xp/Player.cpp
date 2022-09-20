@@ -3388,7 +3388,7 @@ void idPlayer::UpdateHudStats( idMenuHandler_HUD* _hudManager )
 			UpdateHudWeapon();
 			inventory.weaponPulse = false;
 		}
-		
+
 		if (this->weapon.GetEntity()->renderEntity.gui[0] != NULL) {
 			if (pm_smartHUD.GetBool() && !pm_thirdPerson.GetBool()) {
 				hud_->HideAmmoCount();
@@ -3707,13 +3707,13 @@ void idPlayer::EnterCinematic()
 	}
 	
 	Hide();
-	DrawHUD(hudManager); //GK: Just in case the cinematic starts before the player's view
-	hud->setCinematic(true);
 	StopSound( SND_CHANNEL_PDA_AUDIO, false );
 	StopSound( SND_CHANNEL_PDA_VIDEO, false );
 	
 	if( hudManager )
 	{
+		DrawHUD(hudManager); //GK: Just in case the cinematic starts before the player's view
+		hud->setCinematic(true);
 		hudManager->SetRadioMessage( false );
 	}
 	physicsObj.SetLinearVelocity( vec3_origin );
