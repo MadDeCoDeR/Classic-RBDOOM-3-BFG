@@ -1282,6 +1282,8 @@ sysEvent_t Sys_GetEvent()
 				res.evValue2 = 1;
 			}
 
+			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
+
 			axis = ev.caxis.axis;
 			percent = (ev.caxis.value * 16) / range;
 
@@ -1290,7 +1292,6 @@ sysEvent_t Sys_GetEvent()
 			}
 			joyAxis[axis] = percent;
 			//GK: In order to keep the consistency in game always poll
-			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, percent));
 			if (buttonStates[res.evValue] == res.evValue2 ) {
 				continue;
 			}
@@ -1322,12 +1323,12 @@ sysEvent_t Sys_GetEvent()
 			res.evType = SE_KEY;
 			res.evValue = controllerButtonRemap[ev.cbutton.button][0];
 			res.evValue2 = ev.cbutton.state == SDL_PRESSED ? 1 : 0;
+			joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], res.evValue2));
 
 			if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] == ev.cbutton.state) {
 				continue;
 			}
 			else {
-				joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], res.evValue2));
 				buttonStates[controllerButtonRemap[ev.cbutton.button][0]] = ev.cbutton.state;
 			}
 			return res;
