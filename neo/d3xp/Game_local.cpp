@@ -171,7 +171,8 @@ Var_t g_vars[] =
 	{"pm_jumpheight",&pm_jumpheight},
 	{"pm_classicPose", &pm_classicPose},
 	{"cl_close", &cl_close},
-	{"g_damageKickEffect", &g_damageKickEffect}
+	{"g_damageKickEffect", &g_damageKickEffect},
+	{"pm_smartHUD", &pm_smartHUD}
 };
 /*
 ===========

@@ -1539,6 +1539,7 @@ public:
 			ADV_FIELD_VMFOV,
 			ADV_FIELD_FPS,
 			ADV_FIELD_LANG,
+			ADV_FIELD_SMHUD,
 			MAX_ADVANCED_FIELDS
 		};
 
@@ -1567,6 +1568,7 @@ public:
 		int originalVmfov;
 		int originalFPS;
 		idStr originalLang;
+		int originalSMHUD;
 
 		int AdjustOption(int currentValue, const int values[], int numValues, int adjustment);
 	};
@@ -1799,6 +1801,7 @@ public:
 	virtual void					ShowRespawnMessage(bool show) = 0;
 	virtual const char*				GetlocationName() = 0;
 	virtual void					SetShowSoulCubeOnLoad(bool show) = 0;
+	virtual void					HideAmmoCount() = 0;
 
 	// MULTIPLAYER
 
@@ -1942,6 +1945,7 @@ public:
 	virtual void					ShowNewItem( const char* name, const char* icon );
 	virtual void					UpdateFlashlight( idPlayer* player );
 	virtual void					UpdateChattingHud( idPlayer* player );
+	virtual void					HideAmmoCount();
 	virtual void					setCaption(idStr caption, idVec4 color, int priority, idStr shaderName);
 	virtual bool					hasCaption();
 	virtual void					clearCaption(idStr shaderName);

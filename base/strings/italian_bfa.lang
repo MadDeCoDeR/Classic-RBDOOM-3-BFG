@@ -44,6 +44,7 @@
 	"#str_auto_save_success" "Gioco salvato"
 	"#str_lang_menu"	"Lingua"
 	"#str_swf_tp_buton"	"Modalità foto"
+	"#str_smart_hud"	"HUD intelligente"
 // 	"#str_swf_custom_game" "Nome mod"
 // 	"#str_swf_start_map" "Prima mappa da caricare"
 }

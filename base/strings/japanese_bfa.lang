@@ -44,6 +44,7 @@
 	"#str_auto_save_success" "ゲームが保存されました"
 	"#str_lang_menu"	"言語"
 	"#str_swf_tp_buton"	"写真モード"
+	"#str_smart_hud"	"スマート HUD"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "最初にロードするマップ"
 }

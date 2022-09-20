@@ -113,6 +113,14 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	control->SetupEvents(2, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_LANG);
 	options->AddChild(control);
+
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TEXT);
+	control->SetLabel("#str_smart_hud"); //Smart HUD: Hide ammo count if it's visible on the weapon's gui
+	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SMHUD);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SMHUD);
+	options->AddChild(control);
 	
 	options->AddEventAction( WIDGET_EVENT_SCROLL_DOWN ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_DOWN_START_REPEATER, WIDGET_EVENT_SCROLL_DOWN ) );
 	options->AddEventAction( WIDGET_EVENT_SCROLL_UP ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_UP_START_REPEATER, WIDGET_EVENT_SCROLL_UP ) );
@@ -355,6 +363,7 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 	originalVmfov = game->GetCVarInteger("pm_vmfov");
 	originalFPS = com_showFPS.GetInteger();
 	originalLang = sys_lang.GetString();
+	originalSMHUD = game->GetCVarInteger("pm_smartHUD");
 }
 
 bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsRestartRequired() const
@@ -449,6 +458,11 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 		case ADV_FIELD_FPS:
 			com_showFPS.SetInteger(AdjustOption(com_showFPS.GetInteger(), specializedValues, specializedNumValues, adjustAmount));
 			break;
+		case ADV_FIELD_SMHUD:
+		{
+			game->SetCVarBool("pm_smartHUD", AdjustOption(game->GetCVarBool("pm_smartHUD"), genericValues, genericNumValues, adjustAmount));
+			break;
+		}
 		case ADV_FIELD_LANG:
 			idList<int> langValues;
 			langValues.Clear();
@@ -458,6 +472,7 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 			}
 			sys_lang.SetString(Sys_Lang(AdjustOption(Sys_LangIndex(sys_lang.GetString()), langValues.Ptr(), Sys_NumLangs(), adjustAmount)));
 			break;
+		
 	}
 	cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 }
@@ -505,6 +520,17 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 			}
 		case ADV_FIELD_LANG:
 			return va("#str_lang_%s", sys_lang.GetString());
+		case ADV_FIELD_SMHUD:
+		{
+			if (game->GetCVarInteger("pm_smartHUD") == 1)
+			{
+				return "#str_swf_enabled";
+			}
+			else
+			{
+				return "#str_swf_disabled";
+			}
+		}
 	}
 	return false;
 }
@@ -532,6 +558,10 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 		return true;
 	}
 	if (idStr::Icmp(originalLang, sys_lang.GetString()) != 0) {
+		return true;
+	}
+	if (originalSMHUD != game->GetCVarInteger("pm_smartHUD"))
+	{
 		return true;
 	}
 	return false;

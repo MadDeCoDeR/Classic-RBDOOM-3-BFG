@@ -363,7 +363,7 @@ void idMenuScreen_HUDLocal::UpdateWeaponInfo( idPlayer* player )
 	{
 		return;
 	}
-	
+
 	idEntityPtr<idWeapon> weapon = player->weapon;
 	
 	assert( weapon.GetEntity() );
@@ -2405,6 +2405,10 @@ void idMenuScreen_HUDLocal::UpdateChattingHud( idPlayer* player )
 			}
 		}
 	}
+}
+
+void idMenuScreen_HUDLocal::HideAmmoCount() {
+	ammoInfo->SetVisible(false);
 }
 
 const char*		idMenuScreen_HUDLocal::GetlocationName() {

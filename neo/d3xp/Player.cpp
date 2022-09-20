@@ -60,6 +60,7 @@ idCVar pm_clientInterpolation_Divergence( "pm_clientInterpolation_Divergence", "
 idCVar pm_clientAuthoritative_minSpeedSquared( "pm_clientAuthoritative_minSpeedSquared", "1000.0f", CVAR_FLOAT, "" );
 //GK: Internal CVar in order to keep track on whenever the character is flipped or not
 idCVar pm_flip("pm_flip", "0", CVAR_BOOL, "");
+idCVar pm_smartHUD("pm_smartHUD", "0", CVAR_BOOL | CVAR_ARCHIVE | CVAR_GAME, "Enable Smart HUD functionality");
 
 extern idCVar pm_classicPose;
 
@@ -3386,6 +3387,12 @@ void idPlayer::UpdateHudStats( idMenuHandler_HUD* _hudManager )
 		{
 			UpdateHudWeapon();
 			inventory.weaponPulse = false;
+		}
+		
+		if (this->weapon.GetEntity()->renderEntity.gui[0] != NULL) {
+			if (pm_smartHUD.GetBool() && !pm_thirdPerson.GetBool()) {
+				hud_->HideAmmoCount();
+			}
 		}
 		
 		if( gameLocal.mpGame.IsGametypeFlagBased() )

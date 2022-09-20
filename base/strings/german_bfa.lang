@@ -44,6 +44,7 @@
 	"#str_auto_save_success" "Spiel gespeichert"
 	"#str_lang_menu"	"Sprache"
 	"#str_swf_tp_buton"	"Fotomodus"
+	"#str_smart_hud"	"Intelligentes HUD"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "Erste zu ladende Karte"
 }

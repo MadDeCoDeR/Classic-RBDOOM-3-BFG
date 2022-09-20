@@ -44,6 +44,7 @@
 	"#str_auto_save_success"	"Game Saved"
 	"#str_lang_menu"	"Language"
 	"#str_swf_tp_buton"	"Photo Mode"
+	"#str_smart_hud"	"Smart HUD"
 //	"#str_swf_custom_game"	"Mod Name"
 //	"#str_swf_start_map"	"First Map to load"
 }
