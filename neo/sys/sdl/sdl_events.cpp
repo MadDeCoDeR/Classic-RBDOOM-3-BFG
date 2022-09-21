@@ -876,6 +876,7 @@ static size_t uniStrPos = 0;
 static int mwheelRel = 0;
 #endif
 static int32 uniChar = 0;
+static bool hasPolled = false; 
 
 void PushJoyButton( int key, bool value )
 {
@@ -1339,8 +1340,9 @@ void SDL_Poll()
 				{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
 			};
 
+			joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], (ev.cbutton.state == SDL_PRESSED ? 1 : 0)));
 			PushJoyButton(controllerButtonRemap[ev.cbutton.button][0], (ev.cbutton.state == SDL_PRESSED ? 1 : 0));
-			joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], res.evValue2));
+			
 			break;
 		//GK: Steam Deck Hack: For some reason Steam Deck spams these two events
 		case SDL_CONTROLLERDEVICEADDED:
@@ -1747,6 +1749,7 @@ void Sys_ClearEvents()
 	kbd_polls.SetNum( 0 );
 	mouse_polls.SetNum( 0 );
 	joystick_polls.Clear();
+	hasPolled = false;
 }
 
 /*
@@ -1763,6 +1766,7 @@ void Sys_GenerateEvents()
 		
 	SDL_PumpEvents();
 	SDL_Poll();
+	hasPolled = true;
 }
 
 /*
@@ -1772,7 +1776,10 @@ Sys_PollKeyboardInputEvents
 */
 int Sys_PollKeyboardInputEvents()
 {
-	
+	if (!hasPolled) {
+		SDL_Poll();
+		hasPolled = true;
+	}
 	return kbd_polls.Num();
 }
 
@@ -1817,6 +1824,7 @@ Sys_EndKeyboardInputEvents
 */
 void Sys_EndKeyboardInputEvents()
 {
+	hasPolled = false;
 	kbd_polls.SetNum( 0 );
 }
 
@@ -1836,6 +1844,11 @@ int Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] )
 	}
 #endif
 
+	if (!hasPolled) {
+		SDL_Poll();
+		hasPolled = true;
+	}
+
 	int numEvents = mouse_polls.Num();
 	
 	if( numEvents > MAX_MOUSE_EVENTS )
@@ -1852,7 +1865,7 @@ int Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] )
 	}
 	
 	mouse_polls.SetNum( 0 );
-	
+	hasPolled = false;
 	return numEvents;
 }
 
@@ -1948,6 +1961,10 @@ void Sys_SetRumble( int device, int low, int hi )
 
 int Sys_PollJoystickInputEvents( int deviceNum )
 {
+	if (!hasPolled) {
+		SDL_Poll();
+		hasPolled = true;
+	}
 	return joystick_polls.Num();
 }
 
@@ -1974,6 +1991,7 @@ void Sys_EndJoystickInputEvents()
 	// Empty the joystick event container. This is called after
 	// all joystick events have been read using Sys_ReturnJoystickInputEvent()
 	joystick_polls.Clear();
+	hasPolled = false;
 }
 
 bool Sys_hasConnectedController() {
