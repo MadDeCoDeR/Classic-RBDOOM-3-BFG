@@ -855,7 +855,6 @@ static size_t uniStrPos = 0;
 static int mwheelRel = 0;
 #endif
 static int32 uniChar = 0;
-static bool hasPolled = false; 
 
 void PushJoyButton( int key, bool value )
 {
@@ -1721,10 +1720,7 @@ Sys_GetEvent
 sysEvent_t Sys_GetEvent() {
 	sysEvent_t	ev;
 
-	if (!hasPolled) {
-		SDL_Poll();
-		hasPolled = true;
-	}
+	SDL_Poll();
 
 	// return if we have data
 	if ( eventHead > eventTail ) {
@@ -1754,7 +1750,6 @@ void Sys_ClearEvents()
 	kbd_polls.SetNum( 0 );
 	mouse_polls.SetNum( 0 );
 	joystick_polls.Clear();
-	hasPolled = false;
 }
 
 /*
@@ -1771,7 +1766,6 @@ void Sys_GenerateEvents()
 		
 	SDL_PumpEvents();
 	SDL_Poll();
-	hasPolled = true;
 }
 
 /*
@@ -1781,10 +1775,7 @@ Sys_PollKeyboardInputEvents
 */
 int Sys_PollKeyboardInputEvents()
 {
-	if (!hasPolled) {
-		SDL_Poll();
-		hasPolled = true;
-	}
+	SDL_Poll();
 	return kbd_polls.Num();
 }
 
@@ -1829,7 +1820,6 @@ Sys_EndKeyboardInputEvents
 */
 void Sys_EndKeyboardInputEvents()
 {
-	hasPolled = false;
 	kbd_polls.SetNum( 0 );
 }
 
@@ -1849,10 +1839,7 @@ int Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] )
 	}
 #endif
 
-	if (!hasPolled) {
-		SDL_Poll();
-		hasPolled = true;
-	}
+	SDL_Poll();
 
 	int numEvents = mouse_polls.Num();
 	
@@ -1870,7 +1857,6 @@ int Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] )
 	}
 	
 	mouse_polls.SetNum( 0 );
-	hasPolled = false;
 	return numEvents;
 }
 
@@ -1966,10 +1952,7 @@ void Sys_SetRumble( int device, int low, int hi )
 
 int Sys_PollJoystickInputEvents( int deviceNum )
 {
-	if (!hasPolled) {
-		SDL_Poll();
-		hasPolled = true;
-	}
+	SDL_Poll();
 	return joystick_polls.Num();
 }
 
@@ -1996,7 +1979,6 @@ void Sys_EndJoystickInputEvents()
 	// Empty the joystick event container. This is called after
 	// all joystick events have been read using Sys_ReturnJoystickInputEvent()
 	joystick_polls.Clear();
-	hasPolled = false;
 }
 
 bool Sys_hasConnectedController() {
