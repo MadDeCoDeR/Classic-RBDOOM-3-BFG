@@ -914,7 +914,7 @@ void SDL_Poll()
 		}
 	}
 	// loop until there is an event we care about (will return then) or no more events
-	SDL_PollEvent( &ev );
+	while ( SDL_PollEvent( &ev ) )
 	{
 		switch (ev.type)
 		{
@@ -1741,8 +1741,8 @@ void Sys_ClearEvents()
 	SDL_Event ev;
 	eventHead = eventTail = 0;
 	
-	while( SDL_PollEvent( &ev ) )
-		;
+	// while( SDL_PollEvent( &ev ) )
+	// 	;
 		
 	kbd_polls.SetNum( 0 );
 	mouse_polls.SetNum( 0 );
