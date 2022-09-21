@@ -846,27 +846,6 @@ void Sys_QueEvent( sysEventType_t type, int value, int value2, int ptrLength, vo
 	ev->inputDevice = inputDeviceNum;
 }
 
-/*
-================
-Sys_GetEvent
-================
-*/
-
-sysEvent_t Sys_GetEvent() {
-	sysEvent_t	ev;
-
-	// return if we have data
-	if ( eventHead > eventTail ) {
-		eventTail++;
-		return eventQue[ ( eventTail - 1 ) & MASK_QUED_EVENTS ];
-	}
-
-	// return the empty event 
-	memset( &ev, 0, sizeof( ev ) );
-
-	return ev;
-}
-
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 // utf-32 version of the textinput event
 static int32 uniStr[SDL_TEXTINPUTEVENT_TEXT_SIZE] = {0};
@@ -986,7 +965,7 @@ void SDL_Poll()
 			}
 			}
 
-			break; // handle next event
+			continue; // handle next event
 #else // SDL 1.2
 		case SDL_ACTIVEEVENT:
 		{
@@ -1055,7 +1034,7 @@ void SDL_Poll()
 				cvarSystem->SetCVarInteger("r_fullscreen", fullscreen);
 				// DG end
 				PushConsoleEvent("vid_restart");
-				break; // handle next event
+				continue; // handle next event
 			}
 
 			// DG: ctrl-g to un-grab mouse - yeah, left ctrl shoots, then just use right ctrl :)
@@ -1064,7 +1043,7 @@ void SDL_Poll()
 				bool grab = cvarSystem->GetCVarBool("in_nograb");
 				grab = !grab;
 				cvarSystem->SetCVarBool("in_nograb", grab);
-				break; // handle next event
+				continue; // handle next event
 			}
 			// DG end
 
@@ -1100,7 +1079,7 @@ void SDL_Poll()
 					if (ev.type == SDL_KEYDOWN) // FIXME: don't complain if this was an ASCII char and the console is open?
 						common->Warning("unmapped SDL key %d scancode %d", ev.key.keysym.sym, ev.key.keysym.scancode);
 
-					break; // just handle next event
+					continue; // just handle next event
 				}
 #else // SDL1.2
 				key = SDL_KeyToDoom3Key(ev.key.keysym.sym, isChar);
@@ -1171,7 +1150,7 @@ void SDL_Poll()
 				//return res;
 			}
 
-			break; // just handle next event
+			continue; // just handle next event
 #endif // SDL2
 
 		case SDL_MOUSEMOTION:
@@ -1202,7 +1181,7 @@ void SDL_Poll()
 		case SDL_FINGERDOWN:
 		case SDL_FINGERUP:
 		case SDL_FINGERMOTION:
-			break; // Avoid 'unknown event' spam when testing with touchpad by skipping this
+			continue; // Avoid 'unknown event' spam when testing with touchpad by skipping this
 
 		case SDL_MOUSEWHEEL:
 			//res.evType = SE_KEY;
@@ -1261,7 +1240,7 @@ void SDL_Poll()
 				}
 				else // unsupported mouse button
 				{
-					break; // just ignore
+					continue; // just ignore
 				}
 			}
 
@@ -1278,7 +1257,7 @@ void SDL_Poll()
 		case SDL_JOYDEVICEADDED:
 		case SDL_JOYDEVICEREMOVED:
 			// Avoid 'unknown event' spam
-			break;
+			continue;
 
 		case SDL_CONTROLLERAXISMOTION:
 			switch (ev.caxis.axis) {
@@ -1347,7 +1326,7 @@ void SDL_Poll()
 		//GK: Steam Deck Hack: For some reason Steam Deck spams these two events
 		case SDL_CONTROLLERDEVICEADDED:
 		case SDL_CONTROLLERDEVICEREMAPPED:
-			break;
+			continue;
 #else
 			// WM0110
 			// NOTE: it seems that the key bindings for the GUI and for the game are
@@ -1724,13 +1703,39 @@ void SDL_Poll()
 					default:
 						common->Warning( "unknown user event %u", ev.user.code );
 				}
-				break; // just handle next event
+				continue; // just handle next event
 			default:
 				common->Warning( "unknown event %u", ev.type );
-				break; // just handle next event
+				continue; // just handle next event
 		}
 	}
 	Sys_QueEvent(no_more_events.evType, no_more_events.evValue, no_more_events.evValue2, no_more_events.evPtrLength, no_more_events.evPtr, 0);
+}
+
+/*
+================
+Sys_GetEvent
+================
+*/
+
+sysEvent_t Sys_GetEvent() {
+	sysEvent_t	ev;
+
+	if (!hasPolled) {
+		SDL_Poll();
+		hasPolled = true;
+	}
+
+	// return if we have data
+	if ( eventHead > eventTail ) {
+		eventTail++;
+		return eventQue[ ( eventTail - 1 ) & MASK_QUED_EVENTS ];
+	}
+
+	// return the empty event 
+	memset( &ev, 0, sizeof( ev ) );
+
+	return ev;
 }
 
 /*
