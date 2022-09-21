@@ -1948,8 +1948,7 @@ void Sys_SetRumble( int device, int low, int hi )
 
 int Sys_PollJoystickInputEvents( int deviceNum )
 {
-	numEvents = joystick_polls.Num();
-	return numEvents;
+	return joystick_polls.Num();
 }
 
 // This funcion called by void idUsercmdGenLocal::Joystick( int deviceNum ) in
