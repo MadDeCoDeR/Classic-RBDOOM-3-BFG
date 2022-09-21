@@ -809,12 +809,85 @@ void Sys_GrabMouseCursor( bool grabIt )
 	GLimp_GrabInput( flags );
 }
 
+#define	MAX_QUED_EVENTS		256
+#define	MASK_QUED_EVENTS	( MAX_QUED_EVENTS - 1 )
+
+sysEvent_t	eventQue[MAX_QUED_EVENTS];
+int			eventHead = 0;
+int			eventTail = 0;
+
+/*
+================
+Sys_QueEvent
+
+Ptr should either be null, or point to a block of data that can
+be freed by the game later.
+================
+*/
+void Sys_QueEvent( sysEventType_t type, int value, int value2, int ptrLength, void *ptr, int inputDeviceNum ) {
+	sysEvent_t * ev = &eventQue[ eventHead & MASK_QUED_EVENTS ];
+
+	if ( eventHead - eventTail >= MAX_QUED_EVENTS ) {
+		common->Printf("Sys_QueEvent: overflow\n");
+		// we are discarding an event, but don't leak memory
+		if ( ev->evPtr ) {
+			Mem_Free( ev->evPtr );
+		}
+		eventTail++;
+	}
+
+	eventHead++;
+
+	ev->evType = type;
+	ev->evValue = value;
+	ev->evValue2 = value2;
+	ev->evPtrLength = ptrLength;
+	ev->evPtr = ptr;
+	ev->inputDevice = inputDeviceNum;
+}
+
 /*
 ================
 Sys_GetEvent
 ================
 */
-sysEvent_t Sys_GetEvent()
+
+sysEvent_t Sys_GetEvent() {
+	sysEvent_t	ev;
+
+	// return if we have data
+	if ( eventHead > eventTail ) {
+		eventTail++;
+		return eventQue[ ( eventTail - 1 ) & MASK_QUED_EVENTS ];
+	}
+
+	// return the empty event 
+	memset( &ev, 0, sizeof( ev ) );
+
+	return ev;
+}
+
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+// utf-32 version of the textinput event
+static int32 uniStr[SDL_TEXTINPUTEVENT_TEXT_SIZE] = {0};
+static size_t uniStrPos = 0;
+// DG: fake a "mousewheel not pressed anymore" event for SDL2
+// so scrolling in menus stops after one step
+static int mwheelRel = 0;
+#endif
+static int32 uniChar = 0;
+
+void PushJoyButton( int key, bool value )
+{
+	// So we don't keep sending the same SE_KEY message over and over again
+	if( buttonStates[key] != value )
+	{
+		buttonStates[key] = value;
+		Sys_QueEvent( SE_KEY, key, value, 0, NULL, 0 );
+	}
+}
+
+void SDL_Poll()
 {
 	sysEvent_t res = { };
 	
@@ -840,56 +913,8 @@ sysEvent_t Sys_GetEvent()
 			SDL_StopTextInput();
 		}
 	}
-	
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-	// utf-32 version of the textinput event
-	static int32 uniStr[SDL_TEXTINPUTEVENT_TEXT_SIZE] = {0};
-	static size_t uniStrPos = 0;
-	
-	if( uniStr[0] != 0 )
-	{
-		res.evType = SE_CHAR;
-		res.evValue = uniStr[uniStrPos];
-		
-		++uniStrPos;
-		
-		if( !uniStr[uniStrPos] || uniStrPos == SDL_TEXTINPUTEVENT_TEXT_SIZE )
-		{
-			memset( uniStr, 0, sizeof( uniStr ) );
-			uniStrPos = 0;
-		}
-		
-		return res;
-	}
-	
-	// DG: fake a "mousewheel not pressed anymore" event for SDL2
-	// so scrolling in menus stops after one step
-	static int mwheelRel = 0;
-	if( mwheelRel )
-	{
-		res.evType = SE_KEY;
-		res.evValue = mwheelRel;
-		res.evValue2 = 0; // "not pressed anymore"
-		mwheelRel = 0;
-		return res;
-	}
-	// DG end
-#endif // SDL2
-	
-	static int32 uniChar = 0;
-	
-	if( uniChar )
-	{
-		res.evType = SE_CHAR;
-		res.evValue = uniChar;
-		
-		uniChar = 0;
-		
-		return res;
-	}
-	
 	// loop until there is an event we care about (will return then) or no more events
-	while( SDL_PollEvent( &ev ) )
+	SDL_PollEvent( &ev );
 	{
 		switch (ev.type)
 		{
@@ -928,8 +953,7 @@ sysEvent_t Sys_GetEvent()
 
 			case SDL_WINDOWEVENT_LEAVE:
 				// mouse has left the window
-				res.evType = SE_MOUSE_LEAVE;
-				return res;
+				Sys_QueEvent(SE_MOUSE_LEAVE, 0, 0, 0, NULL, 0);
 
 				// DG: handle resizing and moving of window
 			case SDL_WINDOWEVENT_RESIZED:
@@ -961,7 +985,7 @@ sysEvent_t Sys_GetEvent()
 			}
 			}
 
-			continue; // handle next event
+			break; // handle next event
 #else // SDL 1.2
 		case SDL_ACTIVEEVENT:
 		{
@@ -988,8 +1012,7 @@ sysEvent_t Sys_GetEvent()
 			if (ev.active.state == SDL_APPMOUSEFOCUS && !ev.active.gain)
 			{
 				// the mouse has left the window.
-				res.evType = SE_MOUSE_LEAVE;
-				return res;
+				Sys_QueEvent(SE_MOUSE_LEAVE, 0, 0, 0, NULL, 0);
 			}
 
 		}
@@ -1031,7 +1054,7 @@ sysEvent_t Sys_GetEvent()
 				cvarSystem->SetCVarInteger("r_fullscreen", fullscreen);
 				// DG end
 				PushConsoleEvent("vid_restart");
-				continue; // handle next event
+				break; // handle next event
 			}
 
 			// DG: ctrl-g to un-grab mouse - yeah, left ctrl shoots, then just use right ctrl :)
@@ -1040,7 +1063,7 @@ sysEvent_t Sys_GetEvent()
 				bool grab = cvarSystem->GetCVarBool("in_nograb");
 				grab = !grab;
 				cvarSystem->SetCVarBool("in_nograb", grab);
-				continue; // handle next event
+				break; // handle next event
 			}
 			// DG end
 
@@ -1076,7 +1099,7 @@ sysEvent_t Sys_GetEvent()
 					if (ev.type == SDL_KEYDOWN) // FIXME: don't complain if this was an ASCII char and the console is open?
 						common->Warning("unmapped SDL key %d scancode %d", ev.key.keysym.sym, ev.key.keysym.scancode);
 
-					continue; // just handle next event
+					break; // just handle next event
 				}
 #else // SDL1.2
 				key = SDL_KeyToDoom3Key(ev.key.keysym.sym, isChar);
@@ -1111,16 +1134,17 @@ sysEvent_t Sys_GetEvent()
 #endif // SDL 1.2
 			}
 
-			res.evType = SE_KEY;
-			res.evValue = key;
-			res.evValue2 = ev.key.state == SDL_PRESSED ? 1 : 0;
+			//res.evType = SE_KEY;
+			//res.evValue = key;
+			//res.evValue2 = ev.key.state == SDL_PRESSED ? 1 : 0;
 
 			kbd_polls.Append(kbd_poll_t(key, ev.key.state == SDL_PRESSED));
 
 			if (key == K_BACKSPACE && ev.key.state == SDL_PRESSED)
 				uniChar = key;
 
-			return res;
+			Sys_QueEvent(SE_KEY, key, (ev.key.state == SDL_PRESSED ? 1 : 0), 0, NULL, 0);
+			//return res;
 		}
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -1131,9 +1155,9 @@ sysEvent_t Sys_GetEvent()
 				ConvertUTF8toUTF32(ev.text.text, uniStr);
 
 				// return an event with the first/only char
-				res.evType = SE_CHAR;
-				res.evValue = uniStr[0];
-
+				//res.evType = SE_CHAR;
+				//res.evValue = uniStr[0];
+				Sys_QueEvent(SE_CHAR, uniStr[0], 1, 0, NULL, 0);
 				uniStrPos = 1;
 
 				if (uniStr[1] == 0)
@@ -1142,10 +1166,11 @@ sysEvent_t Sys_GetEvent()
 					uniStr[0] = 0;
 					uniStrPos = 0;
 				}
-				return res;
+				
+				//return res;
 			}
 
-			continue; // just handle next event
+			break; // just handle next event
 #endif // SDL2
 
 		case SDL_MOUSEMOTION:
@@ -1153,41 +1178,44 @@ sysEvent_t Sys_GetEvent()
 			// to fix cursor problems in windowed mode
 			if (game && game->Shell_IsActive())
 			{
-				res.evType = SE_MOUSE_ABSOLUTE;
-				res.evValue = ev.motion.x;
-				res.evValue2 = ev.motion.y;
+				// res.evType = SE_MOUSE_ABSOLUTE;
+				// res.evValue = ev.motion.x;
+				// res.evValue2 = ev.motion.y;
+				Sys_QueEvent(SE_MOUSE_ABSOLUTE, ev.motion.x, ev.motion.y, 0, NULL, 0);
 			}
 			else     // this is the old, default behavior
 			{
-				res.evType = SE_MOUSE;
-				res.evValue = ev.motion.xrel;
-				res.evValue2 = ev.motion.yrel;
+				// res.evType = SE_MOUSE;
+				// res.evValue = ev.motion.xrel;
+				// res.evValue2 = ev.motion.yrel;
+				Sys_QueEvent(SE_MOUSE, ev.motion.xrel, ev.motion.yrel, 0, NULL, 0);
 			}
 			// DG end
 
 			mouse_polls.Append(mouse_poll_t(M_DELTAX, ev.motion.xrel));
 			mouse_polls.Append(mouse_poll_t(M_DELTAY, ev.motion.yrel));
 
-			return res;
+			//return res;
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 		case SDL_FINGERDOWN:
 		case SDL_FINGERUP:
 		case SDL_FINGERMOTION:
-			continue; // Avoid 'unknown event' spam when testing with touchpad by skipping this
+			break; // Avoid 'unknown event' spam when testing with touchpad by skipping this
 
 		case SDL_MOUSEWHEEL:
-			res.evType = SE_KEY;
+			//res.evType = SE_KEY;
 
-			res.evValue = (ev.wheel.y > 0) ? K_MWHEELUP : K_MWHEELDOWN;
+			//res.evValue = (ev.wheel.y > 0) ? K_MWHEELUP : K_MWHEELDOWN;
 			mouse_polls.Append(mouse_poll_t(M_DELTAZ, ev.wheel.y));
 
-			res.evValue2 = 1; // for "pressed"
+			//res.evValue2 = 1; // for "pressed"
+			Sys_QueEvent(SE_KEY, (ev.wheel.y > 0) ? K_MWHEELUP : K_MWHEELDOWN, 1, 0, NULL, 0);
 
 			// remember mousewheel direction to issue a "not pressed anymore" event
-			mwheelRel = res.evValue;
+			mwheelRel = (ev.wheel.y > 0) ? K_MWHEELUP : K_MWHEELDOWN;
 
-			return res;
+			//return res;
 #endif // SDL2
 
 		case SDL_MOUSEBUTTONDOWN:
@@ -1232,13 +1260,13 @@ sysEvent_t Sys_GetEvent()
 				}
 				else // unsupported mouse button
 				{
-					continue; // just ignore
+					break; // just ignore
 				}
 			}
 
 			res.evValue2 = ev.button.state == SDL_PRESSED ? 1 : 0;
 
-			return res;
+			Sys_QueEvent(res.evType, res.evValue, res.evValue2, 0, NULL, 0);
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 			// GameController
@@ -1249,54 +1277,45 @@ sysEvent_t Sys_GetEvent()
 		case SDL_JOYDEVICEADDED:
 		case SDL_JOYDEVICEREMOVED:
 			// Avoid 'unknown event' spam
-			continue;
+			break;
 
 		case SDL_CONTROLLERAXISMOTION:
-			res.evType = SE_KEY;
-			res.evValue2 = 0;
 			switch (ev.caxis.axis) {
 					case SDL_CONTROLLER_AXIS_LEFTX:
-						res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_RIGHT : K_JOY_STICK1_LEFT;
+						PushJoyButton(K_JOY_STICK1_RIGHT, ( ev.caxis.value > range ));
+						PushJoyButton(K_JOY_STICK1_LEFT, ( ev.caxis.value < -range ));
 						break;
 					case SDL_CONTROLLER_AXIS_LEFTY:
-						res.evValue = ev.caxis.value > 0 ? K_JOY_STICK1_DOWN : K_JOY_STICK1_UP;
+						PushJoyButton(K_JOY_STICK1_DOWN, ( ev.caxis.value > range ));
+						PushJoyButton(K_JOY_STICK1_UP, ( ev.caxis.value < -range ));
 						break;
 					case SDL_CONTROLLER_AXIS_RIGHTX:
-						res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_RIGHT : K_JOY_STICK2_LEFT;
+						PushJoyButton(K_JOY_STICK2_RIGHT, ( ev.caxis.value > range ));
+						PushJoyButton(K_JOY_STICK2_LEFT, ( ev.caxis.value < -range ));
 						break;
 					case SDL_CONTROLLER_AXIS_RIGHTY:
-						res.evValue = ev.caxis.value > 0 ? K_JOY_STICK2_DOWN : K_JOY_STICK2_UP;
+						PushJoyButton(K_JOY_STICK2_DOWN, ( ev.caxis.value > range ));
+						PushJoyButton(K_JOY_STICK2_UP, ( ev.caxis.value < -range ));
 						break;
 					case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-						if (ev.caxis.value > range) {
-							res.evValue = K_JOY_TRIGGER1;
-						}
+						PushJoyButton(K_JOY_TRIGGER1, ( ev.caxis.value > range ));
 						break;
 					case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-						if (ev.caxis.value > range) {
-							res.evValue = K_JOY_TRIGGER2;
-						}
+						PushJoyButton(K_JOY_TRIGGER2, ( ev.caxis.value > range ));
 						break;
 				}
-			if (abs(ev.caxis.value) > range) {
-				res.evValue2 = 1;
+			if (ev.caxis.axis >= SDL_CONTROLLER_AXIS_LEFTX &&  ev.caxis.axis <= SDL_CONTROLLER_AXIS_RIGHTY) {
+				axis = ev.caxis.axis;
+				percent = (ev.caxis.value * 16) / range;
+				if( joyAxis[axis] != percent )
+				{
+					joyAxis[axis] = percent;
+					Sys_QueEvent( SE_JOYSTICK, axis, percent, 0, NULL, 0 );
+				}
 			}
 
 			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
-
-			axis = ev.caxis.axis;
-			percent = (ev.caxis.value * 16) / range;
-
-			if (joyAxis[axis] == percent) {
-				continue;
-			}
-			joyAxis[axis] = percent;
-			//GK: In order to keep the consistency in game always poll
-			if (buttonStates[res.evValue] == res.evValue2 ) {
-				continue;
-			}
-			buttonStates[res.evValue] = res.evValue2;
-			return res;
+			break;
 
 		case SDL_CONTROLLERBUTTONDOWN:
 		case SDL_CONTROLLERBUTTONUP:
@@ -1320,22 +1339,13 @@ sysEvent_t Sys_GetEvent()
 				{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
 			};
 
-			res.evType = SE_KEY;
-			res.evValue = controllerButtonRemap[ev.cbutton.button][0];
-			res.evValue2 = ev.cbutton.state == SDL_PRESSED ? 1 : 0;
+			PushJoyButton(controllerButtonRemap[ev.cbutton.button][0], (ev.cbutton.state == SDL_PRESSED ? 1 : 0));
 			joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], res.evValue2));
-
-			if (ev.cbutton.button < 10 && buttonStates[controllerButtonRemap[ev.cbutton.button][0]] == ev.cbutton.state) {
-				continue;
-			}
-			else {
-				buttonStates[controllerButtonRemap[ev.cbutton.button][0]] = ev.cbutton.state;
-			}
-			return res;
+			break;
 		//GK: Steam Deck Hack: For some reason Steam Deck spams these two events
 		case SDL_CONTROLLERDEVICEADDED:
 		case SDL_CONTROLLERDEVICEREMAPPED:
-			continue;
+			break;
 #else
 			// WM0110
 			// NOTE: it seems that the key bindings for the GUI and for the game are
@@ -1701,29 +1711,24 @@ sysEvent_t Sys_GetEvent()
 				
 			case SDL_QUIT:
 				PushConsoleEvent( "quit" );
-				res = no_more_events; // don't handle next event, just quit.
-				return res;
-				
+				Sys_QueEvent(no_more_events.evType, no_more_events.evValue, no_more_events.evValue2, no_more_events.evPtrLength, no_more_events.evPtr, 0); // don't handle next event, just quit.
+				break;
 			case SDL_USEREVENT:
 				switch( ev.user.code )
 				{
 					case SE_CONSOLE:
-						res.evType = SE_CONSOLE;
-						res.evPtrLength = ( intptr_t )ev.user.data1;
-						res.evPtr = ev.user.data2;
-						return res;
+						Sys_QueEvent(SE_CONSOLE, 0, 0, ( intptr_t )ev.user.data1, ev.user.data2, 0);
+						break;
 					default:
 						common->Warning( "unknown user event %u", ev.user.code );
 				}
-				continue; // just handle next event
+				break; // just handle next event
 			default:
 				common->Warning( "unknown event %u", ev.type );
-				continue; // just handle next event
+				break; // just handle next event
 		}
 	}
-	
-	res = no_more_events;
-	return res;
+	Sys_QueEvent(no_more_events.evType, no_more_events.evValue, no_more_events.evValue2, no_more_events.evPtrLength, no_more_events.evPtr, 0);
 }
 
 /*
@@ -1734,6 +1739,7 @@ Sys_ClearEvents
 void Sys_ClearEvents()
 {
 	SDL_Event ev;
+	eventHead = eventTail = 0;
 	
 	while( SDL_PollEvent( &ev ) )
 		;
@@ -1765,6 +1771,8 @@ Sys_PollKeyboardInputEvents
 */
 int Sys_PollKeyboardInputEvents()
 {
+	
+	SDL_Poll();
 	return kbd_polls.Num();
 }
 
@@ -1777,7 +1785,26 @@ int Sys_ReturnKeyboardInputEvent( const int n, int& key, bool& state )
 {
 	if( n >= kbd_polls.Num() )
 		return 0;
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	if( uniStr[0] != 0 )
+	{
+		Sys_QueEvent(SE_CHAR, uniStr[uniStrPos], 1, 0, NULL, 0);
 		
+		++uniStrPos;
+		
+		if( !uniStr[uniStrPos] || uniStrPos == SDL_TEXTINPUTEVENT_TEXT_SIZE )
+		{
+			memset( uniStr, 0, sizeof( uniStr ) );
+			uniStrPos = 0;
+		}
+	}
+#endif
+	if( uniChar )
+	{
+		Sys_QueEvent(SE_CHAR, uniChar, 1, 0, NULL, 0);
+		
+		uniChar = 0;
+	}
 	key = kbd_polls[n].key;
 	state = kbd_polls[n].state;
 	return 1;
@@ -1800,6 +1827,17 @@ Sys_PollMouseInputEvents
 */
 int Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] )
 {
+
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	if( mwheelRel )
+	{
+		Sys_QueEvent(SE_KEY, mwheelRel, 0, 0, NULL, 0);
+		mwheelRel = 0;
+	}
+#endif
+
+	SDL_Poll();
+
 	int numEvents = mouse_polls.Num();
 	
 	if( numEvents > MAX_MOUSE_EVENTS )
@@ -1912,8 +1950,10 @@ void Sys_SetRumble( int device, int low, int hi )
 
 int Sys_PollJoystickInputEvents( int deviceNum )
 {
-	int numEvents = joystick_polls.Num();
-	
+	int numEvents = 0;
+	joystick_polls.Clear();
+	SDL_Poll();
+	numEvents = joystick_polls.Num();
 	return numEvents;
 }
 
