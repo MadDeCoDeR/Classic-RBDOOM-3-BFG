@@ -1762,6 +1762,7 @@ void Sys_GenerateEvents()
 		PushConsoleEvent( s );
 		
 	SDL_PumpEvents();
+	SDL_Poll();
 }
 
 /*
@@ -1772,7 +1773,6 @@ Sys_PollKeyboardInputEvents
 int Sys_PollKeyboardInputEvents()
 {
 	
-	SDL_Poll();
 	return kbd_polls.Num();
 }
 
@@ -1835,8 +1835,6 @@ int Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] )
 		mwheelRel = 0;
 	}
 #endif
-
-	SDL_Poll();
 
 	int numEvents = mouse_polls.Num();
 	
@@ -1950,9 +1948,6 @@ void Sys_SetRumble( int device, int low, int hi )
 
 int Sys_PollJoystickInputEvents( int deviceNum )
 {
-	int numEvents = 0;
-	joystick_polls.Clear();
-	SDL_Poll();
 	numEvents = joystick_polls.Num();
 	return numEvents;
 }
