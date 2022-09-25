@@ -147,6 +147,19 @@ struct joystick_poll_t
 		value = v;
 	}
 };
+
+struct joyState {
+	int buttons[15];
+	int LTrigger;
+	int RTrigger;
+	int LXThumb;
+	int LYThumb;
+	int RXThumb;
+	int RYThumb; 
+};
+
+static joyState current;
+static joyState old;
 static idList<joystick_poll_t> joystick_polls;
 int joyAxis[6];
 SDL_Joystick* joy = NULL;
@@ -668,6 +681,8 @@ void Sys_InitInput()
 	
 	memset( buttonStates, 0, sizeof( buttonStates ) );
 	memset( joyAxis, 0, sizeof( joyAxis ) );
+	memset(&current, 0, sizeof(joyState));
+	memset(&old, 0, sizeof(joyState));
 	
 #if !SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_EnableUNICODE( 1 );
@@ -881,6 +896,35 @@ void SDL_Poll()
 	
 	// WM0110: previous state of joystick hat
 	static int previous_hat_state = SDL_HAT_CENTERED;
+
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	if( uniStr[0] != 0 )
+	{
+		Sys_QueEvent(SE_CHAR, uniStr[uniStrPos], 1, 0, NULL, 0);
+		
+		++uniStrPos;
+		
+		if( !uniStr[uniStrPos] || uniStrPos == SDL_TEXTINPUTEVENT_TEXT_SIZE )
+		{
+			memset( uniStr, 0, sizeof( uniStr ) );
+			uniStrPos = 0;
+		}
+	}
+#endif
+	if( uniChar )
+	{
+		Sys_QueEvent(SE_CHAR, uniChar, 1, 0, NULL, 0);
+		
+		uniChar = 0;
+	}
+
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	if( mwheelRel )
+	{
+		Sys_QueEvent(SE_KEY, mwheelRel, 0, 0, NULL, 0);
+		mwheelRel = 0;
+	}
+#endif
 
 	if (console->Active()) {
 		if (!SDL_IsTextInputActive()) {
@@ -1292,8 +1336,30 @@ void SDL_Poll()
 					Sys_QueEvent( SE_JOYSTICK, axis, percent, 0, NULL, 0 );
 				}
 			}
+			sys_jEvents event = (sys_jEvents)(J_AXIS_LEFT_X + ev.caxis.axis);
+			switch(event) {
+				case J_AXIS_LEFT_X:
+					current.LXThumb = ev.caxis.value;
+					break;
+				case J_AXIS_LEFT_Y:
+					current.LYThumb = ev.caxis.value;
+					break;
+				case J_AXIS_RIGHT_X:
+					current.RXThumb = ev.caxis.value;
+					break;
+				case J_AXIS_RIGHT_Y:
+					current.RYThumb = ev.caxis.value;
+					break;
+				case J_AXIS_LEFT_TRIG:
+					current.LTrigger = ev.caxis.value;
+					break;
+				case J_AXIS_RIGHT_TRIG:
+					current.RTrigger = ev.caxis.value;
+					break;
 
-			joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
+			}
+
+			//joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
 			break;
 
 		case SDL_CONTROLLERBUTTONDOWN:
@@ -1318,7 +1384,8 @@ void SDL_Poll()
 				{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
 			};
 
-			joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], (ev.cbutton.state == SDL_PRESSED ? 1 : 0)));
+			//joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], (ev.cbutton.state == SDL_PRESSED ? 1 : 0)));
+			current.buttons[ev.cbutton.button] = (ev.cbutton.state == SDL_PRESSED ? 1 : 0);
 			PushJoyButton(controllerButtonRemap[ev.cbutton.button][0], (ev.cbutton.state == SDL_PRESSED ? 1 : 0));
 			
 			break;
@@ -1720,8 +1787,6 @@ Sys_GetEvent
 sysEvent_t Sys_GetEvent() {
 	sysEvent_t	ev;
 
-	SDL_Poll();
-
 	// return if we have data
 	if ( eventHead > eventTail ) {
 		eventTail++;
@@ -1764,7 +1829,7 @@ void Sys_GenerateEvents()
 	if( s )
 		PushConsoleEvent( s );
 		
-	SDL_PumpEvents();
+	//SDL_PumpEvents();
 	SDL_Poll();
 }
 
@@ -1775,7 +1840,6 @@ Sys_PollKeyboardInputEvents
 */
 int Sys_PollKeyboardInputEvents()
 {
-	SDL_Poll();
 	return kbd_polls.Num();
 }
 
@@ -1788,26 +1852,7 @@ int Sys_ReturnKeyboardInputEvent( const int n, int& key, bool& state )
 {
 	if( n >= kbd_polls.Num() )
 		return 0;
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-	if( uniStr[0] != 0 )
-	{
-		Sys_QueEvent(SE_CHAR, uniStr[uniStrPos], 1, 0, NULL, 0);
-		
-		++uniStrPos;
-		
-		if( !uniStr[uniStrPos] || uniStrPos == SDL_TEXTINPUTEVENT_TEXT_SIZE )
-		{
-			memset( uniStr, 0, sizeof( uniStr ) );
-			uniStrPos = 0;
-		}
-	}
-#endif
-	if( uniChar )
-	{
-		Sys_QueEvent(SE_CHAR, uniChar, 1, 0, NULL, 0);
-		
-		uniChar = 0;
-	}
+
 	key = kbd_polls[n].key;
 	state = kbd_polls[n].state;
 	return 1;
@@ -1830,17 +1875,6 @@ Sys_PollMouseInputEvents
 */
 int Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] )
 {
-
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-	if( mwheelRel )
-	{
-		Sys_QueEvent(SE_KEY, mwheelRel, 0, 0, NULL, 0);
-		mwheelRel = 0;
-	}
-#endif
-
-	SDL_Poll();
-
 	int numEvents = mouse_polls.Num();
 	
 	if( numEvents > MAX_MOUSE_EVENTS )
@@ -1952,8 +1986,63 @@ void Sys_SetRumble( int device, int low, int hi )
 
 int Sys_PollJoystickInputEvents( int deviceNum )
 {
-	SDL_Poll();
-	return joystick_polls.Num();
+	int numEvents = 0;
+	joystick_polls.SetNum(0);
+	int controllerButtonRemap[15] =
+			{
+				{J_ACTION1}, //SDL_CONTROLLER_BUTTON_A
+				{J_ACTION2}, //SDL_CONTROLLER_BUTTON_B
+				{J_ACTION3}, //SDL_CONTROLLER_BUTTON_X
+				{J_ACTION4}, //SDL_CONTROLLER_BUTTON_Y
+				{J_ACTION10}, //SDL_CONTROLLER_BUTTON_BACK
+				{J_ACTION11}, //SDL_CONTROLLER_BUTTON_GUIDE
+				{J_ACTION9}, //SDL_CONTROLLER_BUTTON_START
+				{J_ACTION7}, //SDL_CONTROLLER_BUTTON_LEFTSTICK
+				{J_ACTION8}, //SDL_CONTROLLER_BUTTON_RIGHTSTICK
+				{J_ACTION5}, //SDL_CONTROLLER_BUTTON_LEFTSHOULDER
+				{J_ACTION6}, //SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+
+				{J_DPAD_UP},
+				{J_DPAD_DOWN},
+				{J_DPAD_LEFT},
+				{J_DPAD_RIGHT},
+			};
+
+	for (int i = 0; i < 15; i++) {
+		if (current.buttons[i] != old.buttons[i]) {
+			joystick_polls.Append(joystick_poll_t(controllerButtonRemap[i], current.buttons[i]));
+			numEvents++;
+		}
+	}
+	if (current.LXThumb != old.LXThumb) {
+		joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X, current.LXThumb));
+		numEvents++;
+	}
+	if (current.LYThumb != old.LYThumb) {
+		joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_Y, current.LYThumb));
+		numEvents++;
+	}
+	if (current.RXThumb != old.RXThumb) {
+		joystick_polls.Append(joystick_poll_t(J_AXIS_RIGHT_X, current.RXThumb));
+		numEvents++;
+	}
+	if (current.RYThumb != old.RYThumb) {
+		joystick_polls.Append(joystick_poll_t(J_AXIS_RIGHT_Y, current.RYThumb));
+		numEvents++;
+	}
+	if (current.LTrigger != old.LTrigger) {
+		joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_TRIG, current.LTrigger));
+		numEvents++;
+	}
+	if (current.RTrigger != old.RTrigger) {
+		joystick_polls.Append(joystick_poll_t(J_AXIS_RIGHT_TRIG, current.RTrigger));
+		numEvents++;
+	}
+
+	old = current;
+
+
+	return numEvents;
 }
 
 // This funcion called by void idUsercmdGenLocal::Joystick( int deviceNum ) in
