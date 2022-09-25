@@ -689,8 +689,6 @@ void Sys_InitInput()
 	memset( joyAxis, 0, sizeof( joyAxis ) );
 	memset(&current, 0, sizeof(joyState));
 	memset(&old, 0, sizeof(joyState));
-
-	eventHead = eventTail = 0;
 	
 #if !SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_EnableUNICODE( 1 );
@@ -704,6 +702,9 @@ void Sys_InitInput()
 	SDL_CreateThread(JoystickSamplingThread,NULL);
 	#endif
 	//GK:End
+	//GK: Hack ?
+	Sys_GenerateEvents();
+	Sys_ClearEvents();
 
 }
 
