@@ -172,6 +172,12 @@ static bool joyThreadKill = false;
 int SDL_joystick_has_hat = 0;
 bool buttonStates[K_LAST_KEY];	// For keeping track of button up/down events
 
+#define	MAX_QUED_EVENTS		256
+#define	MASK_QUED_EVENTS	( MAX_QUED_EVENTS - 1 )
+
+sysEvent_t	eventQue[MAX_QUED_EVENTS];
+int			eventHead = 0;
+int			eventTail = 0;
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 
@@ -683,6 +689,8 @@ void Sys_InitInput()
 	memset( joyAxis, 0, sizeof( joyAxis ) );
 	memset(&current, 0, sizeof(joyState));
 	memset(&old, 0, sizeof(joyState));
+
+	eventHead = eventTail = 0;
 	
 #if !SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_EnableUNICODE( 1 );
@@ -823,13 +831,6 @@ void Sys_GrabMouseCursor( bool grabIt )
 	
 	GLimp_GrabInput( flags );
 }
-
-#define	MAX_QUED_EVENTS		256
-#define	MASK_QUED_EVENTS	( MAX_QUED_EVENTS - 1 )
-
-sysEvent_t	eventQue[MAX_QUED_EVENTS];
-int			eventHead = 0;
-int			eventTail = 0;
 
 /*
 ================
