@@ -890,6 +890,7 @@ void SDL_Poll()
 	int range = 16384;
 	int axis = 0;
 	int percent;
+	sys_jEvents joyEvent;
 	
 	// when this is returned, it's assumed that there are no more events!
 	static const sysEvent_t no_more_events = { SE_NONE, 0, 0, 0, NULL };
@@ -1336,8 +1337,8 @@ void SDL_Poll()
 					Sys_QueEvent( SE_JOYSTICK, axis, percent, 0, NULL, 0 );
 				}
 			}
-			sys_jEvents event = (sys_jEvents)(J_AXIS_LEFT_X + ev.caxis.axis);
-			switch(event) {
+			joyEvent = (sys_jEvents)(J_AXIS_LEFT_X + ev.caxis.axis);
+			switch(joyEvent) {
 				case J_AXIS_LEFT_X:
 					current.LXThumb = ev.caxis.value;
 					break;
