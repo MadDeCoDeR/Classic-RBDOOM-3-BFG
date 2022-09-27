@@ -137,15 +137,15 @@ struct joystick_poll_t
 	int action;
 	int value;
 	
-	joystick_poll_t()
-	{
-	}
+	// joystick_poll_t()
+	// {
+	// }
 	
-	joystick_poll_t( int a, int v )
-	{
-		action = a;
-		value = v;
-	}
+	// joystick_poll_t( int a, int v )
+	// {
+	// 	action = a;
+	// 	value = v;
+	// }
 };
 
 struct joyState {
@@ -160,7 +160,7 @@ struct joyState {
 
 static joyState current;
 static joyState old;
-static idList<joystick_poll_t> joystick_polls;
+static joystick_poll_t joystick_polls[42];
 int joyAxis[6];
 SDL_Joystick* joy = NULL;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -683,12 +683,12 @@ void Sys_InitInput()
 	
 	kbd_polls.SetGranularity( 256 );
 	mouse_polls.SetGranularity( 256 );
-	joystick_polls.SetGranularity( 42 );
 	
-	memset( buttonStates, 0, sizeof( buttonStates ) );
-	memset( joyAxis, 0, sizeof( joyAxis ) );
-	memset(&current, 0, sizeof(joyState));
-	memset(&old, 0, sizeof(joyState));
+	memset( &buttonStates, 0, sizeof( buttonStates ) );
+	memset( &joyAxis, 0, sizeof( joyAxis ) );
+	memset( &current, 0, sizeof(joyState) );
+	memset( &old, 0, sizeof(joyState) );
+	memset( &joystick_polls, 0, sizeof(joystick_polls) );
 	
 #if !SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_EnableUNICODE( 1 );
@@ -717,11 +717,13 @@ void Sys_ShutdownInput()
 {
 	kbd_polls.Clear();
 	mouse_polls.Clear();
-	joystick_polls.Clear();
 	joyThreadKill = true;
 	
-	memset( buttonStates, 0, sizeof( buttonStates ) );
-	memset( joyAxis, 0, sizeof( joyAxis ) );
+	memset( &buttonStates, 0, sizeof( buttonStates ) );
+	memset( &joyAxis, 0, sizeof( joyAxis ) );
+	memset( &current, 0, sizeof(joyState) );
+	memset( &old, 0, sizeof(joyState) );
+	memset( &joystick_polls, 0, sizeof(joystick_polls) );
 	
 	// Close any opened SDL Joystic
 	if( joy )
@@ -1817,7 +1819,7 @@ void Sys_ClearEvents()
 		
 	kbd_polls.SetNum( 0 );
 	mouse_polls.SetNum( 0 );
-	joystick_polls.Clear();
+	memset( &joystick_polls, 0, sizeof(joystick_polls) );
 }
 
 /*
@@ -1990,7 +1992,6 @@ void Sys_SetRumble( int device, int low, int hi )
 int Sys_PollJoystickInputEvents( int deviceNum )
 {
 	int numEvents = 0;
-	joystick_polls.SetNum(0);
 	int controllerButtonRemap[15] =
 			{
 				{J_ACTION1}, //SDL_CONTROLLER_BUTTON_A
@@ -2013,32 +2014,39 @@ int Sys_PollJoystickInputEvents( int deviceNum )
 
 	for (int i = 0; i < 15; i++) {
 		if (current.buttons[i] != old.buttons[i]) {
-			joystick_polls.Append(joystick_poll_t(controllerButtonRemap[i], current.buttons[i]));
+			joystick_polls[numEvents].action = controllerButtonRemap[i];
+			joystick_polls[numEvents].value = current.buttons[i];
 			numEvents++;
 		}
 	}
 	if (current.LXThumb != old.LXThumb) {
-		joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X, current.LXThumb));
+		joystick_polls[numEvents].action = J_AXIS_LEFT_X;
+		joystick_polls[numEvents].value = current.LXThumb;
 		numEvents++;
 	}
 	if (current.LYThumb != old.LYThumb) {
-		joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_Y, current.LYThumb));
+		joystick_polls[numEvents].action = J_AXIS_LEFT_Y;
+		joystick_polls[numEvents].value = current.LYThumb;
 		numEvents++;
 	}
 	if (current.RXThumb != old.RXThumb) {
-		joystick_polls.Append(joystick_poll_t(J_AXIS_RIGHT_X, current.RXThumb));
+		joystick_polls[numEvents].action = J_AXIS_RIGHT_X;
+		joystick_polls[numEvents].value = current.RXThumb;
 		numEvents++;
 	}
 	if (current.RYThumb != old.RYThumb) {
-		joystick_polls.Append(joystick_poll_t(J_AXIS_RIGHT_Y, current.RYThumb));
+		joystick_polls[numEvents].action = J_AXIS_RIGHT_Y;
+		joystick_polls[numEvents].value = current.RYThumb;
 		numEvents++;
 	}
 	if (current.LTrigger != old.LTrigger) {
-		joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_TRIG, current.LTrigger));
+		joystick_polls[numEvents].action = J_AXIS_LEFT_TRIG;
+		joystick_polls[numEvents].value = current.LTrigger;
 		numEvents++;
 	}
 	if (current.RTrigger != old.RTrigger) {
-		joystick_polls.Append(joystick_poll_t(J_AXIS_RIGHT_TRIG, current.RTrigger));
+		joystick_polls[numEvents].action = J_AXIS_RIGHT_TRIG;
+		joystick_polls[numEvents].value = current.RTrigger;
 		numEvents++;
 	}
 
@@ -2070,7 +2078,7 @@ void Sys_EndJoystickInputEvents()
 {
 	// Empty the joystick event container. This is called after
 	// all joystick events have been read using Sys_ReturnJoystickInputEvent()
-	joystick_polls.Clear();
+	//joystick_polls.Clear();
 }
 
 bool Sys_hasConnectedController() {
