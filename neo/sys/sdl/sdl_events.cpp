@@ -161,6 +161,7 @@ struct joyState {
 static joyState current;
 static joyState old;
 static joystick_poll_t joystick_polls[42];
+static int numEvents = 0;
 int joyAxis[6];
 SDL_Joystick* joy = NULL;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -875,15 +876,15 @@ static int mwheelRel = 0;
 #endif
 static int32 uniChar = 0;
 
-void PushJoyButton( int key, bool value )
-{
-	// So we don't keep sending the same SE_KEY message over and over again
-	if( buttonStates[key] != value )
-	{
-		buttonStates[key] = value;
-		Sys_QueEvent( SE_KEY, key, value, 0, NULL, 0 );
-	}
-}
+// void PushJoyButton( int key, bool value )
+// {
+// 	// So we don't keep sending the same SE_KEY message over and over again
+// 	if( buttonStates[key] != value )
+// 	{
+// 		buttonStates[key] = value;
+// 		Sys_QueEvent( SE_KEY, key, value, 0, NULL, 0 );
+// 	}
+// }
 
 void SDL_Poll()
 {
@@ -891,9 +892,9 @@ void SDL_Poll()
 	
 	SDL_Event ev;
 	int key;
-	int range = 16384;
-	int axis = 0;
-	int percent;
+	// int range = 16384;
+	// int axis = 0;
+	// int percent;
 	sys_jEvents joyEvent;
 	
 	// when this is returned, it's assumed that there are no more events!
@@ -1308,39 +1309,39 @@ void SDL_Poll()
 			continue;
 
 		case SDL_CONTROLLERAXISMOTION:
-			switch (ev.caxis.axis) {
-					case SDL_CONTROLLER_AXIS_LEFTX:
-						PushJoyButton(K_JOY_STICK1_RIGHT, ( ev.caxis.value > range ));
-						PushJoyButton(K_JOY_STICK1_LEFT, ( ev.caxis.value < -range ));
-						break;
-					case SDL_CONTROLLER_AXIS_LEFTY:
-						PushJoyButton(K_JOY_STICK1_DOWN, ( ev.caxis.value > range ));
-						PushJoyButton(K_JOY_STICK1_UP, ( ev.caxis.value < -range ));
-						break;
-					case SDL_CONTROLLER_AXIS_RIGHTX:
-						PushJoyButton(K_JOY_STICK2_RIGHT, ( ev.caxis.value > range ));
-						PushJoyButton(K_JOY_STICK2_LEFT, ( ev.caxis.value < -range ));
-						break;
-					case SDL_CONTROLLER_AXIS_RIGHTY:
-						PushJoyButton(K_JOY_STICK2_DOWN, ( ev.caxis.value > range ));
-						PushJoyButton(K_JOY_STICK2_UP, ( ev.caxis.value < -range ));
-						break;
-					case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-						PushJoyButton(K_JOY_TRIGGER1, ( ev.caxis.value > range ));
-						break;
-					case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-						PushJoyButton(K_JOY_TRIGGER2, ( ev.caxis.value > range ));
-						break;
-				}
-			if (ev.caxis.axis >= SDL_CONTROLLER_AXIS_LEFTX &&  ev.caxis.axis <= SDL_CONTROLLER_AXIS_RIGHTY) {
-				axis = ev.caxis.axis;
-				percent = (ev.caxis.value * 16) / range;
-				if( joyAxis[axis] != percent )
-				{
-					joyAxis[axis] = percent;
-					Sys_QueEvent( SE_JOYSTICK, axis, percent, 0, NULL, 0 );
-				}
-			}
+			// switch (ev.caxis.axis) {
+			// 		case SDL_CONTROLLER_AXIS_LEFTX:
+			// 			PushJoyButton(K_JOY_STICK1_RIGHT, ( ev.caxis.value > range ));
+			// 			PushJoyButton(K_JOY_STICK1_LEFT, ( ev.caxis.value < -range ));
+			// 			break;
+			// 		case SDL_CONTROLLER_AXIS_LEFTY:
+			// 			PushJoyButton(K_JOY_STICK1_DOWN, ( ev.caxis.value > range ));
+			// 			PushJoyButton(K_JOY_STICK1_UP, ( ev.caxis.value < -range ));
+			// 			break;
+			// 		case SDL_CONTROLLER_AXIS_RIGHTX:
+			// 			PushJoyButton(K_JOY_STICK2_RIGHT, ( ev.caxis.value > range ));
+			// 			PushJoyButton(K_JOY_STICK2_LEFT, ( ev.caxis.value < -range ));
+			// 			break;
+			// 		case SDL_CONTROLLER_AXIS_RIGHTY:
+			// 			PushJoyButton(K_JOY_STICK2_DOWN, ( ev.caxis.value > range ));
+			// 			PushJoyButton(K_JOY_STICK2_UP, ( ev.caxis.value < -range ));
+			// 			break;
+			// 		case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
+			// 			PushJoyButton(K_JOY_TRIGGER1, ( ev.caxis.value > range ));
+			// 			break;
+			// 		case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
+			// 			PushJoyButton(K_JOY_TRIGGER2, ( ev.caxis.value > range ));
+			// 			break;
+			// 	}
+			// if (ev.caxis.axis >= SDL_CONTROLLER_AXIS_LEFTX &&  ev.caxis.axis <= SDL_CONTROLLER_AXIS_RIGHTY) {
+			// 	axis = ev.caxis.axis;
+			// 	percent = (ev.caxis.value * 16) / range;
+			// 	if( joyAxis[axis] != percent )
+			// 	{
+			// 		joyAxis[axis] = percent;
+			// 		Sys_QueEvent( SE_JOYSTICK, axis, percent, 0, NULL, 0 );
+			// 	}
+			// }
 			joyEvent = (sys_jEvents)(J_AXIS_LEFT_X + ev.caxis.axis);
 			switch(joyEvent) {
 				case J_AXIS_LEFT_X:
@@ -1369,29 +1370,29 @@ void SDL_Poll()
 
 		case SDL_CONTROLLERBUTTONDOWN:
 		case SDL_CONTROLLERBUTTONUP:
-			static int controllerButtonRemap[15][2] =
-			{
-				{K_JOY1, J_ACTION1}, //SDL_CONTROLLER_BUTTON_A
-				{K_JOY2, J_ACTION2}, //SDL_CONTROLLER_BUTTON_B
-				{K_JOY3, J_ACTION3}, //SDL_CONTROLLER_BUTTON_X
-				{K_JOY4, J_ACTION4}, //SDL_CONTROLLER_BUTTON_Y
-				{K_JOY10, J_ACTION10}, //SDL_CONTROLLER_BUTTON_BACK
-				{K_JOY11, J_ACTION11}, //SDL_CONTROLLER_BUTTON_GUIDE
-				{K_JOY9, J_ACTION9}, //SDL_CONTROLLER_BUTTON_START
-				{K_JOY7, J_ACTION7}, //SDL_CONTROLLER_BUTTON_LEFTSTICK
-				{K_JOY8, J_ACTION8}, //SDL_CONTROLLER_BUTTON_RIGHTSTICK
-				{K_JOY5, J_ACTION5}, //SDL_CONTROLLER_BUTTON_LEFTSHOULDER
-				{K_JOY6, J_ACTION6}, //SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
+			// static int controllerButtonRemap[15][2] =
+			// {
+			// 	{K_JOY1, J_ACTION1}, //SDL_CONTROLLER_BUTTON_A
+			// 	{K_JOY2, J_ACTION2}, //SDL_CONTROLLER_BUTTON_B
+			// 	{K_JOY3, J_ACTION3}, //SDL_CONTROLLER_BUTTON_X
+			// 	{K_JOY4, J_ACTION4}, //SDL_CONTROLLER_BUTTON_Y
+			// 	{K_JOY10, J_ACTION10}, //SDL_CONTROLLER_BUTTON_BACK
+			// 	{K_JOY11, J_ACTION11}, //SDL_CONTROLLER_BUTTON_GUIDE
+			// 	{K_JOY9, J_ACTION9}, //SDL_CONTROLLER_BUTTON_START
+			// 	{K_JOY7, J_ACTION7}, //SDL_CONTROLLER_BUTTON_LEFTSTICK
+			// 	{K_JOY8, J_ACTION8}, //SDL_CONTROLLER_BUTTON_RIGHTSTICK
+			// 	{K_JOY5, J_ACTION5}, //SDL_CONTROLLER_BUTTON_LEFTSHOULDER
+			// 	{K_JOY6, J_ACTION6}, //SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
 
-				{K_JOY_DPAD_UP, J_DPAD_UP},
-				{K_JOY_DPAD_DOWN, J_DPAD_DOWN},
-				{K_JOY_DPAD_LEFT, J_DPAD_LEFT},
-				{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
-			};
+			// 	{K_JOY_DPAD_UP, J_DPAD_UP},
+			// 	{K_JOY_DPAD_DOWN, J_DPAD_DOWN},
+			// 	{K_JOY_DPAD_LEFT, J_DPAD_LEFT},
+			// 	{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
+			// };
 
 			//joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], (ev.cbutton.state == SDL_PRESSED ? 1 : 0)));
 			current.buttons[ev.cbutton.button] = (ev.cbutton.state == SDL_PRESSED ? 1 : 0);
-			PushJoyButton(controllerButtonRemap[ev.cbutton.button][0], (ev.cbutton.state == SDL_PRESSED ? 1 : 0));
+			//PushJoyButton(controllerButtonRemap[ev.cbutton.button][0], (ev.cbutton.state == SDL_PRESSED ? 1 : 0));
 			
 			break;
 		//GK: Steam Deck Hack: For some reason Steam Deck spams these two events
@@ -1989,9 +1990,75 @@ void Sys_SetRumble( int device, int low, int hi )
 	#endif
 }
 
+void PushButton( int key, bool value )
+{
+	// So we don't keep sending the same SE_KEY message over and over again
+	if( buttonStates[key] != value )
+	{
+		buttonStates[key] = value;
+		Sys_QueEvent( SE_KEY, key, value, 0, NULL, 0 );
+	}
+}
+
+void PostInputEvent( int event, int value, int range =  16384)
+{
+	// These events are used for GUI button presses
+	if( ( event >= J_ACTION1 ) && ( event <= J_ACTION_MAX ) )
+	{
+		PushButton( K_JOY1 + ( event - J_ACTION1 ), value != 0 );
+	}
+	else if( event == J_AXIS_LEFT_X )
+	{
+		PushButton( K_JOY_STICK1_LEFT, ( value < -range ) );
+		PushButton( K_JOY_STICK1_RIGHT, ( value > range ) );
+	}
+	else if( event == J_AXIS_LEFT_Y )
+	{
+		PushButton( K_JOY_STICK1_UP, ( value < -range ) );
+		PushButton( K_JOY_STICK1_DOWN, ( value > range ) );
+	}
+	else if( event == J_AXIS_RIGHT_X )
+	{
+		PushButton( K_JOY_STICK2_LEFT, ( value < -range ) );
+		PushButton( K_JOY_STICK2_RIGHT, ( value > range ) );
+	}
+	else if( event == J_AXIS_RIGHT_Y )
+	{
+		PushButton( K_JOY_STICK2_UP, ( value < -range ) );
+		PushButton( K_JOY_STICK2_DOWN, ( value > range ) );
+	}
+	else if( ( event >= J_DPAD_UP ) && ( event <= J_DPAD_RIGHT ) )
+	{
+		PushButton( K_JOY_DPAD_UP + ( event - J_DPAD_UP ), value != 0 );
+	}
+	else if( event == J_AXIS_LEFT_TRIG )
+	{
+		PushButton( K_JOY_TRIGGER1, ( value > range ) );
+	}
+	else if( event == J_AXIS_RIGHT_TRIG )
+	{
+		PushButton( K_JOY_TRIGGER2, ( value > range ) );
+	}
+	if( event >= J_AXIS_MIN && event <= J_AXIS_MAX )
+	{
+		int axis = event - J_AXIS_MIN;
+		int percent = ( value * 16 ) / range;
+		if( joyAxis[axis] != percent )
+		{
+			joyAxis[axis] = percent;
+			Sys_QueEvent( SE_JOYSTICK, axis, percent, 0, NULL, 0 );
+		}
+	}
+	
+	// These events are used for actual game input
+	joystick_polls[numEvents].action = event;
+	joystick_polls[numEvents].value = value;
+	numEvents++;
+}
+
 int Sys_PollJoystickInputEvents( int deviceNum )
 {
-	int numEvents = 0;
+	
 	int controllerButtonRemap[15] =
 			{
 				{J_ACTION1}, //SDL_CONTROLLER_BUTTON_A
@@ -2014,40 +2081,26 @@ int Sys_PollJoystickInputEvents( int deviceNum )
 
 	for (int i = 0; i < 15; i++) {
 		if (current.buttons[i] != old.buttons[i]) {
-			joystick_polls[numEvents].action = controllerButtonRemap[i];
-			joystick_polls[numEvents].value = current.buttons[i];
-			numEvents++;
+			PostInputEvent(controllerButtonRemap[i], current.buttons[i]);
 		}
 	}
 	if (current.LXThumb != old.LXThumb) {
-		joystick_polls[numEvents].action = J_AXIS_LEFT_X;
-		joystick_polls[numEvents].value = current.LXThumb;
-		numEvents++;
+		PostInputEvent(J_AXIS_LEFT_X, current.LXThumb);
 	}
 	if (current.LYThumb != old.LYThumb) {
-		joystick_polls[numEvents].action = J_AXIS_LEFT_Y;
-		joystick_polls[numEvents].value = current.LYThumb;
-		numEvents++;
+		PostInputEvent(J_AXIS_LEFT_Y, current.LYThumb);
 	}
 	if (current.RXThumb != old.RXThumb) {
-		joystick_polls[numEvents].action = J_AXIS_RIGHT_X;
-		joystick_polls[numEvents].value = current.RXThumb;
-		numEvents++;
+		PostInputEvent(J_AXIS_RIGHT_X, current.RXThumb);
 	}
 	if (current.RYThumb != old.RYThumb) {
-		joystick_polls[numEvents].action = J_AXIS_RIGHT_Y;
-		joystick_polls[numEvents].value = current.RYThumb;
-		numEvents++;
+		PostInputEvent(J_AXIS_RIGHT_Y, current.RYThumb);
 	}
 	if (current.LTrigger != old.LTrigger) {
-		joystick_polls[numEvents].action = J_AXIS_LEFT_TRIG;
-		joystick_polls[numEvents].value = current.LTrigger;
-		numEvents++;
+		PostInputEvent(J_AXIS_LEFT_TRIG, current.LTrigger);
 	}
 	if (current.RTrigger != old.RTrigger) {
-		joystick_polls[numEvents].action = J_AXIS_RIGHT_TRIG;
-		joystick_polls[numEvents].value = current.RTrigger;
-		numEvents++;
+		PostInputEvent(J_AXIS_RIGHT_TRIG, current.RTrigger);
 	}
 
 	old = current;
