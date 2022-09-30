@@ -1990,6 +1990,7 @@ void Sys_SetRumble( int device, int low, int hi )
 	#endif
 }
 
+//GK: Direct copy from Windows Implementation
 void PushButton( int key, bool value )
 {
 	// So we don't keep sending the same SE_KEY message over and over again
@@ -1999,9 +2000,10 @@ void PushButton( int key, bool value )
 		Sys_QueEvent( SE_KEY, key, value, 0, NULL, 0 );
 	}
 }
-
-void PostInputEvent( int event, int value, int range =  16384)
+//GK: Direct copy from Windows Implementation
+void PostInputEvent( int event, int value )
 {
+	int range = 16384;
 	// These events are used for GUI button presses
 	if( ( event >= J_ACTION1 ) && ( event <= J_ACTION_MAX ) )
 	{
@@ -2039,7 +2041,7 @@ void PostInputEvent( int event, int value, int range =  16384)
 	{
 		PushButton( K_JOY_TRIGGER2, ( value > range ) );
 	}
-	if( event >= J_AXIS_MIN && event <= J_AXIS_MAX )
+	if( event >= J_AXIS_MIN && event < J_AXIS_MAX )
 	{
 		int axis = event - J_AXIS_MIN;
 		int percent = ( value * 16 ) / range;
