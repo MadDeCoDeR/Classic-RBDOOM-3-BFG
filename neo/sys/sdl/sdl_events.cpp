@@ -2001,9 +2001,8 @@ void PushButton( int key, bool value )
 	}
 }
 //GK: Direct copy from Windows Implementation
-void PostInputEvent( int event, int value )
+void PostInputEvent( int event, int value, int range = 16384 )
 {
-	int range = 16384;
 	// These events are used for GUI button presses
 	if( ( event >= J_ACTION1 ) && ( event <= J_ACTION_MAX ) )
 	{
@@ -2041,7 +2040,7 @@ void PostInputEvent( int event, int value )
 	{
 		PushButton( K_JOY_TRIGGER2, ( value > range ) );
 	}
-	if( event >= J_AXIS_MIN && event < J_AXIS_MAX )
+	if( event >= J_AXIS_MIN && event <= J_AXIS_MAX )
 	{
 		int axis = event - J_AXIS_MIN;
 		int percent = ( value * 16 ) / range;
@@ -2060,7 +2059,7 @@ void PostInputEvent( int event, int value )
 
 int Sys_PollJoystickInputEvents( int deviceNum )
 {
-	
+	numEvents = 0;
 	int controllerButtonRemap[15] =
 			{
 				{J_ACTION1}, //SDL_CONTROLLER_BUTTON_A
