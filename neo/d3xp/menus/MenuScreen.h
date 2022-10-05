@@ -1887,7 +1887,8 @@ public:
 		showSoulCubeInfoOnLoad(false),
 		subtitles(NULL),
 		subtitlesText(NULL),
-		subtitlePriority(-1)
+		subtitlePriority(-1),
+		inCinematic(false)
 	{
 	}
 	
@@ -2029,6 +2030,8 @@ public:
 		idSWFTextInstance*		subtitlesText;
 		int						subtitlePriority;
 		idStr					subtitleShaderName;
+
+		bool					inCinematic;
 };
 
 //*

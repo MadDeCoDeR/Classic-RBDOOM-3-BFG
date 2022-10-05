@@ -2457,6 +2457,10 @@ void	idMenuScreen_HUDLocal::clearCaption(idStr shaderName) {
 
 void idMenuScreen_HUDLocal::setCinematic(bool value)
 {
+	if (this->inCinematic == value) {
+		return;
+	}
+	this->inCinematic = value;
 	if (stamina != NULL) {
 		stamina->GetSprite()->SetVisible(!value);
 	}

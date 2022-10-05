@@ -511,6 +511,7 @@ void idPlayerView::SingleView( const renderView_t* _view, idMenuHandler_HUD* hud
 		}
 		if (!cvarSystem->GetCVarBool("in_photomode")) {
 			player->DrawHUD(hudManager);
+			hudManager->GetHud()->setCinematic(gameLocal.inCinematic);
 		}
 		
 		if( player->spectating )
