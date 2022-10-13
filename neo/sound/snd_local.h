@@ -604,10 +604,12 @@ public:
 		muted( false ),
 		musicMuted( false ),
 		needsRestart( false ),
-		initOnce( false )
+		initOnce( false ),
+		useXAudio( false )
 	{}
 	private:
 		bool initOnce;
+		bool useXAudio;
 };
 
 extern	idSoundSystemLocal	soundSystemLocal;

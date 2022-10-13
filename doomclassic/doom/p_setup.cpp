@@ -63,10 +63,6 @@ void	P_SpawnMapThing (mapthing_t*	mthing);
 // Store VERTEXES, LINEDEFS, SIDEDEFS, etc.
 //
 
-#if defined(_MSC_VER) && defined(USE_XAUDIO2)
-extern idCVar s_useXAudio;
-#endif
-
 
 
 
@@ -250,7 +246,7 @@ void P_LoadSectors (int lump)
 		//GK: Load the reverbs based on sector's index
 		ss->counter = i;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-		if (!s_useXAudio.GetBool()) {
+		if (!idLib::useSecondaryAudioAPI) {
 #endif
 			if (::g->hasreverb) {
 				if (::g->reverbs.size() < i + 1) {
@@ -781,7 +777,7 @@ P_SetupLevel
 	::g->isfliped = false;
 	//GK: Make sure previous reverb effects are freed
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (!s_useXAudio.GetBool()) {
+	if (!idLib::useSecondaryAudioAPI) {
 #endif
 		if (::g->hasreverb) {
 			for (int i1 = ::g->reverbs.size() - 1; i1 >= 0; i1--) {
@@ -818,7 +814,7 @@ P_SetupLevel
 			sprintf(lumpname, "%s", ::g->maps[map-1].lumpname);
 		}
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-		if (!s_useXAudio.GetBool()) {
+		if (!idLib::useSecondaryAudioAPI) {
 #endif
 			//GK: Get Map's name in order to check for reverbs
 			switch (::g->gamemission) {
@@ -851,7 +847,7 @@ P_SetupLevel
 			if (episode < 5 && map < 10) {
 				idLib::Printf("%s\n", mapnames[(episode - 1) * 9 + (map - 1)]);
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-				if (!s_useXAudio.GetBool())
+				if (!idLib::useSecondaryAudioAPI)
 #endif
 					::g->mapname = mapnames[(episode - 1) * 9 + (map - 1)];
 				
@@ -873,7 +869,7 @@ P_SetupLevel
 						sprintf(lumpname, "%s", ::g->maps[newmap - 1].lumpname);
 						if (::g->maps[newmap - 1].realname != NULL) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-							if (!s_useXAudio.GetBool()) 
+							if (!idLib::useSecondaryAudioAPI)
 #endif
 								::g->mapname = ::g->maps[newmap - 1].realname;
 							

@@ -26,8 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-#pragma hdrstop
 #include "precompiled.h"
+#pragma hdrstop
 #include "../Game_local.h"
 
 const static int NUM_ADVANCED_OPTIONS_OPTIONS = 8;
@@ -36,6 +36,9 @@ const static int NUM_ADVANCED_OPTIONS_OPTIONS = 8;
 //extern idCVar pm_vmfov;
 
 extern idCVar sys_lang;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+extern idCVar s_useXAudio2;
+#endif
 
 /*
 ========================
@@ -107,13 +110,13 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	options->AddChild(control);
 
 	if (Sys_NumLangs() > 1) {
-	control = new(TAG_SWF) idMenuWidget_ControlButton();
-	control->SetOptionType(OPTION_SLIDER_TEXT);
-	control->SetLabel("#str_lang_menu");	// Language
-	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_LANG);
-	control->SetupEvents(2, options->GetChildren().Num());
-	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_LANG);
-	options->AddChild(control);
+		control = new(TAG_SWF) idMenuWidget_ControlButton();
+		control->SetOptionType(OPTION_SLIDER_TEXT);
+		control->SetLabel("#str_lang_menu");	// Language
+		control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_LANG);
+		control->SetupEvents(2, options->GetChildren().Num());
+		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_LANG);
+		options->AddChild(control);
 	}
 
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
@@ -123,7 +126,17 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SMHUD);
 	options->AddChild(control);
-	
+
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TEXT);
+	control->SetLabel("#str_sapi"); //Audio API (Windows ONLY)
+	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SAPI);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SAPI);
+	options->AddChild(control);
+#endif
+
 	options->AddEventAction( WIDGET_EVENT_SCROLL_DOWN ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_DOWN_START_REPEATER, WIDGET_EVENT_SCROLL_DOWN ) );
 	options->AddEventAction( WIDGET_EVENT_SCROLL_UP ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_UP_START_REPEATER, WIDGET_EVENT_SCROLL_UP ) );
 	options->AddEventAction( WIDGET_EVENT_SCROLL_DOWN_RELEASE ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_STOP_REPEATER, WIDGET_EVENT_SCROLL_DOWN_RELEASE ) );
@@ -366,6 +379,9 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Load
 	originalFPS = com_showFPS.GetInteger();
 	originalLang = sys_lang.GetString();
 	originalSMHUD = game->GetCVarInteger("pm_smartHUD");
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	originalSAPI = s_useXAudio2.GetInteger();
+#endif
 }
 
 bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsRestartRequired() const
@@ -373,6 +389,11 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsRe
 	if (idStr::Icmp(originalLang, sys_lang.GetString()) != 0) {
 		return true;
 	}
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (originalSAPI != s_useXAudio2.GetInteger()) {
+		return true;
+	}
+#endif
 	return false;
 }
 
@@ -466,6 +487,7 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 			break;
 		}
 		case ADV_FIELD_LANG:
+		{
 			idList<int> langValues;
 			langValues.Clear();
 
@@ -474,6 +496,12 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 			}
 			sys_lang.SetString(Sys_Lang(AdjustOption(Sys_LangIndex(sys_lang.GetString()), langValues.Ptr(), Sys_NumLangs(), adjustAmount)));
 			break;
+		}
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+		case ADV_FIELD_SAPI:
+			s_useXAudio2.SetBool(AdjustOption(s_useXAudio2.GetBool(), genericValues, genericNumValues, adjustAmount));
+			break;
+#endif
 		
 	}
 	cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
@@ -533,6 +561,12 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSett
 				return "#str_swf_disabled";
 			}
 		}
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+		case ADV_FIELD_SAPI:
+		{
+			return s_useXAudio2.GetBool() ? "#str_swf_xaudio" : "#str_swf_openAL";
+		}
+#endif
 	}
 	return false;
 }
@@ -566,5 +600,10 @@ bool idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::IsDa
 	{
 		return true;
 	}
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (originalSAPI != s_useXAudio2.GetInteger()) {
+		return true;
+	}
+#endif
 	return false;
 }

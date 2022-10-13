@@ -202,6 +202,7 @@ typedef enum
 	sfx_empty2,
 	sound_rp,
 	music_rev,
+	s_api,
 	sound_end
 } sound_e;
 typedef enum

@@ -39,9 +39,6 @@ If you have questions concerning this license or the applicable additional terms
 
 extern idCVar s_noSound;
 extern idCVar s_volume_dB;
-#if defined(_MSC_VER) && defined(USE_XAUDIO2)
-extern idCVar s_useXAudio;
-#endif
 
 //#define JPEG_INTERNALS
 //extern "C" {
@@ -478,7 +475,7 @@ idCinematicLocal::idCinematicLocal()
 #endif
 	
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (s_useXAudio.GetBool()) {
+	if (idLib::useSecondaryAudioAPI) {
 		cinematicAudio = new(TAG_AUDIO) CinematicAudio_XAudio2;
 	} else
 #endif

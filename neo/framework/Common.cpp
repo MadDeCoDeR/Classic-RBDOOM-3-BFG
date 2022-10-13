@@ -144,6 +144,9 @@ idCVar com_skipIntroVideos( "com_skipIntroVideos", "0", CVAR_BOOL , "skips intro
 struct Globals;
 extern idCVar r_aspectcorrect; //GK: And that is why you can't have cool stuff in the game
 extern idCVar in_joyjpn;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+extern idCVar s_useXAudio2;
+#endif
 
 /*
 ==================
@@ -1543,6 +1546,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		// if any archived cvars are modified after this, we will trigger a writing of the config file
 		cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 		
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+		idLib::useSecondaryAudioAPI = s_useXAudio2.GetBool();
+#endif
 
 		// init OpenGL, which will open a window and connect sound and input hardware
 		renderSystem->InitOpenGL();

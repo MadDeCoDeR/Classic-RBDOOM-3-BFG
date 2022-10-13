@@ -40,10 +40,6 @@ idCVar s_showStartSound( "s_showStartSound", "0", CVAR_BOOL, "print a message ev
 idCVar s_useOcclusion( "s_useOcclusion", "1", CVAR_BOOL, "Attenuate sounds based on walls" );
 idCVar s_centerFractionVO( "s_centerFractionVO", "0.75", CVAR_FLOAT, "Portion of VO sounds routed to the center channel" );
 
-#if defined(_MSC_VER) && defined(USE_XAUDIO2)
-extern idCVar s_useXAudio;
-#endif
-
 extern idCVar s_playDefaultSound;
 extern idCVar s_noSound;
 
@@ -170,7 +166,7 @@ Never actually mute VO because we can't restart them precisely enough for lip sy
 bool idSoundChannel::CanMute() const
 {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	return s_useXAudio.GetBool() || IsLooping() || hardwareVoice == NULL;
+	return idLib::useSecondaryAudioAPI || IsLooping() || hardwareVoice == NULL;
 #else
 	return IsLooping() || hardwareVoice == NULL;
 #endif

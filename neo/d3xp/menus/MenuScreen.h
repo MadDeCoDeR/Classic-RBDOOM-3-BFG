@@ -1540,6 +1540,7 @@ public:
 			ADV_FIELD_FPS,
 			ADV_FIELD_LANG,
 			ADV_FIELD_SMHUD,
+			ADV_FIELD_SAPI,
 			MAX_ADVANCED_FIELDS
 		};
 
@@ -1569,6 +1570,7 @@ public:
 		int originalFPS;
 		idStr originalLang;
 		int originalSMHUD;
+		int	originalSAPI;
 
 		int AdjustOption(int currentValue, const int values[], int numValues, int adjustment);
 	};

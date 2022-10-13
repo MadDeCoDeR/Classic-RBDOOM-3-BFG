@@ -104,7 +104,7 @@ extern idCVar in_joyjpn;
 extern idCVar r_swapInterval;
 extern idCVar cl_HUD;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-extern idCVar s_useXAudio;
+extern idCVar s_useXAudio2;
 #endif
 
 extern idCVar in_photomode;
@@ -209,6 +209,9 @@ void M_SfxVol(int choice);
 void M_MusicVol(int choice);
 void M_MusicRev(int choice);
 void M_RandomPitch(int choice);
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+void M_SAPI(int choice);
+#endif
 void M_ChangeDetail(int choice);
 void M_SizeDisplay(int choice);
 void M_StartGame(int choice);
@@ -1055,6 +1058,10 @@ char	msgNames[2][9] =
 {
 "M_MSGOFF","M_MSGON"
 };
+char	sapiNames[2][9] =
+{
+"M_OPENAL", "M_XAUDIO"
+};
 //
 // Change Sfx & Music volumes
 //
@@ -1073,6 +1080,11 @@ void M_DrawSound(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[randpitch], PU_CACHE_SHARED), W_GetNumForName(msgNames[randpitch])), false);
 	V_DrawPatchDirect(::g->SoundDef.x + 170, ::g->SoundDef.y + LINEHEIGHT * music_rev, 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[musrev], PU_CACHE_SHARED), W_GetNumForName(msgNames[musrev])), false);
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	int sapi = s_useXAudio2.GetInteger() >= 1 ? 1 : 0;
+	V_DrawPatchDirect(::g->SoundDef.x + 130, ::g->SoundDef.y + LINEHEIGHT * s_api, 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(sapiNames[sapi], PU_CACHE_SHARED), W_GetNumForName(sapiNames[sapi])), false);
+#endif
 }
 
 char	fullNames[3][9] =
@@ -1222,6 +1234,13 @@ void M_RandomPitch(int choice) {
 void M_MusicRev(int choice) {
 	S_museax.SetBool(!S_museax.GetBool());
 }
+
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+void M_SAPI(int choice) {
+	s_useXAudio2.SetBool(!s_useXAudio2.GetBool());
+	hardreset = true;
+}
+#endif
 
 
 //
@@ -2009,7 +2028,7 @@ void M_CloseGame()
 	//GK: Make sure the other game wont start with reverb
 //#ifdef USE_OPENAL
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (!s_useXAudio.GetBool()) 
+	if (!idLib::useSecondaryAudioAPI)
 #endif
 		alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
 	

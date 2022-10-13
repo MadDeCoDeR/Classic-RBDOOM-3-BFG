@@ -54,9 +54,6 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar cl_jump("cl_jump", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable jumping on classic Doom");
 idCVar cl_freelookclamp("cl_freelookclamp", "550", CVAR_INTEGER | CVAR_ARCHIVE, "Set the absolute mousey clamp limit", -4000, 4000);
-#if defined(_MSC_VER) && defined(USE_XAUDIO2)
-extern idCVar s_useXAudio;
-#endif
 
 //
 // P_Thrust
@@ -358,7 +355,7 @@ void P_PlayerThink (player_t* player)
 
 	P_CalcHeight (player);
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (!s_useXAudio.GetBool()) {
+	if (!idLib::useSecondaryAudioAPI) {
 #endif
 		if (::g->hasreverb)
 			P_Reverb(player);

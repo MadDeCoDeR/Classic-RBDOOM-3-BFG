@@ -26,8 +26,8 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-#pragma hdrstop
 #include "precompiled.h"
+#pragma hdrstop
 
 #include "snd_local.h"
 
@@ -44,7 +44,7 @@ idCVar s_maxSamples( "s_maxSamples", "5", CVAR_INTEGER, "max samples to load per
 #endif
 
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-idCVar s_useXAudio("s_useXAudio", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_ARCHIVE, "set in order to use XAudio 2");
+idCVar s_useXAudio2("s_useXAudio2", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_ARCHIVE, "set in order to use XAudio 2");
 #endif
 
 idCVar preLoad_Samples( "preLoad_Samples", "1", CVAR_SYSTEM | CVAR_BOOL, "preload samples during beginlevelload" );
@@ -139,7 +139,7 @@ void idSoundSystemLocal::Restart()
 		}
 	}
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (s_useXAudio.GetBool()) {
+	if (useXAudio) {
 		// Shutdown sound hardware
 		hardware->Shutdown();
 
@@ -165,7 +165,7 @@ void DefaultDeviceChangeThread(void* data) {
 		int	now = Sys_Milliseconds();
 		if (now >= nextCheck) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-			if (s_useXAudio.GetBool()) {
+			if (idLib::useSecondaryAudioAPI) {
 				AudioDevice defaultDevice;
 				idSoundHardware_XAudio2::EnumerateAudioDevices(&defaultDevice);
 				if (defaultDevice.id != ((AudioDevice*)data)->id) {
@@ -209,8 +209,9 @@ void idSoundSystemLocal::Init()
 	random.SetSeed( soundTime );
 
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (s_useXAudio.GetBool()) {
+	if (idLib::useSecondaryAudioAPI) {
 		hardware = new(TAG_AUDIO) idSoundHardware_XAudio2;
+		useXAudio = true;
 	} else 
 #endif
 		hardware = new(TAG_AUDIO) idSoundHardware_OpenAL;
@@ -229,7 +230,7 @@ void idSoundSystemLocal::Init()
 	if (!initOnce && s_device.GetInteger() < 0) {
 		idLib::Printf("Creating Default Device Detection Thread\n");
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-		if (s_useXAudio.GetBool()) {
+		if (useXAudio) {
 			Sys_CreateThread((xthread_t)DefaultDeviceChangeThread, ((idSoundHardware_XAudio2*)hardware)->GetSelectedDevice(), THREAD_LOWEST, "Default Audio Device Change Listener", CORE_ANY);
 		}
 		else
@@ -472,7 +473,7 @@ idSoundSystemLocal::GetInternal
 void* idSoundSystemLocal::GetInternal() const
 {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (s_useXAudio.GetBool()) {
+	if (useXAudio) {
 		return (void*)((idSoundHardware_XAudio2*)hardware)->GetIXAudio2();
 	} else
 #endif
@@ -531,7 +532,7 @@ idSoundSample* idSoundSystemLocal::LoadSample( const char* name )
 	}
 	idSoundSample* sample;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (s_useXAudio.GetBool()) {
+	if (useXAudio) {
 		sample = new(TAG_AUDIO) idSoundSample_XAudio2;
 	} else
 #endif

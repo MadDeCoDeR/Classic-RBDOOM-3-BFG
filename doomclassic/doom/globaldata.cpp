@@ -69,6 +69,9 @@ void M_SfxVol(int choice);
 void M_MusicVol(int choice);
 void M_MusicRev(int choice);
 void M_RandomPitch(int choice);
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+void M_SAPI(int choice);
+#endif
 void M_ChangeDetail(int choice);
 void M_SizeDisplay(int choice);
 void M_StartGame(int choice);

@@ -87,9 +87,6 @@ void W_RemoveLump(int lump);
 bool W_InjectLump(std::vector<filelump_t>::iterator file, int pos, idFile* handle);
 
 extern idCVar fs_savepath;
-#if defined(_MSC_VER) && defined(USE_XAUDIO2)
-extern idCVar s_useXAudio;
-#endif
 
 extern idCVar in_photomode;
 
@@ -609,7 +606,7 @@ void W_AddFile ( const char *filename)
 					lumpinfo.emplace_back(tlump_);
 					//GK: Check for REVERBD lump and activate reverb check ups
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-					if (!s_useXAudio.GetBool()) {
+					if (!idLib::useSecondaryAudioAPI) {
 #endif
 						if (!idStr::Cmpn(filelumpPointer->name, "REVERBD", 7)) {
 							::g->hasreverb = true;

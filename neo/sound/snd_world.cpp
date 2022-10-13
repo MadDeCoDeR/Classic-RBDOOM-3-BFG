@@ -45,9 +45,6 @@ idCVar s_drawSounds( "s_drawSounds", "0", CVAR_INTEGER, "", 0, 2, idCmdSystem::A
 idCVar s_showVoices( "s_showVoices", "0", CVAR_BOOL, "show active voices" );
 idCVar s_volume_dB( "s_volume_dB", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB" );
 extern idCVar s_noSound;
-#if defined(_MSC_VER) && defined(USE_XAUDIO2)
-extern idCVar s_useXAudio;
-#endif
 
 extern void WriteDeclCache( idDemoFile* f, int demoCategory, int demoCode, declType_t  declType );
 /*
@@ -429,7 +426,7 @@ void idSoundWorldLocal::Update()
 			if( canMute && channel->volumeDB <= DB_SILENCE )
 			{
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-				if (s_useXAudio.GetBool()) {
+				if (idLib::useSecondaryAudioAPI) {
 					channel->Mute();
 					continue;
 				}

@@ -29,9 +29,6 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "snd_local.h"
-#if defined(_MSC_VER) && defined(USE_XAUDIO2)
-extern idCVar s_useXAudio;
-#endif
 
 /*
 ===============
@@ -90,7 +87,7 @@ bool idEFXFile::ReadEffect( idLexer &src, idSoundEffect *effect ) {
 	// reverb effect
 	if ( token == "reverb" ) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-		if (!s_useXAudio.GetBool()) {
+		if (!idLib::useSecondaryAudioAPI) {
 #endif
 			EFXEAXREVERBPROPERTIES* reverb = (EFXEAXREVERBPROPERTIES*)Mem_Alloc(sizeof(EFXEAXREVERBPROPERTIES), TAG_AUDIO);
 			if (reverb) {

@@ -71,6 +71,8 @@ public:
 
 	static bool					classichUsed;
 	static bool					warpUsed;
+	//Changing Audio APIs on runtime can cause instability issues so do it once the engine has been booted
+	static bool					useSecondaryAudioAPI;
 
 	//GK End
 

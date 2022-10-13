@@ -50,6 +50,7 @@ bool			idLib::classichUsed = 0;
 bool			idLib::warpUsed = 0;
 bool			idLib::newd3 = 0;
 ID_TLS			idLib::isMainThread = 0;
+bool			idLib::useSecondaryAudioAPI = 0;
 
 char idException::error[2048];
 

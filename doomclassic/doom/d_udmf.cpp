@@ -40,9 +40,6 @@ long numthings;
 long numsectors;
 long numsidedefs;
 long numvertexes;
-#if defined(_MSC_VER) && defined(USE_XAUDIO2)
-extern idCVar s_useXAudio;
-#endif
 
 typedef struct {
 	const char* name;
@@ -279,7 +276,7 @@ void ParseSector(std::vector<std::string> lines, int index) {
 	//GK: Load the reverbs based on sector's index
 	::g->sectors[index].counter = index;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (!s_useXAudio.GetBool()) {
+	if (!idLib::useSecondaryAudioAPI) {
 #endif
 		if (::g->hasreverb) {
 			if (::g->reverbs.size() < index + 1) {

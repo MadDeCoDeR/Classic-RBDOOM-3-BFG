@@ -45,6 +45,9 @@
 	"#str_lang_menu"	"Sprache"
 	"#str_swf_tp_buton"	"Fotomodus"
 	"#str_smart_hud"	"Intelligentes HUD"
+	"#str_sapi"			"Audio API"
+	"#str_swf_xaudio"	"XAudio 2"
+	"#str_swf_openAL"	"OpenAL-soft"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "Erste zu ladende Karte"
 }
