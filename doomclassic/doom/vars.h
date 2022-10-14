@@ -409,7 +409,11 @@ menuitem_t NewGameMenu[5];
 menu_t  NewDef;
 menuitem_t OptionsMenu[8];
 menu_t  OptionsDef;
+#if defined (_MSC_VER) && defined(USE_XAUDIO2)
 menuitem_t SoundMenu[7];
+#else
+menuitem_t SoundMenu[6];
+#endif
 menu_t  SoundDef;
 menuitem_t VideoMenu[7];
 menu_t  VideoDef;
