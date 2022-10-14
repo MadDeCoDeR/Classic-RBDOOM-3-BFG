@@ -1815,6 +1815,7 @@ void Sys_ClearEvents()
 	SDL_Event ev;
 	eventHead = eventTail = 0;
 	
+	SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
 	// while( SDL_PollEvent( &ev ) )
 	// 	;
 		
@@ -1837,6 +1838,7 @@ void Sys_GenerateEvents()
 		
 	//SDL_PumpEvents();
 	SDL_Poll();
+	SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT); //GK: Nuke the rest (what could possible go wrong?)
 }
 
 /*
