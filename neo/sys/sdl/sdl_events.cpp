@@ -703,10 +703,10 @@ void Sys_InitInput()
 	SDL_CreateThread(JoystickSamplingThread,NULL);
 	#endif
 	//GK:End
-	//GK: Hack ?
-	Sys_GenerateEvents();
+	while(eventHead - eventTail < MAX_QUED_EVENTS) {
+		Sys_GenerateEvents();
+	}
 	Sys_ClearEvents();
-
 }
 
 /*
@@ -2121,6 +2121,11 @@ int Sys_PollJoystickInputEvents( int deviceNum )
 int Sys_ReturnJoystickInputEvent( const int n, int& action, int& value )
 {
 	// Get last element of the list and copy into argument references
+	if( ( n < 0 ) || ( n >= MAX_JOY_EVENT ) )
+	{
+		return 0;
+	}
+
 	const joystick_poll_t& mp = joystick_polls[n];
 	action = mp.action;
 	value = mp.value;
