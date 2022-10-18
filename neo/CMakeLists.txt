@@ -1437,7 +1437,7 @@ if(MSVC)
 		endif()
 	else()
 		find_package(DirectX REQUIRED)
-		include_directories(${DirectX_INCLUDE_DIRS})
+		include_directories(${DirectX_INCLUDE_DIR})
 	endif()
 	
 	if(USE_VULKAN)
@@ -1748,7 +1748,7 @@ else()
 			find_package(OpenAL REQUIRED)
 			add_definitions(-DUSE_OPENAL)
 
-			include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
+			include_directories(${OPENAL_INCLUDE_DIR})
 			
 			#if(CMAKE_CL_64)
 			#	link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/lib/win64)
