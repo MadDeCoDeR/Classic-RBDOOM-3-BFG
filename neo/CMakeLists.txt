@@ -1437,7 +1437,7 @@ if(MSVC)
 		endif()
 	else()
 		find_package(DirectX REQUIRED)
-		include_directories(${DirectX_INCLUDE_DIR})
+		include_directories(${DirectX_INCLUDE_DIRS})
 	endif()
 	
 	if(USE_VULKAN)
@@ -1492,9 +1492,19 @@ if(MSVC)
 	#if(OPENAL)
 		add_definitions(-DUSE_OPENAL)
 	
-		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
+		find_package(OpenAL)
+		if (OPENAL_FOUND)
+			include_directories(${OPENAL_INCLUDE_DIR})
+			set(OpenAL_LIBRARY ${OPENAL_LIBRARY})
+		else (OPENAL_FOUND)
+			include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
 		
-		link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/libs/${OS_CPU})
+			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/libs/${OS_CPU})
+
+			set(OpenAL_LIBRARY
+				OpenAL32)
+			install(FILES libs/openal-soft/libs/${OS_CPU}/OpenAL32.dll DESTINATION .)
+		endif (OPENAL_FOUND)
 		
 		
 		list(APPEND RBDOOM3_INCLUDES 
@@ -1505,7 +1515,7 @@ if(MSVC)
 			${DOOMCLASSIC_OPENAL_SOURCES})
 			
 		if (USE_XAUDIO2_PACKAGE)
-			find_package(xaudi2redist)
+			find_package(xaudio2redist)
 			if (CMAKE_CL_64)
 				set(CPU_ARCH x64)
 			else()
@@ -1536,10 +1546,6 @@ if(MSVC)
 		#target_link_libraries(DoomBFA ${XAUDIO2_REDIST_DEBUG_LIBRARIES} ${XAUDIO2_REDIST_RELEASE_LIBRARIES})
 	endif()
 		
-		set(OpenAL_LIBRARIES
-			OpenAL32)
-			
-		install(FILES libs/openal-soft/libs/${OS_CPU}/OpenAL32.dll DESTINATION .)
 	#else()
 	if(USE_XAUDIO2)
 		list(APPEND RBDOOM3_INCLUDES 
@@ -1659,12 +1665,14 @@ if(MSVC)
 	#GK: add +set r_fullscreen "0" command line (VS DEBUGGER and Fullscreen not a good mix)
 	set_target_properties(DoomBFA PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "+set r_fullscreen 0")
 	
-	add_custom_command(TARGET DoomBFA
-                   POST_BUILD
-				   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				   ${CMAKE_SOURCE_DIR}/libs/openal-soft/bin/${OS_CPU}/soft_oal.dll 
-				   $<TARGET_FILE_DIR:DoomBFA>/OpenAL32.dll
-                   COMMENT "Copy OpenAL dll")
+	if (NOT OPENAL_FOUND)
+		add_custom_command(TARGET DoomBFA
+					   POST_BUILD
+					   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+					   ${CMAKE_SOURCE_DIR}/libs/openal-soft/bin/${OS_CPU}/soft_oal.dll 
+					   $<TARGET_FILE_DIR:DoomBFA>/OpenAL32.dll
+					   COMMENT "Copy OpenAL dll")
+	endif(OPENAL_FOUND)
 		
 	add_dependencies(DoomBFA idlib external)
 	target_link_libraries(DoomBFA
@@ -1680,7 +1688,7 @@ if(MSVC)
 		${Vulkan_RELEASE_LIBRARIES}
 		${Vulkan_DEBUG_LIBRARIES}
 		${OpenGL_LIBRARIES}
-		${OpenAL_LIBRARIES}
+		${OpenAL_LIBRARY}
 		${FFmpeg_LIBRARIES}
         ${ZLIB_LIBRARY}
         ${PNG_LIBRARY}

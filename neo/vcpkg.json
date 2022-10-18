@@ -5,6 +5,7 @@
     "zlib",
     "libpng",
     "libjpeg-turbo",
+    "openal-soft",
     {
       "name": "glew",
       "platform": "windows"
