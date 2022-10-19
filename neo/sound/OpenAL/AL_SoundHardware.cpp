@@ -27,13 +27,17 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-#pragma hdrstop
 #include "precompiled.h"
+#pragma hdrstop
 #include "../snd_local.h"
 #include "../../../doomclassic/doom/i_sound_openal.h"
 #include "AL/alext.h"
 
+#ifdef _MSC_VER
 LPALCREOPENDEVICESOFT alcReopenDeviceSOFT = (LPALCREOPENDEVICESOFT)alGetProcAddress("alcReopenDeviceSOFT");
+#endif // !_MSC_VER
+
+
 
 extern idCVar s_showLevelMeter;
 extern idCVar s_meterTopTime;

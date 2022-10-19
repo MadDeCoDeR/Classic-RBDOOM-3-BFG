@@ -25,6 +25,7 @@
 #include "precompiled.h"
 #include "AL_EAX.h"
 
+#ifdef _MSC_VER
 LPALGENEFFECTS			alGenEffects = (LPALGENEFFECTS)alGetProcAddress("alGenEffects");
 LPALEFFECTI				alEffecti = (LPALEFFECTI)alGetProcAddress("alEffecti");
 LPALEFFECTF				alEffectf = (LPALEFFECTF)alGetProcAddress("alEffectf");
@@ -41,3 +42,4 @@ LPALFILTERFV			alFilterfv = (LPALFILTERFV)alGetProcAddress("alFilterfv");
 LPALFILTERI				alFilteri = (LPALFILTERI)alGetProcAddress("alFilteri");
 LPALDELETEFILTERS		alDeleteFilters = (LPALDELETEFILTERS)alGetProcAddress("alDeleteFilters");
 LPALISFILTER			alIsFilter = (LPALISFILTER)alGetProcAddress("alIsFilter");
+#endif
