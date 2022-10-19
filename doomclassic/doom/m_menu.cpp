@@ -2030,7 +2030,7 @@ void M_CloseGame()
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 	if (!idLib::useSecondaryAudioAPI)
 #endif
-		alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
+		alAuxiliaryEffectSlotiRef((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
 	
 //#endif
 	resetValues();

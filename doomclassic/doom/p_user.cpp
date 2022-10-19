@@ -258,17 +258,17 @@ void P_DeathThink (player_t* player)
 void P_Reverb(player_t* player) {
 	int index = player->mo->subsector->sector->counter;
 	if (index != ::g->csec) {
-		if (alIsEffect((ALuint)::g->clEAX)) {
-			alDeleteEffects(1, &::g->clEAX);
+		if (alIsEffectRef((ALuint)::g->clEAX)) {
+			alDeleteEffectsRef(1, &::g->clEAX);
 			::g->clEAX = 0;
 		}
 		if (::g->reverbs[index]) {
 			SetEFX(::g->reverbs[index]);
-			alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, (ALuint)::g->clEAX);
+			alAuxiliaryEffectSlotiRef((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, (ALuint)::g->clEAX);
 			::g->csec = index;
 		}
 		else {
-			alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
+			alAuxiliaryEffectSlotiRef((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
 			::g->csec = index;
 		}
 	}

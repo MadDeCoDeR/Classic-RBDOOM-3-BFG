@@ -491,7 +491,7 @@ bool idSoundVoice_OpenAL::Update()
 	//GK: Set the EFX in the last moment
 	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
 	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 1, AL_FILTER_NULL);
-	if (alIsEffect(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX) && ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
+	if (alIsEffectRef(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX) && ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
 		if (GetOcclusion() > 0.0f) {
 			alSourcei(openalSource, AL_DIRECT_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voicefilter);
 		}

@@ -784,7 +784,7 @@ P_SetupLevel
 				Mem_Free(::g->reverbs[i1]);
 				::g->reverbs.pop_back();
 			}
-			alAuxiliaryEffectSloti((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
+			alAuxiliaryEffectSlotiRef((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
 		}
 		::g->mapindex = 0;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
