@@ -14,6 +14,10 @@
     {
       "name": "xaudio2redist",
       "platform": "windows"
+    },
+    {
+      "name": "sdl2",
+      "platform": "linux"
     }
   ]
 }
