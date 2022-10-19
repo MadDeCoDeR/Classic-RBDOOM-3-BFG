@@ -41,7 +41,7 @@ typedef struct {
 
 void SetEFX(EFXEAXREVERBPROPERTIES* rev)
 {
-	alGenEffects(1, &::g->clEAX);
+	alGenEffectsRef(1, &::g->clEAX);
 
 		//common->Printf("Using EAX Reverb\n");
 
@@ -51,55 +51,55 @@ void SetEFX(EFXEAXREVERBPROPERTIES* rev)
 
 		 * reverb properties. */
 
-		alEffecti((ALuint)::g->clEAX, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
+		alEffectiRef((ALuint)::g->clEAX, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
 
 
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_DENSITY, rev->flDensity);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_DENSITY, rev->flDensity);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_DIFFUSION, rev->flDiffusion);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_DIFFUSION, rev->flDiffusion);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_GAIN, rev->flGain);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_GAIN, rev->flGain);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_GAINHF, rev->flGainHF);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_GAINHF, rev->flGainHF);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_GAINLF, rev->flGainLF);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_GAINLF, rev->flGainLF);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_DECAY_TIME, rev->flDecayTime);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_DECAY_TIME, rev->flDecayTime);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_DECAY_HFRATIO, rev->flDecayHFRatio);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_DECAY_HFRATIO, rev->flDecayHFRatio);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_DECAY_LFRATIO, rev->flDecayLFRatio);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_DECAY_LFRATIO, rev->flDecayLFRatio);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_REFLECTIONS_GAIN, rev->flReflectionsGain);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_REFLECTIONS_GAIN, rev->flReflectionsGain);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_REFLECTIONS_DELAY, rev->flReflectionsDelay);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_REFLECTIONS_DELAY, rev->flReflectionsDelay);
 
-		alEffectfv((ALuint)::g->clEAX, AL_EAXREVERB_REFLECTIONS_PAN, rev->flReflectionsPan);
+		alEffectfvRef((ALuint)::g->clEAX, AL_EAXREVERB_REFLECTIONS_PAN, rev->flReflectionsPan);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_LATE_REVERB_GAIN, rev->flLateReverbGain);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_LATE_REVERB_GAIN, rev->flLateReverbGain);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_LATE_REVERB_DELAY, rev->flLateReverbDelay);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_LATE_REVERB_DELAY, rev->flLateReverbDelay);
 
-		alEffectfv((ALuint)::g->clEAX, AL_EAXREVERB_LATE_REVERB_PAN, rev->flLateReverbPan);
+		alEffectfvRef((ALuint)::g->clEAX, AL_EAXREVERB_LATE_REVERB_PAN, rev->flLateReverbPan);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_ECHO_TIME, rev->flEchoTime);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_ECHO_TIME, rev->flEchoTime);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_ECHO_DEPTH, rev->flEchoDepth);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_ECHO_DEPTH, rev->flEchoDepth);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_MODULATION_TIME, rev->flModulationTime);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_MODULATION_TIME, rev->flModulationTime);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_MODULATION_DEPTH, rev->flModulationDepth);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_MODULATION_DEPTH, rev->flModulationDepth);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, rev->flAirAbsorptionGainHF);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, rev->flAirAbsorptionGainHF);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_HFREFERENCE, rev->flHFReference);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_HFREFERENCE, rev->flHFReference);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_LFREFERENCE, rev->flLFReference);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_LFREFERENCE, rev->flLFReference);
 
-		alEffectf((ALuint)::g->clEAX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, rev->flRoomRolloffFactor);
+		alEffectfRef((ALuint)::g->clEAX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, rev->flRoomRolloffFactor);
 
-		alEffecti((ALuint)::g->clEAX, AL_EAXREVERB_DECAY_HFLIMIT, rev->iDecayHFLimit);
+		alEffectiRef((ALuint)::g->clEAX, AL_EAXREVERB_DECAY_HFLIMIT, rev->iDecayHFLimit);
 }
 
 std::vector<std::string> getReverblines(char* text) {

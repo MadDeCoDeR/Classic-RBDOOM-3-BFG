@@ -33,9 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../../doomclassic/doom/i_sound_openal.h"
 #include "AL/alext.h"
 
-#ifdef _MSC_VER
-LPALCREOPENDEVICESOFT alcReopenDeviceSOFT = (LPALCREOPENDEVICESOFT)alGetProcAddress("alcReopenDeviceSOFT");
-#endif // !_MSC_VER
+LPALCREOPENDEVICESOFT alcReopenDeviceSOFTRef = (LPALCREOPENDEVICESOFT)alGetProcAddress("alcReopenDeviceSOFT");
 
 
 
@@ -184,7 +182,7 @@ void idSoundHardware_OpenAL::RestartHardware()
 	ALCint att[4] = { 0 };
 	att[0] = ALC_MAX_AUXILIARY_SENDS;
 	att[1] = 4;
-	ALCboolean success = alcReopenDeviceSOFT(openalDevice, defaultDevice, att);
+	ALCboolean success = alcReopenDeviceSOFTRef(openalDevice, defaultDevice, att);
 	if (success == ALC_TRUE) {
 		idLib::Printf("Audio device restart completed\n");
 	}
@@ -268,63 +266,63 @@ void idSoundHardware_OpenAL::Init()
 	ALCint num_sends = 0;
 	alcGetIntegerv(openalDevice, ALC_MAX_AUXILIARY_SENDS, 1, &num_sends);
 	common->Printf("idSoundHardware_OpenAL::Init: Number of EAX sends: %d\n", num_sends);
-	alGenAuxiliaryEffectSlots(1, &slot); //GK: This will remain static during the whole execution
-	if (!alIsAuxiliaryEffectSlot(slot)) {
+	alGenAuxiliaryEffectSlotsRef(1, &slot); //GK: This will remain static during the whole execution
+	if (!alIsAuxiliaryEffectSlotRef(slot)) {
 		common->Warning("idSoundHardware_OpenAL::Init: alGenAuxiliaryEffectSlots() failed\n");
 	}
 	else {
 		//GK: Set default preset for Audio Logs, PDA Videos and Radio Communications
-		alGenAuxiliaryEffectSlots(1, &voiceslot);
-		if (!alIsAuxiliaryEffectSlot(voiceslot)) {
+		alGenAuxiliaryEffectSlotsRef(1, &voiceslot);
+		if (!alIsAuxiliaryEffectSlotRef(voiceslot)) {
 			common->Warning("idSoundHardware_OpenAL::Init: EFX voice Effect slot failed to initialize\n");
 		}
 		else {
 			EFXEAXREVERBPROPERTIES voicereverb = EFX_REVERB_PRESET_AUDITORIUM;
 			EFXEAXREVERBPROPERTIES* voicereverb2 = &voicereverb;
 			ALuint EFX;
-			alGenEffects(1, &EFX);
-			alEffecti(EFX, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
-			alEffectf(EFX, AL_EAXREVERB_DENSITY, voicereverb2->flDensity);
-			alEffectf(EFX, AL_EAXREVERB_DIFFUSION, voicereverb2->flDiffusion);
-			alEffectf(EFX, AL_EAXREVERB_GAIN, voicereverb2->flGain);
-			alEffectf(EFX, AL_EAXREVERB_GAINHF, voicereverb2->flGainHF);
-			alEffectf(EFX, AL_EAXREVERB_GAINLF, voicereverb2->flGainLF);
-			alEffectf(EFX, AL_EAXREVERB_DECAY_TIME, voicereverb2->flDecayTime);
-			alEffectf(EFX, AL_EAXREVERB_DECAY_HFRATIO, voicereverb2->flDecayHFRatio);
-			alEffectf(EFX, AL_EAXREVERB_DECAY_LFRATIO, voicereverb2->flDecayLFRatio);
-			alEffectf(EFX, AL_EAXREVERB_REFLECTIONS_GAIN, voicereverb2->flReflectionsGain);
-			alEffectf(EFX, AL_EAXREVERB_REFLECTIONS_DELAY, voicereverb2->flReflectionsDelay);
-			alEffectfv(EFX, AL_EAXREVERB_REFLECTIONS_PAN, voicereverb2->flReflectionsPan);
-			alEffectf(EFX, AL_EAXREVERB_LATE_REVERB_GAIN, voicereverb2->flLateReverbGain);
-			alEffectf(EFX, AL_EAXREVERB_LATE_REVERB_DELAY, voicereverb2->flLateReverbDelay);
-			alEffectfv(EFX, AL_EAXREVERB_LATE_REVERB_PAN, voicereverb2->flLateReverbPan);
-			alEffectf(EFX, AL_EAXREVERB_ECHO_TIME, voicereverb2->flEchoTime);
-			alEffectf(EFX, AL_EAXREVERB_ECHO_DEPTH, voicereverb2->flEchoDepth);
-			alEffectf(EFX, AL_EAXREVERB_MODULATION_TIME, voicereverb2->flModulationTime);
-			alEffectf(EFX, AL_EAXREVERB_MODULATION_DEPTH, voicereverb2->flModulationDepth);
-			alEffectf(EFX, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, voicereverb2->flAirAbsorptionGainHF);
-			alEffectf(EFX, AL_EAXREVERB_HFREFERENCE, voicereverb2->flHFReference);
-			alEffectf(EFX, AL_EAXREVERB_LFREFERENCE, voicereverb2->flLFReference);
-			alEffectf(EFX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, voicereverb2->flRoomRolloffFactor);
-			alEffecti(EFX, AL_EAXREVERB_DECAY_HFLIMIT, voicereverb2->iDecayHFLimit);
-			alAuxiliaryEffectSloti(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voiceslot, AL_EFFECTSLOT_EFFECT, EFX);
-			alDeleteEffects(1, &EFX);
+			alGenEffectsRef(1, &EFX);
+			alEffectiRef(EFX, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
+			alEffectfRef(EFX, AL_EAXREVERB_DENSITY, voicereverb2->flDensity);
+			alEffectfRef(EFX, AL_EAXREVERB_DIFFUSION, voicereverb2->flDiffusion);
+			alEffectfRef(EFX, AL_EAXREVERB_GAIN, voicereverb2->flGain);
+			alEffectfRef(EFX, AL_EAXREVERB_GAINHF, voicereverb2->flGainHF);
+			alEffectfRef(EFX, AL_EAXREVERB_GAINLF, voicereverb2->flGainLF);
+			alEffectfRef(EFX, AL_EAXREVERB_DECAY_TIME, voicereverb2->flDecayTime);
+			alEffectfRef(EFX, AL_EAXREVERB_DECAY_HFRATIO, voicereverb2->flDecayHFRatio);
+			alEffectfRef(EFX, AL_EAXREVERB_DECAY_LFRATIO, voicereverb2->flDecayLFRatio);
+			alEffectfRef(EFX, AL_EAXREVERB_REFLECTIONS_GAIN, voicereverb2->flReflectionsGain);
+			alEffectfRef(EFX, AL_EAXREVERB_REFLECTIONS_DELAY, voicereverb2->flReflectionsDelay);
+			alEffectfvRef(EFX, AL_EAXREVERB_REFLECTIONS_PAN, voicereverb2->flReflectionsPan);
+			alEffectfRef(EFX, AL_EAXREVERB_LATE_REVERB_GAIN, voicereverb2->flLateReverbGain);
+			alEffectfRef(EFX, AL_EAXREVERB_LATE_REVERB_DELAY, voicereverb2->flLateReverbDelay);
+			alEffectfvRef(EFX, AL_EAXREVERB_LATE_REVERB_PAN, voicereverb2->flLateReverbPan);
+			alEffectfRef(EFX, AL_EAXREVERB_ECHO_TIME, voicereverb2->flEchoTime);
+			alEffectfRef(EFX, AL_EAXREVERB_ECHO_DEPTH, voicereverb2->flEchoDepth);
+			alEffectfRef(EFX, AL_EAXREVERB_MODULATION_TIME, voicereverb2->flModulationTime);
+			alEffectfRef(EFX, AL_EAXREVERB_MODULATION_DEPTH, voicereverb2->flModulationDepth);
+			alEffectfRef(EFX, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, voicereverb2->flAirAbsorptionGainHF);
+			alEffectfRef(EFX, AL_EAXREVERB_HFREFERENCE, voicereverb2->flHFReference);
+			alEffectfRef(EFX, AL_EAXREVERB_LFREFERENCE, voicereverb2->flLFReference);
+			alEffectfRef(EFX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, voicereverb2->flRoomRolloffFactor);
+			alEffectiRef(EFX, AL_EAXREVERB_DECAY_HFLIMIT, voicereverb2->iDecayHFLimit);
+			alAuxiliaryEffectSlotiRef(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voiceslot, AL_EFFECTSLOT_EFFECT, EFX);
+			alDeleteEffectsRef(1, &EFX);
 		}
 
-		alGenFilters(1, &voicefilter);
-		if (!alIsFilter(voicefilter)) {
+		alGenFiltersRef(1, &voicefilter);
+		if (!alIsFilterRef(voicefilter)) {
 			common->Warning("idSoundHardware_OpenAL::Init: alGenFilters() failed\n");
 		}
 		else {
 			//GK: Direct Copy paste from Dhewm 3
-			alFilteri(voicefilter, AL_FILTER_TYPE, AL_FILTER_LOWPASS);
+			alFilteriRef(voicefilter, AL_FILTER_TYPE, AL_FILTER_LOWPASS);
 			// original EAX occusion value was -1150
 			// default OCCLUSIONLFRATIO is 0.25
 
 			// pow(10.0, (-1150*0.25)/2000.0)
-			alFilterf(voicefilter, AL_LOWPASS_GAIN, 0.718208f);
+			alFilterfRef(voicefilter, AL_LOWPASS_GAIN, 0.718208f);
 			// pow(10.0, -1150/2000.0)
-			alFilterf(voicefilter, AL_LOWPASS_GAINHF, 0.266073f);
+			alFilterfRef(voicefilter, AL_LOWPASS_GAINHF, 0.266073f);
 		}
 	}
 	}
@@ -382,8 +380,8 @@ void idSoundHardware_OpenAL::Shutdown()
 	I_ShutdownSoundHardwareAL();
 #endif
 
-	if (alIsFilter(voicefilter)) {
-		alDeleteFilters(1, &voicefilter);
+	if (alIsFilterRef(voicefilter)) {
+		alDeleteFiltersRef(1, &voicefilter);
 	}
 
 	ShutdownReverbSystem();
@@ -399,9 +397,9 @@ void idSoundHardware_OpenAL::Shutdown()
 
 void idSoundHardware_OpenAL::ShutdownReverbSystem()
 {
-	alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
-	if (alIsEffect(EAX)) {
-		alDeleteEffects(1, &EAX);
+	alAuxiliaryEffectSlotiRef(slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
+	if (alIsEffectRef(EAX)) {
+		alDeleteEffectsRef(1, &EAX);
 		EAX = 0;
 	}
 }
@@ -539,8 +537,8 @@ void idSoundHardware_OpenAL::Update()
 void idSoundHardware_OpenAL::UpdateEAXEffect(idSoundEffect* effect)
 {
 	EFXEAXREVERBPROPERTIES EnvironmentParameters;
-	if (alIsEffect(EAX)) {
-		alDeleteEffects(1, &EAX);
+	if (alIsEffectRef(EAX)) {
+		alDeleteEffectsRef(1, &EAX);
 
 	}
 	EAX = 0;
@@ -553,7 +551,7 @@ void idSoundHardware_OpenAL::UpdateEAXEffect(idSoundEffect* effect)
 		}*/
 		if (hasEFX) {
 			SetEFX(&EnvironmentParameters);
-			alAuxiliaryEffectSloti(slot, AL_EFFECTSLOT_EFFECT, EAX);
+			alAuxiliaryEffectSlotiRef(slot, AL_EFFECTSLOT_EFFECT, EAX);
 		}
 	}
 }
@@ -567,7 +565,7 @@ idSoundSystemLocal::SetEFX
 */
 void idSoundHardware_OpenAL::SetEFX(EFXEAXREVERBPROPERTIES* rev)
 {
-	alGenEffects(1, &EAX);
+	alGenEffectsRef(1, &EAX);
 	if (alGetEnumValue("AL_EFFECT_EAXREVERB") != 0)
 
 	{
@@ -580,55 +578,55 @@ void idSoundHardware_OpenAL::SetEFX(EFXEAXREVERBPROPERTIES* rev)
 
 		 * reverb properties. */
 
-		alEffecti(EAX, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
+		alEffectiRef(EAX, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
 
 
 
-		alEffectf(EAX, AL_EAXREVERB_DENSITY, rev->flDensity);
+		alEffectfRef(EAX, AL_EAXREVERB_DENSITY, rev->flDensity);
 
-		alEffectf(EAX, AL_EAXREVERB_DIFFUSION, rev->flDiffusion);
+		alEffectfRef(EAX, AL_EAXREVERB_DIFFUSION, rev->flDiffusion);
 
-		alEffectf(EAX, AL_EAXREVERB_GAIN, rev->flGain);
+		alEffectfRef(EAX, AL_EAXREVERB_GAIN, rev->flGain);
 
-		alEffectf(EAX, AL_EAXREVERB_GAINHF, rev->flGainHF);
+		alEffectfRef(EAX, AL_EAXREVERB_GAINHF, rev->flGainHF);
 
-		alEffectf(EAX, AL_EAXREVERB_GAINLF, rev->flGainLF);
+		alEffectfRef(EAX, AL_EAXREVERB_GAINLF, rev->flGainLF);
 
-		alEffectf(EAX, AL_EAXREVERB_DECAY_TIME, rev->flDecayTime);
+		alEffectfRef(EAX, AL_EAXREVERB_DECAY_TIME, rev->flDecayTime);
 
-		alEffectf(EAX, AL_EAXREVERB_DECAY_HFRATIO, rev->flDecayHFRatio);
+		alEffectfRef(EAX, AL_EAXREVERB_DECAY_HFRATIO, rev->flDecayHFRatio);
 
-		alEffectf(EAX, AL_EAXREVERB_DECAY_LFRATIO, rev->flDecayLFRatio);
+		alEffectfRef(EAX, AL_EAXREVERB_DECAY_LFRATIO, rev->flDecayLFRatio);
 
-		alEffectf(EAX, AL_EAXREVERB_REFLECTIONS_GAIN, rev->flReflectionsGain);
+		alEffectfRef(EAX, AL_EAXREVERB_REFLECTIONS_GAIN, rev->flReflectionsGain);
 
-		alEffectf(EAX, AL_EAXREVERB_REFLECTIONS_DELAY, rev->flReflectionsDelay);
+		alEffectfRef(EAX, AL_EAXREVERB_REFLECTIONS_DELAY, rev->flReflectionsDelay);
 
-		alEffectfv(EAX, AL_EAXREVERB_REFLECTIONS_PAN, rev->flReflectionsPan);
+		alEffectfvRef(EAX, AL_EAXREVERB_REFLECTIONS_PAN, rev->flReflectionsPan);
 
-		alEffectf(EAX, AL_EAXREVERB_LATE_REVERB_GAIN, rev->flLateReverbGain);
+		alEffectfRef(EAX, AL_EAXREVERB_LATE_REVERB_GAIN, rev->flLateReverbGain);
 
-		alEffectf(EAX, AL_EAXREVERB_LATE_REVERB_DELAY, rev->flLateReverbDelay);
+		alEffectfRef(EAX, AL_EAXREVERB_LATE_REVERB_DELAY, rev->flLateReverbDelay);
 
-		alEffectfv(EAX, AL_EAXREVERB_LATE_REVERB_PAN, rev->flLateReverbPan);
+		alEffectfvRef(EAX, AL_EAXREVERB_LATE_REVERB_PAN, rev->flLateReverbPan);
 
-		alEffectf(EAX, AL_EAXREVERB_ECHO_TIME, rev->flEchoTime);
+		alEffectfRef(EAX, AL_EAXREVERB_ECHO_TIME, rev->flEchoTime);
 
-		alEffectf(EAX, AL_EAXREVERB_ECHO_DEPTH, rev->flEchoDepth);
+		alEffectfRef(EAX, AL_EAXREVERB_ECHO_DEPTH, rev->flEchoDepth);
 
-		alEffectf(EAX, AL_EAXREVERB_MODULATION_TIME, rev->flModulationTime);
+		alEffectfRef(EAX, AL_EAXREVERB_MODULATION_TIME, rev->flModulationTime);
 
-		alEffectf(EAX, AL_EAXREVERB_MODULATION_DEPTH, rev->flModulationDepth);
+		alEffectfRef(EAX, AL_EAXREVERB_MODULATION_DEPTH, rev->flModulationDepth);
 
-		alEffectf(EAX, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, rev->flAirAbsorptionGainHF);
+		alEffectfRef(EAX, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, rev->flAirAbsorptionGainHF);
 
-		alEffectf(EAX, AL_EAXREVERB_HFREFERENCE, rev->flHFReference);
+		alEffectfRef(EAX, AL_EAXREVERB_HFREFERENCE, rev->flHFReference);
 
-		alEffectf(EAX, AL_EAXREVERB_LFREFERENCE, rev->flLFReference);
+		alEffectfRef(EAX, AL_EAXREVERB_LFREFERENCE, rev->flLFReference);
 
-		alEffectf(EAX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, rev->flRoomRolloffFactor);
+		alEffectfRef(EAX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, rev->flRoomRolloffFactor);
 
-		alEffecti(EAX, AL_EAXREVERB_DECAY_HFLIMIT, rev->iDecayHFLimit);
+		alEffectiRef(EAX, AL_EAXREVERB_DECAY_HFLIMIT, rev->iDecayHFLimit);
 
 	}
 
@@ -644,35 +642,35 @@ void idSoundHardware_OpenAL::SetEFX(EFXEAXREVERBPROPERTIES* rev)
 
 		 * available reverb properties. */
 
-		alEffecti(EAX, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
+		alEffectiRef(EAX, AL_EFFECT_TYPE, AL_EFFECT_REVERB);
 
 
 
-		alEffectf(EAX, AL_REVERB_DENSITY, rev->flDensity);
+		alEffectfRef(EAX, AL_REVERB_DENSITY, rev->flDensity);
 
-		alEffectf(EAX, AL_REVERB_DIFFUSION, rev->flDiffusion);
+		alEffectfRef(EAX, AL_REVERB_DIFFUSION, rev->flDiffusion);
 
-		alEffectf(EAX, AL_REVERB_GAIN, rev->flGain);
+		alEffectfRef(EAX, AL_REVERB_GAIN, rev->flGain);
 
-		alEffectf(EAX, AL_REVERB_GAINHF, rev->flGainHF);
+		alEffectfRef(EAX, AL_REVERB_GAINHF, rev->flGainHF);
 
-		alEffectf(EAX, AL_REVERB_DECAY_TIME, rev->flDecayTime);
+		alEffectfRef(EAX, AL_REVERB_DECAY_TIME, rev->flDecayTime);
 
-		alEffectf(EAX, AL_REVERB_DECAY_HFRATIO, rev->flDecayHFRatio);
+		alEffectfRef(EAX, AL_REVERB_DECAY_HFRATIO, rev->flDecayHFRatio);
 
-		alEffectf(EAX, AL_REVERB_REFLECTIONS_GAIN, rev->flReflectionsGain);
+		alEffectfRef(EAX, AL_REVERB_REFLECTIONS_GAIN, rev->flReflectionsGain);
 
-		alEffectf(EAX, AL_REVERB_REFLECTIONS_DELAY, rev->flReflectionsDelay);
+		alEffectfRef(EAX, AL_REVERB_REFLECTIONS_DELAY, rev->flReflectionsDelay);
 
-		alEffectf(EAX, AL_REVERB_LATE_REVERB_GAIN, rev->flLateReverbGain);
+		alEffectfRef(EAX, AL_REVERB_LATE_REVERB_GAIN, rev->flLateReverbGain);
 
-		alEffectf(EAX, AL_REVERB_LATE_REVERB_DELAY, rev->flLateReverbDelay);
+		alEffectfRef(EAX, AL_REVERB_LATE_REVERB_DELAY, rev->flLateReverbDelay);
 
-		alEffectf(EAX, AL_REVERB_AIR_ABSORPTION_GAINHF, rev->flAirAbsorptionGainHF);
+		alEffectfRef(EAX, AL_REVERB_AIR_ABSORPTION_GAINHF, rev->flAirAbsorptionGainHF);
 
-		alEffectf(EAX, AL_REVERB_ROOM_ROLLOFF_FACTOR, rev->flRoomRolloffFactor);
+		alEffectfRef(EAX, AL_REVERB_ROOM_ROLLOFF_FACTOR, rev->flRoomRolloffFactor);
 
-		alEffecti(EAX, AL_REVERB_DECAY_HFLIMIT, rev->iDecayHFLimit);
+		alEffectiRef(EAX, AL_REVERB_DECAY_HFLIMIT, rev->iDecayHFLimit);
 
 	}
 }

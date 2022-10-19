@@ -348,7 +348,7 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 	alSource3f( sound->alSourceVoice, AL_POSITION, x, y, z );
 	//GK: Set the EFX in the last moment
 	alSource3i(sound->alSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 2, AL_FILTER_NULL);
-	if (alIsEffect((ALuint)::g->clEAX) && ::g->clEAX > 0) {
+	if (alIsEffectRef((ALuint)::g->clEAX) && ::g->clEAX > 0) {
 		alSource3i(sound->alSourceVoice, AL_AUXILIARY_SEND_FILTER, clslot, 2, AL_FILTER_NULL);
 	}
 	alSourcePlay( sound->alSourceVoice );
@@ -614,7 +614,7 @@ void I_InitSoundHardwareAL( int numOutputChannels_, int channelMask_ )
 		}
 	}
 	
-	alGenAuxiliaryEffectSlots(1, &clslot);
+	alGenAuxiliaryEffectSlotsRef(1, &clslot);
 	soundHardwareInitialized = true;
 }
 
@@ -653,12 +653,12 @@ void I_ShutdownSoundHardwareAL()
 	// Delete OpenAL buffers for all sounds
 	alDeleteBuffers(NUMSFX, alBuffers );
 	
-	if (alIsAuxiliaryEffectSlot(clslot)) {
-		alDeleteAuxiliaryEffectSlots(1,&clslot);
+	if (alIsAuxiliaryEffectSlotRef(clslot)) {
+		alDeleteAuxiliaryEffectSlotsRef(1,&clslot);
 		clslot = 0;
 	}
-	if (alIsAuxiliaryEffectSlot(clmusslot)) {
-		alDeleteAuxiliaryEffectSlots(1, &clmusslot);
+	if (alIsAuxiliaryEffectSlotRef(clmusslot)) {
+		alDeleteAuxiliaryEffectSlotsRef(1, &clmusslot);
 		clmusslot = 0;
 	}
 }
@@ -792,37 +792,37 @@ void I_InitMusicAL( void )
 		
 		alGenBuffers( (ALuint)1, &alMusicBuffer );
 		//GK: Set default preset for music in order to level it's volume to the levels of the reverbed sfxes
-		alGenAuxiliaryEffectSlots(1, &clmusslot);
+		alGenAuxiliaryEffectSlotsRef(1, &clmusslot);
 		EFXEAXREVERBPROPERTIES voicereverb = EFX_REVERB_PRESET_MOOD_HELL;
 		EFXEAXREVERBPROPERTIES* voicereverb2 = &voicereverb;
 		ALuint EFX;
-		alGenEffects(1, &EFX);
-		alEffecti(EFX, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
-		alEffectf(EFX, AL_EAXREVERB_DENSITY, voicereverb2->flDensity);
-		alEffectf(EFX, AL_EAXREVERB_DIFFUSION, voicereverb2->flDiffusion);
-		alEffectf(EFX, AL_EAXREVERB_GAIN, voicereverb2->flGain);
-		alEffectf(EFX, AL_EAXREVERB_GAINHF, voicereverb2->flGainHF);
-		alEffectf(EFX, AL_EAXREVERB_GAINLF, voicereverb2->flGainLF);
-		alEffectf(EFX, AL_EAXREVERB_DECAY_TIME, voicereverb2->flDecayTime);
-		alEffectf(EFX, AL_EAXREVERB_DECAY_HFRATIO, voicereverb2->flDecayHFRatio);
-		alEffectf(EFX, AL_EAXREVERB_DECAY_LFRATIO, voicereverb2->flDecayLFRatio);
-		alEffectf(EFX, AL_EAXREVERB_REFLECTIONS_GAIN, voicereverb2->flReflectionsGain);
-		alEffectf(EFX, AL_EAXREVERB_REFLECTIONS_DELAY, voicereverb2->flReflectionsDelay);
-		alEffectfv(EFX, AL_EAXREVERB_REFLECTIONS_PAN, voicereverb2->flReflectionsPan);
-		alEffectf(EFX, AL_EAXREVERB_LATE_REVERB_GAIN, voicereverb2->flLateReverbGain);
-		alEffectf(EFX, AL_EAXREVERB_LATE_REVERB_DELAY, voicereverb2->flLateReverbDelay);
-		alEffectfv(EFX, AL_EAXREVERB_LATE_REVERB_PAN, voicereverb2->flLateReverbPan);
-		alEffectf(EFX, AL_EAXREVERB_ECHO_TIME, voicereverb2->flEchoTime);
-		alEffectf(EFX, AL_EAXREVERB_ECHO_DEPTH, voicereverb2->flEchoDepth);
-		alEffectf(EFX, AL_EAXREVERB_MODULATION_TIME, voicereverb2->flModulationTime);
-		alEffectf(EFX, AL_EAXREVERB_MODULATION_DEPTH, voicereverb2->flModulationDepth);
-		alEffectf(EFX, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, voicereverb2->flAirAbsorptionGainHF);
-		alEffectf(EFX, AL_EAXREVERB_HFREFERENCE, voicereverb2->flHFReference);
-		alEffectf(EFX, AL_EAXREVERB_LFREFERENCE, voicereverb2->flLFReference);
-		alEffectf(EFX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, voicereverb2->flRoomRolloffFactor);
-		alEffecti(EFX, AL_EAXREVERB_DECAY_HFLIMIT, voicereverb2->iDecayHFLimit);
-		alAuxiliaryEffectSloti(clmusslot, AL_EFFECTSLOT_EFFECT, EFX);
-		alDeleteEffects(1, &EFX);
+		alGenEffectsRef(1, &EFX);
+		alEffectiRef(EFX, AL_EFFECT_TYPE, AL_EFFECT_EAXREVERB);
+		alEffectfRef(EFX, AL_EAXREVERB_DENSITY, voicereverb2->flDensity);
+		alEffectfRef(EFX, AL_EAXREVERB_DIFFUSION, voicereverb2->flDiffusion);
+		alEffectfRef(EFX, AL_EAXREVERB_GAIN, voicereverb2->flGain);
+		alEffectfRef(EFX, AL_EAXREVERB_GAINHF, voicereverb2->flGainHF);
+		alEffectfRef(EFX, AL_EAXREVERB_GAINLF, voicereverb2->flGainLF);
+		alEffectfRef(EFX, AL_EAXREVERB_DECAY_TIME, voicereverb2->flDecayTime);
+		alEffectfRef(EFX, AL_EAXREVERB_DECAY_HFRATIO, voicereverb2->flDecayHFRatio);
+		alEffectfRef(EFX, AL_EAXREVERB_DECAY_LFRATIO, voicereverb2->flDecayLFRatio);
+		alEffectfRef(EFX, AL_EAXREVERB_REFLECTIONS_GAIN, voicereverb2->flReflectionsGain);
+		alEffectfRef(EFX, AL_EAXREVERB_REFLECTIONS_DELAY, voicereverb2->flReflectionsDelay);
+		alEffectfvRef(EFX, AL_EAXREVERB_REFLECTIONS_PAN, voicereverb2->flReflectionsPan);
+		alEffectfRef(EFX, AL_EAXREVERB_LATE_REVERB_GAIN, voicereverb2->flLateReverbGain);
+		alEffectfRef(EFX, AL_EAXREVERB_LATE_REVERB_DELAY, voicereverb2->flLateReverbDelay);
+		alEffectfvRef(EFX, AL_EAXREVERB_LATE_REVERB_PAN, voicereverb2->flLateReverbPan);
+		alEffectfRef(EFX, AL_EAXREVERB_ECHO_TIME, voicereverb2->flEchoTime);
+		alEffectfRef(EFX, AL_EAXREVERB_ECHO_DEPTH, voicereverb2->flEchoDepth);
+		alEffectfRef(EFX, AL_EAXREVERB_MODULATION_TIME, voicereverb2->flModulationTime);
+		alEffectfRef(EFX, AL_EAXREVERB_MODULATION_DEPTH, voicereverb2->flModulationDepth);
+		alEffectfRef(EFX, AL_EAXREVERB_AIR_ABSORPTION_GAINHF, voicereverb2->flAirAbsorptionGainHF);
+		alEffectfRef(EFX, AL_EAXREVERB_HFREFERENCE, voicereverb2->flHFReference);
+		alEffectfRef(EFX, AL_EAXREVERB_LFREFERENCE, voicereverb2->flLFReference);
+		alEffectfRef(EFX, AL_EAXREVERB_ROOM_ROLLOFF_FACTOR, voicereverb2->flRoomRolloffFactor);
+		alEffectiRef(EFX, AL_EAXREVERB_DECAY_HFLIMIT, voicereverb2->iDecayHFLimit);
+		alAuxiliaryEffectSlotiRef(clmusslot, AL_EFFECTSLOT_EFFECT, EFX);
+		alDeleteEffectsRef(1, &EFX);
 		
 		Music_initialized = true;
 	}
@@ -857,8 +857,8 @@ void I_ShutdownMusicAL( void )
 		Timidity_Shutdown();
 	}
 
-	if (alIsAuxiliaryEffectSlot(clmusslot)) {
-		alDeleteAuxiliaryEffectSlots(1, &clmusslot);
+	if (alIsAuxiliaryEffectSlotRef(clmusslot)) {
+		alDeleteAuxiliaryEffectSlotsRef(1, &clmusslot);
 	}
 	
 	if (!soundSystemLocal.needsRestart) {
@@ -982,7 +982,7 @@ void I_UpdateMusicAL( void )
 	}
 
 	alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 3, AL_FILTER_NULL);
-	if ((alIsEffect((ALuint)::g->clEAX) && ::g->clEAX > 0) || S_museax.GetBool()) {
+	if ((alIsEffectRef((ALuint)::g->clEAX) && ::g->clEAX > 0) || S_museax.GetBool()) {
 		alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, clmusslot, 3, AL_FILTER_NULL);
 	}
 

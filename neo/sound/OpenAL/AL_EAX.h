@@ -25,19 +25,19 @@
 #pragma once
 #include "precompiled.h"
 #include "AL/efx.h"
-extern LPALGENEFFECTS			alGenEffects;
-extern LPALEFFECTI				alEffecti;
-extern LPALEFFECTF				alEffectf;
-extern LPALEFFECTFV			alEffectfv;
-extern LPALISEFFECT			alIsEffect;
-extern LPALISAUXILIARYEFFECTSLOT	alIsAuxiliaryEffectSlot;
-extern LPALDELETEAUXILIARYEFFECTSLOTS	alDeleteAuxiliaryEffectSlots;
-extern LPALDELETEEFFECTS	alDeleteEffects;
-extern LPALAUXILIARYEFFECTSLOTI	alAuxiliaryEffectSloti;
-extern LPALGENAUXILIARYEFFECTSLOTS	alGenAuxiliaryEffectSlots;
-extern LPALGENFILTERS alGenFilters;
-extern LPALFILTERF alFilterf;
-extern LPALFILTERFV alFilterfv;
-extern LPALFILTERI alFilteri;
-extern LPALDELETEFILTERS alDeleteFilters;
-extern LPALISFILTER alIsFilter;
+extern LPALGENEFFECTS			alGenEffectsRef;
+extern LPALEFFECTI				alEffectiRef;
+extern LPALEFFECTF				alEffectfRef;
+extern LPALEFFECTFV			alEffectfvRef;
+extern LPALISEFFECT			alIsEffectRef;
+extern LPALISAUXILIARYEFFECTSLOT	alIsAuxiliaryEffectSlotRef;
+extern LPALDELETEAUXILIARYEFFECTSLOTS	alDeleteAuxiliaryEffectSlotsRef;
+extern LPALDELETEEFFECTS	alDeleteEffectsRef;
+extern LPALAUXILIARYEFFECTSLOTI	alAuxiliaryEffectSlotiRef;
+extern LPALGENAUXILIARYEFFECTSLOTS	alGenAuxiliaryEffectSlotsRef;
+extern LPALGENFILTERS alGenFiltersRef;
+extern LPALFILTERF alFilterfRef;
+extern LPALFILTERFV alFilterfvRef;
+extern LPALFILTERI alFilteriRef;
+extern LPALDELETEFILTERS alDeleteFiltersRef;
+extern LPALISFILTER alIsFilterRef;
