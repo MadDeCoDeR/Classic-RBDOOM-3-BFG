@@ -39,7 +39,7 @@ jobs:
             ${{ runner.OS }}-apt-
 
     - name: Download Depedencies
-      run: sudo apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev; apt show libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev | grep Version | awk '{print $NF}' | tr '\n' ' ' > ~/apthcache.txt
+      run: sudo apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev; apt show libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev | grep Version | awk '{print $NF}' | tr '\n' ' ' > ~/aptcache.txt
 
     - name: Cache linux vcpkg
       uses: actions/cache@v3
@@ -54,7 +54,7 @@ jobs:
       working-directory: ${{github.workspace}}/neo
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: ../vcpkg/vcpkg x-update-baseline; cmake -B ${{github.workspace}}/build --preset=linux-${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build --preset=linux-${{env.BUILD_TYPE}}
 
     - name: Build
       # Build your program with the given configuration
@@ -97,7 +97,7 @@ jobs:
       working-directory: ${{github.workspace}}/neo
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: ..\vcpkg\vcpkg x-update-baseline;cmake -B ${{github.workspace}}/build --preset=windows-x64-2022
+      run: cmake -B ${{github.workspace}}/build --preset=windows-x64-2022
       
     - name: Build
       # Build your program with the given configuration
