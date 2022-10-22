@@ -4,39 +4,42 @@
   "dependencies": [
     {
       "name": "zlib",
-      "version-string": "1.2.12"
+      "version>=": "1.2.12"
     },
     {
       "name": "libpng",
-      "version-string": "1.6.37"
+      "version>=": "1.6.37#19"
     },
     {
       "name": "libjpeg-turbo",
-      "version-string": "2.1.4"
+      "version>=": "2.1.4"
     },
     {
       "name": "openal-soft",
-      "version-string": "1.22.2"
+      "version>=": "1.22.2"
     },
     {
       "name": "glew",
-      "version-string": "2.2.0",
+      "version>=": "2.2.0",
       "platform": "!linux"
     },
     {
       "name": "rapidjson",
-      "version-string": "2022-06-28"
+      "version>=": "2022-06-28"
     },
     {
       "name": "xaudio2redist",
-      "version-string": "1.2.9",
+      "version>=": "1.2.9",
       "platform": "windows"
     },
     {
       "name": "sdl2",
-      "version-string": "2.24.0",
-      "features": [ "x11" ],
+      "version>=": "2.24.0",
+      "features": [
+        "x11"
+      ],
       "platform": "linux"
     }
-  ]
+  ],
+  "builtin-baseline": "5132044bc42f6c85100b385b40ad6d6e00744074"
 }
