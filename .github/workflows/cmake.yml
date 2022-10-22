@@ -34,7 +34,7 @@ jobs:
       uses: actions/cache@v3
       with:
           path: /usr
-          key: ${{runner.os}}-apt-${{hashgiles('~/aptcache.txt')}}
+          key: ${{runner.os}}-apt-${{hashfiles('~/aptcache.txt')}}
 
 
 
@@ -45,7 +45,7 @@ jobs:
       uses: actions/cache@v3
       with: 
           path: ${{github.workspace}}/build/vcpkg_installed
-          key: ${{runner.os}}-vcpkg-${{hashgiles('**/status')}}
+          key: ${{runner.os}}-vcpkg-${{hashfiles('**/status')}}
 
 
     - name: Configure CMake
@@ -87,7 +87,7 @@ jobs:
       uses: actions/cache@v3
       with: 
           path: ${{github.workspace}}/build/vcpkg_installed
-          key: ${{runner.os}}-vcpkg-${{hashgiles('**/status')}}
+          key: ${{runner.os}}-vcpkg-${{hashfiles('**/status')}}
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/neo
