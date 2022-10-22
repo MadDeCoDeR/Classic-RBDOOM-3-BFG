@@ -1714,7 +1714,8 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			if (com_emergencyexit.GetBool()) {
 				break;
 			}
-		};
+		}
+		Sys_ClearEvents();
 		if (com_emergencyexit.GetBool()) {
 			return;
 		}
