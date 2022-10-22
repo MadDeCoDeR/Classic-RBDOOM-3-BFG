@@ -37,7 +37,7 @@ jobs:
       uses: actions/cache@v3
       with: 
           path: ${{github.workspace}}/build/vcpkg_installed
-          key: ${{runner.os}}-vcpkg-${{hashfiles('${{github.workspace}}/build/vpkg_installed/vcpkg/status')}}
+          key: ${{runner.os}}-vcpkg-${{hashfiles('build/vpkg_installed/vcpkg/status')}}
           restore-keys: |
             ${{ runner.OS }}-vcpkg-
 
@@ -81,7 +81,7 @@ jobs:
       uses: actions/cache@v3
       with: 
           path: ${{github.workspace}}/build/vcpkg_installed
-          key: ${{runner.os}}-vcpkg-${{hashfiles('${{github.workspace}}/build/vpkg_installed/vcpkg/status')}}
+          key: ${{runner.os}}-vcpkg-${{hashfiles('build/vpkg_installed/vcpkg/status')}}
           restore-keys: |
             ${{ runner.OS }}-vcpkg-
 
