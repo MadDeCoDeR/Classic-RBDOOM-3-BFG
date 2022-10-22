@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     
@@ -30,8 +30,23 @@ jobs:
         version: 11
         platform: x64
     
+    - name: Cache linux Deps
+      uses: actions/cache@v3
+      with:
+          path: /usr
+          key: ${{runner.os}}-apt-${{hashgiles('~/aptcache.txt')}}
+
+
+
     - name: Download Depedencies
-      run: sudo apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev
+      run: sudo apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev; apt show libglew-dev libopenal-dev | grep Version | awk '{print $NF}' | tr '\n' ' ' > ~/apthcache.txt
+
+    - name: Cache linux vcpkg
+      uses: actions/cache@v3
+      with: 
+          path: ${{github.workspace}}/build/vcpkg_installed
+          key: ${{runner.os}}-vcpkg-${{hashgiles('**/status')}}
+
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/neo
@@ -44,7 +59,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --parallel=8
       
     - name: Archive production artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}
         path: |
@@ -58,7 +73,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     
@@ -67,6 +82,12 @@ jobs:
       with:
         vs-version: '[17.0, 18.0)'
         msbuild-architecture: x64
+
+    - name: Cache Windows vcpkg
+      uses: actions/cache@v3
+      with: 
+          path: ${{github.workspace}}/build/vcpkg_installed
+          key: ${{runner.os}}-vcpkg-${{hashgiles('**/status')}}
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/neo
@@ -85,7 +106,7 @@ jobs:
         .\download-ffmpeg.ps1
       
     - name: Archive production artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}
         path: |
