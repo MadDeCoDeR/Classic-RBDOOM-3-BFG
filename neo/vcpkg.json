@@ -18,7 +18,8 @@
     {
       "name": "sdl2",
       "features": [
-        "x11"
+        "x11",
+        "wayland"
       ],
       "platform": "linux"
     }
