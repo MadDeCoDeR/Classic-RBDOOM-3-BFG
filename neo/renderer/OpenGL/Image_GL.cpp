@@ -1065,15 +1065,22 @@ void idImage::AllocImage()
 	}
 	else 
 	{
+		int w = opts.width;
+		int h = opts.height;
+		if (w == 0) {
+			w = 1280;
+		}
+		if (h == 0) {
+			h = 720;
+		}
 		glCreateTextures(target, 1, (GLuint*)&texnum);
 		assert(texnum != TEXTURE_NOT_LOADED);
 		if (opts.textureType == TT_2D_ARRAY) {
-			glTextureStorage3D(texnum, opts.numLevels, internalFormat, opts.width, opts.height, numSides);
+			glTextureStorage3D(texnum, opts.numLevels, internalFormat, w, h, numSides);
 		} else if (opts.textureType == TT_2D_MULTISAMPLE) {
-			glTextureStorage2DMultisample(texnum, opts.samples, internalFormat, opts.width, opts.height, GL_FALSE);
+			glTextureStorage2DMultisample(texnum, opts.samples, internalFormat, w, h, GL_FALSE);
 		} else {
-			int w = opts.width;
-			int h = opts.height;
+			
 			if (opts.textureType == TT_CUBIC) {
 				h = w;
 			}
