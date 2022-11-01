@@ -102,6 +102,13 @@ void Framebuffer::Init()
 	
 	int screenWidth = renderSystem->GetWidth();
 	int screenHeight = renderSystem->GetHeight();
+	//GK: Apparently Some Linux Desktop Environments fail to report the proper resolution. In that case use the default minimum resolution
+	if (screenWidth == 0) {
+		screenWidth = 1280;
+	}
+	if (screenHeight == 0) {
+		screenHeight = 720;
+	}
 	
 	globalFramebuffers.hdrFBO = new Framebuffer( "_hdr", screenWidth, screenHeight );
 	if (!glConfig.directStateAccess) {

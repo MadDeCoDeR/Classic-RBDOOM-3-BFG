@@ -1067,6 +1067,7 @@ void idImage::AllocImage()
 	{
 		int w = opts.width;
 		int h = opts.height;
+		//GK: Apparently Some Linux Desktop Environments fail to report the proper resolution. In that case use the default minimum resolution
 		if (w == 0) {
 			w = 1280;
 		}
