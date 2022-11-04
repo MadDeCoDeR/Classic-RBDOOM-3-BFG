@@ -1065,8 +1065,8 @@ void idImage::AllocImage()
 	}
 	else 
 	{
-		int w = opts.width;
-		int h = opts.height;
+		int w = opts.width > 0 ? opts.width : 1280;
+		int h = opts.height > 0 ? opts.height : 720;
 		glCreateTextures(target, 1, (GLuint*)&texnum);
 		assert(texnum != TEXTURE_NOT_LOADED);
 		if (opts.textureType == TT_2D_ARRAY) {

@@ -100,8 +100,8 @@ void Framebuffer::Init()
 	
 	// HDR
 	
-	int screenWidth = renderSystem->GetWidth();
-	int screenHeight = renderSystem->GetHeight();
+	int screenWidth = renderSystem->GetWidth() > 0 ? renderSystem->GetWidth() : 1280;
+	int screenHeight = renderSystem->GetHeight() > 0 ? renderSystem->GetHeight() : 720;
 	
 	globalFramebuffers.hdrFBO = new Framebuffer( "_hdr", screenWidth, screenHeight );
 	if (!glConfig.directStateAccess) {
