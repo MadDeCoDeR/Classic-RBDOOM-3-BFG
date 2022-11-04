@@ -301,8 +301,8 @@ bool GLimp_Init( glimpParms_t parms )
 			continue;
 		}
 		
-		glConfig.nativeScreenWidth = window->w;
-		glConfig.nativeScreenHeight = window->h;
+		glConfig.nativeScreenWidth = window->w > 0 ? window->w : 1280;
+		glConfig.nativeScreenHeight = window->h > 0 ? window->h: 720;
 		
 		glConfig.isFullscreen = ( window->flags & SDL_FULLSCREEN ) == SDL_FULLSCREEN;
 #endif
@@ -513,8 +513,8 @@ bool GLimp_SetScreenParms( glimpParms_t parms )
 	
 	glConfig.isFullscreen = parms.fullScreen;
 	glConfig.isStereoPixelFormat = parms.stereo;
-	glConfig.nativeScreenWidth = parms.width;
-	glConfig.nativeScreenHeight = parms.height;
+	glConfig.nativeScreenWidth = parms.width > 0 ? parms.width : 1280;
+	glConfig.nativeScreenHeight = parms.height > 0 ? parms.height : 720;
 	glConfig.displayFrequency = parms.displayHz;
 	glConfig.multisamples = parms.multiSamples;
 	
