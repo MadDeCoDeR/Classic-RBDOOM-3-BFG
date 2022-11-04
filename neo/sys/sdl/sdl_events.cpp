@@ -1063,7 +1063,7 @@ void SDL_Poll()
 			glConfig.nativeScreenHeight = h;
 
 			// for some reason this needs a vid_restart in SDL1 but not SDL2 so GLimp_SetScreenParms() is called
-			PushConsoleEvent("vid_restart");
+			cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 			continue; // handle next event
 		}
 		// DG end
