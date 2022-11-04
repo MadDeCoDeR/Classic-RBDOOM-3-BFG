@@ -1067,13 +1067,6 @@ void idImage::AllocImage()
 	{
 		int w = opts.width;
 		int h = opts.height;
-		//GK: Apparently Some Linux Desktop Environments fail to report the proper resolution. In that case use the default minimum resolution
-		if (w == 0) {
-			w = 1280;
-		}
-		if (h == 0) {
-			h = 720;
-		}
 		glCreateTextures(target, 1, (GLuint*)&texnum);
 		assert(texnum != TEXTURE_NOT_LOADED);
 		if (opts.textureType == TT_2D_ARRAY) {
