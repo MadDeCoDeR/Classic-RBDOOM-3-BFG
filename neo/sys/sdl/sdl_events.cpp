@@ -1082,7 +1082,7 @@ void SDL_Poll()
 				}
 				cvarSystem->SetCVarInteger("r_fullscreen", fullscreen);
 				// DG end
-				PushConsoleEvent("vid_restart");
+				cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");;
 				continue; // handle next event
 			}
 

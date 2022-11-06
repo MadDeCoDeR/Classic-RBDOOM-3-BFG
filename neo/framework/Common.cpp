@@ -964,8 +964,9 @@ void idCommonLocal::RenderSplash()
 	// RB: this is the same as Doom 3 renderSystem->BeginFrame()
 	//renderCommands = renderSystem->SwapCommandBuffers_FinishCommandBuffers();
 	
-	const float sysWidth = renderSystem->GetWidth() * renderSystem->GetPixelAspect();
-	const float sysHeight = renderSystem->GetHeight();
+	const int renderWidth = renderSystem->GetWidth() > 0 ? renderSystem->GetWidth() : 1280;
+	const float sysWidth = renderWidth * renderSystem->GetPixelAspect();
+	const float sysHeight = renderSystem->GetHeight() > 0 ? renderSystem->GetHeight() : 720;
 	const float sysAspect = sysWidth / sysHeight;
 	const float splashAspect = 16.0f / 9.0f;
 	const float adjustment = sysAspect / splashAspect;
@@ -1000,8 +1001,9 @@ idCommonLocal::RenderPhotosensitivity
 */
 void idCommonLocal::RenderPhotosensitivity()
 {
-	const float sysWidth = renderSystem->GetWidth() * renderSystem->GetPixelAspect();
-	const float sysHeight = renderSystem->GetHeight();
+	const int renderWidth = renderSystem->GetWidth() > 0 ? renderSystem->GetWidth() : 1280;
+	const float sysWidth = renderWidth * renderSystem->GetPixelAspect();
+	const float sysHeight = renderSystem->GetHeight() > 0 ? renderSystem->GetHeight() : 720;
 	const float sysAspect = sysWidth / sysHeight;
 	const float splashAspect = 16.0f / 9.0f;
 	const float adjustment = sysAspect / splashAspect;
@@ -1033,8 +1035,9 @@ idCommonLocal::RenderBink
 */
 void idCommonLocal::RenderBink( const char* path )
 {
-	const float sysWidth = renderSystem->GetWidth() * renderSystem->GetPixelAspect();
-	const float sysHeight = renderSystem->GetHeight();
+	const int renderWidth = renderSystem->GetWidth() > 0 ? renderSystem->GetWidth() : 1280;
+	const float sysWidth = renderWidth * renderSystem->GetPixelAspect();
+	const float sysHeight = renderSystem->GetHeight() > 0 ? renderSystem->GetHeight() : 720;
 	const float sysAspect = sysWidth / sysHeight;
 	const float movieAspect = ( 16.0f / 9.0f );
 	const float imageWidth = renderSystem->GetVirtualWidth() * movieAspect / sysAspect;
