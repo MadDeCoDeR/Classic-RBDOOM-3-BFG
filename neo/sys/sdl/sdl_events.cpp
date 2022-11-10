@@ -1175,7 +1175,7 @@ void SDL_Poll()
 			Sys_QueEvent(SE_KEY, key, (ev.key.state == SDL_PRESSED ? 1 : 0), 0, NULL, 0);
 			//return res;
 		}
-
+		break;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 		case SDL_TEXTINPUT:
 			if (ev.text.text[0] != '\0')
@@ -1197,6 +1197,7 @@ void SDL_Poll()
 				}
 				
 				//return res;
+				break;
 			}
 
 			continue; // just handle next event
@@ -1225,7 +1226,7 @@ void SDL_Poll()
 			mouse_polls.Append(mouse_poll_t(M_DELTAY, ev.motion.yrel));
 
 			//return res;
-
+			break;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 		case SDL_FINGERDOWN:
 		case SDL_FINGERUP:
@@ -1245,6 +1246,7 @@ void SDL_Poll()
 			mwheelRel = (ev.wheel.y > 0) ? K_MWHEELUP : K_MWHEELDOWN;
 
 			//return res;
+			break;
 #endif // SDL2
 
 		case SDL_MOUSEBUTTONDOWN:
@@ -1296,7 +1298,7 @@ void SDL_Poll()
 			res.evValue2 = ev.button.state == SDL_PRESSED ? 1 : 0;
 
 			Sys_QueEvent(res.evType, res.evValue, res.evValue2, 0, NULL, 0);
-
+			break;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 			// GameController
 		case SDL_JOYAXISMOTION:
@@ -1307,41 +1309,7 @@ void SDL_Poll()
 		case SDL_JOYDEVICEREMOVED:
 			// Avoid 'unknown event' spam
 			continue;
-
 		case SDL_CONTROLLERAXISMOTION:
-			// switch (ev.caxis.axis) {
-			// 		case SDL_CONTROLLER_AXIS_LEFTX:
-			// 			PushJoyButton(K_JOY_STICK1_RIGHT, ( ev.caxis.value > range ));
-			// 			PushJoyButton(K_JOY_STICK1_LEFT, ( ev.caxis.value < -range ));
-			// 			break;
-			// 		case SDL_CONTROLLER_AXIS_LEFTY:
-			// 			PushJoyButton(K_JOY_STICK1_DOWN, ( ev.caxis.value > range ));
-			// 			PushJoyButton(K_JOY_STICK1_UP, ( ev.caxis.value < -range ));
-			// 			break;
-			// 		case SDL_CONTROLLER_AXIS_RIGHTX:
-			// 			PushJoyButton(K_JOY_STICK2_RIGHT, ( ev.caxis.value > range ));
-			// 			PushJoyButton(K_JOY_STICK2_LEFT, ( ev.caxis.value < -range ));
-			// 			break;
-			// 		case SDL_CONTROLLER_AXIS_RIGHTY:
-			// 			PushJoyButton(K_JOY_STICK2_DOWN, ( ev.caxis.value > range ));
-			// 			PushJoyButton(K_JOY_STICK2_UP, ( ev.caxis.value < -range ));
-			// 			break;
-			// 		case SDL_CONTROLLER_AXIS_TRIGGERLEFT:
-			// 			PushJoyButton(K_JOY_TRIGGER1, ( ev.caxis.value > range ));
-			// 			break;
-			// 		case SDL_CONTROLLER_AXIS_TRIGGERRIGHT:
-			// 			PushJoyButton(K_JOY_TRIGGER2, ( ev.caxis.value > range ));
-			// 			break;
-			// 	}
-			// if (ev.caxis.axis >= SDL_CONTROLLER_AXIS_LEFTX &&  ev.caxis.axis <= SDL_CONTROLLER_AXIS_RIGHTY) {
-			// 	axis = ev.caxis.axis;
-			// 	percent = (ev.caxis.value * 16) / range;
-			// 	if( joyAxis[axis] != percent )
-			// 	{
-			// 		joyAxis[axis] = percent;
-			// 		Sys_QueEvent( SE_JOYSTICK, axis, percent, 0, NULL, 0 );
-			// 	}
-			// }
 			joyEvent = (sys_jEvents)(J_AXIS_LEFT_X + ev.caxis.axis);
 			switch(joyEvent) {
 				case J_AXIS_LEFT_X:
@@ -1364,36 +1332,10 @@ void SDL_Poll()
 					break;
 
 			}
-
-			//joystick_polls.Append(joystick_poll_t(J_AXIS_LEFT_X + ev.caxis.axis, ev.caxis.value));
 			break;
-
 		case SDL_CONTROLLERBUTTONDOWN:
 		case SDL_CONTROLLERBUTTONUP:
-			// static int controllerButtonRemap[15][2] =
-			// {
-			// 	{K_JOY1, J_ACTION1}, //SDL_CONTROLLER_BUTTON_A
-			// 	{K_JOY2, J_ACTION2}, //SDL_CONTROLLER_BUTTON_B
-			// 	{K_JOY3, J_ACTION3}, //SDL_CONTROLLER_BUTTON_X
-			// 	{K_JOY4, J_ACTION4}, //SDL_CONTROLLER_BUTTON_Y
-			// 	{K_JOY10, J_ACTION10}, //SDL_CONTROLLER_BUTTON_BACK
-			// 	{K_JOY11, J_ACTION11}, //SDL_CONTROLLER_BUTTON_GUIDE
-			// 	{K_JOY9, J_ACTION9}, //SDL_CONTROLLER_BUTTON_START
-			// 	{K_JOY7, J_ACTION7}, //SDL_CONTROLLER_BUTTON_LEFTSTICK
-			// 	{K_JOY8, J_ACTION8}, //SDL_CONTROLLER_BUTTON_RIGHTSTICK
-			// 	{K_JOY5, J_ACTION5}, //SDL_CONTROLLER_BUTTON_LEFTSHOULDER
-			// 	{K_JOY6, J_ACTION6}, //SDL_CONTROLLER_BUTTON_RIGHTSHOULDER
-
-			// 	{K_JOY_DPAD_UP, J_DPAD_UP},
-			// 	{K_JOY_DPAD_DOWN, J_DPAD_DOWN},
-			// 	{K_JOY_DPAD_LEFT, J_DPAD_LEFT},
-			// 	{K_JOY_DPAD_RIGHT, J_DPAD_RIGHT},
-			// };
-
-			//joystick_polls.Append(joystick_poll_t(controllerButtonRemap[ev.cbutton.button][1], (ev.cbutton.state == SDL_PRESSED ? 1 : 0)));
 			current.buttons[ev.cbutton.button] = (ev.cbutton.state == SDL_PRESSED ? 1 : 0);
-			//PushJoyButton(controllerButtonRemap[ev.cbutton.button][0], (ev.cbutton.state == SDL_PRESSED ? 1 : 0));
-			
 			break;
 		//GK: Steam Deck Hack: For some reason Steam Deck spams these two events
 		case SDL_CONTROLLERDEVICEADDED:
