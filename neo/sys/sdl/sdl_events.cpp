@@ -2157,7 +2157,7 @@ int JoystickSamplingThread(void* data){
 				}
 				nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
 				if (!gcontroller[i]) {
-					common->Printf("	Controller Connected: %s\n", SDL_GameControllerName(controller));
+					idLib::Printf("	Controller Connected: %s\n", SDL_GameControllerName(controller));
 					gcontroller[i]=controller;
 					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
 					haptic[i] = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller[i])); //GK: Make sure it mounted to the right controller
@@ -2170,7 +2170,7 @@ int JoystickSamplingThread(void* data){
 						haptic[i] = NULL;
 						// common->Printf("Failed to find rumble effect\n");
 					}
-					common->Printf("Found haptic Device %d\n",SDL_HapticNumEffects(haptic[i]));
+					idLib::Printf("Found haptic Device %d\n",SDL_HapticNumEffects(haptic[i]));
 					}
 				} else {
 					alreadyConnected = true;
