@@ -158,8 +158,8 @@ struct joyState {
 	int RYThumb; 
 };
 
-static joyState current;
-static joyState old;
+static joyState current[4];
+static joyState old[4];
 static joystick_poll_t joystick_polls[42];
 static int numEvents = 0;
 int joyAxis[6];
@@ -1313,29 +1313,29 @@ void SDL_Poll()
 			joyEvent = (sys_jEvents)(J_AXIS_LEFT_X + ev.caxis.axis);
 			switch(joyEvent) {
 				case J_AXIS_LEFT_X:
-					current.LXThumb = ev.caxis.value;
+					current[ev.caxis.which].LXThumb = ev.caxis.value;
 					break;
 				case J_AXIS_LEFT_Y:
-					current.LYThumb = ev.caxis.value;
+					current[ev.caxis.which].LYThumb = ev.caxis.value;
 					break;
 				case J_AXIS_RIGHT_X:
-					current.RXThumb = ev.caxis.value;
+					current[ev.caxis.which].RXThumb = ev.caxis.value;
 					break;
 				case J_AXIS_RIGHT_Y:
-					current.RYThumb = ev.caxis.value;
+					current[ev.caxis.which].RYThumb = ev.caxis.value;
 					break;
 				case J_AXIS_LEFT_TRIG:
-					current.LTrigger = ev.caxis.value;
+					current[ev.caxis.which].LTrigger = ev.caxis.value;
 					break;
 				case J_AXIS_RIGHT_TRIG:
-					current.RTrigger = ev.caxis.value;
+					current[ev.caxis.which].RTrigger = ev.caxis.value;
 					break;
 
 			}
 			break;
 		case SDL_CONTROLLERBUTTONDOWN:
 		case SDL_CONTROLLERBUTTONUP:
-			current.buttons[ev.cbutton.button] = (ev.cbutton.state == SDL_PRESSED ? 1 : 0);
+			current[ev.cbutton.which].buttons[ev.cbutton.button] = (ev.cbutton.state == SDL_PRESSED ? 1 : 0);
 			break;
 		//GK: Steam Deck Hack: For some reason Steam Deck spams these two events
 		case SDL_CONTROLLERDEVICEADDED:
@@ -2025,30 +2025,30 @@ int Sys_PollJoystickInputEvents( int deviceNum )
 			};
 
 	for (int i = 0; i < 15; i++) {
-		if (current.buttons[i] != old.buttons[i]) {
-			PostInputEvent(controllerButtonRemap[i], current.buttons[i]);
+		if (current[deviceNum].buttons[i] != old[deviceNum].buttons[i]) {
+			PostInputEvent(controllerButtonRemap[i], current[deviceNum].buttons[i]);
 		}
 	}
-	if (current.LXThumb != old.LXThumb) {
-		PostInputEvent(J_AXIS_LEFT_X, current.LXThumb);
+	if (current[deviceNum].LXThumb != old[deviceNum].LXThumb) {
+		PostInputEvent(J_AXIS_LEFT_X, current[deviceNum].LXThumb);
 	}
-	if (current.LYThumb != old.LYThumb) {
-		PostInputEvent(J_AXIS_LEFT_Y, current.LYThumb);
+	if (current[deviceNum].LYThumb != old[deviceNum].LYThumb) {
+		PostInputEvent(J_AXIS_LEFT_Y, current[deviceNum].LYThumb);
 	}
-	if (current.RXThumb != old.RXThumb) {
-		PostInputEvent(J_AXIS_RIGHT_X, current.RXThumb);
+	if (current[deviceNum].RXThumb != old[deviceNum].RXThumb) {
+		PostInputEvent(J_AXIS_RIGHT_X, current[deviceNum].RXThumb);
 	}
-	if (current.RYThumb != old.RYThumb) {
-		PostInputEvent(J_AXIS_RIGHT_Y, current.RYThumb);
+	if (current[deviceNum].RYThumb != old[deviceNum].RYThumb) {
+		PostInputEvent(J_AXIS_RIGHT_Y, current[deviceNum].RYThumb);
 	}
-	if (current.LTrigger != old.LTrigger) {
-		PostInputEvent(J_AXIS_LEFT_TRIG, current.LTrigger);
+	if (current[deviceNum].LTrigger != old[deviceNum].LTrigger) {
+		PostInputEvent(J_AXIS_LEFT_TRIG, current[deviceNum].LTrigger);
 	}
-	if (current.RTrigger != old.RTrigger) {
-		PostInputEvent(J_AXIS_RIGHT_TRIG, current.RTrigger);
+	if (current[deviceNum].RTrigger != old[deviceNum].RTrigger) {
+		PostInputEvent(J_AXIS_RIGHT_TRIG, current[deviceNum].RTrigger);
 	}
 
-	old = current;
+	old[deviceNum] = current[deviceNum];
 
 
 	return numEvents;
@@ -2157,6 +2157,7 @@ int JoystickSamplingThread(void* data){
 				}
 				nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
 				if (!gcontroller[i]) {
+					common->Printf("	Controller Connected: %s\n", SDL_GameControllerName(controller));
 					gcontroller[i]=controller;
 					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
 					haptic[i] = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller[i])); //GK: Make sure it mounted to the right controller
