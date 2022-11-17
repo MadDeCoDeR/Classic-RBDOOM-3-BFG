@@ -300,7 +300,41 @@ const char* skyDirection[6] = { "_forward", "_back", "_left", "_right", "_up", "
 
 
 
+int R_CalculateResolution(bool mode, idList<vidMode_t> modeList) {
+	int customRes;
+	idList<int> modeRes;
+	if (!mode) {
+		customRes = r_customWidth.GetInteger();
+		modeRes.Clear();
+		for (int i = 0; i < modeList.Num(); i++) {
+			modeRes.Append(modeList[i].width);
+		}
+	}
+	else {
+		customRes = r_customHeight.GetInteger();
+		modeRes.Clear();
+		for (int i = 0; i < modeList.Num(); i++) {
+			modeRes.Append(modeList[i].height);
+		}
+	}
 
+	int minscore = INT_MAX;
+	int index = -1;
+	for (int i = 0; i < modeRes.Num(); i++) {
+		if (abs(customRes - modeRes[i]) < minscore) {
+			minscore = abs(customRes - modeRes[i]);
+			index = i;
+		}
+	}
+	r_vidMode.SetInteger(index);
+	if (mode) {
+		r_customHeight.SetInteger(modeRes[index]);
+	}
+	else {
+		r_customWidth.SetInteger(modeRes[index]);
+	}
+	return modeRes[index];
+}
 
 
 /*
@@ -360,7 +394,8 @@ void R_SetNewMode( const bool fullInit )
 		else
 		{
 			// get the mode list for this monitor
-			/*idList<vidMode_t> modeList;
+			idList<vidMode_t> modeList;
+
 			if( !R_GetModeListForDisplay( r_fullscreen.GetInteger() - 1, modeList ) )
 			{
 				idLib::Printf( "r_fullscreen reset from %i to 1 because mode list failed.", r_fullscreen.GetInteger() );
@@ -370,8 +405,12 @@ void R_SetNewMode( const bool fullInit )
 			if( modeList.Num() < 1 )
 			{
 				idLib::Printf( "Going to safe mode because mode list failed." );
-				goto safeMode;
-			}*/
+				vidMode_t mode;
+				mode.width = 1280;
+				mode.height = 720;
+				mode.displayHz = 60;
+				modeList.Append(mode);
+			}
 
 			parms.x = 0;		// ignored
 			parms.y = 0;		// ignored
@@ -397,8 +436,8 @@ void R_SetNewMode( const bool fullInit )
 				/*if( r_vidMode.GetInteger() < 0 )
 				{*/
 				// try forcing a specific mode, even if it isn't on the list
-				parms.width = r_customWidth.GetInteger();
-				parms.height = r_customHeight.GetInteger();
+				parms.width = R_CalculateResolution(false, modeList);
+				parms.height = R_CalculateResolution(true, modeList);
 				parms.displayHz = r_displayRefresh.GetInteger();
 			}
 			/*}
