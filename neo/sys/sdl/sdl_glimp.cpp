@@ -104,7 +104,7 @@ bool GLimp_Init( glimpParms_t parms )
 	GLimp_PreInit(); // DG: make sure SDL is initialized
 	
 	// DG: make window resizable
-	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
 	// DG end
 	
 	if( parms.fullScreen )
