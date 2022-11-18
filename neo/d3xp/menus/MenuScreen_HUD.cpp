@@ -2408,7 +2408,9 @@ void idMenuScreen_HUDLocal::UpdateChattingHud( idPlayer* player )
 }
 
 void idMenuScreen_HUDLocal::HideAmmoCount() {
-	ammoInfo->SetVisible(false);
+	if (ammoInfo != NULL) {
+		ammoInfo->SetVisible(false);
+	}
 }
 
 const char*		idMenuScreen_HUDLocal::GetlocationName() {
