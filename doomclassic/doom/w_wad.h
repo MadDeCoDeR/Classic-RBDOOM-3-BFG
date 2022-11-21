@@ -110,5 +110,6 @@ void W_CheckExp();
 bool W_CheckMods(int sc,std::vector<std::string> filelist);
 char* W_GetNameForNum(int lump);
 int W_GetLumpCount();
+bool W_IsGameWAD(const char* filename);
 #endif
 

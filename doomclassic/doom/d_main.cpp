@@ -514,6 +514,8 @@ void D_AddFile(const char* file)
 		if (file == wadfiles[numwadfiles])
 			return;
 	;
+	if (W_IsGameWAD(file))
+		numwadfiles = 0;
 	wadfiles[numwadfiles] = file;
 }
 

@@ -1938,3 +1938,18 @@ int W_GetLumpCount()
 {
 	return lumpinfo.size();
 }
+
+bool W_IsGameWAD(const char* filename)
+{
+	wadinfo_t		header;
+	idFile* handle;
+	if ((handle = fileSystem->OpenFileRead(filename)) == 0)
+	{
+		return false;
+	}
+	if (idStr::Icmp(filename + strlen(filename) - 3, "wad")) {
+		return false;
+	}
+	handle->Read(&header, sizeof(header));
+	return !idStr::Cmpn(header.identification, "IWAD", 4);
+}
