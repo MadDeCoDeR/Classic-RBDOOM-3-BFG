@@ -2149,14 +2149,14 @@ int JoystickSamplingThread(void* data){
 	{
 		if( SDL_IsGameController( i ) )
 		{
-			controller = SDL_GameControllerOpen( i );
-			if( controller )
-			{
-				if (available < 0) {
-					available = i;
-				}
-				nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
-				if (!gcontroller[i]) {
+			if (!gcontroller[i]) {
+				controller = SDL_GameControllerOpen( i );
+				if( controller )
+				{
+					if (available < 0) {
+						available = i;
+					}
+					nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
 					idLib::Printf("	Controller Connected: %s\n", SDL_GameControllerName(controller));
 					gcontroller[i]=controller;
 					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
@@ -2172,19 +2172,14 @@ int JoystickSamplingThread(void* data){
 					}
 					idLib::Printf("Found haptic Device %d\n",SDL_HapticNumEffects(haptic[i]));
 					}
-				} else {
-					alreadyConnected = true;
+					}
 				}
-			}
-					continue;
+			} else {
+				alreadyConnected = true;
+				continue;
 				//common->Printf( "GameController %i name: %s\n", i, SDL_GameControllerName( controller ) );
 				//common->Printf( "GameController %i is mapped as \"%s\".\n", i, SDL_GameControllerMapping( controller ) );
 			}
-			else
-			{
-				//common->Printf( "Could not open gamecontroller %i: %s\n", i, SDL_GetError() );
-			}
-			
 		}else{
 			inactive++;
 					if(haptic[i]){
