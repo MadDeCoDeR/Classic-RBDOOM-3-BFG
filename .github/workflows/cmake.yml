@@ -126,7 +126,7 @@ jobs:
         tag_name: nightly-${{ steps.date.outputs.date }}
         release_name: DOOM BFA Nigthly ${{ steps.date.outputs.date }}
         body: |
-          latest build
+          git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s
         draft: false
         prerelease: true
     - name: Download linux artifact
@@ -137,6 +137,7 @@ jobs:
       working-directory: ${{github.workspace}}
       run: |
         mv ./build/DoomBFA DoomBFA
+        chmod +x DoomBFA
         rm -d ./build
         zip -m -r linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Linux Artifact to release
