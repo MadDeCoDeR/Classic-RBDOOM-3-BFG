@@ -114,6 +114,9 @@ jobs:
     needs: [ linux-build, windows-build ]
     runs-on: ubuntu-latest
     steps:
+    - name: Get log messages
+      id: messages
+      run: echo "git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s"
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H-%M-%s')"
@@ -126,7 +129,7 @@ jobs:
         tag_name: nightly-${{ steps.date.outputs.date }}
         release_name: DOOM BFA Nigthly ${{ steps.date.outputs.date }}
         body: |
-          git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s
+          ${{ steps.messages.outputs.messages }}
         draft: false
         prerelease: true
     - name: Download linux artifact
