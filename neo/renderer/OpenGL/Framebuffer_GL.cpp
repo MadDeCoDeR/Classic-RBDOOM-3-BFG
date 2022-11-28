@@ -94,8 +94,10 @@ void Framebuffer::Init()
 		width = height = shadowMapResolutions[i];
 		
 		globalFramebuffers.shadowFBO[i] = new Framebuffer( va( "_shadowMap%i", i ) , width, height );
-		globalFramebuffers.shadowFBO[i]->Bind();
-		glDrawBuffers( 0, NULL );
+		if (!glConfig.directStateAccess) {
+			globalFramebuffers.shadowFBO[i]->Bind();
+			glDrawBuffers(0, NULL);
+		}
 	}
 	
 	// HDR

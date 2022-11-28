@@ -830,8 +830,14 @@ void idRenderBackend::GL_SetDefaultState()
 	glEnable( GL_DEPTH_TEST );
 	glEnable( GL_BLEND );
 	glEnable( GL_SCISSOR_TEST );
-	glDrawBuffer( GL_BACK );
-	glReadBuffer( GL_BACK );
+	if (glConfig.directStateAccess) {
+		glNamedFramebufferDrawBuffer(0, GL_BACK);
+		glNamedFramebufferReadBuffer(0, GL_BACK);
+	}
+	else {
+		glDrawBuffer(GL_BACK);
+		glReadBuffer(GL_BACK);
+	}
 	
 	if( r_useScissor.GetBool() )
 	{
