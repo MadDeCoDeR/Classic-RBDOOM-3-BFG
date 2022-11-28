@@ -13,24 +13,6 @@ Multi-Arch: same
 Type: Port
 Status: install ok installed
 
-Package: opengl
-Version: 2022-03-14
-Port-Version: 1
-Architecture: x64-linux
-Multi-Arch: same
-Description: Open Graphics Library (OpenGL)[3][4][5] is a cross-language, cross-platform application programming interface (API) for rendering 2D and 3D vector graphics.
-Type: Port
-Status: purge ok not-installed
-
-Package: glew
-Version: 2.2.0
-Depends: opengl, vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Description: The OpenGL Extension Wrangler Library (GLEW) is a cross-platform open-source C/C++ extension loading library.
-Type: Port
-Status: purge ok not-installed
-
 Package: libjpeg-turbo
 Version: 2.1.4
 Depends: vcpkg-cmake, vcpkg-cmake-config
@@ -98,6 +80,14 @@ Type: Port
 Status: install ok installed
 
 Package: sdl2
+Feature: wayland
+Architecture: x64-linux
+Multi-Arch: same
+Description: Dynamically load Wayland support
+Type: Port
+Status: install ok installed
+
+Package: sdl2
 Feature: x11
 Architecture: x64-linux
 Multi-Arch: same
@@ -105,11 +95,38 @@ Description: Dynamically load X11 support
 Type: Port
 Status: install ok installed
 
-Package: sdl2
-Feature: wayland
+Package: vcpkg-tool-meson
+Version: 0.63
 Architecture: x64-linux
 Multi-Arch: same
-Description: Dynamically load Wayland support
+Description: Meson build system
+Type: Port
+Status: install ok installed
+
+Package: pkgconf
+Version: 1.8.0
+Port-Version: 3
+Depends: vcpkg-tool-meson
+Architecture: x64-linux
+Multi-Arch: same
+Description: pkgconf is a program which helps to configure compiler and linker flags for development libraries. It is similar to pkg-config from freedesktop.org.
+Type: Port
+Status: install ok installed
+
+Package: vcpkg-pkgconfig-get-modules
+Version: 2022-02-10
+Port-Version: 1
+Depends: pkgconf
+Architecture: x64-linux
+Multi-Arch: same
+Type: Port
+Status: install ok installed
+
+Package: vcpkg-cmake-get-vars
+Version: 2022-09-04
+Depends: vcpkg-cmake
+Architecture: x64-linux
+Multi-Arch: same
 Type: Port
 Status: install ok installed
 

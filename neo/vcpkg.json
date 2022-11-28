@@ -22,6 +22,7 @@
         "wayland"
       ],
       "platform": "linux"
-    }
+    },
+    "ffmpeg"
   ]
 }

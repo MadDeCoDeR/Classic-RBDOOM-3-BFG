@@ -46,6 +46,10 @@
         "USE_SYSTEM_RAPIDJSON": {
           "type": "BOOL",
           "value": "ON"
+        },
+        "USE_PACKAGED_FFMPEG": {
+          "type": "BOOL",
+          "value": "ON"
         }
       }
     },

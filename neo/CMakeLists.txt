@@ -21,6 +21,9 @@ option(USE_XAUDIO2
 option(FFMPEG
 		"Use FMPEG to render Bink videos" ON)
 
+option(USE_PACKAGED_FFMPEG
+		"Use FMPEG From Depedency Manager" OFF)
+
 option(BINKDEC
 		"Use included libbinkdec to render Bink videos" OFF)
 		
@@ -1559,27 +1562,40 @@ if(MSVC)
 	if(FFMPEG)
 		add_definitions(-DUSE_FFMPEG)
 	
-		if(CMAKE_CL_64)
-			set(FFMPEG_DIR ffmpeg-win64)
-		else()
-			set(FFMPEG_DIR ffmpeg-win32)
-		endif()
+		if (USE_PACKAGED_FFMPEG)
+			find_package(ffmpeg REQUIRED)
+		else(USE_PACKAGED_FFMPEG)
+			set(FFMPEG_FOUND FALSE)
+		endif(USE_PACKAGED_FFMPEG)
+
+		if(FFMPEG_FOUND)
+			include_directories(${FFMPEG_INCLUDE_DIRS})
+			link_directories(${FFMPEG_LIBRARIES_DIRS})
+			set(FFmpeg_LIBRARIES ${FFMPEG_LIBRARIES})
+		else(FFMPEG_FOUND)
+			if(CMAKE_CL_64)
+				set(FFMPEG_DIR ffmpeg-win64)
+			else()
+				set(FFMPEG_DIR ffmpeg-win32)
+			endif()
 		
-		include_directories(libs/${FFMPEG_DIR}/include)
-		include_directories(libs/${FFMPEG_DIR}/include/libswscale)
-		include_directories(libs/${FFMPEG_DIR}/include/libavformat)
-		include_directories(libs/${FFMPEG_DIR}/include/libavdevice)
-		include_directories(libs/${FFMPEG_DIR}/include/libavcodec)
-		include_directories(libs/${FFMPEG_DIR}/include/libswresample)
+			include_directories(libs/${FFMPEG_DIR}/include)
+			include_directories(libs/${FFMPEG_DIR}/include/libswscale)
+			include_directories(libs/${FFMPEG_DIR}/include/libavformat)
+			include_directories(libs/${FFMPEG_DIR}/include/libavdevice)
+			include_directories(libs/${FFMPEG_DIR}/include/libavcodec)
+			include_directories(libs/${FFMPEG_DIR}/include/libswresample)
 			
-		link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/${FFMPEG_DIR}/lib)
+			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/${FFMPEG_DIR}/lib)
 		
-		set(FFmpeg_LIBRARIES
-				avcodec
-				avformat
-				avutil
-				swscale
-				swresample)
+			set(FFmpeg_LIBRARIES
+					avcodec
+					avformat
+					avutil
+					swscale
+					swresample)
+			
+		endif(FFMPEG_FOUND)
 		
 	endif()
 	
@@ -1672,7 +1688,7 @@ if(MSVC)
 					   ${CMAKE_SOURCE_DIR}/libs/openal-soft/bin/${OS_CPU}/soft_oal.dll 
 					   $<TARGET_FILE_DIR:DoomBFA>/OpenAL32.dll
 					   COMMENT "Copy OpenAL dll")
-	endif(OPENAL_FOUND)
+	endif(NOT OPENAL_FOUND)
 		
 	add_dependencies(DoomBFA idlib external)
 	target_link_libraries(DoomBFA

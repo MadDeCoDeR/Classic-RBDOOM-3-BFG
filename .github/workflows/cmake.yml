@@ -95,11 +95,11 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
       
-    - name: Download FFMPEG
-      working-directory: ${{github.workspace}}/.github/tools
-      shell: pwsh
-      run: |
-        .\download-ffmpeg.ps1
+    # - name: Download FFMPEG
+    #   working-directory: ${{github.workspace}}/.github/tools
+    #   shell: pwsh
+    #   run: |
+    #     .\download-ffmpeg.ps1
       
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
@@ -108,7 +108,6 @@ jobs:
         path: |
           ./build/${{env.BUILD_TYPE}}/DoomBFA.exe
           ./build/${{env.BUILD_TYPE}}/*.dll
-          ./build/ffmpeg/*.dll
           ./base/*
   make-release:
     needs: [ linux-build, windows-build ]
