@@ -31,7 +31,7 @@ jobs:
         platform: x64
 
     - name: Download Depedencies
-      run: sudo apt-get install -y nasm libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev
+      run: sudo apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev
 
     - name: Cache linux vcpkg
       uses: actions/cache@v3
