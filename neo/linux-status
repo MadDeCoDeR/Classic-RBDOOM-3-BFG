@@ -7,7 +7,7 @@ Type: Port
 Status: install ok installed
 
 Package: vcpkg-cmake
-Version: 2022-09-26
+Version: 2022-10-30
 Architecture: x64-linux
 Multi-Arch: same
 Type: Port
@@ -23,8 +23,7 @@ Type: Port
 Status: install ok installed
 
 Package: zlib
-Version: 1.2.12
-Port-Version: 2
+Version: 1.2.13
 Depends: vcpkg-cmake
 Architecture: x64-linux
 Multi-Arch: same
@@ -33,8 +32,8 @@ Type: Port
 Status: install ok installed
 
 Package: libpng
-Version: 1.6.37
-Port-Version: 19
+Version: 1.6.38
+Port-Version: 1
 Depends: vcpkg-cmake, vcpkg-cmake-config, zlib
 Architecture: x64-linux
 Multi-Arch: same
@@ -44,6 +43,7 @@ Status: install ok installed
 
 Package: alsa
 Version: 1.2.6.1
+Port-Version: 1
 Architecture: x64-linux
 Multi-Arch: same
 Description: The Advanced Linux Sound Architecture (ALSA) - library
@@ -71,7 +71,7 @@ Type: Port
 Status: install ok installed
 
 Package: sdl2
-Version: 2.24.1
+Version: 2.26.1
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-linux
 Multi-Arch: same
@@ -80,115 +80,10 @@ Type: Port
 Status: install ok installed
 
 Package: sdl2
-Feature: wayland
-Architecture: x64-linux
-Multi-Arch: same
-Description: Dynamically load Wayland support
-Type: Port
-Status: install ok installed
-
-Package: sdl2
 Feature: x11
 Architecture: x64-linux
 Multi-Arch: same
 Description: Dynamically load X11 support
-Type: Port
-Status: install ok installed
-
-Package: vcpkg-tool-meson
-Version: 0.63
-Architecture: x64-linux
-Multi-Arch: same
-Description: Meson build system
-Type: Port
-Status: install ok installed
-
-Package: pkgconf
-Version: 1.8.0
-Port-Version: 3
-Depends: vcpkg-tool-meson
-Architecture: x64-linux
-Multi-Arch: same
-Description: pkgconf is a program which helps to configure compiler and linker flags for development libraries. It is similar to pkg-config from freedesktop.org.
-Type: Port
-Status: install ok installed
-
-Package: vcpkg-pkgconfig-get-modules
-Version: 2022-02-10
-Port-Version: 1
-Depends: pkgconf
-Architecture: x64-linux
-Multi-Arch: same
-Type: Port
-Status: install ok installed
-
-Package: vcpkg-cmake-get-vars
-Version: 2022-09-04
-Depends: vcpkg-cmake
-Architecture: x64-linux
-Multi-Arch: same
-Type: Port
-Status: install ok installed
-
-Package: ffmpeg
-Version: 4.4.1
-Port-Version: 21
-Depends: vcpkg-cmake-get-vars, vcpkg-pkgconfig-get-modules
-Architecture: x64-linux
-Multi-Arch: same
-Description: a library to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.
-    FFmpeg is the leading multimedia framework, able to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created. It supports the most obscure ancient formats up to the cutting edge. No matter if they were designed by some standards committee, the community or a corporation. It is also highly portable: FFmpeg compiles, runs, and passes our testing infrastructure FATE across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc. under a wide variety of build environments, machine architectures, and configurations.
-Type: Port
-Default-Features: avcodec, avdevice, avfilter, avformat, swresample, swscale
-Status: install ok installed
-
-Package: ffmpeg
-Feature: avcodec
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build the avcodec library
-Type: Port
-Status: install ok installed
-
-Package: ffmpeg
-Feature: avdevice
-Depends: ffmpeg
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build the avdevice library
-Type: Port
-Status: install ok installed
-
-Package: ffmpeg
-Feature: avfilter
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build the avfilter library
-Type: Port
-Status: install ok installed
-
-Package: ffmpeg
-Feature: avformat
-Depends: ffmpeg
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build the avformat library
-Type: Port
-Status: install ok installed
-
-Package: ffmpeg
-Feature: swresample
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build the swresample library
-Type: Port
-Status: install ok installed
-
-Package: ffmpeg
-Feature: swscale
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build the swscale library
 Type: Port
 Status: install ok installed
 

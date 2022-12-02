@@ -84,9 +84,17 @@ GLimp_PreInit
 */
 void GLimp_PreInit() // DG: added this function for SDL compatibility
 {
-	if( !SDL_WasInit( SDL_INIT_VIDEO ) )
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	if( !SDL_WasInit( SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) )
+#else
+	if( !SDL_WasInit( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) )
+#endif
 	{
-		if( SDL_Init( SDL_INIT_VIDEO ) )
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+		if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC ) )
+#else
+		if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) )
+#endif
 			common->Error( "Error while initializing SDL: %s", SDL_GetError() );
 	}
 }
@@ -542,6 +550,7 @@ void GLimp_Shutdown()
 		SDL_DestroyWindow( window );
 		window = NULL;
 	}
+	SDL_Quit();
 #endif
 }
 
