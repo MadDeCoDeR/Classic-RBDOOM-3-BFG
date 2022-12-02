@@ -2,21 +2,39 @@
   "name": "doombfa",
   "version": "1.2.9",
   "dependencies": [
-    "zlib",
-    "libpng",
-    "libjpeg-turbo",
-    "openal-soft",
+    {
+      "name": "zlib",
+      "version>=": "1.2.12"
+    },
+    {
+      "name": "libpng",
+      "version>=": "1.6.37#19"
+    },
+    {
+      "name": "libjpeg-turbo",
+      "version>=": "2.1.4"
+    },
+    {
+      "name": "openal-soft",
+      "version>=": "1.22.2"
+    },
     {
       "name": "glew",
+      "version>=": "2.2.0",
       "platform": "!linux"
     },
-    "rapidjson",
+    {
+      "name": "rapidjson",
+      "version>=": "2022-06-28"
+    },
     {
       "name": "xaudio2redist",
+      "version>=": "1.2.9",
       "platform": "windows"
     },
     {
       "name": "sdl2",
+      "version>=": "2.26.0",
       "features": [
         "x11",
         "wayland"
@@ -25,7 +43,9 @@
     },
     {
       "name": "ffmpeg",
-      "platform":  "!linux"
+      "platform": "!linux",
+      "version>=": "4.4.1"
     }
-  ]
+  ],
+  "builtin-baseline": "163fe7bd3d67c41200617caaa245b5ba2ba854e6"
 }
