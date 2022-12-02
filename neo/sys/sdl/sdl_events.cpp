@@ -162,7 +162,7 @@ static joyState current[4];
 static joyState old[4];
 static joystick_poll_t joystick_polls[42];
 static int numEvents = 0;
-int joyAxis[6];
+int joyAxis[MAX_JOYSTICKS][6];
 SDL_Joystick* joy = NULL;
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 static SDL_GameController* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
@@ -171,7 +171,7 @@ static int registeredControllers = 0;
 #endif
 static bool joyThreadKill = false;
 int SDL_joystick_has_hat = 0;
-bool buttonStates[K_LAST_KEY];	// For keeping track of button up/down events
+bool buttonStates[MAX_JOYSTICKS][K_LAST_KEY];	// For keeping track of button up/down events
 
 #define	MAX_QUED_EVENTS		256
 #define	MASK_QUED_EVENTS	( MAX_QUED_EVENTS - 1 )
@@ -685,8 +685,10 @@ void Sys_InitInput()
 	kbd_polls.SetGranularity( 256 );
 	mouse_polls.SetGranularity( 256 );
 	
-	memset( &buttonStates, 0, sizeof( buttonStates ) );
-	memset( &joyAxis, 0, sizeof( joyAxis ) );
+	for (int i = 0; i < MAX_JOYSTICKS; i++) {
+		memset( &buttonStates[i], 0, sizeof( buttonStates[i] ) );
+		memset( &joyAxis[i], 0, sizeof( joyAxis[i] ) );
+	}
 	memset( &current, 0, sizeof(joyState) );
 	memset( &old, 0, sizeof(joyState) );
 	memset( &joystick_polls, 0, sizeof(joystick_polls) );
@@ -720,8 +722,10 @@ void Sys_ShutdownInput()
 	mouse_polls.Clear();
 	joyThreadKill = true;
 	
-	memset( &buttonStates, 0, sizeof( buttonStates ) );
-	memset( &joyAxis, 0, sizeof( joyAxis ) );
+	for (int i = 0; i < MAX_JOYSTICKS; i++) {
+		memset( &buttonStates[i], 0, sizeof( buttonStates[i] ) );
+		memset( &joyAxis[i], 0, sizeof( joyAxis[i] ) );
+	}
 	memset( &current, 0, sizeof(joyState) );
 	memset( &old, 0, sizeof(joyState) );
 	memset( &joystick_polls, 0, sizeof(joystick_polls) );
@@ -1935,63 +1939,63 @@ void Sys_SetRumble( int device, int low, int hi )
 }
 
 //GK: Direct copy from Windows Implementation
-void PushButton( int key, bool value )
+void PushButton( int inputDeviceNum, int key, bool value )
 {
 	// So we don't keep sending the same SE_KEY message over and over again
-	if( buttonStates[key] != value )
+	if( buttonStates[inputDeviceNum][key] != value )
 	{
-		buttonStates[key] = value;
-		Sys_QueEvent( SE_KEY, key, value, 0, NULL, 0 );
+		buttonStates[inputDeviceNum][key] = value;
+		Sys_QueEvent( SE_KEY, key, value, 0, NULL, inputDeviceNum );
 	}
 }
 //GK: Direct copy from Windows Implementation
-void PostInputEvent( int event, int value, int range = 16384 )
+void PostInputEvent( int inputDeviceNum, int event, int value, int range = 16384 )
 {
 	// These events are used for GUI button presses
 	if( ( event >= J_ACTION1 ) && ( event <= J_ACTION_MAX ) )
 	{
-		PushButton( K_JOY1 + ( event - J_ACTION1 ), value != 0 );
+		PushButton( inputDeviceNum, K_JOY1 + ( event - J_ACTION1 ), value != 0 );
 	}
 	else if( event == J_AXIS_LEFT_X )
 	{
-		PushButton( K_JOY_STICK1_LEFT, ( value < -range ) );
-		PushButton( K_JOY_STICK1_RIGHT, ( value > range ) );
+		PushButton( inputDeviceNum, K_JOY_STICK1_LEFT, ( value < -range ) );
+		PushButton( inputDeviceNum, K_JOY_STICK1_RIGHT, ( value > range ) );
 	}
 	else if( event == J_AXIS_LEFT_Y )
 	{
-		PushButton( K_JOY_STICK1_UP, ( value < -range ) );
-		PushButton( K_JOY_STICK1_DOWN, ( value > range ) );
+		PushButton( inputDeviceNum, K_JOY_STICK1_UP, ( value < -range ) );
+		PushButton( inputDeviceNum, K_JOY_STICK1_DOWN, ( value > range ) );
 	}
 	else if( event == J_AXIS_RIGHT_X )
 	{
-		PushButton( K_JOY_STICK2_LEFT, ( value < -range ) );
-		PushButton( K_JOY_STICK2_RIGHT, ( value > range ) );
+		PushButton( inputDeviceNum, K_JOY_STICK2_LEFT, ( value < -range ) );
+		PushButton( inputDeviceNum, K_JOY_STICK2_RIGHT, ( value > range ) );
 	}
 	else if( event == J_AXIS_RIGHT_Y )
 	{
-		PushButton( K_JOY_STICK2_UP, ( value < -range ) );
-		PushButton( K_JOY_STICK2_DOWN, ( value > range ) );
+		PushButton( inputDeviceNum, K_JOY_STICK2_UP, ( value < -range ) );
+		PushButton( inputDeviceNum, K_JOY_STICK2_DOWN, ( value > range ) );
 	}
 	else if( ( event >= J_DPAD_UP ) && ( event <= J_DPAD_RIGHT ) )
 	{
-		PushButton( K_JOY_DPAD_UP + ( event - J_DPAD_UP ), value != 0 );
+		PushButton( inputDeviceNum, K_JOY_DPAD_UP + ( event - J_DPAD_UP ), value != 0 );
 	}
 	else if( event == J_AXIS_LEFT_TRIG )
 	{
-		PushButton( K_JOY_TRIGGER1, ( value > range ) );
+		PushButton( inputDeviceNum, K_JOY_TRIGGER1, ( value > range ) );
 	}
 	else if( event == J_AXIS_RIGHT_TRIG )
 	{
-		PushButton( K_JOY_TRIGGER2, ( value > range ) );
+		PushButton( inputDeviceNum, K_JOY_TRIGGER2, ( value > range ) );
 	}
 	if( event >= J_AXIS_MIN && event <= J_AXIS_MAX )
 	{
 		int axis = event - J_AXIS_MIN;
 		int percent = ( value * 16 ) / range;
-		if( joyAxis[axis] != percent )
+		if( joyAxis[inputDeviceNum][axis] != percent )
 		{
-			joyAxis[axis] = percent;
-			Sys_QueEvent( SE_JOYSTICK, axis, percent, 0, NULL, 0 );
+			joyAxis[inputDeviceNum][axis] = percent;
+			Sys_QueEvent( SE_JOYSTICK, axis, percent, 0, NULL, inputDeviceNum );
 		}
 	}
 	
@@ -2026,26 +2030,26 @@ int Sys_PollJoystickInputEvents( int deviceNum )
 
 	for (int i = 0; i < 15; i++) {
 		if (current[deviceNum].buttons[i] != old[deviceNum].buttons[i]) {
-			PostInputEvent(controllerButtonRemap[i], current[deviceNum].buttons[i]);
+			PostInputEvent(deviceNum, controllerButtonRemap[i], current[deviceNum].buttons[i]);
 		}
 	}
 	if (current[deviceNum].LXThumb != old[deviceNum].LXThumb) {
-		PostInputEvent(J_AXIS_LEFT_X, current[deviceNum].LXThumb);
+		PostInputEvent(deviceNum, J_AXIS_LEFT_X, current[deviceNum].LXThumb);
 	}
 	if (current[deviceNum].LYThumb != old[deviceNum].LYThumb) {
-		PostInputEvent(J_AXIS_LEFT_Y, current[deviceNum].LYThumb);
+		PostInputEvent(deviceNum, J_AXIS_LEFT_Y, current[deviceNum].LYThumb);
 	}
 	if (current[deviceNum].RXThumb != old[deviceNum].RXThumb) {
-		PostInputEvent(J_AXIS_RIGHT_X, current[deviceNum].RXThumb);
+		PostInputEvent(deviceNum, J_AXIS_RIGHT_X, current[deviceNum].RXThumb);
 	}
 	if (current[deviceNum].RYThumb != old[deviceNum].RYThumb) {
-		PostInputEvent(J_AXIS_RIGHT_Y, current[deviceNum].RYThumb);
+		PostInputEvent(deviceNum, J_AXIS_RIGHT_Y, current[deviceNum].RYThumb);
 	}
 	if (current[deviceNum].LTrigger != old[deviceNum].LTrigger) {
-		PostInputEvent(J_AXIS_LEFT_TRIG, current[deviceNum].LTrigger);
+		PostInputEvent(deviceNum, J_AXIS_LEFT_TRIG, current[deviceNum].LTrigger);
 	}
 	if (current[deviceNum].RTrigger != old[deviceNum].RTrigger) {
-		PostInputEvent(J_AXIS_RIGHT_TRIG, current[deviceNum].RTrigger);
+		PostInputEvent(deviceNum, J_AXIS_RIGHT_TRIG, current[deviceNum].RTrigger);
 	}
 
 	old[deviceNum] = current[deviceNum];
