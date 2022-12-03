@@ -550,7 +550,7 @@ void GLimp_Shutdown()
 		SDL_DestroyWindow( window );
 		window = NULL;
 	}
-	SDL_Quit();
+	atexit(SDL_Quit);
 #endif
 }
 
