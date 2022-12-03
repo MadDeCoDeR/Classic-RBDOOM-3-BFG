@@ -2136,15 +2136,7 @@ int JoystickSamplingThread(void* data){
 		threadTimeDeltas[threadCount & 255] = delta;
 		threadCount++;
 		if(now>=nextCheck[0]){ //GK: Similar to the windows thread
-	#if SDL_VERSION_ATLEAST(2, 0, 0)
-	// GameController
-	// if( SDL_Init( SDL_INIT_GAMECONTROLLER ) ){
-	// 	common->Printf( "Sys_InitInput: SDL_INIT_GAMECONTROLLER error: %s\n", SDL_GetError() );
-	// 	continue;
-	// }
-	// if( SDL_Init( SDL_INIT_HAPTIC ) )
-	// 	common->Printf( "Sys_InitInput: SDL_INIT_HAPTIC error: %s\n", SDL_GetError() );
-		
+#if SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_GameController* controller = NULL;
 	int inactive = 0;
 	int available = -1;
@@ -2213,13 +2205,6 @@ int JoystickSamplingThread(void* data){
 	}
 	/*idLib::joystick = inactive >= 4 ? false : true;*/
 #else
-	// WM0110: Initialise SDL Joystick
-	//common->Printf( "Sys_InitInput: Joystick subsystem init\n" );
-	// if( SDL_Init( SDL_INIT_JOYSTICK ) )
-	// {
-	// 	common->Printf( "Sys_InitInput: Joystic Init ERROR!\n" );
-	// 	continue;
-	// }
 	
 	int numJoysticks = SDL_NumJoysticks();
 	//common->Printf( "Sys_InitInput: Joystic - Found %i joysticks\n", numJoysticks );

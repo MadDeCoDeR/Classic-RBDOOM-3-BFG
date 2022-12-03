@@ -82,6 +82,10 @@ GLimp_PreInit
  Calling that function more than once doesn't make a difference
 ===================
 */
+/*GK: SDL_Init is used to Initialize various SDL submodules. 
+ SDL_Init should be called ONLY ONCE, when the engine starts,
+  and also it needs all the flags for proper setup (without SDL_INIT_GAMECONTROLLER latest versions cause performance degregation when using a controller)
+ */
 void GLimp_PreInit() // DG: added this function for SDL compatibility
 {
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -550,7 +554,6 @@ void GLimp_Shutdown()
 		SDL_DestroyWindow( window );
 		window = NULL;
 	}
-	atexit(SDL_Quit);
 #endif
 }
 
