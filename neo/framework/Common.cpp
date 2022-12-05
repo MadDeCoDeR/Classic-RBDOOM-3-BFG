@@ -952,6 +952,98 @@ CONSOLE_COMMAND( finishBuild, "finishes the build process", NULL )
 	}
 }
 
+bool getInput() {
+	int	mouseEvents[MAX_MOUSE_EVENTS][2];
+	Sys_GenerateEvents();
+
+	// queue system events ready for polling
+	Sys_GetEvent();
+
+	// RB: allow to escape video by pressing anything
+	int numKeyEvents = Sys_PollKeyboardInputEvents();
+	if (numKeyEvents > 0)
+	{
+		idLib::joystick = false;
+		for (int i = 0; i < numKeyEvents; i++)
+		{
+			int key;
+			bool state;
+
+			if (Sys_ReturnKeyboardInputEvent(i, key, state))
+			{
+				if (key == K_ESCAPE && state == true)
+				{
+					return true;
+				}
+				break;
+			}
+		}
+
+		Sys_EndKeyboardInputEvents();
+	}
+
+	int numMouseEvents = Sys_PollMouseInputEvents(mouseEvents);
+	if (numMouseEvents > 0)
+	{
+		idLib::joystick = false;
+		for (int i = 0; i < numMouseEvents; i++)
+		{
+			int action = mouseEvents[i][0];
+			switch (action)
+			{
+			case M_ACTION1:
+			case M_ACTION2:
+			case M_ACTION3:
+			case M_ACTION4:
+			case M_ACTION5:
+			case M_ACTION6:
+			case M_ACTION7:
+			case M_ACTION8:
+				return true;
+				break;
+
+			default:	// some other undefined button
+				break;
+			}
+		}
+	}
+
+	int numJoystickEvents = 0;
+	for (int i = 0; i < MAX_INPUT_DEVICES; i++) {
+		numJoystickEvents = Sys_PollJoystickInputEvents(i);
+		if (numJoystickEvents > 0) {
+			break;
+		}
+	}
+	if (numJoystickEvents > 0)
+	{
+		int validevents = 0;
+		for (int i = 0; i < numJoystickEvents; i++)
+		{
+			int action;
+			int value;
+
+			if (Sys_ReturnJoystickInputEvent(i, action, value))
+			{
+				if (action >= J_ACTION1 && action <= J_ACTION_MAX)
+				{
+					if (value != 0)
+					{
+						validevents++;
+						return true;
+						break;
+					}
+				}
+			}
+		}
+		if (validevents > 0) {
+			idLib::joystick = true;
+		}
+		Sys_EndJoystickInputEvents();
+	}
+	return false;
+}
+
 /*
 =================
 idCommonLocal::RenderSplash
@@ -1052,7 +1144,6 @@ void idCommonLocal::RenderBink( const char* path )
 	// RB: FFmpeg might return the wrong play length so I changed the intro video to play max 30 seconds until finished
 	//GK: No it doesn't
 	int cinematicLength = material->CinematicLength();
-	int	mouseEvents[MAX_MOUSE_EVENTS][2];
 	
 	bool escapeEvent = false;
 	//GK: expecting all the code in the loop to consume no time (especially the sleep) is wrong and it was causing the timer to be incorect on every loop, which resultedon the cinematic to cut before is finished
@@ -1066,93 +1157,7 @@ void idCommonLocal::RenderBink( const char* path )
 		const emptyCommand_t* cmd = renderSystem->SwapCommandBuffers( &time_frontend, &time_backend, &time_shadows, &time_gpu );
 		renderSystem->RenderCommandBuffers( cmd );
 		
-		Sys_GenerateEvents();
-		
-		// queue system events ready for polling
-		Sys_GetEvent();
-		
-		// RB: allow to escape video by pressing anything
-		int numKeyEvents = Sys_PollKeyboardInputEvents();
-		if( numKeyEvents > 0 )
-		{
-			idLib::joystick = false;
-			for( int i = 0; i < numKeyEvents; i++ )
-			{
-				int key;
-				bool state;
-				
-				if( Sys_ReturnKeyboardInputEvent( i, key, state ) )
-				{
-					if( key == K_ESCAPE && state == true )
-					{
-						escapeEvent = true;
-					}
-					break;
-				}
-			}
-			
-			Sys_EndKeyboardInputEvents();
-		}
-		
-		int numMouseEvents = Sys_PollMouseInputEvents( mouseEvents );
-		if( numMouseEvents > 0 )
-		{
-			idLib::joystick = false;
-			for( int i = 0; i < numMouseEvents; i++ )
-			{
-				int action = mouseEvents[i][0];
-				switch( action )
-				{
-					case M_ACTION1:
-					case M_ACTION2:
-					case M_ACTION3:
-					case M_ACTION4:
-					case M_ACTION5:
-					case M_ACTION6:
-					case M_ACTION7:
-					case M_ACTION8:
-						escapeEvent = true;
-						break;
-						
-					default:	// some other undefined button
-						break;
-				}
-			}
-		}
-		
-		int numJoystickEvents = 0;
-		for (int i = 0; i < MAX_INPUT_DEVICES; i++) {
-			numJoystickEvents = Sys_PollJoystickInputEvents(i);
-			if (numJoystickEvents > 0) {
-				break;
-			}
-		}
-		if (numJoystickEvents > 0)
-		{
-			int validevents = 0;
-			for( int i = 0; i < numJoystickEvents; i++ )
-			{
-				int action;
-				int value;
-				
-				if( Sys_ReturnJoystickInputEvent( i, action, value ) )
-				{
-					if( action >= J_ACTION1 && action <= J_ACTION_MAX )
-					{
-						if( value != 0 )
-						{
-							validevents++;
-							escapeEvent = true;
-							break;
-						}
-					}
-				}
-			}
-			if( validevents > 0 ) {
-				idLib::joystick = true;
-			}
-			Sys_EndJoystickInputEvents();
-		}
+		escapeEvent = getInput();
 		
 		if( escapeEvent || com_emergencyexit.GetBool())
 		{
@@ -1714,21 +1719,30 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		StartMenu( true );
 		
+		bool escapeEvent = false;
+		bool finalEscape = !idLib::newd3;
+
 		while( Sys_Milliseconds() - legalStartTime < legalMinTime )
 		{
+			escapeEvent = getInput();
+			if (escapeEvent && !finalEscape) {
+				escapeEvent = false;
+				finalEscape = true;
+				legalStartTime = legalMinTime / 2.0;
+			}
+			if ((finalEscape && escapeEvent) || com_emergencyexit.GetBool()) {
+				break;
+			}
 			if ((Sys_Milliseconds() - legalStartTime) >= legalMinTime / 2.0 && idLib::newd3) {
 				RenderPhotosensitivity();
 			}
 			else {
 				RenderSplash();
 			}
-			Sys_GenerateEvents();
-			Sys_Sleep( 10 );
-			if (com_emergencyexit.GetBool()) {
-				break;
-			}
+			
+			Sys_Sleep(10);
 		}
-		Sys_ClearEvents();
+		//Sys_ClearEvents();
 		if (com_emergencyexit.GetBool()) {
 			return;
 		}
