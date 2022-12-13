@@ -1379,7 +1379,7 @@ public:
 	
 	void Increment()
 	{
-		if( ( count + 1 ) >= nextTicCount )
+		if( (size_t)( count + 1 ) >= nextTicCount )
 		{
 			size_t ticsNeeded = ( size_t )( ( ( double )( count + 1 ) / expectedCount ) * 50.0 );
 			

@@ -632,7 +632,7 @@ ID_TIME_T		Sys_FileTimeStamp( idFileHandle fp );
 const char* 	Sys_TimeStampToStr( ID_TIME_T timeStamp );
 //GK: Begin
 #ifdef WIN32
-const char*		Sys_GetSystemFormatedTime(ID_TIME_T timeStamp);
+const char*		Sys_GetSystemFormatedTime(ID_TIME_TYPE timeStamp);
 #endif
 //GK: End
 const char* 	Sys_SecToStr( int sec );

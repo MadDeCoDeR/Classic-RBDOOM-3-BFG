@@ -164,7 +164,7 @@ void idDebugGraph::Render( idRenderSystem* gui )
 		}
 		if( labels.Num() > 0 )
 		{
-			int64 maxLen = 0;
+			ID_INT maxLen = 0;
 			for( int i = 0; i < labels.Num(); i++ )
 			{
 				maxLen = Max( maxLen, labels[i].Length() );

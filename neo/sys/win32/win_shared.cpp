@@ -300,7 +300,7 @@ Sys_GetSystemFormatedTime
 	It returns a multibyte string
 ================
 */
-const char* Sys_GetSystemFormatedTime(ID_TIME_T timeInt) {
+const char* Sys_GetSystemFormatedTime(ID_TIME_TYPE timeInt) {
 
 	tm* time = localtime(&timeInt);
 	SYSTEMTIME* systime = new SYSTEMTIME();

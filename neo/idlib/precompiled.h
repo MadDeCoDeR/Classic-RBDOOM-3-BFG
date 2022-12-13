@@ -39,6 +39,17 @@ If you have questions concerning this license or the applicable additional terms
 
 //-----------------------------------------------------
 
+#if _WIN64 || __x86_64__
+#define ID_TIME_TYPE int64
+#define ID_INT int64
+#define ID_UINT uint64
+#define ID_LONG int64
+#else
+#define ID_TIME_TYPE long
+#define ID_INT int
+#define ID_UINT uint
+#define ID_LONG long
+#endif
 #define ID_TIME_T int64 // Signed because -1 means "File not found" and we don't want that to compare > than any other time
 
 // non-portable system services

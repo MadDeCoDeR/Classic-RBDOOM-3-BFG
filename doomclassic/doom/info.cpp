@@ -4884,7 +4884,7 @@ void init_cptrs() {
 }
 
 actionf_p2 getFunc(char* func) {
-	for (int i = 0; i < ::g->cptrval.size(); i++) {
+	for (uint i = 0; i < ::g->cptrval.size(); i++) {
 		if (!idStr::Icmp(func, ::g->cptrval[i].name)) {
 			return ::g->cptrval[i].func;
 		}

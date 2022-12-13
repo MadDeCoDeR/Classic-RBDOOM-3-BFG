@@ -1357,7 +1357,7 @@ void FindNextMap(int map,bool issecret = false) {
 		name = ::g->maps[map].secretmapname;
 	}
 	if (*nmap == -1) {
-		for (int j = 0; j < ::g->maps.size(); j++) {
+		for (uint j = 0; j < ::g->maps.size(); j++) {
 			if (::g->maps[j].lumpname != NULL) {
 				if (!idStr::Icmp(name, ::g->maps[j].lumpname)) {
 					*nmap = j;
@@ -1367,7 +1367,7 @@ void FindNextMap(int map,bool issecret = false) {
 		}
 	}
 	else {
-		for (int j = 0; j < ::g->maps.size(); j++) {
+		for (uint j = 0; j < ::g->maps.size(); j++) {
 			if (*nmap == ::g->maps[j].index) {
 				*nmap = j;
 			}
@@ -1584,7 +1584,7 @@ void G_WorldDone (void)
 		::g->players[::g->consoleplayer].didsecret = true; 
 
 	if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
-		if (::g->gamemode == retail && ::g->clusters.size() >= ::g->gameepisode) {
+		if (::g->gamemode == retail && (int)::g->clusters.size() >= ::g->gameepisode) {
 			if (::g->clusters[::g->gameepisode - 1].startmap > -1 && ::g->clusters[::g->gameepisode - 1].endmap > ::g->clusters[::g->gameepisode - 1].startmap) {
 				int map = (::g->clusters[::g->gameepisode - 1].startmap - 1) + ::g->gamemap;
 				if (map == ::g->clusters[::g->gameepisode - 1].endmap) {
@@ -1826,7 +1826,7 @@ qboolean G_DoLoadGame ()
 	if (hm) {
 		char* tla = new char[256];
 		strcpy(tla, clab);
-		for (int mf = 0; mf < filelist.size(); mf++) {
+		for (uint mf = 0; mf < filelist.size(); mf++) {
 			strcat(tla, filelist[mf].c_str());
 			strcat(tla, ",");
 		}

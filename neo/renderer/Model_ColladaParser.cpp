@@ -2281,7 +2281,7 @@ void ColladaParser::ReadPrimitives( Mesh* pMesh, idList<InputChannel>& pPerIndex
 	}
 	
 	// complain if the index count doesn't fit
-	if( expectedPointCount > 0 && indices.Num() != expectedPointCount * numOffsets )
+	if( expectedPointCount > 0 && indices.Num() != (int)(expectedPointCount * numOffsets) )
 		ThrowException( "Expected different index count in <p> element." );
 		
 	else if( expectedPointCount == 0 && ( indices.Num() % numOffsets ) != 0 )
@@ -2390,11 +2390,11 @@ void ColladaParser::ReadPrimitives( Mesh* pMesh, idList<InputChannel>& pPerIndex
 				vindex[offsets] = indices[idx++];
 				
 			// extract per-vertex channels using the global per-vertex offset
-			for( size_t c = 0; c < pMesh->mPerVertexData.Num(); c++ )
+			for( size_t c = 0; (int)c < pMesh->mPerVertexData.Num(); c++ )
 				ExtractDataObjectFromChannel( pMesh->mPerVertexData[c], vindex[perVertexOffset], pMesh );
 				
 			// and extract per-index channels using there specified offset
-			for( size_t c = 0; c < pPerIndexChannels.Num(); c++ )
+			for( size_t c = 0; (int)c < pPerIndexChannels.Num(); c++ )
 			{
 				const InputChannel& ic = pPerIndexChannels[c];
 				ExtractDataObjectFromChannel( ic, vindex[ic.mOffset], pMesh );

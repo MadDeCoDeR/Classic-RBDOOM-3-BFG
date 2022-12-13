@@ -60,7 +60,7 @@ void InitColorMap() {
 }
 
 patch_t* GetPreloaded() {
-	if (::g->cpatch.size() >= flmp) {
+	if ((int)::g->cpatch.size() >= flmp) {
 		if (::g->cpatch[flmp - 1] != NULL) {
 			return ::g->cpatch[flmp - 1];
 		}
@@ -321,7 +321,7 @@ patch_t* PNG2lmp(unsigned char* buffer) {
 	end_info = NULL;
 
 	::g->cpind = 1;
-	if (::g->cpatch.size() < flmp) {
+	if ((int)::g->cpatch.size() < flmp) {
 		::g->cpatch.resize(flmp);
 	}
 	::g->cpatch[flmp - 1] = (patch_t*)malloc(imagesize);
@@ -488,7 +488,7 @@ patch_t* JPEG2lmp(unsigned char* buffer, int size) {
 		jpeg_destroy_decompress(&cinfo);
 
 		::g->cpind = 1;
-		if (::g->cpatch.size() < flmp) {
+		if ((int)::g->cpatch.size() < flmp) {
 			::g->cpatch.resize(flmp);
 		}
 		::g->cpatch[flmp - 1] =(patch_t*) malloc(imagesize);

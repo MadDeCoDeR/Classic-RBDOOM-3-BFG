@@ -331,7 +331,7 @@ P_FindNextHighestFloor
 			continue;
 
 		if (other->floorheight > height) {
-			if (h >= heightlist.size()) {
+			if (h >= (int)heightlist.size()) {
 				heightlist.emplace_back(other->floorheight);
 				h++;
 			}

@@ -180,7 +180,7 @@ EFXEAXREVERBPROPERTIES *GetProperties(std::vector<std::string> lines, int index)
 		};
 
 
-		for (int i = index ; i < lines.size(); i++) {
+		for (int i = index ; i < (int)lines.size(); i++) {
 			if (!idStr::Cmp(lines[i].c_str(), "}")) {
 				break;
 			}
@@ -250,7 +250,7 @@ EFXEAXREVERBPROPERTIES *GetReverb(char* name, int sector) {
 	std::vector<std::string>lines = getReverblines(text);
 	bool isok = false;
 	int s = ::g->mapindex;
-	for (int i = s; i < lines.size(); i++) {
+	for (int i = s; i < (int)lines.size(); i++) {
 		if (!idStr::Cmpn(lines[i].c_str(), "map", 3)) {
 			if (!idStr::Cmp(lines[i].c_str() + 4, name)) {
 				isok = true;

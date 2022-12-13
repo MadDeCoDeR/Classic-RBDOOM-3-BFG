@@ -136,7 +136,7 @@ void ParseLinedef(std::vector<std::string> lines, int index) {
 		{"sideback",NULL,NULL,NULL,&::g->lines[index].sidenum[1] },
 	};
 	char* token1, *token2;
-	for (int i = 0; i < lines.size(); i++) {
+	for (uint i = 0; i < lines.size(); i++) {
 		token1 = strtok(strdup(lines[i].c_str()), "=");
 		token2 = strtok(NULL, "=");
 		for (int k = 0; k < 15; k++) {
@@ -238,7 +238,7 @@ void ParseSidedef(std::vector<std::string> lines, int index) {
 		{"sector",NULL,NULL,NULL,NULL,&::g->sides[index].sector}
 	};
 	char* token1, *token2;
-	for (int i = 0; i < lines.size(); i++) {
+	for (uint i = 0; i < lines.size(); i++) {
 		token1 = strtok(strdup(lines[i].c_str()), "=");
 		token2 = strtok(NULL, "=");
 		for (int k = 0; k < 6; k++) {
@@ -279,7 +279,7 @@ void ParseSector(std::vector<std::string> lines, int index) {
 	if (!idLib::useSecondaryAudioAPI) {
 #endif
 		if (::g->hasreverb) {
-			if (::g->reverbs.size() < index + 1) {
+			if ((int)::g->reverbs.size() < index + 1) {
 				::g->reverbs.push_back(GetReverb(strdup(::g->mapname.c_str()), index));
 			}
 			else {
@@ -290,7 +290,7 @@ void ParseSector(std::vector<std::string> lines, int index) {
 	}
 #endif
 	char* token1, *token2;
-	for (int i = 0; i < lines.size(); i++) {
+	for (uint i = 0; i < lines.size(); i++) {
 		token1 = strtok(strdup(lines[i].c_str()), "=");
 		token2 = strtok(NULL, "=");
 		for (int k = 0; k < 7; k++) {
@@ -337,7 +337,7 @@ void ParseThing(std::vector<std::string> lines, int index) {
 
 	// Do spawn all other stuff. 
 	char* token1, *token2;
-	for (int i = 0; i < lines.size(); i++) {
+	for (uint i = 0; i < lines.size(); i++) {
 		token1 = strtok(strdup(lines[i].c_str()), "=");
 		token2 = strtok(NULL, "=");
 		for (int k = 0; k < 12; k++) {
@@ -416,7 +416,7 @@ void ParseVertex(std::vector<std::string> lines, int index) {
 		{"y",&::g->vertexes[index].y}
 	};
 	char* token1,*token2;
-	for (int i = 0; i < lines.size(); i++) {
+	for (uint i = 0; i < lines.size(); i++) {
 		token1 = strtok(strdup(lines[i].c_str()), "=");
 		token2 = strtok(NULL, "=");
 		for (int k = 0; k < 2; k++) {

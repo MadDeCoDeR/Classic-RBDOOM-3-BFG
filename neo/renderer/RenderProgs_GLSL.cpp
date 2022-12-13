@@ -1298,7 +1298,7 @@ idStr idRenderProgManager::ConvertCG2GLSL( const idStr& in, const char* name, rp
 			program += ( token.linesCrossed > 0 ) ? newline : ( token.WhiteSpaceBeforeToken() > 0 ? " " : "" );
 			program += "{";
 			
-			int64 len = Min( idStr::Length( newline ) + 1, (int64)sizeof( newline ) - 1 );
+			ID_INT len = Min( idStr::Length( newline ) + 1, (ID_INT)sizeof( newline ) - 1 );
 			newline[len - 1] = '\t';
 			newline[len - 0] = '\0';
 			
@@ -1313,7 +1313,7 @@ idStr idRenderProgManager::ConvertCG2GLSL( const idStr& in, const char* name, rp
 		}
 		if( token == "}" )
 		{
-			int64 len = Max( idStr::Length( newline ) - 1, (int64)0 );
+			ID_INT len = Max( idStr::Length( newline ) - 1, (ID_INT)0 );
 			newline[len] = '\0';
 			
 			program += ( token.linesCrossed > 0 ) ? newline : ( token.WhiteSpaceBeforeToken() > 0 ? " " : "" );

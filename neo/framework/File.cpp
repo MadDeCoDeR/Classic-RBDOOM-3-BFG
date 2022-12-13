@@ -27,8 +27,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
 #pragma hdrstop
+#include "precompiled.h"
 
 #include <libs/zlib/minizip/unzip.h>
 
@@ -210,7 +210,7 @@ int idFile::Write( const void* buffer, int len )
 idFile::Length
 =================
 */
-int64 idFile::Length() const
+ID_INT idFile::Length() const
 {
 	return 0;
 }
@@ -258,7 +258,7 @@ void idFile::Flush()
 idFile::Seek
 =================
 */
-int64 idFile::Seek(int64 offset, fsOrigin_t origin )
+ID_INT idFile::Seek(ID_LONG offset, fsOrigin_t origin )
 {
 	return -1;
 }
@@ -904,7 +904,7 @@ int idFile_Memory::Write( const void* buffer, int len )
 idFile_Memory::Length
 =================
 */
-int64 idFile_Memory::Length() const
+ID_INT idFile_Memory::Length() const
 {
 	return fileSize;
 }
@@ -993,7 +993,7 @@ idFile_Memory::Seek
   returns zero on success and -1 on failure
 =================
 */
-int64 idFile_Memory::Seek(int64 offset, fsOrigin_t origin )
+ID_INT idFile_Memory::Seek(ID_LONG offset, fsOrigin_t origin )
 {
 
 	switch( origin )
@@ -1206,7 +1206,7 @@ int idFile_BitMsg::Write( const void* buffer, int len )
 idFile_BitMsg::Length
 =================
 */
-int64 idFile_BitMsg::Length() const
+ID_INT idFile_BitMsg::Length() const
 {
 	return msg->GetSize();
 }
@@ -1263,7 +1263,7 @@ idFile_BitMsg::Seek
   returns zero on success and -1 on failure
 =================
 */
-int64 idFile_BitMsg::Seek(int64 offset, fsOrigin_t origin )
+ID_INT idFile_BitMsg::Seek(ID_LONG offset, fsOrigin_t origin )
 {
 	return -1;
 }
@@ -1503,7 +1503,7 @@ int idFile_Permanent::Tell() const
 idFile_Permanent::Length
 ================
 */
-int64 idFile_Permanent::Length() const
+ID_INT idFile_Permanent::Length() const
 {
 	return fileSize;
 }
@@ -1526,7 +1526,7 @@ idFile_Permanent::Seek
   returns zero on success and -1 on failure
 =================
 */
-int64 idFile_Permanent::Seek(int64 offset, fsOrigin_t origin )
+ID_INT idFile_Permanent::Seek(ID_LONG offset, fsOrigin_t origin )
 {
 	// RB begin
 #if defined(_WIN32)
@@ -1616,7 +1616,7 @@ idFile_ReadBuffered::BufferData
 Buffer a section of the file
 =================
 */
-void idFile_Cached::CacheData( int64 offset, int64 length )
+void idFile_Cached::CacheData( uint64 offset, uint64 length )
 {
 	Mem_Free( buffered );
 	bufferedStartOffset = offset;
@@ -1650,7 +1650,7 @@ int idFile_Cached::Read( void* buffer, int len )
 	int read = idFile_Permanent::Read( buffer, len );
 	if( read != -1 )
 	{
-		internalFilePos += ( int64 )read;
+		internalFilePos += ( uint64 )read;
 	}
 	return read;
 }
@@ -1674,7 +1674,7 @@ idFile_Cached::Seek
   returns zero on success and -1 on failure
 =================
 */
-int64 idFile_Cached::Seek(int64 offset, fsOrigin_t origin )
+ID_INT idFile_Cached::Seek(uint64 offset, fsOrigin_t origin )
 {
 	if( origin == FS_SEEK_SET && offset >= bufferedStartOffset && offset < bufferedEndOffset )
 	{
@@ -1786,7 +1786,7 @@ int idFile_InZip::Tell() const
 idFile_InZip::Length
 ================
 */
-int64 idFile_InZip::Length() const
+ID_INT idFile_InZip::Length() const
 {
 	return fileSize;
 }
@@ -1810,7 +1810,7 @@ idFile_InZip::Seek
 */
 #define ZIP_SEEK_BUF_SIZE	(1<<15)
 
-int64 idFile_InZip::Seek(int64 offset, fsOrigin_t origin )
+ID_INT idFile_InZip::Seek(ID_LONG offset, fsOrigin_t origin )
 {
 	int res, i;
 	char* buf;
@@ -1953,7 +1953,7 @@ idFile_InnerResource::Seek
 =================
 */
 
-int64 idFile_InnerResource::Seek(int64 _offset, fsOrigin_t origin )
+ID_INT idFile_InnerResource::Seek(ID_INT _offset, fsOrigin_t origin )
 {
 	switch( origin )
 	{

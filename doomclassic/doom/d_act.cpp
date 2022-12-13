@@ -63,7 +63,7 @@ void parseacttext(char* text) {
 		value = value+2;
 		if (!idStr::Cmpn(variable, "sector", 6)) {
 			::g->actind = atoi(value);
-			if (::g->actind >= ::g->acts.size()) {
+			if (::g->actind >= (int)::g->acts.size()) {
 				::g->acts.resize(::g->actind+1);
 			}
 			i = 0;

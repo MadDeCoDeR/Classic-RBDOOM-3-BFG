@@ -1334,7 +1334,7 @@ void M_ChooseSkill(int choice)
 		static int startLevel = 1;
 		G_DeferedInitNew((skill_t)choice,::g->epi+1, startLevel);
 		{ //GK: Set Endmap for the selected episode
-			if (::g->clusters.size() <= ::g->epi){
+			if ((int)::g->clusters.size() <= ::g->epi){
 				::g->gamemission = doom;
 			}
 			else {
@@ -2021,7 +2021,7 @@ void M_CloseGame()
 {
 	I_Printf("Reseting Dehacked Patches...\n");
 	::g->cpind = 0;
-	for (int i = 0; i < ::g->cpatch.size(); i++) {
+	for (uint i = 0; i < ::g->cpatch.size(); i++) {
 		free(::g->cpatch[i]);
 		::g->cpatch[i] = NULL;
 	}

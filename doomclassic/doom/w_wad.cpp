@@ -730,7 +730,7 @@ void W_FreeWadFiles() {
 	::g->cpind = 0;
 	if (::g->gamemode == commercial) {
 		I_Printf("Reseting Dehacked Patches...\n");
-		for (int i = 0; i < ::g->cpatch.size(); i++) {
+		for (uint i = 0; i < ::g->cpatch.size(); i++) {
 			free(::g->cpatch[i]);
 			::g->cpatch[i] = NULL;
 		}
@@ -790,7 +790,7 @@ void W_InitMultipleFiles (const char** filenames)
 			//GK: It doesn't like doing recursive calls
 			// and then adding the file that make them.
 			//So we load the founded .wad files later
-			for (int i = 0; i < wadsinzip.size(); i++) {
+			for (uint i = 0; i < wadsinzip.size(); i++) {
 				inzip = true;
 				W_AddFile(wadsinzip[i].c_str());
 				iwad = false;
@@ -1380,11 +1380,11 @@ void CleanUncompFiles(bool unalloc) {
 	if (unalloc) {
 		W_Shutdown();
 	}
-	for (int i = 0; i < fname.size(); i++) {
+	for (uint i = 0; i < fname.size(); i++) {
 		//idLib::Printf("Deleting File %s\n", fname[i].c_str());
 		fileSystem->RemoveFile(fname[i].c_str());
 	}
-	for (int i = 0; i < foldername.size(); i++) {
+	for (uint i = 0; i < foldername.size(); i++) {
 		//idLib::Printf("Deleting Directory %s\n", foldername[i].c_str());
 		fileSystem->RemoveDir(foldername[i].c_str());
 	}
@@ -1824,7 +1824,7 @@ bool W_CheckMods(int sc, std::vector<std::string> filelist) {
 	bool movetonext;
 	if (sc > 0) {
 		//GK: No more trash talking
-		for (int mf = 0; mf < filelist.size(); mf++) {
+		for (uint mf = 0; mf < filelist.size(); mf++) {
 			int f = 1;
 			while (wadfiles[f] != NULL) {
 				movetonext = false;
@@ -1928,7 +1928,7 @@ void W_RemoveLump(int lump) {
 }
 
 char* W_GetNameForNum(int lump) {
-	if (lump >= lumpinfo.size()) {
+	if (lump >= (int)lumpinfo.size()) {
 		return (char*) "";
 	}
 	return lumpinfo[lump].name;

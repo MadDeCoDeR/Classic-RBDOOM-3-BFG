@@ -314,7 +314,7 @@ char* removequotes(char* value) {
 	if (tmpvalue[0] == '\"') {
 		tmpvalue = tmpvalue + 1;
 	}
-	for (int j = 0; j < strlen(tmpvalue); j++) {
+	for (uint j = 0; j < strlen(tmpvalue); j++) {
 		//Name with spaces HACK
 		if (tmpvalue[j] == ';') {
 			tmpvalue[j] = ' ';
@@ -361,7 +361,7 @@ void setMAP(int index,char* value1, char* value2, char* value3) {
 	
 	if (::g->gamemode == retail) {
 		if (beginepisode) {
-			if (episodecount >= ::g->clusters.size()) {
+			if (episodecount >= (int)::g->clusters.size()) {
 				::g->clusters.resize(episodecount + 1);
 				::g->clusters[episodecount].startmap = realmap;
 			}
@@ -374,13 +374,13 @@ void setMAP(int index,char* value1, char* value2, char* value3) {
 		map = index + 1;
 	}
 	if (!::g->mapmax) {
-		if ( map > ::g->maps.size()) {
+		if ( map > (int)::g->maps.size()) {
 			::g->maps.resize(map);
 			::g->mapind = map;
 		}
 	}
 	else {
-		if (map > ::g->maps.size()) {
+		if (map > (int)::g->maps.size()) {
 			map = ::g->maps.size() - 1;
 		}
 	}
@@ -461,7 +461,7 @@ void parseexptext(char* text) {
 		initMAPS(linedtext);
 	}*/
 
-	for (int i = 0; i < linedtext.size(); i++) {
+	for (uint i = 0; i < linedtext.size(); i++) {
 		varval = NULL;
 		varval2 = NULL;
 		char* t = strtok(strdup(linedtext[i].c_str()), " ");
@@ -498,7 +498,7 @@ void parseexptext(char* text) {
 							}
 						}
 						realmap++;
-						if (realmap >= ::g->maps.size()) {
+						if (realmap >= (int)::g->maps.size()) {
 							::g->maps.resize(realmap + 1);
 							::g->mapmax++;
 						}
@@ -520,7 +520,7 @@ void parseexptext(char* text) {
 						if (atoi(t + 1)) {
 							val1 = atoi(t + 1) - 1;
 						}
-						if ((!::g->clusterind || ::g->clusterind <= ::g->clusters.size()) && ::g->clusterind <= val1) {
+						if ((!::g->clusterind || ::g->clusterind <= (int)::g->clusters.size()) && ::g->clusterind <= val1) {
 							if (::g->gamemode == retail) {
 								if (val1 + 1 > ::g->EpiDef.numitems) {
 									::g->EpiDef.numitems = val1 + 1;
@@ -667,8 +667,8 @@ int checkexpstate(char* text) {
 void setEXP(char* name, int value) {
 	if (!idStr::Icmp(name, "max_maps")) {
 		::g->mapmax = value;
-		if (!::g->mapind || ::g->mapind >= ::g->maps.size()) {
-			if (::g->mapmax > ::g->maps.size()) {
+		if (!::g->mapind || ::g->mapind >= (int)::g->maps.size()) {
+			if (::g->mapmax > (int)::g->maps.size()) {
 				::g->maps.resize(::g->mapmax);
 			}
 			::g->mapind = ::g->mapmax;
@@ -786,7 +786,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 					break;
 				case 8:
 				case 9:
-					for (int j = 0; j < ::g->maps.size(); j++) {
+					for (int j = 0; j < (int)::g->maps.size(); j++) {
 						if (!::g->maps[j].lumpname) {
 							continue;
 						}
@@ -935,10 +935,10 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 				break;
 			case MUSIC:
 				c = 0;
-				while (value[c] != '_' && c < strlen(value)) {
+				while (value[c] != '_' && c < (int)strlen(value)) {
 					c++;
 				}
-				if (c == strlen(value)) {
+				if (c == (int)strlen(value)) {
 					c = 0;
 				}
 				if (c) {
@@ -1018,7 +1018,7 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 					lval += "\n";*/
 					lines[linepos] = strtok(strdup(lines[linepos].c_str()), " ");
 					lines[linepos] = strtok(NULL, " ");
-					for (int j = linepos; j < lines.size(); j++) {
+					for (uint j = linepos; j < lines.size(); j++) {
 						/*if (lines[j].c_str()[lines[j].size()-1] == '\"') {
 							lines[j].at(lines[j].size()-1) = '\0';
 							lval += lines[j].c_str();

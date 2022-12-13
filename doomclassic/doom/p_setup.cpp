@@ -249,7 +249,7 @@ void P_LoadSectors (int lump)
 		if (!idLib::useSecondaryAudioAPI) {
 #endif
 			if (::g->hasreverb) {
-				if (::g->reverbs.size() < i + 1) {
+				if ((int)::g->reverbs.size() < i + 1) {
 					::g->reverbs.push_back(GetReverb(strdup(::g->mapname.c_str()), i));
 				}
 				else {
@@ -554,7 +554,7 @@ void P_LoadBlockMap (int lump)
 //will not gonna carry the changes ActMap did
 //in any sector
 void P_ResetAct() {
-	for (int i = 0; i < ::g->acts.size(); i++) {
+	for (uint i = 0; i < ::g->acts.size(); i++) {
 		if (!::g->acts[i].empty()) {
 			for (actdef_t* act : ::g->acts[i]) {
 				if (act->cvar) {
@@ -853,9 +853,9 @@ P_SetupLevel
 				
 			}
 			if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
-				if (::g->clusters.size() >= episode) {
+				if ((int)::g->clusters.size() >= episode) {
 					if (!::g->clusters[episode - 1].startmap && ::g->clusters[episode - 1].mapname != NULL) {
-						for (int i2 = 0; i2 < ::g->maps.size(); i2++) {
+						for (int i2 = 0; i2 < (int)::g->maps.size(); i2++) {
 							if (!idStr::Icmp(::g->clusters[episode - 1].mapname, ::g->maps[i2].lumpname)) {
 								::g->clusters[episode - 1].startmap = i2;
 							}

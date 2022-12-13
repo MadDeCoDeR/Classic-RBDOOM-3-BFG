@@ -1008,7 +1008,7 @@ void D_DoomMain(void)
 				if (::g->gamemode == commercial)
 				{
 					::g->startmap = level;
-					if (level <= 0 || level > ::g->maps.size())
+					if (level <= 0 || level > (int)::g->maps.size())
 					{
 						::g->startmap = 1;
 					}
@@ -1016,7 +1016,7 @@ void D_DoomMain(void)
 				else
 				{
 					::g->startepisode = episode;
-					if (episode <= 0 || episode > ::g->clusters.size())
+					if (episode <= 0 || episode > (int)::g->clusters.size())
 						::g->startepisode = 1;
 					::g->startmap = map;
 					if (::g->clusters[::g->startepisode - 1].startmap != ::g->clusters[::g->startepisode - 1].endmap)

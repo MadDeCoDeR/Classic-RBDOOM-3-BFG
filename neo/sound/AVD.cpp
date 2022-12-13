@@ -232,7 +232,7 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 		*len = offset;
 		*audio = (byte*)malloc(offset);
 		offset = 0;
-		for (int i = 0; i < tBuffer.size(); i++) {
+		for (uint i = 0; i < tBuffer.size(); i++) {
 			memcpy(*audio + offset, tBuffer[i], buffSizes[i]);
 			offset += buffSizes[i];
 			byte* temp = tBuffer[i];
@@ -416,7 +416,7 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 		*len = offset;
 		*audio = (byte*)malloc(offset);
 		offset = 0;
-		for (int i = 0; i < tBuffer.size(); i++) {
+		for (uint i = 0; i < tBuffer.size(); i++) {
 			memcpy(*audio + offset, tBuffer[i], buffSizes[i]);
 			offset += buffSizes[i];
 			byte* temp = tBuffer[i];

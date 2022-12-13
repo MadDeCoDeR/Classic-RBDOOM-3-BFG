@@ -167,7 +167,7 @@ void idCredits::LoadCredits(const byte* buffer, const int bufferLen, const char*
 void idCredits::PopulateList(idList<creditInfo_t>& list)
 {
 	list.Clear();
-	for (int i = 0; i < creditList.size(); i++) {
+	for (uint i = 0; i < creditList.size(); i++) {
 		list.Append(creditList[i]);
 	}
 

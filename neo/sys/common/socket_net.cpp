@@ -329,7 +329,7 @@ static bool Net_ExtractPort( const char* src, char* buf, int bufsize, int* port 
 	char* p;
 	strncpy( buf, src, bufsize );
 	p = buf;
-	p += Min( (int64)(bufsize - 1), idStr::Length( src ) );
+	p += Min( (ID_INT)(bufsize - 1), idStr::Length( src ) );
 	*p = '\0';
 	p = strchr( buf, ':' );
 	if( !p )
@@ -713,7 +713,7 @@ bool Net_WaitForData( int netSocket, int timeout )
 	}
 	
 	FD_ZERO( &set );
-	FD_SET( netSocket, &set ); // TODO: winsocks may want an unsigned int for netSocket?
+	FD_SET( (uint)netSocket, &set ); // TODO: winsocks may want an unsigned int for netSocket?
 	
 	tv.tv_sec = timeout / 1000;
 	tv.tv_usec = ( timeout % 1000 ) * 1000;

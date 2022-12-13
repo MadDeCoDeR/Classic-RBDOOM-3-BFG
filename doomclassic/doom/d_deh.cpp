@@ -446,7 +446,7 @@ void setThing(int pos, char* varname, int varval) {
 }
 
 void extendSpriteNames(int newSize) {
-	if (newSize >= sprnames.size() - 1) {
+	if (newSize >= (int)sprnames.size() - 1) {
 		int oldSize = sprnames.size();
 		sprnames.resize(newSize + 2);
 		for (int i = oldSize - NUMSPRITES; i <= (newSize + 1) - NUMSPRITES; i++) {
@@ -528,7 +528,7 @@ void setCptr(char* varname, char* varfunc) {
 	if (tp != NULL) {
 		int pos = atoi(tp);
 		if (strlen(name) > 1 && strlen(varfunc) > 1) {
-			if (!idStr::Icmp(name, "FRAME") && pos < tempStates.size()) {
+			if (!idStr::Icmp(name, "FRAME") && pos < (int)tempStates.size()) {
 				tempStates[pos].action = getFunc(varfunc);
 			}
 		}
@@ -588,7 +588,7 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 	strcpy(ntxt, "");
 	char* otxt = new char[il];
 	char* ltxt = new char[il + nl];
-	while (checkstate(tst) == 0 && i < lines.size()) {
+	while (checkstate(tst) == 0 && i < (int)lines.size()) {
 		newline = lines[i] + "\n";
 		if (i== op) {
 			strcpy(ltxt, newline.c_str());
@@ -597,7 +597,7 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 			strcat(ltxt, newline.c_str());
 		}
 		i++;
-		if (i < lines.size()) {
+		if (i < (int)lines.size()) {
 			tst = strtok(strdup(lines[i].c_str()), " ");
 		}
 	}
@@ -688,11 +688,11 @@ void setBText(char* varname, char* text) {
 	int arrsz = sizeof(strval) / sizeof(*strval);
 	text++;
 	std::string ttext =text;
-	for (int i = 0; i < ttext.size(); i++) {
+	for (uint i = 0; i < ttext.size(); i++) {
 		if (ttext[i] == '\\' && ttext[i+1] == 'n') {
 			ttext[i] = '\n';
 			ttext[i + 1] = '\b';
-			int j = 3;
+			uint j = 3;
 			if ( i + 2 < ttext.size() && ttext[i + 2] == '\\' ) {
 				if (i + j < ttext.size() && ttext[i + j] == 'n') {
 					ttext[i + 2] = '\n';
@@ -833,7 +833,7 @@ void parsetext(char* text) {
 	int varval2 = -1;
 	char eq = '=';
 	std::string vartext = "";
-	for (int i = 0; i < linedtext.size(); i++) {
+	for (uint i = 0; i < linedtext.size(); i++) {
 		varval2 = -1;
 		//I_Printf("%s\n", linedtext[i].c_str());
 		if ((linedtext[i].find(eq) != std::string::npos) && state != 3 && state != 0) {
@@ -924,7 +924,7 @@ void parsetext(char* text) {
 						}
 						break;
 					case 2:
-						if (statepos >= tempStates.size()) {
+						if (statepos >= (int)tempStates.size()) {
 							//I_Error("No such Frame found");
 							//int oldsize = tempStates.size();
 							tempStates.resize(statepos + 1);
@@ -976,7 +976,7 @@ void parsetext(char* text) {
 						if (varval2 == -1) {
 							if (::g->gamemode == commercial) {
 								if (::g->gamemission == pack_custom) {
-									if (statepos > 0 && statepos <= ::g->maps.size()) {
+									if (statepos > 0 && statepos <= (int)::g->maps.size()) {
 										::g->maps[statepos - 1].par = varval;
 									}
 									else {
@@ -997,15 +997,15 @@ void parsetext(char* text) {
 							
 							if (::g->gamemode == retail) {
 								if (::g->gamemission == pack_custom) {
-									if (statepos > 0 && statepos <= ::g->clusters.size() && ::g->clusters[statepos].startmap > 0) {
-										if (varval > 0 && varval <= ::g->maps.size()) {
+									if (statepos > 0 && statepos <= (int)::g->clusters.size() && ::g->clusters[statepos].startmap > 0) {
+										if (varval > 0 && varval <= (int)::g->maps.size()) {
 											::g->maps[((::g->clusters[statepos - 1].startmap - 1) + varval) - 1].par = varval2;
 										}
 										else {
 											I_Error("No level found");
 										}
 									}
-									else if (statepos > 0 && statepos <= ::g->clusters.size()) {
+									else if (statepos > 0 && statepos <= (int)::g->clusters.size()) {
 										setPars(statepos, varval, varval2);
 									}
 									else {

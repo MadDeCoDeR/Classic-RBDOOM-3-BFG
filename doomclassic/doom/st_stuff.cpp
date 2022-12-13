@@ -669,7 +669,7 @@ ST_Responder (event_t* ev)
 				}
 				else
 				{
-					if (epsd > ::g->clusters.size())
+					if (epsd > (int)::g->clusters.size())
 						return false;
 					if (::g->clusters[epsd - 1].startmap != ::g->clusters[epsd - 1].startmap)
 					{
@@ -2023,7 +2023,7 @@ CONSOLE_COMMAND_SHIP( idclev, "warp to next level", 0 ) {
 			epsd = atoi(args.Argv(1));
 			map = atoi(args.Argv(2));
 
-			if (epsd < 1 || epsd > ::g->clusters.size())
+			if (epsd < 1 || epsd > (int)::g->clusters.size())
 				epsd = 1;
 
 			if (::g->clusters[epsd - 1].startmap != ::g->clusters[epsd - 1].endmap)
