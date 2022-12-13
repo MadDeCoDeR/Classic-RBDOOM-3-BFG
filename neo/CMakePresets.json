@@ -50,6 +50,10 @@
         "USE_PACKAGED_FFMPEG": {
           "type": "BOOL",
           "value": "ON"
+        },
+        "ALL_STATIC": {
+          "type": "BOOL",
+          "value": "ON"
         }
       }
     },
@@ -61,6 +65,9 @@
       "architecture": {
         "value": "x64",
         "strategy": "set"
+      },
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md"
       }
     },
     {
@@ -83,6 +90,9 @@
       "architecture": {
         "value": "Win32",
         "strategy": "set"
+      },
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x86-windows-static-md"
       }
     },
     {

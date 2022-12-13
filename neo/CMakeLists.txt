@@ -59,6 +59,15 @@ option(USE_SYSTEM_RAPIDJSON
 option (USE_XAUDIO2_PACKAGE
 				"Use XAudio 2.9 from nuget (requires nuget executable set on PATH)" OFF)
 
+option (ALL_STATIC
+				"Most vcpkg depedencies are static" OFF)
+
+if (CMAKE_CL_64)
+	set(CPU_ARCH x64)
+else()
+	set(CPU_ARCH x86)
+endif()
+
 set(CPU_TYPE "" CACHE STRING "When set, passes this string as CPU-ID which will be embedded into the binary.")
 
 set(UWP_PATH "" CACHE STRING "When set, passes this string as the game's base search folder.")
@@ -90,6 +99,7 @@ else()
 	set(OS_CPU Win32)
 endif()
 		
+
 if(MSVC)
 	if(USE_XAUDIO2_PACKAGE)
 		set(USE_XAUDIO2 TRUE)
@@ -312,7 +322,7 @@ elseif(MSVC)
 	
 	
 	
-	if (MSVC_VERSION GREATER 1919 AND NOT USE_VULKAN)
+	if (MSVC_VERSION GREATER 1919 AND NOT USE_VULKAN AND NOT ALL_STATIC)
 		add_definitions(-D_ITERATOR_DEBUG_LEVEL=1)
 	endif()
 	
@@ -328,7 +338,13 @@ endif(USE_SYSTEM_ZLIB)
 
 if (ZLIB_FOUND)
     include_directories(${ZLIB_INCLUDE_DIRS})
-    set(ZLIB_LIBRARY ${ZLIB_LIBRARIES})
+	if (MSVC AND ALL_STATIC)
+		set(ZLIB_LIBRARY
+		optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/zlib"
+		debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/zlibd")
+	else()
+		set(ZLIB_LIBRARY ${ZLIB_LIBRARIES})
+	endif()
 else (ZLIB_FOUND)
     include_directories("libs/zlib")
     set(ZLIB_LIBRARY "" )
@@ -340,7 +356,13 @@ endif (USE_SYSTEM_LIBPNG)
 
 if (PNG_FOUND)
     include_directories(${PNG_INCLUDE_DIRS})
-    set(PNG_LIBRARY ${PNG_LIBRARIES})
+	if (MSVC AND ALL_STATIC)
+		set(PNG_LIBRARY
+		optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/libpng16"
+		debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/libpng16d")
+	else()
+		set(PNG_LIBRARY ${PNG_LIBRARIES})
+	endif()
 else (PNG_FOUND)
     include_directories("libs/png")
     set(PNG_LIBRARY "" )
@@ -353,7 +375,13 @@ endif(USE_SYSTEM_LIBJPEG)
 
 if (JPEG_FOUND)
     include_directories(${JPEG_INCLUDE_DIRS})
-    set(JPEG_LIBRARY ${JPEG_LIBRARIES})
+	if (MSVC AND ALL_STATIC)
+		set(JPEG_LIBRARY
+		optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/jpeg"
+		debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/jpeg")
+	else()
+		set(JPEG_LIBRARY ${JPEG_LIBRARIES})
+	endif()
     add_definitions(-DUSE_NEWER_JPEG)
 else (JPEG_FOUND)
     include_directories("libs/jpeg-6")
@@ -406,6 +434,9 @@ else()
 	if(GLEW_FOUND)
 		include_directories(${GLEW_INCLUDE_DIRS})
 		set(GLEW_LIBRARY ${GLEW_LIBRARIES})
+		if (ALL_STATIC)
+			add_definitions(-DGLEW_STATIC)
+		endif()
 	else()
 		include_directories("libs/glew/include")
 		set(GLEW_LIBRARY "" )
@@ -1498,7 +1529,13 @@ if(MSVC)
 		find_package(OpenAL)
 		if (OPENAL_FOUND)
 			include_directories(${OPENAL_INCLUDE_DIR})
-			set(OpenAL_LIBRARY ${OPENAL_LIBRARY})
+			if (MSVC AND ALL_STATIC)
+				set(OpenAL_LIBRARY
+				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/OpenAL32"
+				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/OpenAL32")
+			else()
+				set(OpenAL_LIBRARY ${OPENAL_LIBRARY})
+			endif()
 		else (OPENAL_FOUND)
 			include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
 		
@@ -1519,12 +1556,11 @@ if(MSVC)
 			
 		if (USE_XAUDIO2_PACKAGE)
 			find_package(xaudio2redist)
-			if (CMAKE_CL_64)
-				set(CPU_ARCH x64)
+			if (ALL_STATIC)
+				include_directories("${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/include/xaudio2redist")
 			else()
-				set(CPU_ARCH x86)
+				include_directories("${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows/include/xaudio2redist")
 			endif()
-			include_directories(${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows/include/xaudio2redist)
 		#set(XAUDIO2_REDIST Microsoft.XAudio2.Redist)
 		#find_program(NUGET_EXE NAMES nuget)
 		#exec_program(${NUGET_EXE}
@@ -1571,7 +1607,39 @@ if(MSVC)
 		if(FFMPEG_FOUND)
 			include_directories(${FFMPEG_INCLUDE_DIRS})
 			link_directories(${FFMPEG_LIBRARIES_DIRS})
-			set(FFmpeg_LIBRARIES ${FFMPEG_LIBRARIES})
+			if (MSVC AND ALL_STATIC)
+				set(FFmpeg_LIBRARIES
+				psapi.lib
+				uuid.lib
+				oleaut32.lib
+				shlwapi.lib
+				gdi32.lib
+				vfw32.lib
+				secur32.lib
+				ws2_32.lib
+				mfplat.lib
+				mfuuid.lib
+				strmiids.lib
+				ole32.lib
+				user32.lib
+				bcrypt.lib
+				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/avcodec"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/avdevice"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/avfilter"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/avformat"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/avutil"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/swresample"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/swscale" 
+				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/avcodec"
+				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/avdevice"
+				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/avfilter"
+				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/avformat"
+				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/avutil"
+				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/swresample"
+				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/swscale")
+			else()
+				set(FFmpeg_LIBRARIES ${FFMPEG_LIBRARIES})
+			endif()
 		else(FFMPEG_FOUND)
 			if(CMAKE_CL_64)
 				set(FFMPEG_DIR ffmpeg-win64)

@@ -13,7 +13,7 @@
     "rapidjson",
     {
       "name": "xaudio2redist",
-      "platform": "windows"
+      "platform": "windows & !staticcrt"
     },
     {
       "name": "sdl2",
