@@ -190,8 +190,9 @@ jobs:
       working-directory: ${{github.workspace}}
       run: |
         mv ./build/DoomBFA DoomBFA
+        mv ./build/vcpkg_installed/x64-linux/share /third-party-licenses
         chmod +x DoomBFA
-        rm -d ./build
+        rm -d -R ./build
         zip -m -r linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Linux Artifact to release
       uses: actions/upload-release-asset@v1
@@ -213,6 +214,7 @@ jobs:
       working-directory: ${{github.workspace}}
       run: |
         mv ./build/${{env.BUILD_TYPE}}/* .
+        mv ./build/vcpkg_installed/x64-windows-static-md/share ./third-party-licenses
         rm -d -rf ./build
         zip -m -r windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Windows Artifact to release
@@ -232,6 +234,7 @@ jobs:
       working-directory: ${{github.workspace}}
       run: |
         mv ./build/${{env.BUILD_TYPE}}/* .
+        mv ./build/vcpkg_installed/x86-windows-static-md/share ./third-party-licenses
         rm -d -rf ./build
         zip -m -r windows-32-bit-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Windows 32 bit Artifact to release

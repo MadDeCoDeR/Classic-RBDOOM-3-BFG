@@ -60,7 +60,7 @@ Minimum system requirements:
 
 	CPU: 2 GHz dual core
 	System Memory: 3GB
-	Graphics card: (Windows) Any GLSL 3.3 Compatible GPU. (Linux) NVIDIA GeForce 9800 GT / ATI Radeon HD 5750 / Intel HD graphics 530
+	Graphics card: NVIDIA GeForce 9800 GT / ATI Radeon HD 5750 / Intel HD graphics 530
 
 Recommended system requirements:
 
@@ -70,7 +70,9 @@ Recommended system requirements:
 
 
 Additional Requirements:
-	Windows: DirectX 2010 support
+	For Windows XP (No longer supported): DirectX 2010 support
+	For Windows 7: XAudio 2.9
+	For Linux: FFMPEG(libav) & GLEW
 
 
 ## 2) GENERAL NOTES
@@ -81,6 +83,7 @@ covered by the original EULA and must be obeyed as usual.
 You must patch the game to the latest version.
 
 Note that Doom 3 BFG Edition is available on:
+
 Steam store: http://store.steampowered.com/app/208200/
 
 GOG store: https://www.gog.com/game/doom_3_bfg_edition
@@ -88,6 +91,10 @@ GOG store: https://www.gog.com/game/doom_3_bfg_edition
 Bethesda.net store: https://bethesda.net/en/store/product/DO3CBFPCBG01
 
 Bethesda.net store (2019): https://bethesda.net/en/store/product/DO3GNGPCBG01
+
+Epic Game Store (2019): https://store.epicgames.com/en-US/p/doom-3
+
+Windows Store (2019): https://www.xbox.com/en-us/games/store/doom-3/9nsl68d814gc
 
 
 Steam API:
