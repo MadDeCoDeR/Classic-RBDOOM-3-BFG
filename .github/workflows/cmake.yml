@@ -216,7 +216,7 @@ jobs:
       run: |
         mv ./build/${{env.BUILD_TYPE}}/* .
         mkdir ./third-party-licenses
-        mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
+        mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
         rm -d -rf ./build
         zip -m -r windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Windows Artifact to release
@@ -237,7 +237,7 @@ jobs:
       run: |
         mv ./build/${{env.BUILD_TYPE}}/* .
         mkdir ./third-party-licenses
-        mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
+        mv ./build/vcpkg_installed/x86-windows-static-md/share/* ./third-party-licenses
         rm -d -rf ./build
         zip -m -r windows-32-bit-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Windows 32 bit Artifact to release
