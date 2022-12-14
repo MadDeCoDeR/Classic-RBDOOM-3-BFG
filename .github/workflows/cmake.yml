@@ -60,6 +60,8 @@ jobs:
           ./build/DoomBFA
           ./build/vcpkg_installed/x64-linux/share/*/copyright
           ./base/*
+          ./COPYING.txt
+          ./README.md
   windows-build:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
@@ -110,6 +112,8 @@ jobs:
           ./build/${{env.BUILD_TYPE}}/DoomBFA.exe
           ./build/vcpkg_installed/x64-windows-static-md/share/*/copyright
           ./base/*
+          ./COPYING.txt
+          ./README.md
   windows-32-bit-build:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
@@ -160,6 +164,8 @@ jobs:
           ./build/${{env.BUILD_TYPE}}/DoomBFA.exe
           ./build/vcpkg_installed/x86-windows-static-md/share/*/copyright
           ./base/*
+          ./COPYING.txt
+          ./README.md
   make-release:
     needs: [ linux-build, windows-build, windows-32-bit-build ]
     runs-on: ubuntu-latest
@@ -228,6 +234,9 @@ jobs:
         asset_path: ${{github.workspace}}/windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
         asset_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
         asset_content_type: application/zip
+    - name: Delete Windows artifact zip file
+      working-directory: ${{github.workspace}}
+      run: rm windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
     - name: Download windows 32 bit artifact
       uses: actions/download-artifact@v3
       with:
