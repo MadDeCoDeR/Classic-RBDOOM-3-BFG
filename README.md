@@ -51,6 +51,7 @@ This file contains the following sections:
 [12) GAME MODIFICATIONS](#12-game-modifications)
 
 [13) CODE LICENSE EXCEPTIONS](#13-code-license-exceptions---the-parts-that-are-not-covered-by-the-gpl)
+
 [14) VCPKG DEPEDENCY LICENSES](#14-vcpkg-depedency-licenses)
 
 
