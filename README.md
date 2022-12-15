@@ -76,9 +76,9 @@ Recommended system requirements:
 
 Additional Requirements:
 
-	For Windows XP (No longer supported): DirectX 2010 support
-	For Windows 7, 8, 8.1: XAudio 2.9. See [7.A.1](#1-installing-xaudio-2-9-for-windows-7- 8-&-8-1-users-ONLY)
-	For Linux: FFMPEG(libav) & GLEW
+- For Windows XP (No longer supported): DirectX 2010 support
+- For Windows 7, 8, 8.1: XAudio 2.9. See [7.A](#a-installing-additional-requirements)
+- For Linux: FFMPEG(libav) & GLEW
 
 
 ## 2) GENERAL NOTES
@@ -90,12 +90,12 @@ You must patch the game to the latest version.
 
 Note that Doom 3 BFG Edition is available on:
 
-	Steam store: http://store.steampowered.com/app/208200/
-	GOG store: https://www.gog.com/game/doom_3_bfg_edition
-	Bethesda.net store: https://bethesda.net/en/store/product/DO3CBFPCBG01
-	Bethesda.net store (2019): https://bethesda.net/en/store/product/DO3GNGPCBG01
-	Epic Game Store (2019): https://store.epicgames.com/en-US/p/doom-3
-	Windows Store (2019): https://www.xbox.com/en-us/games/store/doom-3/9nsl68d814gc
+- Steam store: http://store.steampowered.com/app/208200/
+- GOG store: https://www.gog.com/game/doom_3_bfg_edition
+- Bethesda.net store: https://bethesda.net/en/store/product/DO3CBFPCBG01
+- Bethesda.net store (2019): https://bethesda.net/en/store/product/DO3GNGPCBG01
+- Epic Game Store (2019): https://store.epicgames.com/en-US/p/doom-3
+- Windows Store (2019): https://www.xbox.com/en-us/games/store/doom-3/9nsl68d814gc
 
 
 Steam API:
@@ -149,10 +149,9 @@ A) Preperation
 
 	b. For Modern DirectX: 
 	
-		I) XInput 9.1.0 and Direct Input comes pre-installed on Windows 7 and later (.dll that the game will load). 
-	
-		II) XAudio2. It has two versions 2.8 (only for Windows 8 and later) and XAudio 2.9 (backwards compatilble with Windows 7).
-			2.8 like with XInput comes pre-installed with the OS. For 2.9 you must download it using NuGet's package manager
+	- XInput 9.1.0 and Direct Input comes pre-installed on Windows 7 and later (.dll that the game will load). 
+	- XAudio2. It has two versions 2.8 (only for Windows 8 and later) and XAudio 2.9 (backwards compatilble with Windows 7). 
+		2.8 like with XInput comes pre-installed with the OS. For 2.9 you must download it. See [7.A](#a-installing-additional-requirements) for more details
 
 3. (Optional if you want to use cmake presets with Visual Studio) Download and install the latest CMake (recommended 3.8 for compile and run out of the box).
 
@@ -287,7 +286,7 @@ C) Compiling Project
 A) Installing Additional Requirements
 --------------------------------------
 1. Installing XAudio 2.9 (for Windows 7, 8 & 8.1 users ONLY)
-------------------------------------------------------------
+
 	- Download the NuGet package of XAudio 2.9 Redist from here: https://www.nuget.org/packages/Microsoft.XAudio2.Redist/
 	- Rename file extension to zip
 	- Extract the .dll file from build\native\release\bin\(x64 or x86)
@@ -297,86 +296,88 @@ A) Installing Additional Requirements
 B) Installing the Game
 ----------------------
 Windows:
-	-Download and install the appropriate client (Steam, GOG Galaxy, Epic Game Store, Xbox App)
-	-Login with your credentials
-	-Install either DOOM 3 BFG Edition or DOOM 3 Bethesda.net Edition (2019)
+	- Download and install the appropriate client (Steam, GOG Galaxy, Epic Game Store, Xbox App)
+	- Login with your credentials
+	- Install either DOOM 3 BFG Edition or DOOM 3 Bethesda.net Edition (2019)
 
 Linux:
 
 Steam:
-	-Download and install the Steam client
-	-Login with your credentials
-	-Install either DOOM 3 BFG Edition or DOOM 3 Bethesda.net Edition (2019) (try to set up it's installation directory to somewhere where it's easy to access it's files)
+
+	- Download and install the Steam client
+	- Login with your credentials
+	- Install either DOOM 3 BFG Edition or DOOM 3 Bethesda.net Edition (2019) (try to set up it's installation directory to somewhere where it's easy to access it's files)
 
 GOG:
-	-Login with your credentials to GOG.com
-	-Go to your game collection
-	-Select the game (DOOM 3 BFG Edition)
-	-Go to the extra
-	-Download the offline installer
-	-Download Wine from https://winehq.org/download (check website for more details)
-	-Run the offline installer through wine (cli example: wine setup_doom_3_bfg_1.14_\(13452\)_\(g\).exe) (from it's settings set it to install it somewhere where is easy to access it's files)
+
+	- Login with your credentials to GOG.com
+	- Go to your game collection
+	- Select the game (DOOM 3 BFG Edition)
+	- Go to the extra
+	- Download the offline installer
+	- Download Wine from https://winehq.org/download (check website for more details)
+	- Run the offline installer through wine (cli example: wine setup_doom_3_bfg_1.14_\(13452\)_\(g\).exe) (from it's settings set it to install it somewhere where is easy to access it's files)
 
 Epic Game Store:
-	-Download launcher
-	-Download Wine from https://winehq.org/download (check website for more details)
-	-Use wine to install the launcher
-	-Login to the launcher with your credentials
-	-Install DOOM 3 (try to set up it's installation directory to somewhere where it's easy to access it's files)
+
+	- Download launcher
+	- Download Wine from https://winehq.org/download (check website for more details)
+	- Use wine to install the launcher
+	- Login to the launcher with your credentials
+	- Install DOOM 3 (try to set up it's installation directory to somewhere where it's easy to access it's files)
 
 C) Setup Assets
 ---------------
 1. base folder
---------------
 Just copy paste the base folder from the source code to the Game's base folder
 
 2. zBFA folder
---------------
-	-Copy paste the zBFA folder to your own 
-	   Game's folder (/path/to/Doom3BFG)
-	   (Optional) Copy paste the base/renderprogs folder in the zBFA folder 
-	-Open DoomBFA.exe with the launch argument +set com_allowConsole 1
-	-Open Doom 3 and activate the console (press ~ key)
-	-Type writeresourcefilewithdir zBFA
-	-Copy paste from C:\Users\<username>\Saved Games\Id Software\DOOM BFA\base\zBFA.resources (or /home/<username>/.doombfa/base/zBFA.resources for Linux)
-	to your Game's base folder (/path/to/Doom3BFG) in the maps folder
+
+	- Copy paste the zBFA folder to your own Game's folder (/path/to/Doom3BFG)
+	   - (Optional) Copy paste the base/renderprogs folder in the zBFA folder 
+	- Open DoomBFA.exe with the launch argument +set com_allowConsole 1
+	- Open Doom 3 and activate the console (press ~ key)
+	- Type writeresourcefilewithdir zBFA
+	- Copy paste from C:\Users\<username>\Saved Games\Id Software\DOOM BFA\base\zBFA.resources (or /home/<username>/.doombfa/base/zBFA.resources for Linux) to your Game's base folder (/path/to/Doom3BFG) in the maps folder
 
 D) Run/Debug DOOM BFA
 ---------------------------
 Windows:
 
 On windows with Visual Studio everything is pretty much preset. If you need to add additional launch arguments or change the working directory:
-	-Right click on DoomBFA project
-	-Select Properties
-	-Go to the Debugging section
+
+	- Right click on DoomBFA project
+	- Select Properties
+	- Go to the Debugging section
 
 Linux:
 
 On linux Visual Studio Code is prefered for Debugging.
 For Visual Studio Code:
-	-Make sure you have Microsoft's C/C++ extension
-	-Open the .vscode/tasks.json and change the options.cwd to the build folder you are using (example: BuildDebug for the Debug profile with Cmake Presets)
-	-Open the .vscode/launch.json and change the progam's value to reflect where the executable is (example: ${workspaceFolder}/buildDebug/DoomBFA)
-	-On the .vscode/launch.json change cwd to the game's folder
-	-Finally you can use .vscode/launch.json's args to add additional launch arguments
+
+	- Make sure you have Microsoft's C/C++ extension
+	- Open the .vscode/tasks.json and change the options.cwd to the build folder you are using (example: BuildDebug for the Debug profile with Cmake Presets)
+	- Open the .vscode/launch.json and change the progam's value to reflect where the executable is (example: ${workspaceFolder}/buildDebug/DoomBFA)
+	- On the .vscode/launch.json change cwd to the game's folder
+	- Finally you can use .vscode/launch.json's args to add additional launch arguments
 
 E) Extras
 ---------
 1. EAX support
---------------
+
 Download this addon https://www.moddb.com/mods/classic-rbdoom-3-bfg-edition/downloads/roe-addon
 and extract it to the directory on your own Doom 3 BFG directory (/path/to/Doom3BFG)
 
 2. Final DOOM
---------------
-	-Buy Final DOOM (Steam, GOG)
-	-Copy and paste both WAD files (TNT.WAD, PUTONIA.WAD) into the Game's base/wads folder
+
+	- Buy Final DOOM (Steam, GOG)
+	- Copy and paste both WAD files (TNT.WAD, PUTONIA.WAD) into the Game's base/wads folder
 
 3. Master Levels
-----------------
-	-Buy DOOM 2 + Master Levels (Steam, GOG)
-	-Create a folder named master inside the Game's base/wads folder
-	-Copy and paste all the 20 Master Level wads inside the master folder (from the previous step)
+
+	- Buy DOOM 2 + Master Levels (Steam, GOG)
+	- Create a folder named master inside the Game's base/wads folder
+	- Copy and paste all the 20 Master Level wads inside the master folder (from the previous step)
 
 ## 8) OVERALL CHANGES
 
