@@ -51,6 +51,7 @@ This file contains the following sections:
 [12) GAME MODIFICATIONS](#12-game-modifications)
 
 [13) CODE LICENSE EXCEPTIONS](#13-code-license-exceptions---the-parts-that-are-not-covered-by-the-gpl)
+[14) VCPKG DEPEDENCY LICENSES](#14-vcpkg-depedency-licenses)
 
 
 
@@ -58,20 +59,25 @@ This file contains the following sections:
 
 Minimum system requirements:
 
+	OS: Windows 7 or Linux
 	CPU: 2 GHz dual core
 	System Memory: 3GB
 	Graphics card: NVIDIA GeForce 9800 GT / ATI Radeon HD 5750 / Intel HD graphics 530
+	OpenGL Version: 3.3 or later
 
 Recommended system requirements:
 
+	OS: Windows 10 or Linux
 	CPU: 3 GHz dual core
 	System Memory: 3GB
-	Graphics card: (Linux) NVIDIA GeForce GTX 260 / ATI Radeon HD 5850 or higher
+	Graphics card: NVIDIA GeForce GTX 260 / ATI Radeon HD 5850 or higher
+	OpenGL Version: 4.6 with Direct State Access Support
 
 
 Additional Requirements:
+
 	For Windows XP (No longer supported): DirectX 2010 support
-	For Windows 7: XAudio 2.9
+	For Windows 7, 8, 8.1: XAudio 2.9. See [7.A.1](#1-installing-xaudio-2-9-for-windows-7- 8-&-8-1-users-ONLY)
 	For Linux: FFMPEG(libav) & GLEW
 
 
@@ -84,17 +90,12 @@ You must patch the game to the latest version.
 
 Note that Doom 3 BFG Edition is available on:
 
-Steam store: http://store.steampowered.com/app/208200/
-
-GOG store: https://www.gog.com/game/doom_3_bfg_edition
-
-Bethesda.net store: https://bethesda.net/en/store/product/DO3CBFPCBG01
-
-Bethesda.net store (2019): https://bethesda.net/en/store/product/DO3GNGPCBG01
-
-Epic Game Store (2019): https://store.epicgames.com/en-US/p/doom-3
-
-Windows Store (2019): https://www.xbox.com/en-us/games/store/doom-3/9nsl68d814gc
+	Steam store: http://store.steampowered.com/app/208200/
+	GOG store: https://www.gog.com/game/doom_3_bfg_edition
+	Bethesda.net store: https://bethesda.net/en/store/product/DO3CBFPCBG01
+	Bethesda.net store (2019): https://bethesda.net/en/store/product/DO3GNGPCBG01
+	Epic Game Store (2019): https://store.epicgames.com/en-US/p/doom-3
+	Windows Store (2019): https://www.xbox.com/en-us/games/store/doom-3/9nsl68d814gc
 
 
 Steam API:
@@ -105,7 +106,7 @@ Steam & Discord through Open Platform Api.  This includes only achievements and 
 
 Bink:
 -----
-The RBDoom3BFG Edition GPL Source Code release includes functionality for rendering Bink Videos through FFmpeg.
+The DOOM BFA Edition GPL Source Code release includes functionality for rendering Bink Videos through FFmpeg.
 
 
 Back End Rendering of Stencil Shadows:
@@ -140,7 +141,7 @@ If you don't want to use git, you can download the source as a zip file at
 A) Preperation
 --------------
 
-1. Download and install Visual Studio (For new Version make sure the "Desktop Development with C++" component is checked on the installer)
+1. Download and install Visual Studio (For new Versions make sure the "Desktop Development with C++" component is checked on the installer and the individual component cmake)
 
 2. Download and install DirectX SDK:
 
@@ -155,9 +156,7 @@ A) Preperation
 
 3. (Optional if you want to use cmake presets with Visual Studio) Download and install the latest CMake (recommended 3.8 for compile and run out of the box).
 
-4. (For Xaudio 2.9) Download, install and set to your PATH the NuGet CLI.
-
-5. Download the latest stable ffmpeg (5.0) shared from https://github.com/BtbN/FFmpeg-Builds/releases (only 64-bit available) and put them on the game's folder (where the origianal .exe is)
+5. (Optional if you don't want to use vcpkg) Download the latest stable ffmpeg (5.0) shared from https://github.com/BtbN/FFmpeg-Builds/releases (only 64-bit available) and put them on the game's folder (where the origianal .exe is)
 
 
 B) Project Configuration and Genenration
@@ -174,7 +173,7 @@ For Visual Studio 2019 and newer.
 		Available Presets:
 			64-bit Windows: Actively used, uses OpenGL, OpenAL and XAudio2.9
 			64-bit Windows with Vulkan: Expirimental FOR DEVS ONLY. uses Vulkan, OpenAL and XAudio2.9
-			32-bit Windows: Deprecated, many of the currently used libs are 64-bit
+			32-bit Windows: 32-bit version of the x64-bit windows
 
 
 C) Compiling Project
@@ -183,7 +182,7 @@ C) Compiling Project
 1. Use the VC solution to compile  what you need:
 	Classic-RBDOOM-3-BFG/build(Lib&cpuType)/DoomBFA.sln
 	
-(NOTE: The pre-built binaries are made wth buildx64)
+(NOTE: The pre-built binaries are made wth buildx64 with Retail Profile)
 
 2. Select Desired Profile and compile (either by right clicking the DoomBFA project and selecting 'Build' or by running the debugger (F5))
 
@@ -214,21 +213,21 @@ A) Preperation
  
 	On Debian or Ubuntu:
 
-		> apt-get install cmake libsdl2-dev libopenal-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
+		> apt-get install cmake libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
 	
 	On Fedora
 
 		// ffmpeg-devel is found in the rpm-fusion repo. Can be enabled from Gnome Software if not already enabled
 		
-		> dnf install cmake SDL2-devel openal-devel ffmpeg-devel gcc-c++
+		> dnf install cmake ffmpeg-devel gcc-c++
 	
 	On ArchLinux 
 	
-		> sudo pacman -S sdl2 ffmpeg openal cmake
+		> sudo pacman -S ffmpeg cmake
 	
 	On openSUSE (tested in 13.1)
 	
-		> zypper in openal-soft-devel cmake libSDL2-devel libffmpeg1-devel
+		> zypper in cmake libffmpeg1-devel
 	
 		NOTE: SDL 1 is not so well supported and it's missing various features and optimizations
 		For SDL 2 replace "libSDL-devel" with "libSDL2-devel".
@@ -285,114 +284,99 @@ C) Compiling Project
 
 ## 7) INSTALLATION, GETTING THE GAMEDATA, RUNNING THE GAME
 
-If you use the prebuilt Win32 binaries then simply extract them to your
-C:\Program Files (x86)\Steam\SteamApps\common\Doom 3 BFG Edition\ directory and run DoomBFA.exe.
+A) Installing Additional Requirements
+--------------------------------------
+1. Installing XAudio 2.9 (for Windows 7, 8 & 8.1 users ONLY)
+------------------------------------------------------------
+	- Download the NuGet package of XAudio 2.9 Redist from here: https://www.nuget.org/packages/Microsoft.XAudio2.Redist/
+	- Rename file extension to zip
+	- Extract the .dll file from build\native\release\bin\(x64 or x86)
+	- Rename the .dll file and simply remove the "redist" from it's name
+	- Put it on the Game's folder
 
-The following instructions are primarily intented for Linux users and all hackers on other operating systems.
+B) Installing the Game
+----------------------
+Windows:
+	-Download and install the appropriate client (Steam, GOG Galaxy, Epic Game Store, Xbox App)
+	-Login with your credentials
+	-Install either DOOM 3 BFG Edition or DOOM 3 Bethesda.net Edition (2019)
 
-To play the game, you need the game data from a legal copy of the game.
-
-It requires Steam or GOG Windows Installer.
-
-Even the DVD version of Doom 3 BFG only contains encrytped data that is decoded
-by Steam on install.
+Linux:
 
 Steam:
+	-Download and install the Steam client
+	-Login with your credentials
+	-Install either DOOM 3 BFG Edition or DOOM 3 Bethesda.net Edition (2019) (try to set up it's installation directory to somewhere where it's easy to access it's files)
 
-On Steam for Linux you right click on the game in your library and select Properties, from there just check the last check box you will see and then right click it again and select install.
-To get the game files just right click on the game select Properties -> local files -> Browse local files.
-
-Alternatively on Linux and OSX the easiest way to install is with SteamCMD: https://developer.valvesoftware.com/wiki/SteamCMD
-See the description on https://developer.valvesoftware.com/wiki/SteamCMD#Linux (OS X is directly below that) on how to install SteamCMD on your system. You won't have to create a new user.
-
-Then you can download Doom 3 BFG with
-
-> ./steamcmd.sh +@sSteamCmdForcePlatformType windows +login <YOUR_STEAM_LOGIN_NAME> +force_install_dir ./doom3bfg/ +app_update 208200 validate +quit
-
-(replace <YOUR_STEAM_LOGIN_NAME> with your steam login name)
-When it's done you should have the normal windows installation of Doom 3 BFG in ./doom3bfg/ and the needed files in ./doom3bfg/base/
-That number is the "AppID" of Doom 3 BFG; if you wanna use this to get the data of other games you own, you can look up the AppID at https://steamdb.info/
-
-NOTE that we've previously recommended using download_depot in the Steam console to install the game data. That turned out to be unreliable and result in broken, unusable game data. So use SteamCMD instead, as described above.
 GOG:
+	-Login with your credentials to GOG.com
+	-Go to your game collection
+	-Select the game (DOOM 3 BFG Edition)
+	-Go to the extra
+	-Download the offline installer
+	-Download Wine from https://winehq.org/download (check website for more details)
+	-Run the offline installer through wine (cli example: wine setup_doom_3_bfg_1.14_\(13452\)_\(g\).exe) (from it's settings set it to install it somewhere where is easy to access it's files)
 
-Alternatively with the GOG installer, you can use Wine to install the game. See https://winehq.org/download for details on how to install wine for Linux and Mac.
+Epic Game Store:
+	-Download launcher
+	-Download Wine from https://winehq.org/download (check website for more details)
+	-Use wine to install the launcher
+	-Login to the launcher with your credentials
+	-Install DOOM 3 (try to set up it's installation directory to somewhere where it's easy to access it's files)
 
-Once Wine is installed and configured on your system install Doom 3 BFG edition using the downloaded installers from gog.com:
+C) Setup Assets
+---------------
+1. base folder
+--------------
+Just copy paste the base folder from the source code to the Game's base folder
 
-> wine setup_doom_3_bfg_1.14_\(13452\)_\(g\).exe
+2. zBFA folder
+--------------
+	-Copy paste the zBFA folder to your own 
+	   Game's folder (/path/to/Doom3BFG)
+	   (Optional) Copy paste the base/renderprogs folder in the zBFA folder 
+	-Open DoomBFA.exe with the launch argument +set com_allowConsole 1
+	-Open Doom 3 and activate the console (press ~ key)
+	-Type writeresourcefilewithdir zBFA
+	-Copy paste from C:\Users\<username>\Saved Games\Id Software\DOOM BFA\base\zBFA.resources (or /home/<username>/.doombfa/base/zBFA.resources for Linux)
+	to your Game's base folder (/path/to/Doom3BFG) in the maps folder
 
-(there will be several .exe files from GOG, make sure all of them are in the same directory)
+D) Run/Debug DOOM BFA
+---------------------------
+Windows:
 
-Once this is complete, by default you can find your Doom 3 BFG "base/" directory at ".wine/drive_c/GOG\ Games/DOOM\ 3\ BFG/base".
+On windows with Visual Studio everything is pretty much preset. If you need to add additional launch arguments or change the working directory:
+	-Right click on DoomBFA project
+	-Select Properties
+	-Go to the Debugging section
 
-Extra:
+Linux:
 
-Additionally in Ubuntu you can open the DoomBFA file with the text editor and add the missing paths on it and save it as .desktop.
-This will give you a desktop shortcut for Ubuntu. (NOTE: I don't know if other operating systems support this file)
+On linux Visual Studio Code is prefered for Debugging.
+For Visual Studio Code:
+	-Make sure you have Microsoft's C/C++ extension
+	-Open the .vscode/tasks.json and change the options.cwd to the build folder you are using (example: BuildDebug for the Debug profile with Cmake Presets)
+	-Open the .vscode/launch.json and change the progam's value to reflect where the executable is (example: ${workspaceFolder}/buildDebug/DoomBFA)
+	-On the .vscode/launch.json change cwd to the game's folder
+	-Finally you can use .vscode/launch.json's args to add additional launch arguments
 
-Also you can install www.mono-project.com. Which allow you to use CDL.exe natively on linux.
-After you have install mono, download the latest release of this project and extract the CDL.exe in the same directory DoomBFA is.
+E) Extras
+---------
+1. EAX support
+--------------
+Download this addon https://www.moddb.com/mods/classic-rbdoom-3-bfg-edition/downloads/roe-addon
+and extract it to the directory on your own Doom 3 BFG directory (/path/to/Doom3BFG)
 
-Anyway:
+2. Final DOOM
+--------------
+	-Buy Final DOOM (Steam, GOG)
+	-Copy and paste both WAD files (TNT.WAD, PUTONIA.WAD) into the Game's base/wads folder
 
-1. Install Doom 3 BFG in Steam (Windows version) or SteamCMD, make sure it's getting
-   updated/patched.
-
-2. Create your own Doom 3 BFG directory, e.g. /path/to/Doom3BFG/
-
-3. Copy the game-data's base dir from Steam to that directory 
-   (e.g. /path/to/Doom3BFG/), it's in
-	/your/path/to/Steam/steamapps/common/DOOM 3 BFG Edition/base/
-	or, if you used SteamCMD, in the path you used above.
-
-4. Copy your DoomBFA executable that you created in 5) or 6) and the FFmpeg DLLs to your own 
-   Doom 3 BFG directory (/path/to/Doom3BFG).
-   
-   Your own Doom 3 BFG directory now should look like:
-	/path/to/Doom3BFG/
-	 ->	DoomBFA (or DoomBFA.exe on Windows)
-	 -> avcodec-58.dll
-	 -> avformat-58.dll
-	 -> avutil-56.dll
-	 -> swresample-3.dll
-	 -> swscale-5.dll
-	 
-5. Copy paste the base directory from the source code directory to the base directory on your own 
-   Doom 3 BFG directory (/path/to/Doom3BFG).
-   
-(Optional if you want EAX on Doom 3) Download this addon https://www.moddb.com/mods/classic-rbdoom-3-bfg-edition/downloads/roe-addon
-and extract it to the directory on your own 
-   Doom 3 BFG directory (/path/to/Doom3BFG)
-
-6. Run the game by executing the DoomBFA executable.
-
-7. Enjoy
-
-8. If you run into bugs, please report them, see 11)
-
-Additionally for the Final DOOM wads you must legally own them (either aquired from retail,steam or GOG)
-and then copy the two WADs on the /path/to/Doom3BFG/base/wads.
-
-And for the Master Levels you must legally own them (either aquired from retail,steam or GOG),
-make a folder named "master" on /path/to/Doom3BFG/base/wads and copy all the 20 wad files on this folder.
-
-Otherwise the game wont let you play this expansions (because there are no files dah)
-
-For the zBFA.resources:
-
-1. Copy paste zBFA folder to your own 
-   Doom 3 BFG directory (/path/to/Doom3BFG)
-   (Optional) Copy paste the base/renderprogs folder in the zBFA folder 
-
-2. Open DoomBFA.exe with the launch argument +set com_allowConsole 1
-
-3. Open Doom 3 and activate the console (press ~ key)
-
-4. Type writeresourcefilewithdir zBFA
-
-5. Copy paste from C:\Users\<username>\Saved Games\Id Software\DOOM BFA\base\zBFA.resources to your own 
-   Doom 3 BFG directory (/path/to/Doom3BFG) \base\maps
+3. Master Levels
+----------------
+	-Buy DOOM 2 + Master Levels (Steam, GOG)
+	-Create a folder named master inside the Game's base/wads folder
+	-Copy and paste all the 20 Master Level wads inside the master folder (from the previous step)
 
 ## 8) OVERALL CHANGES
 
@@ -433,6 +417,14 @@ For the zBFA.resources:
 
 - Additional ambient render pass to make the game less dark similar to the Quake 4 r_forceAmbient technique
 
+- Support for Classic DOOM launch arguments
+
+- Extended mod support for Classic DOOM (Vanilla + Partial BOOM compatibility)
+
+- Restored Flashlight from the original DOOM 3 (2004)
+
+- Revmaped settings with more options on both DOOM 3 and the Classic DOOM games
+
 ## 9) CONSOLE VARIABLES
 
 Check here: https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/wiki/3.-New-Parameters
@@ -441,6 +433,7 @@ Check here: https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/wiki/3.-New-Param
 
 - In some cases activating both SSAO and Soft Shadows might result in shadow artifacts
 - Using the latest AMD Windows Driver (22.7.1 and newer) might result in worse performance than with previous versions (22.6.1 or older)
+- Booting the Native Linux Version might result into a black screen and then the menu shows up
 
 ## 11) BUG REPORTS
 
@@ -683,3 +676,6 @@ select the most convenient license for your needs from (1) the
 GNU GPL, (2) the GNU LGPL, or (3) the Perl Artistic License.  
 
 
+## 14) VCPKG Depedency Licenses:
+Each pre-build binary include a folder named third-party-licenses. 
+Inside the folder you can find any additional license for each vcpkg depedency that have been used for the creation of the distributed binary
