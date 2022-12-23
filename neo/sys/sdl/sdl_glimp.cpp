@@ -55,7 +55,7 @@ idCVar r_waylandcompat( "r_waylandcompat", "0", CVAR_SYSTEM | CVAR_NOCHEAT | CVA
 idCVar r_useOpenGL32( "r_useOpenGL32", "2", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #elif defined(__linux__)
 // Linux open source drivers suck
-idCVar r_useOpenGL32( "r_useOpenGL32", "0", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
+idCVar r_useOpenGL32( "r_useOpenGL32", "2", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #else
 idCVar r_useOpenGL32( "r_useOpenGL32", "1", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #endif
@@ -215,8 +215,8 @@ bool GLimp_Init( glimpParms_t parms )
 		{
 			glConfig.driverType = GLDRV_OPENGL32_COMPATIBILITY_PROFILE;
 			
-			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 6 );
 			
 			if( r_debugContext.GetBool() )
 			{
@@ -293,7 +293,7 @@ bool GLimp_Init( glimpParms_t parms )
 			common->Warning( "SDL_GL_SWAP_CONTROL not supported" );
 			
 		// RB begin
-		SDL_GetWindowSize( window, &glConfig.nativeScreenWidth, &glConfig.nativeScreenHeight );
+		SDL_GL_GetDrawableSize( window, &glConfig.nativeScreenWidth, &glConfig.nativeScreenHeight );
 		// RB end
 		
 		glConfig.isFullscreen = ( SDL_GetWindowFlags( window ) & SDL_WINDOW_FULLSCREEN ) == SDL_WINDOW_FULLSCREEN;
