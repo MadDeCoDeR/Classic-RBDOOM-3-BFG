@@ -131,7 +131,7 @@ ADDITIONAL TERMS:  The Doom 3 BFG Edition GPL Source Code is also subject to cer
 
 This project's GitHub.net Git repository can be checked out through Git with the following instruction set: 
 
-	> git clone https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG.git
+	> git clone --resursive https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG.git
 
 If you don't want to use git, you can download the source as a zip file at
 	https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/archive/master.zip
