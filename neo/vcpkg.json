@@ -23,9 +23,6 @@
       ],
       "platform": "linux"
     },
-    {
-      "name": "ffmpeg",
-      "platform": "!linux"
-    }
+    "ffmpeg"
   ]
 }
