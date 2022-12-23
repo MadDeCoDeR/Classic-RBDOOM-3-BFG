@@ -1599,14 +1599,24 @@ if(MSVC)
 		add_definitions(-DUSE_FFMPEG)
 	
 		if (USE_PACKAGED_FFMPEG)
-			find_package(ffmpeg REQUIRED)
+			#find_package(ffmpeg REQUIRED)
+			set(FFMPEG_FOUND TRUE)
 		else(USE_PACKAGED_FFMPEG)
 			set(FFMPEG_FOUND FALSE)
 		endif(USE_PACKAGED_FFMPEG)
 
 		if(FFMPEG_FOUND)
-			include_directories(${FFMPEG_INCLUDE_DIRS})
-			link_directories(${FFMPEG_LIBRARIES_DIRS})
+			#include_directories(${FFMPEG_INCLUDE_DIRS})
+			#link_directories(${FFMPEG_LIBRARIES_DIRS})
+			include_directories(
+				"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavcodec"
+				"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavdevice"
+				"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavfilter"
+				"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavformat"
+				"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavutil"
+				"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libswresample"
+				"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libswscale" 
+			)
 			if (MSVC AND ALL_STATIC)
 				set(FFmpeg_LIBRARIES
 				psapi.lib
