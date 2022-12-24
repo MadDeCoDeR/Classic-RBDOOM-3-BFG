@@ -2560,7 +2560,7 @@ idList<idStr> idStr::Split(const char* delimiter) {
 		pos = Find(delimiter, false, oldPos + 1);
 		idStr token = SubStr(oldPos + 1, pos);
 		oldPos = pos;
-		strings.AddUnique(token);
+		strings.Append(token);
 	}
 	//in case the split didn't work don't return empty handed. Return the original String.
 	if (strings.Num() == 0) {
