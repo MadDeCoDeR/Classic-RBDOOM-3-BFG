@@ -543,6 +543,8 @@ void GLimp_Shutdown()
 	common->Printf( "Shutting down OpenGL subsystem\n" );
 	
 #if SDL_VERSION_ATLEAST(2, 0, 0)
+	//GK: This wasn't called anywhere else, and is needed in order to properly destroy SDL context
+	Sys_ShutdownInput();
 	if( context )
 	{
 		SDL_GL_DeleteContext( context );
@@ -554,6 +556,7 @@ void GLimp_Shutdown()
 		SDL_DestroyWindow( window );
 		window = NULL;
 	}
+	atexit(SDL_Quit);
 #endif
 }
 

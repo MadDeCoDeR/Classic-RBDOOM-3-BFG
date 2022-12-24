@@ -82,6 +82,7 @@ extern idCVar r_windowWidth;
 extern idCVar r_windowHeight;
 extern idCVar com_emergencyexit;
 // DG end
+SDL_Thread* joyThread = nullptr;
 //GK: This function will run as a thread in order to capture when a joystick is connected or disconnected
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 void JoystickSamplingThread( void* data );
@@ -700,9 +701,9 @@ void Sys_InitInput()
 	in_keyboard.SetModified();
 	//GK: Insted of initializing only once the joystick run a thread that will allow the dynamic connection/disconnection of it
 	#if SDL_VERSION_ATLEAST(2, 0, 0)
-	SDL_CreateThread((SDL_ThreadFunction)JoystickSamplingThread,"Joystic",NULL);
+	joyThread = SDL_CreateThread((SDL_ThreadFunction)JoystickSamplingThread,"Joystic",NULL);
 	#else
-	SDL_CreateThread(JoystickSamplingThread,NULL);
+	joyThread = SDL_CreateThread(JoystickSamplingThread,NULL);
 	#endif
 	//GK:End
 	while(eventHead - eventTail < MAX_QUED_EVENTS) {
@@ -721,6 +722,7 @@ void Sys_ShutdownInput()
 	kbd_polls.Clear();
 	mouse_polls.Clear();
 	joyThreadKill = true;
+	SDL_WaitThread(joyThread, NULL);
 	
 	for (int i = 0; i < MAX_JOYSTICKS; i++) {
 		memset( &buttonStates[i], 0, sizeof( buttonStates[i] ) );
@@ -729,17 +731,6 @@ void Sys_ShutdownInput()
 	memset( &current, 0, sizeof(joyState) );
 	memset( &old, 0, sizeof(joyState) );
 	memset( &joystick_polls, 0, sizeof(joystick_polls) );
-	
-	// Close any opened SDL Joystic
-	if( joy )
-	{
-		common->Printf( "Sys_ShutdownInput: closing SDL joystick.\n" );
-		SDL_JoystickClose( joy );
-	}
-	else
-	{
-		common->Printf( "Sys_ShutdownInput: SDL joystick not initialized. Nothing to close.\n" );
-	}
 }
 
 /*
@@ -2120,6 +2111,24 @@ int JoystickSamplingThread(void* data){
 	const uint64 waitTime = 5000;// 000; // poll every 5 seconds to see if a controller was connected
 	while(1){
 		if (joyThreadKill) {
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+			for(int i = 0; i < MAX_JOYSTICKS; i++) {
+				if(haptic[i]){
+					SDL_HapticClose(haptic[i]);
+					haptic[i] = NULL;
+				}
+				if(gcontroller[i]){
+					SDL_GameControllerClose(gcontroller[i]);
+				}
+				gcontroller[i]=NULL;
+			}
+#else
+			if (joy)
+			{
+				SDL_JoystickClose(joy);
+			}
+			joy = NULL;
+#endif
 			break;
 		}
 		int	now = Sys_Microseconds();
