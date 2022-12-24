@@ -54,8 +54,8 @@ idCVar r_waylandcompat( "r_waylandcompat", "0", CVAR_SYSTEM | CVAR_NOCHEAT | CVA
 // only core profile is supported on OS X
 idCVar r_useOpenGL32( "r_useOpenGL32", "2", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #elif defined(__linux__)
-// Linux open source drivers suck
-idCVar r_useOpenGL32( "r_useOpenGL32", "2", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
+// Linux open source drivers suck //GK: So as it seems some mesa drivers might not support one of the two texture compression extensions that are required, in that case keep it to compatibility profile
+idCVar r_useOpenGL32( "r_useOpenGL32", "1", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #else
 idCVar r_useOpenGL32( "r_useOpenGL32", "1", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #endif
@@ -103,6 +103,36 @@ void GLimp_PreInit() // DG: added this function for SDL compatibility
 	}
 }
 
+/*
+===================
+GLimp_GetSupportedVersion
+===================
+*/
+/*
+ GK: Supported Version retrieval. First we need a context without the version attributes set,
+ in order to retrieve it from the system and use it acordingly later with other flags and attributes
+ */
+void GLimp_GetSupportedVersion(int* major, int* minor) {
+	
+	window = SDL_CreateWindow(ENGINE_NAME,
+							0,
+							0,
+							0, 0, SDL_WINDOW_OPENGL );
+	// DG end
+	if (window != NULL) {
+		context = SDL_GL_CreateContext( window );
+		if (context != NULL) {
+			idStr version_string = idStr(( const char* )glGetString( GL_VERSION )).SubStr(0, 3);
+			idList<idStr> version_array = version_string.Split(".");
+			*major = atoi(version_array[0].c_str());
+			*minor = atoi(version_array[1].c_str());
+			SDL_GL_DeleteContext(context);
+			context = NULL;
+		}
+		SDL_DestroyWindow(window);
+		window = NULL;
+	}
+}
 
 /*
 ===================
@@ -213,10 +243,17 @@ bool GLimp_Init( glimpParms_t parms )
 		// RB begin
 		if( r_useOpenGL32.GetInteger() > 0 )
 		{
+			int major = 3;
+			int minor = 3;
+			GLimp_GetSupportedVersion(&major, &minor);
+			if (major < 3 || major == 3 && minor < 3) {
+				common->FatalError("GLimp_Init: OpenGL version is not supported!\n");
+			}
 			glConfig.driverType = GLDRV_OPENGL32_COMPATIBILITY_PROFILE;
 			
-			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
-			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 6 );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, major );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, minor );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
 			
 			if( r_debugContext.GetBool() )
 			{

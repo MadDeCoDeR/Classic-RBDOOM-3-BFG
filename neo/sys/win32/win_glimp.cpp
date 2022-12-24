@@ -340,6 +340,36 @@ void GLW_WM_CREATE( HWND hWnd )
 }
 
 /*
+===================
+GLimp_GetSupportedVersion
+===================
+*/
+/*
+ GK: Supported Version retrieval. First we need a context without the version attributes set,
+ in order to retrieve it from the system and use it acordingly later with other flags and attributes
+ */
+void GLimp_GetSupportedVersion(HDC hdc, int* major, int* minor) {
+	HGLRC m_hrc = NULL;
+	int useCoreProfile = r_useOpenGLProfile.GetInteger();
+	if (!WGLEW_ARB_create_context || useCoreProfile == 0)
+	{
+		m_hrc = wglCreateContext(hdc);
+	}
+	else {
+		m_hrc = wglCreateContextAttribsARB(hdc, 0, NULL);
+	}
+	if (m_hrc != NULL) {
+		if (wglMakeCurrent(hdc, m_hrc)) {
+			idStr version_string = idStr((const char*)glGetString(GL_VERSION)).SubStr(0, 3);
+			idList<idStr> version_array = version_string.Split(".");
+			*major = atoi(version_array[0].c_str());
+			*minor = atoi(version_array[1].c_str());
+		}
+		wglDeleteContext(m_hrc);
+	}
+}
+
+/*
 ========================
 CreateOpenGLContextOnDC
 ========================
@@ -360,8 +390,12 @@ static HGLRC CreateOpenGLContextOnDC( const HDC hdc, const bool debugContext )
 			break;
 		}
 		// RB end
-		const int glMajorVersion = 4;
-		const int glMinorVersion = 6;
+		int glMajorVersion = 3;
+		int glMinorVersion = 3;
+		GLimp_GetSupportedVersion(hdc, &glMajorVersion, &glMinorVersion);
+		if (glMajorVersion < 3 || glMajorVersion == 3 && glMinorVersion < 3) {
+			common->FatalError("GLimp_Init: OpenGL version is not supported!\n");
+		}
 		const int glDebugFlag = debugContext ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
 		const int glProfileMask = ( useCoreProfile != 0 ) ? WGL_CONTEXT_PROFILE_MASK_ARB : 0;
 		const int glProfile = ( useCoreProfile == 1 ) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : ( ( useCoreProfile == 2 ) ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : 0 );
