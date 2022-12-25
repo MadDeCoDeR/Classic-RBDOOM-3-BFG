@@ -50,8 +50,8 @@ static bindInfo_t keyboardBinds[] =
 	
 	{ "#str_02095",			""								},	// HEADING
 	{ "#str_02112",	"_attack"								},	// ATTACK
-	{ "#str_02114",	"_impulse15"							},	// PREV. WEAPON
-	{ "#str_02113",	"_impulse14"							},	// NEXT WEAPON
+	{ "#str_02114",	"_impulse14"							},	// NEXT WEAPON
+	{ "#str_02113",	"_impulse15"							},	// PREV. WEAPON
 	{ "#str_02115",	"_impulse13"							},	// RELOAD
 	{ "#str_swf_action_use",	"_use"						},	// USE
 	{ "#str_02116",	"_lookUp"								},	// LOOK UP

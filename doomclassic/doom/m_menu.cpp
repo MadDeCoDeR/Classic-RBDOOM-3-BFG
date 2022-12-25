@@ -363,8 +363,8 @@ static bindInfo_t keyboardBinds[] =
 	{ "Sprint",	"_speed"								},	// SPRINT
 
 	{ "Attack",	"_attack"								},	// ATTACK
-	{ "Prev Weap",	"_impulse14"							},	// PREV. WEAPON
-	{ "Next Weap",	"_impulse15"							},	// NEXT WEAPON
+	{ "Next Weap",	"_impulse14"							},	// NEXT WEAPON
+	{ "Prev Weap",	"_impulse15"							},	// PREV. WEAPON
 	{ "Use",	"_use"						},	// USE
 	{ "Auto Map",	"_impulse19"							},	// PDA / SCOREBOARD
 

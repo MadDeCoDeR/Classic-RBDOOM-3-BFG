@@ -7947,7 +7947,7 @@ void idPlayer::EvaluateControls()
 	//GK: Custom made weapon cycle algorithm in order to handle press and hold events
 	int npw = 0;
 	bool isIntroMap = (idStr::FindText(gameLocal.GetMapFileName(), "mars_city1") >= 0);
-	if (usercmd.buttons & BUTTON_NEXTWEAP && tweap == currentWeapon && circleWeaponPacifier >= (com_engineHz_latched / 2))
+	if (usercmd.buttons & BUTTON_PREVWEAP && tweap == currentWeapon && circleWeaponPacifier >= (com_engineHz_latched / 2))
 	{
 		if (!isIntroMap)
 		{
@@ -7971,7 +7971,7 @@ void idPlayer::EvaluateControls()
 			circleWeaponPacifier = 0;
 		}
 	}
-	if (usercmd.buttons & BUTTON_PREVWEAP && tweap == currentWeapon && circleWeaponPacifier >= (com_engineHz_latched / 2))
+	if (usercmd.buttons & BUTTON_NEXTWEAP && tweap == currentWeapon && circleWeaponPacifier >= (com_engineHz_latched / 2))
 	{
 		if (!isIntroMap)
 		{

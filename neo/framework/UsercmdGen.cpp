@@ -1130,12 +1130,12 @@ void idUsercmdGenLocal::CmdButtons()
 	//GK: From now on next weapon and previous weapon events 
 	//are similar to other events that allowing you to press and hold the button
 	if (ButtonState(UB_IMPULSE14)) {
-		cmd.buttons |= BUTTON_PREVWEAP;
+		cmd.buttons |= BUTTON_NEXTWEAP;
 		Key(302, false);
 		Key(303, false);
 	}
 	if (ButtonState(UB_IMPULSE15)) {
-		cmd.buttons |= BUTTON_NEXTWEAP;
+		cmd.buttons |= BUTTON_PREVWEAP;
 		Key(302, false);
 		Key(303, false);
 	}
