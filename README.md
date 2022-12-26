@@ -435,7 +435,6 @@ Check here: https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/wiki/3.-New-Param
 
 - In some cases activating both SSAO and Soft Shadows might result in shadow artifacts
 - Using the latest AMD Windows Driver (22.7.1 and newer) might result in worse performance than with previous versions (22.6.1 or older)
-- Booting the Native Linux Version might result into a black screen and then the menu shows up
 
 ## 11) BUG REPORTS
 

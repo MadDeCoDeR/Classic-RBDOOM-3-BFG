@@ -1576,10 +1576,6 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// initialize the renderSystem data structures
 		renderSystem->Init();
-		//GK: DIRTY HACK for Linux
-		if (renderSystem->GetWidth() == 0) {
-			cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
-		}
 
 		common->Printf("Initializing Platform\n");
 		LoadPlatformDLL();

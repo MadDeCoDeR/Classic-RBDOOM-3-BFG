@@ -552,6 +552,9 @@ void idRenderBackend::Init()
 	
 	// Reset our gamma
 	R_SetColorMappings();
+	//GK: I don't know why SDL2 on linux does this,
+	// but apparently the engine has to re-set the mode (without initialization) after the rest of the rendering initialization proccess is done
+	R_SetNewMode( false );
 }
 
 void idRenderBackend::Shutdown()
