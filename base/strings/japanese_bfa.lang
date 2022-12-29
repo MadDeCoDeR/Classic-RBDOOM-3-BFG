@@ -48,6 +48,8 @@
 	"#str_sapi"			"オーディオ API"
 	"#str_swf_xaudio"	"XAudio 2"
 	"#str_swf_openAL"	"OpenAL-soft"
+	"#str_04102"		"常に実行"
+	"#str_swf_only_MP"	"MPのみ"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "最初にロードするマップ"
 }

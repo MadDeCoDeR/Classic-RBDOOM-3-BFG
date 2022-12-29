@@ -1043,12 +1043,13 @@ public:
 		virtual bool				IsDataChanged() const;
 		
 		// retrieves a particular field for reading or updating
-		virtual idSWFScriptVar		GetField( const int fieldIndex ) const
+		virtual idSWFScriptVar		GetField(const int fieldIndex) const;/*
 		{
 			return fields[ fieldIndex ];
-		}
+		}*/
 		
 		virtual void				AdjustField( const int fieldIndex, const int adjustAmount );
+		virtual int AdjustOption(int currentValue, const int values[], int numValues, int adjustment);
 		
 	private:
 		idStaticList< idSWFScriptVar, MAX_GAME_FIELDS >	fields;

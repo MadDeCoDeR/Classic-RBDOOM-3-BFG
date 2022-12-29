@@ -173,6 +173,7 @@ extern idCVar	pm_usecylinder;
 extern idCVar	pm_minviewpitch;
 extern idCVar	pm_maxviewpitch;
 extern idCVar	pm_stamina;
+extern idCVar	pm_staminaBackup;
 extern idCVar	pm_staminathreshold;
 extern idCVar	pm_staminarate;
 extern idCVar	pm_crouchheight;

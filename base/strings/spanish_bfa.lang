@@ -48,6 +48,8 @@
 	"#str_sapi"			"Audio API"
 	"#str_swf_xaudio"	"XAudio 2"
 	"#str_swf_openAL"	"OpenAL-soft"
+	"#str_04102"		"Ejecutar siempre"
+	"#str_swf_only_MP"	"Sólo MP"
 // 	"#str_swf_custom_game" "Nombre del mod"
 // 	"#str_swf_start_map" "Primer mapa para cargar"
 }

@@ -111,7 +111,7 @@ void idMenuScreen_Shell_GameOptions::Initialize( idMenuHandler* data )
 	options->AddChild( control );
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
-	control->SetOptionType( OPTION_SLIDER_TOGGLE );
+	control->SetOptionType( OPTION_SLIDER_TEXT );
 	control->SetLabel( "#str_04102" );	// Always Run
 	control->SetDataSource( &systemData, idMenuDataSource_GameSettings::GAME_FIELD_ALWAYS_SPRINT );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
@@ -339,7 +339,7 @@ void idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::LoadData()
 	fields[ GAME_FIELD_AUTO_SWITCH ].SetBool( ui_autoSwitch.GetBool() );
 	fields[ GAME_FIELD_AUTO_RELOAD ].SetBool( ui_autoReload.GetBool() );
 	fields[ GAME_FIELD_AIM_ASSIST ].SetBool(game->GetCVarBool("aa_targetAimAssistEnable") );
-	fields[ GAME_FIELD_ALWAYS_SPRINT ].SetBool( in_alwaysRun.GetBool() );
+	fields[ GAME_FIELD_ALWAYS_SPRINT ].SetInteger( in_alwaysRun.GetInteger() );
 	fields[ GAME_FIELD_FLASHLIGHT_SHADOWS ].SetBool(game->GetCVarBool("g_weaponShadows") );
 	fields[ GAME_FIELD_MUZZLE_FLASHES ].SetBool(game->GetCVarBool("g_muzzleFlash") );
 	originalFields = fields;
@@ -360,7 +360,7 @@ void idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::CommitData()
 	ui_autoSwitch.SetBool( fields[ GAME_FIELD_AUTO_SWITCH ].ToBool() );
 	ui_autoReload.SetBool( fields[ GAME_FIELD_AUTO_RELOAD ].ToBool() );
 	game->SetCVarBool("aa_targetAimAssistEnable", fields[ GAME_FIELD_AIM_ASSIST ].ToBool() );
-	in_alwaysRun.SetBool( fields[ GAME_FIELD_ALWAYS_SPRINT ].ToBool() );
+	in_alwaysRun.SetInteger( fields[ GAME_FIELD_ALWAYS_SPRINT ].ToInteger() );
 	game->SetCVarBool("g_weaponShadows", fields[ GAME_FIELD_FLASHLIGHT_SHADOWS ].ToBool() );
 	game->SetCVarBool("g_muzzleFlash", fields[ GAME_FIELD_MUZZLE_FLASHES ].ToBool() );
 	
@@ -377,13 +377,55 @@ idMenuScreen_Shell_GameOptions::idMenuDataSource_AudioSettings::AdjustField
 */
 void idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::AdjustField( const int fieldIndex, const int adjustAmount )
 {
-	if( fieldIndex == GAME_FIELD_FOV )
-	{
-		fields[ fieldIndex ].SetInteger( idMath::ClampInt( MIN_FOV, MAX_FOV, fields[ fieldIndex ].ToInteger() + adjustAmount * 5 ) );
+	const int sprintValues[3] = { 0, 1, 2 };
+	switch (fieldIndex) {
+		case GAME_FIELD_FOV:
+			fields[fieldIndex].SetInteger(idMath::ClampInt(MIN_FOV, MAX_FOV, fields[fieldIndex].ToInteger() + adjustAmount * 5));
+			break;
+		case GAME_FIELD_ALWAYS_SPRINT:
+			fields[fieldIndex].SetInteger(AdjustOption(fields[fieldIndex].ToInteger(), sprintValues, 3, adjustAmount));
+			break;
+		default:
+			fields[fieldIndex].SetBool(!fields[fieldIndex].ToBool());
 	}
-	else
+}
+
+int idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::AdjustOption(int currentValue, const int values[], int numValues, int adjustment)
+{
+	int index = 0;
+	for (int i = 0; i < numValues; i++)
 	{
-		fields[ fieldIndex ].SetBool( !fields[ fieldIndex ].ToBool() );
+		if (currentValue == values[i])
+		{
+			index = i;
+			break;
+		}
+	}
+	index += adjustment;
+	while (index < 0)
+	{
+		index += numValues;
+	}
+	index %= numValues;
+	return values[index];
+}
+
+/*
+========================
+idMenuScreen_Shell_GameOptions::idMenuDataSource_AudioSettings::AdjustField
+========================
+*/
+idSWFScriptVar idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::GetField(const int fieldIndex) const
+{
+	idList<idStr> sprintValues {
+		idStr("#str_swf_disabled"),
+		idStr("#str_swf_enabled"),
+		idStr("#str_swf_only_MP")
+	};
+	if (fieldIndex == GAME_FIELD_ALWAYS_SPRINT) {
+		return sprintValues[fields[fieldIndex].ToInteger()].c_str();
+	} else {
+		return fields[fieldIndex];
 	}
 }
 
@@ -420,7 +462,7 @@ bool idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::IsDataChange
 		return true;
 	}
 	
-	if( fields[ GAME_FIELD_ALWAYS_SPRINT ].ToBool() != originalFields[ GAME_FIELD_ALWAYS_SPRINT ].ToBool() )
+	if( fields[ GAME_FIELD_ALWAYS_SPRINT ].ToInteger() != originalFields[ GAME_FIELD_ALWAYS_SPRINT ].ToInteger() )
 	{
 		return true;
 	}

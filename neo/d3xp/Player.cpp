@@ -61,6 +61,7 @@ idCVar pm_clientAuthoritative_minSpeedSquared( "pm_clientAuthoritative_minSpeedS
 //GK: Internal CVar in order to keep track on whenever the character is flipped or not
 idCVar pm_flip("pm_flip", "0", CVAR_BOOL, "");
 idCVar pm_smartHUD("pm_smartHUD", "0", CVAR_BOOL | CVAR_ARCHIVE | CVAR_GAME, "Enable Smart HUD functionality");
+idCVar pm_alwaysRun("pm_alwaysRun", "0", CVAR_INTEGER | CVAR_GAME | CVAR_ROM, "Used to check if in_alwaysRun has changed value");
 
 extern idCVar pm_classicPose;
 
@@ -1878,8 +1879,9 @@ void idPlayer::Init()
 	}
 	
 	// disable stamina on hell levels
-	if( gameLocal.world && gameLocal.world->spawnArgs.GetBool( "no_stamina" ) )
+	if(( gameLocal.world && gameLocal.world->spawnArgs.GetBool( "no_stamina" ) ) || cvarSystem->GetCVarBool("in_alwaysRun"))
 	{
+		pm_staminaBackup.SetFloat(pm_stamina.GetFloat());
 		pm_stamina.SetFloat( 0.0f );
 	}
 	
@@ -2881,6 +2883,7 @@ void idPlayer::Restore( idRestoreGame* savefile )
 	
 	savefile->ReadFloat( set );
 	pm_stamina.SetFloat( set );
+	pm_staminaBackup.SetFloat(pm_stamina.GetFloat());
 	
 	// create combat collision hull for exact collision detection
 	SetCombatModel();
@@ -3831,6 +3834,13 @@ void idPlayer::UpdateConditions()
 
 	AI_RUN			= ( usercmd.buttons & BUTTON_RUN ) && ( ( !pm_stamina.GetFloat() ) || ( stamina > pm_staminathreshold.GetFloat() ) );
 	AI_DEAD			= ( health <= 0 );
+
+	if (cvarSystem->GetCVarInteger("in_alwaysRun") != pm_alwaysRun.GetInteger()) {
+		pm_alwaysRun.SetInteger(cvarSystem->GetCVarInteger("in_alwaysRun"));
+		pm_stamina.SetFloat(cvarSystem->GetCVarInteger("in_alwaysRun") == 1 || (cvarSystem->GetCVarInteger("in_alwaysRun") == 2 && common->IsMultiplayer()) ? 0.0f : pm_staminaBackup.GetFloat());
+		stamina = pm_stamina.GetFloat();
+	}
+
 }
 
 /*

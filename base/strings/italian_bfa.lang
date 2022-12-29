@@ -48,6 +48,8 @@
 	"#str_sapi"			"Audio API"
 	"#str_swf_xaudio"	"XAudio 2"
 	"#str_swf_openAL"	"OpenAL-soft"
+	"#str_04102"		"Corri sempre"
+	"#str_swf_only_MP"	"Solo MP"
 // 	"#str_swf_custom_game" "Nome mod"
 // 	"#str_swf_start_map" "Prima mappa da caricare"
 }

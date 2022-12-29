@@ -25,13 +25,16 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-#pragma hdrstop
+
 #include "precompiled.h"
+#pragma hdrstop
 #include "../Game_local.h"
 
 //extern idCVar pm_stamina;
 
 //extern idCVar flashlight_batteryDrainTimeMS;
+
+extern idCVar in_alwaysRun;
 
 /*
 ========================
@@ -330,7 +333,7 @@ void idMenuScreen_HUDLocal::UpdateStamina( idPlayer* player )
 	if( stamSprite != NULL )
 	{
 	
-		if( common->IsMultiplayer() )
+		if( common->IsMultiplayer() || in_alwaysRun.GetInteger() == 1)
 		{
 			stamSprite->SetVisible( false );
 		}
