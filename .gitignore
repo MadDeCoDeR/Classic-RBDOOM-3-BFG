@@ -53,3 +53,4 @@ neo/neo.kdev4
 /.vscode/targets.log
 /.vscode/dryrun.log
 /.vscode/configurationCache.log
+*.aps
