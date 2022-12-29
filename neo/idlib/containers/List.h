@@ -124,6 +124,7 @@ public:
 	
 	idList( int newgranularity = 16 );
 	idList( const idList& other );
+	idList(std::initializer_list<_type_> list);
 	~idList();
 	
 	void			Clear();											// clear the list
@@ -235,6 +236,25 @@ ID_INLINE idList<_type_, _tag_>::idList( const idList& other )
 	list = NULL;
 	*this = other;
 }
+
+//GK: Begin
+/*
+================
+idList<_type_,_tag_>::idList( std::initializer_list<_type_> other )
+================
+*/
+template< typename _type_, memTag_t _tag_ >
+ID_INLINE idList<_type_, _tag_>::idList(std::initializer_list<_type_> other)
+{
+	list = NULL;
+	granularity = other.size();
+	memTag = _tag_;
+	Clear();
+	for (const _type_* i = other.begin(); i != other.end(); ++i) {
+		Append(*i);
+	}
+}
+//GK: End
 
 /*
 ================
