@@ -183,7 +183,7 @@ void main( PS_IN fragment, out PS_OUT result )
 	shadowTexcoord.z = dot4( modelPosition, shadowMatrixZ );
 	shadowTexcoord.w = dot4( modelPosition, shadowMatrixW );
 	
-	float bias = 0.005 * tan( acos( ldotN ) );
+	float bias = 0.001 * tan( acos( ldotN ) );
 	bias = clamp( bias, 0, 0.01 ); //GK: Putting that limit seems to resolve shadow acne but still many shadows are missing
 	//float bias = 0.001;
 	
