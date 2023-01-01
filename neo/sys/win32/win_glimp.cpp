@@ -344,6 +344,7 @@ void GLW_WM_CREATE( HWND hWnd )
 GLimp_GetSupportedVersion
 ===================
 */
+#if !defined(USE_VULKAN)
 /*
  GK: Supported Version retrieval. First we need a context without the version attributes set,
  in order to retrieve it from the system and use it acordingly later with other flags and attributes
@@ -368,7 +369,7 @@ void GLimp_GetSupportedVersion(HDC hdc, int* major, int* minor) {
 		wglDeleteContext(m_hrc);
 	}
 }
-
+#endif
 /*
 ========================
 CreateOpenGLContextOnDC
