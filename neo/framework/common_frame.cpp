@@ -922,8 +922,12 @@ void idCommonLocal::Frame()
 		// drop back to main menu
 		LeaveGame();
 		
-		// force the console open to show error messages
-		console->Open();
+		// GK: We don't know what exception we got exactly and the user is not a programmer to tell us what exactly the console outputs during the exception.
+		// Keep the console hidden and ask the user to use +set logfile instead
+		if (com_allowConsole.GetBool()) {
+			// force the console open to show error messages
+			console->Open();
+		}
 		return;
 	}
 }
