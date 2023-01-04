@@ -44,6 +44,9 @@ idCVar swf_skipLineDraws( "swf_skipLineDraws", "0", CVAR_BOOL, "" );
 idCVar swf_skipBitmaps( "swf_skipBitmaps", "0", CVAR_BOOL, "" );
 
 idCVar swf_show( "swf_show", "0", CVAR_INTEGER, "" );
+// GK: start
+idCVar swf_cursorDPI("swf_cursorDPI", "1.0", CVAR_FLOAT | CVAR_ARCHIVE | CVAR_ROM, "DPI Aware Scaling factor for UI cursor Scaling");
+// GK: end
 // RB end
 
 extern idCVar swf_textStrokeSize;
@@ -179,13 +182,14 @@ void idSWF::Render( idRenderSystem* gui, int time, bool isSplitscreen )
 		gui->SetColor( idVec4( 1.0f, 1.0f, 1.0f, 1.0f ) );
 		idVec2 mouse = renderState.matrix.Transform( idVec2( mouseX - 1, mouseY - 2 ) );
 		//idSWFScriptObject * hitObject = HitTest( mainspriteInstance, swfRenderState_t(), mouseX, mouseY, NULL );
+		float mouseDimension = 32.0f * swf_cursorDPI.GetFloat(); // GK: When dealing with High DPI allways take into account DPI scaling
 		if( !hasHitObject )    //hitObject == NULL ) {
 		{
-			DrawStretchPic( mouse.x, mouse.y, 32.0f, 32.0f, 0, 0, 1, 1, guiCursor_arrow );
+			DrawStretchPic( mouse.x, mouse.y, mouseDimension, mouseDimension, 0, 0, 1, 1, guiCursor_arrow);
 		}
 		else
 		{
-			DrawStretchPic( mouse.x, mouse.y, 32.0f, 32.0f, 0, 0, 1, 1, guiCursor_hand );
+			DrawStretchPic( mouse.x, mouse.y, mouseDimension, mouseDimension, 0, 0, 1, 1, guiCursor_hand );
 		}
 	}
 	

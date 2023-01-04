@@ -45,6 +45,7 @@ extern idCVar r_windowY;
 extern idCVar r_windowWidth;
 extern idCVar r_windowHeight;
 extern idCVar com_emergencyexit;
+extern idCVar swf_cursorDPI;
 
 static void WIN_DisableAltTab()
 {
@@ -557,6 +558,26 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 			}
 			break;
 		}
+// GK: Start
+		case WM_DPICHANGED:
+			int dpi = HIWORD(wParam);
+			// A little shortcut cheat using Microsoft's Documentation
+			switch (dpi) {
+			case 96:
+				swf_cursorDPI.SetFloat(1.0f);
+				break;
+			case 120:
+				swf_cursorDPI.SetFloat(1.25f);
+				break;
+			case 144:
+				swf_cursorDPI.SetFloat(1.5f);
+				break;
+			case 192:
+				swf_cursorDPI.SetFloat(2.0f);
+				break;
+			}
+			break;
+// GK: End
 	}
 	
 	return DefWindowProc( hWnd, uMsg, wParam, lParam );
