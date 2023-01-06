@@ -1918,6 +1918,30 @@ void R_VidRestart_f( const idCmdArgs& args )
 	
 	// set the mode without re-initializing the context
 	R_SetNewMode( false );
+	// GK: Borderless Mode resolution fixup.
+	// While we are in exclusive fullscreen we can control the monitor resolution alongside with the game's resolution.
+	// But in borderless we are limited to the System's resolution and without any DPI awareness System.
+	// So in that case after the game have exited the exclusive fullscreen mode check again if the game's resolution is bigger than the System's,
+	// if so then switch to the System's resolution in order to avoid the game's screen from being out of bounds.
+	if (r_fullscreen.GetInteger() == -1) {
+		idList<vidMode_t> modeList;
+		R_GetModeListForDisplay(0, modeList);
+		int maxW, maxH, maxHz;
+		R_GetScreenResolution(0, maxW, maxH, maxHz);
+		common->Printf("Max Width: %i, Max Height: %i\n", maxW, maxH);
+		if (r_customWidth.GetInteger() > maxW && r_customHeight.GetInteger() > maxH) {
+			for (int i = 0; i < modeList.Num(); i++) {
+				if (modeList[i].width == maxW && modeList[i].height == maxH) {
+					r_vidMode.SetInteger(i);
+					break;
+				}
+			}
+			r_customWidth.SetInteger(maxW);
+			r_customHeight.SetInteger(maxH);
+		}
+		cvarSystem->SetModifiedFlags(CVAR_ARCHIVE);
+		R_SetNewMode(false);
+	}
 }
 
 /*

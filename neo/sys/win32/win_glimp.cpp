@@ -999,11 +999,17 @@ bool R_GetModeListForDisplay( const unsigned requestedDisplayNum, idList<vidMode
 		}
 		unsigned previousWidth = 0;
 		unsigned previousHeight = 0;
+		int maxW, maxH, maxHz;
+		R_GetScreenResolution(displayNum - 1, maxW, maxH, maxHz);
 		for( int modeNum = 0 ; ; modeNum++ )
 		{
 			if( !EnumDisplaySettings( device.DeviceName, modeNum, &devmode ) )
 			{
 				break;
+			}
+
+			if (r_fullscreen.GetInteger() < 0 && devmode.dmPelsWidth > (uint)maxW && devmode.dmPelsHeight > (uint)maxH) {
+				continue;
 			}
 			
 			if( devmode.dmBitsPerPel != 32 )
@@ -1508,14 +1514,15 @@ bool GLimp_Init( glimpParms_t parms )
 					parms.multiSamples, parms.stereo, parms.fullScreen );
 #endif
 
+	// GK: High DPI Awareness setup. 2 different methods are used depending on what the client's OS can support, System-wide DPI Awareness (Win7,Win8 & 8.1) and PerMonitor v2 (Win10 or later) (Microsoft's recomended)
 	HMODULE hShell = LoadLibrary("user32.dll");
-	if (hShell) {
+	if (hShell) { // Win10 or later
 		SetProcessDPIAwarenessContext_t SetProcessDpiAwarenessContext = (SetProcessDPIAwarenessContext_t)GetProcAddress(hShell, "SetProcessDpiAwarenessContext");
 		if (SetProcessDpiAwarenessContext) {
 
 			SetProcessDpiAwarenessContext((BFA_DPI_AWARENESS_CONTEXT)-4); //DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
 		}
-	} else {
+	} else { // Win7, Win8 & 8.1
 		SetProcessDPIAware();
 	}
 					
