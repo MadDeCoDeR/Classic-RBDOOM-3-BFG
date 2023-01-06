@@ -158,6 +158,7 @@ void idMenuScreen_Shell_Resolution::ShowScreen( const mainMenuTransition_t trans
 
 	originalOption.fullscreen = r_fullscreen.GetInteger();
 	originalOption.vidmode = r_vidMode.GetInteger();
+	optionData.Clear();
 	
 	idList< idList< idStr, TAG_IDLIB_LIST_MENU >, TAG_IDLIB_LIST_MENU > menuOptions;
 	menuOptions.Alloc().Alloc() = "#str_swf_disabled";
@@ -326,12 +327,13 @@ bool idMenuScreen_Shell_Resolution::HandleAction( idWidgetAction& action, const 
 							}
 							else
 							{
+								int monitorIndex = optionData.fullscreen > 0 ? optionData.fullscreen - 1 : 0;
 								r_fullscreen.SetInteger( optionData.fullscreen );
 								r_vidMode.SetInteger( optionData.vidmode );
-								r_customWidth.SetInteger(displays[0][optionData.vidmode].width);
-								r_customHeight.SetInteger(displays[0][optionData.vidmode].height);
+								r_customWidth.SetInteger(displays[monitorIndex][optionData.vidmode].width);
+								r_customHeight.SetInteger(displays[monitorIndex][optionData.vidmode].height);
 								if (optionData.fullscreen > 0) {
-									r_displayRefresh.SetInteger(displays[optionData.fullscreen - 1][optionData.vidmode].displayHz);
+									r_displayRefresh.SetInteger(displays[monitorIndex][optionData.vidmode].displayHz);
 								}
 								cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 								cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
