@@ -1975,7 +1975,7 @@ void idRenderBackend::AmbientPass( const drawSurf_t* const* drawSurfs, int numDr
 	
 	GL_Color( colorWhite );
 	
-	const float lightScale = 1.0f; //r_lightScale.GetFloat();
+	const float lightScale = r_lightScale.GetFloat();
 	const idVec4 lightColor = colorWhite * lightScale;
 	// apply the world-global overbright and the 2x factor for specular
 	const idVec4 diffuseColor = lightColor;

@@ -243,7 +243,7 @@ void main( PS_IN fragment, out PS_OUT result )
 	float shadow = 0.0;
 	
 	// RB: casting a float to int and using it as index can really kill the performance ...
-	float numSamples = 6.0; //int(rpScreenCorrectionFactor.w);
+	float numSamples = 12.0f; //int(rpScreenCorrectionFactor.w);
 	float stepSize = 1.0 / numSamples;
 	
 	float4 jitterTC = ( fragment.position * rpScreenCorrectionFactor ) + rpJitterTexOffset;
@@ -255,7 +255,7 @@ void main( PS_IN fragment, out PS_OUT result )
 	rot.y = sin( random.x );
 	
 	float shadowTexelSize = rpScreenCorrectionFactor.z * rpJitterTexScale.x;
-    for( int i = 0; i < 6; i++ )
+    for( int i = 0; i < 12; i++ )
     {
         float2 jitter = poissonDisk[i];
 		float2 jitterRotated;

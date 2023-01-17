@@ -78,9 +78,12 @@ void main( PS_IN fragment, out PS_OUT result ) {
 	half3 diffuseColor = diffuseMap * ( rpDiffuseModifier.xyz ) * 1.5f;
 	half3 specularColor = specMap.xyz * specularContribution * ( rpSpecularModifier.xyz ); 
 	
+	float halfLdotN = 1.0f;
+#if defined(USE_HALF_LAMBERT)
 	// RB: http://developer.valvesoftware.com/wiki/Half_Lambert
-	float halfLdotN = dot3( localNormal, lightVector ) * 0.5 + 0.5;
+	halfLdotN = dot3( localNormal, lightVector ) * 0.5 + 0.5;
 	halfLdotN *= halfLdotN;
+#endif
 	
 	// traditional very dark Lambert light model used in Doom 3
 	float ldotN = dot3( localNormal, lightVector );

@@ -249,6 +249,7 @@ static void R_CheckPortableExtensions()
 	
 	// GL_ARB_seamless_cube_map
 	glConfig.seamlessCubeMapAvailable = GLEW_ARB_seamless_cube_map != 0;
+	R_PrintExtensionStatus(glConfig.seamlessCubeMapAvailable, "GL_ARB_seamless_cube_map");
 	r_useSeamlessCubeMap.SetModified();		// the CheckCvars() next frame will enable / disable it
 	
 	// GL_ARB_framebuffer_sRGB
@@ -1410,7 +1411,9 @@ void idRenderBackend::CheckCVars()
 		{
 			if( globalImages->images[i] )
 			{
-				globalImages->images[i]->Bind();
+				if (!glConfig.directStateAccess) {
+					globalImages->images[i]->Bind();
+				}
 				globalImages->images[i]->SetTexParameters();
 			}
 		}
