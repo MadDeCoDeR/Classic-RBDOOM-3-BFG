@@ -336,7 +336,17 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 		case WM_SYSKEYDOWN:
 			if( wParam == 13 )  	// alt-enter toggles full-screen
 			{
-				cvarSystem->SetCVarBool( "r_fullscreen", !renderSystem->IsFullScreen() );
+				int displayNum = !renderSystem->IsFullScreen();
+				if (!renderSystem->IsFullScreen()) {
+					HMONITOR hmonitor = MonitorFromWindow(win32.hWnd, MONITOR_DEFAULTTONEAREST);
+					MONITORINFOEX monitorinfoex;
+					monitorinfoex.cbSize = sizeof(MONITORINFOEX);
+					if (GetMonitorInfoA(hmonitor, &monitorinfoex)) {
+						idStr monitorName = idStr(monitorinfoex.szDevice);
+						displayNum = atoi(monitorName.SubStr(monitorName.Length() - 1).c_str());
+					}
+				}
+				cvarSystem->SetCVarInteger( "r_fullscreen", displayNum );
 				cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
 				return 0;
 			}
