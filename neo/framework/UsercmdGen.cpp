@@ -1214,11 +1214,9 @@ void idUsercmdGenLocal::MakeCurrent()
 
 			int delta = viewangles[YAW] - oldPMAngles[YAW];
 
-			int moveUpState = ButtonState(UB_MOVEUP);
-			int moveDownState = ButtonState(UB_MOVEDOWN);
-			int offset = moveUpState ? moveUpState : moveDownState ? -moveDownState : 0;
+			int pitchDelta = viewangles[PITCH] - oldPMAngles[PITCH];
 
-			common->GetPhotoMode()->AdjustCamera(delta, offset, cmd);
+			common->GetPhotoMode()->AdjustCamera(delta, -pitchDelta, cmd);
 
 		}
 		else {
