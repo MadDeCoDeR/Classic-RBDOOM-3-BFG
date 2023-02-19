@@ -80,10 +80,11 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 	AVSampleFormat dst_smp = AV_SAMPLE_FMT_NONE;
 	if (dec_ctx->sample_fmt >= 5) {
 		dst_smp = static_cast<AVSampleFormat> (dec_ctx->sample_fmt - 5);
-		swr_ctx = swr_alloc_set_opts(NULL, dec_ctx->channel_layout, dst_smp, dec_ctx->sample_rate, dec_ctx->channel_layout, dec_ctx->sample_fmt, dec_ctx->sample_rate, 0, NULL);
-		int res = swr_init(swr_ctx);
-		if (res >= 0) {
-			hasplanar = true;
+		if (!swr_alloc_set_opts2(&swr_ctx, &dec_ctx->ch_layout, dst_smp, dec_ctx->sample_rate, &dec_ctx->ch_layout, dec_ctx->sample_fmt, dec_ctx->sample_rate, 0, NULL)) {
+			int res = swr_init(swr_ctx);
+			if (res >= 0) {
+				hasplanar = true;
+			}
 		}
 	}
 	int format_byte = 0;
@@ -106,7 +107,7 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 		use_ext = true;
 	}
 	*&format->basic.samplesPerSec = dec_ctx->sample_rate;
-	*&format->basic.numChannels = dec_ctx->channels;
+	*&format->basic.numChannels = dec_ctx->ch_layout.nb_channels;
 	*&format->basic.avgBytesPerSec = *&format->basic.samplesPerSec * format_byte * *&format->basic.numChannels;
 	*&format->basic.blockSize = format_byte * *&format->basic.numChannels;
 	*&format->basic.bitsPerSample = format_byte * 8;
@@ -200,7 +201,7 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 									0);
 
 								int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t**)frame->extended_data, frame->nb_samples);
-								num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
+								num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->ch_layout.nb_channels,
 									res, dst_smp, 1);
 								tBuffer.push_back((byte*)malloc(num_bytes));
 								buffSizes.push_back(num_bytes);
@@ -309,10 +310,11 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	AVSampleFormat dst_smp = AV_SAMPLE_FMT_NONE;
 	if (dec_ctx->sample_fmt >= 5) {
 		dst_smp = static_cast<AVSampleFormat> (dec_ctx->sample_fmt - 5);
-		swr_ctx = swr_alloc_set_opts(NULL, dec_ctx->channel_layout, dst_smp, dec_ctx->sample_rate, dec_ctx->channel_layout, dec_ctx->sample_fmt, dec_ctx->sample_rate, 0, NULL);
-		int res = swr_init(swr_ctx);
-		if (res >= 0) {
-			hasplanar = true;
+		if (!swr_alloc_set_opts2(&swr_ctx, &dec_ctx->ch_layout, dst_smp, dec_ctx->sample_rate, &dec_ctx->ch_layout, dec_ctx->sample_fmt, dec_ctx->sample_rate, 0, NULL)) {
+			int res = swr_init(swr_ctx);
+			if (res >= 0) {
+				hasplanar = true;
+			}
 		}
 	}
 	int format_byte = 0;
@@ -337,13 +339,13 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	*rate = dec_ctx->sample_rate;
 	switch (format_byte) {
 	case 1:
-		*sample = dec_ctx->channels == 2 ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
+		*sample = dec_ctx->ch_layout.nb_channels == 2 ? AL_FORMAT_STEREO8 : AL_FORMAT_MONO8;
 		break;
 	case 2:
-		*sample = dec_ctx->channels == 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
+		*sample = dec_ctx->ch_layout.nb_channels == 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
 		break;
 	case 4:
-		*sample = dec_ctx->channels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
+		*sample = dec_ctx->ch_layout.nb_channels == 2 ? AL_FORMAT_STEREO_FLOAT32 : AL_FORMAT_MONO_FLOAT32;
 		break;
 	}
 	if (av_new_packet(&packet, 1) == 0) {
@@ -380,12 +382,12 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 						if (hasplanar) {
 							av_samples_alloc_array_and_samples(&tBuffer2,
 								&bufflinesize,
-								frame->channels,
+								frame->ch_layout.nb_channels,
 								av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
 								dst_smp,
 								0);
 							int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t**)frame->extended_data, frame->nb_samples);
-							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->channels,
+							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->ch_layout.nb_channels,
 								res, dst_smp, 1);
 							tBuffer.push_back((byte*)malloc(num_bytes));
 							buffSizes.push_back(num_bytes);

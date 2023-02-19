@@ -50,7 +50,7 @@ void CinematicAudio_XAudio2::InitAudio(void* audioContext)
 	}
 	WAVEFORMATEXTENSIBLE exvoice = { 0 };
 	voiceFormatcine.wFormatTag = WAVE_FORMAT_EXTENSIBLE; //Use extensible wave format in order to handle properly the audio
-	voiceFormatcine.nChannels = dec_ctx2->channels; //fixed
+	voiceFormatcine.nChannels = dec_ctx2->ch_layout.nb_channels; //fixed
 	voiceFormatcine.nSamplesPerSec = dec_ctx2->sample_rate; //fixed
 	voiceFormatcine.wBitsPerSample = format_byte * 8; //fixed
 	voiceFormatcine.nBlockAlign = format_byte * voiceFormatcine.nChannels; //fixed

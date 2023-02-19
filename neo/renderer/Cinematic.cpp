@@ -662,10 +662,11 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		}
 		if (dec_ctx2->sample_fmt >= 5) {
 			dst_smp = static_cast<AVSampleFormat> (dec_ctx2->sample_fmt - 5);
-			swr_ctx = swr_alloc_set_opts(NULL, dec_ctx2->channel_layout, dst_smp, dec_ctx2->sample_rate, dec_ctx2->channel_layout, dec_ctx2->sample_fmt, dec_ctx2->sample_rate, 0, NULL);
-			int res = swr_init(swr_ctx);
-			if (res >= 0) {
-				hasplanar = true;
+			if (!swr_alloc_set_opts2(&swr_ctx, &dec_ctx2->ch_layout, dst_smp, dec_ctx2->sample_rate, &dec_ctx2->ch_layout, dec_ctx2->sample_fmt, dec_ctx2->sample_rate, 0, NULL)) {
+				int res = swr_init(swr_ctx);
+				if (res >= 0) {
+					hasplanar = true;
+				}
 			}
 		}
 		else {
@@ -1271,12 +1272,12 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 						if (hasplanar) {
 							av_samples_alloc_array_and_samples(&tBuffer2,
 								&bufflinesize,
-								frame3->channels,
+								frame3->ch_layout.nb_channels,
 								av_rescale_rnd(frame3->nb_samples, frame3->sample_rate, frame3->sample_rate, AV_ROUND_UP),
 								dst_smp,
 								0);
 							int res1 = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t**)frame3->extended_data, frame3->nb_samples);
-							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame3->channels,
+							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame3->ch_layout.nb_channels,
 								res1, dst_smp, 1);
 						}
 						else {
