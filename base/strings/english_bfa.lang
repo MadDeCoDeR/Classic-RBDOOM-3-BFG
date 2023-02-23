@@ -50,6 +50,12 @@
 	"#str_swf_openAL"	"OpenAL-soft"
 	"#str_04102"		"Always Run"
 	"#str_swf_only_MP"	"Only MP"
+	"#str_swf_adv_controls" "Advanced Control Settings"
+	"#str_swf_adv_controls_desc" "Adjust Additional Control Settings"
+	"#str_swf_adv_controls_heading" "Advanced Controls"
+	"#str_swf_toggle_run" "Toggle Run"
+	"#str_swf_toggle_crouch" "Toggle Crouch"
+	"#str_swf_toggle_zoom" "Toggle Zoom"
 //	"#str_swf_custom_game"	"Mod Name"
 //	"#str_swf_start_map"	"First Map to load"
 }

@@ -50,6 +50,12 @@
 	"#str_swf_openAL"	"OpenAL-soft"
 	"#str_04102"		"Immer ausführen"
 	"#str_swf_only_MP"	"Nur MP"
+	"#str_swf_adv_controls" "Erweiterte Steuerungseinstellungen"
+	"#str_swf_adv_controls_desc" "Zusätzliche Steuerelementeinstellungen anpassen"
+	"#str_swf_adv_controls_heading" "Erweiterte Steuerelemente"
+	"#str_swf_toggle_run" "Lauf umschalten"
+	"#str_swf_toggle_crouch" "Hocken umschalten"
+	"#str_swf_toggle_zoom" "Zoom umschalten"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "Erste zu ladende Karte"
 }

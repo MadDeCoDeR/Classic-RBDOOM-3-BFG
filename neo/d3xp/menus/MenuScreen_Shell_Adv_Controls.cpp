@@ -31,24 +31,21 @@ If you have questions concerning this license or the applicable additional terms
 
 const static int NUM_CONTROLS_OPTIONS = 8;
 
-//extern idCVar pm_cursor;
-
-enum contorlsMenuCmds_t
+enum advControlsMenuCmds_t
 {
-	CONTROLS_CMD_BINDINGS,
-	CONTROLS_CMD_GAMEPAD,
-	CONTROLS_CMD_ADV_CONTROLS,
-	CONTROLS_CMD_INVERT,
-	CONTROLS_CMD_MOUSE_SENS,
-	CONTROLS_CMD_CONTROLLER_LAYOUT
+	ADV_CONTROLS_CMD_CROSSHAIR,
+	ADV_CONTROLS_CMD_CPOS,
+	ADV_CONTROLS_CMD_TOGGLE_RUN,
+	ADV_CONTROLS_CMD_TOGGLE_CROUCH,
+	ADV_CONTROLS_CMD_TOGGLE_ZOOM
 };
 
 /*
 ========================
-idMenuScreen_Shell_Controls::Initialize
+idMenuScreen_Shell_Adv_Controls::Initialize
 ========================
 */
-void idMenuScreen_Shell_Controls::Initialize( idMenuHandler* data )
+void idMenuScreen_Shell_Adv_Controls::Initialize( idMenuHandler* data )
 {
 	idMenuScreen::Initialize( data );
 	
@@ -73,61 +70,58 @@ void idMenuScreen_Shell_Controls::Initialize( idMenuHandler* data )
 	
 	btnBack = new( TAG_SWF ) idMenuWidget_Button();
 	btnBack->Initialize( data );
-	btnBack->SetLabel( "#str_swf_settings" );
+	idStr controls( idLocalization::GetString( "#str_04158" ) );
+	controls.ToUpper();
+	btnBack->SetLabel( controls );
 	btnBack->SetSpritePath( GetSpritePath(), "info", "btnBack" );
 	btnBack->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_GO_BACK );
 	AddChild( btnBack );
 	
 	idMenuWidget_ControlButton* control;
-	control = new( TAG_SWF ) idMenuWidget_ControlButton();
-	control->SetOptionType( OPTION_BUTTON_TEXT );
-	control->SetLabel( "#str_swf_keyboard" );	// KEY BINDINGS
-	control->SetDescription( "#str_swf_binding_desc" );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_BINDINGS );
-	control->RegisterEventObserver( helpWidget );
-	options->AddChild( control );
-	
-	control = new( TAG_SWF ) idMenuWidget_ControlButton();
-	control->SetOptionType( OPTION_BUTTON_TEXT );
-	control->SetLabel( "#str_swf_gamepad" );	// Gamepad
-	control->SetDescription( "#str_swf_gamepad_desc" );
-	control->RegisterEventObserver( helpWidget );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_GAMEPAD );
-	options->AddChild( control );
-
-	control = new(TAG_SWF) idMenuWidget_ControlButton();
-	control->SetOptionType(OPTION_BUTTON_TEXT);
-	control->SetLabel("#str_swf_adv_controls");	// Adv Controls
-	control->SetDescription("#str_swf_adv_controls_desc");
-	control->RegisterEventObserver(helpWidget);
-	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, CONTROLS_CMD_ADV_CONTROLS);
-	options->AddChild(control);
-	//GK: Not needed anymore
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TOGGLE );
-	control->SetLabel( "#str_swf_invert_mouse" );	// Invert Mouse
-	control->SetDataSource( &controlData, idMenuDataSource_ControlSettings::CONTROLS_FIELD_INVERT_MOUSE );
+	control->SetLabel( "#str_swf_crosshair" );
+	control->SetDataSource( &controlData, idMenuDataSource_Adv_ControlSettings::ADV_CONTROLS_FIELD_CROSSHAIR );
 	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_INVERT );
+	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, ADV_CONTROLS_CMD_CROSSHAIR );
 	control->RegisterEventObserver( helpWidget );
 	options->AddChild( control );
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
-	control->SetOptionType( OPTION_SLIDER_BAR );
-	control->SetLabel( "#str_swf_mouse_sens" );	// Mouse Sensitivity
-	control->SetDataSource( &controlData, idMenuDataSource_ControlSettings::CONTROLS_FIELD_MOUSE_SENS );
-	control->SetupEvents( 2, options->GetChildren().Num() );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, CONTROLS_CMD_MOUSE_SENS );
+	control->SetOptionType( OPTION_SLIDER_TOGGLE );
+	control->SetLabel( "#str_swf_classic_pose" );
+	control->SetDataSource( &controlData, idMenuDataSource_Adv_ControlSettings::ADV_CONTROLS_FIELD_CPOS );
+	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
+	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, ADV_CONTROLS_CMD_CPOS );
+	control->RegisterEventObserver( helpWidget );
+	options->AddChild( control );
+	
+	control = new( TAG_SWF ) idMenuWidget_ControlButton();
+	control->SetOptionType( OPTION_SLIDER_TOGGLE );
+	control->SetLabel( "#str_swf_toggle_run" );
+	control->SetDataSource( &controlData, idMenuDataSource_Adv_ControlSettings::ADV_CONTROLS_FIELD_TOGGLE_RUN );
+	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
+	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, ADV_CONTROLS_CMD_TOGGLE_RUN );
 	control->RegisterEventObserver( helpWidget );
 	options->AddChild( control );
 
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
-	control->SetOptionType(OPTION_SLIDER_TEXT);
-	control->SetLabel("#str_swf_layout");	// Layout
-	control->SetDataSource(&controlData, idMenuDataSource_ControlSettings::CONTROLS_FIELD_CONTROLLER_LAYOUT);
-	control->SetupEvents(2, options->GetChildren().Num());
-	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, CONTROLS_CMD_CONTROLLER_LAYOUT);
+	control->SetOptionType(OPTION_SLIDER_TOGGLE);
+	control->SetLabel("#str_swf_toggle_crouch");
+	control->SetDataSource(&controlData, idMenuDataSource_Adv_ControlSettings::ADV_CONTROLS_FIELD_TOGGLE_CROUCH);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, ADV_CONTROLS_CMD_TOGGLE_CROUCH);
+	control->RegisterEventObserver(helpWidget);
+	options->AddChild(control);
+
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TOGGLE);
+	control->SetLabel("#str_swf_toggle_zoom");
+	control->SetDataSource(&controlData, idMenuDataSource_Adv_ControlSettings::ADV_CONTROLS_FIELD_TOGGLE_ZOOM);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, ADV_CONTROLS_CMD_TOGGLE_ZOOM);
+	control->RegisterEventObserver(helpWidget);
 	options->AddChild(control);
 	
 	options->AddEventAction( WIDGET_EVENT_SCROLL_DOWN ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_DOWN_START_REPEATER, WIDGET_EVENT_SCROLL_DOWN ) );
@@ -142,10 +136,10 @@ void idMenuScreen_Shell_Controls::Initialize( idMenuHandler* data )
 
 /*
 ========================
-idMenuScreen_Shell_Controls::Update
+idMenuScreen_Shell_Adv_Controls::Update
 ========================
 */
-void idMenuScreen_Shell_Controls::Update()
+void idMenuScreen_Shell_Adv_Controls::Update()
 {
 
 	if( menuData != NULL )
@@ -177,9 +171,7 @@ void idMenuScreen_Shell_Controls::Update()
 		idSWFTextInstance* heading = GetSprite()->GetScriptObject()->GetNestedText( "info", "txtHeading" );
 		if( heading != NULL )
 		{
-			idStr controls( idLocalization::GetString( "#str_04158" ) );
-			controls.ToUpper();
-			heading->SetText( controls );	// CONTROLS
+			heading->SetText( "#str_swf_adv_controls_heading" );	// CONTROLS
 			heading->SetStrokeInfo( true, 0.75f, 1.75f );
 		}
 		
@@ -200,10 +192,10 @@ void idMenuScreen_Shell_Controls::Update()
 
 /*
 ========================
-idMenuScreen_Shell_Controls::ShowScreen
+idMenuScreen_Shell_Adv_Controls::ShowScreen
 ========================
 */
-void idMenuScreen_Shell_Controls::ShowScreen( const mainMenuTransition_t transitionType )
+void idMenuScreen_Shell_Adv_Controls::ShowScreen( const mainMenuTransition_t transitionType )
 {
 	controlData.LoadData();
 	idMenuScreen::ShowScreen( transitionType );
@@ -211,45 +203,11 @@ void idMenuScreen_Shell_Controls::ShowScreen( const mainMenuTransition_t transit
 
 /*
 ========================
-idMenuScreen_Shell_Controls::HideScreen
+idMenuScreen_Shell_Adv_Controls::HideScreen
 ========================
 */
-void idMenuScreen_Shell_Controls::HideScreen( const mainMenuTransition_t transitionType )
+void idMenuScreen_Shell_Adv_Controls::HideScreen( const mainMenuTransition_t transitionType )
 {
-	if (controlData.IsRestartRequired())
-	{
-		class idSWFScriptFunction_Restart : public idSWFScriptFunction_RefCounted
-		{
-		public:
-			idSWFScriptFunction_Restart(gameDialogMessages_t _msg, bool _restart)
-			{
-				msg = _msg;
-				restart = _restart;
-			}
-			idSWFScriptVar Call(idSWFScriptObject* thisObject, const idSWFParmList& parms)
-			{
-				common->Dialog().ClearDialog(msg);
-				if (restart)
-				{
-					// DG: Sys_ReLaunch() doesn't need any options anymore
-					//     (the old way would have been unnecessarily painful on POSIX systems)
-					Sys_ReLaunch();
-					// DG end
-				}
-				return idSWFScriptVar();
-			}
-		private:
-			gameDialogMessages_t msg;
-			bool restart;
-		};
-		idStaticList<idSWFScriptFunction*, 4> callbacks;
-		idStaticList<idStrId, 4> optionText;
-		callbacks.Append(new idSWFScriptFunction_Restart(GDM_GAME_RESTART_REQUIRED, false));
-		callbacks.Append(new idSWFScriptFunction_Restart(GDM_GAME_RESTART_REQUIRED, true));
-		optionText.Append(idStrId("#str_00100113")); // Continue
-		optionText.Append(idStrId("#str_02487")); // Restart Now
-		common->Dialog().AddDynamicDialog(GDM_GAME_RESTART_REQUIRED, callbacks, optionText, true, idStr());
-	}
 
 	if( controlData.IsDataChanged() )
 	{
@@ -270,10 +228,10 @@ void idMenuScreen_Shell_Controls::HideScreen( const mainMenuTransition_t transit
 
 /*
 ========================
-idMenuScreen_Shell_Controls::HandleAction
+idMenuScreen_Shell_Adv_Controls::HandleAction
 ========================
 */
-bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled )
+bool idMenuScreen_Shell_Adv_Controls::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled )
 {
 
 	if( menuData == NULL )
@@ -281,7 +239,7 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 		return true;
 	}
 	
-	if( menuData->ActiveScreen() != SHELL_AREA_CONTROLS )
+	if( menuData->ActiveScreen() != SHELL_AREA_ADV_CONTROLS )
 	{
 		return false;
 	}
@@ -295,10 +253,9 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 	{
 		case WIDGET_ACTION_GO_BACK:
 		{
-			menuData->SetNextScreen( SHELL_AREA_SETTINGS, MENU_TRANSITION_SIMPLE );
+			menuData->SetNextScreen( SHELL_AREA_CONTROLS, MENU_TRANSITION_SIMPLE );
 			return true;
 		}
-		
 		case WIDGET_ACTION_COMMAND:
 		{
 		
@@ -321,46 +278,34 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 			
 			switch( parms[0].ToInteger() )
 			{
-				case CONTROLS_CMD_BINDINGS:
+				case ADV_CONTROLS_CMD_CROSSHAIR:
 				{
-					menuData->SetNextScreen( SHELL_AREA_KEYBOARD, MENU_TRANSITION_SIMPLE );
+					controlData.AdjustField( idMenuDataSource_Adv_ControlSettings::ADV_CONTROLS_FIELD_CROSSHAIR, 1 );
+					options->Update();
 					break;
 				}
-				case CONTROLS_CMD_GAMEPAD:
+				case ADV_CONTROLS_CMD_CPOS:
 				{
-					menuData->SetNextScreen( SHELL_AREA_GAMEPAD, MENU_TRANSITION_SIMPLE );
+					controlData.AdjustField(idMenuDataSource_Adv_ControlSettings::ADV_CONTROLS_FIELD_CPOS, 1);
+					options->Update();
 					break;
 				}
-				case CONTROLS_CMD_ADV_CONTROLS:
+				case ADV_CONTROLS_CMD_TOGGLE_RUN:
 				{
-					menuData->SetNextScreen(SHELL_AREA_ADV_CONTROLS, MENU_TRANSITION_SIMPLE);
+					controlData.AdjustField(idMenuDataSource_Adv_ControlSettings::ADV_CONTROLS_FIELD_TOGGLE_RUN, 1);
+					options->Update();
 					break;
 				}
-				case CONTROLS_CMD_INVERT:
+				case ADV_CONTROLS_CMD_TOGGLE_CROUCH:
 				{
-					controlData.AdjustField( idMenuDataSource_ControlSettings::CONTROLS_FIELD_INVERT_MOUSE, 1 );
-					if( options != NULL )
-					{
-						options->Update();
-					}
+					controlData.AdjustField(idMenuDataSource_Adv_ControlSettings::ADV_CONTROLS_FIELD_TOGGLE_CROUCH, 1);
+					options->Update();
 					break;
 				}
-				case CONTROLS_CMD_MOUSE_SENS:
+				case ADV_CONTROLS_CMD_TOGGLE_ZOOM:
 				{
-					controlData.AdjustField( idMenuDataSource_ControlSettings::CONTROLS_FIELD_MOUSE_SENS, 1 );
-					if( options != NULL )
-					{
-						options->Update();
-					}
-					break;
-				}
-				case CONTROLS_CMD_CONTROLLER_LAYOUT:
-				{
-					controlData.AdjustField(idMenuDataSource_ControlSettings::CONTROLS_FIELD_CONTROLLER_LAYOUT, 1);
-					if (options != NULL)
-					{
-						options->Update();
-					}
+					controlData.AdjustField(idMenuDataSource_Adv_ControlSettings::ADV_CONTROLS_FIELD_TOGGLE_ZOOM, 1);
+					options->Update();
 					break;
 				}
 			}
@@ -389,6 +334,7 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 					options->SetFocusIndex( selectionIndex );
 				}
 			}
+
 			updateUi = false;
 			break;
 		}
@@ -405,49 +351,51 @@ bool idMenuScreen_Shell_Controls::HandleAction( idWidgetAction& action, const id
 // SCREEN SETTINGS
 /////////////////////////////////
 
-extern idCVar in_mouseInvertLook;
-extern idCVar in_mouseSpeed;
-extern idCVar in_joylayout;
-
+extern idCVar in_toggleRun;
+extern idCVar in_toggleCrouch;
+extern idCVar in_toggleZoom;
 
 /*
 ========================
-idMenuScreen_Shell_Controls::idMenuDataSource_AudioSettings::idMenuDataSource_AudioSettings
+idMenuScreen_Shell_Adv_Controls::idMenuDataSource_Adv_ControlSettings::idMenuDataSource_AudioSettings
 ========================
 */
-idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::idMenuDataSource_ControlSettings()
+idMenuScreen_Shell_Adv_Controls::idMenuDataSource_Adv_ControlSettings::idMenuDataSource_Adv_ControlSettings()
 {
-	fields.SetNum( MAX_CONTROL_FIELDS );
-	originalFields.SetNum( MAX_CONTROL_FIELDS );
+	fields.SetNum(MAX_ADV_CONTROL_FIELDS);
+	originalFields.SetNum(MAX_ADV_CONTROL_FIELDS);
 }
 
 /*
 ========================
-idMenuScreen_Shell_Controls::idMenuDataSource_AudioSettings::LoadData
+idMenuScreen_Shell_Adv_Controls::idMenuDataSource_Adv_ControlSettings::LoadData
 ========================
 */
-void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::LoadData()
+void idMenuScreen_Shell_Adv_Controls::idMenuDataSource_Adv_ControlSettings::LoadData()
 {
-	fields[ CONTROLS_FIELD_INVERT_MOUSE ].SetBool( in_mouseInvertLook.GetBool() );
-	float mouseSpeed = ( ( in_mouseSpeed.GetFloat() - 0.25f ) / ( 4.0f - 0.25 ) ) * 100.0f;
-	fields[ CONTROLS_FIELD_MOUSE_SENS ].SetFloat( mouseSpeed );
-	fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].SetInteger(in_joylayout.GetInteger());
+	
+	fields[ADV_CONTROLS_FIELD_CROSSHAIR].SetBool(game->GetCVarBool("pm_cursor"));
+	fields[ADV_CONTROLS_FIELD_CPOS].SetBool(game->GetCVarBool("pm_classicPose"));
+	fields[ADV_CONTROLS_CMD_TOGGLE_RUN].SetBool(in_toggleRun.GetBool());
+	fields[ADV_CONTROLS_CMD_TOGGLE_CROUCH].SetBool(in_toggleCrouch.GetBool());
+	fields[ADV_CONTROLS_CMD_TOGGLE_ZOOM].SetBool(in_toggleZoom.GetBool());
 	
 	originalFields = fields;
 }
 
 /*
 ========================
-idMenuScreen_Shell_Controls::idMenuDataSource_AudioSettings::CommitData
+idMenuScreen_Shell_Adv_Controls::idMenuDataSource_Adv_ControlSettings::CommitData
 ========================
 */
-void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::CommitData()
+void idMenuScreen_Shell_Adv_Controls::idMenuDataSource_Adv_ControlSettings::CommitData()
 {
 
-	in_mouseInvertLook.SetBool( fields[ CONTROLS_FIELD_INVERT_MOUSE ].ToBool() );
-	float mouseSpeed = 0.25f + ( ( 4.0f - 0.25 ) * ( fields[ CONTROLS_FIELD_MOUSE_SENS ].ToFloat() / 100.0f ) );
-	in_mouseSpeed.SetFloat( mouseSpeed );
-	in_joylayout.SetInteger( fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToInteger());
+	game->SetCVarBool("pm_cursor", fields[ADV_CONTROLS_CMD_CROSSHAIR].ToBool());
+	game->SetCVarBool("pm_classicPose", fields[ADV_CONTROLS_CMD_CPOS].ToBool());
+	in_toggleRun.SetBool(fields[ADV_CONTROLS_CMD_TOGGLE_RUN].ToBool());
+	in_toggleCrouch.SetBool(fields[ADV_CONTROLS_CMD_TOGGLE_CROUCH].ToBool());
+	in_toggleZoom.SetBool(fields[ADV_CONTROLS_CMD_TOGGLE_ZOOM].ToBool());
 	
 	cvarSystem->SetModifiedFlags( CVAR_ARCHIVE );
 	
@@ -457,94 +405,51 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::CommitData()
 
 /*
 ========================
-idMenuScreen_Shell_Controls::idMenuDataSource_AudioSettings::AdjustField
+idMenuScreen_Shell_Adv_Controls::idMenuDataSource_Adv_ControlSettings::AdjustField
 ========================
 */
-void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::AdjustField( const int fieldIndex, const int adjustAmount )
+void idMenuScreen_Shell_Adv_Controls::idMenuDataSource_Adv_ControlSettings::AdjustField( const int fieldIndex, const int adjustAmount )
 {
-	if( fieldIndex == CONTROLS_FIELD_INVERT_MOUSE)
-	{
-		fields[ fieldIndex ].SetBool( !fields[ fieldIndex ].ToBool() );
-	}
-	else if( fieldIndex == CONTROLS_FIELD_MOUSE_SENS )
+	fields[fieldIndex].SetBool(!fields[fieldIndex].ToBool());
+	/*
 	{
 		float newValue = idMath::ClampFloat( 0.0f, 100.0f, fields[ fieldIndex ].ToFloat() + adjustAmount );
 		fields[ fieldIndex ].SetFloat( newValue );
-	}
-	else if (fieldIndex == CONTROLS_FIELD_CONTROLLER_LAYOUT) {
-		fields[fieldIndex].SetInteger(fields[fieldIndex].ToInteger() + adjustAmount);
-		if (!idLib::newd3 ) {
-			if (fields[fieldIndex].ToInteger() > 1) {
-				fields[fieldIndex].SetInteger(0);
-			}
-			if (fields[fieldIndex].ToInteger() < 0) {
-				fields[fieldIndex].SetInteger(1);
-			}
-		}
-		if (idLib::newd3) {
-			if (fields[fieldIndex].ToInteger() > 4) {
-				fields[fieldIndex].SetInteger(0);
-			}
-			if (fields[fieldIndex].ToInteger() < 0) {
-				fields[fieldIndex].SetInteger(4);
-			}
-		}
-	}
+	}*/
 }
 
 /*
 ========================
-idMenuScreen_Shell_Controls::idMenuDataSource_AudioSettings::IsDataChanged
+idMenuScreen_Shell_Adv_Controls::idMenuDataSource_Adv_ControlSettings::IsDataChanged
 ========================
 */
-bool idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::IsDataChanged() const
+bool idMenuScreen_Shell_Adv_Controls::idMenuDataSource_Adv_ControlSettings::IsDataChanged() const
 {
 
-	if( fields[ CONTROLS_FIELD_INVERT_MOUSE ].ToBool() != originalFields[ CONTROLS_FIELD_INVERT_MOUSE ].ToBool() )
+	if( fields[ADV_CONTROLS_CMD_CROSSHAIR].ToBool() != originalFields[ADV_CONTROLS_CMD_CROSSHAIR].ToBool() )
 	{
 		return true;
 	}
 	
-	if( fields[ CONTROLS_FIELD_MOUSE_SENS ].ToFloat() != originalFields[ CONTROLS_FIELD_MOUSE_SENS ].ToFloat() )
-	{
-		return true;
-	}
-
-	if (fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToFloat() != originalFields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToFloat())
+	if( fields[ADV_CONTROLS_CMD_CPOS].ToBool() != originalFields[ADV_CONTROLS_CMD_CPOS].ToBool() )
 	{
 		return true;
 	}
 	
-	return false;
-}
-
-idSWFScriptVar idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::GetField(const int fieldIndex) const
-{
-	if (fieldIndex == CONTROLS_FIELD_CONTROLLER_LAYOUT) {
-		switch (fields[ fieldIndex ].ToInteger() + 1) {
-		case 1:
-			return "#str_swf_x360";
-		case 2:
-			return "#stf_swf_ps3";
-		case 3:
-			return "#str_swf_xbone";
-		case 4:
-			return "#str_swf_ps4";
-		case 5:
-			return "#str_swf_switch";
-		}
-	}
-	return fields[fieldIndex];
-}
-
-bool idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::IsRestartRequired() const
-{
-	if (fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToFloat() != originalFields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToFloat()) {
-		idLib::layoutchange = true;
+	if( fields[ADV_CONTROLS_CMD_TOGGLE_RUN].ToBool() != originalFields[ADV_CONTROLS_CMD_TOGGLE_RUN].ToBool() )
+	{
 		return true;
 	}
-	else {
-		idLib::layoutchange = false;
+	
+	if( fields[ADV_CONTROLS_CMD_TOGGLE_CROUCH].ToFloat() != originalFields[ADV_CONTROLS_CMD_TOGGLE_CROUCH].ToFloat() )
+	{
+		return true;
 	}
+	
+	if( fields[ADV_CONTROLS_CMD_TOGGLE_ZOOM].ToFloat() != originalFields[ADV_CONTROLS_CMD_TOGGLE_ZOOM].ToFloat() )
+	{
+		return true;
+	}
+	
 	return false;
 }

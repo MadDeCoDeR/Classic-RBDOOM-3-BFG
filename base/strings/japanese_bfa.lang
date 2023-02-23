@@ -50,6 +50,12 @@
 	"#str_swf_openAL"	"OpenAL-soft"
 	"#str_04102"		"常に実行"
 	"#str_swf_only_MP"	"MPのみ"
+	"#str_swf_adv_controls" "高度なコントロール設定"
+	"#str_swf_adv_controls_desc" "追加のコントロール設定を調整する"
+	"#str_swf_adv_controls_heading" "高度なコントロール"
+	"#str_swf_toggle_run" "トグル実行"
+	"#str_swf_toggle_crouch" "しゃがむトグル"
+	"#str_swf_toggle_zoom" "ズームの切り替え"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "最初にロードするマップ"
 }

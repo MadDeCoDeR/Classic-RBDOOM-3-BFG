@@ -50,6 +50,12 @@
 	"#str_swf_openAL"	"OpenAL-soft"
 	"#str_04102"		"Corri sempre"
 	"#str_swf_only_MP"	"Solo MP"
+	"#str_swf_adv_controls" "Impostazioni di controllo avanzate"
+	"#str_swf_adv_controls_desc" "Regola impostazioni di controllo aggiuntive"
+	"#str_swf_adv_controls_heading" "Controlli avanzati"
+	"#str_swf_toggle_run" "Alterna esecuzione"
+	"#str_swf_toggle_crouch" "Alterna accovacciati"
+	"#str_swf_toggle_zoom" "Attiva/disattiva zoom"
 // 	"#str_swf_custom_game" "Nome mod"
 // 	"#str_swf_start_map" "Prima mappa da caricare"
 }

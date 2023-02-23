@@ -1172,8 +1172,6 @@ public:
 		enum controlSettingFields_t
 		{
 			CONTROLS_FIELD_INVERT_MOUSE,
-			CONTROLS_FIELD_CROSSHAIR,
-			CONTROLS_FIELD_CPOSE,
 			CONTROLS_FIELD_MOUSE_SENS,
 			CONTROLS_FIELD_CONTROLLER_LAYOUT,
 			MAX_CONTROL_FIELDS
@@ -1351,6 +1349,72 @@ private:
 	idMenuDataSource_LayoutSettings		layoutData;
 	idMenuWidget_DynamicList* 			options;
 	idMenuWidget_Button*					btnBack;
+};
+
+//*
+//================================================
+//idMenuScreen_Shell_Adv_Controls
+//================================================
+//*/
+class idMenuScreen_Shell_Adv_Controls : public idMenuScreen
+{
+public:
+
+	/*
+	================================================
+	idMenuDataSource_Adv_ControlSettings
+	================================================
+	*/
+	class idMenuDataSource_Adv_ControlSettings : public idMenuDataSource
+	{
+	public:
+		enum advControlSettingFields_t
+		{
+			ADV_CONTROLS_FIELD_CROSSHAIR,
+			ADV_CONTROLS_FIELD_CPOS,
+			ADV_CONTROLS_FIELD_TOGGLE_RUN,
+			ADV_CONTROLS_FIELD_TOGGLE_CROUCH,
+			ADV_CONTROLS_FIELD_TOGGLE_ZOOM,
+			MAX_ADV_CONTROL_FIELDS
+		};
+
+		idMenuDataSource_Adv_ControlSettings();
+
+		// loads data
+		virtual void				LoadData();
+
+		// submits data
+		virtual void				CommitData();
+
+		// says whether something changed with the data
+		virtual bool				IsDataChanged() const;
+
+		// retrieves a particular field for reading or updating
+		virtual idSWFScriptVar		GetField(const int fieldIndex) const {
+			return fields[fieldIndex];
+		}
+
+		virtual void				AdjustField(const int fieldIndex, const int adjustAmount);
+
+	private:
+		idStaticList< idSWFScriptVar, MAX_ADV_CONTROL_FIELDS >	fields;
+		idStaticList< idSWFScriptVar, MAX_ADV_CONTROL_FIELDS >	originalFields;
+	};
+
+	idMenuScreen_Shell_Adv_Controls() :
+		options(NULL),
+		btnBack(NULL)
+	{
+	}
+	virtual void				Initialize(idMenuHandler* data);
+	virtual void				Update();
+	virtual void				ShowScreen(const mainMenuTransition_t transitionType);
+	virtual void				HideScreen(const mainMenuTransition_t transitionType);
+	virtual bool				HandleAction(idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled = false);
+private:
+	idMenuWidget_DynamicList* options;
+	idMenuDataSource_Adv_ControlSettings	controlData;
+	idMenuWidget_Button* btnBack;
 };
 
 //*

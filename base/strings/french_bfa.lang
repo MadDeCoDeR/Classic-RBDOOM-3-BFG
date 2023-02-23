@@ -50,6 +50,12 @@
 	"#str_swf_openAL"	"OpenAL-soft"
 	"#str_04102"		"Toujours exécuter"
 	"#str_swf_only_MP"	"Seul MP"
+	"#str_swf_adv_controls" "Paramètres de contrôle avancés"
+	"#str_swf_adv_controls_desc" "Ajuster les paramètres de contrôle supplémentaires"
+	"#str_swf_adv_controls_heading" "Contrôles avancés"
+	"#str_swf_toggle_run" "Basculer l'exécution"
+	"#str_swf_toggle_crouch" "Désactiver l'accroupissement"
+	"#str_swf_toggle_zoom" "Basculer le zoom"
 // 	"#str_swf_custom_game" "Nom du mod"
 // 	"#str_swf_start_map" "Première carte à charger"
 }

@@ -488,6 +488,7 @@ void idMenuHandler_ShellLocal::Initialize( const char* swfFile, idSoundWorld* sw
 		BIND_SHELL_SCREEN( SHELL_AREA_CONTROLLER_LAYOUT, idMenuScreen_Shell_ControllerLayout, this );
 		
 		BIND_SHELL_SCREEN( SHELL_AREA_GAMEPAD, idMenuScreen_Shell_Gamepad, this );
+		BIND_SHELL_SCREEN(SHELL_AREA_ADV_CONTROLS, idMenuScreen_Shell_Adv_Controls, this);
 		BIND_SHELL_SCREEN( SHELL_AREA_CREDITS, idMenuScreen_Shell_Credits, this );
 		
 	}
@@ -514,6 +515,7 @@ void idMenuHandler_ShellLocal::Initialize( const char* swfFile, idSoundWorld* sw
 		BIND_SHELL_SCREEN( SHELL_AREA_DEV, idMenuScreen_Shell_Dev, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_LEADERBOARDS, idMenuScreen_Shell_Leaderboards, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_GAMEPAD, idMenuScreen_Shell_Gamepad, this );
+		BIND_SHELL_SCREEN(SHELL_AREA_ADV_CONTROLS, idMenuScreen_Shell_Adv_Controls, this);
 		BIND_SHELL_SCREEN( SHELL_AREA_MATCH_SETTINGS, idMenuScreen_Shell_MatchSettings, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_MODE_SELECT, idMenuScreen_Shell_ModeSelect, this );
 		BIND_SHELL_SCREEN( SHELL_AREA_BROWSER, idMenuScreen_Shell_GameBrowser, this );
@@ -1047,7 +1049,7 @@ bool idMenuHandler_ShellLocal::HandleAction( idWidgetAction& action, const idWid
 				session->Cancel();
 			}
 			
-			if( cmd != SHELL_CMD_QUIT && ( nextScreen == SHELL_AREA_STEREOSCOPICS || nextScreen == SHELL_AREA_SYSTEM_OPTIONS || nextScreen == SHELL_AREA_GAME_OPTIONS ||
+			if( cmd != SHELL_CMD_QUIT && ( nextScreen == SHELL_AREA_STEREOSCOPICS || nextScreen == SHELL_AREA_SYSTEM_OPTIONS || nextScreen == SHELL_AREA_GAME_OPTIONS || nextScreen == SHELL_AREA_ADV_CONTROLS || 
 										   nextScreen == SHELL_AREA_GAMEPAD || nextScreen == SHELL_AREA_MATCH_SETTINGS || nextScreen == SHELL_AREA_ADVANCED || nextScreen == SHELL_AREA_ADV_GRAPHICS) )
 			{
 			
@@ -1285,7 +1287,7 @@ void idMenuHandler_ShellLocal::UpdateBGState()
 		if( nextScreen != SHELL_AREA_PLAYSTATION && nextScreen != SHELL_AREA_SETTINGS && nextScreen != SHELL_AREA_CAMPAIGN && nextScreen != SHELL_AREA_DEV )
 		{
 			if( nextScreen != SHELL_AREA_RESOLUTION && nextScreen != SHELL_AREA_GAMEPAD && nextScreen != SHELL_AREA_DIFFICULTY && nextScreen != SHELL_AREA_SYSTEM_OPTIONS && nextScreen != SHELL_AREA_GAME_OPTIONS && nextScreen != SHELL_AREA_NEW_GAME && nextScreen != SHELL_AREA_STEREOSCOPICS &&
-					nextScreen != SHELL_AREA_CONTROLS && nextScreen != SHELL_AREA_ADVANCED && nextScreen != SHELL_AREA_ADV_GRAPHICS)
+					nextScreen != SHELL_AREA_CONTROLS && nextScreen != SHELL_AREA_ADVANCED && nextScreen != SHELL_AREA_ADV_GRAPHICS && nextScreen != SHELL_AREA_ADV_CONTROLS)
 			{
 				ShowSmallFrame( false );
 			}
