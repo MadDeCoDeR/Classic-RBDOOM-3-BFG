@@ -428,6 +428,7 @@ idCinematicLocal::idCinematicLocal()
 	frame = av_frame_alloc();
 	frame2 = av_frame_alloc();
 	frame3 = av_frame_alloc();
+	swr_ctx = NULL;
 #else
 	frame = avcodec_alloc_frame();
 	frame2 = avcodec_alloc_frame();
