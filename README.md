@@ -79,7 +79,6 @@ Additional Requirements:
 
 - For Windows XP (No longer supported): DirectX 2010 support
 - For Windows 7, 8, 8.1: XAudio 2.9. See [7.A](#a-installing-additional-requirements)
-- For Linux: FFMPEG(libav) & GLEW
 
 
 ## 2) GENERAL NOTES
@@ -131,7 +130,7 @@ ADDITIONAL TERMS:  The Doom 3 BFG Edition GPL Source Code is also subject to cer
 
 This project's GitHub.net Git repository can be checked out through Git with the following instruction set: 
 
-	> git clone --resursive https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG.git
+	> git clone --recursive https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG.git
 
 If you don't want to use git, you can download the source as a zip file at
 	https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/archive/master.zip
@@ -213,21 +212,21 @@ A) Preperation
  
 	On Debian or Ubuntu:
 
-		> apt-get install cmake libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
+		> apt-get install cmake libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev nasm
 	
 	On Fedora
 
 		// ffmpeg-devel is found in the rpm-fusion repo. Can be enabled from Gnome Software if not already enabled
 		
-		> dnf install cmake ffmpeg-devel gcc-c++
+		> dnf install cmake gcc-c++
 	
 	On ArchLinux 
 	
-		> sudo pacman -S ffmpeg cmake
+		> sudo pacman -S cmake
 	
 	On openSUSE (tested in 13.1)
 	
-		> zypper in cmake libffmpeg1-devel
+		> zypper in cmake
 	
 		NOTE: SDL 1 is not so well supported and it's missing various features and optimizations
 		For SDL 2 replace "libSDL-devel" with "libSDL2-devel".
@@ -297,6 +296,7 @@ A) Installing Additional Requirements
 B) Installing the Game
 ----------------------
 Windows:
+
 	- Download and install the appropriate client (Steam, GOG Galaxy, Epic Game Store, Xbox App)
 	- Login with your credentials
 	- Install either DOOM 3 BFG Edition or DOOM 3 Bethesda.net Edition (2019)
