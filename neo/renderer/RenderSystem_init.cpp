@@ -409,6 +409,9 @@ void R_SetNewMode( const bool fullInit )
 			continue;		// don't even try for a stereo mode
 		}
 
+		// get the mode list for this monitor
+		idList<vidMode_t> modeList;
+
 		glimpParms_t	parms;
 
 		if (r_fullscreen.GetInteger() <= 0)
@@ -417,16 +420,14 @@ void R_SetNewMode( const bool fullInit )
 			// use explicit position / size for window
 			parms.x = r_windowX.GetInteger() >= 0 ? r_windowX.GetInteger() : 0;
 			parms.y = r_windowY.GetInteger() >= 0 ? r_windowY.GetInteger() : 0;
-			parms.width = R_CalculateResolution(false, NULL);
-			parms.height = R_CalculateResolution(true, NULL);
+			parms.width = R_CalculateResolution(false, modeList);
+			parms.height = R_CalculateResolution(true, modeList);
 			// may still be -1 to force a borderless window
 			parms.fullScreen = r_fullscreen.GetInteger();
 			parms.displayHz = 0;		// ignored
 		}
 		else
 		{
-			// get the mode list for this monitor
-			idList<vidMode_t> modeList;
 
 			if( !R_GetModeListForDisplay( r_fullscreen.GetInteger() - 1, modeList ) )
 			{
