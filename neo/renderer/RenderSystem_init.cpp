@@ -304,37 +304,67 @@ const char* skyDirection[6] = { "_forward", "_back", "_left", "_right", "_up", "
 int R_CalculateResolution(bool mode, idList<vidMode_t> modeList) {
 	int customRes;
 	idList<int> modeRes;
-	if (!mode) {
-		customRes = r_customWidth.GetInteger();
-		modeRes.Clear();
-		for (int i = 0; i < modeList.Num(); i++) {
-			modeRes.Append(modeList[i].width);
+	if (r_fullscreen.GetInteger() == 0) {
+		if (!mode) {
+			if (r_windowWidth.GetInteger() == 0) {
+				r_windowWidth.SetInteger(640);
+				return 640;
+			}
+			else {
+				return r_windowWidth.GetInteger();
+			}
+		}
+		else {
+			if (r_windowHeight.GetInteger() == 0) {
+				r_windowHeight.SetInteger(480);
+				return 480;
+			}
+			else {
+				return r_windowHeight.GetInteger();
+			}
+		}
+	}
+	else if (r_fullscreen.GetInteger() < 0) {
+		if (!mode) {
+			return r_customWidth.GetInteger() + 1;
+		}
+		else {
+			return r_customHeight.GetInteger() + 1;
 		}
 	}
 	else {
-		customRes = r_customHeight.GetInteger();
-		modeRes.Clear();
-		for (int i = 0; i < modeList.Num(); i++) {
-			modeRes.Append(modeList[i].height);
+		if (!mode) {
+			customRes = r_customWidth.GetInteger();
+			modeRes.Clear();
+			for (int i = 0; i < modeList.Num(); i++) {
+				modeRes.Append(modeList[i].width);
+			}
 		}
-	}
+		else {
+			customRes = r_customHeight.GetInteger();
+			modeRes.Clear();
+			for (int i = 0; i < modeList.Num(); i++) {
+				modeRes.Append(modeList[i].height);
+			}
+		}
 
-	int minscore = INT_MAX;
-	int index = -1;
-	for (int i = 0; i < modeRes.Num(); i++) {
-		if (abs(customRes - modeRes[i]) < minscore) {
-			minscore = abs(customRes - modeRes[i]);
-			index = i;
+		int minscore = INT_MAX;
+		int index = -1;
+		for (int i = 0; i < modeRes.Num(); i++) {
+			if (abs(customRes - modeRes[i]) < minscore) {
+				minscore = abs(customRes - modeRes[i]);
+				index = i;
+			}
 		}
+		r_vidMode.SetInteger(index);
+		if (mode) {
+			r_customHeight.SetInteger(modeRes[index]);
+		}
+		else {
+			r_customWidth.SetInteger(modeRes[index]);
+		}
+		return modeRes[index];
 	}
-	r_vidMode.SetInteger(index);
-	if (mode) {
-		r_customHeight.SetInteger(modeRes[index]);
-	}
-	else {
-		r_customWidth.SetInteger(modeRes[index]);
-	}
-	return modeRes[index];
 }
 
 
@@ -387,8 +417,8 @@ void R_SetNewMode( const bool fullInit )
 			// use explicit position / size for window
 			parms.x = r_windowX.GetInteger() >= 0 ? r_windowX.GetInteger() : 0;
 			parms.y = r_windowY.GetInteger() >= 0 ? r_windowY.GetInteger() : 0;
-			parms.width = r_fullscreen.GetInteger() == 0 ? r_windowWidth.GetInteger() : r_customWidth.GetInteger() + 1;
-			parms.height = r_fullscreen.GetInteger() == 0 ? r_windowHeight.GetInteger() : r_customHeight.GetInteger() + 1;
+			parms.width = R_CalculateResolution(false, NULL);
+			parms.height = R_CalculateResolution(true, NULL);
 			// may still be -1 to force a borderless window
 			parms.fullScreen = r_fullscreen.GetInteger();
 			parms.displayHz = 0;		// ignored
