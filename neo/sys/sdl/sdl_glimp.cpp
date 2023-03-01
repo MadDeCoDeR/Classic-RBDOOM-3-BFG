@@ -61,6 +61,8 @@ idCVar r_useOpenGL32( "r_useOpenGL32", "1", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = O
 #endif
 // RB end
 
+extern idCVar r_fullscreen;
+
 static bool grabbed = false;
 
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -239,6 +241,12 @@ bool GLimp_Init( glimpParms_t parms )
 		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, parms.multiSamples );
 		
 #if SDL_VERSION_ATLEAST(2, 0, 0)
+
+		//GK: Sanity Check Time
+		if (parms.fullscreen > SDL_GetNumVideoDisplays()) {
+			parms.fullscreen = 1;
+			r_fullscreen.SetInteger(1);
+		}
 		
 		// RB begin
 		if( r_useOpenGL32.GetInteger() > 0 )
