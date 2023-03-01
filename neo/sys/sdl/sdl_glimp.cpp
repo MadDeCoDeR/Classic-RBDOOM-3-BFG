@@ -241,12 +241,6 @@ bool GLimp_Init( glimpParms_t parms )
 		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, parms.multiSamples );
 		
 #if SDL_VERSION_ATLEAST(2, 0, 0)
-
-		//GK: Sanity Check Time
-		if (parms.fullScreen > SDL_GetNumVideoDisplays()) {
-			parms.fullScreen = 1;
-			r_fullscreen.SetInteger(1);
-		}
 		
 		// RB begin
 		if( r_useOpenGL32.GetInteger() > 0 )
@@ -747,41 +741,35 @@ bool R_GetModeListForDisplay( const unsigned requestedDisplayNum, idList<vidMode
 	modeList.Clear();
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 	// DG: SDL2 implementation
-	int displayNum = 0;
-	for (int j = 0; j < SDL_GetNumVideoDisplays(); j++) {
-		modeList.Clear();
-		if (j > requestedDisplayNum)
+	if (requestedDisplayNum >= SDL_GetNumVideoDisplays())
+	{
+		// requested invalid displaynum
+		return false;
+	}
+	int numModes = SDL_GetNumDisplayModes(requestedDisplayNum);
+	if (numModes > 0)
+	{
+		for (int i = 0; i < numModes; i++)
 		{
-			break;
-		}
-
-		int numModes = SDL_GetNumDisplayModes(j);
-		if (numModes > 0)
-		{
-			for (int i = 0; i < numModes; i++)
+			SDL_DisplayMode m;
+			int ret = SDL_GetDisplayMode(requestedDisplayNum, i, &m);
+			if (ret != 0)
 			{
-				SDL_DisplayMode m;
-				int ret = SDL_GetDisplayMode(j, i, &m);
-				if (ret != 0)
-				{
-					common->Warning("Can't get video mode no %i, because of %s\n", i, SDL_GetError());
-					continue;
-				}
-				if (m.h < 720) {
-					continue;
-				}
-
-				vidMode_t mode;
-				mode.width = m.w;
-				mode.height = m.h;
-				mode.displayHz = m.refresh_rate ? m.refresh_rate : 60; // default to 60 if unknown (0)
-				modeList.AddUnique(mode);
+				common->Warning("Can't get video mode no %i, because of %s\n", i, SDL_GetError());
+				continue;
+			}
+			if (m.h < 720) {
+				continue;
 			}
 
-			// sort with lowest resolution first
-			modeList.SortWithTemplate(idSort_VidMode());
+			vidMode_t mode;
+			mode.width = m.w;
+			mode.height = m.h;
+			mode.displayHz = m.refresh_rate ? m.refresh_rate : 60; // default to 60 if unknown (0)
+			modeList.AddUnique(mode);
 		}
 	}
+		
 	return modeList.Num() > 0;
 	// DG end
 	
