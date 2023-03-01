@@ -243,8 +243,8 @@ bool GLimp_Init( glimpParms_t parms )
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 
 		//GK: Sanity Check Time
-		if (parms.fullscreen > SDL_GetNumVideoDisplays()) {
-			parms.fullscreen = 1;
+		if (parms.fullScreen > SDL_GetNumVideoDisplays()) {
+			parms.fullScreen = 1;
 			r_fullscreen.SetInteger(1);
 		}
 		
