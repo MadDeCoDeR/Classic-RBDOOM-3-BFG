@@ -123,7 +123,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	control->SetOptionType(OPTION_SLIDER_TEXT);
 	control->SetLabel("#str_smart_hud"); //Smart HUD: Hide ammo count if it's visible on the weapon's gui
 	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SMHUD);
-	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->SetupEvents(2, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SMHUD);
 	options->AddChild(control);
 
@@ -132,7 +132,7 @@ void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 	control->SetOptionType(OPTION_SLIDER_TEXT);
 	control->SetLabel("#str_sapi"); //Audio API (Windows ONLY)
 	control->SetDataSource(&advData, idMenuDataSource_AdvancedSettings::ADV_FIELD_SAPI);
-	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->SetupEvents(2, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedSettings::ADV_FIELD_SAPI);
 	options->AddChild(control);
 #endif
@@ -309,15 +309,17 @@ bool idMenuScreen_Shell_AdvancedOptions::HandleAction( idWidgetAction& action, c
 			}
 			
 			int selectionIndex = options->GetFocusIndex();
-			if( parms.Num() > 0 )
-			{
-				selectionIndex = parms[0].ToInteger();
-			}
-			
-			if( options && selectionIndex != options->GetFocusIndex() )
-			{
-				options->SetViewIndex( options->GetViewOffset() + selectionIndex );
-				options->SetFocusIndex( selectionIndex );
+			if (selectionIndex <= 3) {
+				if (parms.Num() > 0)
+				{
+					selectionIndex = parms[0].ToInteger();
+				}
+
+				if (options && selectionIndex != options->GetFocusIndex())
+				{
+					options->SetViewIndex(options->GetViewOffset() + selectionIndex);
+					options->SetFocusIndex(selectionIndex);
+				}
 			}
 			advData.AdjustField( parms[0].ToInteger(), 1 );
 			options->Update();
