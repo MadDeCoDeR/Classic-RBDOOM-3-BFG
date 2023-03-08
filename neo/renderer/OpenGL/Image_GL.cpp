@@ -372,7 +372,7 @@ void idImage::SubImageUpload( int mipLevel, int x, int y, int z, int width, int 
 		}
 
 #if defined(DEBUG) || defined(__ANDROID__)
-		GL_CheckErrors();
+		//GL_CheckErrors();
 #endif
 		if (IsCompressed())
 		{
@@ -412,7 +412,7 @@ void idImage::SubImageUpload( int mipLevel, int x, int y, int z, int width, int 
 		}
 	
 	#if defined(DEBUG) || defined(__ANDROID__)
-		GL_CheckErrors();
+		//GL_CheckErrors();
 	#endif
 		if( IsCompressed() )
 		{
@@ -450,7 +450,7 @@ void idImage::SubImageUpload( int mipLevel, int x, int y, int z, int width, int 
 	}
 	
 #if defined(DEBUG) || defined(__ANDROID__)
-	GL_CheckErrors();
+	//GL_CheckErrors();
 #endif
 	if (opts.format == FMT_RGB565)
 	{
@@ -833,7 +833,7 @@ This should not be done during normal game-play, if you can avoid it.
 */
 void idImage::AllocImage()
 {
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	PurgeImage();
 	
 	int sRGB = r_useSRGB.GetInteger();
@@ -1018,7 +1018,7 @@ void idImage::AllocImage()
 				{
 
 					// clear out any previous error
-					GL_CheckErrors();
+					//GL_CheckErrors();
 
 					if (IsCompressed())
 					{
@@ -1084,11 +1084,9 @@ void idImage::AllocImage()
 	}
 	
 	// see if we messed anything up
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	
 	SetTexParameters();
-	
-	GL_CheckErrors();
 }
 
 /*

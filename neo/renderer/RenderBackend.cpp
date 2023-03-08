@@ -4659,7 +4659,7 @@ void idRenderBackend::DrawScreenSpaceAmbientOcclusion( const viewDef_t* _viewDef
 	RENDERLOG_PRINTF( "---------- RB_SSAO() ----------\n" );
 	
 #if 0
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	
 	// clear the alpha buffer and draw only the hands + weapon into it so
 	// we can avoid blurring them
@@ -4749,7 +4749,7 @@ void idRenderBackend::DrawScreenSpaceAmbientOcclusion( const viewDef_t* _viewDef
 		glClearColor( 0, 0, 0, 1 );
 		
 		GL_SelectTexture( 0 );
-		//globalImages->currentDepthImage->Bind();
+		globalImages->currentDepthImage->Bind();
 		
 		for( int i = 0; i < MAX_HIERARCHICAL_ZBUFFERS; i++ )
 		{
@@ -5620,7 +5620,7 @@ void idRenderBackend::MotionBlur()
 		return;
 	}
 	
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	
 	
 	// clear the alpha buffer and draw only the hands + weapon into it so
@@ -5713,7 +5713,7 @@ void idRenderBackend::MotionBlur()
 	globalImages->currentDepthImage->Bind();
 	
 	DrawElementsWithCounters( &unitSquareSurface );
-	GL_CheckErrors();
+	//GL_CheckErrors();
 }
 
 /*

@@ -55,7 +55,7 @@ glconfig_t	glConfig;
 
 idCVar r_requestStereoPixelFormat( "r_requestStereoPixelFormat", "1", CVAR_RENDERER, "Ask for a stereo GL pixel format on startup" );
 #ifdef _DEBUG
-idCVar r_debugContext("r_debugContext", "5", CVAR_RENDERER, "Enable various levels of context debug.");
+idCVar r_debugContext("r_debugContext", "3", CVAR_RENDERER, "Enable various levels of context debug.");
 #else
 idCVar r_debugContext( "r_debugContext", "0", CVAR_RENDERER, "Enable various levels of context debug." );
 #endif
@@ -1835,7 +1835,7 @@ void GfxInfo_f( const idCmdArgs& args )
 		common->Printf( "WGL_EXTENSIONS: %s\n", glConfig.wgl_extensions_string );
 	}
 	common->Printf( "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
-	common->Printf( "GL_MAX_TEXTURE_COORDS_ARB: %d\n", glConfig.maxTextureCoords );
+	//common->Printf( "GL_MAX_TEXTURE_COORDS_ARB: %d\n", glConfig.maxTextureCoords );
 	common->Printf( "GL_MAX_TEXTURE_IMAGE_UNITS_ARB: %d\n", glConfig.maxTextureImageUnits );
 	
 	// print all the display adapters, monitors, and video modes

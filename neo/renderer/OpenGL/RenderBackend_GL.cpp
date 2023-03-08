@@ -136,15 +136,77 @@ static void CALLBACK DebugCallback( unsigned int source, unsigned int type,
 									unsigned int id, unsigned int severity, int length, const char* message, const void* userParam )
 {
 	// it probably isn't safe to do an idLib::Printf at this point
+	idStr sourceStr = "";
+	switch (source) {
+	case GL_DEBUG_SOURCE_API:
+		sourceStr = "OpenGL C/C++ API call";
+		break;
+	case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+		sourceStr = "Window-system API call";
+		break;
+	case GL_DEBUG_SOURCE_SHADER_COMPILER:
+		sourceStr = "Shader compilation";
+		break;
+	case GL_DEBUG_SOURCE_THIRD_PARTY:
+		sourceStr = "Associate OpenGL Application";
+		break;
+	case GL_DEBUG_SOURCE_APPLICATION:
+		sourceStr = "User Error";
+		break;
+	default:
+		sourceStr = "Unknown";
+		break;
+	}
+
+	idStr typeStr = "";
+	switch (type) {
+	case GL_DEBUG_TYPE_ERROR:
+		typeStr = "OpenGL Error";
+		break;
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+		typeStr = "Deprecated call(s) in use";
+		break;
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+		typeStr = "Undefined Behavior";
+		break;
+	case GL_DEBUG_TYPE_PORTABILITY:
+		typeStr = "Non portable functionallity reliance";
+		break;
+	case GL_DEBUG_TYPE_PERFORMANCE:
+		typeStr = "Possible Performance issue";
+		break;
+	case GL_DEBUG_TYPE_MARKER:
+		typeStr = "Marker";
+		break;
+	case GL_DEBUG_TYPE_PUSH_GROUP:
+		typeStr = "Group Pushing";
+		break;
+	case GL_DEBUG_TYPE_POP_GROUP:
+		typeStr = "Group Poping";
+		break;
+	default:
+		typeStr = "Unknown";
+		break;
+	}
+
+	idStr severityStr = "";
+	switch (severity) {
+	case GL_DEBUG_SEVERITY_HIGH:
+		severityStr = "High";
+		break;
+	case GL_DEBUG_SEVERITY_MEDIUM:
+		severityStr = "Medium";
+		break;
+	case GL_DEBUG_SEVERITY_LOW:
+		severityStr = "Low";
+		break;
+	default:
+		severityStr = "Notification";
+		break;
+	}
 	
 	// RB: printf should be thread safe on Linux
-#if defined(_WIN32)
-	idLib::Printf("%s\n", message);
-	//OutputDebugString( message );
-	//OutputDebugString( "\n" );
-#else
-	printf( "%s\n", message );
-#endif
+	idLib::Printf("caught OpenGL Error:\n\tSource:%s\n\tType: %s\n\tSeverity: %s\n\tMessage: %s\n", sourceStr.c_str(), typeStr.c_str(), severityStr.c_str(), message);
 	// RB end
 }
 
@@ -349,11 +411,14 @@ static void R_CheckPortableExtensions()
 	R_PrintExtensionStatus(glConfig.framebufferBlitAvailable, "GL_EXT_framebuffer_blit");
 	
 	// GL_ARB_debug_output
-	glConfig.debugOutputAvailable = GLEW_ARB_debug_output != 0;
+	glConfig.debugOutputAvailable = GLEW_ARB_debug_output != 0 && glConfig.glVersion >= 4.3;
 	if( glConfig.debugOutputAvailable )
 	{
 		if( r_debugContext.GetInteger() >= 1 )
 		{
+			if (r_debugContext.GetInteger() < 2) {
+				glEnable(GL_DEBUG_OUTPUT);
+			}
 			glDebugMessageCallbackARB( ( GLDEBUGPROCARB ) DebugCallback, NULL );
 		}
 		if( r_debugContext.GetInteger() >= 2 )
@@ -366,7 +431,7 @@ static void R_CheckPortableExtensions()
 			// enable all the low priority messages
 			glDebugMessageControlARB( GL_DONT_CARE,
 									  GL_DONT_CARE,
-									  GL_DEBUG_SEVERITY_LOW_ARB,
+									  GL_DONT_CARE,
 									  0, NULL, true );
 		}
 	}
@@ -476,7 +541,7 @@ void idRenderBackend::Init()
 	glConfig.version_string = ( const char* )glGetString( GL_VERSION );
 	glConfig.shading_language_string = ( const char* )glGetString( GL_SHADING_LANGUAGE_VERSION );
 	//glConfig.extensions_string = ( const char* )glGetString( GL_EXTENSIONS );
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	
 	float glVersion = atof( idStr(glConfig.version_string).SubStr(0, 3) );
 	float glslVersion = atof( glConfig.shading_language_string );
@@ -535,15 +600,15 @@ void idRenderBackend::Init()
 	// recheck all the extensions (FIXME: this might be dangerous)
 	R_CheckPortableExtensions();
 
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	
 	renderProgManager.Init();
 
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	
 	tr.SetInitialized();
 
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	
 	// allocate the vertex array range or vertex objects
 	vertexCache.Init( glConfig.uniformBufferOffsetAlignment );

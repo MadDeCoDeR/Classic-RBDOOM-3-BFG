@@ -107,7 +107,7 @@ bool idVertexBuffer::AllocBufferObject( const void* data, int allocSize, bufferU
 	int numBytes = GetAllocedSize();
 	
 	// clear out any previous error
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	
 	
 
@@ -365,7 +365,7 @@ bool idIndexBuffer::AllocBufferObject( const void* data, int allocSize, bufferUs
 	
 	
 	// clear out any previous error
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	
 	if (!glConfig.directStateAccess) {
 		glGenBuffersARB(1, (GLuint*)&apiObject);

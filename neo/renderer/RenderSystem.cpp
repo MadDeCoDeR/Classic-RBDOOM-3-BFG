@@ -703,13 +703,16 @@ void idRenderSystemLocal::SwapCommandBuffers_FinishRendering(
 	
 	// check for dynamic changes that require some initialization
 	backend.CheckCVars();
+
+	// check for errors
+	//GL_CheckErrors();
 	
 	// RB: resize HDR buffers
 	Framebuffer::CheckFramebuffers();
 	// RB end
 	
 	// check for errors
-	GL_CheckErrors();
+	//GL_CheckErrors();
 }
 
 /*

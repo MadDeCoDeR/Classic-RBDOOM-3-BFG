@@ -468,7 +468,7 @@ void Framebuffer::AddColorBuffer( int format, int index, int multiSamples )
 		}
 	}
 	
-	GL_CheckErrors();
+	//GL_CheckErrors();
 }
 
 void Framebuffer::AddDepthBuffer( int format, int multiSamples )
@@ -523,7 +523,7 @@ void Framebuffer::AddDepthBuffer( int format, int multiSamples )
 		}
 	}
 	
-	GL_CheckErrors();
+	//GL_CheckErrors();
 }
 
 //SP Begin
@@ -580,7 +580,7 @@ void Framebuffer::AddStencilBuffer(int format, int multiSamples)
 		}
 	}
 
-	GL_CheckErrors();
+	//GL_CheckErrors();
 }
 //SP End
 

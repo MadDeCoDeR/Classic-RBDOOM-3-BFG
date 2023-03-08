@@ -128,14 +128,14 @@ void PC_BeginNamedEvent( const char* szName, ... )
 		return;
 	}
 	
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	if( timeQueryIds[0] == 0 )
 	{
 		glGenQueries( MAX_PIX_EVENTS, timeQueryIds );
 	}
 	glFinish();
 	glBeginQuery( GL_TIME_ELAPSED_EXT, timeQueryIds[numPixEvents] );
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	
 	pixEvent_t* ev = &pixEvents[numPixEvents++];
 	strncpy( ev->name, szName, sizeof( ev->name ) - 1 );
@@ -172,9 +172,9 @@ void PC_EndNamedEvent()
 	pixEvent_t* ev = &pixEvents[numPixEvents - 1];
 	ev->cpuTime = Sys_Microseconds() - ev->cpuTime;
 	
-	GL_CheckErrors();
+	//GL_CheckErrors();
 	glEndQuery( GL_TIME_ELAPSED_EXT );
-	GL_CheckErrors();
+	//GL_CheckErrors();
 #endif
 }
 
