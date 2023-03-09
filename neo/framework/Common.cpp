@@ -819,7 +819,7 @@ bool idCommonLocal::JapaneseCensorship() const
 idCommonLocal::FilterLangList
 ===============
 */
-void idCommonLocal::FilterLangList( idStrList* list, idStr lang )
+void idCommonLocal::FilterLangList( idStrList* list, idStr lang, bool strict )
 {
 
 	idStr temp;
@@ -827,7 +827,12 @@ void idCommonLocal::FilterLangList( idStrList* list, idStr lang )
 	{
 		temp = ( *list )[i];
 		temp = temp.Right( temp.Length() - strlen( "strings/" ) );
-		temp = temp.Left( lang.Length() );
+		if (strict) {
+			temp = temp.Left(temp.Length() - strlen(".lang"));
+		}
+		else {
+			temp = temp.Left(lang.Length());
+		}
 		if( idStr::Icmp( temp, lang ) != 0 )
 		{
 			list->RemoveIndex( i );
@@ -857,15 +862,23 @@ void idCommonLocal::InitLanguageDict()
 	
 	// Loop through the list and filter
 	idStrList currentLangList = langList;
-	FilterLangList( &currentLangList, sys_lang.GetString() );
+	FilterLangList( &currentLangList, sys_lang.GetString(), true );
 	
-	if( currentLangList.Num() == 0 )
+	int i = 0;
+	while( currentLangList.Num() == 0 && i < Sys_NumLangs())
 	{
-		// reset to english and try to load again
-		sys_lang.SetString( ID_LANG_ENGLISH );
+		//GK: Loop through all available languages until it find the installed one
+		sys_lang.SetString(Sys_Lang(i));
 		currentLangList = langList;
-		FilterLangList( &currentLangList, sys_lang.GetString() );
+		FilterLangList(&currentLangList, sys_lang.GetString(), true);
+		i++;
 	}
+	if (currentLangList.Num() == 0) {
+		common->FatalError("Failed to Load Language data");
+	}
+	currentLangList = langList;
+	FilterLangList(&currentLangList, sys_lang.GetString());
+
 	
 	idLocalization::ClearDictionary();
 	for( int i = 0; i < currentLangList.Num(); i++ )

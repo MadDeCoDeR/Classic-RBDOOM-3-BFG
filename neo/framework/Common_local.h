@@ -607,7 +607,7 @@ private:
 	void	RenderBink( const char* path );
 	void	RenderSplash();
 	void	RenderPhotosensitivity();
-	void	FilterLangList( idStrList* list, idStr lang );
+	void	FilterLangList( idStrList* list, idStr lang, bool strict = false );
 	void	CheckStartupStorageRequirements();
 	
 	void	ExitMenu();
