@@ -864,14 +864,14 @@ void idCommonLocal::InitLanguageDict()
 	idStrList currentLangList = langList;
 	FilterLangList( &currentLangList, sys_lang.GetString(), true );
 	
-	int i = 0;
-	while( currentLangList.Num() == 0 && i < Sys_NumLangs())
+	int index = 0;
+	while( currentLangList.Num() == 0 && index < Sys_NumLangs())
 	{
 		//GK: Loop through all available languages until it find the installed one
-		sys_lang.SetString(Sys_Lang(i));
+		sys_lang.SetString(Sys_Lang(index));
 		currentLangList = langList;
 		FilterLangList(&currentLangList, sys_lang.GetString(), true);
-		i++;
+		index++;
 	}
 	if (currentLangList.Num() == 0) {
 		common->FatalError("Failed to Load Language data");
