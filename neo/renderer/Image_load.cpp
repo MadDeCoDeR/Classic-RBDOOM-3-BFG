@@ -99,7 +99,11 @@ int BitsForFormat( textureFormat_t format )
 idImage::DeriveOpts
 ========================
 */
+#ifndef _WIN32
+void idImage::DeriveOpts()
+#else
 ID_INLINE void idImage::DeriveOpts()
+#endif
 {
 	if( opts.format == FMT_NONE )
 	{
