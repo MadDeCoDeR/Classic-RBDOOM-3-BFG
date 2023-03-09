@@ -98,6 +98,9 @@ void Framebuffer::Init()
 			globalFramebuffers.shadowFBO[i]->Bind();
 			glDrawBuffers(0, NULL);
 		}
+		else {
+			glNamedFramebufferDrawBuffers(globalFramebuffers.shadowFBO[i]->frameBuffer, 0, NULL);
+		}
 	}
 	
 	// HDR
