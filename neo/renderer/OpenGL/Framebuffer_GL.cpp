@@ -316,7 +316,7 @@ void Framebuffer::CheckFramebuffers()
 		
 		// HIERARCHICAL Z BUFFER
 		
-		globalImages->hierarchicalZbufferImage->Resize( screenWidth, screenHeight );
+		globalImages->hierarchicalZbufferImage->Resize( screenWidth, screenHeight, true ); //GK: Recalculate Also MipMap levels for that Texture
 		
 		for( int i = 0; i < MAX_HIERARCHICAL_ZBUFFERS; i++ )
 		{

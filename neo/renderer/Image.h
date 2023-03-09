@@ -369,7 +369,9 @@ public:
 	// some scratch images are dynamically resized based on the display window size.  This
 	// simply purges the image and recreates it if the sizes are different, so it should not be
 	// done under any normal circumstances, and probably not at all on consoles.
-	void		Resize( int width, int height );
+	//GK: Add recalculateLevels parameter in order to re calculate the number of MipMap Levels when changing
+	//the resolution of the texture
+	void		Resize( int width, int height, bool recalculateLevels = false );
 	
 	bool		IsCompressed() const
 	{
