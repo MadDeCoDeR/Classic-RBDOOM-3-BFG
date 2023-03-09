@@ -1068,19 +1068,20 @@ void idImage::AllocImage()
 		int w = opts.width > 0 ? opts.width : 1280;
 		int h = opts.height > 0 ? opts.height : 720;
 		glCreateTextures(target, 1, (GLuint*)&texnum);
-		assert(texnum != TEXTURE_NOT_LOADED);
-		if (opts.textureType == TT_2D_ARRAY) {
-			glTextureStorage3D(texnum, opts.numLevels, internalFormat, w, h, numSides);
-		} else if (opts.textureType == TT_2D_MULTISAMPLE) {
-			glTextureStorage2DMultisample(texnum, opts.samples, internalFormat, w, h, GL_FALSE);
+		if (texnum != TEXTURE_NOT_LOADED) {
+			if (opts.textureType == TT_2D_ARRAY) {
+				glTextureStorage3D(texnum, opts.numLevels, internalFormat, w, h, numSides);
+			} else if (opts.textureType == TT_2D_MULTISAMPLE) {
+				glTextureStorage2DMultisample(texnum, opts.samples, internalFormat, w, h, GL_FALSE);
 		} else {
-			
-			if (opts.textureType == TT_CUBIC) {
-				h = w;
+
+				if (opts.textureType == TT_CUBIC) {
+					h = w;
+				}
+				glTextureStorage2D(texnum, opts.numLevels, internalFormat, w, h);
 			}
-			glTextureStorage2D(texnum, opts.numLevels, internalFormat, w, h);
+			glTextureParameteri(texnum, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
 		}
-		glTextureParameteri(texnum, GL_TEXTURE_MAX_LEVEL, opts.numLevels - 1);
 	}
 	
 	// see if we messed anything up
