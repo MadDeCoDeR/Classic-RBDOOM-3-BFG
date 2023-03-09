@@ -299,7 +299,7 @@ static void R_CheckPortableExtensions()
 
 	// GL_ARB_direct_state_access
 	//GK: Use the core direct State Access intead (what purpose the EXT has?)
-	glConfig.directStateAccess = GLEW_ARB_direct_state_access != 0;
+	glConfig.directStateAccess = GLEW_ARB_direct_state_access != 0 && glConfig.glVersion >= 4.5;
 
 	R_PrintExtensionStatus(glConfig.directStateAccess, "GL_ARB_direct_state_access");
 	
@@ -355,7 +355,7 @@ static void R_CheckPortableExtensions()
 	glConfig.fragmentProgramAvailable = GLEW_ARB_fragment_program != 0;
 	if( glConfig.fragmentProgramAvailable )
 	{
-		glGetInteger64v( GL_MAX_TEXTURE_COORDS, ( GLint64* )&glConfig.maxTextureCoords );
+		//glGetInteger64v( GL_MAX_TEXTURE_COORDS, ( GLint64* )&glConfig.maxTextureCoords ); //DEPRECATED
 		glGetIntegerv( GL_MAX_TEXTURE_IMAGE_UNITS, ( GLint* )&glConfig.maxTextureImageUnits );
 	}
 	
