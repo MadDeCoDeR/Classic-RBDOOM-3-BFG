@@ -3,7 +3,7 @@
 	"#str_zoom" "Zoom"
 	"#str_shadow_mapping" "Ombre morbide"
 	"#str_shadow_mapping_lod" "Soft Shadows LOD"
-	"#Str_hdr" "HDR"
+	"#str_hdr" "HDR"
 	"#str_adaptive_hdr" "Tonemapping adattivo HDR"
 	"#str_damage_motion" 	"Movimento di danno"
 	"#str_ssao" "SSAO"
