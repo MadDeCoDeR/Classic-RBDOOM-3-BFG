@@ -127,7 +127,7 @@ void Framebuffer::Init()
 	{
 		globalFramebuffers.hdrFBO->AddColorBuffer( GL_RGBA16F, 0 );
 		globalFramebuffers.hdrFBO->AddDepthBuffer( GL_DEPTH24_STENCIL8 );
-		
+
 		globalFramebuffers.hdrFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->currentRenderHDRImage, 0 );
 		globalFramebuffers.hdrFBO->AttachImageDepth( GL_TEXTURE_2D, globalImages->currentDepthImage );
 	}
@@ -228,7 +228,9 @@ void Framebuffer::Init()
 	globalFramebuffers.smaaBlendFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->smaaBlendImage, 0 );
 	globalFramebuffers.smaaBlendFBO->Check();
 	
-	Unbind();
+	if (!glConfig.directStateAccess) {
+		Unbind();
+	}
 }
 
 void Framebuffer::CheckFramebuffers()
@@ -238,7 +240,9 @@ void Framebuffer::CheckFramebuffers()
 	
 	if( globalFramebuffers.hdrFBO->GetWidth() != screenWidth || globalFramebuffers.hdrFBO->GetHeight() != screenHeight )
 	{
-		Unbind();
+		if (!glConfig.directStateAccess) {
+			Unbind();
+		}
 		
 		// HDR
 		globalImages->currentRenderHDRImage->Resize( screenWidth, screenHeight );
@@ -318,7 +322,7 @@ void Framebuffer::CheckFramebuffers()
 		}
 		
 		// HIERARCHICAL Z BUFFER
-		
+
 		globalImages->hierarchicalZbufferImage->Resize( screenWidth, screenHeight, true ); //GK: Recalculate Also MipMap levels for that Texture
 		
 		for( int i = 0; i < MAX_HIERARCHICAL_ZBUFFERS; i++ )
@@ -371,7 +375,9 @@ void Framebuffer::CheckFramebuffers()
 		globalFramebuffers.smaaBlendFBO->AttachImage2D( GL_TEXTURE_2D, globalImages->smaaBlendImage, 0 );
 		globalFramebuffers.smaaBlendFBO->Check();
 		
-		Unbind();
+		if (!glConfig.directStateAccess) {
+			Unbind();
+		}
 	}
 }
 
