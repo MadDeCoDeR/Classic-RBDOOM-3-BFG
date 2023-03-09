@@ -296,7 +296,7 @@ static void R_CheckPortableExtensions()
 	{
 		glConfig.maxTextureAnisotropy = 1;
 	}
-
+	
 	// GL_ARB_direct_state_access
 	//GK: Use the core direct State Access intead (what purpose the EXT has?)
 	glConfig.directStateAccess = GLEW_ARB_direct_state_access != 0 && glConfig.glVersion >= 4.5;
@@ -618,9 +618,11 @@ void idRenderBackend::Init()
 	
 	// Reset our gamma
 	R_SetColorMappings();
+#ifndef _WIN32
 	//GK: I don't know why SDL2 on linux does this,
 	// but apparently the engine has to re-set the mode (without initialization) after the rest of the rendering initialization proccess is done
 	R_SetNewMode( false );
+#endif
 }
 
 void idRenderBackend::Shutdown()
