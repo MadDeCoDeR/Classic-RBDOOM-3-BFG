@@ -1879,7 +1879,7 @@ void idPlayer::Init()
 	}
 	
 	// disable stamina on hell levels
-	if(( gameLocal.world && gameLocal.world->spawnArgs.GetBool( "no_stamina" ) ) || cvarSystem->GetCVarBool("in_alwaysRun"))
+	if(( gameLocal.world && gameLocal.world->spawnArgs.GetBool( "no_stamina" ) ) || (cvarSystem->GetCVarInteger("in_alwaysRun") == 1 || (common->IsMultiplayer() && cvarSystem->GetCVarInteger("in_alwaysRun") == 2)))
 	{
 		pm_staminaBackup.SetFloat(pm_stamina.GetFloat());
 		pm_stamina.SetFloat( 0.0f );
