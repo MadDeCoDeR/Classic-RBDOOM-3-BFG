@@ -197,6 +197,15 @@ half3 LinearRGBToSRGBUnclamped( half3 rgb )
 half4 LinearRGBAToSRGBA( half4 rgba )
 {
 #if defined( USE_LINEAR_RGB ) && !defined( USE_SRGB )
+	return half4(sRGBValue(rgba.r), sRGBValue(rgba.g), sRGBValue(rgba.b), rgba.a);
+#else
+	return rgba;
+#endif
+}
+
+half4 LinearRGBAToSRGBAUnclamped(half4 rgba)
+{
+#if defined( USE_LINEAR_RGB ) && !defined( USE_SRGB )
 	rgba = clamp(rgba, 0.0, 1.0);
 	return half4(sRGBValue(rgba.r), sRGBValue(rgba.g), sRGBValue(rgba.b), rgba.a);
 #else
