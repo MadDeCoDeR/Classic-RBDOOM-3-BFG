@@ -600,6 +600,7 @@ bool idMenuScreen_Shell_AdvancedGraphics::idMenuDataSource_AdvancedGraphics::IsD
 	}
 	if( originalSSAO != r_useSSAO.GetInteger() )
 	{
+		resetVideo = true;
 		return true;
 	}
 	if( originalFilmic != r_useFilmicPostProcessEffects.GetInteger() )
