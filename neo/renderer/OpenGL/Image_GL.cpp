@@ -1008,8 +1008,8 @@ void idImage::AllocImage()
 		}else{
 			for (int side = 0; side < numSides; side++)
 			{
-				int w = opts.width;
-				int h = opts.height;
+				int w = opts.width > 0 ? opts.width : 1280;
+				int h = opts.height > 0 ? opts.height : 720;
 				if (opts.textureType == TT_CUBIC)
 				{
 					h = w;
