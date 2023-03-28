@@ -1519,6 +1519,9 @@ idStr idRenderProgManager::ConvertCG2GLSL( const idStr& in, const char* name, rp
 			{
 #ifndef USE_VULKAN
 				int glslVersion = glConfig.glVersion * 100;
+				int major = (glslVersion / 100) * 100;
+				int minor = round((glslVersion - major) / 10.0f) * 10;
+				glslVersion = major + minor;
 #else
 				int glslVersion = 450;
 #endif
@@ -1549,6 +1552,9 @@ idStr idRenderProgManager::ConvertCG2GLSL( const idStr& in, const char* name, rp
 			{
 #ifndef USE_VULKAN
 				int glslVersion = glConfig.glVersion * 100;
+				int major = (glslVersion / 100) * 100;
+				int minor = round((glslVersion - major) / 10.0f) * 10;
+				glslVersion = major + minor;
 #else
 				int glslVersion = 450;
 #endif
