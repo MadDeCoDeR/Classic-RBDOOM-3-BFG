@@ -2303,9 +2303,10 @@ void idCommonLocal::ResetPlayerInput( int playerIndex )
 idCommonLocal::SwitchToGame
 ========================
 */
-void idCommonLocal::SwitchToGame( currentGame_t newGame )
+void idCommonLocal::SwitchToGame( currentGame_t newGame, bool restart )
 {
 	idealCurrentGame = newGame;
+	clRestart = restart;
 }
 
 /*
@@ -2382,6 +2383,10 @@ void idCommonLocal::PerformGameSwitch()
 		}
 		//GK: Delete Uncompressed files from classic DOOM mods
 		CleanUncompFiles(false);
+
+		if (clRestart) {
+			Sys_ReLaunch();
+		}
 	}
 	
 	currentGame = idealCurrentGame;

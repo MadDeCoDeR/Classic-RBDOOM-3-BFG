@@ -286,7 +286,7 @@ public:
 	{
 		return currentGame;
 	}
-	virtual void				SwitchToGame( currentGame_t newGame );
+	virtual void				SwitchToGame( currentGame_t newGame, bool restart = false);
 	virtual bool	IsPlayingDoomClassic() const
 	{
 		return GetCurrentGame() != DOOM3_BFG;
@@ -589,6 +589,8 @@ private:
 	static const int			DOOMCLASSIC_IMAGE_SIZE_IN_BYTES = DOOMCLASSIC_RENDERWIDTH_CORRECT * DOOMCLASSIC_RENDERHEIGHT * DOOMCLASSIC_BYTES_PER_PIXEL;
 	
 	idArray< byte, DOOMCLASSIC_IMAGE_SIZE_IN_BYTES >	doomClassicImageData;
+
+	bool clRestart = false; //GK: Use to signal engine reboot from Classic DOOM engine
 #endif
 	// RB end
 	

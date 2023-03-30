@@ -2402,8 +2402,7 @@ void M_HardResetGame(int ch)
 		return;
 	
 	M_CloseGame();
-	common->SwitchToGame(DOOM3_BFG);
-	Sys_ReLaunch();
+	common->SwitchToGame(DOOM3_BFG, true);
 
 }
 
