@@ -469,67 +469,79 @@ void Sys_ReLaunch()
 	//       for Linux/Unix we want one char* per argument so we'll just add the friggin'
 	//       " +set com_skipIntroVideos 1" to the other commandline arguments in this function.
 	
-	int ret = fork();
-	if( ret < 0 )
-		idLib::Error( "Sys_ReLaunch(): Couldn't fork(), reason: %s ", strerror( errno ) );
+	//int ret = vfork();
+	// if( ret < 0 )
+	// 	idLib::Error( "Sys_ReLaunch(): Couldn't fork(), reason: %s ", strerror( errno ) );
 		
-	if( ret == 0 )
+	//if( ret == 0 )
 	{
 		// child process
 		
 		// get our own session so we don't depend on the (soon to be killed)
 		// parent process anymore - else we'll freeze
-		pid_t sId = setsid();
-		if( sId == ( pid_t ) - 1 )
-		{
-			idLib::Error( "Sys_ReLaunch(): setsid() failed! Reason: %s ", strerror( errno ) );
-		}
+		//pid_t sId = setsid();
+		//if( sId == ( pid_t ) - 1 )
+		//{
+		//	idLib::Error( "Sys_ReLaunch(): setsid() failed! Reason: %s ", strerror( errno ) );
+		//}
 		
 		// close all FDs (except for stdin/out/err) so we don't leak FDs
-		DIR* devfd = opendir( "/dev/fd" );
-		if( devfd != NULL )
-		{
-			struct dirent entry;
-			struct dirent* result;
-			while( readdir_r( devfd, &entry, &result ) == 0 )
-			{
-				const char* filename = result->d_name;
-				char* endptr = NULL;
-				long int fd = strtol( filename, &endptr, 0 );
-				if( endptr != filename && fd > STDERR_FILENO )
-					close( fd );
-			}
-		}
-		else
-		{
-			idLib::Warning( "Sys_ReLaunch(): Couldn't open /dev/fd/ - will leak file descriptors. Reason: %s", strerror( errno ) );
-		}
+		// DIR* devfd = opendir( "/dev/fd" );
+		// if( devfd != NULL )
+		// {
+		// 	struct dirent entry;
+		// 	struct dirent* result;
+		// 	while( readdir_r( devfd, &entry, &result ) == 0 )
+		// 	{
+		// 		const char* filename = result->d_name;
+		// 		char* endptr = NULL;
+		// 		long int fd = strtol( filename, &endptr, 0 );
+		// 		if( endptr != filename && fd > STDERR_FILENO )
+		// 			close( fd );
+		// 	}
+		// }
+		// else
+		// {
+		// 	idLib::Warning( "Sys_ReLaunch(): Couldn't open /dev/fd/ - will leak file descriptors. Reason: %s", strerror( errno ) );
+		// }
 		
 		// + 3 because "+set" "com_skipIntroVideos" "1" - and note that while we'll skip
 		// one (the first) cmdargv argument, we need one more pointer for NULL at the end.
 		int argc = cmdargc + 3;
 		const char** argv = ( const char** )calloc( argc, sizeof( char* ) );
 		
-		int i;
-		for( i = 0; i < cmdargc - 1; ++i )
-			argv[i] = cmdargv[i + 1]; // ignore cmdargv[0] == executable name
+		//int j;
+		idList<idStr> args;
+		for(int i = 0; i < cmdargc; ++i )
+			args.Append(idStr(cmdargv[i])); // ignore cmdargv[0] == executable name
 			
 		// add +set com_skipIntroVideos 1
-		argv[i++] = "+set";
-		argv[i++] = "com_skipIntroVideos";
-		argv[i++] = "1";
+		if (args.Find("com_skipIntroVideos") == NULL) {
+			args.Append("+set");
+			args.Append("com_skipIntroVideos");
+			args.Append("1");
+		}
+		// for (j = 0; j < args.Num(); j++)
+		// 	argv[j] = args[j].c_str();
+		
 		// execv expects NULL terminated array
-		argv[i] = NULL;
+		//argv[j] = NULL;
 		
 		const char* exepath = Sys_EXEPath();
 		
 		errno = 0;
-		execv( exepath, ( char** )argv );
+		idStr command = idStr(exepath) + " ";
+		for (int j = 0; j < args.Num(); j++) {
+			command = command + args[j] + " ";
+		}
+		command = command + "&";
+		errno = system(command.c_str());
+		//execv( exepath, ( char** )argv );
 		// we only get here if execv() fails, else the executable is restarted
-		idLib::Error( "Sys_ReLaunch(): WTF exec() failed! Reason: %s ", strerror( errno ) );
+		//idLib::Error( "Sys_ReLaunch(): WTF exec() failed! Reason: %s ", strerror( errno ) );
 		
 	}
-	else
+	//else
 	{
 		// original process
 		// just do a clean shutdown
