@@ -2,7 +2,7 @@ Package: vcpkg-tool-meson
 Version: 0.63
 Architecture: x64-windows
 Multi-Arch: same
-Abi: cad2778d458a18ed184e8e2fdfa4e16432a529985a6f23e53f94d920dc4881a1
+Abi: 419e00131dabe0da8bda9bff1d607cb847fd2c9ed8821546f794ee5e4af2cefe
 Description: Meson build system
 Type: Port
 Status: install ok installed
@@ -13,7 +13,7 @@ Port-Version: 5
 Depends: vcpkg-tool-meson
 Architecture: x64-windows
 Multi-Arch: same
-Abi: ad6674e3be3a29619212f016971650c13b8bf3efca8eed97258eb198f639b417
+Abi: de6b602d46fbdc8d4570475a28ab0f50087c6f8acc20c29a743032b5979ee12b
 Description: pkgconf is a program which helps to configure compiler and linker flags for development libraries. It is similar to pkg-config from freedesktop.org.
 Type: Port
 Status: install ok installed
@@ -24,7 +24,7 @@ Port-Version: 1
 Depends: pkgconf
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 48fead8a55202922b757342ebbe10c52e08091f0cdf7a29abc8bcecf28d6975b
+Abi: 5da94c8ff3e78c2f354e5dfc9ca0959f5dbc4f718aefcb725b6e9941e4a70c2d
 Type: Port
 Status: install ok installed
 
@@ -32,26 +32,26 @@ Package: vcpkg-cmake
 Version: 2022-12-22
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 3ca4909ccff51ff010c1af28213ddddee8a83fbff46f6fd3ef3ee14f4ec78c49
+Abi: 88f636384cc776c20ccb4a906ec6a4701601da5b8b63fee3060f3a40475e88e0
 Type: Port
 Status: install ok installed
 
 Package: vcpkg-cmake-get-vars
-Version: 2022-12-16
+Version: 2023-03-02
 Depends: vcpkg-cmake
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 2fa2356e3952fa6be0d4997c8c88099bea682d1e9793f1259320143c6e5147b0
+Abi: 1568e59c022195d4b5d10d4a32ed8f3152c0484be4e78715873b11c80aec0b24
 Type: Port
 Status: install ok installed
 
 Package: ffmpeg
 Version: 5.1.2
-Port-Version: 4
+Port-Version: 5
 Depends: vcpkg-cmake-get-vars:x64-windows, vcpkg-pkgconfig-get-modules:x64-windows
 Architecture: x64-windows-static-md
 Multi-Arch: same
-Abi: 22b314394456a0e29c6d8bb4fcbc64bde14de7a901d761a0a9bf282c0efc3c2a
+Abi: b150515ba726d10c6c76847c949a9321b3644f6959e92fe6e57aeede364db397
 Description: a library to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.
     FFmpeg is the leading multimedia framework, able to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created. It supports the most obscure ancient formats up to the cutting edge. No matter if they were designed by some standards committee, the community or a corporation. It is also highly portable: FFmpeg compiles, runs, and passes our testing infrastructure FATE across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc. under a wide variety of build environments, machine architectures, and configurations.
 Type: Port
@@ -113,7 +113,7 @@ Version: 2022-02-06
 Port-Version: 1
 Architecture: x64-windows
 Multi-Arch: same
-Abi: 9eac6a999bcac02dbba06e3951ca85857bf7e9d259f4d1e11cd891c1ff8cffbf
+Abi: 4f6a2b2f180e55d0840c65c34dbd7ca0d5df43875cb390dec325f7d40f757717
 Type: Port
 Status: install ok installed
 
@@ -121,28 +121,29 @@ Package: egl-registry
 Version: 2022-09-20
 Architecture: x64-windows-static-md
 Multi-Arch: same
-Abi: 4572e4e32eb03fd057359b8d29cc69739f98992b5f66e657d8cea9b436361368
+Abi: c3877436d2c4bfaae6848ec502d041dd1e6cf5fe1c31a64c22f1c483817bf098
 Description: the EGL API and Extension Registry
 Type: Port
 Status: install ok installed
 
 Package: opengl-registry
 Version: 2022-09-29
+Port-Version: 1
 Depends: egl-registry
 Architecture: x64-windows-static-md
 Multi-Arch: same
-Abi: 44c7bc25ce04e8dfb2d67a74edef6ae32b9d2379414a364447d4ee9c822196de
+Abi: ff5a79f9a1c37409242c444264f295d9d47e9158c775ac9f28fe9c5dfe7cd493
 Description: the API and Extension registries for the OpenGL family APIs
 Type: Port
 Status: install ok installed
 
 Package: opengl
 Version: 2022-12-04
-Port-Version: 1
+Port-Version: 3
 Depends: opengl-registry
 Architecture: x64-windows-static-md
 Multi-Arch: same
-Abi: c4dacbda43390b1bd27f6f56d4d0a641f96434543cb0ce47dce03145ce3ea83a
+Abi: 86fe1850972e29a746f33e79ff558d78c45c54a366246808861191394bdec14c
 Description: Open Graphics Library (OpenGL)[3][4][5] is a cross-language, cross-platform application programming interface (API) for rendering 2D and 3D vector graphics.
 Type: Port
 Status: install ok installed
@@ -152,17 +153,17 @@ Version: 2.2.0
 Depends: opengl, vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
 Architecture: x64-windows-static-md
 Multi-Arch: same
-Abi: ee5e9a9c7735c886f5260ae3072dfadfee1e2ae0cf2d19f4898e609b3ee2d805
+Abi: 5ce2817666e261e181de996cc035b4d88bad24b3e26d8e97a57e1fade09222b9
 Description: The OpenGL Extension Wrangler Library (GLEW) is a cross-platform open-source C/C++ extension loading library.
 Type: Port
 Status: install ok installed
 
 Package: libjpeg-turbo
-Version: 2.1.5
+Version: 2.1.5.1
 Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
 Architecture: x64-windows-static-md
 Multi-Arch: same
-Abi: 91c103cff92dbd28883bb4b7911579c8488f128a769139bf989c41d2772da696
+Abi: f689612f7520f7ff3e3d61c1e6504f7f64553339cd53f68f73e95bd2f595e7a4
 Description: libjpeg-turbo is a JPEG image codec that uses SIMD instructions (MMX, SSE2, NEON, AltiVec) to accelerate baseline JPEG compression and decompression on x86, x86-64, ARM, and PowerPC systems.
 Type: Port
 Status: install ok installed
@@ -172,17 +173,18 @@ Version: 1.2.13
 Depends: vcpkg-cmake:x64-windows
 Architecture: x64-windows-static-md
 Multi-Arch: same
-Abi: 2aeaf31d9493e1a33dbd5abf814cbee663e803c91327c8461566f1f9cfb83e1f
+Abi: 4324e0a194a933270223fc4c0853bb6679b29ce95efd20e30aac96232fc4dbc3
 Description: A compression library
 Type: Port
 Status: install ok installed
 
 Package: libpng
 Version: 1.6.39
+Port-Version: 1
 Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows, zlib
 Architecture: x64-windows-static-md
 Multi-Arch: same
-Abi: 36ab40eed782dd2bb8671b4ebc2b0f63893c1eba23de5be9a173eae331396f4d
+Abi: d353d6f817b1226ddcc4c571b7a429a8bfbb629ff2dcc1cc9bd1c1907d809080
 Description: libpng is a library implementing an interface for reading and writing PNG (Portable Network Graphics) format files
 Type: Port
 Status: install ok installed
@@ -192,7 +194,7 @@ Version: 1.23.0
 Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
 Architecture: x64-windows-static-md
 Multi-Arch: same
-Abi: 9282c6cc94e56ff57ebf397c0ad628deb673a144c549de5b4d07341f5aa73570
+Abi: 9f75d48f3f4ced9f9e8fbc5b49fbd4e0cff688684e5bf331784c2b2fc3a90dff
 Description: OpenAL Soft is an LGPL-licensed, cross-platform, software implementation of the OpenAL 3D audio API.
 Type: Port
 Status: install ok installed
@@ -203,16 +205,17 @@ Port-Version: 3
 Depends: vcpkg-cmake:x64-windows, vcpkg-cmake-config:x64-windows
 Architecture: x64-windows-static-md
 Multi-Arch: same
-Abi: d23fb909d8eadcbb8abea674be0488a2385b6c2ae6132a74907326a78f25288a
+Abi: c7c51622edeefc9aaf8fb4a3908b175e708672cc856f67f73999ae8fabf799a2
 Description: A fast JSON parser/generator for C++ with both SAX/DOM style API <http://rapidjson.org/>
 Type: Port
 Status: install ok installed
 
 Package: xaudio2redist
 Version: 1.2.11
+Port-Version: 1
 Architecture: x64-windows-static-md
 Multi-Arch: same
-Abi: f384f399e1c795906a6b6d8515aca93b228325c54d1b2434150c0ef6bce5a275
+Abi: fc01ddfbcf71fb378b83a0b4aece18d2c200cedf8f8d821bc99fee01f9549915
 Description: Redistributable version of XAudio 2.9 for Windows 7 SP1 or later
 Type: Port
 Status: install ok installed
