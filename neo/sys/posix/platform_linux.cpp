@@ -512,7 +512,7 @@ void Sys_ReLaunch()
 		
 		//int j;
 		idList<idStr> args;
-		for(int i = 0; i < cmdargc; ++i )
+		for(int i = 1; i < cmdargc; ++i )
 			args.Append(idStr(cmdargv[i])); // ignore cmdargv[0] == executable name
 			
 		// add +set com_skipIntroVideos 1
@@ -536,6 +536,7 @@ void Sys_ReLaunch()
 		}
 		command = command + "&";
 		errno = system(command.c_str());
+		common->Printf("Rebooted process returned code: %d\n", errno);
 		//execv( exepath, ( char** )argv );
 		// we only get here if execv() fails, else the executable is restarted
 		//idLib::Error( "Sys_ReLaunch(): WTF exec() failed! Reason: %s ", strerror( errno ) );
