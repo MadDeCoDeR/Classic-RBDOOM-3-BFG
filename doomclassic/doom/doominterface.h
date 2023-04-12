@@ -40,9 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 
 class idUserCmdMgr;
-//GK : Use extern to communicate between DOOM 3 BFG and classic DOOM
-extern char* classicargv[128];
-//GK:Keep this definitions here
 #ifdef _WINDOWS
 typedef int(*RecvFunc)(char* buff, DWORD *numRecv);
 typedef int(*SendFunc)(const char* buff, DWORD size, sockaddr_in *target, int toNode);
