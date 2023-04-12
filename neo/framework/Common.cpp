@@ -286,9 +286,6 @@ doom set test blah + map test
 #define		MAX_CONSOLE_LINES	128 //GK: MORE WORDS
 int			com_numConsoleLines;
 idCmdArgs	com_consoleLines[MAX_CONSOLE_LINES];
-//GK begin
-char* classicargv[128];
-//GK end
 
 bool isnumber(char* arg) {
 	int m = strlen(arg);

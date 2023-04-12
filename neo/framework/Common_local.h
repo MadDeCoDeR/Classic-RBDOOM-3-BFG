@@ -291,6 +291,10 @@ public:
 	{
 		return GetCurrentGame() != DOOM3_BFG;
 	}
+
+	virtual char** GetClassicArguents() {
+		return classicargv;
+	}
 #endif
 	// RB end
 	virtual idUserCmdMgr& GetUCmdMgr()
@@ -591,6 +595,9 @@ private:
 	idArray< byte, DOOMCLASSIC_IMAGE_SIZE_IN_BYTES >	doomClassicImageData;
 
 	bool clRestart = false; //GK: Use to signal engine reboot from Classic DOOM engine
+	//GK begin
+	char* classicargv[128];
+	//GK end
 #endif
 	// RB end
 	

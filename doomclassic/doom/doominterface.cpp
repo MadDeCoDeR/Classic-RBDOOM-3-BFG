@@ -107,18 +107,18 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 			DoomLib::InitGame(mpArgc[i], mpArgVPtr[i] );
 		} else {
 			//GK begin
-			if (classicargv[1] != NULL && classicargv[1][0] != '\0') { //GK: Linux getting some things really seriously
+			if (common->GetClassicArguents()[1] != NULL && common->GetClassicArguents()[1][0] != '\0') { //GK: Linux getting some things really seriously
 				int o = 0;
-				while (classicargv[o] != NULL && classicargv[o][0] != '\0') {
+				while (common->GetClassicArguents()[o] != NULL && common->GetClassicArguents()[o][0] != '\0') {
 					o++;
 				}
 				localdargc = o;
 				//GK: For Debbug porposes
 				for (int k = 0; k < localdargc; k++) {
-					idLib::Printf(" %s", classicargv[k]);
+					idLib::Printf(" %s", common->GetClassicArguents()[k]);
 				}
 				idLib::Printf("\n");
-				DoomLib::InitGame(localdargc, classicargv);
+				DoomLib::InitGame(localdargc, common->GetClassicArguents());
 			}
 			else {
 				localdargc = 1;

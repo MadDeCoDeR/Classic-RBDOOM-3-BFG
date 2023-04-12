@@ -346,6 +346,7 @@ public:
 	virtual currentGame_t		GetCurrentGame() const = 0;
 	virtual void				SwitchToGame( currentGame_t newGame, bool restart = false ) = 0;
 	virtual bool	IsPlayingDoomClassic() const = 0;
+	virtual char**	GetClassicArguents() = 0;
 #endif
 	// RB end
 	//GK: Neither ucmdMgr
@@ -354,6 +355,8 @@ public:
 	virtual int ReadDemoInt(int& var) = 0;
 
 	virtual PhotoMode* GetPhotoMode() = 0;
+
+	
 	
 };
 
