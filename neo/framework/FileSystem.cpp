@@ -1824,7 +1824,7 @@ const char* idFileSystemLocal::OSPathToRelativePath( const char* OSPath )
 		stat(mapath, &info);
 		stat(mapath2, &info2);
 		if (info.st_mode & S_IFDIR && info2.st_mode & S_IFDIR) {
-			idLib::usecustom = true;
+			common->SetCustomExpansion(true);
 		}
 		//GK: End
 	}

@@ -94,7 +94,7 @@ void idMenuScreen_Scoreboard::Update()
 			if( game->GetMpGame().GetGameState() != idMultiplayerGame::GAMEREVIEW )
 			{
 				buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-				if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+				if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 				{
 					buttonInfo->label = "#str_01345";
 				}
@@ -106,7 +106,7 @@ void idMenuScreen_Scoreboard::Update()
 			}
 			
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_swf_view_profile";
 			}

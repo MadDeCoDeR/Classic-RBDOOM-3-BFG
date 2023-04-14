@@ -355,7 +355,7 @@ void P_PlayerThink (player_t* player)
 
 	P_CalcHeight (player);
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (!idLib::useSecondaryAudioAPI) {
+	if (!common->UseAlternativeAudioAPI()) {
 #endif
 		if (::g->hasreverb)
 			P_Reverb(player);

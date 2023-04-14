@@ -42,10 +42,10 @@ If you have questions concerning this license or the applicable additional terms
 All game cvars should be defined here.
 */
 
-struct gameVersion_s {
-	gameVersion_s() { sprintf( string, "%s.%d%s %s %s %s", idLib::newd3 ? NEW_CONSOLE_NAME : CONSOLE_NAME, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__ ); }
-	char	string[256];
-} gameVersion;
+//struct gameVersion_s {
+//	gameVersion_s() { sprintf( string, "%s.%d%s %s %s %s", common->IsNewDOOM3() ? NEW_CONSOLE_NAME : CONSOLE_NAME, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__ ); }
+//	char	string[256];
+//} gameVersion;
 
 
 // noset vars

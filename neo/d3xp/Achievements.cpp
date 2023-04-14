@@ -32,6 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../doomclassic/doom/doomdef.h"
 #ifndef GAME_DLL
 #include "../../doomclassic/doom/doomlib.h"
+#include "../../doomclassic/doom/globaldata.h"
 #endif
 
 idCVar achievements_Verbose( "achievements_Verbose", "1", CVAR_BOOL, "debug spam" );
@@ -281,9 +282,10 @@ void idAchievementManager::EventCompletesAchievement( const achievement_t eventI
 	
 #ifdef ID_RETAIL
 #ifndef GAME_DLL
-	if( common->GetConsoleUsed() || idLib::classichUsed || idLib::warpUsed)
+	Globals* classic = (Globals*)::GetClassicData();
+	if( common->GetConsoleUsed() || ( classic != NULL && classic->classichUsed ) || ( classic != NULL && classic->warpUsed ) )
 	{
-		if( ::op && !cheatingDialogShown && !(idLib::newd3 && (cvarSystem->GetCVarInteger("com_game_mode") == 1 || cvarSystem->GetCVarInteger("com_game_mode") == 2)))
+		if( ::op && !cheatingDialogShown && !(common->IsNewDOOM3() && (cvarSystem->GetCVarInteger("com_game_mode") == 1 || cvarSystem->GetCVarInteger("com_game_mode") == 2)))
 		{
 			common->Dialog().AddDialog( GDM_ACHIEVEMENTS_DISABLED_DUE_TO_CHEATING, DIALOG_ACCEPT, NULL, NULL, true );
 			cheatingDialogShown = true;
@@ -382,20 +384,21 @@ void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
 	
 #ifdef ID_RETAIL					//GK No achievments if we use classic parameters
 #ifndef GAME_DLL
-	if( common->GetConsoleUsed() || idLib::classichUsed || idLib::warpUsed)
+	Globals* classic = (Globals*)::GetClassicData();
+	if( common->GetConsoleUsed() || (classic != NULL && classic->classichUsed) || (classic != NULL && classic->warpUsed))
 	{
 		std::string name;
 		if (common->GetConsoleUsed()) {
 			name = "console";
 		}
-		else if (idLib::classichUsed) {
+		else if (classic != NULL && classic->classichUsed) {
 			name = "classich";
 		}
 		else {
 			name = "warp";
 		}
 		common->Printf("You cheat with %s", name.c_str());
-		if( ::op && !cheatingDialogShown && !(idLib::newd3 && (cvarSystem->GetCVarInteger("com_game_mode") == 1 || cvarSystem->GetCVarInteger("com_game_mode") == 2)))
+		if( ::op && !cheatingDialogShown && !(common->IsNewDOOM3() && (cvarSystem->GetCVarInteger("com_game_mode") == 1 || cvarSystem->GetCVarInteger("com_game_mode") == 2)))
 		{
 			common->Dialog().AddDialog( GDM_ACHIEVEMENTS_DISABLED_DUE_TO_CHEATING, DIALOG_ACCEPT, NULL, NULL, true );
 			cheatingDialogShown = true;

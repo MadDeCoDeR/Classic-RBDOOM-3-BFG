@@ -85,10 +85,6 @@ const char* idSessionLocal::stateToString[ NUM_STATES ] =
 
 struct netVersion_s
 {
-	netVersion_s()
-	{
-		sprintf( string, "%s.%d", idLib::newd3 ? NEW_CONSOLE_NAME : CONSOLE_NAME, BUILD_NUMBER );
-	}
 	char	string[256];
 } netVersion;
 
@@ -127,6 +123,7 @@ idSessionLocal::idSessionLocal() :
 	processorDelete(	new( TAG_SAVEGAMES ) idSaveGameProcessorDelete ),
 	processorEnumerate( new( TAG_SAVEGAMES ) idSaveGameProcessorEnumerateGames )
 {
+	sprintf(netVersion.string, "%s.%d", common->IsNewDOOM3() ? NEW_CONSOLE_NAME : CONSOLE_NAME, BUILD_NUMBER);
 	InitBaseState();
 }
 

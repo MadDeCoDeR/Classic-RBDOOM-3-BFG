@@ -62,17 +62,6 @@ public:
 
 	//enables/disables the gamepad for PC use
 	static bool					joystick;
-	// Since now the Controller Layout option can change in the settings, make sure the game is aware of that
-	static bool					layoutchange;
-	//Use custom expansion on Doom 3
-	static bool					usecustom;
-	//DOOM 3 (2019)
-	static bool					newd3;
-
-	static bool					classichUsed;
-	static bool					warpUsed;
-	//Changing Audio APIs on runtime can cause instability issues so do it once the engine has been booted
-	static bool					useSecondaryAudioAPI;
 
 	//GK End
 

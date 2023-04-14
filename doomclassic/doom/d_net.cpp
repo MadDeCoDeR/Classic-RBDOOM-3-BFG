@@ -466,7 +466,7 @@ void CheckAbort(void)
 		D_QuitNetGame();
 
 		session->QuitMatch();
-		if (!idLib::newd3) {
+		if (!common->IsNewDOOM3()) {
 			common->Dialog().AddDialog(GDM_OPPONENT_CONNECTION_LOST, DIALOG_ACCEPT, NULL, NULL, false);
 		}
 		else {

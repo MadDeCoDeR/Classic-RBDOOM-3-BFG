@@ -180,7 +180,7 @@ void idMenuScreen_Shell_GameBrowser::ShowScreen( const mainMenuTransition_t tran
 		mgr->GetCmdBar()->ClearAllButtons();
 		
 		buttonInfo = mgr->GetCmdBar()->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-		if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+		if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 		{
 			buttonInfo->label = "#str_00395";
 		}
@@ -307,7 +307,7 @@ void idMenuScreen_Shell_GameBrowser::OnServerListReady()
 		if( servers.Num() > 0 )
 		{
 			buttonInfo = mgr->GetCmdBar()->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#STR_SWF_SELECT";
 			}
@@ -315,7 +315,7 @@ void idMenuScreen_Shell_GameBrowser::OnServerListReady()
 		}
 		
 		buttonInfo = mgr->GetCmdBar()->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-		if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+		if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 		{
 			buttonInfo->label = "#str_00395";
 		}

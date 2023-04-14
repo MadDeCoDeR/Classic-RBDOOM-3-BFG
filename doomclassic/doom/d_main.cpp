@@ -654,8 +654,8 @@ void D_DoomMain(void)
 	//const bool isDeathmatch = session->GetActingGameStateLobbyBase().GetMatchParms().gameMode == GAME_MODE_PVP;
 	//const bool isDeathmatch = false;
 	//GK begin
-	idLib::classichUsed = false;
-	idLib::warpUsed = false;
+	::g->classichUsed = false;
+	::g->warpUsed = false;
 	//GK: Check here for deathmatch
 	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
 		::g->devparm = M_CheckParm("-devparm");
@@ -665,7 +665,7 @@ void D_DoomMain(void)
 			::g->deathmatch = 1;
 	}
 	::g->classiccheats = M_CheckParm("-classich");
-	idLib::classichUsed = ::g->classiccheats;
+	::g->classichUsed = ::g->classiccheats;
 	//GK End
 	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
 		::g->nomonsters = M_CheckParm("-nomonsters") || ::g->deathmatch;
@@ -956,7 +956,7 @@ void D_DoomMain(void)
 		p = M_CheckParm("-warp");
 		if (p && p < ::g->myargc - 1)
 		{
-			idLib::warpUsed = true;
+			::g->warpUsed = true;
 			int level = atoi(::g->myargv[p + 1]);
 			int episode = ::g->myargv[p + 1][0] - '0';
 			int map = 1;

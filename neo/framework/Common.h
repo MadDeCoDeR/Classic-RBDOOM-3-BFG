@@ -355,6 +355,14 @@ public:
 	virtual int ReadDemoInt(int& var) = 0;
 
 	virtual PhotoMode* GetPhotoMode() = 0;
+	virtual bool IsLayoutChanged() = 0;
+	virtual void ChangeLayout(bool value) = 0;
+	virtual bool UseCustomExpansion() = 0;
+	virtual void SetCustomExpansion(bool value) = 0;
+	virtual bool IsNewDOOM3() = 0;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	virtual bool UseAlternativeAudioAPI() = 0;
+#endif
 
 	
 	

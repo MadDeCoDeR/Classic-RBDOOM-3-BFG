@@ -132,7 +132,7 @@ void idMenuScreen_Shell_PressStart::Update()
 				cmdBar->ClearAllButtons();
 				idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 				buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-				if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+				if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 				{
 					buttonInfo->label = "#str_SWF_SELECT";
 				}

@@ -789,7 +789,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 	
 	navOptions.Clear();
 	
-	if( !idLib::newd3 && GetPlatform() == 2 && menuBar != NULL )
+	if( !common->IsNewDOOM3() && GetPlatform() == 2 && menuBar != NULL )
 	{
 		if( game->GetCVarBool("g_demoMode") )
 		{
@@ -844,7 +844,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 			navOptions.Append( "DEV" );	// DEV
 #endif
 			navOptions.Append( "#str_swf_campaign" );	// singleplayer
-			if (!idLib::newd3 || idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
+			if (!common->IsNewDOOM3() || idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
 				navOptions.Append("#str_swf_multiplayer");	// multiplayer
 			}
 			navOptions.Append( "#str_swf_settings" );	// settings
@@ -872,7 +872,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 				buttonWidget->SetDescription( "#str_swf_campaign_desc" );
 			}
 			index++;
-			if (!idLib::newd3 || idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
+			if (!common->IsNewDOOM3() || idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
 				buttonWidget = dynamic_cast<idMenuWidget_MenuButton*>(&menuBar->GetChildByIndex(index));
 				if (buttonWidget != NULL)
 				{
@@ -910,7 +910,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 	
 	if( menuBar != NULL && gui != NULL )
 	{
-		if (!idLib::newd3 && GetPlatform() == 2) {
+		if (!common->IsNewDOOM3() && GetPlatform() == 2) {
 			idSWFScriptObject& root = gui->GetRootObject();
 			if (menuBar->BindSprite(root))
 			{
@@ -975,12 +975,12 @@ void idMenuHandler_ShellLocal::HandleExitGameBtn()
 	idStaticList< idStrId, 4 > optionText;
 	callbacks.Append( new( TAG_SWF ) idSWFScriptFunction_QuitDialog( GDM_QUIT_GAME, 1 ) );
 	callbacks.Append( new( TAG_SWF ) idSWFScriptFunction_QuitDialog( GDM_QUIT_GAME, 0 ) );
-	if (!idLib::newd3) {
+	if (!common->IsNewDOOM3()) {
 		callbacks.Append(new(TAG_SWF) idSWFScriptFunction_QuitDialog(GDM_QUIT_GAME, -1));
 	}
 	optionText.Append( idStrId( "#STR_SWF_ACCEPT" ) );
 	optionText.Append( idStrId( "#STR_SWF_CANCEL" ) );
-	if (!idLib::newd3) {
+	if (!common->IsNewDOOM3()) {
 		optionText.Append(idStrId("#str_swf_change_game"));
 	}
 	

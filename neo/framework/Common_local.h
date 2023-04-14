@@ -307,7 +307,31 @@ public:
 	virtual PhotoMode* GetPhotoMode() {
 		return photoMode;
 	}
-	
+
+	virtual bool IsLayoutChanged() {
+		return layoutchange;
+	}
+
+	virtual void ChangeLayout(bool value) {
+		layoutchange = value;
+	}
+
+	virtual bool UseCustomExpansion() {
+		return usecustom;
+	}
+
+	virtual void SetCustomExpansion(bool value) {
+		usecustom = value;
+	}
+
+	virtual bool IsNewDOOM3() {
+		return newd3;
+	}
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	virtual bool UseAlternativeAudioAPI() {
+		return useSecondaryAudioAPI;
+	}
+#endif
 	
 public:
 	void	Draw();			// called by gameThread
@@ -578,6 +602,17 @@ private:
 	int					loadPacifierBinarizeProgressCurrent;
 	
 	bool				showShellRequested;
+
+	// Since now the Controller Layout option can change in the settings, make sure the game is aware of that
+	bool					layoutchange;
+	//Use custom expansion on Doom 3
+	bool					usecustom;
+	//DOOM 3 (2019)
+	bool					newd3;
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	//Changing Audio APIs on runtime can cause instability issues so do it once the engine has been booted
+	bool					useSecondaryAudioAPI;
+#endif
 	
 	// RB begin
 #if defined(USE_DOOMCLASSIC)

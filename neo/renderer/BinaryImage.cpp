@@ -563,7 +563,7 @@ idBinaryImage::GetGeneratedFileName
 void idBinaryImage::GetGeneratedFileName( idStr& gfn, const char* name )
 {
 	//GK: HACK for some binary textures on the new DOOM 3 (2019)
-	if (idLib::newd3 && name[0] == '/') {
+	if (common->IsNewDOOM3() && name[0] == '/') {
 		name = name + 1;
 	}
 	gfn.Format( "generated/images/%s.bimage", name );

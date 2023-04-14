@@ -77,7 +77,7 @@ void idMenuHandler::Initialize( const char* swfFile, idSoundWorld* sw )
 	Cleanup();
 	gui = new idSWF( swfFile, sw );
 	
-	platform = idLib::newd3 ? 5 : 2;
+	platform = common->IsNewDOOM3() ? 5 : 2;
 	
 }
 
@@ -123,7 +123,7 @@ idMenuHandler::GetPlatform
 int idMenuHandler::GetPlatform( bool realPlatform )
 {
 
-	if( ((!idLib::newd3 && platform == 2) || (idLib::newd3 && platform == 5)) && idLib::joystick && !realPlatform )
+	if( ((!common->IsNewDOOM3() && platform == 2) || (common->IsNewDOOM3() && platform == 5)) && idLib::joystick && !realPlatform )
 	{
 		return 0;
 	}

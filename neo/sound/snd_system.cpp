@@ -165,7 +165,7 @@ void DefaultDeviceChangeThread(void* data) {
 		int	now = Sys_Milliseconds();
 		if (now >= nextCheck) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-			if (idLib::useSecondaryAudioAPI) {
+			if (common->UseAlternativeAudioAPI()) {
 				AudioDevice defaultDevice;
 				idSoundHardware_XAudio2::EnumerateAudioDevices(&defaultDevice);
 				if (defaultDevice.id != ((AudioDevice*)data)->id) {
@@ -209,7 +209,7 @@ void idSoundSystemLocal::Init()
 	random.SetSeed( soundTime );
 
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		hardware = new(TAG_AUDIO) idSoundHardware_XAudio2;
 		useXAudio = true;
 	} else 

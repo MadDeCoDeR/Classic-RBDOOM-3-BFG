@@ -426,7 +426,7 @@ void idSoundWorldLocal::Update()
 			if( canMute && channel->volumeDB <= DB_SILENCE )
 			{
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-				if (idLib::useSecondaryAudioAPI) {
+				if (common->UseAlternativeAudioAPI()) {
 					channel->Mute();
 					continue;
 				}

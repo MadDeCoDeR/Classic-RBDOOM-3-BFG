@@ -87,7 +87,7 @@ bool idEFXFile::ReadEffect( idLexer &src, idSoundEffect *effect ) {
 	// reverb effect
 	if ( token == "reverb" ) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-		if (!idLib::useSecondaryAudioAPI) {
+		if (!common->UseAlternativeAudioAPI()) {
 #endif
 			EFXEAXREVERBPROPERTIES* reverb = (EFXEAXREVERBPROPERTIES*)Mem_Alloc(sizeof(EFXEAXREVERBPROPERTIES), TAG_AUDIO);
 			if (reverb) {

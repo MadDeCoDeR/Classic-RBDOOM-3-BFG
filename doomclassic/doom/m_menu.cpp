@@ -2028,7 +2028,7 @@ void M_CloseGame()
 	//GK: Make sure the other game wont start with reverb
 //#ifdef USE_OPENAL
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (!idLib::useSecondaryAudioAPI)
+	if (!common->UseAlternativeAudioAPI())
 #endif
 		alAuxiliaryEffectSlotiRef((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
 	
@@ -2145,7 +2145,7 @@ void M_Layout(int choice)
 {
 	in_joylayout.SetBool(!in_joylayout.GetBool());
 	HU_UpdateGlyphs();
-	if (!idLib::newd3) {
+	if (!common->IsNewDOOM3()) {
 		hardreset = true;
 	}
 }
@@ -2966,7 +2966,7 @@ void M_Drawer (void)
 	// DRAW MENU
 	::g->md_x = ::g->currentMenu->x;
 	::g->md_y = ::g->currentMenu->y;
-	if (::g->currentMenu->menuitems == ::g->QuitDef.menuitems && idLib::newd3) {
+	if (::g->currentMenu->menuitems == ::g->QuitDef.menuitems && common->IsNewDOOM3()) {
 		::g->currentMenu->numitems = 2;
 	}
 	if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn >= 10) {
@@ -3251,10 +3251,10 @@ void M_ChangeMenuExp(int exp) {
 bool M_UseCircleForAccept()
 {
 	int joynum = in_joylayout.GetInteger() + 1;
-	if (joynum == 2 || (idLib::newd3 && joynum == 4)) {
+	if (joynum == 2 || (common->IsNewDOOM3() && joynum == 4)) {
 		return in_joyjpn.GetBool();
 	}
-	else if (idLib::newd3 && joynum == 5) {
+	else if (common->IsNewDOOM3() && joynum == 5) {
 		return true;
 	}
 	return false;

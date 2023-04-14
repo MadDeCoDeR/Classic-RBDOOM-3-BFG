@@ -454,9 +454,6 @@ void DoomLib::Shutdown() {
 		globaldata[currentplayer] = NULL;
 		delete glob;
 	}
-	//GK: No longer in classic Doom ? No need to check these.
-	idLib::classichUsed = false;
-	idLib::warpUsed = false;
 }
 
 // static

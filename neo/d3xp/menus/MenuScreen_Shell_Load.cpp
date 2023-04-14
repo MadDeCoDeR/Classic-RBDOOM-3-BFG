@@ -207,7 +207,7 @@ void idMenuScreen_Shell_LoadLocal::UpdateSaveEnumerations()
 			cmdBar->ClearAllButtons();
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_00395";	// BACK
 			}
@@ -218,14 +218,14 @@ void idMenuScreen_Shell_LoadLocal::UpdateSaveEnumerations()
 			if( sortedSaves.Num() > 0 && !session->GetSaveGameManager().IsWorking() )
 			{
 				buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-				if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+				if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 				{
 					buttonInfo->label = "#str_02187";	// LOAD GAME
 				}
 				buttonInfo->action.Set( WIDGET_ACTION_PRESS_FOCUSED );
 				
 				buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY3 );
-				if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+				if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 				{
 					buttonInfo->label = "#str_02315";	// DELETE GAME
 				}
@@ -236,7 +236,7 @@ void idMenuScreen_Shell_LoadLocal::UpdateSaveEnumerations()
 					idSWFScriptObject& root = GetSWFObject()->GetRootObject();
 					if( btnDelete->BindSprite( root ) )
 					{
-						if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+						if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 						{
 							btnDelete->SetLabel( "" );
 						}

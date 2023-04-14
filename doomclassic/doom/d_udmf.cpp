@@ -276,7 +276,7 @@ void ParseSector(std::vector<std::string> lines, int index) {
 	//GK: Load the reverbs based on sector's index
 	::g->sectors[index].counter = index;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (!idLib::useSecondaryAudioAPI) {
+	if (!common->UseAlternativeAudioAPI()) {
 #endif
 		if (::g->hasreverb) {
 			if ((int)::g->reverbs.size() < index + 1) {

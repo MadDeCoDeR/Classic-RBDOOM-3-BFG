@@ -1287,7 +1287,7 @@ void idConsoleLocal::DrawSolidConsole( float frac )
 	// RB begin
 	//idStr version = va( "%s.%i.%i", ENGINE_VERSION, BUILD_NUMBER, BUILD_NUMBER_MINOR );
 	idStr newGameName = getNewGameName();
-	idStr version = va( "%s %s %s %s", idLib::newd3 ? newGameName.c_str() : CONSOLE_NAME, BUILD_STRING, __DATE__, __TIME__ );
+	idStr version = va( "%s %s %s %s", common->IsNewDOOM3() ? newGameName.c_str() : CONSOLE_NAME, BUILD_STRING, __DATE__, __TIME__ );
 	//idStr version = com_version.GetString();
 	// RB end
 	

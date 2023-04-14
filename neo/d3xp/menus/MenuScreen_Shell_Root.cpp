@@ -104,7 +104,7 @@ void idMenuScreen_Shell_Root::Update()
 			if( !game->GetCVarBool("g_demoMode"))
 			{
 				buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-				if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+				if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 				{
 					buttonInfo->label = "#str_00395";
 				}
@@ -112,7 +112,7 @@ void idMenuScreen_Shell_Root::Update()
 			}
 			
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_SWF_SELECT";
 			}
@@ -147,7 +147,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 		::op->SetAdditionalInfo("status", "D3:Main Menu");
 		::op->SetAdditionalInfo("large image", "d3");
 	}
-	if( menuData != NULL && (!idLib::newd3 && menuData->GetPlatform() != 2) || idLib::newd3)
+	if( menuData != NULL && (!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || common->IsNewDOOM3())
 	{
 		idList< idList< idStr, TAG_IDLIB_LIST_MENU >, TAG_IDLIB_LIST_MENU > menuOptions;
 		idList< idStr > option;
@@ -238,7 +238,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 				buttonWidget->SetDescription( "#str_swf_campaign_desc" );
 			}
 			index++;
-			if (!idLib::newd3 || idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
+			if (!common->IsNewDOOM3() || idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
 				option.Clear();
 				option.Append("#str_swf_multiplayer");	// multiplayer
 				menuOptions.Append(option);
@@ -300,7 +300,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 	
 	idMenuScreen::ShowScreen( transitionType );
 	
-	if( menuData != NULL && !idLib::newd3 && menuData->GetPlatform() == 2)
+	if( menuData != NULL && !common->IsNewDOOM3() && menuData->GetPlatform() == 2)
 	{
 		idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 		if( shell != NULL )
@@ -361,13 +361,13 @@ void idMenuScreen_Shell_Root::HandleExitGameBtn()
 	idStaticList< idStrId, 4 > optionText;
 	callbacks.Append( new( TAG_SWF ) idSWFScriptFunction_QuitDialog( GDM_QUIT_GAME, 1 ) );
 	callbacks.Append( new( TAG_SWF ) idSWFScriptFunction_QuitDialog( GDM_QUIT_GAME, 0 ) );
-	if (!idLib::newd3) {
+	if (!common->IsNewDOOM3()) {
 		callbacks.Append(new(TAG_SWF) idSWFScriptFunction_QuitDialog(GDM_QUIT_GAME, -1));
 	}
 	callbacks.Append(nullptr);
 	optionText.Append( idStrId( "#STR_SWF_ACCEPT" ) );
 	optionText.Append( idStrId( "#STR_SWF_CANCEL" ) );
-	if (!idLib::newd3) {
+	if (!common->IsNewDOOM3()) {
 		optionText.Append(idStrId("#str_swf_change_game"));
 	}
 	optionText.Append(idStrId());
@@ -430,7 +430,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 	{
 		case WIDGET_ACTION_GO_BACK:
 		{
-			if (!idLib::newd3) {
+			if (!common->IsNewDOOM3()) {
 				session->MoveToPressStart();
 				return true;
 			}
@@ -440,7 +440,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 		}
 		case WIDGET_ACTION_PRESS_FOCUSED:
 		{
-			if(!idLib::newd3 && menuData->GetPlatform() == 2)
+			if(!common->IsNewDOOM3() && menuData->GetPlatform() == 2)
 			{
 			
 				idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
@@ -471,7 +471,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 		case WIDGET_ACTION_SCROLL_HORIZONTAL:
 		{
 		
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || idLib::newd3)
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || common->IsNewDOOM3())
 			{
 				return true;
 			}
@@ -497,7 +497,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 			const int totalCount = menuBar->GetTotalNumberOfOptions();
 #endif
 			int newtotalCount = totalCount;
-			if (idLib::newd3 && !idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
+			if (common->IsNewDOOM3() && !idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
 				newtotalCount = totalCount - 1;
 			}
 			index += dir;

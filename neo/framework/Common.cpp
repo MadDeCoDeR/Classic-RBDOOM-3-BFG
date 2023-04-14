@@ -62,10 +62,10 @@ If you have questions concerning this license or the applicable additional terms
 
 struct version_s
 {
-	version_s()
+	/*version_s()
 	{
-		sprintf( string, "%s.%d%s %s %s %s", idLib::newd3 ? NEW_CONSOLE_NAME : CONSOLE_NAME, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__ );
-	}
+		sprintf( string, "%s.%d%s %s %s %s", common->IsNewDOOM3() ? NEW_CONSOLE_NAME : CONSOLE_NAME, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__ );
+	}*/
 	char	string[256];
 } version;
 
@@ -236,6 +236,10 @@ idCommonLocal::idCommonLocal() :
 	stringsFile = NULL;
 
 	photoMode = new PhotoMode();
+
+	layoutchange = false;
+	newd3 = false;
+	usecustom = false;
 	
 	ClearWipe();
 }
@@ -1571,7 +1575,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 		
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-		idLib::useSecondaryAudioAPI = s_useXAudio2.GetBool();
+		useSecondaryAudioAPI = s_useXAudio2.GetBool();
 #endif
 
 		// init OpenGL, which will open a window and connect sound and input hardware
@@ -1615,13 +1619,15 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		//GK: very dirty Hack in order to detect D3(2019)
 		idImage* photoimage = photsensitivityscreen->GetStage(0)->texture.image;
 		photoimage->ActuallyLoadImage(true);
-		idLib::newd3 = photoimage->IsActuallyLoaded();
+		newd3 = photoimage->IsActuallyLoaded();
+		sprintf(version.string, "%s.%d%s %s %s %s", common->IsNewDOOM3() ? NEW_CONSOLE_NAME : CONSOLE_NAME, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__);
+		com_version.SetString(version.string);
 
-		if (!(idLib::newd3 && com_game_mode.GetInteger() > 0)) {
-			Sys_ChangeTitle(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
+		if (!(common->IsNewDOOM3() && com_game_mode.GetInteger() > 0)) {
+			Sys_ChangeTitle(common->IsNewDOOM3() ? NEW_GAME_NAME : GAME_NAME);
 		}
 
-		const int legalMinTime = !idLib::newd3 ? 4000 : 8000;
+		const int legalMinTime = !common->IsNewDOOM3() ? 4000 : 8000;
 		
 		const bool showVideo = ( !com_skipIntroVideos.GetBool() && fileSystem->UsingResourceFiles() );
 		if( showVideo )
@@ -1726,7 +1732,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		StartMenu( true );
 		
 		bool escapeEvent = false;
-		bool finalEscape = !idLib::newd3;
+		bool finalEscape = !common->IsNewDOOM3();
 
 		while( Sys_Milliseconds() - legalStartTime < legalMinTime )
 		{
@@ -1739,7 +1745,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			if ((finalEscape && escapeEvent) || com_emergencyexit.GetBool()) {
 				break;
 			}
-			if ((Sys_Milliseconds() - legalStartTime) >= legalMinTime / 2.0 && idLib::newd3) {
+			if ((Sys_Milliseconds() - legalStartTime) >= legalMinTime / 2.0 && common->IsNewDOOM3()) {
 				RenderPhotosensitivity();
 			}
 			else {
@@ -1800,7 +1806,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		com_fullyInitialized = true;
 		
-		if (idLib::newd3 && (com_game_mode.GetInteger() <= 0 || com_game_mode.GetInteger() > 3)) {
+		if (common->IsNewDOOM3() && (com_game_mode.GetInteger() <= 0 || com_game_mode.GetInteger() > 3)) {
 			com_game_mode.SetInteger(3);
 		}
 		
@@ -1994,9 +2000,9 @@ void idCommonLocal::Shutdown()
 	
 	// free any buffered warning messages
 	char* msg = new char[70];
-	sprintf(msg, "ClearWarnings( %s \" shutdown\" );\n", idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
+	sprintf(msg, "ClearWarnings( %s \" shutdown\" );\n", common->IsNewDOOM3() ? NEW_GAME_NAME : GAME_NAME);
 	minPrint( msg );
-	ClearWarnings(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME " shutdown" );
+	ClearWarnings(common->IsNewDOOM3() ? NEW_GAME_NAME : GAME_NAME " shutdown" );
 	minPrint( "warningCaption.Clear();\n" );
 	warningCaption.Clear();
 	minPrint( "errorList.Clear();\n" );
@@ -2360,7 +2366,7 @@ void idCommonLocal::PerformGameSwitch()
 		DoomLib::Interface.Shutdown();
 		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
 		com_engineHz_latched = com_engineHz.GetFloat();
-		Sys_ChangeTitle(idLib::newd3 ? NEW_GAME_NAME : GAME_NAME);
+		Sys_ChangeTitle(common->IsNewDOOM3() ? NEW_GAME_NAME : GAME_NAME);
 		
 		// Don't MoveToPressStart if we have an invite, we need to go
 		// directly to the lobby.

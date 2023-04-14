@@ -641,7 +641,7 @@ idSWFScriptFunction_GetPlatform::Call
 idSWFScriptVar idSWF::idSWFScriptFunction_getTruePlatform::Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 {
 
-	return idLib::newd3 ? 5 : 2;
+	return common->IsNewDOOM3() ? 5 : 2;
 }
 
 
@@ -691,10 +691,10 @@ idSWF::UseCircleForAccept
 bool idSWF::UseCircleForAccept()
 {
 	int joynum = in_joylayout.GetInteger() + 1;
-	if (joynum == 2 || (idLib::newd3 && joynum == 4)) {
+	if (joynum == 2 || (common->IsNewDOOM3() && joynum == 4)) {
 		return in_joyjpn.GetBool();
 	}
-	else if (idLib::newd3 && joynum == 5) {
+	else if (common->IsNewDOOM3() && joynum == 5) {
 		return true;
 	}
 	return false;
@@ -709,13 +709,13 @@ int	idSWF::GetPlatform()
 {
 
 
-	if( (idLib::joystick || forceNonPCPlatform) && !idLib::layoutchange ) //GK: just in case the layout has changed in the options, make sure the pop up dialogs won't use controller layout (otherwise it will crash)
+	if( (idLib::joystick || forceNonPCPlatform) && !common->IsLayoutChanged() ) //GK: just in case the layout has changed in the options, make sure the pop up dialogs won't use controller layout (otherwise it will crash)
 	{
 		forceNonPCPlatform = false;
 		return 0 + in_joylayout.GetInteger();
 	}
 
-	return idLib::newd3 ? 5 : 2;
+	return common->IsNewDOOM3() ? 5 : 2;
 }
 
 /*

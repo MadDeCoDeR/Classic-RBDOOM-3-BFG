@@ -243,7 +243,7 @@ void idMenuScreen_Shell_Leaderboards::Update()
 			cmdBar->ClearAllButtons();
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_00395";
 			}
@@ -256,7 +256,7 @@ void idMenuScreen_Shell_Leaderboards::Update()
 			if( !lbCache->IsLoadingNewLeaderboard() && !lbCache->IsRequestingRows() && options != NULL && options->GetTotalNumberOfOptions() > 0 )
 			{
 				buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-				if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+				if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 				{
 					buttonInfo->label = "#str_swf_view_profile";
 				}
@@ -404,7 +404,7 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 		
 		if( btnImg != NULL )
 		{
-			if((!idLib::newd3 && platform == 2) || (idLib::newd3 && platform == 5))
+			if((!common->IsNewDOOM3() && platform == 2) || (common->IsNewDOOM3() && platform == 5))
 			{
 				btnImg->SetVisible( false );
 			}
@@ -428,7 +428,7 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 		
 		if( btnImg != NULL )
 		{
-			if((!idLib::newd3 && platform == 2) || (idLib::newd3 && platform == 5))
+			if((!common->IsNewDOOM3() && platform == 2) || (common->IsNewDOOM3() && platform == 5))
 			{
 				btnImg->SetVisible( false );
 			}
@@ -452,7 +452,7 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 		
 		if( btnImg != NULL )
 		{
-			if((!idLib::newd3 && platform == 2) || (idLib::newd3 && platform == 5))
+			if((!common->IsNewDOOM3() && platform == 2) || (common->IsNewDOOM3() && platform == 5))
 			{
 				btnImg->SetVisible( false );
 			}
@@ -476,7 +476,7 @@ void idMenuScreen_Shell_Leaderboards::ShowScreen( const mainMenuTransition_t tra
 		
 		if( btnImg != NULL )
 		{
-			if((!idLib::newd3 && platform == 2) || (idLib::newd3 && platform == 5))
+			if((!common->IsNewDOOM3() && platform == 2) || (common->IsNewDOOM3() && platform == 5))
 			{
 				btnImg->SetVisible( false );
 			}

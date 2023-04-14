@@ -606,7 +606,7 @@ void W_AddFile ( const char *filename)
 					lumpinfo.emplace_back(tlump_);
 					//GK: Check for REVERBD lump and activate reverb check ups
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-					if (!idLib::useSecondaryAudioAPI) {
+					if (!common->UseAlternativeAudioAPI()) {
 #endif
 						if (!idStr::Cmpn(filelumpPointer->name, "REVERBD", 7)) {
 							::g->hasreverb = true;

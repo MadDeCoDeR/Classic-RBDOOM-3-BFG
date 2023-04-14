@@ -1113,6 +1113,9 @@ int firstClock;
 
 const char* acronymPrefix;
 
+bool classichUsed;
+bool warpUsed;
+
 // phares 3/21/98
 //
 // Maintain a freelist of msecnode_t's to reduce memory allocs and frees.

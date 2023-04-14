@@ -476,7 +476,7 @@ idCinematicLocal::idCinematicLocal()
 #endif
 	
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		cinematicAudio = new(TAG_AUDIO) CinematicAudio_XAudio2;
 	} else
 #endif

@@ -166,7 +166,7 @@ Never actually mute VO because we can't restart them precisely enough for lip sy
 bool idSoundChannel::CanMute() const
 {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	return idLib::useSecondaryAudioAPI || IsLooping() || hardwareVoice == NULL;
+	return common->UseAlternativeAudioAPI() || IsLooping() || hardwareVoice == NULL;
 #else
 	return IsLooping() || hardwareVoice == NULL;
 #endif

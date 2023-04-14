@@ -50,7 +50,7 @@ bool			Music_initialized = false;
 
 void I_InitSound() {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-if (idLib::useSecondaryAudioAPI) {
+if (common->UseAlternativeAudioAPI()) {
 		I_InitSoundXA2();
 	}
  else
@@ -59,7 +59,7 @@ if (idLib::useSecondaryAudioAPI) {
 }
 void I_InitSoundHardware(int numOutputChannels_, int channelMask) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_InitSoundHardwareXA2(numOutputChannels_, channelMask);
 	}
 	else
@@ -70,7 +70,7 @@ void I_InitSoundHardware(int numOutputChannels_, int channelMask) {
 // ... update sound buffer and audio device at runtime...
 void I_UpdateSound(void) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_UpdateSoundXA2();
 	}
 	else
@@ -79,7 +79,7 @@ void I_UpdateSound(void) {
 }
 void I_SubmitSound(void) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_SubmitSoundXA2();
 	}
 	else
@@ -90,7 +90,7 @@ void I_SubmitSound(void) {
 // ... shut down and relase at program termination.
 void I_ShutdownSound(void) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_ShutdownSoundXA2();
 	}
 	else
@@ -99,7 +99,7 @@ void I_ShutdownSound(void) {
 }
 void I_ShutdownSoundHardware() {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_ShutdownSoundHardwareXA2();
 	}
 	else
@@ -126,7 +126,7 @@ int I_GetSfxLumpNum(sfxinfo_t* sfxinfo) {
 // Starts a sound in a particular sound channel.
 int I_StartSound(int id, mobj_t* origin, mobj_t* listener_origin, int vol, int pitch, int priority) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		return I_StartSoundXA2(id, origin, listener_origin, vol, pitch, priority);
 	}
 	else
@@ -138,7 +138,7 @@ int I_StartSound(int id, mobj_t* origin, mobj_t* listener_origin, int vol, int p
 // Stops a sound channel.
 void I_StopSound(int handle, int player) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_StopSoundXA2(handle, player);
 	}
 	else
@@ -151,7 +151,7 @@ void I_StopSound(int handle, int player) {
 // Returns 0 if no longer playing, 1 if playing.
 int I_SoundIsPlaying(int handle) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		return I_SoundIsPlayingXA2(handle);
 	}
 	else
@@ -163,7 +163,7 @@ int I_SoundIsPlaying(int handle) {
 //  and pitch of a sound channel.
 void I_UpdateSoundParams(int handle, int vol, int sep, int pitch) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_UpdateSoundParamsXA2(handle, vol, pitch, pitch);
 	}
 	else
@@ -173,7 +173,7 @@ void I_UpdateSoundParams(int handle, int vol, int sep, int pitch) {
 
 void I_SetSfxVolume(int volume) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_SetSfxVolumeXA2(volume);
 	}
 	else
@@ -185,7 +185,7 @@ void I_SetSfxVolume(int volume) {
 //
 void I_InitMusic(void) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_InitMusicXA2();
 	}
 	else
@@ -194,7 +194,7 @@ void I_InitMusic(void) {
 }
 void I_ShutdownMusic(void) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_ShutdownMusicXA2();
 	}
 	else
@@ -204,7 +204,7 @@ void I_ShutdownMusic(void) {
 // Volume.
 void I_SetMusicVolume(int volume) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_SetMusicVolumeXA2(volume);
 	}
 	else
@@ -214,7 +214,7 @@ void I_SetMusicVolume(int volume) {
 // PAUSE game handling.
 void I_PauseSong(int handle) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_PauseSongXA2(handle);
 	}
 	else
@@ -223,7 +223,7 @@ void I_PauseSong(int handle) {
 }
 void I_ResumeSong(int handle) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_ResumeSongXA2(handle);
 	}
 	else
@@ -241,7 +241,7 @@ int I_RegisterSong(void* data, int length) {
 // Horrible thing to do, considering.
 void I_PlaySong(const char* songname, int looping) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_PlaySongXA2(songname, looping);
 	}
 	else
@@ -251,7 +251,7 @@ void I_PlaySong(const char* songname, int looping) {
 // Stops a song over 3 seconds.
 void I_StopSong(int handle) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_StopSongXA2(handle);
 	}
 	else
@@ -265,7 +265,7 @@ void I_UnRegisterSong(int handle) {
 // Update Music (XMP), check for notifications
 void I_UpdateMusic(void) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_UpdateMusicXA2();
 	}
 	else
@@ -275,7 +275,7 @@ void I_UpdateMusic(void) {
 
 void I_ProcessSoundEvents() {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
-	if (idLib::useSecondaryAudioAPI) {
+	if (common->UseAlternativeAudioAPI()) {
 		I_ProcessSoundEventsXA2();
 	}
 	else

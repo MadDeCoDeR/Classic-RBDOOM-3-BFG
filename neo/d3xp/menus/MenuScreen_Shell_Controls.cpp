@@ -156,14 +156,14 @@ void idMenuScreen_Shell_Controls::Update()
 			cmdBar->ClearAllButtons();
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_00395";
 			}
 			buttonInfo->action.Set( WIDGET_ACTION_GO_BACK );
 			
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_SWF_SELECT";
 			}
@@ -473,7 +473,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::AdjustField(
 	}
 	else if (fieldIndex == CONTROLS_FIELD_CONTROLLER_LAYOUT) {
 		fields[fieldIndex].SetInteger(fields[fieldIndex].ToInteger() + adjustAmount);
-		if (!idLib::newd3 ) {
+		if (!common->IsNewDOOM3() ) {
 			if (fields[fieldIndex].ToInteger() > 1) {
 				fields[fieldIndex].SetInteger(0);
 			}
@@ -481,7 +481,7 @@ void idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::AdjustField(
 				fields[fieldIndex].SetInteger(1);
 			}
 		}
-		if (idLib::newd3) {
+		if (common->IsNewDOOM3()) {
 			if (fields[fieldIndex].ToInteger() > 4) {
 				fields[fieldIndex].SetInteger(0);
 			}
@@ -540,11 +540,11 @@ idSWFScriptVar idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::Ge
 bool idMenuScreen_Shell_Controls::idMenuDataSource_ControlSettings::IsRestartRequired() const
 {
 	if (fields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToFloat() != originalFields[CONTROLS_FIELD_CONTROLLER_LAYOUT].ToFloat()) {
-		idLib::layoutchange = true;
+		common->ChangeLayout(true);
 		return true;
 	}
 	else {
-		idLib::layoutchange = false;
+		common->ChangeLayout(false);
 	}
 	return false;
 }

@@ -118,7 +118,7 @@ void idMenuScreen_Shell_ControllerLayout::Update()
 			cmdBar->ClearAllButtons();
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_00395";
 			}
@@ -157,7 +157,7 @@ void idMenuScreen_Shell_ControllerLayout::Update()
 			
 			if( layout != NULL )
 			{
-				if((!idLib::newd3 && menuData->GetPlatform(true) == 2) || (idLib::newd3 && menuData->GetPlatform(true) == 5))
+				if((!common->IsNewDOOM3() && menuData->GetPlatform(true) == 2) || (common->IsNewDOOM3() && menuData->GetPlatform(true) == 5))
 				{
 					layout->StopFrame( 1 );
 				}
@@ -216,7 +216,7 @@ void idMenuScreen_Shell_ControllerLayout::ShowScreen( const mainMenuTransition_t
 			layout360->SetVisible( currentPlatform == 1 );
 			layoutPS3->SetVisible( currentPlatform == 2 );
 		}
-		if (idLib::newd3 && layoutps4 != NULL && layoutxbone != NULL && layoutswitch != NULL) {
+		if (common->IsNewDOOM3() && layoutps4 != NULL && layoutxbone != NULL && layoutswitch != NULL) {
 			layoutxbone->SetVisible(currentPlatform == 3);
 			layoutps4->SetVisible(currentPlatform == 4);
 			layoutswitch->SetVisible(currentPlatform == 5);

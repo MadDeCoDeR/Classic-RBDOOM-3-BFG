@@ -58,7 +58,7 @@ void idMenuScreen_Shell_NewGame::Initialize( idMenuHandler* data )
 	option.Append( "#str_swf_lost_episodes" );	// lost episodes
 	menuOptions.Append( option );
 	//GK: Make sure that the custom expansion option will work before showing it
-	if (idLib::usecustom && idStr::Icmp(idLocalization::GetString("#str_swf_start_map"), "#str_swf_start_map")) {
+	if (common->UseCustomExpansion() && idStr::Icmp(idLocalization::GetString("#str_swf_start_map"), "#str_swf_start_map")) {
 		option.Clear();
 		option.Append("#str_swf_custom_game");	// Custom Expansion
 		menuOptions.Append(option);
@@ -115,14 +115,14 @@ void idMenuScreen_Shell_NewGame::Update()
 			cmdBar->ClearAllButtons();
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_00395";
 			}
 			buttonInfo->action.Set( WIDGET_ACTION_GO_BACK );
 			
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-			if((!idLib::newd3 && menuData->GetPlatform() != 2) || (idLib::newd3 && menuData->GetPlatform() != 5))
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_SWF_SELECT";
 			}

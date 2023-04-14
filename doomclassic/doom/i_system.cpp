@@ -182,7 +182,7 @@ void I_Error(const char *error, ...)
 	//*(int*)0x0 = 21;
 	DoomLib::Interface.QuitCurrentGame();
 	//GK: More lines on console but easier to read
-	if (!idLib::newd3) {
+	if (!common->IsNewDOOM3()) {
 		idLib::Printf("DOOM Classic error: %s\n", error_msg);
 		common->SwitchToGame(DOOM3_BFG);
 	}

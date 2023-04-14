@@ -44,13 +44,7 @@ idFileSystem* 	idLib::fileSystem	= NULL;
 int				idLib::frameNumber	= 0;
 bool			idLib::mainThreadInitialized = 0;
 bool			idLib::joystick = 0;
-bool			idLib::layoutchange = 0;
-bool			idLib::usecustom = 0;
-bool			idLib::classichUsed = 0;
-bool			idLib::warpUsed = 0;
-bool			idLib::newd3 = 0;
 ID_TLS			idLib::isMainThread = 0;
-bool			idLib::useSecondaryAudioAPI = 0;
 
 char idException::error[2048];
 
