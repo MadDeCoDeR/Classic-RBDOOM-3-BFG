@@ -50,7 +50,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // needed for pre rendering (fracs)
 extern fixed_t*		spritewidth;
-extern std::vector<int>		spriteheight;//GK: Keep track of ALL the sprite heights
+extern idList<int>		spriteheight;//GK: Keep track of ALL the sprite heights
 extern fixed_t*		spriteoffset;
 extern fixed_t*		spritetopoffset;
 
