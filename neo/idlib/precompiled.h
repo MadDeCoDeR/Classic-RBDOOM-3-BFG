@@ -139,7 +139,7 @@ const uint32 NUM_FRAME_DATA	= 2;
 #include "../d3xp/Classic.h"
 #include "../d3xp/Game.h"
 
-#include "../libs/platform/OpenPlatform.h"
+#include "../libs/open-platform/include/OpenPlatform.h"
 
 // Session / Network
 #include "../sys/LightweightCompression.h"

@@ -737,7 +737,8 @@ set(OGGVORBIS_SOURCES
 		file(GLOB RAPIDJSON_INCLUDES libs/rapidjson/include/rapidjson/*.h)
 	endif()
 
-file(GLOB OPEN_PLATFORM_INCLUDES libs/platform/*.h)
+file(GLOB OPEN_PLATFORM_INCLUDES libs/open-platform/include/*.h)
+include_directories(${OPEN_PLATFORM_INCLUDES})
 #file(GLOB OPEN_PLATFORM_SOURCES libs/platform/*.cpp)
 	
 file(GLOB SYS_INCLUDES sys/*.h)
@@ -1164,7 +1165,7 @@ source_group("rapidjson" FILES ${RAPIDJSON_INCLUDES})
 
 source_group("freetype" FILES ${FREETYPE_SOURCES})
 
-source_group("platform" FILES ${OPEN_PLATFORM_INCLUDES})
+#source_group("platform" FILES ${OPEN_PLATFORM_INCLUDES})
 #source_group("platform" FILES ${OPEN_PLATFORM_SOURCES})
 
 source_group("Sound" FILES ${SOUND_INCLUDES})
@@ -1305,7 +1306,7 @@ set(LIB_INCLUDES
 			${MINIZIP_INCLUDES}
 			${BINKDEC_INCLUDES}
 			${GLEW_INCLUDES}
-			${OPEN_PLATFORM_INCLUDES}
+			#${OPEN_PLATFORM_INCLUDES}
 			${RAPIDJSON_INCLUDES}
 			#${FREETYPE_SOURCES}
 			${TIMIDITY_INCLUDES}
