@@ -737,7 +737,7 @@ set(OGGVORBIS_SOURCES
 		file(GLOB RAPIDJSON_INCLUDES libs/rapidjson/include/rapidjson/*.h)
 	endif()
 
-file(GLOB OPEN_PLATFORM_INCLUDES libs/open-platform/include/*.h)
+file(GLOB OPEN_PLATFORM_INCLUDES libs/open-platform/include)
 include_directories(${OPEN_PLATFORM_INCLUDES})
 #file(GLOB OPEN_PLATFORM_SOURCES libs/platform/*.cpp)
 	
