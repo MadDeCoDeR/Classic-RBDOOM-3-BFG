@@ -2,7 +2,7 @@ Package: vcpkg-tool-meson
 Version: 0.63
 Architecture: x64-linux
 Multi-Arch: same
-Abi: c546ba96c034c70a01a057808c1d2510f1d4216714c9982fb27bbdf8865aa17b
+Abi: 6aea325ad36f05ded205df32a7d56236e4050fbcef611fdc6c57c031085f9df5
 Description: Meson build system
 Type: Port
 Status: install ok installed
@@ -13,7 +13,7 @@ Port-Version: 5
 Depends: vcpkg-tool-meson
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 3e46a48e9516cf25f92010fbbfb0d1047bb3c5aff92609d0399e670b3c7441a9
+Abi: 00a025241aa23a2bb0950b6cf16a0ab6cac61001eb4148d149dfab4db44d3a30
 Description: pkgconf is a program which helps to configure compiler and linker flags for development libraries. It is similar to pkg-config from freedesktop.org.
 Type: Port
 Status: install ok installed
@@ -24,7 +24,7 @@ Port-Version: 1
 Depends: pkgconf
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 804dbbfa2c197d0b571f60aef7e49016f2d63a41a562b4e34822b366dc0a30c5
+Abi: a7094f79890d6c6cb4db2d7c51b00ec340bbe4880d43e75f24abf927ed95da8b
 Type: Port
 Status: install ok installed
 
@@ -32,7 +32,7 @@ Package: vcpkg-cmake
 Version: 2022-12-22
 Architecture: x64-linux
 Multi-Arch: same
-Abi: b7c8ec9279801beb1c42f86990b3578abcfa2c34fdd4622ece0906e99d230f9f
+Abi: 46c2eb4b28759f30fb5b553861f25fcff9bf3497b9ced27e7862ef24d04786ea
 Type: Port
 Status: install ok installed
 
@@ -41,17 +41,17 @@ Version: 2023-03-02
 Depends: vcpkg-cmake
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 1cf06bad2cbb599a5dec151bf7423e2aebfb8d6f1a5be9e302fa9be53c253bc6
+Abi: b16dbb8e9c9e48198864acc7e2916d57b14617a2b467a4634f98675926a53088
 Type: Port
 Status: install ok installed
 
 Package: ffmpeg
 Version: 5.1.2
-Port-Version: 5
+Port-Version: 6
 Depends: vcpkg-cmake-get-vars, vcpkg-pkgconfig-get-modules
 Architecture: x64-linux
 Multi-Arch: same
-Abi: dbd6b01e045f60a90a90bd468a7d5139ae35f7fc9240caf9ab0242ead8cb4b08
+Abi: 1e86377613f17d3b97c9952d5e69ff9b3059fda3ffb6b46f2ac5b14ca48f32e1
 Description: a library to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.
     FFmpeg is the leading multimedia framework, able to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created. It supports the most obscure ancient formats up to the cutting edge. No matter if they were designed by some standards committee, the community or a corporation. It is also highly portable: FFmpeg compiles, runs, and passes our testing infrastructure FATE across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc. under a wide variety of build environments, machine architectures, and configurations.
 Type: Port
@@ -122,7 +122,7 @@ Version: 2.1.5.1
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-linux
 Multi-Arch: same
-Abi: cfcaab6c8b38b85bf68ba8226bb4d8acca4b434bd8fef13de875f902a25fb79d
+Abi: aa7ea6acab293361dc434427c5fd52f7d6ce830a213503866c690fd6bde83534
 Description: libjpeg-turbo is a JPEG image codec that uses SIMD instructions (MMX, SSE2, NEON, AltiVec) to accelerate baseline JPEG compression and decompression on x86, x86-64, ARM, and PowerPC systems.
 Type: Port
 Status: install ok installed
@@ -132,7 +132,7 @@ Version: 1.2.13
 Depends: vcpkg-cmake
 Architecture: x64-linux
 Multi-Arch: same
-Abi: d16be5fb2be1cf019417c779664ea020434c3d29dd1bf14e72ef445d50dc8ab3
+Abi: 6fe0db2bd41c153f08ae1b06f992843081b07036ee8983ffcbe0013a1e736f0d
 Description: A compression library
 Type: Port
 Status: install ok installed
@@ -143,10 +143,262 @@ Port-Version: 1
 Depends: vcpkg-cmake, vcpkg-cmake-config, zlib
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 80f7becba5516f7b9914bf00d8960bc1da5da5769aa33930a20db0c42e7a357f
+Abi: 92eef7f8e1dc9af5d02f5bf5cd7bd5ca41ed4dabd294748a4081134b7091463f
 Description: libpng is a library implementing an interface for reading and writing PNG (Portable Network Graphics) format files
 Type: Port
 Status: install ok installed
+
+Package: xorg-macros
+Version: 1.19.3
+Architecture: x64-linux
+Multi-Arch: same
+Abi: f2e5ede3185c699cbc74217dd774905190a89c7d239ca2fd8798e8b3cf81ab4f
+Description: X.org macros utilities.
+Type: Port
+Status: purge ok not-installed
+
+Package: xtrans
+Version: 1.4.0
+Port-Version: 1
+Depends: xorg-macros
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 483f5c62523a27e72b4819aaae78d90ecd93c515c205e840d153fe838e509728
+Description: xtrans - X Network Transport layer shared code
+Type: Port
+Status: purge ok not-installed
+
+Package: liblzma
+Version: 5.4.1
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 9f095bff245edd358c3eeddb31019cedd8dc41fc52c2842d51f56bb5f05bead0
+Description: Compression library with an API similar to that of zlib.
+Type: Port
+Status: purge ok not-installed
+
+Package: libiconv
+Version: 1.17
+Port-Version: 1
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 54012bdd4aa90405fd1c61236bb4fac8814d30217691b876112283336d1f8830
+Description: GNU Unicode text conversion
+Type: Port
+Status: purge ok not-installed
+
+Package: libxml2
+Version: 2.10.3
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 4c6d628b02624a385337739d5c1891f2c45c0a22b410a0bee64aca0e862ddf79
+Description: Libxml2 is the XML C parser and toolkit developed for the Gnome project (but usable outside of the Gnome platform).
+Type: Port
+Default-Features: iconv, lzma, zlib
+Status: purge ok not-installed
+
+Package: libxml2
+Feature: iconv
+Depends: libiconv
+Architecture: x64-linux
+Multi-Arch: same
+Description: Add ICONV support
+Type: Port
+Status: purge ok not-installed
+
+Package: libxml2
+Feature: lzma
+Depends: liblzma
+Architecture: x64-linux
+Multi-Arch: same
+Description: Use LZMA
+Type: Port
+Status: purge ok not-installed
+
+Package: libxml2
+Feature: tools
+Architecture: x64-linux
+Multi-Arch: same
+Description: Build tools
+Type: Port
+Status: purge ok not-installed
+
+Package: libxml2
+Feature: zlib
+Depends: zlib
+Architecture: x64-linux
+Multi-Arch: same
+Description: Use ZLib
+Type: Port
+Status: purge ok not-installed
+
+Package: libxslt
+Version: 1.1.37
+Port-Version: 1
+Depends: libxml2, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 09149b7fabd5ca6e8398123106a05b013b73fb2d8544d5e31e7a646fbc2b1d8c
+Description: Libxslt is a XSLT library implemented in C for XSLT 1.0 and most of EXSLT
+Type: Port
+Default-Features: default-features
+Status: purge ok not-installed
+
+Package: libxslt
+Feature: default-features
+Architecture: x64-linux
+Multi-Arch: same
+Description: default features for the current platform
+Type: Port
+Status: purge ok not-installed
+
+Package: xproto
+Version: 2021.5
+Depends: libxslt, vcpkg-tool-meson, xorg-macros
+Architecture: x64-linux
+Multi-Arch: same
+Abi: b8feb73c9755110bba768a058d9812fc3a1e951ffda588147ecc718902f41555
+Description: X Window System unified protocol definitions
+Type: Port
+Status: purge ok not-installed
+
+Package: xcb-util-m4
+Version: 2022-01-24
+Architecture: x64-linux
+Multi-Arch: same
+Abi: cbd571cb171f69dd8fb37a1e46542c94e7a0426e0f1e120685bc325d65e3de4f
+Description: GNU autoconf macros shared across XCB projects
+Type: Port
+Status: purge ok not-installed
+
+Package: bzip2
+Version: 1.0.8
+Port-Version: 4
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: f9ed4f2c8f09ca0eb14cd545e91d9a7c73a206a9d578735967b457234987e913
+Description: bzip2 is a freely available, patent free, high-quality data compressor. It typically compresses files to within 10% to 15% of the best available techniques (the PPM family of statistical compressors), whilst being around twice as fast at compression and six times faster at decompression.
+Type: Port
+Default-Features: tool
+Status: purge ok not-installed
+
+Package: bzip2
+Feature: tool
+Architecture: x64-linux
+Multi-Arch: same
+Description: Builds bzip2 executable
+Type: Port
+Status: purge ok not-installed
+
+Package: xcb-proto
+Version: 1.14.1
+Depends: bzip2, libxml2, xorg-macros
+Architecture: x64-linux
+Multi-Arch: same
+Abi: b4080b9f9e105aff6d8cada3726e0b7355c88981905ce292b7ef2ce9f5088bff
+Description: XML-XCB protocol descriptions used by libxcb for the X11 protocol & extensions
+Type: Port
+Status: purge ok not-installed
+
+Package: pthreads
+Version: 3.0.0
+Port-Version: 13
+Depends: vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 23244445a65a7b6a665f1b046658c6d1f13bfebdb03cd8e5a578772f9d146f5b
+Description: Meta-package that provides PThreads4W on Windows, or assumes presence of system pthreads on POSIX systems.
+Type: Port
+Status: purge ok not-installed
+
+Package: pthread
+Version: 3.0.0
+Port-Version: 2
+Depends: pthreads
+Architecture: x64-linux
+Multi-Arch: same
+Abi: bdc5afd3069dfc71d6028d2d426aab03de0cf24290afe0ec2e0a07ed54ff4db2
+Description: empty package, linking to other port
+Type: Port
+Status: purge ok not-installed
+
+Package: pthread-stubs
+Version: 0.4
+Port-Version: 1
+Depends: pthread
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 26cacea7a02f4fe83d6f35addc88a473fab146a7ea23182f1e4349f21c93dabd
+Description: Stub replacements for POSIX Threads functions.
+Type: Port
+Status: purge ok not-installed
+
+Package: libxdmcp
+Version: 1.1.3
+Depends: bzip2, xorg-macros, xproto
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 48a7349665ad6b139faeb334fbac7b5c320bd34bd052c7253625e794e5ea8383
+Description: X Display Manager Control Protocol library
+Type: Port
+Status: purge ok not-installed
+
+Package: libxau
+Version: 1.0.9
+Depends: bzip2, xorg-macros, xproto
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 1532477f0ab9df64293abeff97cad81172672e023ac9d769fd67a5df4049ff6a
+Description: Functions for handling Xauthority files and entries.
+Type: Port
+Status: purge ok not-installed
+
+Package: xcb
+Version: 1.14
+Port-Version: 1
+Depends: bzip2, libxau, libxdmcp, libxslt, pthread, pthread-stubs, xcb-proto, xcb-util-m4, xorg-macros, xproto
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 63d957a4a57419680f6a49d3889e41a9889799693bb8f1e96c160a511b0e0919
+Description: C interface to the X Window System protocol, which replaces the traditional Xlib interface.
+Type: Port
+Status: purge ok not-installed
+
+Package: libx11
+Version: 1.8.1
+Port-Version: 1
+Depends: bzip2, libx11, libxslt, xcb, xproto, xtrans
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 5a78fb627ad6c304f2a1ab6fde422806fcf23b3bdc7af09d2e205ad74be0205e
+Description: The X Window System is a network-transparent window system that was designed at MIT.
+Type: Port
+Status: purge ok not-installed
+
+Package: libxext
+Version: 1.3.4
+Depends: libx11, xorg-macros, xproto
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 5e73fa432d1ca4f78ec7474c09006911a60376a2faeedb30bc77ad673a3c6ad0
+Description: Xlib-based library for common extensions to the X11 protocol
+Type: Port
+Status: purge ok not-installed
+
+Package: libxrender
+Version: 0.9.10
+Depends: libx11, xorg-macros
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 8cad17f85df08a0b6989496be6f6dbf599d2dfcc46a0bfcda7d0239eacdb635f
+Description: library for the Render Extension to the X11 protocol
+Type: Port
+Status: purge ok not-installed
 
 Package: alsa
 Version: 1.2.6.1
@@ -163,7 +415,7 @@ Version: 1.23.0
 Depends: alsa, vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-linux
 Multi-Arch: same
-Abi: d29d6357916818213a3b802dd4b30a15205aae33bd5ccfee6d3d6c1dd0d36044
+Abi: 6e2c46fb7cb72bbb6eb7b17b8a16fe9386a3ef4edbd77b88f22fda5d28460f6d
 Description: OpenAL Soft is an LGPL-licensed, cross-platform, software implementation of the OpenAL 3D audio API.
 Type: Port
 Status: install ok installed
@@ -174,7 +426,7 @@ Port-Version: 3
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 4ca82dd30452d8ba9c575579e7bd659735390bb0fa0e936e5db6bc61680f5e69
+Abi: 3cef775faa5168b734c4083a93e1b4fd6854d90a78c266e2244ce6e07a7dd777
 Description: A fast JSON parser/generator for C++ with both SAX/DOM style API <http://rapidjson.org/>
 Type: Port
 Status: install ok installed
@@ -184,7 +436,7 @@ Version: 2.26.5
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 9f5fcab9c13469cae50d8e8761de3c89bf8494e9042c844060c03f7d426078ba
+Abi: cdebbf25e3dc6ac1028c00d7ae94572da8b41660d9702019b0386d9e0d245416
 Description: Simple DirectMedia Layer is a cross-platform development library designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D.
 Type: Port
 Default-Features: base
@@ -203,497 +455,6 @@ Feature: x11
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build with X11 support
-Type: Port
-Status: install ok installed
-
-Package: egl-registry
-Version: 2022-09-20
-Architecture: x64-linux
-Multi-Arch: same
-Abi: db2698bcc2abd68e8c9ea46fd69d7a6c383f2a9433fdc5c4ed98db99614fb248
-Description: the EGL API and Extension Registry
-Type: Port
-Status: purge ok not-installed
-
-Package: opengl-registry
-Version: 2022-09-29
-Depends: egl-registry
-Architecture: x64-linux
-Multi-Arch: same
-Abi: f665e569afeb3b7dda1416177fb9bf0b58f504da62c3b401dec8bf7250bfa2e9
-Description: the API and Extension registries for the OpenGL family APIs
-Type: Port
-Status: purge ok not-installed
-
-Package: opengl
-Version: 2022-10-08
-Depends: opengl-registry
-Architecture: x64-linux
-Multi-Arch: same
-Abi: ff68d905fdc0029d68a0652685815f2dde1a1fdae8e21be34defababa479c733
-Description: Open Graphics Library (OpenGL)[3][4][5] is a cross-language, cross-platform application programming interface (API) for rendering 2D and 3D vector graphics.
-Type: Port
-Status: purge ok not-installed
-
-Package: glew
-Version: 2.2.0
-Depends: opengl, vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: bcb9b384350bce27266cee5dfa98e6f83f1e6f27b9feaf20025298ff43ab2762
-Description: The OpenGL Extension Wrangler Library (GLEW) is a cross-platform open-source C/C++ extension loading library.
-Type: Port
-Status: purge ok not-installed
-
-Package: liblzma
-Version: 5.2.5
-Port-Version: 6
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: ad151f65439b4244a95c0e87f04a59408f67a38072b9a6406af0f35a9acade4c
-Description: Compression library with an API similar to that of zlib.
-Type: Port
-Status: purge ok not-installed
-
-Package: libiconv
-Version: 1.17
-Architecture: x64-linux
-Multi-Arch: same
-Abi: edf63874df40b0b7837d21d0e01d228357b2d53801dabb7c5953627e80d69b67
-Description: GNU Unicode text conversion
-Type: Port
-Status: purge ok not-installed
-
-Package: libxml2
-Version: 2.9.14
-Port-Version: 1
-Depends: libiconv, liblzma, vcpkg-cmake, vcpkg-cmake-config, zlib
-Architecture: x64-linux
-Multi-Arch: same
-Abi: bd83dfaa856b08b7cb6fad7d4031c5267e2a1bfeaf62d7f1df5f6ba17d2df302
-Description: Libxml2 is the XML C parser and toolkit developed for the Gnome project (but usable outside of the Gnome platform).
-Type: Port
-Status: purge ok not-installed
-
-Package: libwebp
-Version: 1.2.4
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 2437ecef37b941fb85f877600c40c83fb2f4f5e8a9a1b5e8bfc9401cbb96b7f6
-Description: WebP codec: library to encode and decode images in WebP format
-Type: Port
-Default-Features: libwebpmux, nearlossless, simd
-Status: purge ok not-installed
-
-Package: libwebp
-Feature: libwebpmux
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build the libwebpmux library
-Type: Port
-Status: purge ok not-installed
-
-Package: libwebp
-Feature: nearlossless
-Architecture: x64-linux
-Multi-Arch: same
-Description: Enable near-lossless encoding
-Type: Port
-Status: purge ok not-installed
-
-Package: libwebp
-Feature: simd
-Architecture: x64-linux
-Multi-Arch: same
-Description: Enable any SIMD optimization.
-Type: Port
-Status: purge ok not-installed
-
-Package: libvpx
-Version: 1.12.0
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 0fb3da2b1bf268f7cb4fa37b75ea976a5d2a347b7b1d3f265ba0fe270e162cbf
-Description: The reference software implementation for the video coding formats VP8 and VP9.
-Type: Port
-Status: purge ok not-installed
-
-Package: libogg
-Version: 1.3.5
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 0473ce1dfb1e94c15b377377aa0071886c581d888dcba33cb894e40ae31e6fb0
-Description: Ogg is a multimedia container format, and the native file and stream format for the Xiph.org multimedia codecs.
-Type: Port
-Status: purge ok not-installed
-
-Package: libvorbis
-Version: 1.3.7
-Port-Version: 2
-Depends: libogg, vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 0337fe097285c4b16e7e6831719617e87e952dab5bf6a36332fdad87a6079f24
-Description: Ogg Vorbis is a fully open, non-proprietary, patent-and-royalty-free, general-purpose compressed audio format
-Type: Port
-Status: purge ok not-installed
-
-Package: libtheora
-Version: 1.2.0alpha1-20170719
-Port-Version: 5
-Depends: libogg, vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 4b79df324181e691b5ff8ad720f125ddf3a5522d9ef4b9e31b3e90cdd753fd15
-Description: Theora is a free and open video compression format from the Xiph.org Foundation.
-Type: Port
-Status: purge ok not-installed
-
-Package: mbedtls
-Version: 2.28.1
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 421346a8c9014113cead36089c4f13a72a0ade169cec6f6f58bad14a101e445b
-Description: An open source, portable, easy to use, readable and flexible SSL library
-Type: Port
-Status: purge ok not-installed
-
-Package: mbedtls
-Feature: pthreads
-Architecture: x64-linux
-Multi-Arch: same
-Description: Multi-threading support
-Type: Port
-Status: purge ok not-installed
-
-Package: libssh
-Version: 0.10.4+20221123
-Port-Version: 1
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: b54fa1ff52cddae77181d2d8f8147c5dacdb6ff9c8364163fc8c51b13fde1492
-Description: libssh is a multiplatform C library implementing the SSHv2 protocol on client and server side
-Type: Port
-Default-Features: crypto
-Status: purge ok not-installed
-
-Package: libssh
-Feature: crypto
-Depends: libssh
-Architecture: x64-linux
-Multi-Arch: same
-Description: Default crypto backend
-Type: Port
-Status: purge ok not-installed
-
-Package: libssh
-Feature: mbedtls
-Depends: mbedtls
-Architecture: x64-linux
-Multi-Arch: same
-Description: Crypto support (mbedTLS)
-Type: Port
-Status: purge ok not-installed
-
-Package: openssl
-Version: 3.0.7
-Port-Version: 1
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 0bcbee54bbcf52860145564d212785f2b445edd6a07bd7621954fe37a1cdd15d
-Description: OpenSSL is an open source project that provides a robust, commercial-grade, and full-featured toolkit for the Transport Layer Security (TLS) and Secure Sockets Layer (SSL) protocols. It is also a general-purpose cryptography library.
-Type: Port
-Status: purge ok not-installed
-
-Package: libsrt
-Version: 1.5.0
-Port-Version: 2
-Depends: openssl, vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: a18b5d53738fb2520cf289cd58a336779b6cf001a42d83891395b38df81f46c3
-Description: Secure Reliable Transport (SRT) is an open source transport technology that optimizes streaming performance across unpredictable networks, such as the Internet.
-Type: Port
-Status: purge ok not-installed
-
-Package: speex
-Version: 1.2.1
-Port-Version: 1
-Architecture: x64-linux
-Multi-Arch: same
-Abi: b2d5e9df51d6aa0fdf355065484d4528f150aeb73029de6af2486f408c833f52
-Description: Speex is an Open Source/Free Software patent-free audio compression format designed for speech.
-Type: Port
-Status: purge ok not-installed
-
-Package: soxr
-Version: 0.1.3
-Port-Version: 7
-Depends: vcpkg-cmake
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 33cab7d8bcf920df07a2b40748df037d7e45b4c9e914a2c98de60db615261df8
-Description: High quality audio resampling
-Type: Port
-Status: purge ok not-installed
-
-Package: snappy
-Version: 1.1.9
-Port-Version: 3
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: ea0fef6ed2fc2e00158c2265b52f940c36f6c69c71170e5d5f3e57a39fbb4f38
-Description: A fast compressor/decompressor.
-Type: Port
-Status: purge ok not-installed
-
-Package: opus
-Version: 1.3.1
-Port-Version: 9
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: cf2dea23f71a5d0500c7a41705a01286d75e7e2c3a56774e3e1d66ab86cb994c
-Description: Totally open, royalty-free, highly versatile audio codec
-Type: Port
-Status: purge ok not-installed
-
-Package: openjpeg
-Version: 2.5.0
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: bbee4edfd01c5a21bef0c3108b4dfc22904768988e8d9acffca41930ca761e43
-Description: OpenJPEG is an open-source JPEG 2000 codec written in C language. It has been developed in order to promote the use of JPEG 2000, a still-image compression standard from the Joint Photographic Experts Group (JPEG). Since April 2015, it is officially recognized by ISO/IEC and ITU-T as a JPEG 2000 Reference Software.
-Type: Port
-Status: purge ok not-installed
-
-Package: openh264
-Version: 2021-03-16
-Port-Version: 3
-Depends: vcpkg-tool-meson
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 3cb589ff3f10aa6d6c2aafc38e69a8586aa89ac68fa967c979300144f4e279ce
-Description: OpenH264 is a codec library which supports H.264 encoding and decoding. It is suitable for use in real time applications such as WebRTC.
-Type: Port
-Status: purge ok not-installed
-
-Package: opencl
-Version: 2.2
-Port-Version: 8
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 52f25301a7e2df943566c8d9e07ac2e08ad939114bb66c616ad5c04c4861c5d0
-Description: C/C++ headers and ICD loader (Installable Client Driver) for OpenCL
-Type: Port
-Status: purge ok not-installed
-
-Package: ffnvcodec
-Version: 11.1.5.0
-Port-Version: 1
-Architecture: x64-linux
-Multi-Arch: same
-Abi: e3af6d38655f0b7eadf10c20f2763c0ef5dd0b507848692598b32db77cef0950
-Description: FFmpeg version of Nvidia Codec SDK headers.
-Type: Port
-Status: purge ok not-installed
-
-Package: mp3lame
-Version: 3.100
-Port-Version: 10
-Architecture: x64-linux
-Multi-Arch: same
-Abi: e28920886992579b55a63a7951cf95314ac7b53a747de47acffe5002baa15004
-Description: LAME is a high quality MPEG Audio Layer III (MP3) encoder licensed under the LGPL.
-Type: Port
-Status: purge ok not-installed
-
-Package: libmodplug
-Version: 0.8.9.0
-Port-Version: 10
-Depends: vcpkg-cmake
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 6d93b80de1f58bedd2f0eb989ab945f19eb043af423e70fc7d79491d6983eb9e
-Description: The ModPlug mod file playing library.
-Type: Port
-Status: purge ok not-installed
-
-Package: abseil
-Version: 20220623.1
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 9ffdf1c48cec91c0e243ca059d5695b8e28ef4da021673f3df051b6eaa1a34c8
-Description: an open-source collection designed to augment the C++ standard library.
-    Abseil is an open-source collection of C++ library code designed to augment the C++ standard library. The Abseil library code is collected from Google's own C++ code base, has been extensively tested and used in production, and is the same code we depend on in our daily coding lives.
-    In some cases, Abseil provides pieces missing from the C++ standard; in others, Abseil provides alternatives to the standard for special needs we've found through usage in the Google code base. We denote those cases clearly within the library code we provide you.
-    Abseil is not meant to be a competitor to the standard library; we've just found that many of these utilities serve a purpose within our code base, and we now want to provide those resources to the C++ community as a whole.
-Type: Port
-Status: purge ok not-installed
-
-Package: libilbc
-Version: 3.0.4
-Depends: abseil, vcpkg-cmake
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 13a42648357875daca7b141c069af3099ab22ee4c32f7095cbc77b43312aa507
-Description: Open source implementation of the Internet Low Bit Rate Codec (iLBC) / RFC 3951 codec from the WebRTC project.
-Type: Port
-Status: purge ok not-installed
-
-Package: fribidi
-Version: 1.0.12
-Depends: fribidi, vcpkg-tool-meson
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 00aa1d68aa2c31b05aab8aced8b931cf17936a3c5c84295cd21ea343dab6c716
-Description: GNU FriBidi is an implementation of the Unicode Bidirectional Algorithm (bidi)
-Type: Port
-Status: purge ok not-installed
-
-Package: bzip2
-Version: 1.0.8
-Port-Version: 3
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 7c5e391ca3477c6b2599c00b3087bba5f2a12bfa07f1939d2830f7d55b185d96
-Description: bzip2 is a freely available, patent free, high-quality data compressor. It typically compresses files to within 10% to 15% of the best available techniques (the PPM family of statistical compressors), whilst being around twice as fast at compression and six times faster at decompression.
-Type: Port
-Default-Features: tool
-Status: purge ok not-installed
-
-Package: bzip2
-Feature: tool
-Architecture: x64-linux
-Multi-Arch: same
-Description: Builds bzip2 executable
-Type: Port
-Status: purge ok not-installed
-
-Package: brotli
-Version: 1.0.9
-Port-Version: 4
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 26bb7a46cc1daecdc8e11364fde8cb8dcc5988b0dceff633fe9320364642cdcc
-Description: a generic-purpose lossless compression algorithm that compresses data using a combination of a modern variant of the LZ77 algorithm, Huffman coding and 2nd order context modeling.
-Type: Port
-Status: purge ok not-installed
-
-Package: freetype
-Version: 2.12.1
-Port-Version: 2
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 51ef2fc8716cf95832f44b7e87bbfc1bf8a6f4571573f3d2ea59805b0679a963
-Description: A library to render fonts.
-Type: Port
-Default-Features: brotli, bzip2, png, zlib
-Status: purge ok not-installed
-
-Package: freetype
-Feature: brotli
-Depends: brotli
-Architecture: x64-linux
-Multi-Arch: same
-Description: Support decompression of WOFF2 streams
-Type: Port
-Status: purge ok not-installed
-
-Package: freetype
-Feature: bzip2
-Depends: bzip2
-Architecture: x64-linux
-Multi-Arch: same
-Description: Support bzip2 compressed fonts.
-Type: Port
-Status: purge ok not-installed
-
-Package: freetype
-Feature: png
-Depends: libpng
-Architecture: x64-linux
-Multi-Arch: same
-Description: Support PNG compressed OpenType embedded bitmaps.
-Type: Port
-Status: purge ok not-installed
-
-Package: freetype
-Feature: zlib
-Depends: zlib
-Architecture: x64-linux
-Multi-Arch: same
-Description: Use zlib instead of internal library for DEFLATE
-Type: Port
-Status: purge ok not-installed
-
-Package: pthreads
-Version: 3.0.0
-Port-Version: 12
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 76d87ec7def0f77520996d0fdd01af8ab2e29e3dc5f06bdff624175f3808612e
-Description: Meta-package that provides PThreads4W on Windows, or assumes presence of system pthreads on POSIX systems.
-Type: Port
-Status: purge ok not-installed
-
-Package: pthread
-Version: 3.0.0
-Port-Version: 1
-Depends: pthreads
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 5b90d442a2ba92251073aeb2eccf884118fe0d8313b00c35f6cd6e7e80887243
-Description: empty package, linking to other port
-Type: Port
-Status: purge ok not-installed
-
-Package: libuuid
-Version: 1.0.3
-Port-Version: 11
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 212ff47b2cf34d0d86b192bb08e34b44487ab47d77ac9813d1f54031869a4cc8
-Description: Universally unique id library
-Type: Port
-Status: purge ok not-installed
-
-Package: gperf
-Version: 3.1
-Port-Version: 4
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: a3ec1b8a39c14980f6ed3f7cf38e7051fbb20e587c64e627dd6a32c7ec0f633c
-Description: GNU perfect hash function generator
-Type: Port
-Status: purge ok not-installed
-
-Package: ffmpeg
-Feature: gpl
-Architecture: x64-linux
-Multi-Arch: same
-Description: Allow use of GPL code, the resulting libs and binaries will be under GPL
-Type: Port
-Status: purge ok not-installed
-
-Package: sdl2
-Feature: base
-Depends: sdl2
-Architecture: x64-linux
-Multi-Arch: same
-Description: Base functionality for SDL
 Type: Port
 Status: install ok installed
 
