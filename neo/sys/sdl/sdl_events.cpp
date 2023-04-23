@@ -1073,11 +1073,21 @@ void SDL_Poll()
 				{
 					// this will be handled as "fullscreen on current window"
 					// r_fullscreen 1 means "fullscreen on first window" in d3 bfg
-					fullscreen = -2;
+					SDL_Rect* windowRect = new SDL_Rect();
+					windowRect->x = r_windowX.GetInteger();
+					windowRect->y = r_windowY.GetInteger();
+					windowRect->w = r_windowWidth.GetInteger();
+					windowRect->h = r_windowHeight.GetInteger();
+					fullscreen = SDL_GetRectDisplayIndex(windowRect) + 1;
+					delete(windowRect);
+					if (fullscreen <= 0) {
+						common->Printf("SDL2: Failed to detect Display index from Window with error message: %s\n", SDL_GetError());
+					}
+					
 				}
 				cvarSystem->SetCVarInteger("r_fullscreen", fullscreen);
 				// DG end
-				cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");;
+				cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 				continue; // handle next event
 			}
 
