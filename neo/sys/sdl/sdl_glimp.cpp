@@ -105,7 +105,17 @@ void GLimp_PreInit() // DG: added this function for SDL compatibility
 
 #ifdef __unix__
 	if (SDL_GetCurrentVideoDriver() != "wayland") { //GK: On Linux avoid x11 as much as possible. Since SDL2 is statically linked with Wayland extension enforce it
-		SDL_VideoInit("wayland");
+		bool hasWayland = false;
+		int driversNum = SDL_GetNumVideoDrivers();
+		for (int wi = 0; wi < driversNum; wi++) {
+			if (SDL_GetVideoDriver(wi) == "wayland") {
+				hasWayland = true;
+				break;
+			}
+		}
+		if (hasWayland) {
+			SDL_VideoInit("wayland");
+		}
 	}
 #endif
 	}
