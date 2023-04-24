@@ -114,7 +114,10 @@ void GLimp_PreInit() // DG: added this function for SDL compatibility
 			}
 		}
 		if (hasWayland) {
-			SDL_VideoInit("wayland");
+			if (SDL_VideoInit("wayland") < 0) {
+				common->Error("Error when trying to use Wayland: %s\n", SDL_GetError());
+				SDL_VideoInit(SDL_GetVideoDriver(0));
+			}
 		}
 	}
 #endif
