@@ -102,6 +102,25 @@ void GLimp_PreInit() // DG: added this function for SDL compatibility
 		if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) )
 #endif
 			common->Error( "Error while initializing SDL: %s", SDL_GetError() );
+
+#ifdef __unix__
+	if (SDL_GetCurrentVideoDriver() != "wayland") { //GK: On Linux avoid x11 as much as possible. Since SDL2 is statically linked with Wayland extension enforce it
+		bool hasWayland = false;
+		int driversNum = SDL_GetNumVideoDrivers();
+		for (int wi = 0; wi < driversNum; wi++) {
+			if (SDL_GetVideoDriver(wi) == "wayland") {
+				hasWayland = true;
+				break;
+			}
+		}
+		if (hasWayland) {
+			if (SDL_VideoInit("wayland") < 0) {
+				common->Warning("Error when trying to use Wayland: %s\nReverting to the original Video Driver\n", SDL_GetError());
+				SDL_VideoInit(SDL_GetVideoDriver(0));
+			}
+		}
+	}
+#endif
 	}
 }
 
@@ -146,9 +165,8 @@ bool GLimp_Init( glimpParms_t parms )
 	common->Printf( "Initializing OpenGL subsystem\n" );
 	
 	GLimp_PreInit(); // DG: make sure SDL is initialized
-	
 	// DG: make window resizable
-	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI;
+	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_SHOWN | SDL_WINDOW_INPUT_GRABBED;
 	// DG end
 	
 	if( parms.fullScreen )
@@ -294,7 +312,7 @@ bool GLimp_Init( glimpParms_t parms )
 		 */
 		
 		
-		window = SDL_CreateWindow(ENGINE_NAME,
+			window = SDL_CreateWindow(ENGINE_NAME,
 								   windowPos,
 								   windowPos,
 								   parms.width, parms.height, flags );
