@@ -279,6 +279,8 @@ typedef enum
 	ctl_empty2,
 	mousesens,
 	ctl_empty3,
+	ctl_empty4,
+	togglerun,
 	ctl_end
 } ctl_e;
 // m_menu.structs end // 

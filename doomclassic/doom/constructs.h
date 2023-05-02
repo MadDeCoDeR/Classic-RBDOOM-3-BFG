@@ -483,14 +483,16 @@ menu_t  temp_GameDef = {
 		0
 };
 memcpy(&::g->GameDef, &temp_GameDef, sizeof(temp_GameDef));
-menuitem_t temp_CtlMenu[7] = {
+menuitem_t temp_CtlMenu[9] = {
 	{1,"M_KEY",	M_Key,'k'},
 	{-1, "", 0},
 	{1, "M_RMBL", M_Rumble, 'r' },
 	{1, "M_LAY", M_Layout, 'l'},
 	{-1, "", 0},
 	{2,"M_MSENS",	M_ChangeSensitivity,'m'},
-	{-1,"",0}
+	{-1,"",0},
+	{-1,"",0},
+	{1, "M_TRUN", M_ToggleRun, 't'}
 };
 memcpy(::g->CtlMenu, temp_CtlMenu, sizeof(temp_CtlMenu));
 menu_t  temp_CtlDef = {

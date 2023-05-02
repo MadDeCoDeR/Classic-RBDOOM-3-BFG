@@ -436,7 +436,7 @@ menuitem_t GameMenu[7];
 menu_t  GameDef;
 menuitem_t ResMenu[20];
 menu_t  ResDef;
-menuitem_t CtlMenu[7];
+menuitem_t CtlMenu[9];
 menu_t  CtlDef;
 menuitem_t KeyMenu[30];
 menu_t  KeyDef;

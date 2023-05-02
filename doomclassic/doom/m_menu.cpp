@@ -108,6 +108,7 @@ extern idCVar s_useXAudio2;
 #endif
 
 extern idCVar in_photomode;
+extern idCVar in_toggleRun;
 //
 // defaulted values
 //
@@ -231,6 +232,7 @@ void M_Key(int choice);
 void M_ChangeKeys(int choice);
 void M_Rumble(int choice);
 void M_Layout(int choice);
+void M_ToggleRun(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
@@ -1790,12 +1792,15 @@ void M_DrawCtl(void)
 	const int roundedMouseSpeed = M_GetMouseSpeedForMenu(in_mouseSpeed.GetFloat());
 	bool rumbleOnOff = in_joystickRumble.GetBool();
 	bool layoutOnOff = in_joylayout.GetBool();
+	bool autorunOnOff = in_toggleRun.GetBool();
 
 	V_DrawPatchDirect(::g->CtlDef.x + 95, ::g->CtlDef.y + LINEHEIGHT * rumble, 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[rumbleOnOff], PU_CACHE_SHARED), W_GetNumForName(msgNames[rumbleOnOff])), false);
 	V_DrawPatchDirect(::g->CtlDef.x + 99, ::g->CtlDef.y + LINEHEIGHT * layout, 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(layNames[layoutOnOff], PU_CACHE_SHARED), W_GetNumForName(layNames[layoutOnOff])), false);
 	M_DrawThermo(::g->CtlDef.x, ::g->CtlDef.y + LINEHEIGHT * ctl_empty3, 16, roundedMouseSpeed);
+	V_DrawPatchDirect(::g->CtlDef.x + 148, ::g->CtlDef.y + LINEHEIGHT * togglerun, 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[autorunOnOff], PU_CACHE_SHARED), W_GetNumForName(msgNames[autorunOnOff])), false);
 
 	//M_DrawThermo(::g->OptionsDef.x,::g->OptionsDef.y+LINEHEIGHT*(scrnsize+1),
 	//	9,::g->screenSize);
@@ -2148,6 +2153,11 @@ void M_Layout(int choice)
 	if (!common->IsNewDOOM3()) {
 		hardreset = true;
 	}
+}
+
+void M_ToggleRun(int choice)
+{
+	in_toggleRun.SetBool(!in_toggleRun.GetBool());
 }
 
 

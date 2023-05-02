@@ -89,6 +89,7 @@ void M_Key(int choice);
 void M_ChangeKeys(int choice);
 void M_Rumble(int choice);
 void M_Layout(int choice);
+void M_ToggleRun(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
