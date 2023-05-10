@@ -51,7 +51,7 @@ extern qboolean		markceiling;
 
 extern qboolean		skymap;
 
-extern idList<drawseg_t*>	drawsegs;
+extern std::vector<drawseg_t*>	drawsegs;
 extern drawseg_t*	ds_p;
 
 extern lighttable_t**	hscalelight;

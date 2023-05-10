@@ -733,10 +733,7 @@ void R_InitSpriteLumps (void)
     
     ::g->numspritelumps = ::g->lastspritelump - ::g->firstspritelump + 1;
     ::g->spritewidth = (fixed_t*)DoomLib::Z_Malloc (::g->numspritelumps*4, PU_STATIC, 0);
-	::g->spriteheight.Resize(::g->numspritelumps);
-	for (int j = 0; j < ::g->numspritelumps; j++) {
-		::g->spriteheight.Append(0);
-	}
+	::g->spriteheight.resize(::g->numspritelumps);
     ::g->spriteoffset = (fixed_t*)DoomLib::Z_Malloc (::g->numspritelumps*4, PU_STATIC, 0);
     ::g->spritetopoffset = (fixed_t*)DoomLib::Z_Malloc (::g->numspritelumps*4, PU_STATIC, 0);
 	
@@ -762,7 +759,9 @@ void R_ClearSpriteLumps(void)
 
 	::g->numspritelumps = 0;
 	Z_Free(::g->spritewidth);
-	::g->spriteheight.Clear();
+	if (!::g->spriteheight.empty()) {
+		::g->spriteheight.clear();
+	}
 	Z_Free(::g->spriteoffset);
 	Z_Free(::g->spritetopoffset);
 }

@@ -292,8 +292,11 @@ void P_AddActivePlat(plat_t* plat)
     //int		i;
     
    
-	if (::g->platind >= ::g->activeplats.Num()) {
-		::g->activeplats.Append(plat);
+	if (::g->platind >= ::g->activeplats.size()) {
+		if (::g->activeplats.size() == ::g->activeplats.capacity()) {
+			::g->activeplats.reserve(::g->activeplats.size() + MAXPLATS);
+		}
+		::g->activeplats.emplace_back(plat);
 	}
 	else {
 		::g->activeplats[::g->platind] = plat;

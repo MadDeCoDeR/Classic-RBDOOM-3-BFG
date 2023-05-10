@@ -732,8 +732,25 @@ R_StoreWallRange
 
 
 void AddDrawSeg() {
-	if (::g->drawsegind >= ::g->drawsegs.Num()) {
-		::g->drawsegs.Append(new drawseg_t());
+	if (::g->drawsegind >= ::g->drawsegs.size()) {
+		if (::g->drawsegs.size() == ::g->drawsegs.capacity()) {
+			::g->drawsegs.reserve(::g->drawsegs.size() + MAXDRAWSEGS);
+		}
+		::g->drawsegs.emplace_back(new drawseg_t());
+	}
+	else {
+		::g->drawsegs[::g->drawsegind]->bsilheight = 0;
+		::g->drawsegs[::g->drawsegind]->curline = NULL;
+		::g->drawsegs[::g->drawsegind]->maskedtexturecol = NULL;
+		::g->drawsegs[::g->drawsegind]->scale1 = 0;
+		::g->drawsegs[::g->drawsegind]->scale2 = 0;
+		::g->drawsegs[::g->drawsegind]->scalestep = 0;
+		::g->drawsegs[::g->drawsegind]->silhouette = 0;
+		::g->drawsegs[::g->drawsegind]->sprbottomclip = NULL;
+		::g->drawsegs[::g->drawsegind]->sprtopclip = NULL;
+		::g->drawsegs[::g->drawsegind]->tsilheight = 0;
+		::g->drawsegs[::g->drawsegind]->x1 = 0;
+		::g->drawsegs[::g->drawsegind]->x2 = 0;
 	}
 	::g->drawsegind++;
 }

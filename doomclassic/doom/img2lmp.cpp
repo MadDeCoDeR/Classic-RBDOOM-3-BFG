@@ -521,6 +521,9 @@ patch_t* img2lmp(void* buff,int lump) {
 		unsigned char* imgbuf = reinterpret_cast<unsigned char*>(buff);
 		is_png = checkpng(imgbuf);
 		is_jpeg = checkjpeg(imgbuf);
+		if (!is_png && !is_jpeg) {
+			return (patch_t*)buff;
+		}
 		if (is_png) {
 			patch_t* patch = NULL;
 			if (::g->cpind) {
@@ -534,7 +537,7 @@ patch_t* img2lmp(void* buff,int lump) {
 				return PNG2lmp(imgbuf);
 			}
 		}
-		else if (is_jpeg) {
+		if (is_jpeg) {
 			patch_t* patch = NULL;
 			if (::g->cpind) {
 				patch = GetPreloaded();
@@ -548,6 +551,6 @@ patch_t* img2lmp(void* buff,int lump) {
 			}
 		}
 	}
-	return (patch_t *)buff;
+	return NULL;
 }
 

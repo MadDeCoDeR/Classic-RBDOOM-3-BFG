@@ -873,5 +873,3 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->firstClock = 0;
 
 	::g->cptrvalInitialized = false;
-
-	::g->spechit.SetGranularity(MAXSPECIALCROSS);

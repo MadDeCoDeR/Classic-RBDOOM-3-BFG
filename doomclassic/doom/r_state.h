@@ -50,7 +50,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // needed for pre rendering (fracs)
 extern fixed_t*		spritewidth;
-extern idList<int>		spriteheight;//GK: Keep track of ALL the sprite heights
+extern std::vector<int>		spriteheight;//GK: Keep track of ALL the sprite heights
 extern fixed_t*		spriteoffset;
 extern fixed_t*		spritetopoffset;
 
@@ -79,7 +79,7 @@ extern int		numspritelumps;
 //
 //GK:Don't mind me I just remove limits here and there
 extern long		numsprites;
-extern idList<spritedef_t*>	sprites;
+extern std::vector<spritedef_t*>	sprites;
 
 extern long		numvertexes;
 extern vertex_t*	vertexes;

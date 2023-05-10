@@ -194,9 +194,16 @@ void R_ClearPlanes (void)
 	//GK:Reset indexed vector
 	::g->planeind = 0;
 	//visplane_t* tplane = new visplane_t();
-	if (::g->visplanes.Num() == 0) {
-		::g->visplanes.SetGranularity(MAXVISPLANES);
-		::g->visplanes.Append(new visplane_t());
+	if (::g->visplanes.empty()) {
+#if _ITERATOR_DEBUG_LEVEL < 2
+		::g->visplanes.reserve(MAXVISPLANES);
+		::g->visplanes.emplace_back(new visplane_t());
+#else
+		::g->visplanes.resize(MAXVISPLANES);
+		for (int vpi = 0; vpi < MAXVISPLANES; vpi++) {
+			::g->visplanes[vpi] = new visplane_t();
+		}
+#endif
 	}
 	::g->planeind++;
 	//::g->lastvisplane = ::g->visplanes;
@@ -546,8 +553,11 @@ void R_DrawPlanes (void)
 }
 
 void AddNewVisplane() {
-	if (::g->planeind >= ::g->visplanes.Num()) {
-		::g->visplanes.Append(new visplane_t());
+	if (::g->planeind >= ::g->visplanes.size()) {
+		if (::g->visplanes.size() == ::g->visplanes.capacity()) {
+			::g->visplanes.reserve(::g->visplanes.size() + MAXVISPLANES);
+		}
+		::g->visplanes.emplace_back(new visplane_t());
 	}
 	else {
 		::g->visplanes[::g->planeind]->height = 0;

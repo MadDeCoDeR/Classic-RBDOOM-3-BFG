@@ -341,7 +341,7 @@ typedef struct
 #define MAXPLATS		30
 
 
-extern idList <plat_t*>		activeplats;
+extern std::vector <plat_t*>		activeplats;
 
 void    T_PlatRaise(plat_t*	plat);
 
@@ -582,7 +582,7 @@ typedef struct
 #define CEILWAIT		150
 #define MAXCEILINGS		30
 
-extern idList <ceiling_t*>	activeceilings;
+extern std::vector <ceiling_t*>	activeceilings;
 
 int
 EV_DoCeiling

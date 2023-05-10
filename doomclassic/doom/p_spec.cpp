@@ -1955,16 +1955,25 @@ void P_SpawnSpecials (void)
 
 	//	Init line EFFECTs
 	::g->numlinespecials = 0;
-	::g->linespeciallist.SetGranularity(MAXLINEANIMS);
 	for (i = 0;i < ::g->numlines; i++)
 	{
 		switch(::g->lines[i].special)
 		{
 		case 48:
 			// EFFECT FIRSTCOL SCROLL+
-			if (::g->numlinespecials >= ::g->linespeciallist.Num()) {
+			if (::g->numlinespecials >= ::g->linespeciallist.size()) {
+#if _ITERATOR_DEBUG_LEVEL < 2
 				//::g->linespeciallist.clear();
-				::g->linespeciallist.Append(&::g->lines[i]);
+				if (::g->linespeciallist.size() == ::g->linespeciallist.capacity()) {
+					::g->linespeciallist.reserve(::g->linespeciallist.size() + MAXLINEANIMS);
+				}
+				::g->linespeciallist.emplace_back(&::g->lines[i]);
+#else
+				if (::g->linespeciallist.size() == ::g->linespeciallist.capacity()) {
+					::g->linespeciallist.resize(::g->linespeciallist.size() + MAXLINEANIMS);
+				}
+				::g->linespeciallist[::g->numlinespecials] = & ::g->lines[i];
+#endif
 			}
 			else {
 				::g->linespeciallist[::g->numlinespecials] = &::g->lines[i];
@@ -2006,15 +2015,33 @@ void P_SpawnSpecials (void)
 		}
 	//	Init other misc stuff
 	::g->cellind = 0;
-	::g->activeceilings.SetGranularity(MAXCEILINGS);
-	if (::g->cellind >= ::g->activeceilings.Num()) {
-		::g->activeceilings.Append(new ceiling_t());
+	if (::g->cellind >= ::g->activeceilings.size()) {
+#if _ITERATOR_DEBUG_LEVEL < 2
+		if (::g->activeceilings.size() == ::g->activeceilings.capacity()) {
+			::g->activeceilings.reserve(::g->activeceilings.size() + MAXCEILINGS);
+		}
+		::g->activeceilings.emplace_back(new ceiling_t());
+#else
+		if (::g->activeceilings.size() == ::g->activeceilings.capacity()) {
+			::g->activeceilings.resize(::g->activeceilings.size() + MAXCEILINGS);
+		}
+		::g->activeceilings[::g->cellind] = new ceiling_t();
+#endif
 	}
 	::g->cellind++;
 	::g->platind = 0;
-	::g->activeplats.SetGranularity(MAXPLATS);
-	if (::g->platind >= ::g->activeplats.Num()) {
-		::g->activeplats.Append(new plat_t());
+	if (::g->platind >= ::g->activeplats.size()) {
+#if _ITERATOR_DEBUG_LEVEL < 2
+		if (::g->activeplats.size() == ::g->activeplats.capacity()) {
+			::g->activeplats.reserve(::g->activeplats.size() + MAXPLATS);
+		}
+		::g->activeplats.emplace_back(new plat_t());
+#else
+		if (::g->activeplats.size() == ::g->activeplats.capacity()) {
+			::g->activeplats.resize(::g->activeplats.size() + MAXPLATS);
+		}
+		::g->activeplats[::g->platind] = new plat_t();
+#endif
 	}
 	::g->platind++;
 

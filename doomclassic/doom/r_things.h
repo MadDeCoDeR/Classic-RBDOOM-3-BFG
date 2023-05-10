@@ -36,7 +36,7 @@ If you have questions concerning this license or the applicable additional terms
 //GK : Increase the number of things from 128 to 245760 (lets become NUTS)
 #define MAXVISSPRITES  	128
 
-extern idList<vissprite_t*>	vissprites;
+extern std::vector<vissprite_t*>	vissprites;
 //extern vissprite_t*	vissprite_p;
 extern vissprite_t	vsprsortedhead;
 
