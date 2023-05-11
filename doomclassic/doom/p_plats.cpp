@@ -259,7 +259,7 @@ EV_DoPlat
 
 void P_ActivateInStasis(int tag)
 {
-    int		i;
+    uint		i;
 	
     for (i = 0;i < ::g->platind;i++)
 	if (::g->activeplats[i]
@@ -274,7 +274,7 @@ void P_ActivateInStasis(int tag)
 
 void EV_StopPlat(line_t* line)
 {
-    int		j;
+    uint		j;
 	
     for (j = 0;j < ::g->platind;j++)
 	if (::g->activeplats[j]
@@ -306,7 +306,7 @@ void P_AddActivePlat(plat_t* plat)
 
 void P_RemoveActivePlat(plat_t* plat)
 {
-    int		i;
+    uint		i;
     for (i = 0;i < ::g->platind;i++)
 	if (plat == ::g->activeplats[i])
 	{

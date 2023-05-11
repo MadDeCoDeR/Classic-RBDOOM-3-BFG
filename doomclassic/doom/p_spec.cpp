@@ -1705,14 +1705,15 @@ void P_UpdateSpecials (void)
 
 
 	//	ANIMATE LINE SPECIALS
-	for (i = 0; i < ::g->numlinespecials; i++)
+	size_t ai;
+	for (ai = 0; ai < ::g->numlinespecials; ai++)
 	{
 	//	line = ::g->linespeciallist[i];
-		switch(::g->linespeciallist[i]->special)
+		switch(::g->linespeciallist[ai]->special)
 		{
 		case 48:
 			// EFFECT FIRSTCOL SCROLL +
-			::g->sides[::g->linespeciallist[i]->sidenum[0]].textureoffset += FRACUNIT;
+			::g->sides[::g->linespeciallist[ai]->sidenum[0]].textureoffset += FRACUNIT;
 			break;
 		}
 	}

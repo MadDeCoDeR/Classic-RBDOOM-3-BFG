@@ -726,7 +726,7 @@ P_TraverseIntercepts
     while (count--)
     {
 	dist = MAXINT;
-	for (int i = 0 ; i < ::g->interind-1; i++)
+	for (size_t i = 0 ; i < ::g->interind-1; i++)
 	{
 		scan = ::g->intercepts[i];
 	    if (scan->frac < dist)

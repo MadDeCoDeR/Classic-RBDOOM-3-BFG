@@ -473,7 +473,7 @@ int	prndindex ;
 //  p_ceilng.vars begin // 
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
 std::vector <ceiling_t*>	activeceilings;
-long cellind=0;
+size_t cellind=0;
 // p_ceilng.vars end // 
 //  p_enemy.vars begin // 
 mobj_t*		soundtarget;
@@ -500,7 +500,7 @@ fixed_t		tmdropoffz;
 line_t*		ceilingline;
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
 std::vector<line_t*>		spechit;
-long		numspechit;
+size_t		numspechit;
 fixed_t		bestslidefrac;
 fixed_t		secondslidefrac;
 line_t*		bestslideline;
@@ -530,7 +530,7 @@ fixed_t openbottom;
 fixed_t openrange;
 fixed_t	lowfloor;
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
-long	interind;
+size_t	interind;
 std::vector<intercept_t*>	intercepts;
 //intercept_t*	intercept_p;
 divline_t 	trace;
@@ -547,7 +547,7 @@ int		iquetail;
 //  p_plats.vars begin // 
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
 std::vector <plat_t*>		activeplats;
-long platind = 0;
+size_t platind = 0;
 // p_plats.vars end // 
 //  p_pspr.vars begin // 
 fixed_t		swingx;
@@ -601,7 +601,7 @@ qboolean		levelTimer;
 int		levelTimeCount;
 int		levelFragCount;
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
-long		numlinespecials;
+size_t		numlinespecials;
 long		linespecind;
 std::vector<line_t*>		linespeciallist{};
 animdef_t animdefs[23]; //GK: Make this global in order to be used and elsewhere
@@ -626,7 +626,7 @@ line_t*		linedef;
 sector_t*	frontsector;
 sector_t*	backsector;
 std::vector<drawseg_t*>	drawsegs;
-long	drawsegind;
+size_t	drawsegind;
 drawseg_t*	ds_p;
 cliprange_t*	newend;
 cliprange_t	solidsegs[MAXSEGS];
@@ -798,7 +798,7 @@ std::vector<spritedef_t*>	sprites{};
 long		numsprites;
 spriteframe_t	sprtemp[29];
 int		maxframe;
-long    visspriteind;
+size_t    visspriteind;
 std::vector<vissprite_t*>	vissprites;
 //vissprite_t*	vissprite_p;
 int		newvissprite;
@@ -987,7 +987,7 @@ int texnum; //GK: Store pointer of current texture in order to take it's height 
 // r_plane begin //
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
 std::vector<visplane_t*>		visplanes; 
-long			planeind;
+size_t			planeind;
 //visplane_t*		lastvisplane; 
 visplane_t*		floorplane; 
 visplane_t*		ceilingplane; 

@@ -319,7 +319,7 @@ void P_AddActiveCeiling(ceiling_t* c)
 //
 void P_RemoveActiveCeiling(ceiling_t* c)
 {
-    int		i;
+    uint		i;
 	
     for (i = 0;i < ::g->cellind;i++)
     {
@@ -341,7 +341,7 @@ void P_RemoveActiveCeiling(ceiling_t* c)
 //
 int P_ActivateInStasisCeiling(line_t* line)
 {
-    int		i;
+    uint		i;
 	int j = 0;
 	
     for (i = 0;i < ::g->cellind;i++)
@@ -367,7 +367,7 @@ int P_ActivateInStasisCeiling(line_t* line)
 //
 int	EV_CeilingCrushStop(line_t	*line)
 {
-    int		i;
+    uint		i;
     int		rtn;
 	
     rtn = 0;

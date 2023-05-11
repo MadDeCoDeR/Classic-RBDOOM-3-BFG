@@ -894,7 +894,7 @@ void R_SortVisSprites (void)
     if (!count)
 	return;
 		
-    for (int i_=0 ; i_ < ::g->visspriteind ; i_++)
+    for (uint i_=0 ; i_ < ::g->visspriteind ; i_++)
     {
 		//GK:use the actual vector instead of a temp array
 		if (i_ < ::g->visspriteind -1) {

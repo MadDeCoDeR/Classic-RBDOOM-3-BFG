@@ -234,7 +234,7 @@ visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel,fixed_t xoff
 		height = 0;			// all skys map together
 		lightlevel = 0;
 	}
-		for (int i = 0; i < ::g->planeind; i++) {
+		for (uint i = 0; i < ::g->planeind; i++) {
 			check = ::g->visplanes[i];
 			if (height == check->height && picnum == check->picnum && lightlevel == check->lightlevel && xoffs == check->xoffs && check->yoffs) {
 				break;
@@ -447,7 +447,7 @@ void R_DrawPlanes (void)
 		 ::g->lastopening - ::g->openings);
 #endif
 
-    for (int i = 0; i < ::g->planeind-1; i++)
+    for (uint i = 0; i < ::g->planeind-1; i++)
     {
 		//pl = ::g->visplanes[i];
 	if (::g->visplanes[i]->minx > ::g->visplanes[i]->maxx)
