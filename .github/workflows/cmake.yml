@@ -196,9 +196,11 @@ jobs:
       working-directory: ${{github.workspace}}
       run: |
         mv ./build/DoomBFA DoomBFA
+        mv ./base/DoomBFA.sh DoomBFA.sh
         mkdir ./third-party-licenses
         mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
         chmod +x DoomBFA
+        chmod +x DoomBFA.sh
         rm -d -R ./build
         zip -m -r linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
     - name: Upload Linux Artifact to release
