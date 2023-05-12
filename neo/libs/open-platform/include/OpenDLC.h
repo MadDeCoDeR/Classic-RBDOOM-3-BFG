@@ -23,8 +23,8 @@ SOFTWARE.
 #pragma once
 
 typedef struct OpenContent_t {
-	const char* id;
-	const char* name;
+	char* id;
+	char* name;
 }OpenContent;
 
 class OpenDLC {

@@ -66,6 +66,10 @@ public:
 	* Check if the game runs on a portable device
 	*/
 	virtual bool IsPortable() = 0;
+	/*
+	* Check Battery Level on portable Device
+	*/
+	virtual unsigned char GetBatteryLevel() = 0;
 	virtual bool ShowFloatingTextBox(int type, int xpos, int ypos, int width, int height) = 0;
 	virtual void SetNotificationsPosition(unsigned int x, unsigned int y) = 0;
 	virtual unsigned long long CreateLobby(int type, int maxplayers) = 0;
