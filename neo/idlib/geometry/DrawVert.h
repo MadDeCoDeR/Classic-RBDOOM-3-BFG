@@ -46,6 +46,10 @@ If you have questions concerning this license or the applicable additional terms
 #define NORMALMAP_BYTE_TO_FLOAT( x )	VERTEX_BYTE_TO_FLOAT( x )	//( (x) - 128.0f ) * ( 1.0f / 127.0f )
 #define NORMALMAP_FLOAT_TO_BYTE( x )	VERTEX_FLOAT_TO_BYTE( x )	//idMath::Ftob( 128.0f + 127.0f * (x) + 0.5f )
 
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic ignored "-Wignored-qualifiers"
+#endif
+
 /*
 ================================================
 halfFloat_t

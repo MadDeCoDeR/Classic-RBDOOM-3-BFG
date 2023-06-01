@@ -576,7 +576,7 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 			break;
 		}
 // GK: Start
-		case WM_DPICHANGED:
+		case WM_DPICHANGED: //GK: Microsoft Docs Lie??? This is available on Windows 7
 			int dpi = HIWORD(wParam);
 			// A little shortcut cheat using Microsoft's Documentation
 			switch (dpi) {

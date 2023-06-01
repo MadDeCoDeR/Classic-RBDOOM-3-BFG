@@ -33,6 +33,10 @@ If you have questions concerning this license or the applicable additional terms
 #pragma GCC diagnostic ignored "-Wdeprecated"
 #else
 #pragma warning(disable: 4595) //GK: non-member operator new or delete functions may not be declared inline
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wimplicit-exception-spec-mismatch"
+#pragma clang diagnostic ignored "-Winline-new-delete"
+#endif
 #endif
 /*
 ===============================================================================

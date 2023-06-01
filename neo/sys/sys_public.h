@@ -33,6 +33,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "../idlib/CmdArgs.h"
 #include "../idlib/precompiled.h"
 
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic ignored "-Wmicrosoft-enum-forward-reference"
+#endif
+
 /*
 ===============================================================================
 

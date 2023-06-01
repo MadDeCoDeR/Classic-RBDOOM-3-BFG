@@ -32,6 +32,10 @@ If you have questions concerning this license or the applicable additional terms
 #if defined(USE_INTRINSICS)
 #include <emmintrin.h>
 #endif
+
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic ignored "-Wignored-attributes"
+#endif
 /*
 ================================================================================================
 

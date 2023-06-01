@@ -31,6 +31,10 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __DEMOFILE_H__
 #define __DEMOFILE_H__
 
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+#endif
+
 /*
 ===============================================================================
 

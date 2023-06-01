@@ -28,6 +28,10 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __FILE_SAVEGAME_H__
 #define __FILE_SAVEGAME_H__
 
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+#endif
+
 #include <zlib.h>
 
 // Listing of the types of files within a savegame package

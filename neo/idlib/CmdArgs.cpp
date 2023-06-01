@@ -188,7 +188,7 @@ void idCmdArgs::TokenizeString( const char* text, bool keepAsStrings )
 		
 		len = token.Length();
 		
-		if( totalLen + len + 1 > sizeof( tokenized ) )
+		if( totalLen + len + 1ULL > sizeof( tokenized ) )
 		{
 			return;			// this is usually something malicious
 		}

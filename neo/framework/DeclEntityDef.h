@@ -29,6 +29,10 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __DECLENTITYDEF_H__
 #define __DECLENTITYDEF_H__
 
+#if defined(_MSC_VER) && defined(__clang__)
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+#endif
+
 /*
 ===============================================================================
 
