@@ -1647,6 +1647,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		if (com_emergencyexit.GetBool()) {
 			return;
 		}
+		if (this->IsNewDOOM3()) {
+			fileSystem->Restart();
+		}
 		
 		int legalStartTime = sys->GetMilliseconds();
 		declManager->Init2();

@@ -49,6 +49,8 @@ If you have questions concerning this license or the applicable additional terms
 // RB end
 
 #define	BASE_GAMEDIR					"base"
+#define	BASE_BFG_GAMEDIR					"base_BFG"
+#define	BASE_NEW_GAMEDIR					"base_NEW"
 
 #define CONFIG_FILE						"DBFAConfig.cfg"
 

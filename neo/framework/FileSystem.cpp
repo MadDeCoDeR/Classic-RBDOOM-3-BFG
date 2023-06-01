@@ -3125,10 +3125,18 @@ void idFileSystemLocal::Startup()
 	InitPrecache();
 	
 	SetupGameDirectories( BASE_GAMEDIR );
+	if (::common->IsNewDOOM3()) {
+		SetupGameDirectories(BASE_NEW_GAMEDIR);
+	}
+	else {
+		SetupGameDirectories(BASE_BFG_GAMEDIR);
+	}
 	
 	// fs_game_base override
 	if( fs_game_base.GetString()[0] &&
-			idStr::Icmp( fs_game_base.GetString(), BASE_GAMEDIR ) )
+			idStr::Icmp( fs_game_base.GetString(), BASE_GAMEDIR ) &&
+		idStr::Icmp(fs_game_base.GetString(), BASE_BFG_GAMEDIR) &&
+		idStr::Icmp(fs_game_base.GetString(), BASE_NEW_GAMEDIR))
 	{
 		SetupGameDirectories( fs_game_base.GetString() );
 	}
@@ -3136,6 +3144,8 @@ void idFileSystemLocal::Startup()
 	// fs_game override
 	if( fs_game.GetString()[0] &&
 			idStr::Icmp( fs_game.GetString(), BASE_GAMEDIR ) &&
+			idStr::Icmp(fs_game.GetString(), BASE_BFG_GAMEDIR) &&
+			idStr::Icmp(fs_game.GetString(), BASE_NEW_GAMEDIR) &&
 			idStr::Icmp( fs_game.GetString(), fs_game_base.GetString() ) )
 	{
 		SetupGameDirectories( fs_game.GetString() );
