@@ -1216,6 +1216,10 @@ void LoadPlatformDLL()
 			GetPlatformAPI = (GetPlatformAPI_t)Sys_DLL_GetProcAddress(platformDLL, functionName);
 			if (!GetPlatformAPI)
 			{
+				Sys_DLL_Unload(platformDLL);
+				platformDLL = -1;
+				//common->FatalError("couldn't find platform DLL API");
+				::op = NULL;
 #ifdef WIN32
 				//GK: Just some 64-bit paranoia
 				int lastError = GetLastError();
@@ -1232,10 +1236,6 @@ void LoadPlatformDLL()
 
 				Sys_Error("Sys_DLL_: GetProcAddress failed - %s (%d)", msgbuf, lastError);
 #endif
-				Sys_DLL_Unload(platformDLL);
-				platformDLL = -1;
-				//common->FatalError("couldn't find platform DLL API");
-				::op = NULL;
 				return;
 			}
 
@@ -1257,7 +1257,7 @@ void LoadPlatformDLL()
 				::op->SetAdditionalInfo("small image", "dbfa");
 				::op->SetAdditionalInfo("status", "Strting Game");
 				//::op->SetNotificationsPosition(0, 0); //GK: Who knows maybe someone want it on top left
-				common->Printf("Platform loaded sucessfully !!!\n");
+				common->Printf("%s Platform loaded sucessfully !!!\n", ::op->API_Name());
 			}
 #endif
 		}
@@ -1271,6 +1271,7 @@ void UnloadPlatformDLL()
 	if (::op != NULL)
 	{
 		::op->API_Shutdown();
+		
 	}
 
 	if (platformDLL)
@@ -1317,6 +1318,9 @@ void idCommonLocal::LoadGameDLL()
 		GetGameAPI = (GetGameAPI_t)Sys_DLL_GetProcAddress(gameDLL, functionName);
 		if (!GetGameAPI)
 		{
+			Sys_DLL_Unload(gameDLL);
+			gameDLL = -1;
+			common->FatalError("couldn't find game DLL API");
 #ifdef WIN32
 			//GK: Just some 64-bit paranoia
 			int lastError = GetLastError();
@@ -1333,9 +1337,7 @@ void idCommonLocal::LoadGameDLL()
 
 			Sys_Error("Sys_DLL_: GetProcAddress failed - %s (%d)", msgbuf, lastError);
 #endif
-			Sys_DLL_Unload(gameDLL);
-			gameDLL = -1;
-			common->FatalError("couldn't find game DLL API");
+			
 			return;
 		}
 
@@ -1953,9 +1955,6 @@ void idCommonLocal::Shutdown()
 	// shutdown the decl manager
 	minPrint( "declManager->Shutdown();\n" );
 	declManager->Shutdown();
-	if (::op) {
-		UnloadPlatformDLL();
-	}
 	
 	// shut down the renderSystem
 	minPrint( "renderSystem->Shutdown();\n" );
@@ -1976,6 +1975,10 @@ void idCommonLocal::Shutdown()
 	// only shut down the log file after all output is done
 	minPrint( "CloseLogFile();\n" );
 	CloseLogFile();
+
+	if (::op) {
+		UnloadPlatformDLL();
+	}
 	
 	// shut down the file system
 	minPrint( "fileSystem->Shutdown( false );\n" );
