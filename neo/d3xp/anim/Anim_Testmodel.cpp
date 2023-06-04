@@ -115,7 +115,7 @@ void idTestModel::Spawn()
 	
 	if( renderEntity.hModel && renderEntity.hModel->IsDefaultModel() && !animator.ModelDef() )
 	{
-		gameLocal.Warning( "Unable to create testmodel for '%s' : model defaulted", spawnArgs.GetString( "model" ) );
+		gameLocal->Warning( "Unable to create testmodel for '%s' : model defaulted", spawnArgs.GetString( "model" ) );
 		PostEventMS( &EV_Remove, 0 );
 		return;
 	}
@@ -151,7 +151,7 @@ void idTestModel::Spawn()
 		joint = animator.GetJointHandle( jointName );
 		if( joint == INVALID_JOINT )
 		{
-			gameLocal.Warning( "Joint '%s' not found for 'head_joint'", jointName.c_str() );
+			gameLocal->Warning( "Joint '%s' not found for 'head_joint'", jointName.c_str() );
 		}
 		else
 		{
@@ -164,8 +164,8 @@ void idTestModel::Spawn()
 				sndKV = spawnArgs.MatchPrefix( "snd_", sndKV );
 			}
 			
-			head = gameLocal.SpawnEntityType( idAnimatedEntity::Type, &args );
-			animator.GetJointTransform( joint, gameLocal.time, origin, axis );
+			head = gameLocal->SpawnEntityType( idAnimatedEntity::Type, &args );
+			animator.GetJointTransform( joint, gameLocal->time, origin, axis );
 			origin = GetPhysics()->GetOrigin() + ( origin + modelOffset ) * GetPhysics()->GetAxis();
 			head.GetEntity()->SetModel( headModel );
 			head.GetEntity()->SetOrigin( origin );
@@ -192,14 +192,14 @@ void idTestModel::Spawn()
 				copyJoint.from = animator.GetJointHandle( jointName );
 				if( copyJoint.from == INVALID_JOINT )
 				{
-					gameLocal.Warning( "Unknown copy_joint '%s'", jointName.c_str() );
+					gameLocal->Warning( "Unknown copy_joint '%s'", jointName.c_str() );
 					continue;
 				}
 				
 				copyJoint.to = headAnimator->GetJointHandle( jointName );
 				if( copyJoint.to == INVALID_JOINT )
 				{
-					gameLocal.Warning( "Unknown copy_joint '%s' on head", jointName.c_str() );
+					gameLocal->Warning( "Unknown copy_joint '%s' on head", jointName.c_str() );
 					continue;
 				}
 				
@@ -209,11 +209,11 @@ void idTestModel::Spawn()
 	}
 	
 	// start any shader effects based off of the spawn time
-	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.time );
+	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal->time );
 	
 	SetPhysics( &physicsObj );
 	
-	gameLocal.Printf( "Added testmodel at origin = '%s',  angles = '%s'\n", GetPhysics()->GetOrigin().ToString(), GetPhysics()->GetAxis().ToAngles().ToString() );
+	gameLocal->Printf( "Added testmodel at origin = '%s',  angles = '%s'\n", GetPhysics()->GetOrigin().ToString(), GetPhysics()->GetAxis().ToAngles().ToString() );
 	BecomeActive( TH_THINK );
 }
 
@@ -227,15 +227,15 @@ idTestModel::~idTestModel()
 	StopSound( SND_CHANNEL_ANY, false );
 	if( renderEntity.hModel )
 	{
-		gameLocal.Printf( "Removing testmodel %s\n", renderEntity.hModel->Name() );
+		gameLocal->Printf( "Removing testmodel %s\n", renderEntity.hModel->Name() );
 	}
 	else
 	{
-		gameLocal.Printf( "Removing testmodel\n" );
+		gameLocal->Printf( "Removing testmodel\n" );
 	}
-	if( gameLocal.testmodel == this )
+	if( gameLocal->testmodel == this )
 	{
-		gameLocal.testmodel = NULL;
+		gameLocal->testmodel = NULL;
 	}
 	if( head.GetEntity() )
 	{
@@ -281,7 +281,7 @@ void idTestModel::Think()
 	
 	if( thinkFlags & TH_THINK )
 	{
-		if( anim && ( gameLocal.testmodel == this ) && ( mode != g_testModelAnimate.GetInteger() ) )
+		if( anim && ( gameLocal->testmodel == this ) && ( mode != g_testModelAnimate.GetInteger() ) )
 		{
 			StopSound( SND_CHANNEL_ANY, false );
 			if( head.GetEntity() )
@@ -296,18 +296,18 @@ void idTestModel::Think()
 					if( animator.NumFrames( anim ) <= 1 )
 					{
 						// single frame animations end immediately, so just cycle it since it's the same result
-						animator.CycleAnim( ANIMCHANNEL_ALL, anim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+						animator.CycleAnim( ANIMCHANNEL_ALL, anim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 						if( headAnim )
 						{
-							headAnimator->CycleAnim( ANIMCHANNEL_ALL, headAnim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+							headAnimator->CycleAnim( ANIMCHANNEL_ALL, headAnim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 						}
 					}
 					else
 					{
-						animator.PlayAnim( ANIMCHANNEL_ALL, anim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+						animator.PlayAnim( ANIMCHANNEL_ALL, anim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 						if( headAnim )
 						{
-							headAnimator->PlayAnim( ANIMCHANNEL_ALL, headAnim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+							headAnimator->PlayAnim( ANIMCHANNEL_ALL, headAnim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 							if( headAnimator->AnimLength( headAnim ) > animator.AnimLength( anim ) )
 							{
 								// loop the body anim when the head anim is longer
@@ -320,51 +320,51 @@ void idTestModel::Think()
 					
 				case 1:
 					// cycle anim with fixed origin
-					animator.CycleAnim( ANIMCHANNEL_ALL, anim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+					animator.CycleAnim( ANIMCHANNEL_ALL, anim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					animator.RemoveOriginOffset( true );
 					if( headAnim )
 					{
-						headAnimator->CycleAnim( ANIMCHANNEL_ALL, headAnim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+						headAnimator->CycleAnim( ANIMCHANNEL_ALL, headAnim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					}
 					break;
 					
 				case 2:
 					// cycle anim with continuous origin
-					animator.CycleAnim( ANIMCHANNEL_ALL, anim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+					animator.CycleAnim( ANIMCHANNEL_ALL, anim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					animator.RemoveOriginOffset( false );
 					if( headAnim )
 					{
-						headAnimator->CycleAnim( ANIMCHANNEL_ALL, headAnim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+						headAnimator->CycleAnim( ANIMCHANNEL_ALL, headAnim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					}
 					break;
 					
 				case 3:
 					// frame by frame with continuous origin
-					animator.SetFrame( ANIMCHANNEL_ALL, anim, frame, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+					animator.SetFrame( ANIMCHANNEL_ALL, anim, frame, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					animator.RemoveOriginOffset( false );
 					if( headAnim )
 					{
-						headAnimator->SetFrame( ANIMCHANNEL_ALL, headAnim, frame, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+						headAnimator->SetFrame( ANIMCHANNEL_ALL, headAnim, frame, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					}
 					break;
 					
 				case 4:
 					// play anim once
-					animator.PlayAnim( ANIMCHANNEL_ALL, anim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+					animator.PlayAnim( ANIMCHANNEL_ALL, anim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					animator.RemoveOriginOffset( false );
 					if( headAnim )
 					{
-						headAnimator->PlayAnim( ANIMCHANNEL_ALL, headAnim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+						headAnimator->PlayAnim( ANIMCHANNEL_ALL, headAnim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					}
 					break;
 					
 				case 5:
 					// frame by frame with fixed origin
-					animator.SetFrame( ANIMCHANNEL_ALL, anim, frame, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+					animator.SetFrame( ANIMCHANNEL_ALL, anim, frame, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					animator.RemoveOriginOffset( true );
 					if( headAnim )
 					{
-						headAnimator->SetFrame( ANIMCHANNEL_ALL, headAnim, frame, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+						headAnimator->SetFrame( ANIMCHANNEL_ALL, headAnim, frame, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 					}
 					break;
 			}
@@ -372,14 +372,14 @@ void idTestModel::Think()
 			mode = g_testModelAnimate.GetInteger();
 		}
 		
-		if( ( mode == 0 ) && ( gameLocal.time >= starttime + animtime ) )
+		if( ( mode == 0 ) && ( gameLocal->time >= starttime + animtime ) )
 		{
-			starttime = gameLocal.time;
+			starttime = gameLocal->time;
 			StopSound( SND_CHANNEL_ANY, false );
-			animator.PlayAnim( ANIMCHANNEL_ALL, anim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+			animator.PlayAnim( ANIMCHANNEL_ALL, anim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 			if( headAnim )
 			{
-				headAnimator->PlayAnim( ANIMCHANNEL_ALL, headAnim, gameLocal.time, FRAME2MS( g_testModelBlend.GetInteger() ) );
+				headAnimator->PlayAnim( ANIMCHANNEL_ALL, headAnim, gameLocal->time, FRAME2MS( g_testModelBlend.GetInteger() ) );
 				if( headAnimator->AnimLength( headAnim ) > animator.AnimLength( anim ) )
 				{
 					// loop the body anim when the head anim is longer
@@ -396,14 +396,14 @@ void idTestModel::Think()
 				if( copyJoints[ i ].mod == JOINTMOD_WORLD_OVERRIDE )
 				{
 					idMat3 mat = head.GetEntity()->GetPhysics()->GetAxis().Transpose();
-					GetJointWorldTransform( copyJoints[ i ].from, gameLocal.time, pos, axis );
+					GetJointWorldTransform( copyJoints[ i ].from, gameLocal->time, pos, axis );
 					pos -= head.GetEntity()->GetPhysics()->GetOrigin();
 					headAnimator->SetJointPos( copyJoints[ i ].to, copyJoints[ i ].mod, pos * mat );
 					headAnimator->SetJointAxis( copyJoints[ i ].to, copyJoints[ i ].mod, axis * mat );
 				}
 				else
 				{
-					animator.GetJointLocalTransform( copyJoints[ i ].from, gameLocal.time, pos, axis );
+					animator.GetJointLocalTransform( copyJoints[ i ].from, gameLocal->time, pos, axis );
 					headAnimator->SetJointPos( copyJoints[ i ].to, copyJoints[ i ].mod, pos );
 					headAnimator->SetJointAxis( copyJoints[ i ].to, copyJoints[ i ].mod, axis );
 				}
@@ -414,7 +414,7 @@ void idTestModel::Think()
 		RunPhysics();
 		
 		physicsObj.GetAngles( ang );
-		physicsObj.SetAngularExtrapolation( extrapolation_t( EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP ), gameLocal.time, 0, ang, idAngles( 0, g_testModelRotate.GetFloat() * 360.0f / 60.0f, 0 ), ang_zero );
+		physicsObj.SetAngularExtrapolation( extrapolation_t( EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP ), gameLocal->time, 0, ang, idAngles( 0, g_testModelRotate.GetFloat() * 360.0f / 60.0f, 0 ), ang_zero );
 		
 		idClipModel* clip = physicsObj.GetClipModel();
 		if( clip != NULL && animator.ModelDef() )
@@ -424,27 +424,27 @@ void idTestModel::Think()
 			jointHandle_t joint;
 			
 			joint = animator.GetJointHandle( "origin" );
-			animator.GetJointTransform( joint, gameLocal.time, neworigin, axis_ );
+			animator.GetJointTransform( joint, gameLocal->time, neworigin, axis_ );
 			neworigin = ( ( neworigin - animator.ModelDef()->GetVisualOffset() ) * physicsObj.GetAxis() ) + GetPhysics()->GetOrigin();
-			clip->Link( *gameLocal.GetClip(), this, 0, neworigin, clip->GetAxis() );
+			clip->Link( *gameLocal->GetClip(), this, 0, neworigin, clip->GetAxis() );
 		}
 	}
 	
 	UpdateAnimation();
 	Present();
 	
-	if( ( gameLocal.testmodel == this ) && g_showTestModelFrame.GetInteger() && anim )
+	if( ( gameLocal->testmodel == this ) && g_showTestModelFrame.GetInteger() && anim )
 	{
-		gameLocal.Printf( "^5 Anim: ^7%s  ^5Frame: ^7%d/%d  Time: %.3f\n", animator.AnimFullName( anim ), animator.CurrentAnim( ANIMCHANNEL_ALL )->GetFrameNumber( gameLocal.time ),
-						  animator.CurrentAnim( ANIMCHANNEL_ALL )->NumFrames(), MS2SEC( gameLocal.time - animator.CurrentAnim( ANIMCHANNEL_ALL )->GetStartTime() ) );
+		gameLocal->Printf( "^5 Anim: ^7%s  ^5Frame: ^7%d/%d  Time: %.3f\n", animator.AnimFullName( anim ), animator.CurrentAnim( ANIMCHANNEL_ALL )->GetFrameNumber( gameLocal->time ),
+						  animator.CurrentAnim( ANIMCHANNEL_ALL )->NumFrames(), MS2SEC( gameLocal->time - animator.CurrentAnim( ANIMCHANNEL_ALL )->GetStartTime() ) );
 		if( headAnim )
 		{
-			gameLocal.Printf( "^5 Head: ^7%s  ^5Frame: ^7%d/%d  Time: %.3f\n\n", headAnimator->AnimFullName( headAnim ), headAnimator->CurrentAnim( ANIMCHANNEL_ALL )->GetFrameNumber( gameLocal.time ),
-							  headAnimator->CurrentAnim( ANIMCHANNEL_ALL )->NumFrames(), MS2SEC( gameLocal.time - headAnimator->CurrentAnim( ANIMCHANNEL_ALL )->GetStartTime() ) );
+			gameLocal->Printf( "^5 Head: ^7%s  ^5Frame: ^7%d/%d  Time: %.3f\n\n", headAnimator->AnimFullName( headAnim ), headAnimator->CurrentAnim( ANIMCHANNEL_ALL )->GetFrameNumber( gameLocal->time ),
+							  headAnimator->CurrentAnim( ANIMCHANNEL_ALL )->NumFrames(), MS2SEC( gameLocal->time - headAnimator->CurrentAnim( ANIMCHANNEL_ALL )->GetStartTime() ) );
 		}
 		else
 		{
-			gameLocal.Printf( "\n\n" );
+			gameLocal->Printf( "\n\n" );
 		}
 	}
 }
@@ -468,13 +468,13 @@ void idTestModel::NextAnim( const idCmdArgs& args )
 		anim = 1;
 	}
 	
-	starttime = gameLocal.time;
+	starttime = gameLocal->time;
 	animtime = animator.AnimLength( anim );
 	animname = animator.AnimFullName( anim );
 	headAnim = 0;
 	if( headAnimator )
 	{
-		headAnimator->ClearAllAnims( gameLocal.time, 0 );
+		headAnimator->ClearAllAnims( gameLocal->time, 0 );
 		headAnim = headAnimator->GetAnim( animname );
 		if( !headAnim )
 		{
@@ -487,10 +487,10 @@ void idTestModel::NextAnim( const idCmdArgs& args )
 		}
 	}
 	
-	gameLocal.Printf( "anim '%s', %d.%03d seconds, %d frames\n", animname.c_str(), animator.AnimLength( anim ) / 1000, animator.AnimLength( anim ) % 1000, animator.NumFrames( anim ) );
+	gameLocal->Printf( "anim '%s', %d.%03d seconds, %d frames\n", animname.c_str(), animator.AnimLength( anim ) / 1000, animator.AnimLength( anim ) % 1000, animator.NumFrames( anim ) );
 	if( headAnim )
 	{
-		gameLocal.Printf( "head '%s', %d.%03d seconds, %d frames\n", headAnimator->AnimFullName( headAnim ), headAnimator->AnimLength( headAnim ) / 1000, headAnimator->AnimLength( headAnim ) % 1000, headAnimator->NumFrames( headAnim ) );
+		gameLocal->Printf( "head '%s', %d.%03d seconds, %d frames\n", headAnimator->AnimFullName( headAnim ), headAnimator->AnimLength( headAnim ) / 1000, headAnimator->AnimLength( headAnim ) % 1000, headAnimator->NumFrames( headAnim ) );
 	}
 	
 	// reset the anim
@@ -516,13 +516,13 @@ void idTestModel::PrevAnim( const idCmdArgs& args )
 		anim = animator.NumAnims() - 1;
 	}
 	
-	starttime = gameLocal.time;
+	starttime = gameLocal->time;
 	animtime = animator.AnimLength( anim );
 	animname = animator.AnimFullName( anim );
 	headAnim = 0;
 	if( headAnimator )
 	{
-		headAnimator->ClearAllAnims( gameLocal.time, 0 );
+		headAnimator->ClearAllAnims( gameLocal->time, 0 );
 		headAnim = headAnimator->GetAnim( animname );
 		if( !headAnim )
 		{
@@ -535,10 +535,10 @@ void idTestModel::PrevAnim( const idCmdArgs& args )
 		}
 	}
 	
-	gameLocal.Printf( "anim '%s', %d.%03d seconds, %d frames\n", animname.c_str(), animator.AnimLength( anim ) / 1000, animator.AnimLength( anim ) % 1000, animator.NumFrames( anim ) );
+	gameLocal->Printf( "anim '%s', %d.%03d seconds, %d frames\n", animname.c_str(), animator.AnimLength( anim ) / 1000, animator.AnimLength( anim ) % 1000, animator.NumFrames( anim ) );
 	if( headAnim )
 	{
-		gameLocal.Printf( "head '%s', %d.%03d seconds, %d frames\n", headAnimator->AnimFullName( headAnim ), headAnimator->AnimLength( headAnim ) / 1000, headAnimator->AnimLength( headAnim ) % 1000, headAnimator->NumFrames( headAnim ) );
+		gameLocal->Printf( "head '%s', %d.%03d seconds, %d frames\n", headAnimator->AnimFullName( headAnim ), headAnimator->AnimLength( headAnim ) / 1000, headAnimator->AnimLength( headAnim ) % 1000, headAnimator->NumFrames( headAnim ) );
 	}
 	
 	// reset the anim
@@ -564,7 +564,7 @@ void idTestModel::NextFrame( const idCmdArgs& args )
 		frame = 1;
 	}
 	
-	gameLocal.Printf( "^5 Anim: ^7%s\n^5Frame: ^7%d/%d\n\n", animator.AnimFullName( anim ), frame, animator.NumFrames( anim ) );
+	gameLocal->Printf( "^5 Anim: ^7%s\n^5Frame: ^7%d/%d\n\n", animator.AnimFullName( anim ), frame, animator.NumFrames( anim ) );
 	
 	// reset the anim
 	mode = -1;
@@ -588,7 +588,7 @@ void idTestModel::PrevFrame( const idCmdArgs& args )
 		frame = animator.NumFrames( anim );
 	}
 	
-	gameLocal.Printf( "^5 Anim: ^7%s\n^5Frame: ^7%d/%d\n\n", animator.AnimFullName( anim ), frame, animator.NumFrames( anim ) );
+	gameLocal->Printf( "^5 Anim: ^7%s\n^5Frame: ^7%d/%d\n\n", animator.AnimFullName( anim ), frame, animator.NumFrames( anim ) );
 	
 	// reset the anim
 	mode = -1;
@@ -607,7 +607,7 @@ void idTestModel::TestAnim( const idCmdArgs& args )
 	
 	if( args.Argc() < 2 )
 	{
-		gameLocal.Printf( "usage: testanim <animname>\n" );
+		gameLocal->Printf( "usage: testanim <animname>\n" );
 		return;
 	}
 	
@@ -618,24 +618,24 @@ void idTestModel::TestAnim( const idCmdArgs& args )
 	
 	if( !animNum )
 	{
-		gameLocal.Printf( "Animation '%s' not found.\n", name_.c_str() );
+		gameLocal->Printf( "Animation '%s' not found.\n", name_.c_str() );
 		return;
 	}
 	
 	anim = animNum;
-	starttime = gameLocal.time;
+	starttime = gameLocal->time;
 	animtime = animator.AnimLength( anim );
 	headAnim = 0;
 	if( headAnimator )
 	{
-		headAnimator->ClearAllAnims( gameLocal.time, 0 );
+		headAnimator->ClearAllAnims( gameLocal->time, 0 );
 		headAnim = headAnimator->GetAnim( animname );
 		if( !headAnim )
 		{
 			headAnim = headAnimator->GetAnim( "idle" );
 			if( !headAnim )
 			{
-				gameLocal.Printf( "Missing 'idle' anim for head.\n" );
+				gameLocal->Printf( "Missing 'idle' anim for head.\n" );
 			}
 		}
 		
@@ -646,7 +646,7 @@ void idTestModel::TestAnim( const idCmdArgs& args )
 	}
 	
 	animname = name_;
-	gameLocal.Printf( "anim '%s', %d.%03d seconds, %d frames\n", animname.c_str(), animator.AnimLength( anim ) / 1000, animator.AnimLength( anim ) % 1000, animator.NumFrames( anim ) );
+	gameLocal->Printf( "anim '%s', %d.%03d seconds, %d frames\n", animname.c_str(), animator.AnimLength( anim ) / 1000, animator.AnimLength( anim ) % 1000, animator.NumFrames( anim ) );
 	
 	// reset the anim
 	mode = -1;
@@ -664,27 +664,27 @@ void idTestModel::BlendAnim( const idCmdArgs& args )
 	
 	if( args.Argc() < 4 )
 	{
-		gameLocal.Printf( "usage: testblend <anim1> <anim2> <frames>\n" );
+		gameLocal->Printf( "usage: testblend <anim1> <anim2> <frames>\n" );
 		return;
 	}
 	
-	anim1 = gameLocal.testmodel->animator.GetAnim( args.Argv( 1 ) );
+	anim1 = gameLocal->testmodel->animator.GetAnim( args.Argv( 1 ) );
 	if( !anim1 )
 	{
-		gameLocal.Printf( "Animation '%s' not found.\n", args.Argv( 1 ) );
+		gameLocal->Printf( "Animation '%s' not found.\n", args.Argv( 1 ) );
 		return;
 	}
 	
-	anim2 = gameLocal.testmodel->animator.GetAnim( args.Argv( 2 ) );
+	anim2 = gameLocal->testmodel->animator.GetAnim( args.Argv( 2 ) );
 	if( !anim2 )
 	{
-		gameLocal.Printf( "Animation '%s' not found.\n", args.Argv( 2 ) );
+		gameLocal->Printf( "Animation '%s' not found.\n", args.Argv( 2 ) );
 		return;
 	}
 	
 	animname = args.Argv( 2 );
-	animator.CycleAnim( ANIMCHANNEL_ALL, anim1, gameLocal.time, 0 );
-	animator.CycleAnim( ANIMCHANNEL_ALL, anim2, gameLocal.time, FRAME2MS( atoi( args.Argv( 3 ) ) ) );
+	animator.CycleAnim( ANIMCHANNEL_ALL, anim1, gameLocal->time, 0 );
+	animator.CycleAnim( ANIMCHANNEL_ALL, anim2, gameLocal->time, FRAME2MS( atoi( args.Argv( 3 ) ) ) );
 	
 	anim = anim2;
 	headAnim = 0;
@@ -706,15 +706,15 @@ multiple test models
 */
 void idTestModel::KeepTestModel_f( const idCmdArgs& args )
 {
-	if( !gameLocal.testmodel )
+	if( !gameLocal->testmodel )
 	{
-		gameLocal.Printf( "No active testModel.\n" );
+		gameLocal->Printf( "No active testModel.\n" );
 		return;
 	}
 	
-	gameLocal.Printf( "modelDef %p kept\n", gameLocal.testmodel->renderEntity.hModel );
+	gameLocal->Printf( "modelDef %p kept\n", gameLocal->testmodel->renderEntity.hModel );
 	
-	gameLocal.testmodel = NULL;
+	gameLocal->testmodel = NULL;
 }
 
 /*
@@ -731,14 +731,14 @@ void idTestModel::TestSkin_f( const idCmdArgs& args )
 	idPlayer* 	player;
 	idDict		dict;
 	
-	player = gameLocal.GetLocalPlayer();
-	if( !player || !gameLocal.CheatsOk() )
+	player = gameLocal->GetLocalPlayer();
+	if( !player || !gameLocal->CheatsOk() )
 	{
 		return;
 	}
 	
 	// delete the testModel if active
-	if( !gameLocal.testmodel )
+	if( !gameLocal->testmodel )
 	{
 		common->Printf( "No active testModel\n" );
 		return;
@@ -747,12 +747,12 @@ void idTestModel::TestSkin_f( const idCmdArgs& args )
 	if( args.Argc() < 2 )
 	{
 		common->Printf( "removing testSkin.\n" );
-		gameLocal.testmodel->SetSkin( NULL );
+		gameLocal->testmodel->SetSkin( NULL );
 		return;
 	}
 	
 	name = args.Argv( 1 );
-	gameLocal.testmodel->SetSkin( declManager->FindSkin( name ) );
+	gameLocal->testmodel->SetSkin( declManager->FindSkin( name ) );
 }
 
 /*
@@ -769,14 +769,14 @@ void idTestModel::TestShaderParm_f( const idCmdArgs& args )
 	idPlayer* 	player;
 	idDict		dict;
 	
-	player = gameLocal.GetLocalPlayer();
-	if( !player || !gameLocal.CheatsOk() )
+	player = gameLocal->GetLocalPlayer();
+	if( !player || !gameLocal->CheatsOk() )
 	{
 		return;
 	}
 	
 	// delete the testModel if active
-	if( !gameLocal.testmodel )
+	if( !gameLocal->testmodel )
 	{
 		common->Printf( "No active testModel\n" );
 		return;
@@ -798,14 +798,14 @@ void idTestModel::TestShaderParm_f( const idCmdArgs& args )
 	float	value;
 	if( !idStr::Icmp( args.Argv( 2 ), "time" ) )
 	{
-		value = gameLocal.time * -0.001;
+		value = gameLocal->time * -0.001;
 	}
 	else
 	{
 		value = atof( args.Argv( 2 ) );
 	}
 	
-	gameLocal.testmodel->SetShaderParm( parm, value );
+	gameLocal->testmodel->SetShaderParm( parm, value );
 }
 
 /*
@@ -824,17 +824,17 @@ void idTestModel::TestModel_f( const idCmdArgs& args )
 	const idDict* 	entityDef;
 	idDict			dict;
 	
-	player = gameLocal.GetLocalPlayer();
-	if( !player || !gameLocal.CheatsOk() )
+	player = gameLocal->GetLocalPlayer();
+	if( !player || !gameLocal->CheatsOk() )
 	{
 		return;
 	}
 	
 	// delete the testModel if active
-	if( gameLocal.testmodel )
+	if( gameLocal->testmodel )
 	{
-		delete gameLocal.testmodel;
-		gameLocal.testmodel = NULL;
+		delete gameLocal->testmodel;
+		gameLocal->testmodel = NULL;
 	}
 	
 	if( args.Argc() < 2 )
@@ -844,7 +844,7 @@ void idTestModel::TestModel_f( const idCmdArgs& args )
 	
 	name = args.Argv( 1 );
 	
-	entityDef = gameLocal.FindEntityDefDict( name, false );
+	entityDef = gameLocal->FindEntityDefDict( name, false );
 	if( entityDef )
 	{
 		dict = *entityDef;
@@ -865,7 +865,7 @@ void idTestModel::TestModel_f( const idCmdArgs& args )
 			}
 			if( !renderModelManager->CheckModel( name ) )
 			{
-				gameLocal.Printf( "Can't register model\n" );
+				gameLocal->Printf( "Can't register model\n" );
 				return;
 			}
 			dict.Set( "model", name );
@@ -876,8 +876,8 @@ void idTestModel::TestModel_f( const idCmdArgs& args )
 	
 	dict.Set( "origin", offset.ToString() );
 	dict.Set( "angle", va( "%f", player->viewAngles.yaw + 180.0f ) );
-	gameLocal.testmodel = ( idTestModel* )gameLocal.SpawnEntityType( idTestModel::Type, &dict );
-	gameLocal.testmodel->renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC( gameLocal.time );
+	gameLocal->testmodel = ( idTestModel* )gameLocal->SpawnEntityType( idTestModel::Type, &dict );
+	gameLocal->testmodel->renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC( gameLocal->time );
 }
 
 /*
@@ -909,14 +909,14 @@ idTestModel::TestParticleStopTime_f
 */
 void idTestModel::TestParticleStopTime_f( const idCmdArgs& args )
 {
-	if( !gameLocal.testmodel )
+	if( !gameLocal->testmodel )
 	{
-		gameLocal.Printf( "No testModel active.\n" );
+		gameLocal->Printf( "No testModel active.\n" );
 		return;
 	}
 	
-	gameLocal.testmodel->renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] = MS2SEC( gameLocal.time );
-	gameLocal.testmodel->UpdateVisuals();
+	gameLocal->testmodel->renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] = MS2SEC( gameLocal->time );
+	gameLocal->testmodel->UpdateVisuals();
 }
 
 /*
@@ -926,13 +926,13 @@ idTestModel::TestAnim_f
 */
 void idTestModel::TestAnim_f( const idCmdArgs& args )
 {
-	if( !gameLocal.testmodel )
+	if( !gameLocal->testmodel )
 	{
-		gameLocal.Printf( "No testModel active.\n" );
+		gameLocal->Printf( "No testModel active.\n" );
 		return;
 	}
 	
-	gameLocal.testmodel->TestAnim( args );
+	gameLocal->testmodel->TestAnim( args );
 }
 
 
@@ -943,9 +943,9 @@ idTestModel::ArgCompletion_TestAnim
 */
 void idTestModel::ArgCompletion_TestAnim( const idCmdArgs& args, void( *callback )( const char* s ) )
 {
-	if( gameLocal.testmodel )
+	if( gameLocal->testmodel )
 	{
-		idAnimator* animator = gameLocal.testmodel->GetAnimator();
+		idAnimator* animator = gameLocal->testmodel->GetAnimator();
 		for( int i = 0; i < animator->NumAnims(); i++ )
 		{
 			callback( va( "%s %s", args.Argv( 0 ), animator->AnimFullName( i ) ) );
@@ -960,13 +960,13 @@ idTestModel::TestBlend_f
 */
 void idTestModel::TestBlend_f( const idCmdArgs& args )
 {
-	if( !gameLocal.testmodel )
+	if( !gameLocal->testmodel )
 	{
-		gameLocal.Printf( "No testModel active.\n" );
+		gameLocal->Printf( "No testModel active.\n" );
 		return;
 	}
 	
-	gameLocal.testmodel->BlendAnim( args );
+	gameLocal->testmodel->BlendAnim( args );
 }
 
 /*
@@ -976,13 +976,13 @@ idTestModel::TestModelNextAnim_f
 */
 void idTestModel::TestModelNextAnim_f( const idCmdArgs& args )
 {
-	if( !gameLocal.testmodel )
+	if( !gameLocal->testmodel )
 	{
-		gameLocal.Printf( "No testModel active.\n" );
+		gameLocal->Printf( "No testModel active.\n" );
 		return;
 	}
 	
-	gameLocal.testmodel->NextAnim( args );
+	gameLocal->testmodel->NextAnim( args );
 }
 
 /*
@@ -992,13 +992,13 @@ idTestModel::TestModelPrevAnim_f
 */
 void idTestModel::TestModelPrevAnim_f( const idCmdArgs& args )
 {
-	if( !gameLocal.testmodel )
+	if( !gameLocal->testmodel )
 	{
-		gameLocal.Printf( "No testModel active.\n" );
+		gameLocal->Printf( "No testModel active.\n" );
 		return;
 	}
 	
-	gameLocal.testmodel->PrevAnim( args );
+	gameLocal->testmodel->PrevAnim( args );
 }
 
 /*
@@ -1008,13 +1008,13 @@ idTestModel::TestModelNextFrame_f
 */
 void idTestModel::TestModelNextFrame_f( const idCmdArgs& args )
 {
-	if( !gameLocal.testmodel )
+	if( !gameLocal->testmodel )
 	{
-		gameLocal.Printf( "No testModel active.\n" );
+		gameLocal->Printf( "No testModel active.\n" );
 		return;
 	}
 	
-	gameLocal.testmodel->NextFrame( args );
+	gameLocal->testmodel->NextFrame( args );
 }
 
 /*
@@ -1024,11 +1024,11 @@ idTestModel::TestModelPrevFrame_f
 */
 void idTestModel::TestModelPrevFrame_f( const idCmdArgs& args )
 {
-	if( !gameLocal.testmodel )
+	if( !gameLocal->testmodel )
 	{
-		gameLocal.Printf( "No testModel active.\n" );
+		gameLocal->Printf( "No testModel active.\n" );
 		return;
 	}
 	
-	gameLocal.testmodel->PrevFrame( args );
+	gameLocal->testmodel->PrevFrame( args );
 }

@@ -367,7 +367,7 @@ Creates a def for a relative jump from current code location
 */
 ID_INLINE idVarDef* idCompiler::JumpTo( int jumpto )
 {
-	return JumpDef( gameLocal.GetProgram()->NumStatements(), jumpto );
+	return JumpDef( gameLocal->GetProgram()->NumStatements(), jumpto );
 }
 
 /*
@@ -379,7 +379,7 @@ Creates a def for a relative jump from code location to current code location
 */
 ID_INLINE idVarDef* idCompiler::JumpFrom( int jumpfrom )
 {
-	return JumpDef( jumpfrom, gameLocal.GetProgram()->NumStatements() );
+	return JumpDef( jumpfrom, gameLocal->GetProgram()->NumStatements() );
 }
 
 /*
@@ -415,7 +415,7 @@ idVarDef* idCompiler::FindImmediate( const idTypeDef* type, const eval_t* eval, 
 	etype = type->Type();
 	
 	// check for a constant with the same value
-	for( def = gameLocal.GetProgram()->GetDefList( "<IMMEDIATE>" ); def != NULL; def = def->Next() )
+	for( def = gameLocal->GetProgram()->GetDefList( "<IMMEDIATE>" ); def != NULL; def = def->Next() )
 	{
 		if( def->TypeDef() != type )
 		{
@@ -511,7 +511,7 @@ idVarDef* idCompiler::GetImmediate( idTypeDef* type, const eval_t* eval, const c
 	else
 	{
 		// allocate a new def
-		def = gameLocal.GetProgram()->AllocDef( type, "<IMMEDIATE>", &def_namespace, true );
+		def = gameLocal->GetProgram()->AllocDef( type, "<IMMEDIATE>", &def_namespace, true );
 		if( type->Type() == ev_string )
 		{
 			def->SetString( string, true );
@@ -726,7 +726,7 @@ idVarDef* idCompiler::OptimizeOpcode( const opcode_t* op, idVarDef* var_a, idVar
 		var_a->numUsers--;
 		if( var_a->numUsers <= 0 )
 		{
-			gameLocal.GetProgram()->FreeDef( var_a, NULL );
+			gameLocal->GetProgram()->FreeDef( var_a, NULL );
 		}
 	}
 	if( var_b )
@@ -734,7 +734,7 @@ idVarDef* idCompiler::OptimizeOpcode( const opcode_t* op, idVarDef* var_a, idVar
 		var_b->numUsers--;
 		if( var_b->numUsers <= 0 )
 		{
-			gameLocal.GetProgram()->FreeDef( var_b, NULL );
+			gameLocal->GetProgram()->FreeDef( var_b, NULL );
 		}
 	}
 	
@@ -768,7 +768,7 @@ idVarDef* idCompiler::EmitOpcode( const opcode_t* op, idVarDef* var_a, idVarDef*
 		var_b->numUsers++;
 	}
 	
-	statement = gameLocal.GetProgram()->AllocStatement();
+	statement = gameLocal->GetProgram()->AllocStatement();
 	statement->linenumber	= currentLineNumber;
 	statement->file 		= currentFileNumber;
 	
@@ -781,7 +781,7 @@ idVarDef* idCompiler::EmitOpcode( const opcode_t* op, idVarDef* var_a, idVarDef*
 	{
 		// allocate result space
 		// try to reuse result defs as much as possible
-		var_c = gameLocal.GetProgram()->FindFreeResultDef( op->type_c->TypeDef(), RESULT_STRING, scope, var_a, var_b );
+		var_c = gameLocal->GetProgram()->FindFreeResultDef( op->type_c->TypeDef(), RESULT_STRING, scope, var_a, var_b );
 		// set user count back to 1, a result def needs to be used twice before it can be reused
 		var_c->numUsers = 1;
 	}
@@ -868,7 +868,7 @@ void idCompiler::NextToken()
 	// Save the token's line number and filename since when we emit opcodes the current
 	// token is always the next one to be read
 	currentLineNumber = token.line;
-	currentFileNumber = gameLocal.GetProgram()->GetFilenum( parserPtr->GetFileName() );
+	currentFileNumber = gameLocal->GetProgram()->GetFilenum( parserPtr->GetFileName() );
 	
 	if( !parserPtr->ReadToken( &token ) )
 	{
@@ -876,7 +876,7 @@ void idCompiler::NextToken()
 		return;
 	}
 	
-	if( currentFileNumber != gameLocal.GetProgram()->GetFilenum( parserPtr->GetFileName() ) )
+	if( currentFileNumber != gameLocal->GetProgram()->GetFilenum( parserPtr->GetFileName() ) )
 	{
 		if( ( braceDepth > 0 ) && ( token != "}" ) )
 		{
@@ -1124,7 +1124,7 @@ idTypeDef* idCompiler::CheckType()
 	}
 	else
 	{
-		type = gameLocal.GetProgram()->FindType( token.c_str() );
+		type = gameLocal->GetProgram()->FindType( token.c_str() );
 		if( type != NULL && !type->Inherits( &type_object ) )
 		{
 			type = NULL;
@@ -1255,7 +1255,7 @@ idVarDef* idCompiler::EmitFunctionParms( int op, idVarDef* func, int startarg, i
 		EmitOpcode( op, object, VirtualFunctionConstant( func ) );
 		
 		// need arg size separate since script object may be NULL
-		statement_t& statement = gameLocal.GetProgram()->GetStatement( gameLocal.GetProgram()->NumStatements() - 1 );
+		statement_t& statement = gameLocal->GetProgram()->GetStatement( gameLocal->GetProgram()->NumStatements() - 1 );
 		statement.c = SizeConstant( func->value.functionPtr->parmTotal );
 	}
 	else
@@ -1268,12 +1268,12 @@ idVarDef* idCompiler::EmitFunctionParms( int op, idVarDef* func, int startarg, i
 	if( returnType->Type() == ev_string )
 	{
 		resultOp = OP_STORE_S;
-		returnDef = gameLocal.GetProgram()->returnStringDef;
+		returnDef = gameLocal->GetProgram()->returnStringDef;
 	}
 	else
 	{
-		gameLocal.GetProgram()->returnDef->SetTypeDef( returnType );
-		returnDef = gameLocal.GetProgram()->returnDef;
+		gameLocal->GetProgram()->returnDef->SetTypeDef( returnType );
+		returnDef = gameLocal->GetProgram()->returnDef;
 		
 		switch( returnType->Type() )
 		{
@@ -1316,8 +1316,8 @@ idVarDef* idCompiler::EmitFunctionParms( int op, idVarDef* func, int startarg, i
 	
 	// allocate result space
 	// try to reuse result defs as much as possible
-	statement_t& statement = gameLocal.GetProgram()->GetStatement( gameLocal.GetProgram()->NumStatements() - 1 );
-	idVarDef* resultDef = gameLocal.GetProgram()->FindFreeResultDef( returnType, RESULT_STRING, scope, statement.a, statement.b );
+	statement_t& statement = gameLocal->GetProgram()->GetStatement( gameLocal->GetProgram()->NumStatements() - 1 );
+	idVarDef* resultDef = gameLocal->GetProgram()->FindFreeResultDef( returnType, RESULT_STRING, scope, statement.a, statement.b );
 	// set user count back to 0, a result def needs to be used twice before it can be reused
 	resultDef->numUsers = 0;
 	
@@ -1362,7 +1362,7 @@ idVarDef* idCompiler::ParseFunctionCall( idVarDef* funcDef )
 			if( ( scope->Type() != ev_namespace ) && ( scope->scope->Type() == ev_object ) )
 			{
 				// get the local object pointer
-				idVarDef* thisdef = gameLocal.GetProgram()->GetDef( scope->scope->TypeDef(), "self", scope );
+				idVarDef* thisdef = gameLocal->GetProgram()->GetDef( scope->scope->TypeDef(), "self", scope );
 				if( !thisdef )
 				{
 					Error( "No 'self' within scope" );
@@ -1487,7 +1487,7 @@ idVarDef* idCompiler::LookupDef( const char* name, const idVarDef* baseobj )
 		def = NULL;
 		for( tdef = baseobj; tdef != &def_object; tdef = tdef->TypeDef()->SuperClass()->def )
 		{
-			def = gameLocal.GetProgram()->GetDef( NULL, name, tdef );
+			def = gameLocal->GetProgram()->GetDef( NULL, name, tdef );
 			if( def )
 			{
 				break;
@@ -1497,14 +1497,14 @@ idVarDef* idCompiler::LookupDef( const char* name, const idVarDef* baseobj )
 	else
 	{
 		// first look through the defs in our scope
-		def = gameLocal.GetProgram()->GetDef( NULL, name, scope );
+		def = gameLocal->GetProgram()->GetDef( NULL, name, scope );
 		if( !def )
 		{
 			// if we're in a member function, check types local to the object
 			if( ( scope->Type() != ev_namespace ) && ( scope->scope->Type() == ev_object ) )
 			{
 				// get the local object pointer
-				idVarDef* thisdef = gameLocal.GetProgram()->GetDef( scope->scope->TypeDef(), "self", scope );
+				idVarDef* thisdef = gameLocal->GetProgram()->GetDef( scope->scope->TypeDef(), "self", scope );
 				
 				field = LookupDef( name, scope->scope->TypeDef()->def );
 				if( !field )
@@ -1595,10 +1595,10 @@ idVarDef* idCompiler::ParseValue()
 	{
 		// if an immediate entity ($-prefaced name) then create or lookup a def for it.
 		// when entities are spawned, they'll lookup the def and point it to them.
-		def = gameLocal.GetProgram()->GetDef( &type_entity, "$" + token, &def_namespace );
+		def = gameLocal->GetProgram()->GetDef( &type_entity, "$" + token, &def_namespace );
 		if( !def )
 		{
-			def = gameLocal.GetProgram()->AllocDef( &type_entity, "$" + token, &def_namespace, true );
+			def = gameLocal->GetProgram()->AllocDef( &type_entity, "$" + token, &def_namespace, true );
 		}
 		NextToken();
 		return def;
@@ -1630,7 +1630,7 @@ idVarDef* idCompiler::ParseValue()
 			ExpectToken( "::" );
 			ParseName( name );
 			namespaceDef = def;
-			def = gameLocal.GetProgram()->GetDef( NULL, name, namespaceDef );
+			def = gameLocal->GetProgram()->GetDef( NULL, name, namespaceDef );
 			if( def == NULL )
 			{
 				if( namespaceDef != NULL )
@@ -1784,8 +1784,8 @@ idVarDef* idCompiler::GetTerm()
 		}
 		
 		// threads return the thread number
-		gameLocal.GetProgram()->returnDef->SetTypeDef( &type_float );
-		return gameLocal.GetProgram()->returnDef;
+		gameLocal->GetProgram()->returnDef->SetTypeDef( &type_float );
+		return gameLocal->GetProgram()->returnDef;
 	}
 	
 	if( !immediateType && CheckToken( "(" ) )
@@ -1899,9 +1899,9 @@ idVarDef* idCompiler::GetExpression( int priority )
 		if( op->rightAssociative )
 		{
 			// if last statement is an indirect, change it to an address of
-			if( gameLocal.GetProgram()->NumStatements() > 0 )
+			if( gameLocal->GetProgram()->NumStatements() > 0 )
 			{
-				statement_t& statement = gameLocal.GetProgram()->GetStatement( gameLocal.GetProgram()->NumStatements() - 1 );
+				statement_t& statement = gameLocal->GetProgram()->GetStatement( gameLocal->GetProgram()->NumStatements() - 1 );
 				if( ( statement.op >= OP_INDIRECT_F ) && ( statement.op < OP_ADDRESS ) )
 				{
 					statement.op = OP_ADDRESS;
@@ -2052,7 +2052,7 @@ idVarDef* idCompiler::GetExpression( int priority )
 					// statement.b points to type_pointer, which is just a temporary that gets its type reassigned, so we store the real type in statement.c
 					// so that we can do a type check during run time since we don't know what type the script object is at compile time because it
 					// comes from an entity
-					statement_t& statement = gameLocal.GetProgram()->GetStatement( gameLocal.GetProgram()->NumStatements() - 1 );
+					statement_t& statement = gameLocal->GetProgram()->GetStatement( gameLocal->GetProgram()->NumStatements() - 1 );
 					statement.c = type_pointer.PointerType()->def;
 				}
 				
@@ -2078,8 +2078,8 @@ void idCompiler::PatchLoop( int start, int continuePos )
 	int			i;
 	statement_t*	pos;
 	
-	pos = &gameLocal.GetProgram()->GetStatement( start );
-	for( i = start; i < gameLocal.GetProgram()->NumStatements(); i++, pos++ )
+	pos = &gameLocal->GetProgram()->GetStatement( start );
+	for( i = start; i < gameLocal->GetProgram()->NumStatements(); i++, pos++ )
 	{
 		if( pos->op == OP_BREAK )
 		{
@@ -2153,12 +2153,12 @@ void idCompiler::ParseReturnStatement()
 	idTypeDef* returnType = scope->TypeDef()->ReturnType();
 	if( returnType->Type() == ev_string )
 	{
-		EmitOpcode( op, e, gameLocal.GetProgram()->returnStringDef );
+		EmitOpcode( op, e, gameLocal->GetProgram()->returnStringDef );
 	}
 	else
 	{
-		gameLocal.GetProgram()->returnDef->SetTypeDef( returnType );
-		EmitOpcode( op, e, gameLocal.GetProgram()->returnDef );
+		gameLocal->GetProgram()->returnDef->SetTypeDef( returnType );
+		EmitOpcode( op, e, gameLocal->GetProgram()->returnDef );
 	}
 	EmitOpcode( OP_RETURN, 0, 0 );
 }
@@ -2178,7 +2178,7 @@ void idCompiler::ParseWhileStatement()
 	
 	ExpectToken( "(" );
 	
-	patch2 = gameLocal.GetProgram()->NumStatements();
+	patch2 = gameLocal->GetProgram()->NumStatements();
 	e = GetExpression( TOP_PRIORITY );
 	ExpectToken( ")" );
 	
@@ -2190,11 +2190,11 @@ void idCompiler::ParseWhileStatement()
 	}
 	else
 	{
-		patch1 = gameLocal.GetProgram()->NumStatements();
+		patch1 = gameLocal->GetProgram()->NumStatements();
 		EmitOpcode( OP_IFNOT, e, 0 );
 		ParseStatement();
 		EmitOpcode( OP_GOTO, JumpTo( patch2 ), 0 );
-		gameLocal.GetProgram()->GetStatement( patch1 ).b = JumpFrom( patch1 );
+		gameLocal->GetProgram()->GetStatement( patch1 ).b = JumpFrom( patch1 );
 	}
 	
 	// fixup breaks and continues
@@ -2253,7 +2253,7 @@ void idCompiler::ParseForStatement()
 	
 	loopDepth++;
 	
-	start = gameLocal.GetProgram()->NumStatements();
+	start = gameLocal->GetProgram()->NumStatements();
 	
 	ExpectToken( "(" );
 	
@@ -2270,23 +2270,23 @@ void idCompiler::ParseForStatement()
 	}
 	
 	// condition
-	patch2 = gameLocal.GetProgram()->NumStatements();
+	patch2 = gameLocal->GetProgram()->NumStatements();
 	
 	e = GetExpression( TOP_PRIORITY );
 	ExpectToken( ";" );
 	
 	//FIXME: add check for constant expression
-	patch1 = gameLocal.GetProgram()->NumStatements();
+	patch1 = gameLocal->GetProgram()->NumStatements();
 	EmitOpcode( OP_IFNOT, e, 0 );
 	
 	// counter
 	if( !CheckToken( ")" ) )
 	{
-		patch3 = gameLocal.GetProgram()->NumStatements();
+		patch3 = gameLocal->GetProgram()->NumStatements();
 		EmitOpcode( OP_IF, e, 0 );
 		
 		patch4 = patch2;
-		patch2 = gameLocal.GetProgram()->NumStatements();
+		patch2 = gameLocal->GetProgram()->NumStatements();
 		do
 		{
 			GetExpression( TOP_PRIORITY );
@@ -2299,7 +2299,7 @@ void idCompiler::ParseForStatement()
 		EmitOpcode( OP_GOTO, JumpTo( patch4 ), 0 );
 		
 		// fixup patch3
-		gameLocal.GetProgram()->GetStatement( patch3 ).b = JumpFrom( patch3 );
+		gameLocal->GetProgram()->GetStatement( patch3 ).b = JumpFrom( patch3 );
 	}
 	
 	ParseStatement();
@@ -2308,7 +2308,7 @@ void idCompiler::ParseForStatement()
 	EmitOpcode( OP_GOTO, JumpTo( patch2 ), 0 );
 	
 	// fixup patch1
-	gameLocal.GetProgram()->GetStatement( patch1 ).b = JumpFrom( patch1 );
+	gameLocal->GetProgram()->GetStatement( patch1 ).b = JumpFrom( patch1 );
 	
 	// fixup breaks and continues
 	PatchLoop( start, patch2 );
@@ -2328,7 +2328,7 @@ void idCompiler::ParseDoWhileStatement()
 	
 	loopDepth++;
 	
-	patch1 = gameLocal.GetProgram()->NumStatements();
+	patch1 = gameLocal->GetProgram()->NumStatements();
 	ParseStatement();
 	ExpectToken( "while" );
 	ExpectToken( "(" );
@@ -2360,22 +2360,22 @@ void idCompiler::ParseIfStatement()
 	ExpectToken( ")" );
 	
 	//FIXME: add check for constant expression
-	patch1 = gameLocal.GetProgram()->NumStatements();
+	patch1 = gameLocal->GetProgram()->NumStatements();
 	EmitOpcode( OP_IFNOT, e, 0 );
 	
 	ParseStatement();
 	
 	if( CheckToken( "else" ) )
 	{
-		patch2 = gameLocal.GetProgram()->NumStatements();
+		patch2 = gameLocal->GetProgram()->NumStatements();
 		EmitOpcode( OP_GOTO, 0, 0 );
-		gameLocal.GetProgram()->GetStatement( patch1 ).b = JumpFrom( patch1 );
+		gameLocal->GetProgram()->GetStatement( patch1 ).b = JumpFrom( patch1 );
 		ParseStatement();
-		gameLocal.GetProgram()->GetStatement( patch2 ).a = JumpFrom( patch2 );
+		gameLocal->GetProgram()->GetStatement( patch2 ).a = JumpFrom( patch2 );
 	}
 	else
 	{
-		gameLocal.GetProgram()->GetStatement( patch1 ).b = JumpFrom( patch1 );
+		gameLocal->GetProgram()->GetStatement( patch1 ).b = JumpFrom( patch1 );
 	}
 }
 
@@ -2490,7 +2490,7 @@ void idCompiler::ParseObjectDef( const char* objname )
 	}
 	
 	// make sure it doesn't exist before we create it
-	if( gameLocal.GetProgram()->FindType( objname ) != NULL )
+	if( gameLocal->GetProgram()->FindType( objname ) != NULL )
 	{
 		Error( "'%s' : redefinition; different basic types", objname );
 	}
@@ -2509,8 +2509,8 @@ void idCompiler::ParseObjectDef( const char* objname )
 		}
 	}
 	
-	objtype = gameLocal.GetProgram()->AllocType( ev_object, NULL, objname, parentType == &type_object ? 0 : parentType->Size(), parentType );
-	objtype->def = gameLocal.GetProgram()->AllocDef( objtype, objname, scope, true );
+	objtype = gameLocal->GetProgram()->AllocType( ev_object, NULL, objname, parentType == &type_object ? 0 : parentType->Size(), parentType );
+	objtype->def = gameLocal->GetProgram()->AllocDef( objtype, objname, scope, true );
 	scope = objtype->def;
 	
 	// inherit all the functions
@@ -2546,9 +2546,9 @@ void idCompiler::ParseObjectDef( const char* objname )
 		}
 		else
 		{
-			type = gameLocal.GetProgram()->GetType( newtype, true );
+			type = gameLocal->GetProgram()->GetType( newtype, true );
 			assert( !type->def );
-			gameLocal.GetProgram()->AllocDef( type, name, scope, true );
+			gameLocal->GetProgram()->AllocDef( type, name, scope, true );
 			objtype->AddField( type, name );
 			ExpectToken( ";" );
 		}
@@ -2592,7 +2592,7 @@ idTypeDef* idCompiler::ParseFunction( idTypeDef* returnType, const char* name )
 		ExpectToken( ")" );
 	}
 	
-	return gameLocal.GetProgram()->GetType( newtype, true );
+	return gameLocal->GetProgram()->GetType( newtype, true );
 }
 
 /*
@@ -2618,13 +2618,13 @@ void idCompiler::ParseFunctionDef( idTypeDef* returnType, const char* name )
 	}
 	
 	type = ParseFunction( returnType, name );
-	def = gameLocal.GetProgram()->GetDef( type, name, scope );
+	def = gameLocal->GetProgram()->GetDef( type, name, scope );
 	if( !def )
 	{
-		def = gameLocal.GetProgram()->AllocDef( type, name, scope, true );
+		def = gameLocal->GetProgram()->AllocDef( type, name, scope, true );
 		type->def = def;
 		
-		func = &gameLocal.GetProgram()->AllocFunction( def );
+		func = &gameLocal->GetProgram()->AllocFunction( def );
 		if( scope->TypeDef()->Inherits( &type_object ) )
 		{
 			scope->TypeDef()->AddFunction( func );
@@ -2668,17 +2668,17 @@ void idCompiler::ParseFunctionDef( idTypeDef* returnType, const char* name )
 	// define the parms
 	for( i = 0; i < numParms; i++ )
 	{
-		if( gameLocal.GetProgram()->GetDef( type->GetParmType( i ), type->GetParmName( i ), def ) )
+		if( gameLocal->GetProgram()->GetDef( type->GetParmType( i ), type->GetParmName( i ), def ) )
 		{
 			Error( "'%s' defined more than once in function parameters", type->GetParmName( i ) );
 		}
-		parm = gameLocal.GetProgram()->AllocDef( type->GetParmType( i ), type->GetParmName( i ), def, false );
+		parm = gameLocal->GetProgram()->AllocDef( type->GetParmType( i ), type->GetParmName( i ), def, false );
 	}
 	
 	oldscope = scope;
 	scope = def;
 	
-	func->firstStatement = gameLocal.GetProgram()->NumStatements();
+	func->firstStatement = gameLocal->GetProgram()->NumStatements();
 	
 	// check if we should call the super class constructor
 	if( oldscope->TypeDef()->Inherits( &type_object ) && !idStr::Icmp( name, "init" ) )
@@ -2689,7 +2689,7 @@ void idCompiler::ParseFunctionDef( idTypeDef* returnType, const char* name )
 		// find the superclass constructor
 		for( superClass = oldscope->TypeDef()->SuperClass(); superClass != &type_object; superClass = superClass->SuperClass() )
 		{
-			constructorFunc = gameLocal.GetProgram()->FindFunction( va( "%s::init", superClass->Name() ) );
+			constructorFunc = gameLocal->GetProgram()->FindFunction( va( "%s::init", superClass->Name() ) );
 			if( constructorFunc )
 			{
 				break;
@@ -2699,7 +2699,7 @@ void idCompiler::ParseFunctionDef( idTypeDef* returnType, const char* name )
 		// emit the call to the constructor
 		if( constructorFunc )
 		{
-			idVarDef* selfDef = gameLocal.GetProgram()->GetDef( type->GetParmType( 0 ), type->GetParmName( 0 ), def );
+			idVarDef* selfDef = gameLocal->GetProgram()->GetDef( type->GetParmType( 0 ), type->GetParmName( 0 ), def );
 			assert( selfDef );
 			EmitPush( selfDef, selfDef->TypeDef() );
 			EmitOpcode( &opcodes[ OP_CALL ], constructorFunc->def, 0 );
@@ -2721,7 +2721,7 @@ void idCompiler::ParseFunctionDef( idTypeDef* returnType, const char* name )
 		// find the superclass destructor
 		for( superClass = oldscope->TypeDef()->SuperClass(); superClass != &type_object; superClass = superClass->SuperClass() )
 		{
-			destructorFunc = gameLocal.GetProgram()->FindFunction( va( "%s::destroy", superClass->Name() ) );
+			destructorFunc = gameLocal->GetProgram()->FindFunction( va( "%s::destroy", superClass->Name() ) );
 			if( destructorFunc )
 			{
 				break;
@@ -2730,22 +2730,22 @@ void idCompiler::ParseFunctionDef( idTypeDef* returnType, const char* name )
 		
 		if( destructorFunc )
 		{
-			if( func->firstStatement < gameLocal.GetProgram()->NumStatements() )
+			if( func->firstStatement < gameLocal->GetProgram()->NumStatements() )
 			{
 				// change all returns to point to the call to the destructor
-				pos = &gameLocal.GetProgram()->GetStatement( func->firstStatement );
-				for( i = func->firstStatement; i < gameLocal.GetProgram()->NumStatements(); i++, pos++ )
+				pos = &gameLocal->GetProgram()->GetStatement( func->firstStatement );
+				for( i = func->firstStatement; i < gameLocal->GetProgram()->NumStatements(); i++, pos++ )
 				{
 					if( pos->op == OP_RETURN )
 					{
 						pos->op = OP_GOTO;
-						pos->a = JumpDef( i, gameLocal.GetProgram()->NumStatements() );
+						pos->a = JumpDef( i, gameLocal->GetProgram()->NumStatements() );
 					}
 				}
 			}
 			
 			// emit the call to the destructor
-			idVarDef* selfDef = gameLocal.GetProgram()->GetDef( type->GetParmType( 0 ), type->GetParmName( 0 ), def );
+			idVarDef* selfDef = gameLocal->GetProgram()->GetDef( type->GetParmType( 0 ), type->GetParmName( 0 ), def );
 			assert( selfDef );
 			EmitPush( selfDef, selfDef->TypeDef() );
 			EmitOpcode( &opcodes[ OP_CALL ], destructorFunc->def, 0 );
@@ -2755,7 +2755,7 @@ void idCompiler::ParseFunctionDef( idTypeDef* returnType, const char* name )
 // Disabled code since it caused a function to fall through to the next function when last statement is in the form "if ( x ) { return; }"
 #if 0
 	// don't bother adding a return opcode if the "return" statement was used.
-	if( ( func->firstStatement == gameLocal.GetProgram()->NumStatements() ) || ( gameLocal.GetProgram()->GetStatement( gameLocal.GetProgram()->NumStatements() - 1 ).op != OP_RETURN ) )
+	if( ( func->firstStatement == gameLocal->GetProgram()->NumStatements() ) || ( gameLocal->GetProgram()->GetStatement( gameLocal->GetProgram()->NumStatements() - 1 ).op != OP_RETURN ) )
 	{
 		// emit an end of statements opcode
 		EmitOpcode( OP_RETURN, 0, 0 );
@@ -2766,7 +2766,7 @@ void idCompiler::ParseFunctionDef( idTypeDef* returnType, const char* name )
 #endif
 	
 	// record the number of statements in the function
-	func->numStatements = gameLocal.GetProgram()->NumStatements() - func->firstStatement;
+	func->numStatements = gameLocal->GetProgram()->NumStatements() - func->firstStatement;
 	
 	scope = oldscope;
 }
@@ -2781,13 +2781,13 @@ void idCompiler::ParseVariableDef( idTypeDef* type, const char* name )
 	idVarDef*	def, *def2;
 	bool		negate;
 	
-	def = gameLocal.GetProgram()->GetDef( type, name, scope );
+	def = gameLocal->GetProgram()->GetDef( type, name, scope );
 	if( def )
 	{
 		Error( "%s redeclared", name );
 	}
 	
-	def = gameLocal.GetProgram()->AllocDef( type, name, scope, false );
+	def = gameLocal->GetProgram()->AllocDef( type, name, scope, false );
 	
 	// check for an initialization
 	if( CheckToken( "=" ) )
@@ -3027,7 +3027,7 @@ void idCompiler::ParseEventDef( idTypeDef* returnType, const char* name )
 	}
 	ExpectToken( ";" );
 	
-	type = gameLocal.GetProgram()->FindType( name );
+	type = gameLocal->GetProgram()->FindType( name );
 	if( type )
 	{
 		if( !newtype.MatchesType( *type ) || ( type->def->value.functionPtr->eventdef != ev ) )
@@ -3037,10 +3037,10 @@ void idCompiler::ParseEventDef( idTypeDef* returnType, const char* name )
 	}
 	else
 	{
-		type = gameLocal.GetProgram()->AllocType( newtype );
-		type->def = gameLocal.GetProgram()->AllocDef( type, name, &def_namespace, true );
+		type = gameLocal->GetProgram()->AllocType( newtype );
+		type->def = gameLocal->GetProgram()->AllocDef( type, name, &def_namespace, true );
 		
-		function_t& func	= gameLocal.GetProgram()->AllocFunction( type->def );
+		function_t& func	= gameLocal->GetProgram()->AllocFunction( type->def );
 		func.eventdef		= ev;
 		func.parmSize.SetNum( num );
 		for( i = 0; i < num; i++ )
@@ -3088,16 +3088,16 @@ void idCompiler::ParseDefs()
 	
 	if( type == &type_namespace )
 	{
-		def = gameLocal.GetProgram()->GetDef( type, name, scope );
+		def = gameLocal->GetProgram()->GetDef( type, name, scope );
 		if( !def )
 		{
-			def = gameLocal.GetProgram()->AllocDef( type, name, scope, true );
+			def = gameLocal->GetProgram()->AllocDef( type, name, scope, true );
 		}
 		ParseNamespace( def );
 	}
 	else if( CheckToken( "::" ) )
 	{
-		def = gameLocal.GetProgram()->GetDef( NULL, name, scope );
+		def = gameLocal->GetProgram()->GetDef( NULL, name, scope );
 		if( !def )
 		{
 			Error( "Unknown object name '%s'", name.c_str() );
@@ -3240,7 +3240,7 @@ void idCompiler::CompileFile( const char* text, const char* filename, bool toCon
 		}
 		else
 		{
-			sprintf( error_, "Error: file %s, line %d: %s\n", gameLocal.GetProgram()->GetFilename( currentFileNumber ), currentLineNumber, err.GetError() );
+			sprintf( error_, "Error: file %s, line %d: %s\n", gameLocal->GetProgram()->GetFilename( currentFileNumber ), currentLineNumber, err.GetError() );
 		}
 		
 		parser.FreeSource();
@@ -3251,7 +3251,7 @@ void idCompiler::CompileFile( const char* text, const char* filename, bool toCon
 	// FIXME check for errors
 	if( error )
 	{
-		common->Printf( "Error: idCompiler::CompileFile: file %s, line %d: unknown error\n", gameLocal.GetProgram()->GetFilename( currentFileNumber ), currentLineNumber );
+		common->Printf( "Error: idCompiler::CompileFile: file %s, line %d: unknown error\n", gameLocal->GetProgram()->GetFilename( currentFileNumber ), currentLineNumber );
 	}
 #endif
 	
@@ -3260,6 +3260,6 @@ void idCompiler::CompileFile( const char* text, const char* filename, bool toCon
 	compile_time.Stop();
 	if( !toConsole )
 	{
-		gameLocal.Printf( "Compiled '%s': %.1f ms\n", filename, compile_time.Milliseconds() );
+		gameLocal->Printf( "Compiled '%s': %.1f ms\n", filename, compile_time.Milliseconds() );
 	}
 }

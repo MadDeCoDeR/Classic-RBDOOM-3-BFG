@@ -134,22 +134,22 @@ void idCameraView::Event_Activate( idEntity* activator )
 {
 	if( spawnArgs.GetBool( "trigger" ) )
 	{
-		if( gameLocal.GetCamera() != this )
+		if( gameLocal->GetCamera() != this )
 		{
 			if( g_debugCinematic.GetBool() )
 			{
-				gameLocal.Printf( "%d: '%s' start\n", gameLocal.framenum, GetName() );
+				gameLocal->Printf( "%d: '%s' start\n", gameLocal->framenum, GetName() );
 			}
 			
-			gameLocal.SetCamera( this );
+			gameLocal->SetCamera( this );
 		}
 		else
 		{
 			if( g_debugCinematic.GetBool() )
 			{
-				gameLocal.Printf( "%d: '%s' stop\n", gameLocal.framenum, GetName() );
+				gameLocal->Printf( "%d: '%s' stop\n", gameLocal->framenum, GetName() );
 			}
-			gameLocal.SetCamera( NULL );
+			gameLocal->SetCamera( NULL );
 		}
 	}
 }
@@ -163,10 +163,10 @@ void idCameraView::Stop()
 {
 	if( g_debugCinematic.GetBool() )
 	{
-		gameLocal.Printf( "%d: '%s' stop\n", gameLocal.framenum, GetName() );
+		gameLocal->Printf( "%d: '%s' stop\n", gameLocal->framenum, GetName() );
 	}
-	gameLocal.SetCamera( NULL );
-	ActivateTargets( gameLocal.GetLocalPlayer() );
+	gameLocal->SetCamera( NULL );
+	ActivateTargets( gameLocal->GetLocalPlayer() );
 }
 
 
@@ -180,7 +180,7 @@ void idCameraView::SetAttachment( idEntity** e, const char* p )
 	const char* cam = spawnArgs.GetString( p );
 	if( strlen( cam ) )
 	{
-		*e = gameLocal.FindEntity( cam );
+		*e = gameLocal->FindEntity( cam );
 	}
 }
 
@@ -243,7 +243,7 @@ void idCameraView::GetViewParms( renderView_t* view )
 		view->viewaxis = ent->GetPhysics()->GetAxis();
 	}
 	
-	gameLocal.CalcFov( fov, view->fov_x, view->fov_y );
+	gameLocal->CalcFov( fov, view->fov_x, view->fov_y );
 }
 
 /*
@@ -288,9 +288,9 @@ idCameraAnim::~idCameraAnim
 */
 idCameraAnim::~idCameraAnim()
 {
-	if( gameLocal.GetCamera() == this )
+	if( gameLocal->GetCamera() == this )
 	{
-		gameLocal.SetCamera( NULL );
+		gameLocal->SetCamera( NULL );
 	}
 }
 
@@ -367,19 +367,19 @@ void idCameraAnim::LoadAnim()
 	key = spawnArgs.GetString( "anim" );
 	if( !key )
 	{
-		gameLocal.Error( "Missing 'anim' key on '%s'", name.c_str() );
+		gameLocal->Error( "Missing 'anim' key on '%s'", name.c_str() );
 	}
 	
 	filename = spawnArgs.GetString( va( "anim %s", key ) );
 	if( !filename.Length() )
 	{
-		gameLocal.Error( "Missing 'anim %s' key on '%s'", key, name.c_str() );
+		gameLocal->Error( "Missing 'anim %s' key on '%s'", key, name.c_str() );
 	}
 	
 	filename.SetFileExtension( MD5_CAMERA_EXT );
 	if( !parser.LoadFile( filename ) )
 	{
-		gameLocal.Error( "Unable to load '%s' on '%s'", filename.c_str(), name.c_str() );
+		gameLocal->Error( "Unable to load '%s' on '%s'", filename.c_str(), name.c_str() );
 	}
 	
 	cameraCuts.Clear();
@@ -464,17 +464,17 @@ void idCameraAnim::Start()
 	
 	if( g_debugCinematic.GetBool() )
 	{
-		gameLocal.Printf( "%d: '%s' start\n", gameLocal.framenum, GetName() );
+		gameLocal->Printf( "%d: '%s' start\n", gameLocal->framenum, GetName() );
 	}
 	
-	starttime = gameLocal.time;
-	gameLocal.SetCamera( this );
+	starttime = gameLocal->time;
+	gameLocal->SetCamera( this );
 	BecomeActive( TH_THINK );
 	
 	// if the player has already created the renderview for this frame, have him update it again so that the camera starts this frame
-	if( gameLocal.GetLocalPlayer()->GetRenderView()->time[TIME_GROUP2] == gameLocal.fast.time )
+	if( gameLocal->GetLocalPlayer()->GetRenderView()->time[TIME_GROUP2] == gameLocal->fast.time )
 	{
-		gameLocal.GetLocalPlayer()->CalculateRenderView();
+		gameLocal->GetLocalPlayer()->CalculateRenderView();
 	}
 }
 
@@ -485,15 +485,15 @@ idCameraAnim::Stop
 */
 void idCameraAnim::Stop()
 {
-	if( gameLocal.GetCamera() == this )
+	if( gameLocal->GetCamera() == this )
 	{
 		if( g_debugCinematic.GetBool() )
 		{
-			gameLocal.Printf( "%d: '%s' stop\n", gameLocal.framenum, GetName() );
+			gameLocal->Printf( "%d: '%s' stop\n", gameLocal->framenum, GetName() );
 		}
 		
 		BecomeInactive( TH_THINK );
-		gameLocal.SetCamera( NULL );
+		gameLocal->SetCamera( NULL );
 		if( threadNum )
 		{
 			idThread::ObjectMoveDone( threadNum, this );
@@ -544,7 +544,7 @@ void idCameraAnim::GetViewParms( renderView_t* view )
 	
 	SetTimeState ts( timeGroup );
 	
-	frameTime	= ( gameLocal.time - starttime ) * frameRate;
+	frameTime	= ( gameLocal->time - starttime ) * frameRate;
 	frame		= frameTime / 1000;
 	lerp		= ( frameTime % 1000 ) * 0.001f;
 	
@@ -563,7 +563,7 @@ void idCameraAnim::GetViewParms( renderView_t* view )
 	
 	if( g_debugCinematic.GetBool() )
 	{
-		int prevFrameTime	= ( gameLocal.previousTime - starttime ) * frameRate;
+		int prevFrameTime	= ( gameLocal->previousTime - starttime ) * frameRate;
 		int prevFrame		= prevFrameTime / 1000;
 		int prevCut;
 		
@@ -580,7 +580,7 @@ void idCameraAnim::GetViewParms( renderView_t* view )
 		
 		if( prevCut != cut )
 		{
-			gameLocal.Printf( "%d: '%s' cut %d\n", gameLocal.framenum, GetName(), cut );
+			gameLocal->Printf( "%d: '%s' cut %d\n", gameLocal->framenum, GetName(), cut );
 		}
 	}
 	
@@ -608,10 +608,10 @@ void idCameraAnim::GetViewParms( renderView_t* view )
 		}
 		
 		Stop();
-		if( gameLocal.GetCamera() != NULL )
+		if( gameLocal->GetCamera() != NULL )
 		{
 			// we activated another camera when we stopped, so get it's viewparms instead
-			gameLocal.GetCamera()->GetViewParms( view );
+			gameLocal->GetCamera()->GetViewParms( view );
 			return;
 		}
 		else
@@ -642,7 +642,7 @@ void idCameraAnim::GetViewParms( renderView_t* view )
 		view->fov_x = camFrame[ 0 ].fov * invlerp + camFrame[ 1 ].fov * lerp;
 	}
 	
-	gameLocal.CalcFov( view->fov_x, view->fov_x, view->fov_y );
+	gameLocal->CalcFov( view->fov_x, view->fov_x, view->fov_y );
 	
 	// setup the pvs for this frame
 	UpdatePVSAreas( view->vieworg );
@@ -650,7 +650,7 @@ void idCameraAnim::GetViewParms( renderView_t* view )
 #if 0
 	static int lastFrame = 0;
 	static idVec3 lastFrameVec( 0.0f, 0.0f, 0.0f );
-	if( gameLocal.time != lastFrame )
+	if( gameLocal->time != lastFrame )
 	{
 		gameRenderWorld->DebugBounds( colorCyan, idBounds( view->vieworg ).Expand( 16.0f ), vec3_origin, 1 );
 		gameRenderWorld->DebugLine( colorRed, view->vieworg, view->vieworg + idVec3( 0.0f, 0.0f, 2.0f ), 10000, false );
@@ -658,13 +658,13 @@ void idCameraAnim::GetViewParms( renderView_t* view )
 		gameRenderWorld->DebugLine( colorYellow, view->vieworg + view->viewaxis[ 0 ] * 64.0f, view->vieworg + view->viewaxis[ 0 ] * 66.0f, 10000, false );
 		gameRenderWorld->DebugLine( colorOrange, view->vieworg + view->viewaxis[ 0 ] * 64.0f, view->vieworg + view->viewaxis[ 0 ] * 64.0f + idVec3( 0.0f, 0.0f, 2.0f ), 10000, false );
 		lastFrameVec = view->vieworg;
-		lastFrame = gameLocal.time;
+		lastFrame = gameLocal->time;
 	}
 #endif
 	
 	if( g_showcamerainfo.GetBool() )
 	{
-		gameLocal.Printf( "^5Frame: ^7%d/%d\n\n\n", realFrame + 1, camera.Num() - cameraCuts.Num() );
+		gameLocal->Printf( "^5Frame: ^7%d/%d\n\n\n", realFrame + 1, camera.Num() - cameraCuts.Num() );
 	}
 }
 
@@ -713,7 +713,7 @@ idCameraAnim::Event_SetCallback
 */
 void idCameraAnim::Event_SetCallback()
 {
-	if( ( gameLocal.GetCamera() == this ) && !threadNum )
+	if( ( gameLocal->GetCamera() == this ) && !threadNum )
 	{
 		threadNum = idThread::CurrentThreadNum();
 		idThread::ReturnInt( true );

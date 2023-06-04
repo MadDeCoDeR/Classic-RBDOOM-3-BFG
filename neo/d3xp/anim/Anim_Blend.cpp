@@ -342,7 +342,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			return "Unexpected end of line";
 		}
 		fc.type = FC_SCRIPTFUNCTION;
-		fc.function = gameLocal.GetProgram()->FindFunction( token );
+		fc.function = gameLocal->GetProgram()->FindFunction( token );
 		if( !fc.function )
 		{
 			return va( "Function '%s' not found", token.c_str() );
@@ -391,7 +391,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			fc.soundShader = declManager->FindSound( token );
 			if( fc.soundShader->GetState() == DS_DEFAULTED )
 			{
-				gameLocal.Warning( "Sound '%s' not found", token.c_str() );
+				gameLocal->Warning( "Sound '%s' not found", token.c_str() );
 			}
 		}
 	}
@@ -411,7 +411,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			fc.soundShader = declManager->FindSound( token );
 			if( fc.soundShader->GetState() == DS_DEFAULTED )
 			{
-				gameLocal.Warning( "Sound '%s' not found", token.c_str() );
+				gameLocal->Warning( "Sound '%s' not found", token.c_str() );
 			}
 		}
 	}
@@ -431,7 +431,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			fc.soundShader = declManager->FindSound( token );
 			if( fc.soundShader->GetState() == DS_DEFAULTED )
 			{
-				gameLocal.Warning( "Sound '%s' not found", token.c_str() );
+				gameLocal->Warning( "Sound '%s' not found", token.c_str() );
 			}
 		}
 	}
@@ -451,7 +451,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			fc.soundShader = declManager->FindSound( token );
 			if( fc.soundShader->GetState() == DS_DEFAULTED )
 			{
-				gameLocal.Warning( "Sound '%s' not found", token.c_str() );
+				gameLocal->Warning( "Sound '%s' not found", token.c_str() );
 			}
 		}
 	}
@@ -471,7 +471,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			fc.soundShader = declManager->FindSound( token );
 			if( fc.soundShader->GetState() == DS_DEFAULTED )
 			{
-				gameLocal.Warning( "Sound '%s' not found", token.c_str() );
+				gameLocal->Warning( "Sound '%s' not found", token.c_str() );
 			}
 		}
 	}
@@ -491,7 +491,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			fc.soundShader = declManager->FindSound( token );
 			if( fc.soundShader->GetState() == DS_DEFAULTED )
 			{
-				gameLocal.Warning( "Sound '%s' not found", token.c_str() );
+				gameLocal->Warning( "Sound '%s' not found", token.c_str() );
 			}
 		}
 	}
@@ -511,7 +511,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			fc.soundShader = declManager->FindSound( token );
 			if( fc.soundShader->GetState() == DS_DEFAULTED )
 			{
-				gameLocal.Warning( "Sound '%s' not found", token.c_str() );
+				gameLocal->Warning( "Sound '%s' not found", token.c_str() );
 			}
 		}
 	}
@@ -531,7 +531,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			fc.soundShader = declManager->FindSound( token );
 			if( fc.soundShader->GetState() == DS_DEFAULTED )
 			{
-				gameLocal.Warning( "Sound '%s' not found", token.c_str() );
+				gameLocal->Warning( "Sound '%s' not found", token.c_str() );
 			}
 		}
 	}
@@ -551,7 +551,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			fc.soundShader = declManager->FindSound( token );
 			if( fc.soundShader->GetState() == DS_DEFAULTED )
 			{
-				gameLocal.Warning( "Sound '%s' not found", token.c_str() );
+				gameLocal->Warning( "Sound '%s' not found", token.c_str() );
 			}
 		}
 	}
@@ -571,7 +571,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			fc.soundShader = declManager->FindSound( token );
 			if( fc.soundShader->GetState() == DS_DEFAULTED )
 			{
-				gameLocal.Warning( "Sound '%s' not found", token.c_str() );
+				gameLocal->Warning( "Sound '%s' not found", token.c_str() );
 			}
 		}
 	}
@@ -637,7 +637,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			return "Unexpected end of line";
 		}
 		fc.type = FC_MELEE;
-		if( !gameLocal.FindEntityDef( token.c_str(), false ) )
+		if( !gameLocal->FindEntityDef( token.c_str(), false ) )
 		{
 			return va( "Unknown entityDef '%s'", token.c_str() );
 		}
@@ -650,7 +650,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			return "Unexpected end of line";
 		}
 		fc.type = FC_DIRECTDAMAGE;
-		if( !gameLocal.FindEntityDef( token.c_str(), false ) )
+		if( !gameLocal->FindEntityDef( token.c_str(), false ) )
 		{
 			return va( "Unknown entityDef '%s'", token.c_str() );
 		}
@@ -663,7 +663,7 @@ const char* idAnim::AddFrameCommand( const idDeclModelDef* _modelDef, int framen
 			return "Unexpected end of line";
 		}
 		fc.type = FC_BEGINATTACK;
-		if( !gameLocal.FindEntityDef( token.c_str(), false ) )
+		if( !gameLocal->FindEntityDef( token.c_str(), false ) )
 		{
 			return va( "Unknown entityDef '%s'", token.c_str() );
 		}
@@ -973,12 +973,12 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 			{
 				case FC_SCRIPTFUNCTION:
 				{
-					gameLocal.CallFrameCommand( ent, command.function );
+					gameLocal->CallFrameCommand( ent, command.function );
 					break;
 				}
 				case FC_SCRIPTFUNCTIONOBJECT:
 				{
-					gameLocal.CallObjectFrameCommand( ent, command.string->c_str() );
+					gameLocal->CallObjectFrameCommand( ent, command.string->c_str() );
 					break;
 				}
 				case FC_EVENTFUNCTION:
@@ -993,7 +993,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 					{
 						if( !ent->StartSound( command.string->c_str(), SND_CHANNEL_ANY, 0, false, NULL ) )
 						{
-							gameLocal.Warning( "Framecommand 'sound' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
+							gameLocal->Warning( "Framecommand 'sound' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
 											   ent->name.c_str(), FullName(), frame + 1, command.string->c_str() );
 						}
 					}
@@ -1009,7 +1009,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 					{
 						if( !ent->StartSound( command.string->c_str(), SND_CHANNEL_VOICE, 0, false, NULL ) )
 						{
-							gameLocal.Warning( "Framecommand 'sound_voice' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
+							gameLocal->Warning( "Framecommand 'sound_voice' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
 											   ent->name.c_str(), FullName(), frame + 1, command.string->c_str() );
 						}
 					}
@@ -1025,7 +1025,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 					{
 						if( !ent->StartSound( command.string->c_str(), SND_CHANNEL_VOICE2, 0, false, NULL ) )
 						{
-							gameLocal.Warning( "Framecommand 'sound_voice2' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
+							gameLocal->Warning( "Framecommand 'sound_voice2' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
 											   ent->name.c_str(), FullName(), frame + 1, command.string->c_str() );
 						}
 					}
@@ -1041,7 +1041,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 					{
 						if( !ent->StartSound( command.string->c_str(), SND_CHANNEL_BODY, 0, false, NULL ) )
 						{
-							gameLocal.Warning( "Framecommand 'sound_body' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
+							gameLocal->Warning( "Framecommand 'sound_body' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
 											   ent->name.c_str(), FullName(), frame + 1, command.string->c_str() );
 						}
 					}
@@ -1057,7 +1057,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 					{
 						if( !ent->StartSound( command.string->c_str(), SND_CHANNEL_BODY2, 0, false, NULL ) )
 						{
-							gameLocal.Warning( "Framecommand 'sound_body2' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
+							gameLocal->Warning( "Framecommand 'sound_body2' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
 											   ent->name.c_str(), FullName(), frame + 1, command.string->c_str() );
 						}
 					}
@@ -1073,7 +1073,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 					{
 						if( !ent->StartSound( command.string->c_str(), SND_CHANNEL_BODY3, 0, false, NULL ) )
 						{
-							gameLocal.Warning( "Framecommand 'sound_body3' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
+							gameLocal->Warning( "Framecommand 'sound_body3' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
 											   ent->name.c_str(), FullName(), frame + 1, command.string->c_str() );
 						}
 					}
@@ -1089,7 +1089,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 					{
 						if( !ent->StartSound( command.string->c_str(), SND_CHANNEL_WEAPON, 0, false, NULL ) )
 						{
-							gameLocal.Warning( "Framecommand 'sound_weapon' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
+							gameLocal->Warning( "Framecommand 'sound_weapon' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
 											   ent->name.c_str(), FullName(), frame + 1, command.string->c_str() );
 						}
 					}
@@ -1105,7 +1105,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 					{
 						if( !ent->StartSound( command.string->c_str(), SND_CHANNEL_ANY, SSF_GLOBAL, false, NULL ) )
 						{
-							gameLocal.Warning( "Framecommand 'sound_global' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
+							gameLocal->Warning( "Framecommand 'sound_global' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
 											   ent->name.c_str(), FullName(), frame + 1, command.string->c_str() );
 						}
 					}
@@ -1121,7 +1121,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 					{
 						if( !ent->StartSound( command.string->c_str(), SND_CHANNEL_ITEM, 0, false, NULL ) )
 						{
-							gameLocal.Warning( "Framecommand 'sound_item' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
+							gameLocal->Warning( "Framecommand 'sound_item' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
 											   ent->name.c_str(), FullName(), frame + 1, command.string->c_str() );
 						}
 					}
@@ -1139,7 +1139,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 						{
 							if( !ent->StartSound( command.string->c_str(), SND_CHANNEL_VOICE, 0, false, NULL ) )
 							{
-								gameLocal.Warning( "Framecommand 'sound_chatter' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
+								gameLocal->Warning( "Framecommand 'sound_chatter' on entity '%s', anim '%s', frame %d: Could not find sound '%s'",
 												   ent->name.c_str(), FullName(), frame + 1, command.string->c_str() );
 							}
 						}
@@ -1164,7 +1164,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 				{
 					idEntity* target;
 					
-					target = gameLocal.FindEntity( command.string->c_str() );
+					target = gameLocal->FindEntity( command.string->c_str() );
 					if( target )
 					{
 						SetTimeState ts( target->timeGroup );
@@ -1174,7 +1174,7 @@ void idAnim::CallFrameCommands( idEntity* ent, int from, int to ) const
 					}
 					else
 					{
-						gameLocal.Warning( "Framecommand 'trigger' on entity '%s', anim '%s', frame %d: Could not find entity '%s'",
+						gameLocal->Warning( "Framecommand 'trigger' on entity '%s', anim '%s', frame %d: Could not find entity '%s'",
 										   ent->name.c_str(), FullName(), frame + 1, command.string->c_str() );
 					}
 					break;
@@ -1508,7 +1508,7 @@ void idAnimBlend::Restore( idRestoreGame* savefile, const idDeclModelDef* _model
 	}
 	else if( ( animNum < 0 ) || ( animNum > _modelDef->NumAnims() ) )
 	{
-		gameLocal.Warning( "Anim number %d out of range for model '%s' during save game", animNum, _modelDef->GetModelName() );
+		gameLocal->Warning( "Anim number %d out of range for model '%s' during save game", animNum, _modelDef->GetModelName() );
 		animNum = 0;
 	}
 	savefile->ReadBool( allowMove );
@@ -1722,7 +1722,7 @@ void idAnimBlend::SetFrame( const idDeclModelDef* _modelDef, int _animNum, int _
 	const idMD5Anim* md5anim = _anim->MD5Anim( 0 );
 	if( _modelDef->Joints().Num() != md5anim->NumJoints() )
 	{
-		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", _modelDef->GetModelName(), md5anim->Name() );
+		gameLocal->Warning( "Model '%s' has different # of joints than anim '%s'", _modelDef->GetModelName(), md5anim->Name() );
 		return;
 	}
 	
@@ -1772,7 +1772,7 @@ void idAnimBlend::CycleAnim( const idDeclModelDef* _modelDef, int _animNum, int 
 	const idMD5Anim* md5anim = _anim->MD5Anim( 0 );
 	if( _modelDef->Joints().Num() != md5anim->NumJoints() )
 	{
-		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", _modelDef->GetModelName(), md5anim->Name() );
+		gameLocal->Warning( "Model '%s' has different # of joints than anim '%s'", _modelDef->GetModelName(), md5anim->Name() );
 		return;
 	}
 	
@@ -1783,7 +1783,7 @@ void idAnimBlend::CycleAnim( const idDeclModelDef* _modelDef, int _animNum, int 
 	if( _anim->GetAnimFlags().random_cycle_start )
 	{
 		// start the animation at a random time so that characters don't walk in sync
-		starttime = currentTime - gameLocal.random.RandomFloat() * _anim->Length();
+		starttime = currentTime - gameLocal->random.RandomFloat() * _anim->Length();
 	}
 	else
 	{
@@ -1819,7 +1819,7 @@ void idAnimBlend::PlayAnim( const idDeclModelDef* _modelDef, int _animNum, int c
 	const idMD5Anim* md5anim = _anim->MD5Anim( 0 );
 	if( _modelDef->Joints().Num() != md5anim->NumJoints() )
 	{
-		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", _modelDef->GetModelName(), md5anim->Name() );
+		gameLocal->Warning( "Model '%s' has different # of joints than anim '%s'", _modelDef->GetModelName(), md5anim->Name() );
 		return;
 	}
 	
@@ -2416,11 +2416,11 @@ bool idAnimBlend::BlendAnim( int currentTime, int channel, int numJoints, idJoin
 	{
 		if( frame )
 		{
-			gameLocal.Printf( "  %s: '%s', %d, %.2f%%\n", channelNames[ channel ], anim->FullName(), frame, weight * 100.0f );
+			gameLocal->Printf( "  %s: '%s', %d, %.2f%%\n", channelNames[ channel ], anim->FullName(), frame, weight * 100.0f );
 		}
 		else
 		{
-			gameLocal.Printf( "  %s: '%s', %.3f, %.2f%%\n", channelNames[ channel ], anim->FullName(), ( float )frametime.frame1 + frametime.backlerp, weight * 100.0f );
+			gameLocal->Printf( "  %s: '%s', %.3f, %.2f%%\n", channelNames[ channel ], anim->FullName(), ( float )frametime.frame1 + frametime.backlerp, weight * 100.0f );
 		}
 	}
 	
@@ -2899,7 +2899,7 @@ void idDeclModelDef::GetJointList( const char* jointnames, idList<jointHandle_t>
 		joint = FindJoint( jointname );
 		if( !joint )
 		{
-			gameLocal.Warning( "Unknown joint '%s' in '%s' for model '%s'", jointname.c_str(), jointnames, GetName() );
+			gameLocal->Warning( "Unknown joint '%s' in '%s' for model '%s'", jointname.c_str(), jointnames, GetName() );
 			continue;
 		}
 		
@@ -2997,7 +2997,7 @@ void idDeclModelDef::SetupJoints( int* numJoints, idJointMat** jointList, idBoun
 	
 	if( !num )
 	{
-		gameLocal.Error( "model '%s' has no joints", modelHandle->Name() );
+		gameLocal->Error( "model '%s' has no joints", modelHandle->Name() );
 	}
 	
 	// set up initial pose for model (with no pose, model is just a jumbled mess)
@@ -3644,7 +3644,7 @@ int idDeclModelDef::GetAnim( const char* name ) const
 	
 	// get a random anim
 	//FIXME: don't access gameLocal here?
-	which = gameLocal.random.RandomInt( numAnims );
+	which = gameLocal->random.RandomInt( numAnims );
 	return animList[ which ] + 1;
 }
 
@@ -3714,7 +3714,7 @@ const jointInfo_t* idDeclModelDef::GetJoint( int jointHandle ) const
 {
 	if( ( jointHandle < 0 ) || ( jointHandle > joints.Num() ) )
 	{
-		gameLocal.Error( "idDeclModelDef::GetJoint : joint handle out of range" );
+		gameLocal->Error( "idDeclModelDef::GetJoint : joint handle out of range" );
 	}
 	return &joints[ jointHandle ];
 }
@@ -3735,7 +3735,7 @@ const char* idDeclModelDef::GetJointName( int jointHandle ) const
 	
 	if( ( jointHandle < 0 ) || ( jointHandle > joints.Num() ) )
 	{
-		gameLocal.Error( "idDeclModelDef::GetJointName : joint handle out of range" );
+		gameLocal->Error( "idDeclModelDef::GetJointName : joint handle out of range" );
 	}
 	
 	joint = modelHandle->GetJoints();
@@ -3751,7 +3751,7 @@ int idDeclModelDef::NumJointsOnChannel( int channel ) const
 {
 	if( ( channel < 0 ) || ( channel >= ANIM_NumAnimChannels ) )
 	{
-		gameLocal.Error( "idDeclModelDef::NumJointsOnChannel : channel out of range" );
+		gameLocal->Error( "idDeclModelDef::NumJointsOnChannel : channel out of range" );
 		return 0;
 	}
 	return channelJoints[ channel ].Num();
@@ -3766,7 +3766,7 @@ const int* idDeclModelDef::GetChannelJoints( int channel ) const
 {
 	if( ( channel < 0 ) || ( channel >= ANIM_NumAnimChannels ) )
 	{
-		gameLocal.Error( "idDeclModelDef::GetChannelJoints : channel out of range" );
+		gameLocal->Error( "idDeclModelDef::GetChannelJoints : channel out of range" );
 		return NULL;
 	}
 	return channelJoints[ channel ].Ptr();
@@ -4292,7 +4292,7 @@ idAnimBlend* idAnimator::CurrentAnim( int channelNum )
 {
 	if( ( channelNum < 0 ) || ( channelNum >= ANIM_NumAnimChannels ) )
 	{
-		gameLocal.Error( "idAnimator::CurrentAnim : channel out of range" );
+		gameLocal->Error( "idAnimator::CurrentAnim : channel out of range" );
 		return NULL;
 	}
 	
@@ -4311,7 +4311,7 @@ void idAnimator::Clear( int channelNum, int currentTime, int cleartime )
 	
 	if( ( channelNum < 0 ) || ( channelNum >= ANIM_NumAnimChannels ) )
 	{
-		gameLocal.Error( "idAnimator::Clear : channel out of range" );
+		gameLocal->Error( "idAnimator::Clear : channel out of range" );
 		return;
 	}
 	
@@ -4332,7 +4332,7 @@ void idAnimator::SetFrame( int channelNum, int animNum, int frame, int currentTi
 {
 	if( ( channelNum < 0 ) || ( channelNum >= ANIM_NumAnimChannels ) )
 	{
-		gameLocal.Error( "idAnimator::SetFrame : channel out of range" );
+		gameLocal->Error( "idAnimator::SetFrame : channel out of range" );
 	}
 	
 	if( !modelDef || !modelDef->GetAnim( animNum ) )
@@ -4357,7 +4357,7 @@ void idAnimator::CycleAnim( int channelNum, int animNum, int currentTime, int bl
 {
 	if( ( channelNum < 0 ) || ( channelNum >= ANIM_NumAnimChannels ) )
 	{
-		gameLocal.Error( "idAnimator::CycleAnim : channel out of range" );
+		gameLocal->Error( "idAnimator::CycleAnim : channel out of range" );
 	}
 	
 	if( !modelDef || !modelDef->GetAnim( animNum ) )
@@ -4382,7 +4382,7 @@ void idAnimator::PlayAnim( int channelNum, int animNum, int currentTime, int ble
 {
 	if( ( channelNum < 0 ) || ( channelNum >= ANIM_NumAnimChannels ) )
 	{
-		gameLocal.Error( "idAnimator::PlayAnim : channel out of range" );
+		gameLocal->Error( "idAnimator::PlayAnim : channel out of range" );
 	}
 	
 	if( !modelDef || !modelDef->GetAnim( animNum ) )
@@ -4407,7 +4407,7 @@ void idAnimator::SyncAnimChannels( int channelNum, int fromChannelNum, int curre
 {
 	if( ( channelNum < 0 ) || ( channelNum >= ANIM_NumAnimChannels ) || ( fromChannelNum < 0 ) || ( fromChannelNum >= ANIM_NumAnimChannels ) )
 	{
-		gameLocal.Error( "idAnimator::SyncToChannel : channel out of range" );
+		gameLocal->Error( "idAnimator::SyncToChannel : channel out of range" );
 		return;
 	}
 	
@@ -4774,11 +4774,11 @@ bool idAnimator::GetBounds( int currentTime, idBounds& bounds )
 		{
 			if( entity )
 			{
-				gameLocal.Warning( "big frameBounds on entity '%s' with model '%s': %f,%f", entity->name.c_str(), modelDef->ModelHandle()->Name(), bounds[1][0] - bounds[0][0], bounds[1][1] - bounds[0][1] );
+				gameLocal->Warning( "big frameBounds on entity '%s' with model '%s': %f,%f", entity->name.c_str(), modelDef->ModelHandle()->Name(), bounds[1][0] - bounds[0][0], bounds[1][1] - bounds[0][1] );
 			}
 			else
 			{
-				gameLocal.Warning( "big frameBounds on model '%s': %f,%f", modelDef->ModelHandle()->Name(), bounds[1][0] - bounds[0][0], bounds[1][1] - bounds[0][1] );
+				gameLocal->Warning( "big frameBounds on model '%s': %f,%f", modelDef->ModelHandle()->Name(), bounds[1][0] - bounds[0][0], bounds[1][1] - bounds[0][1] );
 			}
 		}
 	}
@@ -4861,7 +4861,7 @@ void idAnimator::FinishAFPose( int animNum, const idBounds& bounds, const int ti
 	
 	if( numJoints_ != md5anim->NumJoints() )
 	{
-		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", md5->Name(), md5anim->Name() );
+		gameLocal->Warning( "Model '%s' has different # of joints than anim '%s'", md5->Name(), md5anim->Name() );
 		return;
 	}
 	
@@ -5169,7 +5169,7 @@ bool idAnimator::CreateFrame( int currentTime, bool force )
 	
 	static idCVar		r_showSkel( "r_showSkel", "0", CVAR_RENDERER | CVAR_INTEGER, "", 0, 2, idCmdSystem::ArgCompletion_Integer<0, 2> );
 	
-	if( gameLocal.inCinematic && gameLocal.skipCinematic )
+	if( gameLocal->inCinematic && gameLocal->skipCinematic )
 	{
 		return false;
 	}
@@ -5197,8 +5197,8 @@ bool idAnimator::CreateFrame( int currentTime, bool force )
 	if( entity && ( ( g_debugAnim.GetInteger() == entity->entityNumber ) || ( g_debugAnim.GetInteger() == -2 ) ) )
 	{
 		debugInfo = true;
-		gameLocal.Printf( "---------------\n%d: entity '%s':\n", gameLocal.time, entity->GetName() );
-		gameLocal.Printf( "model '%s':\n", modelDef->GetModelName() );
+		gameLocal->Printf( "---------------\n%d: entity '%s':\n", gameLocal->time, entity->GetName() );
+		gameLocal->Printf( "model '%s':\n", modelDef->GetModelName() );
 	}
 	else
 	{
@@ -5218,7 +5218,7 @@ bool idAnimator::CreateFrame( int currentTime, bool force )
 	
 	if( !defaultPose )
 	{
-		//gameLocal.Warning( "idAnimator::CreateFrame: no defaultPose on '%s'", modelDef->Name() );
+		//gameLocal->Warning( "idAnimator::CreateFrame: no defaultPose on '%s'", modelDef->Name() );
 		return false;
 	}
 	
@@ -5274,7 +5274,7 @@ bool idAnimator::CreateFrame( int currentTime, bool force )
 			
 			if( debugInfo && !AFPoseJoints.Num() && !blendWeight )
 			{
-				gameLocal.Printf( "%d: %s using default pose in model '%s'\n", gameLocal.time, channelNames[ i ], modelDef->GetModelName() );
+				gameLocal->Printf( "%d: %s using default pose in model '%s'\n", gameLocal->time, channelNames[ i ], modelDef->GetModelName() );
 			}
 		}
 	}
@@ -5552,13 +5552,13 @@ int idAnimator::GetChannelForJoint( jointHandle_t joint ) const
 {
 	if( !modelDef )
 	{
-		gameLocal.Error( "idAnimator::GetChannelForJoint: NULL model" );
+		gameLocal->Error( "idAnimator::GetChannelForJoint: NULL model" );
 		return -1;
 	}
 	
 	if( ( joint < 0 ) || ( joint >= numJoints ) )
 	{
-		gameLocal.Error( "idAnimator::GetChannelForJoint: invalid joint num (%d)", joint );
+		gameLocal->Error( "idAnimator::GetChannelForJoint: invalid joint num (%d)", joint );
 		return -1;
 	}
 	
@@ -5811,7 +5811,7 @@ idRenderModel* idGameEdit::ANIM_GetModelFromEntityDef( const char* classname )
 {
 	const idDict* args;
 	
-	args = gameLocal.FindEntityDefDict( classname, false );
+	args = gameLocal->FindEntityDefDict( classname, false );
 	if( !args )
 	{
 		return NULL;
@@ -5830,7 +5830,7 @@ const idVec3& idGameEdit::ANIM_GetModelOffsetFromEntityDef( const char* classnam
 	const idDict* args;
 	const idDeclModelDef* modelDef;
 	
-	args = gameLocal.FindEntityDefDict( classname, false );
+	args = gameLocal->FindEntityDefDict( classname, false );
 	if( !args )
 	{
 		return vec3_origin;
@@ -5882,7 +5882,7 @@ const idMD5Anim* idGameEdit::ANIM_GetAnimFromEntityDef( const char* classname, c
 	const char*	modelname;
 	const idDeclModelDef* modelDef;
 	
-	args = gameLocal.FindEntityDefDict( classname, false );
+	args = gameLocal->FindEntityDefDict( classname, false );
 	if( !args )
 	{
 		return NULL;
@@ -6005,7 +6005,7 @@ void idGameEdit::ANIM_CreateAnimFrame( const idRenderModel* model, const idMD5An
 	
 	if( numJoints != model->NumJoints() )
 	{
-		gameLocal.Error( "ANIM_CreateAnimFrame: different # of joints in renderEntity_t than in model (%s)", model->Name() );
+		gameLocal->Error( "ANIM_CreateAnimFrame: different # of joints in renderEntity_t than in model (%s)", model->Name() );
 	}
 	
 	if( !model->NumJoints() )
@@ -6016,12 +6016,12 @@ void idGameEdit::ANIM_CreateAnimFrame( const idRenderModel* model, const idMD5An
 	
 	if( !joints )
 	{
-		gameLocal.Error( "ANIM_CreateAnimFrame: NULL joint frame pointer on model (%s)", model->Name() );
+		gameLocal->Error( "ANIM_CreateAnimFrame: NULL joint frame pointer on model (%s)", model->Name() );
 	}
 	
 	if( numJoints != anim->NumJoints() )
 	{
-		gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", model->Name(), anim->Name() );
+		gameLocal->Warning( "Model '%s' has different # of joints than anim '%s'", model->Name(), anim->Name() );
 		for( i = 0; i < numJoints; i++ )
 		{
 			joints[i].SetRotation( mat3_identity );
@@ -6087,7 +6087,7 @@ idRenderModel* idGameEdit::ANIM_CreateMeshForAnim( idRenderModel* model, const c
 		return NULL;
 	}
 	
-	args = gameLocal.FindEntityDefDict( classname, false );
+	args = gameLocal->FindEntityDefDict( classname, false );
 	if( !args )
 	{
 		return NULL;

@@ -323,7 +323,7 @@ void idClass::FindUninitializedMemory()
 		if( ptr[i] == 0xcdcdcdcd )
 		{
 			const char* varName = GetTypeVariableName( GetClassname(), i << 2 );
-			gameLocal.Warning( "type '%s' has uninitialized variable %s (offset %d)", GetClassname(), varName, i << 2 );
+			gameLocal->Warning( "type '%s' has uninitialized variable %s (offset %d)", GetClassname(), varName, i << 2 );
 		}
 	}
 #endif
@@ -357,7 +357,7 @@ idClass::DisplayInfo_f
 */
 void idClass::DisplayInfo_f( const idCmdArgs& args )
 {
-	gameLocal.Printf( "Class memory status: %i bytes allocated in %i objects\n", memused, numobjects );
+	gameLocal->Printf( "Class memory status: %i bytes allocated in %i objects\n", memused, numobjects );
 }
 
 /*
@@ -370,16 +370,16 @@ void idClass::ListClasses_f( const idCmdArgs& args )
 	int			i;
 	idTypeInfo* type;
 	
-	gameLocal.Printf( "%-24s %-24s %-6s %-6s\n", "Classname", "Superclass", "Type", "Subclasses" );
-	gameLocal.Printf( "----------------------------------------------------------------------\n" );
+	gameLocal->Printf( "%-24s %-24s %-6s %-6s\n", "Classname", "Superclass", "Type", "Subclasses" );
+	gameLocal->Printf( "----------------------------------------------------------------------\n" );
 	
 	for( i = 0; i < types.Num(); i++ )
 	{
 		type = types[ i ];
-		gameLocal.Printf( "%-24s %-24s %6d %6d\n", type->classname, type->superclass, type->typeNum, type->lastChild - type->typeNum );
+		gameLocal->Printf( "%-24s %-24s %6d %6d\n", type->classname, type->superclass, type->typeNum, type->lastChild - type->typeNum );
 	}
 	
-	gameLocal.Printf( "...%d classes", types.Num() );
+	gameLocal->Printf( "...%d classes", types.Num() );
 }
 
 /*
@@ -417,11 +417,11 @@ void idClass::Init()
 	idTypeInfo*	c;
 	int			num;
 	
-	gameLocal.Printf( "Initializing class hierarchy\n" );
+	gameLocal->Printf( "Initializing class hierarchy\n" );
 	
 	if( initialized )
 	{
-		gameLocal.Printf( "...already initialized\n" );
+		gameLocal->Printf( "...already initialized\n" );
 		return;
 	}
 	
@@ -458,7 +458,7 @@ void idClass::Init()
 	
 	initialized = true;
 	
-	gameLocal.Printf( "...%i classes, %i bytes for event callbacks\n", types.Num(), eventCallbackMemory );
+	gameLocal->Printf( "...%i classes, %i bytes for event callbacks\n", types.Num(), eventCallbackMemory );
 }
 
 /*
@@ -677,7 +677,7 @@ bool idClass::PostEventArgs( const idEventDef* ev, int time, int numargs, ... )
 	// we service events on the client to avoid any bad code filling up the event pool
 	// we don't want them processed usually, unless when the map is (re)loading.
 	// we allow threads to run fine, though.
-	if( common->IsClient() && isReplicated && ( gameLocal.GameState() != GAMESTATE_STARTUP ) && !IsType( idThread::Type ) )
+	if( common->IsClient() && isReplicated && ( gameLocal->GameState() != GAMESTATE_STARTUP ) && !IsType( idThread::Type ) )
 	{
 		return true;
 	}
@@ -1022,7 +1022,7 @@ bool idClass::ProcessEventArgPtr( const idEventDef* ev, intptr_t* data )
 	if( g_debugTriggers.GetBool() && ( ev == &EV_Activate ) && IsType( idEntity::Type ) )
 	{
 		const idEntity* ent = *reinterpret_cast<idEntity**>( data );
-		gameLocal.Printf( "%d: '%s' activated by '%s'\n", gameLocal.framenum, static_cast<idEntity*>( this )->GetName(), ent ? ent->GetName() : "NULL" );
+		gameLocal->Printf( "%d: '%s' activated by '%s'\n", gameLocal->framenum, static_cast<idEntity*>( this )->GetName(), ent ? ent->GetName() : "NULL" );
 	}
 	
 	c = GetType();
@@ -1057,7 +1057,7 @@ bool idClass::ProcessEventArgPtr( const idEventDef* ev, intptr_t* data )
 #include "Callbacks.cpp"
 
 		default:
-			gameLocal.Warning( "Invalid formatspec on event '%s'", ev->GetName() );
+			gameLocal->Warning( "Invalid formatspec on event '%s'", ev->GetName() );
 			break;
 	}
 	
@@ -1113,7 +1113,7 @@ bool idClass::ProcessEventArgPtr( const idEventDef* ev, intptr_t* data )
 			break;
 	
 		default:
-			gameLocal.Warning( "Invalid formatspec on event '%s'", ev->GetName() );
+			gameLocal->Warning( "Invalid formatspec on event '%s'", ev->GetName() );
 			break;
 	}
 	// RB end

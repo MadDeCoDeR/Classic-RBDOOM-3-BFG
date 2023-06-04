@@ -424,7 +424,7 @@ void idSaveGame::WriteObject( const idClass* obj )
 	index = objects.FindIndex( obj );
 	if( index < 0 )
 	{
-		gameLocal.DPrintf( "idSaveGame::WriteObject - WriteObject FindIndex failed\n" );
+		gameLocal->DPrintf( "idSaveGame::WriteObject - WriteObject FindIndex failed\n" );
 		
 		// Use the NULL index
 		index = 0;
@@ -616,7 +616,7 @@ void idSaveGame::WriteUserInterface( const idUserInterface* ui, bool unique )
 		WriteBool( unique );
 		if( ui->WriteToSaveGame( file ) == false )
 		{
-			gameLocal.Error( "idSaveGame::WriteUserInterface: ui failed to write properly\n" );
+			gameLocal->Error( "idSaveGame::WriteUserInterface: ui failed to write properly\n" );
 		}
 	}
 }
@@ -1044,7 +1044,7 @@ void idRestoreGame::RestoreObjects()
 	gameState.StripFileExtension();
 	WriteGameState_f( idCmdArgs( va( "test %s_restore", gameState.c_str() ), false ) );
 	//CompareGameState_f( idCmdArgs( va( "test %s_save", gameState.c_str() ) ) );
-	gameLocal.Error( "dumped game states" );
+	gameLocal->Error( "dumped game states" );
 #endif
 }
 
@@ -1078,7 +1078,7 @@ void idRestoreGame::Error( const char* fmt, ... )
 	
 	objects.DeleteContents( true );
 	
-	gameLocal.Error( "%s", text );
+	gameLocal->Error( "%s", text );
 }
 
 /*
@@ -1515,7 +1515,7 @@ void idRestoreGame::ReadUserInterface( idUserInterface*& ui )
 			}
 			else
 			{
-				ui->StateChanged( gameLocal.time );
+				ui->StateChanged( gameLocal->time );
 			}
 		}
 	}

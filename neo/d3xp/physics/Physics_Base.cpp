@@ -43,7 +43,7 @@ idPhysics_Base::idPhysics_Base()
 {
 	self = NULL;
 	clipMask = 0;
-	SetGravity( gameLocal.GetGravity() );
+	SetGravity( gameLocal->GetGravity() );
 	ClearContacts();
 }
 
@@ -613,7 +613,7 @@ void idPhysics_Base::ClearContacts()
 	
 	for( i = 0; i < contacts.Num(); i++ )
 	{
-		ent = gameLocal.entities[ contacts[i].entityNum ];
+		ent = gameLocal->entities[ contacts[i].entityNum ];
 		if( ent )
 		{
 			ent->RemoveContactEntity( self );
@@ -827,7 +827,7 @@ void idPhysics_Base::AddGroundContacts( const idClipModel* clipModel )
 	
 	dir.SubVec3( 0 ) = gravityNormal;
 	dir.SubVec3( 1 ) = vec3_origin;
-	num = gameLocal.GetClip()->Contacts( &contacts[index], 10, clipModel->GetOrigin(),
+	num = gameLocal->GetClip()->Contacts( &contacts[index], 10, clipModel->GetOrigin(),
 								   dir, CONTACT_EPSILON, clipModel, clipModel->GetAxis(), clipMask, self );
 	contacts.SetNum( index + num );
 }
@@ -844,7 +844,7 @@ void idPhysics_Base::AddContactEntitiesForContacts()
 	
 	for( i = 0; i < contacts.Num(); i++ )
 	{
-		ent = gameLocal.entities[ contacts[i].entityNum ];
+		ent = gameLocal->entities[ contacts[i].entityNum ];
 		if( ent && ent != self )
 		{
 			ent->AddContactEntity( self );
@@ -883,7 +883,7 @@ idPhysics_Base::IsOutsideWorld
 */
 bool idPhysics_Base::IsOutsideWorld() const
 {
-	if( !gameLocal.GetClip()->GetWorldBounds().Expand( 128.0f ).IntersectsBounds( GetAbsBounds() ) )
+	if( !gameLocal->GetClip()->GetWorldBounds().Expand( 128.0f ).IntersectsBounds( GetAbsBounds() ) )
 	{
 		return true;
 	}

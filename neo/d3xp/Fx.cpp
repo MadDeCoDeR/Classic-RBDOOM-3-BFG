@@ -194,7 +194,7 @@ void idEntityFx::Setup( const char* fx )
 			idFXLocalAction& laction = actions[i];
 			if( fxaction.random1 || fxaction.random2 )
 			{
-				laction.delay = fxaction.random1 + gameLocal.random.RandomFloat() * ( fxaction.random2 - fxaction.random1 );
+				laction.delay = fxaction.random1 + gameLocal->random.RandomFloat() * ( fxaction.random2 - fxaction.random1 );
 			}
 			else
 			{
@@ -339,7 +339,7 @@ idEntityFx::Done
 */
 const bool idEntityFx::Done()
 {
-	if( started > 0 && gameLocal.time > started + Duration() )
+	if( started > 0 && gameLocal->time > started + Duration() )
 	{
 		return true;
 	}
@@ -433,7 +433,7 @@ void idEntityFx::Run( int time )
 			{
 				if( fxaction.random1 || fxaction.random2 )
 				{
-					totalDelay = fxaction.random1 + gameLocal.random.RandomFloat() * ( fxaction.random2 - fxaction.random1 );
+					totalDelay = fxaction.random1 + gameLocal->random.RandomFloat() * ( fxaction.random2 - fxaction.random1 );
 				}
 				else
 				{
@@ -535,7 +535,7 @@ void idEntityFx::Run( int time )
 				if( !useAction->decalDropped )
 				{
 					useAction->decalDropped = true;
-					gameLocal.ProjectDecal( GetPhysics()->GetOrigin(), GetPhysics()->GetGravity(), 8.0f, true, fxaction.size, fxaction.data );
+					gameLocal->ProjectDecal( GetPhysics()->GetOrigin(), GetPhysics()->GetGravity(), 8.0f, true, fxaction.size, fxaction.data );
 				}
 				break;
 			}
@@ -547,9 +547,9 @@ void idEntityFx::Run( int time )
 					args.Clear();
 					args.SetFloat( "kick_time", fxaction.shakeTime );
 					args.SetFloat( "kick_amplitude", fxaction.shakeAmplitude );
-					for( j = 0; j < gameLocal.numClients; j++ )
+					for( j = 0; j < gameLocal->numClients; j++ )
 					{
-						idPlayer* player = gameLocal.GetClientByNum( j );
+						idPlayer* player = gameLocal->GetClientByNum( j );
 						if( player && ( player->GetPhysics()->GetOrigin() - GetPhysics()->GetOrigin() ).LengthSqr() < Square( fxaction.shakeDistance ) )
 						{
 							if( !common->IsMultiplayer() || !fxaction.shakeIgnoreMaster || GetBindMaster() != player )
@@ -570,7 +570,7 @@ void idEntityFx::Run( int time )
 							}
 						}
 						// lookup the ent we are bound to?
-						gameLocal.RadiusPush( GetPhysics()->GetOrigin(), fxaction.shakeDistance, fxaction.shakeImpulse, this, ignore_ent, 1.0f, true );
+						gameLocal->RadiusPush( GetPhysics()->GetOrigin(), fxaction.shakeDistance, fxaction.shakeImpulse, this, ignore_ent, 1.0f, true );
 					}
 					useAction->shakeStarted = true;
 				}
@@ -620,14 +620,14 @@ void idEntityFx::Run( int time )
 					useAction->launched = true;
 					projectile = NULL;
 					// FIXME: may need to cache this if it is slow
-					projectileDef = gameLocal.FindEntityDefDict( fxaction.data, false );
+					projectileDef = gameLocal->FindEntityDefDict( fxaction.data, false );
 					if( !projectileDef )
 					{
-						gameLocal.Warning( "projectile \'%s\' not found", fxaction.data.c_str() );
+						gameLocal->Warning( "projectile \'%s\' not found", fxaction.data.c_str() );
 					}
 					else
 					{
-						gameLocal.SpawnEntityDef( *projectileDef, &ent, false );
+						gameLocal->SpawnEntityDef( *projectileDef, &ent, false );
 						if( ent && ent->IsType( idProjectile::Type ) )
 						{
 							projectile = ( idProjectile* )ent;
@@ -656,14 +656,14 @@ void idEntityFx::Run( int time )
 						shockDefName = "func_shockwave";
 					}
 					
-					projectileDef = gameLocal.FindEntityDefDict( shockDefName, false );
+					projectileDef = gameLocal->FindEntityDefDict( shockDefName, false );
 					if( !projectileDef )
 					{
-						gameLocal.Warning( "shockwave \'%s\' not found", shockDefName.c_str() );
+						gameLocal->Warning( "shockwave \'%s\' not found", shockDefName.c_str() );
 					}
 					else
 					{
-						gameLocal.SpawnEntityDef( *projectileDef, &ent );
+						gameLocal->SpawnEntityDef( *projectileDef, &ent );
 						ent->SetOrigin( GetPhysics()->GetOrigin() + fxaction.offset );
 						ent->PostEventMS( &EV_Remove, ent->spawnArgs.GetInt( "duration" ) );
 					}
@@ -744,7 +744,7 @@ void idEntityFx::Think()
 	
 	if( thinkFlags & TH_THINK )
 	{
-		Run( gameLocal.time );
+		Run( gameLocal->time );
 	}
 	
 	RunPhysics();
@@ -785,7 +785,7 @@ void idEntityFx::Event_ClearFx()
 			}
 			else
 			{
-				rest *= gameLocal.random.RandomFloat();
+				rest *= gameLocal->random.RandomFloat();
 				PostEventSec( &EV_Activate, rest, this );
 			}
 		}
@@ -808,7 +808,7 @@ void idEntityFx::Event_Trigger( idEntity* activator )
 	float		fxActionDelay;
 	const char* fx;
 	
-	if( gameLocal.time < nextTriggerTime )
+	if( gameLocal->time < nextTriggerTime )
 	{
 		return;
 	}
@@ -816,7 +816,7 @@ void idEntityFx::Event_Trigger( idEntity* activator )
 	if( spawnArgs.GetString( "fx", "", &fx ) )
 	{
 		Setup( fx );
-		Start( gameLocal.time );
+		Start( gameLocal->time );
 		PostEventMS( &EV_Fx_KillFx, Duration() );
 		BecomeActive( TH_THINK );
 	}
@@ -824,12 +824,12 @@ void idEntityFx::Event_Trigger( idEntity* activator )
 	fxActionDelay = spawnArgs.GetFloat( "fxActionDelay" );
 	if( fxActionDelay != 0.0f )
 	{
-		nextTriggerTime = gameLocal.time + SEC2MS( fxActionDelay );
+		nextTriggerTime = gameLocal->time + SEC2MS( fxActionDelay );
 	}
 	else
 	{
 		// prevent multiple triggers on same frame
-		nextTriggerTime = gameLocal.time + 1;
+		nextTriggerTime = gameLocal->time + 1;
 	}
 	PostEventSec( &EV_Fx_Action, fxActionDelay, activator );
 }
@@ -851,7 +851,7 @@ idEntityFx* idEntityFx::StartFx( const char* fx, const idVec3* useOrigin, const 
 	idDict args;
 	args.SetBool( "start", true );
 	args.Set( "fx", fx );
-	idEntityFx* nfx = static_cast<idEntityFx*>( gameLocal.SpawnEntityType( idEntityFx::Type, &args ) );
+	idEntityFx* nfx = static_cast<idEntityFx*>( gameLocal->SpawnEntityType( idEntityFx::Type, &args ) );
 	if( nfx->Joint() && *nfx->Joint() )
 	{
 		nfx->BindToJoint( ent, nfx->Joint(), true );
@@ -866,7 +866,7 @@ idEntityFx* idEntityFx::StartFx( const char* fx, const idVec3* useOrigin, const 
 	if( bind )
 	{
 		// never bind to world spawn
-		if( ent != gameLocal.world )
+		if( ent != gameLocal->world )
 		{
 			nfx->Bind( ent, true );
 		}
@@ -884,7 +884,7 @@ void idEntityFx::WriteToSnapshot( idBitMsg& msg ) const
 {
 	GetPhysics()->WriteToSnapshot( msg );
 	WriteBindToSnapshot( msg );
-	msg.WriteLong( ( fxEffect != NULL ) ? gameLocal.ServerRemapDecl( -1, DECL_FX, fxEffect->Index() ) : -1 );
+	msg.WriteLong( ( fxEffect != NULL ) ? gameLocal->ServerRemapDecl( -1, DECL_FX, fxEffect->Index() ) : -1 );
 	msg.WriteLong( started );
 }
 
@@ -899,13 +899,13 @@ void idEntityFx::ReadFromSnapshot( const idBitMsg& msg )
 	
 	GetPhysics()->ReadFromSnapshot( msg );
 	ReadBindFromSnapshot( msg );
-	fx_index = gameLocal.ClientRemapDecl( DECL_FX, msg.ReadLong() );
+	fx_index = gameLocal->ClientRemapDecl( DECL_FX, msg.ReadLong() );
 	start_time = msg.ReadLong();
 	
 	if( fx_index != -1 && start_time > 0 && !fxEffect && started < 0 )
 	{
 		spawnArgs.GetInt( "effect_lapse", "1000", max_lapse );
-		if( gameLocal.time - start_time > max_lapse )
+		if( gameLocal->time - start_time > max_lapse )
 		{
 			// too late, skip the effect completely
 			started = 0;
@@ -914,7 +914,7 @@ void idEntityFx::ReadFromSnapshot( const idBitMsg& msg )
 		const idDeclFX* fx = static_cast<const idDeclFX*>( declManager->DeclByIndex( DECL_FX, fx_index ) );
 		if( !fx )
 		{
-			gameLocal.Error( "FX at index %d not found", fx_index );
+			gameLocal->Error( "FX at index %d not found", fx_index );
 		}
 		fxEffect = fx;
 		Setup( fx->GetName() );
@@ -930,9 +930,9 @@ idEntityFx::ClientThink
 void idEntityFx::ClientThink( const int curTime, const float fraction, const bool predict )
 {
 
-	if( gameLocal.isNewFrame )
+	if( gameLocal->isNewFrame )
 	{
-		Run( gameLocal.serverTime );
+		Run( gameLocal->serverTime );
 	}
 	
 	InterpolatePhysics( fraction );
@@ -946,9 +946,9 @@ idEntityFx::ClientPredictionThink
 */
 void idEntityFx::ClientPredictionThink()
 {
-	if( gameLocal.isNewFrame )
+	if( gameLocal->isNewFrame )
 	{
-		Run( gameLocal.time );
+		Run( gameLocal->time );
 	}
 	RunPhysics();
 	Present();

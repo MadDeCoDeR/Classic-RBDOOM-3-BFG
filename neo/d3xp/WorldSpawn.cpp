@@ -61,8 +61,8 @@ void idWorldspawn::Spawn()
 	const function_t*	func;
 	const idKeyValue*	kv;
 	
-	assert( gameLocal.world == NULL );
-	gameLocal.world = this;
+	assert( gameLocal->world == NULL );
+	gameLocal->world = this;
 	
 	g_gravity.SetFloat( spawnArgs.GetFloat( "gravity", va( "%f", DEFAULT_GRAVITY ) ) );
 	
@@ -73,14 +73,14 @@ void idWorldspawn::Spawn()
 	}
 	
 	// load script
-	scriptname = gameLocal.GetMapName();
+	scriptname = gameLocal->GetMapName();
 	scriptname.SetFileExtension( ".script" );
 	if( fileSystem->ReadFile( scriptname, NULL, NULL ) > 0 )
 	{
-		gameLocal.GetProgram()->CompileFile( scriptname );
+		gameLocal->GetProgram()->CompileFile( scriptname );
 		
 		// call the main function by default
-		func = gameLocal.GetProgram()->FindFunction( "main" );
+		func = gameLocal->GetProgram()->FindFunction( "main" );
 		if( func != NULL )
 		{
 			thread = new idThread( func );
@@ -92,10 +92,10 @@ void idWorldspawn::Spawn()
 	kv = spawnArgs.MatchPrefix( "call" );
 	while( kv != NULL )
 	{
-		func = gameLocal.GetProgram()->FindFunction( kv->GetValue() );
+		func = gameLocal->GetProgram()->FindFunction( kv->GetValue() );
 		if( func == NULL )
 		{
-			gameLocal.Error( "Function '%s' not found in script for '%s' key on worldspawn", kv->GetValue().c_str(), kv->GetKey().c_str() );
+			gameLocal->Error( "Function '%s' not found in script for '%s' key on worldspawn", kv->GetValue().c_str(), kv->GetKey().c_str() );
 		}
 		
 		thread = new idThread( func );
@@ -120,7 +120,7 @@ idWorldspawn::Restore
 */
 void idWorldspawn::Restore( idRestoreGame* savefile )
 {
-	assert( gameLocal.world == this );
+	assert( gameLocal->world == this );
 	
 	g_gravity.SetFloat( spawnArgs.GetFloat( "gravity", va( "%f", DEFAULT_GRAVITY ) ) );
 	
@@ -138,9 +138,9 @@ idWorldspawn::~idWorldspawn
 */
 idWorldspawn::~idWorldspawn()
 {
-	if( gameLocal.world == this )
+	if( gameLocal->world == this )
 	{
-		gameLocal.world = NULL;
+		gameLocal->world = NULL;
 	}
 }
 
@@ -151,5 +151,5 @@ idWorldspawn::Event_Remove
 */
 void idWorldspawn::Event_Remove()
 {
-	gameLocal.Error( "Tried to remove world" );
+	gameLocal->Error( "Tried to remove world" );
 }

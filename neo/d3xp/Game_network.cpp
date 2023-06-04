@@ -645,18 +645,18 @@ void idGameLocal::ServerProcessReliableMessage( int clientNum, int type, const i
 			const float damageScale = msg.ReadFloat();
 			const int location = msg.ReadLong();
 			
-			if( gameLocal.entities[victimNum] == NULL )
+			if( gameLocal->entities[victimNum] == NULL )
 			{
 				break;
 			}
 			
-			if( gameLocal.entities[attackerNum] == NULL )
+			if( gameLocal->entities[attackerNum] == NULL )
 			{
 				break;
 			}
 			
-			idPlayer& victim = static_cast< idPlayer& >( *gameLocal.entities[victimNum] );
-			idPlayer& attacker = static_cast< idPlayer& >( *gameLocal.entities[attackerNum] );
+			idPlayer& victim = static_cast< idPlayer& >( *gameLocal->entities[victimNum] );
+			idPlayer& attacker = static_cast< idPlayer& >( *gameLocal->entities[attackerNum] );
 			
 			if( victim.GetPhysics() == NULL )
 			{
@@ -684,9 +684,9 @@ void idGameLocal::ServerProcessReliableMessage( int clientNum, int type, const i
 			idVec3 targetLocation = victim.GetRenderEntity()->origin + victim.GetRenderEntity()->joints[location].ToVec3() * victim.GetRenderEntity()->axis;
 			
 			trace_t tr;
-			gameLocal.GetClip()->Translation( tr, muzzleOrigin, targetLocation, NULL, mat3_identity, MASK_SHOT_RENDERMODEL, &attacker );
+			gameLocal->GetClip()->Translation( tr, muzzleOrigin, targetLocation, NULL, mat3_identity, MASK_SHOT_RENDERMODEL, &attacker );
 			
-			idEntity* hitEnt = gameLocal.entities[ tr.c.entityNum ];
+			idEntity* hitEnt = gameLocal->entities[ tr.c.entityNum ];
 			if( hitEnt != &victim )
 			{
 				break;
@@ -695,7 +695,7 @@ void idGameLocal::ServerProcessReliableMessage( int clientNum, int type, const i
 			
 			if( damageDef != NULL )
 			{
-				victim.Damage( NULL, gameLocal.entities[attackerNum], dir, damageDef->GetName(), damageScale, location );
+				victim.Damage( NULL, gameLocal->entities[attackerNum], dir, damageDef->GetName(), damageScale, location );
 			}
 			break;
 		}
@@ -791,7 +791,7 @@ void idGameLocal::ClientReadSnapshot( const idSnapShot& ss )
 					if( weap && ( weap->GetRenderEntity()->bounds[0] == weap->GetRenderEntity()->bounds[1] ) )
 					{
 						// update the weapon's viewmodel bounds so that the model doesn't flicker in the spectator's view
-						weap->GetAnimator()->GetBounds( gameLocal.time, weap->GetRenderEntity()->bounds );
+						weap->GetAnimator()->GetBounds( gameLocal->time, weap->GetRenderEntity()->bounds );
 						weap->UpdateVisuals();
 					}
 				}
@@ -1021,7 +1021,7 @@ void idGameLocal::ClientProcessEntityNetworkEventQueue()
 		
 		if( !entPtr.SetSpawnId( event->spawnId ) )
 		{
-			if( !gameLocal.entities[ event->spawnId & ( ( 1 << GENTITYNUM_BITS ) - 1 ) ] )
+			if( !gameLocal->entities[ event->spawnId & ( ( 1 << GENTITYNUM_BITS ) - 1 ) ] )
 			{
 				// if new entity exists in this position, silently ignore
 				NetworkEventWarning( event, "Entity does not exist any longer, or has not been spawned yet." );
@@ -1086,7 +1086,7 @@ void idGameLocal::ClientProcessReliableMessage( int type, const idBitMsg& msg )
 		}
 		case GAME_RELIABLE_MESSAGE_SOUND_INDEX:
 		{
-			int index = gameLocal.ClientRemapDecl( DECL_SOUND, msg.ReadLong() );
+			int index = gameLocal->ClientRemapDecl( DECL_SOUND, msg.ReadLong() );
 			if( index >= 0 && index < declManager->GetNumDecls( DECL_SOUND ) )
 			{
 				const idSoundShader* shader = declManager->SoundByIndex( index );
@@ -1505,7 +1505,7 @@ void idEventQueue::Enqueue( entityNetEvent_t* event, outOfOrderBehaviour_t behav
 		while( end && end->time > event->time )
 		{
 			entityNetEvent_t* outOfOrder = RemoveLast();
-			common->DPrintf( "WARNING: new event with id %d ( time %d ) caused removal of event with id %d ( time %d ), game time = %d.\n", event->event, event->time, outOfOrder->event, outOfOrder->time, gameLocal.time );
+			common->DPrintf( "WARNING: new event with id %d ( time %d ) caused removal of event with id %d ( time %d ), game time = %d.\n", event->event, event->time, outOfOrder->event, outOfOrder->time, gameLocal->time );
 			Free( outOfOrder );
 		}
 	}

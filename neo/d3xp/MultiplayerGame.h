@@ -240,7 +240,7 @@ private:
 	bool			one, two, three;		// keeps count down voice from repeating
 	
 	// guis
-	idMenuHandler_Scoreboard* scoreboardManager;
+	idMenuHandler_Scoreboard* scoreboardManager = NULL;
 	
 	// chat data
 	mpChatLine_t	chatHistory[ NUM_CHAT_NOTIFY ];

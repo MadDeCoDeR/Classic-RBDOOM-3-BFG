@@ -185,7 +185,7 @@ void idGrabber::Initialize()
 		{
 			args.SetVector( "origin", vec3_origin );
 			args.SetBool( "start_off", true );
-			beamTarget = ( idBeam* )gameLocal.SpawnEntityType( idBeam::Type, &args );
+			beamTarget = ( idBeam* )gameLocal->SpawnEntityType( idBeam::Type, &args );
 		}
 		
 		if( !beam )
@@ -197,7 +197,7 @@ void idGrabber::Initialize()
 			args.Set( "width", "6" );
 			args.Set( "skin", "textures/smf/flareSizeable" );
 			args.Set( "_color", "0.0235 0.843 0.969 0.2" );
-			beam = ( idBeam* )gameLocal.SpawnEntityType( idBeam::Type, &args );
+			beam = ( idBeam* )gameLocal->SpawnEntityType( idBeam::Type, &args );
 			beam->SetShaderParm( 6, 1.0f );
 		}
 		
@@ -234,8 +234,8 @@ void idGrabber::StartDrag( idEntity* grabEnt, int _id )
 	idPlayer* thePlayer = owner.GetEntity();
 	
 	holdingAF = false;
-	dragFailTime = gameLocal.slow.time;
-	startDragTime = gameLocal.slow.time;
+	dragFailTime = gameLocal->slow.time;
+	startDragTime = gameLocal->slow.time;
 	
 	oldImpulseSequence = thePlayer->usercmd.impulseSequence;
 	
@@ -318,7 +318,7 @@ void idGrabber::StartDrag( idEntity* grabEnt, int _id )
 	localPlayerPoint = ( thePlayer->firstPersonViewAxis[0] * HOLD_DISTANCE ) * thePlayer->firstPersonViewAxis.Transpose();
 	
 	// Set the ending time for the hold
-	endTime = gameLocal.time + g_grabberHoldSeconds.GetFloat() * 1000;
+	endTime = gameLocal->time + g_grabberHoldSeconds.GetFloat() * 1000;
 	
 	// Start up the Force_Drag to bring it in
 	drag.Init( g_grabberDamping.GetFloat() );
@@ -354,7 +354,7 @@ void idGrabber::StopDrag( bool dropOnly )
 		ent->SetGrabbedState( false );
 		
 		// If a cinematic has started, allow dropped object to think in cinematics
-		if( gameLocal.inCinematic )
+		if( gameLocal->inCinematic )
 		{
 			ent->cinematic = true;
 		}
@@ -383,7 +383,7 @@ void idGrabber::StopDrag( bool dropOnly )
 			af_Phys->PutToRest();
 			af_Phys->Activate();
 			
-			af_Phys->SetTimeScaleRamp( MS2SEC( gameLocal.slow.time ) - 1.5f, MS2SEC( gameLocal.slow.time ) + 1.0f );
+			af_Phys->SetTimeScaleRamp( MS2SEC( gameLocal->slow.time ) - 1.5f, MS2SEC( gameLocal->slow.time ) + 1.0f );
 		}
 		
 		// If the object isn't near its goal, just drop it in place.
@@ -457,7 +457,7 @@ void idGrabber::StopDrag( bool dropOnly )
 		warpId = -1;
 	}
 	
-	lastFiredTime = gameLocal.time;
+	lastFiredTime = gameLocal->time;
 	dragEnt = NULL;
 	endTime = 0;
 }
@@ -473,7 +473,7 @@ int idGrabber::Update( idPlayer* player, bool hide )
 	idEntity* newEnt;
 	
 	// pause before allowing refire
-	if( lastFiredTime + FIRING_DELAY > gameLocal.time )
+	if( lastFiredTime + FIRING_DELAY > gameLocal->time )
 	{
 		return 3;
 	}
@@ -484,13 +484,13 @@ int idGrabber::Update( idPlayer* player, bool hide )
 		StopDrag( true );
 		if( hide )
 		{
-			lastFiredTime = gameLocal.time - FIRING_DELAY + 250;
+			lastFiredTime = gameLocal->time - FIRING_DELAY + 250;
 		}
 		return 3;
 	}
 	
 	// Check if object being held has been removed (dead demon, projectile, etc.)
-	if( endTime > gameLocal.time )
+	if( endTime > gameLocal->time )
 	{
 		bool abort = !dragEnt.IsValid();
 		
@@ -531,11 +531,11 @@ int idGrabber::Update( idPlayer* player, bool hide )
 		bounds.Zero();
 		bounds.ExpandSelf( TRACE_BOUNDS_SIZE );
 		
-		gameLocal.GetClip()->TraceBounds( trace, player->firstPersonViewOrigin, end, bounds, MASK_SHOT_RENDERMODEL | CONTENTS_PROJECTILE | CONTENTS_MOVEABLECLIP, player );
+		gameLocal->GetClip()->TraceBounds( trace, player->firstPersonViewOrigin, end, bounds, MASK_SHOT_RENDERMODEL | CONTENTS_PROJECTILE | CONTENTS_MOVEABLECLIP, player );
 		// If the trace hit something
 		if( trace.fraction < 1.0f )
 		{
-			newEnt = gameLocal.entities[ trace.c.entityNum ];
+			newEnt = gameLocal->entities[ trace.c.entityNum ];
 			
 			// if entity is already being grabbed then bypass
 			if( common->IsMultiplayer() && newEnt && newEnt->IsGrabbed() )
@@ -595,7 +595,7 @@ int idGrabber::Update( idPlayer* player, bool hide )
 	{
 	
 		// if we've marched backwards
-		if( gameLocal.slow.time < startDragTime )
+		if( gameLocal->slow.time < startDragTime )
 		{
 			allow = false;
 		}
@@ -614,7 +614,7 @@ int idGrabber::Update( idPlayer* player, bool hide )
 			StopDrag( false );
 			return 3;
 		}
-		if( gameLocal.time > endTime )
+		if( gameLocal->time > endTime )
 		{
 			StopDrag( true );
 			return 3;
@@ -652,7 +652,7 @@ int idGrabber::Update( idPlayer* player, bool hide )
 		goalPos = player->firstPersonViewOrigin + localPlayerPoint * player->firstPersonViewAxis;
 		
 		drag.SetGoalPosition( goalPos );
-		drag.Evaluate( gameLocal.time );
+		drag.Evaluate( gameLocal->time );
 		
 		// If an object is flying too fast toward the player, stop it hard
 		if( g_grabberHardStop.GetBool() )
@@ -711,7 +711,7 @@ int idGrabber::Update( idPlayer* player, bool hide )
 		// If the object is stuck away from its intended position for more than 500ms, let it go.
 		if( drag.GetDistanceToGoal() > DRAG_FAIL_LEN )
 		{
-			if( dragFailTime < ( gameLocal.slow.time - 500 ) )
+			if( dragFailTime < ( gameLocal->slow.time - 500 ) )
 			{
 				StopDrag( true );
 				return 3;
@@ -719,7 +719,7 @@ int idGrabber::Update( idPlayer* player, bool hide )
 		}
 		else
 		{
-			dragFailTime = gameLocal.slow.time;
+			dragFailTime = gameLocal->slow.time;
 		}
 		
 		// Currently holding an object
@@ -759,7 +759,7 @@ void idGrabber::UpdateBeams()
 		muzzle_joint = thePlayer->weapon.GetEntity()->GetAnimator()->GetJointHandle( "particle_upper" );
 		if( muzzle_joint != INVALID_JOINT )
 		{
-			thePlayer->weapon.GetEntity()->GetJointWorldTransform( muzzle_joint, gameLocal.time, muzzle_origin, muzzle_axis );
+			thePlayer->weapon.GetEntity()->GetJointWorldTransform( muzzle_joint, gameLocal->time, muzzle_origin, muzzle_axis );
 		}
 		else
 		{
@@ -782,7 +782,7 @@ idGrabber::ApplyShake
 */
 void idGrabber::ApplyShake()
 {
-	float u = 1 - ( float )( endTime - gameLocal.time ) / ( g_grabberHoldSeconds.GetFloat() * 1000 );
+	float u = 1 - ( float )( endTime - gameLocal->time ) / ( g_grabberHoldSeconds.GetFloat() * 1000 );
 	
 	if( u >= 0.8f )
 	{

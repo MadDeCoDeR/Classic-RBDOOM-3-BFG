@@ -1077,11 +1077,11 @@ void idMD5Anim::CheckModelHierarchy( const idRenderModel* model ) const
 	{
 		if( !fileSystem->InProductionMode() )
 		{
-			gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", model->Name(), name.c_str() );
+			gameLocal->Warning( "Model '%s' has different # of joints than anim '%s'", model->Name(), name.c_str() );
 		}
 		else
 		{
-			//gameLocal.Warning( "Model '%s' has different # of joints than anim '%s'", model->Name(), name.c_str() );
+			//gameLocal->Warning( "Model '%s' has different # of joints than anim '%s'", model->Name(), name.c_str() );
 			return;
 		}
 	}
@@ -1092,7 +1092,7 @@ void idMD5Anim::CheckModelHierarchy( const idRenderModel* model ) const
 		int jointNum = jointInfo[ i ].nameIndex;
 		if( modelJoints[ i ].name != animationLib.JointName( jointNum ) )
 		{
-			gameLocal.Error( "Model '%s''s joint names don't match anim '%s''s", model->Name(), name.c_str() );
+			gameLocal->Error( "Model '%s''s joint names don't match anim '%s''s", model->Name(), name.c_str() );
 		}
 		int parent;
 		if( modelJoints[ i ].parent )
@@ -1105,7 +1105,7 @@ void idMD5Anim::CheckModelHierarchy( const idRenderModel* model ) const
 		}
 		if( parent != jointInfo[ i ].parentNum )
 		{
-			gameLocal.Error( "Model '%s' has different joint hierarchy than anim '%s'", model->Name(), name.c_str() );
+			gameLocal->Error( "Model '%s' has different joint hierarchy than anim '%s'", model->Name(), name.c_str() );
 		}
 	}
 }
@@ -1177,7 +1177,7 @@ idMD5Anim* idAnimManager::GetAnim( const char* name )
 		anim = new( TAG_ANIM ) idMD5Anim();
 		if( !anim->LoadAnim( filename ) )
 		{
-			gameLocal.Warning( "Couldn't load anim: '%s'", filename.c_str() );
+			gameLocal->Warning( "Couldn't load anim: '%s'", filename.c_str() );
 			delete anim;
 			anim = NULL;
 		}
@@ -1291,7 +1291,7 @@ void idAnimManager::ListAnims() const
 		{
 			anim = *animptr;
 			s = anim->Size();
-			gameLocal.Printf( "%8d bytes : %2d refs : %s\n", s, anim->NumRefs(), anim->Name() );
+			gameLocal->Printf( "%8d bytes : %2d refs : %s\n", s, anim->NumRefs(), anim->Name() );
 			size += s;
 			num++;
 		}
@@ -1303,8 +1303,8 @@ void idAnimManager::ListAnims() const
 		namesize += jointnames[ i ].Size();
 	}
 	
-	gameLocal.Printf( "\n%d memory used in %d anims\n", size, num );
-	gameLocal.Printf( "%d memory used in %d joint names\n", namesize, jointnames.Num() );
+	gameLocal->Printf( "\n%d memory used in %d anims\n", size, num );
+	gameLocal->Printf( "%d memory used in %d joint names\n", namesize, jointnames.Num() );
 }
 
 /*

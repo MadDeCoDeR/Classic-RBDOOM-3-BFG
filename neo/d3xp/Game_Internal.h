@@ -26,4 +26,4 @@
 
 #include "Game_local.h"
 //Non Monolithic executable should not be aware of this
-extern idGameLocal			gameLocal;
+extern idGameLocal*			gameLocal;

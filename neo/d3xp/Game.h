@@ -276,6 +276,7 @@ public:
 };
 
 extern idGame* 					game;
+idGame*				CreateGameInstance();
 
 
 /*

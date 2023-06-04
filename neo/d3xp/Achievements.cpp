@@ -182,7 +182,7 @@ idLocalUser* idAchievementManager::GetLocalUser()
 	{
 		return NULL;
 	}
-	return session->GetGameLobbyBase().GetLocalUserFromLobbyUser( gameLocal.lobbyUserIDs[ owner->GetEntityNumber() ] );
+	return session->GetGameLobbyBase().GetLocalUserFromLobbyUser( gameLocal->lobbyUserIDs[ owner->GetEntityNumber() ] );
 }
 
 /*
@@ -267,7 +267,7 @@ void idAchievementManager::EventCompletesAchievement( const achievement_t eventI
 			
 			msg.WriteByteAlign();
 			idLib::Printf( "Host Sending Achievement\n" );
-			session->GetActingGameStateLobbyBase().SendReliableToLobbyUser( gameLocal.lobbyUserIDs[ owner->entityNumber ], GAME_RELIABLE_MESSAGE_ACHIEVEMENT_UNLOCK, msg );
+			session->GetActingGameStateLobbyBase().SendReliableToLobbyUser( gameLocal->lobbyUserIDs[ owner->entityNumber ], GAME_RELIABLE_MESSAGE_ACHIEVEMENT_UNLOCK, msg );
 		}
 		
 		return; // Remote user or build game
@@ -644,8 +644,8 @@ AchievementsList
 */
 CONSOLE_COMMAND( AchievementsList, "Lists achievements and status", NULL )
 {
-	idPlayer* player = gameLocal.GetLocalPlayer();
-	idLocalUser* user = ( player == NULL ) ? session->GetSignInManager().GetMasterLocalUser() : session->GetGameLobbyBase().GetLocalUserFromLobbyUser( gameLocal.lobbyUserIDs[ player->GetEntityNumber() ] );
+	idPlayer* player = gameLocal->GetLocalPlayer();
+	idLocalUser* user = ( player == NULL ) ? session->GetSignInManager().GetMasterLocalUser() : session->GetGameLobbyBase().GetLocalUserFromLobbyUser( gameLocal->lobbyUserIDs[ player->GetEntityNumber() ] );
 	if( user == NULL )
 	{
 		idLib::Printf( "Must be signed in\n" );

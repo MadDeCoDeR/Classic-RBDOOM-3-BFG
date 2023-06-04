@@ -77,7 +77,7 @@ void idPlayerIcon::Draw( idPlayer* player, jointHandle_t joint )
 		return;
 	}
 	
-	player->GetJointWorldTransform( joint, gameLocal.time, origin, axis );
+	player->GetJointWorldTransform( joint, gameLocal->time, origin, axis );
 	origin.z += 16.0f;
 	
 	Draw( player, origin );
@@ -90,7 +90,7 @@ idPlayerIcon::Draw
 */
 void idPlayerIcon::Draw( idPlayer* player, const idVec3& origin )
 {
-	idPlayer* localPlayer = gameLocal.GetLocalPlayer();
+	idPlayer* localPlayer = gameLocal->GetLocalPlayer();
 	if( !localPlayer || !localPlayer->GetRenderView() )
 	{
 		FreeIcon();
@@ -107,7 +107,7 @@ void idPlayerIcon::Draw( idPlayer* player, const idVec3& origin )
 			UpdateIcon( player, origin, axis );
 		}
 	}
-	else if( g_CTFArrows.GetBool() && gameLocal.mpGame.IsGametypeFlagBased() && gameLocal.GetLocalPlayer() && player->team == gameLocal.GetLocalPlayer()->team && !player->IsHidden() && !player->AI_DEAD )
+	else if( g_CTFArrows.GetBool() && gameLocal->mpGame.IsGametypeFlagBased() && gameLocal->GetLocalPlayer() && player->team == gameLocal->GetLocalPlayer()->team && !player->IsHidden() && !player->AI_DEAD )
 	{
 		int icon = ICON_TEAM_RED + player->team;
 		

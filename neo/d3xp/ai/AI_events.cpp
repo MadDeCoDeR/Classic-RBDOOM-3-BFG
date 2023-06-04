@@ -348,11 +348,11 @@ void idAI::Event_FindEnemy( int useFOV )
 	idEntity*	ent;
 	idActor*		actor;
 	
-	if( gameLocal.InPlayerPVS( this ) )
+	if( gameLocal->InPlayerPVS( this ) )
 	{
-		for( i = 0; i < gameLocal.numClients ; i++ )
+		for( i = 0; i < gameLocal->numClients ; i++ )
 		{
-			ent = gameLocal.entities[ i ];
+			ent = gameLocal->entities[ i ];
 			
 			if( !ent || !ent->IsType( idActor::Type ) )
 			{
@@ -391,11 +391,11 @@ void idAI::Event_FindEnemyAI( int useFOV )
 	idVec3		delta;
 	pvsHandle_t pvs;
 	
-	pvs = gameLocal.GetPvs()->SetupCurrentPVS( GetPVSAreas(), GetNumPVSAreas() );
+	pvs = gameLocal->GetPvs()->SetupCurrentPVS( GetPVSAreas(), GetNumPVSAreas() );
 	
 	bestDist = idMath::INFINITY;
 	bestEnemy = NULL;
-	for( ent = gameLocal.activeEntities.Next(); ent != NULL; ent = ent->activeNode.Next() )
+	for( ent = gameLocal->activeEntities.Next(); ent != NULL; ent = ent->activeNode.Next() )
 	{
 		if( ent->fl.hidden || ent->fl.isDormant || !ent->IsType( idActor::Type ) )
 		{
@@ -408,7 +408,7 @@ void idAI::Event_FindEnemyAI( int useFOV )
 			continue;
 		}
 		
-		if( !gameLocal.GetPvs()->InCurrentPVS( pvs, actor->GetPVSAreas(), actor->GetNumPVSAreas() ) )
+		if( !gameLocal->GetPvs()->InCurrentPVS( pvs, actor->GetPVSAreas(), actor->GetNumPVSAreas() ) )
 		{
 			continue;
 		}
@@ -422,7 +422,7 @@ void idAI::Event_FindEnemyAI( int useFOV )
 		}
 	}
 	
-	gameLocal.GetPvs()->FreeCurrentPVS( pvs );
+	gameLocal->GetPvs()->FreeCurrentPVS( pvs );
 	idThread::ReturnEntity( bestEnemy );
 }
 
@@ -439,16 +439,16 @@ void idAI::Event_FindEnemyInCombatNodes()
 	idEntity*		targetEnt;
 	idActor*			actor;
 	
-	if( !gameLocal.InPlayerPVS( this ) )
+	if( !gameLocal->InPlayerPVS( this ) )
 	{
 		// don't locate the player when we're not in his PVS
 		idThread::ReturnEntity( NULL );
 		return;
 	}
 	
-	for( i = 0; i < gameLocal.numClients ; i++ )
+	for( i = 0; i < gameLocal->numClients ; i++ )
 	{
-		ent = gameLocal.entities[ i ];
+		ent = gameLocal->entities[ i ];
 		
 		if( !ent || !ent->IsType( idActor::Type ) )
 		{
@@ -500,7 +500,7 @@ void idAI::Event_ClosestReachableEnemyOfEntity( idEntity* team_mate )
 	
 	if( !team_mate->IsType( idActor::Type ) )
 	{
-		gameLocal.Error( "Entity '%s' is not an AI character or player", team_mate->GetName() );
+		gameLocal->Error( "Entity '%s' is not an AI character or player", team_mate->GetName() );
 	}
 	
 	actor = static_cast<idActor*>( team_mate );
@@ -541,8 +541,8 @@ idAI::Event_HeardSound
 void idAI::Event_HeardSound( int ignore_team )
 {
 	// check if we heard any sounds in the last frame
-	idActor*	actor = gameLocal.GetAlertEntity();
-	if( actor != NULL && ( !ignore_team || ( ReactionTo( actor ) & ATTACK_ON_SIGHT ) ) && gameLocal.InPlayerPVS( this ) )
+	idActor*	actor = gameLocal->GetAlertEntity();
+	if( actor != NULL && ( !ignore_team || ( ReactionTo( actor ) & ATTACK_ON_SIGHT ) ) && gameLocal->InPlayerPVS( this ) )
 	{
 		idVec3 pos = actor->GetPhysics()->GetOrigin();
 		idVec3 org = physicsObj.GetOrigin();
@@ -570,7 +570,7 @@ void idAI::Event_SetEnemy( idEntity* ent )
 	}
 	else if( !ent->IsType( idActor::Type ) )
 	{
-		gameLocal.Error( "'%s' is not an idActor (player or ai controlled character)", ent->name.c_str() );
+		gameLocal->Error( "'%s' is not an idActor (player or ai controlled character)", ent->name.c_str() );
 	}
 	else
 	{
@@ -614,7 +614,7 @@ void idAI::Event_CreateMissile( const char* jointname )
 	
 	if( !projectileDef )
 	{
-		gameLocal.Warning( "%s (%s) doesn't have a projectile specified", name.c_str(), GetEntityDefName() );
+		gameLocal->Warning( "%s (%s) doesn't have a projectile specified", name.c_str(), GetEntityDefName() );
 		return idThread::ReturnEntity( NULL );
 	}
 	
@@ -657,10 +657,10 @@ void idAI::Event_FireMissileAtTarget( const char* jointname, const char* targetn
 	idEntity*		aent;
 	idProjectile*	proj;
 	
-	aent = gameLocal.FindEntity( targetname );
+	aent = gameLocal->FindEntity( targetname );
 	if( !aent )
 	{
-		gameLocal.Warning( "Entity '%s' not found for 'fireMissileAtTarget'", targetname );
+		gameLocal->Warning( "Entity '%s' not found for 'fireMissileAtTarget'", targetname );
 	}
 	
 	proj = LaunchProjectile( jointname, aent, false );
@@ -683,7 +683,7 @@ void idAI::Event_LaunchMissile( const idVec3& org, const idAngles& ang )
 	
 	if( !projectileDef )
 	{
-		gameLocal.Warning( "%s (%s) doesn't have a projectile specified", name.c_str(), GetEntityDefName() );
+		gameLocal->Warning( "%s (%s) doesn't have a projectile specified", name.c_str(), GetEntityDefName() );
 		idThread::ReturnEntity( NULL );
 		return;
 	}
@@ -719,7 +719,7 @@ void idAI::Event_LaunchMissile( const idVec3& org, const idAngles& ang )
 		start = ownerBounds.GetCenter();
 	}
 	
-	gameLocal.GetClip()->Translation( tr, start, org, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
+	gameLocal->GetClip()->Translation( tr, start, org, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
 	
 	// launch the projectile
 	idThread::ReturnEntity( projectile.GetEntity() );
@@ -728,7 +728,7 @@ void idAI::Event_LaunchMissile( const idVec3& org, const idAngles& ang )
 	
 	TriggerWeaponEffects( tr.endpos );
 	
-	lastAttackTime = gameLocal.time;
+	lastAttackTime = gameLocal->time;
 }
 
 
@@ -750,20 +750,20 @@ void idAI::Event_LaunchProjectile( const char* entityDefName )
 	float				distance;
 	idProjectile*		proj = NULL;
 	
-	projDef = gameLocal.FindEntityDefDict( entityDefName );
+	projDef = gameLocal->FindEntityDefDict( entityDefName );
 	
-	gameLocal.SpawnEntityDef( *projDef, &ent, false );
+	gameLocal->SpawnEntityDef( *projDef, &ent, false );
 	if( ent == NULL )
 	{
 		clsname = projectileDef->GetString( "classname" );
-		gameLocal.Error( "Could not spawn entityDef '%s'", clsname );
+		gameLocal->Error( "Could not spawn entityDef '%s'", clsname );
 		return;
 	}
 	
 	if( !ent->IsType( idProjectile::Type ) )
 	{
 		clsname = ent->GetClassname();
-		gameLocal.Error( "'%s' is not an idProjectile", clsname );
+		gameLocal->Error( "'%s' is not an idProjectile", clsname );
 	}
 	proj = ( idProjectile* )ent;
 	
@@ -782,7 +782,7 @@ void idAI::Event_LaunchProjectile( const char* entityDefName )
 	{
 		start = ownerBounds.GetCenter();
 	}
-	gameLocal.GetClip()->Translation( tr, start, muzzle, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
+	gameLocal->GetClip()->Translation( tr, start, muzzle, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
 	muzzle = tr.endpos;
 	
 	GetAimDir( muzzle, enemy.GetEntity(), this, dir );
@@ -837,12 +837,12 @@ void idAI::Event_RadiusDamageFromJoint( const char* jointname, const char* damag
 		joint = animator.GetJointHandle( jointname );
 		if( joint == INVALID_JOINT )
 		{
-			gameLocal.Error( "Unknown joint '%s' on %s", jointname, GetEntityDefName() );
+			gameLocal->Error( "Unknown joint '%s' on %s", jointname, GetEntityDefName() );
 		}
-		GetJointWorldTransform( joint, gameLocal.time, org, axis );
+		GetJointWorldTransform( joint, gameLocal->time, org, axis );
 	}
 	
-	gameLocal.RadiusDamage( org, this, this, this, this, damageDefName );
+	gameLocal->RadiusDamage( org, this, this, this, this, damageDefName );
 }
 
 /*
@@ -895,9 +895,9 @@ void idAI::Event_MeleeAttackToJoint( const char* jointname, const char* meleeDef
 	joint = animator.GetJointHandle( jointname );
 	if( joint == INVALID_JOINT )
 	{
-		gameLocal.Error( "Unknown joint '%s' on %s", jointname, GetEntityDefName() );
+		gameLocal->Error( "Unknown joint '%s' on %s", jointname, GetEntityDefName() );
 	}
-	animator.GetJointTransform( joint, gameLocal.time, end, axis );
+	animator.GetJointTransform( joint, gameLocal->time, end, axis );
 	end = physicsObj.GetOrigin() + ( end + modelOffset ) * viewAxis * physicsObj.GetGravityAxis();
 	start = GetEyePosition();
 	
@@ -906,10 +906,10 @@ void idAI::Event_MeleeAttackToJoint( const char* jointname, const char* meleeDef
 		gameRenderWorld->DebugLine( colorYellow, start, end, 1 );
 	}
 	
-	gameLocal.GetClip()->TranslationEntities( trace, start, end, NULL, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
+	gameLocal->GetClip()->TranslationEntities( trace, start, end, NULL, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
 	if( trace.fraction < 1.0f )
 	{
-		hitEnt = gameLocal.GetTraceEntity( trace );
+		hitEnt = gameLocal->GetTraceEntity( trace );
 		if( hitEnt != NULL && hitEnt->IsType( idActor::Type ) )
 		{
 			DirectDamage( meleeDefName, hitEnt );
@@ -935,7 +935,7 @@ void idAI::Event_CanBecomeSolid()
 	idClipModel* cm;
 	idClipModel* clipModels[ MAX_GENTITIES ];
 	
-	num = gameLocal.GetClip()->ClipModelsTouchingBounds( physicsObj.GetAbsBounds(), MASK_MONSTERSOLID, clipModels, MAX_GENTITIES );
+	num = gameLocal->GetClip()->ClipModelsTouchingBounds( physicsObj.GetAbsBounds(), MASK_MONSTERSOLID, clipModels, MAX_GENTITIES );
 	for( i = 0; i < num; i++ )
 	{
 		cm = clipModels[ i ];
@@ -999,7 +999,7 @@ void idAI::Event_BecomeSolid()
 	{
 		physicsObj.SetContents( CONTENTS_BODY );
 	}
-	physicsObj.GetClipModel()->Link( *gameLocal.GetClip() );
+	physicsObj.GetClipModel()->Link( *gameLocal->GetClip() );
 	fl.takedamage = !spawnArgs.GetBool( "noDamage" );
 }
 
@@ -1219,7 +1219,7 @@ void idAI::Event_MoveToAttackPosition( idEntity* entity, const char* attack_anim
 	anim = GetAnim( ANIMCHANNEL_LEGS, attack_anim );
 	if( !anim )
 	{
-		gameLocal.Error( "Unknown anim '%s'", attack_anim );
+		gameLocal->Error( "Unknown anim '%s'", attack_anim );
 	}
 	
 	MoveToAttackPosition( entity, anim );
@@ -1350,7 +1350,7 @@ void idAI::Event_GetCombatNode()
 			// find the closest attack node to the player
 			bestNode = NULL;
 			const idVec3& myPos = physicsObj.GetOrigin();
-			const idVec3& playerPos = gameLocal.GetLocalPlayer()->GetPhysics()->GetOrigin();
+			const idVec3& playerPos = gameLocal->GetLocalPlayer()->GetPhysics()->GetOrigin();
 			
 			bestDist = ( myPos - playerPos ).LengthSqr();
 			
@@ -1588,7 +1588,7 @@ void idAI::Event_SetTalkTarget( idEntity* target )
 {
 	if( target && !target->IsType( idActor::Type ) )
 	{
-		gameLocal.Error( "Cannot set talk target to '%s'.  Not a character or player.", target->GetName() );
+		gameLocal->Error( "Cannot set talk target to '%s'.  Not a character or player.", target->GetName() );
 	}
 	talkTarget = static_cast<idActor*>( target );
 	if( target )
@@ -1620,7 +1620,7 @@ void idAI::Event_SetTalkState( int _state )
 {
 	if( ( _state < 0 ) || ( _state >= NUM_TALK_STATES ) )
 	{
-		gameLocal.Error( "Invalid talk state (%d)", _state );
+		gameLocal->Error( "Invalid talk state (%d)", _state );
 	}
 	
 	talk_state = static_cast<talkState_t>( _state );
@@ -1743,13 +1743,13 @@ void idAI::Event_CanHitEnemy()
 	}
 	
 	// don't check twice per frame
-	if( gameLocal.time == lastHitCheckTime )
+	if( gameLocal->time == lastHitCheckTime )
 	{
 		idThread::ReturnInt( lastHitCheckResult );
 		return;
 	}
 	
-	lastHitCheckTime = gameLocal.time;
+	lastHitCheckTime = gameLocal->time;
 	
 	idVec3 toPos = enemyEnt->GetEyePosition();
 	idVec3 eye = GetEyePosition();
@@ -1759,8 +1759,8 @@ void idAI::Event_CanHitEnemy()
 	dir = toPos - eye;
 	dir.Normalize();
 	toPos = eye + dir * MAX_WORLD_SIZE;
-	gameLocal.GetClip()->TracePoint( tr, eye, toPos, MASK_SHOT_BOUNDINGBOX, this );
-	hit = gameLocal.GetTraceEntity( tr );
+	gameLocal->GetClip()->TracePoint( tr, eye, toPos, MASK_SHOT_BOUNDINGBOX, this );
+	hit = gameLocal->GetTraceEntity( tr );
 	if( tr.fraction >= 1.0f || ( hit == enemyEnt ) )
 	{
 		lastHitCheckResult = true;
@@ -1851,7 +1851,7 @@ void idAI::Event_CanHitEnemyFromAnim( const char* animname )
 		start = ownerBounds.GetCenter();
 	}
 	
-	gameLocal.GetClip()->Translation( tr, start, fromPos, projectileClipModel, mat3_identity, MASK_SHOT_RENDERMODEL, this );
+	gameLocal->GetClip()->Translation( tr, start, fromPos, projectileClipModel, mat3_identity, MASK_SHOT_RENDERMODEL, this );
 	fromPos = tr.endpos;
 	
 	if( GetAimDir( fromPos, enemy.GetEntity(), this, dir ) )
@@ -1885,22 +1885,22 @@ void idAI::Event_CanHitEnemyFromJoint( const char* jointname )
 	}
 	
 	// don't check twice per frame
-	if( gameLocal.time == lastHitCheckTime )
+	if( gameLocal->time == lastHitCheckTime )
 	{
 		idThread::ReturnInt( lastHitCheckResult );
 		return;
 	}
 	
-	lastHitCheckTime = gameLocal.time;
+	lastHitCheckTime = gameLocal->time;
 	
 	const idVec3& org = physicsObj.GetOrigin();
 	idVec3 toPos = enemyEnt->GetEyePosition();
 	jointHandle_t joint = animator.GetJointHandle( jointname );
 	if( joint == INVALID_JOINT )
 	{
-		gameLocal.Error( "Unknown joint '%s' on %s", jointname, GetEntityDefName() );
+		gameLocal->Error( "Unknown joint '%s' on %s", jointname, GetEntityDefName() );
 	}
-	animator.GetJointTransform( joint, gameLocal.time, muzzle, axis );
+	animator.GetJointTransform( joint, gameLocal->time, muzzle, axis );
 	muzzle = org + ( muzzle + modelOffset ) * viewAxis * physicsObj.GetGravityAxis();
 	
 	if( projectileClipModel == NULL )
@@ -1930,11 +1930,11 @@ void idAI::Event_CanHitEnemyFromJoint( const char* jointname )
 		start = ownerBounds.GetCenter();
 	}
 	
-	gameLocal.GetClip()->Translation( tr, start, muzzle, projectileClipModel, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
+	gameLocal->GetClip()->Translation( tr, start, muzzle, projectileClipModel, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
 	muzzle = tr.endpos;
 	
-	gameLocal.GetClip()->Translation( tr, muzzle, toPos, projectileClipModel, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
-	if( tr.fraction >= 1.0f || ( gameLocal.GetTraceEntity( tr ) == enemyEnt ) )
+	gameLocal->GetClip()->Translation( tr, muzzle, toPos, projectileClipModel, mat3_identity, MASK_SHOT_BOUNDINGBOX, this );
+	if( tr.fraction >= 1.0f || ( gameLocal->GetTraceEntity( tr ) == enemyEnt ) )
 	{
 		lastHitCheckResult = true;
 	}
@@ -2063,7 +2063,7 @@ void idAI::Event_TestAnimMoveTowardEnemy( const char* animname )
 	anim = GetAnim( ANIMCHANNEL_LEGS, animname );
 	if( !anim )
 	{
-		gameLocal.DWarning( "missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName() );
+		gameLocal->DWarning( "missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName() );
 		idThread::ReturnInt( false );
 		return;
 	}
@@ -2097,7 +2097,7 @@ void idAI::Event_TestAnimMove( const char* animname )
 	anim = GetAnim( ANIMCHANNEL_LEGS, animname );
 	if( !anim )
 	{
-		gameLocal.DWarning( "missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName() );
+		gameLocal->DWarning( "missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName() );
 		idThread::ReturnInt( false );
 		return;
 	}
@@ -2162,7 +2162,7 @@ void idAI::Event_TestAnimAttack( const char* animname )
 	anim = GetAnim( ANIMCHANNEL_LEGS, animname );
 	if( !anim )
 	{
-		gameLocal.DWarning( "missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName() );
+		gameLocal->DWarning( "missing '%s' animation on '%s' (%s)", animname, name.c_str(), GetEntityDefName() );
 		idThread::ReturnInt( false );
 		return;
 	}
@@ -2193,7 +2193,7 @@ idAI::Event_Burn
 */
 void idAI::Event_Burn()
 {
-	renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH ] = gameLocal.time * 0.001f;
+	renderEntity.shaderParms[ SHADERPARM_TIME_OF_DEATH ] = gameLocal->time * 0.001f;
 	SpawnParticles( "smoke_burnParticleSystem" );
 	UpdateVisuals();
 }
@@ -2222,13 +2222,13 @@ void idAI::Event_SetSmokeVisibility( int num, int on )
 	
 	if( num >= particles.Num() )
 	{
-		gameLocal.Warning( "Particle #%d out of range (%d particles) on entity '%s'", num, particles.Num(), name.c_str() );
+		gameLocal->Warning( "Particle #%d out of range (%d particles) on entity '%s'", num, particles.Num(), name.c_str() );
 		return;
 	}
 	
 	if( on != 0 )
 	{
-		time = gameLocal.time;
+		time = gameLocal->time;
 		BecomeActive( TH_UPDATEPARTICLES );
 	}
 	else
@@ -2315,7 +2315,7 @@ void idAI::Event_SetMoveType( int moveType )
 {
 	if( ( moveType < 0 ) || ( moveType >= NUM_MOVETYPES ) )
 	{
-		gameLocal.Error( "Invalid movetype %d", moveType );
+		gameLocal->Error( "Invalid movetype %d", moveType );
 	}
 	
 	move.moveType = static_cast<moveType_t>( moveType );
@@ -2618,7 +2618,7 @@ void idAI::Event_GetRandomTarget( const char* type )
 		return;
 	}
 	
-	which = gameLocal.random.RandomInt( num );
+	which = gameLocal->random.RandomInt( num );
 	idThread::ReturnEntity( ents[ which ] );
 }
 
@@ -2688,15 +2688,15 @@ void idAI::Event_LookAtEntity( idEntity* ent, float duration )
 		ent = NULL;
 	}
 	
-	if( ( ent != focusEntity.GetEntity() ) || ( focusTime < gameLocal.time ) )
+	if( ( ent != focusEntity.GetEntity() ) || ( focusTime < gameLocal->time ) )
 	{
 		focusEntity	= ent;
-		alignHeadTime = gameLocal.time;
-		forceAlignHeadTime = gameLocal.time + SEC2MS( 1 );
+		alignHeadTime = gameLocal->time;
+		forceAlignHeadTime = gameLocal->time + SEC2MS( 1 );
 		blink_time = 0;
 	}
 	
-	focusTime = gameLocal.time + SEC2MS( duration );
+	focusTime = gameLocal->time + SEC2MS( duration );
 }
 
 /*
@@ -2709,15 +2709,15 @@ void idAI::Event_LookAtEnemy( float duration )
 	idActor* enemyEnt;
 	
 	enemyEnt = enemy.GetEntity();
-	if( ( enemyEnt != focusEntity.GetEntity() ) || ( focusTime < gameLocal.time ) )
+	if( ( enemyEnt != focusEntity.GetEntity() ) || ( focusTime < gameLocal->time ) )
 	{
 		focusEntity	= enemyEnt;
-		alignHeadTime = gameLocal.time;
-		forceAlignHeadTime = gameLocal.time + SEC2MS( 1 );
+		alignHeadTime = gameLocal->time;
+		forceAlignHeadTime = gameLocal->time + SEC2MS( 1 );
 		blink_time = 0;
 	}
 	
-	focusTime = gameLocal.time + SEC2MS( duration );
+	focusTime = gameLocal->time + SEC2MS( duration );
 }
 
 /*
@@ -2833,7 +2833,7 @@ void idAI::Event_GetTrajectoryToPlayer()
 	
 	if( speed <= 0.0f )
 	{
-		gameLocal.Error( "Invalid speed.  speed must be > 0." );
+		gameLocal->Error( "Invalid speed.  speed must be > 0." );
 	}
 	
 	start = physicsObj.GetOrigin() + idVec3( 0.0f, 0.0f, 50.0f );
@@ -3071,7 +3071,7 @@ void idAI::Event_FindActorsInBounds( const idVec3& mins, const idVec3& maxs )
 	int			numListedEntities;
 	int			i;
 	
-	numListedEntities = gameLocal.GetClip()->EntitiesTouchingBounds( idBounds( mins, maxs ), CONTENTS_BODY, entityList, MAX_GENTITIES );
+	numListedEntities = gameLocal->GetClip()->EntitiesTouchingBounds( idBounds( mins, maxs ), CONTENTS_BODY, entityList, MAX_GENTITIES );
 	for( i = 0; i < numListedEntities; i++ )
 	{
 		ent = entityList[ i ];
@@ -3317,7 +3317,7 @@ void idAI::Event_LaunchHomingMissile()
 	
 	if( !projectileDef )
 	{
-		gameLocal.Warning( "%s (%s) doesn't have a projectile specified", name.c_str(), GetEntityDefName() );
+		gameLocal->Warning( "%s (%s) doesn't have a projectile specified", name.c_str(), GetEntityDefName() );
 		idThread::ReturnEntity( NULL );
 		return;
 	}
@@ -3370,7 +3370,7 @@ void idAI::Event_LaunchHomingMissile()
 		start = ownerBounds.GetCenter();
 	}
 	
-	gameLocal.GetClip()->Translation( tr, start, org, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
+	gameLocal->GetClip()->Translation( tr, start, org, projClip, projClip->GetAxis(), MASK_SHOT_RENDERMODEL, this );
 	
 	// launch the projectile
 	idThread::ReturnEntity( projectile.GetEntity() );
@@ -3382,7 +3382,7 @@ void idAI::Event_LaunchHomingMissile()
 	
 	TriggerWeaponEffects( tr.endpos );
 	
-	lastAttackTime = gameLocal.time;
+	lastAttackTime = gameLocal->time;
 }
 
 /*

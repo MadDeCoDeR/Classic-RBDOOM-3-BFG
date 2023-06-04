@@ -1166,7 +1166,7 @@ void idLBCache::Update( const idLeaderboardCallback* callback )
 		switch( errorCode )
 		{
 			case LEADERBOARD_DISPLAY_ERROR_NOT_ONLINE:
-				/*idMenuHandler_Shell * shell = gameLocal.Shell_GetHandler();
+				/*idMenuHandler_Shell * shell = gameLocal->Shell_GetHandler();
 				if ( shell != NULL ) {
 					shell->SetNextScreen( SHELL_AREA_ROOT, MENU_TRANSITION_SIMPLE );
 				}*/

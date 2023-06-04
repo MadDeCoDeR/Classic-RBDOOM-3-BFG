@@ -117,7 +117,7 @@ void idSound::Spawn()
 	if( ( wait > 0.0f ) && ( random >= wait ) )
 	{
 		random = wait - 0.001;
-		gameLocal.Warning( "speaker '%s' at (%s) has random >= wait", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
+		gameLocal->Warning( "speaker '%s' at (%s) has random >= wait", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
 	}
 	
 	soundVol		= 0.0f;
@@ -131,7 +131,7 @@ void idSound::Spawn()
 	if( !refSound.waitfortrigger && ( wait > 0.0f ) )
 	{
 		timerOn = true;
-		PostEventSec( &EV_Speaker_Timer, wait + gameLocal.random.CRandomFloat() * random );
+		PostEventSec( &EV_Speaker_Timer, wait + gameLocal->random.CRandomFloat() * random );
 	}
 	else
 	{
@@ -159,14 +159,14 @@ void idSound::Event_Trigger( idEntity* activator )
 		{
 			timerOn = true;
 			DoSound( true );
-			PostEventSec( &EV_Speaker_Timer, wait + gameLocal.random.CRandomFloat() * random );
+			PostEventSec( &EV_Speaker_Timer, wait + gameLocal->random.CRandomFloat() * random );
 		}
 	}
 	else
 	{
 		if( common->IsMultiplayer() )
 		{
-			if( refSound.referenceSound && ( gameLocal.time < playingUntilTime ) )
+			if( refSound.referenceSound && ( gameLocal->time < playingUntilTime ) )
 			{
 				DoSound( false );
 			}
@@ -197,7 +197,7 @@ idSound::Event_Timer
 void idSound::Event_Timer()
 {
 	DoSound( true );
-	PostEventSec( &EV_Speaker_Timer, wait + gameLocal.random.CRandomFloat() * random );
+	PostEventSec( &EV_Speaker_Timer, wait + gameLocal->random.CRandomFloat() * random );
 }
 
 /*
@@ -252,7 +252,7 @@ void idSound::UpdateChangeableSpawnArgs( const idDict* source )
 		if( ( wait > 0.0f ) && ( random >= wait ) )
 		{
 			random = wait - 0.001;
-			gameLocal.Warning( "speaker '%s' at (%s) has random >= wait", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
+			gameLocal->Warning( "speaker '%s' at (%s) has random >= wait", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
 		}
 		
 		if( !refSound.waitfortrigger && ( wait > 0.0f ) )
@@ -260,7 +260,7 @@ void idSound::UpdateChangeableSpawnArgs( const idDict* source )
 			timerOn = true;
 			DoSound( false );
 			CancelEvents( &EV_Speaker_Timer );
-			PostEventSec( &EV_Speaker_Timer, wait + gameLocal.random.CRandomFloat() * random );
+			PostEventSec( &EV_Speaker_Timer, wait + gameLocal->random.CRandomFloat() * random );
 		}
 		else  if( !refSound.waitfortrigger && !( refSound.referenceSound && refSound.referenceSound->CurrentlyPlaying() ) )
 		{
@@ -302,7 +302,7 @@ void idSound::DoSound( bool play )
 	if( play )
 	{
 		StartSoundShader( refSound.shader, SND_CHANNEL_ANY, refSound.parms.soundShaderFlags, true, &playingUntilTime );
-		playingUntilTime += gameLocal.time;
+		playingUntilTime += gameLocal->time;
 	}
 	else
 	{
@@ -321,7 +321,7 @@ void idSound::Event_On()
 	if( wait > 0.0f )
 	{
 		timerOn = true;
-		PostEventSec( &EV_Speaker_Timer, wait + gameLocal.random.CRandomFloat() * random );
+		PostEventSec( &EV_Speaker_Timer, wait + gameLocal->random.CRandomFloat() * random );
 	}
 	DoSound( true );
 }

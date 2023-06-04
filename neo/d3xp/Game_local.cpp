@@ -32,6 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Game_local.h"
+#include "GameEdit.h"
 
 #ifdef GAME_DLL
 
@@ -68,8 +69,8 @@ static gameExport_t			gameExport;
 idAnimManager				animationLib;
 
 // the rest of the engine will only reference the "game" variable, while all local aspects stay hidden
-idGameLocal					gameLocal;
-idGame* 					game = &gameLocal;	// statically pointed at an idGameLocal
+idGameLocal*					gameLocal = NULL;
+idGame* 					game = NULL /*= &gameLocal*/;	// statically pointed at an idGameLocal
 
 const char* idGameLocal::sufaceTypeNames[ MAX_SURFACE_TYPES ] =
 {
@@ -220,6 +221,12 @@ extern "C" gameExport_t* GetGameAPI( gameImport_t* import )
 	
 	// setup export interface
 	gameExport.version = GAME_API_VERSION;
+	if (game == NULL) {
+		game = CreateGameInstance();
+	}
+	if (gameEdit == NULL) {
+		gameEdit = new idGameEdit();
+	}
 	gameExport.game = game;
 	gameExport.gameEdit = gameEdit;
 	
@@ -256,6 +263,11 @@ void TestGameAPI()
 	testImport.GetClassicData			 = GetClassicData;
 	
 	testExport = *GetGameAPI( &testImport );
+}
+
+idGame* CreateGameInstance() {
+	gameLocal = new idGameLocal();
+	return gameLocal;
 }
 
 /*
@@ -986,7 +998,7 @@ void gameError( const char* fmt, ... )
 	idStr::vsnPrintf( text, sizeof( text ), fmt, argptr );
 	va_end( argptr );
 	
-	gameLocal.Error( "%s", text );
+	gameLocal->Error( "%s", text );
 }
 
 /*
@@ -1311,7 +1323,7 @@ void idGameLocal::MapRestart()
 	
 	if( common->IsMultiplayer() )
 	{
-		gameLocal.mpGame.ReloadScoreboard();
+		gameLocal->mpGame.ReloadScoreboard();
 	}
 }
 
@@ -1329,7 +1341,7 @@ void idGameLocal::MapRestart_f( const idCmdArgs& args )
 		return;
 	}
 	
-	gameLocal.MapRestart( );
+	gameLocal->MapRestart( );
 }
 
 /*
@@ -2234,11 +2246,11 @@ void idGameLocal::SpawnPlayer( int clientNum )
 	else
 	{
 		// precache the player
-		args.Set( "classname", gameLocal.world->spawnArgs.GetString( "def_player", "player_doommarine" ) );
+		args.Set( "classname", gameLocal->world->spawnArgs.GetString( "def_player", "player_doommarine" ) );
 	}
 	
 	// It's important that we increment numClients before calling SpawnEntityDef, because some
-	// entities want to check gameLocal.numClients to see who to operate on (such as target_removeweapons)
+	// entities want to check gameLocal->numClients to see who to operate on (such as target_removeweapons)
 	if( clientNum >= numClients )
 	{
 		numClients = clientNum + 1;
@@ -3022,7 +3034,7 @@ so that we have something to process while we wait for more from the network.
 */
 void idGameLocal::RunAllUserCmdsForPlayer( idUserCmdMgr& cmdMgr, const int playerNumber )
 {
-//idLib::Printf( "Frame: %i = [%i-%i] ", gameLocal.framenum,
+//idLib::Printf( "Frame: %i = [%i-%i] ", gameLocal->framenum,
 //cmdMgr.readFrame[0], cmdMgr.writeFrame[0] );	// !@#
 
 	// Run thinks on any players that have queued up usercmds for networking.
@@ -3069,7 +3081,7 @@ void idGameLocal::RunAllUserCmdsForPlayer( idUserCmdMgr& cmdMgr, const int playe
 	{
 		const int clientTimeOfNextCommand = cmdMgr.GetNextUserCmdClientTime( playerNumber );
 		const int timeDeltaBetweenClientCommands = clientTimeOfNextCommand - lastCmdRunTimeOnClient[ playerNumber ];
-		const int timeSinceServerRanLastCommand = gameLocal.time - lastCmdRunTimeOnServer[ playerNumber ];
+		const int timeSinceServerRanLastCommand = gameLocal->time - lastCmdRunTimeOnServer[ playerNumber ];
 		int clientTimeRunSoFar = 0;
 		
 		// Handle clients who may be running faster than the server. Potentiallly runs multiple
@@ -3081,7 +3093,7 @@ void idGameLocal::RunAllUserCmdsForPlayer( idUserCmdMgr& cmdMgr, const int playe
 				usercmd_t& currentCommand = cmdMgr.GetWritableUserCmdForPlayer( playerNumber );
 				RunSingleUserCmd( currentCommand, player );
 				lastCmdRunTimeOnClient[ playerNumber ] = currentCommand.clientGameMilliseconds;
-				lastCmdRunTimeOnServer[ playerNumber ] = gameLocal.serverTime;
+				lastCmdRunTimeOnServer[ playerNumber ] = gameLocal->serverTime;
 				clientTimeRunSoFar += timeDeltaBetweenClientCommands;
 				if( clientTimeRunSoFar == 0 )
 				{
@@ -3117,7 +3129,7 @@ void idGameLocal::RunAllUserCmdsForPlayer( idUserCmdMgr& cmdMgr, const int playe
 		emptyCmd.forwardmove = 0;
 		emptyCmd.rightmove = 0;
 		RunSingleUserCmd( emptyCmd, player );
-		lastCmdRunTimeOnServer[ playerNumber ] = gameLocal.serverTime;
+		lastCmdRunTimeOnServer[ playerNumber ] = gameLocal->serverTime;
 		if( net_usercmd_timing_debug.GetBool() )
 		{
 			idLib::Printf( "[%d]Ran out of commands for player %d.\n", common->GetGameFrame(), playerNumber );
@@ -3151,7 +3163,7 @@ void idGameLocal::RunAllUserCmdsForPlayer( idUserCmdMgr& cmdMgr, const int playe
 			
 			RunSingleUserCmd( currentCommand, player );
 			lastCmdRunTimeOnClient[ playerNumber ] = currentCommand.clientGameMilliseconds;
-			lastCmdRunTimeOnServer[ playerNumber ] = gameLocal.serverTime;
+			lastCmdRunTimeOnServer[ playerNumber ] = gameLocal->serverTime;
 		}
 		else
 		{
@@ -4272,11 +4284,11 @@ void idGameLocal::ArgCompletion_EntityName( const idCmdArgs& args, void( *callba
 {
 	int i;
 	
-	for( i = 0; i < gameLocal.num_entities; i++ )
+	for( i = 0; i < gameLocal->num_entities; i++ )
 	{
-		if( gameLocal.entities[ i ] )
+		if( gameLocal->entities[ i ] )
 		{
-			callback( va( "%s %s", args.Argv( 0 ), gameLocal.entities[ i ]->name.c_str() ) );
+			callback( va( "%s %s", args.Argv( 0 ), gameLocal->entities[ i ]->name.c_str() ) );
 		}
 	}
 }
@@ -4906,7 +4918,7 @@ void idGameLocal::ProjectDecal( const idVec3& origin, const idVec3& dir, float d
 	winding += idVec5( windingOrigin + ( axis * decalWinding[1] ) * size, idVec2( 0, 1 ) );
 	winding += idVec5( windingOrigin + ( axis * decalWinding[2] ) * size, idVec2( 0, 0 ) );
 	winding += idVec5( windingOrigin + ( axis * decalWinding[3] ) * size, idVec2( 1, 0 ) );
-	gameRenderWorld->ProjectDecalOntoWorld( winding, projectionOrigin, parallel, depth * 0.5f, declManager->FindMaterial( material ), gameLocal.slow.time /* _D3XP */ );
+	gameRenderWorld->ProjectDecalOntoWorld( winding, projectionOrigin, parallel, depth * 0.5f, declManager->FindMaterial( material ), gameLocal->slow.time /* _D3XP */ );
 }
 
 /*
@@ -5090,7 +5102,7 @@ bool idGameLocal::SkipCinematic( void )
 	if( !skipCinematic )
 	{
 		skipCinematic = true;
-		cinematicMaxSkipTime = gameLocal.time + SEC2MS( g_cinematicMaxSkipTime.GetFloat() );
+		cinematicMaxSkipTime = gameLocal->time + SEC2MS( g_cinematicMaxSkipTime.GetFloat() );
 		soundSystem->GetPlayingSoundWorld()->Skip(cinematicMaxSkipTime);
 	}
 	
@@ -5550,7 +5562,7 @@ idGameLocal::GetSpawnId
 */
 int idGameLocal::GetSpawnId( const idEntity* ent ) const
 {
-	return ( gameLocal.spawnIds[ ent->entityNumber ] << GENTITYNUM_BITS ) | ent->entityNumber;
+	return ( gameLocal->spawnIds[ ent->entityNumber ] << GENTITYNUM_BITS ) | ent->entityNumber;
 }
 
 

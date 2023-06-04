@@ -169,7 +169,7 @@ idEntity* idAimAssist::FindAimAssistTarget( idVec3& targetPos )
 	idVec3 primaryTargetPos;
 	idVec3 secondaryTargetPos;
 	
-	for( idEntity* entity = gameLocal.aimAssistEntities.Next(); entity != NULL; entity = entity->aimAssistNode.Next() )
+	for( idEntity* entity = gameLocal->aimAssistEntities.Next(); entity != NULL; entity = entity->aimAssistNode.Next() )
 	{
 		if( !entity->IsActive() )
 		{
@@ -187,7 +187,7 @@ idEntity* idAimAssist::FindAimAssistTarget( idVec3& targetPos )
 			if( actor->team == player->team )
 			{
 				// In DM, LMS, and Tourney, all players are on the same team
-				if( gameLocal.gameType == GAME_CTF || gameLocal.gameType == GAME_TDM || gameLocal.gameType == GAME_SP )
+				if( gameLocal->gameType == GAME_CTF || gameLocal->gameType == GAME_TDM || gameLocal->gameType == GAME_SP )
 				{
 					continue;
 				}
@@ -238,7 +238,7 @@ idEntity* idAimAssist::FindAimAssistTarget( idVec3& targetPos )
 		
 			// determine if the current target is in our line of sight
 			trace_t tr;
-			gameLocal.GetClip()->TracePoint( tr, cameraPos, primaryTargetPos, MASK_MONSTERSOLID, player );
+			gameLocal->GetClip()->TracePoint( tr, cameraPos, primaryTargetPos, MASK_MONSTERSOLID, player );
 			
 			// did our trace fail?
 			if( ( ( tr.fraction < 1.0f ) && ( tr.c.entityNum != entity->entityNumber ) ) || ( tr.fraction >= 1.0f ) )
@@ -246,7 +246,7 @@ idEntity* idAimAssist::FindAimAssistTarget( idVec3& targetPos )
 			
 				// if the collision test failed for the primary position -- check the secondary position
 				trace_t tr2;
-				gameLocal.GetClip()->TracePoint( tr2, cameraPos, secondaryTargetPos, MASK_MONSTERSOLID, player );
+				gameLocal->GetClip()->TracePoint( tr2, cameraPos, secondaryTargetPos, MASK_MONSTERSOLID, player );
 				
 				if( ( ( tr2.fraction < 1.0f ) && ( tr2.c.entityNum != entity->entityNumber ) ) || ( tr2.fraction >= 1.0f ) )
 				{

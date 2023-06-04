@@ -160,7 +160,7 @@ void idSecurityCamera::Spawn()
 		fl.takedamage = true;
 	}
 	
-	pvsArea = gameLocal.GetPvs()->GetPVSArea( GetPhysics()->GetOrigin() );
+	pvsArea = gameLocal->GetPvs()->GetPVSArea( GetPhysics()->GetOrigin() );
 	// if no target specified use ourself
 	str = spawnArgs.GetString( "cameraTarget" );
 	if( str.Length() == 0 )
@@ -177,7 +177,7 @@ void idSecurityCamera::Spawn()
 	
 	if( !collisionModelManager->TrmFromModel( str, trm ) )
 	{
-		gameLocal.Error( "idSecurityCamera '%s': cannot load collision model %s", name.c_str(), str.c_str() );
+		gameLocal->Error( "idSecurityCamera '%s': cannot load collision model %s", name.c_str(), str.c_str() );
 		return;
 	}
 	
@@ -224,7 +224,7 @@ void idSecurityCamera::Event_AddLight()
 	args.Set( "light_up", up.ToString() );
 	args.SetFloat( "angle", GetPhysics()->GetAxis()[0].ToYaw() );
 	
-	spotLight = static_cast<idLight*>( gameLocal.SpawnEntityType( idLight::Type, &args ) );
+	spotLight = static_cast<idLight*>( gameLocal->SpawnEntityType( idLight::Type, &args ) );
 	spotLight->Bind( this, true );
 	spotLight->UpdateVisuals();
 }
@@ -305,11 +305,11 @@ bool idSecurityCamera::CanSeePlayer()
 	idVec3 dir;
 	pvsHandle_t handle;
 	
-	handle = gameLocal.GetPvs()->SetupCurrentPVS( pvsArea );
+	handle = gameLocal->GetPvs()->SetupCurrentPVS( pvsArea );
 	
-	for( i = 0; i < gameLocal.numClients; i++ )
+	for( i = 0; i < gameLocal->numClients; i++ )
 	{
-		ent = static_cast<idPlayer*>( gameLocal.entities[ i ] );
+		ent = static_cast<idPlayer*>( gameLocal->entities[ i ] );
 		
 		if( !ent || ( ent->fl.notarget ) )
 		{
@@ -317,7 +317,7 @@ bool idSecurityCamera::CanSeePlayer()
 		}
 		
 		// if there is no way we can see this player
-		if( !gameLocal.GetPvs()->InCurrentPVS( handle, ent->GetPVSAreas(), ent->GetNumPVSAreas() ) )
+		if( !gameLocal->GetPvs()->InCurrentPVS( handle, ent->GetPVSAreas(), ent->GetNumPVSAreas() ) )
 		{
 			continue;
 		}
@@ -339,15 +339,15 @@ bool idSecurityCamera::CanSeePlayer()
 		
 		eye = ent->EyeOffset();
 		
-		gameLocal.GetClip()->TracePoint( tr, GetPhysics()->GetOrigin(), ent->GetPhysics()->GetOrigin() + eye, MASK_OPAQUE, this );
-		if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == ent ) )
+		gameLocal->GetClip()->TracePoint( tr, GetPhysics()->GetOrigin(), ent->GetPhysics()->GetOrigin() + eye, MASK_OPAQUE, this );
+		if( tr.fraction == 1.0 || ( gameLocal->GetTraceEntity( tr ) == ent ) )
 		{
-			gameLocal.GetPvs()->FreeCurrentPVS( handle );
+			gameLocal->GetPvs()->FreeCurrentPVS( handle );
 			return true;
 		}
 	}
 	
-	gameLocal.GetPvs()->FreeCurrentPVS( handle );
+	gameLocal->GetPvs()->FreeCurrentPVS( handle );
 	
 	return false;
 }
@@ -403,7 +403,7 @@ void idSecurityCamera::Think()
 				float	sightTime;
 				
 				SetAlertMode( ALERT );
-				stopSweeping = gameLocal.time;
+				stopSweeping = gameLocal->time;
 				if( sweeping )
 				{
 					CancelEvents( &EV_SecurityCam_Pause );
@@ -437,7 +437,7 @@ void idSecurityCamera::Think()
 			{
 				idAngles a = GetPhysics()->GetAxis().ToAngles();
 				
-				pct = ( gameLocal.time - sweepStart ) / ( sweepEnd - sweepStart );
+				pct = ( gameLocal->time - sweepStart ) / ( sweepEnd - sweepStart );
 				travel = pct * sweepAngle;
 				if( negativeSweep )
 				{
@@ -485,7 +485,7 @@ void idSecurityCamera::StartSweep()
 	int speed;
 	
 	sweeping = true;
-	sweepStart = gameLocal.time;
+	sweepStart = gameLocal->time;
 	speed = SEC2MS( SweepSpeed() );
 	sweepEnd = sweepStart + speed;
 	PostEventMS( &EV_SecurityCam_Pause, speed );
@@ -500,7 +500,7 @@ idSecurityCamera::Event_ContinueSweep
 void idSecurityCamera::Event_ContinueSweep()
 {
 	float pct = ( stopSweeping - sweepStart ) / ( sweepEnd - sweepStart );
-	float f = gameLocal.time - ( sweepEnd - sweepStart ) * pct;
+	float f = gameLocal->time - ( sweepEnd - sweepStart ) * pct;
 	int speed;
 	
 	sweepStart = f;
@@ -580,7 +580,7 @@ void idSecurityCamera::Killed( idEntity* inflictor, idEntity* attacker, int dama
 	physicsObj.SetAxis( GetPhysics()->GetAxis() );
 	physicsObj.SetBouncyness( 0.2f );
 	physicsObj.SetFriction( 0.6f, 0.6f, 0.2f );
-	physicsObj.SetGravity( gameLocal.GetGravity() );
+	physicsObj.SetGravity( gameLocal->GetGravity() );
 	physicsObj.SetContents( CONTENTS_SOLID );
 	physicsObj.SetClipMask( MASK_SOLID | CONTENTS_BODY | CONTENTS_CORPSE | CONTENTS_MOVEABLECLIP );
 	SetPhysics( &physicsObj );

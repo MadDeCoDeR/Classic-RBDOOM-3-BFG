@@ -63,9 +63,9 @@ idPredictedValue::UpdatePredictionTime
 template< class type_ >
 void idPredictedValue< type_ >::UpdatePredictionTime()
 {
-	if( gameLocal.GetLocalPlayer() != NULL )
+	if( gameLocal->GetLocalPlayer() != NULL )
 	{
-		clientPredictedMilliseconds = gameLocal.GetLocalPlayer()->usercmd.clientGameMilliseconds;
+		clientPredictedMilliseconds = gameLocal->GetLocalPlayer()->usercmd.clientGameMilliseconds;
 	}
 }
 
@@ -132,13 +132,13 @@ Returns true if the value was set, false if not.
 template< class type_ >
 bool idPredictedValue< type_ >::UpdateFromSnapshot( const type_ & valueFromSnapshot, int clientNumber )
 {
-	if( clientNumber != gameLocal.GetLocalClientNum() )
+	if( clientNumber != gameLocal->GetLocalClientNum() )
 	{
 		value = valueFromSnapshot;
 		return true;
 	}
 	
-	if( gameLocal.GetLastClientUsercmdMilliseconds( clientNumber ) >= clientPredictedMilliseconds )
+	if( gameLocal->GetLastClientUsercmdMilliseconds( clientNumber ) >= clientPredictedMilliseconds )
 	{
 		value = valueFromSnapshot;
 		return true;

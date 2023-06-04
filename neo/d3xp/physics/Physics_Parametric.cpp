@@ -98,7 +98,7 @@ idPhysics_Parametric::Rest
 */
 void idPhysics_Parametric::Rest()
 {
-	current.atRest = gameLocal.time;
+	current.atRest = gameLocal->time;
 	self->BecomeInactive( TH_PHYSICS );
 }
 
@@ -110,7 +110,7 @@ idPhysics_Parametric::idPhysics_Parametric
 idPhysics_Parametric::idPhysics_Parametric()
 {
 
-	current.time = gameLocal.time;
+	current.time = gameLocal->time;
 	current.atRest = -1;
 	current.useSplineAngles = false;
 	current.origin.Zero();
@@ -352,7 +352,7 @@ idPhysics_Parametric::SetLinearExtrapolation
 */
 void idPhysics_Parametric::SetLinearExtrapolation( extrapolation_t type, int time, int duration, const idVec3& base, const idVec3& speed, const idVec3& baseSpeed )
 {
-	current.time = gameLocal.time;
+	current.time = gameLocal->time;
 	current.linearExtrapolation.Init( time, duration, base, baseSpeed, speed, type );
 	current.localOrigin = base;
 	Activate();
@@ -365,7 +365,7 @@ idPhysics_Parametric::SetAngularExtrapolation
 */
 void idPhysics_Parametric::SetAngularExtrapolation( extrapolation_t type, int time, int duration, const idAngles& base, const idAngles& speed, const idAngles& baseSpeed )
 {
-	current.time = gameLocal.time;
+	current.time = gameLocal->time;
 	current.angularExtrapolation.Init( time, duration, base, baseSpeed, speed, type );
 	current.localAngles = base;
 	Activate();
@@ -398,7 +398,7 @@ idPhysics_Parametric::SetLinearInterpolation
 */
 void idPhysics_Parametric::SetLinearInterpolation( int time, int accelTime, int decelTime, int duration, const idVec3& startPos, const idVec3& endPos )
 {
-	current.time = gameLocal.time;
+	current.time = gameLocal->time;
 	current.linearInterpolation.Init( time, accelTime, decelTime, duration, startPos, endPos );
 	current.localOrigin = startPos;
 	Activate();
@@ -411,7 +411,7 @@ idPhysics_Parametric::SetAngularInterpolation
 */
 void idPhysics_Parametric::SetAngularInterpolation( int time, int accelTime, int decelTime, int duration, const idAngles& startAng, const idAngles& endAng )
 {
-	current.time = gameLocal.time;
+	current.time = gameLocal->time;
 	current.angularInterpolation.Init( time, accelTime, decelTime, duration, startAng, endAng );
 	current.localAngles = startAng;
 	Activate();
@@ -517,7 +517,7 @@ void idPhysics_Parametric::SetClipModel( idClipModel* model, float density, int 
 		delete clipModel;
 	}
 	clipModel = model;
-	clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
+	clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, current.axis );
 }
 
 /*
@@ -689,12 +689,12 @@ bool idPhysics_Parametric::Evaluate( int timeStepMSec, int endTimeMSec )
 	if( isPusher )
 	{
 	
-		gameLocal.push.ClipPush( pushResults, self, pushFlags, oldOrigin, oldAxis, current.origin, current.axis );
+		gameLocal->push.ClipPush( pushResults, self, pushFlags, oldOrigin, oldAxis, current.origin, current.axis );
 		if( pushResults.fraction < 1.0f )
 		{
 			if( clipModel )
 			{
-				clipModel->Link( *gameLocal.GetClip(), self, 0, oldOrigin, oldAxis );
+				clipModel->Link( *gameLocal->GetClip(), self, 0, oldOrigin, oldAxis );
 			}
 			current.localOrigin = oldLocalOrigin;
 			current.origin = oldOrigin;
@@ -710,7 +710,7 @@ bool idPhysics_Parametric::Evaluate( int timeStepMSec, int endTimeMSec )
 	
 	if( clipModel )
 	{
-		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, current.axis );
 	}
 	
 	current.time = endTimeMSec;
@@ -741,11 +741,11 @@ bool idPhysics_Parametric::Interpolate( const float fraction )
 	
 	const bool hasChanged = InterpolatePhysicsState( current, previous, next, fraction );
 	
-	gameLocal.push.ClipPush( pushResults, self, pushFlags, oldOrigin, oldAxis, current.origin, current.axis );
+	gameLocal->push.ClipPush( pushResults, self, pushFlags, oldOrigin, oldAxis, current.origin, current.axis );
 	
 	if( clipModel )
 	{
-		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, current.axis );
 	}
 	
 	return hasChanged;
@@ -835,7 +835,7 @@ void idPhysics_Parametric::RestoreState()
 	
 	if( clipModel )
 	{
-		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, current.axis );
 	}
 }
 
@@ -864,7 +864,7 @@ void idPhysics_Parametric::SetOrigin( const idVec3& newOrigin, int id )
 	}
 	if( clipModel )
 	{
-		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, current.axis );
 	}
 	Activate();
 }
@@ -898,7 +898,7 @@ void idPhysics_Parametric::SetAxis( const idMat3& newAxis, int id )
 	}
 	if( clipModel )
 	{
-		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, current.axis );
 	}
 	Activate();
 }
@@ -958,7 +958,7 @@ idPhysics_Parametric::SetLinearVelocity
 */
 void idPhysics_Parametric::SetLinearVelocity( const idVec3& newLinearVelocity, int id )
 {
-	SetLinearExtrapolation( extrapolation_t( EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP ), gameLocal.time, 0, current.origin, newLinearVelocity, vec3_origin );
+	SetLinearExtrapolation( extrapolation_t( EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP ), gameLocal->time, 0, current.origin, newLinearVelocity, vec3_origin );
 	current.linearInterpolation.Init( 0, 0, 0, 0, vec3_zero, vec3_zero );
 	Activate();
 }
@@ -978,7 +978,7 @@ void idPhysics_Parametric::SetAngularVelocity( const idVec3& newAngularVelocity,
 	angle = vec.Normalize();
 	rotation.Set( vec3_origin, vec, ( float ) RAD2DEG( angle ) );
 	
-	SetAngularExtrapolation( extrapolation_t( EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP ), gameLocal.time, 0, current.angles, rotation.ToAngles(), ang_zero );
+	SetAngularExtrapolation( extrapolation_t( EXTRAPOLATION_LINEAR | EXTRAPOLATION_NOSTOP ), gameLocal->time, 0, current.angles, rotation.ToAngles(), ang_zero );
 	current.angularInterpolation.Init( 0, 0, 0, 0, ang_zero, ang_zero );
 	Activate();
 }
@@ -992,7 +992,7 @@ const idVec3& idPhysics_Parametric::GetLinearVelocity( int id ) const
 {
 	static idVec3 curLinearVelocity;
 	
-	curLinearVelocity = current.linearExtrapolation.GetCurrentSpeed( gameLocal.time );
+	curLinearVelocity = current.linearExtrapolation.GetCurrentSpeed( gameLocal->time );
 	return curLinearVelocity;
 }
 
@@ -1006,7 +1006,7 @@ const idVec3& idPhysics_Parametric::GetAngularVelocity( int id ) const
 	static idVec3 curAngularVelocity;
 	idAngles angles;
 	
-	angles = current.angularExtrapolation.GetCurrentSpeed( gameLocal.time );
+	angles = current.angularExtrapolation.GetCurrentSpeed( gameLocal->time );
 	curAngularVelocity = angles.ToAngularVelocity();
 	return curAngularVelocity;
 }
@@ -1059,7 +1059,7 @@ void idPhysics_Parametric::LinkClip()
 {
 	if( clipModel )
 	{
-		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, current.axis );
+		clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, current.axis );
 	}
 }
 
@@ -1082,7 +1082,7 @@ idEntity* idPhysics_Parametric::GetBlockingEntity() const
 {
 	if( isBlocked )
 	{
-		return gameLocal.entities[ pushResults.c.entityNum ];
+		return gameLocal->entities[ pushResults.c.entityNum ];
 	}
 	return NULL;
 }

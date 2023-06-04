@@ -4453,7 +4453,7 @@ void idAFConstraint_Suspension::Evaluate( float invTimeStep )
 	
 	axis *= rotation.ToMat3();
 	
-	gameLocal.GetClip()->Translation( trace, start, end, wheelModel, axis, MASK_SOLID, NULL );
+	gameLocal->GetClip()->Translation( trace, start, end, wheelModel, axis, MASK_SOLID, NULL );
 	
 	wheelOffset = ( trace.endpos - body1->GetWorldOrigin() ) * body1->GetWorldAxis().Transpose();
 	
@@ -4760,7 +4760,7 @@ void idAFBody::SetFriction( float linear, float angular, float contact )
 			angular < 0.0f || angular > 1.0f ||
 			contact < 0.0f )
 	{
-		gameLocal.Warning( "idAFBody::SetFriction: friction out of range, linear = %.1f, angular = %.1f, contact = %.1f", linear, angular, contact );
+		gameLocal->Warning( "idAFBody::SetFriction: friction out of range, linear = %.1f, angular = %.1f, contact = %.1f", linear, angular, contact );
 		return;
 	}
 	linearFriction = linear;
@@ -4777,7 +4777,7 @@ void idAFBody::SetBouncyness( float bounce )
 {
 	if( bounce < 0.0f || bounce > 1.0f )
 	{
-		gameLocal.Warning( "idAFBody::SetBouncyness: bouncyness out of range, bounce = %.1f", bounce );
+		gameLocal->Warning( "idAFBody::SetBouncyness: bouncyness out of range, bounce = %.1f", bounce );
 		return;
 	}
 	bouncyness = bounce;
@@ -4797,7 +4797,7 @@ void idAFBody::SetDensity( float density, const idMat3& inertiaScale )
 	// make sure we have a valid mass
 	if( mass <= 0.0f || IEEE_FLT_IS_NAN( mass ) )
 	{
-		gameLocal.Warning( "idAFBody::SetDensity: invalid mass for body '%s'", name.c_str() );
+		gameLocal->Warning( "idAFBody::SetDensity: invalid mass for body '%s'", name.c_str() );
 		mass = 1.0f;
 		centerOfMass.Zero();
 		inertiaTensor.Identity();
@@ -4806,7 +4806,7 @@ void idAFBody::SetDensity( float density, const idMat3& inertiaScale )
 	// make sure the center of mass is at the body origin
 	if( !centerOfMass.Compare( vec3_origin, CENTER_OF_MASS_EPSILON ) )
 	{
-		gameLocal.Warning( "idAFBody::SetDentity: center of mass not at origin for body '%s'", name.c_str() );
+		gameLocal->Warning( "idAFBody::SetDentity: center of mass not at origin for body '%s'", name.c_str() );
 	}
 	centerOfMass.Zero();
 	
@@ -4930,7 +4930,7 @@ ID_INLINE void idAFBody::InverseWorldSpatialInertiaMultiply( idVecX& dst, const 
 	}
 	else
 	{
-		gameLocal.Warning( "spatial inertia is not sparse for body %s", name.c_str() );
+		gameLocal->Warning( "spatial inertia is not sparse for body %s", name.c_str() );
 	}
 }
 
@@ -5041,7 +5041,7 @@ void idAFTree::Factor() const
 				child->invI = childI;
 				if( !child->invI.InverseFastSelf() )
 				{
-					gameLocal.Warning( "idAFTree::Factor: couldn't invert %dx%d matrix for constraint '%s'",
+					gameLocal->Warning( "idAFTree::Factor: couldn't invert %dx%d matrix for constraint '%s'",
 									   child->invI.GetNumRows(), child->invI.GetNumColumns(), child->GetName().c_str() );
 				}
 				child->J = child->invI * child->J;
@@ -5052,7 +5052,7 @@ void idAFTree::Factor() const
 			body->invI = body->I;
 			if( !body->invI.InverseFastSelf() && child != NULL )
 			{
-				gameLocal.Warning( "idAFTree::Factor: couldn't invert %dx%d matrix for body %s",
+				gameLocal->Warning( "idAFTree::Factor: couldn't invert %dx%d matrix for body %s",
 								   child->invI.GetNumRows(), child->invI.GetNumColumns(), body->GetName().c_str() );
 			}
 			if( body->primaryConstraint )
@@ -5412,7 +5412,7 @@ void idAFTree::SortBodies()
 	
 	if( i >= sortedBodies.Num() )
 	{
-		gameLocal.Error( "Articulated figure tree has no root." );
+		gameLocal->Error( "Articulated figure tree has no root." );
 	}
 	
 	body = sortedBodies[i];
@@ -5864,7 +5864,7 @@ void idPhysics_AF::AuxiliaryForces( float timeStep )
 			{
 				if( constraint->boxConstraint->fl.isPrimary )
 				{
-					gameLocal.Error( "cannot reference primary constraints for the box index" );
+					gameLocal->Error( "cannot reference primary constraints for the box index" );
 				}
 				boxIndex[k] = constraint->boxConstraint->firstIndex + constraint->boxIndex[j];
 			}
@@ -6092,7 +6092,7 @@ bool idPhysics_AF::CollisionImpulse( float timeStep, idAFBody* body, trace_t& co
 	impactInfo_t info;
 	idEntity* ent;
 	
-	ent = gameLocal.entities[collision.c.entityNum];
+	ent = gameLocal->entities[collision.c.entityNum];
 	if( ent == self )
 	{
 		return false;
@@ -6179,7 +6179,7 @@ idEntity* idPhysics_AF::SetupCollisionForBody( idAFBody* body ) const
 			if( body->constraints[i]->body2 == NULL )
 			{
 				// don't collide with the world collision model
-				passEntity = gameLocal.world;
+				passEntity = gameLocal->world;
 			}
 		}
 		
@@ -6214,7 +6214,7 @@ idEntity* idPhysics_AF::SetupCollisionForBody( idAFBody* body ) const
 			if( body->constraints[i]->body2 == NULL )
 			{
 				// don't collide with the world collision model
-				passEntity = gameLocal.world;
+				passEntity = gameLocal->world;
 			}
 			else
 			{
@@ -6277,7 +6277,7 @@ void idPhysics_AF::CheckForCollisions( float timeStep )
 			
 #ifdef TEST_COLLISION_DETECTION
 			bool startsolid = false;
-			if( gameLocal.GetClip()->Contents( body->current->worldOrigin, body->clipModel,
+			if( gameLocal->GetClip()->Contents( body->current->worldOrigin, body->clipModel,
 										 body->current->worldAxis, body->clipMask, passEntity ) )
 			{
 				startsolid = true;
@@ -6289,7 +6289,7 @@ void idPhysics_AF::CheckForCollisions( float timeStep )
 			rotation.SetOrigin( body->current->worldOrigin );
 			
 			// if there was a collision
-			if( gameLocal.GetClip()->Motion( collision, body->current->worldOrigin, body->next->worldOrigin, rotation,
+			if( gameLocal->GetClip()->Motion( collision, body->current->worldOrigin, body->next->worldOrigin, rotation,
 									   body->clipModel, body->current->worldAxis, body->clipMask, passEntity ) )
 			{
 			
@@ -6305,7 +6305,7 @@ void idPhysics_AF::CheckForCollisions( float timeStep )
 			}
 			
 #ifdef TEST_COLLISION_DETECTION
-			if( gameLocal.GetClip()->Contents( body->next->worldOrigin, body->clipModel,
+			if( gameLocal->GetClip()->Contents( body->next->worldOrigin, body->clipModel,
 										 body->next->worldAxis, body->clipMask, passEntity ) )
 			{
 				if( !startsolid )
@@ -6316,7 +6316,7 @@ void idPhysics_AF::CheckForCollisions( float timeStep )
 #endif
 		}
 		
-		body->clipModel->Link( *gameLocal.GetClip(), self, body->clipModel->GetId(), body->next->worldOrigin, body->next->worldAxis );
+		body->clipModel->Link( *gameLocal->GetClip(), self, body->clipModel->GetId(), body->next->worldOrigin, body->next->worldAxis );
 	}
 }
 
@@ -6363,7 +6363,7 @@ bool idPhysics_AF::EvaluateContacts()
 		dir.SubVec3( 0 ).Normalize();
 		dir.SubVec3( 1 ).Normalize();
 		
-		numContacts = gameLocal.GetClip()->Contacts( contactInfo, 10, body->current->worldOrigin, dir.SubVec6( 0 ), 2.0f, //CONTACT_EPSILON,
+		numContacts = gameLocal->GetClip()->Contacts( contactInfo, 10, body->current->worldOrigin, dir.SubVec6( 0 ), 2.0f, //CONTACT_EPSILON,
 											   body->clipModel, body->current->worldAxis, body->clipMask, passEntity );
 											   
 #if 1
@@ -6464,7 +6464,7 @@ void idPhysics_AF::ApplyContactForces()
 			continue;
 		}
 		const contactInfo_t& contact = contactConstraints[i]->GetContact();
-		ent = gameLocal.entities[contact.entityNum];
+		ent = gameLocal->entities[contact.entityNum];
 		if( !ent )
 		{
 			continue;
@@ -6549,7 +6549,7 @@ void idPhysics_AF::UpdateClipModels()
 	for( i = 0; i < bodies.Num(); i++ )
 	{
 		body = bodies[i];
-		body->clipModel->Link( *gameLocal.GetClip(), self, body->clipModel->GetId(), body->current->worldOrigin, body->current->worldAxis );
+		body->clipModel->Link( *gameLocal->GetClip(), self, body->clipModel->GetId(), body->current->worldOrigin, body->current->worldAxis );
 	}
 }
 
@@ -6775,7 +6775,7 @@ void idPhysics_AF::Rest()
 {
 	int i;
 	
-	current.atRest = gameLocal.time;
+	current.atRest = gameLocal->time;
 	
 	for( i = 0; i < bodies.Num(); i++ )
 	{
@@ -7183,7 +7183,7 @@ bool idPhysics_AF::Evaluate( int timeStepMSec, int endTimeMSec )
 	// apply collision impulses
 	if( ApplyCollisions( timeStep ) )
 	{
-		current.atRest = gameLocal.time;
+		current.atRest = gameLocal->time;
 		comeToRest = true;
 	}
 	
@@ -7206,7 +7206,7 @@ bool idPhysics_AF::Evaluate( int timeStepMSec, int endTimeMSec )
 	
 	if( IsOutsideWorld() )
 	{
-		gameLocal.Warning( "articulated figure moved outside world bounds for entity '%s' type '%s' at (%s)",
+		gameLocal->Warning( "articulated figure moved outside world bounds for entity '%s' type '%s' at (%s)",
 						   self->name.c_str(), self->GetType()->classname, bodies[0]->current->worldOrigin.ToString( 0 ) );
 		Rest();
 	}
@@ -7216,7 +7216,7 @@ bool idPhysics_AF::Evaluate( int timeStepMSec, int endTimeMSec )
 	
 	if( af_showTimings.GetInteger() == 1 )
 	{
-		gameLocal.Printf( "%12s: t %1.4f pc %2d, %1.4f ac %2d %1.4f lcp %1.4f cd %1.4f\n",
+		gameLocal->Printf( "%12s: t %1.4f pc %2d, %1.4f ac %2d %1.4f lcp %1.4f cd %1.4f\n",
 						  self->name.c_str(),
 						  timer_total.Milliseconds(),
 						  numPrimary, timer_pc.Milliseconds(),
@@ -7228,7 +7228,7 @@ bool idPhysics_AF::Evaluate( int timeStepMSec, int endTimeMSec )
 		numArticulatedFigures++;
 		if( endTimeMSec > lastTimerReset )
 		{
-			gameLocal.Printf( "af %d: t %1.4f pc %2d, %1.4f ac %2d %1.4f lcp %1.4f cd %1.4f\n",
+			gameLocal->Printf( "af %d: t %1.4f pc %2d, %1.4f ac %2d %1.4f lcp %1.4f cd %1.4f\n",
 							  numArticulatedFigures,
 							  timer_total.Milliseconds(),
 							  numPrimary, timer_pc.Milliseconds(),
@@ -7268,7 +7268,7 @@ idPhysics_AF::GetTime
 */
 int idPhysics_AF::GetTime() const
 {
-	return gameLocal.time;
+	return gameLocal->time;
 }
 
 /*
@@ -7313,7 +7313,7 @@ void idPhysics_AF::DebugDraw()
 		if( constraint )
 		{
 			constraint->GetCenter( center );
-			axis = gameLocal.GetLocalPlayer()->viewAngles.ToMat3();
+			axis = gameLocal->GetLocalPlayer()->viewAngles.ToMat3();
 			gameRenderWorld->DebugCone( colorYellow, center, ( axis[2] - axis[1] ) * 4.0f, 0.0f, 1.0f, 0 );
 			
 			if( af_showConstrainedBodies.GetBool() )
@@ -7364,7 +7364,7 @@ void idPhysics_AF::DebugDraw()
 			}
 			collisionModelManager->DrawModel( body->clipModel->Handle(), body->clipModel->GetOrigin(),
 											  body->clipModel->GetAxis(), vec3_origin, 0.0f );
-			//DrawTraceModelSilhouette( gameLocal.GetLocalPlayer()->GetEyePosition(), body->clipModel );
+			//DrawTraceModelSilhouette( gameLocal->GetLocalPlayer()->GetEyePosition(), body->clipModel );
 		}
 	}
 	
@@ -7373,7 +7373,7 @@ void idPhysics_AF::DebugDraw()
 		for( i = 0; i < bodies.Num(); i++ )
 		{
 			body = bodies[i];
-			gameRenderWorld->DrawText( body->GetName().c_str(), body->GetWorldOrigin(), 0.08f, colorCyan, gameLocal.GetLocalPlayer()->viewAngles.ToMat3(), 1 );
+			gameRenderWorld->DrawText( body->GetName().c_str(), body->GetWorldOrigin(), 0.08f, colorCyan, gameLocal->GetLocalPlayer()->viewAngles.ToMat3(), 1 );
 		}
 	}
 	
@@ -7382,13 +7382,13 @@ void idPhysics_AF::DebugDraw()
 		for( i = 0; i < bodies.Num(); i++ )
 		{
 			body = bodies[i];
-			gameRenderWorld->DrawText( va( "\n%1.2f", 1.0f / body->GetInverseMass() ), body->GetWorldOrigin(), 0.08f, colorCyan, gameLocal.GetLocalPlayer()->viewAngles.ToMat3(), 1 );
+			gameRenderWorld->DrawText( va( "\n%1.2f", 1.0f / body->GetInverseMass() ), body->GetWorldOrigin(), 0.08f, colorCyan, gameLocal->GetLocalPlayer()->viewAngles.ToMat3(), 1 );
 		}
 	}
 	
 	if( af_showTotalMass.GetBool() )
 	{
-		axis = gameLocal.GetLocalPlayer()->viewAngles.ToMat3();
+		axis = gameLocal->GetLocalPlayer()->viewAngles.ToMat3();
 		gameRenderWorld->DrawText( va( "\n%1.2f", totalMass ), bodies[0]->GetWorldOrigin() + axis[2] * 8.0f, 0.15f, colorCyan, axis, 1 );
 	}
 	
@@ -7402,7 +7402,7 @@ void idPhysics_AF::DebugDraw()
 										   I[0].x, I[0].y, I[0].z,
 										   I[1].x, I[1].y, I[1].z,
 										   I[2].x, I[2].y, I[2].z ),
-									   body->GetWorldOrigin(), 0.05f, colorCyan, gameLocal.GetLocalPlayer()->viewAngles.ToMat3(), 1 );
+									   body->GetWorldOrigin(), 0.05f, colorCyan, gameLocal->GetLocalPlayer()->viewAngles.ToMat3(), 1 );
 		}
 	}
 	
@@ -7437,7 +7437,7 @@ void idPhysics_AF::DebugDraw()
 		{
 			constraint = primaryConstraints[i];
 			constraint->GetCenter( center );
-			gameRenderWorld->DrawText( constraint->GetName().c_str(), center, 0.08f, colorCyan, gameLocal.GetLocalPlayer()->viewAngles.ToMat3(), 1 );
+			gameRenderWorld->DrawText( constraint->GetName().c_str(), center, 0.08f, colorCyan, gameLocal->GetLocalPlayer()->viewAngles.ToMat3(), 1 );
 		}
 		if( !af_showPrimaryOnly.GetBool() )
 		{
@@ -7445,7 +7445,7 @@ void idPhysics_AF::DebugDraw()
 			{
 				constraint = auxiliaryConstraints[i];
 				constraint->GetCenter( center );
-				gameRenderWorld->DrawText( constraint->GetName().c_str(), center, 0.08f, colorCyan, gameLocal.GetLocalPlayer()->viewAngles.ToMat3(), 1 );
+				gameRenderWorld->DrawText( constraint->GetName().c_str(), center, 0.08f, colorCyan, gameLocal->GetLocalPlayer()->viewAngles.ToMat3(), 1 );
 			}
 		}
 	}
@@ -7872,7 +7872,7 @@ void idPhysics_AF::BuildTrees()
 		
 		if( trees.Num() > 1 )
 		{
-			gameLocal.Warning( "Articulated figure has multiple separate tree structures for entity '%s' type '%s'.",
+			gameLocal->Warning( "Articulated figure has multiple separate tree structures for entity '%s' type '%s'.",
 							   self->name.c_str(), self->GetType()->classname );
 		}
 		
@@ -7926,18 +7926,18 @@ int idPhysics_AF::AddBody( idAFBody* body )
 	
 	if( body->clipModel == NULL )
 	{
-		gameLocal.Error( "idPhysics_AF::AddBody: body '%s' has no clip model.", body->name.c_str() );
+		gameLocal->Error( "idPhysics_AF::AddBody: body '%s' has no clip model.", body->name.c_str() );
 		return 0;
 	}
 	
 	if( bodies.Find( body ) )
 	{
-		gameLocal.Error( "idPhysics_AF::AddBody: body '%s' added twice.", body->name.c_str() );
+		gameLocal->Error( "idPhysics_AF::AddBody: body '%s' added twice.", body->name.c_str() );
 	}
 	
 	if( GetBody( body->name ) )
 	{
-		gameLocal.Error( "idPhysics_AF::AddBody: a body with the name '%s' already exists.", body->name.c_str() );
+		gameLocal->Error( "idPhysics_AF::AddBody: a body with the name '%s' already exists.", body->name.c_str() );
 	}
 	
 	id = bodies.Num();
@@ -7974,27 +7974,27 @@ void idPhysics_AF::AddConstraint( idAFConstraint* constraint )
 
 	if( constraints.Find( constraint ) )
 	{
-		gameLocal.Error( "idPhysics_AF::AddConstraint: constraint '%s' added twice.", constraint->name.c_str() );
+		gameLocal->Error( "idPhysics_AF::AddConstraint: constraint '%s' added twice.", constraint->name.c_str() );
 	}
 	if( GetConstraint( constraint->name ) )
 	{
-		gameLocal.Error( "idPhysics_AF::AddConstraint: a constraint with the name '%s' already exists.", constraint->name.c_str() );
+		gameLocal->Error( "idPhysics_AF::AddConstraint: a constraint with the name '%s' already exists.", constraint->name.c_str() );
 	}
 	if( !constraint->body1 )
 	{
-		gameLocal.Error( "idPhysics_AF::AddConstraint: body1 == NULL on constraint '%s'.", constraint->name.c_str() );
+		gameLocal->Error( "idPhysics_AF::AddConstraint: body1 == NULL on constraint '%s'.", constraint->name.c_str() );
 	}
 	if( !bodies.Find( constraint->body1 ) )
 	{
-		gameLocal.Error( "idPhysics_AF::AddConstraint: body1 of constraint '%s' is not part of the articulated figure.", constraint->name.c_str() );
+		gameLocal->Error( "idPhysics_AF::AddConstraint: body1 of constraint '%s' is not part of the articulated figure.", constraint->name.c_str() );
 	}
 	if( constraint->body2 && !bodies.Find( constraint->body2 ) )
 	{
-		gameLocal.Error( "idPhysics_AF::AddConstraint: body2 of constraint '%s' is not part of the articulated figure.", constraint->name.c_str() );
+		gameLocal->Error( "idPhysics_AF::AddConstraint: body2 of constraint '%s' is not part of the articulated figure.", constraint->name.c_str() );
 	}
 	if( constraint->body1 == constraint->body2 )
 	{
-		gameLocal.Error( "idPhysics_AF::AddConstraint: body1 and body2 of constraint '%s' are the same.", constraint->name.c_str() );
+		gameLocal->Error( "idPhysics_AF::AddConstraint: body1 and body2 of constraint '%s' are the same.", constraint->name.c_str() );
 	}
 	
 	constraints.Append( constraint );
@@ -8026,7 +8026,7 @@ void idPhysics_AF::ForceBodyId( idAFBody* body, int newId )
 	id = bodies.FindIndex( body );
 	if( id == -1 )
 	{
-		gameLocal.Error( "ForceBodyId: body '%s' is not part of the articulated figure.\n", body->name.c_str() );
+		gameLocal->Error( "ForceBodyId: body '%s' is not part of the articulated figure.\n", body->name.c_str() );
 	}
 	if( id != newId )
 	{
@@ -8049,7 +8049,7 @@ int idPhysics_AF::GetBodyId( idAFBody* body ) const
 	id = bodies.FindIndex( body );
 	if( id == -1 && body )
 	{
-		gameLocal.Error( "GetBodyId: body '%s' is not part of the articulated figure.\n", body->name.c_str() );
+		gameLocal->Error( "GetBodyId: body '%s' is not part of the articulated figure.\n", body->name.c_str() );
 	}
 	return id;
 }
@@ -8070,7 +8070,7 @@ int idPhysics_AF::GetBodyId( const char* bodyName ) const
 			return i;
 		}
 	}
-	gameLocal.Error( "GetBodyId: no body with the name '%s' is not part of the articulated figure.\n", bodyName );
+	gameLocal->Error( "GetBodyId: no body with the name '%s' is not part of the articulated figure.\n", bodyName );
 	return 0;
 }
 
@@ -8086,7 +8086,7 @@ int idPhysics_AF::GetConstraintId( idAFConstraint* constraint ) const
 	id = constraints.FindIndex( constraint );
 	if( id == -1 && constraint )
 	{
-		gameLocal.Error( "GetConstraintId: constraint '%s' is not part of the articulated figure.\n", constraint->name.c_str() );
+		gameLocal->Error( "GetConstraintId: constraint '%s' is not part of the articulated figure.\n", constraint->name.c_str() );
 	}
 	return id;
 }
@@ -8107,7 +8107,7 @@ int idPhysics_AF::GetConstraintId( const char* constraintName ) const
 			return i;
 		}
 	}
-	gameLocal.Error( "GetConstraintId: no constraint with the name '%s' is not part of the articulated figure.\n", constraintName );
+	gameLocal->Error( "GetConstraintId: no constraint with the name '%s' is not part of the articulated figure.\n", constraintName );
 	return 0;
 }
 
@@ -8160,7 +8160,7 @@ idAFBody* idPhysics_AF::GetBody( const int id ) const
 {
 	if( id < 0 || id >= bodies.Num() )
 	{
-		gameLocal.Error( "GetBody: no body with id %d exists\n", id );
+		gameLocal->Error( "GetBody: no body with id %d exists\n", id );
 		return NULL;
 	}
 	return bodies[id];
@@ -8195,7 +8195,7 @@ idAFConstraint* idPhysics_AF::GetConstraint( const int id ) const
 {
 	if( id < 0 || id >= constraints.Num() )
 	{
-		gameLocal.Error( "GetConstraint: no constraint with id %d exists\n", id );
+		gameLocal->Error( "GetConstraint: no constraint with id %d exists\n", id );
 		return NULL;
 	}
 	return constraints[id];
@@ -8221,7 +8221,7 @@ void idPhysics_AF::DeleteBody( const char* bodyName )
 	
 	if( i >= bodies.Num() )
 	{
-		gameLocal.Warning( "DeleteBody: no body found in the articulated figure with the name '%s' for entity '%s' type '%s'.",
+		gameLocal->Warning( "DeleteBody: no body found in the articulated figure with the name '%s' for entity '%s' type '%s'.",
 						   bodyName, self->name.c_str(), self->GetType()->classname );
 		return;
 	}
@@ -8240,7 +8240,7 @@ void idPhysics_AF::DeleteBody( const int id )
 	
 	if( id < 0 || id > bodies.Num() )
 	{
-		gameLocal.Error( "DeleteBody: no body with id %d.", id );
+		gameLocal->Error( "DeleteBody: no body with id %d.", id );
 		return;
 	}
 	
@@ -8288,7 +8288,7 @@ void idPhysics_AF::DeleteConstraint( const char* constraintName )
 	
 	if( i >= constraints.Num() )
 	{
-		gameLocal.Warning( "DeleteConstraint: no constriant found in the articulated figure with the name '%s' for entity '%s' type '%s'.",
+		gameLocal->Warning( "DeleteConstraint: no constriant found in the articulated figure with the name '%s' for entity '%s' type '%s'.",
 						   constraintName, self->name.c_str(), self->GetType()->classname );
 		return;
 	}
@@ -8306,7 +8306,7 @@ void idPhysics_AF::DeleteConstraint( const int id )
 
 	if( id < 0 || id >= constraints.Num() )
 	{
-		gameLocal.Error( "DeleteConstraint: no constraint with id %d.", id );
+		gameLocal->Error( "DeleteConstraint: no constraint with id %d.", id );
 		return;
 	}
 	
@@ -8720,13 +8720,13 @@ void idPhysics_AF::ClipTranslation( trace_t& results, const idVec3& translation,
 		{
 			if( model )
 			{
-				gameLocal.GetClip()->TranslationModel( bodyResults, body->current->worldOrigin, body->current->worldOrigin + translation,
+				gameLocal->GetClip()->TranslationModel( bodyResults, body->current->worldOrigin, body->current->worldOrigin + translation,
 												 body->clipModel, body->current->worldAxis, body->clipMask,
 												 model->Handle(), model->GetOrigin(), model->GetAxis() );
 			}
 			else
 			{
-				gameLocal.GetClip()->Translation( bodyResults, body->current->worldOrigin, body->current->worldOrigin + translation,
+				gameLocal->GetClip()->Translation( bodyResults, body->current->worldOrigin, body->current->worldOrigin + translation,
 											body->clipModel, body->current->worldAxis, body->clipMask, self );
 			}
 			if( bodyResults.fraction < results.fraction )
@@ -8762,13 +8762,13 @@ void idPhysics_AF::ClipRotation( trace_t& results, const idRotation& rotation, c
 		{
 			if( model )
 			{
-				gameLocal.GetClip()->RotationModel( bodyResults, body->current->worldOrigin, rotation,
+				gameLocal->GetClip()->RotationModel( bodyResults, body->current->worldOrigin, rotation,
 											  body->clipModel, body->current->worldAxis, body->clipMask,
 											  model->Handle(), model->GetOrigin(), model->GetAxis() );
 			}
 			else
 			{
-				gameLocal.GetClip()->Rotation( bodyResults, body->current->worldOrigin, rotation,
+				gameLocal->GetClip()->Rotation( bodyResults, body->current->worldOrigin, rotation,
 										 body->clipModel, body->current->worldAxis, body->clipMask, self );
 			}
 			if( bodyResults.fraction < results.fraction )
@@ -8803,13 +8803,13 @@ int idPhysics_AF::ClipContents( const idClipModel* model ) const
 		{
 			if( model )
 			{
-				contents |= gameLocal.GetClip()->ContentsModel( body->current->worldOrigin,
+				contents |= gameLocal->GetClip()->ContentsModel( body->current->worldOrigin,
 							body->clipModel, body->current->worldAxis, -1,
 							model->Handle(), model->GetOrigin(), model->GetAxis() );
 			}
 			else
 			{
-				contents |= gameLocal.GetClip()->Contents( body->current->worldOrigin,
+				contents |= gameLocal->GetClip()->Contents( body->current->worldOrigin,
 													 body->clipModel, body->current->worldAxis, -1, NULL );
 			}
 		}

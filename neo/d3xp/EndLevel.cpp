@@ -90,14 +90,14 @@ idTarget_EndLevel::Event_Trigger
 */
 void idTarget_EndLevel::Event_Trigger( idEntity* activator )
 {
-	if( gameLocal.endLevel )
+	if( gameLocal->endLevel )
 	{
 		return;
 	}
 	
 	// mark the endLevel, which will modify some game actions
 	// and pass control to us for drawing the stats and camera position
-	gameLocal.endLevel = this;
+	gameLocal->endLevel = this;
 	
 	// grab the activating player view position
 	idPlayer* player = ( idPlayer* )( activator );
@@ -137,8 +137,8 @@ void idTarget_EndLevel::Draw()
 	renderView.y = 0;
 	
 	renderView.fov_x = 90;
-	renderView.fov_y = gameLocal.CalcFovY( renderView.fov_x );
-	renderView.time = gameLocal.time;
+	renderView.fov_y = gameLocal->CalcFovY( renderView.fov_x );
+	renderView.time = gameLocal->time;
 	
 #if 0
 	renderView.vieworg = initialViewOrg;
@@ -151,7 +151,7 @@ void idTarget_EndLevel::Draw()
 	gameRenderWorld->RenderScene( &renderView );
 	
 	// draw the gui on top of the 3D view
-	gui->Redraw( gameLocal.time );
+	gui->Redraw( gameLocal->time );
 }
 
 /*

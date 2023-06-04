@@ -151,9 +151,9 @@ void idForce_Grab::Evaluate( int time )
 	if( g_grabberRandomMotion.GetBool() && !common->IsMultiplayer() )
 	{
 		// Jitter the objectCenter around so it doesn't remain stationary
-		float SinOffset = idMath::Sin( ( float )( gameLocal.time ) / 66.f );
-		float randScale1 = gameLocal.random.RandomFloat();
-		float randScale2 = gameLocal.random.CRandomFloat();
+		float SinOffset = idMath::Sin( ( float )( gameLocal->time ) / 66.f );
+		float randScale1 = gameLocal->random.RandomFloat();
+		float randScale2 = gameLocal->random.CRandomFloat();
 		objectCenter.x += ( SinOffset * 3.5f * randScale1 ) + ( randScale2 * 1.2f );
 		objectCenter.y += ( SinOffset * -3.5f * randScale1 ) + ( randScale2 * 1.4f );
 		objectCenter.z += ( SinOffset * 2.4f * randScale1 ) + ( randScale2 * 1.6f );

@@ -276,7 +276,7 @@ idEvent* idEvent::Alloc( const idEventDef* evdef, int numargs, va_list args )
 	
 	if( FreeEvents.IsListEmpty() )
 	{
-		gameLocal.Error( "idEvent::Alloc : No more free events" );
+		gameLocal->Error( "idEvent::Alloc : No more free events" );
 	}
 	
 	ev = FreeEvents.Next();
@@ -286,7 +286,7 @@ idEvent* idEvent::Alloc( const idEventDef* evdef, int numargs, va_list args )
 	
 	if( numargs != evdef->GetNumArgs() )
 	{
-		gameLocal.Error( "idEvent::Alloc : Wrong number of args for '%s' event.", evdef->GetName() );
+		gameLocal->Error( "idEvent::Alloc : Wrong number of args for '%s' event.", evdef->GetName() );
 	}
 	
 	size = evdef->GetArgSize();
@@ -310,7 +310,7 @@ idEvent* idEvent::Alloc( const idEventDef* evdef, int numargs, va_list args )
 			// when NULL is passed in for an entity, it gets cast as an integer 0, so don't give an error when it happens
 			if( !( ( ( format[ i ] == D_EVENT_TRACE ) || ( format[ i ] == D_EVENT_ENTITY ) ) && ( arg->type == 'd' ) && ( arg->value == 0 ) ) )
 			{
-				gameLocal.Error( "idEvent::Alloc : Wrong type passed in for arg # %d on '%s' event.", i, evdef->GetName() );
+				gameLocal->Error( "idEvent::Alloc : Wrong type passed in for arg # %d on '%s' event.", i, evdef->GetName() );
 			}
 		}
 		
@@ -364,7 +364,7 @@ idEvent* idEvent::Alloc( const idEventDef* evdef, int numargs, va_list args )
 				break;
 				
 			default :
-				gameLocal.Error( "idEvent::Alloc : Invalid arg format '%s' string for '%s' event.", format, evdef->GetName() );
+				gameLocal->Error( "idEvent::Alloc : Invalid arg format '%s' string for '%s' event.", format, evdef->GetName() );
 				break;
 		}
 	}
@@ -388,7 +388,7 @@ void idEvent::CopyArgs( const idEventDef* evdef, int numargs, va_list args, intp
 	format = evdef->GetArgFormat();
 	if( numargs != evdef->GetNumArgs() )
 	{
-		gameLocal.Error( "idEvent::CopyArgs : Wrong number of args for '%s' event.", evdef->GetName() );
+		gameLocal->Error( "idEvent::CopyArgs : Wrong number of args for '%s' event.", evdef->GetName() );
 	}
 	
 	for( i = 0; i < numargs; i++ )
@@ -399,7 +399,7 @@ void idEvent::CopyArgs( const idEventDef* evdef, int numargs, va_list args, intp
 			// when NULL is passed in for an entity, it gets cast as an integer 0, so don't give an error when it happens
 			if( !( ( ( format[ i ] == D_EVENT_TRACE ) || ( format[ i ] == D_EVENT_ENTITY ) ) && ( arg->type == 'd' ) && ( arg->value == 0 ) ) )
 			{
-				gameLocal.Error( "idEvent::CopyArgs : Wrong type passed in for arg # %d on '%s' event.", i, evdef->GetName() );
+				gameLocal->Error( "idEvent::CopyArgs : Wrong type passed in for arg # %d on '%s' event.", i, evdef->GetName() );
 			}
 		}
 		
@@ -448,7 +448,7 @@ void idEvent::Schedule( idClass* obj, const idTypeInfo* type, int _time )
 	typeinfo = type;
 	
 	// wraps after 24 days...like I care. ;)
-	this->time = gameLocal.time + _time;
+	this->time = gameLocal->time + _time;
 	
 	eventNode.Remove();
 	
@@ -473,7 +473,7 @@ void idEvent::Schedule( idClass* obj, const idTypeInfo* type, int _time )
 	}
 	else
 	{
-		this->time = gameLocal.slow.time + _time;
+		this->time = gameLocal->slow.time + _time;
 	}
 	
 	event = EventQueue.Next();
@@ -583,7 +583,7 @@ void idEvent::ServiceEvents()
 		event = EventQueue.Next();
 		assert( event );
 		
-		if( event->time > gameLocal.time )
+		if( event->time > gameLocal->time )
 		{
 			break;
 		}
@@ -638,7 +638,7 @@ void idEvent::ServiceEvents()
 					break;
 					
 				default:
-					gameLocal.Error( "idEvent::ServiceEvents : Invalid arg format '%s' string for '%s' event.", formatspec, ev->GetName() );
+					gameLocal->Error( "idEvent::ServiceEvents : Invalid arg format '%s' string for '%s' event.", formatspec, ev->GetName() );
 			}
 		}
 		
@@ -653,7 +653,7 @@ void idEvent::ServiceEvents()
 		// enable this code to check if any event call left values on the FPU stack
 		if( !sys->FPU_StackIsEmpty() )
 		{
-			gameLocal.Error( "idEvent::ServiceEvents %d: %s left a value on the FPU stack\n", num, ev->GetName() );
+			gameLocal->Error( "idEvent::ServiceEvents %d: %s left a value on the FPU stack\n", num, ev->GetName() );
 		}
 #endif
 		
@@ -665,7 +665,7 @@ void idEvent::ServiceEvents()
 		num++;
 		if( num > MAX_EVENTSPERFRAME )
 		{
-			gameLocal.Error( "Event overflow.  Possible infinite loop in script." );
+			gameLocal->Error( "Event overflow.  Possible infinite loop in script." );
 		}
 	}
 }
@@ -697,7 +697,7 @@ void idEvent::ServiceFastEvents()
 		event = FastEventQueue.Next();
 		assert( event );
 		
-		if( event->time > gameLocal.fast.time )
+		if( event->time > gameLocal->fast.time )
 		{
 			break;
 		}
@@ -750,7 +750,7 @@ void idEvent::ServiceFastEvents()
 					break;
 					
 				default:
-					gameLocal.Error( "idEvent::ServiceFastEvents : Invalid arg format '%s' string for '%s' event.", formatspec, ev->GetName() );
+					gameLocal->Error( "idEvent::ServiceFastEvents : Invalid arg format '%s' string for '%s' event.", formatspec, ev->GetName() );
 			}
 		}
 		
@@ -765,7 +765,7 @@ void idEvent::ServiceFastEvents()
 		// enable this code to check if any event call left values on the FPU stack
 		if( !sys->FPU_StackIsEmpty() )
 		{
-			gameLocal.Error( "idEvent::ServiceEvents %d: %s left a value on the FPU stack\n", num, event->eventdef->GetName() );
+			gameLocal->Error( "idEvent::ServiceEvents %d: %s left a value on the FPU stack\n", num, event->eventdef->GetName() );
 		}
 #endif
 		
@@ -777,7 +777,7 @@ void idEvent::ServiceFastEvents()
 		num++;
 		if( num > MAX_EVENTSPERFRAME )
 		{
-			gameLocal.Error( "Event overflow.  Possible infinite loop in script." );
+			gameLocal->Error( "Event overflow.  Possible infinite loop in script." );
 		}
 	}
 }
@@ -789,22 +789,22 @@ idEvent::Init
 */
 void idEvent::Init()
 {
-	gameLocal.Printf( "Initializing event system\n" );
+	gameLocal->Printf( "Initializing event system\n" );
 	
 	if( eventError )
 	{
-		gameLocal.Error( "%s", eventErrorMsg );
+		gameLocal->Error( "%s", eventErrorMsg );
 	}
 	
 #ifdef CREATE_EVENT_CODE
 	void CreateEventCallbackHandler();
 	CreateEventCallbackHandler();
-	gameLocal.Error( "Wrote event callback handler" );
+	gameLocal->Error( "Wrote event callback handler" );
 #endif
 	
 	if( initialized )
 	{
-		gameLocal.Printf( "...already initialized\n" );
+		gameLocal->Printf( "...already initialized\n" );
 		ClearEventList();
 		return;
 	}
@@ -813,7 +813,7 @@ void idEvent::Init()
 	
 	eventDataAllocator.Init();
 	
-	gameLocal.Printf( "...%i event definitions\n", idEventDef::NumEventCommands() );
+	gameLocal->Printf( "...%i event definitions\n", idEventDef::NumEventCommands() );
 	
 	// the event system has started
 	initialized = true;
@@ -826,11 +826,11 @@ idEvent::Shutdown
 */
 void idEvent::Shutdown()
 {
-	gameLocal.Printf( "Shutdown event system\n" );
+	gameLocal->Printf( "Shutdown event system\n" );
 	
 	if( !initialized )
 	{
-		gameLocal.Printf( "...not started\n" );
+		gameLocal->Printf( "...not started\n" );
 		return;
 	}
 	
@@ -976,7 +976,7 @@ void idEvent::Restore( idRestoreGame* savefile )
 	{
 		if( FreeEvents.IsListEmpty() )
 		{
-			gameLocal.Error( "idEvent::Restore : No more free events" );
+			gameLocal->Error( "idEvent::Restore : No more free events" );
 		}
 		
 		event = FreeEvents.Next();
@@ -1094,7 +1094,7 @@ void idEvent::Restore( idRestoreGame* savefile )
 	{
 		if( FreeEvents.IsListEmpty() )
 		{
-			gameLocal.Error( "idEvent::Restore : No more free events" );
+			gameLocal->Error( "idEvent::Restore : No more free events" );
 		}
 		
 		event = FreeEvents.Next();

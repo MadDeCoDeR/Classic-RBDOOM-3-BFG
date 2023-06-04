@@ -129,7 +129,7 @@ void idPhysics_Actor::SetClipModelAxis()
 	
 	if( clipModel )
 	{
-		clipModel->Link( *gameLocal.GetClip(), self, 0, clipModel->GetOrigin(), clipModelAxis );
+		clipModel->Link( *gameLocal->GetClip(), self, 0, clipModel->GetOrigin(), clipModelAxis );
 	}
 }
 
@@ -180,7 +180,7 @@ void idPhysics_Actor::SetClipModel( idClipModel* model, const float density, int
 		delete clipModel;
 	}
 	clipModel = model;
-	clipModel->Link( *gameLocal.GetClip(), self, 0, clipModel->GetOrigin(), clipModelAxis );
+	clipModel->Link( *gameLocal->GetClip(), self, 0, clipModel->GetOrigin(), clipModelAxis );
 }
 
 /*
@@ -318,13 +318,13 @@ void idPhysics_Actor::ClipTranslation( trace_t& results, const idVec3& translati
 {
 	if( model )
 	{
-		gameLocal.GetClip()->TranslationModel( results, clipModel->GetOrigin(), clipModel->GetOrigin() + translation,
+		gameLocal->GetClip()->TranslationModel( results, clipModel->GetOrigin(), clipModel->GetOrigin() + translation,
 										 clipModel, clipModel->GetAxis(), clipMask,
 										 model->Handle(), model->GetOrigin(), model->GetAxis() );
 	}
 	else
 	{
-		gameLocal.GetClip()->Translation( results, clipModel->GetOrigin(), clipModel->GetOrigin() + translation,
+		gameLocal->GetClip()->Translation( results, clipModel->GetOrigin(), clipModel->GetOrigin() + translation,
 									clipModel, clipModel->GetAxis(), clipMask, self );
 	}
 }
@@ -338,13 +338,13 @@ void idPhysics_Actor::ClipRotation( trace_t& results, const idRotation& rotation
 {
 	if( model )
 	{
-		gameLocal.GetClip()->RotationModel( results, clipModel->GetOrigin(), rotation,
+		gameLocal->GetClip()->RotationModel( results, clipModel->GetOrigin(), rotation,
 									  clipModel, clipModel->GetAxis(), clipMask,
 									  model->Handle(), model->GetOrigin(), model->GetAxis() );
 	}
 	else
 	{
-		gameLocal.GetClip()->Rotation( results, clipModel->GetOrigin(), rotation,
+		gameLocal->GetClip()->Rotation( results, clipModel->GetOrigin(), rotation,
 								 clipModel, clipModel->GetAxis(), clipMask, self );
 	}
 }
@@ -358,12 +358,12 @@ int idPhysics_Actor::ClipContents( const idClipModel* model ) const
 {
 	if( model )
 	{
-		return gameLocal.GetClip()->ContentsModel( clipModel->GetOrigin(), clipModel, clipModel->GetAxis(), -1,
+		return gameLocal->GetClip()->ContentsModel( clipModel->GetOrigin(), clipModel, clipModel->GetAxis(), -1,
 											 model->Handle(), model->GetOrigin(), model->GetAxis() );
 	}
 	else
 	{
-		return gameLocal.GetClip()->Contents( clipModel->GetOrigin(), clipModel, clipModel->GetAxis(), -1, NULL );
+		return gameLocal->GetClip()->Contents( clipModel->GetOrigin(), clipModel, clipModel->GetAxis(), -1, NULL );
 	}
 }
 
@@ -404,7 +404,7 @@ idPhysics_Actor::LinkClip
 */
 void idPhysics_Actor::LinkClip()
 {
-	clipModel->Link( *gameLocal.GetClip(), self, 0, clipModel->GetOrigin(), clipModel->GetAxis() );
+	clipModel->Link( *gameLocal->GetClip(), self, 0, clipModel->GetOrigin(), clipModel->GetAxis() );
 }
 
 /*

@@ -55,10 +55,10 @@ idTrigger::DrawDebugInfo
 */
 void idTrigger::DrawDebugInfo()
 {
-	idMat3		axis = gameLocal.GetLocalPlayer()->viewAngles.ToMat3();
+	idMat3		axis = gameLocal->GetLocalPlayer()->viewAngles.ToMat3();
 	idVec3		up = axis[ 2 ] * 5.0f;
-	idBounds	viewTextBounds( gameLocal.GetLocalPlayer()->GetPhysics()->GetOrigin() );
-	idBounds	viewBounds( gameLocal.GetLocalPlayer()->GetPhysics()->GetOrigin() );
+	idBounds	viewTextBounds( gameLocal->GetLocalPlayer()->GetPhysics()->GetOrigin() );
+	idBounds	viewBounds( gameLocal->GetLocalPlayer()->GetPhysics()->GetOrigin() );
 	idBounds	box( idVec3( -4.0f, -4.0f, -4.0f ), idVec3( 4.0f, 4.0f, 4.0f ) );
 	idEntity*	ent;
 	idEntity*	target;
@@ -68,7 +68,7 @@ void idTrigger::DrawDebugInfo()
 	
 	viewTextBounds.ExpandSelf( 128.0f );
 	viewBounds.ExpandSelf( 512.0f );
-	for( ent = gameLocal.spawnedEntities.Next(); ent != NULL; ent = ent->spawnNode.Next() )
+	for( ent = gameLocal->spawnedEntities.Next(); ent != NULL; ent = ent->spawnNode.Next() )
 	{
 		if( ent->GetPhysics()->GetContents() & ( CONTENTS_TRIGGER | CONTENTS_FLASHLIGHT_TRIGGER ) )
 		{
@@ -205,10 +205,10 @@ void idTrigger::Restore( idRestoreGame* savefile )
 	savefile->ReadString( funcname );
 	if( funcname.Length() )
 	{
-		scriptFunction = gameLocal.GetProgram()->FindFunction( funcname );
+		scriptFunction = gameLocal->GetProgram()->FindFunction( funcname );
 		if( scriptFunction == NULL )
 		{
-			gameLocal.Warning( "idTrigger_Multi '%s' at (%s) calls unknown function '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcname.c_str() );
+			gameLocal->Warning( "idTrigger_Multi '%s' at (%s) calls unknown function '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcname.c_str() );
 		}
 	}
 	else
@@ -259,10 +259,10 @@ void idTrigger::Spawn()
 	idStr funcname = spawnArgs.GetString( "call", "" );
 	if( funcname.Length() )
 	{
-		scriptFunction = gameLocal.GetProgram()->FindFunction( funcname );
+		scriptFunction = gameLocal->GetProgram()->FindFunction( funcname );
 		if( scriptFunction == NULL )
 		{
-			gameLocal.Warning( "trigger '%s' at (%s) calls unknown function '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcname.c_str() );
+			gameLocal->Warning( "trigger '%s' at (%s) calls unknown function '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcname.c_str() );
 		}
 	}
 	else
@@ -370,13 +370,13 @@ void idTrigger_Multi::Spawn()
 	if( random && ( random >= wait ) && ( wait >= 0 ) )
 	{
 		random = wait - 1;
-		gameLocal.Warning( "idTrigger_Multi '%s' at (%s) has random >= wait", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
+		gameLocal->Warning( "idTrigger_Multi '%s' at (%s) has random >= wait", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
 	}
 	
 	if( random_delay && ( random_delay >= delay ) && ( delay >= 0 ) )
 	{
 		random_delay = delay - 1;
-		gameLocal.Warning( "idTrigger_Multi '%s' at (%s) has random_delay >= delay", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
+		gameLocal->Warning( "idTrigger_Multi '%s' at (%s) has random_delay >= delay", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
 	}
 	
 	spawnArgs.GetString( "requires", "", requires );
@@ -454,7 +454,7 @@ void idTrigger_Multi::TriggerAction( idEntity* activator )
 	
 	if( wait >= 0 )
 	{
-		nextTriggerTime = gameLocal.time + SEC2MS( wait + random * gameLocal.random.CRandomFloat() );
+		nextTriggerTime = gameLocal->time + SEC2MS( wait + random * gameLocal->random.CRandomFloat() );
 	}
 	else
 	{
@@ -462,7 +462,7 @@ void idTrigger_Multi::TriggerAction( idEntity* activator )
 		// called while looping through area links...
 		// If the player spawned inside the trigger, the player Spawn function called Think directly,
 		// allowing for multiple triggers on a trigger_once.  Increasing the nextTriggerTime prevents it.
-		nextTriggerTime = gameLocal.time + 99999;
+		nextTriggerTime = gameLocal->time + 99999;
 		PostEventMS( &EV_Remove, 0 );
 	}
 }
@@ -489,14 +489,14 @@ so wait for the delay time before firing
 */
 void idTrigger_Multi::Event_Trigger( idEntity* activator )
 {
-	if( nextTriggerTime > gameLocal.time )
+	if( nextTriggerTime > gameLocal->time )
 	{
 		// can't retrigger until the wait is over
 		return;
 	}
 	
 	// see if this trigger requires an item
-	if( !gameLocal.RequirementMet( activator, requires, removeItem ) )
+	if( !gameLocal->RequirementMet( activator, requires, removeItem ) )
 	{
 		return;
 	}
@@ -513,12 +513,12 @@ void idTrigger_Multi::Event_Trigger( idEntity* activator )
 	}
 	
 	// don't allow it to trigger twice in a single frame
-	nextTriggerTime = gameLocal.time + 1;
+	nextTriggerTime = gameLocal->time + 1;
 	
 	if( delay > 0 )
 	{
 		// don't allow it to trigger again until our delay has passed
-		nextTriggerTime += SEC2MS( delay + random_delay * gameLocal.random.CRandomFloat() );
+		nextTriggerTime += SEC2MS( delay + random_delay * gameLocal->random.CRandomFloat() );
 		PostEventSec( &EV_TriggerAction, delay, activator );
 	}
 	else
@@ -561,14 +561,14 @@ void idTrigger_Multi::Event_Touch( idEntity* other, trace_t* trace )
 		return;
 	}
 	
-	if( nextTriggerTime > gameLocal.time )
+	if( nextTriggerTime > gameLocal->time )
 	{
 		// can't retrigger until the wait is over
 		return;
 	}
 	
 	// see if this trigger requires an item
-	if( !gameLocal.RequirementMet( other, requires, removeItem ) )
+	if( !gameLocal->RequirementMet( other, requires, removeItem ) )
 	{
 		return;
 	}
@@ -583,11 +583,11 @@ void idTrigger_Multi::Event_Touch( idEntity* other, trace_t* trace )
 		triggerFirst = true;
 	}
 	
-	nextTriggerTime = gameLocal.time + 1;
+	nextTriggerTime = gameLocal->time + 1;
 	if( delay > 0 )
 	{
 		// don't allow it to trigger again until our delay has passed
-		nextTriggerTime += SEC2MS( delay + random_delay * gameLocal.random.CRandomFloat() );
+		nextTriggerTime += SEC2MS( delay + random_delay * gameLocal->random.CRandomFloat() );
 		PostEventSec( &EV_TriggerAction, delay, other );
 	}
 	else
@@ -675,13 +675,13 @@ void idTrigger_EntityName::Spawn()
 	if( random && ( random >= wait ) && ( wait >= 0 ) )
 	{
 		random = wait - 1;
-		gameLocal.Warning( "idTrigger_EntityName '%s' at (%s) has random >= wait", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
+		gameLocal->Warning( "idTrigger_EntityName '%s' at (%s) has random >= wait", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
 	}
 	
 	if( random_delay && ( random_delay >= delay ) && ( delay >= 0 ) )
 	{
 		random_delay = delay - 1;
-		gameLocal.Warning( "idTrigger_EntityName '%s' at (%s) has random_delay >= delay", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
+		gameLocal->Warning( "idTrigger_EntityName '%s' at (%s) has random_delay >= delay", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
 	}
 	
 	spawnArgs.GetBool( "triggerFirst", "0", triggerFirst );
@@ -689,7 +689,7 @@ void idTrigger_EntityName::Spawn()
 	entityName = spawnArgs.GetString( "entityname" );
 	if( !entityName.Length() )
 	{
-		gameLocal.Error( "idTrigger_EntityName '%s' at (%s) doesn't have 'entityname' key specified", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
+		gameLocal->Error( "idTrigger_EntityName '%s' at (%s) doesn't have 'entityname' key specified", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
 	}
 	
 	nextTriggerTime = 0;
@@ -714,13 +714,13 @@ void idTrigger_EntityName::TriggerAction( idEntity* activator )
 	
 	if( wait >= 0 )
 	{
-		nextTriggerTime = gameLocal.time + SEC2MS( wait + random * gameLocal.random.CRandomFloat() );
+		nextTriggerTime = gameLocal->time + SEC2MS( wait + random * gameLocal->random.CRandomFloat() );
 	}
 	else
 	{
 		// we can't just remove (this) here, because this is a touch function
 		// called while looping through area links...
-		nextTriggerTime = gameLocal.time + 1;
+		nextTriggerTime = gameLocal->time + 1;
 		PostEventMS( &EV_Remove, 0 );
 	}
 }
@@ -747,7 +747,7 @@ so wait for the delay time before firing
 */
 void idTrigger_EntityName::Event_Trigger( idEntity* activator )
 {
-	if( nextTriggerTime > gameLocal.time )
+	if( nextTriggerTime > gameLocal->time )
 	{
 		// can't retrigger until the wait is over
 		return;
@@ -781,12 +781,12 @@ void idTrigger_EntityName::Event_Trigger( idEntity* activator )
 	}
 	
 	// don't allow it to trigger twice in a single frame
-	nextTriggerTime = gameLocal.time + 1;
+	nextTriggerTime = gameLocal->time + 1;
 	
 	if( delay > 0 )
 	{
 		// don't allow it to trigger again until our delay has passed
-		nextTriggerTime += SEC2MS( delay + random_delay * gameLocal.random.CRandomFloat() );
+		nextTriggerTime += SEC2MS( delay + random_delay * gameLocal->random.CRandomFloat() );
 		PostEventSec( &EV_TriggerAction, delay, activator );
 	}
 	else
@@ -812,7 +812,7 @@ void idTrigger_EntityName::Event_Touch( idEntity* other, trace_t* trace )
 		return;
 	}
 	
-	if( nextTriggerTime > gameLocal.time )
+	if( nextTriggerTime > gameLocal->time )
 	{
 		// can't retrigger until the wait is over
 		return;
@@ -839,11 +839,11 @@ void idTrigger_EntityName::Event_Touch( idEntity* other, trace_t* trace )
 		return;
 	}
 	
-	nextTriggerTime = gameLocal.time + 1;
+	nextTriggerTime = gameLocal->time + 1;
 	if( delay > 0 )
 	{
 		// don't allow it to trigger again until our delay has passed
-		nextTriggerTime += SEC2MS( delay + random_delay * gameLocal.random.CRandomFloat() );
+		nextTriggerTime += SEC2MS( delay + random_delay * gameLocal->random.CRandomFloat() );
 		PostEventSec( &EV_TriggerAction, delay, other );
 	}
 	else
@@ -930,7 +930,7 @@ void idTrigger_Timer::Spawn()
 	if( random >= wait && wait >= 0 )
 	{
 		random = wait - 0.001;
-		gameLocal.Warning( "idTrigger_Timer '%s' at (%s) has random >= wait", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
+		gameLocal->Warning( "idTrigger_Timer '%s' at (%s) has random >= wait", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ) );
 	}
 	
 	if( on )
@@ -981,7 +981,7 @@ void idTrigger_Timer::Event_Timer()
 	// set time before next firing
 	if( wait >= 0.0f )
 	{
-		PostEventSec( &EV_Timer, wait + gameLocal.random.CRandomFloat() * random );
+		PostEventSec( &EV_Timer, wait + gameLocal->random.CRandomFloat() * random );
 	}
 }
 
@@ -1178,7 +1178,7 @@ void idTrigger_Hurt::Spawn()
 {
 	spawnArgs.GetBool( "on", "1", on );
 	spawnArgs.GetFloat( "delay", "1.0", delay );
-	nextTime = gameLocal.time;
+	nextTime = gameLocal->time;
 	Enable();
 }
 
@@ -1196,7 +1196,7 @@ void idTrigger_Hurt::Event_Touch( idEntity* other, trace_t* trace )
 		return;
 	}
 	
-	if( on && other && gameLocal.time >= nextTime )
+	if( on && other && gameLocal->time >= nextTime )
 	{
 		bool playerOnly = spawnArgs.GetBool( "playerOnly" );
 		if( playerOnly )
@@ -1219,7 +1219,7 @@ void idTrigger_Hurt::Event_Touch( idEntity* other, trace_t* trace )
 		ActivateTargets( other );
 		CallScript();
 		
-		nextTime = gameLocal.time + SEC2MS( delay );
+		nextTime = gameLocal->time + SEC2MS( delay );
 	}
 }
 
@@ -1257,7 +1257,7 @@ void idTrigger_Fade::Event_Trigger( idEntity* activator )
 	int			fadeTime;
 	idPlayer*	player;
 	
-	player = gameLocal.GetLocalPlayer();
+	player = gameLocal->GetLocalPlayer();
 	if( player )
 	{
 		fadeColor = spawnArgs.GetVec4( "fadeColor", "0, 0, 0, 1" );
@@ -1346,7 +1346,7 @@ void idTrigger_Touch::TouchEntities()
 	}
 	
 	bounds.FromTransformedBounds( clipModel->GetBounds(), clipModel->GetOrigin(), clipModel->GetAxis() );
-	numClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
+	numClipModels = gameLocal->GetClip()->ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
 	
 	for( i = 0; i < numClipModels; i++ )
 	{
@@ -1364,7 +1364,7 @@ void idTrigger_Touch::TouchEntities()
 			continue;
 		}
 		
-		if( !gameLocal.GetClip()->ContentsModel( cm->GetOrigin(), cm, cm->GetAxis(), -1,
+		if( !gameLocal->GetClip()->ContentsModel( cm->GetOrigin(), cm, cm->GetAxis(), -1,
 										   clipModel->Handle(), clipModel->GetOrigin(), clipModel->GetAxis() ) )
 		{
 			continue;
@@ -1456,10 +1456,10 @@ void idTrigger_Flag::Spawn()
 	idStr funcname = spawnArgs.GetString( "eventflag", "" );
 	if( funcname.Length() )
 	{
-		eventFlag = idEventDef::FindEvent( funcname );// gameLocal.GetProgram()->FindFunction( funcname );//, &idItemTeam::Type );
+		eventFlag = idEventDef::FindEvent( funcname );// gameLocal->GetProgram()->FindFunction( funcname );//, &idItemTeam::Type );
 		if( eventFlag == NULL )
 		{
-			gameLocal.Warning( "trigger '%s' at (%s) event unknown '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcname.c_str() );
+			gameLocal->Warning( "trigger '%s' at (%s) event unknown '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcname.c_str() );
 		}
 	}
 	else
@@ -1493,8 +1493,8 @@ void idTrigger_Flag::Event_Touch( idEntity* other, trace_t* trace )
 			
 		idItemTeam* flags[2];
 		
-		flags[0] = gameLocal.mpGame.GetTeamFlag( 0 );
-		flags[1] = gameLocal.mpGame.GetTeamFlag( 1 );
+		flags[0] = gameLocal->mpGame.GetTeamFlag( 0 );
+		flags[1] = gameLocal->mpGame.GetTeamFlag( 1 );
 		
 		int iFriend = 1 - player_->team;			// index to the flag player team wants
 		int iOpp	= player_->team;				// index to the flag opp team wants

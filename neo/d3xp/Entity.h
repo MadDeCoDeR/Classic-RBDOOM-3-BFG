@@ -185,7 +185,7 @@ public:
 	
 	idLinkList<idEntity>	spawnNode;				// for being linked into spawnedEntities list
 	idLinkList<idEntity>	activeNode;				// for being linked into activeEntities list
-	idLinkList<idEntity>	aimAssistNode;			// linked into gameLocal.aimAssistEntities
+	idLinkList<idEntity>	aimAssistNode;			// linked into gameLocal->aimAssistEntities
 	
 	idLinkList<idEntity>	snapshotNode;			// for being linked into snapshotEntities list
 	int						snapshotChanged;		// used to detect snapshot state changes

@@ -102,7 +102,7 @@ void idGameEdit::ParseSpawnArgsToRenderLight( const idDict* args, renderLight_t*
 	// we should have all of the target/right/up or none of them
 	if( ( gotTarget || gotUp || gotRight ) != ( gotTarget && gotUp && gotRight ) )
 	{
-		gameLocal.Printf( "Light at (%f,%f,%f) has bad target info\n",
+		gameLocal->Printf( "Light at (%f,%f,%f) has bad target info\n",
 						  renderLight->origin[0], renderLight->origin[1], renderLight->origin[2] );
 		return;
 	}
@@ -155,7 +155,7 @@ void idGameEdit::ParseSpawnArgsToRenderLight( const idDict* args, renderLight_t*
 	if( !args->GetFloat( "shaderParm4", "0", renderLight->shaderParms[ SHADERPARM_TIMEOFFSET ] ) )
 	{
 		// offset the start time of the shader to sync it to the game time
-		renderLight->shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.time );
+		renderLight->shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal->time );
 	}
 	
 	args->GetFloat( "shaderParm5", "0", renderLight->shaderParms[5] );
@@ -290,12 +290,12 @@ void idLight::Restore( idRestoreGame* savefile )
 		if( developer.GetBool() )
 		{
 			// we really want to know if this happens
-			gameLocal.Error( "idLight::Restore: prelightModel '_prelight_%s' not found", name.c_str() );
+			gameLocal->Error( "idLight::Restore: prelightModel '_prelight_%s' not found", name.c_str() );
 		}
 		else
 		{
 			// but let it slide after release
-			gameLocal.Warning( "idLight::Restore: prelightModel '_prelight_%s' not found", name.c_str() );
+			gameLocal->Warning( "idLight::Restore: prelightModel '_prelight_%s' not found", name.c_str() );
 		}
 	}
 	
@@ -351,7 +351,7 @@ void idLight::Spawn()
 	currentLevel = levels;
 	if( levels <= 0 )
 	{
-		gameLocal.Error( "Invalid light level set on entity #%d(%s)", entityNumber, name.c_str() );
+		gameLocal->Error( "Invalid light level set on entity #%d(%s)", entityNumber, name.c_str() );
 	}
 	
 	// make sure the demonic shader is cached
@@ -387,7 +387,7 @@ void idLight::Spawn()
 	}
 	
 	// Midnight CTF
-	if( gameLocal.mpGame.IsGametypeFlagBased() && gameLocal.serverInfo.GetBool( "si_midnight" ) && !spawnArgs.GetBool( "midnight_override" ) )
+	if( gameLocal->mpGame.IsGametypeFlagBased() && gameLocal->serverInfo.GetBool( "si_midnight" ) && !spawnArgs.GetBool( "midnight_override" ) )
 	{
 		Off();
 	}
@@ -410,7 +410,7 @@ void idLight::Spawn()
 		idStr model = spawnArgs.GetString( "model" );		// get the visual model
 		if( !model.Length() )
 		{
-			gameLocal.Error( "Breakable light without a model set on entity #%d(%s)", entityNumber, name.c_str() );
+			gameLocal->Error( "Breakable light without a model set on entity #%d(%s)", entityNumber, name.c_str() );
 		}
 		
 		fl.takedamage	= true;
@@ -444,7 +444,7 @@ void idLight::Spawn()
 		{
 			if( needBroken )
 			{
-				gameLocal.Error( "Model '%s' not found for entity %d(%s)", brokenModel.c_str(), entityNumber, name.c_str() );
+				gameLocal->Error( "Model '%s' not found for entity %d(%s)", brokenModel.c_str(), entityNumber, name.c_str() );
 			}
 			else
 			{
@@ -566,7 +566,7 @@ void idLight::SetLightParm( int parmnum, float value )
 {
 	if( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) )
 	{
-		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
+		gameLocal->Error( "shader parm index (%d) out of range", parmnum );
 		return;
 	}
 	
@@ -626,7 +626,7 @@ void idLight::On()
 {
 	currentLevel = levels;
 	// offset the start time of the shader to sync it to the game time
-	renderLight.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.time );
+	renderLight.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal->time );
 	if( ( soundWasPlaying || refSound.waitfortrigger ) && refSound.shader )
 	{
 		StartSoundShader( refSound.shader, SND_CHANNEL_ANY, 0, false, NULL );
@@ -663,8 +663,8 @@ void idLight::Fade( const idVec4& to, float fadeTime )
 {
 	GetColor( fadeFrom );
 	fadeTo = to;
-	fadeStart = gameLocal.time;
-	fadeEnd = gameLocal.time + SEC2MS( fadeTime );
+	fadeStart = gameLocal->time;
+	fadeEnd = gameLocal->time + SEC2MS( fadeTime );
 	BecomeActive( TH_THINK );
 }
 
@@ -739,7 +739,7 @@ void idLight::BecomeBroken( idEntity* activator )
 		if( spawnArgs.GetString( "def_damage", "", &damageDefName ) )
 		{
 			idVec3 origin = renderEntity.origin + renderEntity.bounds.GetCenter() * renderEntity.axis;
-			gameLocal.RadiusDamage( origin, activator, activator, this, this, damageDefName );
+			gameLocal->RadiusDamage( origin, activator, activator, this, this, damageDefName );
 		}
 		
 	}
@@ -747,8 +747,8 @@ void idLight::BecomeBroken( idEntity* activator )
 	ActivateTargets( activator );
 	
 	// offset the start time of the shader to sync it to the game time
-	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.time );
-	renderLight.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.time );
+	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal->time );
+	renderLight.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal->time );
 	
 	// set the state parm
 	renderEntity.shaderParms[ SHADERPARM_MODE ] = 1;
@@ -868,9 +868,9 @@ void idLight::Think()
 	{
 		if( fadeEnd > 0 )
 		{
-			if( gameLocal.time < fadeEnd )
+			if( gameLocal->time < fadeEnd )
 			{
-				color.Lerp( fadeFrom, fadeTo, ( float )( gameLocal.time - fadeStart ) / ( float )( fadeEnd - fadeStart ) );
+				color.Lerp( fadeFrom, fadeTo, ( float )( gameLocal->time - fadeStart ) / ( float )( fadeEnd - fadeStart ) );
 			}
 			else
 			{
@@ -979,7 +979,7 @@ void idLight::Event_GetLightParm( int parmnum )
 {
 	if( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) )
 	{
-		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
+		gameLocal->Error( "shader parm index (%d) out of range", parmnum );
 		return;
 	}
 	

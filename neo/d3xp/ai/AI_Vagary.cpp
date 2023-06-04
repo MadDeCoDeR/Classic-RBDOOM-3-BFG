@@ -83,9 +83,9 @@ void idAI_Vagary::Event_ChooseObjectToThrow( const idVec3& mins, const idVec3& m
 	const idBounds& myBounds = physicsObj.GetAbsBounds();
 	idBounds checkBounds( mins, maxs );
 	checkBounds.TranslateSelf( physicsObj.GetOrigin() );
-	numListedEntities = gameLocal.GetClip()->EntitiesTouchingBounds( checkBounds, -1, entityList, MAX_GENTITIES );
+	numListedEntities = gameLocal->GetClip()->EntitiesTouchingBounds( checkBounds, -1, entityList, MAX_GENTITIES );
 	
-	index = gameLocal.random.RandomInt( numListedEntities );
+	index = gameLocal->random.RandomInt( numListedEntities );
 	for( i = 0; i < numListedEntities; i++, index++ )
 	{
 		if( index >= numListedEntities )

@@ -357,12 +357,12 @@ CONSOLE_COMMAND( testLeaderboardUpload, "<gameType 0 - 4 > <frags = 0> <wins = 1
 CONSOLE_COMMAND( testLeaderboardUpload_SendToClients, "<gameType 0 - 4 > <frags = 0> <wins = 1>", 0 )
 {
 
-	for( int playerIdx = 0; playerIdx < gameLocal.numClients; playerIdx++ )
+	for( int playerIdx = 0; playerIdx < gameLocal->numClients; playerIdx++ )
 	{
 	
 		leaderboardStats_t stats = { 1, 1, 1, 1 };
 		
-		LeaderboardLocal_Upload( gameLocal.lobbyUserIDs[ playerIdx ], gameLocal.gameType, stats );
+		LeaderboardLocal_Upload( gameLocal->lobbyUserIDs[ playerIdx ], gameLocal->gameType, stats );
 	}
 	
 	// Dont do this more than once.

@@ -204,7 +204,7 @@ void idPhysics_StaticMulti::SetClipModel( idClipModel* model, float density, int
 	clipModels[id] = model;
 	if( clipModels[id] )
 	{
-		clipModels[id]->Link( *gameLocal.GetClip(), self, id, current[id].origin, current[id].axis );
+		clipModels[id]->Link( *gameLocal->GetClip(), self, id, current[id].origin, current[id].axis );
 		
 	}
 	
@@ -239,7 +239,7 @@ idClipModel* idPhysics_StaticMulti::GetClipModel( int id ) const
 	{
 		return clipModels[id];
 	}
-	return gameLocal.GetClip()->DefaultClipModel();
+	return gameLocal->GetClip()->DefaultClipModel();
 }
 
 /*
@@ -447,7 +447,7 @@ bool idPhysics_StaticMulti::Evaluate( int timeStepMSec, int endTimeMSec )
 			}
 			if( clipModels[i] )
 			{
-				clipModels[i]->Link( *gameLocal.GetClip(), self, i, current[i].origin, current[i].axis );
+				clipModels[i]->Link( *gameLocal->GetClip(), self, i, current[i].origin, current[i].axis );
 			}
 		}
 		
@@ -622,7 +622,7 @@ void idPhysics_StaticMulti::SetOrigin( const idVec3& newOrigin, int id )
 		}
 		if( clipModels[id] )
 		{
-			clipModels[id]->Link( *gameLocal.GetClip(), self, id, current[id].origin, current[id].axis );
+			clipModels[id]->Link( *gameLocal->GetClip(), self, id, current[id].origin, current[id].axis );
 		}
 	}
 	else if( id == -1 )
@@ -663,7 +663,7 @@ void idPhysics_StaticMulti::SetAxis( const idMat3& newAxis, int id )
 		}
 		if( clipModels[id] )
 		{
-			clipModels[id]->Link( *gameLocal.GetClip(), self, id, current[id].origin, current[id].axis );
+			clipModels[id]->Link( *gameLocal->GetClip(), self, id, current[id].origin, current[id].axis );
 		}
 	}
 	else if( id == -1 )
@@ -703,7 +703,7 @@ void idPhysics_StaticMulti::Translate( const idVec3& translation, int id )
 		
 		if( clipModels[id] )
 		{
-			clipModels[id]->Link( *gameLocal.GetClip(), self, id, current[id].origin, current[id].axis );
+			clipModels[id]->Link( *gameLocal->GetClip(), self, id, current[id].origin, current[id].axis );
 		}
 	}
 	else if( id == -1 )
@@ -715,7 +715,7 @@ void idPhysics_StaticMulti::Translate( const idVec3& translation, int id )
 			
 			if( clipModels[i] )
 			{
-				clipModels[i]->Link( *gameLocal.GetClip(), self, i, current[i].origin, current[i].axis );
+				clipModels[i]->Link( *gameLocal->GetClip(), self, i, current[i].origin, current[i].axis );
 			}
 		}
 	}
@@ -751,7 +751,7 @@ void idPhysics_StaticMulti::Rotate( const idRotation& rotation, int id )
 		
 		if( clipModels[id] )
 		{
-			clipModels[id]->Link( *gameLocal.GetClip(), self, id, current[id].origin, current[id].axis );
+			clipModels[id]->Link( *gameLocal->GetClip(), self, id, current[id].origin, current[id].axis );
 		}
 	}
 	else if( id == -1 )
@@ -775,7 +775,7 @@ void idPhysics_StaticMulti::Rotate( const idRotation& rotation, int id )
 			
 			if( clipModels[i] )
 			{
-				clipModels[i]->Link( *gameLocal.GetClip(), self, i, current[i].origin, current[i].axis );
+				clipModels[i]->Link( *gameLocal->GetClip(), self, i, current[i].origin, current[i].axis );
 			}
 		}
 	}
@@ -900,7 +900,7 @@ idPhysics_StaticMulti::ClipTranslation
 void idPhysics_StaticMulti::ClipTranslation( trace_t& results, const idVec3& translation, const idClipModel* model ) const
 {
 	memset( &results, 0, sizeof( trace_t ) );
-	gameLocal.Warning( "idPhysics_StaticMulti::ClipTranslation called" );
+	gameLocal->Warning( "idPhysics_StaticMulti::ClipTranslation called" );
 }
 
 /*
@@ -911,7 +911,7 @@ idPhysics_StaticMulti::ClipRotation
 void idPhysics_StaticMulti::ClipRotation( trace_t& results, const idRotation& rotation, const idClipModel* model ) const
 {
 	memset( &results, 0, sizeof( trace_t ) );
-	gameLocal.Warning( "idPhysics_StaticMulti::ClipRotation called" );
+	gameLocal->Warning( "idPhysics_StaticMulti::ClipRotation called" );
 }
 
 /*
@@ -930,12 +930,12 @@ int idPhysics_StaticMulti::ClipContents( const idClipModel* model ) const
 		{
 			if( model )
 			{
-				contents |= gameLocal.GetClip()->ContentsModel( clipModels[i]->GetOrigin(), clipModels[i], clipModels[i]->GetAxis(), -1,
+				contents |= gameLocal->GetClip()->ContentsModel( clipModels[i]->GetOrigin(), clipModels[i], clipModels[i]->GetAxis(), -1,
 							model->Handle(), model->GetOrigin(), model->GetAxis() );
 			}
 			else
 			{
-				contents |= gameLocal.GetClip()->Contents( clipModels[i]->GetOrigin(), clipModels[i], clipModels[i]->GetAxis(), -1, NULL );
+				contents |= gameLocal->GetClip()->Contents( clipModels[i]->GetOrigin(), clipModels[i], clipModels[i]->GetAxis(), -1, NULL );
 			}
 		}
 	}
@@ -1009,7 +1009,7 @@ void idPhysics_StaticMulti::LinkClip()
 	{
 		if( clipModels[i] )
 		{
-			clipModels[i]->Link( *gameLocal.GetClip(), self, i, current[i].origin, current[i].axis );
+			clipModels[i]->Link( *gameLocal->GetClip(), self, i, current[i].origin, current[i].axis );
 		}
 	}
 }

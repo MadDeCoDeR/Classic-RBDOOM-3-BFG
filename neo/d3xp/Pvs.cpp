@@ -631,7 +631,7 @@ void idPVS::AddPassageBoundaries( const idWinding& source, const idWinding& pass
 			
 			if( numBounds >= maxBounds )
 			{
-				gameLocal.Warning( "max passage boundaries." );
+				gameLocal->Warning( "max passage boundaries." );
 				break;
 			}
 			bounds[numBounds] = plane;
@@ -777,11 +777,11 @@ void idPVS::CreatePassages() const
 	}
 	if( passageMemory < 1024 )
 	{
-		gameLocal.Printf( "%5d bytes passage memory used to build PVS\n", passageMemory );
+		gameLocal->Printf( "%5d bytes passage memory used to build PVS\n", passageMemory );
 	}
 	else
 	{
-		gameLocal.Printf( "%5d KB passage memory used to build PVS\n", passageMemory >> 10 );
+		gameLocal->Printf( "%5d KB passage memory used to build PVS\n", passageMemory >> 10 );
 	}
 }
 
@@ -969,17 +969,17 @@ void idPVS::Init()
 	
 	timer.Stop();
 	
-	gameLocal.Printf( "%5.0f msec to calculate PVS\n", timer.Milliseconds() );
-	gameLocal.Printf( "%5d areas\n", numAreas );
-	gameLocal.Printf( "%5d portals\n", numPortals );
-	gameLocal.Printf( "%5d areas visible on average\n", totalVisibleAreas / numAreas );
+	gameLocal->Printf( "%5.0f msec to calculate PVS\n", timer.Milliseconds() );
+	gameLocal->Printf( "%5d areas\n", numAreas );
+	gameLocal->Printf( "%5d portals\n", numPortals );
+	gameLocal->Printf( "%5d areas visible on average\n", totalVisibleAreas / numAreas );
 	if( numAreas * areaVisBytes < 1024 )
 	{
-		gameLocal.Printf( "%5d bytes PVS data\n", numAreas * areaVisBytes );
+		gameLocal->Printf( "%5d bytes PVS data\n", numAreas * areaVisBytes );
 	}
 	else
 	{
-		gameLocal.Printf( "%5d KB PVS data\n", ( numAreas * areaVisBytes ) >> 10 );
+		gameLocal->Printf( "%5d KB PVS data\n", ( numAreas * areaVisBytes ) >> 10 );
 	}
 }
 
@@ -1252,7 +1252,7 @@ pvsHandle_t idPVS::MergeCurrentPVS( pvsHandle_t pvs1, pvsHandle_t pvs2 ) const
 	if( pvs1.i < 0 || pvs1.i >= MAX_CURRENT_PVS || pvs1.h != currentPVS[pvs1.i].handle.h ||
 			pvs2.i < 0 || pvs2.i >= MAX_CURRENT_PVS || pvs2.h != currentPVS[pvs2.i].handle.h )
 	{
-		gameLocal.Error( "idPVS::MergeCurrentPVS: invalid handle" );
+		gameLocal->Error( "idPVS::MergeCurrentPVS: invalid handle" );
 		return handle;
 	}
 	
@@ -1292,7 +1292,7 @@ pvsHandle_t idPVS::AllocCurrentPVS( unsigned int h ) const
 		}
 	}
 	
-	gameLocal.Error( "idPVS::AllocCurrentPVS: no free PVS left" );
+	gameLocal->Error( "idPVS::AllocCurrentPVS: no free PVS left" );
 	
 	handle.i = -1;
 	handle.h = 0;
@@ -1308,7 +1308,7 @@ void idPVS::FreeCurrentPVS( pvsHandle_t handle ) const
 {
 	if( handle.i < 0 || handle.i >= MAX_CURRENT_PVS || handle.h != currentPVS[handle.i].handle.h )
 	{
-		gameLocal.Error( "idPVS::FreeCurrentPVS: invalid handle" );
+		gameLocal->Error( "idPVS::FreeCurrentPVS: invalid handle" );
 		return;
 	}
 	currentPVS[handle.i].handle.i = -1;
@@ -1326,7 +1326,7 @@ bool idPVS::InCurrentPVS( const pvsHandle_t handle, const idVec3& target ) const
 	if( handle.i < 0 || handle.i >= MAX_CURRENT_PVS ||
 			handle.h != currentPVS[handle.i].handle.h )
 	{
-		gameLocal.Warning( "idPVS::InCurrentPVS: invalid handle" );
+		gameLocal->Warning( "idPVS::InCurrentPVS: invalid handle" );
 		return false;
 	}
 	
@@ -1352,7 +1352,7 @@ bool idPVS::InCurrentPVS( const pvsHandle_t handle, const idBounds& target ) con
 	if( handle.i < 0 || handle.i >= MAX_CURRENT_PVS ||
 			handle.h != currentPVS[handle.i].handle.h )
 	{
-		gameLocal.Warning( "idPVS::InCurrentPVS: invalid handle" );
+		gameLocal->Warning( "idPVS::InCurrentPVS: invalid handle" );
 		return false;
 	}
 	
@@ -1379,7 +1379,7 @@ bool idPVS::InCurrentPVS( const pvsHandle_t handle, const int targetArea ) const
 	if( handle.i < 0 || handle.i >= MAX_CURRENT_PVS ||
 			handle.h != currentPVS[handle.i].handle.h )
 	{
-		gameLocal.Warning( "idPVS::InCurrentPVS: invalid handle" );
+		gameLocal->Warning( "idPVS::InCurrentPVS: invalid handle" );
 		return false;
 	}
 	
@@ -1403,7 +1403,7 @@ bool idPVS::InCurrentPVS( const pvsHandle_t handle, const int* targetAreas, int 
 	if( handle.i < 0 || handle.i >= MAX_CURRENT_PVS ||
 			handle.h != currentPVS[handle.i].handle.h )
 	{
-		gameLocal.Warning( "idPVS::InCurrentPVS: invalid handle" );
+		gameLocal->Warning( "idPVS::InCurrentPVS: invalid handle" );
 		return false;
 	}
 	
@@ -1566,7 +1566,7 @@ void idPVS::DrawCurrentPVS( const pvsHandle_t handle, const idVec3& source ) con
 	if( handle.i < 0 || handle.i >= MAX_CURRENT_PVS ||
 			handle.h != currentPVS[handle.i].handle.h )
 	{
-		gameLocal.Error( "idPVS::DrawCurrentPVS: invalid handle" );
+		gameLocal->Error( "idPVS::DrawCurrentPVS: invalid handle" );
 		return;
 	}
 	

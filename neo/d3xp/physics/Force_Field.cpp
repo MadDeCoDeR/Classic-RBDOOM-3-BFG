@@ -172,7 +172,7 @@ void idForce_Field::Evaluate( int time )
 	assert( clipModel );
 	
 	bounds.FromTransformedBounds( clipModel->GetBounds(), clipModel->GetOrigin(), clipModel->GetAxis() );
-	numClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
+	numClipModels = gameLocal->GetClip()->ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
 	
 	for( i = 0; i < numClipModels; i++ )
 	{
@@ -207,7 +207,7 @@ void idForce_Field::Evaluate( int time )
 			}
 		}
 		
-		if( !gameLocal.GetClip()->ContentsModel( cm->GetOrigin(), cm, cm->GetAxis(), -1,
+		if( !gameLocal->GetClip()->ContentsModel( cm->GetOrigin(), cm, cm->GetAxis(), -1,
 										   clipModel->Handle(), clipModel->GetOrigin(), clipModel->GetAxis() ) )
 		{
 			continue;
@@ -234,16 +234,16 @@ void idForce_Field::Evaluate( int time )
 			}
 			default:
 			{
-				gameLocal.Error( "idForce_Field: invalid type" );
+				gameLocal->Error( "idForce_Field: invalid type" );
 				break;
 			}
 		}
 		
 		if( randomTorque != 0.0f )
 		{
-			torque[0] = gameLocal.random.CRandomFloat();
-			torque[1] = gameLocal.random.CRandomFloat();
-			torque[2] = gameLocal.random.CRandomFloat();
+			torque[0] = gameLocal->random.CRandomFloat();
+			torque[1] = gameLocal->random.CRandomFloat();
+			torque[2] = gameLocal->random.CRandomFloat();
 			if( torque.Normalize() == 0.0f )
 			{
 				torque[2] = 1.0f;
@@ -256,11 +256,11 @@ void idForce_Field::Evaluate( int time )
 			{
 				if( randomTorque != 0.0f )
 				{
-					entity->AddForce( gameLocal.world, cm->GetId(), cm->GetOrigin() + torque.Cross( dir ) * randomTorque, dir * magnitude );
+					entity->AddForce( gameLocal->world, cm->GetId(), cm->GetOrigin() + torque.Cross( dir ) * randomTorque, dir * magnitude );
 				}
 				else
 				{
-					entity->AddForce( gameLocal.world, cm->GetId(), cm->GetOrigin(), force * magnitude );
+					entity->AddForce( gameLocal->world, cm->GetId(), cm->GetOrigin(), force * magnitude );
 				}
 				break;
 			}
@@ -278,17 +278,17 @@ void idForce_Field::Evaluate( int time )
 			{
 				if( randomTorque != 0.0f )
 				{
-					entity->ApplyImpulse( gameLocal.world, cm->GetId(), cm->GetOrigin() + torque.Cross( dir ) * randomTorque, dir * magnitude );
+					entity->ApplyImpulse( gameLocal->world, cm->GetId(), cm->GetOrigin() + torque.Cross( dir ) * randomTorque, dir * magnitude );
 				}
 				else
 				{
-					entity->ApplyImpulse( gameLocal.world, cm->GetId(), cm->GetOrigin(), force * magnitude );
+					entity->ApplyImpulse( gameLocal->world, cm->GetId(), cm->GetOrigin(), force * magnitude );
 				}
 				break;
 			}
 			default:
 			{
-				gameLocal.Error( "idForce_Field: invalid apply type" );
+				gameLocal->Error( "idForce_Field: invalid apply type" );
 				break;
 			}
 		}

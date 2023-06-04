@@ -130,7 +130,7 @@ bool idPlayerStart::ClientReceiveEvent( int event, int time, const idBitMsg& msg
 		case EVENT_TELEPORTPLAYER:
 		{
 			entityNumber_ = msg.ReadBits( GENTITYNUM_BITS );
-			idPlayer* player = static_cast<idPlayer*>( gameLocal.entities[entityNumber_] );
+			idPlayer* player = static_cast<idPlayer*>( gameLocal->entities[entityNumber_] );
 			if( player != NULL && player->IsType( idPlayer::Type ) )
 			{
 				Event_TeleportPlayer( player );
@@ -199,7 +199,7 @@ void idPlayerStart::TeleportPlayer( idPlayer* player )
 	float pushVel = spawnArgs.GetFloat( "push", "300" );
 	float f = spawnArgs.GetFloat( "visualEffect", "0" );
 	const char* viewName = spawnArgs.GetString( "visualView", "" );
-	idEntity* ent = viewName ? gameLocal.FindEntity( viewName ) : NULL;
+	idEntity* ent = viewName ? gameLocal->FindEntity( viewName ) : NULL;
 	
 	SetTimeState ts( player->timeGroup );
 	
@@ -244,7 +244,7 @@ void idPlayerStart::Event_TeleportPlayer( idEntity* activator )
 	}
 	else
 	{
-		player = gameLocal.GetLocalPlayer();
+		player = gameLocal->GetLocalPlayer();
 	}
 	if( player )
 	{
@@ -402,7 +402,7 @@ void idPathCorner::DrawDebugInfo()
 	idEntity* ent;
 	idBounds bnds( idVec3( -4.0, -4.0f, -8.0f ), idVec3( 4.0, 4.0f, 64.0f ) );
 	
-	for( ent = gameLocal.spawnedEntities.Next(); ent != NULL; ent = ent->spawnNode.Next() )
+	for( ent = gameLocal->spawnedEntities.Next(); ent != NULL; ent = ent->spawnNode.Next() )
 	{
 		if( !ent->IsType( idPathCorner::Type ) )
 		{
@@ -446,7 +446,7 @@ idPathCorner* idPathCorner::RandomPath( const idEntity* source, const idEntity* 
 		return NULL;
 	}
 	
-	which = gameLocal.random.RandomInt( num );
+	which = gameLocal->random.RandomInt( num );
 	return path[ which ];
 }
 
@@ -528,7 +528,7 @@ void idDamagable::Spawn()
 	spawnArgs.GetString( "broken", "", broken );
 	if( broken.Length() && !renderModelManager->CheckModel( broken ) )
 	{
-		gameLocal.Error( "idDamagable '%s' at (%s): cannot load broken model '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), broken.c_str() );
+		gameLocal->Error( "idDamagable '%s' at (%s): cannot load broken model '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), broken.c_str() );
 	}
 	
 	fl.takedamage = true;
@@ -547,13 +547,13 @@ void idDamagable::BecomeBroken( idEntity* activator )
 	int		cycle;
 	float	wait;
 	
-	if( gameLocal.time < nextTriggerTime )
+	if( gameLocal->time < nextTriggerTime )
 	{
 		return;
 	}
 	
 	spawnArgs.GetFloat( "wait", "0.1", wait );
-	nextTriggerTime = gameLocal.time + SEC2MS( wait );
+	nextTriggerTime = gameLocal->time + SEC2MS( wait );
 	if( count > 0 )
 	{
 		count--;
@@ -576,7 +576,7 @@ void idDamagable::BecomeBroken( idEntity* activator )
 	}
 	
 	// offset the start time of the shader to sync it to the gameLocal time
-	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.time );
+	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal->time );
 	
 	spawnArgs.GetInt( "numstates", "1", numStates );
 	spawnArgs.GetInt( "cycle", "0", cycle );
@@ -597,17 +597,17 @@ void idDamagable::BecomeBroken( idEntity* activator )
 	}
 	else
 	{
-		renderEntity.shaderParms[ SHADERPARM_MODE ] = gameLocal.random.RandomInt( numStates ) + 1;
+		renderEntity.shaderParms[ SHADERPARM_MODE ] = gameLocal->random.RandomInt( numStates ) + 1;
 	}
 	
-	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.time );
+	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal->time );
 	
 	ActivateTargets( activator );
 	
 	if( spawnArgs.GetBool( "hideWhenBroken" ) )
 	{
 		Hide();
-		PostEventMS( &EV_RestoreDamagable, nextTriggerTime - gameLocal.time );
+		PostEventMS( &EV_RestoreDamagable, nextTriggerTime - gameLocal->time );
 		BecomeActive( TH_THINK );
 	}
 }
@@ -619,7 +619,7 @@ idDamagable::Killed
 */
 void idDamagable::Killed( idEntity* inflictor, idEntity* attacker, int damage, const idVec3& dir, int location )
 {
-	if( gameLocal.time < nextTriggerTime )
+	if( gameLocal->time < nextTriggerTime )
 	{
 		health += damage;
 		return;
@@ -705,7 +705,7 @@ void idExplodable::Event_Explode( idEntity* activator )
 	
 	if( spawnArgs.GetString( "def_damage", "damage_explosion", &temp ) )
 	{
-		gameLocal.RadiusDamage( GetPhysics()->GetOrigin(), activator, activator, this, this, temp );
+		gameLocal->RadiusDamage( GetPhysics()->GetOrigin(), activator, activator, this, this, temp );
 	}
 	
 	StartSound( "snd_explode", SND_CHANNEL_ANY, 0, false, NULL );
@@ -715,7 +715,7 @@ void idExplodable::Event_Explode( idEntity* activator )
 	renderEntity.shaderParms[SHADERPARM_GREEN]		= 1.0f;
 	renderEntity.shaderParms[SHADERPARM_BLUE]		= 1.0f;
 	renderEntity.shaderParms[SHADERPARM_ALPHA]		= 1.0f;
-	renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC( gameLocal.time );
+	renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC( gameLocal->time );
 	renderEntity.shaderParms[SHADERPARM_DIVERSITY]	= 0.0f;
 	Show();
 	
@@ -753,7 +753,7 @@ void idSpring::Think()
 	if( thinkFlags & TH_THINK )
 	{
 		// evaluate force
-		spring.Evaluate( gameLocal.time );
+		spring.Evaluate( gameLocal->time );
 		
 		start = p1;
 		if( ent1->GetPhysics() )
@@ -791,30 +791,30 @@ void idSpring::Event_LinkSpring()
 	
 	if( name1.Length() )
 	{
-		ent1 = gameLocal.FindEntity( name1 );
+		ent1 = gameLocal->FindEntity( name1 );
 		if( ent1 == NULL )
 		{
-			gameLocal.Error( "idSpring '%s' at (%s): cannot find first entity '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), name1.c_str() );
+			gameLocal->Error( "idSpring '%s' at (%s): cannot find first entity '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), name1.c_str() );
 			return;
 		}
 	}
 	else
 	{
-		ent1 = gameLocal.entities[ENTITYNUM_WORLD];
+		ent1 = gameLocal->entities[ENTITYNUM_WORLD];
 	}
 	
 	if( name2.Length() )
 	{
-		ent2 = gameLocal.FindEntity( name2 );
+		ent2 = gameLocal->FindEntity( name2 );
 		if( ent2 == NULL )
 		{
-			gameLocal.Error( "idSpring '%s' at (%s): cannot find second entity '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), name2.c_str() );
+			gameLocal->Error( "idSpring '%s' at (%s): cannot find second entity '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), name2.c_str() );
 			return;
 		}
 	}
 	else
 	{
-		ent2 = gameLocal.entities[ENTITYNUM_WORLD];
+		ent2 = gameLocal->entities[ENTITYNUM_WORLD];
 	}
 	
 	spring.SetPosition( ent1->GetPhysics(), id1, p1, ent2->GetPhysics(), id2, p2 );
@@ -889,7 +889,7 @@ void idForceField::ClientThink( const int curTime, const float fraction, const b
 {
 
 	// evaluate force
-	forceField.Evaluate( gameLocal.time );
+	forceField.Evaluate( gameLocal->time );
 	
 	Present();
 }
@@ -904,7 +904,7 @@ void idForceField::Think()
 	if( thinkFlags & TH_THINK )
 	{
 		// evaluate force
-		forceField.Evaluate( gameLocal.time );
+		forceField.Evaluate( gameLocal->time );
 	}
 	Present();
 }
@@ -1135,7 +1135,7 @@ void idAnimated::Spawn()
 	soundJoint = animator.GetJointHandle( joint );
 	if( soundJoint == INVALID_JOINT )
 	{
-		gameLocal.Warning( "idAnimated '%s' at (%s): cannot find joint '%s' for sound playback", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), joint );
+		gameLocal->Warning( "idAnimated '%s' at (%s): cannot find joint '%s' for sound playback", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), joint );
 	}
 	
 	LoadAF();
@@ -1167,7 +1167,7 @@ void idAnimated::Spawn()
 		anim = animator.GetAnim( animname );
 		if( !anim )
 		{
-			gameLocal.Error( "idAnimated '%s' at (%s): cannot find anim '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), animname.c_str() );
+			gameLocal->Error( "idAnimated '%s' at (%s): cannot find anim '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), animname.c_str() );
 		}
 	}
 	
@@ -1185,14 +1185,14 @@ void idAnimated::Spawn()
 		anim2 = animator.GetAnim( animname );
 		if( !anim2 )
 		{
-			gameLocal.Error( "idAnimated '%s' at (%s): cannot find anim '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), animname.c_str() );
+			gameLocal->Error( "idAnimated '%s' at (%s): cannot find anim '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), animname.c_str() );
 		}
-		animator.CycleAnim( ANIMCHANNEL_ALL, anim2, gameLocal.time, 0 );
+		animator.CycleAnim( ANIMCHANNEL_ALL, anim2, gameLocal->time, 0 );
 	}
 	else if( anim )
 	{
 		// init joints to the first frame of the animation
-		animator.SetFrame( ANIMCHANNEL_ALL, anim, 1, gameLocal.time, 0 );
+		animator.SetFrame( ANIMCHANNEL_ALL, anim, 1, gameLocal->time, 0 );
 		
 		if( !num_anims )
 		{
@@ -1232,7 +1232,7 @@ idAnimated::GetPhysicsToSoundTransform
 */
 bool idAnimated::GetPhysicsToSoundTransform( idVec3& origin, idMat3& axis )
 {
-	animator.GetJointTransform( soundJoint, gameLocal.time, origin, axis );
+	animator.GetJointTransform( soundJoint, gameLocal->time, origin, axis );
 	axis = renderEntity.axis;
 	return true;
 }
@@ -1297,20 +1297,20 @@ void idAnimated::PlayNextAnim()
 	if( !animname )
 	{
 		anim = 0;
-		animator.Clear( ANIMCHANNEL_ALL, gameLocal.time, FRAME2MS( blendFrames ) );
+		animator.Clear( ANIMCHANNEL_ALL, gameLocal->time, FRAME2MS( blendFrames ) );
 		return;
 	}
 	
 	anim = animator.GetAnim( animname );
 	if( !anim )
 	{
-		gameLocal.Warning( "missing anim '%s' on %s", animname, name.c_str() );
+		gameLocal->Warning( "missing anim '%s' on %s", animname, name.c_str() );
 		return;
 	}
 	
 	if( g_debugCinematic.GetBool() )
 	{
-		gameLocal.Printf( "%d: '%s' start anim '%s'\n", gameLocal.framenum, GetName(), animname );
+		gameLocal->Printf( "%d: '%s' start anim '%s'\n", gameLocal->framenum, GetName(), animname );
 	}
 	
 	spawnArgs.GetInt( "cycle", "1", cycle );
@@ -1319,7 +1319,7 @@ void idAnimated::PlayNextAnim()
 		cycle = -1;
 	}
 	
-	animator.CycleAnim( ANIMCHANNEL_ALL, anim, gameLocal.time, FRAME2MS( blendFrames ) );
+	animator.CycleAnim( ANIMCHANNEL_ALL, anim, gameLocal->time, FRAME2MS( blendFrames ) );
 	animator.CurrentAnim( ANIMCHANNEL_ALL )->SetCycleCount( cycle );
 	
 	len = animator.CurrentAnim( ANIMCHANNEL_ALL )->PlayLength();
@@ -1329,7 +1329,7 @@ void idAnimated::PlayNextAnim()
 	}
 	
 	// offset the start time of the shader to sync it to the game time
-	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.time );
+	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal->time );
 	
 	animator.ForceUpdate();
 	UpdateAnimation();
@@ -1357,7 +1357,7 @@ void idAnimated::Event_AnimDone( int animindex )
 	if( g_debugCinematic.GetBool() )
 	{
 		const idAnim* animPtr = animator.GetAnim( anim );
-		gameLocal.Printf( "%d: '%s' end anim '%s'\n", gameLocal.framenum, GetName(), animPtr ? animPtr->Name() : "" );
+		gameLocal->Printf( "%d: '%s' end anim '%s'\n", gameLocal->framenum, GetName(), animPtr ? animPtr->Name() : "" );
 	}
 	
 	if( ( animindex >= num_anims ) && spawnArgs.GetBool( "remove" ) )
@@ -1401,7 +1401,7 @@ void idAnimated::Event_Activate( idEntity* _activator )
 	achievement = spawnArgs.GetInt( "achievement", "-1" );
 	if( achievement != -1 )
 	{
-		idPlayer* player = gameLocal.GetLocalPlayer();
+		idPlayer* player = gameLocal->GetLocalPlayer();
 		if( player != NULL )
 		{
 			bool shouldCountAction = true;
@@ -1446,10 +1446,10 @@ void idAnimated::Event_Start()
 		if( g_debugCinematic.GetBool() )
 		{
 			const idAnim* animPtr = animator.GetAnim( anim );
-			gameLocal.Printf( "%d: '%s' start anim '%s'\n", gameLocal.framenum, GetName(), animPtr ? animPtr->Name() : "" );
+			gameLocal->Printf( "%d: '%s' start anim '%s'\n", gameLocal->framenum, GetName(), animPtr ? animPtr->Name() : "" );
 		}
 		spawnArgs.GetInt( "cycle", "1", cycle );
-		animator.CycleAnim( ANIMCHANNEL_ALL, anim, gameLocal.time, FRAME2MS( blendFrames ) );
+		animator.CycleAnim( ANIMCHANNEL_ALL, anim, gameLocal->time, FRAME2MS( blendFrames ) );
 		animator.CurrentAnim( ANIMCHANNEL_ALL )->SetCycleCount( cycle );
 		
 		len = animator.CurrentAnim( ANIMCHANNEL_ALL )->PlayLength();
@@ -1460,7 +1460,7 @@ void idAnimated::Event_Start()
 	}
 	
 	// offset the start time of the shader to sync it to the game time
-	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.time );
+	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal->time );
 	
 	animator.ForceUpdate();
 	UpdateAnimation();
@@ -1495,28 +1495,28 @@ void idAnimated::Event_LaunchMissilesUpdate( int launchjoint, int targetjoint, i
 	const char* 	projectilename;
 	
 	projectilename = spawnArgs.GetString( "projectilename" );
-	projectileDef = gameLocal.FindEntityDefDict( projectilename, false );
+	projectileDef = gameLocal->FindEntityDefDict( projectilename, false );
 	if( !projectileDef )
 	{
-		gameLocal.Warning( "idAnimated '%s' at (%s): 'launchMissiles' called with unknown projectile '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), projectilename );
+		gameLocal->Warning( "idAnimated '%s' at (%s): 'launchMissiles' called with unknown projectile '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), projectilename );
 		return;
 	}
 	
 	StartSound( "snd_missile", SND_CHANNEL_WEAPON, 0, false, NULL );
 	
-	animator.GetJointTransform( ( jointHandle_t )launchjoint, gameLocal.time, launchPos, axis );
+	animator.GetJointTransform( ( jointHandle_t )launchjoint, gameLocal->time, launchPos, axis );
 	launchPos = renderEntity.origin + launchPos * renderEntity.axis;
 	
-	animator.GetJointTransform( ( jointHandle_t )targetjoint, gameLocal.time, targetPos, axis );
+	animator.GetJointTransform( ( jointHandle_t )targetjoint, gameLocal->time, targetPos, axis );
 	targetPos = renderEntity.origin + targetPos * renderEntity.axis;
 	
 	dir = targetPos - launchPos;
 	dir.Normalize();
 	
-	gameLocal.SpawnEntityDef( *projectileDef, &ent, false );
+	gameLocal->SpawnEntityDef( *projectileDef, &ent, false );
 	if( ent == NULL || !ent->IsType( idProjectile::Type ) )
 	{
-		gameLocal.Error( "idAnimated '%s' at (%s): in 'launchMissiles' call '%s' is not an idProjectile", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), projectilename );
+		gameLocal->Error( "idAnimated '%s' at (%s): in 'launchMissiles' call '%s' is not an idProjectile", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), projectilename );
 		return;
 	}
 	projectile = ( idProjectile* )ent;
@@ -1540,24 +1540,24 @@ void idAnimated::Event_LaunchMissiles( const char* projectilename, const char* s
 	jointHandle_t	launch;
 	jointHandle_t	target;
 	
-	projectileDef = gameLocal.FindEntityDefDict( projectilename, false );
+	projectileDef = gameLocal->FindEntityDefDict( projectilename, false );
 	if( !projectileDef )
 	{
-		gameLocal.Warning( "idAnimated '%s' at (%s): unknown projectile '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), projectilename );
+		gameLocal->Warning( "idAnimated '%s' at (%s): unknown projectile '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), projectilename );
 		return;
 	}
 	
 	launch = animator.GetJointHandle( launchjoint );
 	if( launch == INVALID_JOINT )
 	{
-		gameLocal.Warning( "idAnimated '%s' at (%s): unknown launch joint '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), launchjoint );
-		gameLocal.Error( "Unknown joint '%s'", launchjoint );
+		gameLocal->Warning( "idAnimated '%s' at (%s): unknown launch joint '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), launchjoint );
+		gameLocal->Error( "Unknown joint '%s'", launchjoint );
 	}
 	
 	target = animator.GetJointHandle( targetjoint );
 	if( target == INVALID_JOINT )
 	{
-		gameLocal.Warning( "idAnimated '%s' at (%s): unknown target joint '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), targetjoint );
+		gameLocal->Warning( "idAnimated '%s' at (%s): unknown target joint '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), targetjoint );
 	}
 	
 	spawnArgs.Set( "projectilename", projectilename );
@@ -1580,7 +1580,7 @@ void idAnimated::Event_SetAnimation( const char* animName )
 	anim = animator.GetAnim( animName );
 	if( !anim )
 	{
-		gameLocal.Error( "idAnimated '%s' at (%s): cannot find anim '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), animName );
+		gameLocal->Error( "idAnimated '%s' at (%s): cannot find anim '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), animName );
 	}
 	
 }
@@ -1675,7 +1675,7 @@ void idStaticEntity::Spawn()
 	bool hidden;
 	
 	// an inline static model will not do anything at all
-	if( spawnArgs.GetBool( "inline" ) || gameLocal.world->spawnArgs.GetBool( "inlineAllStatics" ) )
+	if( spawnArgs.GetBool( "inline" ) || gameLocal->world->spawnArgs.GetBool( "inlineAllStatics" ) )
 	{
 		Hide();
 		return;
@@ -1693,14 +1693,14 @@ void idStaticEntity::Spawn()
 		GetPhysics()->SetContents( 0 );
 	}
 	
-	spawnTime = gameLocal.time;
+	spawnTime = gameLocal->time;
 	active = false;
 	
 	idStr model = spawnArgs.GetString( "model" );
 	if( model.Find( ".prt" ) >= 0 )
 	{
 		// we want the parametric particles out of sync with each other
-		renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = gameLocal.random.RandomInt( 32767 );
+		renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = gameLocal->random.RandomInt( 32767 );
 	}
 	
 	fadeFrom.Set( 1, 1, 1, 1 );
@@ -1736,19 +1736,19 @@ void idStaticEntity::Think()
 	{
 		if( runGui && renderEntity.gui[0] )
 		{
-			idPlayer* player = gameLocal.GetLocalPlayer();
+			idPlayer* player = gameLocal->GetLocalPlayer();
 			if( player )
 			{
 				if( !player->objectiveSystemOpen )
 				{
-					renderEntity.gui[0]->StateChanged( gameLocal.time, true );
+					renderEntity.gui[0]->StateChanged( gameLocal->time, true );
 					if( renderEntity.gui[1] )
 					{
-						renderEntity.gui[1]->StateChanged( gameLocal.time, true );
+						renderEntity.gui[1]->StateChanged( gameLocal->time, true );
 					}
 					if( renderEntity.gui[2] )
 					{
-						renderEntity.gui[2]->StateChanged( gameLocal.time, true );
+						renderEntity.gui[2]->StateChanged( gameLocal->time, true );
 					}
 				}
 			}
@@ -1756,9 +1756,9 @@ void idStaticEntity::Think()
 		if( fadeEnd > 0 )
 		{
 			idVec4 color;
-			if( gameLocal.time < fadeEnd )
+			if( gameLocal->time < fadeEnd )
 			{
-				color.Lerp( fadeFrom, fadeTo, ( float )( gameLocal.time - fadeStart ) / ( float )( fadeEnd - fadeStart ) );
+				color.Lerp( fadeFrom, fadeTo, ( float )( gameLocal->time - fadeStart ) / ( float )( fadeEnd - fadeStart ) );
 			}
 			else
 			{
@@ -1780,8 +1780,8 @@ void idStaticEntity::Fade( const idVec4& to, float fadeTime )
 {
 	GetColor( fadeFrom );
 	fadeTo = to;
-	fadeStart = gameLocal.time;
-	fadeEnd = gameLocal.time + SEC2MS( fadeTime );
+	fadeStart = gameLocal->time;
+	fadeEnd = gameLocal->time + SEC2MS( fadeTime );
 	BecomeActive( TH_THINK );
 }
 
@@ -1819,7 +1819,7 @@ void idStaticEntity::Event_Activate( idEntity* activator )
 {
 	idStr activateGui;
 	
-	spawnTime = gameLocal.time;
+	spawnTime = gameLocal->time;
 	active = !active;
 	
 	const idKeyValue* kv = spawnArgs.FindKey( "hide" );
@@ -1962,12 +1962,12 @@ void idFuncEmitter::Event_Activate( idEntity* activator )
 	if( hidden || spawnArgs.GetBool( "cycleTrigger" ) )
 	{
 		renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] = 0;
-		renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC( gameLocal.time );
+		renderEntity.shaderParms[SHADERPARM_TIMEOFFSET] = -MS2SEC( gameLocal->time );
 		hidden = false;
 	}
 	else
 	{
-		renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] = MS2SEC( gameLocal.time );
+		renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] = MS2SEC( gameLocal->time );
 		hidden = true;
 	}
 	UpdateVisuals();
@@ -2046,11 +2046,11 @@ void idFuncShootProjectile::Think()
 	if( thinkFlags & TH_THINK )
 	{
 		// time to spawn a new projectile?
-		if( mRespawnTime > 0 && mRespawnTime <= gameLocal.GetTime() )
+		if( mRespawnTime > 0 && mRespawnTime <= gameLocal->GetTime() )
 		{
-			const idDict* dict = gameLocal.FindEntityDefDict( mEntityDefName );
+			const idDict* dict = gameLocal->FindEntityDefDict( mEntityDefName );
 			idEntity* ent = NULL;
-			gameLocal.SpawnEntityDef( *dict, &ent );
+			gameLocal->SpawnEntityDef( *dict, &ent );
 			if( ent != NULL )
 			{
 				idProjectile* proj = static_cast<idProjectile*>( ent );
@@ -2075,7 +2075,7 @@ void idFuncShootProjectile::Think()
 			}
 			else
 			{
-				mRespawnTime = gameLocal.GetTime() + mRespawnDelay;		// moving, respawn after delay
+				mRespawnTime = gameLocal->GetTime() + mRespawnDelay;		// moving, respawn after delay
 			}
 		}
 	}
@@ -2120,7 +2120,7 @@ void idFuncShootProjectile::Event_Activate( idEntity* activator )
 	{
 		if( mShootSpeed == 0.0f && mRespawnTime == 0 )
 		{
-			mRespawnTime = gameLocal.GetTime();
+			mRespawnTime = gameLocal->GetTime();
 			return;
 		}
 	}
@@ -2149,7 +2149,7 @@ void idFuncShootProjectile::Event_Activate( idEntity* activator )
 	{
 		// currently inactive, activate
 		BecomeActive( TH_THINK );
-		mRespawnTime = gameLocal.GetTime();
+		mRespawnTime = gameLocal->GetTime();
 	}
 }
 
@@ -2225,13 +2225,13 @@ void idFuncSplat::Event_Splat()
 	int count = spawnArgs.GetInt( "splatCount", "1" );
 	for( int i = 0; i < count; i++ )
 	{
-		splat = spawnArgs.RandomPrefix( "mtr_splat", gameLocal.random );
+		splat = spawnArgs.RandomPrefix( "mtr_splat", gameLocal->random );
 		if( splat != NULL && *splat != '\0' )
 		{
 			float size = spawnArgs.GetFloat( "splatSize", "128" );
 			float dist = spawnArgs.GetFloat( "splatDistance", "128" );
 			float angle = spawnArgs.GetFloat( "splatAngle", "0" );
-			gameLocal.ProjectDecal( GetPhysics()->GetOrigin(), GetPhysics()->GetAxis()[2], dist, true, size, splat, angle );
+			gameLocal->ProjectDecal( GetPhysics()->GetOrigin(), GetPhysics()->GetAxis()[2], dist, true, size, splat, angle );
 		}
 	}
 	StartSound( "snd_splat", SND_CHANNEL_ANY, 0, false, NULL );
@@ -2320,7 +2320,7 @@ void idFuncSmoke::Spawn()
 	}
 	else if( smoke )
 	{
-		smokeTime = gameLocal.time;
+		smokeTime = gameLocal->time;
 		BecomeActive( TH_UPDATEPARTICLES );
 		restart = true;
 	}
@@ -2343,7 +2343,7 @@ void idFuncSmoke::Event_Activate( idEntity* activator )
 	{
 		BecomeActive( TH_UPDATEPARTICLES );
 		restart = true;
-		smokeTime = gameLocal.time;
+		smokeTime = gameLocal->time;
 	}
 }
 
@@ -2363,11 +2363,11 @@ void idFuncSmoke::Think()
 	
 	if( ( thinkFlags & TH_UPDATEPARTICLES ) && !IsHidden() )
 	{
-		if( !gameLocal.smokeParticles->EmitSmoke( smoke, smokeTime, gameLocal.random.CRandomFloat(), GetPhysics()->GetOrigin(), GetPhysics()->GetAxis(), timeGroup /*_D3XP*/ ) )
+		if( !gameLocal->smokeParticles->EmitSmoke( smoke, smokeTime, gameLocal->random.CRandomFloat(), GetPhysics()->GetOrigin(), GetPhysics()->GetAxis(), timeGroup /*_D3XP*/ ) )
 		{
 			if( restart )
 			{
-				smokeTime = gameLocal.time;
+				smokeTime = gameLocal->time;
 			}
 			else
 			{
@@ -2439,7 +2439,7 @@ void idTextEntity::Think()
 {
 	if( thinkFlags & TH_THINK )
 	{
-		gameRenderWorld->DrawText( text, GetPhysics()->GetOrigin(), 0.25, colorWhite, playerOriented ? gameLocal.GetLocalPlayer()->viewAngles.ToMat3() : GetPhysics()->GetAxis().Transpose(), 1 );
+		gameRenderWorld->DrawText( text, GetPhysics()->GetOrigin(), 0.25, colorWhite, playerOriented ? gameLocal->GetLocalPlayer()->viewAngles.ToMat3() : GetPhysics()->GetAxis().Transpose(), 1 );
 		for( int i = 0; i < targets.Num(); i++ )
 		{
 			if( targets[i].GetEntity() )
@@ -2503,7 +2503,7 @@ void idVacuumSeparatorEntity::Restore( idRestoreGame* savefile )
 	savefile->ReadInt( ( int& )portal );
 	savefile->ReadInt( state );
 	
-	gameLocal.SetPortalState( portal, state );
+	gameLocal->SetPortalState( portal, state );
 }
 
 /*
@@ -2519,10 +2519,10 @@ void idVacuumSeparatorEntity::Spawn()
 	portal = gameRenderWorld->FindPortal( b );
 	if( !portal )
 	{
-		gameLocal.Warning( "VacuumSeparator '%s' didn't contact a portal", spawnArgs.GetString( "name" ) );
+		gameLocal->Warning( "VacuumSeparator '%s' didn't contact a portal", spawnArgs.GetString( "name" ) );
 		return;
 	}
-	gameLocal.SetPortalState( portal, PS_BLOCK_AIR | PS_BLOCK_LOCATION );
+	gameLocal->SetPortalState( portal, PS_BLOCK_AIR | PS_BLOCK_LOCATION );
 }
 
 /*
@@ -2536,7 +2536,7 @@ void idVacuumSeparatorEntity::Event_Activate( idEntity* activator )
 	{
 		return;
 	}
-	gameLocal.SetPortalState( portal, PS_BLOCK_NONE );
+	gameLocal->SetPortalState( portal, PS_BLOCK_NONE );
 }
 
 /*
@@ -2587,7 +2587,7 @@ void idHazardSeparatorEntity::Restore(idRestoreGame* savefile)
 	savefile->ReadInt((int&)portal);
 	savefile->ReadInt(state);
 
-	gameLocal.SetPortalState(portal, state);
+	gameLocal->SetPortalState(portal, state);
 }
 
 /*
@@ -2603,10 +2603,10 @@ void idHazardSeparatorEntity::Spawn()
 	portal = gameRenderWorld->FindPortal(b);
 	if (!portal)
 	{
-		gameLocal.Warning("VacuumSeparator '%s' didn't contact a portal", spawnArgs.GetString("name"));
+		gameLocal->Warning("VacuumSeparator '%s' didn't contact a portal", spawnArgs.GetString("name"));
 		return;
 	}
-	gameLocal.SetPortalState(portal, PS_BLOCK_HAZARD | PS_BLOCK_LOCATION);
+	gameLocal->SetPortalState(portal, PS_BLOCK_HAZARD | PS_BLOCK_LOCATION);
 }
 
 /*
@@ -2620,7 +2620,7 @@ void idHazardSeparatorEntity::Event_Activate(idEntity* activator)
 	{
 		return;
 	}
-	gameLocal.SetPortalState(portal, PS_BLOCK_NONE);
+	gameLocal->SetPortalState(portal, PS_BLOCK_NONE);
 }
 
 
@@ -2649,9 +2649,9 @@ void idLocationSeparatorEntity::Spawn()
 	qhandle_t portal = gameRenderWorld->FindPortal( b );
 	if( !portal )
 	{
-		gameLocal.Warning( "LocationSeparator '%s' didn't contact a portal", spawnArgs.GetString( "name" ) );
+		gameLocal->Warning( "LocationSeparator '%s' didn't contact a portal", spawnArgs.GetString( "name" ) );
 	}
-	gameLocal.SetPortalState( portal, PS_BLOCK_LOCATION );
+	gameLocal->SetPortalState( portal, PS_BLOCK_LOCATION );
 }
 
 
@@ -2675,15 +2675,15 @@ idVacuumEntity::Spawn
 */
 void idVacuumEntity::Spawn()
 {
-	if( gameLocal.vacuumAreaNum != -1 )
+	if( gameLocal->vacuumAreaNum != -1 )
 	{
-		gameLocal.Warning( "idVacuumEntity::Spawn: multiple idVacuumEntity in level" );
+		gameLocal->Warning( "idVacuumEntity::Spawn: multiple idVacuumEntity in level" );
 		return;
 	}
 	
 	idVec3 org = spawnArgs.GetVector( "origin" );
 	
-	gameLocal.vacuumAreaNum = gameRenderWorld->PointInArea( org );
+	gameLocal->vacuumAreaNum = gameRenderWorld->PointInArea( org );
 }
 
 /*
@@ -2709,7 +2709,7 @@ void idHazardEntity::Spawn()
 {
 	
 	idVec3 org = spawnArgs.GetVector("origin");
-	gameLocal.hazardAreaNums[index] = gameRenderWorld->PointInArea(org);
+	gameLocal->hazardAreaNums[index] = gameRenderWorld->PointInArea(org);
 	index++;
 }
 
@@ -2919,7 +2919,7 @@ void idBeam::Event_MatchTarget()
 	
 	if( targetBeam == NULL )
 	{
-		gameLocal.Error( "Could not find valid beam target for '%s'", name.c_str() );
+		gameLocal->Error( "Could not find valid beam target for '%s'", name.c_str() );
 		return;
 	}
 	
@@ -3026,7 +3026,7 @@ void idLiquid::Spawn()
 	/*
 		model = dynamic_cast<idRenderModelLiquid *>( renderEntity.hModel );
 		if ( !model ) {
-			gameLocal.Error( "Entity '%s' must have liquid model", name.c_str() );
+			gameLocal->Error( "Entity '%s' must have liquid model", name.c_str() );
 		}
 		model->Reset();
 		GetPhysics()->SetContents( CONTENTS_TRIGGER );
@@ -3132,7 +3132,7 @@ void idShaking::BeginShaking()
 	int			period;
 	
 	active = true;
-	phase = gameLocal.random.RandomInt( 1000 );
+	phase = gameLocal->random.RandomInt( 1000 );
 	shake = spawnArgs.GetAngles( "shake", "0.5 0.5 0.5" );
 	period = spawnArgs.GetFloat( "period", "0.05" ) * 1000;
 	physicsObj.SetAngularExtrapolation( extrapolation_t( EXTRAPOLATION_DECELSINE | EXTRAPOLATION_NOSTOP ), phase, period * 0.25f, GetPhysics()->GetAxis().ToAngles(), shake, ang_zero );
@@ -3218,7 +3218,7 @@ void idEarthQuake::Restore( idRestoreGame* savefile )
 	savefile->ReadBool( disabled );
 	savefile->ReadFloat( shakeTime );
 	
-	if( shakeStopTime > gameLocal.time )
+	if( shakeStopTime > gameLocal->time )
 	{
 		BecomeActive( TH_THINK );
 	}
@@ -3255,7 +3255,7 @@ idEarthQuake::Event_Activate
 void idEarthQuake::Event_Activate( idEntity* activator )
 {
 
-	if( nextTriggerTime > gameLocal.time )
+	if( nextTriggerTime > gameLocal->time )
 	{
 		return;
 	}
@@ -3265,7 +3265,7 @@ void idEarthQuake::Event_Activate( idEntity* activator )
 		return;
 	}
 	
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = gameLocal->GetLocalPlayer();
 	if( player == NULL )
 	{
 		return;
@@ -3283,7 +3283,7 @@ void idEarthQuake::Event_Activate( idEntity* activator )
 		}
 		else
 		{
-			PostEventSec( &EV_Activate, wait + random * gameLocal.random.CRandomFloat(), this );
+			PostEventSec( &EV_Activate, wait + random * gameLocal->random.CRandomFloat(), this );
 		}
 	}
 	
@@ -3301,7 +3301,7 @@ void idEarthQuake::Event_Activate( idEntity* activator )
 	
 	if( shakeTime > 0.0f )
 	{
-		shakeStopTime = gameLocal.time + SEC2MS( shakeTime );
+		shakeStopTime = gameLocal->time + SEC2MS( shakeTime );
 		BecomeActive( TH_THINK );
 	}
 	
@@ -3309,11 +3309,11 @@ void idEarthQuake::Event_Activate( idEntity* activator )
 	{
 		if( !triggered )
 		{
-			PostEventSec( &EV_Activate, wait + random * gameLocal.random.CRandomFloat(), this );
+			PostEventSec( &EV_Activate, wait + random * gameLocal->random.CRandomFloat(), this );
 		}
 		else
 		{
-			nextTriggerTime = gameLocal.time + SEC2MS( wait + random * gameLocal.random.CRandomFloat() );
+			nextTriggerTime = gameLocal->time + SEC2MS( wait + random * gameLocal->random.CRandomFloat() );
 		}
 	}
 	else if( shakeTime == 0.0f )
@@ -3332,7 +3332,7 @@ void idEarthQuake::Think()
 {
 	if( thinkFlags & TH_THINK )
 	{
-		if( gameLocal.time > shakeStopTime )
+		if( gameLocal->time > shakeStopTime )
 		{
 			BecomeInactive( TH_THINK );
 			if( wait <= 0.0f )
@@ -3342,7 +3342,7 @@ void idEarthQuake::Think()
 			return;
 		}
 		float shakeVolume = gameSoundWorld->CurrentShakeAmplitude();
-		gameLocal.RadiusPush( GetPhysics()->GetOrigin(), 256, 1500 * shakeVolume, this, this, 1.0f, true );
+		gameLocal->RadiusPush( GetPhysics()->GetOrigin(), 256, 1500 * shakeVolume, this, this, 1.0f, true );
 	}
 	BecomeInactive( TH_UPDATEVISUALS );
 }
@@ -3390,7 +3390,7 @@ void idFuncPortal::Restore( idRestoreGame* savefile )
 {
 	savefile->ReadInt( ( int& )portal );
 	savefile->ReadBool( state );
-	gameLocal.SetPortalState( portal, state ? PS_BLOCK_ALL : PS_BLOCK_NONE );
+	gameLocal->SetPortalState( portal, state ? PS_BLOCK_ALL : PS_BLOCK_NONE );
 }
 
 /*
@@ -3404,7 +3404,7 @@ void idFuncPortal::Spawn()
 	if( portal > 0 )
 	{
 		state = spawnArgs.GetBool( "start_on" );
-		gameLocal.SetPortalState( portal, state ? PS_BLOCK_ALL : PS_BLOCK_NONE );
+		gameLocal->SetPortalState( portal, state ? PS_BLOCK_ALL : PS_BLOCK_NONE );
 	}
 }
 
@@ -3418,7 +3418,7 @@ void idFuncPortal::Event_Activate( idEntity* activator )
 	if( portal > 0 )
 	{
 		state = !state;
-		gameLocal.SetPortalState( portal, state ? PS_BLOCK_ALL : PS_BLOCK_NONE );
+		gameLocal->SetPortalState( portal, state ? PS_BLOCK_ALL : PS_BLOCK_NONE );
 	}
 }
 
@@ -3462,7 +3462,7 @@ idFuncAASPortal::Restore
 void idFuncAASPortal::Restore( idRestoreGame* savefile )
 {
 	savefile->ReadBool( state );
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
+	gameLocal->SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
 }
 
 /*
@@ -3473,7 +3473,7 @@ idFuncAASPortal::Spawn
 void idFuncAASPortal::Spawn()
 {
 	state = spawnArgs.GetBool( "start_on" );
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
+	gameLocal->SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
 }
 
 /*
@@ -3484,7 +3484,7 @@ idFuncAASPortal::Event_Activate
 void idFuncAASPortal::Event_Activate( idEntity* activator )
 {
 	state ^= 1;
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
+	gameLocal->SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
 }
 
 /*
@@ -3527,7 +3527,7 @@ idFuncAASObstacle::Restore
 void idFuncAASObstacle::Restore( idRestoreGame* savefile )
 {
 	savefile->ReadBool( state );
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
+	gameLocal->SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
 }
 
 /*
@@ -3538,7 +3538,7 @@ idFuncAASObstacle::Spawn
 void idFuncAASObstacle::Spawn()
 {
 	state = spawnArgs.GetBool( "start_on" );
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
+	gameLocal->SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
 }
 
 /*
@@ -3549,7 +3549,7 @@ idFuncAASObstacle::Event_Activate
 void idFuncAASObstacle::Event_Activate( idEntity* activator )
 {
 	state ^= 1;
-	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
+	gameLocal->SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
 }
 
 
@@ -3617,7 +3617,7 @@ idFuncRadioChatter::Event_Activate
 */
 void idFuncRadioChatter::Event_Activate( idEntity* activator )
 {
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = gameLocal->GetLocalPlayer();
 	
 	if( player != NULL && player->hudManager )
 	{
@@ -3644,7 +3644,7 @@ idFuncRadioChatter::Event_ResetRadioHud
 */
 void idFuncRadioChatter::Event_ResetRadioHud( idEntity* activator )
 {
-	idPlayer* player = ( activator->IsType( idPlayer::Type ) ) ? static_cast<idPlayer*>( activator ) : gameLocal.GetLocalPlayer();
+	idPlayer* player = ( activator->IsType( idPlayer::Type ) ) ? static_cast<idPlayer*>( activator ) : gameLocal->GetLocalPlayer();
 	
 	if( player != NULL && player->hudManager )
 	{
@@ -3798,14 +3798,14 @@ void idPhantomObjects::Event_Activate( idEntity* activator )
 	
 	if( !activator || !activator->IsType( idActor::Type ) )
 	{
-		target = gameLocal.GetLocalPlayer();
+		target = gameLocal->GetLocalPlayer();
 	}
 	else
 	{
 		target = static_cast<idActor*>( activator );
 	}
 	
-	end_time = gameLocal.time + SEC2MS( spawnArgs.GetFloat( "end_time", "0" ) );
+	end_time = gameLocal->time + SEC2MS( spawnArgs.GetFloat( "end_time", "0" ) );
 	
 	targetTime.SetNum( targets.Num() );
 	lastTargetPos.SetNum( targets.Num() );
@@ -3820,14 +3820,14 @@ void idPhantomObjects::Event_Activate( idEntity* activator )
 		lastTargetPos[ i ] = toPos;
 		
 		frac = 1.0f - ( float )i / ( float )targetTime.Num();
-		time += ( gameLocal.random.RandomFloat() + 1.0f ) * 0.5f * frac + 0.1f;
+		time += ( gameLocal->random.RandomFloat() + 1.0f ) * 0.5f * frac + 0.1f;
 	}
 	
 	// scale up the times to fit within throw_time
 	scale = throw_time / time;
 	for( i = 0; i < targetTime.Num(); i++ )
 	{
-		targetTime[ i ] = gameLocal.time + SEC2MS( shake_time ) + targetTime[ i ] * scale;
+		targetTime[ i ] = gameLocal->time + SEC2MS( shake_time ) + targetTime[ i ] * scale;
 	}
 	
 	BecomeActive( TH_THINK );
@@ -3863,7 +3863,7 @@ void idPhantomObjects::Think()
 	}
 	
 	targetEnt = target.GetEntity();
-	if( targetEnt == NULL || ( targetEnt->health <= 0 ) || ( end_time && ( gameLocal.time > end_time ) ) || gameLocal.inCinematic )
+	if( targetEnt == NULL || ( targetEnt->health <= 0 ) || ( end_time && ( gameLocal->time > end_time ) ) || gameLocal->inCinematic )
 	{
 		BecomeInactive( TH_THINK );
 		return;
@@ -3894,7 +3894,7 @@ void idPhantomObjects::Think()
 		
 		num++;
 		
-		time = MS2SEC( targetTime[ i ] - gameLocal.time );
+		time = MS2SEC( targetTime[ i ] - gameLocal->time );
 		if( time > shake_time )
 		{
 			continue;
@@ -3903,8 +3903,8 @@ void idPhantomObjects::Think()
 		entPhys = ent->GetPhysics();
 		const idVec3& entOrg = entPhys->GetOrigin();
 		
-		gameLocal.GetClip()->TracePoint( tr, entOrg, toPos, MASK_OPAQUE, ent );
-		if( tr.fraction >= 1.0f || ( gameLocal.GetTraceEntity( tr ) == targetEnt ) )
+		gameLocal->GetClip()->TracePoint( tr, entOrg, toPos, MASK_OPAQUE, ent );
+		if( tr.fraction >= 1.0f || ( gameLocal->GetTraceEntity( tr ) == targetEnt ) )
 		{
 			lastTargetPos[ i ] = toPos;
 		}
@@ -3921,7 +3921,7 @@ void idPhantomObjects::Think()
 			}
 			else
 			{
-				targetTime[ i ] = gameLocal.time + gameLocal.random.RandomInt( max_wait - min_wait ) + min_wait;
+				targetTime[ i ] = gameLocal->time + gameLocal->random.RandomInt( max_wait - min_wait ) + min_wait;
 			}
 			if( ent->IsType( idMoveable::Type ) )
 			{
@@ -3932,7 +3932,7 @@ void idPhantomObjects::Think()
 		else
 		{
 			// this is not the right way to set the angular velocity, but the effect is nice, so I'm keeping it. :)
-			ang.Set( gameLocal.random.CRandomFloat() * shake_ang.x, gameLocal.random.CRandomFloat() * shake_ang.y, gameLocal.random.CRandomFloat() * shake_ang.z );
+			ang.Set( gameLocal->random.CRandomFloat() * shake_ang.x, gameLocal->random.CRandomFloat() * shake_ang.y, gameLocal->random.CRandomFloat() * shake_ang.z );
 			ang *= ( 1.0f - time / shake_time );
 			entPhys->SetAngularVelocity( ang );
 		}
@@ -4068,13 +4068,13 @@ void idShockwave::Think()
 	
 	endTime = startTime + duration;
 	
-	if( gameLocal.time < endTime )
+	if( gameLocal->time < endTime )
 	{
 		float u;
 		float newSize;
 		
 		// Expand shockwave
-		u = ( float )( gameLocal.time - startTime ) / ( float )duration;
+		u = ( float )( gameLocal->time - startTime ) / ( float )duration;
 		newSize = startSize + u * ( endSize - startSize );
 		
 		// Find all clipmodels between currentSize and newSize
@@ -4108,7 +4108,7 @@ void idShockwave::Think()
 			gameRenderWorld->DebugBounds( colorRed,  bounds, vec3_origin );
 		}
 		
-		listedClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
+		listedClipModels = gameLocal->GetClip()->ClipModelsTouchingBounds( bounds, -1, clipModelList, MAX_GENTITIES );
 		
 		for( i = 0; i < listedClipModels; i++ )
 		{
@@ -4174,8 +4174,8 @@ void idShockwave::Think()
 					
 					// Kick it up, move force point off object origin
 					float rad = ent->GetPhysics()->GetBounds().GetRadius();
-					point.x += gameLocal.random.CRandomFloat() * rad;
-					point.y += gameLocal.random.CRandomFloat() * rad;
+					point.x += gameLocal->random.CRandomFloat() * rad;
+					point.y += gameLocal->random.CRandomFloat() * rad;
 					
 					int j;
 					for( j = 0; j < ent->GetPhysics()->GetNumClipModels(); j++ )
@@ -4207,7 +4207,7 @@ void idShockwave::Event_Activate( idEntity* activator )
 {
 
 	isActive = true;
-	startTime = gameLocal.time;
+	startTime = gameLocal->time;
 	playerDamaged = false;
 	
 	BecomeActive( TH_THINK );
@@ -4265,10 +4265,10 @@ void idFuncMountedObject::Spawn()
 	idStr funcName = spawnArgs.GetString( "call", "" );
 	if( funcName.Length() )
 	{
-		scriptFunction = gameLocal.GetProgram()->FindFunction( funcName );
+		scriptFunction = gameLocal->GetProgram()->FindFunction( funcName );
 		if( scriptFunction == NULL )
 		{
-			gameLocal.Warning( "idFuncMountedObject '%s' at (%s) calls unknown function '%s'\n", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcName.c_str() );
+			gameLocal->Warning( "idFuncMountedObject '%s' at (%s) calls unknown function '%s'\n", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), funcName.c_str() );
 		}
 	}
 	
@@ -4395,10 +4395,10 @@ void idFuncMountedWeapon::Spawn()
 {
 
 	// Get projectile info
-	projectile = gameLocal.FindEntityDefDict( spawnArgs.GetString( "def_projectile" ), false );
+	projectile = gameLocal->FindEntityDefDict( spawnArgs.GetString( "def_projectile" ), false );
 	if( !projectile )
 	{
-		gameLocal.Warning( "Invalid projectile on func_mountedweapon." );
+		gameLocal->Warning( "Invalid projectile on func_mountedweapon." );
 	}
 	
 	float firerate;
@@ -4425,7 +4425,7 @@ void idFuncMountedWeapon::Think()
 		turret->UpdateVisuals();
 		
 		// Check for firing
-		if( mountedPlayer->usercmd.buttons & BUTTON_ATTACK && ( gameLocal.time > weaponLastFireTime + weaponFireDelay ) )
+		if( mountedPlayer->usercmd.buttons & BUTTON_ATTACK && ( gameLocal->time > weaponLastFireTime + weaponFireDelay ) )
 		{
 			// FIRE!
 			idEntity*		ent;
@@ -4433,11 +4433,11 @@ void idFuncMountedWeapon::Think()
 			idBounds		projBounds;
 			idVec3			dir;
 			
-			gameLocal.SpawnEntityDef( *projectile, &ent );
+			gameLocal->SpawnEntityDef( *projectile, &ent );
 			if( !ent || !ent->IsType( idProjectile::Type ) )
 			{
 				const char* projectileName = spawnArgs.GetString( "def_projectile" );
-				gameLocal.Error( "'%s' is not an idProjectile", projectileName );
+				gameLocal->Error( "'%s' is not an idProjectile", projectileName );
 			}
 			
 			mountedPlayer->GetViewPos( muzzleOrigin, muzzleAxis );
@@ -4455,7 +4455,7 @@ void idFuncMountedWeapon::Think()
 			proj->Launch( muzzleOrigin, dir, vec3_origin );
 			StartSoundShader( soundFireWeapon, SND_CHANNEL_WEAPON, SSF_GLOBAL, false, NULL );
 			
-			weaponLastFireTime = gameLocal.time;
+			weaponLastFireTime = gameLocal->time;
 		}
 	}
 	
@@ -4478,7 +4478,7 @@ void idFuncMountedWeapon::Event_PostSpawn()
 	}
 	else
 	{
-		gameLocal.Warning( "idFuncMountedWeapon::Spawn:  Please target one model for a turret\n" );
+		gameLocal->Warning( "idFuncMountedWeapon::Spawn:  Please target one model for a turret\n" );
 	}
 }
 
@@ -4540,7 +4540,7 @@ idPortalSky::Event_PostSpawn
 */
 void idPortalSky::Event_PostSpawn()
 {
-	gameLocal.SetPortalSkyEnt( this );
+	gameLocal->SetPortalSkyEnt( this );
 }
 
 /*
@@ -4550,5 +4550,5 @@ idPortalSky::Event_Activate
 */
 void idPortalSky::Event_Activate( idEntity* activator )
 {
-	gameLocal.SetPortalSkyEnt( this );
+	gameLocal->SetPortalSkyEnt( this );
 }

@@ -205,7 +205,7 @@ void UpdateGuiParms( idUserInterface* gui, const idDict* args )
 		kv = args->MatchPrefix( "gui_parm", kv );
 	}
 	gui->SetStateBool( "noninteractive",  args->GetBool( "gui_noninteractive" ) ) ;
-	gui->StateChanged( gameLocal.time );
+	gui->StateChanged( gameLocal->time );
 }
 
 /*
@@ -518,10 +518,10 @@ void idEntity::Spawn()
 	const char*			classname;
 	const char*			scriptObjectName;
 	
-	gameLocal.RegisterEntity( this, -1, gameLocal.GetSpawnArgs() );
+	gameLocal->RegisterEntity( this, -1, gameLocal->GetSpawnArgs() );
 	
 	spawnArgs.GetString( "classname", NULL, &classname );
-	const idDeclEntityDef* def = gameLocal.FindEntityDef( classname, false );
+	const idDeclEntityDef* def = gameLocal->FindEntityDef( classname, false );
 	if( def )
 	{
 		entityDefNumber = def->Index();
@@ -546,7 +546,7 @@ void idEntity::Spawn()
 	}
 	
 	// go dormant within 100ms so that when the map starts most monsters are dormant
-	dormantStart = gameLocal.time - DELAY_DORMANT_TIME + 100;
+	dormantStart = gameLocal->time - DELAY_DORMANT_TIME + 100;
 	
 	origin = renderEntity.origin;
 	axis = renderEntity.axis;
@@ -605,7 +605,7 @@ void idEntity::Spawn()
 	// if we have targets, wait until all entities are spawned to get them
 	if( spawnArgs.MatchPrefix( "target" ) || spawnArgs.MatchPrefix( "guiTarget" ) )
 	{
-		if( gameLocal.GameState() == GAMESTATE_STARTUP )
+		if( gameLocal->GameState() == GAMESTATE_STARTUP )
 		{
 			PostEventMS( &EV_FindTargets, 0 );
 		}
@@ -645,7 +645,7 @@ void idEntity::Spawn()
 	{
 		if( !scriptObject.SetType( scriptObjectName ) )
 		{
-			gameLocal.Error( "Script object '%s' not found on entity '%s'.", scriptObjectName, name.c_str() );
+			gameLocal->Error( "Script object '%s' not found on entity '%s'.", scriptObjectName, name.c_str() );
 		}
 		
 		ConstructScriptObject();
@@ -684,7 +684,7 @@ idEntity::~idEntity()
 	Unbind();
 	QuitTeam();
 	
-	gameLocal.RemoveEntityFromHash( name.c_str(), this );
+	gameLocal->RemoveEntityFromHash( name.c_str(), this );
 	
 	delete renderView;
 	renderView = NULL;
@@ -701,7 +701,7 @@ idEntity::~idEntity()
 		xrayEntityHandle = -1;
 	}
 	
-	gameLocal.UnregisterEntity( this );
+	gameLocal->UnregisterEntity( this );
 }
 
 /*
@@ -866,7 +866,7 @@ void idEntity::Restore( idRestoreGame* savefile )
 			{
 				savefile->ReadInt( signals->signal[ i ][ j ].threadnum );
 				savefile->ReadString( funcname );
-				signals->signal[ i ][ j ].function = gameLocal.GetProgram()->FindFunction( funcname );
+				signals->signal[ i ][ j ].function = gameLocal->GetProgram()->FindFunction( funcname );
 				if( !signals->signal[ i ][ j ].function )
 				{
 					savefile->Error( "Function '%s' not found", funcname.c_str() );
@@ -907,8 +907,8 @@ void idEntity::SetName( const char* newname )
 {
 	if( name.Length() )
 	{
-		gameLocal.RemoveEntityFromHash( name.c_str(), this );
-		gameLocal.GetProgram()->SetEntity( name, NULL );
+		gameLocal->RemoveEntityFromHash( name.c_str(), this );
+		gameLocal->GetProgram()->SetEntity( name, NULL );
 	}
 	
 	name = newname;
@@ -916,10 +916,10 @@ void idEntity::SetName( const char* newname )
 	{
 		if( ( name == "NULL" ) || ( name == "null_entity" ) )
 		{
-			gameLocal.Error( "Cannot name entity '%s'.  '%s' is reserved for script.", name.c_str(), name.c_str() );
+			gameLocal->Error( "Cannot name entity '%s'.  '%s' is reserved for script.", name.c_str(), name.c_str() );
 		}
-		gameLocal.AddEntityToHash( name.c_str(), this );
-		gameLocal.GetProgram()->SetEntity( name, this );
+		gameLocal->AddEntityToHash( name.c_str(), this );
+		gameLocal->GetProgram()->SetEntity( name, this );
 	}
 }
 
@@ -968,13 +968,13 @@ bool idEntity::DoDormantTests()
 	}
 	
 	// if the monster area is not topologically connected to a player
-	if( !gameLocal.InPlayerConnectedArea( this ) )
+	if( !gameLocal->InPlayerConnectedArea( this ) )
 	{
 		if( dormantStart == 0 )
 		{
-			dormantStart = gameLocal.time;
+			dormantStart = gameLocal->time;
 		}
-		if( gameLocal.time - dormantStart < DELAY_DORMANT_TIME )
+		if( gameLocal->time - dormantStart < DELAY_DORMANT_TIME )
 		{
 			// just got closed off, don't go dormant yet
 			return false;
@@ -987,7 +987,7 @@ bool idEntity::DoDormantTests()
 		// the monster hasn't been woken up before, do the more precise PVS check
 		if( !fl.hasAwakened )
 		{
-			if( !gameLocal.InPlayerPVS( this ) )
+			if( !gameLocal->InPlayerPVS( this ) )
 			{
 				return true;		// stay dormant
 			}
@@ -1078,7 +1078,7 @@ void idEntity::BecomeActive( int flags )
 			// if this is a pusher
 			if( physics->IsType( idPhysics_Parametric::Type ) || physics->IsType( idPhysics_Actor::Type ) )
 			{
-				gameLocal.sortPushers = true;
+				gameLocal->sortPushers = true;
 			}
 		}
 	}
@@ -1089,12 +1089,12 @@ void idEntity::BecomeActive( int flags )
 	{
 		if( !IsActive() )
 		{
-			activeNode.AddToEnd( gameLocal.activeEntities );
+			activeNode.AddToEnd( gameLocal->activeEntities );
 		}
 		else if( !oldFlags )
 		{
 			// we became inactive this frame, so we have to decrease the count of entities to deactivate
-			gameLocal.numEntitiesToDeactivate--;
+			gameLocal->numEntitiesToDeactivate--;
 		}
 	}
 }
@@ -1127,7 +1127,7 @@ void idEntity::BecomeInactive( int flags )
 		thinkFlags &= ~flags;
 		if( !thinkFlags && IsActive() )
 		{
-			gameLocal.numEntitiesToDeactivate++;
+			gameLocal->numEntitiesToDeactivate++;
 		}
 	}
 	
@@ -1163,7 +1163,7 @@ void idEntity::SetShaderParm( int parmnum, float value )
 {
 	if( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) )
 	{
-		gameLocal.Warning( "shader parm index (%d) out of range", parmnum );
+		gameLocal->Warning( "shader parm index (%d) out of range", parmnum );
 		return;
 	}
 	
@@ -1450,13 +1450,13 @@ void idEntity::UpdatePVSAreas()
 	int i;
 	
 	modelAbsBounds.FromTransformedBounds( renderEntity.bounds, renderEntity.origin, renderEntity.axis );
-	localNumPVSAreas = gameLocal.GetPvs()->GetPVSAreas( modelAbsBounds, localPVSAreas, sizeof( localPVSAreas ) / sizeof( localPVSAreas[0] ) );
+	localNumPVSAreas = gameLocal->GetPvs()->GetPVSAreas( modelAbsBounds, localPVSAreas, sizeof( localPVSAreas ) / sizeof( localPVSAreas[0] ) );
 	
 	// FIXME: some particle systems may have huge bounds and end up in many PVS areas
 	// the first MAX_PVS_AREAS may not be visible to a network client and as a result the particle system may not show up when it should
 	if( localNumPVSAreas > MAX_PVS_AREAS )
 	{
-		localNumPVSAreas = gameLocal.GetPvs()->GetPVSAreas( idBounds( renderEntity.origin ).Expand( 64.0f ), localPVSAreas, sizeof( localPVSAreas ) / sizeof( localPVSAreas[0] ) );
+		localNumPVSAreas = gameLocal->GetPvs()->GetPVSAreas( idBounds( renderEntity.origin ).Expand( 64.0f ), localPVSAreas, sizeof( localPVSAreas ) / sizeof( localPVSAreas[0] ) );
 	}
 	
 	for( numPVSAreas = 0; numPVSAreas < MAX_PVS_AREAS && numPVSAreas < localNumPVSAreas; numPVSAreas++ )
@@ -1479,7 +1479,7 @@ void idEntity::UpdatePVSAreas( const idVec3& pos )
 {
 	int i;
 	
-	numPVSAreas = gameLocal.GetPvs()->GetPVSAreas( idBounds( pos ), PVSAreas, MAX_PVS_AREAS );
+	numPVSAreas = gameLocal->GetPvs()->GetPVSAreas( idBounds( pos ), PVSAreas, MAX_PVS_AREAS );
 	i = numPVSAreas;
 	while( i < MAX_PVS_AREAS )
 	{
@@ -1540,7 +1540,7 @@ bool idEntity::PhysicsTeamInPVS( pvsHandle_t pvsHandle )
 	{
 		for( part = teamMaster; part; part = part->teamChain )
 		{
-			if( gameLocal.GetPvs()->InCurrentPVS( pvsHandle, part->GetPVSAreas(), part->GetNumPVSAreas() ) )
+			if( gameLocal->GetPvs()->InCurrentPVS( pvsHandle, part->GetPVSAreas(), part->GetNumPVSAreas() ) )
 			{
 				return true;
 			}
@@ -1548,7 +1548,7 @@ bool idEntity::PhysicsTeamInPVS( pvsHandle_t pvsHandle )
 	}
 	else
 	{
-		return gameLocal.GetPvs()->InCurrentPVS( pvsHandle, GetPVSAreas(), GetNumPVSAreas() );
+		return gameLocal->GetPvs()->InCurrentPVS( pvsHandle, GetPVSAreas(), GetNumPVSAreas() );
 	}
 	return false;
 }
@@ -1592,7 +1592,7 @@ void idEntity::ProjectOverlay( const idVec3& origin, const idVec3& dir, float si
 		return;
 	}
 	
-	idMath::SinCos16( gameLocal.random.RandomFloat() * idMath::TWO_PI, s, c );
+	idMath::SinCos16( gameLocal->random.RandomFloat() * idMath::TWO_PI, s, c );
 	
 	axis[2] = -dir;
 	axis[2].NormalVectors( axistemp[0], axistemp[1] );
@@ -1616,7 +1616,7 @@ void idEntity::ProjectOverlay( const idVec3& origin, const idVec3& dir, float si
 	const idMaterial* mtr = declManager->FindMaterial( material );
 	
 	// project an overlay onto the model
-	gameRenderWorld->ProjectOverlay( modelDefHandle, localPlane, mtr, gameLocal.slow.time );
+	gameRenderWorld->ProjectOverlay( modelDefHandle, localPlane, mtr, gameLocal->slow.time );
 	
 	// make sure non-animating models update their overlay
 	UpdateVisuals();
@@ -1632,7 +1632,7 @@ Present is called to allow entities to generate refEntities, lights, etc for the
 void idEntity::Present()
 {
 
-	if( !gameLocal.isNewFrame )
+	if( !gameLocal->isNewFrame )
 	{
 		return;
 	}
@@ -1645,7 +1645,7 @@ void idEntity::Present()
 	BecomeInactive( TH_UPDATEVISUALS );
 	
 	// camera target for remote render views
-	if( cameraTarget && gameLocal.InPlayerPVS( this ) )
+	if( cameraTarget && gameLocal->InPlayerPVS( this ) )
 	{
 		renderEntity.remoteRenderView = cameraTarget->GetRenderView();
 	}
@@ -1694,7 +1694,7 @@ idEntity::UpdateRenderEntity
 */
 bool idEntity::UpdateRenderEntity( renderEntity_s* _renderEntity, const renderView_t* _renderView )
 {
-	if( gameLocal.inCinematic && gameLocal.skipCinematic )
+	if( gameLocal->inCinematic && gameLocal->skipCinematic )
 	{
 		return false;
 	}
@@ -1703,10 +1703,10 @@ bool idEntity::UpdateRenderEntity( renderEntity_s* _renderEntity, const renderVi
 	if( animator != NULL )
 	{
 		SetTimeState ts( timeGroup );
-		int currentTime = gameLocal.time;
+		int currentTime = gameLocal->time;
 		if( _renderEntity != NULL )
 		{
-			currentTime = gameLocal.GetTimeGroupTime( _renderEntity->timeGroup );
+			currentTime = gameLocal->GetTimeGroupTime( _renderEntity->timeGroup );
 		}
 		return animator->CreateFrame( currentTime, false );
 	}
@@ -1725,10 +1725,10 @@ bool idEntity::ModelCallback( renderEntity_s* renderEntity, const renderView_t* 
 {
 	idEntity* ent;
 	
-	ent = gameLocal.entities[ renderEntity->entityNum ];
+	ent = gameLocal->entities[ renderEntity->entityNum ];
 	if( ent == NULL )
 	{
-		gameLocal.Error( "idEntity::ModelCallback: callback with NULL game entity" );
+		gameLocal->Error( "idEntity::ModelCallback: callback with NULL game entity" );
 		return false;
 	}
 	
@@ -1770,13 +1770,13 @@ renderView_t* idEntity::GetRenderView()
 	// copy global shader parms
 	for( int i = 0; i < MAX_GLOBAL_SHADER_PARMS; i++ )
 	{
-		renderView->shaderParms[ i ] = gameLocal.globalShaderParms[ i ];
+		renderView->shaderParms[ i ] = gameLocal->globalShaderParms[ i ];
 	}
 	
-	renderView->globalMaterial = gameLocal.GetGlobalMaterial();
+	renderView->globalMaterial = gameLocal->GetGlobalMaterial();
 	
-	renderView->time[0] = gameLocal.slow.time;
-	renderView->time[1] = gameLocal.fast.time;
+	renderView->time[0] = gameLocal->slow.time;
+	renderView->time[1] = gameLocal->fast.time;
 	
 	return renderView;
 }
@@ -1828,7 +1828,7 @@ bool idEntity::StartSound( const char* soundName, const s_channelType channel, i
 		return false;
 	}
 	
-	if( !gameLocal.isNewFrame )
+	if( !gameLocal->isNewFrame )
 	{
 		// don't play the sound, but don't report an error
 		return true;
@@ -1858,7 +1858,7 @@ bool idEntity::StartSoundShader( const idSoundShader* shader, const s_channelTyp
 		return false;
 	}
 	
-	if( !gameLocal.isNewFrame )
+	if( !gameLocal->isNewFrame )
 	{
 		return true;
 	}
@@ -1870,7 +1870,7 @@ bool idEntity::StartSoundShader( const idSoundShader* shader, const s_channelTyp
 		
 		msg.InitWrite( msgBuf, sizeof( msgBuf ) );
 		msg.BeginWriting();
-		msg.WriteLong( gameLocal.ServerRemapDecl( -1, DECL_SOUND, shader->Index() ) );
+		msg.WriteLong( gameLocal->ServerRemapDecl( -1, DECL_SOUND, shader->Index() ) );
 		msg.WriteByte( channel );
 		ServerSendEvent( EVENT_STARTSOUNDSHADER, &msg, false );
 	}
@@ -1878,7 +1878,7 @@ bool idEntity::StartSoundShader( const idSoundShader* shader, const s_channelTyp
 	// set a random value for diversity unless one was parsed from the entity
 	if( refSound.diversity < 0.0f )
 	{
-		diversity = gameLocal.random.RandomFloat();
+		diversity = gameLocal->random.RandomFloat();
 	}
 	else
 	{
@@ -1912,7 +1912,7 @@ idEntity::StopSound
 */
 void idEntity::StopSound( const s_channelType channel, bool broadcast )
 {
-	if( !gameLocal.isNewFrame )
+	if( !gameLocal->isNewFrame )
 	{
 		return;
 	}
@@ -2057,13 +2057,13 @@ bool idEntity::InitBind( idEntity* master )
 
 	if( master == this )
 	{
-		gameLocal.Error( "Tried to bind an object to itself." );
+		gameLocal->Error( "Tried to bind an object to itself." );
 		return false;
 	}
 	
-	if( this == gameLocal.world )
+	if( this == gameLocal->world )
 	{
-		gameLocal.Error( "Tried to bind world to another entity" );
+		gameLocal->Error( "Tried to bind world to another entity" );
 		return false;
 	}
 	
@@ -2076,7 +2076,7 @@ bool idEntity::InitBind( idEntity* master )
 		static_cast<idAFEntity_Base*>( this )->AddBindConstraints();
 	}
 	
-	if( !master || master == gameLocal.world )
+	if( !master || master == gameLocal->world )
 	{
 		// this can happen in scripts, so safely exit out.
 		return false;
@@ -2157,14 +2157,14 @@ void idEntity::BindToJoint( idEntity* master, const char* jointname, bool orient
 	masterAnimator = master->GetAnimator();
 	if( !masterAnimator )
 	{
-		gameLocal.Warning( "idEntity::BindToJoint: entity '%s' cannot support skeletal models.", master->GetName() );
+		gameLocal->Warning( "idEntity::BindToJoint: entity '%s' cannot support skeletal models.", master->GetName() );
 		return;
 	}
 	
 	jointnum = masterAnimator->GetJointHandle( jointname );
 	if( jointnum == INVALID_JOINT )
 	{
-		gameLocal.Warning( "idEntity::BindToJoint: joint '%s' not found on entity '%s'.", jointname, master->GetName() );
+		gameLocal->Warning( "idEntity::BindToJoint: joint '%s' not found on entity '%s'.", jointname, master->GetName() );
 	}
 	
 	PreBind();
@@ -2223,7 +2223,7 @@ void idEntity::BindToBody( idEntity* master, int bodyId, bool orientated )
 	
 	if( bodyId < 0 )
 	{
-		gameLocal.Warning( "idEntity::BindToBody: body '%d' not found.", bodyId );
+		gameLocal->Warning( "idEntity::BindToBody: body '%d' not found.", bodyId );
 	}
 	
 	PreBind();
@@ -2604,7 +2604,7 @@ bool idEntity::GetMasterPosition( idVec3& masterOrigin, idMat3& masterAxis ) con
 			}
 			else
 			{
-				masterAnimator->GetJointTransform( bindJoint, gameLocal.time, masterOrigin, masterAxis );
+				masterAnimator->GetJointTransform( bindJoint, gameLocal->time, masterOrigin, masterAxis );
 				masterAxis *= bindMaster->renderEntity.axis;
 				masterOrigin = bindMaster->renderEntity.origin + masterOrigin * bindMaster->renderEntity.axis;
 			}
@@ -2737,7 +2737,7 @@ void idEntity::JoinTeam( idEntity* teammember )
 	teamMaster = master;
 	
 	// reorder the active entity list
-	gameLocal.sortTeamMasters = true;
+	gameLocal->sortTeamMasters = true;
 }
 
 /*
@@ -2840,14 +2840,14 @@ void idEntity::InitDefaultPhysics( const idVec3& origin, const idMat3& axis )
 				setClipModel = true;
 				if( bounds[0][0] > bounds[1][0] || bounds[0][1] > bounds[1][1] || bounds[0][2] > bounds[1][2] )
 				{
-					gameLocal.Error( "Invalid bounds '%s'-'%s' on entity '%s'", bounds[0].ToString(), bounds[1].ToString(), name.c_str() );
+					gameLocal->Error( "Invalid bounds '%s'-'%s' on entity '%s'", bounds[0].ToString(), bounds[1].ToString(), name.c_str() );
 				}
 			}
 			else if( spawnArgs.GetVector( "size", NULL, size ) )
 			{
 				if( ( size.x < 0.0f ) || ( size.y < 0.0f ) || ( size.z < 0.0f ) )
 				{
-					gameLocal.Error( "Invalid size '%s' on entity '%s'", size.ToString(), name.c_str() );
+					gameLocal->Error( "Invalid size '%s' on entity '%s'", size.ToString(), name.c_str() );
 				}
 				bounds[0].Set( size.x * -0.5f, size.y * -0.5f, 0.0f );
 				bounds[1].Set( size.x * 0.5f, size.y * 0.5f, size.z );
@@ -2920,7 +2920,7 @@ void idEntity::SetPhysics( idPhysics* phys )
 	{
 		physics = &defaultPhysicsObj;
 	}
-	physics->UpdateTime( gameLocal.time );
+	physics->UpdateTime( gameLocal->time );
 	physics->SetMaster( bindMaster, fl.bindOrientated );
 }
 
@@ -2975,10 +2975,10 @@ bool idEntity::RunPhysics()
 		return false;
 	}
 	
-	const int startTime = gameLocal.previousTime;
-	const int endTime = gameLocal.time;
+	const int startTime = gameLocal->previousTime;
+	const int endTime = gameLocal->time;
 	
-	gameLocal.push.InitSavingPushedEntityPositions();
+	gameLocal->push.InitSavingPushedEntityPositions();
 	blockedPart = NULL;
 	
 	// save the physics state of the whole team and disable the team for collision detection
@@ -3066,7 +3066,7 @@ bool idEntity::RunPhysics()
 		}
 		
 		// restore the positions of any pushed entities
-		gameLocal.push.RestorePushedEntityPositions();
+		gameLocal->push.RestorePushedEntityPositions();
 		
 		if( common->IsClient() )
 		{
@@ -3090,12 +3090,12 @@ bool idEntity::RunPhysics()
 	renderEntity.skipMotionBlur = false;
 	
 	// set pushed
-	for( i = 0; i < gameLocal.push.GetNumPushedEntities(); i++ )
+	for( i = 0; i < gameLocal->push.GetNumPushedEntities(); i++ )
 	{
-		idEntity* ent = gameLocal.push.GetPushedEntity( i );
+		idEntity* ent = gameLocal->push.GetPushedEntity( i );
 		if( ent->physics->IsType( idPhysics_Player::Type ) )
 		{
-			if( gameLocal.GetLocalClientNum() == ent->entityNumber )
+			if( gameLocal->GetLocalClientNum() == ent->entityNumber )
 			{
 				renderEntity.skipMotionBlur = true;
 			}
@@ -3186,10 +3186,10 @@ void idEntity::InterpolatePhysics( const float fraction )
 		return;
 	}
 	
-	startTime = gameLocal.previousTime;
-	endTime = gameLocal.time;
+	startTime = gameLocal->previousTime;
+	endTime = gameLocal->time;
 	
-	gameLocal.push.InitSavingPushedEntityPositions();
+	gameLocal->push.InitSavingPushedEntityPositions();
 	blockedPart = NULL;
 	
 	// save the physics state of the whole team and disable the team for collision detection
@@ -3277,13 +3277,13 @@ void idEntity::InterpolatePhysics( const float fraction )
 		}
 		
 		// restore the positions of any pushed entities
-		gameLocal.push.RestorePushedEntityPositions();
+		gameLocal->push.RestorePushedEntityPositions();
 	}
 	
 	// set pushed
-	for( i = 0; i < gameLocal.push.GetNumPushedEntities(); i++ )
+	for( i = 0; i < gameLocal->push.GetNumPushedEntities(); i++ )
 	{
-		idEntity* ent = gameLocal.push.GetPushedEntity( i );
+		idEntity* ent = gameLocal->push.GetPushedEntity( i );
 		ent->physics->SetPushed( GetPhysicsTimeStep() );
 	}
 	
@@ -3314,7 +3314,7 @@ void idEntity::InterpolatePhysicsOnly( const float fraction, bool updateTeam )
 	if( updateTeam )
 	{
 	
-		int endTime = gameLocal.time;
+		int endTime = gameLocal->time;
 		
 		// move the whole team
 		for( idEntity* part = this; part != NULL; part = part->teamChain )
@@ -3381,7 +3381,7 @@ idEntity::GetPhysicsTimeStep
 */
 int idEntity::GetPhysicsTimeStep() const
 {
-	return gameLocal.time - gameLocal.previousTime;
+	return gameLocal->time - gameLocal->previousTime;
 }
 
 /*
@@ -3602,8 +3602,8 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	midpoint = ( GetPhysics()->GetAbsBounds()[0] + GetPhysics()->GetAbsBounds()[1] ) * 0.5;
 	
 	dest = midpoint;
-	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
-	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
+	gameLocal->GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	if( tr.fraction == 1.0 || ( gameLocal->GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
 		return true;
@@ -3613,8 +3613,8 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	dest = midpoint;
 	dest[0] += 15.0;
 	dest[1] += 15.0;
-	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
-	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
+	gameLocal->GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	if( tr.fraction == 1.0 || ( gameLocal->GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
 		return true;
@@ -3623,8 +3623,8 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	dest = midpoint;
 	dest[0] += 15.0;
 	dest[1] -= 15.0;
-	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
-	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
+	gameLocal->GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	if( tr.fraction == 1.0 || ( gameLocal->GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
 		return true;
@@ -3633,8 +3633,8 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	dest = midpoint;
 	dest[0] -= 15.0;
 	dest[1] += 15.0;
-	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
-	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
+	gameLocal->GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	if( tr.fraction == 1.0 || ( gameLocal->GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
 		return true;
@@ -3643,8 +3643,8 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	dest = midpoint;
 	dest[0] -= 15.0;
 	dest[1] -= 15.0;
-	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
-	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
+	gameLocal->GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	if( tr.fraction == 1.0 || ( gameLocal->GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
 		return true;
@@ -3652,8 +3652,8 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	
 	dest = midpoint;
 	dest[2] += 15.0;
-	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
-	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
+	gameLocal->GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	if( tr.fraction == 1.0 || ( gameLocal->GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
 		return true;
@@ -3661,8 +3661,8 @@ bool idEntity::CanDamage( const idVec3& origin, idVec3& damagePoint ) const
 	
 	dest = midpoint;
 	dest[2] -= 15.0;
-	gameLocal.GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
-	if( tr.fraction == 1.0 || ( gameLocal.GetTraceEntity( tr ) == this ) )
+	gameLocal->GetClip()->TracePoint( tr, origin, dest, MASK_SOLID, NULL );
+	if( tr.fraction == 1.0 || ( gameLocal->GetTraceEntity( tr ) == this ) )
 	{
 		damagePoint = tr.endpos;
 		return true;
@@ -3712,18 +3712,18 @@ void idEntity::Damage( idEntity* inflictor, idEntity* attacker, const idVec3& di
 	
 	if( !inflictor )
 	{
-		inflictor = gameLocal.world;
+		inflictor = gameLocal->world;
 	}
 	
 	if( !attacker )
 	{
-		attacker = gameLocal.world;
+		attacker = gameLocal->world;
 	}
 	
-	const idDict* damageDef = gameLocal.FindEntityDefDict( damageDefName );
+	const idDict* damageDef = gameLocal->FindEntityDefDict( damageDefName );
 	if( damageDef == NULL )
 	{
-		gameLocal.Error( "Unknown damageDef '%s'\n", damageDefName );
+		gameLocal->Error( "Unknown damageDef '%s'\n", damageDefName );
 		return;
 	}
 	
@@ -3760,13 +3760,13 @@ void idEntity::AddDamageEffect( const trace_t& collision, const idVec3& velocity
 {
 	const char* sound, *decal, *key;
 	
-	const idDeclEntityDef* def = gameLocal.FindEntityDef( damageDefName, false );
+	const idDeclEntityDef* def = gameLocal->FindEntityDef( damageDefName, false );
 	if( def == NULL )
 	{
 		return;
 	}
 	
-	const char* materialType = gameLocal.sufaceTypeNames[ collision.c.material->GetSurfaceType() ];
+	const char* materialType = gameLocal->sufaceTypeNames[ collision.c.material->GetSurfaceType() ];
 	
 	// start impact sound based on material type
 	key = va( "snd_%s", materialType );
@@ -3784,10 +3784,10 @@ void idEntity::AddDamageEffect( const trace_t& collision, const idVec3& velocity
 	{
 		// place a wound overlay on the model
 		key = va( "mtr_wound_%s", materialType );
-		decal = spawnArgs.RandomPrefix( key, gameLocal.random );
+		decal = spawnArgs.RandomPrefix( key, gameLocal->random );
 		if( *decal == '\0' )
 		{
-			decal = def->dict.RandomPrefix( key, gameLocal.random );
+			decal = def->dict.RandomPrefix( key, gameLocal->random );
 		}
 		if( *decal != '\0' )
 		{
@@ -3895,7 +3895,7 @@ void idEntity::DeconstructScriptObject()
 	const function_t* destructor;
 	
 	// don't bother calling the script object's destructor on map shutdown
-	if( gameLocal.GameState() == GAMESTATE_SHUTDOWN )
+	if( gameLocal->GameState() == GAMESTATE_SHUTDOWN )
 	{
 		return;
 	}
@@ -3980,7 +3980,7 @@ void idEntity::ClearSignal( idThread* thread, signalNum_t signalnum )
 	assert( thread );
 	if( ( signalnum < 0 ) || ( signalnum >= NUM_SIGNALS ) )
 	{
-		gameLocal.Error( "Signal out of range" );
+		gameLocal->Error( "Signal out of range" );
 		return;
 	}
 	
@@ -4007,7 +4007,7 @@ void idEntity::ClearSignalThread( signalNum_t signalnum, idThread* thread )
 	
 	if( ( signalnum < 0 ) || ( signalnum >= NUM_SIGNALS ) )
 	{
-		gameLocal.Error( "Signal out of range" );
+		gameLocal->Error( "Signal out of range" );
 		return;
 	}
 	
@@ -4081,7 +4081,7 @@ void idEntity::SignalEvent( idThread* thread, signalNum_t signalnum )
 {
 	if( ( signalnum < 0 ) || ( signalnum >= NUM_SIGNALS ) )
 	{
-		gameLocal.Error( "Signal out of range" );
+		gameLocal->Error( "Signal out of range" );
 	}
 	
 	if( !signals )
@@ -4111,7 +4111,7 @@ void idEntity::TriggerGuis()
 	{
 		if( renderEntity.gui[ i ] )
 		{
-			renderEntity.gui[ i ]->Trigger( gameLocal.time );
+			renderEntity.gui[ i ]->Trigger( gameLocal->time );
 		}
 	}
 }
@@ -4164,7 +4164,7 @@ bool idEntity::HandleGuiCommands( idEntity* entityGui, const char* cmds )
 				}
 				else
 				{
-					idEntity* ent = gameLocal.FindEntity( token2 );
+					idEntity* ent = gameLocal->FindEntity( token2 );
 					if( ent )
 					{
 						ent->Signal( SIG_TRIGGER );
@@ -4186,14 +4186,14 @@ bool idEntity::HandleGuiCommands( idEntity* entityGui, const char* cmds )
 						idToken token3_;
 						if( !src.ReadToken( &token3_ ) )
 						{
-							gameLocal.Error( "Expecting function name following '::' in gui for entity '%s'", entityGui->name.c_str() );
+							gameLocal->Error( "Expecting function name following '::' in gui for entity '%s'", entityGui->name.c_str() );
 						}
 						token2 += "::" + token3_;
 					}
-					const function_t* func = gameLocal.GetProgram()->FindFunction( token2 );
+					const function_t* func = gameLocal->GetProgram()->FindFunction( token2 );
 					if( !func )
 					{
-						gameLocal.Error( "Can't find function '%s' for gui in entity '%s'", token2.c_str(), entityGui->name.c_str() );
+						gameLocal->Error( "Can't find function '%s' for gui in entity '%s'", token2.c_str(), entityGui->name.c_str() );
 					}
 					else
 					{
@@ -4218,7 +4218,7 @@ bool idEntity::HandleGuiCommands( idEntity* entityGui, const char* cmds )
 			{
 				if( src.ReadToken( &token2 ) && src.ReadToken( &token3 ) && src.ReadToken( &token4 ) )
 				{
-					idEntity* ent = gameLocal.FindEntity( token2 );
+					idEntity* ent = gameLocal->FindEntity( token2 );
 					if( ent )
 					{
 						ent->spawnArgs.Set( token3, token4 );
@@ -4252,10 +4252,10 @@ bool idEntity::HandleGuiCommands( idEntity* entityGui, const char* cmds )
 					int score = entityGui->renderEntity.gui[0]->State().GetInt( "score" );
 					score += atoi( token2 );
 					entityGui->renderEntity.gui[0]->SetStateInt( "score", score );
-					if( gameLocal.GetLocalPlayer() && score >= 25000 )
+					if( gameLocal->GetLocalPlayer() && score >= 25000 )
 					{
-						gameLocal.GetLocalPlayer()->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_SCORE_25000_TURKEY_PUNCHER );
-						gameLocal.GetLocalPlayer()->GiveEmail( static_cast<const idDeclEmail*>( declManager->FindType( DECL_EMAIL, "highScore", false ) ) );
+						gameLocal->GetLocalPlayer()->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_SCORE_25000_TURKEY_PUNCHER );
+						gameLocal->GetLocalPlayer()->GiveEmail( static_cast<const idDeclEmail*>( declManager->FindType( DECL_EMAIL, "highScore", false ) ) );
 					}
 				}
 				continue;
@@ -4264,7 +4264,7 @@ bool idEntity::HandleGuiCommands( idEntity* entityGui, const char* cmds )
 			
 			if( !token.Icmp( "martianbuddycomplete" ) )
 			{
-				gameLocal.GetLocalPlayer()->GiveEmail( static_cast<const idDeclEmail*>( declManager->FindType( DECL_EMAIL, "MartianBuddyGameComplete", false ) ) );
+				gameLocal->GetLocalPlayer()->GiveEmail( static_cast<const idDeclEmail*>( declManager->FindType( DECL_EMAIL, "MartianBuddyGameComplete", false ) ) );
 				continue;
 			}
 			
@@ -4352,14 +4352,14 @@ void idEntity::FindTargets()
 	int			i;
 	
 	// targets can be a list of multiple names
-	gameLocal.GetTargets( spawnArgs, targets, "target" );
+	gameLocal->GetTargets( spawnArgs, targets, "target" );
 	
 	// ensure that we don't target ourselves since that could cause an infinite loop when activating entities
 	for( i = 0; i < targets.Num(); i++ )
 	{
 		if( targets[ i ].GetEntity() == this )
 		{
-			gameLocal.Error( "Entity '%s' is targeting itself", name.c_str() );
+			gameLocal->Error( "Entity '%s' is targeting itself", name.c_str() );
 		}
 	}
 }
@@ -4410,7 +4410,7 @@ void idEntity::ActivateTargets( idEntity* activator ) const
 		{
 			if( ent->renderEntity.gui[ j ] )
 			{
-				ent->renderEntity.gui[ j ]->Trigger( gameLocal.time );
+				ent->renderEntity.gui[ j ]->Trigger( gameLocal->time );
 			}
 		}
 	}
@@ -4454,7 +4454,7 @@ bool idEntity::TouchTriggers() const
 	trace.endpos = GetPhysics()->GetOrigin();
 	trace.endAxis = GetPhysics()->GetAxis();
 	
-	numClipModels = gameLocal.GetClip()->ClipModelsTouchingBounds( GetPhysics()->GetAbsBounds(), CONTENTS_TRIGGER, clipModels, MAX_GENTITIES );
+	numClipModels = gameLocal->GetClip()->ClipModelsTouchingBounds( GetPhysics()->GetAbsBounds(), CONTENTS_TRIGGER, clipModels, MAX_GENTITIES );
 	numEntities = 0;
 	
 	for( i = 0; i < numClipModels; i++ )
@@ -4490,9 +4490,9 @@ bool idEntity::TouchTriggers() const
 		ent->Signal( SIG_TOUCH );
 		ent->ProcessEvent( &EV_Touch, this, &trace );
 		
-		if( !gameLocal.entities[ entityNumber ] )
+		if( !gameLocal->entities[ entityNumber ] )
 		{
-			gameLocal.Printf( "entity was removed while touching triggers\n" );
+			gameLocal->Printf( "entity was removed while touching triggers\n" );
 			return true;
 		}
 	}
@@ -4678,7 +4678,7 @@ void idEntity::Event_RandomTarget( const char* ignore )
 	
 	if( ignoreNum >= 0 )
 	{
-		num = gameLocal.random.RandomInt( targets.Num() - 1 );
+		num = gameLocal->random.RandomInt( targets.Num() - 1 );
 		if( num >= ignoreNum )
 		{
 			num++;
@@ -4686,7 +4686,7 @@ void idEntity::Event_RandomTarget( const char* ignore )
 	}
 	else
 	{
-		num = gameLocal.random.RandomInt( targets.Num() );
+		num = gameLocal->random.RandomInt( targets.Num() );
 	}
 	
 	ent = targets[ num ].GetEntity();
@@ -4764,11 +4764,11 @@ void idEntity::Event_SpawnBind()
 		if( idStr::Icmp( bind, "worldspawn" ) == 0 )
 		{
 			//FIXME: Completely unneccessary since the worldspawn is called "world"
-			parent = gameLocal.world;
+			parent = gameLocal->world;
 		}
 		else
 		{
-			parent = gameLocal.FindEntity( bind );
+			parent = gameLocal->FindEntity( bind );
 		}
 		bindOrientated = spawnArgs.GetBool( "bindOrientated", "1" );
 		if( parent )
@@ -4779,13 +4779,13 @@ void idEntity::Event_SpawnBind()
 				parentAnimator = parent->GetAnimator();
 				if( parentAnimator == NULL )
 				{
-					gameLocal.Error( "Cannot bind to joint '%s' on '%s'.  Entity does not support skeletal models.", joint, name.c_str() );
+					gameLocal->Error( "Cannot bind to joint '%s' on '%s'.  Entity does not support skeletal models.", joint, name.c_str() );
 					return;
 				}
 				bindJoint_ = parentAnimator->GetJointHandle( joint );
 				if( bindJoint_ == INVALID_JOINT )
 				{
-					gameLocal.Error( "Joint '%s' not found for bind on '%s'", joint, name.c_str() );
+					gameLocal->Error( "Joint '%s' not found for bind on '%s'", joint, name.c_str() );
 				}
 				
 				// bind it relative to a specific anim
@@ -4794,19 +4794,19 @@ void idEntity::Event_SpawnBind()
 					animNum = parentAnimator->GetAnim( bindanim );
 					if( !animNum )
 					{
-						gameLocal.Error( "Anim '%s' not found for bind on '%s'", bindanim, name.c_str() );
+						gameLocal->Error( "Anim '%s' not found for bind on '%s'", bindanim, name.c_str() );
 					}
 					anim = parentAnimator->GetAnim( animNum );
 					if( !anim )
 					{
-						gameLocal.Error( "Anim '%s' not found for bind on '%s'", bindanim, name.c_str() );
+						gameLocal->Error( "Anim '%s' not found for bind on '%s'", bindanim, name.c_str() );
 					}
 					
 					// make sure parent's render origin has been set
 					parent->UpdateModelTransform();
 					
 					//FIXME: need a BindToJoint that accepts a joint position
-					parentAnimator->CreateFrame( gameLocal.time, true );
+					parentAnimator->CreateFrame( gameLocal->time, true );
 					idJointMat* frame = parent->renderEntity.joints;
 					gameEdit->ANIM_CreateAnimFrame( parentAnimator->ModelHandle(), anim->MD5Anim( 0 ), parent->renderEntity.numJoints, frame, 0, parentAnimator->ModelDef()->GetVisualOffset(), parentAnimator->RemoveOrigin() );
 					BindToJoint( parent, joint, bindOrientated );
@@ -4876,7 +4876,7 @@ void idEntity::Event_GetShaderParm( int parmnum )
 {
 	if( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) )
 	{
-		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
+		gameLocal->Error( "shader parm index (%d) out of range", parmnum );
 		return;
 	}
 	
@@ -5206,7 +5206,7 @@ void idEntity::Event_SetGuiParm( const char* key, const char* val )
 				spawnArgs.Set( key, val );
 			}
 			renderEntity.gui[ i ]->SetStateString( key, val );
-			renderEntity.gui[ i ]->StateChanged( gameLocal.time );
+			renderEntity.gui[ i ]->StateChanged( gameLocal->time );
 		}
 	}
 }
@@ -5223,7 +5223,7 @@ void idEntity::Event_SetGuiFloat( const char* key, float f )
 		if( renderEntity.gui[ i ] )
 		{
 			renderEntity.gui[ i ]->SetStateString( key, va( "%f", f ) );
-			renderEntity.gui[ i ]->StateChanged( gameLocal.time );
+			renderEntity.gui[ i ]->StateChanged( gameLocal->time );
 		}
 	}
 }
@@ -5339,10 +5339,10 @@ void idEntity::Event_GetEntityKey( const char* key )
 		return;
 	}
 	
-	ent = gameLocal.FindEntity( entname );
+	ent = gameLocal->FindEntity( entname );
 	if( !ent )
 	{
-		gameLocal.Warning( "Couldn't find entity '%s' specified in '%s' key in entity '%s'", entname, key, name.c_str() );
+		gameLocal->Warning( "Couldn't find entity '%s' specified in '%s' key in entity '%s'", entname, key, name.c_str() );
 	}
 	
 	idThread::ReturnEntity( ent );
@@ -5386,12 +5386,12 @@ void idEntity::Event_RestorePosition()
 		{
 			if( static_cast<idPhysics_Parametric*>( part->GetPhysics() )->IsPusher() )
 			{
-				gameLocal.Warning( "teleported '%s' which has the pushing mover '%s' bound to it\n", GetName(), part->GetName() );
+				gameLocal->Warning( "teleported '%s' which has the pushing mover '%s' bound to it\n", GetName(), part->GetName() );
 			}
 		}
 		else if( part->GetPhysics()->IsType( idPhysics_AF::Type ) )
 		{
-			gameLocal.Warning( "teleported '%s' which has the articulated figure '%s' bound to it\n", GetName(), part->GetName() );
+			gameLocal->Warning( "teleported '%s' which has the articulated figure '%s' bound to it\n", GetName(), part->GetName() );
 		}
 	}
 }
@@ -5409,14 +5409,14 @@ void idEntity::Event_UpdateCameraTarget()
 	
 	target = spawnArgs.GetString( "cameraTarget" );
 	
-	cameraTarget = gameLocal.FindEntity( target );
+	cameraTarget = gameLocal->FindEntity( target );
 	
 	if( cameraTarget != NULL )
 	{
 		kv = cameraTarget->spawnArgs.MatchPrefix( "target", NULL );
 		while( kv )
 		{
-			idEntity* ent = gameLocal.FindEntity( kv->GetValue() );
+			idEntity* ent = gameLocal->FindEntity( kv->GetValue() );
 			if( ent != NULL && idStr::Icmp( ent->GetEntityDefName(), "target_null" ) == 0 )
 			{
 				dir = ent->GetPhysics()->GetOrigin() - cameraTarget->GetPhysics()->GetOrigin();
@@ -5498,7 +5498,7 @@ void idEntity::Event_Wait( float time )
 	
 	if( thread == NULL )
 	{
-		gameLocal.Error( "Event 'wait' called from outside thread" );
+		gameLocal->Error( "Event 'wait' called from outside thread" );
 		return;
 	}
 	
@@ -5538,25 +5538,25 @@ void idEntity::Event_CallFunction( const char* funcname )
 	thread = idThread::CurrentThread();
 	if( thread == NULL )
 	{
-		gameLocal.Error( "Event 'callFunction' called from outside thread" );
+		gameLocal->Error( "Event 'callFunction' called from outside thread" );
 		return;
 	}
 	
 	func = scriptObject.GetFunction( funcname );
 	if( func == NULL )
 	{
-		gameLocal.Error( "Unknown function '%s' in '%s'", funcname, scriptObject.GetTypeName() );
+		gameLocal->Error( "Unknown function '%s' in '%s'", funcname, scriptObject.GetTypeName() );
 		return;
 	}
 	
 	if( func->type->NumParameters() != 1 )
 	{
-		gameLocal.Error( "Function '%s' has the wrong number of parameters for 'callFunction'", funcname );
+		gameLocal->Error( "Function '%s' has the wrong number of parameters for 'callFunction'", funcname );
 		return;
 	}
 	if( !scriptObject.GetTypeDef()->Inherits( func->type->GetParmType( 0 ) ) )
 	{
-		gameLocal.Error( "Function '%s' is the wrong type for 'callFunction'", funcname );
+		gameLocal->Error( "Function '%s' is the wrong type for 'callFunction'", funcname );
 		return;
 	}
 	
@@ -5601,7 +5601,7 @@ void idEntity::Event_SetGui( int guiNum, const char* guiName )
 	}
 	else
 	{
-		gameLocal.Error( "Entity '%s' doesn't have a GUI %d", name.c_str(), guiNum );
+		gameLocal->Error( "Entity '%s' doesn't have a GUI %d", name.c_str(), guiNum );
 	}
 	
 }
@@ -5722,7 +5722,7 @@ void idEntity::ReadBindFromSnapshot( const idBitMsg& msg )
 	
 	if( ( bindEntityNum != ENTITYNUM_NONE ) && ( bindEntityNum < MAX_GENTITIES ) )
 	{
-		master = gameLocal.entities[ bindEntityNum ];
+		master = gameLocal->entities[ bindEntityNum ];
 		
 		bindOrientated = ( bindInfo >> GENTITYNUM_BITS ) & 1;
 		bindPos = ( bindInfo >> ( GENTITYNUM_BITS + 3 ) );
@@ -5897,16 +5897,16 @@ void idEntity::ServerSendEvent( int eventId, const idBitMsg* msg, bool saveEvent
 	}
 	
 	// prevent dupe events caused by frame re-runs
-	if( !gameLocal.isNewFrame )
+	if( !gameLocal->isNewFrame )
 	{
 		return;
 	}
 	
 	outMsg.InitWrite( msgBuf, sizeof( msgBuf ) );
 	outMsg.BeginWriting();
-	outMsg.WriteBits( gameLocal.GetSpawnId( this ), 32 );
+	outMsg.WriteBits( gameLocal->GetSpawnId( this ), 32 );
 	outMsg.WriteByte( eventId );
-	outMsg.WriteLong( gameLocal.time );
+	outMsg.WriteLong( gameLocal->time );
 	if( msg )
 	{
 		outMsg.WriteBits( msg->GetSize(), idMath::BitsForInteger( MAX_EVENT_PARAM_SIZE ) );
@@ -5927,7 +5927,7 @@ void idEntity::ServerSendEvent( int eventId, const idBitMsg* msg, bool saveEvent
 	
 	if( saveEvent )
 	{
-		gameLocal.SaveEntityNetworkEvent( this, eventId, msg );
+		gameLocal->SaveEntityNetworkEvent( this, eventId, msg );
 	}
 }
 
@@ -5947,16 +5947,16 @@ void idEntity::ClientSendEvent( int eventId, const idBitMsg* msg ) const
 	}
 	
 	// prevent dupe events caused by frame re-runs
-	if( !gameLocal.isNewFrame )
+	if( !gameLocal->isNewFrame )
 	{
 		return;
 	}
 	
 	outMsg.InitWrite( msgBuf, sizeof( msgBuf ) );
 	outMsg.BeginWriting();
-	outMsg.WriteBits( gameLocal.GetSpawnId( this ), 32 );
+	outMsg.WriteBits( gameLocal->GetSpawnId( this ), 32 );
 	outMsg.WriteByte( eventId );
-	outMsg.WriteLong( gameLocal.serverTime );
+	outMsg.WriteLong( gameLocal->serverTime );
 	if( msg )
 	{
 		outMsg.WriteBits( msg->GetSize(), idMath::BitsForInteger( MAX_EVENT_PARAM_SIZE ) );
@@ -6005,14 +6005,14 @@ bool idEntity::ClientReceiveEvent( int event, int time, const idBitMsg& msg )
 		case EVENT_STARTSOUNDSHADER:
 		{
 			// the sound stuff would early out
-			assert( gameLocal.isNewFrame );
-			if( time < gameLocal.realClientTime - 1000 )
+			assert( gameLocal->isNewFrame );
+			if( time < gameLocal->realClientTime - 1000 )
 			{
 				// too old, skip it ( reliable messages don't need to be parsed in full )
-				common->DPrintf( "ent 0x%x: start sound shader too old (%d ms)\n", entityNumber, gameLocal.realClientTime - time );
+				common->DPrintf( "ent 0x%x: start sound shader too old (%d ms)\n", entityNumber, gameLocal->realClientTime - time );
 				return true;
 			}
-			index = gameLocal.ClientRemapDecl( DECL_SOUND, msg.ReadLong() );
+			index = gameLocal->ClientRemapDecl( DECL_SOUND, msg.ReadLong() );
 			if( index >= 0 && index < declManager->GetNumDecls( DECL_SOUND ) )
 			{
 				shader = declManager->SoundByIndex( index, false );
@@ -6024,7 +6024,7 @@ bool idEntity::ClientReceiveEvent( int event, int time, const idBitMsg& msg )
 		case EVENT_STOPSOUNDSHADER:
 		{
 			// the sound stuff would early out
-			assert( gameLocal.isNewFrame );
+			assert( gameLocal->isNewFrame );
 			channel = ( s_channelType )msg.ReadByte();
 			StopSound( channel, false );
 			return true;
@@ -6205,7 +6205,7 @@ void idAnimatedEntity::Restore( idRestoreGame* savefile )
 		// set the callback to update the joints
 		renderEntity.callback = idEntity::ModelCallback;
 		animator.GetJoints( &renderEntity.numJoints, &renderEntity.joints );
-		animator.GetBounds( gameLocal.time, renderEntity.bounds );
+		animator.GetBounds( gameLocal->time, renderEntity.bounds );
 		if( modelDefHandle != -1 )
 		{
 			gameRenderWorld->UpdateEntityDef( modelDefHandle, &renderEntity );
@@ -6273,21 +6273,21 @@ void idAnimatedEntity::UpdateAnimation()
 	// call any frame commands that have happened in the past frame
 	if( !fl.hidden )
 	{
-		animator.ServiceAnims( gameLocal.previousTime, gameLocal.time );
+		animator.ServiceAnims( gameLocal->previousTime, gameLocal->time );
 	}
 	
 	// if the model is animating then we have to update it
-	if( !animator.FrameHasChanged( gameLocal.time ) )
+	if( !animator.FrameHasChanged( gameLocal->time ) )
 	{
 		// still fine the way it was
 		return;
 	}
 	
 	// get the latest frame bounds
-	animator.GetBounds( gameLocal.time, renderEntity.bounds );
+	animator.GetBounds( gameLocal->time, renderEntity.bounds );
 	if( renderEntity.bounds.IsCleared() && !fl.hidden )
 	{
-		gameLocal.DPrintf( "%d: inside out bounds\n", gameLocal.time );
+		gameLocal->DPrintf( "%d: inside out bounds\n", gameLocal->time );
 	}
 	
 	// update the renderEntity
@@ -6331,7 +6331,7 @@ void idAnimatedEntity::SetModel( const char* modelname )
 	// set the callback to update the joints
 	renderEntity.callback = idEntity::ModelCallback;
 	animator.GetJoints( &renderEntity.numJoints, &renderEntity.joints );
-	animator.GetBounds( gameLocal.time, renderEntity.bounds );
+	animator.GetBounds( gameLocal->time, renderEntity.bounds );
 	
 	UpdateVisuals();
 }
@@ -6404,7 +6404,7 @@ void idAnimatedEntity::AddDamageEffect( const trace_t& collision, const idVec3& 
 		return;
 	}
 	
-	const idDeclEntityDef* def = gameLocal.FindEntityDef( damageDefName, false );
+	const idDeclEntityDef* def = gameLocal->FindEntityDef( damageDefName, false );
 	if( def == NULL )
 	{
 		return;
@@ -6465,7 +6465,7 @@ void idAnimatedEntity::AddLocalDamageEffect( jointHandle_t jointNum, const idVec
 		type = GetDefaultSurfaceType();
 	}
 	
-	const char* materialType = gameLocal.sufaceTypeNames[ type ];
+	const char* materialType = gameLocal->sufaceTypeNames[ type ];
 	
 	// start impact sound based on material type
 	key = va( "snd_%s", materialType );
@@ -6481,14 +6481,14 @@ void idAnimatedEntity::AddLocalDamageEffect( jointHandle_t jointNum, const idVec
 	
 	// blood splats are thrown onto nearby surfaces
 	key = va( "mtr_splat_%s", materialType );
-	splat = spawnArgs.RandomPrefix( key, gameLocal.random );
+	splat = spawnArgs.RandomPrefix( key, gameLocal->random );
 	if( *splat == '\0' )
 	{
-		splat = def->dict.RandomPrefix( key, gameLocal.random );
+		splat = def->dict.RandomPrefix( key, gameLocal->random );
 	}
 	if( *splat != '\0' )
 	{
-		gameLocal.BloodSplat( origin, dir, 64.0f, splat );
+		gameLocal->BloodSplat( origin, dir, 64.0f, splat );
 	}
 	
 	// can't see wounds on the player model in single player mode
@@ -6496,10 +6496,10 @@ void idAnimatedEntity::AddLocalDamageEffect( jointHandle_t jointNum, const idVec
 	{
 		// place a wound overlay on the model
 		key = va( "mtr_wound_%s", materialType );
-		decal = spawnArgs.RandomPrefix( key, gameLocal.random );
+		decal = spawnArgs.RandomPrefix( key, gameLocal->random );
 		if( *decal == '\0' )
 		{
-			decal = def->dict.RandomPrefix( key, gameLocal.random );
+			decal = def->dict.RandomPrefix( key, gameLocal->random );
 		}
 		if( *decal != '\0' )
 		{
@@ -6524,7 +6524,7 @@ void idAnimatedEntity::AddLocalDamageEffect( jointHandle_t jointNum, const idVec
 		de->localOrigin = localOrigin;
 		de->localNormal = localNormal;
 		de->type = static_cast<const idDeclParticle*>( declManager->FindType( DECL_PARTICLE, bleed ) );
-		de->time = gameLocal.time;
+		de->time = gameLocal->time;
 	}
 }
 
@@ -6564,11 +6564,11 @@ void idAnimatedEntity::UpdateDamageEffects()
 		idVec3 origin, start;
 		idMat3 axis;
 		
-		animator.GetJointTransform( de->jointNum, gameLocal.time, origin, axis );
+		animator.GetJointTransform( de->jointNum, gameLocal->time, origin, axis );
 		axis *= renderEntity.axis;
 		origin = renderEntity.origin + origin * renderEntity.axis;
 		start = origin + de->localOrigin * axis;
-		if( !gameLocal.smokeParticles->EmitSmoke( de->type, de->time, gameLocal.random.CRandomFloat(), start, axis, timeGroup /*_D3XP*/ ) )
+		if( !gameLocal->smokeParticles->EmitSmoke( de->type, de->time, gameLocal->random.CRandomFloat(), start, axis, timeGroup /*_D3XP*/ ) )
 		{
 			de->time = 0;
 		}
@@ -6597,8 +6597,8 @@ bool idAnimatedEntity::ClientReceiveEvent( int event, int time, const idBitMsg& 
 			localOrigin[2] = msg.ReadFloat();
 			localNormal = msg.ReadDir( 24 );
 			localDir = msg.ReadDir( 24 );
-			damageDefIndex = gameLocal.ClientRemapDecl( DECL_ENTITYDEF, msg.ReadLong() );
-			materialIndex = gameLocal.ClientRemapDecl( DECL_MATERIAL, msg.ReadLong() );
+			damageDefIndex = gameLocal->ClientRemapDecl( DECL_ENTITYDEF, msg.ReadLong() );
+			materialIndex = gameLocal->ClientRemapDecl( DECL_MATERIAL, msg.ReadLong() );
 			const idDeclEntityDef* damageDef = static_cast<const idDeclEntityDef*>( declManager->DeclByIndex( DECL_ENTITYDEF, damageDefIndex ) );
 			const idMaterial* collisionMaterial = static_cast<const idMaterial*>( declManager->DeclByIndex( DECL_MATERIAL, materialIndex ) );
 			AddLocalDamageEffect( jointNum, localOrigin, localNormal, localDir, damageDef, collisionMaterial );
@@ -6689,9 +6689,9 @@ void idAnimatedEntity::Event_GetJointPos( jointHandle_t jointnum )
 	idVec3 offset;
 	idMat3 axis;
 	
-	if( !GetJointWorldTransform( jointnum, gameLocal.time, offset, axis ) )
+	if( !GetJointWorldTransform( jointnum, gameLocal->time, offset, axis ) )
 	{
-		gameLocal.Warning( "Joint # %d out of range on entity '%s'",  jointnum, name.c_str() );
+		gameLocal->Warning( "Joint # %d out of range on entity '%s'",  jointnum, name.c_str() );
 	}
 	
 	idThread::ReturnVector( offset );
@@ -6709,9 +6709,9 @@ void idAnimatedEntity::Event_GetJointAngle( jointHandle_t jointnum )
 	idVec3 offset;
 	idMat3 axis;
 	
-	if( !GetJointWorldTransform( jointnum, gameLocal.time, offset, axis ) )
+	if( !GetJointWorldTransform( jointnum, gameLocal->time, offset, axis ) )
 	{
-		gameLocal.Warning( "Joint # %d out of range on entity '%s'",  jointnum, name.c_str() );
+		gameLocal->Warning( "Joint # %d out of range on entity '%s'",  jointnum, name.c_str() );
 	}
 	
 	idAngles ang = axis.ToAngles();

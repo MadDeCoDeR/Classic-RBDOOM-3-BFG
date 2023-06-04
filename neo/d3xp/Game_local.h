@@ -809,7 +809,7 @@ private:
 //============================================================================
 
 #if !defined (GAME_DLL) && defined (__MONOLITH__)
-extern idGameLocal			gameLocal;
+extern idGameLocal*			gameLocal;
 #endif
 extern idAnimManager		animationLib;
 

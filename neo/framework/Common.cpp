@@ -1366,17 +1366,16 @@ void idCommonLocal::LoadGameDLL()
 			common->FatalError("wrong game DLL API version");
 			return;
 		}
-
 		game = gameExport.game;
 		gameEdit = gameExport.gameEdit;
 	}
-#endif
-	
-	// initialize the game object
-	if( game != NULL )
-	{
-		game->Init();
+#ifdef __MONOLITH__
+	else {
+		game = CreateGameInstance();
+		gameEdit = new idGameEdit();
 	}
+#endif
+#endif
 }
 
 /*
@@ -1404,6 +1403,10 @@ void idCommonLocal::UnloadGameDLL()
 	if( game != NULL )
 	{
 		game->Shutdown();
+		delete(game);
+	}
+	if (gameEdit != NULL) {
+		delete(gameEdit);
 	}
 	
 #ifdef __DOOM_DLL__
@@ -1537,10 +1540,10 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec default.cfg\n" );
 		cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "exec joy_360_0.cfg\n");
 		cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "exec joy_righty.cfg\n");
-#ifndef __MONOLITH__ //GK: Non Monolithic doesn't have the game object until it loads the dll
+//#ifndef __MONOLITH__ //GK: Non Monolithic doesn't have the game object until it loads the dll
 		// load the game dll
 		LoadGameDLL();	
-#endif
+//#endif
 #ifdef CONFIG_FILE
 		// skip the config file if "safe" is on the command line
 		if( !SafeMode() && !game->GetCVarBool("g_demoMode") )
@@ -1681,11 +1684,15 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// Init tool commands
 		InitCommands();
-#ifndef __MONOLITH__ //GK: Reload the dll just in case
-		UnloadGameDLL();
-#endif
+
 		// load the game dll
-		LoadGameDLL();
+		//LoadGameDLL();
+
+		// initialize the game object
+		if (game != NULL)
+		{
+			game->Init();
+		}
 		
 		// On the PC touch them all so they get included in the resource build
 		if( !fileSystem->UsingResourceFiles() )

@@ -331,7 +331,7 @@ void idTypeDef::AddFunctionParm( idTypeDef* parmtype, const char* _name )
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( "idTypeDef::AddFunctionParm : tried to add parameter on non-function type" );
 #else
-		gameLocal.Error( "idTypeDef::AddFunctionParm : tried to add parameter on non-function type" );
+		gameLocal->Error( "idTypeDef::AddFunctionParm : tried to add parameter on non-function type" );
 #endif
 	}
 	
@@ -354,7 +354,7 @@ void idTypeDef::AddField( idTypeDef* fieldtype, const char* _name )
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( "idTypeDef::AddField : tried to add field to non-object type" );
 #else
-		gameLocal.Error( "idTypeDef::AddField : tried to add field to non-object type" );
+		gameLocal->Error( "idTypeDef::AddField : tried to add field to non-object type" );
 #endif
 	}
 	
@@ -426,7 +426,7 @@ idTypeDef* idTypeDef::SuperClass() const
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( "idTypeDef::SuperClass : tried to get superclass of a non-object type" );
 #else
-		gameLocal.Error( "idTypeDef::SuperClass : tried to get superclass of a non-object type" );
+		gameLocal->Error( "idTypeDef::SuperClass : tried to get superclass of a non-object type" );
 #endif
 	}
 	
@@ -447,7 +447,7 @@ idTypeDef* idTypeDef::ReturnType() const
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( "idTypeDef::ReturnType: tried to get return type on non-function type" );
 #else
-		gameLocal.Error( "idTypeDef::ReturnType: tried to get return type on non-function type" );
+		gameLocal->Error( "idTypeDef::ReturnType: tried to get return type on non-function type" );
 #endif
 	}
 	
@@ -468,7 +468,7 @@ void idTypeDef::SetReturnType( idTypeDef* returntype )
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( "idTypeDef::SetReturnType: tried to set return type on non-function type" );
 #else
-		gameLocal.Error( "idTypeDef::SetReturnType: tried to set return type on non-function type" );
+		gameLocal->Error( "idTypeDef::SetReturnType: tried to set return type on non-function type" );
 #endif
 	}
 	
@@ -489,7 +489,7 @@ idTypeDef* idTypeDef::FieldType() const
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( "idTypeDef::FieldType: tried to get field type on non-field type" );
 #else
-		gameLocal.Error( "idTypeDef::FieldType: tried to get field type on non-field type" );
+		gameLocal->Error( "idTypeDef::FieldType: tried to get field type on non-field type" );
 #endif
 	}
 	
@@ -510,7 +510,7 @@ void idTypeDef::SetFieldType( idTypeDef* fieldtype )
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( "idTypeDef::SetFieldType: tried to set return type on non-function type" );
 #else
-		gameLocal.Error( "idTypeDef::SetFieldType: tried to set return type on non-function type" );
+		gameLocal->Error( "idTypeDef::SetFieldType: tried to set return type on non-function type" );
 #endif
 	}
 	
@@ -531,7 +531,7 @@ idTypeDef* idTypeDef::PointerType() const
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( "idTypeDef::PointerType: tried to get pointer type on non-pointer" );
 #else
-		gameLocal.Error( "idTypeDef::PointerType: tried to get pointer type on non-pointer" );
+		gameLocal->Error( "idTypeDef::PointerType: tried to get pointer type on non-pointer" );
 #endif
 	}
 	
@@ -552,7 +552,7 @@ void idTypeDef::SetPointerType( idTypeDef* pointertype )
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( "idTypeDef::SetPointerType: tried to set type on non-pointer" );
 #else
-		gameLocal.Error( "idTypeDef::SetPointerType: tried to set type on non-pointer" );
+		gameLocal->Error( "idTypeDef::SetPointerType: tried to set type on non-pointer" );
 #endif
 	}
 	
@@ -836,7 +836,7 @@ void idVarDef::SetValue( const eval_t& _value, bool constant )
 #if defined(USE_EXCEPTIONS)
 			throw idCompileError( va( "weird type on '%s'", Name() ) );
 #else
-			gameLocal.Error( "weird type on '%s'", Name() );
+			gameLocal->Error( "weird type on '%s'", Name() );
 #endif
 			break;
 	}
@@ -886,8 +886,8 @@ void idVarDef::PrintInfo( idFile* file, int instructionPointer ) const
 	{
 		case ev_jumpoffset :
 			jumpto = instructionPointer + value.jumpOffset;
-			jumpst = &gameLocal.GetProgram()->GetStatement( jumpto );
-			file->Printf( "address %d [%s(%d)]", jumpto, gameLocal.GetProgram()->GetFilename( jumpst->file ), jumpst->linenumber );
+			jumpst = &gameLocal->GetProgram()->GetStatement( jumpto );
+			file->Printf( "address %d [%s(%d)]", jumpto, gameLocal->GetProgram()->GetFilename( jumpst->file ), jumpst->linenumber );
 			break;
 			
 		case ev_function :
@@ -1128,7 +1128,7 @@ bool idScriptObject::SetType( const char* typeName )
 	idTypeDef* newtype;
 	
 	// lookup the type
-	newtype = gameLocal.GetProgram()->FindType( typeName );
+	newtype = gameLocal->GetProgram()->FindType( typeName );
 	
 	// only allocate memory if the object type changes
 	if( newtype != type )
@@ -1136,13 +1136,13 @@ bool idScriptObject::SetType( const char* typeName )
 		Free();
 		if( !newtype )
 		{
-			gameLocal.Warning( "idScriptObject::SetType: Unknown type '%s'", typeName );
+			gameLocal->Warning( "idScriptObject::SetType: Unknown type '%s'", typeName );
 			return false;
 		}
 		
 		if( !newtype->Inherits( &type_object ) )
 		{
-			gameLocal.Warning( "idScriptObject::SetType: Can't create object of type '%s'.  Must be an object type.", newtype->Name() );
+			gameLocal->Warning( "idScriptObject::SetType: Can't create object of type '%s'.  Must be an object type.", newtype->Name() );
 			return false;
 		}
 		
@@ -1249,7 +1249,7 @@ const function_t* idScriptObject::GetFunction( const char* name ) const
 		return NULL;
 	}
 	
-	func = gameLocal.GetProgram()->FindFunction( name, type );
+	func = gameLocal->GetProgram()->FindFunction( name, type );
 	return func;
 }
 
@@ -1443,7 +1443,7 @@ byte* idProgram::ReserveDefMemory( int size )
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( va( "Exceeded global memory size (%zd bytes)", sizeof( variables ) ) );
 #else
-		gameLocal.Error( "Exceeded global memory size (%zd bytes)", sizeof( variables ) );
+		gameLocal->Error( "Exceeded global memory size (%zd bytes)", sizeof( variables ) );
 #endif
 	}
 	
@@ -1661,7 +1661,7 @@ idVarDef* idProgram::GetDef( const idTypeDef* type, const char* name, const idVa
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( va( "Type mismatch on redeclaration of %s", name ) );
 #else
-		gameLocal.Error( "Type mismatch on redeclaration of %s", name );
+		gameLocal->Error( "Type mismatch on redeclaration of %s", name );
 #endif
 	}
 	
@@ -1849,7 +1849,7 @@ function_t& idProgram::AllocFunction( idVarDef* def )
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( va( "Exceeded maximum allowed number of functions (%d)", functions.Max() ) );
 #else
-		gameLocal.Error( "Exceeded maximum allowed number of functions (%d)", functions.Max() );
+		gameLocal->Error( "Exceeded maximum allowed number of functions (%d)", functions.Max() );
 #endif
 	}
 	
@@ -1910,7 +1910,7 @@ statement_t* idProgram::AllocStatement()
 #if defined(USE_EXCEPTIONS)
 		throw idCompileError( va( "Exceeded maximum allowed number of statements (%d)", statements.Max() ) );
 #else
-		gameLocal.Error( "Exceeded maximum allowed number of statements (%d)", statements.Max() );
+		gameLocal->Error( "Exceeded maximum allowed number of statements (%d)", statements.Max() );
 #endif
 	}
 	return statements.Alloc();
@@ -1957,7 +1957,7 @@ void idProgram::BeginCompilation()
 #if defined(USE_EXCEPTIONS)
 	catch( idCompileError& err )
 	{
-		gameLocal.Error( "%s", err.GetError() );
+		gameLocal->Error( "%s", err.GetError() );
 	}
 #endif
 }
@@ -2077,13 +2077,13 @@ void idProgram::CompileStats()
 	int funcMem;
 	int	i;
 	
-	gameLocal.Printf( "---------- Compile stats ----------\n" );
-	gameLocal.DPrintf( "Files loaded:\n" );
+	gameLocal->Printf( "---------- Compile stats ----------\n" );
+	gameLocal->DPrintf( "Files loaded:\n" );
 	
 	stringspace = 0;
 	for( i = 0; i < fileList.Num(); i++ )
 	{
-		gameLocal.DPrintf( "   %s\n", fileList[ i ].c_str() );
+		gameLocal->DPrintf( "   %s\n", fileList[ i ].c_str() );
 		stringspace += fileList[ i ].Allocated();
 	}
 	stringspace += fileList.Size();
@@ -2110,15 +2110,15 @@ void idProgram::CompileStats()
 	memused += functions.MemoryUsed();	// name and filename of functions are shared, so no need to include them
 	memused += sizeof( variables );
 	
-	gameLocal.Printf( "\nMemory usage:\n" );
-	gameLocal.Printf( "     Strings: %d, %d bytes\n", fileList.Num(), stringspace );
-	gameLocal.Printf( "  Statements: %d, %d bytes\n", statements.Num(), statements.MemoryUsed() );
-	gameLocal.Printf( "   Functions: %d, %d bytes\n", functions.Num(), funcMem );
-	gameLocal.Printf( "   Variables: %d bytes\n", numVariables );
-	gameLocal.Printf( "    Mem used: %d bytes\n", memused );
-	gameLocal.Printf( " Static data: %d bytes\n", sizeof( idProgram ) );
-	gameLocal.Printf( "   Allocated: %d bytes\n", memallocated );
-	gameLocal.Printf( " Thread size: %d bytes\n\n", sizeof( idThread ) );
+	gameLocal->Printf( "\nMemory usage:\n" );
+	gameLocal->Printf( "     Strings: %d, %d bytes\n", fileList.Num(), stringspace );
+	gameLocal->Printf( "  Statements: %d, %d bytes\n", statements.Num(), statements.MemoryUsed() );
+	gameLocal->Printf( "   Functions: %d, %d bytes\n", functions.Num(), funcMem );
+	gameLocal->Printf( "   Variables: %d bytes\n", numVariables );
+	gameLocal->Printf( "    Mem used: %d bytes\n", memused );
+	gameLocal->Printf( " Static data: %d bytes\n", sizeof( idProgram ) );
+	gameLocal->Printf( "   Allocated: %d bytes\n", memallocated );
+	gameLocal->Printf( " Thread size: %d bytes\n\n", sizeof( idThread ) );
 }
 
 /*
@@ -2154,7 +2154,7 @@ bool idProgram::CompileText( const char* source, const char* text, bool console 
 #if defined(USE_EXCEPTIONS)
 					throw idCompileError( va( "function %s was not defined\n", def->GlobalName() ) );
 #else
-					gameLocal.Error( "function %s was not defined\n", def->GlobalName() );
+					gameLocal->Error( "function %s was not defined\n", def->GlobalName() );
 #endif
 				}
 			}
@@ -2165,12 +2165,12 @@ bool idProgram::CompileText( const char* source, const char* text, bool console 
 	{
 		if( console )
 		{
-			gameLocal.Printf( "%s\n", err.GetError() );
+			gameLocal->Printf( "%s\n", err.GetError() );
 			return false;
 		}
 		else
 		{
-			gameLocal.Error( "%s\n", err.GetError() );
+			gameLocal->Error( "%s\n", err.GetError() );
 		}
 	};
 #endif
@@ -2201,7 +2201,7 @@ const function_t* idProgram::CompileFunction( const char* functionName, const ch
 	
 	if( !result )
 	{
-		gameLocal.Error( "Compile failed." );
+		gameLocal->Error( "Compile failed." );
 	}
 	
 	return FindFunction( functionName );
@@ -2219,7 +2219,7 @@ void idProgram::CompileFile( const char* _filename )
 	
 	if( fileSystem->ReadFile( _filename, ( void** )&src, NULL ) < 0 )
 	{
-		gameLocal.Error( "Couldn't load %s\n", _filename );
+		gameLocal->Error( "Couldn't load %s\n", _filename );
 	}
 	
 	result = CompileText( _filename, src, false );
@@ -2233,7 +2233,7 @@ void idProgram::CompileFile( const char* _filename )
 	
 	if( !result )
 	{
-		gameLocal.Error( "Compile failed in file %s.", _filename );
+		gameLocal->Error( "Compile failed in file %s.", _filename );
 	}
 }
 
@@ -2291,7 +2291,7 @@ idProgram::Startup
 */
 void idProgram::Startup( const char* defaultScript )
 {
-	gameLocal.Printf( "Initializing scripts\n" );
+	gameLocal->Printf( "Initializing scripts\n" );
 	
 	// make sure all data is freed up
 	idThread::Restart();

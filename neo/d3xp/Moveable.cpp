@@ -109,7 +109,7 @@ void idMoveable::Spawn()
 	
 	if( !collisionModelManager->TrmFromModel( clipModelName, trm ) )
 	{
-		gameLocal.Error( "idMoveable '%s': cannot load collision model %s", name.c_str(), clipModelName.c_str() );
+		gameLocal->Error( "idMoveable '%s': cannot load collision model %s", name.c_str(), clipModelName.c_str() );
 		return;
 	}
 	
@@ -151,7 +151,7 @@ void idMoveable::Spawn()
 	{
 		if( brokenModel != "" && !renderModelManager->CheckModel( brokenModel ) )
 		{
-			gameLocal.Error( "idMoveable '%s' at (%s): cannot load broken model '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), brokenModel.c_str() );
+			gameLocal->Error( "idMoveable '%s' at (%s): cannot load broken model '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString( 0 ), brokenModel.c_str() );
 		}
 	}
 	
@@ -163,7 +163,7 @@ void idMoveable::Spawn()
 	physicsObj.SetAxis( GetPhysics()->GetAxis() );
 	physicsObj.SetBouncyness( bouncyness );
 	physicsObj.SetFriction( 0.6f, 0.6f, friction );
-	physicsObj.SetGravity( gameLocal.GetGravity() );
+	physicsObj.SetGravity( gameLocal->GetGravity() );
 	physicsObj.SetContents( CONTENTS_SOLID );
 	physicsObj.SetClipMask( MASK_SOLID | CONTENTS_BODY | CONTENTS_CORPSE | CONTENTS_MOVEABLECLIP );
 	SetPhysics( &physicsObj );
@@ -301,7 +301,7 @@ bool idMoveable::Collide( const trace_t& collision, const idVec3& velocity )
 	idEntity* ent;
 	
 	v = -( velocity * collision.c.normal );
-	if( v > BOUNCE_SOUND_MIN_VELOCITY && gameLocal.time > nextSoundTime )
+	if( v > BOUNCE_SOUND_MIN_VELOCITY && gameLocal->time > nextSoundTime )
 	{
 		f = v > BOUNCE_SOUND_MAX_VELOCITY ? 1.0f : idMath::Sqrt( v - BOUNCE_SOUND_MIN_VELOCITY ) * ( 1.0f / idMath::Sqrt( BOUNCE_SOUND_MAX_VELOCITY - BOUNCE_SOUND_MIN_VELOCITY ) );
 		if( StartSound( "snd_bounce", SND_CHANNEL_ANY, 0, false, NULL ) )
@@ -310,18 +310,18 @@ bool idMoveable::Collide( const trace_t& collision, const idVec3& velocity )
 			// which causes footsteps on ai's to not honor their shader parms
 			SetSoundVolume( f );
 		}
-		nextSoundTime = gameLocal.time + 500;
+		nextSoundTime = gameLocal->time + 500;
 	}
 	
 	// _D3XP :: changes relating to the addition of monsterDamage
-	if( !common->IsClient() && canDamage && gameLocal.time > nextDamageTime )
+	if( !common->IsClient() && canDamage && gameLocal->time > nextDamageTime )
 	{
 		bool hasDamage = damage.Length() > 0;
 		bool hasMonsterDamage = monsterDamage.Length() > 0;
 		
 		if( hasDamage || hasMonsterDamage )
 		{
-			ent = gameLocal.entities[ collision.c.entityNum ];
+			ent = gameLocal->entities[ collision.c.entityNum ];
 			if( ent && v > minDamageVelocity )
 			{
 				f = v > maxDamageVelocity ? 1.0f : idMath::Sqrt( v - minDamageVelocity ) * ( 1.0f / idMath::Sqrt( maxDamageVelocity - minDamageVelocity ) );
@@ -356,7 +356,7 @@ bool idMoveable::Collide( const trace_t& collision, const idVec3& velocity )
 					}
 				}
 				
-				nextDamageTime = gameLocal.time + 1000;
+				nextDamageTime = gameLocal->time + 1000;
 			}
 		}
 	}
@@ -371,10 +371,10 @@ bool idMoveable::Collide( const trace_t& collision, const idVec3& velocity )
 		}
 	}
 	
-	if( fxCollide.Length() && gameLocal.time > nextCollideFxTime )
+	if( fxCollide.Length() && gameLocal->time > nextCollideFxTime )
 	{
 		idEntityFx::StartFx( fxCollide, &collision.c.point, NULL, this, false );
-		nextCollideFxTime = gameLocal.time + 3500;
+		nextCollideFxTime = gameLocal->time + 3500;
 	}
 	
 	return false;
@@ -488,13 +488,13 @@ bool idMoveable::FollowInitialSplinePath()
 {
 	if( initialSpline != NULL )
 	{
-		if( gameLocal.time < initialSpline->GetTime( initialSpline->GetNumValues() - 1 ) )
+		if( gameLocal->time < initialSpline->GetTime( initialSpline->GetNumValues() - 1 ) )
 		{
-			idVec3 splinePos = initialSpline->GetCurrentValue( gameLocal.time );
+			idVec3 splinePos = initialSpline->GetCurrentValue( gameLocal->time );
 			idVec3 linearVelocity = ( splinePos - physicsObj.GetOrigin() ) * com_engineHz_latched;
 			physicsObj.SetLinearVelocity( linearVelocity );
 			
-			idVec3 splineDir = initialSpline->GetCurrentFirstDerivative( gameLocal.time );
+			idVec3 splineDir = initialSpline->GetCurrentFirstDerivative( gameLocal->time );
 			idVec3 dir = initialSplineDir * physicsObj.GetAxis();
 			idVec3 angularVelocity = dir.Cross( splineDir );
 			angularVelocity.Normalize();
@@ -643,7 +643,7 @@ void idMoveable::Event_Activate( idEntity* activator )
 		PostEventSec( &EV_SetAngularVelocity, delay, init_avelocity );
 	}
 	
-	InitInitialSpline( gameLocal.time );
+	InitInitialSpline( gameLocal->time );
 }
 
 /*
@@ -657,7 +657,7 @@ void idMoveable::Event_SetOwnerFromSpawnArgs()
 	
 	if( spawnArgs.GetString( "owner", "", owner ) )
 	{
-		ProcessEvent( &EV_SetOwner, gameLocal.FindEntity( owner ) );
+		ProcessEvent( &EV_SetOwner, gameLocal->FindEntity( owner ) );
 	}
 }
 
@@ -1034,7 +1034,7 @@ void idExplodingBarrel::UpdateLight()
 		if( state == BURNING )
 		{
 			// ramp the color up over 250 ms
-			float pct = ( gameLocal.serverTime - lightTime ) / 250.f;
+			float pct = ( gameLocal->serverTime - lightTime ) / 250.f;
 			if( pct > 1.0f )
 			{
 				pct = 1.0f;
@@ -1049,7 +1049,7 @@ void idExplodingBarrel::UpdateLight()
 		}
 		else
 		{
-			if( gameLocal.serverTime - lightTime > 250 )
+			if( gameLocal->serverTime - lightTime > 250 )
 			{
 				gameRenderWorld->FreeLightDef( lightDefHandle );
 				lightDefHandle = -1;
@@ -1173,15 +1173,15 @@ void idExplodingBarrel::AddParticles( const char* _name, bool burn )
 			particleRenderEntity.shaderParms[ SHADERPARM_GREEN ] = rgb;
 			particleRenderEntity.shaderParms[ SHADERPARM_BLUE ] = rgb;
 			particleRenderEntity.shaderParms[ SHADERPARM_ALPHA ] = rgb;
-			particleRenderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.realClientTime );
-			particleRenderEntity.shaderParms[ SHADERPARM_DIVERSITY ] = ( burn ) ? 1.0f : gameLocal.random.RandomInt( 90 );
+			particleRenderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal->realClientTime );
+			particleRenderEntity.shaderParms[ SHADERPARM_DIVERSITY ] = ( burn ) ? 1.0f : gameLocal->random.RandomInt( 90 );
 			particleRenderEntity.timeGroup = explicitTimeGroup;
 			particleModelDefHandle = gameRenderWorld->AddEntityDef( &particleRenderEntity );
 			if( burn )
 			{
 				BecomeActive( TH_THINK );
 			}
-			particleTime = gameLocal.realClientTime;
+			particleTime = gameLocal->realClientTime;
 		}
 	}
 }
@@ -1210,7 +1210,7 @@ void idExplodingBarrel::AddLight( const char* _name, bool burn )
 	light.shaderParms[ SHADERPARM_BLUE ] = 2.0f;
 	light.shaderParms[ SHADERPARM_ALPHA ] = 2.0f;
 	lightDefHandle = gameRenderWorld->AddLightDef( &light );
-	lightTime = gameLocal.serverTime;
+	lightTime = gameLocal->serverTime;
 	BecomeActive( TH_THINK );
 }
 
@@ -1247,7 +1247,7 @@ void idExplodingBarrel::ExplodingEffects()
 	temp = spawnArgs.GetString( "mtr_burnmark" );
 	if( *temp != '\0' )
 	{
-		gameLocal.ProjectDecal( GetPhysics()->GetOrigin(), GetPhysics()->GetGravity(), 128.0f, true, 96.0f, temp );
+		gameLocal->ProjectDecal( GetPhysics()->GetOrigin(), GetPhysics()->GetGravity(), 128.0f, true, 96.0f, temp );
 	}
 }
 
@@ -1288,7 +1288,7 @@ void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* _attacker, int _d
 			byte		msgBuf[MAX_EVENT_PARAM_SIZE];
 			
 			msg.InitWrite( msgBuf, sizeof( msgBuf ) );
-			msg.WriteLong( gameLocal.time );
+			msg.WriteLong( gameLocal->time );
 			ServerSendEvent( EVENT_EXPLODE, &msg, false );
 		}
 	}
@@ -1300,7 +1300,7 @@ void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* _attacker, int _d
 	const char* splash = spawnArgs.GetString( "def_splash_damage", "damage_explosion" );
 	if( splash != NULL && *splash != '\0' )
 	{
-		gameLocal.RadiusDamage( GetPhysics()->GetOrigin(), this, _attacker, this, this, splash );
+		gameLocal->RadiusDamage( GetPhysics()->GetOrigin(), this, _attacker, this, this, splash );
 	}
 	
 	ExplodingEffects( );
@@ -1310,7 +1310,7 @@ void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* _attacker, int _d
 	// bool first = true;
 	while( kv != NULL )
 	{
-		const idDict* debris_args = gameLocal.FindEntityDefDict( kv->GetValue(), false );
+		const idDict* debris_args = gameLocal->FindEntityDefDict( kv->GetValue(), false );
 		if( debris_args )
 		{
 			idEntity* ent;
@@ -1320,23 +1320,23 @@ void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* _attacker, int _d
 			dir_ = physicsObj.GetAxis()[1];
 			//	first = false;
 			//} else {
-			dir_.x += gameLocal.random.CRandomFloat() * 4.0f;
-			dir_.y += gameLocal.random.CRandomFloat() * 4.0f;
-			//dir_.z = gameLocal.random.RandomFloat() * 8.0f;
+			dir_.x += gameLocal->random.CRandomFloat() * 4.0f;
+			dir_.y += gameLocal->random.CRandomFloat() * 4.0f;
+			//dir_.z = gameLocal->random.RandomFloat() * 8.0f;
 			//}
 			dir_.Normalize();
 			
-			gameLocal.SpawnEntityDef( *debris_args, &ent, false );
+			gameLocal->SpawnEntityDef( *debris_args, &ent, false );
 			if( ent == NULL || !ent->IsType( idDebris::Type ) )
 			{
-				gameLocal.Error( "'projectile_debris' is not an idDebris" );
+				gameLocal->Error( "'projectile_debris' is not an idDebris" );
 				break;
 			}
 			
 			debris = static_cast<idDebris*>( ent );
 			debris->Create( this, physicsObj.GetOrigin(), dir_.ToMat3() );
 			debris->Launch();
-			debris->GetRenderEntity()->shaderParms[ SHADERPARM_TIME_OF_DEATH ] = ( gameLocal.time + 1500 ) * 0.001f;
+			debris->GetRenderEntity()->shaderParms[ SHADERPARM_TIME_OF_DEATH ] = ( gameLocal->time + 1500 ) * 0.001f;
 			debris->UpdateVisuals();
 			
 		}
@@ -1363,7 +1363,7 @@ void idExplodingBarrel::Killed( idEntity* inflictor, idEntity* _attacker, int _d
 	}
 	
 	// Any time a barrel explodes, attribute it towards the 'Boomtastic' achievement, since there's no way a barrel can explode without player interference
-	idPlayer* player = gameLocal.GetLocalPlayer();
+	idPlayer* player = gameLocal->GetLocalPlayer();
 	if( player != NULL && !common->IsMultiplayer() )
 	{
 		player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_DESTROY_BARRELS );
@@ -1379,10 +1379,10 @@ void idExplodingBarrel::Damage( idEntity* inflictor, idEntity* _attacker, const 
 								const char* damageDefName, const float damageScale, const int location )
 {
 
-	const idDict* damageDef = gameLocal.FindEntityDefDict( damageDefName );
+	const idDict* damageDef = gameLocal->FindEntityDefDict( damageDefName );
 	if( damageDef == NULL )
 	{
-		gameLocal.Error( "Unknown damageDef '%s'\n", damageDefName );
+		gameLocal->Error( "Unknown damageDef '%s'\n", damageDefName );
 		return;
 	}
 	if( damageDef->FindKey( "radius" ) && GetPhysics()->GetContents() != 0 && GetBindMaster() == NULL )
@@ -1431,13 +1431,13 @@ void idExplodingBarrel::Event_Respawn()
 	if( minRespawnDist )
 	{
 		float minDist = -1;
-		for( i = 0; i < gameLocal.numClients; i++ )
+		for( i = 0; i < gameLocal->numClients; i++ )
 		{
-			if( !gameLocal.entities[ i ] || !gameLocal.entities[ i ]->IsType( idPlayer::Type ) )
+			if( !gameLocal->entities[ i ] || !gameLocal->entities[ i ]->IsType( idPlayer::Type ) )
 			{
 				continue;
 			}
-			idVec3 v = gameLocal.entities[ i ]->GetPhysics()->GetOrigin() - GetPhysics()->GetOrigin();
+			idVec3 v = gameLocal->entities[ i ]->GetPhysics()->GetOrigin() - GetPhysics()->GetOrigin();
 			float dist = v.Length();
 			if( minDist < 0 || dist < minDist )
 			{
@@ -1518,7 +1518,7 @@ bool idExplodingBarrel::ClientReceiveEvent( int event, int _time, const idBitMsg
 	{
 		case EVENT_EXPLODE:
 		{
-			if( gameLocal.realClientTime - msg.ReadLong() < spawnArgs.GetInt( "explode_lapse", "1000" ) )
+			if( gameLocal->realClientTime - msg.ReadLong() < spawnArgs.GetInt( "explode_lapse", "1000" ) )
 			{
 				ExplodingEffects( );
 			}

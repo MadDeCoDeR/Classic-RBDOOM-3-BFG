@@ -227,7 +227,7 @@ bool idPhysics_Player::SlideMove( bool gravity, bool stepUp, bool stepDown, bool
 		end = current.origin + time_left * current.velocity;
 		
 		// see if we can make it there
-		gameLocal.GetClip()->Translation( trace, current.origin, end, clipModel, clipModel->GetAxis(), clipMask, self );
+		gameLocal->GetClip()->Translation( trace, current.origin, end, clipModel, clipModel->GetAxis(), clipMask, self );
 		
 		time_left -= time_left * trace.fraction;
 		current.origin = trace.endpos;
@@ -251,7 +251,7 @@ bool idPhysics_Player::SlideMove( bool gravity, bool stepUp, bool stepDown, bool
 				// trace down to see if the player is near the ground
 				// step checking when near the ground allows the player to move up stairs smoothly while jumping
 				stepEnd = current.origin + maxStepHeight * gravityNormal;
-				gameLocal.GetClip()->Translation( downTrace, current.origin, stepEnd, clipModel, clipModel->GetAxis(), clipMask, self );
+				gameLocal->GetClip()->Translation( downTrace, current.origin, stepEnd, clipModel, clipModel->GetAxis(), clipMask, self );
 				nearGround = ( downTrace.fraction < 1.0f && ( downTrace.c.normal * -gravityNormal ) > MIN_WALK_NORMAL );
 			}
 			
@@ -261,15 +261,15 @@ bool idPhysics_Player::SlideMove( bool gravity, bool stepUp, bool stepDown, bool
 			
 				// step up
 				stepEnd = current.origin - maxStepHeight * gravityNormal;
-				gameLocal.GetClip()->Translation( downTrace, current.origin, stepEnd, clipModel, clipModel->GetAxis(), clipMask, self );
+				gameLocal->GetClip()->Translation( downTrace, current.origin, stepEnd, clipModel, clipModel->GetAxis(), clipMask, self );
 				
 				// trace along velocity
 				stepEnd = downTrace.endpos + time_left * current.velocity;
-				gameLocal.GetClip()->Translation( stepTrace, downTrace.endpos, stepEnd, clipModel, clipModel->GetAxis(), clipMask, self );
+				gameLocal->GetClip()->Translation( stepTrace, downTrace.endpos, stepEnd, clipModel, clipModel->GetAxis(), clipMask, self );
 				
 				// step down
 				stepEnd = stepTrace.endpos + maxStepHeight * gravityNormal;
-				gameLocal.GetClip()->Translation( downTrace, stepTrace.endpos, stepEnd, clipModel, clipModel->GetAxis(), clipMask, self );
+				gameLocal->GetClip()->Translation( downTrace, stepTrace.endpos, stepEnd, clipModel, clipModel->GetAxis(), clipMask, self );
 				
 				if( downTrace.fraction >= 1.0f || ( downTrace.c.normal * -gravityNormal ) > MIN_WALK_NORMAL )
 				{
@@ -311,7 +311,7 @@ bool idPhysics_Player::SlideMove( bool gravity, bool stepUp, bool stepDown, bool
 			pushFlags = PUSHFL_CLIP | PUSHFL_ONLYMOVEABLE | PUSHFL_NOGROUNDENTITIES | PUSHFL_APPLYIMPULSE;
 			
 			// clip & push
-			totalMass = gameLocal.push.ClipTranslationalPush( trace, self, pushFlags, end, end - current.origin );
+			totalMass = gameLocal->push.ClipTranslationalPush( trace, self, pushFlags, end, end - current.origin );
 			
 			if( totalMass > 0.0f )
 			{
@@ -447,7 +447,7 @@ bool idPhysics_Player::SlideMove( bool gravity, bool stepUp, bool stepDown, bool
 	if( stepDown && groundPlane )
 	{
 		stepEnd = current.origin + gravityNormal * maxStepHeight;
-		gameLocal.GetClip()->Translation( downTrace, current.origin, stepEnd, clipModel, clipModel->GetAxis(), clipMask, self );
+		gameLocal->GetClip()->Translation( downTrace, current.origin, stepEnd, clipModel, clipModel->GetAxis(), clipMask, self );
 		if( downTrace.fraction > 1e-4f && downTrace.fraction < 1.0f )
 		{
 			current.stepUp -= ( downTrace.endpos - current.origin ) * gravityNormal;
@@ -822,7 +822,7 @@ void idPhysics_Player::WalkMove()
 		return;
 	}
 	
-	gameLocal.push.InitSavingPushedEntityPositions();
+	gameLocal->push.InitSavingPushedEntityPositions();
 	
 	idPhysics_Player::SlideMove( false, true, true, true );
 }
@@ -1045,7 +1045,7 @@ void idPhysics_Player::CorrectAllSolid( trace_t& trace, int contents )
 {
 	if( debugLevel )
 	{
-		gameLocal.Printf( "%i:allsolid\n", c_pmove );
+		gameLocal->Printf( "%i:allsolid\n", c_pmove );
 	}
 	
 	// FIXME: jitter around to find a free spot ?
@@ -1103,7 +1103,7 @@ void idPhysics_Player::CheckGround()
 		groundTrace.fraction = 1.0f;
 	}
 	
-	contents = gameLocal.GetClip()->Contents( current.origin, clipModel, clipModel->GetAxis(), -1, self );
+	contents = gameLocal->GetClip()->Contents( current.origin, clipModel, clipModel->GetAxis(), -1, self );
 	if( contents & MASK_SOLID )
 	{
 		// do something corrective if stuck in solid
@@ -1120,14 +1120,14 @@ void idPhysics_Player::CheckGround()
 	}
 	
 	groundMaterial = groundTrace.c.material;
-	groundEntityPtr = gameLocal.entities[ groundTrace.c.entityNum ];
+	groundEntityPtr = gameLocal->entities[ groundTrace.c.entityNum ];
 	
 	// check if getting thrown off the ground
 	if( ( current.velocity * -gravityNormal ) > 0.0f && ( current.velocity * groundTrace.c.normal ) > 10.0f )
 	{
 		if( debugLevel )
 		{
-			gameLocal.Printf( "%i:kickoff\n", c_pmove );
+			gameLocal->Printf( "%i:kickoff\n", c_pmove );
 		}
 		
 		groundPlane = false;
@@ -1140,7 +1140,7 @@ void idPhysics_Player::CheckGround()
 	{
 		if( debugLevel )
 		{
-			gameLocal.Printf( "%i:steep\n", c_pmove );
+			gameLocal->Printf( "%i:steep\n", c_pmove );
 		}
 		
 		// FIXME: if they can't slide down the slope, let them walk (sharp crevices)
@@ -1226,7 +1226,7 @@ void idPhysics_Player::CheckDuck()
 			{
 				// try to stand up
 				end = current.origin - ( pm_normalheight.GetFloat() - pm_crouchheight.GetFloat() ) * gravityNormal;
-				gameLocal.GetClip()->Translation( trace, current.origin, end, clipModel, clipModel->GetAxis(), clipMask, self );
+				gameLocal->GetClip()->Translation( trace, current.origin, end, clipModel, clipModel->GetAxis(), clipMask, self );
 				if( trace.fraction >= 1.0f )
 				{
 					current.movementFlags &= ~PMF_DUCKED;
@@ -1298,7 +1298,7 @@ void idPhysics_Player::CheckLadder()
 	}
 	
 	end = current.origin + tracedist * forward;
-	gameLocal.GetClip()->Translation( trace, current.origin, end, clipModel, clipModel->GetAxis(), clipMask, self );
+	gameLocal->GetClip()->Translation( trace, current.origin, end, clipModel, clipModel->GetAxis(), clipMask, self );
 	
 	// if near a surface
 	if( trace.fraction < 1.0f )
@@ -1310,10 +1310,10 @@ void idPhysics_Player::CheckLadder()
 		
 			// check a step height higher
 			end = current.origin - gravityNormal * ( maxStepHeight * 0.75f );
-			gameLocal.GetClip()->Translation( trace, current.origin, end, clipModel, clipModel->GetAxis(), clipMask, self );
+			gameLocal->GetClip()->Translation( trace, current.origin, end, clipModel, clipModel->GetAxis(), clipMask, self );
 			start = trace.endpos;
 			end = start + tracedist * forward;
-			gameLocal.GetClip()->Translation( trace, start, end, clipModel, clipModel->GetAxis(), clipMask, self );
+			gameLocal->GetClip()->Translation( trace, start, end, clipModel, clipModel->GetAxis(), clipMask, self );
 			
 			// if also near a surface a step height higher
 			if( trace.fraction < 1.0f )
@@ -1395,14 +1395,14 @@ bool idPhysics_Player::CheckWaterJump()
 	
 	spot = current.origin + 30.0f * flatforward;
 	spot -= 4.0f * gravityNormal;
-	cont = gameLocal.GetClip()->Contents( spot, NULL, mat3_identity, -1, self );
+	cont = gameLocal->GetClip()->Contents( spot, NULL, mat3_identity, -1, self );
 	if( !( cont & CONTENTS_SOLID ) )
 	{
 		return false;
 	}
 	
 	spot -= 16.0f * gravityNormal;
-	cont = gameLocal.GetClip()->Contents( spot, NULL, mat3_identity, -1, self );
+	cont = gameLocal->GetClip()->Contents( spot, NULL, mat3_identity, -1, self );
 	if( cont )
 	{
 		return false;
@@ -1437,7 +1437,7 @@ void idPhysics_Player::SetWaterLevel()
 	
 	// check at feet level
 	point = current.origin - ( bounds[0][2] + 1.0f ) * gravityNormal;
-	contents = gameLocal.GetClip()->Contents( point, NULL, mat3_identity, -1, self );
+	contents = gameLocal->GetClip()->Contents( point, NULL, mat3_identity, -1, self );
 	if( contents & MASK_WATER )
 	{
 	
@@ -1446,7 +1446,7 @@ void idPhysics_Player::SetWaterLevel()
 		
 		// check at waist level
 		point = current.origin - ( bounds[1][2] - bounds[0][2] ) * 0.5f * gravityNormal;
-		contents = gameLocal.GetClip()->Contents( point, NULL, mat3_identity, -1, self );
+		contents = gameLocal->GetClip()->Contents( point, NULL, mat3_identity, -1, self );
 		if( contents & MASK_WATER )
 		{
 		
@@ -1454,7 +1454,7 @@ void idPhysics_Player::SetWaterLevel()
 			
 			// check at head level
 			point = current.origin - ( bounds[1][2] - 1.0f ) * gravityNormal;
-			contents = gameLocal.GetClip()->Contents( point, NULL, mat3_identity, -1, self );
+			contents = gameLocal->GetClip()->Contents( point, NULL, mat3_identity, -1, self );
 			if( contents & MASK_WATER )
 			{
 				waterLevel = WATERLEVEL_HEAD;
@@ -1933,7 +1933,7 @@ bool idPhysics_Player::Evaluate( int timeStepMSec, int endTimeMSec )
 	{
 		self->GetMasterPosition( masterOrigin, masterAxis );
 		current.origin = masterOrigin + current.localOrigin * masterAxis;
-		clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, clipModel->GetAxis() );
+		clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, clipModel->GetAxis() );
 		current.velocity = ( current.origin - oldOrigin ) / ( timeStepMSec * 0.001f );
 		masterDeltaYaw = masterYaw;
 		masterYaw = masterAxis[0].ToYaw();
@@ -1945,11 +1945,11 @@ bool idPhysics_Player::Evaluate( int timeStepMSec, int endTimeMSec )
 	
 	idPhysics_Player::MovePlayer( timeStepMSec );
 	
-	clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, clipModel->GetAxis() );
+	clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, clipModel->GetAxis() );
 	
 	if( IsOutsideWorld() )
 	{
-		gameLocal.Warning( "clip model outside world bounds for entity '%s' at (%s)", self->name.c_str(), current.origin.ToString( 0 ) );
+		gameLocal->Warning( "clip model outside world bounds for entity '%s' at (%s)", self->name.c_str(), current.origin.ToString( 0 ) );
 	}
 	
 	return true; //( current.origin != oldOrigin );
@@ -1989,7 +1989,7 @@ bool idPhysics_Player::Interpolate( const float fraction )
 	}
 	
 	//current.localOrigin = Lerp( previous.localOrigin, next.localOrigin, fraction );
-	if( self != NULL && ( self->entityNumber != gameLocal.GetLocalClientNum() ) )
+	if( self != NULL && ( self->entityNumber != gameLocal->GetLocalClientNum() ) )
 	{
 		current.velocity = Lerp( previous.velocity, next.velocity, fraction );
 	}
@@ -2007,7 +2007,7 @@ bool idPhysics_Player::Interpolate( const float fraction )
 	
 	if( clipModel )
 	{
-		clipModel->Link( *gameLocal.GetClip(), self, 0, next.origin, clipModel->GetAxis() );
+		clipModel->Link( *gameLocal->GetClip(), self, 0, next.origin, clipModel->GetAxis() );
 	}
 	
 	return true;
@@ -2029,7 +2029,7 @@ idPhysics_Player::GetTime
 */
 int idPhysics_Player::GetTime() const
 {
-	return gameLocal.time;
+	return gameLocal->time;
 }
 
 /*
@@ -2097,7 +2097,7 @@ void idPhysics_Player::RestoreState()
 {
 	current = saved;
 	
-	clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, clipModel->GetAxis() );
+	clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, clipModel->GetAxis() );
 	
 	EvaluateContacts();
 }
@@ -2123,7 +2123,7 @@ void idPhysics_Player::SetOrigin( const idVec3& newOrigin, int id )
 		current.origin = newOrigin;
 	}
 	
-	clipModel->Link( *gameLocal.GetClip(), self, 0, newOrigin, clipModel->GetAxis() );
+	clipModel->Link( *gameLocal->GetClip(), self, 0, newOrigin, clipModel->GetAxis() );
 	
 	previous = next = current;
 }
@@ -2145,7 +2145,7 @@ idPhysics_Player::SetAxis
 */
 void idPhysics_Player::SetAxis( const idMat3& newAxis, int id )
 {
-	clipModel->Link( *gameLocal.GetClip(), self, 0, clipModel->GetOrigin(), newAxis );
+	clipModel->Link( *gameLocal->GetClip(), self, 0, clipModel->GetOrigin(), newAxis );
 	
 	previous = next = current;
 }
@@ -2161,7 +2161,7 @@ void idPhysics_Player::Translate( const idVec3& translation, int id )
 	current.localOrigin += translation;
 	current.origin += translation;
 	
-	clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, clipModel->GetAxis() );
+	clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, clipModel->GetAxis() );
 	
 	previous = next = current;
 }
@@ -2187,7 +2187,7 @@ void idPhysics_Player::Rotate( const idRotation& rotation, int id )
 		current.localOrigin = current.origin;
 	}
 	
-	clipModel->Link( *gameLocal.GetClip(), self, 0, current.origin, clipModel->GetAxis() * rotation.ToMat3() );
+	clipModel->Link( *gameLocal->GetClip(), self, 0, current.origin, clipModel->GetAxis() * rotation.ToMat3() );
 }
 
 /*
@@ -2221,7 +2221,7 @@ void idPhysics_Player::SetPushed( int deltaTime )
 	float d;
 	
 	// Dont push non Local clients on clients.
-	if( self->entityNumber != gameLocal.GetLocalClientNum() && common->IsClient() )
+	if( self->entityNumber != gameLocal->GetLocalClientNum() && common->IsClient() )
 	{
 		return;
 	}
@@ -2252,7 +2252,7 @@ void idPhysics_Player::SetPushedWithAbnormalVelocityHack( int deltaTime )
 	float d;
 	
 	// Dont push non Local clients on clients.
-	if( self->entityNumber != gameLocal.GetLocalClientNum() && common->IsClient() )
+	if( self->entityNumber != gameLocal->GetLocalClientNum() && common->IsClient() )
 	{
 		return;
 	}
@@ -2321,7 +2321,7 @@ bool idPhysics_Player::ClientPusherLocked( bool& justBecameUnlocked )
 	for( int i = 0; i < contacts.Num(); i++ )
 	{
 	
-		idEntity* ent = gameLocal.entities[ contacts[i].entityNum ];
+		idEntity* ent = gameLocal->entities[ contacts[i].entityNum ];
 		if( ent )
 		{
 			idPhysics* p = ent->GetPhysics();
@@ -2439,7 +2439,7 @@ void idPhysics_Player::ReadFromSnapshot( const idBitMsg& msg )
 	
 	if( clipModel )
 	{
-		clipModel->Link( *gameLocal.GetClip(), self, 0, next.origin, clipModel->GetAxis() );
+		clipModel->Link( *gameLocal->GetClip(), self, 0, next.origin, clipModel->GetAxis() );
 	}
 	
 }
