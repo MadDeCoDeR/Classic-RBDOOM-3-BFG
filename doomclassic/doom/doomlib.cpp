@@ -267,7 +267,7 @@ extern void I_ShutdownGraphics();
 extern void I_ProcessSoundEvents();
 
 
-void DoomLib::InitGlobals( void *ptr /* = NULL */ )
+void DoomLib::InitGlobals( void *ptr /*= NULL */ )
 {
 	if (ptr == NULL)
 		ptr = new Globals;

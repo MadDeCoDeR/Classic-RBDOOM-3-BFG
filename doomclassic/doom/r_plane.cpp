@@ -554,10 +554,18 @@ void R_DrawPlanes (void)
 
 void AddNewVisplane() {
 	if (::g->planeind >= ::g->visplanes.size()) {
+#if _ITERATOR_DEBUG_LEVEL < 2
 		if (::g->visplanes.size() == ::g->visplanes.capacity()) {
 			::g->visplanes.reserve(::g->visplanes.size() + MAXVISPLANES);
 		}
 		::g->visplanes.emplace_back(new visplane_t());
+#else
+		
+		::g->visplanes.resize(::g->visplanes.size() + MAXVISPLANES);
+		for (int vpi = ::g->planeind; vpi < ::g->visplanes.size(); vpi++) {
+			::g->visplanes[vpi] = new visplane_t();
+		}
+#endif
 	}
 	else {
 		::g->visplanes[::g->planeind]->height = 0;

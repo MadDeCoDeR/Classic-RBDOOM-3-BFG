@@ -3005,8 +3005,9 @@ void idFileSystemLocal::AddGameDirectory( const char* path, const char* dir )
 			return;
 		}
 	}
-	
-	gameFolder = dir;
+	if (idStr::Cmp(dir, BASE_BFG_GAMEDIR) && idStr::Cmp(dir, BASE_NEW_GAMEDIR)) { //GK: Exclude the base_* Paths that are bundled with thw port in order to avoid confusions
+		gameFolder = dir;
+	}
 	
 	//
 	// add the directory to the search path
@@ -3945,7 +3946,23 @@ idFileSystemLocal::IsFolder
 */
 sysFolder_t idFileSystemLocal::IsFolder( const char* relativePath, const char* basePath )
 {
-	return Sys_IsFolder( RelativePathToOSPath( relativePath, basePath ) );
+
+	sysFolder_t res = Sys_IsFolder( RelativePathToOSPath( relativePath, basePath ) );
+	if (res == FOLDER_ERROR) {
+		char* oldgamePath = new char[256];
+		sprintf(oldgamePath, gameFolder);
+		for (int i = 0; i < searchPaths.Num(); i++) {
+			if (searchPaths[i].gamedir != oldgamePath) {
+				gameFolder = searchPaths[i].gamedir;
+				res = Sys_IsFolder(RelativePathToOSPath(relativePath, basePath));
+				if (res != FOLDER_ERROR) {
+					sprintf(gameFolder, oldgamePath);
+					break;
+				}
+			}
+		}
+	}
+	return res;
 }
 
 idFile_SaveGamePipelined* idFileSystemLocal::GetSaveGamePipelined() {
