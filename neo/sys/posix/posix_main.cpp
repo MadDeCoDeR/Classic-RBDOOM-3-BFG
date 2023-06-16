@@ -835,7 +835,7 @@ TODO: OSX - use the native API instead? NSModule
 intptr_t Sys_DLL_Load( const char* path )
 {
 	//GK: Use DEEPBIND in dlopen otherwise the game will freeze
-	void* handle = dlopen( path, RTLD_NOW | RTLD_DEEPBIND );
+	void* handle = dlopen( path, RTLD_LAZY | RTLD_DEEPBIND );
 	if( !handle )
 	{
 		Sys_Printf( "dlopen '%s' failed: %s\n", path, dlerror() );
