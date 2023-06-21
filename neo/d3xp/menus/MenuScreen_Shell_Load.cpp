@@ -148,7 +148,7 @@ void idMenuScreen_Shell_LoadLocal::UpdateSaveEnumerations()
 
 	const saveGameDetailsList_t& saveGameInfo = session->GetSaveGameManager().GetEnumeratedSavegames();
 	sortedSaves = saveGameInfo;
-	sortedSaves.Sort( idSort_SavesByDate() );
+	sortedSaves.SortWithTemplate( idSort_SavesByDate() );
 	
 	if( options != NULL )
 	{

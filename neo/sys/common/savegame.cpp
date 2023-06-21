@@ -473,7 +473,7 @@ int idSaveGameThread::Enumerate()
 		
 		for( int i = 0; i < fileList.Num() && !callback->cancelled; i++ )
 		{
-			idSaveGameDetails* details = callback->detailList.Alloc();
+			idSaveGameDetails* details = &callback->detailList.Alloc();
 			// We have more folders on disk than we have room in our save detail list, stop trying to read them in and continue with what we have
 			if( details == NULL )
 			{

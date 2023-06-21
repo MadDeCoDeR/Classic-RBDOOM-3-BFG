@@ -51,7 +51,7 @@ void idMenuWidget_Shell_SaveInfo::Update()
 	const saveGameDetailsList_t& saveGameInfo = session->GetSaveGameManager().GetEnumeratedSavegames();
 	
 	saveGameDetailsList_t sortedSaves = saveGameInfo;
-	sortedSaves.Sort( idSort_SavesByDate() );
+	sortedSaves.SortWithTemplate( idSort_SavesByDate() );
 	
 	for( int slot = 0; slot < sortedSaves.Num(); ++slot )
 	{
