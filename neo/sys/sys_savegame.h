@@ -207,7 +207,7 @@ public:
 	idStrStatic< MAX_FOLDER_NAME_LENGTH >	slotName;		// [out] folder/slot name, e.g. AUTOSAVE
 };
 
-typedef idStaticList< idSaveGameDetails, MAX_SAVEGAMES > saveGameDetailsList_t;
+typedef idList< idSaveGameDetails > saveGameDetailsList_t;
 
 // Making a auto_ptr to handle lifetime issues better
 typedef idList< idFile_SaveGame*, TAG_SAVEGAMES > saveFileEntryList_t;
