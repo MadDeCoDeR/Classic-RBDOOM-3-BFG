@@ -412,7 +412,7 @@ void idMenuScreen_Shell_SaveLocal::SaveGame( int index )
 		}
 		
 		//assert( slotNumber <= ( slotMask/*sizeof( slotMask ) * 8*/ ) );
-		idStr name = va( "%s%d", savePrefix.c_str(), slotNumber );
+		idStr name = va( "%s%llu", savePrefix.c_str(), slotNumber );
 		cmdSystem->AppendCommandText( va( "savegame %s\n", name.c_str() ) );
 		
 		// Throw up the saving message...
