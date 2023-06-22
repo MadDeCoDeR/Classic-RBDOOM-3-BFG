@@ -515,7 +515,7 @@ void idMenuScreen_Shell_SaveLocal::DeleteGame( int index )
 	
 	//if( ( saveInfo_.Num() < MAX_SAVEGAMES - 1 ) || ( ( saveInfo_.Num() == MAX_SAVEGAMES - 1 ) && hasAutosave ) )
 	//{
-	//	index--;	// Subtract 1 from the index for 'New Game'
+		index--;	// Subtract 1 from the index for 'New Game'
 	//}
 	
 	common->Dialog().AddDialog( GDM_DELETE_SAVE, DIALOG_ACCEPT_CANCEL, new idSWFScriptFunction_DeleteGame( GDM_DELETE_SAVE, true, index, this ), new idSWFScriptFunction_DeleteGame( GDM_DELETE_SAVE, false, index, this ), false );

@@ -179,7 +179,7 @@ void idMenuWidget_Shell_SaveInfo::ObserveEvent( const idMenuWidget& widget, cons
 			}
 			
 			
-			if( forSaveScreen && ( ( detailList.Num() < MAX_SAVEGAMES - 1 ) || ( ( detailList.Num() == MAX_SAVEGAMES - 1 ) && hasAutoSave ) ) )
+			if( forSaveScreen /*&& ( ( detailList.Num() < MAX_SAVEGAMES - 1 ) || ( ( detailList.Num() == MAX_SAVEGAMES - 1 ) && hasAutoSave ) )*/ )
 			{
 				loadIndex -= 1;
 			}
