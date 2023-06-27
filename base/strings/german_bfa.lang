@@ -56,6 +56,7 @@
 	"#str_swf_toggle_run" "Lauf umschalten"
 	"#str_swf_toggle_crouch" "Hocken umschalten"
 	"#str_swf_toggle_zoom" "Zoom umschalten"
+	"#str_swf_center_camera_button" "Kamera zentrieren"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "Erste zu ladende Karte"
 }

@@ -56,6 +56,7 @@
 	"#str_swf_toggle_run" "トグル実行"
 	"#str_swf_toggle_crouch" "しゃがむトグル"
 	"#str_swf_toggle_zoom" "ズームの切り替え"
+	"#str_swf_center_camera_button" "センターカメラ"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "最初にロードするマップ"
 }

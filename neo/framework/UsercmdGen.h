@@ -189,6 +189,7 @@ typedef enum
 	UB_IMPULSE31,
 
 	UB_THIRDPERSON,
+	UB_CENTER_CAMERA,
 	
 	UB_MAX_BUTTONS
 } usercmdButton_t;

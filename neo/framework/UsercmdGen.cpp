@@ -148,6 +148,7 @@ userCmdString_t	userCmdStrings[] =
 	{ "_showScores",	UB_SHOWSCORES },
 	{ "_use",			UB_USE },
 	{ "_thirdperson",	UB_THIRDPERSON},
+	{ "_center_camera",	UB_CENTER_CAMERA},
 	
 	{ "_impulse0",		UB_IMPULSE0 },
 	{ "_impulse1",		UB_IMPULSE1 },
@@ -1171,6 +1172,7 @@ void idUsercmdGenLocal::MakeCurrent()
 	{
 		int TPButtonState = ButtonState(UB_THIRDPERSON);
 		Globals* gl = (Globals*)DoomLib::GetGlobalData(0);
+		bool resetAngles = ButtonState(UB_CENTER_CAMERA);
 		bool inClassicDemo = false;
 		if (gl != NULL) {
 			inClassicDemo = gl->demoplayback || gl->demorecording;
@@ -1211,6 +1213,10 @@ void idUsercmdGenLocal::MakeCurrent()
 			// keyboard angle adjustment
 			AdjustAngles();
 
+			if (resetAngles) {
+				viewangles[PITCH] = 0;
+			}
+
 			// get basic movement from keyboard
 			KeyMove();
 
@@ -1246,6 +1252,10 @@ void idUsercmdGenLocal::MakeCurrent()
 
 			// keyboard angle adjustment
 			AdjustAngles();
+
+			if (resetAngles) {
+				viewangles[PITCH] = 0;
+			}
 
 			// set button bits
 			CmdButtons();

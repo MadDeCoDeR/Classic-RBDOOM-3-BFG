@@ -56,6 +56,7 @@
 	"#str_swf_toggle_run" "Basculer l'exécution"
 	"#str_swf_toggle_crouch" "Désactiver l'accroupissement"
 	"#str_swf_toggle_zoom" "Basculer le zoom"
+	"#str_swf_center_camera_button" "Caméra centrale"
 // 	"#str_swf_custom_game" "Nom du mod"
 // 	"#str_swf_start_map" "Première carte à charger"
 }
