@@ -2372,6 +2372,9 @@ void idCommonLocal::PerformGameSwitch()
 		com_engineHz_latched = cl_engineHz.GetInteger();
 		//GK: End
 		DoomLib::SetCurrentExpansion( idealCurrentGame );
+		if (::op != NULL) {
+			::op->openInput()->ChangeControllerConfiguration("classic", 0);
+		}
 		
 	}
 	else if( idealCurrentGame == DOOM3_BFG )
@@ -2388,6 +2391,7 @@ void idCommonLocal::PerformGameSwitch()
 			if (::op) {
 				::op->SetAdditionalInfo("status", "Game Selection Menu");
 				::op->SetAdditionalInfo("large image", "dbfa");
+				::op->openInput()->ChangeControllerConfiguration("modern", 0);
 			}
 			session->MoveToPressStart();
 		}

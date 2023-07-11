@@ -1,7 +1,7 @@
 /*
 Open Platform
 
-Copyright(C) 2021 George Kalmpokis
+Copyright(C) 2023 George Kalmpokis
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 and associated documentation files(the "Software"), to deal in the Software without
@@ -22,16 +22,9 @@ SOFTWARE.
 */
 #pragma once
 
-class OpenAchievement {
+class OpenInput {
 public:
-	virtual bool GetAchievement(const char* name, bool* status) = 0;
-	virtual const char* GetAchievementDevName(unsigned int id) = 0;
-	virtual bool GetAchievementPercent(const char* name, unsigned int progress, unsigned int max) = 0;
-	virtual bool UnlockAchievement(const char* name) = 0;
-	virtual bool LockAchievement(const char* name) = 0;
-	virtual const char* GetAchievementName(const char* name) = 0;
-	virtual const char* GetAchievementDescription(const char* name) = 0;
-	virtual bool GetAchievementHidden(const char* name) = 0;
+	virtual void ChangeControllerConfiguration(const char* configName, int controllerIndex) = 0;
 };
 
-OpenAchievement* getAchievementInstance(bool apiEnabled);
+OpenInput* getInputInstance(bool apiEnabled);
