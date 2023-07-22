@@ -218,7 +218,7 @@ jobs:
       run: |
         mv ./build/DoomBFA DoomBFA
         mv ./base/DoomBFA.sh DoomBFA.sh
-        mv ./BFA_Assets/* .
+        mv -f -u ./BFA_Assets/* .
         mkdir ./third-party-licenses
         mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
         chmod +x DoomBFA
@@ -245,7 +245,7 @@ jobs:
       working-directory: ${{github.workspace}}
       run: |
         mv ./build/${{env.BUILD_TYPE}}/* .
-        mv ./BFA_Assets/* .
+        mv -f -u ./BFA_Assets/* .
         mkdir ./third-party-licenses
         mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
         rm -d -rf ./build
@@ -270,7 +270,7 @@ jobs:
       working-directory: ${{github.workspace}}
       run: |
         mv ./build/${{env.BUILD_TYPE}}/* .
-        mv ./BFA_Assets/* .
+        mv -f -u ./BFA_Assets/* .
         mkdir ./third-party-licenses
         mv ./build/vcpkg_installed/x86-windows-static-md/share/* ./third-party-licenses
         rm -d -rf ./build
