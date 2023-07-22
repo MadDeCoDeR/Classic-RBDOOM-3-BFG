@@ -23,11 +23,15 @@ jobs:
     - uses: actions/checkout@v3
       with:
         submodules: recursive
+
+    - uses: actions/checkout@v3
+      with:
+        repository: MadDeCoDeR/BFA-Assets
     
     - name: Set up GCC
       uses: egor-tensin/setup-gcc@v1
       with:
-        version: 11
+        version: 12
         platform: x64
 
     - name: Download Depedencies
@@ -60,6 +64,8 @@ jobs:
           ./build/DoomBFA
           ./build/vcpkg_installed/x64-linux/share/*/copyright
           ./base/*
+          ./base_BFG/*
+          ./base_NEW/*
           ./COPYING.txt
           ./README.md
   windows-build:
@@ -74,6 +80,10 @@ jobs:
       with:
         submodules: recursive
     
+    - uses: actions/checkout@v3
+      with:
+        repository: MadDeCoDeR/BFA-Assets
+
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1.1
       with:
@@ -112,6 +122,8 @@ jobs:
           ./build/${{env.BUILD_TYPE}}/DoomBFA.exe
           ./build/vcpkg_installed/x64-windows-static-md/share/*/copyright
           ./base/*
+          ./base_BFG/*
+          ./base_NEW/*
           ./COPYING.txt
           ./README.md
   windows-32-bit-build:
@@ -125,6 +137,10 @@ jobs:
     - uses: actions/checkout@v3
       with:
         submodules: recursive
+
+    - uses: actions/checkout@v3
+      with:
+        repository: MadDeCoDeR/BFA-Assets
     
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v1.1
@@ -164,6 +180,8 @@ jobs:
           ./build/${{env.BUILD_TYPE}}/DoomBFA.exe
           ./build/vcpkg_installed/x86-windows-static-md/share/*/copyright
           ./base/*
+          ./base_BFG/*
+          ./base_NEW/*
           ./COPYING.txt
           ./README.md
   make-release:

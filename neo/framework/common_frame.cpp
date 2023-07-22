@@ -961,8 +961,8 @@ void idCommonLocal::RunDoomClassicFrame()
 	{
 		Globals* data = ( Globals* )DoomLib::GetGlobalData( 0 );
 		
-		idArray< unsigned int, 256 > palette;
-		std::copy( data->XColorMap, data->XColorMap + palette.Num(), palette.Ptr() );
+		/*idArray< unsigned int, 256 > palette;
+		std::copy( data->XColorMap, data->XColorMap + palette.Num(), palette.Ptr() );*/
 		
 		// Do the palette lookup.
 		for( int row = 0; row < DOOMCLASSIC_RENDERHEIGHT; ++row )
@@ -971,11 +971,11 @@ void idCommonLocal::RunDoomClassicFrame()
 			{
 				const int doomScreenPixelIndex = row * w + column;
 				const byte paletteIndex = data->screens[0][doomScreenPixelIndex];
-				const unsigned int paletteColor = palette[paletteIndex];
+				const unsigned int paletteColor = data->XColorMap[paletteIndex];
 				const byte red = ( paletteColor & 0xFF000000 ) >> 24;
 				const byte green = ( paletteColor & 0x00FF0000 ) >> 16;
 				const byte blue = ( paletteColor & 0x0000FF00 ) >> 8;
-				const byte alpha = r_clblurry.GetBool() ? (paletteColor & 0x000000FF) - data->blurryoffset : (paletteColor & 0x000000FF);
+				const byte alpha = /*r_clblurry.GetBool() ? (paletteColor & 0x000000FF) - data->blurryoffset : */(paletteColor & 0x000000FF);
 				
 				const int imageDataPixelIndex = row * w * DOOMCLASSIC_BYTES_PER_PIXEL + column * DOOMCLASSIC_BYTES_PER_PIXEL;
 				doomClassicImageData[imageDataPixelIndex]		= red;
@@ -986,7 +986,7 @@ void idCommonLocal::RunDoomClassicFrame()
 		}
 	}
 	//GK: End
-	renderSystem->UploadImage( "_doomClassic", doomClassicImageData.Ptr(), w, DOOMCLASSIC_RENDERHEIGHT );
+	renderSystem->UploadImage( "_doomClassic", doomClassicImageData, w, DOOMCLASSIC_RENDERHEIGHT );
 	doomTics++;
 }
 

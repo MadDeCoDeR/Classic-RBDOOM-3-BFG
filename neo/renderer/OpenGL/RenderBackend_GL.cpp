@@ -46,7 +46,11 @@ idCVar stereoRender_warpParmZ( "stereoRender_warpParmZ", "0", CVAR_RENDERER | CV
 idCVar stereoRender_warpParmW( "stereoRender_warpParmW", "0", CVAR_RENDERER | CVAR_FLOAT | CVAR_ARCHIVE, "development parm" );
 idCVar stereoRender_warpTargetFraction( "stereoRender_warpTargetFraction", "1.0", CVAR_RENDERER | CVAR_FLOAT | CVAR_ARCHIVE, "fraction of half-width the through-lens view covers" );
 
+#ifdef _DEBUG
+idCVar r_showSwapBuffers("r_showSwapBuffers", "1", CVAR_BOOL, "Show timings from GL_BlockingSwapBuffers");
+#else
 idCVar r_showSwapBuffers( "r_showSwapBuffers", "0", CVAR_BOOL, "Show timings from GL_BlockingSwapBuffers" );
+#endif
 idCVar r_syncEveryFrame( "r_syncEveryFrame", "1", CVAR_BOOL, "Don't let the GPU buffer execution past swapbuffers" );
 
 //GK: Begin
@@ -1893,7 +1897,7 @@ void idRenderBackend::GL_BlockingSwapBuffers()
 	{
 		common->Printf( "%i msec to swapBuffers\n", beforeFence - beforeSwap );
 	}
-	
+
 	if( glConfig.syncAvailable )
 	{
 		swapIndex ^= 1;

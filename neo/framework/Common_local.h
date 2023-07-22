@@ -627,7 +627,7 @@ private:
 	//GK: Having this higher than expected doesn't giving any issue
 	static const int			DOOMCLASSIC_IMAGE_SIZE_IN_BYTES = DOOMCLASSIC_RENDERWIDTH_CORRECT * DOOMCLASSIC_RENDERHEIGHT * DOOMCLASSIC_BYTES_PER_PIXEL;
 	
-	idArray< byte, DOOMCLASSIC_IMAGE_SIZE_IN_BYTES >	doomClassicImageData;
+	byte	doomClassicImageData[DOOMCLASSIC_IMAGE_SIZE_IN_BYTES];
 
 	bool clRestart = false; //GK: Use to signal engine reboot from Classic DOOM engine
 	//GK begin

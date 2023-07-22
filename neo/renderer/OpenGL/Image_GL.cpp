@@ -106,29 +106,18 @@ void idImage::Bind()
 	// RB: added support for more types
 	tmu_t* tmu = &glcontext.tmu[texUnit];
 	// bind the texture
-	uint* currentMap = &tmu->current2DMap;
-	int target = GL_TEXTURE_2D;
-	switch (opts.textureType) {
-		case TT_2D:
-			target = GL_TEXTURE_2D;
-			currentMap = &tmu->current2DMap;
-			break;
-		case TT_CUBIC:
-			target = GL_TEXTURE_CUBE_MAP;
-			currentMap = &tmu->currentCubeMap;
-			break;
-		case TT_2D_ARRAY:
-			target = GL_TEXTURE_2D_ARRAY;
-			currentMap = &tmu->current2DArray;
-			break;
-		case TT_2D_MULTISAMPLE:
-			target = GL_TEXTURE_2D_MULTISAMPLE;
-			currentMap = &tmu->current2DMap;
-			break;
+	uint currentMap = 0;
+	if (opts.textureType == TT_CUBIC) {
+		currentMap = tmu->currentCubeMap;
 	}
-	if( *currentMap != texnum )
+	else if (opts.textureType == TT_2D_ARRAY) {
+		currentMap = tmu->current2DArray;
+	}
+	else {
+		currentMap = tmu->current2DMap;
+	}
+	if( currentMap != texnum )
 	{
-		*currentMap = texnum;
 
 #if !defined(USE_GLES2) && !defined(USE_GLES3)
 		if( glConfig.directStateAccess )
@@ -138,6 +127,21 @@ void idImage::Bind()
 		else
 #endif
 		{
+			int target = GL_TEXTURE_2D;
+			switch (opts.textureType) {
+			case TT_2D:
+				target = GL_TEXTURE_2D;
+				break;
+			case TT_CUBIC:
+				target = GL_TEXTURE_CUBE_MAP;
+				break;
+			case TT_2D_ARRAY:
+				target = GL_TEXTURE_2D_ARRAY;
+				break;
+			case TT_2D_MULTISAMPLE:
+				target = GL_TEXTURE_2D_MULTISAMPLE;
+				break;
+			}
 			glActiveTexture( GL_TEXTURE0 + texUnit );
 			glBindTexture( target, texnum );
 		}
