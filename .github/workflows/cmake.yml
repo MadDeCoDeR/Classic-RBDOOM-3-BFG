@@ -183,7 +183,7 @@ jobs:
           ./build/${{env.BUILD_TYPE}}/DoomBFA.exe
           ./build/vcpkg_installed/x86-windows-static-md/share/*/copyright
           ./base/*
-          ./BFA_assets/*
+          ./BFA_Assets/*
           ./base_new/*
           ./COPYING.txt
           ./README.md
