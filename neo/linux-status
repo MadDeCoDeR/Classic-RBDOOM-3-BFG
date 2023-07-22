@@ -2,9 +2,8 @@ Package: vcpkg-tool-meson
 Version: 0.63
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 6aea325ad36f05ded205df32a7d56236e4050fbcef611fdc6c57c031085f9df5
+Abi: 973c4e31448fffe82b4e81dd9763f7e28ebb84b20b981ffa35f80dfdf6c76e75
 Description: Meson build system
-Type: Port
 Status: install ok installed
 
 Package: pkgconf
@@ -13,27 +12,23 @@ Port-Version: 5
 Depends: vcpkg-tool-meson
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 00a025241aa23a2bb0950b6cf16a0ab6cac61001eb4148d149dfab4db44d3a30
+Abi: c6b838c7f0f54a34e276490b85afad7ac3ce7c1f1937cd6ff0115334ee6c58b1
 Description: pkgconf is a program which helps to configure compiler and linker flags for development libraries. It is similar to pkg-config from freedesktop.org.
-Type: Port
 Status: install ok installed
 
 Package: vcpkg-pkgconfig-get-modules
-Version: 2022-02-10
-Port-Version: 1
+Version: 2023-02-25
 Depends: pkgconf
 Architecture: x64-linux
 Multi-Arch: same
-Abi: a7094f79890d6c6cb4db2d7c51b00ec340bbe4880d43e75f24abf927ed95da8b
-Type: Port
+Abi: 0e243c33bf32158ccf58a2000604c2f2a3c553efb05028fbdfb7a03cc1403971
 Status: install ok installed
 
 Package: vcpkg-cmake
-Version: 2022-12-22
+Version: 2023-05-04
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 46c2eb4b28759f30fb5b553861f25fcff9bf3497b9ced27e7862ef24d04786ea
-Type: Port
+Abi: 08812ebdcfbe12cf834c5127e591ac5f15fb40174d10b2fcef7a670c7aac59e2
 Status: install ok installed
 
 Package: vcpkg-cmake-get-vars
@@ -41,8 +36,7 @@ Version: 2023-03-02
 Depends: vcpkg-cmake
 Architecture: x64-linux
 Multi-Arch: same
-Abi: b16dbb8e9c9e48198864acc7e2916d57b14617a2b467a4634f98675926a53088
-Type: Port
+Abi: 2e1b27ccca86e7503c94e15b1a626e26c1d147031eda4c84e07468970d509910
 Status: install ok installed
 
 Package: ffmpeg
@@ -51,10 +45,9 @@ Port-Version: 6
 Depends: vcpkg-cmake-get-vars, vcpkg-pkgconfig-get-modules
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 1e86377613f17d3b97c9952d5e69ff9b3059fda3ffb6b46f2ac5b14ca48f32e1
+Abi: 02001a4217c93bdf462dcb373e688530ec7775abb83fb867b43864b8c121399c
 Description: a library to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.
     FFmpeg is the leading multimedia framework, able to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created. It supports the most obscure ancient formats up to the cutting edge. No matter if they were designed by some standards committee, the community or a corporation. It is also highly portable: FFmpeg compiles, runs, and passes our testing infrastructure FATE across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc. under a wide variety of build environments, machine architectures, and configurations.
-Type: Port
 Default-Features: avcodec, avdevice, avfilter, avformat, swresample, swscale
 Status: install ok installed
 
@@ -63,16 +56,13 @@ Feature: avcodec
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the avcodec library
-Type: Port
 Status: install ok installed
 
 Package: ffmpeg
 Feature: avdevice
-Depends: ffmpeg
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the avdevice library
-Type: Port
 Status: install ok installed
 
 Package: ffmpeg
@@ -80,16 +70,13 @@ Feature: avfilter
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the avfilter library
-Type: Port
 Status: install ok installed
 
 Package: ffmpeg
 Feature: avformat
-Depends: ffmpeg
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the avformat library
-Type: Port
 Status: install ok installed
 
 Package: ffmpeg
@@ -97,7 +84,6 @@ Feature: swresample
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the swresample library
-Type: Port
 Status: install ok installed
 
 Package: ffmpeg
@@ -105,7 +91,6 @@ Feature: swscale
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the swscale library
-Type: Port
 Status: install ok installed
 
 Package: vcpkg-cmake-config
@@ -113,18 +98,17 @@ Version: 2022-02-06
 Port-Version: 1
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 8f1de6c2eedfc4547c21010491f52183b899afd24b2e9ad9079e4835b7fe5826
-Type: Port
+Abi: abb7a37f1ff83868c8d28136b9d906d97b80686ca3c250dd8d0a9dfc85cdd436
 Status: install ok installed
 
 Package: libjpeg-turbo
 Version: 2.1.5.1
+Port-Version: 2
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-linux
 Multi-Arch: same
-Abi: aa7ea6acab293361dc434427c5fd52f7d6ce830a213503866c690fd6bde83534
+Abi: b4bba79d9905aab7abf3929e6574fefdd8ebdb493d861f00614ed8d14f92c282
 Description: libjpeg-turbo is a JPEG image codec that uses SIMD instructions (MMX, SSE2, NEON, AltiVec) to accelerate baseline JPEG compression and decompression on x86, x86-64, ARM, and PowerPC systems.
-Type: Port
 Status: install ok installed
 
 Package: zlib
@@ -132,9 +116,8 @@ Version: 1.2.13
 Depends: vcpkg-cmake
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 6fe0db2bd41c153f08ae1b06f992843081b07036ee8983ffcbe0013a1e736f0d
+Abi: 2b061b620fadbc9e514c9879f42bb23459185b2032ee58b89a727aab03eb09cb
 Description: A compression library
-Type: Port
 Status: install ok installed
 
 Package: libpng
@@ -143,292 +126,36 @@ Port-Version: 1
 Depends: vcpkg-cmake, vcpkg-cmake-config, zlib
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 92eef7f8e1dc9af5d02f5bf5cd7bd5ca41ed4dabd294748a4081134b7091463f
+Abi: 21cee13cdc1cacea298ae7f7a528dbfa5b2475feeeea568ff5a6f7fb7776a8d0
 Description: libpng is a library implementing an interface for reading and writing PNG (Portable Network Graphics) format files
-Type: Port
 Status: install ok installed
 
-Package: xorg-macros
-Version: 1.19.3
-Architecture: x64-linux
-Multi-Arch: same
-Abi: f2e5ede3185c699cbc74217dd774905190a89c7d239ca2fd8798e8b3cf81ab4f
-Description: X.org macros utilities.
-Type: Port
-Status: purge ok not-installed
-
-Package: xtrans
-Version: 1.4.0
-Port-Version: 1
-Depends: xorg-macros
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 483f5c62523a27e72b4819aaae78d90ecd93c515c205e840d153fe838e509728
-Description: xtrans - X Network Transport layer shared code
-Type: Port
-Status: purge ok not-installed
-
-Package: liblzma
-Version: 5.4.1
-Port-Version: 1
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 9f095bff245edd358c3eeddb31019cedd8dc41fc52c2842d51f56bb5f05bead0
-Description: Compression library with an API similar to that of zlib.
-Type: Port
-Status: purge ok not-installed
-
-Package: libiconv
-Version: 1.17
-Port-Version: 1
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 54012bdd4aa90405fd1c61236bb4fac8814d30217691b876112283336d1f8830
-Description: GNU Unicode text conversion
-Type: Port
-Status: purge ok not-installed
-
-Package: libxml2
-Version: 2.10.3
-Port-Version: 1
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 4c6d628b02624a385337739d5c1891f2c45c0a22b410a0bee64aca0e862ddf79
-Description: Libxml2 is the XML C parser and toolkit developed for the Gnome project (but usable outside of the Gnome platform).
-Type: Port
-Default-Features: iconv, lzma, zlib
-Status: purge ok not-installed
-
-Package: libxml2
-Feature: iconv
-Depends: libiconv
-Architecture: x64-linux
-Multi-Arch: same
-Description: Add ICONV support
-Type: Port
-Status: purge ok not-installed
-
-Package: libxml2
-Feature: lzma
-Depends: liblzma
-Architecture: x64-linux
-Multi-Arch: same
-Description: Use LZMA
-Type: Port
-Status: purge ok not-installed
-
-Package: libxml2
-Feature: tools
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build tools
-Type: Port
-Status: purge ok not-installed
-
-Package: libxml2
-Feature: zlib
-Depends: zlib
-Architecture: x64-linux
-Multi-Arch: same
-Description: Use ZLib
-Type: Port
-Status: purge ok not-installed
-
-Package: libxslt
-Version: 1.1.37
-Port-Version: 1
-Depends: libxml2, vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 09149b7fabd5ca6e8398123106a05b013b73fb2d8544d5e31e7a646fbc2b1d8c
-Description: Libxslt is a XSLT library implemented in C for XSLT 1.0 and most of EXSLT
-Type: Port
-Default-Features: default-features
-Status: purge ok not-installed
-
-Package: libxslt
-Feature: default-features
-Architecture: x64-linux
-Multi-Arch: same
-Description: default features for the current platform
-Type: Port
-Status: purge ok not-installed
-
-Package: xproto
-Version: 2021.5
-Depends: libxslt, vcpkg-tool-meson, xorg-macros
-Architecture: x64-linux
-Multi-Arch: same
-Abi: b8feb73c9755110bba768a058d9812fc3a1e951ffda588147ecc718902f41555
-Description: X Window System unified protocol definitions
-Type: Port
-Status: purge ok not-installed
-
-Package: xcb-util-m4
-Version: 2022-01-24
-Architecture: x64-linux
-Multi-Arch: same
-Abi: cbd571cb171f69dd8fb37a1e46542c94e7a0426e0f1e120685bc325d65e3de4f
-Description: GNU autoconf macros shared across XCB projects
-Type: Port
-Status: purge ok not-installed
-
-Package: bzip2
-Version: 1.0.8
-Port-Version: 4
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: f9ed4f2c8f09ca0eb14cd545e91d9a7c73a206a9d578735967b457234987e913
-Description: bzip2 is a freely available, patent free, high-quality data compressor. It typically compresses files to within 10% to 15% of the best available techniques (the PPM family of statistical compressors), whilst being around twice as fast at compression and six times faster at decompression.
-Type: Port
-Default-Features: tool
-Status: purge ok not-installed
-
-Package: bzip2
-Feature: tool
-Architecture: x64-linux
-Multi-Arch: same
-Description: Builds bzip2 executable
-Type: Port
-Status: purge ok not-installed
-
-Package: xcb-proto
-Version: 1.14.1
-Depends: bzip2, libxml2, xorg-macros
-Architecture: x64-linux
-Multi-Arch: same
-Abi: b4080b9f9e105aff6d8cada3726e0b7355c88981905ce292b7ef2ce9f5088bff
-Description: XML-XCB protocol descriptions used by libxcb for the X11 protocol & extensions
-Type: Port
-Status: purge ok not-installed
-
-Package: pthreads
-Version: 3.0.0
-Port-Version: 13
-Depends: vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 23244445a65a7b6a665f1b046658c6d1f13bfebdb03cd8e5a578772f9d146f5b
-Description: Meta-package that provides PThreads4W on Windows, or assumes presence of system pthreads on POSIX systems.
-Type: Port
-Status: purge ok not-installed
-
-Package: pthread
-Version: 3.0.0
-Port-Version: 2
-Depends: pthreads
-Architecture: x64-linux
-Multi-Arch: same
-Abi: bdc5afd3069dfc71d6028d2d426aab03de0cf24290afe0ec2e0a07ed54ff4db2
-Description: empty package, linking to other port
-Type: Port
-Status: purge ok not-installed
-
-Package: pthread-stubs
-Version: 0.4
-Port-Version: 1
-Depends: pthread
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 26cacea7a02f4fe83d6f35addc88a473fab146a7ea23182f1e4349f21c93dabd
-Description: Stub replacements for POSIX Threads functions.
-Type: Port
-Status: purge ok not-installed
-
-Package: libxdmcp
-Version: 1.1.3
-Depends: bzip2, xorg-macros, xproto
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 48a7349665ad6b139faeb334fbac7b5c320bd34bd052c7253625e794e5ea8383
-Description: X Display Manager Control Protocol library
-Type: Port
-Status: purge ok not-installed
-
-Package: libxau
-Version: 1.0.9
-Depends: bzip2, xorg-macros, xproto
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 1532477f0ab9df64293abeff97cad81172672e023ac9d769fd67a5df4049ff6a
-Description: Functions for handling Xauthority files and entries.
-Type: Port
-Status: purge ok not-installed
-
-Package: xcb
-Version: 1.14
-Port-Version: 1
-Depends: bzip2, libxau, libxdmcp, libxslt, pthread, pthread-stubs, xcb-proto, xcb-util-m4, xorg-macros, xproto
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 63d957a4a57419680f6a49d3889e41a9889799693bb8f1e96c160a511b0e0919
-Description: C interface to the X Window System protocol, which replaces the traditional Xlib interface.
-Type: Port
-Status: purge ok not-installed
-
-Package: libx11
-Version: 1.8.1
-Port-Version: 1
-Depends: bzip2, libx11, libxslt, xcb, xproto, xtrans
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 5a78fb627ad6c304f2a1ab6fde422806fcf23b3bdc7af09d2e205ad74be0205e
-Description: The X Window System is a network-transparent window system that was designed at MIT.
-Type: Port
-Status: purge ok not-installed
-
-Package: libxext
-Version: 1.3.4
-Depends: libx11, xorg-macros, xproto
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 5e73fa432d1ca4f78ec7474c09006911a60376a2faeedb30bc77ad673a3c6ad0
-Description: Xlib-based library for common extensions to the X11 protocol
-Type: Port
-Status: purge ok not-installed
-
-Package: libxrender
-Version: 0.9.10
-Depends: libx11, xorg-macros
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 8cad17f85df08a0b6989496be6f6dbf599d2dfcc46a0bfcda7d0239eacdb635f
-Description: library for the Render Extension to the X11 protocol
-Type: Port
-Status: purge ok not-installed
-
 Package: alsa
-Version: 1.2.6.1
-Port-Version: 2
+Version: 1.2.8
+Port-Version: 1
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 8c6449175b2efecccfc604079670569a67eece6d3d2597a616d12ed1224e3b25
+Abi: c313665f776edf62a092787743c6308120ef90861249d7825537e04ca1411377
 Description: The Advanced Linux Sound Architecture (ALSA) - library
-Type: Port
 Status: install ok installed
 
 Package: openal-soft
 Version: 1.23.0
+Port-Version: 1
 Depends: alsa, vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 6e2c46fb7cb72bbb6eb7b17b8a16fe9386a3ef4edbd77b88f22fda5d28460f6d
+Abi: c558d4354d09b9161fc11681c4ce15b18c7402e91bb5c96cc88b20df3ccf9d53
 Description: OpenAL Soft is an LGPL-licensed, cross-platform, software implementation of the OpenAL 3D audio API.
-Type: Port
 Status: install ok installed
 
 Package: rapidjson
-Version: 2022-06-28
-Port-Version: 3
+Version: 2023-04-27
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 3cef775faa5168b734c4083a93e1b4fd6854d90a78c266e2244ce6e07a7dd777
+Abi: 002320e4be29366edf91326688a5b5bcc938d0a3b49def82741882c70019beb1
 Description: A fast JSON parser/generator for C++ with both SAX/DOM style API <http://rapidjson.org/>
-Type: Port
 Status: install ok installed
 
 Package: sdl2
@@ -436,26 +163,9 @@ Version: 2.26.5
 Depends: vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-linux
 Multi-Arch: same
-Abi: cdebbf25e3dc6ac1028c00d7ae94572da8b41660d9702019b0386d9e0d245416
+Abi: c21568a7651799aaee7c4d56e9e49be7e41970ba480a59c77888ece2f9b3d617
 Description: Simple DirectMedia Layer is a cross-platform development library designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D.
-Type: Port
 Default-Features: base
-Status: install ok installed
-
-Package: sdl2
-Feature: wayland
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build with Wayland support
-Type: Port
-Status: install ok installed
-
-Package: sdl2
-Feature: x11
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build with X11 support
-Type: Port
 Status: install ok installed
 
 Package: sdl2
@@ -463,6 +173,19 @@ Feature: ibus
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build with ibus IME support
-Type: Port
+Status: install ok installed
+
+Package: sdl2
+Feature: wayland
+Architecture: x64-linux
+Multi-Arch: same
+Description: Build with Wayland support
+Status: install ok installed
+
+Package: sdl2
+Feature: x11
+Architecture: x64-linux
+Multi-Arch: same
+Description: Build with X11 support
 Status: install ok installed
 
