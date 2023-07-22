@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "initializer_list": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/neo",
     "cmake.defaultVariants": {
