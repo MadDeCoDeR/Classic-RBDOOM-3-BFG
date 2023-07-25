@@ -25,6 +25,9 @@ SOFTWARE.
 class OpenInput {
 public:
 	virtual void ChangeControllerConfiguration(const char* configName, int controllerIndex) = 0;
+	virtual void RegisterInputConfigurationFile(const char* path) = 0;
+	virtual bool Start() = 0;
+	virtual bool Stop() = 0;
 };
 
 OpenInput* getInputInstance(bool apiEnabled);
