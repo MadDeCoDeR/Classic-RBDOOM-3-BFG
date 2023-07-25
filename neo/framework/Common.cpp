@@ -1273,8 +1273,7 @@ void UnloadPlatformDLL()
 	// shut down the platform object
 	if (::op != NULL)
 	{
-		::op->API_Shutdown();
-		
+		::op->API_Shutdown();		
 	}
 
 	if (platformDLL)
