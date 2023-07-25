@@ -1914,11 +1914,12 @@ qboolean G_DoSaveGame (void)
 	int		length; 
 	int		i; 
 	qboolean	bResult = true;
+	idStr localsavedir;
 
 	if ( ::g->gamestate != GS_LEVEL ) {
 		return false;
 	}
-
+	
 	description = ::g->savedescription; 
 	//GK: quicksaves are using diferent name in order to be detected more easy
 	if (::g->savegameslot == 7) {
@@ -1927,31 +1928,36 @@ qboolean G_DoSaveGame (void)
 	else {
 		sprintf(sname, "%s", SAVEGAMENAME);
 	}
+
+
 	//GK: Add save directories for Evilution and Plutonia expansions
 	if (::g->gamemission == pack_custom && ::g->savedir != NULL) { //GK: Custom expansion related stuff
-		sprintf(name, "%s\\%s%d.dsg", ::g->savedir, sname, ::g->savegameslot);
+		localsavedir = ::g->savedir;
 	}
-	else
-	if( common->GetCurrentGame() == DOOM_CLASSIC ) {
-		sprintf(name,"DOOM\\%s%d.dsg", sname,::g->savegameslot );
-	} else {
-		if (DoomLib::idealExpansion == doom2) {
-			sprintf(name, "DOOM2\\%s%d.dsg", sname, ::g->savegameslot);
+	else {
+		switch (DoomLib::idealExpansion) {
+			case doom:
+				localsavedir = "DOOM";
+				break;
+			case doom2:
+				localsavedir = "DOOM2";
+				break;
+			case pack_nerve:
+				localsavedir = "DOOM2_NRFTL";
+				break;
+			case pack_tnt:
+				localsavedir = "DOOM2_TNT";
+				break;
+			case pack_plut:
+				localsavedir = "DOOM2_PLUT";
+				break;
+			case pack_master:
+				localsavedir = "DOOM2_MASTER";
+				break;
 		}
-		else if (DoomLib::idealExpansion == pack_nerve) {
-			sprintf(name, "DOOM2_NRFTL\\%s%d.dsg", sname, ::g->savegameslot);
-		}
-		else if (DoomLib::idealExpansion == pack_tnt) {
-			sprintf(name, "DOOM2_TNT\\%s%d.dsg", sname, ::g->savegameslot);
-		}
-		else if (DoomLib::idealExpansion == pack_plut) {
-			sprintf(name, "DOOM2_PLUT\\%s%d.dsg", sname, ::g->savegameslot);
-		}
-		else if (DoomLib::idealExpansion == pack_master) {
-			sprintf(name, "DOOM2_MASTER\\%s%d.dsg", sname, ::g->savegameslot);
-		}
-		
 	}
+
+	sprintf(name, "%s\\%s%d.dsg", localsavedir.c_str(), sname, ::g->savegameslot);
 
 	::g->save_p = ::g->savebuffer = ::g->screens[1];
 

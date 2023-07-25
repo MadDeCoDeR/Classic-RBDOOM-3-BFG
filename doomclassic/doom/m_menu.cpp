@@ -434,33 +434,36 @@ void M_ReadSaveStrings(void)
 	int             count;
 	int             i;
 	char    name[256];
+	idStr localsavedir;
 
 	for (i = 0;i < load_end;i++)
 	{
 		if (DoomLib::idealExpansion == ::g->rexp && ::g->gamemission == pack_custom && ::g->savedir) { //GK: Custom expansion related stuff
-			sprintf(name, "%s\\%s%d.dsg", ::g->savedir, SAVEGAMENAME, i);
+			localsavedir = ::g->savedir;
 		}
-		else
-		if( common->GetCurrentGame() == DOOM_CLASSIC ) {
-			sprintf(name,"DOOM\\%s%d.dsg",  SAVEGAMENAME,i );
-		} else {
-			if( DoomLib::idealExpansion == doom2 ) {
-				sprintf(name,"DOOM2\\%s%d.dsg",  SAVEGAMENAME,i );
-			} else if ( DoomLib::idealExpansion == pack_nerve){
-				sprintf(name,"DOOM2_NRFTL\\%s%d.dsg",  SAVEGAMENAME,i );
+		else {
+			switch (DoomLib::idealExpansion) {
+				case doom:
+					localsavedir = "DOOM";
+					break;
+				case doom2:
+					localsavedir = "DOOM2";
+					break;
+				case pack_nerve:
+					localsavedir = "DOOM2_NRFTL";
+					break;
+				case pack_tnt:
+					localsavedir = "DOOM2_TNT";
+					break;
+				case pack_plut:
+					localsavedir = "DOOM2_PLUT";
+					break;
+				case pack_master:
+					localsavedir = "DOOM2_MASTER";
+					break;
 			}
-			else if (DoomLib::idealExpansion == pack_tnt) {
-				sprintf(name, "DOOM2_TNT\\%s%d.dsg", SAVEGAMENAME, i);
-			}
-			else if (DoomLib::idealExpansion == pack_plut) {
-				sprintf(name, "DOOM2_PLUT\\%s%d.dsg", SAVEGAMENAME, i);
-			}
-			else if (DoomLib::idealExpansion == pack_master) {
-				sprintf(name, "DOOM2_MASTER\\%s%d.dsg", SAVEGAMENAME, i);
-			}
-			
-			
 		}
+		sprintf(name, "%s\\%s%d.dsg", localsavedir.c_str(), SAVEGAMENAME, i);
 
 		handle = fileSystem->OpenFileRead ( name, false );
 		if (handle == NULL)
@@ -486,35 +489,36 @@ bool M_CheckQuickSave(void)
 	//int             count;
 	//int             i;
 	char    name[256];
+	idStr localsavedir;
 
 	//for (i = 0; i < load_end; i++)
 	{
-		if (::g->gamemission == pack_custom && ::g->savedir) { //GK: Custom expansion related stuff
-			sprintf(name, "%s\\%s%d.dsg", ::g->savedir, QUICKSAVENAME, 7);
-		}
-		else
-		if (common->GetCurrentGame() == DOOM_CLASSIC) {
-			sprintf(name, "DOOM\\%s%d.dsg", QUICKSAVENAME, 7);
+		if (DoomLib::idealExpansion == ::g->rexp && ::g->gamemission == pack_custom && ::g->savedir) { //GK: Custom expansion related stuff
+			localsavedir = ::g->savedir;
 		}
 		else {
-				if (DoomLib::idealExpansion == doom2) {
-					sprintf(name, "DOOM2\\%s%d.dsg", QUICKSAVENAME, 7);
-				}
-				else if (DoomLib::idealExpansion == pack_nerve) {
-					sprintf(name, "DOOM2_NRFTL\\%s%d.dsg", QUICKSAVENAME, 7);
-				}
-				else if (DoomLib::idealExpansion == pack_tnt) {
-					sprintf(name, "DOOM2_TNT\\%s%d.dsg", QUICKSAVENAME, 7);
-				}
-				else if (DoomLib::idealExpansion == pack_plut) {
-					sprintf(name, "DOOM2_PLUT\\%s%d.dsg", QUICKSAVENAME, 7);
-				}
-				else if (DoomLib::idealExpansion == pack_master) {
-					sprintf(name, "DOOM2_MASTER\\%s%d.dsg", QUICKSAVENAME, 7);
-				}
-
-
+			switch (DoomLib::idealExpansion) {
+			case doom:
+				localsavedir = "DOOM";
+				break;
+			case doom2:
+				localsavedir = "DOOM2";
+				break;
+			case pack_nerve:
+				localsavedir = "DOOM2_NRFTL";
+				break;
+			case pack_tnt:
+				localsavedir = "DOOM2_TNT";
+				break;
+			case pack_plut:
+				localsavedir = "DOOM2_PLUT";
+				break;
+			case pack_master:
+				localsavedir = "DOOM2_MASTER";
+				break;
+			}
 		}
+		sprintf(name, "%s\\%s%d.dsg", localsavedir.c_str(), SAVEGAMENAME, 7);
 
 		handle = fileSystem->OpenFileRead(name, false);
 		if (handle == NULL)
