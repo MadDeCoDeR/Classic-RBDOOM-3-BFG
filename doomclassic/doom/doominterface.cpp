@@ -178,7 +178,7 @@ bool DoomInterface::Frame( int iTime, idUserCmdMgr * userCmdMgr )
 					if ( !waitingForWipe ) {
 						const bool didRunTic = DoomLib::Tic( userCmdMgr );
 						if ( didRunTic == false ) {
-							//printf( "Skipping tic and yielding because not enough time has passed.\n" );
+							//common->Printf( "Skipping tic and yielding because not enough time has passed.\n" );
 						
 							// Give lower priority threads a chance to run.
 							Sys_Yield();
@@ -207,7 +207,7 @@ bool DoomInterface::Frame( int iTime, idUserCmdMgr * userCmdMgr )
 
 		lastTicRun = iTime;
 	} else {
-		printf( "Skipping this frame becase it's not time to run a tic yet.\n" );
+		common->Printf( "Skipping this frame becase it's not time to run a tic yet.\n" );
 	}
 
 	return bAllFinished;

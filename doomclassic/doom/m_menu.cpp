@@ -518,7 +518,7 @@ bool M_CheckQuickSave(void)
 				break;
 			}
 		}
-		sprintf(name, "%s\\%s%d.dsg", localsavedir.c_str(), SAVEGAMENAME, 7);
+		sprintf(name, "%s\\%s%d.dsg", localsavedir.c_str(), QUICKSAVENAME, 7);
 
 		handle = fileSystem->OpenFileRead(name, false);
 		if (handle == NULL)

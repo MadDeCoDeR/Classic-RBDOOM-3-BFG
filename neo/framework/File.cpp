@@ -1413,7 +1413,20 @@ int idFile_Permanent::Write( const void* buffer, int len )
 		// RB begin
 #if defined(_WIN32)
 		DWORD bytesWritten;
-		WriteFile( o, buf, block, &bytesWritten, NULL );
+		if (!WriteFile(o, buf, block, &bytesWritten, NULL) && tries) {
+			char msgbuf[256];
+			int error = GetLastError();
+			FormatMessage(
+				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL,
+				error,
+				MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
+				(LPTSTR)&msgbuf,
+				sizeof(msgbuf),
+				NULL
+			);
+			Sys_Error("Failed to write file with error: %s", msgbuf);
+		}
 		written = bytesWritten;
 #else
 		written = fwrite( buf, 1, block, o );
