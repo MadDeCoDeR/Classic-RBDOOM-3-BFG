@@ -39,8 +39,8 @@ extern idCVar s_meterPosition;
 extern idCVar s_device;
 extern idCVar s_showPerfData;
 extern idCVar s_volume_dB;
-//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
-#if defined(USE_WINRT)
+//GK : Rulling out the #if defined(USE_SYS_DX) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
+#if defined(USE_SYS_DX)
 HRESULT GetAudioDeviceDetails( _In_ IMMDevice* immDevice, _Out_ AudioDevice* pInfo )
 {
 	IPropertyStore* propStore = nullptr;
@@ -200,9 +200,9 @@ void listDevices_f_XA2( const idCmdArgs& args )
 		idLib::Warning( "No xaudio object" );
 		return;
 	}
-	//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
+	//GK : Rulling out the #if defined(USE_SYS_DX) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 // RB: not available on Windows 8 SDK
-#if defined(USE_WINRT) //(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+#if defined(USE_SYS_DX) //(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
 	AudioDevice defaultDevice;
 	auto vAudioDevices = idSoundHardware_XAudio2::EnumerateAudioDevices( &defaultDevice );
 	if( vAudioDevices.size() == 0 )
@@ -356,19 +356,19 @@ void idSoundHardware_XAudio2::Init()
 	cmdSystem->AddCommand("listDevices", listDevices_f_XA2, 0, "Lists the connected sound devices", NULL);
 
 	DWORD xAudioCreateFlags = 0;
-	//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
+	//GK : Rulling out the #if defined(USE_SYS_DX) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 // RB: not available on Windows 8 SDK
-#if !defined(USE_WINRT) && defined(_DEBUG) // (_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/) && defined(_DEBUG)
+#if !defined(USE_SYS_DX) && defined(_DEBUG) // (_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/) && defined(_DEBUG)
 	xAudioCreateFlags |= XAUDIO2_DEBUG_ENGINE;
 #endif
 	// RB end
 
 	XAUDIO2_PROCESSOR xAudioProcessor = XAUDIO2_DEFAULT_PROCESSOR;
-	//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
+	//GK : Rulling out the #if defined(USE_SYS_DX) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 // RB: not available on Windows 8 SDK
 	if (FAILED(XAudio2Create(&pXAudio2, xAudioCreateFlags, xAudioProcessor)))
 	{
-#if !defined(USE_WINRT) && defined(_DEBUG) // (_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/) && defined(_DEBUG)
+#if !defined(USE_SYS_DX) && defined(_DEBUG) // (_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/) && defined(_DEBUG)
 		if (xAudioCreateFlags & XAUDIO2_DEBUG_ENGINE)
 		{
 			// in case the debug engine isn't installed
@@ -401,9 +401,9 @@ void idSoundHardware_XAudio2::Init()
 
 	idCmdArgs args;
 	listDevices_f_XA2(args);
-	//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
+	//GK : Rulling out the #if defined(USE_SYS_DX) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 	// RB: not available on Windows 8 SDK
-#if defined(USE_WINRT) //(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+#if defined(USE_SYS_DX) //(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
 	AudioDevice defaultDevice;
 	std::vector<AudioDevice> vAudioDevices = EnumerateAudioDevices(&defaultDevice);
 

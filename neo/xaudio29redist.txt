@@ -1,0 +1,5 @@
+//GK: Copy it in vcpkg.json for XAudio 2.9 redist headers (AKA XAudio 2.9 with compatibility to Win7, 8, 8.1)
+{
+      "name": "xaudio2redist",
+      "platform": "windows & !staticcrt"
+    },

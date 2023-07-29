@@ -15,17 +15,13 @@
         "rhs": "Windows"
       },
       "cacheVariables": {
-        "OPENAL": {
-          "type": "BOOL",
-          "value": "ON"
-        },
-        "WINRT": {
+        "USE_SYSTEM_DX": {
           "type": "BOOL",
           "value": "ON"
         },
         "USE_XAUDIO2_PACKAGE": {
           "type": "BOOL",
-          "value": "ON"
+          "value": "OFF" 
         },
         "USE_SYSTEM_ZLIB": {
           "type": "BOOL",

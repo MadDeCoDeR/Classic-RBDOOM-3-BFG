@@ -1,9 +1,117 @@
+Package: vcpkg-cmake-config
+Version: 2022-02-06
+Port-Version: 1
+Architecture: x64-linux
+Multi-Arch: same
+Abi: abb7a37f1ff83868c8d28136b9d906d97b80686ca3c250dd8d0a9dfc85cdd436
+Type: Port
+Status: install ok installed
+
+Package: vcpkg-cmake
+Version: 2023-05-04
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 08812ebdcfbe12cf834c5127e591ac5f15fb40174d10b2fcef7a670c7aac59e2
+Type: Port
+Status: install ok installed
+
+Package: libjpeg-turbo
+Version: 2.1.5.1
+Port-Version: 2
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: f2d5aceeb89a81901ea9256b666caac23e2e40971219433954cfa36cb689c2b9
+Description: libjpeg-turbo is a JPEG image codec that uses SIMD instructions (MMX, SSE2, NEON, AltiVec) to accelerate baseline JPEG compression and decompression on x86, x86-64, ARM, and PowerPC systems.
+Type: Port
+Status: install ok installed
+
+Package: zlib
+Version: 1.2.13
+Depends: vcpkg-cmake
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 2b061b620fadbc9e514c9879f42bb23459185b2032ee58b89a727aab03eb09cb
+Description: A compression library
+Type: Port
+Status: install ok installed
+
+Package: libpng
+Version: 1.6.39
+Port-Version: 1
+Depends: vcpkg-cmake, vcpkg-cmake-config, zlib
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 21cee13cdc1cacea298ae7f7a528dbfa5b2475feeeea568ff5a6f7fb7776a8d0
+Description: libpng is a library implementing an interface for reading and writing PNG (Portable Network Graphics) format files
+Type: Port
+Status: install ok installed
+
+Package: alsa
+Version: 1.2.8
+Port-Version: 1
+Architecture: x64-linux
+Multi-Arch: same
+Abi: c313665f776edf62a092787743c6308120ef90861249d7825537e04ca1411377
+Description: The Advanced Linux Sound Architecture (ALSA) - library
+Type: Port
+Status: install ok installed
+
+Package: openal-soft
+Version: 1.23.0
+Port-Version: 2
+Depends: alsa, vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 0962a2c1dfacad442182cb34bb0f27f0d194ea12ed0c9d9bc0b1b15c8a4635b6
+Description: OpenAL Soft is an LGPL-licensed, cross-platform, software implementation of the OpenAL 3D audio API.
+Type: Port
+Status: install ok installed
+
+Package: rapidjson
+Version: 2023-04-27
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 002320e4be29366edf91326688a5b5bcc938d0a3b49def82741882c70019beb1
+Description: A fast JSON parser/generator for C++ with both SAX/DOM style API <http://rapidjson.org/>
+Type: Port
+Status: install ok installed
+
+Package: sdl2
+Version: 2.26.5
+Depends: vcpkg-cmake, vcpkg-cmake-config
+Architecture: x64-linux
+Multi-Arch: same
+Abi: 2cd9aee2165bd15ef16712f7c32584120e11f95a402749bcbf07fb9f16b09fbb
+Description: Simple DirectMedia Layer is a cross-platform development library designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D.
+Type: Port
+Default-Features: base
+Status: install ok installed
+
+Package: sdl2
+Feature: x11
+Architecture: x64-linux
+Multi-Arch: same
+Description: Build with X11 support
+Type: Port
+Status: install ok installed
+
+Package: sdl2
+Feature: wayland
+Architecture: x64-linux
+Multi-Arch: same
+Description: Build with Wayland support
+Type: Port
+Status: install ok installed
+
 Package: vcpkg-tool-meson
 Version: 0.63
 Architecture: x64-linux
 Multi-Arch: same
 Abi: 973c4e31448fffe82b4e81dd9763f7e28ebb84b20b981ffa35f80dfdf6c76e75
 Description: Meson build system
+Type: Port
 Status: install ok installed
 
 Package: pkgconf
@@ -14,6 +122,7 @@ Architecture: x64-linux
 Multi-Arch: same
 Abi: c6b838c7f0f54a34e276490b85afad7ac3ce7c1f1937cd6ff0115334ee6c58b1
 Description: pkgconf is a program which helps to configure compiler and linker flags for development libraries. It is similar to pkg-config from freedesktop.org.
+Type: Port
 Status: install ok installed
 
 Package: vcpkg-pkgconfig-get-modules
@@ -22,13 +131,7 @@ Depends: pkgconf
 Architecture: x64-linux
 Multi-Arch: same
 Abi: 0e243c33bf32158ccf58a2000604c2f2a3c553efb05028fbdfb7a03cc1403971
-Status: install ok installed
-
-Package: vcpkg-cmake
-Version: 2023-05-04
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 08812ebdcfbe12cf834c5127e591ac5f15fb40174d10b2fcef7a670c7aac59e2
+Type: Port
 Status: install ok installed
 
 Package: vcpkg-cmake-get-vars
@@ -37,6 +140,7 @@ Depends: vcpkg-cmake
 Architecture: x64-linux
 Multi-Arch: same
 Abi: 2e1b27ccca86e7503c94e15b1a626e26c1d147031eda4c84e07468970d509910
+Type: Port
 Status: install ok installed
 
 Package: ffmpeg
@@ -48,6 +152,7 @@ Multi-Arch: same
 Abi: 02001a4217c93bdf462dcb373e688530ec7775abb83fb867b43864b8c121399c
 Description: a library to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.
     FFmpeg is the leading multimedia framework, able to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created. It supports the most obscure ancient formats up to the cutting edge. No matter if they were designed by some standards committee, the community or a corporation. It is also highly portable: FFmpeg compiles, runs, and passes our testing infrastructure FATE across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc. under a wide variety of build environments, machine architectures, and configurations.
+Type: Port
 Default-Features: avcodec, avdevice, avfilter, avformat, swresample, swscale
 Status: install ok installed
 
@@ -56,6 +161,7 @@ Feature: avcodec
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the avcodec library
+Type: Port
 Status: install ok installed
 
 Package: ffmpeg
@@ -63,6 +169,7 @@ Feature: avdevice
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the avdevice library
+Type: Port
 Status: install ok installed
 
 Package: ffmpeg
@@ -70,6 +177,7 @@ Feature: avfilter
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the avfilter library
+Type: Port
 Status: install ok installed
 
 Package: ffmpeg
@@ -77,6 +185,7 @@ Feature: avformat
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the avformat library
+Type: Port
 Status: install ok installed
 
 Package: ffmpeg
@@ -84,6 +193,7 @@ Feature: swresample
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the swresample library
+Type: Port
 Status: install ok installed
 
 Package: ffmpeg
@@ -91,81 +201,7 @@ Feature: swscale
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the swscale library
-Status: install ok installed
-
-Package: vcpkg-cmake-config
-Version: 2022-02-06
-Port-Version: 1
-Architecture: x64-linux
-Multi-Arch: same
-Abi: abb7a37f1ff83868c8d28136b9d906d97b80686ca3c250dd8d0a9dfc85cdd436
-Status: install ok installed
-
-Package: libjpeg-turbo
-Version: 2.1.5.1
-Port-Version: 2
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: b4bba79d9905aab7abf3929e6574fefdd8ebdb493d861f00614ed8d14f92c282
-Description: libjpeg-turbo is a JPEG image codec that uses SIMD instructions (MMX, SSE2, NEON, AltiVec) to accelerate baseline JPEG compression and decompression on x86, x86-64, ARM, and PowerPC systems.
-Status: install ok installed
-
-Package: zlib
-Version: 1.2.13
-Depends: vcpkg-cmake
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 2b061b620fadbc9e514c9879f42bb23459185b2032ee58b89a727aab03eb09cb
-Description: A compression library
-Status: install ok installed
-
-Package: libpng
-Version: 1.6.39
-Port-Version: 1
-Depends: vcpkg-cmake, vcpkg-cmake-config, zlib
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 21cee13cdc1cacea298ae7f7a528dbfa5b2475feeeea568ff5a6f7fb7776a8d0
-Description: libpng is a library implementing an interface for reading and writing PNG (Portable Network Graphics) format files
-Status: install ok installed
-
-Package: alsa
-Version: 1.2.8
-Port-Version: 1
-Architecture: x64-linux
-Multi-Arch: same
-Abi: c313665f776edf62a092787743c6308120ef90861249d7825537e04ca1411377
-Description: The Advanced Linux Sound Architecture (ALSA) - library
-Status: install ok installed
-
-Package: openal-soft
-Version: 1.23.0
-Port-Version: 1
-Depends: alsa, vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: c558d4354d09b9161fc11681c4ce15b18c7402e91bb5c96cc88b20df3ccf9d53
-Description: OpenAL Soft is an LGPL-licensed, cross-platform, software implementation of the OpenAL 3D audio API.
-Status: install ok installed
-
-Package: rapidjson
-Version: 2023-04-27
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: 002320e4be29366edf91326688a5b5bcc938d0a3b49def82741882c70019beb1
-Description: A fast JSON parser/generator for C++ with both SAX/DOM style API <http://rapidjson.org/>
-Status: install ok installed
-
-Package: sdl2
-Version: 2.26.5
-Depends: vcpkg-cmake, vcpkg-cmake-config
-Architecture: x64-linux
-Multi-Arch: same
-Abi: c21568a7651799aaee7c4d56e9e49be7e41970ba480a59c77888ece2f9b3d617
-Description: Simple DirectMedia Layer is a cross-platform development library designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D.
-Default-Features: base
+Type: Port
 Status: install ok installed
 
 Package: sdl2
@@ -173,19 +209,6 @@ Feature: ibus
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build with ibus IME support
-Status: install ok installed
-
-Package: sdl2
-Feature: wayland
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build with Wayland support
-Status: install ok installed
-
-Package: sdl2
-Feature: x11
-Architecture: x64-linux
-Multi-Arch: same
-Description: Build with X11 support
+Type: Port
 Status: install ok installed
 

@@ -12,10 +12,6 @@
     },
     "rapidjson",
     {
-      "name": "xaudio2redist",
-      "platform": "windows & !staticcrt"
-    },
-    {
       "name": "sdl2",
       "default-features": false,
       "features": [

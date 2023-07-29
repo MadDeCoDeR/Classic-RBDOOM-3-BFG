@@ -733,9 +733,9 @@ I_InitSoundChannel
 */
 void I_InitSoundChannelXA2( int channel, int numOutputChannels_ ) {
 	activeSoundXA2_t	*soundchannel = &activeSounds[ channel ];
-	//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
+	//GK : Rulling out the #if defined(USE_SYS_DX) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 	// RB: fixed non-aggregates cannot be initialized with initializer list
-#if defined(USE_WINRT) //(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+#if defined(USE_SYS_DX) //(_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
 	X3DAUDIO_VECTOR ZeroVector( 0.0f, 0.0f, 0.0f );
 #else
 	X3DAUDIO_VECTOR ZeroVector = { 0.0f, 0.0f, 0.0f };
@@ -807,7 +807,7 @@ void I_InitSoundXA2() {
 		int i;
 
 		// RB: non-aggregates cannot be initialized with initializer list
-#if defined(USE_WINRT) // (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+#if defined(USE_SYS_DX) // (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
 		X3DAUDIO_VECTOR ZeroVector( 0.0f, 0.0f, 0.0f );
 #else
 		X3DAUDIO_VECTOR ZeroVector = { 0.0f, 0.0f, 0.0f };
@@ -916,7 +916,7 @@ void I_InitMusicXA2(void)
 
 // RB: XAUDIO2_VOICE_MUSIC not available on Windows 8 SDK
 //GK: Correction, according to MSDN XAUDIO2_VOICE_MUSIC is NOT supported by Windows
-//#if !defined(USE_WINRT) //(_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
+//#if !defined(USE_SYS_DX) //(_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
 		((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->GetIXAudio2()->CreateSourceVoice( &pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat );
 //#endif
 // RB end
@@ -1031,7 +1031,7 @@ DWORD WINAPI I_LoadSong( LPVOID songname ) {
 
 		// RB: XAUDIO2_VOICE_MUSIC not available on Windows 8 SDK
 		//GK: Correction, according to MSDN XAUDIO2_VOICE_MUSIC is NOT supported by Windows
-		//#if !defined(USE_WINRT) //(_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
+		//#if !defined(USE_SYS_DX) //(_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
 		((idSoundHardware_XAudio2*)soundSystemLocal.hardware)->GetIXAudio2()->CreateSourceVoice(&pMusicSourceVoice, (WAVEFORMATEX *)&voiceFormat);
 		//#endif
 		// RB end

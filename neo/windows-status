@@ -219,5 +219,5 @@ Multi-Arch: same
 Abi: 87463d36f6c5b301545acd67b68376bb52c3c25c5fb322947db6d6c6221e0af3
 Description: Redistributable version of XAudio 2.9 for Windows 7 SP1 or later
 Type: Port
-Status: install ok installed
+Status: purge ok not-installed
 

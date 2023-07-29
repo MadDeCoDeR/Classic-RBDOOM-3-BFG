@@ -140,9 +140,9 @@ ID_INLINE_EXTERN ALCenum CheckALCErrors_( ALCdevice* device, const char* filenam
 #if defined(_MSC_VER) && defined(USE_XAUDIO2) // DG: stub out xaudio for MinGW etc
 
 #define OPERATION_SET 1
-//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
+//GK : Rulling out the #if defined(USE_SYS_DX) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 // RB: not available on Windows 8 SDK
-#if defined(USE_WINRT) // (_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
+#if defined(USE_SYS_DX) // (_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
 #include <mmdeviceapi.h>
 #include <initguid.h> // For the pkey defines to be properly instantiated.
 #include <propkeydef.h>
@@ -167,9 +167,9 @@ struct AudioDevice
 #include <xaudio2.h>
 #include <xaudio2fx.h>
 #include <X3DAudio.h>
-//GK : Rulling out the #if defined(USE_WINRT) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
+//GK : Rulling out the #if defined(USE_SYS_DX) because it causes more harm than good (no music) and also win8 and later are having fine backward compatibility with win 7
 // RB: not available on Windows 8 SDK
-#if !defined(USE_WINRT) // (_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
+#if !defined(USE_SYS_DX) // (_WIN32_WINNT < 0x0602 /*_WIN32_WINNT_WIN8*/)
 #include <xma2defs.h>
 #endif
 // RB end
