@@ -75,7 +75,7 @@ Recommended system requirements:
 	OpenGL Version: 4.6 with Direct State Access Support
 
 
-Additional Requirements:
+Additional Requirements for XAudio2 (if it is included):
 
 - For Windows XP (No longer supported): DirectX 2010 support
 - For Windows 7, 8, 8.1: XAudio 2.9. See [7.A](#a-installing-additional-requirements)
@@ -134,6 +134,8 @@ This project's GitHub.net Git repository can be checked out through Git with the
 
 If you don't want to use git, you can download the source as a zip file at
 	https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/archive/master.zip
+
+Tip: Make sure to change the file path on line 3 of neo/CMakeLists.txt to the folder path of vcpkg you have installed on your system (if you have it already installed)
 
 
 ## 5) COMPILING ON WINDOWS WITH VISUAL STUDIO
@@ -379,6 +381,12 @@ and extract it to the directory on your own Doom 3 BFG directory (/path/to/Doom3
 	- Buy DOOM 2 + Master Levels (Steam, GOG)
 	- Create a folder named master inside the Game's base/wads folder
 	- Copy and paste all the 20 Master Level wads inside the master folder (from the previous step)
+
+4. XAudio2 backend on Windows
+
+	- Copy the text with the brackets from the neo/xaudio29redist.txt to neo/vcpkg.json (each entry is separated with comma)
+	- On CMakePresets.json in the windows-base configuration change the value of USE_XAUDIO2_PACKAGE from OFF to ON
+	- Follow steps from [Chapter 5](#5-compiling-on-windows-with-visual-studio)
 
 ## 8) OVERALL CHANGES
 
@@ -679,4 +687,8 @@ GNU GPL, (2) the GNU LGPL, or (3) the Perl Artistic License.
 
 ## 14) VCPKG Depedency Licenses:
 Each pre-build binary include a folder named third-party-licenses. 
-Inside the folder you can find any additional license for each vcpkg depedency that have been used for the creation of the distributed binary
+Inside the folder you can find any additional license for each vcpkg depedency that have been used for the creation of the distributed binary.
+
+A) XAudio 2.9 redist
+--------------------------------------
+If XAudio 2.9 redist package is included in the project, only the header files of that package are used in order to maintain Windows 7, 8, 8.1 compatibility.
