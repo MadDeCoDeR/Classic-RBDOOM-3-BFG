@@ -42,7 +42,7 @@ Port-Version: 1
 Depends: vcpkg-cmake, vcpkg-cmake-config, zlib
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 21cee13cdc1cacea298ae7f7a528dbfa5b2475feeeea568ff5a6f7fb7776a8d0
+Abi: 7bb3a160f898194540f0e6cdbaa1afeff29c48fb6f0062f26c3526577710d9e4
 Description: libpng is a library implementing an interface for reading and writing PNG (Portable Network Graphics) format files
 Type: Port
 Status: install ok installed
@@ -52,18 +52,17 @@ Version: 1.2.8
 Port-Version: 1
 Architecture: x64-linux
 Multi-Arch: same
-Abi: c313665f776edf62a092787743c6308120ef90861249d7825537e04ca1411377
+Abi: 1c0d406c06007dced2d0af2d1fdfeb695ad857b48de7c804bd232172c35f26f0
 Description: The Advanced Linux Sound Architecture (ALSA) - library
 Type: Port
 Status: install ok installed
 
 Package: openal-soft
-Version: 1.23.0
-Port-Version: 2
+Version: 1.23.1
 Depends: alsa, vcpkg-cmake, vcpkg-cmake-config
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 0962a2c1dfacad442182cb34bb0f27f0d194ea12ed0c9d9bc0b1b15c8a4635b6
+Abi: 28415951512859b9f3bb738df3f5bc5a2e4774a0d32ccfe4c896c69251ab2433
 Description: OpenAL Soft is an LGPL-licensed, cross-platform, software implementation of the OpenAL 3D audio API.
 Type: Port
 Status: install ok installed
@@ -149,7 +148,7 @@ Port-Version: 6
 Depends: vcpkg-cmake-get-vars, vcpkg-pkgconfig-get-modules
 Architecture: x64-linux
 Multi-Arch: same
-Abi: 02001a4217c93bdf462dcb373e688530ec7775abb83fb867b43864b8c121399c
+Abi: 19ef059b728cea5db727f2adf3e34aba5231c33b73143bb421be184d8f8215c1
 Description: a library to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created.
     FFmpeg is the leading multimedia framework, able to decode, encode, transcode, mux, demux, stream, filter and play pretty much anything that humans and machines have created. It supports the most obscure ancient formats up to the cutting edge. No matter if they were designed by some standards committee, the community or a corporation. It is also highly portable: FFmpeg compiles, runs, and passes our testing infrastructure FATE across Linux, Mac OS X, Microsoft Windows, the BSDs, Solaris, etc. under a wide variety of build environments, machine architectures, and configurations.
 Type: Port
@@ -166,6 +165,7 @@ Status: install ok installed
 
 Package: ffmpeg
 Feature: avdevice
+Depends: ffmpeg
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the avdevice library
@@ -182,6 +182,7 @@ Status: install ok installed
 
 Package: ffmpeg
 Feature: avformat
+Depends: ffmpeg
 Architecture: x64-linux
 Multi-Arch: same
 Description: Build the avformat library
