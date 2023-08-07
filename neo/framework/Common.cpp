@@ -1256,6 +1256,7 @@ void LoadPlatformDLL()
 				::op->SetAdditionalInfo("large image", "dbfa");
 				::op->SetAdditionalInfo("small image", "dbfa");
 				::op->SetAdditionalInfo("status", "Strting Game");
+				::op->openInput()->Start();
 				if (!idStr::Icmp("Steam", ::op->API_Name())) {
 					::op->openInput()->RegisterInputConfigurationFile(fileSystem->RelativePathToOSPath("bfa_actions.vdf"));
 				}
@@ -1273,6 +1274,7 @@ void UnloadPlatformDLL()
 	// shut down the platform object
 	if (::op != NULL)
 	{
+		::op->openInput()->Stop();
 		::op->API_Shutdown();		
 	}
 
