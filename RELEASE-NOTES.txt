@@ -4,6 +4,87 @@ Thank you for downloading DOOM-BFA.
 
 _______________________________________
 
+9 August 2023 - DOOM-BFA 1.3.0
+_______________________________
+
+[classicdoom]
+
+- Remove static limit over drawsegs
+
+- Add option to switch between fullscreen, borderless fullscreen and windowed mode
+
+- Fix issue with loading huge audio files with XAudio2
+
+- Re-adjust Rumble effect
+
+- Fixed various issues with the Master Levels Mega WAD generation
+
+- Add Photo Mode
+
+- Add Camera Movement accelaration when framerate interpolation is active
+
+- When loading IWAD using the file argument replace the default IWAD with the one loaded from the -file argument
+
+- Add Toggle Run Option
+
+- Pause the game if the controller was used but it got disconnected while playing
+
+[DOOM3BFG]
+
+- Optimize device detection threads
+
+- Add OpenGL Direct State Access
+
+- Revmaped Advanced Settings and Separate the to Advanced Graphics and Advanced Options
+
+- Add Option to switch between exclusive fullscreen, windowed and borderless
+
+- Refactor folder paths for subtitle scripts (now the folder path will indicate also the language)
+
+- Add FPS Counter setting on Advanced Options
+
+- Make subtitles to be visible only when their audio source is audible
+
+- Refactor SDL2's controller input and made more simillar to it's XInput counterpart
+
+- Save file dates will use the System's date format (Windows ONLY)
+
+- Thy Warnings Consumed (Pain just Pain)
+
+- Add Language Option which can also show user added languages
+
+- Add Photo Mode
+
+- Minor Improvement over Shadows and Screen Space Ambient Oclusion
+
+- Pause the game if the controller was used but it got disconnected while playing
+
+- Add Support for Monitor DPI awareness V2 (Windows ONLY)
+
+- Add Smart HUD, HUD will stop displaying ammo info on weapons with gui elements (only on First Person)
+
+- Fix Alt + Enter on SDL2
+
+- Add High DPI support for SDL2
+
+- Reworked Always Run. Now it can work also on Single Player (and while doing that it disables the stamina)
+
+- Fix tiny mouse cursor issue when switching to High DPI resolutions (on Windows)
+
+- Using Alt + Enter on Windows or Linux (with Wayland and libdecor) will switch to fullscreen on the Monitor the Game's window is on
+
+- On Windows Pressing Alt + Backspace will release the mouse cursor
+
+- Remapped Control Settings and Added Advanced control Settings that allow you to enable toggle behaviour on sprint, crouch and zoom 
+
+- Unlimited Save files
+
+- Add Center Camera Key Binding
+
+- Use Open Platform's OpenInput interface to switch controller layouts depending on the game running
+
+_______________________________________
+
 29 Octomber 2021 - DOOM-BFA 1.2.8
 _______________________________
 
