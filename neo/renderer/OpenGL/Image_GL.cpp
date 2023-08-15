@@ -1000,20 +1000,21 @@ void idImage::AllocImage()
 			numSides = 1;
 	}
 
+	int w = opts.width > 0 ? opts.width : 1280;
+	int h = opts.height > 0 ? opts.height : 720;
+
 	if (!glConfig.directStateAccess) {
 		glGenTextures(1, (GLuint*)&texnum);
 		assert(texnum != TEXTURE_NOT_LOADED);
 		glBindTexture(target, texnum);
 		if (opts.textureType == TT_2D_ARRAY) {
-			glTexImage3D(uploadTarget, 0, internalFormat, opts.width, opts.height, numSides, 0, dataFormat, GL_UNSIGNED_BYTE, NULL);
+			glTexImage3D(uploadTarget, 0, internalFormat, w, h, numSides, 0, dataFormat, GL_UNSIGNED_BYTE, NULL);
 		}
 		else if (opts.textureType == TT_2D_MULTISAMPLE) {
-			glTexImage2DMultisample(uploadTarget, opts.samples, internalFormat, opts.width, opts.height, GL_FALSE);
+			glTexImage2DMultisample(uploadTarget, opts.samples, internalFormat, w, h, GL_FALSE);
 		}else{
 			for (int side = 0; side < numSides; side++)
 			{
-				int w = opts.width > 0 ? opts.width : 1280;
-				int h = opts.height > 0 ? opts.height : 720;
 				if (opts.textureType == TT_CUBIC)
 				{
 					h = w;
@@ -1069,8 +1070,6 @@ void idImage::AllocImage()
 	}
 	else 
 	{
-		int w = opts.width > 0 ? opts.width : 1280;
-		int h = opts.height > 0 ? opts.height : 720;
 		glCreateTextures(target, 1, (GLuint*)&texnum);
 		if (texnum != TEXTURE_NOT_LOADED) {
 			if (opts.textureType == TT_2D_ARRAY) {
