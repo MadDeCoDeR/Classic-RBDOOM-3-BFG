@@ -663,6 +663,8 @@ bool Sys_Exec(	const char* appPath, const char* workingPath, const char* args,
 				execProcessWorkFunction_t workFn, execOutputFunction_t outputFn, const int waitMS,
 				unsigned int& exitCode );
 
+const char* Sys_GetCallStack();
+
 // localization
 
 #define ID_LANG_ENGLISH		"english"

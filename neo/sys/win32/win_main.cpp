@@ -40,6 +40,8 @@ If you have questions concerning this license or the applicable additional terms
 #include <shellapi.h>
 #include <shlobj.h>
 
+#include <DbgHelp.h>
+
 #ifndef __MRC__
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -944,6 +946,56 @@ bool Sys_Exec(	const char * appPath, const char * workingPath, const char * args
 		return true;
 }
 
+const char* Sys_GetCallStack()
+{
+	char* callStack = new char[5000];
+	sprintf(callStack, "Called: ");
+	HANDLE process = GetCurrentProcess();
+	void* stack[62];
+	WORD frames = CaptureStackBackTrace(0, 62, stack, NULL);
+	SYMBOL_INFO* symbol = new SYMBOL_INFO[1];
+	symbol->MaxNameLen = 2048;
+	symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+	IMAGEHLP_LINE* line = new IMAGEHLP_LINE[1];
+	line->SizeOfStruct = sizeof(IMAGEHLP_LINE);
+	uint64 dwDisplacement1;
+	DWORD dwDisplacement2;
+	for (int frame = 1; frame < frames; frame++) {
+#if defined(_M_IX86)
+		BOOL call1 = SymFromAddr(process, (DWORD)(stack[frame]), &dwDisplacement1, symbol);
+		BOOL call2 = SymGetLineFromAddr(process, (DWORD)(stack[frame]), &dwDisplacement2, line);
+#else
+		BOOL call1 = SymFromAddr(process, (DWORD64)(stack[frame]), &dwDisplacement1, symbol);
+		BOOL call2 = SymGetLineFromAddr(process, (DWORD64)(stack[frame]), &dwDisplacement2, line);
+#endif
+		if (call1 && call2) {
+			char* frameLine = new char[255];
+			sprintf(frameLine, "at %s(%s:%d)\n\t", symbol->Name, line->FileName, line->LineNumber);
+			strcat(callStack, frameLine);
+		}
+		else {
+			int lastError = GetLastError();
+			char msgbuf[256];
+			FormatMessage(
+				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL,
+				lastError,
+				MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
+				(LPTSTR)&msgbuf,
+				sizeof(msgbuf),
+				NULL
+			);
+
+			if (lastError != 487 && lastError != 126) {
+				Sys_Error("Sys_GetCallStack: failed - %s (%d)", msgbuf, lastError);
+			}
+		}
+	}
+	int lastLetter = strlen(callStack);
+	callStack[lastLetter - 1] = '\0';
+	return callStack;
+}
+
 /*
 ========================================================================
 
@@ -1189,6 +1241,7 @@ The cvar system must already be setup
 
 void Sys_Init() {
 
+	SymInitialize(GetCurrentProcess(), NULL, TRUE);
 	CoInitialize( NULL );
 
 	// get WM_TIMER messages pumped every millisecond
@@ -1378,6 +1431,7 @@ Sys_Shutdown
 ================
 */
 void Sys_Shutdown() {
+	SymCleanup(GetCurrentProcess());
 	CoUninitialize();
 }
 
