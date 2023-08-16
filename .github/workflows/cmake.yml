@@ -340,7 +340,7 @@ jobs:
     - name: Zip Windows debug artifact files
       working-directory: ${{github.workspace}}
       run: |
-        mv ./build/${{env.BUILD_TYPE}}/* .
+        mv ./build/debug/* .
         cp -r -u  -f ./BFA_Assets/* .
         rm -r ./BFA_Assets
         mkdir ./third-party-licenses
