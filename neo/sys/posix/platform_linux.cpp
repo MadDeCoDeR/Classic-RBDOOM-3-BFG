@@ -599,3 +599,17 @@ const char* Sys_GetCallStack() {
 	}
 	return callStack;
 }
+
+const char* Sys_Wcstrtombstr(const wchar_t* wstring) {
+	int wstrlen = wcslen(wstring);
+	char* dest = new char[wstrlen];
+	int mblength = wcstombs(dest, wstring, wstrlen);
+	return dest;
+}
+
+const wchar_t* Sys_Mbstrtowcstr(const char* string) {
+	int mbstrlen = strlen(string);
+	wchar_t* dest = new wchar_t[mbstrlen];
+	mbstowcs(dest, string, mbstrlen);
+	return dest;
+}

@@ -643,6 +643,7 @@ const char* 	Sys_SecToStr( int sec );
 
 //GK: Begin
 const char* Sys_Wcstrtombstr(const wchar_t* wstring);
+const wchar_t* Sys_Mbstrtowcstr(const char* string);
 //GK: End
 
 const char* 	Sys_DefaultBasePath();

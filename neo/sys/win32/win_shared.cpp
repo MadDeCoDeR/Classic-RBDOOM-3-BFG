@@ -247,6 +247,18 @@ const char* Sys_Wcstrtombstr(const wchar_t* wstring) {
 	return "";
 }
 
+const wchar_t* Sys_Mbstrtowcstr(const char* string)
+{
+	int strlen = lstrlen(string);
+	int wstrlen = MultiByteToWideChar(CP_ACP, NULL, string, strlen, NULL, 0);
+	wchar_t* wstring = new wchar_t[wstrlen + 1];
+	if (MultiByteToWideChar(CP_ACP, NULL, string, strlen, wstring, wstrlen) > 0) {
+		wstring[wstrlen] = '\0';
+		return wstring;
+	}
+	return L"";
+}
+
 /*
 ================
 Sys_GetDateFormated
