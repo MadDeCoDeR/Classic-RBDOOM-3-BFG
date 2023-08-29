@@ -45,6 +45,7 @@ idCVar stereoRender_warpCenterY( "stereoRender_warpCenterY", "0.5", CVAR_RENDERE
 idCVar stereoRender_warpParmZ( "stereoRender_warpParmZ", "0", CVAR_RENDERER | CVAR_FLOAT | CVAR_ARCHIVE, "development parm" );
 idCVar stereoRender_warpParmW( "stereoRender_warpParmW", "0", CVAR_RENDERER | CVAR_FLOAT | CVAR_ARCHIVE, "development parm" );
 idCVar stereoRender_warpTargetFraction( "stereoRender_warpTargetFraction", "1.0", CVAR_RENDERER | CVAR_FLOAT | CVAR_ARCHIVE, "fraction of half-width the through-lens view covers" );
+idCVar r_useOpenGLDSA("r_useOpenGLDSA", "-1", CVAR_RENDERER | CVAR_INTEGER | CVAR_ARCHIVE, "Enable/Disable OpenGL DSA. -1 = Enable based on system detection, 0 = Force to Disable, 1 = Force to Enable", -1, 1);
 
 #ifdef _DEBUG
 idCVar r_showSwapBuffers("r_showSwapBuffers", "1", CVAR_BOOL, "Show timings from GL_BlockingSwapBuffers");
@@ -303,7 +304,7 @@ static void R_CheckPortableExtensions()
 	
 	// GL_ARB_direct_state_access
 	//GK: Use the core direct State Access intead (what purpose the EXT has?)
-	glConfig.directStateAccess = GLEW_ARB_direct_state_access != 0 && glConfig.glVersion >= 4.5;
+	glConfig.directStateAccess = (r_useOpenGLDSA.GetInteger() < 0) ? GLEW_ARB_direct_state_access != 0 && glConfig.glVersion >= 4.5 : r_useOpenGLDSA.GetBool();
 
 	R_PrintExtensionStatus(glConfig.directStateAccess, "GL_ARB_direct_state_access");
 	
