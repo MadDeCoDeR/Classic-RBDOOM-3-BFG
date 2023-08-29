@@ -150,10 +150,6 @@
         "rhs": "Linux"
       },
       "cacheVariables": {
-        "OPENAL": {
-          "type": "BOOL",
-          "value": "ON"
-        },
         "USE_SYSTEM_ZLIB": {
           "type": "BOOL",
           "value": "ON"
