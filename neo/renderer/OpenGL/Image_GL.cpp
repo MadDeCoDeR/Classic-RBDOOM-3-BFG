@@ -755,11 +755,11 @@ void idImage::SetTextureParameters() {
 			{
 				aniso = 0;
 			}
-			glTextureParameterf(texnum, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
+			glTextureParameterf(texnum, (glConfig.glVersion == 4.6) ? GL_TEXTURE_MAX_ANISOTROPY : GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
 		}
 		else
 		{
-			glTextureParameterf(texnum, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+			glTextureParameterf(texnum, (glConfig.glVersion == 4.6) ? GL_TEXTURE_MAX_ANISOTROPY : GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
 		}
 	}
 
@@ -768,7 +768,7 @@ void idImage::SetTextureParameters() {
 	if( glConfig.textureLODBiasAvailable && ( usage != TD_FONT ) )
 	{
 		// use a blurring LOD bias in combination with high anisotropy to fix our aliasing grate textures...
-		glTextureParameterf( texnum, GL_TEXTURE_LOD_BIAS_EXT, r_lodBias.GetFloat() );
+		glTextureParameterf( texnum, (glConfig.glVersion == 4.6) ? GL_TEXTURE_LOD_BIAS : GL_TEXTURE_LOD_BIAS_EXT, r_lodBias.GetFloat() );
 	}
 	*/
 	// RB end
@@ -999,9 +999,13 @@ void idImage::AllocImage()
 			target = uploadTarget = GL_TEXTURE_2D;
 			numSides = 1;
 	}
-
+#ifndef _WIN32
 	int w = opts.width > 0 ? opts.width : 1280;
 	int h = opts.height > 0 ? opts.height : 720;
+#else
+	int w = opts.width;
+	int h = opts.height;
+#endif
 
 	if (!glConfig.directStateAccess) {
 		glGenTextures(1, (GLuint*)&texnum);
@@ -1013,12 +1017,19 @@ void idImage::AllocImage()
 		else if (opts.textureType == TT_2D_MULTISAMPLE) {
 			glTexImage2DMultisample(uploadTarget, opts.samples, internalFormat, w, h, GL_FALSE);
 		}else{
+			if (opts.textureType == TT_CUBIC)
+			{
+				h = w;
+			}
 			for (int side = 0; side < numSides; side++)
 			{
-				if (opts.textureType == TT_CUBIC)
-				{
-					h = w;
-				}
+#ifndef _WIN32
+				w = opts.width > 0 ? opts.width : 1280;
+				h = opts.height > 0 ? opts.height : 720;
+#else
+				w = opts.width;
+				h = opts.height;
+#endif
 				for (int level = 0; level < opts.numLevels; level++)
 				{
 

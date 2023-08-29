@@ -104,9 +104,13 @@ void Framebuffer::Init()
 	}
 	
 	// HDR
-	
+#ifndef _WIN32
 	int screenWidth = renderSystem->GetWidth() > 0 ? renderSystem->GetWidth() : 1280;
 	int screenHeight = renderSystem->GetHeight() > 0 ? renderSystem->GetHeight() : 720;
+#else
+	int screenWidth = renderSystem->GetWidth();
+	int screenHeight = renderSystem->GetHeight();
+#endif
 	
 	globalFramebuffers.hdrFBO = new Framebuffer( "_hdr", screenWidth, screenHeight );
 	if (!glConfig.directStateAccess) {
@@ -547,7 +551,7 @@ void Framebuffer::AddStencilBuffer(int format, int multiSamples)
 			glCreateRenderbuffers(1, &stencilBuffer);
 		}
 		else {
-			glGenFramebuffers(1, &stencilBuffer);
+			 glGenRenderbuffers(1, &stencilBuffer);
 		}
 	}
 
