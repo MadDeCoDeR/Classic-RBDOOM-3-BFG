@@ -1550,6 +1550,7 @@ if(MSVC)
 		if(FFMPEG_FOUND)
 			#include_directories(${FFMPEG_INCLUDE_DIRS})
 			#link_directories(${FFMPEG_LIBRARIES_DIRS})
+			if (MSVC AND ALL_STATIC)
 			include_directories(
 				"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavcodec"
 				"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavdevice"
@@ -1559,7 +1560,6 @@ if(MSVC)
 				"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libswresample"
 				"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libswscale" 
 			)
-			if (MSVC AND ALL_STATIC)
 				set(FFmpeg_LIBRARIES
 				psapi.lib
 				uuid.lib
@@ -1589,6 +1589,45 @@ if(MSVC)
 				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/avutil"
 				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/swresample"
 				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/swscale")
+			elseif(MSVC AND NOT ALL_STATIC)
+			include_directories(
+				"vcpkg_installed/${CPU_ARCH}-windows/include/libavcodec"
+				"vcpkg_installed/${CPU_ARCH}-windows/include/libavdevice"
+				"vcpkg_installed/${CPU_ARCH}-windows/include/libavfilter"
+				"vcpkg_installed/${CPU_ARCH}-windows/include/libavformat"
+				"vcpkg_installed/${CPU_ARCH}-windows/include/libavutil"
+				"vcpkg_installed/${CPU_ARCH}-windows/include/libswresample"
+				"vcpkg_installed/${CPU_ARCH}-windows/include/libswscale" 
+			)
+				set(FFmpeg_LIBRARIES
+				psapi.lib
+				uuid.lib
+				oleaut32.lib
+				shlwapi.lib
+				gdi32.lib
+				vfw32.lib
+				secur32.lib
+				ws2_32.lib
+				mfplat.lib
+				mfuuid.lib
+				strmiids.lib
+				ole32.lib
+				user32.lib
+				bcrypt.lib
+				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/avcodec"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/avdevice"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/avfilter"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/avformat"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/avutil"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/swresample"
+				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/swscale" 
+				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/avcodec"
+				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/avdevice"
+				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/avfilter"
+				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/avformat"
+				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/avutil"
+				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/swresample"
+				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/swscale")
 			else()
 				set(FFmpeg_LIBRARIES ${FFMPEG_LIBRARIES})
 			endif()
