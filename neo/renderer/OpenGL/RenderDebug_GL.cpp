@@ -2412,16 +2412,16 @@ void idRenderBackend::DBG_ShowCenterOfProjection()
 	for( float f = 0.0f ; f <= 1.0f ; f += 0.125f )
 	{
 		glScissor( w * f - 1 , 0, 3, h );
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 		glScissor( 0, h * f - 1 , w, 3 );
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 	}
 	glClearColor( 0, 1, 0, 1 );
 	float f = 0.5f;
 	glScissor( w * f - 1 , 0, 3, h );
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 	glScissor( 0, h * f - 1 , w, 3 );
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 	
 	glScissor( 0, 0, w, h );
 }
@@ -2460,7 +2460,7 @@ void idRenderBackend::DBG_ShowLines()
 		for( int i = start ; i < tr.GetHeight() ; i += 2 )
 		{
 			glScissor( 0, i, tr.GetWidth(), 1 );
-			glClear( GL_COLOR_BUFFER_BIT );
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 		}
 	}
 	else
@@ -2468,7 +2468,7 @@ void idRenderBackend::DBG_ShowLines()
 		for( int i = start ; i < tr.GetWidth() ; i += 2 )
 		{
 			glScissor( i, 0, 1, tr.GetHeight() );
-			glClear( GL_COLOR_BUFFER_BIT );
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 		}
 	}
 }

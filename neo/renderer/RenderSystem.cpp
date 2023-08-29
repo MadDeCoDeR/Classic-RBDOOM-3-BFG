@@ -1021,7 +1021,7 @@ void idRenderSystemLocal::CaptureRenderToFile( const char* fileName, bool fixAlp
 	int	c = ( rc.GetWidth() + 3 ) * rc.GetHeight();
 	byte* data = ( byte* )R_StaticAlloc( c * 3 );
 	
-	glReadPixels( rc.x1, rc.y1, rc.GetWidth(), rc.GetHeight(), GL_RGB, GL_UNSIGNED_BYTE, data );
+	glReadPixels( rc.x1, rc.y1, rc.GetWidth(), rc.GetHeight(), GL_RGB8, GL_UNSIGNED_BYTE, data );
 	
 	byte* data2 = ( byte* )R_StaticAlloc( c * 4 );
 	

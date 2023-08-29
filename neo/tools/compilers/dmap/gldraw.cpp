@@ -52,7 +52,7 @@ void Draw_ClearWindow()
 	GL_Set2D();
 	
 	glClearColor( 0.5, 0.5, 0.5, 0 );
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 	
 #if 0
 	int		w, h, g;

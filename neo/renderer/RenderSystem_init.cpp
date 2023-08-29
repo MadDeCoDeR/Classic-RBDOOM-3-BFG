@@ -906,7 +906,7 @@ void R_ReadTiledPixels( int width, int height, byte* buffer, renderView_t* ref =
 			}
 			
 			glReadBuffer( GL_FRONT );
-			glReadPixels( 0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, temp );
+			glReadPixels( 0, 0, w, h, GL_RGB8, GL_UNSIGNED_BYTE, temp );
 			
 			int	row = ( w * 3 + 3 ) & ~3;		// OpenGL pads to dword boundaries
 			

@@ -4325,7 +4325,7 @@ void idRenderBackend::CalculateAutomaticExposure()
 		// FIXME
 #if !defined(USE_VULKAN)
 		// read back the contents
-		glReadPixels( 0, 0, 64, 64, GL_RGBA, GL_FLOAT, image );
+		glReadPixels( 0, 0, 64, 64, GL_RGBA8, GL_FLOAT, image );
 #endif
 		
 		sum = 0.0f;
@@ -4527,7 +4527,7 @@ void idRenderBackend::Bloom( const viewDef_t* _viewDef )
 	// FIXME
 #if !defined(USE_VULKAN)
 	glClearColor( 0, 0, 0, 1 );
-//	glClear( GL_COLOR_BUFFER_BIT );
+//	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 #endif
 
 	GL_State( /*GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO |*/ GLS_DEPTHMASK | GLS_DEPTHFUNC_ALWAYS | GLS_CULL_TWOSIDED );
@@ -4609,7 +4609,7 @@ void idRenderBackend::Bloom( const viewDef_t* _viewDef )
 		
 		// FIXME
 #if !defined(USE_VULKAN)
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 #endif
 		
 		globalImages->bloomRenderImage[j % 2]->Bind();
@@ -4665,7 +4665,7 @@ void idRenderBackend::DrawScreenSpaceAmbientOcclusion( const viewDef_t* _viewDef
 	// we can avoid blurring them
 	glClearColor( 0, 0, 0, 1 );
 	GL_State( GLS_COLORMASK | GLS_DEPTHMASK );
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 	GL_Color( 0, 0, 0, 0 );
 	
 	
@@ -4761,7 +4761,7 @@ void idRenderBackend::DrawScreenSpaceAmbientOcclusion( const viewDef_t* _viewDef
 			
 			globalFramebuffers.csDepthFBO[i]->Bind();
 			
-			glClear( GL_COLOR_BUFFER_BIT );
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 			
 			if( i == 0 )
 			{
@@ -4807,7 +4807,7 @@ void idRenderBackend::DrawScreenSpaceAmbientOcclusion( const viewDef_t* _viewDef
 		globalFramebuffers.ambientOcclusionFBO[0]->Bind();
 		
 		glClearColor( 0, 0, 0, 0 );
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 		
 		renderProgManager.BindShader_AmbientOcclusion();
 	}
@@ -5004,7 +5004,7 @@ void idRenderBackend::DrawScreenSpaceGlobalIllumination( const viewDef_t* _viewD
 			
 			globalFramebuffers.csDepthFBO[i]->Bind();
 			
-			glClear( GL_COLOR_BUFFER_BIT );
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 			
 			if( i == 0 )
 			{
@@ -5051,7 +5051,7 @@ void idRenderBackend::DrawScreenSpaceGlobalIllumination( const viewDef_t* _viewD
 		
 		// FIXME remove and mix with color from previous frame
 		glClearColor( 0, 0, 0, 0 );
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 		
 		renderProgManager.BindShader_DeepGBufferRadiosity();
 	}
@@ -5630,7 +5630,7 @@ void idRenderBackend::MotionBlur()
 // FIXME
 #if !defined(USE_VULKAN)
 	glClearColor( 0, 0, 0, 1 );
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 	
 #endif
 	
@@ -5900,7 +5900,7 @@ void idRenderBackend::PostProcess( const void* data )
 		globalFramebuffers.smaaEdgesFBO->Bind();
 		
 		glClearColor( 0, 0, 0, 0 );
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 		
 		GL_SelectTexture( 0 );
 		globalImages->smaaInputImage->Bind();
@@ -5914,7 +5914,7 @@ void idRenderBackend::PostProcess( const void* data )
 		globalFramebuffers.smaaBlendFBO->Bind();
 		//Framebuffer::Unbind();
 		
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 		
 		GL_SelectTexture( 0 );
 		globalImages->smaaEdgesImage->Bind();

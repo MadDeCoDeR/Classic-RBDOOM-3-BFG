@@ -843,7 +843,7 @@ void idRenderBackend::GL_EndFrame()
 	// Fix for the steam overlay not showing up while in game without Shell/Debug/Console/Menu also rendering
 	glColorMask( 1, 1, 1, 1 );
 	
-	glFlush();
+	//glFlush();
 }
 
 /*
@@ -1823,7 +1823,7 @@ void idRenderBackend::DrawFlickerBox()
 		glClearColor( 0, 1, 0, 1 );
 	}
 	glScissor( 0, 0, 256, 256 );
-	glClear( GL_COLOR_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 }
 
 /*
@@ -1910,7 +1910,7 @@ void idRenderBackend::GL_BlockingSwapBuffers()
 		const int start = Sys_Milliseconds();
 		glScissor( 0, 0, 1, 1 );
 		glEnable( GL_SCISSOR_TEST );
-		glClear( GL_COLOR_BUFFER_BIT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 		renderSync[swapIndex] = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
 		const int end = Sys_Milliseconds();
 		if( r_showSwapBuffers.GetBool() && end - start > 1 )
@@ -2168,7 +2168,7 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 			
 			// force the HDMI 720P 3D guard band to a constant color
 			glScissor( 0, 720, 1280, 30 );
-			glClear( GL_COLOR_BUFFER_BIT );
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 			break;
 			
 		default:
@@ -2186,7 +2186,7 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 				// clears are fast...
 				glScissor( 0, 0, glConfig.nativeScreenWidth, glConfig.nativeScreenHeight );
 				glClearColor( 0, 0, 0, 0 );
-				glClear( GL_COLOR_BUFFER_BIT );
+				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 				
 				// the size of the box that will get the warped pixels
 				// With the 7" displays, this will be less than half the screen width

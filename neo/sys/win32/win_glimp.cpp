@@ -90,7 +90,7 @@ void GLimp_TestSwapBuffers( const idCmdArgs& args )
 			{
 				glClearColor( 1, 0, 0, 1 );
 			}
-			glClear( GL_COLOR_BUFFER_BIT );
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 			SwapBuffers( win32.hDC );
 			glFinish();
 			timestamps[i] = Sys_Microseconds();
@@ -1755,7 +1755,7 @@ void GLimp_SwapBuffers()
 			wglSwapIntervalEXT( interval );
 		}
 	}
-	
+
 	SwapBuffers( win32.hDC );
 }
 #endif
