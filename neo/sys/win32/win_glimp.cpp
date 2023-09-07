@@ -186,6 +186,24 @@ This is gross -- creating a window just to get a context to get the wgl extensio
 */
 
 /*
+===================
+GLimp_GetSupportedVersion
+===================
+*/
+#if !defined(USE_VULKAN)
+/*
+ GK: Supported Version retrieval. First we need a context without the version attributes set,
+ in order to retrieve it from the system and use it acordingly later with other flags and attributes
+ */
+void GLimp_GetSupportedVersion(int* major, int* minor) {
+	idStr version_string = idStr((const char*)glGetString(GL_VERSION)).SubStr(0, 3);
+	idList<idStr> version_array = version_string.Split(".");
+	*major = atoi(version_array[0].c_str());
+	*minor = atoi(version_array[1].c_str());
+}
+#endif
+
+/*
 ====================
 FakeWndProc
 
@@ -216,7 +234,7 @@ LONG WINAPI FakeWndProc(
 		1,
 		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
 		PFD_TYPE_RGBA,
-		24,
+		32,
 		0, 0, 0, 0, 0, 0,
 		8, 0,
 		0, 0, 0, 0,
@@ -239,7 +257,10 @@ LONG WINAPI FakeWndProc(
 	SetPixelFormat( hDC, pixelFormat, &pfd );
 	hGLRC = wglCreateContext( hDC );
 	wglMakeCurrent( hDC, hGLRC );
-	
+	int major = 3;
+	int minor = 3;
+	GLimp_GetSupportedVersion(&major, &minor);
+	glConfig.version_string = va("%d.%d", major, minor);
 	// free things
 	wglMakeCurrent( NULL, NULL );
 	wglDeleteContext( hGLRC );
@@ -317,8 +338,9 @@ static void GLW_GetWGLExtensionsWithFakeWindow()
 	wglMakeCurrent( hDC, gRC );
 	GLW_CheckWGLExtensions( hDC );
 	wglDeleteContext( gRC );
+	wglMakeCurrent(NULL, NULL);
 	ReleaseDC( hWnd, hDC );
-	
+	DeleteDC(hDC);
 	if (hWnd != 0) {
 		DestroyWindow(hWnd);
 	}
@@ -339,37 +361,7 @@ void GLW_WM_CREATE( HWND hWnd )
 {
 }
 
-/*
-===================
-GLimp_GetSupportedVersion
-===================
-*/
-#if !defined(USE_VULKAN)
-/*
- GK: Supported Version retrieval. First we need a context without the version attributes set,
- in order to retrieve it from the system and use it acordingly later with other flags and attributes
- */
-void GLimp_GetSupportedVersion(HDC hdc, int* major, int* minor) {
-	HGLRC m_hrc = NULL;
-	int useCoreProfile = r_useOpenGLProfile.GetInteger();
-	if (!WGLEW_ARB_create_context || useCoreProfile == 0)
-	{
-		m_hrc = wglCreateContext(hdc);
-	}
-	else {
-		m_hrc = wglCreateContextAttribsARB(hdc, 0, NULL);
-	}
-	if (m_hrc != NULL) {
-		if (wglMakeCurrent(hdc, m_hrc)) {
-			idStr version_string = idStr((const char*)glGetString(GL_VERSION)).SubStr(0, 3);
-			idList<idStr> version_array = version_string.Split(".");
-			*major = atoi(version_array[0].c_str());
-			*minor = atoi(version_array[1].c_str());
-		}
-		wglDeleteContext(m_hrc);
-	}
-}
-#endif
+
 /*
 ========================
 CreateOpenGLContextOnDC
@@ -391,21 +383,21 @@ static HGLRC CreateOpenGLContextOnDC( const HDC hdc, const bool debugContext )
 			break;
 		}
 		// RB end
-		int glMajorVersion = 3;
-		int glMinorVersion = 3;
-		GLimp_GetSupportedVersion(hdc, &glMajorVersion, &glMinorVersion);
+		idList<idStr> version_array = idStr(glConfig.version_string).Split(".");
+		int glMajorVersion = atoi(version_array[0].c_str());
+		int glMinorVersion = atoi(version_array[1].c_str());
+		//GLimp_GetSupportedVersion(hdc, &glMajorVersion, &glMinorVersion);
 		if (glMajorVersion < 3 || glMajorVersion == 3 && glMinorVersion < 3) {
 			common->FatalError("GLimp_Init: OpenGL version is not supported!\n");
 		}
-		const int glDebugFlag = debugContext ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
-		const int glProfileMask = ( useCoreProfile != 0 ) ? WGL_CONTEXT_PROFILE_MASK_ARB : 0;
+		const int glDebugFlag = debugContext ? WGL_CONTEXT_DEBUG_BIT_ARB | WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB : WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
 		const int glProfile = ( useCoreProfile == 1 ) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : ( ( useCoreProfile == 2 ) ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : 0 );
 		const int attribs[] =
 		{
 			WGL_CONTEXT_MAJOR_VERSION_ARB,	glMajorVersion,
 			WGL_CONTEXT_MINOR_VERSION_ARB,	glMinorVersion,
 			WGL_CONTEXT_FLAGS_ARB,			glDebugFlag,
-			glProfileMask,					glProfile,
+			WGL_CONTEXT_PROFILE_MASK_ARB,	glProfile,
 			0
 		};
 		
@@ -504,6 +496,8 @@ static bool GLW_InitDriver( glimpParms_t parms )
 		1,								// version number
 		PFD_DRAW_TO_WINDOW |			// support window
 		PFD_SUPPORT_OPENGL |			// support OpenGL
+		PFD_GENERIC_FORMAT |
+		PFD_GENERIC_ACCELERATED |
 		PFD_DOUBLEBUFFER,				// double buffered
 		PFD_TYPE_RGBA,					// RGBA type
 		32,								// 32-bit color depth
@@ -515,7 +509,7 @@ static bool GLW_InitDriver( glimpParms_t parms )
 		24,								// 24-bit z-buffer
 		8,								// 8-bit stencil buffer
 		0,								// no auxiliary buffer
-		PFD_MAIN_PLANE,					// main layer
+		0,					// main layer
 		0,								// reserved
 		0, 0, 0							// layer masks ignored
 	};
