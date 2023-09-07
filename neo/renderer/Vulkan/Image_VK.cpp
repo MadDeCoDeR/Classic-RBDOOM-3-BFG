@@ -571,7 +571,7 @@ void idImage::PurgeImage()
 idImage::Resize
 ========================
 */
-void idImage::Resize( int width, int height )
+void idImage::Resize( int width, int height, bool recalculateLevels )
 {
 	if (opts.width == width && opts.height == height)
 	{
