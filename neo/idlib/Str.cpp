@@ -2580,17 +2580,10 @@ idStr idStr::SubStr(ID_INT start, ID_INT end)
 	}
 	//This is how many characters we want to take (+1 for null termination)
 	ID_INT tmpLen = end - start;
-	char* tmpBuffer = (char*)malloc((tmpLen + 1) * sizeof(char));
-	//Out of memory (?) case acording to MS docs
-	if (tmpBuffer) {
-		memcpy(tmpBuffer, data + start, tmpLen);
-		tmpBuffer[tmpLen] = '\0';
-		return idStr(tmpBuffer);
-	}
-	else {
-		idLib::common->Error("idStr::SubStr: Failed to initialize temporary buffer");
-		return *this;
-	}
+	char* tmpBuffer = new char[tmpLen + 1];
+	memcpy(tmpBuffer, data + start, tmpLen);
+	tmpBuffer[tmpLen] = '\0';
+	return idStr(tmpBuffer);
 	
 }
 

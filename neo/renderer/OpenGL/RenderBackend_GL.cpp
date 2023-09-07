@@ -47,11 +47,11 @@ idCVar stereoRender_warpParmW( "stereoRender_warpParmW", "0", CVAR_RENDERER | CV
 idCVar stereoRender_warpTargetFraction( "stereoRender_warpTargetFraction", "1.0", CVAR_RENDERER | CVAR_FLOAT | CVAR_ARCHIVE, "fraction of half-width the through-lens view covers" );
 idCVar r_useOpenGLDSA("r_useOpenGLDSA", "-1", CVAR_RENDERER | CVAR_INTEGER | CVAR_ARCHIVE, "Enable/Disable OpenGL DSA. -1 = Enable based on system detection, 0 = Force to Disable, 1 = Force to Enable", -1, 1);
 
-#ifdef _DEBUG
-idCVar r_showSwapBuffers("r_showSwapBuffers", "1", CVAR_BOOL, "Show timings from GL_BlockingSwapBuffers");
-#else
+//#ifdef _DEBUG
+//idCVar r_showSwapBuffers("r_showSwapBuffers", "1", CVAR_BOOL, "Show timings from GL_BlockingSwapBuffers");
+//#else
 idCVar r_showSwapBuffers( "r_showSwapBuffers", "0", CVAR_BOOL, "Show timings from GL_BlockingSwapBuffers" );
-#endif
+//#endif
 idCVar r_syncEveryFrame( "r_syncEveryFrame", "1", CVAR_BOOL, "Don't let the GPU buffer execution past swapbuffers" );
 
 //GK: Begin

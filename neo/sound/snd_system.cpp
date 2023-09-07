@@ -169,6 +169,7 @@ void DefaultDeviceChangeThread(void* data) {
 				AudioDevice defaultDevice;
 				idSoundHardware_XAudio2::EnumerateAudioDevices(&defaultDevice);
 				if (defaultDevice.id != ((AudioDevice*)data)->id) {
+					idScopedCriticalSection cs(soundSystemLocal.mutex);
 					soundSystemLocal.SetNeedsRestart();
 				}
 			} else
@@ -183,6 +184,7 @@ void DefaultDeviceChangeThread(void* data) {
 				idSoundHardware_OpenAL::parseDeviceName(selectedDevice, mbseldev);*/
 				//idLib::Printf("Default Device: %s\nSelected Device: %s\n", mbdefdev, mbseldev); //GK: Otherwise outside of an attached debugger it only works once???
 				if (idStr::Icmp(defaultDevice, selectedDevice)) {
+					idScopedCriticalSection cs(soundSystemLocal.mutex);
 					soundSystemLocal.SetNeedsRestart();
 				}
 			}
@@ -415,6 +417,7 @@ void idSoundSystemLocal::Render()
 	
 	if( needsRestart )
 	{
+		idScopedCriticalSection cs(mutex);
 		Restart();
 		needsRestart = false; //GK: That way OpenAL can properly keep all it's existing audio buffer data
 	}

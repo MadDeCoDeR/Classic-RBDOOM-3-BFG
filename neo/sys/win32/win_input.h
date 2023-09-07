@@ -73,9 +73,8 @@ public:
 	virtual int		PollInputEvents( int inputDeviceNum );
 	virtual int		ReturnInputEvent( const int n, int& action, int& value );
 	virtual void	EndInputEvents() {}
-	virtual bool	GetControllerState(int index) {
-		return controllers[index].valid;
-	}
+	virtual bool	hasConnectedControllers();
+	
 	
 protected:
 	friend void		JoystickSamplingThread( void* data );
@@ -99,4 +98,5 @@ protected:
 	// should these be per-controller?
 	bool					buttonStates[MAX_INPUT_DEVICES][K_LAST_KEY];	// For keeping track of button up/down events
 	int						joyAxis[MAX_INPUT_DEVICES][MAX_JOYSTICK_AXIS];			// For keeping track of joystick axises
+	int						connectedControllers = 0;
 };

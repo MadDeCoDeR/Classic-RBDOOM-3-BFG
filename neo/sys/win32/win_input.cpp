@@ -728,14 +728,7 @@ int Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] )
 
 bool Sys_hasConnectedController()
 {
-	bool isConnected = false;
-	for (int i = 0; i < MAX_JOYSTICKS; i++) {
-		if (win32.g_Joystick.GetControllerState(i)) {
-			isConnected = true;
-			break;
-		}
-	}
-	return isConnected;
+	return win32.g_Joystick.hasConnectedControllers();
 }
 
 void Sys_SetRumble( int device, int low, int hi )
@@ -820,6 +813,7 @@ void JoystickSamplingThread( void* data )
 			idScopedCriticalSection cs( win32.g_Joystick.mutexXis );
 			int inactive = 0;
 			int available = -1;
+			int connectedTemp = 0;
 			for( int i = 0 ; i < MAX_JOYSTICKS ; i++ )
 			{
 				
@@ -832,7 +826,7 @@ void JoystickSamplingThread( void* data )
 					continue;
 				}
 				cs_->valid = true;
-
+				connectedTemp++;
 				XINPUT_STATE& current = joyData[i];
 
 				cs_->current = current;
@@ -851,6 +845,9 @@ void JoystickSamplingThread( void* data )
 				}
 #endif
 				cs_->buttonBits |= current.Gamepad.wButtons;
+			}
+			if (connectedTemp != win32.g_Joystick.connectedControllers) {
+				win32.g_Joystick.connectedControllers = connectedTemp;
 			}
 			//GK: Enable controller layout if there is one controller connected
 			if (inactive < MAX_JOYSTICKS) {
@@ -1126,6 +1123,12 @@ int idJoystickWin32::ReturnInputEvent( const int n, int& action, int& value )
 	value = events[ n ].value;
 	
 	return 1;
+}
+
+bool idJoystickWin32::hasConnectedControllers()
+{
+	//idScopedCriticalSection crit(mutexXis);
+	return connectedControllers > 0;
 }
 
 /*

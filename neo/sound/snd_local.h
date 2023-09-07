@@ -595,6 +595,8 @@ public:
 	bool						needsRestart;
 	
 	bool						insideLevelLoad;
+
+	idSysMutex					mutex;
 	
 	//-------------------------
 	
