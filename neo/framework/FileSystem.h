@@ -122,7 +122,7 @@ public:
 	// Converts a relative path to a full OS path.
 	virtual const char* 	OSPathToRelativePath( const char* OSPath ) = 0;
 	// Converts a full OS path to a relative path.
-	virtual const char* 	RelativePathToOSPath( const char* relativePath, const char* basePath = "fs_basepath" ) = 0;
+	virtual const char* 	RelativePathToOSPath( const char* relativePath, const char* basePath = "fs_basepath", const char* gamedir = NULL) = 0;
 	// Builds a full OS path from the given components.
 	virtual const char* 	BuildOSPath( const char* base, const char* game, const char* relativePath ) = 0;
 	virtual const char* 	BuildOSPath( const char* base, const char* relativePath ) = 0;

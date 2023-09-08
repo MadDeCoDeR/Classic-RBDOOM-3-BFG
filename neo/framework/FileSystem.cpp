@@ -139,7 +139,7 @@ public:
 	virtual idFileList* 	ListFilesTree( const char* relativePath, const char* extension, bool sort = false, const char* gamedir = NULL );
 	virtual void			FreeFileList( idFileList* fileList );
 	virtual const char* 	OSPathToRelativePath( const char* OSPath );
-	virtual const char* 	RelativePathToOSPath( const char* relativePath, const char* basePath );
+	virtual const char* 	RelativePathToOSPath( const char* relativePath, const char* basePath, const char* gamedir = NULL );
 	virtual const char* 	BuildOSPath( const char* base, const char* game, const char* relativePath );
 	virtual const char* 	BuildOSPath( const char* base, const char* relativePath );
 	virtual void			CreateOSPath( const char* OSPath );
@@ -1897,14 +1897,17 @@ idFileSystemLocal::RelativePathToOSPath
 Returns a fully qualified path that can be used with stdio libraries
 =====================
 */
-const char* idFileSystemLocal::RelativePathToOSPath( const char* relativePath, const char* basePath )
+const char* idFileSystemLocal::RelativePathToOSPath( const char* relativePath, const char* basePath, const char* gamedir )
 {
 	const char* path = cvarSystem->GetCVarString( basePath );
 	if( !path[0] )
 	{
 		path = fs_savepath.GetString();
 	}
-	return BuildOSPath( path, gameFolder, relativePath );
+	if (gamedir == NULL) {
+		gamedir = gameFolder;
+	}
+	return BuildOSPath( path, gamedir, relativePath );
 }
 
 /*
@@ -3005,7 +3008,7 @@ void idFileSystemLocal::AddGameDirectory( const char* path, const char* dir )
 			return;
 		}
 	}
-	if (idStr::Cmp(dir, BASE_BFG_GAMEDIR) && idStr::Cmp(dir, BASE_NEW_GAMEDIR)) { //GK: Exclude the base_* Paths that are bundled with thw port in order to avoid confusions
+	if (idStr::Cmpn(dir, "base_", 5)) { //GK: Exclude the base_* Paths that are bundled with thw port in order to avoid confusions
 		gameFolder = dir;
 	}
 	
@@ -3953,12 +3956,12 @@ sysFolder_t idFileSystemLocal::IsFolder( const char* relativePath, const char* b
 		sprintf(oldgamePath, "%s", gameFolder.c_str());
 		for (int i = 0; i < searchPaths.Num(); i++) {
 			if (searchPaths[i].gamedir != oldgamePath) {
-				gameFolder = searchPaths[i].gamedir;
-				res = Sys_IsFolder(RelativePathToOSPath(relativePath, basePath));
-				if (res != FOLDER_ERROR) {
+				//gameFolder = searchPaths[i].gamedir;
+				res = Sys_IsFolder(RelativePathToOSPath(relativePath, basePath, searchPaths[i].gamedir));
+				/*if (res != FOLDER_ERROR) {
 					sprintf(gameFolder, "%s", oldgamePath);
 					break;
-				}
+				}*/
 			}
 		}
 	}
