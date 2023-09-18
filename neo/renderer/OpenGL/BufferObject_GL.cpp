@@ -36,7 +36,7 @@ extern idCVar r_showBuffers;
 
 //static const GLenum bufferUsage = GL_STATIC_DRAW;
 static const GLenum bufferUsage = GL_DYNAMIC_DRAW;
-
+static const GLenum bufferStorageFlags = GL_DYNAMIC_STORAGE_BIT | GL_MAP_WRITE_BIT | GL_MAP_READ_BIT;
 
 
 
@@ -128,7 +128,7 @@ bool idVertexBuffer::AllocBufferObject( const void* data, int allocSize, bufferU
 		{
 			idLib::FatalError("idVertexBuffer::AllocBufferObject: failed");
 		}
-		glNamedBufferData(apiObject, numBytes, NULL, bufferUsage);
+		glNamedBufferStorage(apiObject, numBytes, NULL, bufferStorageFlags);
 	}
 	
 	GLenum err = glGetError();
@@ -383,10 +383,10 @@ bool idIndexBuffer::AllocBufferObject( const void* data, int allocSize, bufferUs
 		glCreateBuffers(1, (GLuint*)&apiObject);
 		if (apiObject == 0xFFFF)
 		{
-			GLenum error = glGetError();
-			idLib::FatalError("idIndexBuffer::AllocBufferObject: failed - GL_Error %d", error);
+			//GLenum error = glGetError();
+			idLib::FatalError("idIndexBuffer::AllocBufferObject: failed");// - GL_Error %d", error);
 		}
-		glNamedBufferData(apiObject, numBytes, NULL, bufferUsage);
+		glNamedBufferStorage(apiObject, numBytes, NULL, bufferStorageFlags);
 	}
 	
 	GLenum err = glGetError();
@@ -636,7 +636,7 @@ bool idUniformBuffer::AllocBufferObject( const void* data, int allocSize, buffer
 	}
 	else {
 		glCreateBuffers(1, (GLuint*)&apiObject);
-		glNamedBufferData(apiObject, numBytes, NULL, GL_STREAM_DRAW_ARB);
+		glNamedBufferStorage(apiObject, numBytes, NULL, bufferStorageFlags);
 	}
 	
 	if( r_showBuffers.GetBool() )

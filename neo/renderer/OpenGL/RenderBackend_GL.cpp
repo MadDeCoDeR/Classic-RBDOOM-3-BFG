@@ -725,7 +725,7 @@ void idRenderBackend::DrawElementsWithCounters( const drawSurf_t* surf )
 	}
 
 	renderProgManager.CommitUniforms(glStateBits);
-	if (glConfig.directStateAccess) {
+	if (glConfig.directStateAccess) {		
 		// RB: 64 bit fixes, changed GLuint to GLintptr
 		if ((GLintptr)currentIndexBuffer != (GLintptr)indexBuffer->GetAPIObject() || !r_useStateCaching.GetBool())
 		{

@@ -57,6 +57,7 @@ typedef HRESULT(WINAPI* SetProcessDPIAwarenessContext_t)(BFA_DPI_AWARENESS_CONTE
 
 idCVar r_useOpenGLProfile( "r_useOpenGLProfile", "2", CVAR_INTEGER, "0 = OpenGL 4.5 no profile, 1 = OpenGL 4.5 compatibility profile, 2 = OpenGL 4.5 core profile", 0, 2 );
 
+DWORD enumDiplayFlag = 0;
 
 
 #if !defined(USE_VULKAN)
@@ -680,7 +681,7 @@ static const char* GetDisplayName( const int deviceNum )
 				0,			// lpDevice
 				deviceNum,
 				&device,
-				0 /* dwFlags */ ) )
+				enumDiplayFlag /* dwFlags */ ) )
 	{
 		return NULL;
 	}
@@ -700,7 +701,7 @@ static idStr GetDeviceName( const int deviceNum )
 				0,			// lpDevice
 				deviceNum,
 				&device,
-				0 /* dwFlags */ ) )
+				enumDiplayFlag /* dwFlags */ ) )
 	{
 		return idStr();
 	}
@@ -733,7 +734,7 @@ static bool GetDisplayCoordinates( const int deviceNum, int& x, int& y, int& wid
 				0,			// lpDevice
 				deviceNum,
 				&device,
-				0 /* dwFlags */ ) )
+				enumDiplayFlag /* dwFlags */ ) )
 	{
 		return false;
 	}
@@ -744,7 +745,7 @@ static bool GetDisplayCoordinates( const int deviceNum, int& x, int& y, int& wid
 				deviceName.c_str(),
 				0,
 				&monitor,
-				0 /* dwFlags */ ) )
+				enumDiplayFlag /* dwFlags */ ) )
 	{
 		return false;
 	}
@@ -836,7 +837,7 @@ void DumpAllDisplayDevices()
 					0,			// lpDevice
 					deviceNum,
 					&device,
-					0 /* dwFlags */ ) )
+					enumDiplayFlag /* dwFlags */ ) )
 		{
 			break;
 		}
@@ -856,7 +857,7 @@ void DumpAllDisplayDevices()
 						device.DeviceName,
 						monitorNum,
 						&monitor,
-						0 /* dwFlags */ ) )
+						enumDiplayFlag /* dwFlags */ ) )
 			{
 				break;
 			}
@@ -943,117 +944,120 @@ bool R_GetModeListForDisplay( const unsigned requestedDisplayNum, idList<vidMode
 	DWORD displayNum = requestedDisplayNum /*> 1 ? requestedDisplayNum : 0*/;
 	DISPLAY_DEVICE	device;
 	device.cb = sizeof(device);
-	while(EnumDisplayDevices(NULL, displayNum, &device, 0))//for( int displayNum = requestedDisplayNum; ; displayNum++ )
-	{
-		if (/*requestedDisplayNum > 1 &&*/ displayNum > requestedDisplayNum) {
-			break;
-		}
-		//if( !EnumDisplayDevices(
-		//			0,			// lpDevice
-		//			displayNum,
-		//			&device,
-		//			0 /* dwFlags */ ) )
-		//{
-		//	return false;
-		//}
-		displayNum++;
-		// get the monitor for this display
-		if( !( device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP ) )
+	for (int i = 0; i < 2; i++) {
+		while (EnumDisplayDevices(NULL, displayNum, &device, enumDiplayFlag))//for( int displayNum = requestedDisplayNum; ; displayNum++ )
 		{
-			continue;
-		}
-		
-		DISPLAY_DEVICE	monitor;
-		monitor.cb = sizeof( monitor );
-		if( !EnumDisplayDevices(
-					device.DeviceName,
-					0,
-					&monitor,
-					0 /* dwFlags */ ) )
-		{
-			continue;
-		}
-		
-		DEVMODE	devmode;
-		devmode.dmSize = sizeof( devmode );
-		
-		if( verbose )
-		{
-			common->Printf( "display device: %i\n", displayNum - 1 );
-			common->Printf( "  DeviceName  : %s\n", device.DeviceName );
-			common->Printf( "  DeviceString: %s\n", device.DeviceString );
-			common->Printf( "  StateFlags  : 0x%x\n", device.StateFlags );
-			common->Printf( "  DeviceID    : %s\n", device.DeviceID );
-			common->Printf( "  DeviceKey   : %s\n", device.DeviceKey );
-			common->Printf( "      DeviceName  : %s\n", monitor.DeviceName );
-			common->Printf( "      DeviceString: %s\n", monitor.DeviceString );
-			common->Printf( "      StateFlags  : 0x%x\n", monitor.StateFlags );
-			common->Printf( "      DeviceID    : %s\n", monitor.DeviceID );
-			common->Printf( "      DeviceKey   : %s\n", monitor.DeviceKey );
-		}
-		unsigned previousWidth = 0;
-		unsigned previousHeight = 0;
-		int maxW, maxH, maxHz;
-		R_GetScreenResolution(displayNum - 1, maxW, maxH, maxHz);
-		for( int modeNum = 0 ; ; modeNum++ )
-		{
-			if( !EnumDisplaySettings( device.DeviceName, modeNum, &devmode ) )
-			{
+			if (/*requestedDisplayNum > 1 &&*/ displayNum > requestedDisplayNum) {
 				break;
 			}
+			//if( !EnumDisplayDevices(
+			//			0,			// lpDevice
+			//			displayNum,
+			//			&device,
+			//			0 /* dwFlags */ ) )
+			//{
+			//	return false;
+			//}
+			displayNum++;
+			// get the monitor for this display
+			if (!(device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP))
+			{
+				continue;
+			}
 
-			if (r_fullscreen.GetInteger() < 0 && devmode.dmPelsWidth > (uint)maxW && devmode.dmPelsHeight > (uint)maxH) {
-				continue;
-			}
-			
-			if( devmode.dmBitsPerPel != 32 )
+			DISPLAY_DEVICE	monitor;
+			monitor.cb = sizeof(monitor);
+			if (!EnumDisplayDevices(
+				device.DeviceName,
+				0,
+				&monitor,
+				enumDiplayFlag /* dwFlags */))
 			{
 				continue;
 			}
-			/*if( devmode.dmDisplayFrequency < 60  || devmode.dmDisplayFrequency > 120 )
+
+			DEVMODE	devmode;
+			devmode.dmSize = sizeof(devmode);
+
+			if (verbose)
 			{
-				continue;
-			}*/
-			if( devmode.dmPelsHeight < 720 )
-			{
-				continue;
+				common->Printf("display device: %i\n", displayNum - 1);
+				common->Printf("  DeviceName  : %s\n", device.DeviceName);
+				common->Printf("  DeviceString: %s\n", device.DeviceString);
+				common->Printf("  StateFlags  : 0x%x\n", device.StateFlags);
+				common->Printf("  DeviceID    : %s\n", device.DeviceID);
+				common->Printf("  DeviceKey   : %s\n", device.DeviceKey);
+				common->Printf("      DeviceName  : %s\n", monitor.DeviceName);
+				common->Printf("      DeviceString: %s\n", monitor.DeviceString);
+				common->Printf("      StateFlags  : 0x%x\n", monitor.StateFlags);
+				common->Printf("      DeviceID    : %s\n", monitor.DeviceID);
+				common->Printf("      DeviceKey   : %s\n", monitor.DeviceKey);
 			}
-			if (devmode.dmPelsWidth == previousWidth && devmode.dmPelsHeight == previousHeight) {
-				if (modeList[modeList.Num() - 1].displayHz < 60 && devmode.dmDisplayFrequency == 60) {
-					modeList[modeList.Num() - 1].displayHz = devmode.dmDisplayFrequency;
+			unsigned previousWidth = 0;
+			unsigned previousHeight = 0;
+			int maxW, maxH, maxHz;
+			R_GetScreenResolution(displayNum - 1, maxW, maxH, maxHz);
+			for (int modeNum = 0; ; modeNum++)
+			{
+				if (!EnumDisplaySettings(device.DeviceName, modeNum, &devmode))
+				{
+					break;
 				}
-				continue;
+
+				if (r_fullscreen.GetInteger() < 0 && devmode.dmPelsWidth > (uint)maxW && devmode.dmPelsHeight > (uint)maxH) {
+					continue;
+				}
+
+				if (devmode.dmBitsPerPel != 32)
+				{
+					continue;
+				}
+				/*if( devmode.dmDisplayFrequency < 60  || devmode.dmDisplayFrequency > 120 )
+				{
+					continue;
+				}*/
+				if (devmode.dmPelsHeight < 720)
+				{
+					continue;
+				}
+				if (devmode.dmPelsWidth == previousWidth && devmode.dmPelsHeight == previousHeight) {
+					if (modeList[modeList.Num() - 1].displayHz < 60 && devmode.dmDisplayFrequency == 60) {
+						modeList[modeList.Num() - 1].displayHz = devmode.dmDisplayFrequency;
+					}
+					continue;
+				}
+				previousWidth = devmode.dmPelsWidth;
+				previousHeight = devmode.dmPelsHeight;
+				if (verbose)
+				{
+					common->Printf("          -------------------\n");
+					common->Printf("          modeNum             : %i\n", modeNum);
+					common->Printf("          dmPosition.x        : %i\n", devmode.dmPosition.x);
+					common->Printf("          dmPosition.y        : %i\n", devmode.dmPosition.y);
+					common->Printf("          dmBitsPerPel        : %i\n", devmode.dmBitsPerPel);
+					common->Printf("          dmPelsWidth         : %i\n", devmode.dmPelsWidth);
+					common->Printf("          dmPelsHeight        : %i\n", devmode.dmPelsHeight);
+					common->Printf("          dmDisplayFixedOutput: %s\n", DMDFO(devmode.dmDisplayFixedOutput));
+					common->Printf("          dmDisplayFlags      : 0x%x\n", devmode.dmDisplayFlags);
+					common->Printf("          dmDisplayFrequency  : %i\n", devmode.dmDisplayFrequency);
+				}
+				vidMode_t mode;
+				mode.width = devmode.dmPelsWidth;
+				mode.height = devmode.dmPelsHeight;
+				mode.displayHz = devmode.dmDisplayFrequency;
+				modeList.AddUnique(mode);
 			}
-			previousWidth = devmode.dmPelsWidth;
-			previousHeight = devmode.dmPelsHeight;
-			if( verbose )
+
+			if (modeList.Num() > 0)
 			{
-				common->Printf( "          -------------------\n" );
-				common->Printf( "          modeNum             : %i\n", modeNum );
-				common->Printf( "          dmPosition.x        : %i\n", devmode.dmPosition.x );
-				common->Printf( "          dmPosition.y        : %i\n", devmode.dmPosition.y );
-				common->Printf( "          dmBitsPerPel        : %i\n", devmode.dmBitsPerPel );
-				common->Printf( "          dmPelsWidth         : %i\n", devmode.dmPelsWidth );
-				common->Printf( "          dmPelsHeight        : %i\n", devmode.dmPelsHeight );
-				common->Printf( "          dmDisplayFixedOutput: %s\n", DMDFO( devmode.dmDisplayFixedOutput ) );
-				common->Printf( "          dmDisplayFlags      : 0x%x\n", devmode.dmDisplayFlags );
-				common->Printf( "          dmDisplayFrequency  : %i\n", devmode.dmDisplayFrequency );
+				// sort with lowest resolution first
+				modeList.SortWithTemplate(idSort_VidMode());
+
+				return true;
 			}
-			vidMode_t mode;
-			mode.width = devmode.dmPelsWidth;
-			mode.height = devmode.dmPelsHeight;
-			mode.displayHz = devmode.dmDisplayFrequency;
-			modeList.AddUnique( mode );
+
 		}
-		
-		if( modeList.Num() > 0 )
-		{
-			// sort with lowest resolution first
-			modeList.SortWithTemplate( idSort_VidMode() );
-			
-			return true;
-		}
-		
+		enumDiplayFlag = !i ? EDD_GET_DEVICE_INTERFACE_NAME : 0;
 	}
 	return false;
 	// Never gets here
@@ -1084,7 +1088,7 @@ bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>&
 	DWORD displayNum = requestedDisplayNum /*> 1 ? requestedDisplayNum : 0*/;
 	DISPLAY_DEVICE	device;
 	device.cb = sizeof(device);
-	while (EnumDisplayDevices(NULL, displayNum, &device, 0))//for( int displayNum = requestedDisplayNum; ; displayNum++ )
+	while (EnumDisplayDevices(NULL, displayNum, &device, enumDiplayFlag))//for( int displayNum = requestedDisplayNum; ; displayNum++ )
 	{
 		if (/*requestedDisplayNum > 1 &&*/ displayNum > requestedDisplayNum) {
 			break;
@@ -1110,7 +1114,7 @@ bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>&
 			device.DeviceName,
 			0,
 			&monitor,
-			0 /* dwFlags */))
+			enumDiplayFlag /* dwFlags */))
 		{
 			continue;
 		}
@@ -1190,7 +1194,7 @@ bool R_GetScreenResolution(const unsigned requestedDisplayNum, int& w, int& h, i
 	DWORD displayNum = requestedDisplayNum;
 	DISPLAY_DEVICE	device;
 	device.cb = sizeof(device);
-	while (EnumDisplayDevices(NULL, displayNum, &device, 0))
+	while (EnumDisplayDevices(NULL, displayNum, &device, enumDiplayFlag))
 	{
 		if (displayNum > requestedDisplayNum) {
 			break;
@@ -1208,7 +1212,7 @@ bool R_GetScreenResolution(const unsigned requestedDisplayNum, int& w, int& h, i
 			device.DeviceName,
 			0,
 			&monitor,
-			0))
+			enumDiplayFlag))
 		{
 			continue;
 		}
