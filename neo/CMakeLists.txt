@@ -1792,7 +1792,11 @@ else()
 
 	if(UNIX)
 		if(FFMPEG)
+		if (USE_VCPKG)
 			find_package(FFMPEG REQUIRED)
+		else(USE_VCPKG)
+			find_package(FFMPEGDNL REQUIRED)
+		endif(USE_VCPKG)
 			add_definitions(-DUSE_FFMPEG)
 			
 			include_directories(${FFMPEG_INCLUDE_DIR})
