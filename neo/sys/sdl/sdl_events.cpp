@@ -989,6 +989,7 @@ void SDL_Poll()
 
 				glConfig.nativeScreenWidth = w;
 				glConfig.nativeScreenHeight = h;
+				cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 				break;
 			}
 
@@ -998,6 +999,7 @@ void SDL_Poll()
 				int y = ev.window.data2;
 				r_windowX.SetInteger(x);
 				r_windowY.SetInteger(y);
+				cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 				break;
 			}
 			case SDL_WINDOWEVENT_CLOSE:
