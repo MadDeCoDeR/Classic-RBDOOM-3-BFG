@@ -1653,6 +1653,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 			RenderSplash();
 			//RenderSplash();
 		}
+#ifndef _WIN32
+		Sys_ClearEvents();
+#endif
 		if (com_emergencyexit.GetBool()) {
 			return;
 		}
