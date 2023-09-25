@@ -260,6 +260,7 @@ jobs:
         mv ./base/DoomBFA.sh DoomBFA.sh
         cp -r -u  -f ./BFA_Assets/* .
         rm -r ./BFA_Assets
+        rm -r ./base/renderprogs
         mkdir ./third-party-licenses
         mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
         chmod +x DoomBFA
@@ -317,6 +318,7 @@ jobs:
         mv ./build/${{env.BUILD_TYPE}}/* .
         cp -r -u  -f ./BFA_Assets/* .
         rm -r ./BFA_Assets
+        rm -r ./base/renderprogs
         mkdir ./third-party-licenses
         mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
         rm -d -rf ./build
@@ -369,6 +371,7 @@ jobs:
         mv ./build/${{env.BUILD_TYPE}}/* .
         cp -r -u  -f ./BFA_Assets/* .
         rm -r ./BFA_Assets
+        rm -r ./base/renderprogs
         mkdir ./third-party-licenses
         mv ./build/vcpkg_installed/x86-windows-static-md/share/* ./third-party-licenses
         rm -d -rf ./build
