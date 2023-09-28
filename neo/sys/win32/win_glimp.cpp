@@ -1057,7 +1057,10 @@ bool R_GetModeListForDisplay( const unsigned requestedDisplayNum, idList<vidMode
 			}
 
 		}
-		enumDiplayFlag = !i ? EDD_GET_DEVICE_INTERFACE_NAME : 0;
+		int error = GetLastError();
+		char msgbuf[256];
+		Sys_ParseError(error, msgbuf, 256);
+		common->Printf("Warning when retrieving Display Modes: %s", msgbuf);
 	}
 	return false;
 	// Never gets here
@@ -1184,6 +1187,10 @@ bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>&
 		}
 
 	}
+	int error = GetLastError();
+	char msgbuf[256];
+	Sys_ParseError(error, msgbuf, 256);
+	common->Printf("Warning when retrieving Display Modes: %s", msgbuf);
 	return false;
 	// Never gets here
 }
@@ -1228,6 +1235,10 @@ bool R_GetScreenResolution(const unsigned requestedDisplayNum, int& w, int& h, i
 		}
 
 	}
+	int error = GetLastError();
+	char msgbuf[256];
+	Sys_ParseError(error, msgbuf, 256);
+	common->Printf("Warning when retrieving Display Modes: %s", msgbuf);
 	return false;
 }
 
