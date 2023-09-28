@@ -129,6 +129,7 @@ namespace DoomLib
 	//extern SendRemoteFunc SendRemote;
 
 	extern void* 	(*Z_Malloc)( unsigned size, int tag, void* user );
+	extern void		(*Z_Free)(void* user);
 	extern void 	(*Z_FreeTag)(int lowtag );
 
 	extern DoomInterface		Interface;

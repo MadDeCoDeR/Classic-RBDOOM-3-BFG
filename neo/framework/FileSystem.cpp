@@ -1815,9 +1815,9 @@ const char* idFileSystemLocal::OSPathToRelativePath( const char* OSPath )
 	{
 		basePaths.Append( fs_game.GetString() );
 		//GK: Make sure the mod we load has custom maps and strings before we even consider it an expansion
-		char* mapath = new char[256];
+		char mapath[256];
 		sprintf(mapath, "%s/maps", fs_game.GetString());
-		char* mapath2 = new char[256];
+		char mapath2[256];
 		sprintf(mapath2, "%s/strings", fs_game.GetString());
 		struct stat info;
 		struct stat info2;
@@ -3952,7 +3952,7 @@ sysFolder_t idFileSystemLocal::IsFolder( const char* relativePath, const char* b
 
 	sysFolder_t res = Sys_IsFolder( RelativePathToOSPath( relativePath, basePath ) );
 	if (res == FOLDER_ERROR) {
-		char* oldgamePath = new char[256];
+		char oldgamePath[256];
 		sprintf(oldgamePath, "%s", gameFolder.c_str());
 		for (int i = 0; i < searchPaths.Num(); i++) {
 			if (searchPaths[i].gamedir != oldgamePath) {

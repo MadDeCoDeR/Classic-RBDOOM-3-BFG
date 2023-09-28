@@ -414,9 +414,9 @@ Recursively search for a specified file
 in a parent folder
 ================
 */
-std::string findFile(const char* folder, const char* file, std::string path = "") {
-	std::string result = path;
-	std::string rootPath = path + folder + "/";
+idStr findFile(const char* folder, const char* file, idStr path = "") {
+	idStr result = path;
+	idStr rootPath = path + folder + "/";
 	DIR* parent = opendir(rootPath.c_str());
 	if (parent) {
 		dirent* entry;
@@ -425,7 +425,7 @@ std::string findFile(const char* folder, const char* file, std::string path = ""
 				switch (entry->d_type) {
 				case DT_DIR:
 					result = findFile(entry->d_name, file, rootPath);
-					if (result.rfind(file) != std::string::npos) {
+					if (result.Find(file) != -1) {
 						closedir(parent);
 						return result;
 					}
@@ -496,26 +496,23 @@ const char* Sys_DefaultBasePath()
 	basePaths.Append(idStr(getenv("HOME")));
 	basePaths.Append(idStr("/run/media/"));
 	basePaths.Append(idStr("/media/"));
-	std::string foundPath = "";
 	struct stat commonStat;
 	for (int i = 0; i < 3; i++) {
-		foundPath = findFile(basePaths[i].c_str(), "_common.resources");
+		basepath = findFile(basePaths[i].c_str(), "_common.resources");
 		
-		if (foundPath.rfind("_common.resources") != std::string::npos) {
+		if (basepath.Find("_common.resources") != -1) {
 			break;
 		}
 	}
-	if (stat(foundPath.c_str(), &commonStat) < 0) {
+	if (stat(basepath.c_str(), &commonStat) < 0) {
 		common->FatalError("Failed to find the Game's base path");
 	}
-	if (foundPath.rfind("_common.resources") != std::string::npos) {
-		foundPath = foundPath.substr(0, foundPath.rfind("/"));
-		foundPath = foundPath.substr(0, foundPath.rfind("/"));
+	if (basepath.Find("_common.resources") != -1) {
+		basepath = basepath.SubStr(0, basepath.Find("/"));
+		basepath = basepath.SubStr(0, basepath.Find("/"));
 	}
 	//GK: Crazy const char desease
-	char* finalPath = new char[foundPath.size() + 1];
-	strcpy(finalPath, foundPath.c_str());
-	return finalPath;
+	return basepath;
 }
 
 /*

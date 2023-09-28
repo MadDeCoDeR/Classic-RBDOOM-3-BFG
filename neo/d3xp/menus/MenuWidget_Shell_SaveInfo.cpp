@@ -69,7 +69,9 @@ void idMenuWidget_Shell_SaveInfo::Update()
 		const idSaveGameDetails& details = sortedSaves[ loadIndex ];
 		
 #ifdef WIN32 //GK: TODO: Find linux equivilant
-		info.Append(Sys_GetSystemFormatedTime( details.date ) );
+		char formattedTime[256];
+		Sys_GetSystemFormatedTime(formattedTime, details.date);
+		info.Append( formattedTime );
 #else
 		info.Append(Sys_TimeStampToStr(details.date));
 #endif

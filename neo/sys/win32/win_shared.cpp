@@ -236,27 +236,25 @@ Sys_Wcstrtombstr
 	wcstombs is unreliable on Windows so instead it has to be done the Windows way in order to include the Sytem's ANSI code page
 ================
 */
-const char* Sys_Wcstrtombstr(const wchar_t* wstring) {
-	int wstrlen = lstrlenW(wstring);
-	int mbstrlen = WideCharToMultiByte(CP_ACP, NULL, wstring, wstrlen, NULL, 0, NULL, 0);
-	char* mbstring = new char[mbstrlen + 1];
-	if (WideCharToMultiByte(CP_ACP, NULL, wstring, wstrlen, mbstring, mbstrlen, NULL, 0) > 0) {
-		mbstring[mbstrlen] = '\0';
-		return mbstring;
+int Sys_Wcstrtombstr(char* Dest, const wchar_t* Source, size_t size) {
+	int wstrlen = size;
+	int mbstrlen = WideCharToMultiByte(CP_ACP, NULL, Source, wstrlen, NULL, 0, NULL, 0);
+	if (WideCharToMultiByte(CP_ACP, NULL, Source, wstrlen, Dest, mbstrlen, NULL, 0) > 0) {
+		Dest[mbstrlen] = '\0';
+		return mbstrlen + 1;
 	}
-	return "";
+	return -1;
 }
 
-const wchar_t* Sys_Mbstrtowcstr(const char* string)
+int Sys_Mbstrtowcstr(wchar_t* Dest, const char* Source, size_t size)
 {
-	int strlen = lstrlen(string);
-	int wstrlen = MultiByteToWideChar(CP_ACP, NULL, string, strlen, NULL, 0);
-	wchar_t* wstring = new wchar_t[wstrlen + 1];
-	if (MultiByteToWideChar(CP_ACP, NULL, string, strlen, wstring, wstrlen) > 0) {
-		wstring[wstrlen] = '\0';
-		return wstring;
+	int strlen = size;
+	int wstrlen = MultiByteToWideChar(CP_ACP, NULL, Source, strlen, NULL, 0);
+	if (MultiByteToWideChar(CP_ACP, NULL, Source, strlen, Dest, wstrlen) > 0) {
+		Dest[wstrlen] = '\0';
+		return wstrlen + 1;
 	}
-	return L"";
+	return -1;
 }
 
 /*
@@ -268,16 +266,16 @@ Sys_GetDateFormated
 	NOTE: It might not work well if user has set short date format with letters
 ================
 */
-const char* Sys_GetDateFormated(SYSTEMTIME* systime) {
+int Sys_GetDateFormated(char* Dest, SYSTEMTIME* systime) {
 	int bufferSize = GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, LOCALE_USE_CP_ACP | DATE_SHORTDATE, systime, NULL, NULL, 0, NULL);
 
-	wchar_t* wdate = new wchar_t[bufferSize + 1];
+	wchar_t wdate[256];
 
 	if (GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, LOCALE_USE_CP_ACP | DATE_SHORTDATE, systime, NULL, wdate, bufferSize, NULL) > 0) {
 		wdate[bufferSize] = '\0';
-		return Sys_Wcstrtombstr(wdate);
+		return Sys_Wcstrtombstr(Dest, wdate, bufferSize + 1);
 	}
-	return "";
+	return -1;
 }
 
 
@@ -290,16 +288,16 @@ Sys_GetTimeFormated
 	Unlike the Date, this one is not so prune to error since it uses only numbers
 ================
 */
-const char* Sys_GetTimeFormated(SYSTEMTIME* systime) {
+int Sys_GetTimeFormated(char* Dest, SYSTEMTIME* systime) {
 	int bufferSize = GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, LOCALE_USE_CP_ACP | TIME_NOSECONDS | TIME_FORCE24HOURFORMAT | TIME_NOTIMEMARKER, systime, NULL, NULL, 0);
 
-	wchar_t* wtime = new wchar_t[bufferSize + 1];
+	wchar_t wtime[256];
 
 	if (GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, LOCALE_USE_CP_ACP | TIME_NOSECONDS | TIME_FORCE24HOURFORMAT | TIME_NOTIMEMARKER, systime, NULL, wtime, bufferSize) > 0) {
 		wtime[bufferSize] = '\0';
-		return Sys_Wcstrtombstr(wtime);
+		return Sys_Wcstrtombstr(Dest, wtime, bufferSize + 1);
 	}
-	return "";
+	return -1;
 }
 
 /*
@@ -312,7 +310,7 @@ Sys_GetSystemFormatedTime
 	It returns a multibyte string
 ================
 */
-const char* Sys_GetSystemFormatedTime(ID_TIME_TYPE timeInt) {
+int Sys_GetSystemFormatedTime(char* Dest, ID_TIME_TYPE timeInt) {
 
 	tm* time = localtime(&timeInt);
 	SYSTEMTIME* systime = new SYSTEMTIME();
@@ -323,17 +321,26 @@ const char* Sys_GetSystemFormatedTime(ID_TIME_TYPE timeInt) {
 	systime->wMinute = time->tm_min;
 	systime->wSecond = time->tm_sec;
 	systime->wDayOfWeek = time->tm_wday;
-	idStr finalDate;
+	char date[256];
+	Sys_GetDateFormated(date, systime);
+	char stime[256];
+	Sys_GetTimeFormated(stime, systime);
+	return sprintf(Dest, "%s %s\0", date, stime);
+}
 
-	finalDate += Sys_GetDateFormated(systime);
-	finalDate += " ";
-	finalDate += Sys_GetTimeFormated(systime);
-
-	char* finalBuffer = new char[finalDate.Length() + 1];
-	finalBuffer[0] = '\0';
-	idStr::Copynz(finalBuffer, finalDate, finalDate.Length() + 1);
-
-	return finalBuffer;
+void Sys_ParseError(int errorCode, char* msgbuf, int bufsize)
+{
+	char tbuf[256];
+	FormatMessage(
+		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL,
+		errorCode,
+		MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
+		(LPTSTR)&tbuf,
+		bufsize,
+		NULL
+	);
+	sprintf(msgbuf, "%s\0", tbuf);
 }
 
 //GK: End

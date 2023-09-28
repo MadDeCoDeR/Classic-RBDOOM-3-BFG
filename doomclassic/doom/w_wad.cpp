@@ -100,7 +100,7 @@ int filelength (FILE* handle)
 void
 ExtractFileBase
 ( const char*		path,
-  char**		dest )
+  char*		dest )
 {
 	const char*	src;
 	int		length;
@@ -116,17 +116,17 @@ ExtractFileBase
 	}
     
 	// copy up to eight characters
-	memset (*dest,0,8);
+	memset (dest,0,8);
 	length = 0;
 
 	if (!idStr::Icmp(path + strlen(path) - 3, "deh") || !idStr::Icmp(path + strlen(path) - 3, "bex")) {
-		*dest = (char*) "DEHACKED";
+		strncpy(dest, "DEHACKED", 8);
 	}
 	else if (!idStr::Icmp(path + strlen(path) - 3, "dlc")) {
-		*dest = (char*) "EXPINFO";
+		strncpy(dest, "EXPINFO", 7);
 	}
 	else {
-		char* temp = new char(8);
+		char temp[8];
 		memset(temp, 0, 8);
 		while (*src && *src != '.')
 		{
@@ -135,7 +135,7 @@ ExtractFileBase
 
 				temp[length - 1] = toupper((int)*src++);
 		}
-		*dest = temp;
+		strncpy(dest, temp, 8);
 	}
 }
 
@@ -396,7 +396,7 @@ void W_AddFile ( const char *filename)
 				// single lump file
 				fileinfo[0].filepos = 0;
 				//GK: Allow to load "Wild" files
-				char* filename_ = new char[256];
+				char filename_[256];
 				if(relp){
 					sprintf(filename_, "./base%s", filename);
 					
@@ -406,9 +406,9 @@ void W_AddFile ( const char *filename)
 				}
 				std::ifstream inf(filename_, std::ifstream::ate | std::ifstream::binary);
 				fileinfo[0].size = inf.tellg();
-				char* tempname = new char();
-				ExtractFileBase(filename_, &tempname);
-				strcpy(fileinfo[0].name, tempname);
+				char tempname[256];
+				ExtractFileBase(filename_, tempname);
+				strncpy(fileinfo[0].name, tempname, 8);
 				numlumps++;
 				relp = false;
 			//	idLib::Printf("Added %s succesfully!\n", filename);
@@ -1186,9 +1186,9 @@ void W_Profile (void)
 
 //GK: Open archive files extract it's content and load it as files for DOOM
 bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
-	char* maindir = new char[MAX_FILENAME];
-	char* finalWadDir = new char[MAX_FILENAME];
-	char* fdir = new char[MAX_FILENAME];
+	char maindir[MAX_FILENAME];
+	char finalWadDir[MAX_FILENAME];
+	char fdir[MAX_FILENAME];
 	zipfileinfo.clear();
 	zipfileinfo.shrink_to_fit();
 	if (inzip) {
@@ -1213,14 +1213,14 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 			int k = 0;
 			for (unsigned long i = 0; i < gi.number_entry; i++) {
 				unz_file_info fi;
-				char* name = new char[MAX_FILENAME];
+				char name[MAX_FILENAME];
 				if (unzGetCurrentFileInfo(zip, &fi, name, MAX_FILENAME, NULL, 0, NULL, 0) == UNZ_OK) {
 					//idLib::Printf("%s\n", name);
 					const size_t filename_length = strlen(name);
 					if (name[filename_length - 1] != '/') {
 						if (!idStr::Icmp(name+filename_length - 3, "wad")) {
 							if (unzOpenCurrentFile(zip) == UNZ_OK) {
-								char* path = new char[MAX_FILENAME];
+								char path[MAX_FILENAME];
 								sprintf(path, "%s%s", finalWadDir, name);
 								idFile* out = fileSystem->OpenFileWrite(path);
 								if (out != NULL) {
@@ -1237,7 +1237,7 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 									if (loadWads) {
 										fname.emplace_back(path);
 									}
-									char* pname = new char[MAX_FILENAME];
+									char pname[MAX_FILENAME];
 									sprintf(pname, "%s%s", wadPath, name);
 									if (idStr::Icmp(name + strlen(name) - 3, "wad")) {
 										relp = true;
@@ -1263,7 +1263,7 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 								unz_file_pos pos;
 								zippos.emplace_back(pos);
 								char* t = strtok(name, "/");
-								char* tn = new char[512];
+								char tn[512];
 								qboolean insprite = false;
 								while (t != NULL) {
 									if (!usesprites && !idStr::Icmp(t, "SPRITES")) { //GK: Set S_START Flag if we entered a SPRITES folder
@@ -1276,7 +1276,7 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 									if (!insprite && !idStr::Icmp(t, "SPRITES")) {
 										insprite = true;
 									}
-									tn = t;
+									strncpy(tn, t, strlen(t));
 									t = strtok(NULL, "/");
 								}
 								if (usesprites && !insprite) { //GK: And set a S_END flag once we exit the folder
@@ -1286,10 +1286,10 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 									k++;
 								}
 								//GK: And also keep the file extension
-								char* fex = new char[5];
+								char fex[5];
 								t = strtok(tn, ".");
 								while (t != NULL) {
-									fex = t;
+									strncpy(fex, t, 5);
 									t = strtok(NULL, ".");
 
 								}
@@ -1448,10 +1448,10 @@ void MasterList() {
 	std::vector<filelump_t>	fileinfo(1);
 	int count = 1;
 	int count2 = 1;
-	char* filename = new char[MAX_FILENAME];
+	char filename[MAX_FILENAME];
 	std::vector <int> fofs;
 	int offs = 12;
-	char* buffer = new char[512];
+	char* buffer;
 
 	idFile* master = fileSystem->OpenFileWrite("wads/MASTERLEVELS.WAD");
 	master->Write("PWAD", 4);
@@ -1566,7 +1566,7 @@ void MasterList() {
 				strncpy(lump->name, filelumpPointer->name, 8);
 				lump->name[8] = '\0';
 				if (!idStr::Cmpn(lump->name, "MAP", 3)) {
-					char* tm = new char[6];
+					char tm[16];
 					if (count < 10) {
 						sprintf(tm, "MAP0%i", count);
 						tm[5] = '\0';
@@ -1581,7 +1581,7 @@ void MasterList() {
 				}
 				if (!idStr::Cmpn(lump->name, "RSKY", 4)) {
 					if (count2 < 4) {
-						char* tm = new char[6];
+						char tm[6];
 						sprintf(tm, "STAR%i", count2);
 						tm[5] = '\0';
 						strcpy(lump->name, tm);
@@ -1590,7 +1590,7 @@ void MasterList() {
 				}
 				if (!idStr::Cmp(lump->name, "STARS")) {
 					if (count2 == 2) {
-						char* tm = new char[6];
+						char tm[6];
 						sprintf(tm, "STAR%i", count2);
 						tm[5] = '\0';
 						strcpy(lump->name, tm);
@@ -1660,14 +1660,14 @@ void MasterExport() {
 	std::vector<filelump_t>	fileinfo(1);
 	//int count = 1;
 	//int count2 = 1;
-	char* filename = new char[MAX_FILENAME];
+	char filename[MAX_FILENAME];
 	const char* file[3];
 	file[0] = "wads/MASTERLEVELS.WAD";
 	file[1] = "wads/mlbls.wad";
 	file[2] = "wads/ua.wad";
 	std::vector <int> fofs;
 	int offs = 12;
-	char* buffer = new char[512];
+	char* buffer;
 	idFile* mazter = fileSystem->OpenFileWrite("wads/MASTERLEVELZ.WAD");
 	mazter->Write("PWAD", 4);
 	for (int i = 0; i < 3; i++) {

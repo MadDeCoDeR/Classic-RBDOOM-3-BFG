@@ -113,7 +113,7 @@ SOCKET UDPsocket (void) //GK:return SOCKET instead of int
 		int err = GetLastSocketError();
 		//GK:Show proper error message
 		char msgbuf[256];
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+		Sys_ParseError(err, msgbuf, 256);
 		I_Error( "can't create socket, error %s", msgbuf );
 	}
 
@@ -139,7 +139,7 @@ void BindToLocalPort( SOCKET	s, int	port )//GK:Restored source code from the van
 	if (v == SOCKET_ERROR) {
 		int err = GetLastSocketError();
 		char msgbuf[256];
-		FormatMessage( FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+		Sys_ParseError(err, msgbuf, 256);
 		I_Error("BindToPort: bind: %s", msgbuf);
 	}
 }
@@ -177,7 +177,7 @@ void PacketSend (void)//GK:Restored source code from the vanilla DOOM source cod
 	if (c == SOCKET_ERROR) {
 		int err = GetLastSocketError();
 		char msgbuf[256];
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+		Sys_ParseError(err, msgbuf, 256);
 		I_Error("SendPacket error: %s", msgbuf);
 	}
 }
@@ -202,7 +202,7 @@ void PacketGet (void)//GK:Restored source code from the vanilla DOOM source code
 	{
 		int err = GetLastSocketError();
 		char msgbuf[256];
-		FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+		Sys_ParseError(err, msgbuf, 256);
 		if (err != WSAEWOULDBLOCK)
 			I_Error("GetPacket: %s", msgbuf);
 		::g->doomcom.remotenode = -1;		// no packet
@@ -377,7 +377,7 @@ void I_InitNetwork (void)
 		if (r == SOCKET_ERROR) {
 			int err = GetLastSocketError();
 			char msgbuf[256];
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, err, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+			Sys_ParseError(err, msgbuf, 256);
 			I_Error("Socket Error:%d\n", msgbuf);
 		}
 		::g->sendsocket = UDPsocket();

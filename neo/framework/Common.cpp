@@ -1224,16 +1224,7 @@ void LoadPlatformDLL()
 				//GK: Just some 64-bit paranoia
 				int lastError = GetLastError();
 				char msgbuf[256];
-				FormatMessage(
-					FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-					NULL,
-					lastError,
-					MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
-					(LPTSTR)&msgbuf,
-					sizeof(msgbuf),
-					NULL
-				);
-
+				Sys_ParseError(lastError, msgbuf, 256);
 				Sys_Error("Sys_DLL_: GetProcAddress failed - %s (%d)", msgbuf, lastError);
 #endif
 				return;
@@ -1329,16 +1320,7 @@ void idCommonLocal::LoadGameDLL()
 			//GK: Just some 64-bit paranoia
 			int lastError = GetLastError();
 			char msgbuf[256];
-			FormatMessage(
-				FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-				NULL,
-				lastError,
-				MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
-				(LPTSTR)&msgbuf,
-				sizeof(msgbuf),
-				NULL
-			);
-
+			Sys_ParseError(lastError, msgbuf, 256);
 			Sys_Error("Sys_DLL_: GetProcAddress failed - %s (%d)", msgbuf, lastError);
 #endif
 			

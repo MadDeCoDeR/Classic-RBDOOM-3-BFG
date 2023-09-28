@@ -1704,7 +1704,7 @@ qboolean G_CheckSave(char* name) {
 		tlab [11] = '\0';
 	}
 	bool hm = false;
-	char* clab = new char[19];
+	char clab[19];
 	std::vector<std::string>filelist;
 	if (strcmp(tlab, vcheck)) {
 		//GK: Welp forgeting that was causing most of the problems with save files
@@ -1785,7 +1785,7 @@ qboolean G_DoLoadGame ()
 		tlab[11] = '\0';
 	}
 	bool hm = false;
-	char* clab = new char[19];
+	char clab[19];
 	std::vector<std::string>filelist;
 	if (strcmp (tlab, vcheck)) {
 		//GK: Welp forgeting that was causing most of the problems with save files
@@ -1824,7 +1824,7 @@ qboolean G_DoLoadGame ()
 	}
 	//GK: In case the save file has no mods
 	if (hm) {
-		char* tla = new char[256];
+		char tla[256];
 		strcpy(tla, clab);
 		for (uint mf = 0; mf < filelist.size(); mf++) {
 			strcat(tla, filelist[mf].c_str());
@@ -1908,7 +1908,7 @@ G_SaveGame
 qboolean G_DoSaveGame (void) 
 { 
 	char	name[100]; 
-	char*	name2; 
+	char	name2[256]; 
 	char	sname[10];
 	char*	description; 
 	int		length; 
@@ -1967,7 +1967,6 @@ qboolean G_DoSaveGame (void)
 	 
 	//GK: if the game uses mods store their names on the save file header
 	if (M_CheckParm("-file")) {
-		name2 = new char[256];
 		memset(name2, 0, strlen(name2));
 		sprintf(name2, "version %i files ", VERSION);
 		for (int f=1; f<20; f++) {
@@ -1992,8 +1991,7 @@ qboolean G_DoSaveGame (void)
 	}
 	else {
 		//GK: allow unmodded saves
-		name2 = new char[VERSIONSIZE];
-		memset(name2, 0, strlen(name2));
+		memset(name2, 0, VERSIONSIZE);
 		sprintf(name2, "version %i", VERSION);
 	}
 	memcpy (::g->save_p, name2, strlen(name2));

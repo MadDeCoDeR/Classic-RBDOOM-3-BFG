@@ -625,6 +625,9 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 					
 				}
 				*strval[j].var=ntxt;
+				delete[] otxt;
+
+				delete[] ltxt;
 				return;
 			}
 		}
@@ -633,43 +636,59 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 			sprintf(otxt, otxtfmt.c_str(),
 				VERSION / 100, VERSION % 100);
 		}
-		char* prettyTitle = new char[100];
+		char prettyTitle[200];
 		sprintf(prettyTitle, "                         %s                           ", ::g->title);
 		if (!idStr::Icmp(otxt, prettyTitle)) {
 			char* parsedTitle = ntxt + 25;
 			parsedTitle[strlen(parsedTitle) - 30] = '\0';
 			strcpy(::g->title, parsedTitle);
+			delete[] otxt;
+
+			delete[] ntxt;
+			delete[] ltxt;
 			return;
 		}
 			for (int m = 0; m < NUMSPRITES - 1; m++) {
 				if (!idStr::Icmp(otxt, sprnames[m])) {
 					sprnames[m] = ntxt;
+					delete[] otxt;
+
+					delete[] ltxt;
 					return;
 				}
 			}
 			for (int m = 0; m < 12; m++) {
 				if (!idStr::Icmp(otxt, finaleflat[m])) {
 					finaleflat[m] = ntxt;
+					delete[] otxt;
+
+					delete[] ltxt;
 					return;
 				}
 			}
 			for (int m = 1; m < NUMMUSIC; m++) {
 				if (!idStr::Icmp(otxt, ::g->S_music[m].name)) {
 					::g->S_music[m].name = ntxt;
+					delete[] otxt;
+
+					delete[] ltxt;
 					return;
 				}
 			}
 			for (int m = 1; m < NUMSFX; m++) {
 				if (!idStr::Icmp(otxt, S_sfx[m].name)) {
 					S_sfx[m].name = ntxt;
+					delete[] otxt;
+
+					delete[] ltxt;
 					return;
 				}
 			}
 	}
-	//free(otxt);
+	delete[] otxt;
 	
-	//free(ntxt);
-	//free(otxt);
+	delete[] ntxt;
+	delete[] ltxt;
 	return;
 }
 

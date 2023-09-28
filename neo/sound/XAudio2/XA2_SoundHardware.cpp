@@ -216,8 +216,8 @@ void listDevices_f_XA2( const idCmdArgs& args )
 		char mbcsDisplayName[256];
 		char mbcsId[256];
 		//GK:wcstombs doen't read non-ASCII on windows so instead use this function in order to read them
-		strcpy(mbcsDisplayName, Sys_Wcstrtombstr(vAudioDevices[i].name.c_str()));
-		strcpy(mbcsId, Sys_Wcstrtombstr(vAudioDevices[i].id.c_str()));
+		Sys_Wcstrtombstr(mbcsDisplayName, vAudioDevices[i].name.c_str(), 256);
+		Sys_Wcstrtombstr(mbcsId, vAudioDevices[i].id.c_str(), 256);
 		idLib::Printf( "%s %3d: %s %s\n", vAudioDevices[i].id == defaultDevice.id ? "*" : " ", i, mbcsDisplayName, mbcsId );
 	}
 #else
@@ -299,7 +299,7 @@ void listDevices_f_XA2( const idCmdArgs& args )
 		}
 		char mbcsDisplayName[ 256 ];
 		//GK:wcstombs doen't read non-ASCII on windows so instead use this function in order to read them
-		strcpy(mbcsDisplayName, Sys_Wcstrtombstr(deviceDetails.DisplayName));
+		Sys_Wcstrtombstr(mbcsDisplayName, deviceDetails.DisplayName, 256);
 		idLib::Printf( "%3d: %s\n", i, mbcsDisplayName );
 		idLib::Printf( "     %d channels, %d Hz\n", deviceDetails.OutputFormat.Format.nChannels, deviceDetails.OutputFormat.Format.nSamplesPerSec );
 		if( channelNames.Num() != deviceDetails.OutputFormat.Format.nChannels )
@@ -452,8 +452,8 @@ void idSoundHardware_XAudio2::Init()
 		}
 		else
 		{
-			char msgbuf[256];
-			FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, masterVoice, MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), msgbuf, sizeof(msgbuf), NULL);
+			char* msgbuf;
+			Sys_ParseError(masterVoice, msgbuf, 256);
 			idLib::FatalError("Failed to create master voice: %s", msgbuf);
 			pXAudio2->Release();
 			pXAudio2 = NULL;

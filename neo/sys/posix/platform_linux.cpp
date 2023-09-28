@@ -587,8 +587,8 @@ int main( int argc, const char** argv )
 	}
 }
 
-const char* Sys_GetCallStack() {
-	char* callStack = new char[5000];
+void Sys_GetCallStack(char* Dest) {
+	char callStack[5000];
 	sprintf(callStack, "Called: ");
 	void* stack[62];
 	int frames = backtrace(stack, 62);
@@ -597,19 +597,13 @@ const char* Sys_GetCallStack() {
 		strcat(callStack, frameLines[frame]);
 		strcat(callStack, "\n\t");
 	}
-	return callStack;
+	sprintf(Dest, "%s", callStack);
 }
 
-const char* Sys_Wcstrtombstr(const wchar_t* wstring) {
-	int wstrlen = wcslen(wstring);
-	char* dest = new char[wstrlen];
-	int mblength = wcstombs(dest, wstring, wstrlen);
-	return dest;
+int Sys_Wcstrtombstr(char* Dest, const wchar_t* Source, size_t size) {
+	return wcstombs(Dest, Source, size);
 }
 
-const wchar_t* Sys_Mbstrtowcstr(const char* string) {
-	int mbstrlen = strlen(string);
-	wchar_t* dest = new wchar_t[mbstrlen];
-	mbstowcs(dest, string, mbstrlen);
-	return dest;
+int Sys_Mbstrtowcstr(wchar_t* Dest, const char* Source, size_t size) {
+	return mbstowcs(Dest, Source, size);
 }

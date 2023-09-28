@@ -63,7 +63,7 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 	avindx = ret;
 	dec_ctx = avcodec_alloc_context3(dec);
 	if ((ret = avcodec_parameters_to_context(dec_ctx, fmt_ctx->streams[avindx]->codecpar)) < 0) {
-		char* error = new char[256];
+		char error[256];
 		av_strerror(ret, error, 256);
 		common->Warning("AVD: Failed to create codec context from codec parameters with error: %s\n", error);
 	}
@@ -177,7 +177,7 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 					packetQueue->push(packet);
 					ret = avcodec_send_packet(dec_ctx, &packetQueue->front());
 					if (ret != 0 && ret != AVERROR(EAGAIN)) {
-						char* error = new char[256];
+						char error[256];
 						av_strerror(ret, error, 256);
 						common->Warning("AVD: Failed to send packet for decoding with message: %s\n", error);
 					}
@@ -186,7 +186,7 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 						packetQueue->pop();
 						ret = avcodec_receive_frame(dec_ctx, frame);
 						if (ret != 0) {
-							char* error = new char[256];
+							char error[256];
 							av_strerror(ret, error, 256);
 							common->Warning("AVD: Failed to receive frame from decoding with message: %s\n", error);
 						}
@@ -293,7 +293,7 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	avindx = ret;
 	dec_ctx = avcodec_alloc_context3(dec);
 	if ((ret = avcodec_parameters_to_context(dec_ctx, fmt_ctx->streams[avindx]->codecpar)) < 0) {
-		char* error = new char[256];
+		char error[256];
 		av_strerror(ret, error, 256);
 		common->Warning("AVD: Failed to create codec context from codec parameters with error: %s\n", error);
 	}
@@ -364,7 +364,7 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 				packetQueue->push(packet);
 				ret = avcodec_send_packet(dec_ctx, &packetQueue->front());
 				if (ret != 0 && ret != AVERROR(EAGAIN)) {
-					char* error = new char[256];
+					char error[256];
 					av_strerror(ret, error, 256);
 					common->Warning("AVD: Failed to send packet for decoding with message: %s\n", error);
 				}
@@ -373,7 +373,7 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 					packetQueue->pop();
 					ret = avcodec_receive_frame(dec_ctx, frame);
 					if (ret != 0) {
-						char* error = new char[256];
+						char error[256];
 						av_strerror(ret, error, 256);
 						common->Warning("AVD: Failed to receive frame from decoding with message: %s\n", error);
 					}
@@ -461,7 +461,7 @@ const char* GetSampleName(ALenum sample) {
 }
 
 void parseAVError(int error) {
-	char* errorbuff = new char[256];
+	char errorbuff[256];
 	av_make_error_string(errorbuff, 256, error);
 	common->Printf("FFMPEG Error: %s\n", errorbuff);
 }

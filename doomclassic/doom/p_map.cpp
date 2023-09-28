@@ -236,11 +236,18 @@ qboolean PIT_CheckLine (line_t* ld)
     {
 		//GK:From now on it uses indexed vectors (for now until and if I found something better)
 		if (::g->numspechit >= ::g->spechit.size()) {
+#if _ITERATOR_DEBUG_LEVEL < 2
 			if (::g->spechit.size() == ::g->spechit.capacity()) {
 				::g->spechit.reserve(::g->spechit.size() + MAXSPECIALCROSS);
 			}
 			//::g->specind = 0;
 			::g->spechit.emplace_back(ld);
+#else
+			if (::g->spechit.size() == ::g->spechit.capacity()) {
+				::g->spechit.resize(::g->spechit.size() + MAXSPECIALCROSS);
+			}
+			::g->spechit[::g->numspechit] = ld;
+#endif
 		}
 		else {
 			::g->spechit[::g->numspechit] = ld;

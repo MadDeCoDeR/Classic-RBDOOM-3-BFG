@@ -310,7 +310,7 @@ manual_ceiling:
 
     // new ceiling thinker
     rtn = 1;
-    ceiling =(ceiling_t*) DoomLib::Z_Malloc (sizeof(*ceiling), PU_LEVSPEC, 0);
+    ceiling =(ceiling_t*) DoomLib::Z_Malloc (sizeof(*ceiling), PU_CEILING, 0);
     P_AddThinker (&ceiling->thinker);
     sec->ceilingdata = ceiling; //jff 2/22/98
     ceiling->thinker.function.acp1 = (actionf_p1) T_MoveCeiling;
@@ -515,7 +515,7 @@ manual_lift:
       
     // Setup the plat thinker
     rtn = 1;
-    plat =(plat_t*) DoomLib::Z_Malloc( sizeof(*plat), PU_LEVSPEC, 0);
+    plat =(plat_t*) DoomLib::Z_Malloc( sizeof(*plat), PU_PLATS, 0);
     P_AddThinker(&plat->thinker);
               
     plat->sector = sec;
@@ -857,7 +857,7 @@ manual_crusher:
 
     // new ceiling thinker
     rtn = 1;
-    ceiling =(ceiling_t*) DoomLib::Z_Malloc (sizeof(*ceiling), PU_LEVSPEC, 0);
+    ceiling =(ceiling_t*) DoomLib::Z_Malloc (sizeof(*ceiling), PU_CEILING, 0);
     P_AddThinker (&ceiling->thinker);
     sec->ceilingdata = ceiling; //jff 2/22/98
     ceiling->thinker.function.acp1 = (actionf_p1) T_MoveCeiling;

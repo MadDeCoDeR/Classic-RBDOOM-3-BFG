@@ -627,7 +627,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 	video_stream_index = ret;
 	dec_ctx = avcodec_alloc_context3(dec);
 	if ((ret = avcodec_parameters_to_context(dec_ctx, fmt_ctx->streams[video_stream_index]->codecpar)) < 0) {
-		char* error = new char[256];
+		char error[256];
 		av_strerror(ret, error, 256);
 		common->Warning("idCinematic: Failed to create codec context from codec parameters with error: %s\n", error);
 	}
@@ -637,7 +637,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 	/* init the video decoder */
 	if( ( ret = avcodec_open2( dec_ctx, dec, NULL ) ) < 0 )
 	{
-		char* error = new char[256];
+		char error[256];
 		av_strerror(ret, error, 256);
 		common->Warning( "idCinematic: Cannot open video decoder for: '%s', %d, with message: %s\n", qpath, looping, error );
 		return false;
@@ -649,7 +649,7 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 		audio_stream_index = ret2;
 		dec_ctx2 = avcodec_alloc_context3(dec);
 		if ((ret2 = avcodec_parameters_to_context(dec_ctx2, fmt_ctx->streams[audio_stream_index]->codecpar)) < 0) {
-			char* error = new char[256];
+			char error[256];
 			av_strerror(ret2, error, 256);
 			common->Warning("idCinematic: Failed to create codec context from codec parameters with error: %s\n", error);
 		}
@@ -1239,13 +1239,13 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 			{
 				// Decode video frame
 				if ((res = avcodec_send_packet(dec_ctx, &packet)) != 0) {
-					char* error = new char[256];
+					char error[256];
 					av_strerror(res, error, 256);
 					common->Warning("idCinematic: Failed to send packet for decoding with message: %s\n", error);
 				}
 				else {
 					if ((frameFinished = avcodec_receive_frame(dec_ctx, frame)) != 0) {
-						char* error = new char[256];
+						char error[256];
 						av_strerror(frameFinished, error, 256);
 						common->Warning("idCinematic: Failed to receive frame from decoding with message: %s\n", error);
 					}
@@ -1256,7 +1256,7 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 				packets->push(packet);
 				res = avcodec_send_packet(dec_ctx2, &packets->front());
 				if (res != 0 && res != AVERROR(EAGAIN)) {
-					char* error = new char[256];
+					char error[256];
 					av_strerror(res, error, 256);
 					common->Warning("idCinematic: Failed to send packet for decoding with message: %s\n", error);
 				}
@@ -1264,7 +1264,7 @@ cinData_t idCinematicLocal::ImageForTimeFFMPEG( int thisTime )
 					packet = packets->front();
 					packets->pop();
 					if ((frameFinished1 = avcodec_receive_frame(dec_ctx2, frame3)) != 0) {
-						char* error = new char[256];
+						char error[256];
 						av_strerror(frameFinished1, error, 256);
 						common->Warning("idCinematic: Failed to receive frame from decoding with message: %s\n", error);
 					}

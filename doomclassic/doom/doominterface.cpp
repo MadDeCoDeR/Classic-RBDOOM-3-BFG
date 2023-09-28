@@ -78,6 +78,10 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 		DoomLib::Z_Malloc = Z_Malloc;
 	}
 
+	if (DoomLib::Z_Free == NULL) {
+		DoomLib::Z_Free = Z_Free;
+	}
+
 	// Splitscreen
 	if ( !multiplayer && playerscount > 1 ) {
 		localdargc += 2; // for the '-net' and the console number

@@ -209,9 +209,10 @@ static void CALLBACK DebugCallback( unsigned int source, unsigned int type,
 		severityStr = "Notification";
 		break;
 	}
-	idStr callStack = Sys_GetCallStack();
+	char callstack[5000];
+	Sys_GetCallStack(callstack);
 	// RB: printf should be thread safe on Linux
-	idLib::Printf("caught OpenGL Error:\n\tSource:%s\n\tType: %s\n\tSeverity: %s\n\tMessage: %s\n%s", sourceStr.c_str(), typeStr.c_str(), severityStr.c_str(), message, callStack.c_str());
+	idLib::Printf("caught OpenGL Error:\n\tSource:%s\n\tType: %s\n\tSeverity: %s\n\tMessage: %s\n%s", sourceStr.c_str(), typeStr.c_str(), severityStr.c_str(), message, callstack);
 	// RB end
 }
 

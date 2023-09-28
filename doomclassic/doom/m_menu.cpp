@@ -728,7 +728,7 @@ void M_SaveSelect(int choice)
 {
 	//GK: show modded level names on save files
 	/*const*/ char* s=new char[256];
-	char* mapname;
+	char mapname[256];
 	const ExpansionData* exp = DoomLib::GetCurrentExpansion();
 
 	switch ( ::g->gamemode )
@@ -741,7 +741,6 @@ void M_SaveSelect(int choice)
 	case commercial:
 		if (DoomLib::expansionSelected == doom2) {
 			char* ts;
-			mapname = new char[256];
 			strcpy(mapname, mapnames2[::g->gamemap - 1]);
 			ts = strtok(mapname, " ");
 			if (!idStr::Icmp(ts, "level")) {
@@ -764,7 +763,6 @@ void M_SaveSelect(int choice)
 		}
 		else if (DoomLib::expansionSelected == pack_tnt) {
 			char* ts;
-			mapname = new char[256];
 			strcpy(mapname, mapnamest[::g->gamemap - 1]);
 			ts = strtok(mapname, " ");
 			if (!idStr::Icmp(ts, "level")) {
@@ -787,7 +785,6 @@ void M_SaveSelect(int choice)
 		}
 		else if (DoomLib::expansionSelected == pack_plut) {
 			char* ts;
-			mapname = new char[256];
 			strcpy(mapname, mapnamesp[::g->gamemap - 1]);
 			ts = strtok(mapname, " ");
 			if (!idStr::Icmp(ts, "level")) {
@@ -812,7 +809,6 @@ void M_SaveSelect(int choice)
 			//GK: Give the modified level name instead
 			if (::g->modifiedtext) {
 				char* ts;
-				mapname = new char[256];
 				strcpy(mapname, mapnames2[::g->gamemap - 1]);
 				ts = strtok(mapname, " ");
 				if (!idStr::Icmp(ts, "level")) {
@@ -1128,7 +1124,7 @@ void M_DrawVideo(void)
 	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : r_fullscreen.GetInteger() < 0 ? 2 : 0;
 	//int blurryeffect = r_clblurry.GetInteger();
 	int syncValue = r_swapInterval.GetInteger();
-	char* res = new char[11];
+	char res[32];
 	sprintf(res, "%4i x %4i", r_customWidth.GetInteger(), r_customHeight.GetInteger());
 	std::string fps = va("%d FPS", cl_engineHz.GetInteger());
 	if (cl_engineHz_interp.GetBool()) {
@@ -2139,7 +2135,7 @@ void M_ChangeKeys(int choice) {
 	{
 		::g->bindIndex = choice;
 	}*/
-	char* tempMsg = new char[128];
+	char tempMsg[128];
 	sprintf(tempMsg, KEYMSG, keyboardBinds[::g->bindIndex].display);
 	M_StartMessage(tempMsg, NULL, false);
 	
@@ -3204,7 +3200,7 @@ void M_Remap(event_t* ev) {
 						break;
 					}
 				}
-				char* tempMsg = new char[128];
+				char tempMsg[128];
 				if (!idLib::joystick) {
 					sprintf(tempMsg, REMAPKEY, bindName.c_str(), keyboardBinds[::g->bindIndex].display);
 					

@@ -73,7 +73,7 @@ void initMAPS(std::vector<std::string> lines);
 void setCluster(int pos, char* name, char*value, char* option, int linepos, std::vector<std::string> lines);
 int tex = 1;
 void setExpData(char* name, char* value);
-const char* getENumName(int i);
+//const char* getENumName(int i);
 void M_Episode(int choice);
 
 bool beginepisode = false;
@@ -677,7 +677,7 @@ void setEXP(char* name, int value) {
 				if (::g->maps[i].lumpname != NULL) {
 					continue;
 				}
-				char* tname = new char[6];
+				char tname[16];
 				sprintf(tname, "MAP%02d", i + 1);
 				::g->maps[i].lumpname = tname;
 				::g->maps[i].nextmap = i + 2;
@@ -905,7 +905,7 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 		}
 	}
 	int c = 0;
-	char* musname;
+	char musname[20];
 	expobj clusterobj[] = {
 		{"flat",MAXINT,&::g->clusters[pos].ftex,&::g->clusters[pos].fflat},
 		{"music",MAXINT,NULL,&::g->clusters[pos].fmusic},
@@ -944,8 +944,7 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 				if (c) {
 					c++;
 				}
-				musname = new char[strlen(value + c)];
-				musname = value + c;
+				sprintf(musname, "%s", value + c);
 				for (int j = 1; j < 80; j++) {
 
 					if (::g->S_music[j].name == NULL) {
@@ -1210,76 +1209,76 @@ void setExpData(char* name, char* value) {
 	}
 }
 
-const char* getENumName(int i) {
-	musicinfo_t temp_S_music[80] = {
-		{ 0 },
-	{ "e1m1", 0 },
-	{ "e1m2", 0 },
-	{ "e1m3", 0 },
-	{ "e1m4", 0 },
-	{ "e1m5", 0 },
-	{ "e1m6", 0 },
-	{ "e1m7", 0 },
-	{ "e1m8", 0 },
-	{ "e1m9", 0 },
-	{ "e2m1", 0 },
-	{ "e2m2", 0 },
-	{ "e2m3", 0 },
-	{ "e2m4", 0 },
-	{ "e2m5", 0 },
-	{ "e2m6", 0 },
-	{ "e2m7", 0 },
-	{ "e2m8", 0 },
-	{ "e2m9", 0 },
-	{ "e3m1", 0 },
-	{ "e3m2", 0 },
-	{ "e3m3", 0 },
-	{ "e3m4", 0 },
-	{ "e3m5", 0 },
-	{ "e3m6", 0 },
-	{ "e3m7", 0 },
-	{ "e3m8", 0 },
-	{ "e3m9", 0 },
-	{ "inter", 0 },
-	{ "intro", 0 },
-	{ "bunny", 0 },
-	{ "victor", 0 },
-	{ "introa", 0 },
-	{ "runnin", 0 },
-	{ "stalks", 0 },
-	{ "countd", 0 },
-	{ "betwee", 0 },
-	{ "doom", 0 },
-	{ "the_da", 0 },
-	{ "shawn", 0 },
-	{ "ddtblu", 0 },
-	{ "in_cit", 0 },
-	{ "dead", 0 },
-	{ "stlks2", 0 },
-	{ "theda2", 0 },
-	{ "doom2", 0 },
-	{ "ddtbl2", 0 },
-	{ "runni2", 0 },
-	{ "dead2", 0 },
-	{ "stlks3", 0 },
-	{ "romero", 0 },
-	{ "shawn2", 0 },
-	{ "messag", 0 },
-	{ "count2", 0 },
-	{ "ddtbl3", 0 },
-	{ "ampie", 0 },
-	{ "theda3", 0 },
-	{ "adrian", 0 },
-	{ "messg2", 0 },
-	{ "romer2", 0 },
-	{ "tense", 0 },
-	{ "shawn3", 0 },
-	{ "openin", 0 },
-	{ "evil", 0 },
-	{ "ultima", 0 },
-	{ "read_m", 0 },
-	{ "dm2ttl", 0 },
-	{ "dm2int", 0 }
-	};
-	return temp_S_music[i].name;
-}
+//const char* getENumName(int i) {
+//	musicinfo_t temp_S_music[80] = {
+//		{ 0 },
+//	{ "e1m1", 0 },
+//	{ "e1m2", 0 },
+//	{ "e1m3", 0 },
+//	{ "e1m4", 0 },
+//	{ "e1m5", 0 },
+//	{ "e1m6", 0 },
+//	{ "e1m7", 0 },
+//	{ "e1m8", 0 },
+//	{ "e1m9", 0 },
+//	{ "e2m1", 0 },
+//	{ "e2m2", 0 },
+//	{ "e2m3", 0 },
+//	{ "e2m4", 0 },
+//	{ "e2m5", 0 },
+//	{ "e2m6", 0 },
+//	{ "e2m7", 0 },
+//	{ "e2m8", 0 },
+//	{ "e2m9", 0 },
+//	{ "e3m1", 0 },
+//	{ "e3m2", 0 },
+//	{ "e3m3", 0 },
+//	{ "e3m4", 0 },
+//	{ "e3m5", 0 },
+//	{ "e3m6", 0 },
+//	{ "e3m7", 0 },
+//	{ "e3m8", 0 },
+//	{ "e3m9", 0 },
+//	{ "inter", 0 },
+//	{ "intro", 0 },
+//	{ "bunny", 0 },
+//	{ "victor", 0 },
+//	{ "introa", 0 },
+//	{ "runnin", 0 },
+//	{ "stalks", 0 },
+//	{ "countd", 0 },
+//	{ "betwee", 0 },
+//	{ "doom", 0 },
+//	{ "the_da", 0 },
+//	{ "shawn", 0 },
+//	{ "ddtblu", 0 },
+//	{ "in_cit", 0 },
+//	{ "dead", 0 },
+//	{ "stlks2", 0 },
+//	{ "theda2", 0 },
+//	{ "doom2", 0 },
+//	{ "ddtbl2", 0 },
+//	{ "runni2", 0 },
+//	{ "dead2", 0 },
+//	{ "stlks3", 0 },
+//	{ "romero", 0 },
+//	{ "shawn2", 0 },
+//	{ "messag", 0 },
+//	{ "count2", 0 },
+//	{ "ddtbl3", 0 },
+//	{ "ampie", 0 },
+//	{ "theda3", 0 },
+//	{ "adrian", 0 },
+//	{ "messg2", 0 },
+//	{ "romer2", 0 },
+//	{ "tense", 0 },
+//	{ "shawn3", 0 },
+//	{ "openin", 0 },
+//	{ "evil", 0 },
+//	{ "ultima", 0 },
+//	{ "read_m", 0 },
+//	{ "dm2ttl", 0 },
+//	{ "dm2int", 0 }
+//	};
+//	return temp_S_music[i].name;
+//}

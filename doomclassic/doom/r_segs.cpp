@@ -733,10 +733,19 @@ R_StoreWallRange
 
 void AddDrawSeg() {
 	if (::g->drawsegind >= ::g->drawsegs.size()) {
+#if _ITERATOR_DEBUG_LEVEL < 2
 		if (::g->drawsegs.size() == ::g->drawsegs.capacity()) {
 			::g->drawsegs.reserve(::g->drawsegs.size() + MAXDRAWSEGS);
 		}
 		::g->drawsegs.emplace_back(new drawseg_t());
+#else
+		if (::g->drawsegs.size() == ::g->drawsegs.capacity()) {
+			::g->drawsegs.resize(::g->drawsegs.size() + MAXDRAWSEGS);
+		}
+		for (int i = ::g->drawsegind; i < ::g->drawsegs.size(); i++) {
+			::g->drawsegs[i] = new drawseg_t();
+		}
+#endif
 	}
 	else {
 		::g->drawsegs[::g->drawsegind]->bsilheight = 0;

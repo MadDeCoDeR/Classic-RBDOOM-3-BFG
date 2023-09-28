@@ -188,6 +188,7 @@ namespace DoomLib
 	static int								lowDuration;
 
 	void * (*Z_Malloc)( unsigned size, int tag, void* user ) = NULL;
+	void	(*Z_Free)(void* user) = NULL;
 	void 	(*Z_FreeTag)(int lowtag );
 
 	idArray< idSysMutex, 4 >		playerScreenMutexes;

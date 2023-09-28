@@ -1973,7 +1973,7 @@ void P_SpawnSpecials (void)
 				if (::g->linespeciallist.size() == ::g->linespeciallist.capacity()) {
 					::g->linespeciallist.resize(::g->linespeciallist.size() + MAXLINEANIMS);
 				}
-				::g->linespeciallist[::g->numlinespecials] = & ::g->lines[i];
+				::g->linespeciallist[::g->numlinespecials] = &::g->lines[i];
 #endif
 			}
 			else {

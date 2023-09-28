@@ -560,7 +560,6 @@ void AddNewVisplane() {
 		}
 		::g->visplanes.emplace_back(new visplane_t());
 #else
-		
 		::g->visplanes.resize(::g->visplanes.size() + MAXVISPLANES);
 		for (int vpi = ::g->planeind; vpi < ::g->visplanes.size(); vpi++) {
 			::g->visplanes[vpi] = new visplane_t();
