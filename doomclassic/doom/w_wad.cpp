@@ -1220,7 +1220,7 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 					if (name[filename_length - 1] != '/') {
 						if (!idStr::Icmp(name+filename_length - 3, "wad")) {
 							if (unzOpenCurrentFile(zip) == UNZ_OK) {
-								char path[MAX_FILENAME];
+								char path[1024];
 								sprintf(path, "%s%s", finalWadDir, name);
 								idFile* out = fileSystem->OpenFileWrite(path);
 								if (out != NULL) {
@@ -1237,7 +1237,7 @@ bool OpenCompFile(const char* filename, const char* wadPath, bool loadWads) {
 									if (loadWads) {
 										fname.emplace_back(path);
 									}
-									char pname[MAX_FILENAME];
+									char pname[1024];
 									sprintf(pname, "%s%s", wadPath, name);
 									if (idStr::Icmp(name + strlen(name) - 3, "wad")) {
 										relp = true;
@@ -1581,7 +1581,7 @@ void MasterList() {
 				}
 				if (!idStr::Cmpn(lump->name, "RSKY", 4)) {
 					if (count2 < 4) {
-						char tm[6];
+						char tm[16];
 						sprintf(tm, "STAR%i", count2);
 						tm[5] = '\0';
 						strcpy(lump->name, tm);
@@ -1590,7 +1590,7 @@ void MasterList() {
 				}
 				if (!idStr::Cmp(lump->name, "STARS")) {
 					if (count2 == 2) {
-						char tm[6];
+						char tm[16];
 						sprintf(tm, "STAR%i", count2);
 						tm[5] = '\0';
 						strcpy(lump->name, tm);

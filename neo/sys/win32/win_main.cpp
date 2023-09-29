@@ -946,8 +946,8 @@ void Sys_GetCallStack(char* Dest)
 	DWORD dwDisplacement2;
 	for (int frame = 1; frame < frames; frame++) {
 #if defined(_M_IX86)
-		BOOL call1 = SymFromAddr(process, (DWORD)(stack[frame]), &dwDisplacement1, symbol);
-		BOOL call2 = SymGetLineFromAddr(process, (DWORD)(stack[frame]), &dwDisplacement2, line);
+		BOOL call1 = SymFromAddr(process, (DWORD)(stack[frame]), &dwDisplacement1, &symbol);
+		BOOL call2 = SymGetLineFromAddr(process, (DWORD)(stack[frame]), &dwDisplacement2, &line);
 #else
 		BOOL call1 = SymFromAddr(process, (DWORD64)(stack[frame]), &dwDisplacement1, &symbol);
 		BOOL call2 = SymGetLineFromAddr(process, (DWORD64)(stack[frame]), &dwDisplacement2, &line);
