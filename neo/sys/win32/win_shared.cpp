@@ -335,7 +335,7 @@ void Sys_ParseError(int errorCode, char* msgbuf, int bufsize)
 		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 		NULL,
 		errorCode,
-		MAKELANGID(LANG_ENGLISH, SUBLANG_DEFAULT), // Default language
+		MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), // Default language
 		(LPTSTR)&tbuf,
 		bufsize,
 		NULL

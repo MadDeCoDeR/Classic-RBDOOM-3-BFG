@@ -1060,7 +1060,7 @@ bool R_GetModeListForDisplay( const unsigned requestedDisplayNum, idList<vidMode
 		int error = GetLastError();
 		char msgbuf[256];
 		Sys_ParseError(error, msgbuf, 256);
-		common->Printf("Warning when retrieving Display Modes: %s", msgbuf);
+		common->Printf("Warning when retrieving Display Modes: Code %d: %s", msgbuf);
 	}
 	return false;
 	// Never gets here
@@ -1190,7 +1190,7 @@ bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>&
 	int error = GetLastError();
 	char msgbuf[256];
 	Sys_ParseError(error, msgbuf, 256);
-	common->Printf("Warning when retrieving Display Modes: %s", msgbuf);
+	common->Printf("Warning when retrieving Display Modes: Code %d: %s", msgbuf);
 	return false;
 	// Never gets here
 }
@@ -1238,7 +1238,7 @@ bool R_GetScreenResolution(const unsigned requestedDisplayNum, int& w, int& h, i
 	int error = GetLastError();
 	char msgbuf[256];
 	Sys_ParseError(error, msgbuf, 256);
-	common->Printf("Warning when retrieving Display Modes: %s", msgbuf);
+	common->Printf("Warning when retrieving Display Modes: Code %d: %s", msgbuf);
 	return false;
 }
 
