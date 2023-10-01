@@ -47,6 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "win_local.h"
 #include "rc/doom_resource.h"
 #include "../../renderer/RenderCommon.h"
+#include <vector>
 
 
 //GK: Win 7 compatibility hack. Re-declare the HANDLE DPI_AWARENESS_CONTEXT in order to avoid issues with older SDK's
@@ -707,10 +708,10 @@ static idStr GetDeviceName( const int deviceNum )
 	}
 	
 	// get the monitor for this display
-	if( !( device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP ) )
+	/*if( !( device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP ) )
 	{
 		return idStr();
-	}
+	}*/
 	
 	return idStr( device.DeviceName );
 }
@@ -960,10 +961,10 @@ bool R_GetModeListForDisplay( const unsigned requestedDisplayNum, idList<vidMode
 			//}
 			displayNum++;
 			// get the monitor for this display
-			if (!(device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP))
+			/*if (!(device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP))
 			{
 				continue;
-			}
+			}*/
 
 			DISPLAY_DEVICE	monitor;
 			monitor.cb = sizeof(monitor);
@@ -1106,10 +1107,10 @@ bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>&
 		//}
 		displayNum++;
 		// get the monitor for this display
-		if (!(device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP))
+		/*if (!(device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP))
 		{
 			continue;
-		}
+		}*/
 
 		DISPLAY_DEVICE	monitor;
 		monitor.cb = sizeof(monitor);
@@ -1208,10 +1209,10 @@ bool R_GetScreenResolution(const unsigned requestedDisplayNum, int& w, int& h, i
 		}
 		displayNum++;
 		// get the monitor for this display
-		if (!(device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP))
+		/*if (!(device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP))
 		{
 			continue;
-		}
+		}*/
 
 		DISPLAY_DEVICE	monitor;
 		monitor.cb = sizeof(monitor);
