@@ -272,6 +272,57 @@ ID_INT idStr::FindText( const char* str, const char* text, bool casesensitive, I
 
 /*
 ============
+idStr::FindLastText
+
+returns -1 if not found otherwise the index of the text
+
+GK: It's an exact replica of FindText with the main difference that it goes from the end to the begining of the string
+============
+*/
+ID_INT idStr::FindLastText( const char* str, const char* text, bool casesensitive, ID_INT start, ID_INT end )
+{
+	ID_INT l, i, j;
+	
+	// RB: 64 bit fixes,  conversion from 'size_t' to 'int', possible loss of data
+	if( end == -1 )
+	{
+		end = (ID_INT)strlen( str );
+	}
+	l = end - (ID_INT)strlen( text );
+	// RB end
+	
+	for( i = l; i > start; i-- )
+	{
+		if( casesensitive )
+		{
+			for( j = 0; text[j]; j++ )
+			{
+				if( str[i + j] != text[j] )
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			for( j = 0; text[j]; j++ )
+			{
+				if( ::toupper( str[i + j] ) != ::toupper( text[j] ) )
+				{
+					break;
+				}
+			}
+		}
+		if( !text[j] )
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+/*
+============
 idStr::Filter
 
 Returns true if the string conforms the given filter.

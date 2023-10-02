@@ -499,7 +499,7 @@ const char* Sys_DefaultBasePath()
 	struct stat commonStat;
 	for (int i = 0; i < 3; i++) {
 		basepath = findFile(basePaths[i].c_str(), "_common.resources");
-		
+
 		if (basepath.Find("_common.resources") != -1) {
 			break;
 		}
@@ -508,8 +508,8 @@ const char* Sys_DefaultBasePath()
 		common->FatalError("Failed to find the Game's base path");
 	}
 	if (basepath.Find("_common.resources") != -1) {
-		basepath = basepath.SubStr(0, basepath.Find("/"));
-		basepath = basepath.SubStr(0, basepath.Find("/"));
+		basepath = basepath.SubStr(0, basepath.FindLast("/"));
+		basepath = basepath.SubStr(0, basepath.FindLast("/"));
 	}
 	//GK: Crazy const char desease
 	return basepath;

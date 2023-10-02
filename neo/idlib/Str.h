@@ -240,6 +240,7 @@ public:
 	
 	ID_INT				Find( const char c, ID_INT start = 0, ID_INT end = -1 ) const;
 	ID_INT				Find( const char* text, bool casesensitive = true, ID_INT start = 0, ID_INT end = -1 ) const;
+	ID_INT				FindLast( const char* text, bool casesensitive = true, ID_INT start = 0, ID_INT end = -1 ) const;
 	bool				Filter( const char* filter, bool casesensitive ) const;
 	ID_INT				Last( const char c ) const;						// return the index to the last occurance of 'c', returns -1 if not found
 	const char* 		Left( int len, idStr& result ) const;			// store the leftmost 'len' characters in the result
@@ -309,6 +310,7 @@ public:
 	static int			vsnPrintf( char* dest, ID_INT size, const char* fmt, va_list argptr );
 	static ID_INT		FindChar( const char* str, const char c, ID_INT start = 0, ID_INT end = -1 );
 	static ID_INT		FindText( const char* str, const char* text, bool casesensitive = true, ID_INT start = 0, ID_INT end = -1 );
+	static ID_INT		FindLastText( const char* str, const char* text, bool casesensitive = true, ID_INT start = 0, ID_INT end = -1 );
 	static bool			Filter( const char* filter, const char* name, bool casesensitive );
 	static void			StripMediaName( const char* name, idStr& mediaName );
 	static bool			CheckExtension( const char* name, const char* ext );
@@ -1204,6 +1206,15 @@ ID_INLINE ID_INT idStr::Find( const char* text, bool casesensitive, ID_INT start
 		end = len;
 	}
 	return idStr::FindText( data, text, casesensitive, start, end );
+}
+
+ID_INLINE ID_INT idStr::FindLast( const char* text, bool casesensitive, ID_INT start, ID_INT end ) const
+{
+	if( end == -1 )
+	{
+		end = len;
+	}
+	return idStr::FindLastText( data, text, casesensitive, start, end );
 }
 
 ID_INLINE bool idStr::Filter( const char* filter, bool casesensitive ) const
