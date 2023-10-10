@@ -104,7 +104,12 @@ const char* Sys_DefaultSavePath()
 		SDL_free( base_path );
 	}
 #else
-	sprintf( savepath, "%s/.doombfa", getenv( "HOME" ) );
+	char* rootPath = getenv("XDG_DATA_HOME");
+	if (rootPath == NULL) {
+		rootPath = getenv("HOME");
+	}
+
+	sprintf( savepath, "%s/.doombfa", rootPath );
 #endif
 	
 	return savepath.c_str();
