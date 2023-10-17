@@ -43,6 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <signal.h>
 #include <fcntl.h>
 #include <fnmatch.h>
+#include <SDL.h>
 
 // RB begin
 #if defined(__ANDROID__)
@@ -510,7 +511,7 @@ const char* Sys_DefaultBasePath()
 		}
 	}
 	if (stat(basepath.c_str(), &commonStat) < 0) {
-		common->FatalError("Failed to find the Game's base path");
+		common->FatalError("Failed to find the Game's base path\nPlease install a compatible Game");
 	}
 	if (basepath.Find("_common.resources") != -1) {
 		basepath = basepath.SubStr(0, basepath.FindLast("/"));
@@ -1678,13 +1679,17 @@ Sys_Error
 void Sys_Error( const char* error, ... )
 {
 	va_list argptr;
+	char text[4096];
 	
 	Sys_Printf( "Sys_Error: " );
 	va_start( argptr, error );
-	Sys_DebugVPrintf( error, argptr );
+	vsprintf(text, error, argptr);
 	va_end( argptr );
+	Sys_Printf(text);
 	Sys_Printf( "\n" );
-	
+#if SDL_VERSION_ATLEAST(2, 0, 0)
+	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "System Error", text, NULL);
+#endif
 	Posix_Exit( EXIT_FAILURE );
 }
 
