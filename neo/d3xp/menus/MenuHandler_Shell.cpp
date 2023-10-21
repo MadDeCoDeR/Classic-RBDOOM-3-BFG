@@ -470,7 +470,7 @@ void idMenuHandler_ShellLocal::Initialize( const char* swfFile, idSoundWorld* sw
 	delete new idSWF( "doomIntro", NULL );
 	delete new idSWF( "roeIntro", NULL );
 	delete new idSWF( "leIntro", NULL );
-	common->Printf(" "); //GK: Ducktape fix: For some  unknown reason if that function is not interupted here it crashes on Boot on Windows Retail
+	
 	if( inGame )
 	{
 		BIND_SHELL_SCREEN( SHELL_AREA_ROOT, idMenuScreen_Shell_Pause, this );
