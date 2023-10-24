@@ -325,9 +325,13 @@ void P_RemoveActiveCeiling(ceiling_t* c)
     {
 	if (::g->activeceilings[i] == c)
 	{
+		void* tempData = ::g->activeceilings[i]->sector->ceilingdata;
 	    ::g->activeceilings[i]->sector->ceilingdata = NULL;
+		Z_Free(tempData);
 	    P_RemoveThinker (&::g->activeceilings[i]->thinker);
+		ceiling_t* tempCeiling = ::g->activeceilings[i];
 	    ::g->activeceilings[i] = NULL;
+		Z_Free(tempCeiling);
 		//::g->cellind = ::g->cellind - 1;
 	    break;
 	}

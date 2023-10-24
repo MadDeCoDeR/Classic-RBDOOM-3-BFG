@@ -373,10 +373,19 @@ vissprite_t* R_NewVisSprite (void)
 	//return &::g->overflowsprite;
 	
 	if (::g->visspriteind >= ::g->vissprites.size()) {
+#if _ITERATOR_DEBUG_LEVEL < 2
 		if (::g->vissprites.size() == ::g->vissprites.capacity()) {
 			::g->vissprites.reserve(::g->vissprites.size() + MAXVISSPRITES);
 		}
 		::g->vissprites.emplace_back(new vissprite_t());
+#else
+		if (::g->vissprites.size() == ::g->vissprites.capacity()) {
+			::g->vissprites.resize(::g->vissprites.size() + MAXVISSPRITES);
+		}
+		for (int vi = ::g->visspriteind; vi < ::g->vissprites.size(); vi++) {
+			::g->vissprites[vi] = new vissprite_t();
+		}
+#endif
 	}
 	else {
 		R_ZeroVisSprite(::g->visspriteind);

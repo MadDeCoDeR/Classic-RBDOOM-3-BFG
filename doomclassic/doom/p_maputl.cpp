@@ -929,10 +929,19 @@ P_PathTraverse
 
 void AddNewIntercept() {
 	if (::g->interind >= ::g->intercepts.size()) {
+#if _ITERATOR_DEBUG_LEVEL < 2
 		if (::g->intercepts.size() == ::g->intercepts.capacity()) {
 			::g->intercepts.reserve(::g->intercepts.size() + MAXINTERCEPTS);
 		}
 		::g->intercepts.emplace_back(new intercept_t());
+#else
+		if (::g->intercepts.size() == ::g->intercepts.capacity()) {
+			::g->intercepts.resize(::g->intercepts.size() + MAXINTERCEPTS);
+		}
+		for (int j = ::g->interind; j < ::g->intercepts.size(); j++) {
+			::g->intercepts[j] = new intercept_t();
+		}
+#endif
 	}
 	else {
 		::g->intercepts[::g->interind]->d.line = NULL;

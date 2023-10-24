@@ -2026,7 +2026,9 @@ void P_SpawnSpecials (void)
 		if (::g->activeceilings.size() == ::g->activeceilings.capacity()) {
 			::g->activeceilings.resize(::g->activeceilings.size() + MAXCEILINGS);
 		}
-		::g->activeceilings[::g->cellind] = new ceiling_t();
+		for (int ci = ::g->cellind; ci < ::g->activeceilings.size(); ci++) {
+			::g->activeceilings[ci] = new ceiling_t();
+		}
 #endif
 	}
 	::g->cellind++;
@@ -2041,7 +2043,9 @@ void P_SpawnSpecials (void)
 		if (::g->activeplats.size() == ::g->activeplats.capacity()) {
 			::g->activeplats.resize(::g->activeplats.size() + MAXPLATS);
 		}
-		::g->activeplats[::g->platind] = new plat_t();
+		for (int pi = ::g->platind; pi < ::g->activeplats.size(); pi++) {
+			::g->activeplats[pi] = new plat_t();
+		}
 #endif
 	}
 	::g->platind++;

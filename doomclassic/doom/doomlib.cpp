@@ -429,6 +429,17 @@ fixed_t GetViewY()
 	return ::g->viewy + ::g->viewyoffset;
 }
 
+template<class T>
+void CleanVector(std::vector<T*> myVector) {
+	for (int i = 0; i < myVector.size(); i++) {
+		if (myVector[i] != NULL) {
+			void* val = myVector[i];
+			myVector[i] = NULL;
+			delete val;
+		}
+	}
+}
+
 void DoomLib::Shutdown() {
 	//GK: Reset Dehacked patches also here just in case
 	/*resetValues();
@@ -453,6 +464,18 @@ void DoomLib::Shutdown() {
 	if ( globaldata[currentplayer] ) {
 		Globals* glob = globaldata[currentplayer];
 		globaldata[currentplayer] = NULL;
+		CleanVector(glob->activeceilings);
+		CleanVector(glob->activeplats);
+		CleanVector(glob->intercepts);
+		CleanVector(glob->drawsegs);
+		CleanVector(glob->sprites);
+		CleanVector(glob->vissprites);
+		CleanVector(glob->cpatch);
+		CleanVector(glob->visplanes);
+		CleanVector(glob->reverbs);
+		for (int j = 0; j < glob->acts.size(); j++) {
+			CleanVector(glob->acts[j]);
+		}
 		delete glob;
 	}
 }
