@@ -435,7 +435,7 @@ void CleanVector(std::vector<T*> myVector) {
 		if (myVector[i] != NULL) {
 			void* val = myVector[i];
 			myVector[i] = NULL;
-			delete val;
+			delete (T*)val;
 		}
 	}
 }
@@ -473,7 +473,7 @@ void DoomLib::Shutdown() {
 		CleanVector(glob->cpatch);
 		CleanVector(glob->visplanes);
 		CleanVector(glob->reverbs);
-		for (int j = 0; j < glob->acts.size(); j++) {
+		for (size_t j = 0; j < glob->acts.size(); j++) {
 			CleanVector(glob->acts[j]);
 		}
 		delete glob;
