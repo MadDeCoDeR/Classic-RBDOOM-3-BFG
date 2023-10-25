@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2021 George Kalmpokis
+* Copyright (C) 2021 George Kalampokis
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * this software and associated documentation files (the "Software"), to deal in
@@ -27,28 +27,32 @@
 #include <queue>
 #ifndef __CINEMATIC_AUDIO_AL_H__
 #define __CINEMATIC_AUDIO_AL_H__
-#define NUM_BUFFERS 4
+#define MIN_BUFFERS 4
+#define NUM_BUFFERS 16
 
 class CinematicAudio_OpenAL: public CinematicAudio {
 public:
 	CinematicAudio_OpenAL();
 	void InitAudio(void* audioContext);
 	void PlayAudio(uint8_t* data, int size);
+	void ResetAudio();
 	void ShutdownAudio();
 private:
 	ALuint		alMusicSourceVoicecin;
 	ALuint		alMusicBuffercin[NUM_BUFFERS];
 	ALenum av_sample_cin;
 	int av_rate_cin;
+	int offset;
 	bool trigger;
 	//GK: Unlike XAudio2 which can accept buffer until the end of this world.
 	//	  OpenAL can accept buffers as long as there are freely available buffers.
 	//	  So, what happens if there are no freely available buffers but we still geting audio frames ? Loss of data.
 	//	  That why now I am using two queues in order to store the frames (and their sizes) and when we have available buffers,
 	//	  then start poping those frames instead of the current, so we don't lose any audio frames and the sound doesn't crack anymore.
-	std::queue<uint8_t*> tBuffer[NUM_BUFFERS];
-	std::queue<int> sizes[NUM_BUFFERS];
-	int offset;
+	std::queue<uint8_t*> tBuffer;
+	std::queue<int> sizes;
+	std::queue<ALuint> freeBuffers;
+	
 };
 
 #endif

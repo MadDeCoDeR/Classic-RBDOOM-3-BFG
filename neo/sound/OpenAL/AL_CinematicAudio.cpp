@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2021 George Kalmpokis
+* Copyright (C) 2021 George Kalampokis
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * this software and associated documentation files (the "Software"), to deal in
@@ -42,6 +42,9 @@ CinematicAudio_OpenAL::CinematicAudio_OpenAL():
 	alSourcei(alMusicSourceVoicecin, AL_ROLLOFF_FACTOR, 0);
 	alListenerf(AL_GAIN, s_noSound.GetBool() ? 0.0f : DBtoLinear(s_volume_dB.GetFloat())); //GK: Set the sound volume the same that is used in DOOM 3
 	alGenBuffers(NUM_BUFFERS, &alMusicBuffercin[0]);
+	for (int i = 0; i < NUM_BUFFERS; i++) {
+		freeBuffers.push(alMusicBuffercin[i]);
+	}
 }
 
 void CinematicAudio_OpenAL::InitAudio(void* audioContext)
@@ -93,19 +96,23 @@ void CinematicAudio_OpenAL::PlayAudio(uint8_t* data, int size)
 	alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_PROCESSED, &processed);
 
 	if (trigger) {
-		tBuffer->push(data);
-		sizes->push(size);
+		tBuffer.push(data);
+		sizes.push(size);
+		ALuint bufid;
 		while (processed > 0) {
-			ALuint bufid;
-
 			alSourceUnqueueBuffers(alMusicSourceVoicecin, 1, &bufid);
+			freeBuffers.push(bufid);
 			processed--;
-			if (!tBuffer->empty()) {
-				int tempSize = sizes->front();
-				sizes->pop();
-				uint8_t* tempdata = tBuffer->front();
-				tBuffer->pop();
+		}
+		while (!tBuffer.empty()) {
+			if (!freeBuffers.empty()) {
+				int tempSize = sizes.front();
+				sizes.pop();
+				uint8_t* tempdata = tBuffer.front();
+				tBuffer.pop();
 				if (tempSize > 0) {
+					bufid = freeBuffers.front();
+					freeBuffers.pop();
 					alBufferData(bufid, av_sample_cin, tempdata, tempSize, av_rate_cin);
 					alSourceQueueBuffers(alMusicSourceVoicecin, 1, &bufid);
 					ALenum error = alGetError();
@@ -113,23 +120,27 @@ void CinematicAudio_OpenAL::PlayAudio(uint8_t* data, int size)
 						common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
 						return;
 					}
+					av_freep(&tempdata);
 				}
-				offset++;
-				if (offset == NUM_BUFFERS) {
-					offset = 0;
-				}
+			}
+			else {
+				break;
 			}
 		}
 	}
 	else {
 		alBufferData(alMusicBuffercin[offset], av_sample_cin, data, size, av_rate_cin);
+		av_freep(&data);
 		offset++;
-		if (offset == NUM_BUFFERS) {
+		if (offset == MIN_BUFFERS) {
 			alSourceQueueBuffers(alMusicSourceVoicecin, offset, alMusicBuffercin);
 			ALenum error = alGetError();
 			if (error != AL_NO_ERROR) {
 				common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
 				return;
+			}
+			for (int k = 0; k < MIN_BUFFERS; k++) {
+				freeBuffers.pop();
 			}
 			trigger = true;
 			offset = 0;
@@ -153,6 +164,28 @@ void CinematicAudio_OpenAL::PlayAudio(uint8_t* data, int size)
 	}
 }
 
+void CinematicAudio_OpenAL::ResetAudio()
+{
+	if (alIsSource(alMusicSourceVoicecin)) {
+		alSourceRewind(alMusicSourceVoicecin);
+		alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
+	}
+	while (!tBuffer.empty()) {
+		uint8_t* data = tBuffer.front();
+		tBuffer.pop();
+		av_freep(&data);
+	}
+	while (!sizes.empty()) {
+		sizes.pop();
+	}
+	while (!freeBuffers.empty()) {
+		freeBuffers.pop();
+	}
+	offset = 0;
+	trigger = false;
+
+}
+
 void CinematicAudio_OpenAL::ShutdownAudio()
 {
 	if (alIsSource(alMusicSourceVoicecin)) {
@@ -172,18 +205,15 @@ void CinematicAudio_OpenAL::ShutdownAudio()
 	if (alIsBuffer(alMusicBuffercin[0])) {
 		alDeleteBuffers(NUM_BUFFERS, alMusicBuffercin);
 	}
-	if (!tBuffer->empty()) {
-		int buffersize = tBuffer->size();
-		while (buffersize > 0) {
-			tBuffer->pop();
-			buffersize--;
-		}
+	while (!tBuffer.empty()) {
+		uint8_t* data = tBuffer.front();
+		tBuffer.pop();
+		av_freep(&data);
 	}
-	if (!sizes->empty()) {
-		int buffersize = sizes->size();
-		while (buffersize > 0) {
-			sizes->pop();
-			buffersize--;
-		}
+	while (!sizes.empty()) {
+		sizes.pop();
+	}
+	while (!freeBuffers.empty()) {
+		freeBuffers.pop();
 	}
 }
