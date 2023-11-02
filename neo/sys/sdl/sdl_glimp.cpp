@@ -84,25 +84,9 @@ GLimp_PreInit
  Calling that function more than once doesn't make a difference
 ===================
 */
-/*GK: SDL_Init is used to Initialize various SDL submodules. 
- SDL_Init should be called ONLY ONCE, when the engine starts,
-  and also it needs all the flags for proper setup (without SDL_INIT_GAMECONTROLLER latest versions cause performance degregation when using a controller)
- */
+
 void GLimp_PreInit() // DG: added this function for SDL compatibility
 {
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-	if( !SDL_WasInit( SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) )
-#else
-	if( !SDL_WasInit( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) )
-#endif
-	{
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-		if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC ) )
-#else
-		if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) )
-#endif
-			common->Error( "Error while initializing SDL: %s", SDL_GetError() );
-
 #ifdef __unix__
 	if (SDL_GetCurrentVideoDriver() != "wayland") { //GK: On Linux avoid x11 as much as possible. Since SDL2 is statically linked with Wayland extension enforce it
 		bool hasWayland = false;
@@ -121,7 +105,6 @@ void GLimp_PreInit() // DG: added this function for SDL compatibility
 		}
 	}
 #endif
-	}
 }
 
 /*
