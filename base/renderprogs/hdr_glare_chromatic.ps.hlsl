@@ -92,7 +92,7 @@ void main( PS_IN fragment, out PS_OUT result )
 	const int samples = 9;
 	
 	float scale = 13.0; // bloom width
-	const float weightScale = 2.3; // bloom strength
+	const float weightScale = 1.9; // bloom strength
 	
 	for( int i = 0; i < samples; i++ )
     {
