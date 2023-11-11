@@ -193,7 +193,7 @@ void* getsfx ( const char* sfxname, int* len )
 	}
 	// Allocate from zone memory.
 	//sfxmem = (float*)DoomLib::Z_Malloc( size*(sizeof(float)), PU_SOUND_SHARED, 0 );
-	sfxmem = (unsigned char*)malloc( size * sizeof(unsigned char) );
+	sfxmem = (unsigned char*)malloc( size * sizeof(unsigned char));
 	
 	// Now copy, and convert to Xbox360 native float samples, do initial volume ramp, and scale
 	for ( int i = 0; i < size; i++ ) {

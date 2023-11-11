@@ -248,6 +248,7 @@ EFXEAXREVERBPROPERTIES *GetReverb(char* name, int sector) {
 	text[W_LumpLength(lump)] = '\0';
 	W_ReadLump(lump, text);
 	std::vector<std::string>lines = getReverblines(text);
+	free(text);
 	bool isok = false;
 	int s = ::g->mapindex;
 	for (int i = s; i < (int)lines.size(); i++) {

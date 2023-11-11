@@ -450,8 +450,9 @@ void extendSpriteNames(int newSize) {
 		int oldSize = sprnames.size();
 		sprnames.resize(newSize + 2);
 		for (int i = oldSize - NUMSPRITES; i <= (newSize + 1) - NUMSPRITES; i++) {
-			sprnames[i + (NUMSPRITES - 1)] = (char*)malloc(5 * sizeof(char));
-			sprintf(sprnames[i + (NUMSPRITES - 1)], "SP%02d", i);
+			char temp[5];
+			sprintf(temp, "SP%02d", i);
+			sprnames[i + (NUMSPRITES - 1)] = temp;
 		}
 	}
 }

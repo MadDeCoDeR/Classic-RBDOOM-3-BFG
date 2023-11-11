@@ -389,8 +389,9 @@ void setMAP(int index,char* value1, char* value2, char* value3) {
 		::g->maps[map -1].lumpname = value1;
 	}
 	else {
-		::g->maps[map - 1].lumpname = (char*)malloc(6 * sizeof(char));
-		sprintf(::g->maps[map-1].lumpname, "MAP%02d", map);
+		char temp[6];
+		sprintf(temp, "MAP%02d", map);
+		::g->maps[map - 1].lumpname = temp;
 	}
 	if (value2 != NULL) {
 		value2 = removequotes(value2);

@@ -280,12 +280,17 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	AVIOContext *avio_ctx = avio_alloc_context(avio_ctx_buffer, *len, 0, NULL, NULL, NULL, NULL);
 	fmt_ctx->pb = avio_ctx;
 	if ((ret = avformat_open_input(&fmt_ctx, "", NULL, NULL)) < 0) {
+		avformat_free_context(fmt_ctx);
+		avio_context_free(&avio_ctx);
 		parseAVError(ret);
 		return false;
 	}
 
 	if ((ret = avformat_find_stream_info(fmt_ctx, NULL)) < 0)
 	{
+		avformat_close_input(&fmt_ctx);
+		avformat_free_context(fmt_ctx);
+		avio_context_free(&avio_ctx);
 		parseAVError(ret);
 		return false;
 	}
@@ -303,6 +308,9 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 	dec = avcodec_find_decoder(dec_ctx->codec_id);
 	if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0)
 	{
+		avformat_close_input(&fmt_ctx);
+		avformat_free_context(fmt_ctx);
+		avio_context_free(&avio_ctx);
 		parseAVError(ret);
 		return false;
 	}
@@ -354,23 +362,25 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 		int num_bytes = 0;
 		//int bufferoffset = format_byte * 10;
 		//unsigned long long length = *len;
-		std::vector<byte*> tBuffer;
-		std::vector<int> buffSizes;
-		uint8_t** tBuffer2 = NULL;
+		std::queue<byte*> tBuffer;
+		std::queue<int> buffSizes;
+		uint8_t* tBuffer2 = NULL;
 		int  bufflinesize;
-		std::queue<AVPacket> packetQueue[4];
+		std::queue<AVPacket> packetQueue;
 		while (av_read_frame(fmt_ctx, &packet) >= 0) {
 			if (packet.stream_index == avindx) {
-				packetQueue->push(packet);
-				ret = avcodec_send_packet(dec_ctx, &packetQueue->front());
+
+				packetQueue.push(packet);
+
+				ret = avcodec_send_packet(dec_ctx, &packetQueue.front());
 				if (ret != 0 && ret != AVERROR(EAGAIN)) {
 					char error[256];
 					av_strerror(ret, error, 256);
 					common->Warning("AVD: Failed to send packet for decoding with message: %s\n", error);
 				}
 				else {
-					packet = packetQueue->front();
-					packetQueue->pop();
+					packet = packetQueue.front();
+					packetQueue.pop();
 					ret = avcodec_receive_frame(dec_ctx, frame);
 					if (ret != 0) {
 						char error[256];
@@ -378,30 +388,34 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 						common->Warning("AVD: Failed to receive frame from decoding with message: %s\n", error);
 					}
 					else {
-
+						
 						if (hasplanar) {
-							av_samples_alloc_array_and_samples(&tBuffer2,
+							av_samples_alloc(&tBuffer2,
 								&bufflinesize,
 								frame->ch_layout.nb_channels,
 								av_rescale_rnd(frame->nb_samples, frame->sample_rate, frame->sample_rate, AV_ROUND_UP),
 								dst_smp,
 								0);
-							int res = swr_convert(swr_ctx, tBuffer2, bufflinesize, (const uint8_t**)frame->extended_data, frame->nb_samples);
+							int res = swr_convert(swr_ctx, &tBuffer2, bufflinesize, (const uint8_t**)frame->extended_data, frame->nb_samples);
 							num_bytes = av_samples_get_buffer_size(&bufflinesize, frame->ch_layout.nb_channels,
 								res, dst_smp, 1);
-							tBuffer.push_back((byte*)malloc(num_bytes));
-							buffSizes.push_back(num_bytes);
-							memcpy(tBuffer.back(), tBuffer2[0], num_bytes);
+							buffSizes.push(num_bytes);
+							tBuffer.push(tBuffer2);
 
 							offset += num_bytes;
-							av_freep(&tBuffer2[0]);
 
 						}
 						else {
 							num_bytes = frame->linesize[0];
-							tBuffer.push_back((byte*)malloc(num_bytes));
-							buffSizes.push_back(num_bytes);
-							memcpy(tBuffer.back(), frame->extended_data[0], num_bytes);
+							av_samples_alloc(&tBuffer2,
+								&bufflinesize,
+								frame->ch_layout.nb_channels,
+								frame->nb_samples,
+								dst_smp,
+								0);
+							memcpy(tBuffer2, frame->extended_data[0], num_bytes);
+							tBuffer.push(tBuffer2);
+							buffSizes.push(num_bytes);
 							offset += num_bytes;
 						}
 
@@ -414,30 +428,32 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 			av_packet_unref(&packet);
 		}
 		av_frame_free(&frame);
-		free(frame);
 		*len = offset;
 		*audio = (byte*)malloc(offset);
 		offset = 0;
-		for (uint i = 0; i < tBuffer.size(); i++) {
-			memcpy(*audio + offset, tBuffer[i], buffSizes[i]);
-			offset += buffSizes[i];
-			byte* temp = tBuffer[i];
-			free(temp);
-			temp = NULL;
+		while(!buffSizes.empty()) {
+			byte* temp = tBuffer.front();
+			tBuffer.pop();
+			int size = buffSizes.front();
+			buffSizes.pop();
+			memcpy(*audio + offset, temp, size);
+			offset += size;
+			av_freep(&temp);
 		}
-		tBuffer.clear();
-		buffSizes.clear();
 		if (swr_ctx != NULL) {
+			swr_close(swr_ctx);
 			swr_free(&swr_ctx);
 		}
 
 		avcodec_close(dec_ctx);
+		avcodec_free_context(&dec_ctx);
+
 		avformat_close_input(&fmt_ctx);
 		avformat_free_context(fmt_ctx);
 
-
-		av_free(avio_ctx->buffer);
-		av_freep(avio_ctx);
+		av_freep(&avio_ctx->buffer);
+		avio_closep(&avio_ctx);
+		avio_context_free(&avio_ctx);
 	}
 	return true;
 }

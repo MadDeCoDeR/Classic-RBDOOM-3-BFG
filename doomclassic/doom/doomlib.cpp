@@ -476,6 +476,10 @@ void DoomLib::Shutdown() {
 		for (size_t j = 0; j < glob->acts.size(); j++) {
 			CleanVector(glob->acts[j]);
 		}
+		free(glob->EpisodeMenu);
+		if (glob->nummapthings) {
+			free(glob->mapthings);
+		}
 		delete glob;
 	}
 }

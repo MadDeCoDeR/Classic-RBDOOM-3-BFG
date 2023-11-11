@@ -1636,6 +1636,7 @@ void MasterList() {
 		}
 	}
 	lump = nullptr;
+	free(lumpnfo);
 	lumpnfo = nullptr;
 	delete[] buffer;
 	master->Flush();
@@ -1791,6 +1792,7 @@ for (int i = 0; i < nlps; lump++) {
 	}
 }
 lump = nullptr;
+free(lumpnfo);
 lumpnfo = nullptr;
 delete[] buffer;
 mazter->Flush();

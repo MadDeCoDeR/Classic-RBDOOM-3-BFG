@@ -544,6 +544,7 @@ idCinematicLocal::~idCinematicLocal()
 	
 	if( fmt_ctx )
 	{
+		avformat_close_input(&fmt_ctx);
 		avformat_free_context( fmt_ctx );
 	}
 	
@@ -991,12 +992,14 @@ void idCinematicLocal::Close()
 		if (audio_stream_index >= 0) {
 			if (dec_ctx2)
 			{
+				avcodec_close(dec_ctx2);
 				avcodec_free_context(&dec_ctx2);
 			}
 
 			// SRS - Free resample context if we were decoding planar audio
 			if (swr_ctx)
 			{
+				swr_close(swr_ctx);
 				swr_free(&swr_ctx);
 			}
 
@@ -1017,11 +1020,13 @@ void idCinematicLocal::Close()
 		if( dec_ctx )
 		{
 			avcodec_close( dec_ctx );
+			avcodec_free_context(&dec_ctx);
 		}
 		
 		if( fmt_ctx )
 		{
 			avformat_close_input( &fmt_ctx );
+			avformat_free_context(fmt_ctx);
 		}
 		status = FMV_EOF;
 	}

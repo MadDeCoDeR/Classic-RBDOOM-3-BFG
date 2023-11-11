@@ -683,6 +683,7 @@ void R_ClearTextures(void) {
 	Z_Free(::g->s_texturecomposite);
 	Z_Free(::g->s_texturecompositesize);
 	Z_Free(::g->texturetranslation);
+	free(::g->skybuffer);
 	::g->s_numtextures = 0;
 }
 
