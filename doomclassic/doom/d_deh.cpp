@@ -449,8 +449,8 @@ void extendSpriteNames(int newSize) {
 	if (newSize >= (int)sprnames.size() - 1) {
 		int oldSize = sprnames.size();
 		sprnames.resize(newSize + 2);
-		for (int i = oldSize - NUMSPRITES; i <= (newSize + 1) - NUMSPRITES; i++) {
-			char temp[5];
+		for (byte i = oldSize - NUMSPRITES; i <= (newSize + 1) - NUMSPRITES; i++) {
+			char temp[15];
 			sprintf(temp, "SP%02d", i);
 			sprnames[i + (NUMSPRITES - 1)] = temp;
 		}
