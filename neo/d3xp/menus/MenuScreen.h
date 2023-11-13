@@ -388,6 +388,7 @@ public:
 private:
 	idMenuWidget_DynamicList* 	options;
 	idMenuWidget_Help* 			helpWidget;
+	int							oldPlatform;
 };
 
 //*

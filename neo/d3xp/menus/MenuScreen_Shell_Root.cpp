@@ -147,7 +147,8 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 		::op->SetAdditionalInfo("status", "D3:Main Menu");
 		::op->SetAdditionalInfo("large image", "d3");
 	}
-	if( menuData != NULL && (!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || common->IsNewDOOM3())
+	this->oldPlatform = menuData->GetPlatform();
+	if( menuData != NULL && ((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5)))
 	{
 		idList< idList< idStr, TAG_IDLIB_LIST_MENU >, TAG_IDLIB_LIST_MENU > menuOptions;
 		idList< idStr > option;
@@ -300,7 +301,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 	
 	idMenuScreen::ShowScreen( transitionType );
 	
-	if( menuData != NULL && !common->IsNewDOOM3() && menuData->GetPlatform() == 2)
+	if( menuData != NULL && ((!common->IsNewDOOM3() && menuData->GetPlatform() == 2) || (common->IsNewDOOM3() && menuData->GetPlatform() == 5)))
 	{
 		idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
 		if( shell != NULL )
@@ -308,6 +309,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 			idMenuWidget_MenuBar* menuBar = shell->GetMenuBar();
 			if( menuBar != NULL )
 			{
+				menuBar->Show();
 				menuBar->SetFocusIndex( GetRootIndex() );
 			}
 		}
@@ -420,7 +422,19 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 	{
 		return false;
 	}
+	if (this->oldPlatform != menuData->GetPlatform()) {
+		idMenuHandler_Shell* pcShell = dynamic_cast<idMenuHandler_ShellLocal*>(menuData);
+		if (pcShell != NULL)
+		{
+			idMenuWidget_MenuBar* menuBar = pcShell->GetMenuBar();
+			if (menuBar != NULL)
+			{
+				menuBar->GetSprite()->SetVisible(false);
+			}
+		}
+		this->ShowScreen(MENU_TRANSITION_SIMPLE);
 
+	}
 	this->Update();
 	
 	widgetAction_t actionType = action.GetType();
@@ -440,7 +454,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 		}
 		case WIDGET_ACTION_PRESS_FOCUSED:
 		{
-			if(!common->IsNewDOOM3() && menuData->GetPlatform() == 2)
+			if(((!common->IsNewDOOM3() && menuData->GetPlatform() == 2) || (common->IsNewDOOM3() && menuData->GetPlatform() == 5)))
 			{
 			
 				idMenuHandler_Shell* shell = dynamic_cast< idMenuHandler_ShellLocal* >( menuData );
@@ -471,7 +485,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 		case WIDGET_ACTION_SCROLL_HORIZONTAL:
 		{
 		
-			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || common->IsNewDOOM3())
+			if(((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5)))
 			{
 				return true;
 			}
