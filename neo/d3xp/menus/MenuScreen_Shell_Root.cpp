@@ -433,7 +433,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 			}
 		}
 		this->ShowScreen(MENU_TRANSITION_SIMPLE);
-
+		
 	}
 	this->Update();
 	

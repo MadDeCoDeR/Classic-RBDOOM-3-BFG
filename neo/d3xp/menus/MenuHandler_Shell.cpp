@@ -789,7 +789,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 	
 	navOptions.Clear();
 	
-	if(((!common->IsNewDOOM3() && platform == 2) || (common->IsNewDOOM3() && platform == 5)) && menuBar != NULL )
+	if(((!common->IsNewDOOM3() && GetPlatform() == 2) || (common->IsNewDOOM3() && GetPlatform() == 5)) && menuBar != NULL)
 	{
 		if( game->GetCVarBool("g_demoMode") )
 		{
@@ -910,7 +910,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 	
 	if( menuBar != NULL && gui != NULL )
 	{
-		if ((!common->IsNewDOOM3() && platform == 2) || (common->IsNewDOOM3() && platform == 5)) {
+		if ((!common->IsNewDOOM3() && GetPlatform() == 2) || (common->IsNewDOOM3() && GetPlatform() == 5)) {
 			idSWFScriptObject& root = gui->GetRootObject();
 			if (menuBar->BindSprite(root))
 			{
