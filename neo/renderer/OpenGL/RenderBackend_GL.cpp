@@ -1851,6 +1851,11 @@ void idRenderBackend::SetBuffer( const void* data )
 		float c[3];
 		if( sscanf( r_clear.GetString(), "%f %f %f", &c[0], &c[1], &c[2] ) == 3 )
 		{
+			if (c[0] > 1.0f || c[1] > 1.0f || c[2] > 1.0f) {
+				c[0] = c[0] / 255.0f;
+				c[1] = c[1] / 255.0f;
+				c[2] = c[2] / 255.0f;
+			}
 			GL_Clear( true, false, false, 0, c[0], c[1], c[2], 1.0f, true );
 		}
 		else if( r_clear.GetInteger() == 2 )
