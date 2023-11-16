@@ -384,6 +384,9 @@ idMenuScreen_Shell_Pause::HideScreen
 */
 void idMenuScreen_Shell_Pause::HideScreen( const mainMenuTransition_t transitionType )
 {
+	if (common->Dialog().HasDialogMsg(GDM_SP_QUIT_SAVE, NULL) || common->Dialog().HasDialogMsg(GDM_MULTI_VDM_QUIT_LOSE_LEADERBOARDS, NULL) || common->Dialog().HasDialogMsg(GDM_MULTI_VDM_QUIT, NULL) || common->Dialog().HasDialogMsg(GDM_SP_RESTART_SAVE, NULL)) {
+		common->Dialog().ClearDialogs(true);
+	}
 	idMenuScreen::HideScreen( transitionType );
 }
 
