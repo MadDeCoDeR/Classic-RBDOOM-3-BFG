@@ -28,8 +28,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "precompiled.h"
 #pragma hdrstop
+#include "precompiled.h"
 
 #include "Common_local.h"
 #include "../sys/sys_lobby_backend.h"
@@ -42,7 +42,7 @@ idCVar com_wipeSeconds( "com_wipeSeconds", "1", CVAR_SYSTEM, "" );
 idCVar com_disableAutoSaves( "com_disableAutoSaves", "0", CVAR_SYSTEM | CVAR_BOOL, "" );
 idCVar com_disableAllSaves( "com_disableAllSaves", "0", CVAR_SYSTEM | CVAR_BOOL, "" );
 
-
+extern idCVar r_clear;
 extern idCVar sys_lang;
 
 //extern idCVar g_demoMode;
@@ -247,7 +247,7 @@ idCommonLocal::LoadLoadingGui
 */
 void idCommonLocal::LoadLoadingGui( const char* mapName, bool& hellMap )
 {
-
+	
 	defaultLoadscreen = false;
 	loadGUI = new idSWF( "loading/default", NULL );
 	
@@ -403,6 +403,11 @@ void idCommonLocal::ExecuteMapChange()
 		idLib::Warning( "Session state is not LOADING in ExecuteMapChange" );
 		return;
 	}
+
+	idStr clearValue;
+	clearValue = r_clear.GetString();
+	r_clear.SetInteger(2);
+	r_clear.SetModified();
 	
 	// Clear all dialogs before beginning the load
 	common->Dialog().ClearDialogs( true );
@@ -696,6 +701,9 @@ void idCommonLocal::ExecuteMapChange()
 	
 	// Issue a render at the very end of the load process to update soundTime before the first frame
 	soundSystem->Render();
+
+	r_clear.SetString(clearValue);
+	r_clear.SetModified();
 }
 
 /*
