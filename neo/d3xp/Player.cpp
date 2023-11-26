@@ -1046,7 +1046,7 @@ bool idInventory::Give( idPlayer* owner, const idDict& spawnArgs, const char* st
 					{
 						idLobbyBase& lobby = session->GetActingGameStateLobbyBase();
 						lobbyUserID_t& lobbyUserID = gameLocal->lobbyUserIDs[owner->entityNumber];
-						if( lobby.GetLobbyUserWeaponAutoSwitch( lobbyUserID ) && idealWeapon != NULL && i != owner->weapon_bloodstone_active1 && i != owner->weapon_bloodstone_active2 && i != owner->weapon_bloodstone_active3 )
+						if( i == owner->weapon_bloodstone ||( lobby.GetLobbyUserWeaponAutoSwitch( lobbyUserID ) && idealWeapon != NULL && i != owner->weapon_bloodstone_active1 && i != owner->weapon_bloodstone_active2 && i != owner->weapon_bloodstone_active3 ))
 						{
 							idealWeapon->Set( i );
 						}
