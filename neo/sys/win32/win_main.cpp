@@ -937,24 +937,25 @@ void Sys_GetCallStack(char* Dest)
 	HANDLE process = GetCurrentProcess();
 	void* stack[62];
 	WORD frames = CaptureStackBackTrace(0, 62, stack, NULL);
-	SYMBOL_INFO symbol;
-	symbol.MaxNameLen = 2048;
-	symbol.SizeOfStruct = sizeof(SYMBOL_INFO);
-	IMAGEHLP_LINE line;
-	line.SizeOfStruct = sizeof(IMAGEHLP_LINE);
-	uint64 dwDisplacement1;
-	DWORD dwDisplacement2;
 	for (int frame = 1; frame < frames; frame++) {
+		char buf[sizeof(SYMBOL_INFO) + 2047 * sizeof(TCHAR)];
+		SYMBOL_INFO* symbol = (SYMBOL_INFO*)buf;
+		symbol->MaxNameLen = 2048;
+		symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+		IMAGEHLP_LINE line;
+		line.SizeOfStruct = sizeof(IMAGEHLP_LINE);
+		uint64 dwDisplacement1;
+		DWORD dwDisplacement2;
 #if defined(_M_IX86)
 		BOOL call1 = SymFromAddr(process, (DWORD)(stack[frame]), &dwDisplacement1, &symbol);
 		BOOL call2 = SymGetLineFromAddr(process, (DWORD)(stack[frame]), &dwDisplacement2, &line);
 #else
-		BOOL call1 = SymFromAddr(process, (DWORD64)(stack[frame]), &dwDisplacement1, &symbol);
+		BOOL call1 = SymFromAddr(process, (DWORD64)(stack[frame]), &dwDisplacement1, symbol);
 		BOOL call2 = SymGetLineFromAddr(process, (DWORD64)(stack[frame]), &dwDisplacement2, &line);
 #endif
 		if (call1 && call2) {
 			char frameLine[255];
-			sprintf(frameLine, "at %s(%s:%d)\n\t", symbol.Name, line.FileName, line.LineNumber);
+			sprintf(frameLine, "at %s(%s:%d)\n\t", symbol->Name, line.FileName, line.LineNumber);
 			strcat(callStack, frameLine);
 		}
 		else {
