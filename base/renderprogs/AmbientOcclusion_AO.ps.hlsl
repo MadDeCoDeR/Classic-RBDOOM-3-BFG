@@ -146,9 +146,10 @@ float3 reconstructNonUnitCSFaceNormal( float3 C )
 float3 reconstructCSPosition( float2 S, float z )
 {
 	float4 P;
-	P.z = z * 2.0 - 1.0;
-	P.xy = ( S * rpScreenCorrectionFactor.xy ) * 2.0 - 1.0;
-	P.w = 1.0;
+	//P.z = z * 2.0 - 1.0;
+	//P.xy = S * 2.0 - 1.0;
+	//P.w = 1.0;
+    P = float4(S * rpScreenCorrectionFactor.xy, z, 1.0) * 4.0 - 1.0;
 	
 	float4 csP;
 	csP.x = dot4( P, rpModelMatrixX );
@@ -158,7 +159,7 @@ float3 reconstructCSPosition( float2 S, float z )
 	
 	csP.xyz /= csP.w;
 	
-	return csP.xyz;
+    return (csP.xyz * 0.5) + 0.5;
 }
 
 float3 sampleNormal( sampler2D normalBuffer, int2 ssC, int mipLevel )
@@ -312,7 +313,7 @@ float sampleAO( int2 issC, in float3 C, in float3 n_C, in float ssDiskRadius, in
 	return max( aoValueFromPositionsAndNormal( C, n_C, Q0 ), aoValueFromPositionsAndNormal( C, n_C, Q1 ) );
 #else
 	// The occluding point in camera space
-	vec3 Q = getOffsetPosition( issC, unitOffset, ssR, cszBuffer, invCszBufferScale );
+	float3 Q = getOffsetPosition( issC, unitOffset, ssR, cszBuffer, invCszBufferScale );
 	
 	return aoValueFromPositionsAndNormal( C, n_C, Q );
 #endif
@@ -335,13 +336,13 @@ void main( PS_IN fragment, out PS_OUT result )
 #endif
 	
 	// Pixel being shaded
-	//float2 ssC = fragment.texcoord0;
-	//int2 issC = int2( ssC.x * rpScreenCorrectionFactor.z, ssC.y * rpScreenCorrectionFactor.w );
+    //float2 ssC = fragment.texcoord0 * rpScreenCorrectionFactor.xy;
+	//int2 ssP = int2( ssC.x * rpScreenCorrectionFactor.z, ssC.y * rpScreenCorrectionFactor.w );
 	
-	int2 ssP = int2( gl_FragCoord.xy );
+    int2 ssP = int2(gl_FragCoord.xy);
 	
 	// World space point being shaded
-	vec3 C = getPosition( ssP, CS_Z_buffer );
+	float3 C = getPosition( ssP, CS_Z_buffer );
 	
 	//float z = length( C - rpGlobalEyePos.xyz );
 	//bilateralKey = CSZToKey( C.z );

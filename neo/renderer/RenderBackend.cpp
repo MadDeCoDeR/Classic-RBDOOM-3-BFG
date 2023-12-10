@@ -4749,7 +4749,7 @@ void idRenderBackend::DrawScreenSpaceAmbientOcclusion( const viewDef_t* _viewDef
 		glClearColor( 0, 0, 0, 1 );
 		
 		GL_SelectTexture( 0 );
-		globalImages->currentDepthImage->Bind();
+		//globalImages->currentDepthImage->Bind();
 		
 		for( int i = 0; i < MAX_HIERARCHICAL_ZBUFFERS; i++ )
 		{
