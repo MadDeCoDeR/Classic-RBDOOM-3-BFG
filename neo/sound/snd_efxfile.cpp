@@ -126,7 +126,7 @@ bool idEFXFile::ReadEffect( idLexer &src, idSoundEffect *effect ) {
 					}
 					else if (token == "environment size") {
 						float size = src.ParseFloat();
-						reverb->flDensity = (size < 2.0f) ? (size - 1.0f) : 1.0f;
+						reverb->flDensity = idMath::ClampFloat(0.0f, 1.0f, idMath::Pow(size, 3) / 16.0f);
 					}
 					else if (token == "environment diffusion") {
 						reverb->flDiffusion = src.ParseFloat();
