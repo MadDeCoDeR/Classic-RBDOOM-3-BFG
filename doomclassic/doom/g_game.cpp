@@ -1511,7 +1511,7 @@ void G_DoCompleted (void)
 			if (::g->map) {
 				if (::g->secretexit) {
 					FindNextMap(::g->map - 1, true);
-					::g->wminfo.next = ::g->maps[::g->map - 1].secretmap;
+					::g->wminfo.next = ::g->maps[::g->map - 1].secretmap - (::g->clusters[::g->gameepisode - 1].startmap - 1);
 				}
 				else {
 					FindNextMap(::g->map - 1);

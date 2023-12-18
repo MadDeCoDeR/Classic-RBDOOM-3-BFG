@@ -1017,7 +1017,7 @@ void parsetext(char* text) {
 							
 							if (::g->gamemode == retail) {
 								if (::g->gamemission == pack_custom) {
-									if (statepos > 0 && statepos <= (int)::g->clusters.size() && ::g->clusters[statepos].startmap > 0) {
+									if (statepos > 0 && statepos <= (int)::g->clusters.size() && ::g->clusters[statepos - 1].startmap > 0) {
 										if (varval > 0 && varval <= (int)::g->maps.size()) {
 											::g->maps[((::g->clusters[statepos - 1].startmap - 1) + varval) - 1].par = varval2;
 										}

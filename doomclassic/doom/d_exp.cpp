@@ -412,25 +412,23 @@ void setMAP(int index,char* value1, char* value2, char* value3) {
 }
 
 void EX_add(int lump) {
+	//Allocate necessary storage for the EXPINFO file
 	char* text = (char*)malloc(W_LumpLength(lump) + 1);
+	//Sanity Check. Set last character to ending 0
 	text[W_LumpLength(lump)] = '\0';
 	I_Printf("Applying Expansion Info ...\n");
+	//Load the EXPINFO file to the text buffer
 	W_ReadLump(lump, text);
-	::g->mapmax = 0;
-	/*if (!::g->maps.empty()) {
-		::g->maps.clear();
-	}
-	if (!::g->clusters.empty()) {
-		::g->clusterind = 0;
-		::g->clusters.clear();
-	}*/
+	//Auto configuration: Pre set maps vector with DOOM 2's number of maps
 	if (::g->maps.empty()) {
 		::g->maps.resize(1);
 		::g->endmap = 30;
 		realmap = 0;
 		episodecount = -1;
 	}
+	//Nullify save directory (use custom one in order to avoid future conflicts)
 	::g->savedir = NULL;
+	//Auto configuration: Pre set intermission music
 	if (::g->gamemode == retail) {
 		beginepisode = false;
 		::g->intermusic = mus_inter;
@@ -438,8 +436,9 @@ void EX_add(int lump) {
 	else {
 		::g->intermusic = mus_dm2int;
 	}
-	//idLib::Printf("%s", text);
+	//Start reading and parsing EXPINFO
 	parseexptext(text);
+	//max_map wasn't defined in the EXPINFO, set it based on how many levels we have parsed
 	if (!::g->mapmax) {
 		::g->mapmax = ::g->maps.size();
 	}
@@ -451,7 +450,6 @@ void parseexptext(char* text) {
 	std::vector<std::string> linedtext = getexplines(text);
 	int state = 0;
 	int val1 = 0;
-	//int val2;
 	int val3;
 	int mapcount = 0;
 	char* varname;
@@ -463,6 +461,7 @@ void parseexptext(char* text) {
 	}*/
 
 	for (uint i = 0; i < linedtext.size(); i++) {
+		//On each line reset variable buffers
 		varval = NULL;
 		varval2 = NULL;
 		char* t = strtok(strdup(linedtext[i].c_str()), " ");
@@ -478,74 +477,77 @@ void parseexptext(char* text) {
 			}
 		}
 			if (tstate) {
-				state = tstate;
+			state = tstate;
 				if (t != NULL) {
 					if (atoi(t + 3)) {
 						val1 = atoi(t + 3) - 1;
-					}
-					else {
+				}
+				else {
 						val1 = atoi(t) - 1;
+				}
+				switch (state) {
+				case 2:
+					//No MAPXX found or no map number was provided. Get the current map value based on the mapcount
+					mapcount++;
+					if (val1 == -1) {
+						val1 = mapcount - 1;
 					}
-					switch (state) {
-					case 2:
-						if (val1 == -1) {
-							mapcount++;
-							val1 = mapcount - 1;
+					//First level on DOOM 1. Increase Episodecount and if the beginEpisode haven't been triggered trigger it
+					if (::g->gamemode == retail && val1 == 0) {
+						//episodecount++;
+						if (!beginepisode) {
+							beginepisode = true;
 						}
-						if (::g->gamemode == retail && val1 == 0) {
-							episodecount++;
-							if (!beginepisode) {
-								beginepisode = true;
-							}
-						}
-						realmap++;
+					}
+					realmap++;
 						if (realmap >= (int)::g->maps.size()) {
-							::g->maps.resize(realmap + 1);
-							::g->mapmax++;
-						}
+						::g->maps.resize(realmap + 1);
+						::g->mapmax++;
+						::g->mapind = ::g->mapmax;
+					}
 						varopt = t;
 						t = strtok(NULL, " ");
 						if (t != NULL) {
 							varval = t;
-						}
+					}
 						t = strtok(NULL, " ");
 						if (t != NULL) {
 							varval2 = t;
-						}
-						setMAP(val1, varopt, varval, varval2);
-						break;
+					}
+					setMAP(val1, varopt, varval, varval2);
+					break;
 					case 3:
-						if (val1 == -1) {
-							val1 = ::g->EpiDef.numitems;
-						}
+					if (val1 == -1) {
+						val1 = ::g->EpiDef.numitems;
+					}
 						if (atoi(t + 1)) {
 							val1 = atoi(t + 1) - 1;
-						}
-						if ((!::g->clusterind || ::g->clusterind <= (int)::g->clusters.size()) && ::g->clusterind <= val1) {
-							if (::g->gamemode == retail) {
-								if (val1 + 1 > ::g->EpiDef.numitems) {
-									::g->EpiDef.numitems = val1 + 1;
-									int newval = val1 + 1;
-									::g->EpisodeMenu = (menuitem_t*)realloc(::g->EpisodeMenu, newval * sizeof(menuitem_t));
-								}
+					}
+					if ((!::g->clusterind || ::g->clusterind <= (int)::g->clusters.size()) && ::g->clusterind <= val1) {
+						if (::g->gamemode == retail) {
+							if (val1 + 1 > ::g->EpiDef.numitems) {
+								::g->EpiDef.numitems = val1 + 1;
+								int newval = val1 + 1;
+								::g->EpisodeMenu = (menuitem_t*)realloc(::g->EpisodeMenu, newval * sizeof(menuitem_t));
 							}
-							::g->clusters.resize(val1 + 1);
-							::g->clusterind = val1 + 1;
 						}
-						::g->clusters[val1].fflat = -1;
-						::g->clusters[val1].startmap = realmap + 1;
-						episodecount = val1;
+						::g->clusters.resize(val1 + 1);
+						::g->clusterind = val1 + 1;
+					}
+					::g->clusters[val1].fflat = -1;
+					::g->clusters[val1].startmap = realmap + 1;
+					episodecount = val1;
 						if (!atoi(t)) {
 							::g->clusters[val1].mapname = t;
-							if (::g->gamemode == retail) {
-								beginepisode = true;
-							}
+						if (::g->gamemode == retail) {
+							beginepisode = true;
 						}
-						break;
 					}
+					break;
 				}
 			}
-			else {
+		}
+		else {
 					//varname = t;
 
 				if (t != NULL) {
@@ -554,53 +556,53 @@ void parseexptext(char* text) {
 						t = strtok(NULL, " ");
 						if (t == NULL || !idStr::Icmpn(varopt, "\"", 1) || !idStr::Icmp(varname, "sky1")) {
 							t = varopt;
-							varopt = NULL;
-						}
+						varopt = NULL;
+					}
 
 					
 					val3 = atoi(t);
-				}
-				else {
-					val3 = 0;
-				}
+			}
+			else {
+				val3 = 0;
+			}
 
 				
-				switch (state) {
+			switch (state) {
 				case 1:
-					if (!idStr::Icmp(varname, "save_dir")) {
+				if (!idStr::Icmp(varname, "save_dir")) {
 						varval = t;
 						setSAVEDIR(varval);
-					}
-					else if (!idStr::Icmp(varname, "rich_precense")) {
+				}
+				else if (!idStr::Icmp(varname, "rich_precense")) {
 						::g->acronymPrefix = t;
-					}
-					else {
+				}
+				else {
 						setEXP(varname, val3);
-					}
-					break;
+				}
+				break;
 				case 2:
-					if (::g->mapmax && val1 > ::g->mapmax) {
-						val1 = ::g->mapmax - 1;
-					}
-							if (!val3) {
+				if (::g->mapmax && val1 > ::g->mapmax) {
+					val1 = ::g->mapmax - 1;
+				}
+						if (!val3) {
 								varval = t;
 								setMAPSTR(val1, varname, varval);
-							} 
-							else {
+						} 
+						else {
 								setMAPINT(val1, varname, val3);
-							}
-					break;
+						}
+				break;
 				case 3:
 					varval = t;
 					setCluster(val1, varname, varval, varopt, i, linedtext );
-					break;
-				default:
+				break;
+			default:
 					varval = t;
 					setExpData(varname, varval);
-					break;
+				break;
 
-				}
 			}
+		}
 		
 
 		
@@ -667,8 +669,8 @@ int checkexpstate(char* text) {
 
 void setEXP(char* name, int value) {
 	if (!idStr::Icmp(name, "max_maps")) {
-		::g->mapmax = value;
-		if (!::g->mapind || ::g->mapind >= (int)::g->maps.size()) {
+		::g->mapmax = ::g->mapmax + value;
+		/*if (!::g->mapind || ::g->mapind >= (int)::g->maps.size()) */{
 			if (::g->mapmax > (int)::g->maps.size()) {
 				::g->maps.resize(::g->mapmax);
 			}
@@ -772,7 +774,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 					break;
 				case 6:
 				case 7:
-					for (int j = 1; j < 80; j++) {
+					for (int j = 1; j < 1024; j++) {
 						char* musname = value + 2;
 						if (::g->S_music[j].name == NULL) {
 							::g->S_music[j].name = musname;
@@ -803,7 +805,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 					if (!idStr::Icmpn(value, "EndGame", 7) || !idStr::Icmpn(value, "endbunny", 8)) {
 						::g->endmap = pos + 1;
 						if (::g->gamemode == retail) {
-							::g->clusters[episodecount].endmap = ::g->endmap - (::g->clusters[episodecount].startmap - 1);
+							::g->clusters[episodecount].endmap = abs(::g->endmap - (::g->clusters[episodecount].startmap - 1));
 							beginepisode = true;
 						}
 					}
@@ -1194,7 +1196,7 @@ void setExpData(char* name, char* value) {
 		return;
 	}
 	if (!idStr::Icmp(name, "intermusic")) {
-		for (int i = 1; i < 80; i++) {
+		for (int i = 1; i < 1024; i++) {
 			char* musname = value + 2;
 			if (::g->S_music[i].name == NULL) {
 				::g->totalmus++;

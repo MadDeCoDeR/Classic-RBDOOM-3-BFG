@@ -810,7 +810,7 @@ fixed_t		sprtopscreen;
 vissprite_t	vsprsortedhead;
 // r_things.vars end // 
 //  sounds.vars begin // 
-musicinfo_t S_music[80];
+musicinfo_t S_music[1024];
 int totalmus = 68;
 // sounds.vars end // 
 //  st_lib.vars begin // 
