@@ -644,7 +644,7 @@ int		lastspritelump;
 int		numspritelumps;
 int*		flattranslation;
 int*		texturetranslation;
-std::vector<int>	spriteheight;
+int*		spriteheight;
 fixed_t*	spritewidth;	
 fixed_t*	spriteoffset;
 fixed_t*	spritetopoffset;

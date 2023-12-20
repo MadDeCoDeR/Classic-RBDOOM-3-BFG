@@ -683,7 +683,10 @@ void R_ClearTextures(void) {
 	Z_Free(::g->s_texturecomposite);
 	Z_Free(::g->s_texturecompositesize);
 	Z_Free(::g->texturetranslation);
-	free(::g->skybuffer);
+	if (::g->skybuffer) {
+		free(::g->skybuffer);
+		::g->skybuffer = NULL;
+	}
 	::g->s_numtextures = 0;
 }
 
@@ -734,7 +737,7 @@ void R_InitSpriteLumps (void)
     
     ::g->numspritelumps = ::g->lastspritelump - ::g->firstspritelump + 1;
     ::g->spritewidth = (fixed_t*)DoomLib::Z_Malloc (::g->numspritelumps*4, PU_STATIC, 0);
-	::g->spriteheight.resize(::g->numspritelumps);
+	::g->spriteheight = (int*)DoomLib::Z_Malloc(::g->numspritelumps * 4, PU_STATIC, 0);
     ::g->spriteoffset = (fixed_t*)DoomLib::Z_Malloc (::g->numspritelumps*4, PU_STATIC, 0);
     ::g->spritetopoffset = (fixed_t*)DoomLib::Z_Malloc (::g->numspritelumps*4, PU_STATIC, 0);
 	
@@ -760,9 +763,7 @@ void R_ClearSpriteLumps(void)
 
 	::g->numspritelumps = 0;
 	Z_Free(::g->spritewidth);
-	if (!::g->spriteheight.empty()) {
-		::g->spriteheight.clear();
-	}
+	Z_Free(::g->spriteheight);
 	Z_Free(::g->spriteoffset);
 	Z_Free(::g->spritetopoffset);
 }

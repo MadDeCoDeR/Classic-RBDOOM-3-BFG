@@ -648,7 +648,7 @@ memcpy( ::g->checkcoord, temp_checkcoord, sizeof(temp_checkcoord) );
 	::g->validcount = 1;		
 // r_main.constructs end // 
 //  sounds.constructs begin // 
-musicinfo_t temp_S_music[80] = {
+musicinfo_t temp_S_music[1024] = {
     { 0 },
     { "e1m1", 0 },
     { "e1m2", 0 },
@@ -873,3 +873,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->firstClock = 0;
 
 	::g->cptrvalInitialized = false;
+
+	::g->mapmax = 0;
