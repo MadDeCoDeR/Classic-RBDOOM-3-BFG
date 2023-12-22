@@ -87,7 +87,7 @@ void P_RemoveThinker (thinker_t* thinker)
 	thinker->function.acv = (actionf_v)(-1);
 	thinker->next->prev = thinker->prev;
 	thinker->prev->next = thinker->next;
-	Z_Free(thinker);
+	//Z_Free(thinker);
 }
 
 
