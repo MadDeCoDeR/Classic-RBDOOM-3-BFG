@@ -23,8 +23,12 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+ - CPU [e.g. Intel Core, Amd Ryzen]
+ - GPU [e.g. Nvidia, AMD, Intel]
+ - Memory [e.g. 16GB, 32 GB]
+ - Monitor [e.g. 1920x1080 no HDR no Free/G sync HDMI, 3840x2160 HDR FreeSync DisplayPort]
+ - GPU Driver Version [e.g. 23.12.1, 546.33, Mesa]
+ - Version [e.g. 22, nightly-2023-12-23]
 
 **Additional context**
 Add any other context about the problem here.
