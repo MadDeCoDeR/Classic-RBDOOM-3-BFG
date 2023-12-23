@@ -525,7 +525,7 @@ void F_Ticker (void)
 		map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
 		keepRolling = ::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode - 1].startmap && map != ::g->clusters[::g->gameepisode - 1].endmap;
 	}
-	if ( (::g->gamemode == commercial || (::g->gamemode == retail && keepRolling)) && ( ::g->finalecount > 50) )
+	if ( (::g->gamemode == commercial || (::g->gamemode == retail && !keepRolling)) && ( ::g->finalecount > 50) )
 	{
 		// go on to the next level
 		for (i=0 ; i<MAXPLAYERS ; i++)
@@ -557,7 +557,7 @@ void F_Ticker (void)
 				}
 
 			}
-			else if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
+			else if (::g->gamemode != retail && ::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
 				if (::g->gamemap == ::g->endmap) {
 					F_StartCast();
 					castStarted = true;
