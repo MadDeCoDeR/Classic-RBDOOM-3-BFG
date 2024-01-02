@@ -567,6 +567,7 @@ public:
 	}
 	
 	void								AddChild( idMenuWidget* widget );
+	void								AddChildAtFocusIndex(idMenuWidget* widget);
 	void								RemoveChild( idMenuWidget* widget );
 	bool								HasChild( idMenuWidget* widget );
 	void								RemoveAllChildren();
