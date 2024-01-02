@@ -205,15 +205,15 @@ void idMenuScreen_Shell_AdvancedGraphics::Update()
 	}
 
 	if (options != NULL) {
-		idMenuWidgetList children = options->GetChildren();
-		if (com_hideSSAO.GetBool() == true && children.Num() == idMenuDataSource_AdvancedGraphics::MAX_ADVANCED_FIELDS) {
-			for (int j = 0; j < children.Num(); j++) {
-				if (children[j]->GetDataSourceFieldIndex() == idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSAO) {
-					options->RemoveChild(children[j]);
+		idMenuWidgetList optionChildren = options->GetChildren();
+		if (com_hideSSAO.GetBool() == true && optionChildren.Num() == idMenuDataSource_AdvancedGraphics::MAX_ADVANCED_FIELDS) {
+			for (int j = 0; j < optionChildren.Num(); j++) {
+				if (optionChildren[j]->GetDataSourceFieldIndex() == idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSAO) {
+					options->RemoveChild(optionChildren[j]);
 				}
 			}
 		}
-		else if (com_hideSSAO.GetBool() == false && children.Num() < idMenuDataSource_AdvancedGraphics::MAX_ADVANCED_FIELDS) {
+		else if (com_hideSSAO.GetBool() == false && optionChildren.Num() < idMenuDataSource_AdvancedGraphics::MAX_ADVANCED_FIELDS) {
 			idMenuWidget_ControlButton* control = new(TAG_SWF) idMenuWidget_ControlButton();
 			control->SetOptionType(OPTION_SLIDER_TEXT);
 			control->SetLabel("#str_ssao"); //SSAO

@@ -334,7 +334,6 @@ int R_GetDimensionCLosestToScreenMode(idCVar* dCVar, idList<int> modeList) {
 
 
 int R_CalculateResolution(bool mode, idList<vidMode_t> modeList) {
-	int customRes;
 	idList<int> modeRes;
 	if (r_fullscreen.GetInteger() == 0) {
 		if (!mode) {
