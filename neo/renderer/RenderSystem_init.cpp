@@ -283,7 +283,7 @@ idCVar r_ssgiFiltering( "r_ssgiFiltering", "1", CVAR_RENDERER | CVAR_BOOL, "" );
 idCVar r_useSSAO( "r_useSSAO", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "use screen space ambient occlusion to darken corners" );
 idCVar r_ssaoDebug( "r_ssaoDebug", "0", CVAR_RENDERER | CVAR_INTEGER, "" );
 idCVar r_ssaoFiltering( "r_ssaoFiltering", "1", CVAR_RENDERER | CVAR_BOOL, "" );
-idCVar r_useHierarchicalDepthBuffer( "r_useHierarchicalDepthBuffer", "0", CVAR_RENDERER | CVAR_BOOL, "" );
+idCVar r_useHierarchicalDepthBuffer( "r_useHierarchicalDepthBuffer", "1", CVAR_RENDERER | CVAR_BOOL, "" );
 
 idCVar r_exposure( "r_exposure", "0.5", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_FLOAT, "HDR exposure or LDR brightness [0.0 .. 1.0]", 0.0f, 1.0f );
 // RB end
@@ -299,6 +299,38 @@ const char* envDirection[6] = { "_px", "_nx", "_py", "_ny", "_pz", "_nz" };
 const char* skyDirection[6] = { "_forward", "_back", "_left", "_right", "_up", "_down" };
 
 
+int R_SetWindowDimension(idCVar* dCVar, int defaultValue) {
+	if (dCVar->GetInteger() == 0) {
+		dCVar->SetInteger(defaultValue);
+		return defaultValue;
+	}
+	else {
+		return dCVar->GetInteger();
+	}
+}
+
+int R_GetDimensionCLosestToScreenMode(idCVar* dCVar, idList<int> modeList) {
+	int customRes;
+	idList<int> modeRes;
+	customRes = dCVar->GetInteger();
+	modeRes.Clear();
+	for (int i = 0; i < modeList.Num(); i++) {
+		modeRes.Append(modeList[i]);
+	}
+
+	int minscore = INT_MAX;
+	int index = -1;
+	for (int i = 0; i < modeRes.Num(); i++) {
+		if (abs(customRes - modeRes[i]) < minscore) {
+			minscore = abs(customRes - modeRes[i]);
+			index = i;
+		}
+	}
+	r_vidMode.SetInteger(index);
+	dCVar->SetInteger(modeRes[index]);
+	return modeRes[index];
+}
+
 
 
 int R_CalculateResolution(bool mode, idList<vidMode_t> modeList) {
@@ -306,22 +338,10 @@ int R_CalculateResolution(bool mode, idList<vidMode_t> modeList) {
 	idList<int> modeRes;
 	if (r_fullscreen.GetInteger() == 0) {
 		if (!mode) {
-			if (r_windowWidth.GetInteger() == 0) {
-				r_windowWidth.SetInteger(640);
-				return 640;
-			}
-			else {
-				return r_windowWidth.GetInteger();
-			}
+			return R_SetWindowDimension(&r_windowWidth, 640);
 		}
 		else {
-			if (r_windowHeight.GetInteger() == 0) {
-				r_windowHeight.SetInteger(480);
-				return 480;
-			}
-			else {
-				return r_windowHeight.GetInteger();
-			}
+			return R_SetWindowDimension(&r_windowHeight, 480);
 		}
 	}
 	else if (r_fullscreen.GetInteger() < 0) {
@@ -333,37 +353,16 @@ int R_CalculateResolution(bool mode, idList<vidMode_t> modeList) {
 		}
 	}
 	else {
-		if (!mode) {
-			customRes = r_customWidth.GetInteger();
-			modeRes.Clear();
-			for (int i = 0; i < modeList.Num(); i++) {
+		modeRes.Clear();
+		for (int i = 0; i < modeList.Num(); i++) {
+			if (!mode) {
 				modeRes.Append(modeList[i].width);
 			}
-		}
-		else {
-			customRes = r_customHeight.GetInteger();
-			modeRes.Clear();
-			for (int i = 0; i < modeList.Num(); i++) {
+			else {
 				modeRes.Append(modeList[i].height);
 			}
 		}
-
-		int minscore = INT_MAX;
-		int index = -1;
-		for (int i = 0; i < modeRes.Num(); i++) {
-			if (abs(customRes - modeRes[i]) < minscore) {
-				minscore = abs(customRes - modeRes[i]);
-				index = i;
-			}
-		}
-		r_vidMode.SetInteger(index);
-		if (mode) {
-			r_customHeight.SetInteger(modeRes[index]);
-		}
-		else {
-			r_customWidth.SetInteger(modeRes[index]);
-		}
-		return modeRes[index];
+		return R_GetDimensionCLosestToScreenMode(mode ? &r_customHeight : &r_customWidth, modeRes);
 	}
 }
 
@@ -459,35 +458,24 @@ void R_SetNewMode( const bool fullInit )
 					r_customWidth.SetInteger(width);
 					r_customHeight.SetInteger(height);
 					r_displayRefresh.SetInteger(hz);
-					com_engineHz.SetInteger(hz);//r_displayRefresh.GetInteger();
+					com_engineHz.SetInteger(hz);
 					r_firstTime.SetBool(true);
 					cvarSystem->SetModifiedFlags(CVAR_ARCHIVE);
 			}
 			else {
 
 				// set the parameters we are trying
-				/*if( r_vidMode.GetInteger() < 0 )
-				{*/
 				// try forcing a specific mode, even if it isn't on the list
 				parms.width = R_CalculateResolution(false, modeList);
 				parms.height = R_CalculateResolution(true, modeList);
 				parms.displayHz = r_displayRefresh.GetInteger();
 			}
-			/*}
-			else
-			{
-				if( r_vidMode.GetInteger() >= modeList.Num() )
-				{
-					idLib::Printf( "r_vidMode reset from %i to 0.\n", r_vidMode.GetInteger() );
-					r_vidMode.SetInteger( 0 );
-				}
-
-				parms.width = modeList[ r_vidMode.GetInteger() ].width;
-				parms.height = modeList[ r_vidMode.GetInteger() ].height;
-				parms.displayHz = modeList[ r_vidMode.GetInteger() ].displayHz;
-			}*/
+			
 		}
-
+		//GK: Bad Hack Time: Sadly I still haven't figure out to resolve the graphical issues with SSAO on very high resolutions. So for now just disable it and hide the option
+		idLib::Printf("Changing to Height: %d\n", parms.height);
+		game->SetCVarBool("com_hideSSAO", parms.height > 1080);
+		r_useSSAO.SetBool(parms.height > 1080 ? false : r_useSSAO.GetBool());
 		switch (r_antiAliasing.GetInteger())
 		{
 		case ANTI_ALIASING_MSAA_2X:

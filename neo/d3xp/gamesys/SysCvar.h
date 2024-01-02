@@ -282,4 +282,6 @@ extern idCVar	net_clientSelfSmoothing;
 
 extern idCVar cl_close;
 
+extern idCVar com_hideSSAO;
+
 #endif /* !__SYS_CVAR_H__ */

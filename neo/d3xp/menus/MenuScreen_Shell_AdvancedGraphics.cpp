@@ -111,13 +111,15 @@ void idMenuScreen_Shell_AdvancedGraphics::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedGraphics::ADV_FIELD_ANTIALIASING);
 	options->AddChild( control );
 	
-	control = new( TAG_SWF ) idMenuWidget_ControlButton();
-	control->SetOptionType( OPTION_SLIDER_TEXT );
-	control->SetLabel( "#str_ssao" ); //SSAO
-	control->SetDataSource( &advData, idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSAO );
-	control->SetupEvents( DEFAULT_REPEAT_TIME, options->GetChildren().Num() );
-	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSAO );
-	options->AddChild( control );
+	if (game->GetCVarBool("com_hideSSAO") == false) {
+		control = new(TAG_SWF) idMenuWidget_ControlButton();
+		control->SetOptionType(OPTION_SLIDER_TEXT);
+		control->SetLabel("#str_ssao"); //SSAO
+		control->SetDataSource(&advData, idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSAO);
+		control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSAO);
+		options->AddChild(control);
+	}
 	
 	control = new( TAG_SWF ) idMenuWidget_ControlButton();
 	control->SetOptionType( OPTION_SLIDER_TEXT );
@@ -200,6 +202,26 @@ void idMenuScreen_Shell_AdvancedGraphics::Update()
 	if( btnBack != NULL )
 	{
 		btnBack->BindSprite( root );
+	}
+
+	if (options != NULL) {
+		idMenuWidgetList children = options->GetChildren();
+		if (com_hideSSAO.GetBool() == true && children.Num() == idMenuDataSource_AdvancedGraphics::MAX_ADVANCED_FIELDS) {
+			for (int j = 0; j < children.Num(); j++) {
+				if (children[j]->GetDataSourceFieldIndex() == idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSAO) {
+					options->RemoveChild(children[j]);
+				}
+			}
+		}
+		else if (com_hideSSAO.GetBool() == false && children.Num() < idMenuDataSource_AdvancedGraphics::MAX_ADVANCED_FIELDS) {
+			idMenuWidget_ControlButton* control = new(TAG_SWF) idMenuWidget_ControlButton();
+			control->SetOptionType(OPTION_SLIDER_TEXT);
+			control->SetLabel("#str_ssao"); //SSAO
+			control->SetDataSource(&advData, idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSAO);
+			control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+			control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSAO);
+			options->AddChildAtFocusIndex(control);
+		}
 	}
 	
 	idMenuScreen::Update();
