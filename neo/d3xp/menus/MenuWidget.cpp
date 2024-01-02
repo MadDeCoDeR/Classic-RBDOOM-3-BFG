@@ -111,6 +111,29 @@ void idMenuWidget::AddChild( idMenuWidget* widget )
 
 /*
 ========================
+idMenuWidget::AddChild
+========================
+*/
+void idMenuWidget::AddChildAtFocusIndex(idMenuWidget* widget)
+{
+	if (!verify(children.Find(widget) == NULL))
+	{
+		return;	// attempt to add a widget that was already in the list
+	}
+
+	if (widget->GetParent() != NULL)
+	{
+		// take out of previous parent
+		widget->GetParent()->RemoveChild(widget);
+	}
+
+	widget->AddRef();
+	widget->SetParent(this);
+	children.Insert(widget, widget->GetDataSourceFieldIndex());
+}
+
+/*
+========================
 idMenuWidget::RemoveAllChildren
 ========================
 */
