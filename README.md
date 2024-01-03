@@ -388,6 +388,24 @@ and extract it to the directory on your own Doom 3 BFG directory (/path/to/Doom3
 	- On CMakePresets.json in the windows-base configuration change the value of USE_XAUDIO2_PACKAGE from OFF to ON
 	- Follow steps from [Chapter 5](#5-compiling-on-windows-with-visual-studio)
 
+5. DXGI (Windows ONLY)
+	Newer GPU drivers (AMD and nVidia) offer the option to make OpenGL games to render on a DX12 Context provided by the GPU driver sofware.
+
+	AMD:
+
+		- Open the AMD Adrenaline Software
+		- Go to 'GAMING' tab
+		- Go to "Graphics' tab
+		- On the drop down select 'Advanced View'
+		- Enable OpenGL triple-buffering and 10-bit pixel format (for HDR support)
+
+	nVidia:
+
+		- Open nVidia Control Panel
+		- Go to '3D Settings'
+		- Go to 'Manage 3D Settings'
+		- Set 'Vulkan/OpenGL present method' to 'Prefer layered on DXGI Swapchain'
+
 ## 8) OVERALL CHANGES
 
 - Flexible build system using CMake
