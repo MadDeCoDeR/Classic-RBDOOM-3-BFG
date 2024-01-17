@@ -273,7 +273,7 @@ void R_InitSpriteDefs (const std::vector <char*> namelist)
 	// allocate space for the frames present and copy ::g->sprtemp to it
 		::g->sprites[i]->numframes = ::g->maxframe;
 		::g->sprites[i]->spriteframes =
-			(spriteframe_t*)DoomLib::Z_Malloc(::g->maxframe * sizeof(spriteframe_t), PU_SPRITE, NULL);
+			(spriteframe_t*)DoomLib::Z_Malloc(::g->maxframe * sizeof(spriteframe_t), PU_STATIC, NULL);
 		memcpy(::g->sprites[i]->spriteframes, ::g->sprtemp, ::g->maxframe * sizeof(spriteframe_t));
 	
 	/*if (::g->sprind >= ::g->sprites.size()) {
