@@ -578,6 +578,7 @@ void I_ShutdownSoundAL( void )
 			alGenBuffers(1, &alBuffers[i]);
 			if ( S_sfx[i].data && !(S_sfx[i].link) ) {
 				free( S_sfx[i].data );
+				S_sfx[i].data = NULL;
 				lengths[i] = 0;
 			}
 		}
@@ -837,7 +838,7 @@ void I_ShutdownMusicAL( void )
 {
 	if ( Music_initialized ) {
 		if ( alIsSource(alMusicSourceVoice) ) {
-			I_StopSongAL( 0 );
+			alSourceStop(alMusicSourceVoice);
 			alSourcei( alMusicSourceVoice, AL_BUFFER, 0 );
 			alDeleteSources( 1, &alMusicSourceVoice );
 			if (CheckALErrors() == AL_NO_ERROR) {
@@ -991,7 +992,7 @@ void I_UpdateMusicAL( void )
 		alSourcef( alMusicSourceVoice, AL_GAIN, x_MusicVolume * GLOBAL_VOLUME_MULTIPLIER );
 		
 	}
-	
+
 	if ( waitingForMusic ) {
 		if ( musicReady && alMusicSourceVoice ) {
 			if ( musicBuffer ) {

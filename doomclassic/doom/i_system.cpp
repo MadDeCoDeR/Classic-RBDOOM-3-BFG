@@ -169,11 +169,11 @@ void I_Error(const char *error, ...)
     // Message first.
 	//if( debugOutput ) {
 		va_start (argptr,error);
-		idStr::vsnPrintf (error_msg, ERROR_MSG_SIZE, error, argptr);
+		vsprintf(error_msg, error, argptr);
 
-		safeOutputDebug("Error: ");
+		/*safeOutputDebug("Error: ");
 		safeOutputDebug(error_msg);
-		safeOutputDebug("\n");
+		safeOutputDebug("\n");*/
 
 		va_end (argptr);
 	//}
