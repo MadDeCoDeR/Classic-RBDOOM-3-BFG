@@ -70,28 +70,28 @@ jobs:
           ./COPYING.txt
           ./README.md
 
-    - name: Configure CMake Debug
-      working-directory: ${{github.workspace}}/neo
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build --preset=linux-debug
+    # - name: Configure CMake Debug
+    #   working-directory: ${{github.workspace}}/neo
+    #   # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+    #   # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+    #   run: cmake -B ${{github.workspace}}/build --preset=linux-debug
 
-    - name: Build Debug
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --parallel=16
+    # - name: Build Debug
+    #   # Build your program with the given configuration
+    #   run: cmake --build ${{github.workspace}}/build --parallel=16
       
-    - name: Archive debug artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: linux-${{env.VERSION}}-debug
-        path: |
-          ./build/DoomBFA
-          ./build/vcpkg_installed/x64-linux/share/*/copyright
-          ./base/*
-          ./BFA_Assets/*
-          ./base_new/*
-          ./COPYING.txt
-          ./README.md
+    # - name: Archive debug artifacts
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: linux-${{env.VERSION}}-debug
+    #     path: |
+    #       ./build/DoomBFA
+    #       ./build/vcpkg_installed/x64-linux/share/*/copyright
+    #       ./base/*
+    #       ./BFA_Assets/*
+    #       ./base_new/*
+    #       ./COPYING.txt
+    #       ./README.md
   windows-build:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
@@ -133,9 +133,9 @@ jobs:
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: BuildDebug
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config debug
+    # - name: BuildDebug
+    #   # Build your program with the given configuration
+    #   run: cmake --build ${{github.workspace}}/build --config debug
       
     # - name: Download FFMPEG
     #   working-directory: ${{github.workspace}}/.github/tools
@@ -156,18 +156,18 @@ jobs:
           ./COPYING.txt
           ./README.md
     
-    - name: Archive debug artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: windows-${{env.VERSION}}-debug
-        path: |
-          ./build/debug/DoomBFA.*
-          ./build/vcpkg_installed/x64-windows-static-md/share/*/copyright
-          ./base/*
-          ./BFA_Assets/*
-          ./base_new/*
-          ./COPYING.txt
-          ./README.md
+    # - name: Archive debug artifacts
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: windows-${{env.VERSION}}-debug
+    #     path: |
+    #       ./build/debug/DoomBFA.*
+    #       ./build/vcpkg_installed/x64-windows-static-md/share/*/copyright
+    #       ./base/*
+    #       ./BFA_Assets/*
+    #       ./base_new/*
+    #       ./COPYING.txt
+    #       ./README.md
   windows-32-bit-build:
     # The CMake configure and build commands are platform agnostic and should work equally
     # well on Windows or Mac.  You can convert this to a matrix build if you need
@@ -279,35 +279,35 @@ jobs:
     - name: Delete linux artifact zip file
       working-directory: ${{github.workspace}}
       run: rm linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
-    - name: Download linux debug artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: linux-${{env.VERSION}}-debug
-    - name: Zip linux artifact files
-      working-directory: ${{github.workspace}}
-      run: |
-        mv ./build/DoomBFA DoomBFA
-        mv ./base/DoomBFA.sh DoomBFA.sh
-        cp -r -u  -f ./BFA_Assets/* .
-        rm -r ./BFA_Assets
-        mkdir ./third-party-licenses
-        mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
-        chmod +x DoomBFA
-        chmod +x DoomBFA.sh
-        rm -d -R ./build
-        zip -m -r linux-${{env.VERSION}}-debug.zip .
-    - name: Upload Linux debug Artifact to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{github.workspace}}/linux-${{env.VERSION}}-debug.zip
-        asset_name: linux-${{env.VERSION}}-debug.zip
-        asset_content_type: application/zip
-    - name: Delete linux debug artifact zip file
-      working-directory: ${{github.workspace}}
-      run: rm linux-${{env.VERSION}}-debug.zip
+    # - name: Download linux debug artifact
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #     name: linux-${{env.VERSION}}-debug
+    # - name: Zip linux artifact files
+    #   working-directory: ${{github.workspace}}
+    #   run: |
+    #     mv ./build/DoomBFA DoomBFA
+    #     mv ./base/DoomBFA.sh DoomBFA.sh
+    #     cp -r -u  -f ./BFA_Assets/* .
+    #     rm -r ./BFA_Assets
+    #     mkdir ./third-party-licenses
+    #     mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
+    #     chmod +x DoomBFA
+    #     chmod +x DoomBFA.sh
+    #     rm -d -R ./build
+    #     zip -m -r linux-${{env.VERSION}}-debug.zip .
+    # - name: Upload Linux debug Artifact to release
+    #   uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #     asset_path: ${{github.workspace}}/linux-${{env.VERSION}}-debug.zip
+    #     asset_name: linux-${{env.VERSION}}-debug.zip
+    #     asset_content_type: application/zip
+    # - name: Delete linux debug artifact zip file
+    #   working-directory: ${{github.workspace}}
+    #   run: rm linux-${{env.VERSION}}-debug.zip
     - name: Download windows artifact
       uses: actions/download-artifact@v3
       with:
@@ -335,32 +335,32 @@ jobs:
     - name: Delete Windows artifact zip file
       working-directory: ${{github.workspace}}
       run: rm windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
-    - name: Download windows debug artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: windows-${{env.VERSION}}-debug
-    - name: Zip Windows debug artifact files
-      working-directory: ${{github.workspace}}
-      run: |
-        mv ./build/debug/* .
-        cp -r -u  -f ./BFA_Assets/* .
-        rm -r ./BFA_Assets
-        mkdir ./third-party-licenses
-        mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
-        rm -d -rf ./build
-        zip -m -r windows-${{env.VERSION}}-debug.zip .
-    - name: Upload Windows debug Artifact to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{github.workspace}}/windows-${{env.VERSION}}-debug.zip
-        asset_name: windows-${{env.VERSION}}-debug.zip
-        asset_content_type: application/zip
-    - name: Delete Windows debug artifact zip file
-      working-directory: ${{github.workspace}}
-      run: rm windows-${{env.VERSION}}-debug.zip
+    # - name: Download windows debug artifact
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #     name: windows-${{env.VERSION}}-debug
+    # - name: Zip Windows debug artifact files
+    #   working-directory: ${{github.workspace}}
+    #   run: |
+    #     mv ./build/debug/* .
+    #     cp -r -u  -f ./BFA_Assets/* .
+    #     rm -r ./BFA_Assets
+    #     mkdir ./third-party-licenses
+    #     mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
+    #     rm -d -rf ./build
+    #     zip -m -r windows-${{env.VERSION}}-debug.zip .
+    # - name: Upload Windows debug Artifact to release
+    #   uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #     asset_path: ${{github.workspace}}/windows-${{env.VERSION}}-debug.zip
+    #     asset_name: windows-${{env.VERSION}}-debug.zip
+    #     asset_content_type: application/zip
+    # - name: Delete Windows debug artifact zip file
+    #   working-directory: ${{github.workspace}}
+    #   run: rm windows-${{env.VERSION}}-debug.zip
     - name: Download windows 32 bit artifact
       uses: actions/download-artifact@v3
       with:
