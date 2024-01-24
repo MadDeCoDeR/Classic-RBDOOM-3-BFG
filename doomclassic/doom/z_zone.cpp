@@ -84,7 +84,7 @@ void *I_ZoneBase( int *size )
 
 int FindStatIndexByTag(int tag) {
 	int index = 0;
-	for (int i = 0; i < ::g->zstats.size(); i++) {
+	for (uint i = 0; i < ::g->zstats.size(); i++) {
 		if (::g->zstats[i].tag == tag) {
 			index = i;
 			break;

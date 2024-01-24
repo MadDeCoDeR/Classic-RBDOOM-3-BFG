@@ -684,7 +684,7 @@ void W_FreeLumps() {
 	}
 
 	if (!directlumpcache.empty()) {
-		for (int i = 0; i < directlumpcache.size(); i++) {
+		for (uint i = 0; i < directlumpcache.size(); i++) {
 			free(directlumpcache[i]);
 		}
 		direct.clear();

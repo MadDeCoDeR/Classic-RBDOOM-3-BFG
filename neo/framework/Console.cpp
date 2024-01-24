@@ -464,7 +464,7 @@ float idConsoleLocal::DrawMemoryUsage( float y )
 			int w = timeStr.LengthWithoutColors() * BIGCHAR_WIDTH;
 			renderSystem->DrawBigStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, timeStr.c_str(), colorWhite, false);
 			y += BIGCHAR_HEIGHT + 4;
-			for (int i = 0; i < data->zstats.size(); i++) {
+			for (uint i = 0; i < data->zstats.size(); i++) {
 				if (data->zstats[i].size != 0) {
 					timeStr.Format("%s: %4.2f %s", ParseClassicMemoryTag(data->zstats[i].tag).c_str(), calculateSize(data->zstats[i].size), calculateSizeLetter(data->zstats[i].size).c_str());
 					w = timeStr.LengthWithoutColors() * SMALLCHAR_WIDTH;
