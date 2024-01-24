@@ -566,7 +566,7 @@ msecnode_t* P_GetSecnode()
 		::g->headsecnode = ::g->headsecnode->m_snext;
 	}
 	else
-		node =(msecnode_t*) DoomLib::Z_Malloc(sizeof(*node), PU_STATIC_SHARED, NULL);
+		node =(msecnode_t*) DoomLib::Z_Malloc(sizeof(*node), PU_LEVEL_SHARED, NULL);
 	return(node);
 }
 

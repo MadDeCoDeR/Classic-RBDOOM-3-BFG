@@ -1128,3 +1128,4 @@ bool warpUsed;
 msecnode_t* headsecnode;
 
 
+std::vector<zstats_t> zstats;

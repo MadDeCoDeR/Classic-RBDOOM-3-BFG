@@ -564,6 +564,11 @@ typedef struct
     memblock_t*	rover;
     
 } memzone_t;
+
+typedef struct zstats_s {
+	int tag;
+	int size;
+} zstats_t;
 // z_zone.structs end // 
 
 typedef struct map_s{//GK:Store information for the custom expansion maps

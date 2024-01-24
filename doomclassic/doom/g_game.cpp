@@ -1731,6 +1731,7 @@ qboolean G_CheckSave(char* name) {
 			}
 			ok = W_CheckMods(sc, filelist);
 		}
+		Z_Free(::g->savebuffer);
 		if (!ok) {
 			loadingGame = false;
 			waitingForWipe = false;
@@ -1745,6 +1746,7 @@ qboolean G_CheckSave(char* name) {
 		}
 	}
 	else {
+		Z_Free(::g->savebuffer);
 		return true;
 	}
 }
@@ -1883,7 +1885,7 @@ qboolean G_DoLoadGame ()
 	}
 	loadingGame = false;
 
-	Z_Free(g->savebuffer);
+	Z_Free(::g->savebuffer);
 
 	return true;
 } 

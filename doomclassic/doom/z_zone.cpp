@@ -82,6 +82,38 @@ void *I_ZoneBase( int *size )
 	return malloc( HEAP_SIZE );
 }
 
+int FindStatIndexByTag(int tag) {
+	int index = 0;
+	for (int i = 0; i < ::g->zstats.size(); i++) {
+		if (::g->zstats[i].tag == tag) {
+			index = i;
+			break;
+		}
+	}
+	return index;
+}
+
+void InitStats() {
+#if _ITERATOR_DEBUG_LEVEL < 2
+	for (int i = 1; i < 26; i++) {
+		::g->zstats.push_back({ i, 0 });
+	}
+	::g->zstats.push_back({ PU_LEVEL, 0 });
+	::g->zstats.push_back({ PU_LEVSPEC, 0 });
+	::g->zstats.push_back({ PU_PURGELEVEL, 0 });
+	::g->zstats.push_back({ PU_CACHE, 0 });
+#else
+	::g->zstats.resize(29 * sizeof(zstats_t));
+	for (int i = 1; i < 26; i++) {
+		::g->zstats[i - 1] = { i, 0 };
+	}
+	::g->zstats[25] = { PU_LEVEL, 0 };
+	::g->zstats[26] = { PU_LEVSPEC, 0 };
+	::g->zstats[27] = { PU_PURGELEVEL, 0 };
+	::g->zstats[28] = { PU_CACHE, 0 };
+#endif
+}
+
 //
 // Z_Init
 //
@@ -103,7 +135,8 @@ void Z_Init (void)
     ::g->mainzone->blocklist.user = (void **)::g->mainzone;
     ::g->mainzone->blocklist.tag = PU_STATIC;
     ::g->mainzone->rover = block;
-	
+
+	InitStats();
     block->prev = block->next = &::g->mainzone->blocklist;
 
     // NULL indicates a free block.
@@ -129,6 +162,12 @@ void Z_Free (void* ptr)
 #endif
 
 	::g->NumAlloc -= block->size;
+
+	if (com_showMemoryUsage.GetInteger() == 2) {
+		int index = FindStatIndexByTag(block->tag);
+
+		::g->zstats[index].size -= block->size;
+	}
 
 	if (block->tag == PU_CACHE ){
 		::g->CacheAlloc -= block->size;
@@ -177,6 +216,8 @@ void Z_Free (void* ptr)
 	if (other == ::g->mainzone->rover)
 	    ::g->mainzone->rover = block;
     }
+
+	Z_CheckHeap();
 }
 
 
@@ -314,10 +355,6 @@ Z_Malloc
 	if (size < 0 || size > (unsigned)::g->zonesize)
 		I_Error("Z_Malloc: Trying to allocate %i on tag %d", size, tag);
 #endif
-		::g->NumAlloc += size;
-		if (tag == PU_CACHE) {
-			::g->CacheAlloc += size;
-		}
     	
 	size = (size + 3) & ~3;
     
@@ -328,6 +365,15 @@ Z_Malloc
 
     // account for size of block header
     size += sizeof(memblock_t);
+
+	::g->NumAlloc += size;
+	if (tag == PU_CACHE) {
+		::g->CacheAlloc += size;
+	}
+	if (com_showMemoryUsage.GetInteger() == 2) {
+		int index = FindStatIndexByTag(tag);
+		::g->zstats[index].size += size;
+	}
     
     // if there is a free block behind the rover,
     //  back up over them
@@ -344,7 +390,7 @@ Z_Malloc
 		if (rover == start)
 		{
 			// scanned all the way around the list
-			I_Error ("Z_Malloc: failed on allocation of %i bytes", size);
+			I_Error ("Z_Malloc: failed on allocation of %i bytes for %d", size, tag);
 			/*Z_Realloc(size); //TODO: Find out how to make z-memory dynamiclly resizeable
 			base = ::g->mainzone->rover;
 			rover = base;

@@ -346,6 +346,98 @@ float idConsoleLocal::DrawFPS( float y )
 	return y + BIGCHAR_HEIGHT + 4;
 }
 
+idStr ParseClassicMemoryTag(int tag) {
+	switch (tag) {
+	case 1:
+		return idStr("STATIC");
+	case 2:
+		return idStr("SOUND");
+	case 3:
+		return idStr("MUSIC");
+	case 4:
+		return idStr("STATUS_BACK");
+	case 5:
+		return idStr("STATUS_FRONT");
+	case 6:
+		return idStr("LINES");
+	case 7:
+		return idStr("SECTORS");
+	case 8:
+		return idStr("SIDES");
+	case 9:
+		return idStr("VERTEX");
+	case 10:
+		return idStr("FINALE");
+	case 11:
+		return idStr("FONT");
+	case 12:
+		return idStr("CEILING");
+	case 13:
+		return idStr("DOOR");
+	case 14:
+		return idStr("FLOOR");
+	case 15:
+		return idStr("LIGHTS");
+	case 16:
+		return idStr("MOBJ");
+	case 17:
+		return idStr("PLATS");
+	case 18:
+		return idStr("BLOCKMAP");
+	case 19:
+		return idStr("REJECT");
+	case 20:
+		return idStr("NODE");
+	case 21:
+		return idStr("SEGS");
+	case 22:
+		return idStr("SPRITE");
+	case 23:
+		return idStr("WI_LNAME");
+	case 24:
+		return idStr("WI_FRONT");
+	case 25:
+		return idStr("WI_BACK");
+	case 50:
+		return idStr("LEVEL");
+	case 51:
+		return idStr("LEVSPEC");
+	case 100:
+		return idStr("PURGELEVEL");
+	case 101:
+		return idStr("CACHE");
+	default:
+		return idStr("????");
+	}
+}
+
+float calculateSize(int size) {
+	float result = size;
+	while (result > 1024.0f) {
+		result /= 1024.0f;
+	}
+	return result;
+}
+
+idStr calculateSizeLetter(int size) {
+	float result = size;
+	int count = 0;
+	while (result > 1024.0f) {
+		result /= 1024.0f;
+		count++;
+	}
+	switch (count) {
+	case 1:
+		return idStr("KB");
+	case 2:
+		return idStr("MB");
+	case 3:
+		return idStr("GB");
+	default:
+		return idStr("");
+	}
+}
+
 /*
 ==================
 idConsoleLocal::DrawMemoryUsage
@@ -362,22 +454,32 @@ float idConsoleLocal::DrawMemoryUsage( float y )
 		else {
 			inuse = data->NumAlloc-data->CacheAlloc;
 		}
-		inuse = ((inuse) / 1024);
-		int total = (data->zonesize / 1024);
-		int nintprec = ((data->zonesize / 1024) / 1024)*0.9;
-		int inusemb = inuse / 1024;
+		float finalInuse = calculateSize(inuse);
+		int total = calculateSize(data->zonesize);
+		int nintprec = total*0.9;
 		idStr timeStr;
 		
 		if (com_showMemoryUsage.GetInteger() == 2) {
-			timeStr.Format("%sZM+C: %4.2f/%d",inusemb>nintprec?S_COLOR_RED:"", inuse / 1024.0f, total / 1024);
+			timeStr.Format("%sZM+C: %4.2f/%d", finalInuse >nintprec?S_COLOR_RED:"", finalInuse, total);
+			int w = timeStr.LengthWithoutColors() * BIGCHAR_WIDTH;
+			renderSystem->DrawBigStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, timeStr.c_str(), colorWhite, false);
+			y += BIGCHAR_HEIGHT + 4;
+			for (int i = 0; i < data->zstats.size(); i++) {
+				if (data->zstats[i].size != 0) {
+					timeStr.Format("%s: %4.2f %s", ParseClassicMemoryTag(data->zstats[i].tag).c_str(), calculateSize(data->zstats[i].size), calculateSizeLetter(data->zstats[i].size).c_str());
+					w = timeStr.LengthWithoutColors() * SMALLCHAR_WIDTH;
+					renderSystem->DrawSmallStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, timeStr.c_str(), colorWhite, false);
+					y += SMALLCHAR_HEIGHT + 4;
+				}
+			}
 		}
 		else {
-			timeStr.Format("%sZM: %4.2f/%d", inusemb> nintprec ? S_COLOR_RED : "", inuse / 1024.0f, total / 1024);
-		}
-		int w = timeStr.LengthWithoutColors() * BIGCHAR_WIDTH;
+			timeStr.Format("%sZM: %4.2f/%d", finalInuse > nintprec ? S_COLOR_RED : "", finalInuse, total);
+			int w = timeStr.LengthWithoutColors() * BIGCHAR_WIDTH;
 
-		renderSystem->DrawBigStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, timeStr.c_str(), colorWhite, false);
-		y += BIGCHAR_HEIGHT + 4;
+			renderSystem->DrawBigStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, timeStr.c_str(), colorWhite, false);
+			y += BIGCHAR_HEIGHT + 4;
+		}
 	}
 	return y;
 }

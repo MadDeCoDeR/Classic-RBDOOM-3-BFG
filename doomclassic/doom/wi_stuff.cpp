@@ -1731,10 +1731,10 @@ void WI_loadData(void)
 	::g->total = /*(patch_t*)*/img2lmp(W_CacheLumpName("WIMSTT", PU_WI_FRONT), W_GetNumForName("WIMSTT"));
 
 	// your face
-	::g->star = /*(patch_t*)*/img2lmp(W_CacheLumpName("STFST01", PU_STATIC_SHARED), W_GetNumForName("STFST01")); // ALAN: this is statically in the game...
+	::g->star = /*(patch_t*)*/img2lmp(W_CacheLumpName("STFST01", PU_WI_FRONT), W_GetNumForName("STFST01")); // ALAN: this is statically in the game...
 
 	// dead face
-	::g->bstar = /*(patch_t*)*/img2lmp(W_CacheLumpName("STFDEAD0", PU_STATIC_SHARED), W_GetNumForName("STFDEAD0"));
+	::g->bstar = /*(patch_t*)*/img2lmp(W_CacheLumpName("STFDEAD0", PU_WI_FRONT), W_GetNumForName("STFDEAD0"));
 
 	for (i=0 ; i<MAXPLAYERS ; i++)
 	{

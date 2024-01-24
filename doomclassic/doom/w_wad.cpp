@@ -61,7 +61,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "g_game.h"
 #include "p_setup.h"
 
-#include <set>
+#include <map>
 
 #define READ_SIZE 8192
 #define MAX_FILENAME 512
@@ -72,7 +72,9 @@ If you have questions concerning this license or the applicable additional terms
 std::vector<lumpinfo_t>	lumpinfo;
 int			numlumps;
 void**		lumpcache;
-std::set<int> direct;
+std::vector<void*>      directlumpcache;
+int directIndex = 0;
+std::map<int, int> direct;
 std::vector<std::string> fname;
 std::vector<std::string> foldername;
 //GK: Keep information retrieved from .zip and .pk3 files
@@ -673,19 +675,21 @@ void W_Reload (void)
 void W_FreeLumps() {
 	if ( lumpcache != NULL ) {
 		for ( int i = 0; i < W_GetLumpCount(); i++ ) {
-			if ( lumpcache[i] && direct.find(i) == direct.end()) {
+			if ( lumpcache[i] ) {
 				Z_Free( lumpcache[i] );
 			}
-			else if (lumpcache[i] && direct.find(i) != direct.end()){
-				free(lumpcache[i]);
-				direct.erase(i);
-			}
 		}
-		std::set<int> tempDirect;
-		direct.clear();
-		direct.swap(tempDirect);
 		Z_Free( lumpcache );
 		lumpcache = NULL;
+	}
+
+	if (!directlumpcache.empty()) {
+		for (int i = 0; i < directlumpcache.size(); i++) {
+			free(directlumpcache[i]);
+		}
+		direct.clear();
+		directIndex = 0;
+		directlumpcache.clear();
 	}
 
 	/*if ( lumpinfo != NULL ) {
@@ -1125,16 +1129,18 @@ W_LoadLumpNum
 		I_Error("W_CacheLumpNum: %i >= numlumps", lump);
 #endif
 
-	if (!lumpcache[lump])
+	if (direct.find(lump) == direct.end())
 	{
 		//byte* ptr;
 		// read the lump in
 		//I_Printf ("cache miss on lump %i\n",lump);
-		lumpcache[lump] = (byte*)malloc(W_LumpLength(lump));
-		W_ReadLump(lump, lumpcache[lump]);
+		void* buf = (byte*)malloc(W_LumpLength(lump));
+		W_ReadLump(lump, buf);
+		directlumpcache.push_back(buf);
+		direct.insert({ lump, directIndex });
+		directIndex++;
 	}
-	direct.insert(lump);
-	return lumpcache[lump];
+	return directlumpcache[direct[lump]];
 }
 
 

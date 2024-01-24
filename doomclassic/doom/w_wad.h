@@ -78,6 +78,7 @@ typedef struct
 
 
 extern	void**		lumpcache;
+extern	std::vector<void*>      directlumpcache;
 extern	std::vector<lumpinfo_t>	lumpinfo;
 extern	int		numlumps;
 

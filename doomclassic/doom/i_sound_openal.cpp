@@ -924,15 +924,11 @@ bool I_LoadSong( const char * songname )
 		
 		Timidity_Stop();
 		Timidity_FreeSong( doomMusic );
-		free(lumpcache[W_GetNumForName(lumpName.c_str())]);
-		lumpcache[W_GetNumForName(lumpName.c_str())] = NULL;
 		use_avi = false;
 	}
 	else {
 			use_avi = DecodeALAudio(&musFile,&mus_size,&av_rate,&av_sample); //GK: Simplified
 			if (use_avi) {
-				free(lumpcache[W_GetNumForName(lumpName.c_str())]);
-				lumpcache[W_GetNumForName(lumpName.c_str())] = NULL;
 				totalBufferSize = mus_size;
 				musicBuffer = musFile;
 			}
