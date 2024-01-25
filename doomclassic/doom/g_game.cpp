@@ -1806,9 +1806,9 @@ qboolean G_DoLoadGame ()
 			idStr fnames = tlab.SubStr(18);
 			idStrList file = fnames.Split(",");
 			int sc = 0;
-			for (int i =0; i < file.Num(); i++) {
-				filelist.push_back(file[i].c_str());
-				if (idStr::Icmpn(file[i].c_str(), "wads", 4)) {
+			for (int j = 0; j < file.Num(); j++) {
+				filelist.push_back(file[j].c_str());
+				if (idStr::Icmpn(file[j].c_str(), "wads", 4)) {
 					sc++;
 				}
 			}
