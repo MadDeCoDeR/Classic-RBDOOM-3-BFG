@@ -1781,8 +1781,9 @@ qboolean G_DoLoadGame ()
 	memset (vcheck,0,sizeof(vcheck)); 
 	sprintf (vcheck,"version %i",VERSION); 
 	//GK:Check if the save file uses mods
-	char tlab[256];
-	strcpy(tlab, (char*)::g->save_p);
+	idStr tlab;
+	tlab = (char*)::g->save_p;
+	//strcpy(tlab, (char*)::g->save_p);
 	if (tlab[11] != ' ') {
 		tlab[11] = '\0';
 	}
@@ -1802,15 +1803,14 @@ qboolean G_DoLoadGame ()
 		bool ok = false;
 		if (!strcmp(clab, vcheck)) {
 			hm = true;
-			const char * fnames = tlab + 18;
-			char* file = strtok(strdup(fnames), ",");
+			idStr fnames = tlab.SubStr(18);
+			idStrList file = fnames.Split(",");
 			int sc = 0;
-			while (file) {
-				filelist.push_back(file);
-				if (idStr::Icmpn(file, "wads", 4)) {
+			for (int i =0; i < file.Num(); i++) {
+				filelist.push_back(file[i].c_str());
+				if (idStr::Icmpn(file[i].c_str(), "wads", 4)) {
 					sc++;
 				}
-				file = strtok(NULL, ",");
 			}
 			ok = W_CheckMods(sc, filelist);
 		}
@@ -1826,16 +1826,16 @@ qboolean G_DoLoadGame ()
 	}
 	//GK: In case the save file has no mods
 	if (hm) {
-		char tla[256];
-		strcpy(tla, clab);
+		idStr tla;
+		tla = clab;
 		for (uint mf = 0; mf < filelist.size(); mf++) {
-			strcat(tla, filelist[mf].c_str());
-			strcat(tla, ",");
+			tla += filelist[mf].c_str();
+			tla += ",";
 		}
-		::g->save_p += strlen(tla);
+		::g->save_p += tla.Length();
 	}
 	else {
-		::g->save_p += strlen(tlab);
+		::g->save_p += tlab.Length();
 	}
 
 	::g->gameskill = (skill_t)*::g->save_p++; 
@@ -1910,7 +1910,7 @@ G_SaveGame
 qboolean G_DoSaveGame (void) 
 { 
 	char	name[100]; 
-	char	name2[256]; 
+	idStr	name2;
 	char	sname[10];
 	char*	description; 
 	int		length; 
@@ -1969,8 +1969,7 @@ qboolean G_DoSaveGame (void)
 	 
 	//GK: if the game uses mods store their names on the save file header
 	if (M_CheckParm("-file")) {
-		memset(name2, 0, strlen(name2));
-		sprintf(name2, "version %i files ", VERSION);
+		name2.Format("version %i files ", VERSION);
 		for (int f=1; f<20; f++) {
 			if (wadfiles[f] != NULL) {
 				char* fname = strtok(strdup(wadfiles[f]), "\\");
@@ -1983,8 +1982,8 @@ qboolean G_DoSaveGame (void)
 						break;
 					}
 				}
-				strcat(name2, fname);
-				strcat(name2, ",");
+				name2 += fname;
+				name2 += ",";
 			}
 			else {
 				break;
@@ -1993,11 +1992,10 @@ qboolean G_DoSaveGame (void)
 	}
 	else {
 		//GK: allow unmodded saves
-		memset(name2, 0, VERSIONSIZE);
-		sprintf(name2, "version %i", VERSION);
+		name2.Format("version %i", VERSION);
 	}
-	memcpy (::g->save_p, name2, strlen(name2));
-	::g->save_p += strlen(name2); 
+	memcpy (::g->save_p, name2.c_str(), name2.Length());
+	::g->save_p += name2.Length();
 
 	*::g->save_p++ = ::g->gameskill; 
 	*::g->save_p++ = ::g->gameepisode; 
