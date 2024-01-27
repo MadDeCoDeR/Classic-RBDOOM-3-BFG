@@ -1367,9 +1367,11 @@ void FindNextMap(int map,bool issecret = false) {
 		}
 	}
 	else {
-		for (uint j = 0; j < ::g->maps.size(); j++) {
-			if (*nmap == ::g->maps[j].index) {
-				*nmap = j;
+		if (::g->gamemode == commercial) {
+			for (uint j = 0; j < ::g->maps.size(); j++) {
+				if (*nmap == ::g->maps[j].index) {
+					*nmap = j;
+				}
 			}
 		}
 	}
@@ -1510,8 +1512,8 @@ void G_DoCompleted (void)
 			//int map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
 			if (::g->map) {
 				if (::g->secretexit) {
-					//FindNextMap(::g->map - 1, true);
-					::g->wminfo.next = (::g->maps[::g->map - 1].secretmap - 1) - (::g->clusters[::g->gameepisode - 1].startmap - 1);
+					FindNextMap(::g->map - 1, true);
+					::g->wminfo.next = ::g->maps[::g->map - 1].secretmap - (::g->clusters[::g->gameepisode - 1].startmap - 1);
 				}
 				else {
 					//FindNextMap(::g->map - 1);
