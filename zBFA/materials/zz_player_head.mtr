@@ -1,0 +1,39 @@
+//////////////////////////////////
+//				//
+//	New Player Head		//
+//				//
+//////////////////////////////////
+
+
+material models/characters/player/playerhead
+{
+        noselfShadow
+	noOverlays
+	flesh
+	clamp
+	//twosided
+
+
+	renderbump  -size 512 512 -trace 0.07 -colorMap -aa 2  models/characters/player/playerhead_512_local.tga models/characters/player/playerhead_hi.lwo
+
+	{
+ 		blend diffusemap
+          	map  models/characters/player/playerhead_512.tga
+     	}
+	
+
+	{
+		blend bumpmap
+		map  addnormals(models/characters/player/playerhead_512_local.tga, heightmap(models/characters/player/playerhead_512_h.tga, 1 ) )	  
+     	}	
+		
+	{	
+		blend	specularmap	 
+		map	models/characters/player/playerhead_512_s.tga
+		red	.4
+		green	.4
+		blue	.4
+	}
+
+
+}

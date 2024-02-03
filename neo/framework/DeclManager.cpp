@@ -811,12 +811,12 @@ int idDeclFile::LoadAndParse()
 		if( newDecl )
 		{
 			// update the existing copy
-			if( newDecl->sourceFile != this || newDecl->redefinedInReload )
+			/*if( newDecl->sourceFile != this || newDecl->redefinedInReload )
 			{
 				src.Warning( "%s '%s' previously defined at %s:%i", declManagerLocal.GetDeclNameFromType( identifiedType ),
 							 name.c_str(), newDecl->sourceFile->fileName.c_str(), newDecl->sourceLine );
 				continue;
-			}
+			}*/
 			if( newDecl->declState != DS_UNPARSED )
 			{
 				reparse = true;
