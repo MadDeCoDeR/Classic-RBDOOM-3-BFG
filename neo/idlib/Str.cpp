@@ -2610,8 +2610,10 @@ idList<idStr> idStr::Split(const char* delimiter) {
 		//Always check + 1 otherwise it will get the previous delimiter
 		pos = Find(delimiter, false, oldPos + 1);
 		idStr token = SubStr(oldPos + 1, pos);
-		oldPos = pos;
-		strings.Append(token);
+		if (token.Length() > 0) {
+			oldPos = pos;
+			strings.Append(token);
+		}
 	}
 	//in case the split didn't work don't return empty handed. Return the original String.
 	if (strings.Num() == 0) {
