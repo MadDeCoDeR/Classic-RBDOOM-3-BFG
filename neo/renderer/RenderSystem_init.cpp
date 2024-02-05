@@ -54,7 +54,7 @@ idGuiModel* tr_guiModel;
 glconfig_t	glConfig;
 
 idCVar r_requestStereoPixelFormat( "r_requestStereoPixelFormat", "1", CVAR_RENDERER, "Ask for a stereo GL pixel format on startup" );
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(_GLDEBUG)
 idCVar r_debugContext("r_debugContext", "3", CVAR_RENDERER, "Enable various levels of context debug.");
 #else
 idCVar r_debugContext( "r_debugContext", "0", CVAR_RENDERER, "Enable various levels of context debug." );
