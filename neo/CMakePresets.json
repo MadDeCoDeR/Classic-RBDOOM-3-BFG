@@ -21,7 +21,7 @@
         },
         "USE_XAUDIO2_PACKAGE": {
           "type": "BOOL",
-          "value": "OFF" 
+          "value": "OFF"
         },
         "USE_SYSTEM_ZLIB": {
           "type": "BOOL",
@@ -192,6 +192,16 @@
       "inherits": "linux-base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "linux-relwithdebuginfo",
+      "displayName": "Linux Retail With Debug Info",
+      "binaryDir": "${sourceParentDir}/buildRelwithdebuginfo",
+      "generator": "Unix Makefiles",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Relwithdebuginfo"
       }
     },
     {
