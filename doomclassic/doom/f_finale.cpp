@@ -1065,7 +1065,7 @@ void F_BunnyScroll (void)
     int		x;
     patch_t*	p1;
     patch_t*	p2;
-    char	name[13];
+    char	name[16];
     int		stage;
 		
     p1 =  /*(patch_t*)*/img2lmp(W_CacheLumpName ("PFUB2", PU_FINALE), W_GetNumForName("PFUB2"));
