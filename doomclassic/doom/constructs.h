@@ -437,7 +437,7 @@ menu_t  temp_ResDef = {
 	::g->ResMenu,
 	M_DrawRes,
 	40,30,
-	(short) r_vidMode.GetInteger()
+	0
 };
 memcpy(&::g->ResDef, &temp_ResDef, sizeof(temp_ResDef));
 

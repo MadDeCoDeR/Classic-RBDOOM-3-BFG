@@ -84,6 +84,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "am_map.h"
 //#ifdef USE_OPENAL
 #include "sound/OpenAL/AL_EAX.h"
+#include <functional>
 //#endif
 extern idCVar S_museax;
 
@@ -178,6 +179,8 @@ char    skullName[2][/*8*/9] =
 //
 // PROTOTYPES
 //
+void M_DrawPagedText(menu_t def, std::function<std::string(int)> func);
+bool M_HandlePaging(int choice);
 void M_NewGame(int choice);
 void M_Episode(int choice);
 void M_Expansion(int choice);
@@ -295,6 +298,9 @@ idList<int>			classicRefreshList;
 int refreshIndex = 0;
 int modeSize = 0;
 int pageIndex = 0;
+int numPages = 0;
+int activePageItems = 0;
+menu_t pageDef;
 //
 // DOOM MENU
 //
@@ -1563,21 +1569,19 @@ void M_DrawRes(void) {
 	else {
 		R_GetModeListForDisplay(0, modeList);
 	}
-	modeSize = modeList.Num() < doomit_end ? modeList.Num() : doomit_end;
-	for (int i = 0; i < modeSize; i++) {
+	numPages = modeList.Num() / 10;
+	M_DrawPagedText(::g->ResDef, [&](int i) {
 		std::string res;
-		res = va("%4i x %4i", modeList[i].width, modeList[i].height);
-		if (modeList[i].displayHz != 60)
-		{
-			res += va(" @ %dhz", modeList[i].displayHz);
+		if (i < modeList.Num()) {
+			activePageItems++;
+			res = va("%4i x %4i", modeList[i].width, modeList[i].height);
+			if (modeList[i].displayHz != 60)
+			{
+				res += va(" @ %dhz", modeList[i].displayHz);
+			}
 		}
-		if (i < 10) {
-			M_WriteText(::g->ResDef.x, ::g->ResDef.y + LINEHEIGHT * i, res.c_str(), false);
-		}
-		else {
-			M_WriteText(::g->ResDef.x + 120, ::g->ResDef.y + LINEHEIGHT * (i - 10), res.c_str(), false);
-		}
-	}
+		return res;
+		});
 }
 
 
@@ -1726,15 +1730,20 @@ void M_Light(int choice) {
 }
 
 void M_Resolution(int choice) {
+	pageIndex = 0;
 	M_SetupNextMenu(&::g->ResDef);
 }
 
 void M_SetRes(int choice) {
-	r_vidMode.SetInteger(choice);
-	r_customWidth.SetInteger(modeList[choice].width);
-	r_customHeight.SetInteger(modeList[choice].height);
-	//if (modeList[choice].displayHz != 60) {
-		r_displayRefresh.SetInteger(modeList[choice].displayHz);
+	if (M_HandlePaging(choice)) {
+		return;
+	}
+	int finalChoice = choice + (pageIndex * 10);
+	r_vidMode.SetInteger(finalChoice);
+	r_customWidth.SetInteger(modeList[finalChoice].width);
+	r_customHeight.SetInteger(modeList[finalChoice].height);
+	//if (modeList[finalChoice].displayHz != 60) {
+		r_displayRefresh.SetInteger(modeList[finalChoice].displayHz);
 	//}
 	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 	M_SetupNextMenu(::g->currentMenu->prevMenu);
@@ -1806,32 +1815,17 @@ void M_DrawCtl(void)
 	//	9,::g->screenSize);
 }
 
-const char* M_GetPageText(int i) {
-	switch (pageIndex) {
-	case 0:
-		return "next page";
-	case 1:
-	case 2:
-		return i == 10 ? "next page" : "prev page";
-	case 3:
-		return "prev page";
-	}
-	return "";
-}
+
 
 void M_DrawKey(void) {
 	V_DrawPatchDirect(108, 10, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_KEY", PU_CACHE_SHARED), W_GetNumForName("M_KEY")), false);
-	int bindStart = 0;
-	int bindEnd = 0;
-	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
-	bindStart = pageIndex * 10;
-	int endOffs = bindStart == 0 ? 1 : 2;
-	bindEnd = (bindStart + 10) + endOffs;
-	for (int i = bindStart; i < bindEnd; i++) {
+	numPages = 3;
+	M_DrawPagedText(::g->KeyDef, [&](int i) {
 		std::string res;
 		if (i < numBinds) {
+			activePageItems++;
 			keyBindings_t bind = idKeyInput::KeyBindingsFromBinding(keyboardBinds[i].bind, false, true);
-			
+
 			idStr bindings;
 
 			if (!bind.gamepad.IsEmpty() && idLib::joystick)
@@ -1906,24 +1900,8 @@ void M_DrawKey(void) {
 			bindings.ToUpper();
 			res = va("%s - %s", keyboardBinds[i].display, bindings.c_str());
 		}
-		/*if (aspect) {
-			if (i < 10) {
-				M_WriteAspectText(::g->KeyDef.x, ::g->KeyDef.y + LINEHEIGHT * i, res.c_str());
-			}
-			else {
-				M_WriteAspectText(::g->KeyDef.x + 220, ::g->KeyDef.y + LINEHEIGHT * (i - 10), res.c_str());
-			}
-		}
-		else*/
-		{
-			if ( (i < ((pageIndex + 1) * 10)) || (pageIndex == 3 && (i - bindStart) == 10)) {
-				M_WriteText(::g->KeyDef.x + ((i - bindStart) < 10 ? 0 : (aspect ? 220 : 0)), ::g->KeyDef.y + LINEHEIGHT * ((i - bindStart) < 10 ? (i - bindStart) : (aspect ? ((i - bindStart) - 10) : (i - bindStart))), res.c_str(), true);
-			}
-			else {
-				M_WriteText(::g->KeyDef.x + (aspect ? 220 : 200), ::g->KeyDef.y + LINEHEIGHT * (pageIndex == 3 && !aspect ? ((i - bindStart) - 11) : ((i - bindStart) - 10)), M_GetPageText((i- bindStart)), true);
-			}
-		}
-	}
+		return res;
+	});
 }
 //
 // M_EndGame
@@ -2103,29 +2081,14 @@ void M_Ctl(int choice)
 
 void M_Key(int choice)
 {
+	pageIndex = 0;
 	M_SetupNextMenu(&::g->KeyDef);
 }
 
 void M_ChangeKeys(int choice) {
 	//int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
-	if (choice == 10) {
-		if (pageIndex < 3) {
-			pageIndex++;
-			::g->itemOn = 0;
-			::g->currentMenu->lastOn = 0;
-			M_SetupNextMenu(&::g->KeyDef);
-			return;
-		}
-		
-	}
-	if (choice == 11) {
-		if (pageIndex > 0) {
-			pageIndex--;
-			::g->itemOn = 0;
-			::g->currentMenu->lastOn = 0;
-			M_SetupNextMenu(&::g->KeyDef);
-			return;
-		}
+	if (M_HandlePaging(choice)) {
+		return;
 	}
 	::g->captureBind = true;
 	//if (!aspect) {
@@ -2784,14 +2747,11 @@ qboolean M_Responder (event_t* ev)
 				::g->itemOn = 0;
 			} else
 				
-				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn + 1 >= modeSize) {
+				if (::g->currentMenu->menuitems == pageDef.menuitems && ::g->itemOn + 1 >= (pageIndex == 0 ? 11 : 12)) {
 					::g->itemOn = 0;
 				}
-				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && ::g->itemOn + 1 >= (pageIndex == 0 ? 11 : 12)) {
-					::g->itemOn = 0;
-				}
-				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems &&  pageIndex == 3 && ::g->itemOn + 1 >= 2) {
-					::g->itemOn += 10;
+				else if (::g->currentMenu->menuitems == pageDef.menuitems &&  pageIndex == numPages && ::g->itemOn + 1 >= activePageItems) {
+					::g->itemOn += (11 - ::g->itemOn);
 				}
 				else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == vsync) {
 					::g->itemOn = vsync + 2;
@@ -2808,17 +2768,15 @@ qboolean M_Responder (event_t* ev)
 		do
 		{
 			if (!::g->itemOn)
-				if (::g->currentMenu->menuitems == ::g->ResDef.menuitems)
-					::g->itemOn = modeSize - 1;
-				else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems)
+				if (::g->currentMenu->menuitems == pageDef.menuitems)
 					::g->itemOn = pageIndex == 0 ? 10 : 11;
 				else ::g->itemOn = ::g->currentMenu->numitems-1;
 			else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == framerate)
 				::g->itemOn = framerate - 2;
 			else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == jump)
 				::g->itemOn = look;
-			else if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && pageIndex == 3 && ::g->itemOn == 11) {
-				::g->itemOn -= 10;
+			else if (::g->currentMenu->menuitems == pageDef.menuitems && pageIndex == numPages && ::g->itemOn == 11) {
+				::g->itemOn -= (12 - activePageItems);
 			}
 			else ::g->itemOn--;
 			S_StartSound(NULL,sfx_pstop);
@@ -2979,10 +2937,7 @@ void M_Drawer (void)
 	if (::g->currentMenu->menuitems == ::g->QuitDef.menuitems && common->IsNewDOOM3()) {
 		::g->currentMenu->numitems = 2;
 	}
-	if (::g->currentMenu->menuitems == ::g->ResDef.menuitems && ::g->itemOn >= 10) {
-		::g->md_x = ::g->currentMenu->x + 120;
-	}
-	if (::g->currentMenu->menuitems == ::g->KeyDef.menuitems && ::g->itemOn >= 10 ) {
+	if (::g->currentMenu->menuitems == pageDef.menuitems && ::g->itemOn >= 10 ) {
 		if (!aspect) 
 		{
 			::g->md_x = ::g->currentMenu->x + 200;
@@ -2991,7 +2946,7 @@ void M_Drawer (void)
 		{
 			::g->md_x = ::g->currentMenu->x + 165;
 		}
-		if (pageIndex == 3 && !aspect && ::g->itemOn == 10) {
+		if (pageIndex == numPages && !aspect && ::g->itemOn == 10) {
 			::g->md_x = ::g->currentMenu->x;
 		}
 	}
@@ -3029,9 +2984,9 @@ void M_Drawer (void)
 		if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn > aim) {
 			lineoffs = (::g->itemOn - 1) * LINEHEIGHT;
 		}
-		if ((::g->currentMenu->menuitems == ::g->ResDef.menuitems || ::g->currentMenu->menuitems == ::g->KeyDef.menuitems) && ::g->itemOn >= 10) {
+		if (::g->currentMenu->menuitems == pageDef.menuitems && ::g->itemOn >= 10) {
 			lineoffs = LINEHEIGHT * (::g->itemOn - 10);
-			if (pageIndex == 3 && !aspect ) {
+			if (pageIndex == numPages && !aspect ) {
 				if (::g->itemOn == 10) {
 					lineoffs = ::g->itemOn * LINEHEIGHT;
 				}
@@ -3266,6 +3221,80 @@ bool M_UseCircleForAccept()
 	}
 	else if (common->IsNewDOOM3() && joynum == 5) {
 		return true;
+	}
+	return false;
+}
+
+//GK: MENU PAGINAGTION
+
+idStr NextPage = "next page";
+idStr PrevPage = "prev page";
+
+const char* M_GetPageText(int i) {
+	
+	if (pageIndex == 0) {
+		return NextPage.c_str();
+	}
+	else if (pageIndex == numPages) {
+		return PrevPage.c_str();
+	}
+	return i == 10 ? NextPage.c_str() : PrevPage.c_str();
+}
+
+//GK: BEGIN
+/* 
+ Render a paged menu given its def and a functional func that 
+ handles the menu's data parsing and final string output that will be
+ used in the text rendering
+*/
+void M_DrawPagedText(menu_t def, std::function<std::string(int)> func)
+{
+	activePageItems = 0;
+	pageDef = def;
+	int bindStart = 0;
+	int bindEnd = 0;
+	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+	bindStart = pageIndex * 10;
+	int endOffs = bindStart == 0 ? 1 : 2;
+	bindEnd = (bindStart + 10) + endOffs;
+	for (int i = bindStart; i < bindEnd; i++) {
+		std::string result = func(i);
+
+		{
+			if ((i < ((pageIndex + 1) * 10)) || (pageIndex == numPages && (i - bindStart) == 10)) {
+				M_WriteText(pageDef.x + ((i - bindStart) < 10 ? 0 : (aspect ? 220 : 0)), pageDef.y + LINEHEIGHT * ((i - bindStart) < 10 ? (i - bindStart) : (aspect ? ((i - bindStart) - 10) : (i - bindStart))), result.c_str(), true);
+			}
+			else {
+				M_WriteText(pageDef.x + (aspect ? 220 : 200), pageDef.y + LINEHEIGHT * (pageIndex == numPages && !aspect ? ((i - bindStart) - 11) : ((i - bindStart) - 10)), M_GetPageText((i - bindStart)), true);
+			}
+		}
+	}
+}
+
+/*
+Manage the paging on the menu's input. It always assume that choices in position 10 & 11
+are reserved for the pagging options
+*/
+bool M_HandlePaging(int choice)
+{
+	if (choice == 10) {
+		if (pageIndex < numPages) {
+			pageIndex++;
+			::g->itemOn = 0;
+			::g->currentMenu->lastOn = 0;
+			M_SetupNextMenu(&pageDef);
+			return true;
+		}
+
+	}
+	if (choice == 11) {
+		if (pageIndex > 0) {
+			pageIndex--;
+			::g->itemOn = 0;
+			::g->currentMenu->lastOn = 0;
+			M_SetupNextMenu(&pageDef);
+			return true;
+		}
 	}
 	return false;
 }
