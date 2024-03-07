@@ -875,3 +875,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->cptrvalInitialized = false;
 
 	::g->mapmax = 0;
+
+	::g->lastMasocTick = 0;

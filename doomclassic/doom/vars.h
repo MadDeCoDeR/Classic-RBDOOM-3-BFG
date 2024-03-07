@@ -1129,3 +1129,5 @@ msecnode_t* headsecnode;
 
 
 std::vector<zstats_t> zstats;
+
+int lastMasocTick;

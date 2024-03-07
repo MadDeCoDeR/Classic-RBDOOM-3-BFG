@@ -710,7 +710,7 @@ void G_DoLoadLevel ()
 		memset (&(::g->players[i].cmd),0,sizeof(::g->players[i].cmd)); 
 	} 
 
-	const char * difficultyNames[] = {  "I'm Too Young To Die!", "Hey, Not Too Rough!", "Hurt Me Plenty!", "Ultra-Violence", "Nightmare" };
+	const char * difficultyNames[] = {  "I'm Too Young To Die!", "Hey, Not Too Rough!", "Hurt Me Plenty!", "Ultra-Violence", "Nightmare", "Masochism"};
 	const ExpansionData * expansion = DoomLib::GetCurrentExpansion();
 	
 	int truemap = ::g->gamemap;
@@ -2096,8 +2096,8 @@ G_InitNew
 		S_ResumeSound (); 
 	} 
 
-	if (skill > sk_nightmare) 
-		skill = sk_nightmare;
+	if (skill > sk_masochism) 
+		skill = sk_masochism;
 
 	// This was quite messy with SPECIAL and commented parts.
 	// Supposedly hacks to make the latest edition work.
@@ -2126,7 +2126,7 @@ G_InitNew
 	if (map < 1) 
 		map = 1;
 
-	if (skill == sk_nightmare || ::g->respawnparm )
+	if (skill >= sk_nightmare || ::g->respawnparm )
 		::g->respawnmonsters = true;
 	else
 		::g->respawnmonsters = false;
@@ -2147,6 +2147,14 @@ G_InitNew
 		mobjinfo[MT_BRUISERSHOT].speed = 15 * FRACUNIT;
 		mobjinfo[MT_HEADSHOT].speed = 10 * FRACUNIT;
 		mobjinfo[MT_TROOPSHOT].speed = 10 * FRACUNIT;
+	}
+	else if (skill != sk_masochism && ::g->gameskill == sk_masochism)
+	{
+		for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
+			::g->states[i].tics <<= 1;
+		mobjinfo[MT_BRUISERSHOT].speed = 5 * FRACUNIT;
+		mobjinfo[MT_HEADSHOT].speed = 5 * FRACUNIT;
+		mobjinfo[MT_TROOPSHOT].speed = 5 * FRACUNIT;
 	}
 	// force ::g->players to be initialized upon first level load         
 	for (i=0 ; i<MAXPLAYERS ; i++) 

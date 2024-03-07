@@ -113,6 +113,10 @@ P_GiveAmmo
 		// you'll need in nightmare
 		num <<= 1;
 	}
+	if (::g->gameskill == sk_masochism) {
+		//Less Ammo for better tormenting effects
+		num >>= 1;
+	}
 
 
 	oldammo = player->ammo[ammo];
@@ -978,6 +982,14 @@ P_DamageMobj
 	if (player && ::g->gameskill == sk_baby)
 		damage >>= 1; 	// take half damage in trainer mode
 
+	if (::g->gameskill == sk_masochism) {
+		if (player) {
+			damage <<= 1;
+		}
+		else {
+			damage >>= 1;
+		}
+	}
 
 	// Some close combat weapons should not
 	// inflict thrust and push the victim out of reach,

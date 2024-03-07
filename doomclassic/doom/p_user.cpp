@@ -345,6 +345,14 @@ void P_PlayerThink (player_t* player)
 		return;
 	}
 
+	int time_delta = (::g->gametic - ::g->lastMasocTick) / TICRATE;
+	if (::g->gameskill == sk_masochism && time_delta == 3) {
+		::g->lastMasocTick = ::g->gametic;
+		if (player->health > 25) {
+			player->health -= 5;
+		}
+	}
+
 	// Move around.
 	// Reactiontime is used to prevent movement
 	//  for a bit after a teleport.

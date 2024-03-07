@@ -716,7 +716,11 @@ void D_DoomMain(void)
 	// to the wad list
 	//
 	// get skill / episode / map from defaults
+#ifdef FOOLS
+	::g->startskill = sk_masochism;
+#else
 	::g->startskill = sk_medium;
+#endif
 	::g->startepisode = 1;
 	::g->startmap = 1;
 	::g->autostart = false;
@@ -872,8 +876,12 @@ void D_DoomMain(void)
 		if (p && p < ::g->myargc - 1)
 		{
 			::g->startskill = (skill_t)(::g->myargv[p + 1][0] - '1');
-			if (::g->startskill < sk_baby || ::g->startskill > sk_nightmare)
+			if (::g->startskill < sk_baby || ::g->startskill > sk_masochism)
+#ifdef FOOLS
+				::g->startskill = sk_masochism;
+#else
 				::g->startskill = sk_medium;
+#endif
 			::g->autostart = true;
 		}
 

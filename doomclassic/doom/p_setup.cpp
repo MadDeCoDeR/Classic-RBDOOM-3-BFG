@@ -382,6 +382,10 @@ void P_LoadThings (int lump)
 		mt->type = SHORT(mt->type);
 		mt->options = SHORT(mt->options);
 
+		if (::g->gameskill == sk_masochism && (mt->type == 2011 || mt->type == 2012)) {
+			continue;
+		}
+
 		P_SpawnMapThing (mt);
 	}
 

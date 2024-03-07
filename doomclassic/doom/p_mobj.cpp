@@ -765,7 +765,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
 
 	if (::g->gameskill == sk_baby)
 		bit = 1;
-	else if (::g->gameskill == sk_nightmare)
+	else if (::g->gameskill == sk_nightmare || ::g->gameskill == sk_masochism)
 		bit = 4;
 	else
 		bit = 1<<(::g->gameskill-1);
