@@ -112,7 +112,7 @@ jobs:
         path: BFA_Assets
 
     - name: setup-msbuild
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v2
       with:
         vs-version: '[17.0, 18.0)'
         msbuild-architecture: x64
@@ -190,7 +190,7 @@ jobs:
         path: BFA_Assets
     
     - name: setup-msbuild
-      uses: microsoft/setup-msbuild@v1.1
+      uses: microsoft/setup-msbuild@v2
       with:
         vs-version: '[17.0, 18.0)'
         msbuild-architecture: Win32
