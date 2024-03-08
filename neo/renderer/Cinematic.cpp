@@ -710,8 +710,8 @@ bool idCinematicLocal::InitFromFFMPEGFile( const char* qpath, bool amilooping )
 	 *
 	 * Set to time_base ticks per frame. Default 1, e.g., H.264/MPEG-2 set it to 2.
 	 */
-	int ticksPerFrame = dec_ctx->ticks_per_frame;
-	float durationSec = static_cast<double>( fmt_ctx->streams[video_stream_index]->duration ) * static_cast<double>( ticksPerFrame ) / static_cast<double>( avr.den );
+	//int ticksPerFrame = dec_ctx->ticks_per_frame; //GK: Deprecated?
+	float durationSec = static_cast<double>( fmt_ctx->streams[video_stream_index]->duration ) /** static_cast<double>( ticksPerFrame ) *// static_cast<double>( avr.den );
 	//GK: No duration is given. Check if we get at least bitrate to calculate the length, otherwise set it to fixed 1 minute (should be lower ?)
 	if (durationSec < 0) {
 		if (dec_ctx->bit_rate > 0) {
