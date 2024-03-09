@@ -13,10 +13,6 @@ env:
 
 jobs:
   linux-build:
-    # The CMake configure and build commands are platform agnostic and should work equally
-    # well on Windows or Mac.  You can convert this to a matrix build if you need
-    # cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: ubuntu-latest
 
     steps:
@@ -49,12 +45,9 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/neo
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}}/build --preset=linux-${{env.BUILD_TYPE}}
 
     - name: Build
-      # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --parallel=16
       
     - name: Archive production artifacts
@@ -73,8 +66,6 @@ jobs:
 
     - name: Configure CMake Debug
       working-directory: ${{github.workspace}}/neo
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}}/build --preset=linux-relwithdebuginfo
 
     - name: Build Debug
@@ -95,10 +86,6 @@ jobs:
           ./alsoft.ini
           ./README.md
   windows-build:
-    # The CMake configure and build commands are platform agnostic and should work equally
-    # well on Windows or Mac.  You can convert this to a matrix build if you need
-    # cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
 
     steps:
@@ -114,7 +101,7 @@ jobs:
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v2
       with:
-        vs-version: '[17.9, 17.9)'
+        vs-version: '[17.0, 18.0)'
         msbuild-architecture: x64
 
     - name: Cache Windows vcpkg
@@ -127,8 +114,6 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/neo
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}}/build --preset=windows-x64-2022
       
     - name: Build
@@ -136,14 +121,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: BuildDebug
-      # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config retwithdebugsymbols
-      
-    # - name: Download FFMPEG
-    #   working-directory: ${{github.workspace}}/.github/tools
-    #   shell: pwsh
-    #   run: |
-    #     .\download-ffmpeg.ps1
       
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
@@ -173,10 +151,6 @@ jobs:
           ./alsoft.ini
           ./README.md
   windows-32-bit-build:
-    # The CMake configure and build commands are platform agnostic and should work equally
-    # well on Windows or Mac.  You can convert this to a matrix build if you need
-    # cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
 
     steps:
@@ -192,7 +166,7 @@ jobs:
     - name: setup-msbuild
       uses: microsoft/setup-msbuild@v2
       with:
-        vs-version: '[17.9, 17.9)'
+        vs-version: '[17.0, 18.0)'
         msbuild-architecture: Win32
 
     - name: Cache Windows vcpkg
@@ -205,19 +179,11 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}/neo
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: cmake -B ${{github.workspace}}/build --preset=windows-x86-2022
       
     - name: Build
       # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-      
-    # - name: Download FFMPEG
-    #   working-directory: ${{github.workspace}}/.github/tools
-    #   shell: pwsh
-    #   run: |
-    #     .\download-ffmpeg.ps1
       
     - name: Archive production artifacts
       uses: actions/upload-artifact@v3
