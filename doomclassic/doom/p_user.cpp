@@ -349,7 +349,7 @@ void P_PlayerThink (player_t* player)
 	if (::g->gameskill == sk_masochism && time_delta == 3) {
 		::g->lastMasocTick = ::g->gametic;
 		if (player->health > 25) {
-			player->health -= 5;
+			player->health -= ((player->health - 5) < 25) ? (player->health - 25) : 5;
 		}
 	}
 

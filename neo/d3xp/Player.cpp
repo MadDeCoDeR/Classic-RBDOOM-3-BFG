@@ -460,7 +460,7 @@ void idInventory::RestoreInventory( idPlayer* owner, const idDict& dict )
 	// weapons are stored as a number for persistant data, but as strings in the entityDef
 	weapons	= dict.GetInt( "weapon_bits", "0" );
 	
-	if( g_skill.GetInteger() >= 3 || cvarSystem->GetCVarBool( "fs_buildresources" ) )
+	if( g_skill.GetInteger() == 3 || cvarSystem->GetCVarBool( "fs_buildresources" ) )
 	{
 		Give( owner, dict, "weapon", dict.GetString( "weapon_nightmare" ), NULL, false, ITEM_GIVE_FEEDBACK | ITEM_GIVE_UPDATE_STATE );
 	}
@@ -909,7 +909,7 @@ bool idInventory::Give( idPlayer* owner, const idDict& spawnArgs, const char* st
 			amount = atoi( value );
 			if( amount )
 			{
-				ammo[ i ] += amount;
+				ammo[ i ] += (int)((g_skill.GetInteger() == 4 ? 0.5 : 1.0) * amount);
 				if( ( max > 0 ) && ( ammo[ i ].Get() > max ) )
 				{
 					ammo[ i ] = max;
@@ -2239,7 +2239,7 @@ void idPlayer::Spawn()
 		{
 			new_g_damageScale = 1.0f;
 			g_armorProtection.SetFloat( ( g_skill.GetInteger() < 2 ) ? 0.4f : 0.2f );
-			if( g_skill.GetInteger() == 3 )
+			if (g_skill.GetInteger() >= 3)
 			{
 				nextHealthTake = gameLocal->time + g_healthTakeTime.GetInteger() * 1000;
 			}
@@ -2277,7 +2277,7 @@ void idPlayer::Spawn()
 		kv = spawnArgs.MatchPrefix( "weapontoggle", kv );
 	}
 	
-	if( g_skill.GetInteger() >= 3 || cvarSystem->GetCVarBool( "fs_buildresources" ) )
+	if( g_skill.GetInteger() == 3 || cvarSystem->GetCVarBool( "fs_buildresources" ) )
 	{
 		if( !WeaponAvailable( "weapon_bloodstone_passive" ) )
 		{
@@ -4684,7 +4684,7 @@ void idPlayer::UpdatePowerUps()
 			healthPulse = true;
 		}
 	}
-	if( !gameLocal->inCinematic && influenceActive == 0 && g_skill.GetInteger() == 3 && gameLocal->time > nextHealthTake && !AI_DEAD && health > g_healthTakeLimit.GetInteger() )
+	if( !gameLocal->inCinematic && influenceActive == 0 && g_skill.GetInteger() >= 3 && gameLocal->time > nextHealthTake && !AI_DEAD && health > g_healthTakeLimit.GetInteger() )
 	{
 		assert( !common->IsClient() );	// healthPool never be set on client
 		
@@ -7453,7 +7453,7 @@ void idPlayer::updateOxygen() {
 			StartSound("snd_decompress", SND_CHANNEL_ANY, SSF_GLOBAL, false, NULL);
 			StartSound("snd_noAir", SND_CHANNEL_BODY2, 0, false, NULL);
 		}
-		airMsec -= (gameLocal->time - gameLocal->previousTime);
+		airMsec -= ((gameLocal->time - gameLocal->previousTime) * (g_skill.GetInteger() == 4 ? 2 : 1));
 		if (airMsec < 0)
 		{
 			airMsec = 0;
@@ -7524,7 +7524,7 @@ void idPlayer::updateEnviro() {
 	//GK: If Envirosuit is active calculate haow much time is left
 	if (PowerUpActive(ENVIROSUIT))
 	{
-		envirotime = (float)(inventory.powerupEndTime[ENVIROTIME] - gameLocal->time);
+		envirotime = ((float)(inventory.powerupEndTime[ENVIROTIME] - (gameLocal->time * (g_skill.GetInteger() == 4 ? 2.0f : 1.0f))));
 	}
 	//GK: No more enviro time and still in hazard, start damaging the player
 	if (envirotime < 0 && inHazard)
@@ -9954,6 +9954,9 @@ void idPlayer::CalcDamagePoints( idEntity* inflictor, idEntity* attacker, const 
 				case 3:
 					damage *= 3.5f;
 					break;
+				case 4:
+					damage *= 7.0f;
+					break;
 				default:
 					break;
 			}
@@ -9963,7 +9966,7 @@ void idPlayer::CalcDamagePoints( idEntity* inflictor, idEntity* attacker, const 
 	damage *= _damageScale;
 	
 	// always give half damage if hurting self
-	if( attacker == this )
+	if( attacker == this  && g_skill.GetInteger() < 4)
 	{
 		if( common->IsMultiplayer() )
 		{

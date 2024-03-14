@@ -3986,7 +3986,7 @@ void idAI::Killed( idEntity* inflictor, idEntity* attacker, int damage, const id
 	{
 		static_cast< idPlayer* >( attacker )->AddAIKill();
 	}
-	
+
 	if( spawnArgs.GetBool( "harvest_on_death" ) )
 	{
 		const idDict* harvestDef = gameLocal->FindEntityDefDict( spawnArgs.GetString( "def_harvest_type" ), false );
@@ -4005,6 +4005,10 @@ void idAI::Killed( idEntity* inflictor, idEntity* attacker, int damage, const id
 			harvestEnt.GetEntity()->BecomeActive( TH_THINK );
 		}
 	}
+
+	/*if (g_skill.GetInteger() == 4) {
+		gameLocal->AddToThePile(this->spawnArgs);
+	}*/
 }
 
 /***********************************************************************

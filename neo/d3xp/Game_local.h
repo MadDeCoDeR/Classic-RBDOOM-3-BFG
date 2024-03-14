@@ -644,6 +644,13 @@ public:
 		return nextGibTime;
 	};
 	
+	idList<idDict> GetRespawns() {
+		return upcomingTorture;
+	}
+	void AddToThePile(idDict spawnArgs) {
+		upcomingTorture.Append(spawnArgs);
+	}
+	
 	virtual bool				InhibitControls();
 	virtual bool				IsPDAOpen() const;
 	virtual bool				IsPlayerChatting() const;
@@ -804,6 +811,7 @@ private:
 	idProgram*				program = NULL;				// currently loaded script and data space
 	idClip*					clip = NULL;					// collision detection
 	idPVS*					pvs = NULL;					// potential visible set
+	idList<idDict>			upcomingTorture;
 };
 
 //============================================================================

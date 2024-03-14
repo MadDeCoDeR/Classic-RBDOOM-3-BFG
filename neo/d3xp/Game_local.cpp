@@ -1408,7 +1408,7 @@ void idGameLocal::InitFromNewMap( const char* mapName, idRenderWorld* renderWorl
 	}
 	else
 	{
-		g_skill.SetInteger( idMath::ClampInt( 0, 3, g_skill.GetInteger() ) );
+		g_skill.SetInteger( idMath::ClampInt( 0, 4, g_skill.GetInteger() ) );
 	}
 	
 	LoadMap( mapName, randseed );
@@ -1769,6 +1769,8 @@ void idGameLocal::MapShutdown()
 	Printf( "--------- Game Map Shutdown ----------\n" );
 	
 	gamestate = GAMESTATE_SHUTDOWN;
+	
+	upcomingTorture.Clear();
 	
 	if( gameRenderWorld )
 	{
@@ -2930,6 +2932,13 @@ void idGameLocal::RunFrame( idUserCmdMgr& cmdMgr, gameReturn_t& ret )
 		soundSystem->SetMute( false );
 		skipCinematic = false;
 	}
+
+	/*if (g_skill.GetInteger() == 4) {
+		while (upcomingTorture.Num() > 0) {
+			SpawnEntityType(idAI::Type, &upcomingTorture[0]);
+			upcomingTorture.RemoveIndex(0);
+		}
+	}*/
 	
 	// show any debug info for this frame
 	RunDebugInfo();
@@ -4071,13 +4080,13 @@ bool idGameLocal::InhibitEntitySpawn( idDict& _spawnArgs )
 	else
 	{
 		_spawnArgs.GetBool( "not_hard", "0", result );
-		if( !result && g_skill.GetInteger() == 3 )
+		if (!result && g_skill.GetInteger() >= 3)
 		{
 			_spawnArgs.GetBool( "not_nightmare", "0", result );
 		}
 	}
 	
-	if( g_skill.GetInteger() == 3 )
+	if( g_skill.GetInteger() >= 3 )
 	{
 		const char* name = _spawnArgs.GetString( "classname" );
 		// _D3XP :: remove moveable medkit packs also
