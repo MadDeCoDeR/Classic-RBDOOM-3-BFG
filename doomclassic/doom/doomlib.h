@@ -124,6 +124,8 @@ namespace DoomLib
 
 	void RunSound();
 
+	extern const char* Mast_MapNames[];
+	extern const char* Nerve_MapNames[];
 	//extern RecvFunc Recv;
 	//extern SendFunc Send;
 	//extern SendRemoteFunc SendRemote;

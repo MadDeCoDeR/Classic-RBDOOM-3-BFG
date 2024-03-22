@@ -181,6 +181,7 @@ char    skullName[2][/*8*/9] =
 //
 void M_DrawPagedText(menu_t def, std::function<std::string(int)> func);
 bool M_HandlePaging(int choice);
+void M_Dev(int choice);
 void M_NewGame(int choice);
 void M_Episode(int choice);
 void M_Expansion(int choice);
@@ -223,6 +224,7 @@ void M_Sound(int choice);
 void M_Video(int choice);
 void M_MasterSelect(int choice);
 void M_Doom_IT(int choice);
+void M_StartDev(int choice);
 void M_Gameplay(int choice);
 void M_Freelook(int choice);
 void M_Autoaim(int choice);
@@ -245,6 +247,8 @@ bool M_CheckQuickSave(void);
 void M_QuickSave(void);
 void M_QuickLoad(void);
 
+void M_DrawDev(void);
+void M_DrawMainDev(void);
 void M_DrawMainMenu(void);
 void M_DrawQuit(void);
 void M_DrawReadThis1(void);
@@ -300,6 +304,7 @@ int modeSize = 0;
 int pageIndex = 0;
 int numPages = 0;
 int activePageItems = 0;
+bool inDevMode = false;
 menu_t pageDef;
 //
 // DOOM MENU
@@ -1266,6 +1271,30 @@ void M_DrawQuit(void) {
 	V_DrawPatchDirect (54,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_EXITO",PU_CACHE_SHARED), W_GetNumForName("M_EXITO")), false);
 }
 
+//
+// M_DEV
+//
+void M_DrawMainDev(void)
+{
+	V_DrawPatchDirect(96, 14, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_DEV", PU_CACHE_SHARED), W_GetNumForName("M_DEV")), false);
+	V_DrawPatchDirect(54, 38, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SKILL", PU_CACHE_SHARED), W_GetNumForName("M_SKILL")), false);
+}
+
+void M_Dev(int choice)
+{
+	if (::g->netgame && !::g->demoplayback)
+	{
+		M_StartMessage(NEWGAME, NULL, false);
+		return;
+	}
+	inDevMode = true;
+	pageIndex = 0;
+	if (::g->gamemode == commercial)
+		M_SetupNextMenu(&::g->ExpDef);
+	else
+		M_SetupNextMenu(&::g->EpiDef);
+}
+
 
 
 //
@@ -1386,18 +1415,29 @@ void M_Episode(int choice)
 	}
 
 	::g->epi = choice;
-	M_SetupNextMenu(&::g->NewDef);
+	if (inDevMode) {
+		M_SetupNextMenu(&::g->DevDef);
+	}else {
+		M_SetupNextMenu(&::g->NewDef);
+	}
+	
 }
 
 void M_Expansion(int choice)
 {
 	::g->exp = choice;
+	if (inDevMode) {
+		pageIndex = 0;
+		::g->gamemission = doom2;
+	}
 	bool procced = true;
+	GameMission_t mission = doom2;
 	if( choice == 0 ) {
 		DoomLib::SetIdealExpansion( doom2 );
 	}else if (choice == 1){
 		if (DoomLib::hexp[3]) {
 			DoomLib::SetIdealExpansion(pack_nerve);
+			mission = pack_nerve;
 		}
 		else {
 			procced = false;
@@ -1407,6 +1447,7 @@ void M_Expansion(int choice)
 	else if (choice == 2) {
 		if (DoomLib::hexp[0]) {
 			DoomLib::SetIdealExpansion(pack_tnt);
+			mission = pack_tnt;
 		}
 		else {
 			procced = false;
@@ -1416,6 +1457,7 @@ void M_Expansion(int choice)
 	else if (choice == 3) {
 		if (DoomLib::hexp[1]) {
 			DoomLib::SetIdealExpansion(pack_plut);
+			mission = pack_plut;
 		}
 		else {
 			procced = false;
@@ -1425,6 +1467,7 @@ void M_Expansion(int choice)
 	else if (choice == 4) {
 		if (DoomLib::hexp[2]) {
 			DoomLib::SetIdealExpansion(pack_master);
+			mission = pack_master;
 			if (doomit.GetInteger() == 1) {
 				DoomLib::use_doomit = true;
 				state = 0;
@@ -1437,14 +1480,32 @@ void M_Expansion(int choice)
 		}
 	}
 		if (procced) {
+			if (inDevMode) {
+				::g->gamemission = mission;
+			}
 			if (choice == 4 && !DoomLib::use_doomit) {
-				M_SetupNextMenu(&::g->NewDef);
+				if (inDevMode) {
+					M_SetupNextMenu(&::g->DevDef);
+				}
+				else {
+					M_SetupNextMenu(&::g->NewDef);
+				}
 			}
 			else if (choice != 4) {
-				M_SetupNextMenu(&::g->NewDef);
+				if (inDevMode) {
+					M_SetupNextMenu(&::g->DevDef);
+				}
+				else {
+					M_SetupNextMenu(&::g->NewDef);
+				}
 			}
 			else if (choice == 4 && DoomLib::use_doomit && doomit.GetInteger() == 0) {
-				M_SetupNextMenu(&::g->NewDef);
+				if (inDevMode) {
+					M_SetupNextMenu(&::g->DevDef);
+				}
+				else {
+					M_SetupNextMenu(&::g->NewDef);
+				}
 			}
 		}
 		else {
@@ -1507,6 +1568,117 @@ void M_DrawDoomIT(void) {
 			M_WriteText(::g->DOOMITDef.x, ::g->DOOMITDef.y + LINEHEIGHT * i, masterlist[i+10], false);
 		}
 	}
+}
+
+void M_StartDev(int choice) {
+	if (M_HandlePaging(choice)) {
+		return;
+	}
+	//state = 0;
+#ifdef FOOLS
+	skill_t skill = sk_masochism;
+#else
+	skill_t skill = sk_medium;
+#endif
+	int startLevel = (choice + 1) + (pageIndex * 10);
+	if (::g->gamemode != commercial) {
+		G_DeferedInitNew(skill, ::g->epi + 1, startLevel);
+		{ //GK: Set Endmap for the selected episode
+			if ((int)::g->clusters.size() <= ::g->epi) {
+				::g->gamemission = doom;
+			}
+			else {
+				if (!::g->clusters[::g->epi].startmap && ::g->clusters[::g->epi].mapname == NULL) {
+					::g->gamemission = doom;
+				}
+				else {
+					::g->gamemission = pack_custom;
+					if (!::g->clusters[::g->epi].endmap) {
+						::g->clusters[::g->epi].endmap = ::g->clusters[::g->epi].startmap + 7;
+					}
+					::g->endmap = ::g->clusters[::g->epi].endmap;
+				}
+			}
+		}
+		M_ClearMenus();
+	}
+	else {
+		DoomLib::use_doomit = true;
+		DoomLib::selection = startLevel;
+		DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
+		DoomLib::skipToNew = true;
+		DoomLib::chosenSkill = skill;
+		DoomLib::chosenEpisode = ::g->epi + 1;
+	}
+}
+
+void M_DrawDev(void) {
+	V_DrawPatchDirect(108, 10, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_DEV", PU_CACHE_SHARED), W_GetNumForName("M_DEV")), false);
+	switch ((GameMission_t)::g->gamemission) {
+	case doom:
+	case pack_nerve:
+		numPages = 0;
+		break;
+	case doom2:
+	case pack_tnt:
+	case pack_plut:
+		numPages = 3;
+		break;
+	case pack_master:
+		numPages = 2;
+		break;
+	case pack_custom:
+		numPages = ::g->maps.size() / 10;
+		break;
+	}
+	M_DrawPagedText(::g->DevDef, [&](int i) {
+		std::string res;
+		switch ((GameMission_t)::g->gamemission) {
+		case doom:
+			if (i < 9) {
+				res = mapnames[(::g->epi) * 9 + i];
+				activePageItems++;
+			}
+			break;
+		case doom2:
+			if (i < 33) {
+				res = mapnames2[i];
+				activePageItems++;
+			}
+			break;
+		case pack_tnt:
+			if (i < 32) {
+				res = mapnamest[i];
+				activePageItems++;
+			}
+			break;
+		case pack_plut:
+			if (i < 32) {
+				res = mapnamesp[i];
+				activePageItems++;
+			}
+			break;
+		case pack_nerve:
+			if (i < 9) {
+				res = DoomLib::Nerve_MapNames[i];
+				activePageItems++;
+			}
+			break;
+		case pack_master:
+			if (i < 21) {
+				res = DoomLib::Mast_MapNames[i];
+				activePageItems++;
+			}
+			break;
+		case pack_custom:
+			if (::g->maps[i].realname != NULL) {
+				res = ::g->maps[i].realname;
+				activePageItems++;
+			}
+			break;
+		}
+		return res;
+		});
 }
 
 //
@@ -2751,7 +2923,12 @@ qboolean M_Responder (event_t* ev)
 					::g->itemOn = 0;
 				}
 				else if (::g->currentMenu->menuitems == pageDef.menuitems &&  pageIndex == numPages && ::g->itemOn + 1 >= activePageItems) {
-					::g->itemOn += (11 - ::g->itemOn);
+					if (numPages == 0) {
+						::g->itemOn = 0;
+					}
+					else {
+						::g->itemOn += (11 - ::g->itemOn);
+					}
 				}
 				else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == vsync) {
 					::g->itemOn = vsync + 2;
@@ -2768,15 +2945,21 @@ qboolean M_Responder (event_t* ev)
 		do
 		{
 			if (!::g->itemOn)
-				if (::g->currentMenu->menuitems == pageDef.menuitems)
-					::g->itemOn = pageIndex == 0 ? 10 : 11;
+				if (::g->currentMenu->menuitems == pageDef.menuitems) {
+					if (numPages == 0) {
+						::g->itemOn = activePageItems - 1;
+					}
+					else {
+						::g->itemOn = pageIndex == 0 ? 10 : 11;
+					}
+				}
 				else ::g->itemOn = ::g->currentMenu->numitems-1;
 			else if (::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn == framerate)
 				::g->itemOn = framerate - 2;
 			else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == jump)
 				::g->itemOn = look;
 			else if (::g->currentMenu->menuitems == pageDef.menuitems && pageIndex == numPages && ::g->itemOn == 11) {
-				::g->itemOn -= (12 - activePageItems);
+					::g->itemOn -= (12 - activePageItems);
 			}
 			else ::g->itemOn--;
 			S_StartSound(NULL,sfx_pstop);

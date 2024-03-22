@@ -397,7 +397,11 @@ short		skullAnimCounter;	// skull animation counter
 short		whichSkull;		// which skull to draw
 menu_t*	currentMenu; 
 //GK:Re-enable "Read This!" option
+#ifdef _DEBUG
+menuitem_t MainMenu[7];
+#else
 menuitem_t MainMenu[6];
+#endif
 menu_t  QuitDef;
 menuitem_t QuitMenu[3];
 menu_t  MainDef;
@@ -407,6 +411,8 @@ menuitem_t ExpansionMenu[5];
 menu_t  ExpDef;
 menuitem_t NewGameMenu[5];
 menu_t  NewDef;
+menuitem_t DevMenu[12];
+menu_t  DevDef;
 menuitem_t OptionsMenu[8];
 menu_t  OptionsDef;
 #if defined (_MSC_VER) && defined(USE_XAUDIO2)

@@ -127,8 +127,14 @@ menu_t  temp_QuitDef = {
 };
 memcpy( &::g->QuitDef, &temp_QuitDef, sizeof(temp_QuitDef) );
 //GK: Re-enable the Read This! option
+#ifdef _DEBUG
+menuitem_t temp_MainMenu[7] =
+{
+	{1,"M_DEV",M_Dev,'d'},
+#else
 menuitem_t temp_MainMenu[6]=
 {
+#endif
 	{1,"M_NGAME",M_NewGame,'n'},
 	{1,"M_OPTION",M_Options,'o'},
 	{1,"M_LOADG",M_LoadGame,'l'},
@@ -377,6 +383,31 @@ menu_t  temp_DoomitDef = {
 	0
 };
 memcpy(&::g->DOOMITDef, &temp_DoomitDef, sizeof(temp_DoomitDef));
+
+menuitem_t temp_DevMenu[12] = {
+	{ 1,"", M_StartDev,'1' },
+{ 1,"", M_StartDev,'2' },
+{ 1,"", M_StartDev,'3' },
+{ 1,"", M_StartDev,'4' },
+{ 1,"", M_StartDev,'5' },
+{ 1,"", M_StartDev,'6' },
+{ 1,"", M_StartDev,'7' },
+{ 1,"", M_StartDev,'8' },
+{ 1,"", M_StartDev,'9' },
+{ 1,"", M_StartDev,'0' },
+{ 1,"", M_StartDev,'p' },
+{ 1,"", M_StartDev,'n' },
+};
+memcpy(::g->DevMenu, temp_DevMenu, sizeof(temp_DevMenu));
+menu_t  temp_DevDef = {
+	12,
+	&::g->EpiDef,
+	::g->DevMenu,
+	M_DrawDev,
+	40,30,
+	0
+};
+memcpy(&::g->DevDef, &temp_DevDef, sizeof(temp_DevDef));
 //Gk:End
 //GK: Re-enable the Read This! option
 menuitem_t temp_ReadMenu1[1] = {

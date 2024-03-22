@@ -413,7 +413,7 @@ void HU_Start(void)
 			s = HU_TITLEP;
 		}
 		else {
-			if (DoomLib::expansionSelected == 5) {
+			if (DoomLib::expansionSelected == pack_nerve) {
 				int map = ::g->gamemap;
 				if (::g->gamemap > 9) {
 					map = 0;
@@ -442,7 +442,7 @@ void HU_Start(void)
 		}
 		break;
 	default:
-		if( DoomLib::expansionSelected == 5 ) {
+		if( DoomLib::expansionSelected == pack_nerve) {
 			int map = ::g->gamemap;
 			if( ::g->gamemap > 9 ) {
 				map = 0;

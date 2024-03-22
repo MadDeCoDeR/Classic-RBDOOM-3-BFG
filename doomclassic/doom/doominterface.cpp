@@ -140,7 +140,7 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 		if( DoomLib::skipToNew ) {
 			static int startLevel = 1;
 			if (DoomLib::use_doomit) {
-				idLib::Printf("Map %d", DoomLib::selection);
+				//idLib::Printf("Map %d", DoomLib::selection);
 				G_DeferedInitNew((skill_t)DoomLib::chosenSkill, DoomLib::chosenEpisode + 1, DoomLib::selection);
 				//DoomLib::use_doomit = false;
 			}

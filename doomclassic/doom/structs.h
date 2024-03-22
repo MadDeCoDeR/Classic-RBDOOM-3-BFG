@@ -131,7 +131,12 @@ typedef struct menu_s
 } menu_t;
 typedef enum
 {
+#ifdef _DEBUG
+	dev = 0,
+	newgame,
+#else
     newgame = 0,
+#endif
     options,
     loadgame,
     savegame,

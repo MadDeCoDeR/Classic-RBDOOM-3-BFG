@@ -104,12 +104,12 @@ namespace DoomLib
 		"26: Bunker", "27: Anti-Christ", "28: The Sewers", "29: Odyssey of Noises", "30: The Gateway of Hell", "31: Cyberden", "32: Go 2 It"
 	};
 
-	static const char * Mast_MapNames[] = {
+	const char * Mast_MapNames[] = {
 		"1: Attack", "2: Canyon","3: The Catwalk", "4: The Combine", "5: The Fistula", "6: The Garrison", "7: Titan Manor", "8: Paradox", "9: Subspace", "10: Subterra", "11: Trapped On Titan", "12: Virgil's Lead", "13: Minos' Judgement", 
 		"14: Bloodsea Keep", "15: Mephisto's Maosoleum", "16: Nessus", "17: Geryon", "18: Vesperas", "19: Black Tower", "20: The Express Elevator To Hell", "21: Bad Dream"
 	};
 
-	static const char * Nerve_MapNames[] = {
+	const char * Nerve_MapNames[] = {
 		"1: The Earth Base", "2: The Pain Labs", "3: Canyon of the Dead", "4: Hell Mountain", "5: Vivisection", "6: Inferno of Blood", "7: Baron's Banquet", "8: Tomb of Malevolence", "9: March of Demons"
 	};
 

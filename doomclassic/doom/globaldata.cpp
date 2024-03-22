@@ -34,6 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 //
 // PROTOTYPES
 //
+void M_Dev(int choice);
 void M_NewGame(int choice);
 void M_Episode(int choice);
 void M_Expansion(int choice);
@@ -51,6 +52,7 @@ void M_QuitDOOM(int choice);
 void M_ExitGame(int choice);
 void M_GameSelection(int choice);
 void M_CancelExit(int choice);
+void M_StartDev(int choice);
 
 void M_Alwaysrun(int choice);
 void M_ChangeMessages(int choice);
@@ -98,6 +100,8 @@ void M_ReadSaveStrings(void);
 void M_QuickSave(void);
 void M_QuickLoad(void);
 
+void M_DrawDev(void);
+void M_DrawMainDev(void);
 void M_DrawMainMenu(void);
 void M_DrawQuit(void);
 void M_DrawReadThis1(void);
