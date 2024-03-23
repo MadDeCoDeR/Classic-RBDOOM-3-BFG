@@ -13,191 +13,20 @@ env:
 
 jobs:
   linux-build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-
-    - uses: actions/checkout@v3
-      with:
-        repository: MadDeCoDeR/BFA-Assets
-        path: BFA_Assets
-    
-    - name: Set up GCC
-      uses: egor-tensin/setup-gcc@v1
-      with:
-        version: 12
-        platform: x64
-
-    - name: Download Depedencies
-      run: sudo apt-get install -y libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev nasm libwayland-dev libxkbcommon-dev libegl1-mesa-dev libdecor-0-dev libxrandr-dev
-
-    - name: Cache linux vcpkg
-      uses: actions/cache@v3
-      with: 
-          path: ${{github.workspace}}/build/vcpkg_installed
-          key: ${{runner.os}}-vcpkg-${{hashfiles('neo/linux-status')}}
-          restore-keys: |
-            ${{ runner.OS }}-vcpkg-
-
-
-    - name: Configure CMake
-      working-directory: ${{github.workspace}}/neo
-      run: cmake -B ${{github.workspace}}/build --preset=linux-${{env.BUILD_TYPE}}
-
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build --parallel=16
-      
-    - name: Archive production artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}
-        path: |
-          ./build/DoomBFA
-          ./build/vcpkg_installed/x64-linux/share/*/copyright
-          ./base/*
-          ./BFA_Assets/*
-          ./base_new/*
-          ./COPYING.txt
-          ./alsoft.ini
-          ./README.md
-
-    - name: Configure CMake Debug
-      working-directory: ${{github.workspace}}/neo
-      run: cmake -B ${{github.workspace}}/build --preset=linux-relwithdebuginfo
-
-    - name: Build Debug
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --parallel=16
-      
-    - name: Archive debug artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: linux-${{env.VERSION}}-debug
-        path: |
-          ./build/DoomBFA
-          ./build/vcpkg_installed/x64-linux/share/*/copyright
-          ./base/*
-          ./BFA_Assets/*
-          ./base_new/*
-          ./COPYING.txt
-          ./alsoft.ini
-          ./README.md
+    uses: ./.github/workflows/cmake_linux_x64.yml
+    with: 
+      build-type: ${{github.env.BUILD_TYPE}}
+      version: ${{github.env.VERSION}}
   windows-build:
-    runs-on: windows-latest
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-    
-    - uses: actions/checkout@v3
-      with:
-        repository: MadDeCoDeR/BFA-Assets
-        path: BFA_Assets
-
-    - name: setup-msbuild
-      uses: microsoft/setup-msbuild@v2
-      with:
-        vs-version: '[17.0, 18.0)'
-        msbuild-architecture: x64
-
-    - name: Cache Windows vcpkg
-      uses: actions/cache@v3
-      with: 
-          path: ${{github.workspace}}/build/vcpkg_installed
-          key: ${{runner.os}}-vcpkg-${{hashfiles('neo/windows-status')}}
-          restore-keys: |
-            ${{ runner.OS }}-vcpkg-
-
-    - name: Configure CMake
-      working-directory: ${{github.workspace}}/neo
-      run: cmake -B ${{github.workspace}}/build --preset=windows-x64-2022
-      
-    - name: Build
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: BuildDebug
-      run: cmake --build ${{github.workspace}}/build --config retwithdebugsymbols
-      
-    - name: Archive production artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}
-        path: |
-          ./build/${{env.BUILD_TYPE}}/DoomBFA.exe
-          ./build/vcpkg_installed/x64-windows-static-md/share/*/copyright
-          ./base/*
-          ./BFA_Assets/*
-          ./base_new/*
-          ./COPYING.txt
-          ./alsoft.ini
-          ./README.md
-    
-    - name: Archive debug artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: windows-${{env.VERSION}}-debug
-        path: |
-          ./build/retwithdebugsymbols/DoomBFA.*
-          ./build/vcpkg_installed/x64-windows-static-md/share/*/copyright
-          ./base/*
-          ./BFA_Assets/*
-          ./base_new/*
-          ./COPYING.txt
-          ./alsoft.ini
-          ./README.md
+    uses: ./.github/workflows/cmake_windows_x64.yml
+    with: 
+      build-type: ${{github.env.BUILD_TYPE}}
+      version: ${{github.env.VERSION}}
   windows-32-bit-build:
-    runs-on: windows-latest
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-
-    - uses: actions/checkout@v3
-      with:
-        repository: MadDeCoDeR/BFA-Assets
-        path: BFA_Assets
-    
-    - name: setup-msbuild
-      uses: microsoft/setup-msbuild@v2
-      with:
-        vs-version: '[17.0, 18.0)'
-        msbuild-architecture: Win32
-
-    - name: Cache Windows vcpkg
-      uses: actions/cache@v3
-      with: 
-          path: ${{github.workspace}}/build/vcpkg_installed
-          key: ${{runner.os}}-vcpkg-${{hashfiles('neo/windows-32-bit-status')}}
-          restore-keys: |
-            ${{ runner.OS }}-vcpkg-
-
-    - name: Configure CMake
-      working-directory: ${{github.workspace}}/neo
-      run: cmake -B ${{github.workspace}}/build --preset=windows-x86-2022
-      
-    - name: Build
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-      
-    - name: Archive production artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: windows-32-bit-${{env.VERSION}}-${{env.BUILD_TYPE}}
-        path: |
-          ./build/${{env.BUILD_TYPE}}/DoomBFA.exe
-          ./build/vcpkg_installed/x86-windows-static-md/share/*/copyright
-          ./base/*
-          ./BFA_Assets/*
-          ./base_new/*
-          ./COPYING.txt
-          ./alsoft.ini
-          ./README.md
+    uses: ./.github/workflows/cmake_windows_x64.yml
+    with: 
+      build-type: ${{github.env.BUILD_TYPE}}
+      version: ${{github.env.VERSION}}
   make-release:
     needs: [ linux-build, windows-build, windows-32-bit-build ]
     runs-on: ubuntu-latest
@@ -220,139 +49,49 @@ jobs:
           ${{ steps.messages.outputs.messages }}
         draft: false
         prerelease: true
-    - name: Download linux artifact
-      uses: actions/download-artifact@v3
+    - name: Upload Linux Production Artifact
+      uses: ./.github/workflows/package_formater.yml
       with:
-        name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}
-    - name: Zip linux artifact files
-      working-directory: ${{github.workspace}}
-      run: |
-        mv ./build/DoomBFA DoomBFA
-        mv ./base/DoomBFA.sh DoomBFA.sh
-        cp -r -u  -f ./BFA_Assets/* .
-        rm -r ./BFA_Assets
-        rm -r ./base/renderprogs
-        mkdir ./third-party-licenses
-        mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
-        chmod +x DoomBFA
-        chmod +x DoomBFA.sh
-        rm -d -R ./build
-        zip -m -r linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
-    - name: Upload Linux Artifact to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
+        artifact_name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{github.workspace}}/linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
-        asset_name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
-        asset_content_type: application/zip
-    - name: Delete linux artifact zip file
-      working-directory: ${{github.workspace}}
-      run: rm linux-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
-    - name: Download linux debug artifact
-      uses: actions/download-artifact@v3
+        commands: |
+          mv ./build/DoomBFA DoomBFA
+          mv ./base/DoomBFA.sh DoomBFA.sh
+          mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
+          chmod +x DoomBFA
+          chmod +x DoomBFA.sh
+    - name: Upload Linux Debug Artifact
+      uses: ./.github/workflows/package_formater.yml
       with:
-        name: linux-${{env.VERSION}}-debug
-    - name: Zip linux artifact files
-      working-directory: ${{github.workspace}}
-      run: |
-        mv ./build/DoomBFA DoomBFA
-        mv ./base/DoomBFA.sh DoomBFA.sh
-        cp -r -u  -f ./BFA_Assets/* .
-        rm -r ./BFA_Assets
-        mkdir ./third-party-licenses
-        mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
-        chmod +x DoomBFA
-        chmod +x DoomBFA.sh
-        rm -d -R ./build
-        zip -m -r linux-${{env.VERSION}}-debug.zip .
-    - name: Upload Linux debug Artifact to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
+        artifact_name: linux-${{env.VERSION}}-debug
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{github.workspace}}/linux-${{env.VERSION}}-debug.zip
-        asset_name: linux-${{env.VERSION}}-debug.zip
-        asset_content_type: application/zip
-    - name: Delete linux debug artifact zip file
-      working-directory: ${{github.workspace}}
-      run: rm linux-${{env.VERSION}}-debug.zip
-    - name: Download windows artifact
-      uses: actions/download-artifact@v3
+        commands: |
+          mv ./build/DoomBFA DoomBFA
+          mv ./base/DoomBFA.sh DoomBFA.sh
+          mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
+          chmod +x DoomBFA
+          chmod +x DoomBFA.sh
+    - name: Upload x64 Windows Production Artifact
+      uses: ./.github/workflows/package_formater.yml
       with:
-        name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}
-    - name: Zip Windows artifact files
-      working-directory: ${{github.workspace}}
-      run: |
-        mv ./build/${{env.BUILD_TYPE}}/* .
-        cp -r -u  -f ./BFA_Assets/* .
-        rm -r ./BFA_Assets
-        rm -r ./base/renderprogs
-        mkdir ./third-party-licenses
-        mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
-        rm -d -rf ./build
-        zip -m -r windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
-    - name: Upload Windows Artifact to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
+        artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{github.workspace}}/windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
-        asset_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
-        asset_content_type: application/zip
-    - name: Delete Windows artifact zip file
-      working-directory: ${{github.workspace}}
-      run: rm windows-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
-    - name: Download windows debug artifact
-      uses: actions/download-artifact@v3
+        commands: |
+          mv ./build/${{env.BUILD_TYPE}}/* .
+          mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
+    - name: Upload x64 Windows Debug Artifact
+      uses: ./.github/workflows/package_formater.yml
       with:
-        name: windows-${{env.VERSION}}-debug
-    - name: Zip Windows debug artifact files
-      working-directory: ${{github.workspace}}
-      run: |
-        mv ./build/retwithdebugsymbols/* .
-        cp -r -u  -f ./BFA_Assets/* .
-        rm -r ./BFA_Assets
-        mkdir ./third-party-licenses
-        mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
-        rm -d -rf ./build
-        zip -m -r windows-${{env.VERSION}}-debug.zip .
-    - name: Upload Windows debug Artifact to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
+        artifact_name: windows-${{env.VERSION}}-debug
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{github.workspace}}/windows-${{env.VERSION}}-debug.zip
-        asset_name: windows-${{env.VERSION}}-debug.zip
-        asset_content_type: application/zip
-    - name: Delete Windows debug artifact zip file
-      working-directory: ${{github.workspace}}
-      run: rm windows-${{env.VERSION}}-debug.zip
-    - name: Download windows 32 bit artifact
-      uses: actions/download-artifact@v3
+        commands: |
+          mv ./build/retwithdebugsymbols/* .
+          mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
+    - name: Upload x86 Windows Production Artifact
+      uses: ./.github/workflows/package_formater.yml
       with:
-        name: windows-32-bit-${{env.VERSION}}-${{env.BUILD_TYPE}}
-    - name: Zip Windows 32 bit artifact files
-      working-directory: ${{github.workspace}}
-      run: |
-        mv ./build/${{env.BUILD_TYPE}}/* .
-        cp -r -u  -f ./BFA_Assets/* .
-        rm -r ./BFA_Assets
-        rm -r ./base/renderprogs
-        mkdir ./third-party-licenses
-        mv ./build/vcpkg_installed/x86-windows-static-md/share/* ./third-party-licenses
-        rm -d -rf ./build
-        zip -m -r windows-32-bit-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip .
-    - name: Upload Windows 32 bit Artifact to release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
+        artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{github.workspace}}/windows-32-bit-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
-        asset_name: windows-32-bit-${{env.VERSION}}-${{env.BUILD_TYPE}}.zip
-        asset_content_type: application/zip
+        commands: |
+          mv ./build/${{env.BUILD_TYPE}}/* .
+          mv ./build/vcpkg_installed/x86-windows-static-md/share/* ./third-party-licenses

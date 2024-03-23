@@ -1,0 +1,64 @@
+name: Build x64 Windows
+
+on:
+    workflow_call:
+        inputs:
+            build_type:
+                required: true
+                type: string
+            version:
+                required: true
+                type: string
+
+jobs:
+    windows-build:
+        runs-on: windows-latest
+    
+        steps:
+        - uses: actions/checkout@v3
+          with:
+            submodules: recursive
+        
+        - uses: actions/checkout@v3
+          with:
+            repository: MadDeCoDeR/BFA-Assets
+            path: BFA_Assets
+    
+        - name: setup-msbuild
+          uses: microsoft/setup-msbuild@v2
+          with:
+            vs-version: '[17.0, 18.0)'
+            msbuild-architecture: x64
+    
+        - name: Cache Windows vcpkg
+          uses: actions/cache@v3
+          with: 
+              path: ${{github.workspace}}/build/vcpkg_installed
+              key: ${{runner.os}}-vcpkg-${{hashfiles('neo/windows-status')}}
+              restore-keys: |
+                ${{ runner.OS }}-vcpkg-
+    
+        - name: Configure CMake
+          working-directory: ${{github.workspace}}/neo
+          run: cmake -B ${{github.workspace}}/build --preset=windows-x64-2022
+          
+        - name: Build
+          # Build your program with the given configuration
+          run: cmake --build ${{github.workspace}}/build --config ${{inputs.build_type}}
+    
+        - name: BuildDebug
+          run: cmake --build ${{github.workspace}}/build --config retwithdebugsymbols
+          
+        - name: Archive production artifacts
+          uses: ./.github/workflows/upload_artifact.yml
+          with:
+            artifact_name: windows-${{inputs.version}}-${{inputs.build_type}}
+            executable_path: ./build/${{inputs.build_type}}/DoomBFA.exe
+            vcpkg_triplet: x64-windows-static-md
+        
+        - name: Archive debug artifacts
+          uses: ./.github/workflows/upload_artifact.yml
+          with:
+            artifact_name: windows-${{inputs.version}}-debug
+            executable_path: ./build/retwithdebugsymbols/DoomBFA.exe
+            vcpkg_triplet: x64-windows-static-md

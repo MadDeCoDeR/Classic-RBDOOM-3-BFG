@@ -1,0 +1,50 @@
+name: Package Formatter
+
+on:
+    workflow_call:
+        inputs:
+            artifact_name:
+                required: true
+                type: string
+            upload_url:
+                required: true
+                type: string
+            commands:
+                required: true
+                type: string
+
+jobs:
+    format_and_upload:
+        runs-on: ubunut-latest
+        steps:
+            - name: Download artifact
+              uses: actions/download-artifact@v3
+              with:
+                name: ${{inputs.artifact_name}}
+            - name: Zip artifact files
+              working-directory: ${{github.workspace}}
+              run: |
+                mv ./build/DoomBFA DoomBFA
+                mv ./base/DoomBFA.sh DoomBFA.sh
+                cp -r -u  -f ./BFA_Assets/* .
+                rm -r ./BFA_Assets
+                rm -r ./base/renderprogs
+                mkdir ./third-party-licenses
+                mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
+                chmod +x DoomBFA
+                chmod +x DoomBFA.sh
+                rm -d -R ./build
+                ${{inputs.commands}}
+                zip -m -r ${{inputs.artifact_name}}.zip .
+            - name: Upload Artifact to release
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ inputs.upload_url }}
+                asset_path: ${{github.workspace}}/${{inputs.artifact_name}}.zip
+                asset_name: ${{inputs.artifact_name}}.zip
+                asset_content_type: application/zip
+            - name: Delete artifact zip file
+              working-directory: ${{github.workspace}}
+              run: rm ${{inputs.artifact_name}}.zip
