@@ -15,18 +15,18 @@ jobs:
   linux-build:
     uses: ./.github/workflows/cmake_linux_x64.yml
     with: 
-      build_type: ${{github.env.BUILD_TYPE}}
-      version: ${{github.env.BUILD_TYPE}}
+      build_type: ${{env.BUILD_TYPE}}
+      version: ${{env.VERSION}}
   windows-build:
     uses: ./.github/workflows/cmake_windows_x64.yml
     with: 
-      build_type: ${{github.env.BUILD_TYPE}}
-      version: ${{github.env.BUILD_TYPE}}
+      build_type: ${{env.BUILD_TYPE}}
+      version: ${{env.VERSION}}
   windows-32-bit-build:
     uses: ./.github/workflows/cmake_windows_x86.yml
     with: 
-      build_type: ${{github.env.BUILD_TYPE}}
-      version: ${{github.env.BUILD_TYPE}}
+      build_type: ${{env.BUILD_TYPE}}
+      version: ${{env.VERSION}}
   make-release:
     needs: [ linux-build, windows-build, windows-32-bit-build ]
     runs-on: ubuntu-latest
