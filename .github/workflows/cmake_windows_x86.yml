@@ -47,7 +47,7 @@ jobs:
               run: cmake --build ${{github.workspace}}/build --config ${{inputs.build_type}}
             
             - name: Archive production artifacts
-              uses: ./.github/workflows/upload_artifact.yml
+              uses: ./.github/actions/upload_artifact
               with:
                 artifact_name: windows-${{inputs.version}}-${{inputs.build_type}}
                 executable_path: ./build/${{inputs.build_type}}/DoomBFA.exe
