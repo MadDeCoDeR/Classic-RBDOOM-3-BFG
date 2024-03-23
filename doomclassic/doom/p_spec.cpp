@@ -2105,7 +2105,6 @@ void T_Scroll(scroll_t *s)
 		side_t *side;
 		sector_t *sec;
 		fixed_t height, waterheight;  // killough 4/4/98: add waterheight
-		msecnode_t *node;
 		mobj_t *thing;
 
 	case sc_side:                   // killough 3/7/98: Scroll wall texture
@@ -2139,15 +2138,18 @@ void T_Scroll(scroll_t *s)
 			::g->sectors[sec->heightsec].floorheight > height ?
 			::g->sectors[sec->heightsec].floorheight : MININT;
 
-		for (node = sec->touching_thinglist; node; node = node->m_snext)
-			if (!((thing = node->m_thing)->flags & MF_NOCLIP) &&
-				(!(thing->z > height) || thing->z < waterheight))
-			{
-				// Move objects only if on floor or underwater,
-				// non-floating, and clipped.
-				thing->momx += dx;
-				thing->momy += dy;
+		for (msecnode_t* node : ::g->sector_list) {
+			if (node->m_sector == sec) {
+				if (!((thing = node->m_thing)->flags & MF_NOCLIP) &&
+					(!(thing->z > height) || thing->z < waterheight))
+				{
+					// Move objects only if on floor or underwater,
+					// non-floating, and clipped.
+					thing->momx += dx;
+					thing->momy += dy;
+				}
 			}
+		}
 		break;
 
 	case sc_carry_ceiling:       // to be added later

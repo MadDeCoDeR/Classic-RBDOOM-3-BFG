@@ -560,22 +560,16 @@ msecnode_t* P_GetSecnode()
 {
 	msecnode_t* node;
 
-	if (::g->headsecnode)
+	if (!::g->sector_list.empty())
 	{
-		node = ::g->headsecnode;
-		::g->headsecnode = ::g->headsecnode->m_snext;
+		node = ::g->sector_list.front();
+#ifndef _DEBUG
+		::g->sector_list.pop_front();
+#endif
 	}
 	else
-		node =(msecnode_t*) DoomLib::Z_Malloc(sizeof(*node), PU_LEVEL_SHARED, NULL);
+		node = (msecnode_t*) DoomLib::Z_Malloc(sizeof(*node), PU_LEVEL_SHARED, NULL);
 	return(node);
-}
-
-// P_PutSecnode() returns a node to the freelist.
-
-void P_PutSecnode(msecnode_t* node)
-{
-	node->m_snext = ::g->headsecnode;
-	::g->headsecnode = node;
 }
 // phares 3/16/98
 //
@@ -584,97 +578,86 @@ void P_PutSecnode(msecnode_t* node)
 // sectors this object appears in. This is called when creating a list of
 // nodes that will get linked in later. Returns a pointer to the new node.
 
-msecnode_t* P_AddSecnode(sector_t* s, mobj_t* thing, msecnode_t* nextnode)
+void P_AddSecnode(sector_t* s, mobj_t* thing)
 {
-	msecnode_t* node;
-
-	node = nextnode;
-	while (node)
-	{
+	for (msecnode_t* node : ::g->sector_list) {
 		if (node->m_sector == s)   // Already have a node for this sector?
 		{
 			node->m_thing = thing; // Yes. Setting m_thing says 'keep it'.
-			return(nextnode);
+			return;
 		}
-		node = node->m_tnext;
 	}
+	msecnode_t* tnode = P_GetSecnode();
+	tnode->visited = 0;
 
-	// Couldn't find an existing node for this sector. Add one at the head
-	// of the list.
+	tnode->m_sector = s;       // sector
+	tnode->m_thing = thing;     // mobj
+	s->touching_thinglist = tnode;
+	::g->sector_list.push_front(tnode);
 
-	node = P_GetSecnode();
+	//msecnode_t* node;
 
-	// killough 4/4/98, 4/7/98: mark new nodes unvisited.
-	node->visited = 0;
+	//node = nextnode;
+	//while (node)
+	//{
+	//	if (node->m_sector == s)   // Already have a node for this sector?
+	//	{
+	//		node->m_thing = thing; // Yes. Setting m_thing says 'keep it'.
+	//		return(nextnode);
+	//	}
+	//	node = node->m_tnext;
+	//}
 
-	node->m_sector = s;       // sector
-	node->m_thing = thing;     // mobj
-	node->m_tprev = NULL;    // prev node on Thing thread
-	node->m_tnext = nextnode;  // next node on Thing thread
-	if (nextnode)
-		nextnode->m_tprev = node; // set back link on Thing
+	//// Couldn't find an existing node for this sector. Add one at the head
+	//// of the list.
 
-								  // Add new node at head of sector thread starting at s->touching_thinglist
+	//node = P_GetSecnode();
 
-	node->m_sprev = NULL;    // prev node on sector thread
-	node->m_snext = s->touching_thinglist; // next node on sector thread
-	if (s->touching_thinglist)
-		node->m_snext->m_sprev = node;
-	s->touching_thinglist = node;
-	return(node);
+	//// killough 4/4/98, 4/7/98: mark new nodes unvisited.
+	//node->visited = 0;
+
+	//node->m_sector = s;       // sector
+	//node->m_thing = thing;     // mobj
+	//node->m_tprev = NULL;    // prev node on Thing thread
+	//node->m_tnext = nextnode;  // next node on Thing thread
+	//if (nextnode)
+	//	nextnode->m_tprev = node; // set back link on Thing
+
+	//							  // Add new node at head of sector thread starting at s->touching_thinglist
+
+	//node->m_sprev = NULL;    // prev node on sector thread
+	//node->m_snext = s->touching_thinglist; // next node on sector thread
+	//if (s->touching_thinglist)
+	//	node->m_snext->m_sprev = node;
+	//s->touching_thinglist = node;
+	//return(node);
 }
 
 // P_DelSecnode() deletes a sector node from the list of
 // sectors this object appears in. Returns a pointer to the next node
 // on the linked list, or NULL.
 
-msecnode_t* P_DelSecnode(msecnode_t* node)
+void P_DelSecnode(msecnode_t* node)
 {
-	msecnode_t* tp;  // prev node on thing thread
-	msecnode_t* tn;  // next node on thing thread
-	msecnode_t* sp;  // prev node on sector thread
-	msecnode_t* sn;  // next node on sector thread
-
 	if (node)
 	{
-
-		// Unlink from the Thing thread. The Thing thread begins at
-		// sector_list and not from mobj_t->touching_sectorlist.
-
-		tp = node->m_tprev;
-		tn = node->m_tnext;
-		if (tp)
-			tp->m_tnext = tn;
-		if (tn)
-			tn->m_tprev = tp;
-
-		// Unlink from the sector thread. This thread begins at
-		// sector_t->touching_thinglist.
-
-		sp = node->m_sprev;
-		sn = node->m_snext;
-		if (sp)
-			sp->m_snext = sn;
-		else if(node->m_sector)
-			node->m_sector->touching_thinglist = sn;
-		if (sn)
-			sn->m_sprev = sp;
-
-		// Return this node to the freelist
-
-		P_PutSecnode(node);
-		return(tn);
+		DoomLib::Z_Free(node);
 	}
-	return(NULL);
 }                             // phares 3/13/98
 
 							  // Delete an entire sector list
 
-void P_DelSeclist(msecnode_t* node)
+void P_DelSeclist()
 
 {
-	while (node)
-		node = P_DelSecnode(node);
+	while(!::g->sector_list.empty()) {
+		msecnode_t* node = ::g->sector_list.front();
+
+#ifndef _DEBUG
+		::g->sector_list.pop_front();
+#endif
+		P_DelSecnode(node);
+	}
 }
 
 // phares 3/14/98
@@ -702,8 +685,8 @@ qboolean PIT_GetSectors(line_t* ld)
 	// sector_list you're examining. If the Thing ends up being
 	// allowed to move to this position, then the sector_list
 	// will be attached to the Thing's mobj_t at touching_sectorlist.
-	if (ld->frontsector)
-	::g->sector_list = P_AddSecnode(ld->frontsector, ::g->tmthing, ::g->sector_list);
+	if (ld->frontsector) 
+		P_AddSecnode(ld->frontsector, ::g->tmthing);
 
 	// Don't assume all lines are 2-sided, since some Things
 	// like MT_TFOG are allowed regardless of whether their radius takes
@@ -713,7 +696,7 @@ qboolean PIT_GetSectors(line_t* ld)
 	// Use sidedefs instead of 2s flag to determine two-sidedness.
 
 	if (ld->backsector)
-		::g->sector_list = P_AddSecnode(ld->backsector, ::g->tmthing, ::g->sector_list);
+		P_AddSecnode(ld->backsector, ::g->tmthing);
 
 	return true;
 }
@@ -731,18 +714,15 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 	int yh;
 	int bx;
 	int by;
-	msecnode_t* node;
 
 	// First, clear out the existing m_thing fields. As each node is
 	// added or verified as needed, m_thing will be set properly. When
 	// finished, delete all nodes where m_thing is still NULL. These
 	// represent the sectors the Thing has vacated.
 
-	node = ::g->sector_list;
-	while (node)
+	for (msecnode_t* node : ::g->sector_list)
 	{
 		node->m_thing = NULL;
-		node = node->m_tnext;
 	}
 
 	::g->tmthing = thing;
@@ -769,22 +749,22 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 
 	// Add the sector of the (x,y) point to sector_list.
 
-	::g->sector_list = P_AddSecnode(thing->subsector->sector, thing, ::g->sector_list);
+	P_AddSecnode(thing->subsector->sector, thing);
 
 	// Now delete any nodes that won't be used. These are the ones where
 	// m_thing is still NULL.
 
-	node = ::g->sector_list;
-	while (node)
+	for (msecnode_t* node : ::g->sector_list)
 	{
 		if (node->m_thing == NULL)
 		{
-			if (node == ::g->sector_list)
-				::g->sector_list = node->m_tnext;
-			node = P_DelSecnode(node);
+			if (node == ::g->sector_list.front()) {
+#ifndef _DEBUG
+				::g->sector_list.pop_front();
+#endif
+				P_DelSecnode(node);
+			}
 		}
-		else
-			node = node->m_tnext;
 	}
 }
 

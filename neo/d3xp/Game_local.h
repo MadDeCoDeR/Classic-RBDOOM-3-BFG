@@ -647,8 +647,8 @@ public:
 	idList<idDict> GetRespawns() {
 		return upcomingTorture;
 	}
-	void AddToThePile(idDict spawnArgs) {
-		upcomingTorture.Append(spawnArgs);
+	void AddToThePile(idDict _spawnArgs) {
+		upcomingTorture.Append(_spawnArgs);
 	}
 	
 	virtual bool				InhibitControls();

@@ -528,7 +528,7 @@ int		bombdamage;
 qboolean		crushchange;
 qboolean		nofit;
 // Temporary holder for thing_sectorlist threads
-msecnode_t* sector_list = NULL;                             // phares 3/16/98
+std::deque<msecnode_t*> sector_list;                             // phares 3/16/98
 // p_map.vars end // 
 //  p_maputl.vars begin // 
 fixed_t opentop;
@@ -1121,17 +1121,6 @@ const char* acronymPrefix;
 
 bool classichUsed;
 bool warpUsed;
-
-// phares 3/21/98
-//
-// Maintain a freelist of msecnode_t's to reduce memory allocs and frees.
-//
-// Kalampokis 27/04/19
-//
-// If you EVER find ANY custom global variable 
-// when importing from other ports then put it HERE
-
-msecnode_t* headsecnode;
 
 
 std::vector<zstats_t> zstats;

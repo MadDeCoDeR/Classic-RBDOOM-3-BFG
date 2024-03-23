@@ -373,9 +373,6 @@ void P_UnsetThingPosition (mobj_t* thing)
 		//
 		// If this Thing is being removed entirely, then the calling
 		// routine will clear out the nodes in sector_list.
-
-	::g->sector_list = thing->touching_sectorlist;
-	thing->touching_sectorlist = NULL; //to be restored by P_SetThingPosition
 	
     if ( ! (thing->flags & MF_NOBLOCKMAP) )
     {
@@ -450,8 +447,10 @@ P_SetThingPosition (mobj_t* thing)
 	// added, new sector links are created.
 
 		P_CreateSecNodeList(thing, thing->x, thing->y);
-		thing->touching_sectorlist = ::g->sector_list; // Attach to Thing's mobj_t
-		::g->sector_list = NULL; // clear for next time
+		//int thingKey = thing->type & thing->spawnpoint.x & thing->spawnpoint.y;
+		//::g->sector_list_map.emplace(std::pair<int, std::deque<msecnode_t*>>( thingKey, ::g->sector_list )); // Attach to Thing's mobj_t
+		//std::deque<msecnode_t*> tlist;
+		//::g->sector_list.swap(tlist); // clear for next time
     }
 
     

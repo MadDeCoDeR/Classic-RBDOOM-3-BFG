@@ -727,8 +727,6 @@ void G_DoLoadLevel ()
 	// by Z_FreeTags() when the previous level ended or player
 	// died.
 
-	::g->headsecnode = NULL;
-
 	P_SetupLevel (::g->gameepisode, ::g->gamemap, 0, ::g->gameskill);
 
 	::g->displayplayer = ::g->consoleplayer;		// view the guy you are playing    
