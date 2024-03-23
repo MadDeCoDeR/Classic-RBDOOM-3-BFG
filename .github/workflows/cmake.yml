@@ -13,17 +13,17 @@ env:
 
 jobs:
   linux-build:
-    uses: ./.github/workflows/cmake_linux_x64.yml
+    uses: MadDeCoDeR/Classic-RBDOOM-3-BFG/.github/workflows/cmake_linux_x64.yml@main
     with: 
       build-type: ${{github.env.BUILD_TYPE}}
       version: ${{github.env.BUILD_TYPE}}
   windows-build:
-    uses: ./.github/workflows/cmake_windows_x64.yml
+    uses: MadDeCoDeR/Classic-RBDOOM-3-BFG/.github/workflows/cmake_windows_x64.yml@main
     with: 
       build-type: ${{github.env.BUILD_TYPE}}
       version: ${{github.env.BUILD_TYPE}}
   windows-32-bit-build:
-    uses: ./.github/workflows/cmake_windows_x86.yml
+    uses: MadDeCoDeR/Classic-RBDOOM-3-BFG/.github/workflows/cmake_windows_x86.yml@main
     with: 
       build-type: ${{github.env.BUILD_TYPE}}
       version: ${{github.env.BUILD_TYPE}}
@@ -50,7 +50,7 @@ jobs:
         draft: false
         prerelease: true
     - name: Upload Linux Production Artifact
-      uses: ./.github/workflows/package_formater.yml
+      uses: MadDeCoDeR/Classic-RBDOOM-3-BFG/.github/workflows/package_formater.yml@main
       with:
         artifact_name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}
         upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -61,7 +61,7 @@ jobs:
           chmod +x DoomBFA
           chmod +x DoomBFA.sh
     - name: Upload Linux Debug Artifact
-      uses: ./.github/workflows/package_formater.yml
+      uses: MadDeCoDeR/Classic-RBDOOM-3-BFG/.github/workflows/package_formater.yml@main
       with:
         artifact_name: linux-${{env.VERSION}}-debug
         upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -72,7 +72,7 @@ jobs:
           chmod +x DoomBFA
           chmod +x DoomBFA.sh
     - name: Upload x64 Windows Production Artifact
-      uses: ./.github/workflows/package_formater.yml
+      uses: MadDeCoDeR/Classic-RBDOOM-3-BFG/.github/workflows/package_formater.yml@main
       with:
         artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}
         upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -80,7 +80,7 @@ jobs:
           mv ./build/${{env.BUILD_TYPE}}/* .
           mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
     - name: Upload x64 Windows Debug Artifact
-      uses: ./.github/workflows/package_formater.yml
+      uses: MadDeCoDeR/Classic-RBDOOM-3-BFG/.github/workflows/package_formater.yml@main
       with:
         artifact_name: windows-${{env.VERSION}}-debug
         upload_url: ${{ steps.create_release.outputs.upload_url }}
@@ -88,7 +88,7 @@ jobs:
           mv ./build/retwithdebugsymbols/* .
           mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
     - name: Upload x86 Windows Production Artifact
-      uses: ./.github/workflows/package_formater.yml
+      uses: MadDeCoDeR/Classic-RBDOOM-3-BFG/.github/workflows/package_formater.yml@main
       with:
         artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}
         upload_url: ${{ steps.create_release.outputs.upload_url }}
