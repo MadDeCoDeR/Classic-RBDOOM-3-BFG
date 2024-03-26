@@ -3267,6 +3267,7 @@ void M_Init (void)
 
 		::g->MainDef.y += 8;
 		::g->NewDef.prevMenu = &::g->MainDef;
+		::g->DevDef.prevMenu = &::g->MainDef;
 		//::g->ReadDef1.routine = M_DrawReadThis1;
 		//::g->ReadDef1.x = 330;
 		//::g->ReadDef1.y = 165;
