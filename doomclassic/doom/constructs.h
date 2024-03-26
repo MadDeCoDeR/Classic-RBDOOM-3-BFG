@@ -131,15 +131,21 @@ memcpy( &::g->QuitDef, &temp_QuitDef, sizeof(temp_QuitDef) );
 menuitem_t temp_MainMenu[7] =
 {
 	{1,"M_DEV",M_Dev,'d'},
+#elif FOOLS
+menuitem_t temp_MainMenu[3] =
+{
+	{1,"M_DEV",M_Dev,'d'},
 #else
 menuitem_t temp_MainMenu[6]=
 {
 #endif
+#ifndef FOOLS
 	{1,"M_NGAME",M_NewGame,'n'},
 	{1,"M_OPTION",M_Options,'o'},
 	{1,"M_LOADG",M_LoadGame,'l'},
 	{1,"M_SAVEG",M_SaveGame,'m'},
 	// Another hickup with Special edition.
+#endif
 	{1,"M_RDTHIS",M_ReadThis,'r'},
 	{1,"M_QUITG",M_QuitDOOM,'q'}
 };

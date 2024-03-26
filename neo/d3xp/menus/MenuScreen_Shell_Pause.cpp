@@ -167,9 +167,11 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 			option.Append( "#str_swf_restart_map" );	// retart map
 			menuOptions.Append( option );
 			option.Clear();
+#ifndef FOOLS
 			option.Append( "#str_swf_settings" );	// settings
 			menuOptions.Append( option );
 			option.Clear();
+#endif
 			option.Append( "#str_swf_exit_game" );	// exit game
 			menuOptions.Append( option );
 			
@@ -177,9 +179,11 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_DEAD_RESTART );
 			index++;
+#ifndef FOOLS
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_SETTINGS );
 			index++;
+#endif
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_LEAVE );
 		}
@@ -188,12 +192,14 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 			option.Append( "#str_04106" );	// return to game
 			menuOptions.Append( option );
 			option.Clear();
+#ifndef FOOLS
 			option.Append( "#str_swf_restart_map" );	// retart map
 			menuOptions.Append( option );
 			option.Clear();
 			option.Append( "#str_swf_settings" );	// settings
 			menuOptions.Append( option );
 			option.Clear();
+#endif
 			option.Append( "#str_swf_exit_game" );	// exit game
 			menuOptions.Append( option );
 			
@@ -201,12 +207,14 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_RETURN );
 			index++;
+#ifndef FOOLS
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_RESTART );
 			index++;
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_SETTINGS );
 			index++;
+#endif
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_EXIT );
 		}
@@ -219,9 +227,11 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 			option.Append( "#str_04106" );	// return to game
 			menuOptions.Append( option );
 			option.Clear();
+#ifndef FOOLS
 			option.Append( "#str_swf_settings" );	// settings
 			menuOptions.Append( option );
 			option.Clear();
+#endif
 			option.Append( "#str_swf_invite_friends_upper" );	// settings
 			menuOptions.Append( option );
 			option.Clear();
@@ -238,6 +248,7 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 				buttonWidget->SetDescription( "#str_swf_resume_desc" );
 			}
 			index++;
+#ifndef FOOLS
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_SETTINGS );
 			buttonWidget = dynamic_cast< idMenuWidget_Button* >( &options->GetChildByIndex( index ) );
@@ -246,6 +257,7 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 				buttonWidget->SetDescription( "#str_02206" );
 			}
 			index++;
+#endif
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_INVITE_FRIENDS );
 			buttonWidget = dynamic_cast< idMenuWidget_Button* >( &options->GetChildByIndex( index ) );
@@ -268,17 +280,20 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 			isMpPause = false;
 			if( isDead )
 			{
+#ifndef FOOLS
 				option.Append( "#str_02187" );	// load game
 				menuOptions.Append( option );
 				option.Clear();
 				option.Append( "#str_swf_settings" );	// settings
 				menuOptions.Append( option );
 				option.Clear();
+#endif
 				option.Append( "#str_swf_exit_game" );	// exit game
 				menuOptions.Append( option );
 				
 				int index = 0;
 				idMenuWidget_Button* buttonWidget = NULL;
+#ifndef FOOLS
 				options->GetChildByIndex( index ).ClearEventActions();
 				options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_LOAD );
 				buttonWidget = dynamic_cast< idMenuWidget_Button* >( &options->GetChildByIndex( index ) );
@@ -295,6 +310,7 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 					buttonWidget->SetDescription( "#str_02206" );
 				}
 				index++;
+#endif
 				options->GetChildByIndex( index ).ClearEventActions();
 				options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_EXIT );
 				buttonWidget = dynamic_cast< idMenuWidget_Button* >( &options->GetChildByIndex( index ) );
@@ -309,6 +325,7 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 				option.Append( "#str_04106" );	// return to game
 				menuOptions.Append( option );
 				option.Clear();
+#ifndef FOOLS
 				option.Append( "#str_02179" );	// save game
 				menuOptions.Append( option );
 				option.Clear();
@@ -318,6 +335,7 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 				option.Append( "#str_swf_settings" );	// settings
 				menuOptions.Append( option );
 				option.Clear();
+#endif
 				option.Append( "#str_swf_exit_game" );	// exit game
 				menuOptions.Append( option );
 				
@@ -331,6 +349,7 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 					buttonWidget->SetDescription( "#str_swf_resume_desc" );
 				}
 				index++;
+#ifndef FOOLS
 				options->GetChildByIndex( index ).ClearEventActions();
 				options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_SAVE );
 				buttonWidget = dynamic_cast< idMenuWidget_Button* >( &options->GetChildByIndex( index ) );
@@ -355,6 +374,7 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 					buttonWidget->SetDescription( "#str_02206" );
 				}
 				index++;
+#endif
 				options->GetChildByIndex( index ).ClearEventActions();
 				options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_EXIT );
 				buttonWidget = dynamic_cast< idMenuWidget_Button* >( &options->GetChildByIndex( index ) );

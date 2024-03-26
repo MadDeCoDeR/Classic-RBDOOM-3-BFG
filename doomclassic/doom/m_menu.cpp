@@ -2813,7 +2813,7 @@ qboolean M_Responder (event_t* ev)
 			//::g->itemOn = 0;
 			S_StartSound(NULL,sfx_swtchn);
 			return true;
-
+#ifndef FOOLS
 		case KEY_F2:            // Save
 			M_StartControlPanel();
 			S_StartSound(NULL,sfx_swtchn);
@@ -2843,12 +2843,12 @@ qboolean M_Responder (event_t* ev)
 			S_StartSound(NULL,sfx_swtchn);
 			M_QuickSave();
 			return true;
-
+#endif
 		case KEY_F7:            // End game
 			S_StartSound(NULL,sfx_swtchn);
 			M_EndGame(0);
 			return true;
-
+#ifndef FOOLS
 		case KEY_F8:            // Toggle messages
 			M_ChangeMessages(1);
 			S_StartSound(NULL,sfx_swtchn);
@@ -2858,13 +2858,13 @@ qboolean M_Responder (event_t* ev)
 			S_StartSound(NULL,sfx_swtchn);
 			M_QuickLoad();
 			return true;
-
+#endif
 		case KEY_F10:           // Quit DOOM
 			M_StartControlPanel(); //GK: without it it doesn't show
 			S_StartSound(NULL,sfx_swtchn);
 			M_QuitDOOM(0);
 			return true;
-
+#ifndef FOOLS
 		case KEY_F11:           // gamma toggle
 			::g->usegamma++;
 			if (::g->usegamma > 4)
@@ -2872,6 +2872,7 @@ qboolean M_Responder (event_t* ev)
 			::g->players[::g->consoleplayer].message = gammamsg[::g->usegamma];
 			I_SetPalette ((byte*)W_CacheLumpName ("PLAYPAL",PU_CACHE_SHARED),W_LumpLength(W_GetNumForName("PLAYPAL")));
 			return true;
+#endif
 		//case KEY_F12: //GK: Why not
 		//	M_Alwaysrun(0);
 		//	S_StartSound(NULL, sfx_swtchn);

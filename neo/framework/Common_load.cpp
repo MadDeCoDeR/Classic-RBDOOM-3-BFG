@@ -1349,6 +1349,7 @@ LoadGame_f
 */
 CONSOLE_COMMAND_SHIP( loadGame, "loads a game", idCmdSystem::ArgCompletion_SaveGame )
 {
+#ifndef FOOLS
 	console->Close();
 	commonLocal.LoadGame( ( args.Argc() > 1 ) ? args.Argv( 1 ) : "quick" );
 }
@@ -1360,11 +1361,13 @@ SaveGame_f
 */
 CONSOLE_COMMAND_SHIP( saveGame, "saves a game", NULL )
 {
+#ifndef FOOLS
 	const char* savename = ( args.Argc() > 1 ) ? args.Argv( 1 ) : "quick";
 	if( commonLocal.SaveGame( savename ) )
 	{
 		common->Printf( "Saved: %s\n", savename );
 	}
+#endif
 }
 
 /*
@@ -1401,6 +1404,9 @@ Restart the server on a different map in developer mode
 */
 CONSOLE_COMMAND_SHIP( devmap, "loads a map in developer mode", idCmdSystem::ArgCompletion_MapName )
 {
+#ifdef FOOLS
+	game->SetCVarInteger("g_skill", 4);
+#endif
 	commonLocal.StartNewGame( args.Argv( 1 ), true, GAME_MODE_SINGLEPLAYER );
 }
 

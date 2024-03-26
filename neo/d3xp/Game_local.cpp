@@ -131,7 +131,11 @@ idCVar flashlight_old("flashlight_old", "0", CVAR_GAME | CVAR_INTEGER | CVAR_ARC
 idCVar pm_vmfov("pm_vmfov", "0", CVAR_INTEGER | CVAR_GAME | CVAR_ARCHIVE, "Adjust the View Model Field of View", 0, 64);
 idCVar pm_cursor("pm_cursor", "1", CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE, "Enable/disable Crosshair");
 idCVar aa_targetAimAssistEnable("aa_targetAimAssistEnable", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enables/Disables the entire Aim Assist system");
+#ifdef FOOLS
+idCVar g_checkpoints("g_checkpoints", "0", CVAR_BOOL | CVAR_ROM, "Enable/Disable checkpoints");
+#else
 idCVar g_checkpoints("g_checkpoints", "1", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable checkpoints");
+#endif
 idCVar g_weaponShadows("g_weaponShadows", "1", CVAR_BOOL | CVAR_ARCHIVE, "Cast shadows from weapons");
 idCVar pm_classicPose("pm_classicPose", "0", CVAR_BOOL | CVAR_GAME | CVAR_ARCHIVE, "Toogle classic weapon pose");
 

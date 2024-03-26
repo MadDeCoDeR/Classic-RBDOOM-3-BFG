@@ -215,7 +215,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 		
 			idMenuWidget_Button* buttonWidget = NULL;
 			
-#if !defined ( ID_RETAIL )
+#if !defined ( ID_RETAIL ) || defined (FOOLS)
 			option.Append( "DEV" );	// DEV
 			menuOptions.Append( option );
 			options->GetChildByIndex( index ).ClearEventActions();
@@ -227,7 +227,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 			}
 			index++;
 #endif
-			
+#if !defined (FOOLS)
 			option.Clear();
 			option.Append( "#str_swf_campaign" );	// singleplayer
 			menuOptions.Append( option );
@@ -264,7 +264,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 				buttonWidget->SetDescription( "#str_02206" );
 			}
 			index++;
-			
+#endif
 			
 			option.Clear();
 			option.Append( "#str_swf_credits" );	// credits

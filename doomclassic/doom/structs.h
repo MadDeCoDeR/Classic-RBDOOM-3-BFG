@@ -137,10 +137,12 @@ typedef enum
 #else
     newgame = 0,
 #endif
+#ifndef FOOLS
     options,
     loadgame,
     savegame,
 	//GK:Re-enable the "Read This!" option
+#endif
 	readthis,
     quitdoom,
     main_end

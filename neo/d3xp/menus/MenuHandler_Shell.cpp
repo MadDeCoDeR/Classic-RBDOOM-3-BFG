@@ -840,21 +840,23 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 		}
 		else
 		{
-#if !defined ( ID_RETAIL )
+#if !defined ( ID_RETAIL ) || defined (FOOLS)
 			navOptions.Append( "DEV" );	// DEV
 #endif
+#ifndef FOOLS
 			navOptions.Append( "#str_swf_campaign" );	// singleplayer
 			if (!common->IsNewDOOM3() || idStr::Icmp("", cvarSystem->GetCVarString("fs_game"))) {
 				navOptions.Append("#str_swf_multiplayer");	// multiplayer
 			}
 			navOptions.Append( "#str_swf_settings" );	// settings
+#endif
 			navOptions.Append( "#str_swf_credits" );	// credits
 			navOptions.Append( "#str_swf_quit" );	// quit
 			
 			
 			idMenuWidget_MenuButton* buttonWidget = NULL;
 			int index = 0;
-#if !defined ( ID_RETAIL )
+#if !defined ( ID_RETAIL ) || defined (FOOLS)
 			buttonWidget = dynamic_cast< idMenuWidget_MenuButton* >( &menuBar->GetChildByIndex( index ) );
 			if( buttonWidget != NULL )
 			{
@@ -864,6 +866,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 			}
 			index++;
 #endif
+#ifndef FOOLS
 			buttonWidget = dynamic_cast< idMenuWidget_MenuButton* >( &menuBar->GetChildByIndex( index ) );
 			if( buttonWidget != NULL )
 			{
@@ -890,6 +893,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 				buttonWidget->SetDescription( "#str_02206" );
 			}
 			index++;
+#endif
 			buttonWidget = dynamic_cast< idMenuWidget_MenuButton* >( &menuBar->GetChildByIndex( index ) );
 			if( buttonWidget != NULL )
 			{

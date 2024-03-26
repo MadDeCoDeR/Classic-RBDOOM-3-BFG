@@ -399,6 +399,8 @@ menu_t*	currentMenu;
 //GK:Re-enable "Read This!" option
 #ifdef _DEBUG
 menuitem_t MainMenu[7];
+#elif FOOLS
+menuitem_t MainMenu[3];
 #else
 menuitem_t MainMenu[6];
 #endif
