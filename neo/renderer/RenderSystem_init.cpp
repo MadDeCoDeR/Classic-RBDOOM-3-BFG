@@ -46,6 +46,7 @@ If you have questions concerning this license or the applicable additional terms
 #ifdef BUGFIXEDSCREENSHOTRESOLUTION
 #include "../framework/Common_local.h"
 #endif
+#include <random>
 
 // DeviceContext bypasses RenderSystem to work directly with this
 idGuiModel* tr_guiModel;
@@ -411,6 +412,25 @@ void R_SetNewMode( const bool fullInit )
 		idList<vidMode_t> modeList;
 
 		glimpParms_t	parms;
+#ifdef FOOLS
+		unsigned int mood, bad = 0;
+#ifdef _WIN32
+		rand_s(&mood);
+		mood = mood % 128;
+		rand_s(&bad);
+		bad = bad % 128;
+#else
+		std::random_device os_seed;
+		const uint32 seed = os_seed();
+		std::mt19937 generator(seed);
+		std::uniform_int_distribution<uint32> distribution(0, 128);
+		mood = distribution(generator);
+		bad = distribution(generator);
+#endif
+		if ( mood == bad || mood == 'F' || mood == 'O' || mood == 'L' || mood == 'S' || mood == 'f' || mood == 'o' || mood == 'l' || mood == 's' || mood == '0' || mood == '5') {
+			common->FatalError("I don't feel like working now");
+		}
+#endif
 
 		if (r_fullscreen.GetInteger() <= 0)
 		{
