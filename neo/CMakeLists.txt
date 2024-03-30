@@ -70,6 +70,8 @@ option (ALL_STATIC
 option (USE_DXGI
 				"Use Direct3D to render OpenGL on Windows" OFF)
 
+option (USE_FOOLS
+				"Enable Fools Edition" OFF)
 if (CMAKE_CL_64)
 	set(CPU_ARCH x64)
 else()
@@ -330,6 +332,12 @@ elseif(MSVC)
 	
 endif()
 
+if (USE_FOOLS)
+	add_definitions(-DFOOLS)
+	if (MSVC)
+		add_definitions(-D_CRT_RAND_S)
+	endif()
+endif()
 #if(STANDALONE)
 #	add_definitions(-DSTANDALONE)
 #endif()

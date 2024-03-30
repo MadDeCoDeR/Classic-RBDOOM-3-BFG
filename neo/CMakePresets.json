@@ -213,6 +213,20 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Retail"
       }
+    },
+    {
+      "name": "linux-retail-fools",
+      "displayName": "Linux Retail (Fools Edition)",
+      "binaryDir": "${sourceParentDir}/buildRetailFools",
+      "generator": "Unix Makefiles",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Retail",
+        "USE_FOOLS": {
+          "type": "BOOL",
+          "value": "ON"
+        }
+      }
     }
   ]
 }
