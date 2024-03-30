@@ -1352,6 +1352,7 @@ CONSOLE_COMMAND_SHIP( loadGame, "loads a game", idCmdSystem::ArgCompletion_SaveG
 #ifndef FOOLS
 	console->Close();
 	commonLocal.LoadGame( ( args.Argc() > 1 ) ? args.Argv( 1 ) : "quick" );
+#endif
 }
 
 /*
