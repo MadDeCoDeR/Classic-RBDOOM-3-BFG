@@ -2,6 +2,20 @@ DOOM-BFA Release Notes - https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG
 
 Thank you for downloading DOOM-BFA.
 
+_______________________________________
+
+1 April 2024 - DOOM-BFA 1.3.2
+_______________________________
+
+[classicdoom]
+
+- Various Stability and Performance Improvements
+
+- Fix minor issue with EXPINFO for DOOM 1
+
+[DOOM3BFG]
+
+- Fix issue with Player's Head self-shadow
 
 _______________________________________
 
