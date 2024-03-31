@@ -116,6 +116,19 @@
       "generator": "Visual Studio 17"
     },
     {
+      "name": "windows-x64-2022-fools",
+      "displayName": "VS2022: 64-bit Windows (Fools Edition)",
+      "inherits": "windows-x64-base",
+      "binaryDir": "${sourceParentDir}/buildx64Fools",
+      "generator": "Visual Studio 17",
+      "cacheVariables": {
+        "USE_FOOLS": {
+          "type": "BOOL",
+          "value": "ON"
+        }
+      }
+    },
+    {
       "name": "windows-x64-2022-legacy",
       "displayName": "VS2022: 64-bit Windows Legacy Mode",
       "binaryDir": "${sourceParentDir}/buildx64Legacy",
@@ -139,6 +152,19 @@
       "displayName": "VS2022: 32-bit Windows",
       "inherits": "windows-x86-base",
       "generator": "Visual Studio 17"
+    },
+    {
+      "name": "windows-x86-2022-fools",
+      "displayName": "VS2022: 32-bit Windows (Fools Edition)",
+      "inherits": "windows-x86-base",
+      "binaryDir": "${sourceParentDir}/buildx86Fools",
+      "generator": "Visual Studio 17",
+      "cacheVariables": {
+        "USE_FOOLS": {
+          "type": "BOOL",
+          "value": "ON"
+        }
+      }
     },
     {
       "name": "linux-base",
