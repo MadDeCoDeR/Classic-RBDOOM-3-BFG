@@ -593,7 +593,10 @@ void P_AddSecnode(sector_t* s, mobj_t* thing)
 	tnode->m_sector = s;       // sector
 	tnode->m_thing = thing;     // mobj
 	s->touching_thinglist = tnode;
+#ifdef _WIN32
 	::g->sector_list.push_front(tnode);
+#endif
+	
 
 	//msecnode_t* node;
 
