@@ -291,7 +291,7 @@ struct mobj_t
     mobj_t*	tracer;	
 
 	// a linked list of sectors where this object appears
-	struct msecnode_s* touching_sectorlist;                 // phares 3/14/98
+	//struct msecnode_s* touching_sectorlist;                 // phares 3/14/98
     
 };
 

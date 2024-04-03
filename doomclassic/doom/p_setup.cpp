@@ -242,7 +242,7 @@ void P_LoadSectors (int lump)
 		ss->special = SHORT(ms->special);
 		ss->tag = SHORT(ms->tag);
 		ss->thinglist = NULL;
-		ss->touching_thinglist = NULL;            // phares 3/14/98
+		//ss->touching_thinglist = NULL;            // phares 3/14/98
 		//GK: Load the reverbs based on sector's index
 		ss->counter = i;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)

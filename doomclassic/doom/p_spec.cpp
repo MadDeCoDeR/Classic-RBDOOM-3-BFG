@@ -2139,14 +2139,16 @@ void T_Scroll(scroll_t *s)
 			::g->sectors[sec->heightsec].floorheight : MININT;
 
 		for (msecnode_t* node : ::g->sector_list) {
-			if (node->m_sector == sec) {
-				if (!((thing = node->m_thing)->flags & MF_NOCLIP) &&
-					(!(thing->z > height) || thing->z < waterheight))
-				{
-					// Move objects only if on floor or underwater,
-					// non-floating, and clipped.
-					thing->momx += dx;
-					thing->momy += dy;
+			if (node != NULL) {
+				if (node->m_sector == sec) {
+					if (!((thing = node->m_thing)->flags & MF_NOCLIP) &&
+						(!(thing->z > height) || thing->z < waterheight))
+					{
+						// Move objects only if on floor or underwater,
+						// non-floating, and clipped.
+						thing->momx += dx;
+						thing->momy += dy;
+					}
 				}
 			}
 		}

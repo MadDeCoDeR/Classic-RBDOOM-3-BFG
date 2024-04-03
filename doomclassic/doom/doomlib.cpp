@@ -473,6 +473,7 @@ void DoomLib::Shutdown() {
 		CleanVector(glob->cpatch);
 		CleanVector(glob->visplanes);
 		CleanVector(glob->reverbs);
+		CleanVector(glob->sector_list);
 		for (size_t j = 0; j < glob->acts.size(); j++) {
 			CleanVector(glob->acts[j]);
 		}

@@ -560,15 +560,17 @@ msecnode_t* P_GetSecnode()
 {
 	msecnode_t* node;
 
-	if (!::g->sector_list.empty())
+	if (::g->headsecind > 0)
 	{
-		node = ::g->sector_list.front();
-#ifndef _DEBUG
-		::g->sector_list.pop_front();
-#endif
+		node = ::g->sector_list[::g->headsecind - 1];
+		::g->sector_list[::g->headsecind - 1] = NULL;
+		::g->headsecind--;
+		if (::g->headsecind < 0) {
+			::g->headsecind = 0;
+		}
 	}
 	else
-		node = (msecnode_t*) DoomLib::Z_Malloc(sizeof(*node), PU_LEVEL_SHARED, NULL);
+		node = new msecnode_t();
 	return(node);
 }
 // phares 3/16/98
@@ -580,23 +582,34 @@ msecnode_t* P_GetSecnode()
 
 void P_AddSecnode(sector_t* s, mobj_t* thing)
 {
-	for (msecnode_t* node : ::g->sector_list) {
-		if (node->m_sector == s)   // Already have a node for this sector?
+	for (int i = 0; i < ::g->headsecind; i++) {
+		
+		if (::g->sector_list[i]->m_sector == s)   // Already have a node for this sector?
 		{
-			node->m_thing = thing; // Yes. Setting m_thing says 'keep it'.
+			::g->sector_list[i]->m_thing = thing; // Yes. Setting m_thing says 'keep it'.
 			return;
 		}
+		
 	}
 	msecnode_t* tnode = P_GetSecnode();
 	tnode->visited = 0;
 
 	tnode->m_sector = s;       // sector
 	tnode->m_thing = thing;     // mobj
-	s->touching_thinglist = tnode;
-#ifdef _WIN32
-	::g->sector_list.push_front(tnode);
+	//s->touching_thinglist = tnode;
+#if _ITERATOR_DEBUG_LEVEL < 2
+	if (::g->sector_list.size() == ::g->sector_list.capacity()) {
+		::g->sector_list.reserve(::g->sector_list.size() + 100);
+}
+	//::g->specind = 0;
+	::g->sector_list.emplace_back(tnode);
+#else
+	if (::g->sector_list.size() == ::g->sector_list.capacity()) {
+		::g->sector_list.resize(::g->sector_list.size() + 100);
+	}
+	::g->sector_list[::g->headsecind] = tnode;
 #endif
-	
+	::g->headsecind++;
 
 	//msecnode_t* node;
 
@@ -642,10 +655,12 @@ void P_AddSecnode(sector_t* s, mobj_t* thing)
 
 void P_DelSecnode(msecnode_t* node)
 {
-	if (node)
+	/*if (node)
 	{
-		DoomLib::Z_Free(node);
-	}
+		node->m_thing = NULL;
+		node->m_sector = NULL;
+		delete node;
+	}*/
 }                             // phares 3/13/98
 
 							  // Delete an entire sector list
@@ -654,11 +669,12 @@ void P_DelSeclist()
 
 {
 	while(!::g->sector_list.empty()) {
-		msecnode_t* node = ::g->sector_list.front();
-
-#ifndef _DEBUG
-		::g->sector_list.pop_front();
-#endif
+		msecnode_t* node = ::g->sector_list[::g->headsecind - 1];
+		::g->sector_list[::g->headsecind - 1] = NULL;
+		::g->headsecind--;
+		if (::g->headsecind < 0) {
+			::g->headsecind = 0;
+		}
 		P_DelSecnode(node);
 	}
 }
@@ -725,7 +741,9 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 
 	for (msecnode_t* node : ::g->sector_list)
 	{
-		node->m_thing = NULL;
+		if (node != NULL) {
+			node->m_thing = NULL;
+		}
 	}
 
 	::g->tmthing = thing;
@@ -759,13 +777,17 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 
 	for (msecnode_t* node : ::g->sector_list)
 	{
-		if (node->m_thing == NULL)
-		{
-			if (node == ::g->sector_list.front()) {
-#ifndef _DEBUG
-				::g->sector_list.pop_front();
-#endif
-				P_DelSecnode(node);
+		if (node != NULL) {
+			if (node->m_thing == NULL)
+			{
+				if (node == ::g->sector_list[::g->headsecind - 1]) {
+					::g->sector_list[::g->headsecind - 1] = NULL;
+					::g->headsecind--;
+					if (::g->headsecind < 0) {
+						::g->headsecind = 0;
+					}
+					P_DelSecnode(node);
+				}
 			}
 		}
 	}

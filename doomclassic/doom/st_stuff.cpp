@@ -1032,15 +1032,17 @@ void ST_Ticker (void)
 
 	::g->st_clock++;
 	::g->st_randomnumber = M_Random();
-	if (!in_photomode.GetBool()) {
-		if (::g->st_statusbaron) {
-			ST_updateWidgets();
+	if (::g->plyr) {
+		if (!in_photomode.GetBool()) {
+			if (::g->st_statusbaron) {
+				ST_updateWidgets();
+			}
+			else if (cl_HUD.GetBool()) {
+				ST_updateFullWidgets();
+			}
 		}
-		else if (cl_HUD.GetBool()) {
-			ST_updateFullWidgets();
-		}
+		::g->st_oldhealth = ::g->plyr->health;
 	}
-	::g->st_oldhealth = ::g->plyr->health;
 
 }
 

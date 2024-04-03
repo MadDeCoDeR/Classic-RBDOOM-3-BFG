@@ -530,7 +530,8 @@ int		bombdamage;
 qboolean		crushchange;
 qboolean		nofit;
 // Temporary holder for thing_sectorlist threads
-std::deque<msecnode_t*> sector_list;                             // phares 3/16/98
+std::vector<msecnode_t*> sector_list;                             // phares 3/16/98
+size_t headsecind;
 // p_map.vars end // 
 //  p_maputl.vars begin // 
 fixed_t opentop;

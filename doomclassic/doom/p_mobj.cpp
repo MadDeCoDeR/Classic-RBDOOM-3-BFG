@@ -504,7 +504,7 @@ P_SpawnMobj
 	mobj->height = info->height;
 	mobj->flags = info->flags;
 	mobj->health = info->spawnhealth;
-	mobj->touching_sectorlist = NULL; // NULL head of sector list // phares 3/13/98
+	//mobj->touching_sectorlist = NULL; // NULL head of sector list // phares 3/13/98
 
 	if (::g->gameskill != sk_nightmare)
 		mobj->reactiontime = info->reactiontime;

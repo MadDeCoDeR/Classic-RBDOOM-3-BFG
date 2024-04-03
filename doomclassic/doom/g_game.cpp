@@ -1761,7 +1761,7 @@ qboolean G_DoLoadGame ()
 
 	::g->gameaction = ga_nothing; 
 
-	M_ReadFile (::g->savename, &::g->savebuffer); 
+	int savelength = M_ReadFile (::g->savename, &::g->savebuffer); 
 
 	waitingForWipe = true;
 
@@ -1781,16 +1781,15 @@ qboolean G_DoLoadGame ()
 	memset (vcheck,0,sizeof(vcheck)); 
 	sprintf (vcheck,"version %i",VERSION); 
 	//GK:Check if the save file uses mods
-	idStr tlab;
-	tlab = (char*)::g->save_p;
-	//strcpy(tlab, (char*)::g->save_p);
+	char* tlab = (char*)malloc(savelength);
+	strcpy(tlab, (const char*)::g->save_p);
 	if (tlab[11] != ' ') {
 		tlab[11] = '\0';
 	}
 	bool hm = false;
 	char clab[19];
 	std::vector<std::string>filelist;
-	if (strcmp (tlab, vcheck)) {
+	if (strcmp(tlab, vcheck)) {
 		//GK: Welp forgeting that was causing most of the problems with save files
 		int o = strlen(tlab) - 1;
 		while (tlab[o] != ',') {
@@ -1803,7 +1802,7 @@ qboolean G_DoLoadGame ()
 		bool ok = false;
 		if (!strcmp(clab, vcheck)) {
 			hm = true;
-			idStr fnames = tlab.SubStr(18);
+			idStr fnames = tlab + 18;
 			idStrList file = fnames.Split(",");
 			int sc = 0;
 			for (int j = 0; j < file.Num(); j++) {
@@ -1832,10 +1831,10 @@ qboolean G_DoLoadGame ()
 			tla += filelist[mf].c_str();
 			tla += ",";
 		}
-		::g->save_p += tla.Length();
+		::g->save_p += tla.Length() - 1;
 	}
 	else {
-		::g->save_p += tlab.Length();
+		::g->save_p += strlen(tlab);
 	}
 
 	::g->gameskill = (skill_t)*::g->save_p++; 

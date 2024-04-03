@@ -111,6 +111,8 @@ extern int		itemrespawntime[ITEMQUESIZE];
 extern int		iquehead;
 extern int		iquetail;
 
+extern std::vector<msecnode_t*> sector_list;
+
 
 void P_RespawnSpecials (void);
 

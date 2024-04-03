@@ -565,23 +565,24 @@ void HU_Ticker(void)
 		::g->message_on = false;
 		::g->message_nottobefuckedwith = false;
 	}
-
-	if ( ( m_inDemoMode.GetBool() == false && m_show_messages.GetBool() ) || ::g->message_dontfuckwithme)
-	{
-
-		// display message if necessary
-		if ((::g->plr->message && !::g->message_nottobefuckedwith)
-			|| (::g->plr->message && ::g->message_dontfuckwithme))
+	if (::g->plyr) {
+		if ((m_inDemoMode.GetBool() == false && m_show_messages.GetBool()) || ::g->message_dontfuckwithme)
 		{
-			HUlib_addMessageToSText(&::g->w_message, 0, ::g->plr->message);
-			::g->plr->message = 0;
-			::g->message_on = true;
-			::g->message_counter = HU_MSGTIMEOUT;
-			::g->message_nottobefuckedwith = ::g->message_dontfuckwithme;
-			::g->message_dontfuckwithme = 0;
-		}
 
-	} // else ::g->message_on = false;
+			// display message if necessary
+			if ((::g->plr->message && !::g->message_nottobefuckedwith)
+				|| (::g->plr->message && ::g->message_dontfuckwithme))
+			{
+				HUlib_addMessageToSText(&::g->w_message, 0, ::g->plr->message);
+				::g->plr->message = 0;
+				::g->message_on = true;
+				::g->message_counter = HU_MSGTIMEOUT;
+				::g->message_nottobefuckedwith = ::g->message_dontfuckwithme;
+				::g->message_dontfuckwithme = 0;
+			}
+
+		} // else ::g->message_on = false
+	}
 }
 
 

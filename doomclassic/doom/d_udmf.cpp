@@ -311,7 +311,7 @@ void ParseSector(std::vector<std::string> lines, int index) {
 		}
 	}
 	::g->sectors[index].thinglist = NULL;
-	::g->sectors[index].touching_thinglist = NULL;
+	//::g->sectors[index].touching_thinglist = NULL;
 }
 
 void ParseThing(std::vector<std::string> lines, int index) {
