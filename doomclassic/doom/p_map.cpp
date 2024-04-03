@@ -552,27 +552,6 @@ P_TryMove
 
     return true;
 }
-
-// P_GetSecnode() retrieves a node from the freelist. The calling routine
-// should make sure it sets all fields properly.
-
-msecnode_t* P_GetSecnode()
-{
-	msecnode_t* node;
-
-	if (::g->headsecind > 0)
-	{
-		node = ::g->sector_list[::g->headsecind - 1];
-		::g->sector_list[::g->headsecind - 1] = NULL;
-		::g->headsecind--;
-		if (::g->headsecind < 0) {
-			::g->headsecind = 0;
-		}
-	}
-	else
-		node = new msecnode_t();
-	return(node);
-}
 // phares 3/16/98
 //
 // P_AddSecnode() searches the current list to see if this sector is
@@ -583,15 +562,16 @@ msecnode_t* P_GetSecnode()
 void P_AddSecnode(sector_t* s, mobj_t* thing)
 {
 	for (int i = 0; i < ::g->headsecind; i++) {
-		
-		if (::g->sector_list[i]->m_sector == s)   // Already have a node for this sector?
-		{
-			::g->sector_list[i]->m_thing = thing; // Yes. Setting m_thing says 'keep it'.
-			return;
+		if (::g->sector_list[i] != NULL) {
+			if (::g->sector_list[i]->m_sector == s)   // Already have a node for this sector?
+			{
+				::g->sector_list[i]->m_thing = thing; // Yes. Setting m_thing says 'keep it'.
+				return;
+			}
 		}
 		
 	}
-	msecnode_t* tnode = P_GetSecnode();
+	msecnode_t* tnode = new msecnode_t();
 	tnode->visited = 0;
 
 	tnode->m_sector = s;       // sector
@@ -775,22 +755,22 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 	// Now delete any nodes that won't be used. These are the ones where
 	// m_thing is still NULL.
 
-	for (msecnode_t* node : ::g->sector_list)
-	{
-		if (node != NULL) {
-			if (node->m_thing == NULL)
-			{
-				if (node == ::g->sector_list[::g->headsecind - 1]) {
-					::g->sector_list[::g->headsecind - 1] = NULL;
-					::g->headsecind--;
-					if (::g->headsecind < 0) {
-						::g->headsecind = 0;
-					}
-					P_DelSecnode(node);
-				}
-			}
-		}
-	}
+	// for (msecnode_t* node : ::g->sector_list)
+	// {
+	// 	if (node != NULL) {
+	// 		if (node->m_thing == NULL)
+	// 		{
+	// 			if (node == ::g->sector_list[::g->headsecind - 1]) {
+	// 				::g->sector_list[::g->headsecind - 1] = NULL;
+	// 				::g->headsecind--;
+	// 				if (::g->headsecind < 0) {
+	// 					::g->headsecind = 0;
+	// 				}
+	// 				P_DelSecnode(node);
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 
 
