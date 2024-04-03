@@ -1831,7 +1831,7 @@ qboolean G_DoLoadGame ()
 			tla += filelist[mf].c_str();
 			tla += ",";
 		}
-		::g->save_p += tla.Length() - 1;
+		::g->save_p += tla.Length();
 	}
 	else {
 		::g->save_p += strlen(tlab);
