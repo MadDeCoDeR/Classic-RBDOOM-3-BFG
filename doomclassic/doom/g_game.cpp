@@ -1837,6 +1837,8 @@ qboolean G_DoLoadGame ()
 		::g->save_p += strlen(tlab);
 	}
 
+	free(tlab);
+
 	::g->gameskill = (skill_t)*::g->save_p++; 
 	::g->gameepisode = *::g->save_p++; 
 	::g->gamemission = *::g->save_p++;
