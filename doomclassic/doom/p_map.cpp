@@ -561,7 +561,7 @@ P_TryMove
 
 void P_AddSecnode(sector_t* s, mobj_t* thing)
 {
-	for (int i = 0; i < ::g->headsecind; i++) {
+	for (size_t i = 0; i < ::g->headsecind; i++) {
 		if (::g->sector_list[i] != NULL) {
 			if (::g->sector_list[i]->m_sector == s)   // Already have a node for this sector?
 			{
