@@ -37,6 +37,7 @@ idMenuScreen_Shell_NewGame::Initialize
 */
 void idMenuScreen_Shell_NewGame::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing New Game\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

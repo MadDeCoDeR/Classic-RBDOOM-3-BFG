@@ -38,7 +38,7 @@ idMenuScreen_PDA_VideoDisks::Initialize
 */
 void idMenuScreen_PDA_VideoDisks::Initialize( idMenuHandler* data )
 {
-
+	common->Printf("Initializing PDA Video\n");
 	if( data != NULL )
 	{
 		menuGUI = data->GetGUI();

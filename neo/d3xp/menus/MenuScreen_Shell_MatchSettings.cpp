@@ -37,6 +37,7 @@ idMenuScreen_Shell_MatchSettings::Initialize
 */
 void idMenuScreen_Shell_MatchSettings::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Match Settings\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

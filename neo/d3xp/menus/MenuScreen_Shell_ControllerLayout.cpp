@@ -69,6 +69,7 @@ idMenuScreen_Shell_ControllerLayout::Initialize
 */
 void idMenuScreen_Shell_ControllerLayout::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Controller Layout\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

@@ -39,6 +39,7 @@ idMenuScreen_Shell_Save::Initialize
 */
 void idMenuScreen_Shell_SaveLocal::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Save Game\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

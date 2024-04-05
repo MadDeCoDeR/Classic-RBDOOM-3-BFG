@@ -97,6 +97,7 @@ idMenuScreen_Shell_GameBrowser::Initialize
 */
 void idMenuScreen_Shell_GameBrowser::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Browser\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

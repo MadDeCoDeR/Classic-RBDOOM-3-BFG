@@ -54,6 +54,7 @@ idMenuScreen_Shell_PartyLobby::Initialize
 */
 void idMenuScreen_Shell_PartyLobby::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Party Lobby\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

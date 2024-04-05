@@ -41,6 +41,7 @@ idMenuScreen_Shell_Difficulty::Initialize
 */
 void idMenuScreen_Shell_Difficulty::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Difficulty\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

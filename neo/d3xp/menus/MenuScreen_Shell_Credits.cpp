@@ -74,6 +74,7 @@ idMenuScreen_Shell_Credits::Initialize
 */
 void idMenuScreen_Shell_Credits::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Credits\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

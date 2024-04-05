@@ -66,6 +66,7 @@ idMenuScreen_Shell_PressStart::Initialize
 */
 void idMenuScreen_Shell_PressStart::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Press Start\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

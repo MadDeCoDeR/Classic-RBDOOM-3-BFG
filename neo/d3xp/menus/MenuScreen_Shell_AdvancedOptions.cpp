@@ -47,6 +47,7 @@ idMenuScreen_Shell_AdvancedOptions::Initialize
 */
 void idMenuScreen_Shell_AdvancedOptions::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Advanced Options\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

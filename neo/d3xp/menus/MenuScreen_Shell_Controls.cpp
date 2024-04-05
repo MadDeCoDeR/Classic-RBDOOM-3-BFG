@@ -50,6 +50,7 @@ idMenuScreen_Shell_Controls::Initialize
 */
 void idMenuScreen_Shell_Controls::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Controls Options\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

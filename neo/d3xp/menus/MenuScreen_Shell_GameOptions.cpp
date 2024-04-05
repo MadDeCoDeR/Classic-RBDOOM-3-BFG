@@ -44,6 +44,7 @@ idMenuScreen_Shell_GameOptions::Initialize
 */
 void idMenuScreen_Shell_GameOptions::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Game Options\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

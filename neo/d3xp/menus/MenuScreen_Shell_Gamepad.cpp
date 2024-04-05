@@ -52,6 +52,7 @@ idMenuScreen_Shell_Gamepad::Initialize
 */
 void idMenuScreen_Shell_Gamepad::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Gamepad\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

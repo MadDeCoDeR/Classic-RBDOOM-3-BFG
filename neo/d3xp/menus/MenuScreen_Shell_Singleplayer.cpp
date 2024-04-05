@@ -37,6 +37,7 @@ idMenuScreen_Shell_Singleplayer::Initialize
 */
 void idMenuScreen_Shell_Singleplayer::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Single Player\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

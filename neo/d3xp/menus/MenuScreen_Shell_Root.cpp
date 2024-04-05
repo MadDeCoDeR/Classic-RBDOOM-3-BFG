@@ -38,6 +38,7 @@ idMenuScreen_Shell_Root::Initialize
 */
 void idMenuScreen_Shell_Root::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Root Menu\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

@@ -38,6 +38,7 @@ idMenuScreen_Shell_ModeSelect::Initialize
 */
 void idMenuScreen_Shell_ModeSelect::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Mode Select\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

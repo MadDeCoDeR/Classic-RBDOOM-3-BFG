@@ -48,6 +48,7 @@ idMenuScreen_Shell_Resolution::Initialize
 */
 void idMenuScreen_Shell_Resolution::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Resolution Menu\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

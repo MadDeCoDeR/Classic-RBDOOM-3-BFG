@@ -38,6 +38,7 @@ idMenuScreen_PDA_UserData::Initialize
 */
 void idMenuScreen_PDA_UserData::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing PDA User Data\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

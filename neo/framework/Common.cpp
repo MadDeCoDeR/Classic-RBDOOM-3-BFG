@@ -1722,7 +1722,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		{
 			game->Leaderboards_Init();
 		}
-		
+		common->Printf("Creating Main Menu\n");
 		CreateMainMenu();
 		
 		commonDialog.Init();

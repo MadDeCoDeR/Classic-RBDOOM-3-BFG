@@ -49,6 +49,7 @@ idMenuScreen_Shell_Settings::Initialize
 */
 void idMenuScreen_Shell_Settings::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Settings Menu\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

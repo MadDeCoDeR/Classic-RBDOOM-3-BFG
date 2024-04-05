@@ -53,6 +53,7 @@ idMenuScreen_Shell_Pause::Initialize
 */
 void idMenuScreen_Shell_Pause::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Pause Menu\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

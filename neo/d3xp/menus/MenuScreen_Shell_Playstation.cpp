@@ -37,6 +37,7 @@ idMenuScreen_Shell_Playstation::Initialize
 */
 void idMenuScreen_Shell_Playstation::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Playstation Menu\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

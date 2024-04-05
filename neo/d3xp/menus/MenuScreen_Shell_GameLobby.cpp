@@ -49,6 +49,7 @@ idMenuScreen_Shell_GameLobby::Initialize
 */
 void idMenuScreen_Shell_GameLobby::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Game Lobby\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

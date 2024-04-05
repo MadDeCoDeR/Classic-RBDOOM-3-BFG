@@ -41,6 +41,7 @@ idMenuScreen_Scoreboard::Initialize
 */
 void idMenuScreen_Scoreboard::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Scoreboard\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

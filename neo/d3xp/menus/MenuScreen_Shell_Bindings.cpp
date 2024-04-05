@@ -93,6 +93,7 @@ idMenuScreen_Shell_Bindings::Initialize
 */
 void idMenuScreen_Shell_Bindings::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Bindings\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

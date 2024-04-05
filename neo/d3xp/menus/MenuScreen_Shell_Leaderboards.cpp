@@ -80,6 +80,7 @@ idMenuScreen_Shell_Leaderboards::Initialize
 */
 void idMenuScreen_Shell_Leaderboards::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Leaderboards\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

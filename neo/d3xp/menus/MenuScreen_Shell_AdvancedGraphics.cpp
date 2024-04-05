@@ -51,6 +51,7 @@ idMenuScreen_Shell_AdvancedGraphics::Initialize
 */
 void idMenuScreen_Shell_AdvancedGraphics::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Advanced Graphics Options\n");
 	idMenuScreen::Initialize( data );
 
 	resetVideo = false;

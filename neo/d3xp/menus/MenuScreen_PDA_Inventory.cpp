@@ -39,7 +39,7 @@ idMenuScreen_PDA_Inventory::Initialize
 */
 void idMenuScreen_PDA_Inventory::Initialize( idMenuHandler* data )
 {
-
+	common->Printf("Initializing PDA Inventory\n");
 	AddEventAction( WIDGET_EVENT_TAB_NEXT ).Set( new( TAG_SWF ) idWidgetActionHandler( this, WIDGET_ACTION_EVENT_TAB_NEXT, WIDGET_EVENT_TAB_NEXT ) );
 	AddEventAction( WIDGET_EVENT_TAB_PREV ).Set( new( TAG_SWF ) idWidgetActionHandler( this, WIDGET_ACTION_EVENT_TAB_PREV, WIDGET_EVENT_TAB_PREV ) );
 	

@@ -36,6 +36,7 @@ idMenuScreen_PDA_UserEmails::Initialize
 */
 void idMenuScreen_PDA_UserEmails::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing PDA e-mail\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

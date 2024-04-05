@@ -53,6 +53,7 @@ idMenuScreen_Shell_Stereoscopics::Initialize
 */
 void idMenuScreen_Shell_Stereoscopics::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing 3D Menu\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

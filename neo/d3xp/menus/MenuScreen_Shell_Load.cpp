@@ -39,6 +39,7 @@ idMenuScreen_Shell_Load::Initialize
 */
 void idMenuScreen_Shell_LoadLocal::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing Load Game\n");
 	idMenuScreen::Initialize( data );
 	
 	if( data != NULL )

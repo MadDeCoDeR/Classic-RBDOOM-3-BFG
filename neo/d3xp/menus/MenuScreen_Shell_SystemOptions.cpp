@@ -52,6 +52,7 @@ idMenuScreen_Shell_SystemOptions::Initialize
 */
 void idMenuScreen_Shell_SystemOptions::Initialize( idMenuHandler* data )
 {
+	common->Printf("Initializing System Options\n");
 	idMenuScreen::Initialize( data );
 	
 	resetVideo = false;
