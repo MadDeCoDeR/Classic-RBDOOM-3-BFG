@@ -27,8 +27,12 @@ jobs:
             - name: setup-msbuild
               uses: microsoft/setup-msbuild@v2
               with:
-                vs-version: '[17.0, 17.4)'
+                vs-version: '[17.0, 18.0)'
                 msbuild-architecture: Win32
+
+            - name: Fix MSbuild
+              shell: powershell
+              run: Remove-Item "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\Microsoft.VCToolsVersion.v143.default.*"
 
             - name: Cache Windows vcpkg
               uses: actions/cache@v3
