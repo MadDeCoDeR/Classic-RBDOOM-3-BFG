@@ -22,7 +22,9 @@ jobs:
             submodules: recursive
 
         - name: Patch vcpkg
-          run: cd vcpkg && git apply vcpkg.patch
+          run: |
+           cd vcpkg
+           git apply ./vcpkg.patch
     
         - uses: actions/checkout@v3
           id: step2
