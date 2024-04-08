@@ -10,6 +10,10 @@ inputs:
     commands:
         required: true
         type: string
+outputs:
+    artifact_name: 
+        description: 'Echo of the input'  
+        value: ${{inputs.artifact_name}}
 
 runs:
   using: "composite"

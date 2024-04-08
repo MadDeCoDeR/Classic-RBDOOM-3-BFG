@@ -31,6 +31,7 @@ jobs:
     needs: [ linux-build, windows-build, windows-32-bit-build ]
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
     - name: Get log messages
       id: messages
       run: echo "git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s"
