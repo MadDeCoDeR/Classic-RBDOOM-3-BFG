@@ -131,7 +131,7 @@ typedef struct menu_s
 } menu_t;
 typedef enum
 {
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(ALLOW_DEV)
 	dev = 0,
 	newgame,
 #else

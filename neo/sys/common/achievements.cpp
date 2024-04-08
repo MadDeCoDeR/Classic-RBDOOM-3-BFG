@@ -64,9 +64,11 @@ idAchievementSystemWin::AchievementUnlock
 */
 void idAchievementSystemWin::AchievementUnlock( idLocalUser* user, int achievementID )
 {
+#ifndef ALLOW_DEV
 	if (::op) {
 		::op->openAchievement()->UnlockAchievement(va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
 	}
+#endif
 }
 
 /*

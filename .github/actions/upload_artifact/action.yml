@@ -22,11 +22,11 @@ runs:
           with:
             name: ${{inputs.artifact_name}}
             path: |
-            ${{inputs.executable_path}}
-            ./build/vcpkg_installed/${{inputs.vcpkg_triplet}}/share/*/copyright
-            ./base/*
-            ./BFA_Assets/*
-            ./base_new/*
-            ./COPYING.txt
-            ./alsoft.ini
-            ./README.md
+                ${{inputs.executable_path}}
+                ./build/vcpkg_installed/${{inputs.vcpkg_triplet}}/share/*/copyright
+                ./base/*
+                ./BFA_Assets/*
+                ./base_new/*
+                ./COPYING.txt
+                ./alsoft.ini
+                ./README.md

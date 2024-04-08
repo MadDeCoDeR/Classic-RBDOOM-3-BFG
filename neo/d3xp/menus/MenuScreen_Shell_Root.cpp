@@ -216,7 +216,7 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 		
 			idMenuWidget_Button* buttonWidget = NULL;
 			
-#if !defined ( ID_RETAIL ) || defined (FOOLS)
+#if !defined ( ID_RETAIL ) || defined (FOOLS) || defined(ALLOW_DEV)
 			option.Append( "DEV" );	// DEV
 			menuOptions.Append( option );
 			options->GetChildByIndex( index ).ClearEventActions();
@@ -506,7 +506,7 @@ bool idMenuScreen_Shell_Root::HandleAction( idWidgetAction& action, const idWidg
 			
 			int index = menuBar->GetViewIndex();
 			const int dir = parms[0].ToInteger();
-#ifdef ID_RETAIL
+#if defined(ID_RETAIL) && !defined(FOOLS) && !defined(ALLOW_DEV)
 			const int totalCount = menuBar->GetTotalNumberOfOptions() - 1;
 #else
 			const int totalCount = menuBar->GetTotalNumberOfOptions();

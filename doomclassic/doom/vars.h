@@ -397,7 +397,7 @@ short		skullAnimCounter;	// skull animation counter
 short		whichSkull;		// which skull to draw
 menu_t*	currentMenu; 
 //GK:Re-enable "Read This!" option
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(ALLOW_DEV)
 menuitem_t MainMenu[7];
 #elif FOOLS
 menuitem_t MainMenu[3];

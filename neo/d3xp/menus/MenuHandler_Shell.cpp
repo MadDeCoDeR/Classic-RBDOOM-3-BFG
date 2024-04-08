@@ -840,7 +840,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 		}
 		else
 		{
-#if !defined ( ID_RETAIL ) || defined (FOOLS)
+#if !defined ( ID_RETAIL ) || defined (FOOLS) || defined(ALLOW_DEV)
 			navOptions.Append( "DEV" );	// DEV
 #endif
 #ifndef FOOLS
@@ -856,7 +856,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 			
 			idMenuWidget_MenuButton* buttonWidget = NULL;
 			int index = 0;
-#if !defined ( ID_RETAIL ) || defined (FOOLS)
+#if !defined ( ID_RETAIL ) || defined (FOOLS) || defined(ALLOW_DEV)
 			buttonWidget = dynamic_cast< idMenuWidget_MenuButton* >( &menuBar->GetChildByIndex( index ) );
 			if( buttonWidget != NULL )
 			{

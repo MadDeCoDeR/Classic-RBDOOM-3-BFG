@@ -65,10 +65,12 @@ void idMenuScreen_Shell_Difficulty::Initialize( idMenuHandler* data )
 	option.Clear();
 	option.Append( "#str_02357" );	// Nightmare
 	menuOptions.Append( option );
+#if 0
 	if (game->GetCVarBool("g_nightmare") && game->GetCVarBool("g_roeNightmare") && game->GetCVarBool("g_leNightmare")) {
 		option.Append("Difficulty Placeholder");	// Masochism
 		menuOptions.Append(option);
 	}
+#endif
 	
 	options->SetListData( menuOptions );
 	options->SetNumVisibleOptions( NUM_SETTING_OPTIONS );

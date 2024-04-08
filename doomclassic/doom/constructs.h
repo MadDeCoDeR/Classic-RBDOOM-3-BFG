@@ -127,7 +127,7 @@ menu_t  temp_QuitDef = {
 };
 memcpy( &::g->QuitDef, &temp_QuitDef, sizeof(temp_QuitDef) );
 //GK: Re-enable the Read This! option
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(ALLOW_DEV)
 menuitem_t temp_MainMenu[7] =
 {
 	{1,"M_DEV",M_Dev,'d'},
