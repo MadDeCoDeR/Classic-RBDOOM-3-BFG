@@ -22,13 +22,15 @@ runs:
   using: "composite"
   steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{inputs.artifact_name}}
+          path: ${{github.workspace}}/temp
       - name: Zip artifact files
         shell: bash
-        working-directory: ${{github.workspace}}
+        working-directory: ${{github.workspace}}/temp
         run: |
+          ls -a
           mv ./build/DoomBFA DoomBFA
           mv ./base/DoomBFA.sh DoomBFA.sh
           cp -r -u  -f ./BFA_Assets/* .
@@ -47,10 +49,10 @@ runs:
           GITHUB_TOKEN: ${{ inputs.access_token }}
         with:
           upload_url: ${{ inputs.upload_url }}
-          asset_path: ${{github.workspace}}/${{inputs.artifact_name}}.zip
+          asset_path: ${{github.workspace}}/temp/${{inputs.artifact_name}}.zip
           asset_name: ${{inputs.artifact_name}}.zip
           asset_content_type: application/zip
       - name: Delete artifact zip file
-        working-directory: ${{github.workspace}}
+        working-directory: ${{github.workspace}}/temp
         shell: bash
         run: rm ${{inputs.artifact_name}}.zip
