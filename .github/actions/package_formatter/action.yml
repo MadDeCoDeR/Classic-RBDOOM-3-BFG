@@ -30,17 +30,17 @@ runs:
         shell: bash
         working-directory: ${{github.workspace}}/temp
         run: |
-          ls -a
-          mv ./build/DoomBFA DoomBFA
-          mv ./base/DoomBFA.sh DoomBFA.sh
+          ls -R build
+          mv build/DoomBFA DoomBFA
+          mv base/DoomBFA.sh DoomBFA.sh
           cp -r -u  -f ./BFA_Assets/* .
           rm -r ./BFA_Assets
           rm -r ./base/renderprogs
-          mkdir ./third-party-licenses
-          mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
+          mkdir third-party-licenses
+          mv build/vcpkg_installed/x64-linux/share/* third-party-licenses
           chmod +x DoomBFA
           chmod +x DoomBFA.sh
-          rm -d -R ./build
+          rm -d -R build
           ${{inputs.commands}}
           zip -m -r ${{inputs.artifact_name}}.zip .
       - name: Upload Artifact to release
