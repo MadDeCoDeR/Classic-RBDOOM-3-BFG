@@ -10,6 +10,9 @@ inputs:
     commands:
         required: true
         type: string
+    access_token:
+        required: true
+        type: string
 outputs:
     artifact_name: 
         description: 'Echo of the input'  
@@ -23,6 +26,7 @@ runs:
         with:
           name: ${{inputs.artifact_name}}
       - name: Zip artifact files
+        shell: bash
         working-directory: ${{github.workspace}}
         run: |
           mv ./build/DoomBFA DoomBFA
@@ -40,7 +44,7 @@ runs:
       - name: Upload Artifact to release
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ inputs.access_token }}
         with:
           upload_url: ${{ inputs.upload_url }}
           asset_path: ${{github.workspace}}/${{inputs.artifact_name}}.zip
@@ -48,4 +52,5 @@ runs:
           asset_content_type: application/zip
       - name: Delete artifact zip file
         working-directory: ${{github.workspace}}
+        shell: bash
         run: rm ${{inputs.artifact_name}}.zip
