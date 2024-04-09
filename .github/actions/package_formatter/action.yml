@@ -31,13 +31,13 @@ runs:
         working-directory: ${{github.workspace}}/temp
         run: |
           ls -R build
-          mv build/DoomBFA DoomBFA
+          mv build/* .
           mv base/DoomBFA.sh DoomBFA.sh
           cp -r -u  -f ./BFA_Assets/* .
           rm -r ./BFA_Assets
           rm -r ./base/renderprogs
           mkdir third-party-licenses
-          mv build/vcpkg_installed/x64-linux/share/* third-party-licenses
+          mv vcpkg_installed/x64-linux/share/* third-party-licenses
           chmod +x DoomBFA
           chmod +x DoomBFA.sh
           rm -d -R build
