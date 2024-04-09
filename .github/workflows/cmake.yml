@@ -77,7 +77,7 @@ jobs:
     - name: Upload x64 Windows Production Artifact
       uses: ./.github/actions/package_formatter
       with:
-        artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}
+        artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}-x64
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         access_token: ${{ secrets.GITHUB_TOKEN }}
         commands: |
@@ -86,7 +86,7 @@ jobs:
     - name: Upload x64 Windows Debug Artifact
       uses: ./.github/actions/package_formatter
       with:
-        artifact_name: windows-${{env.VERSION}}-debug
+        artifact_name: windows-${{env.VERSION}}-debug-x64
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         access_token: ${{ secrets.GITHUB_TOKEN }}
         commands: |
@@ -95,7 +95,7 @@ jobs:
     - name: Upload x86 Windows Production Artifact
       uses: ./.github/actions/package_formatter
       with:
-        artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}
+        artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}-x86
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         access_token: ${{ secrets.GITHUB_TOKEN }}
         commands: |

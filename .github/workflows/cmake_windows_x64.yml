@@ -57,13 +57,13 @@ jobs:
         - name: Archive production artifacts
           uses: ./.github/actions/upload_artifact
           with:
-            artifact_name: windows-${{inputs.version}}-${{inputs.build_type}}
+            artifact_name: windows-${{inputs.version}}-${{inputs.build_type}}-x64
             executable_path: ./build/${{inputs.build_type}}/DoomBFA.exe
             vcpkg_triplet: x64-windows-static-md
         
         - name: Archive debug artifacts
           uses: ./.github/actions/upload_artifact
           with:
-            artifact_name: windows-${{inputs.version}}-debug
+            artifact_name: windows-${{inputs.version}}-debug-x64
             executable_path: ./build/retwithdebugsymbols/DoomBFA.exe
             vcpkg_triplet: x64-windows-static-md
