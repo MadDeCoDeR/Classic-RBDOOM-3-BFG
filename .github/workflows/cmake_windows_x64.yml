@@ -65,5 +65,5 @@ jobs:
           uses: ./.github/actions/upload_artifact
           with:
             artifact_name: windows-${{inputs.version}}-debug-x64
-            executable_path: ./build/retwithdebugsymbols/DoomBFA.exe
+            executable_path: ./build/retwithdebugsymbols/DoomBFA.*
             vcpkg_triplet: x64-windows-static-md
