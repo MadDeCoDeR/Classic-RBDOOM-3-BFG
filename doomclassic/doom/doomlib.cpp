@@ -464,8 +464,8 @@ void DoomLib::Shutdown() {
 	if ( globaldata[currentplayer] ) {
 		Globals* glob = globaldata[currentplayer];
 		globaldata[currentplayer] = NULL;
-		CleanVector(glob->activeceilings);
-		CleanVector(glob->activeplats);
+		//CleanVector(glob->activeceilings); //GK: Contains memory managed by the Zone Memory. Skip
+		//CleanVector(glob->activeplats); //GK: Contains memory managed by the Zone Memory. Skip
 		CleanVector(glob->intercepts);
 		CleanVector(glob->drawsegs);
 		CleanVector(glob->sprites);

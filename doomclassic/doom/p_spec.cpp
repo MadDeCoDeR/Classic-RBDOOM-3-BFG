@@ -2021,13 +2021,13 @@ void P_SpawnSpecials (void)
 		if (::g->activeceilings.size() == ::g->activeceilings.capacity()) {
 			::g->activeceilings.reserve(::g->activeceilings.size() + MAXCEILINGS);
 		}
-		::g->activeceilings.emplace_back(new ceiling_t());
+		::g->activeceilings.emplace_back((ceiling_t*)DoomLib::Z_Malloc(sizeof(ceiling_t), PU_CEILING, 0));
 #else
 		if (::g->activeceilings.size() == ::g->activeceilings.capacity()) {
 			::g->activeceilings.resize(::g->activeceilings.size() + MAXCEILINGS);
 		}
 		for (int ci = ::g->cellind; ci < ::g->activeceilings.size(); ci++) {
-			::g->activeceilings[ci] = new ceiling_t();
+			::g->activeceilings[ci] = (ceiling_t*)DoomLib::Z_Malloc(sizeof(ceiling_t), PU_CEILING, 0);
 		}
 #endif
 	}
@@ -2038,13 +2038,13 @@ void P_SpawnSpecials (void)
 		if (::g->activeplats.size() == ::g->activeplats.capacity()) {
 			::g->activeplats.reserve(::g->activeplats.size() + MAXPLATS);
 		}
-		::g->activeplats.emplace_back(new plat_t());
+		::g->activeplats.emplace_back((plat_t*)DoomLib::Z_Malloc(sizeof(plat_t), PU_PLATS, 0));
 #else
 		if (::g->activeplats.size() == ::g->activeplats.capacity()) {
 			::g->activeplats.resize(::g->activeplats.size() + MAXPLATS);
 		}
 		for (int pi = ::g->platind; pi < ::g->activeplats.size(); pi++) {
-			::g->activeplats[pi] = new plat_t();
+			::g->activeplats[pi] = (plat_t*)DoomLib::Z_Malloc(sizeof(plat_t), PU_PLATS, 0);
 		}
 #endif
 	}
