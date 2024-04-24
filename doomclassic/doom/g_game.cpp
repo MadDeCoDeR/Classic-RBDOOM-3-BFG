@@ -1863,6 +1863,9 @@ qboolean G_DoLoadGame ()
 	// specials are archived with thinkers
 	//P_UnArchiveSpecials (); 
 
+	::g->classichUsed = *::g->save_p++;
+	::g->warpUsed = * ::g->save_p++;
+
 	if (*::g->save_p != 0x1d) 
 		I_Error ("Bad savegame");
 
@@ -2017,6 +2020,9 @@ qboolean G_DoSaveGame (void)
 
 	// specials are archived with thinkers
 	//P_ArchiveSpecials (); 
+
+	*::g->save_p++ = ::g->classichUsed || common->GetConsoleUsed();
+	*::g->save_p++ = ::g->warpUsed;
 
 	*::g->save_p++ = 0x1d;		// ::g->consistancy marker 
 
