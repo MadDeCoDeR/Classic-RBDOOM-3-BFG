@@ -268,25 +268,25 @@ Absolutely every image goes through this path
 On exit, the idImage will have a valid OpenGL texture number that can be bound
 ===============
 */
-void idImage::ActuallyLoadImage( bool fromBackEnd )
+void idImage::ActuallyLoadImage(bool fromBackEnd)
 {
 	// if we don't have a rendering context yet, just return
 	//if( !tr.IsInitialized() )
 	//{
 	//	return;
 	//}
-	
+
 	// this is the ONLY place generatorFunction will ever be called
-	if( generatorFunction )
+	if (generatorFunction)
 	{
-		generatorFunction( this );
+		generatorFunction(this);
 		return;
 	}
-	
-	if( com_productionMode.GetInteger() != 0 )
+
+	if (com_productionMode.GetInteger() != 0)
 	{
 		sourceFileTime = FILE_NOT_FOUND_TIMESTAMP;
-		if( cubeFiles != CF_2D )
+		if (cubeFiles != CF_2D)
 		{
 			opts.textureType = TT_CUBIC;
 			repeat = TR_CLAMP;
@@ -295,7 +295,7 @@ void idImage::ActuallyLoadImage( bool fromBackEnd )
 	else
 	{
 		// RB: added CF_2D_ARRAY
-		if( cubeFiles == CF_2D_ARRAY )
+		if (cubeFiles == CF_2D_ARRAY)
 		{
 			opts.textureType = TT_2D_ARRAY;
 		}
@@ -303,23 +303,31 @@ void idImage::ActuallyLoadImage( bool fromBackEnd )
 		{
 			opts.textureType = TT_CUBIC;
 			repeat = TR_CLAMP;
-			R_LoadCubeImages( GetName(), cubeFiles, NULL, NULL, &sourceFileTime, cubeMapSize );
+			R_LoadCubeImages(GetName(), cubeFiles, NULL, NULL, &sourceFileTime, cubeMapSize);
 		}
 		else
 		{
 			opts.textureType = TT_2D;
-			R_LoadImageProgram( GetName(), NULL, NULL, NULL, &sourceFileTime, &usage );
+			R_LoadImageProgram(GetName(), NULL, NULL, NULL, &sourceFileTime, &usage);
 		}
 	}
-	
+
 	// Figure out opts.colorFormat and opts.format so we can make sure the binary image is up to date
 	DeriveOpts();
-	
+
 	idStrStatic< MAX_OSPATH > generatedName = GetName();
-	GetGeneratedName( generatedName, usage, cubeFiles );
-	
-	idBinaryImage im( generatedName );
-	binaryFileTime = im.LoadFromGeneratedFile( sourceFileTime );
+	GetGeneratedName(generatedName, usage, cubeFiles);
+
+	idBinaryImage im(generatedName);
+	binaryFileTime = im.LoadFromGeneratedFile(sourceFileTime);
+
+	//GK: Load hack. If it fails to find generated file with the file extension (jpg, png) remove it and try again
+	if (binaryFileTime == FILE_NOT_FOUND_TIMESTAMP) {
+		generatedName.Replace(".jpg", "");
+		generatedName.Replace(".png", "");
+		im.SetName(generatedName);
+		binaryFileTime = im.LoadFromGeneratedFile(sourceFileTime);
+	}
 	
 	// BFHACK, do not want to tweak on buildgame so catch these images here
 	if( binaryFileTime == FILE_NOT_FOUND_TIMESTAMP && fileSystem->UsingResourceFiles() )
