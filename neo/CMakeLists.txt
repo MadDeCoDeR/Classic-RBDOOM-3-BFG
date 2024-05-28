@@ -72,6 +72,8 @@ option (USE_DXGI
 
 option (USE_FOOLS
 				"Enable Fools Edition" OFF)
+
+option (USE_OPENXR "Use OpenXR for VR support" ON)
 if (CMAKE_CL_64)
 	set(CPU_ARCH x64)
 else()
@@ -475,6 +477,10 @@ else (RAPIDJSON_FOUND)
 	include_directories("libs/rapidjson/include")
 endif (RAPIDJSON_FOUND)
 
+if (USE_OPENXR)
+	add_subdirectory(${CMAKE_SOURCE_DIR}/../OpenXR ${CMAKE_SOURCE_DIR}/../OpenXR/build)
+	include_directories(${CMAKE_SOURCE_DIR}/../OpenXR/src/common ${CMAKE_SOURCE_DIR}/../OpenXR/external/include)
+endif(USE_OPENXR)
 
 	
 add_subdirectory(idlib)
@@ -514,6 +520,9 @@ file(GLOB RENDERER_SMAA_INCLUDES renderer/SMAA/*.h)
 
 file(GLOB RENDERER_OPENGL_INCLUDES renderer/OpenGL/*.h)
 file(GLOB RENDERER_OPENGL_SOURCES renderer/OpenGL/*.cpp)
+
+file(GLOB RENDERER_OPENXR_INCLUDES renderer/OpenXR/*.h)
+file(GLOB RENDERER_OPENXR_SOURCES renderer/OpenXR/*.cpp)
 
 file(GLOB RENDERER_VULKAN_INCLUDES renderer/Vulkan/*.h)
 file(GLOB RENDERER_VULKAN_SOURCES renderer/Vulkan/*.cpp)
@@ -1025,6 +1034,10 @@ if (USE_DXGI)
 else()
 	list(APPEND WIN32_SOURCES sys/win32/win_glimp.cpp)
 endif()
+
+if (USE_OPENXR)
+	list(APPEND WIN32_SOURCES sys/win32/win_oxr.cpp)
+endif()
 	
 if(MSVC)
 	list(APPEND WIN32_SOURCES sys/win32/win_cpu.cpp)
@@ -1089,6 +1102,9 @@ source_group("Renderer\\Jobs\\StaticShadowVolume" FILES ${RENDERER_JOBS_STATICSH
 
 source_group("Renderer\\OpenGL" FILES ${RENDERER_OPENGL_INCLUDES})
 source_group("Renderer\\OpenGL" FILES ${RENDERER_OPENGL_SOURCES})
+
+source_group("Renderer\\OpenXR" FILES ${RENDERER_OPENXR_INCLUDES})
+source_group("Renderer\\OpenXR" FILES ${RENDERER_OPENXR_SOURCES})
 
 source_group("Renderer\\Vulkan" FILES ${RENDERER_VULKAN_INCLUDES})
 source_group("Renderer\\Vulkan" FILES ${RENDERER_VULKAN_SOURCES})
@@ -1791,6 +1807,9 @@ if(MSVC)
         ${GLEW_LIBRARY}
 		${CMAKE_DL_LIBS}
 		)
+		if (USE_OPENXR)
+			target_link_libraries(DoomBFA openxr-gfxwrapper openxr-loader)
+		endif()
 	
 
 		
