@@ -54,3 +54,4 @@ neo/neo.kdev4
 /.vscode/dryrun.log
 /.vscode/configurationCache.log
 *.aps
+/neo/libs/openxr

@@ -478,8 +478,21 @@ else (RAPIDJSON_FOUND)
 endif (RAPIDJSON_FOUND)
 
 if (USE_OPENXR)
-	add_subdirectory(${CMAKE_SOURCE_DIR}/../OpenXR ${CMAKE_SOURCE_DIR}/../OpenXR/build)
-	include_directories(${CMAKE_SOURCE_DIR}/../OpenXR/src/common ${CMAKE_SOURCE_DIR}/../OpenXR/external/include)
+	set(XR_RUNTIME_JSON "$ENV{XR_RUNTIME_JSON}")
+	include(FetchContent)
+	set(BUILD_TESTS OFF)
+	set(BUILD_API_LAYERS ON)
+	FetchContent_Declare(
+		OpenXR
+		URL_HASH MD5=927EE8D4699DFB4DDD9B0A16A37EDBFC
+		URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.1.37.tar.gz
+		SOURCE_DIR
+		../neo/libs/openxr
+	)
+	FetchContent_MakeAvailable(OpenXR)
+	include_directories(
+	${openxr_SOURCE_DIR}/src/common
+	)
 endif(USE_OPENXR)
 
 	
@@ -1808,7 +1821,7 @@ if(MSVC)
 		${CMAKE_DL_LIBS}
 		)
 		if (USE_OPENXR)
-			target_link_libraries(DoomBFA openxr-gfxwrapper openxr-loader)
+			target_link_libraries(DoomBFA openxr-gfxwrapper openxr_loader)
 		endif()
 	
 

@@ -1,3 +1,4 @@
+#include "precompiled.h"
 #include "renderer/OpenXR/XRCommon.h"
 #include <string.h>
 #include <framework/Licensee.h>
@@ -15,5 +16,9 @@ void InitXR() {
 	strncpy(XRAppInfo.engineName, "DOOM BFA", 8);
 
 	std::vector<std::string> extentions;
-	extentions.push_back(OPEN_GL)
+#ifdef _DEBUG
+	extentions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
+	extentions.push_back(XR_KHR_OPENGL_ENABLE_EXTENSION_NAME);
+
 }

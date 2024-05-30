@@ -1,7 +1,3 @@
 [submodule "vcpkg"]
 	path = vcpkg
 	url = https://github.com/microsoft/vcpkg.git
-
-[submodule "OpenXR"]
-	path = OpenXR
-	url = https://github.com/KhronosGroup/OpenXR-SDK-Source.git
