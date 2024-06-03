@@ -1187,7 +1187,6 @@ void idUsercmdGenLocal::MakeCurrent()
 					common->GetPhotoMode()->End(&viewangles);
 				}
 			}
-			game->SetCVarBool("pm_thirdPerson", in_photomode.GetBool());
 			oldTPButtonState = TPButtonState;
 		}		
 
