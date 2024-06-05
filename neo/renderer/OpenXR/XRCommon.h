@@ -1,16 +1,19 @@
-#pragma once
+#pragma hdrstop
 #define XR_USE_GRAPHICS_API_OPENGL
 #include "openxr/openxr.h"
 #include "openxr/openxr_platform.h"
-#include "gfxwrapper_opengl.h"
+#pragma warning( disable : 4005 )
+#include <vector>
+#include <string>
 
 class idXR {
 public:
 	void InitXR();
+	void ShutDownXR();
 private:
 	XrInstance instance = {};
-	std::vector<std::string> activeAPILayers = {};
-	std::vector<std::string> activeExtensions = {};
+	std::vector<const char*> activeAPILayers = {};
+	std::vector<const char*> activeExtensions = {};
 	std::vector<std::string> APILayers = {};
 	std::vector<std::string> extensions = {};
 #ifdef _DEBUG

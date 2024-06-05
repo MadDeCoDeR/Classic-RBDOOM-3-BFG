@@ -954,6 +954,7 @@ CONSOLE_COMMAND( reloadLanguage, "reload language dict", NULL )
 }
 
 #include "../renderer/Image.h"
+#include <renderer/OpenXR/XRCommon.h>
 
 /*
 =================
@@ -1583,7 +1584,11 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// initialize the renderSystem data structures
 		renderSystem->Init();
-
+		//GK: Sample Code to Test if OpenXR loads. TO BE DELETED
+		idXR* xrSystem = new idXR();
+		xrSystem->InitXR();
+		xrSystem->ShutDownXR();
+		delete xrSystem;
 		common->Printf("Initializing Platform\n");
 		LoadPlatformDLL();
 		if (::op == NULL) {

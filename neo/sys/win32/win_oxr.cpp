@@ -3,17 +3,16 @@
 #include <string.h>
 #include <framework/Licensee.h>
 #include <stdlib.h>
-#include <string>
-#include <vector>
+#include "gfxwrapper_opengl.h"
 
 
 void idXR::InitXR() {
 	XrApplicationInfo XRAppInfo;
-	strncpy(XRAppInfo.applicationName, "DOOM BFA", 8);
+	strncpy(XRAppInfo.applicationName, "DOOM BFA\0", 9);
 	XRAppInfo.apiVersion = XR_CURRENT_API_VERSION;
 	XRAppInfo.applicationVersion = atoi(ENGINE_VERSION);
 	XRAppInfo.engineVersion = atoi(ENGINE_VERSION);
-	strncpy(XRAppInfo.engineName, "DOOM BFA", 8);
+	strncpy(XRAppInfo.engineName, "DOOM BFA\0", 9);
 
 #ifdef _DEBUG
 	this->extensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
@@ -57,9 +56,41 @@ void idXR::InitXR() {
 					}
 				}
 				if (!found) {
-					common->Error("Failed to find OpenXR Extension: %s\n", requestExtension);
+					common->Error("Failed to find OpenXR Extension: %s\n", requestExtension.c_str());
 				}
 			}
 		}
+	}
+
+	XrInstanceCreateInfo ici{ XR_TYPE_INSTANCE_CREATE_INFO };
+	ici.createFlags = 0;
+	ici.applicationInfo = XRAppInfo;
+	ici.enabledApiLayerCount = static_cast<uint32_t>(activeAPILayers.size());
+	ici.enabledApiLayerNames = activeAPILayers.data();
+	ici.enabledExtensionCount = static_cast<uint32_t>(activeExtensions.size());
+	ici.enabledExtensionNames = activeExtensions.data();
+	XrResult result = xrCreateInstance(&ici, &instance);
+	if (result == XR_ERROR_API_VERSION_UNSUPPORTED) {
+		XRAppInfo.apiVersion = XR_API_VERSION_1_0;
+		ici.applicationInfo = XRAppInfo;
+		result = xrCreateInstance(&ici, &instance);
+	}
+	if (result != XR_SUCCESS) {
+		common->Error("Failed to initiate OpenXR\n");
+		return;
+	}
+
+	XrInstanceProperties instanceProperties{ XR_TYPE_INSTANCE_PROPERTIES };
+	if (xrGetInstanceProperties(instance, &instanceProperties) == XR_SUCCESS) {
+		char* xrVersion = new char[20];
+		sprintf(xrVersion, "%d.%d.%d", XR_VERSION_MAJOR(instanceProperties.runtimeVersion), XR_VERSION_MINOR(instanceProperties.runtimeVersion), XR_VERSION_PATCH(instanceProperties.runtimeVersion));
+		common->Printf("OpenXR Have been initialized\n------------------------------------------------\nRuntime Name: %s\nRuntime Version: %s\n------------------------------------------------\n", instanceProperties.runtimeName, xrVersion);
+	}
+}
+
+void idXR::ShutDownXR()
+{
+	if (xrDestroyInstance(instance) != XR_SUCCESS) {
+		common->Error("Failed to close OpenXR\n");
 	}
 }
