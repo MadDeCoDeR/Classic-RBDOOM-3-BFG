@@ -1,3 +1,26 @@
+/**
+* Copyright (C) 2024 George Kalampokis
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* this software and associated documentation files (the "Software"), to deal in
+* the Software without restriction, including without limitation the rights to
+* use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+* of the Software, and to permit persons to whom the Software is furnished to
+* do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software. As clarification, there
+* is no requirement that the copyright notice and permission be included in
+* binary distributions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
 #include "precompiled.h"
 #include "renderer/OpenXR/XRCommon.h"
 #include <string.h>
@@ -86,6 +109,60 @@ void idXR::InitXR() {
 		sprintf(xrVersion, "%d.%d.%d", XR_VERSION_MAJOR(instanceProperties.runtimeVersion), XR_VERSION_MINOR(instanceProperties.runtimeVersion), XR_VERSION_PATCH(instanceProperties.runtimeVersion));
 		common->Printf("OpenXR Have been initialized\n------------------------------------------------\nRuntime Name: %s\nRuntime Version: %s\n------------------------------------------------\n", instanceProperties.runtimeName, xrVersion);
 	}
+#ifdef _DEBUG
+	if (std::find(activeExtensions.begin(), activeExtensions.end(), XR_EXT_DEBUG_UTILS_EXTENSION_NAME) != activeExtensions.end()) {
+		XrDebugUtilsMessengerCreateInfoEXT dmci{ XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT };
+		dmci.messageSeverities = XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
+		dmci.messageTypes = XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT;
+		dmci.userCallback = (PFN_xrDebugUtilsMessengerCallbackEXT)DebugXR;
+		dmci.userData = nullptr;
+	}
+#endif
+}
+
+XrBool32 DebugXR(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
+	// it probably isn't safe to do an idLib::Printf at this point
+	idStr typeStr = "";
+	switch (messageType) {
+	case XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
+		typeStr = "General Call";
+		break;
+	case XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
+		typeStr = "Performance Call";
+		break;
+	case XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
+		typeStr = "Validation Call";
+		break;
+	case XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT:
+		typeStr = "Conformance Call";
+		break;
+	default:
+		typeStr = "Unknown";
+		break;
+	}
+
+	idStr severityStr = "";
+	switch (messageSeverity) {
+	case XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+		severityStr = "Error";
+		break;
+	case XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+		severityStr = "Warning";
+		break;
+	case XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+		severityStr = "Info";
+		break;
+	default:
+		severityStr = "Notification";
+		break;
+	}
+	char callstack[5000];
+	Sys_GetCallStack(callstack);
+	// RB: printf should be thread safe on Linux
+	idLib::Printf("caught OpenXR Error:\n\tType: %s\n\tSeverity: %s\n\tMessage: %s\n%s", typeStr.c_str(), severityStr.c_str(), pCallbackData->message, callstack);
+	// RB end
+
+	return XrBool32();
 }
 
 void idXR::ShutDownXR()
