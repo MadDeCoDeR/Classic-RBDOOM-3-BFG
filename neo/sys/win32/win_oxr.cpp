@@ -29,6 +29,52 @@
 #include "gfxwrapper_opengl.h"
 
 
+
+XrBool32 DebugXR(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
+	// it probably isn't safe to do an idLib::Printf at this point
+	idStr typeStr = "";
+	switch (messageType) {
+	case XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
+		typeStr = "General Call";
+		break;
+	case XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
+		typeStr = "Performance Call";
+		break;
+	case XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
+		typeStr = "Validation Call";
+		break;
+	case XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT:
+		typeStr = "Conformance Call";
+		break;
+	default:
+		typeStr = "Unknown";
+		break;
+	}
+
+	idStr severityStr = "";
+	switch (messageSeverity) {
+	case XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+		severityStr = "Error";
+		break;
+	case XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+		severityStr = "Warning";
+		break;
+	case XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+		severityStr = "Info";
+		break;
+	default:
+		severityStr = "Notification";
+		break;
+	}
+	char callstack[5000];
+	Sys_GetCallStack(callstack);
+	// RB: printf should be thread safe on Linux
+	idLib::Printf("caught OpenXR Error:\n\tType: %s\n\tSeverity: %s\n\tMessage: %s\n%s", typeStr.c_str(), severityStr.c_str(), pCallbackData->message, callstack);
+	// RB end
+
+	return XrBool32();
+}
+
 void idXR::InitXR() {
 	XrApplicationInfo XRAppInfo;
 	strncpy(XRAppInfo.applicationName, "DOOM BFA\0", 9);
@@ -116,54 +162,28 @@ void idXR::InitXR() {
 		dmci.messageTypes = XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT;
 		dmci.userCallback = (PFN_xrDebugUtilsMessengerCallbackEXT)DebugXR;
 		dmci.userData = nullptr;
+
+		PFN_xrCreateDebugUtilsMessengerEXT xrCreateDebugUtils;
+		if (xrGetInstanceProcAddr(instance, "xrCreateDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrCreateDebugUtils) == XR_SUCCESS) {
+			if (xrCreateDebugUtils(instance, &dmci, &debugMessager) != XR_SUCCESS) {
+				common->Error("OpenXR Error: Failed to create Debug Messenger");
+			}
+		}
 	}
 #endif
+
+	XrSystemGetInfo systemGI{ XR_TYPE_SYSTEM_GET_INFO };
+	systemGI.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
+	if (xrGetSystem(instance, &systemGI, &systemId) != XR_SUCCESS) {
+		common->Error("OpenXR Error: Failed to retrieve SystemId");
+	}
+	if (xrGetSystemProperties(instance, systemId, &systemProperties) != XR_SUCCESS) {
+		common->Error("OpenXR Error: Failed to retrieve System properties");
+	}
+	common->Printf("OpenXR Compatible System Havebeen Found\n------------------------------------------------\nVendor: %d\nSystem: %s\n------------------------------------------------\n", systemProperties.vendorId, systemProperties.systemName);
+
 }
 
-XrBool32 DebugXR(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
-	// it probably isn't safe to do an idLib::Printf at this point
-	idStr typeStr = "";
-	switch (messageType) {
-	case XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
-		typeStr = "General Call";
-		break;
-	case XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
-		typeStr = "Performance Call";
-		break;
-	case XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
-		typeStr = "Validation Call";
-		break;
-	case XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT:
-		typeStr = "Conformance Call";
-		break;
-	default:
-		typeStr = "Unknown";
-		break;
-	}
-
-	idStr severityStr = "";
-	switch (messageSeverity) {
-	case XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-		severityStr = "Error";
-		break;
-	case XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-		severityStr = "Warning";
-		break;
-	case XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-		severityStr = "Info";
-		break;
-	default:
-		severityStr = "Notification";
-		break;
-	}
-	char callstack[5000];
-	Sys_GetCallStack(callstack);
-	// RB: printf should be thread safe on Linux
-	idLib::Printf("caught OpenXR Error:\n\tType: %s\n\tSeverity: %s\n\tMessage: %s\n%s", typeStr.c_str(), severityStr.c_str(), pCallbackData->message, callstack);
-	// RB end
-
-	return XrBool32();
-}
 
 void idXR::ShutDownXR()
 {
