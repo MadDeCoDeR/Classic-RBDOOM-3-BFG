@@ -90,7 +90,7 @@ const int HEALTH_PER_DOSE = 10;
 const int WEAPON_DROP_TIME = 20 * 1000;
 
 // time before a next or prev weapon switch happens
-const int WEAPON_SWITCH_DELAY = 150;
+const int WEAPON_SWITCH_DELAY = 150 * 5;
 
 // how many units to raise spectator above default view height so it's in the head of someone
 const int SPECTATE_RAISE = 25;
@@ -5666,7 +5666,10 @@ void idPlayer::Weapon_Combat()
 		return;
 	}
 	
-	weapon.GetEntity()->RaiseWeapon();
+	if (gameLocal->time > weaponSwitchTime) {
+		weapon.GetEntity()->RaiseWeapon();
+	}
+	
 	if( weapon.GetEntity()->IsReloading() )
 	{
 		if( !AI_RELOAD )
@@ -5686,31 +5689,19 @@ void idPlayer::Weapon_Combat()
 		idealWeapon = currentWeapon;
 	}
 	
-	if( idealWeapon != currentWeapon &&  idealWeapon.Get() < MAX_WEAPONS )
+	if( idealWeapon != currentWeapon &&  idealWeapon.Get() < MAX_WEAPONS)
 	{
-		if( weaponCatchup )
+		if (weaponCatchup)
 		{
-			assert( common->IsClient() );
-			
+			assert(common->IsClient());
+
 			currentWeapon = idealWeapon.Get();
 			tweap = currentWeapon;
 			weaponGone = false;
-			animPrefix = spawnArgs.GetString( va( "def_weapon%d", currentWeapon ) );
-			weapon.GetEntity()->GetWeaponDef( animPrefix, inventory.GetClipAmmoForWeapon( currentWeapon ) );
-			animPrefix.Strip( "weapon_" );
-			
-			weapon.GetEntity()->NetCatchup();
-			const function_t* newstate = GetScriptFunction( "NetCatchup" );
-			if( newstate )
-			{
-				SetState( newstate );
-				UpdateScript();
-			}
-			weaponCatchup = false;
 		}
 		else
 		{
-			if( weapon.GetEntity()->IsReady() )
+			if( weapon.GetEntity()->IsReady())
 			{
 				weapon.GetEntity()->PutAway();
 			}
@@ -5727,31 +5718,57 @@ void idPlayer::Weapon_Combat()
 				currentWeapon = idealWeapon.Get();
 				tweap = currentWeapon;
 				weaponGone = false;
-				animPrefix = spawnArgs.GetString( va( "def_weapon%d", currentWeapon ) );
-				weapon.GetEntity()->GetWeaponDef( animPrefix, inventory.GetClipAmmoForWeapon( currentWeapon ) );
-				animPrefix.Strip( "weapon_" );
 				
-				weapon.GetEntity()->Raise();
 			}
 		}
 	}
-	else
-	{
-		weaponGone = false;	// if you drop and re-get weap, you may miss the = false above
-		if( weapon.GetEntity()->IsHolstered() )
-		{
-			if( !weapon.GetEntity()->AmmoAvailable() )
-			{
-				// weapons can switch automatically if they have no more ammo
-				NextBestWeapon();
-			}
-			else
-			{
-				weapon.GetEntity()->Raise();
-				state = GetScriptFunction( "RaiseWeapon" );
-				if( state )
+	
+
+	if (gameLocal->time > weaponSwitchTime) {
+		idStr expectedWeapon = spawnArgs.GetString(va("def_weapon%d", currentWeapon));
+		expectedWeapon.Strip("weapon_");
+		expectedWeapon.ToUpper();
+		if (idStr::Cmp(weapon.GetEntity()->DisplayName(), expectedWeapon)) {
+			if (weaponCatchup) {
+				animPrefix = spawnArgs.GetString(va("def_weapon%d", currentWeapon));
+				weapon.GetEntity()->GetWeaponDef(animPrefix, inventory.GetClipAmmoForWeapon(currentWeapon));
+				animPrefix.Strip("weapon_");
+				weapon.GetEntity()->NetCatchup();
+				const function_t* newstate = GetScriptFunction("NetCatchup");
+				if (newstate)
 				{
-					SetState( state );
+					SetState(newstate);
+					UpdateScript();
+				}
+				weaponCatchup = false;
+			}
+			else {
+				if (weapon.GetEntity()->IsHolstered()) {
+					animPrefix = spawnArgs.GetString(va("def_weapon%d", currentWeapon));
+					weapon.GetEntity()->GetWeaponDef(animPrefix, inventory.GetClipAmmoForWeapon(currentWeapon));
+					animPrefix.Strip("weapon_");
+					weapon.GetEntity()->Raise();
+				}
+			}
+		}
+		else
+		{
+			weaponGone = false;	// if you drop and re-get weap, you may miss the = false above
+			if (weapon.GetEntity()->IsHolstered())
+			{
+				if (!weapon.GetEntity()->AmmoAvailable())
+				{
+					// weapons can switch automatically if they have no more ammo
+					NextBestWeapon();
+				}
+				else
+				{
+					weapon.GetEntity()->Raise();
+					state = GetScriptFunction("RaiseWeapon");
+					if (state)
+					{
+						SetState(state);
+					}
 				}
 			}
 		}
