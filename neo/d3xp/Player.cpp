@@ -5790,7 +5790,7 @@ void idPlayer::Weapon_Combat()
 	}
 	
 	// update our ammo clip in our inventory
-	if( ( currentWeapon >= 0 ) && ( currentWeapon < MAX_WEAPONS ) )
+	if( ( currentWeapon >= 0 ) && ( currentWeapon < MAX_WEAPONS ) && gameLocal->time > weaponSwitchTime)
 	{
 		inventory.SetClipAmmoForWeapon( currentWeapon, weapon.GetEntity()->AmmoInClip() );
 	}
