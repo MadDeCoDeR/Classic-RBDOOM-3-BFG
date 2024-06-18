@@ -182,6 +182,10 @@ void idXR::InitXR() {
 	}
 	common->Printf("OpenXR Compatible System Havebeen Found\n------------------------------------------------\nVendor: %d\nSystem: %s\n------------------------------------------------\n", systemProperties.vendorId, systemProperties.systemName);
 
+	//Create a Session
+	XrSessionCreateInfo sci{ XR_TYPE_SESSION_CREATE_INFO };
+	//TODO: Interact and retrieve data from renderingSystem
+
 }
 
 

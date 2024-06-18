@@ -45,4 +45,5 @@ private:
 	XrFormFactor formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 	XrSystemId systemId = {};
 	XrSystemProperties systemProperties = { XR_TYPE_SYSTEM_PROPERTIES };
+	XrSession session = XR_NULL_HANDLE;
 };
