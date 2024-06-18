@@ -90,7 +90,7 @@ const int HEALTH_PER_DOSE = 10;
 const int WEAPON_DROP_TIME = 20 * 1000;
 
 // time before a next or prev weapon switch happens
-const int WEAPON_SWITCH_DELAY = 150 * 5;
+const int WEAPON_SWITCH_DELAY = 500;
 
 // how many units to raise spectator above default view height so it's in the head of someone
 const int SPECTATE_RAISE = 25;
