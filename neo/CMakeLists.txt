@@ -334,6 +334,10 @@ elseif(MSVC)
 	
 endif()
 
+if (USE_OPENXR)
+	add_definitions(-DUSE_OPENXR)
+endif()
+
 if (USE_FOOLS)
 	add_definitions(-DFOOLS)
 	if (MSVC)

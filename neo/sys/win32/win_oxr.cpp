@@ -27,6 +27,7 @@
 #include <framework/Licensee.h>
 #include <stdlib.h>
 #include "gfxwrapper_opengl.h"
+#include "renderer/RenderCommon.h"
 
 
 
@@ -185,6 +186,12 @@ void idXR::InitXR() {
 	//Create a Session
 	XrSessionCreateInfo sci{ XR_TYPE_SESSION_CREATE_INFO };
 	//TODO: Interact and retrieve data from renderingSystem
+	sci.next = GetOpenXRGraphicsBinding();
+	sci.createFlags = 0;
+	sci.systemId = systemId;
+	if (xrCreateSession(instance, &sci, &session) != XR_SUCCESS) {
+		common->Error("OpenXR Error: Failed to create Session");
+	}
 
 }
 

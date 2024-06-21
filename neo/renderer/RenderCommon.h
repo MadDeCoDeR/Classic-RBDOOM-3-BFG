@@ -1168,7 +1168,9 @@ void		GLimp_Shutdown();
 void		GLimp_SetGamma( unsigned short red[256],
 							unsigned short green[256],
 							unsigned short blue[256] );
-
+#ifdef USE_OPENXR
+void* GetOpenXRGraphicsBinding();
+#endif
 
 
 /*
