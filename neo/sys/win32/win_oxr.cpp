@@ -22,14 +22,10 @@
 * SOFTWARE.
 */
 #include "precompiled.h"
-#include "renderer/OpenXR/XRCommon.h"
-#include <string.h>
-#include <framework/Licensee.h>
-#include <stdlib.h>
-#include "gfxwrapper_opengl.h"
-#include "renderer/RenderCommon.h"
+#include "win_oxr.h"
 
-
+idXR_Win xrWinSystem;
+idXR* xrSystem = &xrWinSystem;
 
 XrBool32 DebugXR(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
 	// it probably isn't safe to do an idLib::Printf at this point
@@ -76,7 +72,39 @@ XrBool32 DebugXR(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUti
 	return XrBool32();
 }
 
-void idXR::InitXR() {
+void idXR_Win::PollXREvents()
+{
+	XrEventDataBuffer eventData{ XR_TYPE_EVENT_DATA_BUFFER };
+	std::function xrPollEvents = [&]() -> bool {
+		eventData = { XR_TYPE_EVENT_DATA_BUFFER };
+		return xrPollEvent(instance, &eventData) == XR_SUCCESS;
+		};
+
+	while (xrPollEvents()) {
+		switch (eventData.type) {
+		case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
+			XrEventDataSessionStateChanged* sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged*>(&eventData);
+			if (sessionStateChanged->session != session) {
+				common->Warning("OpenXR: State Change Session is different from created Session");
+				break;
+			}
+			if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
+				XrSessionBeginInfo sessionbi{ XR_TYPE_SESSION_BEGIN_INFO };
+				sessionbi.primaryViewConfigurationType = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+				if (xrBeginSession(session, &sessionbi) != XR_SUCCESS) {
+					common->Warning("OpenXR: Failed to begin Session");
+				}
+			} else if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING){
+				if (xrEndSession(session) != XR_SUCCESS) {
+					common->Warning("OpenXR: Failed to end Session");
+				}
+			}
+			break;
+		}
+	}
+}
+
+void idXR_Win::InitXR() {
 	XrApplicationInfo XRAppInfo;
 	strncpy(XRAppInfo.applicationName, "DOOM BFA\0", 9);
 	XRAppInfo.apiVersion = XR_CURRENT_API_VERSION;
@@ -192,12 +220,22 @@ void idXR::InitXR() {
 	if (xrCreateSession(instance, &sci, &session) != XR_SUCCESS) {
 		common->Error("OpenXR Error: Failed to create Session");
 	}
-
 }
 
 
-void idXR::ShutDownXR()
+void idXR_Win::ShutDownXR()
 {
+	if (xrDestroySession(session) != XR_SUCCESS) {
+		common->Error("Failed to close OpenXR Session\n");
+	}
+#ifdef _DEBUG
+	PFN_xrDestroyDebugUtilsMessengerEXT xrDestroyDebugMessager;
+	if (xrGetInstanceProcAddr(instance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrDestroyDebugMessager) == XR_SUCCESS) {
+		if (xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
+			common->Error("OpenXR Error: Failed to Destroy Debug Messenger");
+		}
+	}
+#endif
 	if (xrDestroyInstance(instance) != XR_SUCCESS) {
 		common->Error("Failed to close OpenXR\n");
 	}

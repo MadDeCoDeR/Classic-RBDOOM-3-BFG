@@ -1054,6 +1054,7 @@ endif()
 
 if (USE_OPENXR)
 	list(APPEND WIN32_SOURCES sys/win32/win_oxr.cpp)
+	list(APPEND WIN32_INCLUDES sys/win32/win_oxr.h)
 endif()
 	
 if(MSVC)

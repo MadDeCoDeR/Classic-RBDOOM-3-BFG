@@ -33,6 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "Game_local.h"
 #include "GameEdit.h"
+#include <renderer/OpenXR/XRCommon.h>
 
 #ifdef GAME_DLL
 
@@ -2709,6 +2710,8 @@ void idGameLocal::RunFrame( idUserCmdMgr& cmdMgr, gameReturn_t& ret )
 	
 	SyncPlayersWithLobbyUsers( false );
 	ServerSendNetworkSyncCvars();
+
+	xrSystem->PollXREvents();
 	
 	player = GetLocalPlayer();
 	
