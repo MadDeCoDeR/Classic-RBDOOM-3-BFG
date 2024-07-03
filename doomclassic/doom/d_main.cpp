@@ -100,6 +100,8 @@ void D_DoAdvanceDemo (void);
 bool initonce = false;
 
 idCVar cl_expMenu("cl_expMenu", "1", CVAR_INTEGER, "Change DOOM 2 Menu based on expansion 1 = DOOM 2, 2 = TNT: Evilution, 3 = The Plutonia Experiment, 4 = Master Levels, 5 = No Rest For the Living", 1, 5);
+idCVar cl_ScreenSize("cl_ScreenSize", "0", CVAR_INTEGER | CVAR_BOOL, "Store ScreenSize input", 0, 1);
+
 
 const char*		wadfiles[MAXWADFILES] =
 {
@@ -329,7 +331,9 @@ void D_RunFrame( bool Sounds )
 		// move positional sounds
 		S_UpdateSounds (::g->players[::g->consoleplayer].mo);
 	}
-
+	if (!::g->demoplayback) {
+		M_SizeDisplay(cl_ScreenSize.GetInteger());
+	}
 	// Update display, next frame, with current state.
 	D_Display ();
 
@@ -1170,6 +1174,8 @@ bool D_DoomMainPoll(void)
 
 	I_Printf ("ST_Init: Init status bar.\n");
 	ST_Init ();
+
+	M_SizeDisplay(0);
 
 	// start the apropriate game based on parms
 	p = M_CheckParm ("-record");

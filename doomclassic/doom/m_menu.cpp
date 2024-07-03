@@ -110,6 +110,8 @@ extern idCVar s_useXAudio2;
 
 extern idCVar in_photomode;
 extern idCVar in_toggleRun;
+
+extern idCVar cl_ScreenSize;
 //
 // defaulted values
 //
@@ -2788,7 +2790,7 @@ qboolean M_Responder (event_t* ev)
 		case KEY_MINUS:         // Screen size down
 			if (::g->automapactive || ::g->chat_on || in_photomode.GetBool())
 				return false;
-			M_SizeDisplay(0);
+			cl_ScreenSize.SetInteger(0);
 			//M_Aspect(0); //GK: Screen size doesn't work
 			S_StartSound(NULL,sfx_stnmov);
 			return true;
@@ -2796,7 +2798,7 @@ qboolean M_Responder (event_t* ev)
 		case KEY_EQUALS:        // Screen size up
 			if (::g->automapactive || ::g->chat_on || in_photomode.GetBool())
 				return false;
-			M_SizeDisplay(1);
+			cl_ScreenSize.SetInteger(1);
 			//M_Aspect(1); //GK: It doesn't circle through
 			S_StartSound(NULL,sfx_stnmov);
 			return true;
@@ -3014,6 +3016,7 @@ qboolean M_Responder (event_t* ev)
 	case KEY_BACKSPACE:
 		::g->currentMenu->lastOn = ::g->itemOn;
 		M_CheckReset();
+		inDevMode = false;
 		if (::g->currentMenu->prevMenu)
 		{
 			::g->currentMenu = ::g->currentMenu->prevMenu;
@@ -3057,7 +3060,7 @@ void M_StartControlPanel (void)
 	// intro might call this repeatedly
 	if (::g->menuactive)
 		return;
-
+	inDevMode = false;
 	::g->menuactive = 1;
 	::g->currentMenu = &::g->MainDef;
 	::g->itemOn = ::g->currentMenu->lastOn;

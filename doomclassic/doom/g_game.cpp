@@ -264,6 +264,11 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 		}
 	}
 
+	if (::g->menuactive && !::g->demoplayback) {
+		return;
+	}
+
+
 	base = I_BaseTiccmd ();		// empty, or external driver
 	memcpy (cmd,base,sizeof(*cmd)); 
 
