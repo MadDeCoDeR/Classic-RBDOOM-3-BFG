@@ -48,12 +48,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "rc/doom_resource.h"
 #include "../../renderer/RenderCommon.h"
 #include <vector>
-#ifdef USE_OPENXR
-#define XR_USE_GRAPHICS_API_OPENGL
-#define XR_USE_PLATFORM_WIN32
-#include "openxr/openxr.h"
-#include "openxr/openxr_platform.h"
-#endif
 
 
 //GK: Win 7 compatibility hack. Re-declare the HANDLE DPI_AWARENESS_CONTEXT in order to avoid issues with older SDK's
@@ -185,10 +179,9 @@ void GLimp_SetGamma( unsigned short red[256], unsigned short green[256], unsigne
 #ifdef USE_OPENXR
 void* GetOpenXRGraphicsBinding()
 {
-	XrGraphicsBindingOpenGLWin32KHR graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR};
-	graphicsBinding.hDC = win32.hDC;
-	graphicsBinding.hGLRC = win32.hGLRC;
-	return &graphicsBinding;
+	win32.graphicsBinding.hDC = win32.hDC;
+	win32.graphicsBinding.hGLRC = win32.hGLRC;
+	return &win32.graphicsBinding;
 }
 #endif
 

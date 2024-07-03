@@ -211,6 +211,15 @@ void idXR_Win::InitXR() {
 	}
 	common->Printf("OpenXR Compatible System Havebeen Found\n------------------------------------------------\nVendor: %d\nSystem: %s\n------------------------------------------------\n", systemProperties.vendorId, systemProperties.systemName);
 
+	//Required before Creating a Session
+	XrGraphicsRequirementsOpenGLKHR requirements{ XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR };
+	PFN_xrGetOpenGLGraphicsRequirementsKHR xrGetOpenGLGraphicsRequirementsKHR;
+	if (xrGetInstanceProcAddr(instance, "xrGetOpenGLGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&xrGetOpenGLGraphicsRequirementsKHR) == XR_SUCCESS) {
+		if (xrGetOpenGLGraphicsRequirementsKHR(instance, systemId, &requirements) != XR_SUCCESS) {
+			common->Error("OpenXR Error: Failed to Retrieve Graphic Requirements");
+		}
+	}
+
 	//Create a Session
 	XrSessionCreateInfo sci{ XR_TYPE_SESSION_CREATE_INFO };
 	//TODO: Interact and retrieve data from renderingSystem
