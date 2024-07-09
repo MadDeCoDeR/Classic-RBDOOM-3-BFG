@@ -108,6 +108,8 @@ idCVar com_emergencyexit("com_emergencyexit", "0", CVAR_BOOL | CVAR_ROM, "Stops 
 //GK End
 //extern idCVar g_demoMode; //GK: get it from game object
 
+extern idCVar stereoRender_enable;
+
 idCVar com_engineHz( "com_engineHz", "60", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the engine runs at", 10.0f, 1024.0f );
 idCVar cl_engineHz("cl_engineHz", "35", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the classic engine runs at", 35.0f, 40.0f);
 idCVar cl_engineHz_interp("cl_engineHz_interp", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable Classic Doom Engine Iterpolation");
@@ -1584,7 +1586,9 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// initialize the renderSystem data structures
 		renderSystem->Init();
-		xrSystem->InitXR();
+		if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR) {
+			xrSystem->InitXR();
+		}
 		common->Printf("Initializing Platform\n");
 		LoadPlatformDLL();
 		if (::op == NULL) {

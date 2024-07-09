@@ -2710,8 +2710,9 @@ void idGameLocal::RunFrame( idUserCmdMgr& cmdMgr, gameReturn_t& ret )
 	
 	SyncPlayersWithLobbyUsers( false );
 	ServerSendNetworkSyncCvars();
-
-	xrSystem->PollXREvents();
+	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR) {
+		xrSystem->PollXREvents();
+	}
 	
 	player = GetLocalPlayer();
 	

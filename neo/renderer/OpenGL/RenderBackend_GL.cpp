@@ -2179,6 +2179,7 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 			break;
 			
 		default:
+		case STEREO3D_VR:
 		case STEREO3D_SIDE_BY_SIDE:
 			if( stereoRender_warp.GetBool() )
 			{

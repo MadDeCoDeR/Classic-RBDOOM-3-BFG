@@ -154,7 +154,7 @@ void idXR_Win::InitXR() {
 					}
 				}
 				if (!found) {
-					common->Error("Failed to find OpenXR Extension: %s\n", requestExtension.c_str());
+					common->Warning("Failed to find OpenXR Extension: %s\n", requestExtension.c_str());
 				}
 			}
 		}
@@ -174,7 +174,7 @@ void idXR_Win::InitXR() {
 		result = xrCreateInstance(&ici, &instance);
 	}
 	if (result != XR_SUCCESS) {
-		common->Error("Failed to initiate OpenXR\n");
+		common->Warning("Failed to initiate OpenXR\n");
 		return;
 	}
 
@@ -195,7 +195,7 @@ void idXR_Win::InitXR() {
 		PFN_xrCreateDebugUtilsMessengerEXT xrCreateDebugUtils;
 		if (xrGetInstanceProcAddr(instance, "xrCreateDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrCreateDebugUtils) == XR_SUCCESS) {
 			if (xrCreateDebugUtils(instance, &dmci, &debugMessager) != XR_SUCCESS) {
-				common->Error("OpenXR Error: Failed to create Debug Messenger");
+				common->Warning("OpenXR Error: Failed to create Debug Messenger");
 			}
 		}
 	}
@@ -204,10 +204,10 @@ void idXR_Win::InitXR() {
 	XrSystemGetInfo systemGI{ XR_TYPE_SYSTEM_GET_INFO };
 	systemGI.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 	if (xrGetSystem(instance, &systemGI, &systemId) != XR_SUCCESS) {
-		common->Error("OpenXR Error: Failed to retrieve SystemId");
+		common->Warning("OpenXR Error: Failed to retrieve SystemId");
 	}
 	if (xrGetSystemProperties(instance, systemId, &systemProperties) != XR_SUCCESS) {
-		common->Error("OpenXR Error: Failed to retrieve System properties");
+		common->Warning("OpenXR Error: Failed to retrieve System properties");
 	}
 	common->Printf("OpenXR Compatible System Havebeen Found\n------------------------------------------------\nVendor: %d\nSystem: %s\n------------------------------------------------\n", systemProperties.vendorId, systemProperties.systemName);
 
@@ -216,7 +216,7 @@ void idXR_Win::InitXR() {
 	PFN_xrGetOpenGLGraphicsRequirementsKHR xrGetOpenGLGraphicsRequirementsKHR;
 	if (xrGetInstanceProcAddr(instance, "xrGetOpenGLGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&xrGetOpenGLGraphicsRequirementsKHR) == XR_SUCCESS) {
 		if (xrGetOpenGLGraphicsRequirementsKHR(instance, systemId, &requirements) != XR_SUCCESS) {
-			common->Error("OpenXR Error: Failed to Retrieve Graphic Requirements");
+			common->Warning("OpenXR Error: Failed to Retrieve Graphic Requirements");
 		}
 	}
 
@@ -227,25 +227,25 @@ void idXR_Win::InitXR() {
 	sci.createFlags = 0;
 	sci.systemId = systemId;
 	if (xrCreateSession(instance, &sci, &session) != XR_SUCCESS) {
-		common->Error("OpenXR Error: Failed to create Session");
+		common->Warning("OpenXR Error: Failed to create Session");
 	}
 }
 
 
 void idXR_Win::ShutDownXR()
 {
-	if (xrDestroySession(session) != XR_SUCCESS) {
-		common->Error("Failed to close OpenXR Session\n");
+	if (session != NULL && xrDestroySession(session) != XR_SUCCESS) {
+		common->Warning("Failed to close OpenXR Session\n");
 	}
 #ifdef _DEBUG
 	PFN_xrDestroyDebugUtilsMessengerEXT xrDestroyDebugMessager;
 	if (xrGetInstanceProcAddr(instance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrDestroyDebugMessager) == XR_SUCCESS) {
-		if (xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
-			common->Error("OpenXR Error: Failed to Destroy Debug Messenger");
+		if (debugMessager != NULL && xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to Destroy Debug Messenger");
 		}
 	}
 #endif
-	if (xrDestroyInstance(instance) != XR_SUCCESS) {
-		common->Error("Failed to close OpenXR\n");
+	if (instance != NULL && xrDestroyInstance(instance) != XR_SUCCESS) {
+		common->Warning("Failed to close OpenXR\n");
 	}
 }
