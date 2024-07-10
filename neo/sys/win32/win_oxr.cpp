@@ -90,7 +90,7 @@ void idXR_Win::PollXREvents()
 			}
 			if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
 				XrSessionBeginInfo sessionbi{ XR_TYPE_SESSION_BEGIN_INFO };
-				sessionbi.primaryViewConfigurationType = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+				sessionbi.primaryViewConfigurationType = viewConfiguration;
 				if (xrBeginSession(session, &sessionbi) != XR_SUCCESS) {
 					common->Warning("OpenXR: Failed to begin Session");
 				}
@@ -217,6 +217,32 @@ void idXR_Win::InitXR() {
 	if (xrGetInstanceProcAddr(instance, "xrGetOpenGLGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&xrGetOpenGLGraphicsRequirementsKHR) == XR_SUCCESS) {
 		if (xrGetOpenGLGraphicsRequirementsKHR(instance, systemId, &requirements) != XR_SUCCESS) {
 			common->Warning("OpenXR Error: Failed to Retrieve Graphic Requirements");
+		}
+	}
+
+	uint viewConfigurationCount = 0;
+	if (xrEnumerateViewConfigurations(instance, systemId, 0, &viewConfigurationCount, nullptr) == XR_SUCCESS) {
+		viewConfigurations.resize(viewConfigurationCount);
+		if (xrEnumerateViewConfigurations(instance, systemId, viewConfigurationCount, &viewConfigurationCount, viewConfigurations.data()) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to Enumerate View Configurations");
+		}
+	}
+
+	for (const XrViewConfigurationType viewConf : appViewConfigurations) {
+		if (std::find(viewConfigurations.begin(), viewConfigurations.end(), viewConf) != viewConfigurations.end()) {
+			viewConfiguration = viewConf;
+			break;
+		}
+	}
+
+	if (viewConfiguration == XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM) {
+		viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+	}
+
+	if (xrEnumerateViewConfigurationViews(instance, systemId, viewConfiguration, 0, &viewConfigurationCount, nullptr) == XR_SUCCESS) {
+		configurationView.resize(viewConfigurationCount, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
+		if (xrEnumerateViewConfigurationViews(instance, systemId, viewConfiguration, viewConfigurationCount, &viewConfigurationCount, configurationView.data()) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to Enumerate View Configuration Views");
 		}
 	}
 

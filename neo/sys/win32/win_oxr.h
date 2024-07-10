@@ -49,4 +49,17 @@ private:
 	XrSystemId systemId = {};
 	XrSystemProperties systemProperties = { XR_TYPE_SYSTEM_PROPERTIES };
 	XrSession session = XR_NULL_HANDLE;
+	std::vector<XrViewConfigurationType> appViewConfigurations = { XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_MONO };
+	std::vector<XrViewConfigurationType> viewConfigurations;
+	XrViewConfigurationType viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM;
+	std::vector<XrViewConfigurationView> configurationView;
+
+	struct SwapchainInfo {
+		XrSwapchain swapchain = XR_NULL_HANDLE;
+		int64 swapchainFormat = 0;
+		std::vector<void*> imageViews;
+	};
+
+	std::vector<SwapchainInfo> colorSwapchainInfo = {};
+	std::vector<SwapchainInfo> depthSwapchainInfo = {};
 };
