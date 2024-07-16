@@ -255,6 +255,79 @@ void idXR_Win::InitXR() {
 	if (xrCreateSession(instance, &sci, &session) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to create Session");
 	}
+
+	uint formatCount = 0;
+	if (xrEnumerateSwapchainFormats(session, 0, &formatCount, nullptr) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Initiate the enumeration for Swapchain Formats");
+	}
+	std::vector<int64> formats(formatCount);
+	if (xrEnumerateSwapchainFormats(session, formatCount, &formatCount, formats.data()) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Enumerate Swapchain Formats");
+	}
+
+	std::vector<int64> supportedColorFormats = {
+		GL_RGB10_A2,
+		GL_RGBA16F,
+		GL_RGBA8,
+		GL_RGBA8_SNORM
+	};
+	int64 colorFormat = 0;
+	std::vector<int64>::const_iterator colorFormatIterator = std::find_first_of(formats.begin(), formats.end(), supportedColorFormats.begin(), supportedColorFormats.end());
+
+	if (colorFormatIterator == formats.end()) {
+		common->Warning("OpenXR Error: Failed to find Color Format");
+	}
+	else {
+		colorFormat = *colorFormatIterator;
+	}
+
+	std::vector<int64> supportedDepthFormats = {
+		GL_DEPTH_COMPONENT32F,
+		GL_DEPTH_COMPONENT32,
+		GL_DEPTH_COMPONENT24,
+		GL_DEPTH_COMPONENT16
+	};
+	int64 depthFormat = 0;
+	std::vector<int64>::const_iterator depthFormatIterator = std::find_first_of(formats.begin(), formats.end(), supportedDepthFormats.begin(), supportedDepthFormats.end());
+	if (depthFormatIterator == formats.end()) {
+		common->Warning("OpenXR Error: Failed to find Depth Format");
+	}
+	else {
+		depthFormat = *depthFormatIterator;
+	}
+
+	colorSwapchainInfo.resize(configurationView.size());
+	depthSwapchainInfo.resize(configurationView.size());
+
+	for (int i = 0; i < configurationView.size(); i++) {
+		XrSwapchainCreateInfo swci{ XR_TYPE_SWAPCHAIN_CREATE_INFO };
+		swci.createFlags = 0;
+		swci.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
+		swci.format = colorFormat;
+		swci.sampleCount = configurationView[i].recommendedSwapchainSampleCount;
+		swci.width = configurationView[i].recommendedImageRectWidth;
+		swci.height = configurationView[i].recommendedImageRectHeight;
+		swci.faceCount = 1;
+		swci.arraySize = 1;
+		swci.mipCount = 1;
+		if (xrCreateSwapchain(session, &swci, &colorSwapchainInfo[i].swapchain) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to Create Color Swapchain");
+		}
+
+		swci.createFlags = 0;
+		swci.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+		swci.format = depthFormat;
+		swci.sampleCount = configurationView[i].recommendedSwapchainSampleCount;
+		swci.width = configurationView[i].recommendedImageRectWidth;
+		swci.height = configurationView[i].recommendedImageRectHeight;
+		swci.faceCount = 1;
+		swci.arraySize = 1;
+		swci.mipCount = 1;
+		if (xrCreateSwapchain(session, &swci, &depthSwapchainInfo[i].swapchain) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to Create Depth Swapchain");
+		}
+	}
+
 }
 
 
