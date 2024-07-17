@@ -104,6 +104,20 @@ void idXR_Win::PollXREvents()
 	}
 }
 
+void idXR_Win::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index)
+{
+	uint imageCount = 0;
+	XrSwapchain targetSwapchain = swapchainInfo[index].swapchain;
+		if (xrEnumerateSwapchainImages(targetSwapchain, 0, &imageCount, nullptr) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to Initiate the enumeration for Swapchain Images");
+		}
+	swapchainImageMap[targetSwapchain].first = type;
+	swapchainImageMap[targetSwapchain].second.resize(imageCount, { XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR });
+	if (xrEnumerateSwapchainImages(targetSwapchain, imageCount, &imageCount, reinterpret_cast<XrSwapchainImageBaseHeader*>(swapchainImageMap[targetSwapchain].second.data())) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to enumeration for Swapchain Images");
+	}
+}
+
 void idXR_Win::InitXR() {
 	XrApplicationInfo XRAppInfo;
 	strncpy(XRAppInfo.applicationName, "DOOM BFA\0", 9);
@@ -326,6 +340,10 @@ void idXR_Win::InitXR() {
 		if (xrCreateSwapchain(session, &swci, &depthSwapchainInfo[i].swapchain) != XR_SUCCESS) {
 			common->Warning("OpenXR Error: Failed to Create Depth Swapchain");
 		}
+
+		this->EnumerateSwapchainImage(colorSwapchainInfo, idXRSwapchainType::COLOR, i);
+		this->EnumerateSwapchainImage(depthSwapchainInfo, idXRSwapchainType::DEPTH, i);
+		
 	}
 
 }

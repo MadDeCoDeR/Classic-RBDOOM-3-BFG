@@ -34,6 +34,11 @@ public:
 	virtual void InitXR() = 0;
 	virtual void ShutDownXR() = 0;
 	virtual void PollXREvents() = 0;
+
+	enum class idXRSwapchainType : uint8{
+		COLOR,
+		DEPTH
+	};
 };
 
 extern idXR* xrSystem;

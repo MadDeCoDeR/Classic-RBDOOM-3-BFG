@@ -53,13 +53,16 @@ private:
 	std::vector<XrViewConfigurationType> viewConfigurations;
 	XrViewConfigurationType viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM;
 	std::vector<XrViewConfigurationView> configurationView;
+	
 
 	struct SwapchainInfo {
 		XrSwapchain swapchain = XR_NULL_HANDLE;
 		int64 swapchainFormat = 0;
 		std::vector<void*> imageViews;
 	};
-
+	virtual void EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index);
 	std::vector<SwapchainInfo> colorSwapchainInfo = {};
 	std::vector<SwapchainInfo> depthSwapchainInfo = {};
+
+	std::unordered_map<XrSwapchain, std::pair<idXRSwapchainType, std::vector<XrSwapchainImageOpenGLKHR>>> swapchainImageMap{};
 };
