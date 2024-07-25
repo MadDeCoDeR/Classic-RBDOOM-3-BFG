@@ -104,13 +104,50 @@ void idXR_Win::PollXREvents()
 	}
 }
 
+void idXR_Win::StartRendering(int eye)
+{
+	renderingEye = eye;
+	if (!inFrame) {
+		XrFrameState frameState{ XR_TYPE_FRAME_STATE };
+		XrFrameWaitInfo frameWaitInfo{ XR_TYPE_FRAME_WAIT_INFO };
+		if (xrWaitFrame(session, &frameWaitInfo, &frameState) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to wait for Frame\n");
+			return;
+		}
+		predictedDisplayTime = frameState.predictedDisplayPeriod;
+		XrFrameBeginInfo frameBeginInfo{ XR_TYPE_FRAME_BEGIN_INFO };
+		if (xrBeginFrame(session, &frameBeginInfo) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to begin Frame\n");
+			return;
+		}
+		inFrame = true;
+		views.clear();
+		views.assign(configurationView.size(), { XR_TYPE_VIEW });
+
+		XrViewState viewState{ XR_TYPE_VIEW_STATE };
+		XrViewLocateInfo viewLocateInfo{ XR_TYPE_VIEW_LOCATE_INFO };
+		viewLocateInfo.viewConfigurationType = viewConfiguration;
+		viewLocateInfo.displayTime = predictedDisplayTime;
+		viewLocateInfo.space = localSpace;
+		uint viewCount = 0;
+		if (xrLocateViews(session, &viewLocateInfo, &viewState, static_cast<uint>(views.size()), &viewCount, views.data()) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to Locate Views\n");
+			return;
+		}
+	}
+
+	renderingColorSwapchainInfo = colorSwapchainInfo[eye];
+	renderingDepthSwapchainInfo = depthSwapchainInfo[eye];
+
+}
+
 void idXR_Win::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index)
 {
 	uint imageCount = 0;
 	XrSwapchain targetSwapchain = swapchainInfo[index].swapchain;
-		if (xrEnumerateSwapchainImages(targetSwapchain, 0, &imageCount, nullptr) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to Initiate the enumeration for Swapchain Images");
-		}
+	if (xrEnumerateSwapchainImages(targetSwapchain, 0, &imageCount, nullptr) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Initiate the enumeration for Swapchain Images");
+	}
 	swapchainImageMap[targetSwapchain].first = type;
 	swapchainImageMap[targetSwapchain].second.resize(imageCount, { XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR });
 	if (xrEnumerateSwapchainImages(targetSwapchain, imageCount, &imageCount, reinterpret_cast<XrSwapchainImageBaseHeader*>(swapchainImageMap[targetSwapchain].second.data())) != XR_SUCCESS) {
@@ -270,6 +307,13 @@ void idXR_Win::InitXR() {
 		common->Warning("OpenXR Error: Failed to create Session");
 	}
 
+	XrReferenceSpaceCreateInfo referenceSpaceCI{ XR_TYPE_REFERENCE_SPACE_CREATE_INFO };
+	referenceSpaceCI.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
+	referenceSpaceCI.poseInReferenceSpace = { {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f} };
+	if (xrCreateReferenceSpace(session, &referenceSpaceCI, &localSpace) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to create Reference Space");
+	}
+
 	uint formatCount = 0;
 	if (xrEnumerateSwapchainFormats(session, 0, &formatCount, nullptr) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to Initiate the enumeration for Swapchain Formats");
@@ -344,6 +388,10 @@ void idXR_Win::InitXR() {
 		this->EnumerateSwapchainImage(colorSwapchainInfo, idXRSwapchainType::COLOR, i);
 		this->EnumerateSwapchainImage(depthSwapchainInfo, idXRSwapchainType::DEPTH, i);
 		
+		XrSwapchain targetSwapchain = colorSwapchainInfo[i].swapchain;
+		for (int i = 0; i < swapchainImageMap[targetSwapchain].second.size(); i++) {
+
+		}
 	}
 
 }

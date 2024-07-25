@@ -34,6 +34,9 @@ public:
 	virtual void InitXR() = 0;
 	virtual void ShutDownXR() = 0;
 	virtual void PollXREvents() = 0;
+	virtual void StartRendering(int eye) = 0;
+	virtual void RenderFrame() = 0;
+	virtual void EndRendering() = 0;
 
 	enum class idXRSwapchainType : uint8{
 		COLOR,
