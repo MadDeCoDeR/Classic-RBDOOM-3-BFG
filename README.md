@@ -255,8 +255,10 @@ Without cmake presets:
 With CMake presets (new and currently used):
 
 Terminal:
+
 	> cd neo/
  	> cmake -B ../build_<profile> --preset=linux-<profile>
+	
 
 CMake GUI (also applies to Windows):
 
