@@ -30,6 +30,9 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Game_local.h"
+#ifdef USE_OPENXR
+#include "renderer/OpenXR/XRCommon.h"
+#endif
 
 // _D3XP : rename all gameLocal->time to gameLocal->slow.time for merge!
 
@@ -789,8 +792,18 @@ void idPlayerView::EmitStereoEyeView( const int eye, idMenuHandler_HUD* hudManag
 	
 	eyeView.viewEyeBuffer = stereoRender_swapEyes.GetBool() ? eye : -eye;
 	eyeView.stereoScreenSeparation = eye * dists.screenSeparation;
-	
+#ifdef USE_OPENXR
+	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		int xrEye = eyeView.viewEyeBuffer < 0 ? 0 : eyeView.viewEyeBuffer;
+		xrSystem->BindSwapchainImage(xrEye);
+	}
+#endif
 	SingleView( &eyeView, hudManager );
+#ifdef USE_OPENXR
+	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		xrSystem->ReleaseSwapchainImage();
+	}
+#endif
 }
 
 /*
@@ -824,11 +837,21 @@ void idPlayerView::RenderPlayerView( idMenuHandler_HUD* hudManager )
 	const renderView_t* view_ = player->GetRenderView();
 	if( renderSystem->GetStereo3DMode() != STEREO3D_OFF )
 	{
+#ifdef USE_OPENXR
+		if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+			xrSystem->StartFrame();
+		}
+#endif
 		// render both eye views each frame on the PC
 		for( int eye = 1 ; eye >= -1 ; eye -= 2 )
 		{
 			EmitStereoEyeView( eye, hudManager );
 		}
+#ifdef USE_OPENXR
+		if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+			xrSystem->EndFrame();
+		}
+#endif
 	}
 	else
 	{

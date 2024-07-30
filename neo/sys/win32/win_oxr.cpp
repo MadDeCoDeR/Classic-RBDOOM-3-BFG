@@ -104,41 +104,66 @@ void idXR_Win::PollXREvents()
 	}
 }
 
-void idXR_Win::StartRendering(int eye)
+void idXR_Win::StartFrame()
+{
+	XrFrameState frameState{ XR_TYPE_FRAME_STATE };
+	XrFrameWaitInfo frameWaitInfo{ XR_TYPE_FRAME_WAIT_INFO };
+	if (xrWaitFrame(session, &frameWaitInfo, &frameState) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to wait for Frame\n");
+		return;
+	}
+	predictedDisplayTime = frameState.predictedDisplayPeriod;
+	XrFrameBeginInfo frameBeginInfo{ XR_TYPE_FRAME_BEGIN_INFO };
+	if (xrBeginFrame(session, &frameBeginInfo) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to begin Frame\n");
+		return;
+	}
+	views.clear();
+	views.assign(configurationView.size(), { XR_TYPE_VIEW });
+
+	XrViewState viewState{ XR_TYPE_VIEW_STATE };
+	XrViewLocateInfo viewLocateInfo{ XR_TYPE_VIEW_LOCATE_INFO };
+	viewLocateInfo.viewConfigurationType = viewConfiguration;
+	viewLocateInfo.displayTime = predictedDisplayTime;
+	viewLocateInfo.space = localSpace;
+	uint viewCount = 0;
+	if (xrLocateViews(session, &viewLocateInfo, &viewState, static_cast<uint>(views.size()), &viewCount, views.data()) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Locate Views\n");
+		return;
+	}
+}
+
+void idXR_Win::BindSwapchainImage(int eye)
 {
 	renderingEye = eye;
-	if (!inFrame) {
-		XrFrameState frameState{ XR_TYPE_FRAME_STATE };
-		XrFrameWaitInfo frameWaitInfo{ XR_TYPE_FRAME_WAIT_INFO };
-		if (xrWaitFrame(session, &frameWaitInfo, &frameState) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to wait for Frame\n");
-			return;
-		}
-		predictedDisplayTime = frameState.predictedDisplayPeriod;
-		XrFrameBeginInfo frameBeginInfo{ XR_TYPE_FRAME_BEGIN_INFO };
-		if (xrBeginFrame(session, &frameBeginInfo) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to begin Frame\n");
-			return;
-		}
-		inFrame = true;
-		views.clear();
-		views.assign(configurationView.size(), { XR_TYPE_VIEW });
+	renderingColorSwapchainInfo = colorSwapchainInfo[renderingEye];
+	renderingDepthSwapchainInfo = depthSwapchainInfo[renderingEye];
 
-		XrViewState viewState{ XR_TYPE_VIEW_STATE };
-		XrViewLocateInfo viewLocateInfo{ XR_TYPE_VIEW_LOCATE_INFO };
-		viewLocateInfo.viewConfigurationType = viewConfiguration;
-		viewLocateInfo.displayTime = predictedDisplayTime;
-		viewLocateInfo.space = localSpace;
-		uint viewCount = 0;
-		if (xrLocateViews(session, &viewLocateInfo, &viewState, static_cast<uint>(views.size()), &viewCount, views.data()) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to Locate Views\n");
-			return;
-		}
+	uint colorIndex = 0;
+	uint depthIndex = 0;
+	XrSwapchainImageAcquireInfo acquireInfo{ XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO };
+	if (xrAcquireSwapchainImage(renderingColorSwapchainInfo.swapchain, &acquireInfo, &colorIndex) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to acquire Image for Color Swapchain\n");
+		return;
+	}
+	if (xrAcquireSwapchainImage(renderingDepthSwapchainInfo.swapchain, &acquireInfo, &depthIndex) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to acquire Image for Depth Swapchain\n");
+		return;
 	}
 
-	renderingColorSwapchainInfo = colorSwapchainInfo[eye];
-	renderingDepthSwapchainInfo = depthSwapchainInfo[eye];
+	XrSwapchainImageWaitInfo waitInfo = { XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO };
+	waitInfo.timeout = XR_INFINITE_DURATION;
+	if (xrWaitSwapchainImage(renderingColorSwapchainInfo.swapchain, &waitInfo) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to wait for Image for Color Swapchain\n");
+		return;
+	}
+	if (xrWaitSwapchainImage(renderingDepthSwapchainInfo.swapchain, &acquireInfo) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to wait for Image for Depth Swapchain\n");
+		return;
+	}
 
+	r_customWidth.SetInteger(configurationView[renderingEye].recommendedImageRectWidth);
+	r_customHeight.SetInteger(configurationView[renderingEye].recommendedImageRectHeight);
 }
 
 void idXR_Win::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index)

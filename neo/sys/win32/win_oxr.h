@@ -36,9 +36,11 @@ public:
 	virtual void InitXR();
 	virtual void ShutDownXR();
 	virtual void PollXREvents();
-	virtual void StartRendering(int eye);
+	virtual void StartFrame();
+	virtual void BindSwapchainImage(int eye);
+	virtual void ReleaseSwapchainImage();
 	virtual void RenderFrame();
-	virtual void EndRendering();
+	virtual void EndFrame();
 private:
 	XrInstance instance = {};
 	std::vector<const char*> activeAPILayers = {};
@@ -69,7 +71,6 @@ private:
 
 	std::unordered_map<XrSwapchain, std::pair<idXRSwapchainType, std::vector<XrSwapchainImageOpenGLKHR>>> swapchainImageMap{};
 	int renderingEye = -1;
-	bool inFrame = false;
 	std::vector<XrView> views;
 	XrTime predictedDisplayTime;
 	SwapchainInfo &renderingColorSwapchainInfo;
