@@ -246,13 +246,17 @@ B) Project Configuration and Genenration
 
 Without cmake presets:
 
-1.To Generate the Makefiles using CMake:
+1.To Generate the Makefiles using CMake (old and deprecated):
 
 	> cd neo/
 	> ./cmake-linux-<profile>.sh (recommended retail profile)
 	
 	
-With CMake presets:
+With CMake presets (new and currently used):
+
+Terminal:
+	> cd neo/
+ 	> cmake -B ../build_<profile> --preset=linux-<profile>
 
 CMake GUI (also applies to Windows):
 
