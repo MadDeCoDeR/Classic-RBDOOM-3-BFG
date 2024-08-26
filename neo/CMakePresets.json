@@ -212,6 +212,31 @@
       }
     },
     {
+      "name": "linux-debug-flatpak",
+      "displayName": "Linux Debug for flatpak",
+      "binaryDir": "${sourceParentDir}/buildDebugFl",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "USE_VCPKG": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "USE_SYSTEM_LIBGLEW": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "USE_SYSTEM_RAPIDJSON": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "INSIDE_PACKAGE": {
+          "type": "BOOL",
+          "value": "ON"
+        }
+      }
+    },
+    {
       "name": "linux-release",
       "displayName": "Linux Release",
       "binaryDir": "${sourceParentDir}/buildRelease",
@@ -238,6 +263,31 @@
       "inherits": "linux-base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Retail"
+      }
+    },
+    {
+      "name": "linux-retail-flatpak",
+      "displayName": "Linux Retail for flatpak",
+      "binaryDir": "${sourceParentDir}/buildRetailFl",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Retail",
+        "USE_VCPKG": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "USE_SYSTEM_LIBGLEW": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "USE_SYSTEM_RAPIDJSON": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "INSIDE_PACKAGE": {
+          "type": "BOOL",
+          "value": "ON"
+        }
       }
     },
     {

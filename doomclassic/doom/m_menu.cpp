@@ -3016,7 +3016,9 @@ qboolean M_Responder (event_t* ev)
 	case KEY_BACKSPACE:
 		::g->currentMenu->lastOn = ::g->itemOn;
 		M_CheckReset();
-		inDevMode = false;
+		if (::g->currentMenu->prevMenu && ::g->currentMenu->prevMenu == &::g->MainDef) {
+			inDevMode = false;
+		}
 		if (::g->currentMenu->prevMenu)
 		{
 			::g->currentMenu = ::g->currentMenu->prevMenu;

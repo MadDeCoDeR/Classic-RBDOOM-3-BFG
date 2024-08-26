@@ -72,6 +72,9 @@ option (USE_DXGI
 
 option (USE_FOOLS
 				"Enable Fools Edition" OFF)
+
+option (INSIDE_PACKAGE 
+					"Compile engine inside a packaged environment" OFF)
 if (CMAKE_CL_64)
 	set(CPU_ARCH x64)
 else()
@@ -462,6 +465,16 @@ else()
 		endif()
 		
 	endif()
+
+	if (INSIDE_PACKAGE)
+		if (NOT EXISTS ${CMAKE_SOURCE_DIR}/libs/glu/build/src)
+			execute_process (
+				COMMAND bash -c "cd ${CMAKE_SOURCE_DIR}/libs && mkdir -p glu && cd ${CMAKE_SOURCE_DIR}/libs/glu && curl -O https://archive.mesa3d.org/glu/glu-9.0.3.tar.xz && tar -xf glu-9.0.3.tar.xz --strip-components=1 && rm glu-9.0.3.tar.xz &&  meson build && cd build && meson compile"
+			)
+		endif()
+		include_directories("libs/glu/include")
+		set(GLU_LIBRARY ${CMAKE_SOURCE_DIR}/libs/glu/build/src)
+	endif(INSIDE_PACKAGE)
 endif()
 
 if(USE_SYSTEM_RAPIDJSON)
@@ -2009,6 +2022,7 @@ else()
             ${PNG_LIBRARY}
             ${JPEG_LIBRARY}
             ${GLEW_LIBRARY}
+			${GLU_LIBRARY}
 	    ${CMAKE_DL_LIBS}
 			)
 	endif()
