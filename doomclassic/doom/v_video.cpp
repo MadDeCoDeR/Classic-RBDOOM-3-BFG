@@ -212,7 +212,9 @@ V_DrawPatch
   int		y,
   int		scrn,
   patch_t*	patch,
-  bool      aspect) 
+  bool      aspect,
+  int       xLeadingOffs,
+  int       xEndingOffs) 
 { 
 
     int				count;
@@ -238,13 +240,13 @@ V_DrawPatch
 #endif 
 
     if (!scrn)
-		V_MarkRect (x, y, SHORT(patch->width), SHORT(patch->height)); 
+		V_MarkRect (x, y, SHORT(patch->width - (xLeadingOffs + xEndingOffs)), SHORT(patch->height)); 
 
-    col = 0; 
+    col = xLeadingOffs; 
 	int destx = x;
 	int desty = y;
 	 
-    w = SHORT(patch->width);
+    w = SHORT(patch->width) - xEndingOffs;
 
 	// SMF - rewritten for scaling
 	for ( ; col < w ; x++, col++ ) {

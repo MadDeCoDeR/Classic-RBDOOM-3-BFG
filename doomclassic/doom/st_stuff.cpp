@@ -366,6 +366,15 @@ void ST_refreshBackground(void)
 	if (!in_photomode.GetBool()) {
 		if (::g->st_statusbaron)
 		{
+			if (::g->sbar->width > 320) {
+				if (::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) {
+					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true);
+				} else {
+					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true, ::g->mapt->width, ::g->spwr->width);
+				}
+			} else {
+				V_DrawPatch(ST_X + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->sbar, true);
+			}
 			short widthoffset = 0;
 			if (::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) {
 				V_DrawPatch(ST_X, 0, BG, ::g->mapt, true);
@@ -374,7 +383,7 @@ void ST_refreshBackground(void)
 				widthoffset += ::g->spwr->width;
 			}
 
-			V_DrawPatch(ST_X + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->sbar, true);
+			
 
 
 			if (::g->netgame)

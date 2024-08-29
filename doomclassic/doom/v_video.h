@@ -79,7 +79,9 @@ V_DrawPatch
   int		y,
   int		scrn,
   patch_t*	patch,
-  bool      aspect);
+  bool      aspect,
+  int       xLeadingOffs = 0,
+  int       xEndingoffs = 0);
 
 void
 V_DrawPatchDirect
