@@ -37,7 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
-
+#include <dlfcn.h>
 // DG: needed for Sys_ReLaunch()
 #include <dirent.h>
 #include <execinfo.h>
@@ -586,16 +586,92 @@ int main( int argc, const char** argv )
 		common->Frame();
 	}
 }
+//GK: Begin
+/**
+ * =====================
+ * 			exec
+ * =====================
+ * Execute a command and return it's result as an idStr
+ */
+idStr exec(const char* cmd) {
+	char buffer[4000];
+	idStr result;
+    FILE* cmdStream = popen(cmd, "r");
+	if (cmdStream == NULL) {
+		return "";
+	}
+	while(fgets(buffer, 4000, cmdStream) != 0) {
+		result.Append(buffer);
+	}
+	feof(cmdStream);
+	pclose(cmdStream);
+	return result;
+}
+
+/**
+ * =============================
+ * 		getAddressOffset
+ * =============================
+ * Returns the Address offset from the address input to the base Address of the program
+ * 
+ * - mangledName: Mangled function name of the program used to retrieve the program's base address
+ * - address: The address of the call that we want to get the offset from
+ */
+void* getAddressOffset(const char* mangledName, const char* address) {
+	void* baseAddress = dlopen(NULL, RTLD_LAZY);
+	void* funcAddr = dlsym(baseAddress, mangledName);
+	Dl_info info;
+	if (dladdr(funcAddr, &info) == 0) {
+		dlclose(baseAddress);
+		return NULL;
+	}
+	dlclose(baseAddress);
+	void* paddress;
+	sscanf(address, "%p", &paddress);
+	//GK: Arithmetic operations are not allowed with void* but char is of size 1 and it can preform some arithmetic operations
+	return (void*)((char*)paddress - (char*)info.dli_fbase);
+}
 
 void Sys_GetCallStack(char* Dest) {
 	char callStack[5000];
 	sprintf(callStack, "Called: ");
 	void* stack[62];
+	//GK: addr2line is WAY TOO SLOW. So call it with all the address offsets instead of one addres at the time
+	idStr command = "addr2line -f -C -e ";
+	command.Append(Sys_EXEPath());
 	int frames = backtrace(stack, 62);
 	char** frameLines = backtrace_symbols(stack, frames);
 	for (int frame = 1; frame < frames; frame++) {
-		strcat(callStack, frameLines[frame]);
-		strcat(callStack, "\n\t");
+		idStr parsedLine = idStr(frameLines[frame]);
+		ID_INT beginIndex = parsedLine.Find('(');
+		ID_INT endIndex = parsedLine.Find('+', beginIndex + 1);
+		idStr mangledName = parsedLine.SubStr(beginIndex + 1, endIndex);
+		idStr procName = parsedLine.SubStr(0, beginIndex);
+		int status;
+		int length;
+		//GK: Check if we got both the mangled function name and if the process address is the same with the EXEPath
+		if (!mangledName.IsEmpty() && !procName.Cmp(Sys_EXEPath())) {
+			char fileData[256];
+			ID_INT newBeginIndex = parsedLine.Find('[', endIndex + 1);
+			ID_INT newEndIndex = parsedLine.Find(']', newBeginIndex + 1);
+			idStr addr = parsedLine.SubStr(newBeginIndex + 1, newEndIndex);
+			void* paddr = getAddressOffset(mangledName.c_str(), addr.c_str());
+			char saddr[256];
+			sprintf(saddr, " %p", paddr);
+			command.Append(saddr);
+			
+		}
+	}
+	char prRes[4000];
+	sprintf(prRes, "%s", exec(command.c_str()).c_str());
+	idStr prResParsed = idStr(prRes);
+	idList<idStr> prResults = prResParsed.Split("\n");
+	//GK: addr2line returns it's results in the format "functionName\nFileName:LineNumber".
+	// So the loop moves on 2 steps at the time since the output is tokenized with the "\n" character
+	for (int i = 0; i < prResults.Num(); i = i + 2) {
+		char frameLine[512];
+		sprintf(frameLine, "at %s (%s)\n\t", prResults[i].c_str(), prResults[i + 1].c_str());
+		strcat(callStack, frameLine);
 	}
 	sprintf(Dest, "%s", callStack);
 }
@@ -607,3 +683,5 @@ int Sys_Wcstrtombstr(char* Dest, const wchar_t* Source, size_t size) {
 int Sys_Mbstrtowcstr(wchar_t* Dest, const char* Source, size_t size) {
 	return mbstowcs(Dest, Source, size);
 }
+
+//GK: End

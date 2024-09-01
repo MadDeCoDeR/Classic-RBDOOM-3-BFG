@@ -252,7 +252,33 @@
       "generator": "Unix Makefiles",
       "inherits": "linux-base",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Relwithdebuginfo"
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      }
+    },
+    {
+      "name": "linux-relwithdebuginfo-fl",
+      "displayName": "Linux Retail With Debug Info for flatpak",
+      "binaryDir": "${sourceParentDir}/buildRelwithdebuginfofl",
+      "generator": "Unix Makefiles",
+      "inherits": "linux-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "USE_VCPKG": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "USE_SYSTEM_LIBGLEW": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "USE_SYSTEM_RAPIDJSON": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "INSIDE_PACKAGE": {
+          "type": "BOOL",
+          "value": "ON"
+        }
       }
     },
     {
