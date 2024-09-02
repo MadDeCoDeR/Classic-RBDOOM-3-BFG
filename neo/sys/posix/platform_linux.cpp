@@ -603,7 +603,7 @@ idStr exec(const char* cmd) {
 	while(fgets(buffer, 4000, cmdStream) != 0) {
 		result.Append(buffer);
 	}
-	feof(cmdStream);
+	int res = feof(cmdStream);
 	pclose(cmdStream);
 	return result;
 }
