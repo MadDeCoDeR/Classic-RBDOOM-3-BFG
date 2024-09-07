@@ -248,6 +248,11 @@ bool GLimp_Init( glimpParms_t parms )
 		{
 			int major = 3;
 			int minor = 3;
+			if (r_useOpenGL32.GetInteger() == 1) {
+				SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
+			} else {
+				SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+			}
 			GLimp_GetSupportedVersion(&major, &minor);
 			if (major < 3 || major == 3 && minor < 3) {
 				common->FatalError("GLimp_Init: OpenGL version is not supported!\n");
@@ -256,7 +261,7 @@ bool GLimp_Init( glimpParms_t parms )
 			
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, major );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, minor );
-			SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
+			
 			
 			if( r_debugContext.GetBool() )
 			{
@@ -267,8 +272,6 @@ bool GLimp_Init( glimpParms_t parms )
 		if( r_useOpenGL32.GetInteger() > 1 )
 		{
 			glConfig.driverType = GLDRV_OPENGL32_CORE_PROFILE;
-			
-			SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 		}
 		// RB end
 		
