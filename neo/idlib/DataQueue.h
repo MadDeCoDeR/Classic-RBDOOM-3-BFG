@@ -109,9 +109,13 @@ bool idDataQueue< maxItems, maxBuffer >::Append( int sequence, const byte* b1, i
 	item.dataOffset = dataLength;
 	memcpy( data + dataLength, b1, b1Len );
 	dataLength += b1Len;
+#if __GNUC_PREREQ(13, 0)
 	if (b2 != __null) {
+#endif
 		memcpy( data + dataLength, b2, b2Len );
+#if __GNUC_PREREQ(13, 0)
 	}
+#endif
 	dataLength += b2Len;
 	return true;
 }
