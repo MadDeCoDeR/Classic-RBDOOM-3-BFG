@@ -801,6 +801,7 @@ void idPlayerView::EmitStereoEyeView( const int eye, idMenuHandler_HUD* hudManag
 	SingleView( &eyeView, hudManager );
 #ifdef USE_OPENXR
 	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		xrSystem->RenderFrame();
 		xrSystem->ReleaseSwapchainImage();
 	}
 #endif

@@ -33,6 +33,7 @@
 
 class idXR_Win :public idXR {
 public:
+	idXR_Win() {}
 	virtual void InitXR();
 	virtual void ShutDownXR();
 	virtual void PollXREvents();
@@ -73,6 +74,7 @@ private:
 	int renderingEye = -1;
 	std::vector<XrView> views;
 	XrTime predictedDisplayTime;
-	SwapchainInfo &renderingColorSwapchainInfo;
-	SwapchainInfo &renderingDepthSwapchainInfo;
+	XrEnvironmentBlendMode environmentBlendMode;
+	std::vector<XrCompositionLayerProjectionView> layers;
+	uint glFBO;
 };
