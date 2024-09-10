@@ -40,7 +40,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../sys/win32/win_local.h"
 #endif
 // RB end
-
+#include "OpenXR/XRCommon.h"
 // foresthale 2014-03-01: fixed custom screenshot resolution by doing a more direct render path
 #define BUGFIXEDSCREENSHOTRESOLUTION 1
 #ifdef BUGFIXEDSCREENSHOTRESOLUTION
@@ -2374,6 +2374,9 @@ void idRenderSystemLocal::Init()
 	tr_guiModel = guiModel;	// for DeviceContext fast path
 	
 	UpdateStereo3DMode();
+	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR) {
+		xrSystem->InitXR();
+	}
 	
 	globalImages->Init();
 	

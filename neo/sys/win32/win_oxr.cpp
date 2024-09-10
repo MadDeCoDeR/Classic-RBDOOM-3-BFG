@@ -108,13 +108,15 @@ void idXR_Win::StartFrame()
 {
 	XrFrameState frameState{ XR_TYPE_FRAME_STATE };
 	XrFrameWaitInfo frameWaitInfo{ XR_TYPE_FRAME_WAIT_INFO };
-	if (xrWaitFrame(session, &frameWaitInfo, &frameState) != XR_SUCCESS) {
+	XrResult waitRes = xrWaitFrame(session, &frameWaitInfo, &frameState);
+	if (waitRes != XR_SUCCESS && waitRes != XR_SESSION_LOSS_PENDING) {
 		common->Warning("OpenXR Error: Failed to wait for Frame\n");
 		return;
 	}
 	predictedDisplayTime = frameState.predictedDisplayPeriod;
 	XrFrameBeginInfo frameBeginInfo{ XR_TYPE_FRAME_BEGIN_INFO };
-	if (xrBeginFrame(session, &frameBeginInfo) != XR_SUCCESS) {
+	XrResult beginRes = xrBeginFrame(session, &frameBeginInfo);
+	if (beginRes != XR_SUCCESS && beginRes != XR_SESSION_LOSS_PENDING && beginRes != XR_FRAME_DISCARDED) {
 		common->Warning("OpenXR Error: Failed to begin Frame\n");
 		return;
 	}
@@ -179,12 +181,12 @@ void idXR_Win::BindSwapchainImage(int eye)
 
 	if (glConfig.directStateAccess) {
 		glCreateFramebuffers(1, &glFBO);
-		glNamedFramebufferTexture(glFBO, GL_COLOR_ATTACHMENT0, swapchainImageMap[colorSwapchainInfo[renderingEye].swapchain].second[0].image, 0);
+		glNamedFramebufferTexture(glFBO, GL_COLOR_ATTACHMENT0, swapchainImageMap[colorSwapchainInfo[renderingEye].swapchain].second[colorIndex].image, 0);
 	}
 	else {
 		glGenFramebuffers(1, &glFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, glFBO);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, swapchainImageMap[colorSwapchainInfo[renderingEye].swapchain].second[0].image, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, swapchainImageMap[colorSwapchainInfo[renderingEye].swapchain].second[colorIndex].image, 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 

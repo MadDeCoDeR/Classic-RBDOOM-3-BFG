@@ -1586,9 +1586,7 @@ void idCommonLocal::Init( int argc, const char* const* argv, const char* cmdline
 		
 		// initialize the renderSystem data structures
 		renderSystem->Init();
-		if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR) {
-			xrSystem->InitXR();
-		}
+		
 		common->Printf("Initializing Platform\n");
 		LoadPlatformDLL();
 		if (::op == NULL) {

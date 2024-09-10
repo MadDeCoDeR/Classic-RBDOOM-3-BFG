@@ -76,5 +76,5 @@ private:
 	XrTime predictedDisplayTime;
 	XrEnvironmentBlendMode environmentBlendMode;
 	std::vector<XrCompositionLayerProjectionView> layers;
-	uint glFBO;
+	GLuint glFBO = -1;
 };

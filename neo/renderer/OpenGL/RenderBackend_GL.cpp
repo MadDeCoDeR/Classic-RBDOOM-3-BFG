@@ -35,9 +35,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "../RenderCommon.h"
 #include "../RenderBackend.h"
 #include "../../framework/Common_local.h"
+#include "../OpenXR/XRCommon.h"
 
 idCVar r_drawFlickerBox( "r_drawFlickerBox", "0", CVAR_RENDERER | CVAR_BOOL, "visual test for dropping frames" );
-idCVar stereoRender_warp( "stereoRender_warp", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "use the optical warping renderprog instead of stereoDeGhost" );
+idCVar stereoRender_warp( "stereoRender_warp", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "use the optical warping renderprog instead of stereoDeGhost" );
 idCVar stereoRender_warpStrength( "stereoRender_warpStrength", "1.45", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_FLOAT, "amount of pre-distortion" );
 
 idCVar stereoRender_warpCenterX( "stereoRender_warpCenterX", "0.5", CVAR_RENDERER | CVAR_FLOAT | CVAR_ARCHIVE, "center for left eye, right eye will be 1.0 - this" );
@@ -2181,6 +2182,12 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 		default:
 		case STEREO3D_VR:
 		case STEREO3D_SIDE_BY_SIDE:
+#ifdef USE_OPENXR
+			if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+				xrSystem->StartFrame();
+			}
+#endif
+
 			if( stereoRender_warp.GetBool() )
 			{
 				// this is the Rift warp
@@ -2200,6 +2207,11 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 				// With the 7" displays, this will be less than half the screen width
 				const int pixelDimensions = ( glConfig.nativeScreenWidth >> 1 ) * stereoRender_warpTargetFraction.GetFloat();
 				
+#ifdef USE_OPENXR
+				if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+					xrSystem->BindSwapchainImage(0);
+				}
+#endif
 				// Always scissor to the half-screen boundary, but the viewports
 				// might cross that boundary if the lenses can be adjusted closer
 				// together.
@@ -2212,11 +2224,24 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 				// don't use GL_Color(), because we don't want to clamp
 				renderProgManager.SetRenderParm( RENDERPARM_COLOR, color.ToFloatPtr() );
 				
+
 				GL_SelectTexture( 0 );
 				stereoRenderImages[0]->Bind();
 				glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
 				glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
 				DrawElementsWithCounters( &unitSquareSurface );
+#ifdef USE_OPENXR
+				if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+					xrSystem->RenderFrame();
+					xrSystem->ReleaseSwapchainImage();
+				}
+#endif
+
+#ifdef USE_OPENXR
+				if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+					xrSystem->BindSwapchainImage(1);
+				}
+#endif
 				
 				idVec4	color2( stereoRender_warpCenterX.GetFloat(), stereoRender_warpCenterY.GetFloat(), stereoRender_warpParmZ.GetFloat(), stereoRender_warpParmW.GetFloat() );
 				// don't use GL_Color(), because we don't want to clamp
@@ -2232,6 +2257,17 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 				glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
 				glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER );
 				DrawElementsWithCounters( &unitSquareSurface );
+#ifdef USE_OPENXR
+				if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+					xrSystem->RenderFrame();
+					xrSystem->ReleaseSwapchainImage();
+				}
+#endif
+#ifdef USE_OPENXR
+				if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+					xrSystem->EndFrame();
+				}
+#endif
 				break;
 			}
 			
