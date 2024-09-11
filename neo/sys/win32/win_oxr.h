@@ -77,4 +77,5 @@ private:
 	XrEnvironmentBlendMode environmentBlendMode;
 	std::vector<XrCompositionLayerProjectionView> layers;
 	GLuint glFBO = -1;
+	bool inFrame = false;
 };

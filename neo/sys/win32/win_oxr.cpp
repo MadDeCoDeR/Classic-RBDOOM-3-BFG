@@ -106,139 +106,164 @@ void idXR_Win::PollXREvents()
 
 void idXR_Win::StartFrame()
 {
-	XrFrameState frameState{ XR_TYPE_FRAME_STATE };
-	XrFrameWaitInfo frameWaitInfo{ XR_TYPE_FRAME_WAIT_INFO };
-	XrResult waitRes = xrWaitFrame(session, &frameWaitInfo, &frameState);
-	if (waitRes != XR_SUCCESS && waitRes != XR_SESSION_LOSS_PENDING) {
-		common->Warning("OpenXR Error: Failed to wait for Frame\n");
-		return;
-	}
-	predictedDisplayTime = frameState.predictedDisplayPeriod;
-	XrFrameBeginInfo frameBeginInfo{ XR_TYPE_FRAME_BEGIN_INFO };
-	XrResult beginRes = xrBeginFrame(session, &frameBeginInfo);
-	if (beginRes != XR_SUCCESS && beginRes != XR_SESSION_LOSS_PENDING && beginRes != XR_FRAME_DISCARDED) {
-		common->Warning("OpenXR Error: Failed to begin Frame\n");
-		return;
-	}
-	views.clear();
-	views.assign(configurationView.size(), { XR_TYPE_VIEW });
+	if (!inFrame) {
+		XrFrameState frameState{ XR_TYPE_FRAME_STATE };
+		XrFrameWaitInfo frameWaitInfo{ XR_TYPE_FRAME_WAIT_INFO };
+		XrResult waitRes = xrWaitFrame(session, &frameWaitInfo, &frameState);
+		if (waitRes != XR_SUCCESS && waitRes != XR_SESSION_LOSS_PENDING) {
+			common->Warning("OpenXR Error: Failed to wait for Frame\n");
+			return;
+		}
 
-	XrViewState viewState{ XR_TYPE_VIEW_STATE };
-	XrViewLocateInfo viewLocateInfo{ XR_TYPE_VIEW_LOCATE_INFO };
-	viewLocateInfo.viewConfigurationType = viewConfiguration;
-	viewLocateInfo.displayTime = predictedDisplayTime;
-	viewLocateInfo.space = localSpace;
-	uint viewCount = 0;
-	if (xrLocateViews(session, &viewLocateInfo, &viewState, static_cast<uint>(views.size()), &viewCount, views.data()) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to Locate Views\n");
-		return;
-	}
+		predictedDisplayTime = frameState.predictedDisplayPeriod;
 
-	layers.resize(viewCount, { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW });
+		XrFrameBeginInfo frameBeginInfo{ XR_TYPE_FRAME_BEGIN_INFO };
+		XrResult beginRes = xrBeginFrame(session, &frameBeginInfo);
+		if (beginRes != XR_SUCCESS && beginRes != XR_SESSION_LOSS_PENDING && beginRes != XR_FRAME_DISCARDED) {
+			common->Warning("OpenXR Error: Failed to begin Frame\n");
+			return;
+		}
+		views.clear();
+		views.assign(configurationView.size(), { XR_TYPE_VIEW });
+
+		if (predictedDisplayTime > 0) {
+			XrViewState viewState{ XR_TYPE_VIEW_STATE };
+			XrViewLocateInfo viewLocateInfo{ XR_TYPE_VIEW_LOCATE_INFO };
+			viewLocateInfo.viewConfigurationType = viewConfiguration;
+			viewLocateInfo.displayTime = predictedDisplayTime;
+			viewLocateInfo.space = localSpace;
+			uint viewCount = 0;
+			XrResult locateResult = xrLocateViews(session, &viewLocateInfo, &viewState, static_cast<uint>(views.size()), &viewCount, views.data());
+			if (locateResult != XR_SUCCESS && locateResult != XR_SESSION_LOSS_PENDING) {
+				common->Warning("OpenXR Error: Failed to Locate Views\n");
+				return;
+			}
+
+			layers.resize(viewCount, { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW });
+		}
+		inFrame = true;
+	}
 }
 
 void idXR_Win::BindSwapchainImage(int eye)
 {
-	renderingEye = eye;
-	SwapchainInfo &renderingColorSwapchainInfo = colorSwapchainInfo[renderingEye];
-	SwapchainInfo& renderingDepthSwapchainInfo = depthSwapchainInfo[renderingEye];
+	if (inFrame) {
+		renderingEye = eye;
+		SwapchainInfo& renderingColorSwapchainInfo = colorSwapchainInfo[renderingEye];
+		SwapchainInfo& renderingDepthSwapchainInfo = depthSwapchainInfo[renderingEye];
 
-	uint colorIndex = 0;
-	uint depthIndex = 0;
-	XrSwapchainImageAcquireInfo acquireInfo{ XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO };
-	if (xrAcquireSwapchainImage(renderingColorSwapchainInfo.swapchain, &acquireInfo, &colorIndex) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to acquire Image for Color Swapchain\n");
-		return;
-	}
-	if (xrAcquireSwapchainImage(renderingDepthSwapchainInfo.swapchain, &acquireInfo, &depthIndex) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to acquire Image for Depth Swapchain\n");
-		return;
-	}
+		uint colorIndex = 0;
+		uint depthIndex = 0;
+		XrSwapchainImageAcquireInfo acquireInfo{ XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO };
+		if (xrAcquireSwapchainImage(renderingColorSwapchainInfo.swapchain, &acquireInfo, &colorIndex) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to acquire Image for Color Swapchain\n");
+			return;
+		}
+		/*if (xrAcquireSwapchainImage(renderingDepthSwapchainInfo.swapchain, &acquireInfo, &depthIndex) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to acquire Image for Depth Swapchain\n");
+			return;
+		}*/
 
-	XrSwapchainImageWaitInfo waitInfo = { XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO };
-	waitInfo.timeout = XR_INFINITE_DURATION;
-	if (xrWaitSwapchainImage(renderingColorSwapchainInfo.swapchain, &waitInfo) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to wait for Image for Color Swapchain\n");
-		return;
-	}
-	if (xrWaitSwapchainImage(renderingDepthSwapchainInfo.swapchain, &waitInfo) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to wait for Image for Depth Swapchain\n");
-		return;
-	}
+		XrSwapchainImageWaitInfo waitInfo = { XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO };
+		waitInfo.timeout = XR_INFINITE_DURATION;
+		if (xrWaitSwapchainImage(renderingColorSwapchainInfo.swapchain, &waitInfo) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to wait for Image for Color Swapchain\n");
+			return;
+		}
+		/*if (xrWaitSwapchainImage(renderingDepthSwapchainInfo.swapchain, &waitInfo) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to wait for Image for Depth Swapchain\n");
+			return;
+		}*/
 
-	r_customWidth.SetInteger(configurationView[renderingEye].recommendedImageRectWidth);
-	r_customHeight.SetInteger(configurationView[renderingEye].recommendedImageRectHeight);
+		r_customWidth.SetInteger(configurationView[renderingEye].recommendedImageRectWidth);
+		r_customHeight.SetInteger(configurationView[renderingEye].recommendedImageRectHeight);
 
-	layers[renderingEye] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
-	layers[renderingEye].fov = views[renderingEye].fov;
-	layers[renderingEye].pose = views[renderingEye].pose;
-	layers[renderingEye].subImage.swapchain = renderingColorSwapchainInfo.swapchain;
-	layers[renderingEye].subImage.imageRect.offset.x = 0;
-	layers[renderingEye].subImage.imageRect.offset.y = 0;
-	layers[renderingEye].subImage.imageRect.extent.width = r_customWidth.GetInteger();
-	layers[renderingEye].subImage.imageRect.extent.height = r_customHeight.GetInteger();
-	layers[renderingEye].subImage.imageArrayIndex = 0;
+		layers[renderingEye] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
+		layers[renderingEye].fov = views[renderingEye].fov;
+		layers[renderingEye].pose = views[renderingEye].pose;
+		layers[renderingEye].subImage.swapchain = renderingColorSwapchainInfo.swapchain;
+		layers[renderingEye].subImage.imageRect.offset.x = 0;
+		layers[renderingEye].subImage.imageRect.offset.y = 0;
+		layers[renderingEye].subImage.imageRect.extent.width = r_customWidth.GetInteger();
+		layers[renderingEye].subImage.imageRect.extent.height = r_customHeight.GetInteger();
+		layers[renderingEye].subImage.imageArrayIndex = 0;
 
-	if (glConfig.directStateAccess) {
-		glCreateFramebuffers(1, &glFBO);
-		glNamedFramebufferTexture(glFBO, GL_COLOR_ATTACHMENT0, swapchainImageMap[colorSwapchainInfo[renderingEye].swapchain].second[colorIndex].image, 0);
-	}
-	else {
-		glGenFramebuffers(1, &glFBO);
-		glBindFramebuffer(GL_FRAMEBUFFER, glFBO);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, swapchainImageMap[colorSwapchainInfo[renderingEye].swapchain].second[colorIndex].image, 0);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		if (glConfig.directStateAccess) {
+			glCreateFramebuffers(1, &glFBO);
+			glNamedFramebufferTexture(glFBO, GL_COLOR_ATTACHMENT0, swapchainImageMap[colorSwapchainInfo[renderingEye].swapchain].second[colorIndex].image, 0);
+			int status = glCheckNamedFramebufferStatus(glFBO, GL_FRAMEBUFFER);
+			if (status != GL_FRAMEBUFFER_COMPLETE) {
+				common->Warning("OpenXR Error: Failed to Create Framebuffer");
+				return;
+			}
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
+		else {
+			glGenFramebuffers(1, &glFBO);
+			glBindFramebuffer(GL_FRAMEBUFFER, glFBO);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, swapchainImageMap[colorSwapchainInfo[renderingEye].swapchain].second[colorIndex].image, 0);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
 	}
 
 }
 
 void idXR_Win::ReleaseSwapchainImage()
 {
-	glDeleteFramebuffers(1, &glFBO);
-	XrSwapchainImageReleaseInfo releaseInfo{ XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO };
-	if (xrReleaseSwapchainImage(colorSwapchainInfo[renderingEye].swapchain, &releaseInfo) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to release Color swapchain Image");
-		return;
-	}
-	if (xrReleaseSwapchainImage(depthSwapchainInfo[renderingEye].swapchain, &releaseInfo) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to release Depth swapchain Image");
-		return;
+	if (inFrame) {
+		glDeleteFramebuffers(1, &glFBO);
+		glFBO = -1;
+		XrSwapchainImageReleaseInfo releaseInfo{ XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO };
+		if (xrReleaseSwapchainImage(colorSwapchainInfo[renderingEye].swapchain, &releaseInfo) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to release Color swapchain Image");
+			return;
+		}
+		
+		/*if (xrReleaseSwapchainImage(depthSwapchainInfo[renderingEye].swapchain, &releaseInfo) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to release Depth swapchain Image");
+			return;
+		}*/
 	}
 }
 
 void idXR_Win::RenderFrame()
 {
-	if (glConfig.directStateAccess) {
-		glBlitNamedFramebuffer(0, glFBO, 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
-	}
-	else {
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, glFBO);
-		glBlitFramebuffer( 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
+	if (inFrame) {
+		if (glConfig.directStateAccess) {
+			glBlitNamedFramebuffer(0, glFBO, 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
+		}
+		else {
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, glFBO);
+			glBlitFramebuffer(0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
+		}
 	}
 }
 
 void idXR_Win::EndFrame()
 {
-	XrFrameEndInfo frameEndInfo{ XR_TYPE_FRAME_END_INFO };
-	frameEndInfo.displayTime = predictedDisplayTime;
-	frameEndInfo.environmentBlendMode = environmentBlendMode;
+	if (inFrame && predictedDisplayTime > 0) {
+		XrFrameEndInfo frameEndInfo{ XR_TYPE_FRAME_END_INFO };
+		frameEndInfo.displayTime = predictedDisplayTime;
+		frameEndInfo.environmentBlendMode = environmentBlendMode;
 
-	XrCompositionLayerProjection projection = { XR_TYPE_COMPOSITION_LAYER_PROJECTION };
-	projection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
-	projection.space = localSpace;
-	projection.viewCount = layers.size();
-	projection.views = layers.data();
-	std::vector<XrCompositionLayerBaseHeader*> renderLayers;
-	renderLayers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&projection));
+		XrCompositionLayerProjection projection = { XR_TYPE_COMPOSITION_LAYER_PROJECTION };
+		projection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
+		projection.space = localSpace;
+		projection.viewCount = layers.size();
+		projection.views = layers.data();
+		std::vector<XrCompositionLayerBaseHeader*> renderLayers;
+		renderLayers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&projection));
 
 
-	frameEndInfo.layerCount = renderLayers.size();
-	frameEndInfo.layers = renderLayers.data();
-
-	if (xrEndFrame(session, &frameEndInfo) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to End Frame\n");
-		return;
+		frameEndInfo.layerCount = renderLayers.size();
+		frameEndInfo.layers = renderLayers.data();
+		XrResult endFrameRes = xrEndFrame(session, &frameEndInfo);
+		if (endFrameRes != XR_SUCCESS || endFrameRes != XR_SESSION_LOSS_PENDING) {
+			common->Warning("OpenXR Error: Failed to End Frame\n");
+			return;
+		}
+		inFrame = false;
 	}
 }
 

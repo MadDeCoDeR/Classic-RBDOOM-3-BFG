@@ -2376,6 +2376,7 @@ void idRenderSystemLocal::Init()
 	UpdateStereo3DMode();
 	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR) {
 		xrSystem->InitXR();
+		xrSystem->PollXREvents();
 	}
 	
 	globalImages->Init();

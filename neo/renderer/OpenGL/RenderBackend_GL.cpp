@@ -2274,19 +2274,54 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 		// a non-warped side-by-side-uncompressed (dual input cable) is rendered
 		// just like STEREO3D_SIDE_BY_SIDE_COMPRESSED, so fall through.
 		case STEREO3D_SIDE_BY_SIDE_COMPRESSED:
+#ifdef USE_OPENXR
+			if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+				xrSystem->StartFrame();
+			}
+#endif
+
 			GL_SelectTexture( 0 );
 			stereoRenderImages[0]->Bind();
 			GL_SelectTexture( 1 );
 			stereoRenderImages[1]->Bind();
 			GL_ViewportAndScissor( 0, 0, renderSystem->GetWidth(), renderSystem->GetHeight() );
+#ifdef USE_OPENXR
+			if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+				xrSystem->BindSwapchainImage(0);
+			}
+#endif
 			DrawElementsWithCounters( &unitSquareSurface );
+#ifdef USE_OPENXR
+			if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+				xrSystem->RenderFrame();
+				xrSystem->ReleaseSwapchainImage();
+			}
+#endif
+
+
 			
 			GL_SelectTexture( 0 );
 			stereoRenderImages[1]->Bind();
 			GL_SelectTexture( 1 );
 			stereoRenderImages[0]->Bind();
 			GL_ViewportAndScissor( renderSystem->GetWidth(), 0, renderSystem->GetWidth(), renderSystem->GetHeight() );
+#ifdef USE_OPENXR
+			if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+				xrSystem->BindSwapchainImage(1);
+			}
+#endif
 			DrawElementsWithCounters( &unitSquareSurface );
+#ifdef USE_OPENXR
+			if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+				xrSystem->RenderFrame();
+				xrSystem->ReleaseSwapchainImage();
+			}
+#endif
+#ifdef USE_OPENXR
+			if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+				xrSystem->EndFrame();
+			}
+#endif
 			break;
 			
 		case STEREO3D_TOP_AND_BOTTOM_COMPRESSED:
