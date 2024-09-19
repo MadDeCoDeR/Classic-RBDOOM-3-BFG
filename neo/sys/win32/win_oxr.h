@@ -66,7 +66,36 @@ private:
 		int64 swapchainFormat = 0;
 		std::vector<void*> imageViews;
 	};
-	virtual void EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index);
+	virtual uint EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index);
+	struct FrameBufferCreateInfo {
+		void* image;
+		enum class Type : uint8_t {
+			RTV,
+			DSV,
+			SRV,
+			UAV
+		} type;
+		enum class View : uint8_t {
+			TYPE_1D,
+			TYPE_2D,
+			TYPE_3D,
+			TYPE_CUBE,
+			TYPE_1D_ARRAY,
+			TYPE_2D_ARRAY,
+			TYPE_CUBE_ARRAY
+		} view;
+		int64_t format;
+		enum class Aspect : uint8_t {
+			COLOR_BIT = 0x01,
+			DEPTH_BIT = 0x02,
+			STENCIL_BIT = 0x04
+		} aspect;
+		uint32_t baseMipLevel;
+		uint32_t levelCount;
+		uint32_t baseArrayLayer;
+		uint32_t layerCount;
+	};
+	virtual void* CreateFrameBuffer(const FrameBufferCreateInfo &FbCI);
 	std::vector<SwapchainInfo> colorSwapchainInfo = {};
 	std::vector<SwapchainInfo> depthSwapchainInfo = {};
 

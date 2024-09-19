@@ -188,22 +188,8 @@ void idXR_Win::BindSwapchainImage(int eye)
 		layers[renderingEye].subImage.imageRect.extent.height = r_customHeight.GetInteger();
 		layers[renderingEye].subImage.imageArrayIndex = 0;
 
-		if (glConfig.directStateAccess) {
-			glCreateFramebuffers(1, &glFBO);
-			glNamedFramebufferTexture(glFBO, GL_COLOR_ATTACHMENT0, swapchainImageMap[colorSwapchainInfo[renderingEye].swapchain].second[colorIndex].image, 0);
-			int status = glCheckNamedFramebufferStatus(glFBO, GL_FRAMEBUFFER);
-			if (status != GL_FRAMEBUFFER_COMPLETE) {
-				common->Warning("OpenXR Error: Failed to Create Framebuffer");
-				return;
-			}
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
-		else {
-			glGenFramebuffers(1, &glFBO);
-			glBindFramebuffer(GL_FRAMEBUFFER, glFBO);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, swapchainImageMap[colorSwapchainInfo[renderingEye].swapchain].second[colorIndex].image, 0);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
+		glFBO = (GLuint)(uint64_t)colorSwapchainInfo[renderingEye].imageViews[colorIndex];
+		glClearColor(0, 0, 0, 1);
 	}
 
 }
@@ -211,7 +197,7 @@ void idXR_Win::BindSwapchainImage(int eye)
 void idXR_Win::ReleaseSwapchainImage()
 {
 	if (inFrame) {
-		glDeleteFramebuffers(1, &glFBO);
+		//glDeleteFramebuffers(1, &glFBO);
 		glFBO = -1;
 		XrSwapchainImageReleaseInfo releaseInfo{ XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO };
 		if (xrReleaseSwapchainImage(colorSwapchainInfo[renderingEye].swapchain, &releaseInfo) != XR_SUCCESS) {
@@ -230,7 +216,7 @@ void idXR_Win::RenderFrame()
 {
 	if (inFrame) {
 		if (glConfig.directStateAccess) {
-			glBlitNamedFramebuffer(0, glFBO, 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
+		glBlitNamedFramebuffer(0, glFBO, 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
 		}
 		else {
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -259,7 +245,7 @@ void idXR_Win::EndFrame()
 		frameEndInfo.layerCount = renderLayers.size();
 		frameEndInfo.layers = renderLayers.data();
 		XrResult endFrameRes = xrEndFrame(session, &frameEndInfo);
-		if (endFrameRes != XR_SUCCESS || endFrameRes != XR_SESSION_LOSS_PENDING) {
+		if (endFrameRes != XR_SUCCESS && endFrameRes != XR_SESSION_LOSS_PENDING) {
 			common->Warning("OpenXR Error: Failed to End Frame\n");
 			return;
 		}
@@ -267,7 +253,7 @@ void idXR_Win::EndFrame()
 	}
 }
 
-void idXR_Win::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index)
+uint idXR_Win::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index)
 {
 	uint imageCount = 0;
 	XrSwapchain targetSwapchain = swapchainInfo[index].swapchain;
@@ -279,7 +265,57 @@ void idXR_Win::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo,
 	if (xrEnumerateSwapchainImages(targetSwapchain, imageCount, &imageCount, reinterpret_cast<XrSwapchainImageBaseHeader*>(swapchainImageMap[targetSwapchain].second.data())) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to enumeration for Swapchain Images");
 	}
+	return imageCount;
 }
+
+void* idXR_Win::CreateFrameBuffer(const FrameBufferCreateInfo& FbCI)
+{
+	GLuint fb = 0;
+	if (glConfig.directStateAccess) {
+		glCreateFramebuffers(1, &fb);
+		GLenum attachment = FbCI.aspect == FrameBufferCreateInfo::Aspect::COLOR_BIT ? GL_COLOR_ATTACHMENT0 : GL_DEPTH_ATTACHMENT;
+		if (FbCI.view == FrameBufferCreateInfo::View::TYPE_2D_ARRAY) {
+			glNamedFramebufferTextureMultiviewOVR(fb, attachment, (GLuint)(uint64_t)FbCI.image, FbCI.baseMipLevel, FbCI.baseArrayLayer, FbCI.layerCount);
+		}
+		else if (FbCI.view == FrameBufferCreateInfo::View::TYPE_2D) {
+			glNamedFramebufferTexture(fb, attachment, (GLuint)(uint64_t)FbCI.image, FbCI.baseMipLevel);
+		}
+		else {
+			common->Warning("OpenXR Error: Framebuffer Create Info had invalid View type");
+			return nullptr;
+		}
+		int status = glCheckNamedFramebufferStatus(fb, GL_DRAW_FRAMEBUFFER);
+		if (status != GL_FRAMEBUFFER_COMPLETE) {
+			common->Warning("OpenXR Error: Failed to Create Framebuffer");
+			return nullptr;
+		}
+		
+	}
+	else {
+		glGenFramebuffers(1, &fb);
+		GLenum attachment = FbCI.aspect == FrameBufferCreateInfo::Aspect::COLOR_BIT ? GL_COLOR_ATTACHMENT0 : GL_DEPTH_ATTACHMENT;
+		glBindFramebuffer(GL_FRAMEBUFFER, fb);
+		if (FbCI.view == FrameBufferCreateInfo::View::TYPE_2D_ARRAY) {
+			glFramebufferTextureMultiviewOVR(GL_DRAW_FRAMEBUFFER, attachment, (GLuint)(uint64_t)FbCI.image, FbCI.baseMipLevel, FbCI.baseArrayLayer, FbCI.layerCount);
+		}
+		else if (FbCI.view == FrameBufferCreateInfo::View::TYPE_2D) {
+			glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, attachment, GL_TEXTURE_2D, (GLuint)(uint64_t)FbCI.image, FbCI.baseMipLevel);
+		}
+		else {
+			common->Warning("OpenXR Error: Framebuffer Create Info had invalid View type");
+			return nullptr;
+		}
+		int status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+		if (status != GL_FRAMEBUFFER_COMPLETE) {
+			common->Warning("OpenXR Error: Failed to Create Framebuffer");
+			return nullptr;
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+	return (void*)(uint64_t)fb;
+}
+
+
 
 void idXR_Win::InitXR() {
 	XrApplicationInfo XRAppInfo;
@@ -511,8 +547,37 @@ void idXR_Win::InitXR() {
 			common->Warning("OpenXR Error: Failed to Create Depth Swapchain");
 		}
 
-		this->EnumerateSwapchainImage(colorSwapchainInfo, idXRSwapchainType::COLOR, i);
-		this->EnumerateSwapchainImage(depthSwapchainInfo, idXRSwapchainType::DEPTH, i);
+		uint colorSwapchainImageCount = this->EnumerateSwapchainImage(colorSwapchainInfo, idXRSwapchainType::COLOR, i);
+
+		uint depthSwapchainImageCount = this->EnumerateSwapchainImage(depthSwapchainInfo, idXRSwapchainType::DEPTH, i);
+
+		for (int ci = 0; ci < colorSwapchainImageCount; ci++) {
+			FrameBufferCreateInfo fbCI;
+			fbCI.image = (void*)(uint64_t)swapchainImageMap[colorSwapchainInfo[i].swapchain].second[ci].image;
+			fbCI.type = FrameBufferCreateInfo::Type::RTV;
+			fbCI.view = FrameBufferCreateInfo::View::TYPE_2D;
+			fbCI.format = colorSwapchainInfo[i].swapchainFormat;
+			fbCI.aspect = FrameBufferCreateInfo::Aspect::COLOR_BIT;
+			fbCI.baseMipLevel = 0;
+			fbCI.levelCount = 1;
+			fbCI.baseArrayLayer = 0;
+			fbCI.layerCount = 1;
+			colorSwapchainInfo[i].imageViews.push_back(CreateFrameBuffer(fbCI));
+		}
+
+		for (int di = 0; di < depthSwapchainImageCount; di++) {
+			FrameBufferCreateInfo fbCI;
+			fbCI.image = (void*)(uint64_t)swapchainImageMap[depthSwapchainInfo[i].swapchain].second[di].image;
+			fbCI.type = FrameBufferCreateInfo::Type::DSV;
+			fbCI.view = FrameBufferCreateInfo::View::TYPE_2D;
+			fbCI.format = depthSwapchainInfo[i].swapchainFormat;
+			fbCI.aspect = FrameBufferCreateInfo::Aspect::DEPTH_BIT;
+			fbCI.baseMipLevel = 0;
+			fbCI.levelCount = 1;
+			fbCI.baseArrayLayer = 0;
+			fbCI.layerCount = 1;
+			colorSwapchainInfo[i].imageViews.push_back(CreateFrameBuffer(fbCI));
+		}
 		
 		//XrSwapchain targetSwapchain = colorSwapchainInfo[i].swapchain;
 	}
