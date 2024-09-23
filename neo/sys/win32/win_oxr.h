@@ -40,8 +40,14 @@ public:
 	virtual void StartFrame();
 	virtual void BindSwapchainImage(int eye);
 	virtual void ReleaseSwapchainImage();
-	virtual void RenderFrame();
+	virtual void RenderFrame(int srcX, int srcY, int srcW, int srcH);
 	virtual void EndFrame();
+	virtual uint32_t GetWidth() {
+		return width;
+	}
+	virtual uint32_t GetHeight() {
+		return height;
+	}
 private:
 	XrInstance instance = {};
 	std::vector<const char*> activeAPILayers = {};
@@ -60,6 +66,7 @@ private:
 	XrViewConfigurationType viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM;
 	std::vector<XrViewConfigurationView> configurationView;
 	XrSpace localSpace = XR_NULL_HANDLE;
+	XrSessionState sessionState = XR_SESSION_STATE_UNKNOWN;
 
 	struct SwapchainInfo {
 		XrSwapchain swapchain = XR_NULL_HANDLE;
@@ -105,6 +112,8 @@ private:
 	XrTime predictedDisplayTime;
 	XrEnvironmentBlendMode environmentBlendMode;
 	std::vector<XrCompositionLayerProjectionView> layers;
-	GLuint glFBO = -1;
+	GLuint glFBO = MAX_UNSIGNED_TYPE(int);
 	bool inFrame = false;
+	uint32_t width = 0;
+	uint32_t height = 0;
 };

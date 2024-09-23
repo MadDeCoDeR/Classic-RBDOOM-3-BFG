@@ -109,9 +109,9 @@ int idGameThread::Run()
 		ret = gameReturn_t();
 	}
 
-	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR) {
+	/*if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR) {
 		xrSystem->PollXREvents();
-	}
+	}*/
 	
 	if( isClient )
 	{

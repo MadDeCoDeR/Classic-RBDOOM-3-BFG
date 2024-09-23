@@ -37,9 +37,10 @@ public:
 	virtual void StartFrame() = 0;
 	virtual void BindSwapchainImage(int eye) = 0;
 	virtual void ReleaseSwapchainImage() = 0;
-	virtual void RenderFrame() = 0;
+	virtual void RenderFrame(int srcX, int srcY, int srcW, int srcH) = 0;
 	virtual void EndFrame() = 0;
-
+	virtual uint32_t GetWidth() = 0;
+	virtual uint32_t GetHeight() = 0;
 	enum class idXRSwapchainType : uint8{
 		COLOR,
 		DEPTH

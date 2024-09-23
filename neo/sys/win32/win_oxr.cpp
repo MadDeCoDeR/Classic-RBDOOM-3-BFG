@@ -99,6 +99,7 @@ void idXR_Win::PollXREvents()
 					common->Warning("OpenXR: Failed to end Session");
 				}
 			}
+			sessionState = sessionStateChanged->state;
 			break;
 		}
 	}
@@ -106,7 +107,8 @@ void idXR_Win::PollXREvents()
 
 void idXR_Win::StartFrame()
 {
-	if (!inFrame) {
+	bool activeSession = (sessionState == XR_SESSION_STATE_SYNCHRONIZED || sessionState == XR_SESSION_STATE_VISIBLE || sessionState == XR_SESSION_STATE_FOCUSED || sessionState == XR_SESSION_STATE_READY);
+	if (!inFrame && activeSession) {
 		XrFrameState frameState{ XR_TYPE_FRAME_STATE };
 		XrFrameWaitInfo frameWaitInfo{ XR_TYPE_FRAME_WAIT_INFO };
 		XrResult waitRes = xrWaitFrame(session, &frameWaitInfo, &frameState);
@@ -141,7 +143,7 @@ void idXR_Win::StartFrame()
 
 			layers.resize(viewCount, { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW });
 		}
-		inFrame = true;
+		inFrame = frameState.shouldRender && ((sessionState == XR_SESSION_STATE_SYNCHRONIZED || sessionState == XR_SESSION_STATE_VISIBLE || sessionState == XR_SESSION_STATE_FOCUSED));
 	}
 }
 
@@ -150,10 +152,10 @@ void idXR_Win::BindSwapchainImage(int eye)
 	if (inFrame) {
 		renderingEye = eye;
 		SwapchainInfo& renderingColorSwapchainInfo = colorSwapchainInfo[renderingEye];
-		SwapchainInfo& renderingDepthSwapchainInfo = depthSwapchainInfo[renderingEye];
+		//SwapchainInfo& renderingDepthSwapchainInfo = depthSwapchainInfo[renderingEye];
 
 		uint colorIndex = 0;
-		uint depthIndex = 0;
+		//uint depthIndex = 0;
 		XrSwapchainImageAcquireInfo acquireInfo{ XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO };
 		if (xrAcquireSwapchainImage(renderingColorSwapchainInfo.swapchain, &acquireInfo, &colorIndex) != XR_SUCCESS) {
 			common->Warning("OpenXR Error: Failed to acquire Image for Color Swapchain\n");
@@ -175,8 +177,8 @@ void idXR_Win::BindSwapchainImage(int eye)
 			return;
 		}*/
 
-		r_customWidth.SetInteger(configurationView[renderingEye].recommendedImageRectWidth);
-		r_customHeight.SetInteger(configurationView[renderingEye].recommendedImageRectHeight);
+		width = configurationView[renderingEye].recommendedImageRectWidth;
+		height = configurationView[renderingEye].recommendedImageRectHeight;
 
 		layers[renderingEye] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
 		layers[renderingEye].fov = views[renderingEye].fov;
@@ -184,12 +186,15 @@ void idXR_Win::BindSwapchainImage(int eye)
 		layers[renderingEye].subImage.swapchain = renderingColorSwapchainInfo.swapchain;
 		layers[renderingEye].subImage.imageRect.offset.x = 0;
 		layers[renderingEye].subImage.imageRect.offset.y = 0;
-		layers[renderingEye].subImage.imageRect.extent.width = r_customWidth.GetInteger();
-		layers[renderingEye].subImage.imageRect.extent.height = r_customHeight.GetInteger();
+		layers[renderingEye].subImage.imageRect.extent.width = width;
+		layers[renderingEye].subImage.imageRect.extent.height = height;
 		layers[renderingEye].subImage.imageArrayIndex = 0;
 
 		glFBO = (GLuint)(uint64_t)colorSwapchainInfo[renderingEye].imageViews[colorIndex];
-		glClearColor(0, 0, 0, 1);
+
+		
+
+		//glClearColor(0, 0, 0, 1);
 	}
 
 }
@@ -198,7 +203,7 @@ void idXR_Win::ReleaseSwapchainImage()
 {
 	if (inFrame) {
 		//glDeleteFramebuffers(1, &glFBO);
-		glFBO = -1;
+		glFBO = MAX_UNSIGNED_TYPE(int);
 		XrSwapchainImageReleaseInfo releaseInfo{ XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO };
 		if (xrReleaseSwapchainImage(colorSwapchainInfo[renderingEye].swapchain, &releaseInfo) != XR_SUCCESS) {
 			common->Warning("OpenXR Error: Failed to release Color swapchain Image");
@@ -212,45 +217,45 @@ void idXR_Win::ReleaseSwapchainImage()
 	}
 }
 
-void idXR_Win::RenderFrame()
+void idXR_Win::RenderFrame(int srcX, int srcY, int srcW, int srcH)
 {
 	if (inFrame) {
 		if (glConfig.directStateAccess) {
-		glBlitNamedFramebuffer(0, glFBO, 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
+			glBlitNamedFramebuffer(0, glFBO, srcX, srcY, srcW, srcH, 0, 0 , width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 		}
 		else {
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, glFBO);
-			glBlitFramebuffer(0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), 0, 0, r_customWidth.GetInteger(), r_customHeight.GetInteger(), GL_COLOR_BUFFER_BIT, GL_LINEAR);
+			glBlitFramebuffer(srcX, srcY, srcW, srcH, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 		}
 	}
 }
 
 void idXR_Win::EndFrame()
 {
-	if (inFrame && predictedDisplayTime > 0) {
-		XrFrameEndInfo frameEndInfo{ XR_TYPE_FRAME_END_INFO };
-		frameEndInfo.displayTime = predictedDisplayTime;
-		frameEndInfo.environmentBlendMode = environmentBlendMode;
+	
+	XrFrameEndInfo frameEndInfo{ XR_TYPE_FRAME_END_INFO };
+	frameEndInfo.displayTime = predictedDisplayTime;
+	frameEndInfo.environmentBlendMode = environmentBlendMode;
 
-		XrCompositionLayerProjection projection = { XR_TYPE_COMPOSITION_LAYER_PROJECTION };
-		projection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
-		projection.space = localSpace;
-		projection.viewCount = layers.size();
-		projection.views = layers.data();
-		std::vector<XrCompositionLayerBaseHeader*> renderLayers;
-		renderLayers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&projection));
+	XrCompositionLayerProjection projection = { XR_TYPE_COMPOSITION_LAYER_PROJECTION };
+	projection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
+	projection.space = localSpace;
+	projection.viewCount = layers.size();
+	projection.views = layers.data();
+	std::vector<XrCompositionLayerBaseHeader*> renderLayers;
+	renderLayers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&projection));
 
 
-		frameEndInfo.layerCount = renderLayers.size();
-		frameEndInfo.layers = renderLayers.data();
-		XrResult endFrameRes = xrEndFrame(session, &frameEndInfo);
-		if (endFrameRes != XR_SUCCESS && endFrameRes != XR_SESSION_LOSS_PENDING) {
-			common->Warning("OpenXR Error: Failed to End Frame\n");
-			return;
-		}
-		inFrame = false;
+	frameEndInfo.layerCount = renderLayers.size();
+	frameEndInfo.layers = renderLayers.data();
+	XrResult endFrameRes = xrEndFrame(session, &frameEndInfo);
+	if (endFrameRes != XR_SUCCESS && endFrameRes != XR_SESSION_LOSS_PENDING) {
+		common->Warning("OpenXR Error: Failed to End Frame\n");
+		return;
 	}
+	inFrame = false;
+	
 }
 
 uint idXR_Win::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index)
@@ -551,7 +556,7 @@ void idXR_Win::InitXR() {
 
 		uint depthSwapchainImageCount = this->EnumerateSwapchainImage(depthSwapchainInfo, idXRSwapchainType::DEPTH, i);
 
-		for (int ci = 0; ci < colorSwapchainImageCount; ci++) {
+		for (uint ci = 0; ci < colorSwapchainImageCount; ci++) {
 			FrameBufferCreateInfo fbCI;
 			fbCI.image = (void*)(uint64_t)swapchainImageMap[colorSwapchainInfo[i].swapchain].second[ci].image;
 			fbCI.type = FrameBufferCreateInfo::Type::RTV;
@@ -565,7 +570,7 @@ void idXR_Win::InitXR() {
 			colorSwapchainInfo[i].imageViews.push_back(CreateFrameBuffer(fbCI));
 		}
 
-		for (int di = 0; di < depthSwapchainImageCount; di++) {
+		for (uint di = 0; di < depthSwapchainImageCount; di++) {
 			FrameBufferCreateInfo fbCI;
 			fbCI.image = (void*)(uint64_t)swapchainImageMap[depthSwapchainInfo[i].swapchain].second[di].image;
 			fbCI.type = FrameBufferCreateInfo::Type::DSV;

@@ -512,6 +512,10 @@ void R_SetNewMode( const bool fullInit )
 			break;
 		}
 
+		if (stereoRender_enable.GetInteger() == STEREO3D_VR) {
+			parms.multiSamples = 0;
+		}
+
 		if (i == 0)
 		{
 			parms.stereo = (stereoRender_enable.GetInteger() == STEREO3D_QUAD_BUFFER);
@@ -2376,7 +2380,7 @@ void idRenderSystemLocal::Init()
 	UpdateStereo3DMode();
 	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR) {
 		xrSystem->InitXR();
-		xrSystem->PollXREvents();
+		
 	}
 	
 	globalImages->Init();
@@ -2659,7 +2663,7 @@ idRenderSystemLocal::GetWidth
 */
 int idRenderSystemLocal::GetWidth() const
 {
-	if( glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE || glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE_COMPRESSED || glConfig.stereo3Dmode == STEREO3D_VR)
+	if( glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE || glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE_COMPRESSED)
 	{
 		return glConfig.nativeScreenWidth >> 1;
 	}
@@ -2678,7 +2682,7 @@ int idRenderSystemLocal::GetHeight() const
 		return 720;
 	}
 	extern idCVar stereoRender_warp;
-	if( (glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE || glConfig.stereo3Dmode == STEREO3D_VR)&& stereoRender_warp.GetBool() )
+	if( glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE && stereoRender_warp.GetBool() )
 	{
 		// for the Rift, render a square aspect view that will be symetric for the optics
 		return glConfig.nativeScreenWidth >> 1;
