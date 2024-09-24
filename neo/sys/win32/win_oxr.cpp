@@ -108,7 +108,7 @@ void idXR_Win::PollXREvents()
 void idXR_Win::StartFrame()
 {
 	bool activeSession = (sessionState == XR_SESSION_STATE_SYNCHRONIZED || sessionState == XR_SESSION_STATE_VISIBLE || sessionState == XR_SESSION_STATE_FOCUSED || sessionState == XR_SESSION_STATE_READY);
-	if (!inFrame && activeSession) {
+	if (activeSession) {
 		XrFrameState frameState{ XR_TYPE_FRAME_STATE };
 		XrFrameWaitInfo frameWaitInfo{ XR_TYPE_FRAME_WAIT_INFO };
 		XrResult waitRes = xrWaitFrame(session, &frameWaitInfo, &frameState);
@@ -117,11 +117,11 @@ void idXR_Win::StartFrame()
 			return;
 		}
 
-		predictedDisplayTime = frameState.predictedDisplayPeriod;
+		predictedDisplayTime = frameState.predictedDisplayTime;
 
 		XrFrameBeginInfo frameBeginInfo{ XR_TYPE_FRAME_BEGIN_INFO };
 		XrResult beginRes = xrBeginFrame(session, &frameBeginInfo);
-		if (beginRes != XR_SUCCESS && beginRes != XR_SESSION_LOSS_PENDING && beginRes != XR_FRAME_DISCARDED) {
+		if (beginRes != XR_SUCCESS && beginRes != XR_SESSION_LOSS_PENDING ) {
 			common->Warning("OpenXR Error: Failed to begin Frame\n");
 			return;
 		}
@@ -143,7 +143,7 @@ void idXR_Win::StartFrame()
 
 			layers.resize(viewCount, { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW });
 		}
-		inFrame = frameState.shouldRender && ((sessionState == XR_SESSION_STATE_SYNCHRONIZED || sessionState == XR_SESSION_STATE_VISIBLE || sessionState == XR_SESSION_STATE_FOCUSED));
+		inFrame = frameState.shouldRender && activeSession/*((sessionState == XR_SESSION_STATE_SYNCHRONIZED || sessionState == XR_SESSION_STATE_VISIBLE || sessionState == XR_SESSION_STATE_FOCUSED))*/;
 	}
 }
 
@@ -221,7 +221,7 @@ void idXR_Win::RenderFrame(int srcX, int srcY, int srcW, int srcH)
 {
 	if (inFrame) {
 		if (glConfig.directStateAccess) {
-			glBlitNamedFramebuffer(0, glFBO, srcX, srcY, srcW, srcH, 0, 0 , width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+			glBlitNamedFramebuffer(0, glFBO, srcX, srcY, srcW, srcH, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 		}
 		else {
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -233,28 +233,27 @@ void idXR_Win::RenderFrame(int srcX, int srcY, int srcW, int srcH)
 
 void idXR_Win::EndFrame()
 {
-	
-	XrFrameEndInfo frameEndInfo{ XR_TYPE_FRAME_END_INFO };
-	frameEndInfo.displayTime = predictedDisplayTime;
-	frameEndInfo.environmentBlendMode = environmentBlendMode;
+		XrFrameEndInfo frameEndInfo{ XR_TYPE_FRAME_END_INFO };
+		frameEndInfo.displayTime = predictedDisplayTime;
+		frameEndInfo.environmentBlendMode = environmentBlendMode;
 
-	XrCompositionLayerProjection projection = { XR_TYPE_COMPOSITION_LAYER_PROJECTION };
-	projection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
-	projection.space = localSpace;
-	projection.viewCount = layers.size();
-	projection.views = layers.data();
-	std::vector<XrCompositionLayerBaseHeader*> renderLayers;
-	renderLayers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&projection));
+		XrCompositionLayerProjection projection = { XR_TYPE_COMPOSITION_LAYER_PROJECTION };
+		projection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
+		projection.space = localSpace;
+		projection.viewCount = layers.size();
+		projection.views = layers.data();
+		std::vector<XrCompositionLayerBaseHeader*> renderLayers;
+		renderLayers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&projection));
 
 
-	frameEndInfo.layerCount = renderLayers.size();
-	frameEndInfo.layers = renderLayers.data();
-	XrResult endFrameRes = xrEndFrame(session, &frameEndInfo);
-	if (endFrameRes != XR_SUCCESS && endFrameRes != XR_SESSION_LOSS_PENDING) {
-		common->Warning("OpenXR Error: Failed to End Frame\n");
-		return;
-	}
-	inFrame = false;
+		frameEndInfo.layerCount = renderLayers.size();
+		frameEndInfo.layers = renderLayers.data();
+		XrResult endFrameRes = xrEndFrame(session, &frameEndInfo);
+		if (endFrameRes != XR_SUCCESS && endFrameRes != XR_SESSION_LOSS_PENDING) {
+			common->Warning("OpenXR Error: Failed to End Frame\n");
+			return;
+		}
+		inFrame = false;
 	
 }
 
@@ -597,7 +596,6 @@ void idXR_Win::InitXR() {
 			}
 		}
 	}
-
 }
 
 

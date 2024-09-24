@@ -2663,7 +2663,7 @@ idRenderSystemLocal::GetWidth
 */
 int idRenderSystemLocal::GetWidth() const
 {
-	if( glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE || glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE_COMPRESSED)
+	if( glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE || glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE_COMPRESSED || glConfig.stereo3Dmode == STEREO3D_VR)
 	{
 		return glConfig.nativeScreenWidth >> 1;
 	}
@@ -2682,7 +2682,7 @@ int idRenderSystemLocal::GetHeight() const
 		return 720;
 	}
 	extern idCVar stereoRender_warp;
-	if( glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE && stereoRender_warp.GetBool() )
+	if(( glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE && stereoRender_warp.GetBool() ) || glConfig.stereo3Dmode == STEREO3D_VR)
 	{
 		// for the Rift, render a square aspect view that will be symetric for the optics
 		return glConfig.nativeScreenWidth >> 1;

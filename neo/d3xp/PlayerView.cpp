@@ -689,7 +689,7 @@ void idPlayerView::ScreenFade()
 }
 
 extern idCVar	stereoRender_interOccularCentimeters;
-idCVar	stereoRender_convergence( "stereoRender_convergence", "6", CVAR_RENDERER, "0 = head mounted display, otherwise world units to convergence plane" );
+idCVar	stereoRender_convergence( "stereoRender_convergence", "0", CVAR_RENDERER, "0 = head mounted display, otherwise world units to convergence plane" );
 
 extern	idCVar stereoRender_screenSeparation;	// screen units from center to eyes
 extern  idCVar stereoRender_swapEyes;
@@ -762,7 +762,7 @@ float	idGameLocal::GetScreenSeparationForGuis()
 										stereoRender_interOccularCentimeters.GetFloat(),
 										renderSystem->GetPhysicalScreenWidthInCentimeters(),
 										stereoRender_convergence.GetFloat(),
-										80.0f /* fov */ );
+										160.0f /* fov */ );
 										
 	return dists.screenSeparation;
 }

@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 const static int NUM_SYSTEM_OPTIONS_OPTIONS = 4;
 
 // TRC requires a maximum interoccular distance of 6.5cm even though human adults can easily have an interoccular distance of over 7.5cm
-const static float MAX_INTEROCCULAR_DISTANCE = 6.5f;
+const static float MAX_INTEROCCULAR_DISTANCE = 12.5f;
 
 // This should line up with stereo3DMode_t
 static const char* stereoRender_enable_text[] =
