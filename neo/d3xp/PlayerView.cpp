@@ -762,7 +762,7 @@ float	idGameLocal::GetScreenSeparationForGuis()
 										stereoRender_interOccularCentimeters.GetFloat(),
 										renderSystem->GetPhysicalScreenWidthInCentimeters(),
 										stereoRender_convergence.GetFloat(),
-										160.0f /* fov */ );
+										80.0f /* fov */ );
 										
 	return dists.screenSeparation;
 }
