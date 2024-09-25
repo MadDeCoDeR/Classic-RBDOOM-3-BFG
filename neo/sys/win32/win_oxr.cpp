@@ -108,7 +108,7 @@ void idXR_Win::PollXREvents()
 void idXR_Win::StartFrame()
 {
 	bool activeSession = (sessionState == XR_SESSION_STATE_SYNCHRONIZED || sessionState == XR_SESSION_STATE_VISIBLE || sessionState == XR_SESSION_STATE_FOCUSED || sessionState == XR_SESSION_STATE_READY);
-	if (activeSession) {
+	if (!inFrame && activeSession) {
 		XrFrameState frameState{ XR_TYPE_FRAME_STATE };
 		XrFrameWaitInfo frameWaitInfo{ XR_TYPE_FRAME_WAIT_INFO };
 		XrResult waitRes = xrWaitFrame(session, &frameWaitInfo, &frameState);
@@ -121,7 +121,7 @@ void idXR_Win::StartFrame()
 
 		XrFrameBeginInfo frameBeginInfo{ XR_TYPE_FRAME_BEGIN_INFO };
 		XrResult beginRes = xrBeginFrame(session, &frameBeginInfo);
-		if (beginRes != XR_SUCCESS && beginRes != XR_SESSION_LOSS_PENDING ) {
+		if (beginRes != XR_SUCCESS && beginRes != XR_SESSION_LOSS_PENDING && beginRes != XR_FRAME_DISCARDED) {
 			common->Warning("OpenXR Error: Failed to begin Frame\n");
 			return;
 		}
@@ -143,7 +143,7 @@ void idXR_Win::StartFrame()
 
 			layers.resize(viewCount, { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW });
 		}
-		inFrame = frameState.shouldRender && activeSession/*((sessionState == XR_SESSION_STATE_SYNCHRONIZED || sessionState == XR_SESSION_STATE_VISIBLE || sessionState == XR_SESSION_STATE_FOCUSED))*/;
+		inFrame = frameState.shouldRender && activeSession;
 	}
 }
 
@@ -233,6 +233,7 @@ void idXR_Win::RenderFrame(int srcX, int srcY, int srcW, int srcH)
 
 void idXR_Win::EndFrame()
 {
+	if (inFrame) {
 		XrFrameEndInfo frameEndInfo{ XR_TYPE_FRAME_END_INFO };
 		frameEndInfo.displayTime = predictedDisplayTime;
 		frameEndInfo.environmentBlendMode = environmentBlendMode;
@@ -254,6 +255,7 @@ void idXR_Win::EndFrame()
 			return;
 		}
 		inFrame = false;
+	}
 	
 }
 
@@ -465,7 +467,6 @@ void idXR_Win::InitXR() {
 
 	//Create a Session
 	XrSessionCreateInfo sci{ XR_TYPE_SESSION_CREATE_INFO };
-	//TODO: Interact and retrieve data from renderingSystem
 	sci.next = GetOpenXRGraphicsBinding();
 	sci.createFlags = 0;
 	sci.systemId = systemId;
@@ -580,7 +581,7 @@ void idXR_Win::InitXR() {
 			fbCI.levelCount = 1;
 			fbCI.baseArrayLayer = 0;
 			fbCI.layerCount = 1;
-			colorSwapchainInfo[i].imageViews.push_back(CreateFrameBuffer(fbCI));
+			depthSwapchainInfo[i].imageViews.push_back(CreateFrameBuffer(fbCI));
 		}
 		
 		//XrSwapchain targetSwapchain = colorSwapchainInfo[i].swapchain;
@@ -601,18 +602,49 @@ void idXR_Win::InitXR() {
 
 void idXR_Win::ShutDownXR()
 {
-	if (session != NULL && xrDestroySession(session) != XR_SUCCESS) {
-		common->Warning("Failed to close OpenXR Session\n");
+	if (colorSwapchainInfo.size() > 0) {
+		for (int i = 0; i < colorSwapchainInfo.size(); i++) {
+			for (int j = 0; j < colorSwapchainInfo[i].imageViews.size(); j++) {
+				GLuint fbo = (GLuint)(uint64_t)colorSwapchainInfo[i].imageViews[j];
+				glDeleteFramebuffers(1, &fbo);
+			}
+			colorSwapchainInfo[i].imageViews.clear();
+			swapchainImageMap[colorSwapchainInfo[i].swapchain].second.clear();
+			if (xrDestroySwapchain(colorSwapchainInfo[i].swapchain) != XR_SUCCESS) {
+				common->Warning("OpenXR Error: Failed to delete Color Swapchain Image\n");
+			}
+		}
+	}
+	if (depthSwapchainInfo.size() > 0) {
+		for (int i = 0; i < depthSwapchainInfo.size(); i++) {
+			for (int j = 0; j < depthSwapchainInfo[i].imageViews.size(); j++) {
+				GLuint fbo = (GLuint)(uint64_t)depthSwapchainInfo[i].imageViews[j];
+				glDeleteFramebuffers(1, &fbo);
+			}
+			depthSwapchainInfo[i].imageViews.clear();
+			swapchainImageMap[depthSwapchainInfo[i].swapchain].second.clear();
+			if (xrDestroySwapchain(depthSwapchainInfo[i].swapchain) != XR_SUCCESS) {
+				common->Warning("OpenXR Error: Failed to delete Depth Swapchain Image\n");
+			}
+		}
+	}
+	swapchainImageMap.clear();
+
+	if (localSpace != XR_NULL_HANDLE && xrDestroySpace(localSpace) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to close OpenXR Space\n");
+	}
+	if (session != XR_NULL_HANDLE && xrDestroySession(session) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to close OpenXR Session\n");
 	}
 #ifdef _DEBUG
 	PFN_xrDestroyDebugUtilsMessengerEXT xrDestroyDebugMessager;
 	if (xrGetInstanceProcAddr(instance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrDestroyDebugMessager) == XR_SUCCESS) {
-		if (debugMessager != NULL && xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
+		if (debugMessager != XR_NULL_HANDLE && xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
 			common->Warning("OpenXR Error: Failed to Destroy Debug Messenger");
 		}
 	}
 #endif
-	if (instance != NULL && xrDestroyInstance(instance) != XR_SUCCESS) {
-		common->Warning("Failed to close OpenXR\n");
+	if (instance != XR_NULL_HANDLE && xrDestroyInstance(instance) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to close OpenXR\n");
 	}
 }

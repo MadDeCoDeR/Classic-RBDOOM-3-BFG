@@ -1923,8 +1923,10 @@ void idCommonLocal::Shutdown()
 	minPrint( "delete menuSoundWorld;\n" );
 	delete menuSoundWorld;
 	menuSoundWorld = NULL;
-
+#ifdef USE_OPENXR
+	minPrint("xrSystem->ShutDownXR();\n");
 	xrSystem->ShutDownXR();
+#endif
 	
 	// shut down the session
 	minPrint( "session->ShutdownSoundRelatedSystems();\n" );

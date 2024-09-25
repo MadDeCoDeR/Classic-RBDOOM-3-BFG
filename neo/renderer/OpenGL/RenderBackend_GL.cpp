@@ -2186,7 +2186,7 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 			xrSystem->StartFrame();
 
 			renderProgManager.BindShader_StereoVRWarp();
-			glScissor(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+			glScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 			idVec4	color(stereoRender_warpCenterX.GetFloat(), stereoRender_warpCenterY.GetFloat(), stereoRender_warpParmZ.GetFloat(), stereoRender_warpParmW.GetFloat());
@@ -2196,15 +2196,15 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 			GL_SelectTexture(1);
 			stereoRenderImages[1]->Bind();
 			xrSystem->BindSwapchainImage(0);
-			GL_ViewportAndScissor(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+			GL_ViewportAndScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 			DrawElementsWithCounters(&unitSquareSurface);
 
-			xrSystem->RenderFrame(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+			xrSystem->RenderFrame(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 			xrSystem->ReleaseSwapchainImage();
 
 			idVec4	color2(stereoRender_warpCenterX.GetFloat(), stereoRender_warpCenterY.GetFloat(), stereoRender_warpParmZ.GetFloat(), stereoRender_warpParmW.GetFloat());
 			renderProgManager.SetRenderParm(RENDERPARM_COLOR, color2.ToFloatPtr());
-			glScissor(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+			glScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -2213,9 +2213,9 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 			GL_SelectTexture(1);
 			stereoRenderImages[0]->Bind();
 			xrSystem->BindSwapchainImage(1);
-			GL_ViewportAndScissor(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+			GL_ViewportAndScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 			DrawElementsWithCounters(&unitSquareSurface);
-			xrSystem->RenderFrame(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+			xrSystem->RenderFrame(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 			xrSystem->ReleaseSwapchainImage();
 			xrSystem->EndFrame();
 

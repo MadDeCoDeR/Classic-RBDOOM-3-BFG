@@ -2378,10 +2378,12 @@ void idRenderSystemLocal::Init()
 	tr_guiModel = guiModel;	// for DeviceContext fast path
 	
 	UpdateStereo3DMode();
+#ifdef USE_OPENXR
 	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR) {
 		xrSystem->InitXR();
 		
 	}
+#endif
 	
 	globalImages->Init();
 	
