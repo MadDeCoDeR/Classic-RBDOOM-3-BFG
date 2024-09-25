@@ -2185,7 +2185,7 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 			xrSystem->PollXREvents();
 			xrSystem->StartFrame();
 
-			renderProgManager.BindShader_StereoWarp();
+			renderProgManager.BindShader_StereoVRWarp();
 			glScissor(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
 			glClearColor(0, 0, 0, 0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);

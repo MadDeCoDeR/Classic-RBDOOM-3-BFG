@@ -236,7 +236,7 @@ void idMenuScreen_Shell_SaveLocal::UpdateSaveEnumerations()
 			cmdBar->ClearAllButtons();
 			idMenuWidget_CommandBar::buttonInfo_t* buttonInfo;
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5) || renderSystem->GetStereo3DMode() == STEREO3D_VR)
 			{
 				buttonInfo->label = "#str_00395";	// BACK
 			}
@@ -246,7 +246,7 @@ void idMenuScreen_Shell_SaveLocal::UpdateSaveEnumerations()
 			if( !session->GetSaveGameManager().IsWorking() )
 			{
 				buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-				if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
+				if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5) || renderSystem->GetStereo3DMode() == STEREO3D_VR)
 				{
 					buttonInfo->label = "#str_02179";	// SAVE GAME
 				}
@@ -257,7 +257,7 @@ void idMenuScreen_Shell_SaveLocal::UpdateSaveEnumerations()
 					if( options->GetViewIndex() != 0 || ( options->GetViewIndex() == 0 && newSaveOffset == 0 ) )
 					{
 						buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY3 );
-						if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
+						if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5) || renderSystem->GetStereo3DMode() == STEREO3D_VR)
 						{
 							buttonInfo->label = "#str_02315";	// DELETE
 						}
@@ -268,7 +268,7 @@ void idMenuScreen_Shell_SaveLocal::UpdateSaveEnumerations()
 							idSWFScriptObject& root = GetSWFObject()->GetRootObject();
 							if( btnDelete->BindSprite( root ) )
 							{
-								if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
+								if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5) || renderSystem->GetStereo3DMode() == STEREO3D_VR)
 								{
 									btnDelete->SetLabel( "" );
 								}
