@@ -48,6 +48,9 @@ public:
 	virtual uint32_t GetHeight() {
 		return height;
 	}
+	virtual bool IsInitialized() {
+		return isInitialized;
+	}
 private:
 	XrInstance instance = {};
 	std::vector<const char*> activeAPILayers = {};
@@ -61,7 +64,7 @@ private:
 	XrSystemId systemId = {};
 	XrSystemProperties systemProperties = { XR_TYPE_SYSTEM_PROPERTIES };
 	XrSession session = XR_NULL_HANDLE;
-	std::vector<XrViewConfigurationType> appViewConfigurations = { XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, XR_VIEW_CONFIGURATION_TYPE_PRIMARY_MONO };
+	std::vector<XrViewConfigurationType> appViewConfigurations = { XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO };
 	std::vector<XrViewConfigurationType> viewConfigurations;
 	XrViewConfigurationType viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM;
 	std::vector<XrViewConfigurationView> configurationView;
@@ -116,4 +119,5 @@ private:
 	bool inFrame = false;
 	uint32_t width = 0;
 	uint32_t height = 0;
+	bool isInitialized = false;
 };

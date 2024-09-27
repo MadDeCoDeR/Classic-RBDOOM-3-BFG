@@ -41,6 +41,7 @@ public:
 	virtual void EndFrame() = 0;
 	virtual uint32_t GetWidth() = 0;
 	virtual uint32_t GetHeight() = 0;
+	virtual bool IsInitialized() = 0;
 	enum class idXRSwapchainType : uint8{
 		COLOR,
 		DEPTH

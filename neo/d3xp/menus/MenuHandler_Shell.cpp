@@ -789,7 +789,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 	
 	navOptions.Clear();
 	
-	if(((!common->IsNewDOOM3() && GetPlatform() == 2) || (common->IsNewDOOM3() && GetPlatform() == 5)) && menuBar != NULL)
+	if(((!common->IsNewDOOM3() && GetPlatform() == 2) || (common->IsNewDOOM3() && GetPlatform() == 5)) && menuBar != NULL && renderSystem->GetStereo3DMode() != STEREO3D_VR)
 	{
 		if( game->GetCVarBool("g_demoMode") )
 		{
@@ -914,7 +914,7 @@ void idMenuHandler_ShellLocal::SetupPCOptions()
 	
 	if( menuBar != NULL && gui != NULL )
 	{
-		if ((!common->IsNewDOOM3() && GetPlatform() == 2) || (common->IsNewDOOM3() && GetPlatform() == 5)) {
+		if ((!common->IsNewDOOM3() && GetPlatform() == 2) || (common->IsNewDOOM3() && GetPlatform() == 5) && renderSystem->GetStereo3DMode() != STEREO3D_VR) {
 			idSWFScriptObject& root = gui->GetRootObject();
 			if (menuBar->BindSprite(root))
 			{

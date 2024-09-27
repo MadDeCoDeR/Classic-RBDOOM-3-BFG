@@ -74,33 +74,36 @@ XrBool32 DebugXR(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUti
 
 void idXR_Win::PollXREvents()
 {
-	XrEventDataBuffer eventData{ XR_TYPE_EVENT_DATA_BUFFER };
-	std::function xrPollEvents = [&]() -> bool {
-		eventData = { XR_TYPE_EVENT_DATA_BUFFER };
-		return xrPollEvent(instance, &eventData) == XR_SUCCESS;
-		};
+	if (isInitialized) {
+		XrEventDataBuffer eventData{ XR_TYPE_EVENT_DATA_BUFFER };
+		std::function xrPollEvents = [&]() -> bool {
+			eventData = { XR_TYPE_EVENT_DATA_BUFFER };
+			return xrPollEvent(instance, &eventData) == XR_SUCCESS;
+			};
 
-	while (xrPollEvents()) {
-		switch (eventData.type) {
-		case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
-			XrEventDataSessionStateChanged* sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged*>(&eventData);
-			if (sessionStateChanged->session != session) {
-				common->Warning("OpenXR: State Change Session is different from created Session");
+		while (xrPollEvents()) {
+			switch (eventData.type) {
+			case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
+				XrEventDataSessionStateChanged* sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged*>(&eventData);
+				if (sessionStateChanged->session != session) {
+					common->Warning("OpenXR: State Change Session is different from created Session");
+					break;
+				}
+				if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
+					XrSessionBeginInfo sessionbi{ XR_TYPE_SESSION_BEGIN_INFO };
+					sessionbi.primaryViewConfigurationType = viewConfiguration;
+					if (xrBeginSession(session, &sessionbi) != XR_SUCCESS) {
+						common->Warning("OpenXR: Failed to begin Session");
+					}
+				}
+				else if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
+					if (xrEndSession(session) != XR_SUCCESS) {
+						common->Warning("OpenXR: Failed to end Session");
+					}
+				}
+				sessionState = sessionStateChanged->state;
 				break;
 			}
-			if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
-				XrSessionBeginInfo sessionbi{ XR_TYPE_SESSION_BEGIN_INFO };
-				sessionbi.primaryViewConfigurationType = viewConfiguration;
-				if (xrBeginSession(session, &sessionbi) != XR_SUCCESS) {
-					common->Warning("OpenXR: Failed to begin Session");
-				}
-			} else if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING){
-				if (xrEndSession(session) != XR_SUCCESS) {
-					common->Warning("OpenXR: Failed to end Session");
-				}
-			}
-			sessionState = sessionStateChanged->state;
-			break;
 		}
 	}
 }
@@ -188,7 +191,10 @@ void idXR_Win::BindSwapchainImage(int eye)
 		layers[renderingEye].subImage.imageArrayIndex = 0;
 
 		glFBO = (GLuint)(uint64_t)colorSwapchainInfo[renderingEye].imageViews[colorIndex];
-
+		glBindFramebuffer(GL_FRAMEBUFFER, glFBO);
+		glClearColor(0, 0, 0, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		
 
 		//glClearColor(0, 0, 0, 1);
@@ -488,10 +494,12 @@ void idXR_Win::InitXR() {
 	}
 
 	std::vector<int64> supportedColorFormats = {
+		GL_RGBA16_SNORM,
+		GL_RGBA8_SNORM,
 		GL_RGB10_A2,
 		GL_RGBA16F,
 		GL_RGBA8,
-		GL_RGBA8_SNORM
+		GL_SRGB8
 	};
 	int64 colorFormat = 0;
 	std::vector<int64>::const_iterator colorFormatIterator = std::find_first_of(formats.begin(), formats.end(), supportedColorFormats.begin(), supportedColorFormats.end());
@@ -597,54 +605,58 @@ void idXR_Win::InitXR() {
 			}
 		}
 	}
+
+	isInitialized = true;
 }
 
 
 void idXR_Win::ShutDownXR()
 {
-	if (colorSwapchainInfo.size() > 0) {
-		for (int i = 0; i < colorSwapchainInfo.size(); i++) {
-			for (int j = 0; j < colorSwapchainInfo[i].imageViews.size(); j++) {
-				GLuint fbo = (GLuint)(uint64_t)colorSwapchainInfo[i].imageViews[j];
-				glDeleteFramebuffers(1, &fbo);
-			}
-			colorSwapchainInfo[i].imageViews.clear();
-			swapchainImageMap[colorSwapchainInfo[i].swapchain].second.clear();
-			if (xrDestroySwapchain(colorSwapchainInfo[i].swapchain) != XR_SUCCESS) {
-				common->Warning("OpenXR Error: Failed to delete Color Swapchain Image\n");
-			}
-		}
-	}
-	if (depthSwapchainInfo.size() > 0) {
-		for (int i = 0; i < depthSwapchainInfo.size(); i++) {
-			for (int j = 0; j < depthSwapchainInfo[i].imageViews.size(); j++) {
-				GLuint fbo = (GLuint)(uint64_t)depthSwapchainInfo[i].imageViews[j];
-				glDeleteFramebuffers(1, &fbo);
-			}
-			depthSwapchainInfo[i].imageViews.clear();
-			swapchainImageMap[depthSwapchainInfo[i].swapchain].second.clear();
-			if (xrDestroySwapchain(depthSwapchainInfo[i].swapchain) != XR_SUCCESS) {
-				common->Warning("OpenXR Error: Failed to delete Depth Swapchain Image\n");
+	if (isInitialized) {
+		if (colorSwapchainInfo.size() > 0) {
+			for (int i = 0; i < colorSwapchainInfo.size(); i++) {
+				for (int j = 0; j < colorSwapchainInfo[i].imageViews.size(); j++) {
+					GLuint fbo = (GLuint)(uint64_t)colorSwapchainInfo[i].imageViews[j];
+					glDeleteFramebuffers(1, &fbo);
+				}
+				colorSwapchainInfo[i].imageViews.clear();
+				swapchainImageMap[colorSwapchainInfo[i].swapchain].second.clear();
+				if (xrDestroySwapchain(colorSwapchainInfo[i].swapchain) != XR_SUCCESS) {
+					common->Warning("OpenXR Error: Failed to delete Color Swapchain Image\n");
+				}
 			}
 		}
-	}
-	swapchainImageMap.clear();
+		if (depthSwapchainInfo.size() > 0) {
+			for (int i = 0; i < depthSwapchainInfo.size(); i++) {
+				for (int j = 0; j < depthSwapchainInfo[i].imageViews.size(); j++) {
+					GLuint fbo = (GLuint)(uint64_t)depthSwapchainInfo[i].imageViews[j];
+					glDeleteFramebuffers(1, &fbo);
+				}
+				depthSwapchainInfo[i].imageViews.clear();
+				swapchainImageMap[depthSwapchainInfo[i].swapchain].second.clear();
+				if (xrDestroySwapchain(depthSwapchainInfo[i].swapchain) != XR_SUCCESS) {
+					common->Warning("OpenXR Error: Failed to delete Depth Swapchain Image\n");
+				}
+			}
+		}
+		swapchainImageMap.clear();
 
-	if (localSpace != XR_NULL_HANDLE && xrDestroySpace(localSpace) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to close OpenXR Space\n");
-	}
-	if (session != XR_NULL_HANDLE && xrDestroySession(session) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to close OpenXR Session\n");
-	}
-#ifdef _DEBUG
-	PFN_xrDestroyDebugUtilsMessengerEXT xrDestroyDebugMessager;
-	if (xrGetInstanceProcAddr(instance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrDestroyDebugMessager) == XR_SUCCESS) {
-		if (debugMessager != XR_NULL_HANDLE && xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to Destroy Debug Messenger");
+		if (localSpace != XR_NULL_HANDLE && xrDestroySpace(localSpace) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to close OpenXR Space\n");
 		}
-	}
+		if (session != XR_NULL_HANDLE && xrDestroySession(session) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to close OpenXR Session\n");
+		}
+#ifdef _DEBUG
+		PFN_xrDestroyDebugUtilsMessengerEXT xrDestroyDebugMessager;
+		if (xrGetInstanceProcAddr(instance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrDestroyDebugMessager) == XR_SUCCESS) {
+			if (debugMessager != XR_NULL_HANDLE && xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
+				common->Warning("OpenXR Error: Failed to Destroy Debug Messenger");
+			}
+		}
 #endif
-	if (instance != XR_NULL_HANDLE && xrDestroyInstance(instance) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to close OpenXR\n");
+		if (instance != XR_NULL_HANDLE && xrDestroyInstance(instance) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to close OpenXR\n");
+		}
 	}
 }

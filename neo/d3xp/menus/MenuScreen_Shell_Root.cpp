@@ -105,7 +105,7 @@ void idMenuScreen_Shell_Root::Update()
 			if( !game->GetCVarBool("g_demoMode"))
 			{
 				buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY2 );
-				if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5) || renderSystem->GetStereo3DMode() == STEREO3D_VR)
+				if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 				{
 					buttonInfo->label = "#str_00395";
 				}
@@ -113,7 +113,7 @@ void idMenuScreen_Shell_Root::Update()
 			}
 			
 			buttonInfo = cmdBar->GetButton( idMenuWidget_CommandBar::BUTTON_JOY1 );
-			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5) || renderSystem->GetStereo3DMode() == STEREO3D_VR)
+			if((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
 			{
 				buttonInfo->label = "#str_SWF_SELECT";
 			}
@@ -312,17 +312,6 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 			{
 				menuBar->Show();
 				menuBar->SetFocusIndex( GetRootIndex() );
-			}
-		}
-	}
-	if (menuData != NULL && renderSystem->GetStereo3DMode() == STEREO3D_VR) {
-		idMenuHandler_Shell* shell = dynamic_cast<idMenuHandler_ShellLocal*>(menuData);
-		if (shell != NULL)
-		{
-			idMenuWidget_MenuBar* menuBar = shell->GetMenuBar();
-			if (menuBar != NULL)
-			{
-				menuBar->Hide();
 			}
 		}
 	}
