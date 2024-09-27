@@ -2218,7 +2218,6 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 			xrSystem->RenderFrame(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 			xrSystem->ReleaseSwapchainImage();
 			xrSystem->EndFrame();
-
 			break;
 		}
 #endif

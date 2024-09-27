@@ -315,6 +315,17 @@ void idMenuScreen_Shell_Root::ShowScreen( const mainMenuTransition_t transitionT
 			}
 		}
 	}
+	if (menuData != NULL && renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		idMenuHandler_Shell* shell = dynamic_cast<idMenuHandler_ShellLocal*>(menuData);
+		if (shell != NULL)
+		{
+			idMenuWidget_MenuBar* menuBar = shell->GetMenuBar();
+			if (menuBar != NULL)
+			{
+				menuBar->Hide();
+			}
+		}
+	}
 }
 
 /*

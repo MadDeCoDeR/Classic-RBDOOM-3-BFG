@@ -177,11 +177,8 @@ void idXR_Win::BindSwapchainImage(int eye)
 			return;
 		}*/
 
-		width = configurationView[renderingEye].recommendedImageRectWidth;
-		height = configurationView[renderingEye].recommendedImageRectHeight;
-
 		layers[renderingEye] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
-		layers[renderingEye].fov = views[renderingEye].fov;
+		layers[renderingEye].fov = { -0.750491619f, 0.785398185f, 0.837758064f, -0.872664630f }; //views[renderingEye].fov;
 		layers[renderingEye].pose = views[renderingEye].pose;
 		layers[renderingEye].subImage.swapchain = renderingColorSwapchainInfo.swapchain;
 		layers[renderingEye].subImage.imageRect.offset.x = 0;
@@ -524,14 +521,17 @@ void idXR_Win::InitXR() {
 	colorSwapchainInfo.resize(configurationView.size());
 	depthSwapchainInfo.resize(configurationView.size());
 
+	width = 2244;//configurationView[0].recommendedImageRectWidth; //2244
+	height = 2352;//configurationView[0].recommendedImageRectHeight; //2352
+
 	for (int i = 0; i < configurationView.size(); i++) {
 		XrSwapchainCreateInfo swci{ XR_TYPE_SWAPCHAIN_CREATE_INFO };
 		swci.createFlags = 0;
 		swci.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
 		swci.format = colorFormat;
 		swci.sampleCount = configurationView[i].recommendedSwapchainSampleCount;
-		swci.width = configurationView[i].recommendedImageRectWidth;
-		swci.height = configurationView[i].recommendedImageRectHeight;
+		swci.width = width;
+		swci.height = height;
 		swci.faceCount = 1;
 		swci.arraySize = 1;
 		swci.mipCount = 1;
@@ -543,8 +543,8 @@ void idXR_Win::InitXR() {
 		swci.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		swci.format = depthFormat;
 		swci.sampleCount = configurationView[i].recommendedSwapchainSampleCount;
-		swci.width = configurationView[i].recommendedImageRectWidth;
-		swci.height = configurationView[i].recommendedImageRectHeight;
+		swci.width = width;
+		swci.height = height;
 		swci.faceCount = 1;
 		swci.arraySize = 1;
 		swci.mipCount = 1;

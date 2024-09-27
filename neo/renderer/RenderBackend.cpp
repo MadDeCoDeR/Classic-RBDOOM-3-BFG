@@ -5578,12 +5578,21 @@ void idRenderBackend::DrawViewInternal( const viewDef_t* _viewDef, const int ste
 		else
 #endif
 		{
-			glBindFramebuffer( GL_READ_FRAMEBUFFER_EXT, globalFramebuffers.hdrFBO->GetFramebuffer() );
-			glBindFramebuffer( GL_DRAW_FRAMEBUFFER_EXT, globalFramebuffers.hdr64FBO->GetFramebuffer() );
-			glBlitFramebuffer( 0, 0, renderSystem->GetWidth(), renderSystem->GetHeight(),
-							   0, 0, 64, 64,
-							   GL_COLOR_BUFFER_BIT,
-							   GL_LINEAR );
+			if (glConfig.directStateAccess) {
+				glBlitNamedFramebuffer(globalFramebuffers.hdrFBO->GetFramebuffer(), globalFramebuffers.hdr64FBO->GetFramebuffer(),
+					0, 0, renderSystem->GetWidth(), renderSystem->GetHeight(),
+					0, 0, 64, 64,
+					GL_COLOR_BUFFER_BIT,
+					GL_LINEAR);
+			}
+			else {
+				glBindFramebuffer(GL_READ_FRAMEBUFFER_EXT, globalFramebuffers.hdrFBO->GetFramebuffer());
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER_EXT, globalFramebuffers.hdr64FBO->GetFramebuffer());
+				glBlitFramebuffer(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight(),
+					0, 0, 64, 64,
+					GL_COLOR_BUFFER_BIT,
+					GL_LINEAR);
+			}
 		}
 		
 		CalculateAutomaticExposure();
