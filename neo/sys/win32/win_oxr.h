@@ -51,6 +51,12 @@ public:
 	virtual bool IsInitialized() {
 		return isInitialized;
 	}
+	virtual bool isFOVmutable() {
+		if (isInitialized) {
+			return viewProperties.fovMutable;
+		}
+		return false;
+	}
 private:
 	XrInstance instance = {};
 	std::vector<const char*> activeAPILayers = {};
@@ -120,4 +126,5 @@ private:
 	uint32_t width = 0;
 	uint32_t height = 0;
 	bool isInitialized = false;
+	XrViewConfigurationProperties viewProperties;
 };

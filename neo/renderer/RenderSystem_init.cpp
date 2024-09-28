@@ -2379,8 +2379,17 @@ void idRenderSystemLocal::Init()
 	
 	UpdateStereo3DMode();
 #ifdef USE_OPENXR
-	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR) {
+	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR && !xrSystem->IsInitialized()) {
 		xrSystem->InitXR();
+		r_customWidth.SetInteger(xrSystem->GetWidth());
+		r_customHeight.SetInteger(xrSystem->GetHeight());
+		if (!xrSystem->isFOVmutable()) {
+			game->SetCVarInteger("stereoRender_convergence", 6);
+			game->SetCVarInteger("stereoRender_interOccularCentimeters", -90);
+		}
+		else {
+			game->SetCVarInteger("stereoRender_convergence", 0);
+		}
 		
 	}
 #endif

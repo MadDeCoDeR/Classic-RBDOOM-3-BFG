@@ -179,9 +179,9 @@ void idXR_Win::BindSwapchainImage(int eye)
 			common->Warning("OpenXR Error: Failed to wait for Image for Depth Swapchain\n");
 			return;
 		}*/
-
+		XrFovf customFov = { -0.750491619f, 0.785398185f, 0.837758064f, -0.872664630f };
 		layers[renderingEye] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
-		layers[renderingEye].fov = { -0.750491619f, 0.785398185f, 0.837758064f, -0.872664630f }; //views[renderingEye].fov;
+		layers[renderingEye].fov = viewProperties.fovMutable == true ? customFov : views[renderingEye].fov;
 		layers[renderingEye].pose = views[renderingEye].pose;
 		layers[renderingEye].subImage.swapchain = renderingColorSwapchainInfo.swapchain;
 		layers[renderingEye].subImage.imageRect.offset.x = 0;
@@ -240,13 +240,13 @@ void idXR_Win::EndFrame()
 		XrFrameEndInfo frameEndInfo{ XR_TYPE_FRAME_END_INFO };
 		frameEndInfo.displayTime = predictedDisplayTime;
 		frameEndInfo.environmentBlendMode = environmentBlendMode;
-
+		std::vector<XrCompositionLayerBaseHeader*> renderLayers;
 		XrCompositionLayerProjection projection = { XR_TYPE_COMPOSITION_LAYER_PROJECTION };
 		projection.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT | XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT;
 		projection.space = localSpace;
 		projection.viewCount = layers.size();
 		projection.views = layers.data();
-		std::vector<XrCompositionLayerBaseHeader*> renderLayers;
+			
 		renderLayers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&projection));
 
 
@@ -468,6 +468,17 @@ void idXR_Win::InitXR() {
 		}
 	}
 
+	width = 2244;
+	height = 2352;
+
+	viewProperties = { XR_TYPE_VIEW_CONFIGURATION_PROPERTIES };
+	if (xrGetViewConfigurationProperties(instance, systemId, viewConfiguration, &viewProperties) == XR_SUCCESS) {
+		if (!viewProperties.fovMutable) {
+			width = configurationView[0].recommendedImageRectWidth; 
+			height = configurationView[0].recommendedImageRectHeight;
+		}
+	}
+
 	//Create a Session
 	XrSessionCreateInfo sci{ XR_TYPE_SESSION_CREATE_INFO };
 	sci.next = GetOpenXRGraphicsBinding();
@@ -529,8 +540,7 @@ void idXR_Win::InitXR() {
 	colorSwapchainInfo.resize(configurationView.size());
 	depthSwapchainInfo.resize(configurationView.size());
 
-	width = 2244;//configurationView[0].recommendedImageRectWidth; //2244
-	height = 2352;//configurationView[0].recommendedImageRectHeight; //2352
+	
 
 	for (int i = 0; i < configurationView.size(); i++) {
 		XrSwapchainCreateInfo swci{ XR_TYPE_SWAPCHAIN_CREATE_INFO };
