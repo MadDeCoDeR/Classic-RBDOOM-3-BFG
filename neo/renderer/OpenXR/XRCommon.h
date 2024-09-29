@@ -31,7 +31,7 @@
 
 class idXR {
 public:
-	virtual void InitXR() = 0;
+	virtual bool InitXR() = 0;
 	virtual void ShutDownXR() = 0;
 	virtual void PollXREvents() = 0;
 	virtual void StartFrame() = 0;

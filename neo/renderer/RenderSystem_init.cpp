@@ -294,6 +294,7 @@ idCVar r_aspectcorrect("r_aspectcorrect", "0", CVAR_RENDERER | CVAR_ARCHIVE | CV
 idCVar r_clight("r_clight", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER | CVAR_INIT, "0 = original, 1 = Dark, 2 = Bright"); //GK: Special cvar for classic DOOM Light
 idCVar r_clblurry("r_clblurry", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL | CVAR_INIT, "Enables/Disbles Classic DOOM Blurry effects");//GK: Useless since the new Rendering Code of 1.2.0
 extern idCVar swf_cursorDPI;
+extern idCVar cl_HUD;
 //GK end
 const char* fileExten[3] = { "tga", "png", "jpg" };
 const char* envDirection[6] = { "_px", "_nx", "_py", "_ny", "_pz", "_nz" };
@@ -2380,15 +2381,19 @@ void idRenderSystemLocal::Init()
 	UpdateStereo3DMode();
 #ifdef USE_OPENXR
 	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR && !xrSystem->IsInitialized()) {
-		xrSystem->InitXR();
-		r_customWidth.SetInteger(xrSystem->GetWidth());
-		r_customHeight.SetInteger(xrSystem->GetHeight());
-		if (!xrSystem->isFOVmutable()) {
-			game->SetCVarInteger("stereoRender_convergence", 6);
-			game->SetCVarInteger("stereoRender_interOccularCentimeters", -90);
+		if (xrSystem->InitXR()) {
+			r_fullscreen.SetInteger(0);
+			cl_HUD.SetBool(true);
+			if (!xrSystem->isFOVmutable()) {
+				game->SetCVarInteger("stereoRender_convergence", 6);
+				game->SetCVarInteger("stereoRender_interOccularCentimeters", -90);
+			}
+			else {
+				game->SetCVarInteger("stereoRender_convergence", 0);
+			}
 		}
 		else {
-			game->SetCVarInteger("stereoRender_convergence", 0);
+			xrSystem->ShutDownXR();
 		}
 		
 	}

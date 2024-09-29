@@ -48,7 +48,7 @@ struct PS_OUT {
 };
 
 void main( PS_IN fragment, out PS_OUT result ) {
-    const float screenWarp_range   = 1.85;
+    const float screenWarp_range   = 2.05;
 
     const float2    warpCenter = float2( 0.5, 0.5 );
     float2    centeredTexcoord = fragment.texcoord0.xy - warpCenter;

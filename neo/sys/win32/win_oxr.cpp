@@ -116,7 +116,7 @@ void idXR_Win::StartFrame()
 		XrFrameWaitInfo frameWaitInfo{ XR_TYPE_FRAME_WAIT_INFO };
 		XrResult waitRes = xrWaitFrame(session, &frameWaitInfo, &frameState);
 		if (waitRes != XR_SUCCESS && waitRes != XR_SESSION_LOSS_PENDING) {
-			common->Warning("OpenXR Error: Failed to wait for Frame\n");
+			common->Warning("OpenXR Error: Failed to wait for Frame");
 			return;
 		}
 
@@ -125,7 +125,7 @@ void idXR_Win::StartFrame()
 		XrFrameBeginInfo frameBeginInfo{ XR_TYPE_FRAME_BEGIN_INFO };
 		XrResult beginRes = xrBeginFrame(session, &frameBeginInfo);
 		if (beginRes != XR_SUCCESS && beginRes != XR_SESSION_LOSS_PENDING && beginRes != XR_FRAME_DISCARDED) {
-			common->Warning("OpenXR Error: Failed to begin Frame\n");
+			common->Warning("OpenXR Error: Failed to begin Frame");
 			return;
 		}
 		views.clear();
@@ -140,7 +140,7 @@ void idXR_Win::StartFrame()
 			uint viewCount = 0;
 			XrResult locateResult = xrLocateViews(session, &viewLocateInfo, &viewState, static_cast<uint>(views.size()), &viewCount, views.data());
 			if (locateResult != XR_SUCCESS && locateResult != XR_SESSION_LOSS_PENDING) {
-				common->Warning("OpenXR Error: Failed to Locate Views\n");
+				common->Warning("OpenXR Error: Failed to Locate Views");
 				return;
 			}
 
@@ -161,27 +161,27 @@ void idXR_Win::BindSwapchainImage(int eye)
 		//uint depthIndex = 0;
 		XrSwapchainImageAcquireInfo acquireInfo{ XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO };
 		if (xrAcquireSwapchainImage(renderingColorSwapchainInfo.swapchain, &acquireInfo, &colorIndex) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to acquire Image for Color Swapchain\n");
+			common->Warning("OpenXR Error: Failed to acquire Image for Color Swapchain");
 			return;
 		}
 		/*if (xrAcquireSwapchainImage(renderingDepthSwapchainInfo.swapchain, &acquireInfo, &depthIndex) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to acquire Image for Depth Swapchain\n");
+			common->Warning("OpenXR Error: Failed to acquire Image for Depth Swapchain");
 			return;
 		}*/
 
 		XrSwapchainImageWaitInfo waitInfo = { XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO };
 		waitInfo.timeout = XR_INFINITE_DURATION;
 		if (xrWaitSwapchainImage(renderingColorSwapchainInfo.swapchain, &waitInfo) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to wait for Image for Color Swapchain\n");
+			common->Warning("OpenXR Error: Failed to wait for Image for Color Swapchain");
 			return;
 		}
 		/*if (xrWaitSwapchainImage(renderingDepthSwapchainInfo.swapchain, &waitInfo) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to wait for Image for Depth Swapchain\n");
+			common->Warning("OpenXR Error: Failed to wait for Image for Depth Swapchain");
 			return;
 		}*/
 		XrFovf customFov = { -0.750491619f, 0.785398185f, 0.837758064f, -0.872664630f };
 		layers[renderingEye] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
-		layers[renderingEye].fov = viewProperties.fovMutable == true ? customFov : views[renderingEye].fov;
+		layers[renderingEye].fov = isFOVmutable() == true ? customFov : views[renderingEye].fov;
 		layers[renderingEye].pose = views[renderingEye].pose;
 		layers[renderingEye].subImage.swapchain = renderingColorSwapchainInfo.swapchain;
 		layers[renderingEye].subImage.imageRect.offset.x = 0;
@@ -254,7 +254,7 @@ void idXR_Win::EndFrame()
 		frameEndInfo.layers = renderLayers.data();
 		XrResult endFrameRes = xrEndFrame(session, &frameEndInfo);
 		if (endFrameRes != XR_SUCCESS && endFrameRes != XR_SESSION_LOSS_PENDING) {
-			common->Warning("OpenXR Error: Failed to End Frame\n");
+			common->Warning("OpenXR Error: Failed to End Frame");
 			return;
 		}
 		inFrame = false;
@@ -326,7 +326,7 @@ void* idXR_Win::CreateFrameBuffer(const FrameBufferCreateInfo& FbCI)
 
 
 
-void idXR_Win::InitXR() {
+bool idXR_Win::InitXR() {
 	XrApplicationInfo XRAppInfo;
 	strncpy(XRAppInfo.applicationName, "DOOM BFA\0", 9);
 	XRAppInfo.apiVersion = XR_CURRENT_API_VERSION;
@@ -341,46 +341,55 @@ void idXR_Win::InitXR() {
 
 	uint apiLayerCount = 0;
 	std::vector<XrApiLayerProperties> apiLayerProperties;
-	if (xrEnumerateApiLayerProperties(0, &apiLayerCount, nullptr) == XR_SUCCESS) {
-		apiLayerProperties.resize(apiLayerCount, { XR_TYPE_API_LAYER_PROPERTIES });
-		if (xrEnumerateApiLayerProperties(apiLayerCount, &apiLayerCount, apiLayerProperties.data()) == XR_SUCCESS) {
-			for (std::string& requestLayer : APILayers) {
-				for (XrApiLayerProperties& layerProperty : apiLayerProperties) {
-					if (idStr::Icmp(requestLayer.c_str(), layerProperty.layerName)) {
-						continue;
-					}
-					else {
-						activeAPILayers.push_back(requestLayer.c_str());
-						break;
-					}
-				}
+	if (xrEnumerateApiLayerProperties(0, &apiLayerCount, nullptr) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to enumerate App Layer Properties");
+		return false;
+	}
+	apiLayerProperties.resize(apiLayerCount, { XR_TYPE_API_LAYER_PROPERTIES });
+	if (xrEnumerateApiLayerProperties(apiLayerCount, &apiLayerCount, apiLayerProperties.data()) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to retrieve App Layer Properties");
+		return false;
+	}
+	for (std::string& requestLayer : APILayers) {
+		for (XrApiLayerProperties& layerProperty : apiLayerProperties) {
+			if (idStr::Icmp(requestLayer.c_str(), layerProperty.layerName)) {
+				continue;
+			}
+			else {
+				activeAPILayers.push_back(requestLayer.c_str());
+				break;
 			}
 		}
 	}
 
 	uint extensionCount = 0;
 	std::vector<XrExtensionProperties> extensionProperties;
-	if (xrEnumerateInstanceExtensionProperties(nullptr, 0, &extensionCount, nullptr) == XR_SUCCESS) {
-		extensionProperties.resize(extensionCount, { XR_TYPE_EXTENSION_PROPERTIES });
-		if (xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()) == XR_SUCCESS) {
-			for (std::string& requestExtension : extensions) {
-				bool found = false;
-				for (XrExtensionProperties& extensionProperty : extensionProperties) {
-					if (idStr::Icmp(requestExtension.c_str(), extensionProperty.extensionName)) {
-						continue;
-					}
-					else {
-						activeExtensions.push_back(requestExtension.c_str());
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					common->Warning("Failed to find OpenXR Extension: %s\n", requestExtension.c_str());
-				}
+	if (xrEnumerateInstanceExtensionProperties(nullptr, 0, &extensionCount, nullptr) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to enumerate Instance Extension Properties");
+		return false;
+	}
+	extensionProperties.resize(extensionCount, { XR_TYPE_EXTENSION_PROPERTIES });
+	if (xrEnumerateInstanceExtensionProperties(nullptr, extensionCount, &extensionCount, extensionProperties.data()) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to retrieve Instance Extension Properties");
+		return false;
+	}
+	for (std::string& requestExtension : extensions) {
+		bool found = false;
+		for (XrExtensionProperties& extensionProperty : extensionProperties) {
+			if (idStr::Icmp(requestExtension.c_str(), extensionProperty.extensionName)) {
+				continue;
+			}
+			else {
+				activeExtensions.push_back(requestExtension.c_str());
+				found = true;
+				break;
 			}
 		}
+		if (!found) {
+			common->Warning("Failed to find OpenXR Extension: %s", requestExtension.c_str());
+		}
 	}
+	
 
 	XrInstanceCreateInfo ici{ XR_TYPE_INSTANCE_CREATE_INFO };
 	ici.createFlags = 0;
@@ -396,16 +405,19 @@ void idXR_Win::InitXR() {
 		result = xrCreateInstance(&ici, &instance);
 	}
 	if (result != XR_SUCCESS) {
-		common->Warning("Failed to initiate OpenXR\n");
-		return;
+		common->Warning("OpenXR Error: Failed to initiate Instace");
+		return false;
 	}
 
 	XrInstanceProperties instanceProperties{ XR_TYPE_INSTANCE_PROPERTIES };
-	if (xrGetInstanceProperties(instance, &instanceProperties) == XR_SUCCESS) {
-		char* xrVersion = new char[20];
-		sprintf(xrVersion, "%d.%d.%d", XR_VERSION_MAJOR(instanceProperties.runtimeVersion), XR_VERSION_MINOR(instanceProperties.runtimeVersion), XR_VERSION_PATCH(instanceProperties.runtimeVersion));
-		common->Printf("OpenXR Have been initialized\n------------------------------------------------\nRuntime Name: %s\nRuntime Version: %s\n------------------------------------------------\n", instanceProperties.runtimeName, xrVersion);
+	if (xrGetInstanceProperties(instance, &instanceProperties) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to retrieve Instace Properties");
+		return false;
 	}
+	char* xrVersion = new char[20];
+	sprintf(xrVersion, "%d.%d.%d", XR_VERSION_MAJOR(instanceProperties.runtimeVersion), XR_VERSION_MINOR(instanceProperties.runtimeVersion), XR_VERSION_PATCH(instanceProperties.runtimeVersion));
+	common->Printf("OpenXR Have been initialized\n------------------------------------------------\nRuntime Name: %s\nRuntime Version: %s\n------------------------------------------------\n", instanceProperties.runtimeName, xrVersion);
+	
 #ifdef _DEBUG
 	if (std::find(activeExtensions.begin(), activeExtensions.end(), XR_EXT_DEBUG_UTILS_EXTENSION_NAME) != activeExtensions.end()) {
 		XrDebugUtilsMessengerCreateInfoEXT dmci{ XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT };
@@ -418,6 +430,7 @@ void idXR_Win::InitXR() {
 		if (xrGetInstanceProcAddr(instance, "xrCreateDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrCreateDebugUtils) == XR_SUCCESS) {
 			if (xrCreateDebugUtils(instance, &dmci, &debugMessager) != XR_SUCCESS) {
 				common->Warning("OpenXR Error: Failed to create Debug Messenger");
+				return false;
 			}
 		}
 	}
@@ -427,9 +440,11 @@ void idXR_Win::InitXR() {
 	systemGI.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 	if (xrGetSystem(instance, &systemGI, &systemId) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to retrieve SystemId");
+		return false;
 	}
 	if (xrGetSystemProperties(instance, systemId, &systemProperties) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to retrieve System properties");
+		return false;
 	}
 	common->Printf("OpenXR Compatible System Havebeen Found\n------------------------------------------------\nVendor: %d\nSystem: %s\n------------------------------------------------\n", systemProperties.vendorId, systemProperties.systemName);
 
@@ -439,6 +454,7 @@ void idXR_Win::InitXR() {
 	if (xrGetInstanceProcAddr(instance, "xrGetOpenGLGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&xrGetOpenGLGraphicsRequirementsKHR) == XR_SUCCESS) {
 		if (xrGetOpenGLGraphicsRequirementsKHR(instance, systemId, &requirements) != XR_SUCCESS) {
 			common->Warning("OpenXR Error: Failed to Retrieve Graphic Requirements");
+			return false;
 		}
 	}
 
@@ -447,6 +463,7 @@ void idXR_Win::InitXR() {
 		viewConfigurations.resize(viewConfigurationCount);
 		if (xrEnumerateViewConfigurations(instance, systemId, viewConfigurationCount, &viewConfigurationCount, viewConfigurations.data()) != XR_SUCCESS) {
 			common->Warning("OpenXR Error: Failed to Enumerate View Configurations");
+			return false;
 		}
 	}
 
@@ -465,6 +482,7 @@ void idXR_Win::InitXR() {
 		configurationView.resize(viewConfigurationCount, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
 		if (xrEnumerateViewConfigurationViews(instance, systemId, viewConfiguration, viewConfigurationCount, &viewConfigurationCount, configurationView.data()) != XR_SUCCESS) {
 			common->Warning("OpenXR Error: Failed to Enumerate View Configuration Views");
+			return false;
 		}
 	}
 
@@ -486,6 +504,7 @@ void idXR_Win::InitXR() {
 	sci.systemId = systemId;
 	if (xrCreateSession(instance, &sci, &session) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to create Session");
+		return false;
 	}
 
 	XrReferenceSpaceCreateInfo referenceSpaceCI{ XR_TYPE_REFERENCE_SPACE_CREATE_INFO };
@@ -493,30 +512,29 @@ void idXR_Win::InitXR() {
 	referenceSpaceCI.poseInReferenceSpace = { {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f} };
 	if (xrCreateReferenceSpace(session, &referenceSpaceCI, &localSpace) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to create Reference Space");
+		return false;
 	}
 
 	uint formatCount = 0;
 	if (xrEnumerateSwapchainFormats(session, 0, &formatCount, nullptr) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to Initiate the enumeration for Swapchain Formats");
+		return false;
 	}
 	std::vector<int64> formats(formatCount);
 	if (xrEnumerateSwapchainFormats(session, formatCount, &formatCount, formats.data()) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to Enumerate Swapchain Formats");
+		return false;
 	}
 
 	std::vector<int64> supportedColorFormats = {
-		GL_RGBA16_SNORM,
-		GL_RGBA8_SNORM,
-		GL_RGB10_A2,
-		GL_RGBA16F,
-		GL_RGBA8,
-		GL_SRGB8
+		GL_SRGB8_ALPHA8
 	};
 	int64 colorFormat = 0;
 	std::vector<int64>::const_iterator colorFormatIterator = std::find_first_of(formats.begin(), formats.end(), supportedColorFormats.begin(), supportedColorFormats.end());
 
 	if (colorFormatIterator == formats.end()) {
 		common->Warning("OpenXR Error: Failed to find Color Format");
+		return false;
 	}
 	else {
 		colorFormat = *colorFormatIterator;
@@ -532,6 +550,7 @@ void idXR_Win::InitXR() {
 	std::vector<int64>::const_iterator depthFormatIterator = std::find_first_of(formats.begin(), formats.end(), supportedDepthFormats.begin(), supportedDepthFormats.end());
 	if (depthFormatIterator == formats.end()) {
 		common->Warning("OpenXR Error: Failed to find Depth Format");
+		return false;
 	}
 	else {
 		depthFormat = *depthFormatIterator;
@@ -555,6 +574,7 @@ void idXR_Win::InitXR() {
 		swci.mipCount = 1;
 		if (xrCreateSwapchain(session, &swci, &colorSwapchainInfo[i].swapchain) != XR_SUCCESS) {
 			common->Warning("OpenXR Error: Failed to Create Color Swapchain");
+			return false;
 		}
 
 		swci.createFlags = 0;
@@ -568,6 +588,7 @@ void idXR_Win::InitXR() {
 		swci.mipCount = 1;
 		if (xrCreateSwapchain(session, &swci, &depthSwapchainInfo[i].swapchain) != XR_SUCCESS) {
 			common->Warning("OpenXR Error: Failed to Create Depth Swapchain");
+			return false;
 		}
 
 		uint colorSwapchainImageCount = this->EnumerateSwapchainImage(colorSwapchainInfo, idXRSwapchainType::COLOR, i);
@@ -617,56 +638,56 @@ void idXR_Win::InitXR() {
 	}
 
 	isInitialized = true;
+	return isInitialized;
 }
 
 
 void idXR_Win::ShutDownXR()
 {
-	if (isInitialized) {
-		if (colorSwapchainInfo.size() > 0) {
-			for (int i = 0; i < colorSwapchainInfo.size(); i++) {
-				for (int j = 0; j < colorSwapchainInfo[i].imageViews.size(); j++) {
-					GLuint fbo = (GLuint)(uint64_t)colorSwapchainInfo[i].imageViews[j];
-					glDeleteFramebuffers(1, &fbo);
-				}
-				colorSwapchainInfo[i].imageViews.clear();
-				swapchainImageMap[colorSwapchainInfo[i].swapchain].second.clear();
-				if (xrDestroySwapchain(colorSwapchainInfo[i].swapchain) != XR_SUCCESS) {
-					common->Warning("OpenXR Error: Failed to delete Color Swapchain Image\n");
-				}
+	if (colorSwapchainInfo.size() > 0) {
+		for (int i = 0; i < colorSwapchainInfo.size(); i++) {
+			for (int j = 0; j < colorSwapchainInfo[i].imageViews.size(); j++) {
+				GLuint fbo = (GLuint)(uint64_t)colorSwapchainInfo[i].imageViews[j];
+				glDeleteFramebuffers(1, &fbo);
 			}
-		}
-		if (depthSwapchainInfo.size() > 0) {
-			for (int i = 0; i < depthSwapchainInfo.size(); i++) {
-				for (int j = 0; j < depthSwapchainInfo[i].imageViews.size(); j++) {
-					GLuint fbo = (GLuint)(uint64_t)depthSwapchainInfo[i].imageViews[j];
-					glDeleteFramebuffers(1, &fbo);
-				}
-				depthSwapchainInfo[i].imageViews.clear();
-				swapchainImageMap[depthSwapchainInfo[i].swapchain].second.clear();
-				if (xrDestroySwapchain(depthSwapchainInfo[i].swapchain) != XR_SUCCESS) {
-					common->Warning("OpenXR Error: Failed to delete Depth Swapchain Image\n");
-				}
+			colorSwapchainInfo[i].imageViews.clear();
+			swapchainImageMap[colorSwapchainInfo[i].swapchain].second.clear();
+			if (xrDestroySwapchain(colorSwapchainInfo[i].swapchain) != XR_SUCCESS) {
+				common->Warning("OpenXR Error: Failed to delete Color Swapchain Image");
 			}
-		}
-		swapchainImageMap.clear();
-
-		if (localSpace != XR_NULL_HANDLE && xrDestroySpace(localSpace) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to close OpenXR Space\n");
-		}
-		if (session != XR_NULL_HANDLE && xrDestroySession(session) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to close OpenXR Session\n");
-		}
-#ifdef _DEBUG
-		PFN_xrDestroyDebugUtilsMessengerEXT xrDestroyDebugMessager;
-		if (xrGetInstanceProcAddr(instance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrDestroyDebugMessager) == XR_SUCCESS) {
-			if (debugMessager != XR_NULL_HANDLE && xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
-				common->Warning("OpenXR Error: Failed to Destroy Debug Messenger");
-			}
-		}
-#endif
-		if (instance != XR_NULL_HANDLE && xrDestroyInstance(instance) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to close OpenXR\n");
 		}
 	}
+	if (depthSwapchainInfo.size() > 0) {
+		for (int i = 0; i < depthSwapchainInfo.size(); i++) {
+			for (int j = 0; j < depthSwapchainInfo[i].imageViews.size(); j++) {
+				GLuint fbo = (GLuint)(uint64_t)depthSwapchainInfo[i].imageViews[j];
+				glDeleteFramebuffers(1, &fbo);
+			}
+			depthSwapchainInfo[i].imageViews.clear();
+			swapchainImageMap[depthSwapchainInfo[i].swapchain].second.clear();
+			if (xrDestroySwapchain(depthSwapchainInfo[i].swapchain) != XR_SUCCESS) {
+				common->Warning("OpenXR Error: Failed to delete Depth Swapchain Image");
+			}
+		}
+	}
+	swapchainImageMap.clear();
+
+	if (localSpace != XR_NULL_HANDLE && xrDestroySpace(localSpace) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to close OpenXR Space");
+	}
+	if (session != XR_NULL_HANDLE && xrDestroySession(session) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to close OpenXR Session");
+	}
+#ifdef _DEBUG
+	PFN_xrDestroyDebugUtilsMessengerEXT xrDestroyDebugMessager;
+	if (instance != XR_NULL_HANDLE && xrGetInstanceProcAddr(instance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrDestroyDebugMessager) == XR_SUCCESS) {
+		if (debugMessager != XR_NULL_HANDLE && xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to Destroy Debug Messenger");
+		}
+	}
+#endif
+	if (instance != XR_NULL_HANDLE && xrDestroyInstance(instance) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to close OpenXR");
+	}
+	isInitialized = false;
 }

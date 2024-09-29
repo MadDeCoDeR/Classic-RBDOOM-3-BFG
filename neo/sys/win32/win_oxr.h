@@ -34,7 +34,7 @@
 class idXR_Win :public idXR {
 public:
 	idXR_Win() {}
-	virtual void InitXR();
+	virtual bool InitXR();
 	virtual void ShutDownXR();
 	virtual void PollXREvents();
 	virtual void StartFrame();

@@ -30,6 +30,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 
 #include "RenderCommon.h"
+#include "../doomclassic/doom/doomlib.h"
+#include "../doomclassic/doom/globaldata.h"
 
 const float idGuiModel::STEREO_DEPTH_NEAR = 0.0f;
 const float idGuiModel::STEREO_DEPTH_MID  = 0.5f;
@@ -326,8 +328,9 @@ void idGuiModel::EmitFullScreen()
 	viewDef->worldSpace.modelMatrix[2 * 4 + 2] = 1.0f;
 	viewDef->worldSpace.modelMatrix[3 * 4 + 3] = 1.0f;
 	
+	Globals* classicData = (Globals*)DoomLib::GetGlobalData(0);
 	viewDef->worldSpace.modelViewMatrix[0 * 4 + 0] = 1.0f;
-	viewDef->worldSpace.modelViewMatrix[1 * 4 + 1] = renderSystem->GetStereo3DMode() == STEREO3D_VR? 0.9f : 1.0f;
+	viewDef->worldSpace.modelViewMatrix[1 * 4 + 1] = renderSystem->GetStereo3DMode() == STEREO3D_VR && classicData == NULL? 0.9f : 1.0f;
 	viewDef->worldSpace.modelViewMatrix[2 * 4 + 2] = 1.0f;
 	viewDef->worldSpace.modelViewMatrix[3 * 4 + 3] = 1.0f;
 	
