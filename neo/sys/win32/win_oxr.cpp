@@ -181,7 +181,7 @@ void idXR_Win::BindSwapchainImage(int eye)
 		}*/
 		XrFovf customFov = { -0.750491619f, 0.785398185f, 0.837758064f, -0.872664630f };
 		layers[renderingEye] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
-		layers[renderingEye].fov = isFOVmutable() == true ? customFov : views[renderingEye].fov;
+		layers[renderingEye].fov = isFOVmutable()? customFov : views[renderingEye].fov;
 		layers[renderingEye].pose = views[renderingEye].pose;
 		layers[renderingEye].subImage.swapchain = renderingColorSwapchainInfo.swapchain;
 		layers[renderingEye].subImage.imageRect.offset.x = 0;
