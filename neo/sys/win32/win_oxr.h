@@ -58,6 +58,11 @@ public:
 		return false;
 	}
 private:
+	XrPath StringToXRPath(const char* strPath);
+	idStr XRPathToString(XrPath xrPath);
+	void CreateXrMappings();
+	void CreateAction(XrAction& action, XrActionSet actionSet, const char* name, XrActionType type, std::vector<const char*> subActions = {});
+	void SuggestBindings(const char* profilePath, std::vector<XrActionSuggestedBinding> bindings);
 	XrInstance instance = {};
 	std::vector<const char*> activeAPILayers = {};
 	std::vector<const char*> activeExtensions = {};
@@ -127,4 +132,7 @@ private:
 	uint32_t height = 0;
 	bool isInitialized = false;
 	XrViewConfigurationProperties viewProperties;
+	XrActionSet menuActionSet, gameActionSet;
+	//Menu Actions
+	XrAction menuPointer, menuSelect, menuBack, menuScroll;
 };

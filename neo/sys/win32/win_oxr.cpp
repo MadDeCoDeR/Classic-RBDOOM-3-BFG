@@ -267,6 +267,77 @@ void idXR_Win::EndFrame()
 	
 }
 
+XrPath idXR_Win::StringToXRPath(const char* strPath)
+{
+	XrPath xrPath;
+	if (xrStringToPath(instance, strPath, &xrPath) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Convert String to XrPath");
+	}
+	return xrPath;
+}
+
+idStr idXR_Win::XRPathToString(XrPath xrPath)
+{
+	uint32_t length;
+	char buffer[XR_MAX_PATH_LENGTH];
+	XrResult res = xrPathToString(instance, xrPath, XR_MAX_PATH_LENGTH, &length, buffer);
+	if (res == XR_SUCCESS) {
+		return idStr(buffer);
+	}
+	return idStr();
+}
+
+void idXR_Win::CreateXrMappings()
+{
+	//Menu Action Set
+	XrActionSetCreateInfo xrActCI{ XR_TYPE_ACTION_SET_CREATE_INFO };
+	strncpy(xrActCI.actionSetName, "doom-bfa-menu-action-set", 26);
+	strncpy(xrActCI.localizedActionSetName, "DOOM BFA Menu Action Set", 26);
+	xrActCI.priority = 0;
+	if (xrCreateActionSet(instance, &xrActCI, &menuActionSet) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Create Menu Action Set");
+	}
+	CreateAction(menuPointer, menuActionSet, "menuPointer", XR_ACTION_TYPE_POSE_INPUT, { "/user/hand/left", "/user/hand/right" });
+	CreateAction(menuSelect, menuActionSet, "menuSelect", XR_ACTION_TYPE_BOOLEAN_INPUT, { "/user/hand/left", "/user/hand/right" });
+	CreateAction(menuBack, menuActionSet, "menuBack", XR_ACTION_TYPE_BOOLEAN_INPUT, { "/user/hand/left", "/user/hand/right" });
+	CreateAction(menuScroll, menuActionSet, "menuScroll", XR_ACTION_TYPE_FLOAT_INPUT, { "/user/hand/left", "/user/hand/right" });
+	SuggestBindings("/interaction_profiles/meta/touch_controller_quest_2", { 
+		{menuPointer, StringToXRPath("/user/hand/right/input/aim/pose")},
+		{menuSelect, StringToXRPath("/user/hand/right/input/trigger/value")},
+		{menuBack, StringToXRPath("/user/hand/right/input/b/click")},
+		{menuScroll, StringToXRPath("/user/hand/right/input/thumbstick/y")}
+		});
+
+}
+
+void idXR_Win::CreateAction(XrAction& action, XrActionSet actionSet, const char* name, XrActionType type, std::vector<const char*> subActions)
+{
+	XrActionCreateInfo actCI{ XR_TYPE_ACTION_CREATE_INFO };
+	actCI.actionType = type;
+	std::vector<XrPath> subXrActions;
+	for (const char* subAction : subActions) {
+		subXrActions.push_back(StringToXRPath(subAction));
+	}
+	actCI.countSubactionPaths = (uint32_t)subXrActions.size();
+	actCI.subactionPaths = subXrActions.data();
+	strncpy(actCI.actionName, name, strlen(name));
+	strncpy(actCI.localizedActionName, name, strlen(name));
+	if (xrCreateAction(actionSet, &actCI, &action) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Create Action");
+	}
+}
+
+void idXR_Win::SuggestBindings(const char* profilePath, std::vector<XrActionSuggestedBinding> bindings)
+{
+	XrInteractionProfileSuggestedBinding ipsb{ XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING };
+	ipsb.interactionProfile = StringToXRPath(profilePath);
+	ipsb.suggestedBindings = bindings.data();
+	ipsb.countSuggestedBindings = (uint32_t)bindings.size();
+	if (xrSuggestInteractionProfileBindings(instance, &ipsb) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Create Action");
+	}
+}
+
 uint idXR_Win::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index)
 {
 	uint imageCount = 0;
@@ -454,6 +525,8 @@ bool idXR_Win::InitXR() {
 	common->Printf("OpenXR Compatible System Havebeen Found\n------------------------------------------------\nVendor: %d\nSystem: %s\n------------------------------------------------\n", systemProperties.vendorId, systemProperties.systemName);
 
 	//Required before Creating a Session
+
+
 	XrGraphicsRequirementsOpenGLKHR requirements{ XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR };
 	PFN_xrGetOpenGLGraphicsRequirementsKHR xrGetOpenGLGraphicsRequirementsKHR;
 	if (xrGetInstanceProcAddr(instance, "xrGetOpenGLGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&xrGetOpenGLGraphicsRequirementsKHR) == XR_SUCCESS) {
