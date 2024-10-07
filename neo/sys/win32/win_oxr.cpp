@@ -191,12 +191,17 @@ void idXR_Win::BindSwapchainImage(int eye)
 		layers[renderingEye].subImage.imageArrayIndex = 0;
 
 		glFBO = (GLuint)(uint64_t)colorSwapchainInfo[renderingEye].imageViews[colorIndex];
-		glBindFramebuffer(GL_FRAMEBUFFER, glFBO);
-		glClearColor(0, 0, 0, 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		
-
+		if (glConfig.directStateAccess) {
+			uint clearColor[4] = {0,0,0,0};
+			glClearNamedFramebufferuiv(glFBO, GL_COLOR, 0, clearColor);
+			glClearNamedFramebufferfi(glFBO, GL_DEPTH_STENCIL, 0, 0, 0);
+		}
+		else {
+			glBindFramebuffer(GL_FRAMEBUFFER, glFBO);
+			glClearColor(0, 0, 0, 0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
 		//glClearColor(0, 0, 0, 1);
 	}
 

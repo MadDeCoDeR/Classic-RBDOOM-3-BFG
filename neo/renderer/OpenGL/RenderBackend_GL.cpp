@@ -2185,16 +2185,12 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 			if (xrSystem->IsInitialized()) {
 				xrSystem->PollXREvents();
 				xrSystem->StartFrame();
-				if (xrSystem->isFOVmutable()) {
-					renderProgManager.BindShader_StereoVRWarp();
-				}
+				renderProgManager.BindShader_StereoVRWarp();
 				glScissor(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
 				glClearColor(0, 0, 0, 0);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-				if (xrSystem->isFOVmutable()) {
-					idVec4	color(stereoRender_warpCenterX.GetFloat(), stereoRender_warpCenterY.GetFloat(), stereoRender_warpParmZ.GetFloat(), stereoRender_warpParmW.GetFloat());
-					renderProgManager.SetRenderParm(RENDERPARM_COLOR, color.ToFloatPtr());
-				}
+				idVec4	color(stereoRender_warpCenterX.GetFloat(), stereoRender_warpCenterY.GetFloat(), stereoRender_warpParmZ.GetFloat(), stereoRender_warpParmW.GetFloat());
+				renderProgManager.SetRenderParm(RENDERPARM_COLOR, color.ToFloatPtr());
 				GL_SelectTexture(0);
 				stereoRenderImages[0]->Bind();
 				GL_SelectTexture(1);
@@ -2205,10 +2201,8 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 
 				xrSystem->RenderFrame(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 				xrSystem->ReleaseSwapchainImage();
-				if (xrSystem->isFOVmutable()) {
-					idVec4	color2(stereoRender_warpCenterX.GetFloat(), stereoRender_warpCenterY.GetFloat(), stereoRender_warpParmZ.GetFloat(), stereoRender_warpParmW.GetFloat());
-					renderProgManager.SetRenderParm(RENDERPARM_COLOR, color2.ToFloatPtr());
-				}
+				idVec4	color2(stereoRender_warpCenterX.GetFloat(), stereoRender_warpCenterY.GetFloat(), stereoRender_warpParmZ.GetFloat(), stereoRender_warpParmW.GetFloat());
+				renderProgManager.SetRenderParm(RENDERPARM_COLOR, color2.ToFloatPtr());
 				glScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 				glClearColor(0, 0, 0, 0);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
