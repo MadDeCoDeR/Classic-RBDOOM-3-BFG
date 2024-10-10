@@ -43,6 +43,7 @@ public:
 	virtual uint32_t GetHeight() = 0;
 	virtual bool IsInitialized() = 0;
 	virtual bool isFOVmutable() = 0;
+	virtual void SetActionSet(idStr name) = 0;
 	enum class idXRSwapchainType : uint8{
 		COLOR,
 		DEPTH

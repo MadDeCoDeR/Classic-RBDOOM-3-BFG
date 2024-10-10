@@ -23,6 +23,7 @@
 */
 #include "precompiled.h"
 #include "win_oxr.h"
+#include "win_local.h"
 
 idXR_Win xrWinSystem;
 idXR* xrSystem = &xrWinSystem;
@@ -145,6 +146,7 @@ void idXR_Win::StartFrame()
 			}
 
 			layers.resize(viewCount, { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW });
+			PollActions();
 		}
 		inFrame = frameState.shouldRender && activeSession;
 	}
@@ -267,6 +269,15 @@ void idXR_Win::EndFrame()
 	
 }
 
+void idXR_Win::SetActionSet(idStr name)
+{
+	for (idXrActionSet actionSet : actionSets) {
+		if (!actionSet.name.Cmp(name.c_str())) {
+			expectedActionSet = actionSet.name;
+		}
+	}
+}
+
 XrPath idXR_Win::StringToXRPath(const char* strPath)
 {
 	XrPath xrPath;
@@ -289,29 +300,46 @@ idStr idXR_Win::XRPathToString(XrPath xrPath)
 
 void idXR_Win::CreateXrMappings()
 {
+	handPaths.push_back(StringToXRPath("/user/hand/left"));
+	handPaths.push_back(StringToXRPath("/user/hand/right"));
 	//Menu Action Set
+	idXrActionSet menuActionSet;
+	XrActionSet mActionSet;
+	menuActionSet.name = "MENU";
+	menuActionSet.actionSet = mActionSet;
 	XrActionSetCreateInfo xrActCI{ XR_TYPE_ACTION_SET_CREATE_INFO };
 	strncpy(xrActCI.actionSetName, "doom-bfa-menu-action-set", 26);
 	strncpy(xrActCI.localizedActionSetName, "DOOM BFA Menu Action Set", 26);
 	xrActCI.priority = 0;
-	if (xrCreateActionSet(instance, &xrActCI, &menuActionSet) != XR_SUCCESS) {
+	if (xrCreateActionSet(instance, &xrActCI, &menuActionSet.actionSet) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to Create Menu Action Set");
 	}
-	CreateAction(menuPointer, menuActionSet, "menuPointer", XR_ACTION_TYPE_POSE_INPUT, { "/user/hand/left", "/user/hand/right" });
-	CreateAction(menuSelect, menuActionSet, "menuSelect", XR_ACTION_TYPE_BOOLEAN_INPUT, { "/user/hand/left", "/user/hand/right" });
-	CreateAction(menuBack, menuActionSet, "menuBack", XR_ACTION_TYPE_BOOLEAN_INPUT, { "/user/hand/left", "/user/hand/right" });
-	CreateAction(menuScroll, menuActionSet, "menuScroll", XR_ACTION_TYPE_FLOAT_INPUT, { "/user/hand/left", "/user/hand/right" });
+	menuActionSet.actions = {};
+	idXrAction menuPointer = CreateAction(menuActionSet.actionSet, "menuPointer", XR_ACTION_TYPE_POSE_INPUT, K_NONE, { "/user/hand/left", "/user/hand/right" });
+	idXrAction menuSelect = CreateAction(menuActionSet.actionSet, "menuSelect", XR_ACTION_TYPE_BOOLEAN_INPUT, K_JOY1, { "/user/hand/left", "/user/hand/right" });
+	idXrAction menuBack = CreateAction(menuActionSet.actionSet, "menuBack", XR_ACTION_TYPE_BOOLEAN_INPUT, K_JOY2, { "/user/hand/left", "/user/hand/right" });
+	idXrAction menuScroll = CreateAction(menuActionSet.actionSet, "menuScroll", XR_ACTION_TYPE_FLOAT_INPUT, J_AXIS_LEFT_Y, { "/user/hand/left", "/user/hand/right" });
 	SuggestBindings("/interaction_profiles/meta/touch_controller_quest_2", { 
-		{menuPointer, StringToXRPath("/user/hand/right/input/aim/pose")},
-		{menuSelect, StringToXRPath("/user/hand/right/input/trigger/value")},
-		{menuBack, StringToXRPath("/user/hand/right/input/b/click")},
-		{menuScroll, StringToXRPath("/user/hand/right/input/thumbstick/y")}
+		{menuPointer.action, StringToXRPath("/user/hand/right/input/aim/pose")},
+		{menuSelect.action, StringToXRPath("/user/hand/right/input/trigger/value")},
+		{menuBack.action, StringToXRPath("/user/hand/right/input/b/click")},
+		{menuScroll.action, StringToXRPath("/user/hand/right/input/thumbstick/y")}
 		});
+	menuActionSet.actions.push_back(menuPointer);
+	menuActionSet.actions.push_back(menuSelect);
+	menuActionSet.actions.push_back(menuBack);
+	menuActionSet.actions.push_back(menuScroll);
 
 }
 
-void idXR_Win::CreateAction(XrAction& action, XrActionSet actionSet, const char* name, XrActionType type, std::vector<const char*> subActions)
+idXR_Win::idXrAction idXR_Win::CreateAction(XrActionSet actionSet, const char* name, XrActionType type, uint32_t mappedKey, std::vector<const char*> subActions)
 {
+	idXrAction action;
+	XrAction mAction;
+	action.name = name;
+	action.type = type;
+	action.action = mAction;
+	action.mappedKey = mappedKey;
 	XrActionCreateInfo actCI{ XR_TYPE_ACTION_CREATE_INFO };
 	actCI.actionType = type;
 	std::vector<XrPath> subXrActions;
@@ -322,9 +350,10 @@ void idXR_Win::CreateAction(XrAction& action, XrActionSet actionSet, const char*
 	actCI.subactionPaths = subXrActions.data();
 	strncpy(actCI.actionName, name, strlen(name));
 	strncpy(actCI.localizedActionName, name, strlen(name));
-	if (xrCreateAction(actionSet, &actCI, &action) != XR_SUCCESS) {
+	if (xrCreateAction(actionSet, &actCI, &action.action) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to Create Action");
 	}
+	return action;
 }
 
 void idXR_Win::SuggestBindings(const char* profilePath, std::vector<XrActionSuggestedBinding> bindings)
@@ -335,6 +364,137 @@ void idXR_Win::SuggestBindings(const char* profilePath, std::vector<XrActionSugg
 	ipsb.countSuggestedBindings = (uint32_t)bindings.size();
 	if (xrSuggestInteractionProfileBindings(instance, &ipsb) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to Create Action");
+	}
+}
+
+XrSpace idXR_Win::CreateActionPoseSpace(XrAction action, const char* subPath)
+{
+	XrSpace space;
+	const XrPosef poseId = { {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f} };
+	XrActionSpaceCreateInfo asCI{ XR_TYPE_ACTION_SPACE_CREATE_INFO };
+	asCI.action = action;
+	asCI.poseInActionSpace = poseId;
+	if (subPath) {
+		asCI.subactionPath = StringToXRPath(subPath);
+	}
+	if (xrCreateActionSpace(session, &asCI, &space) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Create Action Space");
+	}
+	return space;
+}
+
+void idXR_Win::FinalizeActions()
+{
+	idXrActionSet menuActionSet = GetActionSetByName("MENU");
+	idXrAction menuPointer = GetActionByName("MENU", "menuPointer");
+	handPoseSpace.push_back(CreateActionPoseSpace(menuPointer.action, "/user/hand/left"));
+	handPoseSpace.push_back(CreateActionPoseSpace(menuPointer.action, "/user/hand/right"));
+	XrSessionActionSetsAttachInfo sasaI{ XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO };
+	sasaI.countActionSets = 1;
+	sasaI.actionSets = &menuActionSet.actionSet;
+	if (xrAttachSessionActionSets(session, &sasaI) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Attach Action Sets");
+	}
+
+}
+
+void idXR_Win::PollActions()
+{
+	idXrActionSet expectedIdActionSet = GetActionSetByName(expectedActionSet);
+	XrActiveActionSet activeActionSet{};
+	activeActionSet.actionSet = expectedIdActionSet.actionSet;
+	activeActionSet.subactionPath = XR_NULL_PATH;
+	XrActionsSyncInfo actionSyncInfo{ XR_TYPE_ACTIONS_SYNC_INFO };
+	actionSyncInfo.activeActionSets = &activeActionSet;
+	actionSyncInfo.countActiveActionSets = 1;
+	if (xrSyncActions(session, &actionSyncInfo) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Sync Action Sets");
+	}
+	for (idXrAction action : expectedIdActionSet.actions) {
+		RetrieveActionState(action);
+		MapActionStateToUsrCmd(action);
+	}
+}
+
+void idXR_Win::RetrieveActionState(idXrAction action)
+{
+	XrActionStateGetInfo actionStateGI{ XR_TYPE_ACTION_STATE_GET_INFO };
+	actionStateGI.action = action.action;
+	for (int i = 0; i < 2; i++) {
+		actionStateGI.subactionPath = handPaths[i];
+		XrResult res;
+		switch (action.type) {
+		case XR_ACTION_TYPE_POSE_INPUT: {
+			res = xrGetActionStatePose(session, &actionStateGI, &action.poseState[i]);
+			if (res == XR_SUCCESS && action.poseState[i].isActive) {
+				XrSpaceLocation handLocation{ XR_TYPE_SPACE_LOCATION };
+				res = xrLocateSpace(handPoseSpace[i], localSpace, predictedDisplayTime, &handLocation);
+				if (XR_UNQUALIFIED_SUCCESS(res) &&
+					(handLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0 &&
+					(handLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0) {
+					handPose[i] = handLocation.pose;
+				}
+				else {
+					action.poseState[i].isActive = false;
+				}
+			}
+			break;
+		}
+		case XR_ACTION_TYPE_BOOLEAN_INPUT:
+			res = xrGetActionStateBoolean(session, &actionStateGI, &action.booleanState[i]);
+			break;
+		case XR_ACTION_TYPE_FLOAT_INPUT:
+			res = xrGetActionStateFloat(session, &actionStateGI, &action.floatState[i]);
+			break;
+		case XR_ACTION_TYPE_VECTOR2F_INPUT:
+			res = xrGetActionStateVector2f(session, &actionStateGI, &action.vector2fState[i]);
+			break;
+		}
+	}
+
+}
+
+idXR_Win::idXrAction idXR_Win::GetActionByName(idStr setName, idStr name)
+{
+	for (idXrActionSet actionSet : actionSets) {
+		if (!actionSet.name.Cmp(setName)) {
+			for (idXrAction action : actionSet.actions) {
+				if (!action.name.Cmp(name)) {
+					return action;
+				}
+			}
+		}
+	}
+}
+
+idXR_Win::idXrActionSet idXR_Win::GetActionSetByName(idStr setName)
+{
+	for (idXrActionSet actionSet : actionSets) {
+		if (!actionSet.name.Cmp(setName)) {
+			return actionSet;
+		}
+	}
+}
+
+void idXR_Win::MapActionStateToUsrCmd(idXrAction action)
+{
+	for (int i = 0; i < 2; i++) {
+		switch (action.type) {
+			case XR_ACTION_TYPE_POSE_INPUT:
+			{
+				Sys_QueEvent(SE_MOUSE, handPose[i].position.x, 0, 0, NULL, 0);
+				Sys_QueEvent(SE_MOUSE, handPose[i].position.y, 0, 0, NULL, 0);
+				break;
+			}
+			case XR_ACTION_TYPE_BOOLEAN_INPUT:
+				Sys_QueEvent(SE_KEY, action.mappedKey, action.booleanState[i].currentState, 0, NULL, 0);
+				break;
+			case XR_ACTION_TYPE_FLOAT_INPUT: {
+				Sys_QueEvent(SE_JOYSTICK, action.mappedKey, action.floatState[i].currentState, 0, NULL, 0);
+				break;
+			}
+
+		}
 	}
 }
 
@@ -526,7 +686,7 @@ bool idXR_Win::InitXR() {
 
 	//Required before Creating a Session
 
-
+	CreateXrMappings();
 	XrGraphicsRequirementsOpenGLKHR requirements{ XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR };
 	PFN_xrGetOpenGLGraphicsRequirementsKHR xrGetOpenGLGraphicsRequirementsKHR;
 	if (xrGetInstanceProcAddr(instance, "xrGetOpenGLGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&xrGetOpenGLGraphicsRequirementsKHR) == XR_SUCCESS) {
@@ -584,6 +744,8 @@ bool idXR_Win::InitXR() {
 		common->Warning("OpenXR Error: Failed to create Session");
 		return false;
 	}
+
+	FinalizeActions();
 
 	XrReferenceSpaceCreateInfo referenceSpaceCI{ XR_TYPE_REFERENCE_SPACE_CREATE_INFO };
 	referenceSpaceCI.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;

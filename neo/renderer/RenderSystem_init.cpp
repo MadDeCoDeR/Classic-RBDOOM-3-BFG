@@ -2385,6 +2385,7 @@ void idRenderSystemLocal::Init()
 		if (xrSystem->InitXR()) {
 			r_fullscreen.SetInteger(0);
 			cl_HUD.SetBool(true);
+			xrSystem->SetActionSet("MENU");
 			if (!xrSystem->isFOVmutable()) {
 				game->SetCVarInteger("stereoRender_convergence", 6);
 				game->SetCVarInteger("stereoRender_interOccularCentimeters", 900);

@@ -57,12 +57,9 @@ public:
 		}
 		return false;
 	}
+	virtual void SetActionSet(idStr name);
 private:
-	XrPath StringToXRPath(const char* strPath);
-	idStr XRPathToString(XrPath xrPath);
-	void CreateXrMappings();
-	void CreateAction(XrAction& action, XrActionSet actionSet, const char* name, XrActionType type, std::vector<const char*> subActions = {});
-	void SuggestBindings(const char* profilePath, std::vector<XrActionSuggestedBinding> bindings);
+	
 	XrInstance instance = {};
 	std::vector<const char*> activeAPILayers = {};
 	std::vector<const char*> activeExtensions = {};
@@ -132,7 +129,37 @@ private:
 	uint32_t height = 0;
 	bool isInitialized = false;
 	XrViewConfigurationProperties viewProperties;
-	XrActionSet menuActionSet, gameActionSet;
-	//Menu Actions
-	XrAction menuPointer, menuSelect, menuBack, menuScroll;
+	struct idXrAction {
+		idStr name;
+		XrAction action;
+		XrActionType type;
+		uint32_t mappedKey = K_NONE;
+		XrActionStatePose poseState[2] = { {XR_TYPE_ACTION_STATE_POSE}, {XR_TYPE_ACTION_STATE_POSE} };
+		XrActionStateBoolean booleanState[2] = { {XR_TYPE_ACTION_STATE_BOOLEAN}, {XR_TYPE_ACTION_STATE_BOOLEAN} };
+		XrActionStateFloat floatState[2] = { {XR_TYPE_ACTION_STATE_FLOAT}, {XR_TYPE_ACTION_STATE_FLOAT} };
+		XrActionStateVector2f vector2fState[2] = { {XR_TYPE_ACTION_STATE_VECTOR2F}, {XR_TYPE_ACTION_STATE_VECTOR2F} };
+	};
+	struct idXrActionSet {
+		idStr name;
+		XrActionSet actionSet;
+		std::vector<idXrAction> actions;
+	};
+	std::vector<idXrActionSet> actionSets;
+	std::vector<XrSpace> handPoseSpace;
+	std::vector<XrPath> handPaths;
+	XrPosef handPose[2] = { {XR_TYPE_SPACE_LOCATION}, {XR_TYPE_SPACE_LOCATION} };
+	idStr expectedActionSet;
+
+	XrPath StringToXRPath(const char* strPath);
+	idStr XRPathToString(XrPath xrPath);
+	void CreateXrMappings();
+	idXrAction CreateAction(XrActionSet actionSet, const char* name, XrActionType type, uint32_t mappedKey, std::vector<const char*> subActions = {});
+	void SuggestBindings(const char* profilePath, std::vector<XrActionSuggestedBinding> bindings);
+	XrSpace CreateActionPoseSpace(XrAction action, const char* subPath = nullptr);
+	void FinalizeActions();
+	void PollActions();
+	void RetrieveActionState(idXrAction action);
+	idXrAction GetActionByName(idStr setName, idStr name);
+	idXrActionSet GetActionSetByName(idStr setName);
+	void MapActionStateToUsrCmd(idXrAction action);
 };
