@@ -23,7 +23,6 @@
 */
 #include "precompiled.h"
 #include "win_oxr.h"
-#include "win_local.h"
 
 idXR_Win xrWinSystem;
 idXR* xrSystem = &xrWinSystem;
@@ -84,22 +83,41 @@ void idXR_Win::PollXREvents()
 
 		while (xrPollEvents()) {
 			switch (eventData.type) {
+			case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
+				XrEventDataInteractionProfileChanged* interactionProfileChanged = reinterpret_cast<XrEventDataInteractionProfileChanged*>(&eventData);
+				if (interactionProfileChanged->session != session) {
+					common->Warning("OpenXR: Interaction Profile Change Session is different from created Session");
+					break;
+				}
+				XrInteractionProfileState profileState = { XR_TYPE_INTERACTION_PROFILE_STATE, 0, 0 };
+				for (int i = 0; i < 2; i++) {
+					XrResult res = xrGetCurrentInteractionProfile(session, handPaths[i], &profileState);
+					if (res != XR_SUCCESS || profileState.interactionProfile == 0) {
+						common->Warning("OpenXR Error: Failed to retrieve Interaction Profile");
+					}
+				}
+				break;
+			}
 			case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
 				XrEventDataSessionStateChanged* sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged*>(&eventData);
 				if (sessionStateChanged->session != session) {
 					common->Warning("OpenXR: State Change Session is different from created Session");
 					break;
 				}
-				if (sessionStateChanged->state == XR_SESSION_STATE_READY) {
-					XrSessionBeginInfo sessionbi{ XR_TYPE_SESSION_BEGIN_INFO };
-					sessionbi.primaryViewConfigurationType = viewConfiguration;
-					if (xrBeginSession(session, &sessionbi) != XR_SUCCESS) {
-						common->Warning("OpenXR: Failed to begin Session");
+				switch (sessionStateChanged->state) {
+				case XR_SESSION_STATE_READY: {
+						XrSessionBeginInfo sessionbi{ XR_TYPE_SESSION_BEGIN_INFO };
+						sessionbi.primaryViewConfigurationType = viewConfiguration;
+						if (xrBeginSession(session, &sessionbi) != XR_SUCCESS) {
+							common->Warning("OpenXR: Failed to begin Session");
+						}
+						break;
 					}
-				}
-				else if (sessionStateChanged->state == XR_SESSION_STATE_STOPPING) {
-					if (xrEndSession(session) != XR_SUCCESS) {
-						common->Warning("OpenXR: Failed to end Session");
+				case XR_SESSION_STATE_STOPPING: {
+						if (xrEndSession(session) != XR_SUCCESS) {
+							common->Warning("OpenXR: Failed to end Session");
+						}
+						break;
 					}
 				}
 				sessionState = sessionStateChanged->state;
@@ -304,9 +322,7 @@ void idXR_Win::CreateXrMappings()
 	handPaths.push_back(StringToXRPath("/user/hand/right"));
 	//Menu Action Set
 	idXrActionSet menuActionSet;
-	XrActionSet mActionSet;
 	menuActionSet.name = "MENU";
-	menuActionSet.actionSet = mActionSet;
 	XrActionSetCreateInfo xrActCI{ XR_TYPE_ACTION_SET_CREATE_INFO };
 	strncpy(xrActCI.actionSetName, "doom-bfa-menu-action-set", 26);
 	strncpy(xrActCI.localizedActionSetName, "DOOM BFA Menu Action Set", 26);
@@ -315,13 +331,13 @@ void idXR_Win::CreateXrMappings()
 		common->Warning("OpenXR Error: Failed to Create Menu Action Set");
 	}
 	menuActionSet.actions = {};
-	idXrAction menuPointer = CreateAction(menuActionSet.actionSet, "menuPointer", XR_ACTION_TYPE_POSE_INPUT, K_NONE, { "/user/hand/left", "/user/hand/right" });
-	idXrAction menuSelect = CreateAction(menuActionSet.actionSet, "menuSelect", XR_ACTION_TYPE_BOOLEAN_INPUT, K_JOY1, { "/user/hand/left", "/user/hand/right" });
-	idXrAction menuBack = CreateAction(menuActionSet.actionSet, "menuBack", XR_ACTION_TYPE_BOOLEAN_INPUT, K_JOY2, { "/user/hand/left", "/user/hand/right" });
-	idXrAction menuScroll = CreateAction(menuActionSet.actionSet, "menuScroll", XR_ACTION_TYPE_FLOAT_INPUT, J_AXIS_LEFT_Y, { "/user/hand/left", "/user/hand/right" });
-	SuggestBindings("/interaction_profiles/meta/touch_controller_quest_2", { 
+	idXrAction menuPointer = CreateAction(menuActionSet.actionSet, "menu-pointer", XR_ACTION_TYPE_POSE_INPUT, K_NONE, { "/user/hand/left", "/user/hand/right" });
+	idXrAction menuSelect = CreateAction(menuActionSet.actionSet, "menu-select", XR_ACTION_TYPE_BOOLEAN_INPUT, K_JOY1, { "/user/hand/left", "/user/hand/right" });
+	idXrAction menuBack = CreateAction(menuActionSet.actionSet, "menu-back", XR_ACTION_TYPE_BOOLEAN_INPUT, K_JOY2, { "/user/hand/left", "/user/hand/right" });
+	idXrAction menuScroll = CreateAction(menuActionSet.actionSet, "menu-scroll", XR_ACTION_TYPE_FLOAT_INPUT, J_AXIS_LEFT_Y, { "/user/hand/left", "/user/hand/right" });
+	SuggestBindings("/interaction_profiles/oculus/touch_controller", { 
 		{menuPointer.action, StringToXRPath("/user/hand/right/input/aim/pose")},
-		{menuSelect.action, StringToXRPath("/user/hand/right/input/trigger/value")},
+		{menuSelect.action, StringToXRPath("/user/hand/right/input/trigger/touch")},
 		{menuBack.action, StringToXRPath("/user/hand/right/input/b/click")},
 		{menuScroll.action, StringToXRPath("/user/hand/right/input/thumbstick/y")}
 		});
@@ -329,16 +345,14 @@ void idXR_Win::CreateXrMappings()
 	menuActionSet.actions.push_back(menuSelect);
 	menuActionSet.actions.push_back(menuBack);
 	menuActionSet.actions.push_back(menuScroll);
-
+	actionSets.push_back(menuActionSet);
 }
 
 idXR_Win::idXrAction idXR_Win::CreateAction(XrActionSet actionSet, const char* name, XrActionType type, uint32_t mappedKey, std::vector<const char*> subActions)
 {
 	idXrAction action;
-	XrAction mAction;
 	action.name = name;
 	action.type = type;
-	action.action = mAction;
 	action.mappedKey = mappedKey;
 	XrActionCreateInfo actCI{ XR_TYPE_ACTION_CREATE_INFO };
 	actCI.actionType = type;
@@ -348,9 +362,10 @@ idXR_Win::idXrAction idXR_Win::CreateAction(XrActionSet actionSet, const char* n
 	}
 	actCI.countSubactionPaths = (uint32_t)subXrActions.size();
 	actCI.subactionPaths = subXrActions.data();
-	strncpy(actCI.actionName, name, strlen(name));
-	strncpy(actCI.localizedActionName, name, strlen(name));
-	if (xrCreateAction(actionSet, &actCI, &action.action) != XR_SUCCESS) {
+	strncpy(actCI.actionName, name, XR_MAX_ACTION_NAME_SIZE);
+	strncpy(actCI.localizedActionName, name, XR_MAX_LOCALIZED_ACTION_NAME_SIZE);
+	XrResult res = xrCreateAction(actionSet, &actCI, &action.action);
+	if (res != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to Create Action");
 	}
 	return action;
@@ -362,8 +377,9 @@ void idXR_Win::SuggestBindings(const char* profilePath, std::vector<XrActionSugg
 	ipsb.interactionProfile = StringToXRPath(profilePath);
 	ipsb.suggestedBindings = bindings.data();
 	ipsb.countSuggestedBindings = (uint32_t)bindings.size();
-	if (xrSuggestInteractionProfileBindings(instance, &ipsb) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to Create Action");
+	XrResult res = xrSuggestInteractionProfileBindings(instance, &ipsb);
+	if (res != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Create Suggestion Binding");
 	}
 }
 
@@ -386,7 +402,7 @@ XrSpace idXR_Win::CreateActionPoseSpace(XrAction action, const char* subPath)
 void idXR_Win::FinalizeActions()
 {
 	idXrActionSet menuActionSet = GetActionSetByName("MENU");
-	idXrAction menuPointer = GetActionByName("MENU", "menuPointer");
+	idXrAction menuPointer = GetActionByName("MENU", "menu-pointer");
 	handPoseSpace.push_back(CreateActionPoseSpace(menuPointer.action, "/user/hand/left"));
 	handPoseSpace.push_back(CreateActionPoseSpace(menuPointer.action, "/user/hand/right"));
 	XrSessionActionSetsAttachInfo sasaI{ XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO };
@@ -422,7 +438,7 @@ void idXR_Win::RetrieveActionState(idXrAction action)
 	actionStateGI.action = action.action;
 	for (int i = 0; i < 2; i++) {
 		actionStateGI.subactionPath = handPaths[i];
-		XrResult res;
+		XrResult res = XR_ERROR_PATH_UNSUPPORTED;
 		switch (action.type) {
 		case XR_ACTION_TYPE_POSE_INPUT: {
 			res = xrGetActionStatePose(session, &actionStateGI, &action.poseState[i]);
@@ -450,6 +466,9 @@ void idXR_Win::RetrieveActionState(idXrAction action)
 			res = xrGetActionStateVector2f(session, &actionStateGI, &action.vector2fState[i]);
 			break;
 		}
+		if (res != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to retrieve action state");
+		}
 	}
 
 }
@@ -465,6 +484,7 @@ idXR_Win::idXrAction idXR_Win::GetActionByName(idStr setName, idStr name)
 			}
 		}
 	}
+	return {};
 }
 
 idXR_Win::idXrActionSet idXR_Win::GetActionSetByName(idStr setName)
@@ -474,6 +494,7 @@ idXR_Win::idXrActionSet idXR_Win::GetActionSetByName(idStr setName)
 			return actionSet;
 		}
 	}
+	return {};
 }
 
 void idXR_Win::MapActionStateToUsrCmd(idXrAction action)
@@ -482,15 +503,43 @@ void idXR_Win::MapActionStateToUsrCmd(idXrAction action)
 		switch (action.type) {
 			case XR_ACTION_TYPE_POSE_INPUT:
 			{
-				Sys_QueEvent(SE_MOUSE, handPose[i].position.x, 0, 0, NULL, 0);
-				Sys_QueEvent(SE_MOUSE, handPose[i].position.y, 0, 0, NULL, 0);
+				float deltaX = handPose[i].position.x - oldhandPose[i][0];
+				float deltaY = handPose[i].position.y - oldhandPose[i][1];
+				oldhandPose[i][0] = handPose[i].position.x;
+				oldhandPose[i][1] = handPose[i].position.y;
+				if (deltaX != 0.0f) {
+					Sys_QueEvent(SE_MOUSE, deltaX, 0, 0, NULL, 0);
+				}
+				if (deltaY != 0.0f) {
+					Sys_QueEvent(SE_MOUSE, 0, deltaY, 0, NULL, 0);
+				}
 				break;
 			}
 			case XR_ACTION_TYPE_BOOLEAN_INPUT:
-				Sys_QueEvent(SE_KEY, action.mappedKey, action.booleanState[i].currentState, 0, NULL, 0);
+				if (action.booleanState[i].currentState) {
+					Sys_QueEvent(SE_KEY, action.mappedKey, action.booleanState[i].currentState, 0, NULL, 0);
+				}
 				break;
 			case XR_ACTION_TYPE_FLOAT_INPUT: {
-				Sys_QueEvent(SE_JOYSTICK, action.mappedKey, action.floatState[i].currentState, 0, NULL, 0);
+				if (action.floatState[i].currentState != 0.0f) {
+					Sys_QueEvent(SE_JOYSTICK, action.mappedKey, action.floatState[i].currentState, 0, NULL, 0);
+					int targetKey = K_JOY_STICK1_LEFT;
+					switch (action.mappedKey - J_AXIS_MIN) {
+					case 0:
+						targetKey = action.floatState[i].currentState < 0 ? K_JOY_STICK1_LEFT : K_JOY_STICK1_RIGHT;
+						break;
+					case 1:
+						targetKey = action.floatState[i].currentState < 0 ? K_JOY_STICK1_UP : K_JOY_STICK1_DOWN;
+						break;
+					case 2:
+						targetKey = action.floatState[i].currentState < 0 ? K_JOY_STICK2_LEFT : K_JOY_STICK2_RIGHT;
+						break;
+					case 3:
+						targetKey = action.floatState[i].currentState < 0 ? K_JOY_STICK2_UP : K_JOY_STICK2_DOWN;
+						break;
+					}
+					Sys_QueEvent(SE_KEY, targetKey, 1, 0, NULL, 0);
+				}
 				break;
 			}
 

@@ -30,6 +30,7 @@
 #include "gfxwrapper_opengl.h"
 #include "renderer/RenderCommon.h"
 #include <functional>
+#include "win_local.h"
 
 class idXR_Win :public idXR {
 public:
@@ -148,6 +149,7 @@ private:
 	std::vector<XrSpace> handPoseSpace;
 	std::vector<XrPath> handPaths;
 	XrPosef handPose[2] = { {XR_TYPE_SPACE_LOCATION}, {XR_TYPE_SPACE_LOCATION} };
+	float oldhandPose[2][2] = { {0.0f, 0.0f}, {0.0f, 0.0f} };
 	idStr expectedActionSet;
 
 	XrPath StringToXRPath(const char* strPath);

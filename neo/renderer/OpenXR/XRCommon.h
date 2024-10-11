@@ -22,9 +22,8 @@
 * SOFTWARE.
 */
 #pragma hdrstop
-#define XR_USE_GRAPHICS_API_OPENGL
+//#define XR_USE_GRAPHICS_API_OPENGL
 #include "openxr/openxr.h"
-#include "openxr/openxr_platform.h"
 #pragma warning( disable : 4005 )
 #include <vector>
 #include <string>
