@@ -200,6 +200,10 @@ void idXR_Win::BindSwapchainImage(int eye)
 			return;
 		}*/
 		XrFovf customFov = { -0.750491619f, 0.785398185f, 0.837758064f, -0.872664630f };
+		if (!isFOVmutable()) {
+			xOffs = abs((views[renderingEye].fov.angleLeft - customFov.angleLeft) * 1000);
+			xOffs = xOffs * (renderingEye == 0 ? 1 : -1);
+		}
 		layers[renderingEye] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
 		layers[renderingEye].fov = isFOVmutable()? customFov : views[renderingEye].fov;
 		layers[renderingEye].pose = views[renderingEye].pose;
@@ -249,7 +253,7 @@ void idXR_Win::RenderFrame(int srcX, int srcY, int srcW, int srcH)
 {
 	if (inFrame) {
 		if (glConfig.directStateAccess) {
-			glBlitNamedFramebuffer(0, glFBO, srcX, srcY, srcW, srcH, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+			glBlitNamedFramebuffer(0, glFBO, srcX, srcY, srcW, srcH, xOffs, 0, width + xOffs, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 		}
 		else {
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);

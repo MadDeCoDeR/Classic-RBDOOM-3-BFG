@@ -2386,15 +2386,7 @@ void idRenderSystemLocal::Init()
 			r_fullscreen.SetInteger(0);
 			cl_HUD.SetBool(true);
 			xrSystem->SetActionSet("MENU");
-			if (!xrSystem->isFOVmutable()) {
-				game->SetCVarInteger("stereoRender_convergence", 6);
-				game->SetCVarInteger("stereoRender_interOccularCentimeters", 900);
-				r_forceScreenWidthCentimeters.SetFloat(xrSystem->GetWidth());
-			}
-			else {
-				game->SetCVarInteger("stereoRender_convergence", 0);
-				
-			}
+			game->SetCVarInteger("stereoRender_convergence", 0);
 		}
 		else {
 			xrSystem->ShutDownXR();

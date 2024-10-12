@@ -128,6 +128,10 @@ private:
 	bool inFrame = false;
 	uint32_t width = 0;
 	uint32_t height = 0;
+	//GK: When FOV mutation on the projection View is not supported then it uses the xOffs that manually adjust the image based on the FOV that it uses when it can mutate the FOV in the projection View.
+	//The Offset is the difference between the HMD's FOV's angleLeft and the desired FOV's angleLeft. Based on which eye is rendered it keep it either positive or negative.
+	//When it blit's the framebuffer it uses the Offset in order to normalize the image's position in each len.
+	uint32_t xOffs = 0;
 	bool isInitialized = false;
 	XrViewConfigurationProperties viewProperties;
 	struct idXrAction {
