@@ -704,6 +704,7 @@ void idCommonLocal::ExecuteMapChange()
 
 	r_clear.SetString(clearValue);
 	r_clear.SetModified();
+	cvarSystem->SetCVarBool("gui_useVRHack", false);
 }
 
 /*

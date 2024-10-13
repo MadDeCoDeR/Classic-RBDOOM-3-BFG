@@ -5942,6 +5942,7 @@ void idGameLocal::Shell_Show( bool show )
 	{
 		shellHandler->ActivateMenu( show );
 	}
+	cvarSystem->SetCVarBool("gui_useVRHack", show);
 }
 
 /*

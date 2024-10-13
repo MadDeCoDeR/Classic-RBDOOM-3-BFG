@@ -67,7 +67,7 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	float yOffset = 0.0f;
 	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
 		xOffset = renderSystem->GetWidth() / 9.0f;
-		yOffset = (renderSystem->GetHeight() / 16.0f) * -1.0f;
+		yOffset = (renderSystem->GetHeight() / 10.0f) * -1.0f;
 	}
 	
 	idSWFScriptObject& root = menuGUI->GetRootObject();
@@ -152,7 +152,8 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	ammoInfo->SetXPos(ammoInfo->GetXPos() - xOffset);
 	ammoInfo->parent->SetYPos(ammoInfo->parent->GetYPos() + yOffset);
 	bsInfo = root.GetNestedSprite( "_bottomRight", "bsInfo" );
-	bsInfo->SetXPos(bsInfo->GetXPos() - xOffset);
+	bsInfo->SetXPos((bsInfo->GetXPos() - xOffset) + 150);
+	bsInfo->SetYPos(bsInfo->GetYPos() - 150);
 	soulcubeInfo = root.GetNestedSprite( "_bottomRight", "soulcube" );
 	soulcubeInfo->SetXPos(soulcubeInfo->GetXPos() - xOffset);
 	

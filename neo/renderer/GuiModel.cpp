@@ -37,6 +37,8 @@ const float idGuiModel::STEREO_DEPTH_NEAR = 0.0f;
 const float idGuiModel::STEREO_DEPTH_MID  = 0.5f;
 const float idGuiModel::STEREO_DEPTH_FAR  = 1.0f;
 
+idCVar gui_useVRHack("gui_useVRHack", "1", CVAR_BOOL | CVAR_RENDERER, "Use GUI height hack for VR");
+
 /*
 ================
 idGuiModel::idGuiModel
@@ -327,10 +329,9 @@ void idGuiModel::EmitFullScreen()
 	viewDef->worldSpace.modelMatrix[1 * 4 + 1] = 1.0f;
 	viewDef->worldSpace.modelMatrix[2 * 4 + 2] = 1.0f;
 	viewDef->worldSpace.modelMatrix[3 * 4 + 3] = 1.0f;
-	
-	Globals* classicData = (Globals*)DoomLib::GetGlobalData(0);
+
 	viewDef->worldSpace.modelViewMatrix[0 * 4 + 0] = 1.0f;
-	viewDef->worldSpace.modelViewMatrix[1 * 4 + 1] = renderSystem->GetStereo3DMode() == STEREO3D_VR && classicData == NULL? 0.9f : 1.0f;
+	viewDef->worldSpace.modelViewMatrix[1 * 4 + 1] = renderSystem->GetStereo3DMode() == STEREO3D_VR && gui_useVRHack.GetBool() ? 0.9f : 1.0f;
 	viewDef->worldSpace.modelViewMatrix[2 * 4 + 2] = 1.0f;
 	viewDef->worldSpace.modelViewMatrix[3 * 4 + 3] = 1.0f;
 	

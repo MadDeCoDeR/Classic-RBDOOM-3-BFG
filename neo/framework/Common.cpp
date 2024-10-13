@@ -109,6 +109,7 @@ idCVar com_emergencyexit("com_emergencyexit", "0", CVAR_BOOL | CVAR_ROM, "Stops 
 //extern idCVar g_demoMode; //GK: get it from game object
 
 extern idCVar stereoRender_enable;
+extern idCVar gui_useVRHack;
 
 idCVar com_engineHz( "com_engineHz", "60", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the engine runs at", 10.0f, 1024.0f );
 idCVar cl_engineHz("cl_engineHz", "35", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the classic engine runs at", 35.0f, 40.0f);
@@ -2352,6 +2353,7 @@ void idCommonLocal::PerformGameSwitch()
 		{
 			menuSoundWorld->Pause();
 		}
+		gui_useVRHack.SetBool(false);
 		
 		DoomLib::skipToNew = false;
 		DoomLib::skipToLoad = false;
@@ -2381,7 +2383,7 @@ void idCommonLocal::PerformGameSwitch()
 		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
 		com_engineHz_latched = com_engineHz.GetFloat();
 		Sys_ChangeTitle(common->IsNewDOOM3() ? NEW_GAME_NAME : GAME_NAME);
-		
+		gui_useVRHack.SetBool(true);
 		// Don't MoveToPressStart if we have an invite, we need to go
 		// directly to the lobby.
 		if( session->GetState() <= idSession::IDLE )
