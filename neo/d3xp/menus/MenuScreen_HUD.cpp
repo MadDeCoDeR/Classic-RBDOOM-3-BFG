@@ -152,8 +152,10 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	ammoInfo->SetXPos(ammoInfo->GetXPos() - xOffset);
 	ammoInfo->parent->SetYPos(ammoInfo->parent->GetYPos() + yOffset);
 	bsInfo = root.GetNestedSprite( "_bottomRight", "bsInfo" );
-	bsInfo->SetXPos((bsInfo->GetXPos() - xOffset) + 150);
-	bsInfo->SetYPos(bsInfo->GetYPos() - 150);
+	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		bsInfo->SetXPos((bsInfo->GetXPos() - xOffset) + 150);
+		bsInfo->SetYPos(bsInfo->GetYPos() - 150);
+	}
 	soulcubeInfo = root.GetNestedSprite( "_bottomRight", "soulcube" );
 	soulcubeInfo->SetXPos(soulcubeInfo->GetXPos() - xOffset);
 	

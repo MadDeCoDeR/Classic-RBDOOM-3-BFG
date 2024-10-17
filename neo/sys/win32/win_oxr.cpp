@@ -258,7 +258,7 @@ void idXR_Win::RenderFrame(int srcX, int srcY, int srcW, int srcH)
 		else {
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, glFBO);
-			glBlitFramebuffer(srcX, srcY, srcW, srcH, 0, 0, width, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+			glBlitFramebuffer(srcX, srcY, srcW, srcH, xOffs, 0, width + xOffs, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 		}
 	}
 }
@@ -507,15 +507,17 @@ void idXR_Win::MapActionStateToUsrCmd(idXrAction action)
 		switch (action.type) {
 			case XR_ACTION_TYPE_POSE_INPUT:
 			{
-				float deltaX = handPose[i].position.x - oldhandPose[i][0];
-				float deltaY = handPose[i].position.y - oldhandPose[i][1];
+				float deltaX = (handPose[i].position.x - oldhandPose[i][0]);
+				float deltaY = (handPose[i].position.y - oldhandPose[i][1]);
 				oldhandPose[i][0] = handPose[i].position.x;
 				oldhandPose[i][1] = handPose[i].position.y;
 				if (deltaX != 0.0f) {
-					Sys_QueEvent(SE_MOUSE, deltaX, 0, 0, NULL, 0);
+					uint32_t calculatedX = abs(handPose[i].position.x) * renderSystem->GetWidth();
+					Sys_QueEvent(SE_MOUSE, calculatedX, 0, 0, NULL, 0);
 				}
 				if (deltaY != 0.0f) {
-					Sys_QueEvent(SE_MOUSE, 0, deltaY, 0, NULL, 0);
+					uint32_t calculatedY = abs(handPose[i].position.y) * renderSystem->GetHeight();
+					Sys_QueEvent(SE_MOUSE, 0, calculatedY, 0, NULL, 0);
 				}
 				break;
 			}
