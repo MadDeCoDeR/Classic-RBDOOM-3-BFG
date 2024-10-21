@@ -65,9 +65,13 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 
 	float xOffset = 0.0f;
 	float yOffset = 0.0f;
+	float topXOffset = 0.0f;
+	float topYOffset = 0.0f;
 	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
 		xOffset = renderSystem->GetWidth() / 9.0f;
 		yOffset = (renderSystem->GetHeight() / 10.0f) * -1.0f;
+		topXOffset = renderSystem->GetWidth() / 12.0f;
+		topYOffset = (renderSystem->GetHeight() / 26.0f) * -1.0f;
 	}
 	
 	idSWFScriptObject& root = menuGUI->GetRootObject();
@@ -86,8 +90,8 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 		locationNameSprite->SetYPos(locationNameSprite->GetYPos() + 15);
 	}
 	tipInfo = root.GetNestedObj( "_left", "tip" );
-	tipInfo->GetSprite()->SetXPos(tipInfo->GetSprite()->GetXPos() + xOffset);
-	tipInfo->GetSprite()->SetYPos(tipInfo->GetSprite()->GetYPos() + yOffset);
+	tipInfo->GetSprite()->SetXPos(tipInfo->GetSprite()->GetXPos() + topXOffset);
+	tipInfo->GetSprite()->SetYPos(tipInfo->GetSprite()->GetYPos() - topYOffset);
 	
 	if( playerInfo )
 	{
@@ -98,6 +102,7 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	
 	// Security Update
 	security = root.GetNestedSprite( "_center", "security" );
+	security->SetYPos(security->GetYPos() + yOffset);
 	securityText = root.GetNestedText( "_center", "security", "info", "txtVal" );
 
 	// Subtitles Update
@@ -112,6 +117,7 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	
 	// PDA Download
 	newPDADownload = root.GetNestedSprite( "_center", "pdaDownload" );
+	newPDADownload->SetYPos(newPDADownload->GetYPos() + yOffset);
 	newPDAName = root.GetNestedText( "_center", "pdaDownload", "info", "txtName" );
 	newPDAHeading = root.GetNestedText( "_center", "pdaDownload", "info", "txtHeading" );
 	newPDA = root.GetNestedSprite( "_bottomLeft", "newPDA" );
@@ -120,6 +126,7 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	
 	// Video Download
 	newVideoDownload = root.GetNestedSprite( "_center", "videoDownload" );
+	newVideoDownload->SetYPos(newVideoDownload->GetYPos() + yOffset);
 	newVideoHeading = root.GetNestedText( "_center", "videoDownload", "info", "txtHeading" );
 	newVideo = root.GetNestedSprite( "_bottomLeft", "newVideo" );
 	newVideo->SetXPos(newVideo->GetXPos() + xOffset);
