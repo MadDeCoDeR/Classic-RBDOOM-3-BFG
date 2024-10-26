@@ -48,7 +48,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: nightly-${{ steps.date.outputs.date }}
-        release_name: DOOM BFA Nigthly ${{ steps.date.outputs.date }}
+        release_name: DOOM BFA Nightly ${{ steps.date.outputs.date }}
         body: |
           ${{ steps.messages.outputs.messages }}
         draft: false
