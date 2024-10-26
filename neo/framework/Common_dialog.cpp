@@ -833,6 +833,9 @@ void idCommonDialog::Init()
 		BIND_DIALOG_CONSTANT( DIALOG_CONTINUE_LARGE );
 		BIND_DIALOG_CONSTANT( DIALOG_BENCHMARK );
 	}
+	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		dialog->SetSWFScale(0.82f);
+	}
 }
 
 /*

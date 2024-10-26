@@ -215,19 +215,7 @@ void idXR_Win::BindSwapchainImage(int eye)
 		layers[renderingEye].subImage.imageArrayIndex = 0;
 
 		glFBO = (GLuint)(uint64_t)colorSwapchainInfo[renderingEye].imageViews[colorIndex];
-		if (glConfig.directStateAccess) {
-			uint clearColor[4] = {0,0,0,0};
-			glClearNamedFramebufferuiv(glFBO, GL_COLOR, 0, clearColor);
-			glClearNamedFramebufferfi(glFBO, GL_DEPTH_STENCIL, 0, 0, 0);
 		}
-		else {
-			glBindFramebuffer(GL_FRAMEBUFFER, glFBO);
-			glClearColor(0, 0, 0, 0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
-		//glClearColor(0, 0, 0, 1);
-	}
 
 }
 
@@ -629,6 +617,7 @@ bool idXR_Win::InitXR() {
 	this->extensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif
 	this->extensions.push_back(XR_KHR_OPENGL_ENABLE_EXTENSION_NAME);
+	this->extensions.push_back(XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME);
 
 	uint apiLayerCount = 0;
 	std::vector<XrApiLayerProperties> apiLayerProperties;
@@ -737,7 +726,7 @@ bool idXR_Win::InitXR() {
 		common->Warning("OpenXR Error: Failed to retrieve System properties");
 		return false;
 	}
-	common->Printf("OpenXR Compatible System Havebeen Found\n------------------------------------------------\nVendor: %d\nSystem: %s\n------------------------------------------------\n", systemProperties.vendorId, systemProperties.systemName);
+	common->Printf("OpenXR Compatible System Have been Found\n------------------------------------------------\nVendor: %d\nSystem: %s\n------------------------------------------------\n", systemProperties.vendorId, systemProperties.systemName);
 
 	//Required before Creating a Session
 
@@ -799,7 +788,16 @@ bool idXR_Win::InitXR() {
 		common->Warning("OpenXR Error: Failed to create Session");
 		return false;
 	}
+	float refreshRate = 60.0f;
+	PFN_xrGetDisplayRefreshRateFB xrGetDisplayRefreshRate;
+	if (xrGetInstanceProcAddr(instance, "xrGetDisplayRefreshRateFB", (PFN_xrVoidFunction*)&xrGetDisplayRefreshRate) == XR_SUCCESS) {
+		if (xrGetDisplayRefreshRate(session, &refreshRate) != XR_SUCCESS) {
+			refreshRate = 60.0f;
+			common->Warning("OpenXR Error: Failed to retrieve VR Refresh rate");
+		}
+	}
 
+	com_engineHz.SetFloat(refreshRate);
 	FinalizeActions();
 
 	XrReferenceSpaceCreateInfo referenceSpaceCI{ XR_TYPE_REFERENCE_SPACE_CREATE_INFO };
