@@ -57,7 +57,7 @@
 	"#str_swf_toggle_crouch" "Alterna accovacciati"
 	"#str_swf_toggle_zoom" "Attiva/disattiva zoom"
 	"#str_swf_center_camera_button" "Telecamera centrale"
-	"#str_swf_stereo_vr" "Virtual Reality"
+	"#str_swf_stereo_vr" "Realtà virtuale"
 // 	"#str_swf_custom_game" "Nome mod"
 // 	"#str_swf_start_map" "Prima mappa da caricare"
 }
