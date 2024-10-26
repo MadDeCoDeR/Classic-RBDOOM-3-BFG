@@ -39,6 +39,12 @@ If you have questions concerning this license or the applicable additional terms
 // RB end
 
 #include "win_input.h"
+#ifdef USE_OPENXR
+#define XR_USE_GRAPHICS_API_OPENGL
+#define XR_USE_PLATFORM_WIN32
+#include <openxr/openxr.h>
+#include <openxr/openxr_platform.h>
+#endif
 
 
 #define	WINDOW_STYLE	(WS_OVERLAPPED|WS_BORDER|WS_CAPTION|WS_VISIBLE | WS_THICKFRAME)
@@ -136,6 +142,10 @@ typedef struct Win32Vars_s
 	LPDIRECTINPUTDEVICE8	g_pMouse;
 	LPDIRECTINPUTDEVICE8	g_pKeyboard;
 	idJoystickWin32			g_Joystick;
+#endif
+
+#ifdef USE_OPENXR
+	XrGraphicsBindingOpenGLWin32KHR graphicsBinding = { XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR };
 #endif
 	
 } Win32Vars_t;

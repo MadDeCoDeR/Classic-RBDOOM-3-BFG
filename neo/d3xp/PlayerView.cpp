@@ -30,6 +30,9 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Game_local.h"
+#ifdef USE_OPENXR
+#include "renderer/OpenXR/XRCommon.h"
+#endif
 
 // _D3XP : rename all gameLocal->time to gameLocal->slow.time for merge!
 
@@ -686,7 +689,7 @@ void idPlayerView::ScreenFade()
 }
 
 extern idCVar	stereoRender_interOccularCentimeters;
-idCVar	stereoRender_convergence( "stereoRender_convergence", "6", CVAR_RENDERER, "0 = head mounted display, otherwise world units to convergence plane" );
+idCVar	stereoRender_convergence( "stereoRender_convergence", "0", CVAR_RENDERER, "0 = head mounted display, otherwise world units to convergence plane" );
 
 extern	idCVar stereoRender_screenSeparation;	// screen units from center to eyes
 extern  idCVar stereoRender_swapEyes;
@@ -789,8 +792,9 @@ void idPlayerView::EmitStereoEyeView( const int eye, idMenuHandler_HUD* hudManag
 	
 	eyeView.viewEyeBuffer = stereoRender_swapEyes.GetBool() ? eye : -eye;
 	eyeView.stereoScreenSeparation = eye * dists.screenSeparation;
-	
+
 	SingleView( &eyeView, hudManager );
+
 }
 
 /*
@@ -824,11 +828,13 @@ void idPlayerView::RenderPlayerView( idMenuHandler_HUD* hudManager )
 	const renderView_t* view_ = player->GetRenderView();
 	if( renderSystem->GetStereo3DMode() != STEREO3D_OFF )
 	{
+
 		// render both eye views each frame on the PC
 		for( int eye = 1 ; eye >= -1 ; eye -= 2 )
 		{
 			EmitStereoEyeView( eye, hudManager );
 		}
+
 	}
 	else
 	{

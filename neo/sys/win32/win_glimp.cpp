@@ -176,6 +176,14 @@ void GLimp_SetGamma( unsigned short red[256], unsigned short green[256], unsigne
 		common->Printf( "WARNING: SetDeviceGammaRamp failed.\n" );
 	}
 }
+#ifdef USE_OPENXR
+void* GetOpenXRGraphicsBinding()
+{
+	win32.graphicsBinding.hDC = win32.hDC;
+	win32.graphicsBinding.hGLRC = win32.hGLRC;
+	return &win32.graphicsBinding;
+}
+#endif
 
 /*
 =============================================================================

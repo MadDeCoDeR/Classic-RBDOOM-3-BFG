@@ -35,9 +35,10 @@ If you have questions concerning this license or the applicable additional terms
 #include "../RenderCommon.h"
 #include "../RenderBackend.h"
 #include "../../framework/Common_local.h"
+#include "../OpenXR/XRCommon.h"
 
 idCVar r_drawFlickerBox( "r_drawFlickerBox", "0", CVAR_RENDERER | CVAR_BOOL, "visual test for dropping frames" );
-idCVar stereoRender_warp( "stereoRender_warp", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "use the optical warping renderprog instead of stereoDeGhost" );
+idCVar stereoRender_warp( "stereoRender_warp", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "use the optical warping renderprog instead of stereoDeGhost" );
 idCVar stereoRender_warpStrength( "stereoRender_warpStrength", "1.45", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_FLOAT, "amount of pre-distortion" );
 
 idCVar stereoRender_warpCenterX( "stereoRender_warpCenterX", "0.5", CVAR_RENDERER | CVAR_FLOAT | CVAR_ARCHIVE, "center for left eye, right eye will be 1.0 - this" );
@@ -2179,6 +2180,48 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 			break;
 			
 		default:
+#ifdef USE_OPENXR
+		case STEREO3D_VR: {
+			if (xrSystem->IsInitialized()) {
+				xrSystem->PollXREvents();
+				xrSystem->StartFrame();
+				renderProgManager.BindShader_StereoVRWarp();
+				glScissor(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+				glClearColor(0, 0, 0, 0);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+				idVec4	color(stereoRender_warpCenterX.GetFloat(), stereoRender_warpCenterY.GetFloat(), stereoRender_warpParmZ.GetFloat(), stereoRender_warpParmW.GetFloat());
+				renderProgManager.SetRenderParm(RENDERPARM_COLOR, color.ToFloatPtr());
+				GL_SelectTexture(0);
+				stereoRenderImages[0]->Bind();
+				GL_SelectTexture(1);
+				stereoRenderImages[1]->Bind();
+				xrSystem->BindSwapchainImage(0);
+				GL_ViewportAndScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
+				DrawElementsWithCounters(&unitSquareSurface);
+
+				xrSystem->RenderFrame(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
+				xrSystem->ReleaseSwapchainImage();
+				idVec4	color2(stereoRender_warpCenterX.GetFloat(), stereoRender_warpCenterY.GetFloat(), stereoRender_warpParmZ.GetFloat(), stereoRender_warpParmW.GetFloat());
+				renderProgManager.SetRenderParm(RENDERPARM_COLOR, color2.ToFloatPtr());
+				glScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
+				glClearColor(0, 0, 0, 0);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+				GL_SelectTexture(0);
+				stereoRenderImages[1]->Bind();
+				GL_SelectTexture(1);
+				stereoRenderImages[0]->Bind();
+				xrSystem->BindSwapchainImage(1);
+				GL_ViewportAndScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
+				DrawElementsWithCounters(&unitSquareSurface);
+				xrSystem->RenderFrame(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
+				xrSystem->ReleaseSwapchainImage();
+				xrSystem->EndFrame();
+			}
+			break;
+
+		}
+#endif
 		case STEREO3D_SIDE_BY_SIDE:
 			if( stereoRender_warp.GetBool() )
 			{
@@ -2198,7 +2241,6 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 				// the size of the box that will get the warped pixels
 				// With the 7" displays, this will be less than half the screen width
 				const int pixelDimensions = ( glConfig.nativeScreenWidth >> 1 ) * stereoRender_warpTargetFraction.GetFloat();
-				
 				// Always scissor to the half-screen boundary, but the viewports
 				// might cross that boundary if the lenses can be adjusted closer
 				// together.
@@ -2211,6 +2253,7 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 				// don't use GL_Color(), because we don't want to clamp
 				renderProgManager.SetRenderParm( RENDERPARM_COLOR, color.ToFloatPtr() );
 				
+
 				GL_SelectTexture( 0 );
 				stereoRenderImages[0]->Bind();
 				glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER );
@@ -2237,13 +2280,14 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 		// a non-warped side-by-side-uncompressed (dual input cable) is rendered
 		// just like STEREO3D_SIDE_BY_SIDE_COMPRESSED, so fall through.
 		case STEREO3D_SIDE_BY_SIDE_COMPRESSED:
+
 			GL_SelectTexture( 0 );
 			stereoRenderImages[0]->Bind();
 			GL_SelectTexture( 1 );
 			stereoRenderImages[1]->Bind();
 			GL_ViewportAndScissor( 0, 0, renderSystem->GetWidth(), renderSystem->GetHeight() );
 			DrawElementsWithCounters( &unitSquareSurface );
-			
+
 			GL_SelectTexture( 0 );
 			stereoRenderImages[1]->Bind();
 			GL_SelectTexture( 1 );

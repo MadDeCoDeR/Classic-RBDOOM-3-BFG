@@ -470,6 +470,11 @@ public:
 	{
 		BindShader_Builtin( BUILTIN_STEREO_WARP );
 	}
+
+	void	BindShader_StereoVRWarp()
+	{
+		BindShader_Builtin(BUILTIN_STEREO_VR_WARP);
+	}
 	
 	void	BindShader_StereoInterlace()
 	{
@@ -710,6 +715,7 @@ private:
 		// RB end
 		BUILTIN_STEREO_DEGHOST,
 		BUILTIN_STEREO_WARP,
+		BUILTIN_STEREO_VR_WARP,
 		BUILTIN_BINK,
 		BUILTIN_BINK_GUI,
 		BUILTIN_STEREO_INTERLACE,

@@ -41,6 +41,7 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 // RB end
 
+#include "../renderer/OpenXR/XRCommon.h"
 /*
 
 New for tech4x:
@@ -83,6 +84,7 @@ extern idCVar in_joystickRumble;
 extern idCVar r_aspectcorrect; //GK: also here
 extern idCVar r_clblurry;
 extern idCVar in_photomode;
+extern idCVar stereoRender_enable;
 /*
 ===============
 idGameThread::Run
@@ -106,6 +108,10 @@ int idGameThread::Run()
 		// Ensure there's no stale gameReturn data from a paused game
 		ret = gameReturn_t();
 	}
+
+	/*if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR) {
+		xrSystem->PollXREvents();
+	}*/
 	
 	if( isClient )
 	{

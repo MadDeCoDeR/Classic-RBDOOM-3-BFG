@@ -30,10 +30,14 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 
 #include "RenderCommon.h"
+#include "../doomclassic/doom/doomlib.h"
+#include "../doomclassic/doom/globaldata.h"
 
 const float idGuiModel::STEREO_DEPTH_NEAR = 0.0f;
 const float idGuiModel::STEREO_DEPTH_MID  = 0.5f;
 const float idGuiModel::STEREO_DEPTH_FAR  = 1.0f;
+
+idCVar gui_useVRHack("gui_useVRHack", "1", CVAR_BOOL | CVAR_RENDERER, "Use GUI height hack for VR");
 
 /*
 ================
@@ -288,35 +292,35 @@ void idGuiModel::EmitFullScreen()
 	viewDef->scissor.y1 = 0;
 	viewDef->scissor.x2 = viewDef->viewport.x2 - viewDef->viewport.x1;
 	viewDef->scissor.y2 = viewDef->viewport.y2 - viewDef->viewport.y1;
-	
-	// RB: IMPORTANT - the projectionMatrix has a few changes to make it work with Vulkan
-	viewDef->projectionMatrix[0 * 4 + 0] = 2.0f / renderSystem->GetVirtualWidth();
-	viewDef->projectionMatrix[0 * 4 + 1] = 0.0f;
-	viewDef->projectionMatrix[0 * 4 + 2] = 0.0f;
-	viewDef->projectionMatrix[0 * 4 + 3] = 0.0f;
-	
-	viewDef->projectionMatrix[1 * 4 + 0] = 0.0f;
+
+		// RB: IMPORTANT - the projectionMatrix has a few changes to make it work with Vulkan
+		viewDef->projectionMatrix[0 * 4 + 0] = 2.0f / renderSystem->GetVirtualWidth();
+		viewDef->projectionMatrix[0 * 4 + 1] = 0.0f;
+		viewDef->projectionMatrix[0 * 4 + 2] = 0.0f;
+		viewDef->projectionMatrix[0 * 4 + 3] = 0.0f;
+
+		viewDef->projectionMatrix[1 * 4 + 0] = 0.0f;
 #if defined(USE_VULKAN)
-	viewDef->projectionMatrix[1 * 4 + 1] = 2.0f / renderSystem->GetVirtualHeight();
+		viewDef->projectionMatrix[1 * 4 + 1] = 2.0f / renderSystem->GetVirtualHeight();
 #else
-	viewDef->projectionMatrix[1 * 4 + 1] = -2.0f / renderSystem->GetVirtualHeight();
+		viewDef->projectionMatrix[1 * 4 + 1] = -2.0f / renderSystem->GetVirtualHeight();
 #endif
-	viewDef->projectionMatrix[1 * 4 + 2] = 0.0f;
-	viewDef->projectionMatrix[1 * 4 + 3] = 0.0f;
-	
-	viewDef->projectionMatrix[2 * 4 + 0] = 0.0f;
-	viewDef->projectionMatrix[2 * 4 + 1] = 0.0f;
-	viewDef->projectionMatrix[2 * 4 + 2] = -1.0f;
-	viewDef->projectionMatrix[2 * 4 + 3] = 0.0f;
-	
-	viewDef->projectionMatrix[3 * 4 + 0] = -1.0f; // RB: was -2.0f
+		viewDef->projectionMatrix[1 * 4 + 2] = 0.0f;
+		viewDef->projectionMatrix[1 * 4 + 3] = 0.0f;
+
+		viewDef->projectionMatrix[2 * 4 + 0] = 0.0f;
+		viewDef->projectionMatrix[2 * 4 + 1] = 0.0f;
+		viewDef->projectionMatrix[2 * 4 + 2] = -1.0f;
+		viewDef->projectionMatrix[2 * 4 + 3] = 0.0f;
+
+		viewDef->projectionMatrix[3 * 4 + 0] = -1.0f; // RB: was -2.0f
 #if defined(USE_VULKAN)
-	viewDef->projectionMatrix[3 * 4 + 1] = -1.0f;
+		viewDef->projectionMatrix[3 * 4 + 1] = -1.0f;
 #else
-	viewDef->projectionMatrix[3 * 4 + 1] = 1.0f;
+		viewDef->projectionMatrix[3 * 4 + 1] = 1.0f;
 #endif
-	viewDef->projectionMatrix[3 * 4 + 2] = 0.0f; // RB: was 1.0f
-	viewDef->projectionMatrix[3 * 4 + 3] = 1.0f;
+		viewDef->projectionMatrix[3 * 4 + 2] = 0.0f; // RB: was 1.0f
+		viewDef->projectionMatrix[3 * 4 + 3] = 1.0f;
 	
 	// make a tech5 renderMatrix for faster culling
 	idRenderMatrix::Transpose( *( idRenderMatrix* )viewDef->projectionMatrix, viewDef->projectionRenderMatrix );
@@ -325,9 +329,9 @@ void idGuiModel::EmitFullScreen()
 	viewDef->worldSpace.modelMatrix[1 * 4 + 1] = 1.0f;
 	viewDef->worldSpace.modelMatrix[2 * 4 + 2] = 1.0f;
 	viewDef->worldSpace.modelMatrix[3 * 4 + 3] = 1.0f;
-	
+
 	viewDef->worldSpace.modelViewMatrix[0 * 4 + 0] = 1.0f;
-	viewDef->worldSpace.modelViewMatrix[1 * 4 + 1] = 1.0f;
+	viewDef->worldSpace.modelViewMatrix[1 * 4 + 1] = renderSystem->GetStereo3DMode() == STEREO3D_VR && gui_useVRHack.GetBool() ? 0.9f : 1.0f;
 	viewDef->worldSpace.modelViewMatrix[2 * 4 + 2] = 1.0f;
 	viewDef->worldSpace.modelViewMatrix[3 * 4 + 3] = 1.0f;
 	

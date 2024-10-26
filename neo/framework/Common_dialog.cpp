@@ -812,6 +812,7 @@ void idCommonDialog::Init()
 	Shutdown();
 	
 	dialog = new( TAG_SWF ) idSWF( "dialog" );
+
 	saveIndicator = new( TAG_SWF ) idSWF( "save_indicator" );
 	
 #define BIND_DIALOG_CONSTANT( x ) dialog->SetGlobal( #x, x )
@@ -831,6 +832,9 @@ void idCommonDialog::Init()
 		BIND_DIALOG_CONSTANT( DIALOG_CRAWL_SAVE );
 		BIND_DIALOG_CONSTANT( DIALOG_CONTINUE_LARGE );
 		BIND_DIALOG_CONSTANT( DIALOG_BENCHMARK );
+	}
+	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		dialog->SetSWFScale(0.82f);
 	}
 }
 

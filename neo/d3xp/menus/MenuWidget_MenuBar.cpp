@@ -91,7 +91,7 @@ void idMenuWidget_MenuBar::Update()
 	idSWFSpriteInstance* backing = GetSprite()->GetScriptObject()->GetNestedSprite( "backing" );
 	if( backing != NULL )
 	{
-		if( menuData != NULL && (!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5))
+		if( menuData != NULL && ((!common->IsNewDOOM3() && menuData->GetPlatform() != 2) || (common->IsNewDOOM3() && menuData->GetPlatform() != 5) || renderSystem->GetStereo3DMode() == STEREO3D_VR))
 		{
 			backing->SetVisible( false );
 		}

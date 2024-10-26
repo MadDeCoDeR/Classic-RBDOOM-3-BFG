@@ -62,12 +62,36 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	{
 		return;
 	}
+
+	float xOffset = 0.0f;
+	float yOffset = 0.0f;
+	float topXOffset = 0.0f;
+	float topYOffset = 0.0f;
+	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		xOffset = renderSystem->GetWidth() / 9.0f;
+		yOffset = (renderSystem->GetHeight() / 10.0f) * -1.0f;
+		topXOffset = renderSystem->GetWidth() / 12.0f;
+		topYOffset = (renderSystem->GetHeight() / 26.0f) * -1.0f;
+	}
 	
 	idSWFScriptObject& root = menuGUI->GetRootObject();
 	playerInfo = root.GetNestedObj( "_bottomLeft", "playerInfo", "info" );
+	playerInfo->GetSprite()->SetXPos(playerInfo->GetSprite()->GetXPos() + xOffset);
+	playerInfo->GetSprite()->parent->SetYPos(playerInfo->GetSprite()->parent->GetYPos() + yOffset);
 	stamina = root.GetNestedObj( "_bottomLeft", "stamina" );
+	stamina->GetSprite()->SetXPos(stamina->GetSprite()->GetXPos() + xOffset);
+	stamina->GetSprite()->SetYPos(stamina->GetSprite()->GetYPos() + yOffset);
 	locationName = root.GetNestedText( "_bottomLeft", "location", "txtVal" );
+	idSWFSpriteInstance* locationNameSprite = root.GetNestedSprite("_bottomLeft", "location");
+	locationNameSprite->SetXPos(locationNameSprite->GetXPos() + xOffset);
+	locationNameSprite->SetYPos((locationNameSprite->GetYPos() + yOffset));
+	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		locationNameSprite->SetXPos(locationNameSprite->GetXPos() - 190);
+		locationNameSprite->SetYPos(locationNameSprite->GetYPos() + 15);
+	}
 	tipInfo = root.GetNestedObj( "_left", "tip" );
+	tipInfo->GetSprite()->SetXPos(tipInfo->GetSprite()->GetXPos() + topXOffset);
+	tipInfo->GetSprite()->SetYPos(tipInfo->GetSprite()->GetYPos() - topYOffset);
 	
 	if( playerInfo )
 	{
@@ -78,6 +102,7 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	
 	// Security Update
 	security = root.GetNestedSprite( "_center", "security" );
+	security->SetYPos(security->GetYPos() + yOffset);
 	securityText = root.GetNestedText( "_center", "security", "info", "txtVal" );
 
 	// Subtitles Update
@@ -92,24 +117,38 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	
 	// PDA Download
 	newPDADownload = root.GetNestedSprite( "_center", "pdaDownload" );
+	newPDADownload->SetYPos(newPDADownload->GetYPos() + yOffset);
 	newPDAName = root.GetNestedText( "_center", "pdaDownload", "info", "txtName" );
 	newPDAHeading = root.GetNestedText( "_center", "pdaDownload", "info", "txtHeading" );
 	newPDA = root.GetNestedSprite( "_bottomLeft", "newPDA" );
+	newPDA->SetXPos(newPDA->GetXPos() + xOffset);
+	newPDA->SetYPos(newPDA->GetYPos() + yOffset);
 	
 	// Video Download
 	newVideoDownload = root.GetNestedSprite( "_center", "videoDownload" );
+	newVideoDownload->SetYPos(newVideoDownload->GetYPos() + yOffset);
 	newVideoHeading = root.GetNestedText( "_center", "videoDownload", "info", "txtHeading" );
 	newVideo = root.GetNestedSprite( "_bottomLeft", "newVideo" );
+	newVideo->SetXPos(newVideo->GetXPos() + xOffset);
+	newVideo->SetYPos(newVideo->GetYPos() + yOffset);
 	
 	// Audio Log
 	audioLog = root.GetNestedSprite( "_bottomLeft", "audioLog" );
+	audioLog->SetXPos(audioLog->GetXPos() + xOffset);
+	audioLog->SetYPos(audioLog->GetYPos() + yOffset);
 	
 	// Radio Communication
 	communication = root.GetNestedSprite( "_bottomLeft", "communication" );
+	communication->SetXPos(communication->GetXPos() + xOffset);
+	communication->SetYPos(communication->GetYPos() + yOffset);
 	
 	// Oxygen
 	oxygen = root.GetNestedSprite( "_bottomLeft", "oxygen" );
+	oxygen->SetXPos(oxygen->GetXPos() + xOffset);
+	oxygen->SetYPos(oxygen->GetYPos() + yOffset);
 	flashlight = root.GetNestedSprite( "_bottomLeft", "flashlight" );
+	flashlight->SetXPos(flashlight->GetXPos() + xOffset);
+	flashlight->SetYPos(flashlight->GetYPos() + yOffset);
 	
 	// Objective
 	objective = root.GetNestedSprite( "_right", "objective" );
@@ -117,8 +156,15 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	
 	// Ammo Info
 	ammoInfo = root.GetNestedSprite( "_bottomRight", "ammoInfo" );
+	ammoInfo->SetXPos(ammoInfo->GetXPos() - xOffset);
+	ammoInfo->parent->SetYPos(ammoInfo->parent->GetYPos() + yOffset);
 	bsInfo = root.GetNestedSprite( "_bottomRight", "bsInfo" );
+	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		bsInfo->SetXPos((bsInfo->GetXPos() - xOffset) + 150);
+		bsInfo->SetYPos(bsInfo->GetYPos() - 150);
+	}
 	soulcubeInfo = root.GetNestedSprite( "_bottomRight", "soulcube" );
+	soulcubeInfo->SetXPos(soulcubeInfo->GetXPos() - xOffset);
 	
 	// If the player loaded a save with enough souls to use the cube, the icon wouldn't show.  We're setting this flag in idPlayer::Restore so we can show the cube after loading a game
 	if( showSoulCubeInfoOnLoad == true )
@@ -129,13 +175,19 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	
 	// Weapon pills
 	weaponPills = root.GetNestedObj( "_bottomRight", "weaponState" );
+	weaponPills->GetSprite()->SetXPos(weaponPills->GetSprite()->GetXPos() - xOffset);
 	weaponImg = root.GetNestedSprite( "_bottomRight", "weaponIcon" );
+	weaponImg->SetXPos(weaponImg->GetXPos() - xOffset);
 	weaponName = root.GetNestedObj( "_bottomRight", "weaponName" );
+	weaponName->GetSprite()->SetXPos(weaponName->GetSprite()->GetXPos() - xOffset);
 	
 	// Pickup Info
 	newWeapon = root.GetNestedSprite( "_center", "newWeapon" );
 	pickupInfo = root.GetNestedSprite( "_bottomLeft", "pickupInfo" );
+	pickupInfo->SetXPos(pickupInfo->GetXPos() + xOffset);
+	pickupInfo->SetYPos(pickupInfo->GetYPos() + yOffset);
 	newItem = root.GetNestedSprite( "_left", "newItem" );
+	newItem->SetXPos(newItem->GetXPos() + xOffset);
 	
 	// Cursors
 	talkCursor = root.GetNestedSprite( "_center", "crosshairTalk" );

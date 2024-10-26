@@ -73,6 +73,8 @@ option (USE_DXGI
 option (USE_FOOLS
 				"Enable Fools Edition" OFF)
 
+option (USE_OPENXR "Use OpenXR for VR support" ON)
+
 option (INSIDE_PACKAGE 
 					"Compile engine inside a packaged environment" OFF)
 if (CMAKE_CL_64)
@@ -335,6 +337,10 @@ elseif(MSVC)
 	
 endif()
 
+if (USE_OPENXR)
+	add_definitions(-DUSE_OPENXR)
+endif()
+
 if (USE_FOOLS)
 	add_definitions(-DFOOLS)
 	if (MSVC)
@@ -488,6 +494,25 @@ else (RAPIDJSON_FOUND)
 	include_directories("libs/rapidjson/include")
 endif (RAPIDJSON_FOUND)
 
+if (USE_OPENXR)
+	set(CMAKE_MODULE_LINKER_FLAGS_RETAIL "${CMAKE_MODULE_LINKER_FLAGS_RELEASE}")
+	set(CMAKE_MODULE_LINKER_FLAGS_RETWITHDEBUGSYMBOLS "${CMAKE_MODULE_LINKER_FLAGS_RELEASE}")
+	set(XR_RUNTIME_JSON "$ENV{XR_RUNTIME_JSON}")
+	include(FetchContent)
+	set(BUILD_TESTS OFF)
+	set(BUILD_API_LAYERS ON)
+	FetchContent_Declare(
+		OpenXR
+		URL_HASH MD5=927EE8D4699DFB4DDD9B0A16A37EDBFC
+		URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.1.37.tar.gz
+		SOURCE_DIR
+		../neo/libs/openxr
+	)
+	FetchContent_MakeAvailable(OpenXR)
+	include_directories(
+	${openxr_SOURCE_DIR}/src/common
+	)
+endif(USE_OPENXR)
 
 	
 add_subdirectory(idlib)
@@ -527,6 +552,9 @@ file(GLOB RENDERER_SMAA_INCLUDES renderer/SMAA/*.h)
 
 file(GLOB RENDERER_OPENGL_INCLUDES renderer/OpenGL/*.h)
 file(GLOB RENDERER_OPENGL_SOURCES renderer/OpenGL/*.cpp)
+
+file(GLOB RENDERER_OPENXR_INCLUDES renderer/OpenXR/*.h)
+file(GLOB RENDERER_OPENXR_SOURCES renderer/OpenXR/*.cpp)
 
 file(GLOB RENDERER_VULKAN_INCLUDES renderer/Vulkan/*.h)
 file(GLOB RENDERER_VULKAN_SOURCES renderer/Vulkan/*.cpp)
@@ -1038,6 +1066,11 @@ if (USE_DXGI)
 else()
 	list(APPEND WIN32_SOURCES sys/win32/win_glimp.cpp)
 endif()
+
+if (USE_OPENXR)
+	list(APPEND WIN32_SOURCES sys/win32/win_oxr.cpp)
+	list(APPEND WIN32_INCLUDES sys/win32/win_oxr.h)
+endif()
 	
 if(MSVC)
 	list(APPEND WIN32_SOURCES sys/win32/win_cpu.cpp)
@@ -1102,6 +1135,9 @@ source_group("Renderer\\Jobs\\StaticShadowVolume" FILES ${RENDERER_JOBS_STATICSH
 
 source_group("Renderer\\OpenGL" FILES ${RENDERER_OPENGL_INCLUDES})
 source_group("Renderer\\OpenGL" FILES ${RENDERER_OPENGL_SOURCES})
+
+source_group("Renderer\\OpenXR" FILES ${RENDERER_OPENXR_INCLUDES})
+source_group("Renderer\\OpenXR" FILES ${RENDERER_OPENXR_SOURCES})
 
 source_group("Renderer\\Vulkan" FILES ${RENDERER_VULKAN_INCLUDES})
 source_group("Renderer\\Vulkan" FILES ${RENDERER_VULKAN_SOURCES})
@@ -1489,6 +1525,12 @@ if(MSVC)
 			opengl32
 			glu32)
 	endif()
+
+	if (USE_OPENXR)
+		list(APPEND RBDOOM3_INCLUDES ${RENDERER_OPENXR_INCLUDES})
+		list(APPEND RBDOOM3_SOURCES ${RENDERER_OPENXR_SOURCES})
+	endif()
+
 	
 	list(APPEND RBDOOM3_INCLUDES 
 			${SOUND_COMMON_INCLUDES})
@@ -1804,6 +1846,9 @@ if(MSVC)
         ${GLEW_LIBRARY}
 		${CMAKE_DL_LIBS}
 		)
+		if (USE_OPENXR)
+			target_link_libraries(DoomBFA openxr-gfxwrapper openxr_loader)
+		endif()
 	
 
 		

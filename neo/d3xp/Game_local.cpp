@@ -33,6 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "Game_local.h"
 #include "GameEdit.h"
+#include <renderer/OpenXR/XRCommon.h>
 
 #ifdef GAME_DLL
 
@@ -2709,6 +2710,7 @@ void idGameLocal::RunFrame( idUserCmdMgr& cmdMgr, gameReturn_t& ret )
 	
 	SyncPlayersWithLobbyUsers( false );
 	ServerSendNetworkSyncCvars();
+	
 	
 	player = GetLocalPlayer();
 	
@@ -5940,6 +5942,7 @@ void idGameLocal::Shell_Show( bool show )
 	{
 		shellHandler->ActivateMenu( show );
 	}
+	cvarSystem->SetCVarBool("gui_useVRHack", show);
 }
 
 /*

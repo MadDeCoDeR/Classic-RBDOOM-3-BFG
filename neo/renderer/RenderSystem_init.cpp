@@ -40,7 +40,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../sys/win32/win_local.h"
 #endif
 // RB end
-
+#include "OpenXR/XRCommon.h"
 // foresthale 2014-03-01: fixed custom screenshot resolution by doing a more direct render path
 #define BUGFIXEDSCREENSHOTRESOLUTION 1
 #ifdef BUGFIXEDSCREENSHOTRESOLUTION
@@ -234,7 +234,7 @@ idCVar r_materialOverride( "r_materialOverride", "", CVAR_RENDERER, "overrides a
 
 idCVar r_debugRenderToTexture( "r_debugRenderToTexture", "0", CVAR_RENDERER | CVAR_INTEGER, "" );
 
-idCVar stereoRender_enable( "stereoRender_enable", "0", CVAR_INTEGER | CVAR_ARCHIVE, "1 = side-by-side compressed, 2 = top and bottom compressed, 3 = side-by-side, 4 = 720 frame packed, 5 = interlaced, 6 = OpenGL quad buffer" );
+idCVar stereoRender_enable( "stereoRender_enable", "0", CVAR_INTEGER | CVAR_ARCHIVE, "1 = side-by-side compressed, 2 = top and bottom compressed, 3 = side-by-side, 4 = 720 frame packed, 5 = interlaced, 6 = OpenGL quad buffer, 7 = Virtual Reality (using side-by-side)" );
 //extern	idCVar stereoRender_swapEyes;
 idCVar stereoRender_deGhost( "stereoRender_deGhost", "0.05", CVAR_FLOAT | CVAR_ARCHIVE, "subtract from opposite eye to reduce ghosting" );
 
@@ -294,7 +294,9 @@ idCVar r_aspectcorrect("r_aspectcorrect", "0", CVAR_RENDERER | CVAR_ARCHIVE | CV
 idCVar r_clight("r_clight", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER | CVAR_INIT, "0 = original, 1 = Dark, 2 = Bright"); //GK: Special cvar for classic DOOM Light
 idCVar r_clblurry("r_clblurry", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL | CVAR_INIT, "Enables/Disbles Classic DOOM Blurry effects");//GK: Useless since the new Rendering Code of 1.2.0
 extern idCVar swf_cursorDPI;
+extern idCVar cl_HUD;
 //GK end
+idCVar	r_forceScreenWidthCentimeters("r_forceScreenWidthCentimeters", "0", CVAR_RENDERER | CVAR_ARCHIVE, "Override screen width returned by hardware");
 const char* fileExten[3] = { "tga", "png", "jpg" };
 const char* envDirection[6] = { "_px", "_nx", "_py", "_ny", "_pz", "_nz" };
 const char* skyDirection[6] = { "_forward", "_back", "_left", "_right", "_up", "_down" };
@@ -510,6 +512,10 @@ void R_SetNewMode( const bool fullInit )
 		default:
 			parms.multiSamples = 0;
 			break;
+		}
+
+		if (stereoRender_enable.GetInteger() == STEREO3D_VR) {
+			parms.multiSamples = 0;
 		}
 
 		if (i == 0)
@@ -2374,6 +2380,24 @@ void idRenderSystemLocal::Init()
 	tr_guiModel = guiModel;	// for DeviceContext fast path
 	
 	UpdateStereo3DMode();
+#ifdef USE_OPENXR
+	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR && !xrSystem->IsInitialized()) {
+		if (xrSystem->InitXR()) {
+			r_fullscreen.SetInteger(1);
+			r_customWidth.SetInteger(xrSystem->GetWidth());
+			r_customHeight.SetInteger(xrSystem->GetHeight());
+			cl_HUD.SetBool(true);
+			r_useVirtualScreenResolution.SetBool(true);
+			r_useSRGB.SetBool(false);
+			xrSystem->SetActionSet("MENU");
+			game->SetCVarInteger("stereoRender_convergence", 0);
+		}
+		else {
+			xrSystem->ShutDownXR();
+		}
+		
+	}
+#endif
 	
 	globalImages->Init();
 	
@@ -2655,7 +2679,7 @@ idRenderSystemLocal::GetWidth
 */
 int idRenderSystemLocal::GetWidth() const
 {
-	if( glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE || glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE_COMPRESSED )
+	if( glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE || glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE_COMPRESSED)
 	{
 		return glConfig.nativeScreenWidth >> 1;
 	}
@@ -2674,7 +2698,7 @@ int idRenderSystemLocal::GetHeight() const
 		return 720;
 	}
 	extern idCVar stereoRender_warp;
-	if( glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE && stereoRender_warp.GetBool() )
+	if(( glConfig.stereo3Dmode == STEREO3D_SIDE_BY_SIDE && stereoRender_warp.GetBool() ))
 	{
 		// for the Rift, render a square aspect view that will be symetric for the optics
 		return glConfig.nativeScreenWidth >> 1;
@@ -2807,7 +2831,7 @@ idRenderSystemLocal::GetPhysicalScreenWidthInCentimeters
 This is used to calculate stereoscopic screen offset for a given interocular distance.
 ========================
 */
-idCVar	r_forceScreenWidthCentimeters( "r_forceScreenWidthCentimeters", "0", CVAR_RENDERER | CVAR_ARCHIVE, "Override screen width returned by hardware" );
+
 float idRenderSystemLocal::GetPhysicalScreenWidthInCentimeters() const
 {
 	if( r_forceScreenWidthCentimeters.GetFloat() > 0 )
