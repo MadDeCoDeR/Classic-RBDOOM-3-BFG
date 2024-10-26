@@ -27,7 +27,7 @@ jobs:
         - name: setup-msbuild
           uses: microsoft/setup-msbuild@v2
           with:
-            vs-version: '[17.0, 17.11.5)'
+            vs-version: '[17.0, 17.11)'
             msbuild-architecture: x64
     
         - name: Cache Windows vcpkg
