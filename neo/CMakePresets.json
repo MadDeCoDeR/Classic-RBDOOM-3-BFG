@@ -113,7 +113,13 @@
       "name": "windows-x64-2022",
       "displayName": "VS2022: 64-bit Windows",
       "inherits": "windows-x64-base",
-      "generator": "Visual Studio 17"
+      "generator": "Visual Studio 17",
+      "cacheVariables": {
+        "USE_OPENXR": {
+          "type": "BOOL",
+          "value": "ON"
+        }
+      }
     },
     {
       "name": "windows-x64-2022-fools",

@@ -40,8 +40,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../doomclassic/doom/globaldata.h"
 #endif
 // RB end
-
+#ifdef USE_OPENXR
 #include "../renderer/OpenXR/XRCommon.h"
+#endif
 /*
 
 New for tech4x:

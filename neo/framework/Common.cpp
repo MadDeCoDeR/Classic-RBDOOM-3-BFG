@@ -957,7 +957,9 @@ CONSOLE_COMMAND( reloadLanguage, "reload language dict", NULL )
 }
 
 #include "../renderer/Image.h"
+#ifdef USE_OPENXR
 #include <renderer/OpenXR/XRCommon.h>
+#endif
 
 /*
 =================

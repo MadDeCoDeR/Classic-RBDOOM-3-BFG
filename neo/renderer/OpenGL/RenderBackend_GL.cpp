@@ -35,7 +35,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "../RenderCommon.h"
 #include "../RenderBackend.h"
 #include "../../framework/Common_local.h"
+#ifdef USE_OPENXR
 #include "../OpenXR/XRCommon.h"
+#endif
 
 idCVar r_drawFlickerBox( "r_drawFlickerBox", "0", CVAR_RENDERER | CVAR_BOOL, "visual test for dropping frames" );
 idCVar stereoRender_warp( "stereoRender_warp", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "use the optical warping renderprog instead of stereoDeGhost" );

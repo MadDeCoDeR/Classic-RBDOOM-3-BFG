@@ -73,7 +73,7 @@ option (USE_DXGI
 option (USE_FOOLS
 				"Enable Fools Edition" OFF)
 
-option (USE_OPENXR "Use OpenXR for VR support" ON)
+option (USE_OPENXR "Use OpenXR for VR support" OFF)
 
 option (INSIDE_PACKAGE 
 					"Compile engine inside a packaged environment" OFF)
@@ -552,9 +552,10 @@ file(GLOB RENDERER_SMAA_INCLUDES renderer/SMAA/*.h)
 
 file(GLOB RENDERER_OPENGL_INCLUDES renderer/OpenGL/*.h)
 file(GLOB RENDERER_OPENGL_SOURCES renderer/OpenGL/*.cpp)
-
-file(GLOB RENDERER_OPENXR_INCLUDES renderer/OpenXR/*.h)
-file(GLOB RENDERER_OPENXR_SOURCES renderer/OpenXR/*.cpp)
+if (USE_OPENXR)
+	file(GLOB RENDERER_OPENXR_INCLUDES renderer/OpenXR/*.h)
+	file(GLOB RENDERER_OPENXR_SOURCES renderer/OpenXR/*.cpp)
+endif()
 
 file(GLOB RENDERER_VULKAN_INCLUDES renderer/Vulkan/*.h)
 file(GLOB RENDERER_VULKAN_SOURCES renderer/Vulkan/*.cpp)

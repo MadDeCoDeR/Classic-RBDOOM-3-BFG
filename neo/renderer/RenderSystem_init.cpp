@@ -40,7 +40,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "../sys/win32/win_local.h"
 #endif
 // RB end
+#ifdef USE_OPENXR
 #include "OpenXR/XRCommon.h"
+#endif
 // foresthale 2014-03-01: fixed custom screenshot resolution by doing a more direct render path
 #define BUGFIXEDSCREENSHOTRESOLUTION 1
 #ifdef BUGFIXEDSCREENSHOTRESOLUTION
