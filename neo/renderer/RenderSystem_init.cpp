@@ -297,6 +297,7 @@ idCVar r_clight("r_clight", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER | C
 idCVar r_clblurry("r_clblurry", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL | CVAR_INIT, "Enables/Disbles Classic DOOM Blurry effects");//GK: Useless since the new Rendering Code of 1.2.0
 extern idCVar swf_cursorDPI;
 extern idCVar cl_HUD;
+extern idCVar cl_ScreenSize;
 //GK end
 idCVar	r_forceScreenWidthCentimeters("r_forceScreenWidthCentimeters", "0", CVAR_RENDERER | CVAR_ARCHIVE, "Override screen width returned by hardware");
 const char* fileExten[3] = { "tga", "png", "jpg" };
@@ -2385,12 +2386,11 @@ void idRenderSystemLocal::Init()
 #ifdef USE_OPENXR
 	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR && !xrSystem->IsInitialized()) {
 		if (xrSystem->InitXR()) {
-			r_fullscreen.SetInteger(1);
-			r_customWidth.SetInteger(xrSystem->GetWidth());
-			r_customHeight.SetInteger(xrSystem->GetHeight());
+			r_fullscreen.SetInteger(0);
 			cl_HUD.SetBool(true);
 			r_useVirtualScreenResolution.SetBool(true);
 			r_useSRGB.SetBool(false);
+			cl_ScreenSize.SetInteger(1);
 			xrSystem->SetActionSet("MENU");
 			game->SetCVarInteger("stereoRender_convergence", 0);
 		}

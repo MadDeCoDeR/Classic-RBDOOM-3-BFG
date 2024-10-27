@@ -249,7 +249,7 @@ void idMenuScreen_Shell_Stereoscopics::HideScreen( const mainMenuTransition_t tr
 
 /*
 ========================
-idMenuScreen_Shell_Stereoscopics::HandleAction h
+idMenuScreen_Shell_Stereoscopics::HandleAction
 ========================
 */
 bool idMenuScreen_Shell_Stereoscopics::HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled )
@@ -402,6 +402,9 @@ void idMenuScreen_Shell_Stereoscopics::idMenuDataSource_StereoSettings::AdjustFi
 		{
 			numOptions--;
 		}
+#ifndef USE_OPENXR
+		numOptions--;
+#endif
 		
 		int adjusted = fields[ fieldIndex ].ToInteger() + adjustAmount;
 		adjusted += numOptions;
