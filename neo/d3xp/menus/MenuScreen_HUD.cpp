@@ -68,7 +68,7 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	float topXOffset = 0.0f;
 	float topYOffset = 0.0f;
 	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
-		xOffset = renderSystem->GetWidth() / 9.0f;
+		xOffset = renderSystem->GetWidth() / 10.0f;
 		yOffset = (renderSystem->GetHeight() / 10.0f) * -1.0f;
 		topXOffset = renderSystem->GetWidth() / 12.0f;
 		topYOffset = (renderSystem->GetHeight() / 26.0f) * -1.0f;
