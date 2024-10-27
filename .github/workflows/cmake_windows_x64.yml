@@ -45,10 +45,12 @@ jobs:
           
         - name: Build
           # Build your program with the given configuration
-          run: cmake --build ${{github.workspace}}/build --config ${{inputs.build_type}}
+          #run: cmake --build ${{github.workspace}}/build --config ${{inputs.build_type}}
+          run: MSBuild ${{github.workspace}}/build/DoomBFA.vcxproj -property:Configuration=${{inputs.build_type}}
     
         - name: BuildDebug
-          run: cmake --build ${{github.workspace}}/build --config retwithdebugsymbols
+          #run: cmake --build ${{github.workspace}}/build --config retwithdebugsymbols
+          run: MSBuild ${{github.workspace}}/build/DoomBFA.vcxproj -property:Configuration=retwithdebugsymbols
           
         - name: Archive production artifacts
           uses: ./.github/actions/upload_artifact
