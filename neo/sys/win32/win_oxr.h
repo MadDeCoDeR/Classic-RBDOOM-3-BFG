@@ -116,7 +116,6 @@ private:
 	};
 	virtual void* CreateFrameBuffer(const FrameBufferCreateInfo &FbCI);
 	std::vector<SwapchainInfo> colorSwapchainInfo = {};
-	std::vector<SwapchainInfo> depthSwapchainInfo = {};
 
 	std::unordered_map<XrSwapchain, std::pair<idXRSwapchainType, std::vector<XrSwapchainImageOpenGLKHR>>> swapchainImageMap{};
 	int renderingEye = -1;

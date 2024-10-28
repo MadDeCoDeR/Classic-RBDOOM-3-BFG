@@ -887,19 +887,6 @@ void idXR_Win::ShutDownXR()
 			}
 		}
 	}
-	if (depthSwapchainInfo.size() > 0) {
-		for (int i = 0; i < depthSwapchainInfo.size(); i++) {
-			for (int j = 0; j < depthSwapchainInfo[i].imageViews.size(); j++) {
-				GLuint fbo = (GLuint)(uint64_t)depthSwapchainInfo[i].imageViews[j];
-				glDeleteFramebuffers(1, &fbo);
-			}
-			depthSwapchainInfo[i].imageViews.clear();
-			swapchainImageMap[depthSwapchainInfo[i].swapchain].second.clear();
-			if (xrDestroySwapchain(depthSwapchainInfo[i].swapchain) != XR_SUCCESS) {
-				common->Warning("OpenXR Error: Failed to delete Depth Swapchain Image");
-			}
-		}
-	}
 	swapchainImageMap.clear();
 
 	if (localSpace != XR_NULL_HANDLE && xrDestroySpace(localSpace) != XR_SUCCESS) {
