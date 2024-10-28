@@ -175,7 +175,6 @@ void idXR_Win::BindSwapchainImage(int eye)
 	if (inFrame) {
 		renderingEye = eye;
 		SwapchainInfo& renderingColorSwapchainInfo = colorSwapchainInfo[renderingEye];
-		//SwapchainInfo& renderingDepthSwapchainInfo = depthSwapchainInfo[renderingEye];
 
 		uint colorIndex = 0;
 		//uint depthIndex = 0;
@@ -184,10 +183,6 @@ void idXR_Win::BindSwapchainImage(int eye)
 			common->Warning("OpenXR Error: Failed to acquire Image for Color Swapchain");
 			return;
 		}
-		/*if (xrAcquireSwapchainImage(renderingDepthSwapchainInfo.swapchain, &acquireInfo, &depthIndex) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to acquire Image for Depth Swapchain");
-			return;
-		}*/
 
 		XrSwapchainImageWaitInfo waitInfo = { XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO };
 		waitInfo.timeout = XR_INFINITE_DURATION;
@@ -195,17 +190,19 @@ void idXR_Win::BindSwapchainImage(int eye)
 			common->Warning("OpenXR Error: Failed to wait for Image for Color Swapchain");
 			return;
 		}
-		/*if (xrWaitSwapchainImage(renderingDepthSwapchainInfo.swapchain, &waitInfo) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to wait for Image for Depth Swapchain");
-			return;
-		}*/
-		XrFovf customFov = { -0.750491619f, 0.785398185f, 0.837758064f, -0.872664630f };
-		if (!isFOVmutable()) {
-			xOffs = abs((views[renderingEye].fov.angleLeft - customFov.angleLeft) * 1000);
-			xOffs = xOffs * (renderingEye == 0 ? 1 : -1);
-		}
+		//GK: Image Alignment Calculation: Using the left and right FOV angles from an FOV that aligns the images it calculates an offset that will apply to the frame in order to keep the images aligned. 
+		// It's not pretty but it works with dynamic resolutions and dynamic lens distances
+		float FOVFixConst = -0.750491619f;
+		float FOVFixConst2 = 0.785398185f;
+		uint32_t xOffsL = abs((views[renderingEye].fov.angleLeft - FOVFixConst) * 1000);
+		xOffsL = xOffsL * (renderingEye == 0 ? 1 : -1);
+
+		uint32_t xOffsR = abs((views[renderingEye].fov.angleRight - FOVFixConst2) * 1000);
+		xOffsR = xOffsR * (renderingEye == 0 ? -1 : 1);
+		xOffs = xOffsL - xOffsR;
+
 		layers[renderingEye] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
-		layers[renderingEye].fov = isFOVmutable()? customFov : views[renderingEye].fov;
+		layers[renderingEye].fov = views[renderingEye].fov;
 		layers[renderingEye].pose = views[renderingEye].pose;
 		layers[renderingEye].subImage.swapchain = renderingColorSwapchainInfo.swapchain;
 		layers[renderingEye].subImage.imageRect.offset.x = 0;
@@ -222,18 +219,12 @@ void idXR_Win::BindSwapchainImage(int eye)
 void idXR_Win::ReleaseSwapchainImage()
 {
 	if (inFrame) {
-		//glDeleteFramebuffers(1, &glFBO);
 		glFBO = MAX_UNSIGNED_TYPE(int);
 		XrSwapchainImageReleaseInfo releaseInfo{ XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO };
 		if (xrReleaseSwapchainImage(colorSwapchainInfo[renderingEye].swapchain, &releaseInfo) != XR_SUCCESS) {
 			common->Warning("OpenXR Error: Failed to release Color swapchain Image");
 			return;
 		}
-		
-		/*if (xrReleaseSwapchainImage(depthSwapchainInfo[renderingEye].swapchain, &releaseInfo) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to release Depth swapchain Image");
-			return;
-		}*/
 	}
 }
 
@@ -768,15 +759,10 @@ bool idXR_Win::InitXR() {
 		}
 	}
 
-	width = 2244;
-	height = 2352;
-
 	viewProperties = { XR_TYPE_VIEW_CONFIGURATION_PROPERTIES };
 	if (xrGetViewConfigurationProperties(instance, systemId, viewConfiguration, &viewProperties) == XR_SUCCESS) {
-		if (!viewProperties.fovMutable) {
-			width = configurationView[0].recommendedImageRectWidth; 
-			height = configurationView[0].recommendedImageRectHeight;
-		}
+		width = configurationView[0].recommendedImageRectWidth; 
+		height = configurationView[0].recommendedImageRectHeight;
 	}
 
 	//Create a Session
@@ -833,24 +819,7 @@ bool idXR_Win::InitXR() {
 		colorFormat = *colorFormatIterator;
 	}
 
-	std::vector<int64> supportedDepthFormats = {
-		GL_DEPTH_COMPONENT32F,
-		GL_DEPTH_COMPONENT32,
-		GL_DEPTH_COMPONENT24,
-		GL_DEPTH_COMPONENT16
-	};
-	int64 depthFormat = 0;
-	std::vector<int64>::const_iterator depthFormatIterator = std::find_first_of(formats.begin(), formats.end(), supportedDepthFormats.begin(), supportedDepthFormats.end());
-	if (depthFormatIterator == formats.end()) {
-		common->Warning("OpenXR Error: Failed to find Depth Format");
-		return false;
-	}
-	else {
-		depthFormat = *depthFormatIterator;
-	}
-
 	colorSwapchainInfo.resize(configurationView.size());
-	depthSwapchainInfo.resize(configurationView.size());
 
 	
 
@@ -870,23 +839,7 @@ bool idXR_Win::InitXR() {
 			return false;
 		}
 
-		swci.createFlags = 0;
-		swci.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-		swci.format = depthFormat;
-		swci.sampleCount = configurationView[i].recommendedSwapchainSampleCount;
-		swci.width = width;
-		swci.height = height;
-		swci.faceCount = 1;
-		swci.arraySize = 1;
-		swci.mipCount = 1;
-		if (xrCreateSwapchain(session, &swci, &depthSwapchainInfo[i].swapchain) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to Create Depth Swapchain");
-			return false;
-		}
-
 		uint colorSwapchainImageCount = this->EnumerateSwapchainImage(colorSwapchainInfo, idXRSwapchainType::COLOR, i);
-
-		uint depthSwapchainImageCount = this->EnumerateSwapchainImage(depthSwapchainInfo, idXRSwapchainType::DEPTH, i);
 
 		for (uint ci = 0; ci < colorSwapchainImageCount; ci++) {
 			FrameBufferCreateInfo fbCI;
@@ -901,22 +854,6 @@ bool idXR_Win::InitXR() {
 			fbCI.layerCount = 1;
 			colorSwapchainInfo[i].imageViews.push_back(CreateFrameBuffer(fbCI));
 		}
-
-		for (uint di = 0; di < depthSwapchainImageCount; di++) {
-			FrameBufferCreateInfo fbCI;
-			fbCI.image = (void*)(uint64_t)swapchainImageMap[depthSwapchainInfo[i].swapchain].second[di].image;
-			fbCI.type = FrameBufferCreateInfo::Type::DSV;
-			fbCI.view = FrameBufferCreateInfo::View::TYPE_2D;
-			fbCI.format = depthSwapchainInfo[i].swapchainFormat;
-			fbCI.aspect = FrameBufferCreateInfo::Aspect::DEPTH_BIT;
-			fbCI.baseMipLevel = 0;
-			fbCI.levelCount = 1;
-			fbCI.baseArrayLayer = 0;
-			fbCI.layerCount = 1;
-			depthSwapchainInfo[i].imageViews.push_back(CreateFrameBuffer(fbCI));
-		}
-		
-		//XrSwapchain targetSwapchain = colorSwapchainInfo[i].swapchain;
 	}
 
 	uint ebmc = 0;
