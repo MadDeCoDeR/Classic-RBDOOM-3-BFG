@@ -587,28 +587,28 @@ void FindResponseFile (void)
 // and it is usually the higher of them both.
 // The second is based on the remaining frames from the first
 // frequency and is the lower one.
-void CalculateInterpolation() {
-	int engineHz_denominator = com_engineHz_denominator / 100LL;
-	if (engineHz_denominator > com_engineHz_latched) {
-		double firstclassicrate = engineHz_denominator;
-		while (firstclassicrate > com_engineHz_latched) {
-			firstclassicrate = firstclassicrate / 2;
-		}
-		::g->ticrate[0] = ceil(engineHz_denominator / firstclassicrate);
-
-		int ff = ceil(engineHz_denominator / ((double)::g->ticrate[0]));
-
-		double remainedticrate = com_engineHz_latched - ff;
-		for (int i = 1; i < 3; i++) {
-			::g->ticrate[i] = ceil(engineHz_denominator / remainedticrate);
-			int af = ceil(engineHz_denominator / ((double)::g->ticrate[i]));
-			if (remainedticrate - af == 0) {
-				break;
-			}
-			remainedticrate = abs(remainedticrate - af);
-		}
-	}
-}
+//void CalculateInterpolation() {
+//	int engineHz_denominator = com_engineHz_denominator / 100LL;
+//	if (engineHz_denominator > com_engineHz_latched) {
+//		double firstclassicrate = engineHz_denominator;
+//		while (firstclassicrate > com_engineHz_latched) {
+//			firstclassicrate = firstclassicrate / 2;
+//		}
+//		::g->ticrate[0] = ceil(engineHz_denominator / firstclassicrate);
+//
+//		int ff = ceil(engineHz_denominator / ((double)::g->ticrate[0]));
+//
+//		double remainedticrate = com_engineHz_latched - ff;
+//		for (int i = 1; i < 3; i++) {
+//			::g->ticrate[i] = ceil(engineHz_denominator / remainedticrate);
+//			int af = ceil(engineHz_denominator / ((double)::g->ticrate[i]));
+//			if (remainedticrate - af == 0) {
+//				break;
+//			}
+//			remainedticrate = abs(remainedticrate - af);
+//		}
+//	}
+//}
 //GK: End
 
 //
@@ -621,7 +621,7 @@ void D_DoomMain(void)
 	char                    file[256];
 	R_Initwidth(); //GK: Simplyfied
 	FindResponseFile();
-	CalculateInterpolation();
+	//CalculateInterpolation();
 
 
 	IdentifyVersion();

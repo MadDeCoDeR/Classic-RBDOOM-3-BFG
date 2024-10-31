@@ -49,6 +49,7 @@ void G_BuildTiccmd (ticcmd_t *cmd, idUserCmdMgr *, int newTics );
 void D_DoAdvanceDemo (void);
 
 extern bool globalNetworking;
+extern idCVar cl_engineHz;
 
 //
 // NETWORKING
@@ -676,7 +677,26 @@ void D_QuitNetGame (void)
 // Check if the current tic must run or not.
 //
 bool InterpolateTics() {
-	int notyet = 0;
+	if (!::g->skipTicInterpolationCheck) {
+		const int currentTime = Sys_Milliseconds();
+		float expectedFrameMs = 1000.0f / cl_engineHz.GetFloat();
+		::g->timeDelta = currentTime - ::g->lastTicTime;
+		if (::g->timeDelta >= expectedFrameMs) {
+			::g->accumulatedTimeDelta += ::g->timeDelta - expectedFrameMs;
+			if (::g->accumulatedTimeDelta >= expectedFrameMs) {
+				::g->skipTicInterpolationCheck = true;
+				::g->accumulatedTimeDelta = 0;
+			}
+			::g->lastTicTime = currentTime;
+			return true;
+		}
+	}
+	else {
+		::g->skipTicInterpolationCheck = false;
+		return true;
+	}
+	return false;
+	/*int notyet = 0;
 	if (::g->ownedframe) {
 		::g->ownedframe = false;
 		::g->lasttic[!::g->ownedtic] = ::g->lasttic[::g->ownedtic];
@@ -711,7 +731,7 @@ bool InterpolateTics() {
 		notyet = 0;
 		return false;
 	}
-	return false;
+	return false;*/
 }
 //GK: End
 

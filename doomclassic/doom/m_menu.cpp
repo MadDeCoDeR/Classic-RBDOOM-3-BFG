@@ -1945,8 +1945,9 @@ void M_Framerate(int choice) {
 	if (oldHz > 35) {
 		cl_engineHz_interp.SetBool(!cl_engineHz_interp.GetBool());
 	}
-
-	hardreset = true;
+	com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? com_engineHz.GetInteger() : cl_engineHz.GetInteger());
+	com_engineHz_latched = cl_engineHz.GetInteger();
+	//hardreset = true;
 }
 
 void M_Refresh(int choice) {

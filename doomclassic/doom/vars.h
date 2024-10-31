@@ -1129,3 +1129,9 @@ bool warpUsed;
 std::vector<zstats_t> zstats;
 
 int lastMasocTick;
+
+//GK: New Frame Rate Interpolation
+int timeDelta;
+int lastTicTime;
+bool skipTicInterpolationCheck;
+int accumulatedTimeDelta;

@@ -246,11 +246,16 @@ float idConsoleLocal::DrawFPS( float y )
 		int w = strlen( s ) * BIGCHAR_WIDTH;
 		
 		renderSystem->DrawBigStringExt( LOCALSAFE_RIGHT - w, idMath::Ftoi( y ) + 2, s, colorWhite, true );
+		y += BIGCHAR_HEIGHT + 4;
+		const char* frameTimeS = va("%dms", frameTime);
+		int frameTimeW = strlen(frameTimeS) * BIGCHAR_WIDTH;
+		renderSystem->DrawBigStringExt(LOCALSAFE_RIGHT - frameTimeW, idMath::Ftoi(y) + 2, frameTimeS, colorWhite, true);
 	}
 	
 	y += BIGCHAR_HEIGHT + 4;
 
 	Globals* data = (Globals*)DoomLib::GetGlobalData(0);
+	static int secIndex;
 	if (data != NULL) {
 		int engineHz_denominator = com_engineHz_denominator / 100LL;
 		if (engineHz_denominator > com_engineHz_latched) {
@@ -260,27 +265,35 @@ float idConsoleLocal::DrawFPS( float y )
 			renderSystem->DrawBigStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, s, colorWhite, true);
 			y += BIGCHAR_HEIGHT + 4;
 			if (com_showFPS.GetInteger() == 1) {
-				if (data->ticrate[0] != 0 && data->ticrate[1] != 0 && data->ticrate[2] != 0) {
-					//int engineHz_denominator = com_engineHz_denominator / 100LL;
-					int ff = ceil(engineHz_denominator / ((double)data->ticrate[0]));
-					int sf = ceil(engineHz_denominator / ((double)data->ticrate[1]));
-					int tf = ceil(engineHz_denominator / ((double)data->ticrate[2]));
-					idStr ffreq;
-					ffreq.Format("%i / %i ffreq", data->counttics[0], ff);
-					w = ffreq.LengthWithoutColors() * SMALLCHAR_WIDTH;
-					renderSystem->DrawSmallStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, ffreq.c_str(), colorWhite, false);
-					y += SMALLCHAR_HEIGHT + 4;
-					idStr sfreq;
-					sfreq.Format("%i / %i sfreq", data->counttics[1], sf);
-					w = sfreq.LengthWithoutColors() * SMALLCHAR_WIDTH;
-					renderSystem->DrawSmallStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, sfreq.c_str(), colorWhite, false);
-					y += SMALLCHAR_HEIGHT + 4;
-					idStr tfreq;
-					tfreq.Format("%i / %i tfreq", data->counttics[2], tf);
-					w = tfreq.LengthWithoutColors() * SMALLCHAR_WIDTH;
-					renderSystem->DrawSmallStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, tfreq.c_str(), colorWhite, false);
-					y += SMALLCHAR_HEIGHT + 4;
+				for (int i = 0; i < FPS_FRAMES; i++) {
+					continue;
 				}
+				idStr ffreq;
+				ffreq.Format("%dgms", data->timeDelta);
+				w = ffreq.LengthWithoutColors() * SMALLCHAR_WIDTH;
+				renderSystem->DrawSmallStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, ffreq.c_str(), colorWhite, false);
+				y += SMALLCHAR_HEIGHT + 4;
+				//if (data->ticrate[0] != 0 && data->ticrate[1] != 0 && data->ticrate[2] != 0) {
+				//	//int engineHz_denominator = com_engineHz_denominator / 100LL;
+				//	int ff = ceil(engineHz_denominator / ((double)data->ticrate[0]));
+				//	int sf = ceil(engineHz_denominator / ((double)data->ticrate[1]));
+				//	int tf = ceil(engineHz_denominator / ((double)data->ticrate[2]));
+				//	idStr ffreq;
+				//	ffreq.Format("%i / %i ffreq", data->counttics[0], ff);
+				//	w = ffreq.LengthWithoutColors() * SMALLCHAR_WIDTH;
+				//	renderSystem->DrawSmallStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, ffreq.c_str(), colorWhite, false);
+				//	y += SMALLCHAR_HEIGHT + 4;
+				//	idStr sfreq;
+				//	sfreq.Format("%i / %i sfreq", data->counttics[1], sf);
+				//	w = sfreq.LengthWithoutColors() * SMALLCHAR_WIDTH;
+				//	renderSystem->DrawSmallStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, sfreq.c_str(), colorWhite, false);
+				//	y += SMALLCHAR_HEIGHT + 4;
+				//	idStr tfreq;
+				//	tfreq.Format("%i / %i tfreq", data->counttics[2], tf);
+				//	w = tfreq.LengthWithoutColors() * SMALLCHAR_WIDTH;
+				//	renderSystem->DrawSmallStringExt(LOCALSAFE_RIGHT - w, idMath::Ftoi(y) + 2, tfreq.c_str(), colorWhite, false);
+				//	y += SMALLCHAR_HEIGHT + 4;
+				//}
 			}
 		}
 	}
