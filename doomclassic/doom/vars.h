@@ -1133,5 +1133,9 @@ int lastMasocTick;
 //GK: New Frame Rate Interpolation
 int timeDelta;
 int lastTicTime;
-bool skipTicInterpolationCheck;
+int skipTicInterpolationCheck;
 int accumulatedTimeDelta;
+int accumulatedTimeDelta2;
+
+//GK: Mouse Acceleration Fix
+int prevMouseTime;

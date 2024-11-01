@@ -684,7 +684,12 @@ bool InterpolateTics() {
 		if (::g->timeDelta >= expectedFrameMs) {
 			::g->accumulatedTimeDelta += ::g->timeDelta - expectedFrameMs;
 			if (::g->accumulatedTimeDelta >= expectedFrameMs) {
-				::g->skipTicInterpolationCheck = true;
+				::g->accumulatedTimeDelta2 += ::g->accumulatedTimeDelta - expectedFrameMs;
+				if (::g->accumulatedTimeDelta2 >= expectedFrameMs) {
+					::g->skipTicInterpolationCheck++;
+					::g->accumulatedTimeDelta2 = 0;
+				}
+				::g->skipTicInterpolationCheck++;
 				::g->accumulatedTimeDelta = 0;
 			}
 			::g->lastTicTime = currentTime;
@@ -692,7 +697,7 @@ bool InterpolateTics() {
 		}
 	}
 	else {
-		::g->skipTicInterpolationCheck = false;
+		::g->skipTicInterpolationCheck--;
 		return true;
 	}
 	return false;
@@ -749,10 +754,11 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 	::g->trt_realtics = ::g->trt_entertic - ::g->oldtrt_entertics;
 	::g->oldtrt_entertics = ::g->trt_entertic;
 
-	if (FRAME_TO_MSEC(::g->trt_entertic) - ::g->firstClock >= 1000) {
-		int tempcounttics[3] = { 0, 0, 0 };
-		memcpy(::g->counttics, tempcounttics, sizeof(tempcounttics));
-		::g->firstClock = FRAME_TO_MSEC(::g->trt_entertic);
+	int currentTime = Sys_Milliseconds();
+	if (currentTime - ::g->firstClock >= 1000) {
+		/*int tempcounttics[3] = { 0, 0, 0 };
+		memcpy(::g->counttics, tempcounttics, sizeof(tempcounttics));*/
+		::g->firstClock = currentTime;
 		::g->dgameframe = ::g->gameframecount;
 		::g->gameframecount = 0;
 	}

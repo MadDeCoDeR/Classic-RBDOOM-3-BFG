@@ -360,12 +360,19 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			angleDelta.pitch /= newTics;
 		}
 
-		
+		int currentTime = Sys_Milliseconds();
+		int frameTime = currentTime - ::g->prevMouseTime;
+		if (newTics > 0) {
+			::g->prevMouseTime = currentTime;
+		}
+		float estimatedFPS = roundf(1000.0f * (1.0f/frameTime));
 		float engineHz_denominator = com_engineHz_denominator / 100.0f;
-		float accelerator = engineHz_denominator / com_engineHz_latched;
-
-		angleDelta.yaw *= accelerator;
-		angleDelta.pitch *= accelerator;
+		float accelerator = estimatedFPS / com_engineHz_latched;
+		//I_Printf("Estimated FPS: %f, Accelerator: %f\n", estimatedFPS, accelerator);
+		if (accelerator >= 1) {
+			angleDelta.yaw *= accelerator;
+			angleDelta.pitch *= accelerator;
+		}
 
 		//I_Printf("Mouse Pitch: %f, Mouse Yaw: %f\n", angleDelta.pitch, angleDelta.yaw);
 
