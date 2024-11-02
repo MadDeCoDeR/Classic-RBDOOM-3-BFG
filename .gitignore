@@ -56,3 +56,4 @@ neo/neo.kdev4
 *.aps
 /neo/libs/openxr
 /neo/libs/glu
+/neo/libs/ex-openxr-populate1234/OpenXR-SDK-Source-release-1.1.37

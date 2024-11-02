@@ -116,7 +116,8 @@ private:
 	};
 	virtual void* CreateFrameBuffer(const FrameBufferCreateInfo &FbCI);
 	std::vector<SwapchainInfo> colorSwapchainInfo = {};
-
+	GLuint GeneralFB;
+	idImage* GeneralImage;
 	std::unordered_map<XrSwapchain, std::pair<idXRSwapchainType, std::vector<XrSwapchainImageOpenGLKHR>>> swapchainImageMap{};
 	int renderingEye = -1;
 	std::vector<XrView> views;
@@ -167,4 +168,5 @@ private:
 	idXrAction GetActionByName(idStr setName, idStr name);
 	idXrActionSet GetActionSetByName(idStr setName);
 	void MapActionStateToUsrCmd(idXrAction action);
+
 };

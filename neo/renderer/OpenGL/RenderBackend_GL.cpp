@@ -2186,7 +2186,7 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 		case STEREO3D_VR: {
 			if (xrSystem->IsInitialized()) {
 				xrSystem->PollXREvents();
-				xrSystem->StartFrame();
+				
 				renderProgManager.BindShader_StereoVRWarp();
 				glScissor(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
 				glClearColor(0, 0, 0, 0);
@@ -2197,15 +2197,26 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 				stereoRenderImages[0]->Bind();
 				GL_SelectTexture(1);
 				stereoRenderImages[1]->Bind();
+				GLint xrFBO;
+				xrSystem->StartFrame();
+				glGetIntegerv(GL_FRAMEBUFFER_BINDING, &xrFBO);
 				xrSystem->BindSwapchainImage(0);
-				GL_ViewportAndScissor(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+				GL_ViewportAndScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 				DrawElementsWithCounters(&unitSquareSurface);
 
-				xrSystem->RenderFrame(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+				xrSystem->RenderFrame(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 				xrSystem->ReleaseSwapchainImage();
+				if (glConfig.directStateAccess) {
+					glBlitNamedFramebuffer(xrFBO, 0, 0, 0, xrSystem->GetWidth(), xrSystem->GetHeight(), 0, 0, renderSystem->GetWidth() / 2, renderSystem->GetHeight(), GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+				}
+				else {
+					glBindFramebuffer(GL_READ_FRAMEBUFFER, xrFBO);
+					glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+					glBlitFramebuffer(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight(), 0, 0, renderSystem->GetWidth() / 2, renderSystem->GetHeight(), GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+				}
 				idVec4	color2(stereoRender_warpCenterX.GetFloat(), stereoRender_warpCenterY.GetFloat(), stereoRender_warpParmZ.GetFloat(), stereoRender_warpParmW.GetFloat());
 				renderProgManager.SetRenderParm(RENDERPARM_COLOR, color2.ToFloatPtr());
-				glScissor(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+				glScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 				glClearColor(0, 0, 0, 0);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -2214,10 +2225,21 @@ void idRenderBackend::StereoRenderExecuteBackEndCommands( const emptyCommand_t* 
 				GL_SelectTexture(1);
 				stereoRenderImages[0]->Bind();
 				xrSystem->BindSwapchainImage(1);
-				GL_ViewportAndScissor(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+				GL_ViewportAndScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 				DrawElementsWithCounters(&unitSquareSurface);
-				xrSystem->RenderFrame(0, 0, renderSystem->GetWidth(), renderSystem->GetHeight());
+				xrSystem->RenderFrame(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
 				xrSystem->ReleaseSwapchainImage();
+				if (glConfig.directStateAccess) {
+					glBlitNamedFramebuffer(xrFBO, 0, 0, 0, xrSystem->GetWidth(), xrSystem->GetHeight(), renderSystem->GetWidth() / 2, 0, renderSystem->GetWidth(), renderSystem->GetHeight(), GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+				}
+				else {
+					glBindFramebuffer(GL_READ_FRAMEBUFFER, xrFBO);
+					glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+					glBlitFramebuffer(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight(), renderSystem->GetWidth() / 2, 0, renderSystem->GetWidth() , renderSystem->GetHeight(), GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+				}
+				glScissor(0, 0, xrSystem->GetWidth(), xrSystem->GetHeight());
+				glClearColor(0, 0, 0, 0);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 				xrSystem->EndFrame();
 			}
 			break;

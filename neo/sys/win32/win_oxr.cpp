@@ -167,6 +167,9 @@ void idXR_Win::StartFrame()
 			PollActions();
 		}
 		inFrame = frameState.shouldRender && activeSession;
+		if (inFrame) {
+			glBindFramebuffer(GL_FRAMEBUFFER, GeneralFB);
+		}
 	}
 }
 
@@ -232,10 +235,10 @@ void idXR_Win::RenderFrame(int srcX, int srcY, int srcW, int srcH)
 {
 	if (inFrame) {
 		if (glConfig.directStateAccess) {
-			glBlitNamedFramebuffer(0, glFBO, srcX, srcY, srcW, srcH, xOffs, 0, width + xOffs, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
+			glBlitNamedFramebuffer(GeneralFB, glFBO, srcX, srcY, srcW, srcH, xOffs, 0, width + xOffs, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 		}
 		else {
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, GeneralFB);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, glFBO);
 			glBlitFramebuffer(srcX, srcY, srcW, srcH, xOffs, 0, width + xOffs, height, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT, GL_NEAREST);
 		}
@@ -245,6 +248,7 @@ void idXR_Win::RenderFrame(int srcX, int srcY, int srcW, int srcH)
 void idXR_Win::EndFrame()
 {
 	if (inFrame) {
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		XrFrameEndInfo frameEndInfo{ XR_TYPE_FRAME_END_INFO };
 		frameEndInfo.displayTime = predictedDisplayTime;
 		frameEndInfo.environmentBlendMode = environmentBlendMode;
@@ -856,6 +860,25 @@ bool idXR_Win::InitXR() {
 		}
 	}
 
+	GeneralImage = new (TAG_IMAGE)idImage("VR");
+	idImageOpts opts;
+	opts.format = FMT_RGBA8;
+	opts.colorFormat = CFM_DEFAULT;
+	opts.width = width;
+	opts.height = height;
+	opts.numLevels = 1;
+	GeneralImage->AllocImage(opts, TF_LINEAR, TR_REPEAT);
+	FrameBufferCreateInfo fbCI;
+	fbCI.image = (void*)(uint64_t)GeneralImage->texnum;
+	fbCI.type = FrameBufferCreateInfo::Type::RTV;
+	fbCI.view = FrameBufferCreateInfo::View::TYPE_2D;
+	fbCI.format = GL_SRGB8_ALPHA8;
+	fbCI.aspect = FrameBufferCreateInfo::Aspect::COLOR_BIT;
+	fbCI.baseMipLevel = 0;
+	fbCI.levelCount = 1;
+	fbCI.baseArrayLayer = 0;
+	fbCI.layerCount = 1;
+	GeneralFB = (GLuint)(uint64_t)CreateFrameBuffer(fbCI);
 	uint ebmc = 0;
 	if (xrEnumerateEnvironmentBlendModes(instance, systemId, viewConfiguration, 0, &ebmc, nullptr) == XR_SUCCESS) {
 		std::vector<XrEnvironmentBlendMode> environmentBlendModes;
@@ -874,6 +897,10 @@ bool idXR_Win::InitXR() {
 
 void idXR_Win::ShutDownXR()
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDeleteFramebuffers(1, &GeneralFB);
+	GeneralImage->PurgeImage();
+	
 	if (colorSwapchainInfo.size() > 0) {
 		for (int i = 0; i < colorSwapchainInfo.size(); i++) {
 			for (int j = 0; j < colorSwapchainInfo[i].imageViews.size(); j++) {

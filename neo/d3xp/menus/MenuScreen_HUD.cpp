@@ -29,7 +29,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #pragma hdrstop
 #include "../Game_local.h"
-
+#ifdef USE_OPENXR
+#include "../renderer/OpenXR/XRCommon.h"
+#endif
 //extern idCVar pm_stamina;
 
 //extern idCVar flashlight_batteryDrainTimeMS;
@@ -67,13 +69,14 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	float yOffset = 0.0f;
 	float topXOffset = 0.0f;
 	float topYOffset = 0.0f;
+#ifdef USE_OPENXR
 	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
-		xOffset = renderSystem->GetWidth() / 10.0f;
-		yOffset = (renderSystem->GetHeight() / 10.0f) * -1.0f;
-		topXOffset = renderSystem->GetWidth() / 12.0f;
-		topYOffset = (renderSystem->GetHeight() / 26.0f) * -1.0f;
+		xOffset = xrSystem->GetWidth() / 9.0f;
+		yOffset = (xrSystem->GetHeight() / 10.0f) * -1.0f;
+		topXOffset = xrSystem->GetWidth() / 11.0f;
+		topYOffset = (xrSystem->GetHeight() / 26.0f) * -1.0f;
 	}
-	
+#endif
 	idSWFScriptObject& root = menuGUI->GetRootObject();
 	playerInfo = root.GetNestedObj( "_bottomLeft", "playerInfo", "info" );
 	playerInfo->GetSprite()->SetXPos(playerInfo->GetSprite()->GetXPos() + xOffset);

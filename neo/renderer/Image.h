@@ -403,7 +403,7 @@ public:
 	{
 		return actuallyloaded;
 	}
-	
+	GLuint				texnum;				// gl texture binding
 private:
 	friend class idImageManager;
 	
@@ -456,7 +456,6 @@ private:
 	static idList< VkImageView >	viewGarbage[ NUM_FRAME_DATA ];
 	static idList< VkSampler >		samplerGarbage[ NUM_FRAME_DATA ];
 #else
-	GLuint				texnum;				// gl texture binding
 	
 	// we could derive these in subImageUpload each time if necessary
 	GLuint				internalFormat;
