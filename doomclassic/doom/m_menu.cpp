@@ -1146,17 +1146,12 @@ void M_DrawVideo(void)
 	std::string refreshString = va("%d Hz", com_engineHz.GetInteger());
 
 	int offset = 0;
-	if (!cl_engineHz_interp.GetBool()) {
+	if (!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR) {
 		offset = 1;
 	}
-	if(stereoRender_enable.GetInteger() == STEREO3D_VR) {
-		offset = 3;
-	}
 
-	if (stereoRender_enable.GetInteger() != STEREO3D_VR) {
-		V_DrawPatchDirect(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * endgame, 0,
-			/*(patch_t*)*/img2lmp(W_CacheLumpName(fullNames[fullscreenOnOff], PU_CACHE_SHARED), W_GetNumForName(fullNames[fullscreenOnOff])), false);
-	}
+	V_DrawPatchDirect(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * endgame, 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(fullNames[fullscreenOnOff], PU_CACHE_SHARED), W_GetNumForName(fullNames[fullscreenOnOff])), false);
 	V_DrawPatchDirect(::g->VideoDef.x + asoffset, ::g->VideoDef.y + LINEHEIGHT * (detail - offset), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])), false);
 	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light - offset), 0,
@@ -1165,9 +1160,7 @@ void M_DrawVideo(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(syncNames[syncValue], PU_CACHE_SHARED), W_GetNumForName(syncNames[syncValue])), false);
 	//V_DrawPatchDirect(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (blurry), 0,
 	//	/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[blurryeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[blurryeffect])));
-	if (stereoRender_enable.GetInteger() != STEREO3D_VR) {
-		M_WriteText(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * (resolution)+6, res, false);
-	}
+	M_WriteText(::g->VideoDef.x + 150, ::g->VideoDef.y + LINEHEIGHT * (resolution)+6, res, false);
 	M_WriteText(::g->VideoDef.x + 133, ::g->VideoDef.y + LINEHEIGHT * (framerate - offset) + 6, fps.c_str(), false);
 	if (cl_engineHz_interp.GetBool() && stereoRender_enable.GetInteger() != STEREO3D_VR) {
 		M_WriteText(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (refresh)+6, refreshString.c_str(), false);
@@ -2931,30 +2924,27 @@ qboolean M_Responder (event_t* ev)
 	case KEY_DOWNARROW:
 		do
 		{
-			if (::g->itemOn + 1 > ::g->currentMenu->numitems - 1 && !(::g->currentMenu == &::g->VideoDef && stereoRender_enable.GetInteger() == STEREO3D_VR)) {
+			if (::g->itemOn + 1 > ::g->currentMenu->numitems - 1) {
 				::g->itemOn = 0;
 			} else
 				
-				if (::g->currentMenu->menuitems == pageDef.menuitems && ::g->itemOn + 1 >= (pageIndex == 0 ? 11 : 12)) {
+			if (::g->currentMenu->menuitems == pageDef.menuitems && ::g->itemOn + 1 >= (pageIndex == 0 ? 11 : 12)) {
+				::g->itemOn = 0;
+			}
+			else if (::g->currentMenu->menuitems == pageDef.menuitems &&  pageIndex == numPages && ::g->itemOn + 1 >= activePageItems) {
+				if (numPages == 0) {
 					::g->itemOn = 0;
 				}
-				else if (::g->currentMenu->menuitems == pageDef.menuitems &&  pageIndex == numPages && ::g->itemOn + 1 >= activePageItems) {
-					if (numPages == 0) {
-						::g->itemOn = 0;
-					}
-					else {
-						::g->itemOn += (11 - ::g->itemOn);
-					}
+				else {
+					::g->itemOn += (11 - ::g->itemOn);
 				}
-				else if ((::g->currentMenu == &::g->VideoDef && (!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR) && ::g->itemOn == vsync) ) {
-					::g->itemOn = vsync + 2;
-				}
-				else if (::g->currentMenu == &::g->VideoDef && stereoRender_enable.GetInteger() == STEREO3D_VR && ::g->itemOn == light) {
-					::g->itemOn = vsync;
-				}
-				else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == look) {
-					::g->itemOn = jump;
-				}
+			}
+			else if ((::g->currentMenu == &::g->VideoDef && (!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR) && ::g->itemOn == vsync) ) {
+				::g->itemOn = vsync + 2;
+			}
+			else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == look) {
+				::g->itemOn = jump;
+			}
 			else ::g->itemOn++;
 			S_StartSound(NULL,sfx_pstop);
 		} while(::g->currentMenu->menuitems[::g->itemOn].status==-1);
@@ -2976,8 +2966,6 @@ qboolean M_Responder (event_t* ev)
 			}
 			else if ((::g->currentMenu == &::g->VideoDef && (!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR) && ::g->itemOn == framerate))
 				::g->itemOn = framerate - 2;
-			else if (::g->currentMenu == &::g->VideoDef && stereoRender_enable.GetInteger() == STEREO3D_VR && ::g->itemOn == vsync)
-				::g->itemOn = light;
 			else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == jump)
 				::g->itemOn = look;
 			else if (::g->currentMenu->menuitems == pageDef.menuitems && pageIndex == numPages && ::g->itemOn == 11) {
@@ -3166,12 +3154,6 @@ void M_Drawer (void)
 		if (::g->currentMenu == &::g->VideoDef && (!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR) && i == refresh) {
 			 continue;
 		}
-		if (::g->currentMenu == &::g->VideoDef && (stereoRender_enable.GetInteger() == STEREO3D_VR) && i == resolution) {
-			continue;
-		}
-		if (::g->currentMenu == &::g->VideoDef && (stereoRender_enable.GetInteger() == STEREO3D_VR) && i == endgame) {
-			continue;
-		}
 		if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && i == aim) {
 			continue;
 		}
@@ -3192,16 +3174,8 @@ void M_Drawer (void)
 		if (::g->currentMenu == &::g->OptionsDef && ::g->itemOn > messages) {
 			lineoffs += (optoffs*LINEHEIGHT);
 		}
-		if ((::g->currentMenu == &::g->VideoDef && !cl_engineHz_interp.GetBool() && ::g->itemOn > refresh) && stereoRender_enable.GetInteger() != STEREO3D_VR) {
+		if ((::g->currentMenu == &::g->VideoDef && (!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR) && ::g->itemOn > refresh)) {
 			lineoffs = (::g->itemOn - 1) * LINEHEIGHT;
-		}
-		if (::g->currentMenu == &::g->VideoDef && stereoRender_enable.GetInteger() == STEREO3D_VR) {
-			if (::g->itemOn == vsync) {
-				lineoffs = (::g->itemOn - 2) * LINEHEIGHT;
-			}
-			if (::g->itemOn > vsync) {
-				lineoffs = (::g->itemOn - 3) * LINEHEIGHT;
-			}
 		}
 		if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn > aim) {
 			lineoffs = (::g->itemOn - 1) * LINEHEIGHT;
@@ -3257,9 +3231,6 @@ void M_ClearMenus (void)
 void M_SetupNextMenu(menu_t *menudef)
 {
 	::g->currentMenu = menudef;
-	if (stereoRender_enable.GetInteger() == STEREO3D_VR && ::g->currentMenu == &::g->VideoDef && !::g->currentMenu->lastOn) {
-		::g->currentMenu->lastOn = vsync;
-	}
 	::g->itemOn = ::g->currentMenu->lastOn;
 }
 

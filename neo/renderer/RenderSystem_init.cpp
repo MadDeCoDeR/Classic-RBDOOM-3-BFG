@@ -2386,9 +2386,6 @@ void idRenderSystemLocal::Init()
 #ifdef USE_OPENXR
 	if (((stereo3DMode_t)stereoRender_enable.GetInteger()) == STEREO3D_VR && !xrSystem->IsInitialized()) {
 		if (xrSystem->InitXR()) {
-			r_fullscreen.SetInteger(0);
-			r_windowWidth.SetInteger(1920);
-			r_windowHeight.SetInteger(1080);
 			cl_HUD.SetBool(true);
 			r_useVirtualScreenResolution.SetBool(true);
 			r_useSRGB.SetBool(false);

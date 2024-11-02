@@ -90,25 +90,24 @@ void idMenuScreen_Shell_SystemOptions::Initialize( idMenuHandler* data )
 	AddChild( options );
 	AddChild( btnBack );
 	idMenuWidget_ControlButton* control;
-	if (renderSystem->GetStereo3DMode() != STEREO3D_VR) {
-		control = new(TAG_SWF) idMenuWidget_ControlButton();
-		control->SetOptionType(OPTION_SLIDER_TEXT);
-		control->SetLabel("#str_02154");
-		control->SetDataSource(&systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN);
-		control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
-		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN);
-		options->AddChild(control);
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TEXT);
+	control->SetLabel("#str_02154");
+	control->SetDataSource(&systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN);
+	options->AddChild(control);
 	
-	//GK: Begin
+//GK: Begin
 
-		control = new(TAG_SWF) idMenuWidget_ControlButton();
-		control->SetOptionType(OPTION_SLIDER_TEXT);
-		control->SetLabel("#str_fullscreen");
-		control->SetDataSource(&systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN_MODE);
-		control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
-		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN_MODE);
-		options->AddChild(control);
-	}
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_TEXT);
+	control->SetLabel("#str_fullscreen");
+	control->SetDataSource(&systemData, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN_MODE);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SystemSettings::SYSTEM_FIELD_FULLSCREEN_MODE);
+	options->AddChild(control);
+	
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_TEXT);
 	control->SetLabel("#str_swf_aspect"); //Aspect Ratio
