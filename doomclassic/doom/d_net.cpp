@@ -900,7 +900,8 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 
 			int engineHz_denominator = com_engineHz_denominator / 100LL;
 			int engine_diff = engineHz_denominator - com_engineHz_latched;
-			if (InterpolateTics() || !engine_diff) {
+			::g->runTic = InterpolateTics(); //GK: Kepp it in memory just in case
+			if (::g->runTic || !engine_diff) {
 				if (::g->advancedemo) {
 					D_DoAdvanceDemo();
 				}

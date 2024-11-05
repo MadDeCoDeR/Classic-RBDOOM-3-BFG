@@ -1139,3 +1139,5 @@ int accumulatedTimeDelta2;
 
 //GK: Mouse Acceleration Fix
 int prevMouseTime;
+
+bool runTic;

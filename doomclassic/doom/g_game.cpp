@@ -366,7 +366,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 			::g->prevMouseTime = currentTime;
 		}
 		float estimatedFPS = roundf(1000.0f * (1.0f/frameTime));
-		float engineHz_denominator = com_engineHz_denominator / 100.0f;
+		//float engineHz_denominator = com_engineHz_denominator / 100.0f;
 		float accelerator = estimatedFPS / com_engineHz_latched;
 		//I_Printf("Estimated FPS: %f, Accelerator: %f\n", estimatedFPS, accelerator);
 		if (accelerator >= 1) {
@@ -405,7 +405,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 //			if( oldImpulseSequence != curTech5Command.impulseSequence ) {
 			//int engineHz_denominator = com_engineHz_denominator / 100;
 			cimpulse = G_PerformImpulse( curTech5Command.buttons, cmd );
-			if (cimpulse > 0 && circleWeaponPacifier >= ( engineHz_denominator / 2)) { //GK: Weapon change event happend
+			if (cimpulse > 0 && circleWeaponPacifier >= (estimatedFPS / 2)) { //GK: Weapon change event happend
 				circleWeaponPacifier = 0;
 				if (!::g->demorecording) {
 					/*cmd->buttons |= BT_CHANGE;
