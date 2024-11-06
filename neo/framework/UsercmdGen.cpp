@@ -254,6 +254,8 @@ public:
 	
 	void			ClearAngles();
 	
+	void			SetAngles(idAngles angle);
+	
 	void			InhibitUsercmd( inhibit_t subsystem, bool inhibit );
 	
 	int				CommandStringUsercmdData( const char* cmdString );
@@ -1404,6 +1406,13 @@ idUsercmdGenLocal::ClearAngles
 void idUsercmdGenLocal::ClearAngles()
 {
 	viewangles.Zero();
+}
+
+void idUsercmdGenLocal::SetAngles(idAngles angle)
+{
+	viewangles = angle.ToAngularVelocity() * 100.0f;
+	viewangles[PITCH] *= in_invertLook.GetBool() ? 1.0f : -1.0f;
+	viewangles[ROLL] *= -1.0f;
 }
 
 //======================================================================

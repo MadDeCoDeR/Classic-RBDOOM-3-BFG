@@ -219,6 +219,9 @@ public:
 	
 	// Clears view angles.
 	virtual void		ClearAngles() = 0;
+
+	//GK: Set view angles.
+	virtual void		SetAngles(idAngles angle) = 0;
 	
 	// When the console is down or the menu is up, only emit default usercmd, so the player isn't moving around.
 	// Each subsystem (session and game) may want an inhibit will OR the requests.

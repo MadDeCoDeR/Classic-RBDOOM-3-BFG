@@ -162,7 +162,10 @@ void idXR_Win::StartFrame()
 				common->Warning("OpenXR Error: Failed to Locate Views");
 				return;
 			}
-
+			//HMD input
+			if (!expectedActionSet.Cmp("GAME")) {
+				usercmdGen->SetAngles(idQuat(views[0].pose.orientation.x, views[0].pose.orientation.y, views[0].pose.orientation.z, views[0].pose.orientation.w).ToAngles());
+			}
 			layers.resize(viewCount, { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW });
 			PollActions();
 		}
@@ -333,6 +336,16 @@ void idXR_Win::CreateXrMappings()
 	menuActionSet.actions.push_back(menuBack);
 	menuActionSet.actions.push_back(menuScroll);
 	actionSets.push_back(menuActionSet);
+	idXrActionSet gameActionSet;
+	gameActionSet.name = "GAME";
+	XrActionSetCreateInfo gxrActCI{ XR_TYPE_ACTION_SET_CREATE_INFO };
+	strncpy(gxrActCI.actionSetName, "doom-bfa-game-action-set", 26);
+	strncpy(gxrActCI.localizedActionSetName, "DOOM BFA Game Action Set", 26);
+	gxrActCI.priority = 0;
+	if (xrCreateActionSet(instance, &gxrActCI, &gameActionSet.actionSet) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to Create Game Action Set");
+	}
+	actionSets.push_back(gameActionSet);
 }
 
 idXR_Win::idXrAction idXR_Win::CreateAction(XrActionSet actionSet, const char* name, XrActionType type, uint32_t mappedKey, std::vector<const char*> subActions)
@@ -898,45 +911,45 @@ bool idXR_Win::InitXR() {
 
 void idXR_Win::ShutDownXR()
 {
-	if (isInitialized) {
+	if (GeneralFB > 0) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDeleteFramebuffers(1, &GeneralFB);
-		if (GeneralImage != NULL) {
-			GeneralImage->PurgeImage();
-		}
-
-		if (colorSwapchainInfo.size() > 0) {
-			for (int i = 0; i < colorSwapchainInfo.size(); i++) {
-				for (int j = 0; j < colorSwapchainInfo[i].imageViews.size(); j++) {
-					GLuint fbo = (GLuint)(uint64_t)colorSwapchainInfo[i].imageViews[j];
-					glDeleteFramebuffers(1, &fbo);
-				}
-				colorSwapchainInfo[i].imageViews.clear();
-				swapchainImageMap[colorSwapchainInfo[i].swapchain].second.clear();
-				if (xrDestroySwapchain(colorSwapchainInfo[i].swapchain) != XR_SUCCESS) {
-					common->Warning("OpenXR Error: Failed to delete Color Swapchain Image");
-				}
-			}
-		}
-		swapchainImageMap.clear();
-
-		if (localSpace != XR_NULL_HANDLE && xrDestroySpace(localSpace) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to close OpenXR Space");
-		}
-		if (session != XR_NULL_HANDLE && xrDestroySession(session) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to close OpenXR Session");
-		}
-#ifdef _DEBUG
-		PFN_xrDestroyDebugUtilsMessengerEXT xrDestroyDebugMessager;
-		if (instance != XR_NULL_HANDLE && xrGetInstanceProcAddr(instance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrDestroyDebugMessager) == XR_SUCCESS) {
-			if (debugMessager != XR_NULL_HANDLE && xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
-				common->Warning("OpenXR Error: Failed to Destroy Debug Messenger");
-			}
-		}
-#endif
-		if (instance != XR_NULL_HANDLE && xrDestroyInstance(instance) != XR_SUCCESS) {
-			common->Warning("OpenXR Error: Failed to close OpenXR");
-		}
-		isInitialized = false;
 	}
+	if (GeneralImage != NULL) {
+		GeneralImage->PurgeImage();
+	}
+
+	if (colorSwapchainInfo.size() > 0) {
+		for (int i = 0; i < colorSwapchainInfo.size(); i++) {
+			for (int j = 0; j < colorSwapchainInfo[i].imageViews.size(); j++) {
+				GLuint fbo = (GLuint)(uint64_t)colorSwapchainInfo[i].imageViews[j];
+				glDeleteFramebuffers(1, &fbo);
+			}
+			colorSwapchainInfo[i].imageViews.clear();
+			swapchainImageMap[colorSwapchainInfo[i].swapchain].second.clear();
+			if (xrDestroySwapchain(colorSwapchainInfo[i].swapchain) != XR_SUCCESS) {
+				common->Warning("OpenXR Error: Failed to delete Color Swapchain Image");
+			}
+		}
+	}
+	swapchainImageMap.clear();
+
+	if (localSpace != XR_NULL_HANDLE && xrDestroySpace(localSpace) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to close OpenXR Space");
+	}
+	if (session != XR_NULL_HANDLE && xrDestroySession(session) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to close OpenXR Session");
+	}
+#ifdef _DEBUG
+	PFN_xrDestroyDebugUtilsMessengerEXT xrDestroyDebugMessager;
+	if (instance != XR_NULL_HANDLE && xrGetInstanceProcAddr(instance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrDestroyDebugMessager) == XR_SUCCESS) {
+		if (debugMessager != XR_NULL_HANDLE && xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
+			common->Warning("OpenXR Error: Failed to Destroy Debug Messenger");
+		}
+	}
+#endif
+	if (instance != XR_NULL_HANDLE && xrDestroyInstance(instance) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to close OpenXR");
+	}
+	isInitialized = false;
 }

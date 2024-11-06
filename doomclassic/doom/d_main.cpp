@@ -30,7 +30,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "globaldata.h"
 
 #include "idlib/precompiled.h"
-
+#ifdef USE_OPENXR
+#include "renderer/OpenXR/XRCommon.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -223,7 +225,16 @@ void D_Display (void)
 
 	// draw buffered stuff to screen
 	I_UpdateNoBlit ();
-
+#ifdef USE_OPENXR
+	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		if (::g->gamestate == GS_LEVEL) {
+			xrSystem->SetActionSet("GAME");
+		}
+		else {
+			xrSystem->SetActionSet("MENU");
+		}
+	}
+#endif
 	// draw the view directly
 	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && !::g->automapactive && ::g->gametic)
 		R_RenderPlayerView (&::g->players[::g->displayplayer]);

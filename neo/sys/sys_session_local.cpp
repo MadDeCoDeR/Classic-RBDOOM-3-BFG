@@ -30,7 +30,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "sys_session_local.h"
 #include "sys_voicechat.h"
 #include "sys_dedicated_server_search.h"
-
+#ifdef USE_OPENXR
+#include "renderer/OpenXR/XRCommon.h"
+#endif
 
 idCVar ui_skinIndex( "ui_skinIndex", "0", CVAR_ARCHIVE, "Selected skin index" );
 idCVar ui_autoSwitch( "ui_autoSwitch", "1", CVAR_ARCHIVE | CVAR_BOOL, "auto switch weapon" );
@@ -2657,6 +2659,16 @@ void idSessionLocal::SetState( state_t newState )
 		ComputeNextGameCoalesceTime();
 	}
 	
+#ifdef USE_OPENXR
+	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
+		if (newState == STATE_INGAME) {
+			xrSystem->SetActionSet("GAME");
+		}
+		else {
+			xrSystem->SetActionSet("MENU");
+		}
+	}
+#endif
 	localState = newState;
 }
 
