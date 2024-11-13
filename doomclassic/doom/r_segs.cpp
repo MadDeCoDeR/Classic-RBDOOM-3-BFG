@@ -393,7 +393,7 @@ R_StoreWallRange
     sineval = finesine[distangle>>ANGLETOFINESHIFT];
     ::g->rw_distance = FixedMul (hyp, sineval);
 		
-	::g->ds_p = ::g->drawsegs[::g->drawsegind - 1];
+	::g->ds_p = ::g->drawsegs[::g->drawsegind - 1].get();
     ::g->ds_p->x1 = ::g->rw_x = start;
     ::g->ds_p->x2 = stop;
     ::g->ds_p->curline = ::g->curline;
@@ -737,13 +737,13 @@ void AddDrawSeg() {
 		if (::g->drawsegs.size() == ::g->drawsegs.capacity()) {
 			::g->drawsegs.reserve(::g->drawsegs.size() + MAXDRAWSEGS);
 		}
-		::g->drawsegs.emplace_back(new drawseg_t());
+		::g->drawsegs.emplace_back(std::make_unique<drawseg_t>());
 #else
 		if (::g->drawsegs.size() == ::g->drawsegs.capacity()) {
 			::g->drawsegs.resize(::g->drawsegs.size() + MAXDRAWSEGS);
 		}
 		for (int i = ::g->drawsegind; i < ::g->drawsegs.size(); i++) {
-			::g->drawsegs[i] = new drawseg_t();
+			::g->drawsegs[i] = std::make_unique<drawseg_t>();
 		}
 #endif
 	}

@@ -67,11 +67,11 @@ void R_ClearDrawSegs (void)
     if (::g->drawsegs.empty()) {
 #if _ITERATOR_DEBUG_LEVEL < 2
         ::g->drawsegs.reserve(MAXDRAWSEGS);
-        ::g->drawsegs.emplace_back(new drawseg_t());
+        ::g->drawsegs.emplace_back(std::make_unique<drawseg_t>());
 #else
         ::g->drawsegs.resize(MAXDRAWSEGS);
         for (int di = 0; di < MAXDRAWSEGS; di++) {
-            ::g->drawsegs[di] = new drawseg_t();
+            ::g->drawsegs[di] = std::make_unique<drawseg_t>();
         }
 #endif
     }

@@ -912,3 +912,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->mapmax = 0;
 
 	::g->lastMasocTick = 0;
+
+	::g->accumulatedTimeDeltas.resize(100); //GK: For that to be exceeded the game must run more than @3500 or @4000 FPS

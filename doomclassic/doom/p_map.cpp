@@ -571,25 +571,26 @@ void P_AddSecnode(sector_t* s, mobj_t* thing)
 		}
 		
 	}
-	msecnode_t* tnode = new msecnode_t();
-	tnode->visited = 0;
-
-	tnode->m_sector = s;       // sector
-	tnode->m_thing = thing;     // mobj
-	//s->touching_thinglist = tnode;
+	
 #if _ITERATOR_DEBUG_LEVEL < 2
 	if (::g->sector_list.size() == ::g->sector_list.capacity()) {
 		::g->sector_list.reserve(::g->sector_list.size() + 100);
 }
 	//::g->specind = 0;
-	::g->sector_list.emplace_back(tnode);
+	msecnode_t* tnode = ::g->sector_list.emplace_back(std::make_unique<msecnode_t>()).get();
 #else
 	if (::g->sector_list.size() == ::g->sector_list.capacity()) {
 		::g->sector_list.resize(::g->sector_list.size() + 100);
 	}
-	::g->sector_list[::g->headsecind] = tnode;
+	::g->sector_list[::g->headsecind] = std::make_unique<msecnode_t>();
+	msecnode_t* tnode = ::g->sector_list[::g->headsecind].get();
 #endif
 	::g->headsecind++;
+	tnode->visited = 0;
+
+	tnode->m_sector = s;       // sector
+	tnode->m_thing = thing;     // mobj
+	//s->touching_thinglist = tnode;
 
 	//msecnode_t* node;
 
@@ -649,7 +650,7 @@ void P_DelSeclist()
 
 {
 	while(!::g->sector_list.empty()) {
-		msecnode_t* node = ::g->sector_list[::g->headsecind - 1];
+		msecnode_t* node = ::g->sector_list[::g->headsecind - 1].get();
 		::g->sector_list[::g->headsecind - 1] = NULL;
 		::g->headsecind--;
 		if (::g->headsecind < 0) {
@@ -719,8 +720,9 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 	// finished, delete all nodes where m_thing is still NULL. These
 	// represent the sectors the Thing has vacated.
 
-	for (msecnode_t* node : ::g->sector_list)
+	for (int i = 0; i < ::g->sector_list.size(); i++)
 	{
+		msecnode_t* node = ::g->sector_list[i].get();
 		if (node != NULL) {
 			node->m_thing = NULL;
 		}

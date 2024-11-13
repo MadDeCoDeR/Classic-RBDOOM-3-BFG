@@ -466,14 +466,14 @@ void DoomLib::Shutdown() {
 		globaldata[currentplayer] = NULL;
 		//CleanVector(glob->activeceilings); //GK: Contains memory managed by the Zone Memory. Skip
 		//CleanVector(glob->activeplats); //GK: Contains memory managed by the Zone Memory. Skip
-		CleanVector(glob->intercepts);
-		CleanVector(glob->drawsegs);
+		glob->intercepts.clear();
+		glob->drawsegs.clear();
 		CleanVector(glob->sprites);
-		CleanVector(glob->vissprites);
+		glob->vissprites.clear();
 		CleanVector(glob->cpatch);
-		CleanVector(glob->visplanes);
+		glob->visplanes.clear();
 		CleanVector(glob->reverbs);
-		CleanVector(glob->sector_list);
+		glob->sector_list.clear();
 		for (size_t j = 0; j < glob->acts.size(); j++) {
 			CleanVector(glob->acts[j]);
 		}

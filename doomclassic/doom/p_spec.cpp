@@ -1709,11 +1709,11 @@ void P_UpdateSpecials (void)
 	for (ai = 0; ai < ::g->numlinespecials; ai++)
 	{
 	//	line = ::g->linespeciallist[i];
-		switch(::g->linespeciallist[ai]->special)
+		switch(::g->linespeciallist[ai].special)
 		{
 		case 48:
 			// EFFECT FIRSTCOL SCROLL +
-			::g->sides[::g->linespeciallist[ai]->sidenum[0]].textureoffset += FRACUNIT;
+			::g->sides[::g->linespeciallist[ai].sidenum[0]].textureoffset += FRACUNIT;
 			break;
 		}
 	}
@@ -1963,21 +1963,13 @@ void P_SpawnSpecials (void)
 		case 48:
 			// EFFECT FIRSTCOL SCROLL+
 			if (::g->numlinespecials >= ::g->linespeciallist.size()) {
-#if _ITERATOR_DEBUG_LEVEL < 2
-				//::g->linespeciallist.clear();
-				if (::g->linespeciallist.size() == ::g->linespeciallist.capacity()) {
-					::g->linespeciallist.reserve(::g->linespeciallist.size() + MAXLINEANIMS);
-				}
-				::g->linespeciallist.emplace_back(&::g->lines[i]);
-#else
 				if (::g->linespeciallist.size() == ::g->linespeciallist.capacity()) {
 					::g->linespeciallist.resize(::g->linespeciallist.size() + MAXLINEANIMS);
 				}
-				::g->linespeciallist[::g->numlinespecials] = &::g->lines[i];
-#endif
+				::g->linespeciallist[::g->numlinespecials] = ::g->lines[i];
 			}
 			else {
-				::g->linespeciallist[::g->numlinespecials] = &::g->lines[i];
+				::g->linespeciallist[::g->numlinespecials] = ::g->lines[i];
 			}
 			::g->numlinespecials++;
 			break;
@@ -2138,7 +2130,8 @@ void T_Scroll(scroll_t *s)
 			::g->sectors[sec->heightsec].floorheight > height ?
 			::g->sectors[sec->heightsec].floorheight : MININT;
 
-		for (msecnode_t* node : ::g->sector_list) {
+		for (int i = 0; i < ::g->sector_list.size(); i++) {
+			msecnode_t* node = ::g->sector_list[i].get();
 			if (node != NULL) {
 				if (node->m_sector == sec) {
 					if (!((thing = node->m_thing)->flags & MF_NOCLIP) &&

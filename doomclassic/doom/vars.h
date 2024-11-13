@@ -530,7 +530,7 @@ int		bombdamage;
 qboolean		crushchange;
 qboolean		nofit;
 // Temporary holder for thing_sectorlist threads
-std::vector<msecnode_t*> sector_list;                             // phares 3/16/98
+std::vector<std::unique_ptr<msecnode_t>> sector_list;                             // phares 3/16/98
 size_t headsecind;
 // p_map.vars end // 
 //  p_maputl.vars begin // 
@@ -540,7 +540,7 @@ fixed_t openrange;
 fixed_t	lowfloor;
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
 size_t	interind;
-std::vector<intercept_t*>	intercepts;
+std::vector<std::unique_ptr<intercept_t>>	intercepts;
 //intercept_t*	intercept_p;
 divline_t 	trace;
 qboolean 	earlyout;
@@ -612,7 +612,7 @@ int		levelFragCount;
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
 size_t		numlinespecials;
 long		linespecind;
-std::vector<line_t*>		linespeciallist{};
+std::vector<line_t>		linespeciallist{};
 animdef_t animdefs[23]; //GK: Make this global in order to be used and elsewhere
 // p_spec.vars end // 
 //  p_switch.vars begin // 
@@ -634,7 +634,7 @@ side_t*		sidedef;
 line_t*		linedef;
 sector_t*	frontsector;
 sector_t*	backsector;
-std::vector<drawseg_t*>	drawsegs;
+std::vector<std::unique_ptr<drawseg_t>>	drawsegs;
 size_t	drawsegind;
 drawseg_t*	ds_p;
 cliprange_t*	newend;
@@ -808,7 +808,7 @@ long		numsprites;
 spriteframe_t	sprtemp[29];
 int		maxframe;
 size_t    visspriteind;
-std::vector<vissprite_t*>	vissprites;
+std::vector<std::unique_ptr<vissprite_t>>	vissprites;
 //vissprite_t*	vissprite_p;
 int		newvissprite;
 vissprite_t	overflowsprite;
@@ -995,7 +995,7 @@ int texnum; //GK: Store pointer of current texture in order to take it's height 
 // r_data end //
 // r_plane begin //
 //GK:From now on it uses indexed vectors (for now until and if I found something better)
-std::vector<visplane_t*>		visplanes; 
+std::vector<std::unique_ptr<visplane_t>>		visplanes; 
 size_t			planeind;
 //visplane_t*		lastvisplane; 
 visplane_t*		floorplane; 
@@ -1134,8 +1134,7 @@ int lastMasocTick;
 int timeDelta;
 int lastTicTime;
 int skipTicInterpolationCheck;
-int accumulatedTimeDelta;
-int accumulatedTimeDelta2;
+std::vector<int> accumulatedTimeDeltas;
 
 //GK: Mouse Acceleration Fix
 int prevMouseTime;

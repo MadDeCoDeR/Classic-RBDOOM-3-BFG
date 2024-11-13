@@ -671,7 +671,23 @@ void D_QuitNetGame (void)
 }
 
 //GK: Begin
-//
+/**
+* CalculateInterpolationCheckSkips
+* 
+* Calculate and check if the engine's frameTime is slower than the expected frameTime and if it is accumulate interpolaction check skips in order to not lose any frames
+*/
+void CalculateInterpolationCheckSkips(int timeDelta, float expectedFrameMs, int index) {
+	if (index == 100) { //We only use 100 entries to keep the accumulated FrameTimes, if it run out just skip and start playing the frames
+		return;
+	}
+	::g->accumulatedTimeDeltas[index] += timeDelta - expectedFrameMs;
+	if (::g->accumulatedTimeDeltas[index] >= expectedFrameMs) {
+		::g->skipTicInterpolationCheck++;
+		CalculateInterpolationCheckSkips(::g->accumulatedTimeDeltas[index], expectedFrameMs, index + 1);
+		::g->accumulatedTimeDeltas[index] = 0;
+	}
+}
+
 //	InterpolateTics
 //
 // Check if the current tic must run or not.
@@ -682,16 +698,7 @@ bool InterpolateTics() {
 		float expectedFrameMs = 1000.0f / cl_engineHz.GetFloat();
 		::g->timeDelta = currentTime - ::g->lastTicTime;
 		if (::g->timeDelta >= expectedFrameMs) {
-			::g->accumulatedTimeDelta += ::g->timeDelta - expectedFrameMs;
-			if (::g->accumulatedTimeDelta >= expectedFrameMs) {
-				::g->accumulatedTimeDelta2 += ::g->accumulatedTimeDelta - expectedFrameMs;
-				if (::g->accumulatedTimeDelta2 >= expectedFrameMs) {
-					::g->skipTicInterpolationCheck++;
-					::g->accumulatedTimeDelta2 = 0;
-				}
-				::g->skipTicInterpolationCheck++;
-				::g->accumulatedTimeDelta = 0;
-			}
+			CalculateInterpolationCheckSkips(::g->timeDelta, expectedFrameMs, 0);
 			::g->lastTicTime = currentTime;
 			return true;
 		}

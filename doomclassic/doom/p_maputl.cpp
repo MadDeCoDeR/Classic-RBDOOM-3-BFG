@@ -727,7 +727,7 @@ P_TraverseIntercepts
 	dist = MAXINT;
 	for (size_t i = 0 ; i < ::g->interind-1; i++)
 	{
-		scan = ::g->intercepts[i];
+		scan = ::g->intercepts[i].get();
 	    if (scan->frac < dist)
 	    {
 		dist = scan->frac;
@@ -810,11 +810,11 @@ P_PathTraverse
 	if (::g->intercepts.empty()) {
 #if _ITERATOR_DEBUG_LEVEL < 2
         ::g->intercepts.reserve(MAXINTERCEPTS);
-		::g->intercepts.emplace_back(new intercept_t());
+		::g->intercepts.emplace_back(std::make_unique<intercept_t>());
 #else
 		::g->intercepts.resize(MAXINTERCEPTS);
 		for (int ii = 0; ii < MAXINTERCEPTS; ii++) {
-			::g->intercepts[ii] = new intercept_t();
+			::g->intercepts[ii] = std::make_unique<intercept_t>();
 		}
 #endif
 	}
@@ -932,13 +932,13 @@ void AddNewIntercept() {
 		if (::g->intercepts.size() == ::g->intercepts.capacity()) {
 			::g->intercepts.reserve(::g->intercepts.size() + MAXINTERCEPTS);
 		}
-		::g->intercepts.emplace_back(new intercept_t());
+		::g->intercepts.emplace_back(std::make_unique<intercept_t>());
 #else
 		if (::g->intercepts.size() == ::g->intercepts.capacity()) {
 			::g->intercepts.resize(::g->intercepts.size() + MAXINTERCEPTS);
 		}
 		for (int j = ::g->interind; j < ::g->intercepts.size(); j++) {
-			::g->intercepts[j] = new intercept_t();
+			::g->intercepts[j] = std::make_unique<intercept_t>();
 		}
 #endif
 	}

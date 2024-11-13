@@ -197,11 +197,11 @@ void R_ClearPlanes (void)
 	if (::g->visplanes.empty()) {
 #if _ITERATOR_DEBUG_LEVEL < 2
 		::g->visplanes.reserve(MAXVISPLANES);
-		::g->visplanes.emplace_back(new visplane_t());
+		::g->visplanes.emplace_back(std::make_unique<visplane_t>());
 #else
 		::g->visplanes.resize(MAXVISPLANES);
 		for (int vpi = 0; vpi < MAXVISPLANES; vpi++) {
-			::g->visplanes[vpi] = new visplane_t();
+			::g->visplanes[vpi] = std::make_unique<visplane_t>();
 		}
 #endif
 	}
@@ -235,13 +235,13 @@ visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel,fixed_t xoff
 		lightlevel = 0;
 	}
 		for (uint i = 0; i < ::g->planeind; i++) {
-			check = ::g->visplanes[i];
+			check = ::g->visplanes[i].get();
 			if (height == check->height && picnum == check->picnum && lightlevel == check->lightlevel && xoffs == check->xoffs && check->yoffs) {
 				break;
 			}
 		}
 
-		if (check != ::g->visplanes[::g->planeind-1])
+		if (check != ::g->visplanes[::g->planeind-1].get())
 			return check;
 
     //if (::g->lastvisplane - ::g->visplanes == MAXVISPLANES)
@@ -326,7 +326,7 @@ R_CheckPlane
 	::g->visplanes[::g->planeind-1]->height = pl->height;
 	::g->visplanes[::g->planeind - 1]->picnum = pl->picnum;
 	::g->visplanes[::g->planeind - 1]->lightlevel = pl->lightlevel;
-	pl = ::g->visplanes[::g->planeind - 1];
+	pl = ::g->visplanes[::g->planeind - 1].get();
 	AddNewVisplane();
     pl->minx = start;
     pl->maxx = stop;
@@ -558,11 +558,11 @@ void AddNewVisplane() {
 		if (::g->visplanes.size() == ::g->visplanes.capacity()) {
 			::g->visplanes.reserve(::g->visplanes.size() + MAXVISPLANES);
 		}
-		::g->visplanes.emplace_back(new visplane_t());
+		::g->visplanes.emplace_back(std::make_unique<visplane_t>());
 #else
 		::g->visplanes.resize(::g->visplanes.size() + MAXVISPLANES);
 		for (int vpi = ::g->planeind; vpi < ::g->visplanes.size(); vpi++) {
-			::g->visplanes[vpi] = new visplane_t();
+			::g->visplanes[vpi] = std::make_unique<visplane_t>();
 		}
 #endif
 	}

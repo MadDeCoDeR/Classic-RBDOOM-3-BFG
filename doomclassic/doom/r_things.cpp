@@ -323,8 +323,8 @@ void R_ZeroVisSprite(int index) {
 	::g->vissprites[index]->gz = 0;
 	::g->vissprites[index]->gzt = 0;
 	::g->vissprites[index]->mobjflags = 0;
-	::g->vissprites[index]->next = ::g->vissprites[index];
-	::g->vissprites[index]->prev = ::g->vissprites[index - 1];
+	::g->vissprites[index]->next = ::g->vissprites[index].get();
+	::g->vissprites[index]->prev = ::g->vissprites[index - 1].get();
 	::g->vissprites[index]->patch = 0;
 	::g->vissprites[index]->scale = 0;
 	::g->vissprites[index]->startfrac = 0;
@@ -346,11 +346,11 @@ void R_ClearSprites (void)
 	if (::g->vissprites.empty()) {
 #if _ITERATOR_DEBUG_LEVEL < 2
 		::g->vissprites.reserve(MAXVISSPRITES);
-		::g->vissprites.emplace_back(new vissprite_t());
+		::g->vissprites.emplace_back(std::make_unique<vissprite_t>());
 #else
 		::g->vissprites.resize(MAXVISSPRITES);
 		for (int vi = 0; vi < MAXVISSPRITES; vi++) {
-			::g->vissprites[vi] = new vissprite_t();
+			::g->vissprites[vi] = std::make_unique<vissprite_t>();
 		}
 #endif
 	}
@@ -377,13 +377,13 @@ vissprite_t* R_NewVisSprite (void)
 		if (::g->vissprites.size() == ::g->vissprites.capacity()) {
 			::g->vissprites.reserve(::g->vissprites.size() + MAXVISSPRITES);
 		}
-		::g->vissprites.emplace_back(new vissprite_t());
+		::g->vissprites.emplace_back(std::make_unique<vissprite_t>());
 #else
 		if (::g->vissprites.size() == ::g->vissprites.capacity()) {
 			::g->vissprites.resize(::g->vissprites.size() + MAXVISSPRITES);
 		}
 		for (int vi = ::g->visspriteind; vi < ::g->vissprites.size(); vi++) {
-			::g->vissprites[vi] = new vissprite_t();
+			::g->vissprites[vi] = std::make_unique<vissprite_t>();
 		}
 #endif
 	}
@@ -391,7 +391,7 @@ vissprite_t* R_NewVisSprite (void)
 		R_ZeroVisSprite(::g->visspriteind);
 	}
 	
-    return ::g->vissprites[::g->visspriteind-1];
+    return ::g->vissprites[::g->visspriteind-1].get();
 }
 
 
@@ -907,23 +907,23 @@ void R_SortVisSprites (void)
     {
 		//GK:use the actual vector instead of a temp array
 		if (i_ < ::g->visspriteind -1) {
-			::g->vissprites[i_]->next= ::g->vissprites[i_ + 1];
+			::g->vissprites[i_]->next= ::g->vissprites[i_ + 1].get();
 		}
 		else {
-			::g->vissprites[i_]->next = ::g->vissprites[i_];
+			::g->vissprites[i_]->next = ::g->vissprites[i_].get();
 		}
 	if (i_ > 0) {
-		::g->vissprites[i_]->prev = ::g->vissprites[i_ - 1];
+		::g->vissprites[i_]->prev = ::g->vissprites[i_ - 1].get();
 	}
 	else {
-		::g->vissprites[i_]->prev = ::g->vissprites[i_];
+		::g->vissprites[i_]->prev = ::g->vissprites[i_].get();
 	}
     }
     
     ::g->vissprites[0]->prev = &unsorted;
     unsorted.next = &*::g->vissprites[0];
 	::g->vissprites[::g->visspriteind-1]->next = &unsorted;
-    unsorted.prev = ::g->vissprites[::g->visspriteind-1];
+    unsorted.prev = ::g->vissprites[::g->visspriteind-1].get();
     
     // pull the ::g->vissprites out by scale
     //best = 0;		// shut up the compiler warning
@@ -973,7 +973,7 @@ void R_DrawSprite (vissprite_t* spr)
     //  is the clip seg.
     for (int i = ::g->drawsegind - 2; i >= 0; i--)
     {
-		ds = ::g->drawsegs[i];
+		ds = ::g->drawsegs[i].get();
 	// determine if the drawseg obscures the sprite
 	if (ds->x1 > spr->x2
 	    || ds->x2 < spr->x1
@@ -1091,7 +1091,7 @@ void R_DrawMasked (void)
     
     // render any remaining masked mid textures
 	for (int i = ::g->drawsegind - 2; i >= 0; i--) {
-		ds = ::g->drawsegs[i];
+		ds = ::g->drawsegs[i].get();
 		if (ds->maskedtexturecol)
 			R_RenderMaskedSegRange(ds, ds->x1, ds->x2);
 	}
