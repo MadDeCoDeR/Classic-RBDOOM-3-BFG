@@ -441,8 +441,14 @@ void R_SetNewMode( const bool fullInit )
 		{
 			swf_cursorDPI.SetFloat(1.0f);// GK: Since it is in windowed Mode (or Borderless mode) reset the scale to 1
 			// use explicit position / size for window
-			parms.x = r_windowX.GetInteger() >= 0 ? r_windowX.GetInteger() : 0;
-			parms.y = r_windowY.GetInteger() >= 0 ? r_windowY.GetInteger() : 0;
+			if (r_fullscreen.GetInteger() == 0) {
+				parms.x = r_windowX.GetInteger() >= 0 ? r_windowX.GetInteger() : 0;
+				parms.y = r_windowY.GetInteger() >= 0 ? r_windowY.GetInteger() : 0;
+			}
+			else {
+				parms.x = 0;
+				parms.y = 0;
+			}
 			parms.width = R_CalculateResolution(false, modeList);
 			parms.height = R_CalculateResolution(true, modeList);
 			// may still be -1 to force a borderless window

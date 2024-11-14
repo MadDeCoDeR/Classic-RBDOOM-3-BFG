@@ -720,7 +720,7 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 	// finished, delete all nodes where m_thing is still NULL. These
 	// represent the sectors the Thing has vacated.
 
-	for (int i = 0; i < ::g->sector_list.size(); i++)
+	for (size_t i = 0; i < ::g->sector_list.size(); i++)
 	{
 		msecnode_t* node = ::g->sector_list[i].get();
 		if (node != NULL) {

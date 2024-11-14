@@ -2130,7 +2130,7 @@ void T_Scroll(scroll_t *s)
 			::g->sectors[sec->heightsec].floorheight > height ?
 			::g->sectors[sec->heightsec].floorheight : MININT;
 
-		for (int i = 0; i < ::g->sector_list.size(); i++) {
+		for (size_t i = 0; i < ::g->sector_list.size(); i++) {
 			msecnode_t* node = ::g->sector_list[i].get();
 			if (node != NULL) {
 				if (node->m_sector == sec) {
