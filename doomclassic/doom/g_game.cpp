@@ -628,7 +628,7 @@ void G_DoLoadLevel ()
 	int             i; 
 
 	M_ClearRandom();
-
+	::g->firstFrame = true;
 	// Set the sky map.
 	// First thing, we have a dummy sky texture name,
 	//  a flat. The data is in the WAD only because
@@ -1770,7 +1770,7 @@ qboolean G_DoLoadGame ()
 	char	vcheck[256]; 
 
 	loadingGame = true;
-
+	::g->firstFrame = true;
 	::g->gameaction = ga_nothing; 
 
 	int savelength = M_ReadFile (::g->savename, &::g->savebuffer); 
@@ -2089,6 +2089,7 @@ void G_DoNewGame (void)
 	::g->fastparm = false;
 	::g->nomonsters = false;
 	::g->consoleplayer = 0;
+	::g->firstFrame = true;
 	G_InitNew (::g->d_skill, ::g->d_episode, ::g->d_map ); 
 	::g->gameaction = ga_nothing; 
 } 

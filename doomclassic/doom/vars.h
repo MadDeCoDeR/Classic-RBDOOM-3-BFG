@@ -1135,6 +1135,7 @@ int timeDelta;
 int lastTicTime;
 int skipTicInterpolationCheck;
 std::vector<int> accumulatedTimeDeltas;
+bool firstFrame; //Correction Flag for Frame Rate Interpolation. The first frame will come with an absurdly high FrameTime Delta so it must skip some checks in order to keep a consistent Framerate
 
 //GK: Mouse Acceleration Fix
 int prevMouseTime;

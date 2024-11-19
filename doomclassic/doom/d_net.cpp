@@ -698,7 +698,12 @@ bool InterpolateTics() {
 		float expectedFrameMs = 1000.0f / cl_engineHz.GetFloat();
 		::g->timeDelta = currentTime - ::g->lastTicTime;
 		if (::g->timeDelta >= expectedFrameMs) {
-			CalculateInterpolationCheckSkips(::g->timeDelta, expectedFrameMs, 0);
+			if (!::g->firstFrame) {
+				CalculateInterpolationCheckSkips(::g->timeDelta, expectedFrameMs, 0);
+			}
+			else {
+				::g->firstFrame = false;
+			}
 			::g->lastTicTime = currentTime;
 			return true;
 		}
