@@ -28,6 +28,8 @@
 #include <vector>
 #include <string>
 
+
+
 class idXR {
 public:
 	virtual bool InitXR() = 0;

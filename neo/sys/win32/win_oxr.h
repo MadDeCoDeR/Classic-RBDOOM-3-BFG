@@ -121,6 +121,9 @@ private:
 	std::unordered_map<XrSwapchain, std::pair<idXRSwapchainType, std::vector<XrSwapchainImageOpenGLKHR>>> swapchainImageMap{};
 	int renderingEye = -1;
 	std::vector<XrView> views;
+	XrView initialView;
+	idVec3 initialViewAngles;
+	idVec3 previousViewAngles;
 	XrTime predictedDisplayTime;
 	XrEnvironmentBlendMode environmentBlendMode;
 	std::vector<XrCompositionLayerProjectionView> layers;
@@ -168,5 +171,6 @@ private:
 	idXrAction GetActionByName(idStr setName, idStr name);
 	idXrActionSet GetActionSetByName(idStr setName);
 	void MapActionStateToUsrCmd(idXrAction action);
-
+	void ProccessHMDInput();
+	idVec3 ConvertQuatToVec3(XrQuaternionf viewQuat);
 };

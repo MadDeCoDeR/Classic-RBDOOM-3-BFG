@@ -99,6 +99,8 @@ private:
 	
 	float				DrawFPS( float y );
 	float				DrawMemoryUsage( float y );
+
+	float				DrawViewAngles(float c);
 	
 	void				DrawOverlayText( float& leftY, float& rightY, float& centerY );
 	void				DrawDebugGraphs();
@@ -495,6 +497,16 @@ float idConsoleLocal::DrawMemoryUsage( float y )
 		}
 	}
 	return y;
+}
+
+float idConsoleLocal::DrawViewAngles(float c)
+{
+	idVec3 viewAngles = usercmdGen->GetAngles();
+	idStr angleStr;
+	angleStr.Format("PITCH: %4.4f YAW: %4.4f ROLL: %4.4f", viewAngles[PITCH], viewAngles[YAW], viewAngles[ROLL]);
+	int w = (angleStr.LengthWithoutColors() * SMALLCHAR_WIDTH) / 2;
+	renderSystem->DrawSmallStringExt((LOCALSAFE_WIDTH /2) - w, (LOCALSAFE_HEIGHT / 2) + (2 * SMALLCHAR_HEIGHT), angleStr.c_str(), colorWhite, false);
+	return c;
 }
 
 //=========================================================================
@@ -1481,7 +1493,7 @@ void idConsoleLocal::DrawSolidConsole( float frac )
 	renderSystem->SetColor( colorCyan );
 }
 
-
+extern idCVar in_showViewAngles;
 /*
 ==============
 Draw
@@ -1534,6 +1546,10 @@ void idConsoleLocal::Draw( bool forceFullScreen )
 	if( com_showMemoryUsage.GetBool() )
 	{
 		righty = DrawMemoryUsage( righty );
+	}
+	if (in_showViewAngles.GetBool())
+	{
+		centery = DrawViewAngles(centery);
 	}
 	DrawOverlayText( lefty, righty, centery );
 	DrawDebugGraphs();

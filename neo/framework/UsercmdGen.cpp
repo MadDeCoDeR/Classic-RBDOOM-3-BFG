@@ -67,6 +67,8 @@ idCVar in_joyjpn("in_joyjpn", "0", CVAR_NOCHEAT | CVAR_BOOL, "Enable/Disable JPN
 
 idCVar in_photomode("in_photomode", "0", CVAR_NOCHEAT | CVAR_BOOL, "Enable/Disable Photo Mode");
 
+idCVar in_showViewAngles("in_showViewAngles", "0", CVAR_NOCHEAT | CVAR_BOOL, "Show View Angles");
+
 extern idCVar com_pause;
 //GK End
 /*
@@ -254,7 +256,13 @@ public:
 	
 	void			ClearAngles();
 	
-	void			SetAngles(idAngles angle);
+	void			SetAngles(idVec3 angle) {
+		viewangles = angle;
+	}
+
+	idVec3			GetAngles() {
+		return viewangles;
+	}
 	
 	void			InhibitUsercmd( inhibit_t subsystem, bool inhibit );
 	
@@ -1406,13 +1414,6 @@ idUsercmdGenLocal::ClearAngles
 void idUsercmdGenLocal::ClearAngles()
 {
 	viewangles.Zero();
-}
-
-void idUsercmdGenLocal::SetAngles(idAngles angle)
-{
-	viewangles = angle.ToAngularVelocity() * 100.0f;
-	viewangles[PITCH] *= in_invertLook.GetBool() ? 1.0f : -1.0f;
-	viewangles[ROLL] *= -1.0f;
 }
 
 //======================================================================

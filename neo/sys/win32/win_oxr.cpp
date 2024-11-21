@@ -23,6 +23,8 @@
 */
 #include "precompiled.h"
 #include "win_oxr.h"
+idCVar vr_recordInitialPosition("vr_recordInitialPosition", "1", CVAR_BOOL, "Boolean to Determine if the current HMD Input must be recorded for initial Position");
+extern idCVar in_invertLook;
 
 idXR_Win xrWinSystem;
 idXR* xrSystem = &xrWinSystem;
@@ -163,8 +165,14 @@ void idXR_Win::StartFrame()
 				return;
 			}
 			//HMD input
+			if (vr_recordInitialPosition.GetBool()) {
+				initialView = views[0];
+				initialViewAngles = ConvertQuatToVec3(initialView.pose.orientation);
+				vr_recordInitialPosition.SetBool(false);
+				previousViewAngles = initialViewAngles;
+			}
 			if (!expectedActionSet.Cmp("GAME")) {
-				usercmdGen->SetAngles(idQuat(views[0].pose.orientation.x, views[0].pose.orientation.y, views[0].pose.orientation.z, views[0].pose.orientation.w).ToAngles());
+				ProccessHMDInput();
 			}
 			layers.resize(viewCount, { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW });
 			PollActions();
@@ -547,6 +555,25 @@ void idXR_Win::MapActionStateToUsrCmd(idXrAction action)
 
 		}
 	}
+}
+
+void idXR_Win::ProccessHMDInput()
+{
+	idVec3 viewAngles = ConvertQuatToVec3(views[0].pose.orientation);
+	viewAngles[YAW] = initialViewAngles[YAW] - viewAngles[YAW];
+	viewAngles[YAW] *=  - 1.0f;
+	viewAngles[PITCH] = initialViewAngles[PITCH] - viewAngles[PITCH];
+	viewAngles[PITCH] *= -1.0f;
+	previousViewAngles = viewAngles;
+	usercmdGen->SetAngles(viewAngles);
+}
+
+idVec3 idXR_Win::ConvertQuatToVec3(XrQuaternionf viewQuat)
+{
+	idVec3 viewAngles = idQuat(viewQuat.x, viewQuat.y, viewQuat.z, viewQuat.w).ToAngles().ToAngularVelocity() * 100.0f;
+	viewAngles[PITCH] *= in_invertLook.GetBool() ? 1.0f : -1.0f;
+	viewAngles[ROLL] *= 0.0f;
+	return viewAngles;
 }
 
 uint idXR_Win::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index)
