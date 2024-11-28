@@ -24,6 +24,7 @@
 #include "precompiled.h"
 #include "win_oxr.h"
 idCVar vr_recordInitialPosition("vr_recordInitialPosition", "1", CVAR_BOOL, "Boolean to Determine if the current HMD Input must be recorded for initial Position");
+idCVar vr_HeadtrackingDeadZone("vr_HeadtrackingDeadZone", "5.0", CVAR_FLOAT | CVAR_ARCHIVE, "Head Tracking deadzone");
 extern idCVar in_invertLook;
 
 idXR_Win xrWinSystem;
@@ -149,8 +150,8 @@ void idXR_Win::StartFrame()
 			common->Warning("OpenXR Error: Failed to begin Frame");
 			return;
 		}
-		views.clear();
-		views.assign(configurationView.size(), { XR_TYPE_VIEW });
+		localSpaceViews.clear();
+		localSpaceViews.assign(configurationView.size(), { XR_TYPE_VIEW });
 
 		if (predictedDisplayTime > 0) {
 			XrViewState viewState{ XR_TYPE_VIEW_STATE };
@@ -159,20 +160,28 @@ void idXR_Win::StartFrame()
 			viewLocateInfo.displayTime = predictedDisplayTime;
 			viewLocateInfo.space = localSpace;
 			uint viewCount = 0;
-			XrResult locateResult = xrLocateViews(session, &viewLocateInfo, &viewState, static_cast<uint>(views.size()), &viewCount, views.data());
+			XrResult locateResult = xrLocateViews(session, &viewLocateInfo, &viewState, static_cast<uint>(localSpaceViews.size()), &viewCount, localSpaceViews.data());
 			if (locateResult != XR_SUCCESS && locateResult != XR_SESSION_LOSS_PENDING) {
 				common->Warning("OpenXR Error: Failed to Locate Views");
 				return;
 			}
-			//HMD input
-			if (vr_recordInitialPosition.GetBool()) {
-				initialView = views[0];
-				initialViewAngles = ConvertQuatToVec3(initialView.pose.orientation);
-				vr_recordInitialPosition.SetBool(false);
-				previousViewAngles = initialViewAngles;
+			
+			XrResult viewResult = xrLocateSpace(viewSpace, localSpace, predictedDisplayTime, & headLocation);
+			if (viewResult != XR_SUCCESS && viewResult != XR_SESSION_LOSS_PENDING) {
+				common->Warning("OpenXR Error: Failed to Locate Space");
+				return;
 			}
-			if (!expectedActionSet.Cmp("GAME")) {
-				ProccessHMDInput();
+			//HMD input
+			if (headLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT && headLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT) {
+				if (vr_recordInitialPosition.GetBool()) {
+					initialView = headLocation.pose;
+					initialViewAngles = ConvertQuatToVec3(headLocation.pose.orientation);
+					vr_recordInitialPosition.SetBool(false);
+					previousViewAngles = initialViewAngles;
+				}
+				if (!expectedActionSet.Cmp("GAME")) {
+					ProccessHMDInput();
+				}
 			}
 			layers.resize(viewCount, { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW });
 			PollActions();
@@ -208,16 +217,16 @@ void idXR_Win::BindSwapchainImage(int eye)
 		// It's not pretty but it works with dynamic resolutions and dynamic lens distances
 		float FOVFixConst = -0.750491619f;
 		float FOVFixConst2 = 0.785398185f;
-		uint32_t xOffsL = abs((views[renderingEye].fov.angleLeft - FOVFixConst) * 1000);
+		uint32_t xOffsL = abs((localSpaceViews[renderingEye].fov.angleLeft - FOVFixConst) * 1000);
 		xOffsL = xOffsL * (renderingEye == 0 ? 1 : -1);
 
-		uint32_t xOffsR = abs((views[renderingEye].fov.angleRight - FOVFixConst2) * 1000);
+		uint32_t xOffsR = abs((localSpaceViews[renderingEye].fov.angleRight - FOVFixConst2) * 1000);
 		xOffsR = xOffsR * (renderingEye == 0 ? -1 : 1);
 		xOffs = xOffsL - xOffsR;
 
 		layers[renderingEye] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
-		layers[renderingEye].fov = views[renderingEye].fov;
-		layers[renderingEye].pose = views[renderingEye].pose;
+		layers[renderingEye].fov = localSpaceViews[renderingEye].fov;
+		layers[renderingEye].pose = localSpaceViews[renderingEye].pose;
 		layers[renderingEye].subImage.swapchain = renderingColorSwapchainInfo.swapchain;
 		layers[renderingEye].subImage.imageRect.offset.x = 0;
 		layers[renderingEye].subImage.imageRect.offset.y = 0;
@@ -559,12 +568,7 @@ void idXR_Win::MapActionStateToUsrCmd(idXrAction action)
 
 void idXR_Win::ProccessHMDInput()
 {
-	idVec3 viewAngles = ConvertQuatToVec3(views[0].pose.orientation);
-	viewAngles[YAW] = initialViewAngles[YAW] - viewAngles[YAW];
-	viewAngles[YAW] *=  - 1.0f;
-	viewAngles[PITCH] = initialViewAngles[PITCH] - viewAngles[PITCH];
-	viewAngles[PITCH] *= -1.0f;
-	previousViewAngles = viewAngles;
+	idVec3 viewAngles = ConvertQuatToVec3(headLocation.pose.orientation);
 	usercmdGen->SetAngles(viewAngles);
 }
 
@@ -838,6 +842,14 @@ bool idXR_Win::InitXR() {
 		return false;
 	}
 
+	XrReferenceSpaceCreateInfo referenceViewSpaceCI{ XR_TYPE_REFERENCE_SPACE_CREATE_INFO };
+	referenceViewSpaceCI.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
+	referenceViewSpaceCI.poseInReferenceSpace = { {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f} };
+	if (xrCreateReferenceSpace(session, &referenceViewSpaceCI, &viewSpace) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to create Reference Space");
+		return false;
+	}
+
 	uint formatCount = 0;
 	if (xrEnumerateSwapchainFormats(session, 0, &formatCount, nullptr) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to Initiate the enumeration for Swapchain Formats");
@@ -962,7 +974,10 @@ void idXR_Win::ShutDownXR()
 	swapchainImageMap.clear();
 
 	if (localSpace != XR_NULL_HANDLE && xrDestroySpace(localSpace) != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to close OpenXR Space");
+		common->Warning("OpenXR Error: Failed to close OpenXR Local Space");
+	}
+	if (viewSpace != XR_NULL_HANDLE && xrDestroySpace(viewSpace) != XR_SUCCESS) {
+		common->Warning("OpenXR Error: Failed to close OpenXR View Space");
 	}
 	if (session != XR_NULL_HANDLE && xrDestroySession(session) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to close OpenXR Session");

@@ -78,6 +78,7 @@ private:
 	XrViewConfigurationType viewConfiguration = XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM;
 	std::vector<XrViewConfigurationView> configurationView;
 	XrSpace localSpace = XR_NULL_HANDLE;
+	XrSpace viewSpace = XR_NULL_HANDLE;
 	XrSessionState sessionState = XR_SESSION_STATE_UNKNOWN;
 
 	struct SwapchainInfo {
@@ -120,8 +121,9 @@ private:
 	idImage* GeneralImage;
 	std::unordered_map<XrSwapchain, std::pair<idXRSwapchainType, std::vector<XrSwapchainImageOpenGLKHR>>> swapchainImageMap{};
 	int renderingEye = -1;
-	std::vector<XrView> views;
-	XrView initialView;
+	std::vector<XrView> localSpaceViews;
+	XrSpaceLocation headLocation{ XR_TYPE_SPACE_LOCATION };
+	XrPosef initialView;
 	idVec3 initialViewAngles;
 	idVec3 previousViewAngles;
 	XrTime predictedDisplayTime;
