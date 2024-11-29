@@ -24,7 +24,6 @@
 #include "precompiled.h"
 #include "win_oxr.h"
 idCVar vr_recordInitialPosition("vr_recordInitialPosition", "1", CVAR_BOOL, "Boolean to Determine if the current HMD Input must be recorded for initial Position");
-idCVar vr_HeadtrackingDeadZone("vr_HeadtrackingDeadZone", "5.0", CVAR_FLOAT | CVAR_ARCHIVE, "Head Tracking deadzone");
 extern idCVar in_invertLook;
 
 idXR_Win xrWinSystem;
@@ -570,11 +569,13 @@ void idXR_Win::ProccessHMDInput()
 {
 	idVec3 viewAngles = ConvertQuatToVec3(headLocation.pose.orientation);
 	usercmdGen->SetAngles(viewAngles);
+
+	float crouchDeadzone = initialView.position.y * 0.25;
 }
 
 idVec3 idXR_Win::ConvertQuatToVec3(XrQuaternionf viewQuat)
 {
-	idVec3 viewAngles = idQuat(viewQuat.x, viewQuat.y, viewQuat.z, viewQuat.w).ToAngles().ToAngularVelocity() * 100.0f;
+	idVec3 viewAngles = idQuat(viewQuat.x, viewQuat.y, viewQuat.z, viewQuat.w).ToAngles().ToAngularVelocity() * 127.0f;
 	viewAngles[PITCH] *= in_invertLook.GetBool() ? 1.0f : -1.0f;
 	viewAngles[ROLL] *= 0.0f;
 	return viewAngles;
