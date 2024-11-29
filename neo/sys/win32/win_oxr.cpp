@@ -569,8 +569,7 @@ void idXR_Win::ProccessHMDInput()
 {
 	idVec3 viewAngles = ConvertQuatToVec3(headLocation.pose.orientation);
 	usercmdGen->SetAngles(viewAngles);
-
-	float crouchDeadzone = initialView.position.y * 0.25;
+	usercmdGen->SetAngles(viewAngles);
 }
 
 idVec3 idXR_Win::ConvertQuatToVec3(XrQuaternionf viewQuat)
