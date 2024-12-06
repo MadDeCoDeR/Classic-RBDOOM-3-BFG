@@ -871,6 +871,8 @@ void D_DoomMain(void)
 		I_Printf("Playing demo %s.lmp.\n",::g->myargv[p+1]);
 	}
 
+	::g->debugfile = M_CheckParm("-debug");
+
 
 	if ( DoomLib::matchParms.gameEpisode != GAME_EPISODE_UNKNOWN ) {
 		::g->startepisode = DoomLib::matchParms.gameEpisode;

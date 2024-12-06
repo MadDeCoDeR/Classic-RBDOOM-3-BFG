@@ -124,7 +124,7 @@ skill_t		startskill;
 int             startepisode;
 int		startmap;
 qboolean		autostart;
-FILE*		debugfile;
+qboolean		debugfile;
 qboolean		advancedemo;
 char		wadfile[1024];		// primary wad file
 char		mapdir[1024];           // directory of development maps
@@ -1139,5 +1139,6 @@ bool firstFrame; //Correction Flag for Frame Rate Interpolation. The first frame
 
 //GK: Mouse Acceleration Fix
 int prevMouseTime;
+idAngles prevAngleDelta;
 
 bool runTic;

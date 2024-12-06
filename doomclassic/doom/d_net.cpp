@@ -157,14 +157,14 @@ HSendPacket
 		else
 			realretrans = -1;
 
-		fprintf (::g->debugfile,"send (%i + %i, R %i) [%i] ",
+		I_Printf("send (%i + %i, R %i) [%i] ",
 			ExpandTics(::g->netbuffer->starttic),
 			::g->netbuffer->numtics, realretrans, ::g->doomcom.datalength);
 
 		for (i=0 ; i < ::g->doomcom.datalength ; i++)
-			fprintf (::g->debugfile,"%i ",((byte *)::g->netbuffer)[i]);
+			I_Printf("%i ",((byte *)::g->netbuffer)[i]);
 
-		fprintf (::g->debugfile,"\n");
+		I_Printf("\n");
 	}
 
 	I_NetCmd ();
@@ -199,7 +199,7 @@ qboolean HGetPacket (void)
 	if (::g->doomcom.datalength != NetbufferSize ())
 	{
 		if (::g->debugfile)
-			fprintf (::g->debugfile,"bad packet length %i\n",::g->doomcom.datalength);
+			I_Printf("bad packet length %i\n",::g->doomcom.datalength);
 		return false;
 	}
 
@@ -209,7 +209,7 @@ qboolean HGetPacket (void)
 	if ( /*!gameLocal->IsSplitscreen() &&*/ NetbufferChecksum() != (::g->netbuffer->checksum&NCMD_CHECKSUM) ) //GK:No splitscreen
 	{
 		if (::g->debugfile) {
-			fprintf (::g->debugfile,"bad packet checksum\n");
+			I_Printf("bad packet checksum\n");
 		}
 
 		return false;
@@ -222,7 +222,7 @@ qboolean HGetPacket (void)
 		int	i;
 
 		if (::g->netbuffer->checksum & NCMD_SETUP)
-			fprintf (::g->debugfile,"setup packet\n");
+			I_Printf("setup packet\n");
 		else
 		{
 			if (::g->netbuffer->checksum & NCMD_RETRANSMIT)
@@ -230,14 +230,14 @@ qboolean HGetPacket (void)
 			else
 				realretrans = -1;
 
-			fprintf (::g->debugfile,"get %i = (%i + %i, R %i)[%i] ",
+			I_Printf("get %i = (%i + %i, R %i)[%i] ",
 				::g->doomcom.remotenode,
 				ExpandTics(::g->netbuffer->starttic),
 				::g->netbuffer->numtics, realretrans, ::g->doomcom.datalength);
 
 			for (i=0 ; i < ::g->doomcom.datalength ; i++)
-				fprintf (::g->debugfile,"%i ",((byte *)::g->netbuffer)[i]);
-			fprintf (::g->debugfile,"\n");
+				I_Printf("%i ",((byte *)::g->netbuffer)[i]);
+			I_Printf("\n");
 		}
 	}
 	return true;	
@@ -305,7 +305,7 @@ void GetPackets (void)
 		{
 			::g->resendto[netnode] = ExpandTics(::g->netbuffer->retransmitfrom);
 			if (::g->debugfile)
-				fprintf (::g->debugfile,"retransmit from %i\n", ::g->resendto[netnode]);
+				I_Printf("retransmit from %i\n", ::g->resendto[netnode]);
 			::g->resendcount[netnode] = RESENDCOUNT;
 		}
 		else
@@ -318,7 +318,7 @@ void GetPackets (void)
 		if (realend < ::g->nettics[netnode])
 		{
 			if (::g->debugfile)
-				fprintf (::g->debugfile,
+				I_Printf(
 				"out of order packet (%i + %i)\n" ,
 				realstart,::g->netbuffer->numtics);
 			continue;
@@ -329,7 +329,7 @@ void GetPackets (void)
 		{
 			// stop processing until the other system resends the missed tics
 			if (::g->debugfile)
-				fprintf (::g->debugfile,
+				I_Printf(
 				"missed tics from %i (%i - %i)\n",
 				netnode, realstart, ::g->nettics[netnode]);
 			::g->remoteresend[netnode] = true;
@@ -400,7 +400,7 @@ void NetUpdate ( idUserCmdMgr * userCmdMgr )
 		//I_GetEvents( ::g->I_StartTicCallback () );
 		D_ProcessEvents ();
 		if (::g->maketic - gameticdiv >= BACKUPTICS/2-1) {
-			printf( "Out of room for ticcmds: maketic = %d, gameticdiv = %d\n", ::g->maketic, gameticdiv );
+			I_Printf( "Out of room for ticcmds: maketic = %d, gameticdiv = %d\n", ::g->maketic, gameticdiv );
 			break;          // can't hold any more
 		}
 
@@ -811,7 +811,7 @@ bool TryRunTics ( idUserCmdMgr * userCmdMgr )
 	::g->frameon++;
 
 	if (::g->debugfile) {
-		fprintf (::g->debugfile, "=======real: %i  avail: %i  game: %i\n", ::g->trt_realtics, ::g->trt_availabletics,::g->trt_counts);
+		I_Printf( "=======real: %i  avail: %i  game: %i\n", ::g->trt_realtics, ::g->trt_availabletics,::g->trt_counts);
 	}
 
 	if ( !::g->demoplayback )

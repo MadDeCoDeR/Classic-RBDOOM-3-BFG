@@ -347,15 +347,19 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 		}
 
 		idAngles angleDelta;
+		if (::g->debugfile)
+			I_Printf("Current Cmds: Pitch: %f Yaw: %f\nPrevious Cmds: Pitch: %f Yaw:%f\n", SHORT2ANGLE( curTech5Command.angles[ 0 ] ), SHORT2ANGLE( curTech5Command.angles[ 1 ] ), SHORT2ANGLE( prevTech5Command.angles[ 0 ] ), SHORT2ANGLE( prevTech5Command.angles[ 1 ] ));
 		angleDelta.pitch	= SHORT2ANGLE( curTech5Command.angles[ 0 ] ) - SHORT2ANGLE( prevTech5Command.angles[ 0 ] );
 		angleDelta.yaw		= SHORT2ANGLE( curTech5Command.angles[ 1 ] ) - SHORT2ANGLE( prevTech5Command.angles[ 1 ] );
 		angleDelta.roll		= 0.0f;
+		::g->prevAngleDelta = angleDelta;
 		angleDelta.Normalize180();
 
 		// We will be running a number of tics equal to newTics before we get a new command from tech5.
 		// So to keep input smooth, divide the angles between all the newTics.
 		if ( newTics > 0 ) {
-			//I_Printf("New Tics: %d\n", newTics);
+			if (::g->debugfile)
+				I_Printf("New Tics: %d\n", newTics);
 			angleDelta.yaw /= newTics;
 			angleDelta.pitch /= newTics;
 		}
@@ -368,13 +372,15 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 		float estimatedFPS = roundf(1000.0f * (1.0f/frameTime));
 		//float engineHz_denominator = com_engineHz_denominator / 100.0f;
 		float accelerator = estimatedFPS / com_engineHz_latched;
-		//I_Printf("Estimated FPS: %f, Accelerator: %f\n", estimatedFPS, accelerator);
+		if (::g->debugfile)
+			I_Printf("Estimated FPS: %f, Accelerator: %f\n", estimatedFPS, accelerator);
 		if (accelerator >= 1) {
 			angleDelta.yaw *= accelerator;
 			angleDelta.pitch *= accelerator;
 		}
 
-		//I_Printf("Mouse Pitch: %f, Mouse Yaw: %f\n", angleDelta.pitch, angleDelta.yaw);
+		if (::g->debugfile)
+			I_Printf("Mouse Pitch: %f, Mouse Yaw: %f\n", angleDelta.pitch, angleDelta.yaw);
 
 		// idAngles is stored in degrees. Convert to doom format.
 		cmd->angleturn = DegreesToDoomAngleTurn( angleDelta.yaw );
@@ -886,7 +892,7 @@ void G_Ticker (void)
 		S_ResumeSound();
 
 	// do player reborns if needed
-	for (i=0 ; i<MAXPLAYERS ; i++) 
+	for (i=0 ; i<::g->doomcom.numnodes ; i++) 
 		if (::g->playeringame[i] && ::g->players[i].playerstate == PST_REBORN) {
 			if (!::g->netgame && ::g->demorecording)
 				G_CheckDemoStatus();
@@ -938,7 +944,7 @@ void G_Ticker (void)
 	// and build new ::g->consistancy check
 	buf = (::g->gametic/::g->ticdup)%BACKUPTICS; 
 
-	for (i=0 ; i<MAXPLAYERS ; i++)
+	for (i=0 ; i<::g->doomcom.numnodes ; i++)
 	{
 		if (::g->playeringame[i]) 
 		{ 
