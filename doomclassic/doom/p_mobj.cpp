@@ -440,6 +440,25 @@ void P_MobjThinker (mobj_t* mobj)
 			return;		// mobj was removed
 	}
 
+	{
+    sector_t* sector = mobj->subsector->sector;
+
+    if (
+      sector->special & KILL_MONSTERS_MASK &&
+      mobj->z == mobj->floorz &&
+      mobj->player == NULL &&
+      mobj->flags & MF_SHOOTABLE &&
+      !(mobj->flags & MF_FLOAT)
+    )
+    {
+      P_DamageMobj(mobj, NULL, NULL, 10000);
+
+      // must have been removed
+      if (mobj->thinker.function.acv == (actionf_v) (-1))
+        return;
+    }
+  }
+
 
 	// cycle through states,
 	// calling action functions at transitions

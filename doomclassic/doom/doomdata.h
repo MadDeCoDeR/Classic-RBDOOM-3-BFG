@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 // Some global defines, that configure the game.
 #include "doomdef.h"
 
-
-
 //
 // Map level types.
 // The following data structures define the persistent format
@@ -140,7 +138,10 @@ typedef struct
 // Set if already seen, thus drawn in automap.
 #define ML_MAPPED		256
 
+// mbf21
+#define ML_BLOCKLANDMONSTERS 4096
 
+#define ML_BLOCKPLAYERS 8192
 
 
 // Sector definition, from editing.

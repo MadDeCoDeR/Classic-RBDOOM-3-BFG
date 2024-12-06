@@ -117,6 +117,9 @@ If you have questions concerning this license or the applicable additional terms
 // Any questions?
 //
 
+//GK: MBF21 Support
+#define KILL_MONSTERS_MASK 0x2000 // bit 13
+
 //
 // Misc. mobj flags
 //

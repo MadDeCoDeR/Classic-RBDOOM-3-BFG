@@ -1548,92 +1548,120 @@ void P_PlayerInSpecialSector (player_t* player)
 		return;	
 
 	// Has hitten ground.
-	switch (sector->special)
-	{
-	case 5:
-		// HELLSLIME DAMAGE
-		if (!player->powers[pw_ironfeet])
-			if (!(::g->leveltime&0x1f))
-				P_DamageMobj (player->mo, NULL, NULL, 10);
-		break;
-
-	case 7:
-		// NUKAGE DAMAGE
-		if (!player->powers[pw_ironfeet])
-			if (!(::g->leveltime&0x1f))
-				P_DamageMobj (player->mo, NULL, NULL, 5);
-		break;
-
-	case 16:
-		// SUPER HELLSLIME DAMAGE
-	case 4:
-		// STROBE HURT
-		if (!player->powers[pw_ironfeet]
-		|| (P_Random()<5) )
+	if (sector->special < 32) {
+		switch (sector->special)
 		{
-			if (!(::g->leveltime&0x1f))
-				P_DamageMobj (player->mo, NULL, NULL, 20);
-		}
-		break;
+		case 5:
+			// HELLSLIME DAMAGE
+			if (!player->powers[pw_ironfeet])
+				if (!(::g->leveltime&0x1f))
+					P_DamageMobj (player->mo, NULL, NULL, 10);
+			break;
 
-	case 9:
-		// SECRET SECTOR
-		player->secretcount++;
-		//GK send message when secret found
-		::g->plyr->message = GOTSECRET;
-		S_StartSound(player->mo, sfx_getpow);
-		sector->special = 0;
+		case 7:
+			// NUKAGE DAMAGE
+			if (!player->powers[pw_ironfeet])
+				if (!(::g->leveltime&0x1f))
+					P_DamageMobj (player->mo, NULL, NULL, 5);
+			break;
+
+		case 16:
+			// SUPER HELLSLIME DAMAGE
+		case 4:
+			// STROBE HURT
+			if (!player->powers[pw_ironfeet]
+			|| (P_Random()<5) )
+			{
+				if (!(::g->leveltime&0x1f))
+					P_DamageMobj (player->mo, NULL, NULL, 20);
+			}
+			break;
+
+		case 9:
+			// SECRET SECTOR
+			player->secretcount++;
+			//GK send message when secret found
+			::g->plyr->message = GOTSECRET;
+			S_StartSound(player->mo, sfx_getpow);
+			sector->special = 0;
 
 
-		if ( !::g->demoplayback && ( ::g->usergame && !::g->netgame ) ) {
-			// DHM - Nerve :: Let's give achievements in real time in Doom 2
-			if ( !common->IsMultiplayer() ) {
-				switch( DoomLib::GetGameSKU() ) {
-					case GAME_SKU_DOOM1_BFG: {
-						// Removing trophies for DOOM and DOOM II BFG due to point limit.
-						//gameLocal->UnlockAchievement( Doom1BFG_Trophies::SCOUT_FIND_ANY_SECRET );
-						break;
-					}
-					case GAME_SKU_DOOM2_BFG: {
-#ifdef __MONOLITH__
-						//gameLocal->UnlockAchievement( Doom2BFG_Trophies::IMPORTANT_LOOKING_DOOR_FIND_ANY_SECRET );
-						idAchievementManager::LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM2_IMPORTANT_LOOKING_DOOR_FIND_ANY_SECRET );
-#endif
-						break;
-					}
-					case GAME_SKU_DCC: {
-						// Not on PC.
-						//gameLocal->UnlockAchievement( DOOM_ACHIEVEMENT_FIND_SECRET );
-						break;
-					}
-					default: {
-						// No unlocks for other SKUs.
-						break;
+			if ( !::g->demoplayback && ( ::g->usergame && !::g->netgame ) ) {
+				// DHM - Nerve :: Let's give achievements in real time in Doom 2
+				if ( !common->IsMultiplayer() ) {
+					switch( DoomLib::GetGameSKU() ) {
+						case GAME_SKU_DOOM1_BFG: {
+							// Removing trophies for DOOM and DOOM II BFG due to point limit.
+							//gameLocal->UnlockAchievement( Doom1BFG_Trophies::SCOUT_FIND_ANY_SECRET );
+							break;
+						}
+						case GAME_SKU_DOOM2_BFG: {
+	#ifdef __MONOLITH__
+							//gameLocal->UnlockAchievement( Doom2BFG_Trophies::IMPORTANT_LOOKING_DOOR_FIND_ANY_SECRET );
+							idAchievementManager::LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM2_IMPORTANT_LOOKING_DOOR_FIND_ANY_SECRET );
+	#endif
+							break;
+						}
+						case GAME_SKU_DCC: {
+							// Not on PC.
+							//gameLocal->UnlockAchievement( DOOM_ACHIEVEMENT_FIND_SECRET );
+							break;
+						}
+						default: {
+							// No unlocks for other SKUs.
+							break;
+						}
 					}
 				}
 			}
+
+
+			break;
+
+		case 11:
+			// EXIT SUPER DAMAGE! (for E1M8 finale)
+			player->cheats &= ~CF_GODMODE;
+
+			if (!(::g->leveltime&0x1f))
+				P_DamageMobj (player->mo, NULL, NULL, 20);
+
+			if (player->health <= 10)
+				G_ExitLevel();
+			break;
+		default:
+			I_Error ("P_PlayerInSpecialSector: "
+				"unknown special %i",
+				sector->special);
+			break;
+		};
+	} else if(sector->special & DEATH_MASK) {
+		switch(sector->special & DAMAGE_MASK >> DAMAGE_SHIFT) {
+			case 0: {
+				if (!player->powers[pw_invulnerability] && !player->powers[pw_ironfeet])
+					P_DamageMobj(player->mo, NULL, NULL, 10000);
+				break;
+			}
+			case 1:
+				P_DamageMobj(player->mo, NULL, NULL, 10000);
+				break;
+			case 2:
+				for (int i = 0; i < ::g->doomcom.numnodes; i++) {
+					if (::g->playeringame[i]) {
+						P_DamageMobj(::g->players[i].mo, NULL, NULL, 10000);
+					}
+				}
+				G_ExitLevel();
+				break;
+			case 3: 
+				for (int i = 0; i < ::g->doomcom.numnodes; i++) {
+					if (::g->playeringame[i]) {
+						P_DamageMobj(::g->players[i].mo, NULL, NULL, 10000);
+					}
+				}
+				G_SecretExitLevel();
+				break;
 		}
-
-
-		break;
-
-	case 11:
-		// EXIT SUPER DAMAGE! (for E1M8 finale)
-		player->cheats &= ~CF_GODMODE;
-
-		if (!(::g->leveltime&0x1f))
-			P_DamageMobj (player->mo, NULL, NULL, 20);
-
-		if (player->health <= 10)
-			G_ExitLevel();
-		break;
-
-	default:
-		I_Error ("P_PlayerInSpecialSector: "
-			"unknown special %i",
-			sector->special);
-		break;
-	};
+	}
 }
 
 
@@ -2293,6 +2321,27 @@ static void P_SpawnScrollers(void)
 		case 85:                  // jff 1/30/98 2-way scroll
 			Add_Scroller(sc_side, -FRACUNIT, 0, -1, ::g->lines[i].sidenum[0], accel);
 			break;
+		        case 1024: // special 255 with tag control
+
+        case 1025:
+        case 1026:
+          if (l->tag == 0)
+            I_Error("Line %d is missing a tag!", i);
+
+          if (special > 1024)
+            control = ::g->sides[*l->sidenum].sector->counter; //GK: it's the same as iSectorID
+
+          if (special == 1026)
+            accel = 1;
+
+          s = ::g->lines[i].sidenum[0];
+          dx = -::g->sides[s].textureoffset;
+          dy = ::g->sides[s].rowoffset;
+          for (s = -1; (s = P_FindLineFromLineTag(l, s)) >= 0;)
+            if (s != i)
+              Add_Scroller(sc_side, dx, dy, control, ::g->lines[s].sidenum[0], accel);
+
+          break;
 		}
 	}
 }

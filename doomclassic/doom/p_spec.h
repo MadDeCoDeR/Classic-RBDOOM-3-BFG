@@ -36,6 +36,10 @@ If you have questions concerning this license or the applicable additional terms
 extern	qboolean levelTimer;
 extern	int	levelTimeCount;
 
+//GK: MBF21 support
+#define DEATH_MASK 0x1000
+#define DAMAGE_MASK 0x60
+#define DAMAGE_SHIFT 5
 
 //      Define values for map objects
 #define MO_TELEPORTMAN          14
