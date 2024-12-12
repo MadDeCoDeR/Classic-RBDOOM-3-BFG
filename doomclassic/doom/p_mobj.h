@@ -262,6 +262,7 @@ struct mobj_t
     int			tics;	// state tic counter
     const state_t*		state;
     int			flags;
+    int64       flags2;
     int			health;
 
     // Movement direction, movement generation (zig-zagging).
@@ -298,7 +299,7 @@ struct mobj_t
     
 };
 
-
+#define MF2_NEUTRAL_SPLASH int64(0x0000001000000000) // splash damage does not account for group
 
 #endif
 

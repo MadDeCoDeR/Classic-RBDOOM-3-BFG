@@ -1175,7 +1175,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_DROPOFF | MF_PICKUP | MF_NOTDMATCH,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_POSSESSED
@@ -1201,7 +1205,11 @@ extern "C"
 	0,		// damage
 	sfx_posact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_POSS_RAISE1		// raisestate
+	S_POSS_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_SHOTGUY
@@ -1227,7 +1235,11 @@ extern "C"
 	0,		// damage
 	sfx_posact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_SPOS_RAISE1		// raisestate
+	S_SPOS_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_VILE
@@ -1253,7 +1265,11 @@ extern "C"
 	0,		// damage
 	sfx_vilact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_FIRE
@@ -1279,7 +1295,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_UNDEAD
@@ -1305,7 +1325,11 @@ extern "C"
 	0,		// damage
 	sfx_skeact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_SKEL_RAISE1		// raisestate
+	S_SKEL_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_TRACER
@@ -1331,7 +1355,11 @@ extern "C"
 	10,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_SMOKE
@@ -1357,7 +1385,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_FATSO
@@ -1383,7 +1415,11 @@ extern "C"
 	0,		// damage
 	sfx_posact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_FATT_RAISE1		// raisestate
+	S_FATT_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_FATSHOT
@@ -1409,7 +1445,11 @@ extern "C"
 	8,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_CHAINGUY
@@ -1435,7 +1475,11 @@ extern "C"
 	0,		// damage
 	sfx_posact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_CPOS_RAISE1		// raisestate
+	S_CPOS_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_TROOP
@@ -1461,7 +1505,11 @@ extern "C"
 	0,		// damage
 	sfx_bgact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_TROO_RAISE1		// raisestate
+	S_TROO_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_SERGEANT
@@ -1487,7 +1535,11 @@ extern "C"
 	0,		// damage
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_SARG_RAISE1		// raisestate
+	S_SARG_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_SHADOWS
@@ -1513,7 +1565,11 @@ extern "C"
 	0,		// damage
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_SHADOW | MF_COUNTKILL,		// flags
-	S_SARG_RAISE1		// raisestate
+	S_SARG_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_HEAD
@@ -1539,7 +1595,11 @@ extern "C"
 	0,		// damage
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_FLOAT | MF_NOGRAVITY | MF_COUNTKILL,		// flags
-	S_HEAD_RAISE1		// raisestate
+	S_HEAD_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_BRUISER
@@ -1565,7 +1625,11 @@ extern "C"
 	0,		// damage
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_BOSS_RAISE1		// raisestate
+	S_BOSS_RAISE1,		// raisestate
+	0,			//infightingGroup
+	1,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_BRUISERSHOT
@@ -1591,7 +1655,11 @@ extern "C"
 	8,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_KNIGHT
@@ -1617,7 +1685,11 @@ extern "C"
 	0,		// damage
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_BOS2_RAISE1		// raisestate
+	S_BOS2_RAISE1,		// raisestate
+	0,			//infightingGroup
+	1,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_SKULL
@@ -1643,7 +1715,11 @@ extern "C"
 	3,		// damage
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_FLOAT | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_SPIDER
@@ -1669,7 +1745,11 @@ extern "C"
 	0,		// damage
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_BABY
@@ -1695,7 +1775,11 @@ extern "C"
 	0,		// damage
 	sfx_bspact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_BSPI_RAISE1		// raisestate
+	S_BSPI_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_CYBORG
@@ -1721,7 +1805,11 @@ extern "C"
 	0,		// damage
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_PAIN
@@ -1747,7 +1835,11 @@ extern "C"
 	0,		// damage
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_FLOAT | MF_NOGRAVITY | MF_COUNTKILL,		// flags
-	S_PAIN_RAISE1		// raisestate
+	S_PAIN_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_WOLFSS
@@ -1773,7 +1865,11 @@ extern "C"
 	0,		// damage
 	sfx_posact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_SSWV_RAISE1		// raisestate
+	S_SSWV_RAISE1,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_KEEN
@@ -1799,7 +1895,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY | MF_SHOOTABLE | MF_COUNTKILL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_BOSSBRAIN
@@ -1825,7 +1925,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SHOOTABLE,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_BOSSSPIT
@@ -1851,7 +1955,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOSECTOR,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_BOSSTARGET
@@ -1877,7 +1985,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOSECTOR,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_SPAWNSHOT
@@ -1903,7 +2015,11 @@ extern "C"
 	3,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_NOCLIP,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_SPAWNFIRE
@@ -1929,7 +2045,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_BARREL
@@ -1955,7 +2075,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	MF2_NEUTRAL_SPLASH			//flags2
 	},
 
 	{		// MT_TROOPSHOT
@@ -1981,7 +2105,11 @@ extern "C"
 	3,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_HEADSHOT
@@ -2007,7 +2135,11 @@ extern "C"
 	5,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_ROCKET
@@ -2033,7 +2165,11 @@ extern "C"
 	20,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_PLASMA
@@ -2059,7 +2195,11 @@ extern "C"
 	5,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_BFG
@@ -2085,7 +2225,11 @@ extern "C"
 	100,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_ARACHPLAZ
@@ -2111,7 +2255,11 @@ extern "C"
 	5,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_PUFF
@@ -2137,7 +2285,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_BLOOD
@@ -2163,7 +2315,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_TFOG
@@ -2189,7 +2345,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_IFOG
@@ -2215,7 +2375,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_TELEPORTMAN
@@ -2241,7 +2405,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOSECTOR,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_EXTRABFG
@@ -2267,7 +2435,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC0
@@ -2293,7 +2465,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC1
@@ -2319,7 +2495,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC2
@@ -2345,7 +2525,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC3
@@ -2371,7 +2555,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC4
@@ -2397,7 +2585,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC5
@@ -2423,7 +2615,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC6
@@ -2449,7 +2645,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC7
@@ -2475,7 +2675,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC8
@@ -2501,7 +2705,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC9
@@ -2527,7 +2735,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC10
@@ -2553,7 +2765,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC11
@@ -2579,7 +2795,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC12
@@ -2605,7 +2825,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_INV
@@ -2631,7 +2855,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC13
@@ -2657,7 +2885,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_INS
@@ -2683,7 +2915,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC14
@@ -2709,7 +2945,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC15
@@ -2735,7 +2975,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC16
@@ -2761,7 +3005,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MEGA
@@ -2787,7 +3035,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_CLIP
@@ -2813,7 +3065,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC17
@@ -2839,7 +3095,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC18
@@ -2865,7 +3125,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC19
@@ -2891,7 +3155,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC20
@@ -2917,7 +3185,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC21
@@ -2943,7 +3215,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC22
@@ -2969,7 +3245,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC23
@@ -2995,7 +3275,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC24
@@ -3021,7 +3305,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC25
@@ -3047,7 +3335,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_CHAINGUN
@@ -3073,7 +3365,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC26
@@ -3099,7 +3395,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC27
@@ -3125,7 +3425,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC28
@@ -3151,7 +3455,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_SHOTGUN
@@ -3177,7 +3485,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_SUPERSHOTGUN
@@ -3203,7 +3515,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC29
@@ -3229,7 +3545,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC30
@@ -3255,7 +3575,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC31
@@ -3281,7 +3605,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC32
@@ -3307,7 +3635,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC33
@@ -3333,7 +3665,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC34
@@ -3359,7 +3695,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC35
@@ -3385,7 +3725,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC36
@@ -3411,7 +3755,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC37
@@ -3437,7 +3785,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC38
@@ -3463,7 +3815,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC39
@@ -3489,7 +3845,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC40
@@ -3515,7 +3875,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC41
@@ -3541,7 +3905,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC42
@@ -3567,7 +3935,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC43
@@ -3593,7 +3965,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC44
@@ -3619,7 +3995,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC45
@@ -3645,7 +4025,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC46
@@ -3671,7 +4055,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC47
@@ -3697,7 +4085,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC48
@@ -3723,7 +4115,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC49
@@ -3749,7 +4145,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	0,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC50
@@ -3775,7 +4175,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC51
@@ -3801,7 +4205,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC52
@@ -3827,7 +4235,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC53
@@ -3853,7 +4265,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC54
@@ -3879,7 +4295,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC55
@@ -3905,7 +4325,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC56
@@ -3931,7 +4355,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC57
@@ -3957,7 +4385,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC58
@@ -3983,7 +4415,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC59
@@ -4009,7 +4445,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC60
@@ -4035,7 +4475,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC61
@@ -4061,7 +4505,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	0,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC62
@@ -4087,7 +4535,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	0,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC63
@@ -4113,7 +4565,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	0,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC64
@@ -4139,7 +4595,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	0,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC65
@@ -4165,7 +4625,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	0,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC66
@@ -4191,7 +4655,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	0,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC67
@@ -4217,7 +4685,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	0,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC68
@@ -4243,7 +4715,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	0,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC69
@@ -4269,7 +4745,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	0,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC70
@@ -4295,7 +4775,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC71
@@ -4321,7 +4805,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	0,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC72
@@ -4347,7 +4835,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC73
@@ -4373,7 +4865,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC74
@@ -4399,7 +4895,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC75
@@ -4425,7 +4925,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC76
@@ -4451,7 +4955,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC77
@@ -4477,7 +4985,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC78
@@ -4503,7 +5015,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC79
@@ -4529,7 +5045,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC80
@@ -4555,7 +5075,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC81
@@ -4581,7 +5105,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC82
@@ -4607,7 +5135,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC83
@@ -4633,7 +5165,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC84
@@ -4659,7 +5195,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC85
@@ -4685,7 +5225,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	},
 
 	{		// MT_MISC86
@@ -4711,7 +5255,11 @@ extern "C"
 	0,		// damage
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP,		// flags
-	S_NULL		// raisestate
+	S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2
 	}
 		,
 
@@ -4739,7 +5287,11 @@ extern "C"
   0,              // damage                                   
   sfx_None,       // activesound                              
   MF_NOBLOCKMAP,  // flags
-  S_NULL          // raisestate                                   
+  S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2                                   
 },
 
 // For use with wind and current effects
@@ -4766,7 +5318,11 @@ extern "C"
   0,              // damage                                   
   sfx_None,       // activesound                              
   MF_NOBLOCKMAP,  // flags
-  S_NULL          // raisestate                                   
+  S_NULL,		// raisestate
+	0,			//infightingGroup
+	0,			//projectileGroup
+	0,			//splashGroup
+	0			//flags2                                   
 }
 };
 //std::vector<state_t> tempStates(arrStates, arrStates + NUMSTATES);

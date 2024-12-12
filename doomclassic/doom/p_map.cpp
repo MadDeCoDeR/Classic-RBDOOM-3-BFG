@@ -259,6 +259,26 @@ qboolean PIT_CheckLine (line_t* ld)
     return true;
 }
 
+qboolean P_ProjectileImmune(mobj_t *target, mobj_t *source)
+{
+  return
+    ( // PG_GROUPLESS means no immunity, even to own species
+      mobjinfo[target->type].projectileGroup != PG_GROUPLESS ||
+      target == source
+    ) &&
+    (
+      ( // target type has default behaviour, and things are the same type
+        mobjinfo[target->type].projectileGroup == PG_DEFAULT &&
+        source->type == target->type
+      ) ||
+      ( // target type has special behaviour, and things have the same group
+        mobjinfo[target->type].projectileGroup != PG_DEFAULT &&
+        mobjinfo[target->type].projectileGroup == mobjinfo[source->type].projectileGroup
+      )
+    );
+}
+
+
 //
 // PIT_CheckThing
 //
@@ -321,10 +341,11 @@ qboolean PIT_CheckThing (mobj_t* thing)
 	if (::g->tmthing->z+::g->tmthing->height < thing->z)
 	    return true;		// underneath
 		
-	if (::g->tmthing->target && (
-	    ::g->tmthing->target->type == thing->type || 
-	    (::g->tmthing->target->type == MT_KNIGHT && thing->type == MT_BRUISER)||
-	    (::g->tmthing->target->type == MT_BRUISER && thing->type == MT_KNIGHT) ) )
+	if (::g->tmthing->target && !P_ProjectileImmune(thing, ::g->tmthing->target))
+	// (
+	//     ::g->tmthing->target->type == thing->type || 
+	//     (::g->tmthing->target->type == MT_KNIGHT && thing->type == MT_BRUISER)||
+	//     (::g->tmthing->target->type == MT_BRUISER && thing->type == MT_KNIGHT) ) )
 	{
 	    // Don't hit same species as originator.
 	    if (thing == ::g->tmthing->target)
@@ -1458,6 +1479,13 @@ void P_UseLines (player_t*	player)
 // RADIUS ATTACK
 //
 
+qboolean P_SplashImmune(mobj_t *target, mobj_t *source, mobj_t *spot)
+{
+  return // not neutral, not default behaviour, and same group
+    !(spot->flags2 & MF2_NEUTRAL_SPLASH) &&
+    mobjinfo[target->type].splashGroup != SG_DEFAULT &&
+    mobjinfo[target->type].splashGroup == mobjinfo[source->type].splashGroup;
+}
 
 //
 // PIT_RadiusAttack
@@ -1472,6 +1500,9 @@ qboolean PIT_RadiusAttack (mobj_t* thing)
 	
     if (!(thing->flags & MF_SHOOTABLE) )
 	return true;
+
+	if (::g->bombsource && P_SplashImmune(thing, ::g->bombsource, ::g->bombspot))
+    return true;
 
     // Boss spider and cyborg
     // take no damage from concussion.

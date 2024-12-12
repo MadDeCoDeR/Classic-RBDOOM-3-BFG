@@ -926,7 +926,12 @@ P_KillMobj
 }
 
 
-
+qboolean P_InfightingImmune(mobj_t *target, mobj_t *source)
+{
+  return // not default behaviour, and same group
+    mobjinfo[target->type].infightingGroup != IG_DEFAULT &&
+    mobjinfo[target->type].infightingGroup == mobjinfo[source->type].infightingGroup;
+}
 
 //
 // P_DamageMobj
@@ -1105,7 +1110,8 @@ P_DamageMobj
 
 	if ( (!target->threshold || target->type == MT_VILE)
 		&& source && source != target
-		&& source->type != MT_VILE)
+		&& source->type != MT_VILE
+		&& (source->type != MT_PLAYER && !P_InfightingImmune(target, source)))
 	{
 		// if not intent on another player,
 		// chase after this one

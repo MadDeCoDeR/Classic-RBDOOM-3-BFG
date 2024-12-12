@@ -522,6 +522,7 @@ P_SpawnMobj
 	mobj->radius = info->radius;
 	mobj->height = info->height;
 	mobj->flags = info->flags;
+	mobj->flags2 = info->flags2;
 	mobj->health = info->spawnhealth;
 	//mobj->touching_sectorlist = NULL; // NULL head of sector list // phares 3/13/98
 

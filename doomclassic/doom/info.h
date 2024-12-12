@@ -1338,6 +1338,24 @@ typedef enum {
 
 } mobjtype_t;
 
+typedef enum {
+  IG_DEFAULT,
+  IG_WIZARD,
+  IG_END
+} infighting_group_t;
+
+typedef enum {
+  PG_GROUPLESS = -1,
+  PG_DEFAULT,
+  PG_BARON,
+  PG_END
+} projectile_group_t;
+
+typedef enum {
+  SG_DEFAULT,
+  SG_END
+} splash_group_t;
+
 typedef struct
 {
     int	doomednum;
@@ -1363,6 +1381,10 @@ typedef struct
     int	activesound;
     int	flags;
     int	raisestate;
+    int infightingGroup;
+    int projectileGroup;
+    int splashGroup;
+    int64 flags2;
 
 } mobjinfo_t;
 

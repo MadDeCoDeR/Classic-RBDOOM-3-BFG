@@ -410,7 +410,7 @@ int checkstate(char* text) {
 
 void setThing(int pos, char* varname, int varval) {
 	//GK: This works (suprisingly)
-	dehobj tvars[23] = {
+	dehobj tvars[26] = {
 		{"Initial frame ",MAXINT,NULL,&mobjinfo[pos].spawnstate},
 		{"Hit points ",MAXINT,NULL,&mobjinfo[pos].spawnhealth},
 		{"First moving frame ",MAXINT,NULL,&mobjinfo[pos].seestate},
@@ -434,14 +434,36 @@ void setThing(int pos, char* varname, int varval) {
 		{"Bits ",MAXINT,NULL,&mobjinfo[pos].flags},
 		{"Respawn frame ", MAXINT,NULL,&mobjinfo[pos].raisestate},
 		{"ID # ",MAXINT,NULL,&mobjinfo[pos].doomednum},
+		{"Infighting group", MAXINT, NULL, &mobjinfo[pos].infightingGroup},
+		{"Projectile group", MAXINT, NULL, &mobjinfo[pos].projectileGroup},
+		{"Splash group", MAXINT, NULL, &mobjinfo[pos].splashGroup}
 	};
-	for (int i = 0; i < 23; i++) {
+	for (int i = 0; i < 26; i++) {
 		if (!idStr::Icmp(varname, tvars[i].name)) {
 			if (varval < tvars[i].limit) {
 				*tvars[i].ival = varval;
 				return;
 			}
 		}
+	}
+
+	//MBF21 sanity check
+	if (mobjinfo[pos].infightingGroup < 0) {
+		I_Error("DEHACKED Error: Infighting Group is negative");
+	} else {
+		mobjinfo[pos].infightingGroup = mobjinfo[pos].infightingGroup + IG_END;
+	}
+
+	if (mobjinfo[pos].projectileGroup < 0) {
+		mobjinfo[pos].projectileGroup = PG_GROUPLESS;
+	} else {
+		mobjinfo[pos].projectileGroup = mobjinfo[pos].projectileGroup + PG_END;
+	}
+
+	if (mobjinfo[pos].splashGroup < 0) {
+		I_Error("DEHACKED Error: Splash Group is negative");
+	} else {
+		mobjinfo[pos].splashGroup = mobjinfo[pos].splashGroup + SG_END;
 	}
 }
 
