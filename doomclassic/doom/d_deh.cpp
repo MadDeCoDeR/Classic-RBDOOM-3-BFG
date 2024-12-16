@@ -63,6 +63,7 @@ typedef struct{
 	spritenum_t* spval;
 	statenum_t* stval;
 	ammotype_t* amval;
+	int64* llval;
 }dehobj;
 
 dehstr strval[] = {
@@ -380,7 +381,27 @@ dehbits mobfl[] = {
 //  use a translation table for player colormaps
 { "TRANSLATION",MF_TRANSLATION },
 // Hmm ???.
-{ "TRANSSHIFT",MF_TRANSSHIFT }
+{ "TRANSSHIFT",MF_TRANSSHIFT },
+//MBF21 Bits
+{ "LOGRAV", MF2_LOGRAV },
+{"SHORTMRANGE", MF2_SHORTMRANGE},
+{"DMGIGNORED", MF2_DMGIGNORED},
+{"NORADIUSDMG", MF2_NORADIUSDMG},
+{"FORCERADIUSDMG", MF2_FORCERADIUSDMG},
+{"HIGHERMPROB", MF2_HIGHERMPROB},
+{"RANGEHALF", MF2_RANGEHALF},
+{"NOTHRESHOLD", MF2_NOTHRESHOLD},
+{"LONGMELEE", MF2_LONGMELEE},
+{"BOSS", MF2_BOSS},
+{"MAP07BOSS1", MF2_MAP07BOSS1},
+{"MAP07BOSS2", MF2_MAP07BOSS2},
+{"E1M8BOSS", MF2_E1M8BOSS},
+{"E2M8BOSS", MF2_E2M8BOSS},
+{"E3M8BOSS", MF2_E3M8BOSS},
+{"E4M6BOSS", MF2_E4M6BOSS},
+{"E4M8BOSS", MF2_E4M8BOSS},
+{"RIP", MF2_RIP},
+{"FULLVOLSOUNDS", MF2_FULLVOLSOUNDS}
 };
 
 int checkstate(char* text) {
@@ -410,7 +431,7 @@ int checkstate(char* text) {
 
 void setThing(int pos, char* varname, int varval) {
 	//GK: This works (suprisingly)
-	dehobj tvars[26] = {
+	dehobj tvars[27] = {
 		{"Initial frame ",MAXINT,NULL,&mobjinfo[pos].spawnstate},
 		{"Hit points ",MAXINT,NULL,&mobjinfo[pos].spawnhealth},
 		{"First moving frame ",MAXINT,NULL,&mobjinfo[pos].seestate},
@@ -436,9 +457,10 @@ void setThing(int pos, char* varname, int varval) {
 		{"ID # ",MAXINT,NULL,&mobjinfo[pos].doomednum},
 		{"Infighting group", MAXINT, NULL, &mobjinfo[pos].infightingGroup},
 		{"Projectile group", MAXINT, NULL, &mobjinfo[pos].projectileGroup},
-		{"Splash group", MAXINT, NULL, &mobjinfo[pos].splashGroup}
+		{"Splash group", MAXINT, NULL, &mobjinfo[pos].splashGroup},
+		{"MBF21 Bits ",MAXINT,NULL, &mobjinfo[pos].flags2}
 	};
-	for (int i = 0; i < 26; i++) {
+	for (int i = 0; i < 27; i++) {
 		if (!idStr::Icmp(varname, tvars[i].name)) {
 			if (varval < tvars[i].limit) {
 				*tvars[i].ival = varval;
@@ -884,7 +906,7 @@ void parsetext(char* text) {
 			if (!tv3.empty()) {
 				if (state != 6 && state != 9) {
 					varval = atoi(tv3.c_str());
-					if (state == 1 && !idStr::Icmp(varname, "Bits ") && varval == 0) {
+					if (state == 1 && (!idStr::Icmp(varname, "Bits ") || !idStr::Icmp(varname, "MBF21 Bits ")) && varval == 0) {
 						varval = Generateflags(strdup(tv3.c_str()));
 					}
 				}

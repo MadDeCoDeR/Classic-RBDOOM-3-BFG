@@ -212,6 +212,29 @@ typedef enum
 } mobjflag_t;
 
 
+typedef enum
+{
+    MF2_LOGRAV		= 0x00001,
+    MF2_SHORTMRANGE = 0x00002,
+    MF2_DMGIGNORED  = 0x00004,
+    MF2_NORADIUSDMG = 0x00008,
+    MF2_FORCERADIUSDMG = 0x00010,
+    MF2_HIGHERMPROB = 0x00020,
+    MF2_RANGEHALF = 0x00040,
+    MF2_NOTHRESHOLD = 0x00080,
+    MF2_LONGMELEE = 0x00100,
+    MF2_BOSS = 0x00200,
+    MF2_MAP07BOSS1 = 0x00400,
+    MF2_MAP07BOSS2 = 0x00800,
+    MF2_E1M8BOSS = 0x01000,
+    MF2_E2M8BOSS = 0x02000,
+    MF2_E3M8BOSS = 0x04000,
+    MF2_E4M6BOSS = 0x08000,
+    MF2_E4M8BOSS = 0x10000,
+    MF2_RIP      = 0x20000,
+    MF2_FULLVOLSOUNDS = 0x40000
+} mobjflag2_t;
+
 // Map Object definition.
 struct mobj_t
 {

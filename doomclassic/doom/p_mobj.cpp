@@ -324,10 +324,15 @@ void P_ZMovement (mobj_t* mo)
 	}
 	else if (! (mo->flags & MF_NOGRAVITY) )
 	{
+		fixed_t tGravity = GRAVITY;
+		if (mo->flags2 & MF2_LOGRAV) {
+			tGravity = GRAVITY/8;
+		}
+
 		if (mo->momz == 0)
-			mo->momz = -GRAVITY*2;
+			mo->momz = -tGravity*2;
 		else
-			mo->momz -= GRAVITY;
+			mo->momz -= tGravity;
 	}
 
 	if (mo->z + mo->height > mo->ceilingz)
