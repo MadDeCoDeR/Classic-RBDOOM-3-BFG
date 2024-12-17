@@ -63,7 +63,7 @@ typedef struct{
 	spritenum_t* spval;
 	statenum_t* stval;
 	ammotype_t* amval;
-	int64* llval;
+	uint64* llval;
 }dehobj;
 
 dehstr strval[] = {
@@ -458,12 +458,16 @@ void setThing(int pos, char* varname, int varval) {
 		{"Infighting group", MAXINT, NULL, &mobjinfo[pos].infightingGroup},
 		{"Projectile group", MAXINT, NULL, &mobjinfo[pos].projectileGroup},
 		{"Splash group", MAXINT, NULL, &mobjinfo[pos].splashGroup},
-		{"MBF21 Bits ",MAXINT,NULL, &mobjinfo[pos].flags2}
+		{"MBF21 Bits ",MAXINT,NULL, NULL, NULL, NULL, NULL, NULL, NULL, &mobjinfo[pos].flags2}
 	};
 	for (int i = 0; i < 27; i++) {
 		if (!idStr::Icmp(varname, tvars[i].name)) {
 			if (varval < tvars[i].limit) {
-				*tvars[i].ival = varval;
+				if (tvars[i].llval != NULL) {
+					*tvars[i].llval = varval;
+				} else {
+					*tvars[i].ival = varval;
+				}
 				return;
 			}
 		}

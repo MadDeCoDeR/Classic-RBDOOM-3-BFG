@@ -341,7 +341,7 @@ qboolean PIT_CheckThing (mobj_t* thing)
 	if (::g->tmthing->z+::g->tmthing->height < thing->z)
 	    return true;		// underneath
 		
-	if (::g->tmthing->target && !P_ProjectileImmune(thing, ::g->tmthing->target))
+	if (::g->tmthing->target && P_ProjectileImmune(thing, ::g->tmthing->target))
 	// (
 	//     ::g->tmthing->target->type == thing->type || 
 	//     (::g->tmthing->target->type == MT_KNIGHT && thing->type == MT_BRUISER)||
@@ -1506,8 +1506,7 @@ qboolean PIT_RadiusAttack (mobj_t* thing)
 
     // Boss spider and cyborg
     // take no damage from concussion.
-    if (thing->type == MT_CYBORG
-	|| thing->type == MT_SPIDER)
+    if (((thing->flags2 & MF2_NORADIUSDMG) || (thing->flags2 & MF2_BOSS)) && !(thing->flags2 & MF2_FORCERADIUSDMG))
 	return true;	
 		
     dx = abs(thing->x - ::g->bombspot->x);

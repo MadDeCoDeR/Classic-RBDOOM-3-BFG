@@ -206,24 +206,21 @@ qboolean P_CheckMissileRange (mobj_t* actor)
 
     dist >>= 16;
 
-    if (actor->type == MT_VILE)
+    if (actor->flags2 & MF2_SHORTMRANGE)
     {
 	if (dist > 14*64)	
 	    return false;	// too far away
     }
 	
 
-    if (actor->type == MT_UNDEAD)
+    if (actor->flags2 & MF2_LONGMELEE)
     {
 	if (dist < 196)	
 	    return false;	// close for fist attack
-	dist >>= 1;
     }
 	
 
-    if (actor->type == MT_CYBORG
-	|| actor->type == MT_SPIDER
-	|| actor->type == MT_SKULL)
+    if (actor->flags2 & MF2_RANGEHALF)
     {
 	dist >>= 1;
     }
@@ -231,7 +228,7 @@ qboolean P_CheckMissileRange (mobj_t* actor)
     if (dist > 200)
 	dist = 200;
 		
-    if (actor->type == MT_CYBORG && dist > 160)
+    if (actor->flags2 & MF2_HIGHERMPROB && dist > 160)
 	dist = 160;
 		
     if (P_Random () < dist)
@@ -633,8 +630,7 @@ void A_Look (mobj_t* actor, void * )
 	    break;
 	}
 
-	if (actor->type==MT_SPIDER
-	    || actor->type == MT_CYBORG)
+	if ((actor->flags2 & MF2_BOSS) || (actor->flags2 & MF2_FULLVOLSOUNDS))
 	{
 	    // full volume
 	    S_StartSound (NULL, sound);
@@ -1537,8 +1533,7 @@ void A_Scream (mobj_t* actor, void * )
     }
 
     // Check for bosses.
-    if (actor->type==MT_SPIDER
-	|| actor->type == MT_CYBORG)
+    if ((actor->flags2 & MF2_BOSS) || (actor->flags2 & MF2_FULLVOLSOUNDS))
     {
 	// full volume
 	S_StartSound (NULL, sound);
@@ -1640,8 +1635,8 @@ void A_BossDeath (mobj_t* mo, void * )
 				return;
 
 	idLib::Printf("%d %d\n", ::g->gamemission, ::g->gamemap);
-	if ((mo->type != MT_FATSO)
-	    && (mo->type != MT_BABY))
+	if (!(mo->flags2 & MF2_MAP07BOSS1)
+	    && !(mo->flags2 & MF2_MAP07BOSS2))
 	    return;
     }
     else
@@ -1652,7 +1647,7 @@ void A_BossDeath (mobj_t* mo, void * )
 	    if (::g->gamemap != 8)
 		return;
 
-	    if (mo->type != MT_BRUISER)
+	    if (!(mo->flags2 & MF2_E1M8BOSS))
 		return;
 	    break;
 	    
@@ -1660,7 +1655,7 @@ void A_BossDeath (mobj_t* mo, void * )
 	    if (::g->gamemap != 8)
 		return;
 
-	    if (mo->type != MT_CYBORG)
+	    if (!(mo->flags2 & MF2_E2M8BOSS))
 		return;
 	    break;
 	    
@@ -1668,7 +1663,7 @@ void A_BossDeath (mobj_t* mo, void * )
 	    if (::g->gamemap != 8)
 		return;
 	    
-	    if (mo->type != MT_SPIDER)
+	    if (!(mo->flags2 & MF2_E3M8BOSS))
 		return;
 	    
 	    break;
@@ -1677,12 +1672,12 @@ void A_BossDeath (mobj_t* mo, void * )
 	    switch(::g->gamemap)
 	    {
 	      case 6:
-		if (mo->type != MT_CYBORG)
+		if (!(mo->flags2 & MF2_E4M6BOSS))
 		    return;
 		break;
 		
 	      case 8: 
-		if (mo->type != MT_SPIDER)
+		if (!(mo->flags2 & MF2_E4M8BOSS))
 		    return;
 		break;
 		
@@ -1731,14 +1726,14 @@ void A_BossDeath (mobj_t* mo, void * )
     {
 	if (::g->gamemap == 7 || ok) // GK: Take in account the 14th ,15th and 16th levels on master Levels Expansion since they are using MAP07 special logic
 	{
-	    if (mo->type == MT_FATSO)
+	    if (mo->flags2 & MF2_MAP07BOSS1)
 	    {
 		junk.tag = 666;
 		EV_DoFloor(&junk,lowerFloorToLowest);
 		return;
 	    }
 	    
-	    if (mo->type == MT_BABY)
+	    if (mo->flags2 & MF2_MAP07BOSS2)
 	    {
 		junk.tag = 667;
 		EV_DoFloor(&junk,raiseToTexture);

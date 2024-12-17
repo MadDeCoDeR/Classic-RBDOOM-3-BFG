@@ -1269,7 +1269,7 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	MF2_SHORTMRANGE | MF2_DMGIGNORED | MF2_NOTHRESHOLD			//flags2
 	},
 
 	{		// MT_FIRE
@@ -1329,7 +1329,7 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	MF2_RANGEHALF | MF2_LONGMELEE			//flags2
 	},
 
 	{		// MT_TRACER
@@ -1419,7 +1419,7 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	MF2_MAP07BOSS1			//flags2
 	},
 
 	{		// MT_FATSHOT
@@ -1629,7 +1629,7 @@ extern "C"
 	0,			//infightingGroup
 	1,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	MF2_E1M8BOSS			//flags2
 	},
 
 	{		// MT_BRUISERSHOT
@@ -1657,7 +1657,7 @@ extern "C"
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
 	0,			//infightingGroup
-	0,			//projectileGroup
+	1,			//projectileGroup
 	0,			//splashGroup
 	0			//flags2
 	},
@@ -1719,7 +1719,7 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	MF2_RANGEHALF			//flags2
 	},
 
 	{		// MT_SPIDER
@@ -1749,7 +1749,7 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	MF2_NORADIUSDMG	| MF2_RANGEHALF | MF2_E3M8BOSS | MF2_E4M8BOSS | MF2_FULLVOLSOUNDS	//flags2
 	},
 
 	{		// MT_BABY
@@ -1779,7 +1779,7 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	MF2_MAP07BOSS2			//flags2
 	},
 
 	{		// MT_CYBORG
@@ -1809,7 +1809,7 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	MF2_NORADIUSDMG	| MF2_HIGHERMPROB | MF2_RANGEHALF | MF2_E2M8BOSS | MF2_E4M6BOSS | MF2_FULLVOLSOUNDS	//flags2
 	},
 
 	{		// MT_PAIN

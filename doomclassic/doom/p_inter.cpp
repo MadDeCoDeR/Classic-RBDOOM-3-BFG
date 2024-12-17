@@ -1108,9 +1108,9 @@ P_DamageMobj
 
 	target->reactiontime = 0;		// we're awake now...	
 
-	if ( (!target->threshold || target->type == MT_VILE)
+	if ( (!target->threshold || target->flags2 & MF2_NOTHRESHOLD)
 		&& source && source != target
-		&& source->type != MT_VILE
+		&& !(source->flags2 & MF2_DMGIGNORED)
 		&& (source->type != MT_PLAYER && !P_InfightingImmune(target, source)))
 	{
 		// if not intent on another player,

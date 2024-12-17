@@ -1384,7 +1384,7 @@ typedef struct
     int infightingGroup;
     int projectileGroup;
     int splashGroup;
-    int flags2;
+    uint64 flags2;
 
 } mobjinfo_t;
 
