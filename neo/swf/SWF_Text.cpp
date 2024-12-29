@@ -56,7 +56,7 @@ void idSWF::DefineFont2( idSWFBitStream& bitstream )
 	uint16 numGlyphs = bitstream.ReadU16();
 	entry->font->glyphs.SetNum( numGlyphs );
 	
-	if( flags & BIT( 3 ) )
+	if( flags & IDBIT( 3 ) )
 	{
 		// 32 bit offsets
 		uint32 offsetTableSize = ( numGlyphs + 1 ) * 4;
@@ -98,7 +98,7 @@ void idSWF::DefineFont2( idSWFBitStream& bitstream )
 			swfShapeParser.ParseFont( shapeStream, entry->font->glyphs[i] );
 		}
 	}
-	if( flags & BIT( 2 ) )
+	if( flags & IDBIT( 2 ) )
 	{
 		// 16 bit codes
 		for( int i = 0; i < numGlyphs; i++ )
@@ -114,7 +114,7 @@ void idSWF::DefineFont2( idSWFBitStream& bitstream )
 			entry->font->glyphs[i].code = bitstream.ReadU8();
 		}
 	}
-	if( flags & BIT( 7 ) )
+	if( flags & IDBIT( 7 ) )
 	{
 		entry->font->ascent = bitstream.ReadS16();
 		entry->font->descent = bitstream.ReadS16();
@@ -129,7 +129,7 @@ void idSWF::DefineFont2( idSWFBitStream& bitstream )
 			bitstream.ReadRect( ignored );
 		}
 		uint16 kearningCount = bitstream.ReadU16();
-		if( flags & BIT( 2 ) )
+		if( flags & IDBIT( 2 ) )
 		{
 			for( int i = 0; i < kearningCount; i++ )
 			{
@@ -190,11 +190,11 @@ void idSWF::DefineTextX( idSWFBitStream& bitstream, bool rgba )
 		}
 		idSWFTextRecord& textRecord = text->textRecords.Alloc();
 		
-		if( flags & BIT( 3 ) )
+		if( flags & IDBIT( 3 ) )
 		{
 			textRecord.fontID = bitstream.ReadU16();
 		}
-		if( flags & BIT( 2 ) )
+		if( flags & IDBIT( 2 ) )
 		{
 			if( rgba )
 			{
@@ -205,15 +205,15 @@ void idSWF::DefineTextX( idSWFBitStream& bitstream, bool rgba )
 				bitstream.ReadColorRGB( textRecord.color );
 			}
 		}
-		if( flags & BIT( 0 ) )
+		if( flags & IDBIT( 0 ) )
 		{
 			textRecord.xOffset = bitstream.ReadS16();
 		}
-		if( flags & BIT( 1 ) )
+		if( flags & IDBIT( 1 ) )
 		{
 			textRecord.yOffset = bitstream.ReadS16();
 		}
-		if( flags & BIT( 3 ) )
+		if( flags & IDBIT( 3 ) )
 		{
 			textRecord.textHeight = bitstream.ReadU16();
 		}

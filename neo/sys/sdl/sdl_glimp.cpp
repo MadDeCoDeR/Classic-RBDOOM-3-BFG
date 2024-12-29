@@ -991,3 +991,13 @@ Sys_ChangeTitle
  {
 	 SDL_SetWindowTitle(window, string);
  }
+
+#ifdef USE_OPENXR
+void* GetOpenXRGraphicsBinding()
+{
+	
+	graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_WAYLAND_KHR};
+    graphicsBinding.display = NULL;
+	return &graphicsBinding;
+}
+#endif

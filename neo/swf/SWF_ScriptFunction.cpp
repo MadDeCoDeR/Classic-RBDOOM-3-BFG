@@ -160,18 +160,18 @@ idSWFScriptVar idSWFScriptFunction_Script::Call( idSWFScriptObject* thisObject, 
 	stack.A().SetInteger( parms.Num() );
 	
 	int preloadReg = 1;
-	if( flags & BIT( 0 ) )
+	if( flags & IDBIT( 0 ) )
 	{
 		// load "this" into a register
 		registers[ preloadReg ].SetObject( thisObject );
 		preloadReg++;
 	}
-	if( ( flags & BIT( 1 ) ) == 0 )
+	if( ( flags & IDBIT( 1 ) ) == 0 )
 	{
 		// create "this"
 		locals->Set( "this", idSWFScriptVar( thisObject ) );
 	}
-	if( flags & BIT( 2 ) )
+	if( flags & IDBIT( 2 ) )
 	{
 		idSWFScriptObject* arguments = idSWFScriptObject::Alloc();
 		// load "arguments" into a register
@@ -189,7 +189,7 @@ idSWFScriptVar idSWFScriptFunction_Script::Call( idSWFScriptObject* thisObject, 
 		
 		arguments->Release();
 	}
-	if( ( flags & BIT( 3 ) ) == 0 )
+	if( ( flags & IDBIT( 3 ) ) == 0 )
 	{
 		idSWFScriptObject* arguments = idSWFScriptObject::Alloc();
 		
@@ -207,24 +207,24 @@ idSWFScriptVar idSWFScriptFunction_Script::Call( idSWFScriptObject* thisObject, 
 		
 		arguments->Release();
 	}
-	if( flags & BIT( 4 ) )
+	if( flags & IDBIT( 4 ) )
 	{
 		// load "super" into a register
 		registers[ preloadReg ].SetObject( thisObject->GetPrototype() );
 		preloadReg++;
 	}
-	if( ( flags & BIT( 5 ) ) == 0 )
+	if( ( flags & IDBIT( 5 ) ) == 0 )
 	{
 		// create "super"
 		locals->Set( "super", idSWFScriptVar( thisObject->GetPrototype() ) );
 	}
-	if( flags & BIT( 6 ) )
+	if( flags & IDBIT( 6 ) )
 	{
 		// preload _root
 		registers[ preloadReg ] = scope[0]->Get( "_root" );
 		preloadReg++;
 	}
-	if( flags & BIT( 7 ) )
+	if( flags & IDBIT( 7 ) )
 	{
 		// preload _parent
 		if( thisObject->GetSprite() != NULL && thisObject->GetSprite()->parent != NULL )
@@ -237,7 +237,7 @@ idSWFScriptVar idSWFScriptFunction_Script::Call( idSWFScriptObject* thisObject, 
 		}
 		preloadReg++;
 	}
-	if( flags & BIT( 8 ) )
+	if( flags & IDBIT( 8 ) )
 	{
 		// load "_global" into a register
 		registers[ preloadReg ].SetObject( scope[0] );
@@ -309,18 +309,18 @@ idStr idSWFScriptFunction_Script::CallToScript( idSWFScriptObject* thisObject, c
 	stack.A().SetInteger( parms.Num() );
 	
 	int preloadReg = 1;
-	if( flags & BIT( 0 ) )
+	if( flags & IDBIT( 0 ) )
 	{
 		// load "this" into a register
 		registers[ preloadReg ].SetObject( thisObject );
 		preloadReg++;
 	}
-	if( ( flags & BIT( 1 ) ) == 0 )
+	if( ( flags & IDBIT( 1 ) ) == 0 )
 	{
 		// create "this"
 		locals->Set( "this", idSWFScriptVar( thisObject ) );
 	}
-	if( flags & BIT( 2 ) )
+	if( flags & IDBIT( 2 ) )
 	{
 		idSWFScriptObject* arguments = idSWFScriptObject::Alloc();
 		// load "arguments" into a register
@@ -338,7 +338,7 @@ idStr idSWFScriptFunction_Script::CallToScript( idSWFScriptObject* thisObject, c
 		
 		arguments->Release();
 	}
-	if( ( flags & BIT( 3 ) ) == 0 )
+	if( ( flags & IDBIT( 3 ) ) == 0 )
 	{
 		idSWFScriptObject* arguments = idSWFScriptObject::Alloc();
 		
@@ -356,24 +356,24 @@ idStr idSWFScriptFunction_Script::CallToScript( idSWFScriptObject* thisObject, c
 		
 		arguments->Release();
 	}
-	if( flags & BIT( 4 ) )
+	if( flags & IDBIT( 4 ) )
 	{
 		// load "super" into a register
 		registers[ preloadReg ].SetObject( thisObject->GetPrototype() );
 		preloadReg++;
 	}
-	if( ( flags & BIT( 5 ) ) == 0 )
+	if( ( flags & IDBIT( 5 ) ) == 0 )
 	{
 		// create "super"
 		locals->Set( "super", idSWFScriptVar( thisObject->GetPrototype() ) );
 	}
-	if( flags & BIT( 6 ) )
+	if( flags & IDBIT( 6 ) )
 	{
 		// preload _root
 		registers[ preloadReg ] = scope[0]->Get( "_root" );
 		preloadReg++;
 	}
-	if( flags & BIT( 7 ) )
+	if( flags & IDBIT( 7 ) )
 	{
 		// preload _parent
 		if( thisObject->GetSprite() != NULL && thisObject->GetSprite()->parent != NULL )
@@ -386,7 +386,7 @@ idStr idSWFScriptFunction_Script::CallToScript( idSWFScriptObject* thisObject, c
 		}
 		preloadReg++;
 	}
-	if( flags & BIT( 8 ) )
+	if( flags & IDBIT( 8 ) )
 	{
 		// load "_global" into a register
 		registers[ preloadReg ].SetObject( scope[0] );

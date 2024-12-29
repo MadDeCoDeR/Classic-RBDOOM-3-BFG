@@ -23,18 +23,21 @@
 */
 #pragma once
 
-#include "renderer/OpenXR/XRCommon.h"
+#include "XRCommon.h"
 #include <string.h>
 #include <framework/Licensee.h>
 #include <stdlib.h>
 #include "gfxwrapper_opengl.h"
 #include "renderer/RenderCommon.h"
 #include <functional>
-#include "win_local.h"
-
-class idXR_Win :public idXR {
+#ifdef _WIN32
+#include "sys/win32/win_local.h"
+#else
+#include "sys/sdl/sdl_local.h"
+#endif
+class idXRLocal :public idXR {
 public:
-	idXR_Win() {}
+	idXRLocal() {}
 	virtual bool InitXR();
 	virtual void ShutDownXR();
 	virtual void PollXREvents();

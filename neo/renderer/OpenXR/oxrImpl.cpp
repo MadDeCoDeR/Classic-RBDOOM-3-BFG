@@ -22,12 +22,12 @@
 * SOFTWARE.
 */
 #include "precompiled.h"
-#include "win_oxr.h"
+#include "oxrImpl.h"
 idCVar vr_recordInitialPosition("vr_recordInitialPosition", "1", CVAR_BOOL, "Boolean to Determine if the current HMD Input must be recorded for initial Position");
 extern idCVar in_invertLook;
 
-idXR_Win xrWinSystem;
-idXR* xrSystem = &xrWinSystem;
+idXRLocal xrLocalSystem;
+idXR* xrSystem = &xrLocalSystem;
 
 XrBool32 DebugXR(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageType, const XrDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
 	// it probably isn't safe to do an idLib::Printf at this point
@@ -74,7 +74,7 @@ XrBool32 DebugXR(XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUti
 	return XrBool32();
 }
 
-void idXR_Win::PollXREvents()
+void idXRLocal::PollXREvents()
 {
 	if (isInitialized) {
 		XrEventDataBuffer eventData{ XR_TYPE_EVENT_DATA_BUFFER };
@@ -129,7 +129,7 @@ void idXR_Win::PollXREvents()
 	}
 }
 
-void idXR_Win::StartFrame()
+void idXRLocal::StartFrame()
 {
 	bool activeSession = (sessionState == XR_SESSION_STATE_SYNCHRONIZED || sessionState == XR_SESSION_STATE_VISIBLE || sessionState == XR_SESSION_STATE_FOCUSED || sessionState == XR_SESSION_STATE_READY);
 	if (!inFrame && activeSession) {
@@ -192,7 +192,7 @@ void idXR_Win::StartFrame()
 	}
 }
 
-void idXR_Win::BindSwapchainImage(int eye)
+void idXRLocal::BindSwapchainImage(int eye)
 {
 	if (inFrame) {
 		renderingEye = eye;
@@ -238,7 +238,7 @@ void idXR_Win::BindSwapchainImage(int eye)
 
 }
 
-void idXR_Win::ReleaseSwapchainImage()
+void idXRLocal::ReleaseSwapchainImage()
 {
 	if (inFrame) {
 		glFBO = MAX_UNSIGNED_TYPE(int);
@@ -250,7 +250,7 @@ void idXR_Win::ReleaseSwapchainImage()
 	}
 }
 
-void idXR_Win::RenderFrame(int srcX, int srcY, int srcW, int srcH)
+void idXRLocal::RenderFrame(int srcX, int srcY, int srcW, int srcH)
 {
 	if (inFrame) {
 		if (glConfig.directStateAccess) {
@@ -264,7 +264,7 @@ void idXR_Win::RenderFrame(int srcX, int srcY, int srcW, int srcH)
 	}
 }
 
-void idXR_Win::EndFrame()
+void idXRLocal::EndFrame()
 {
 	if (inFrame) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -293,7 +293,7 @@ void idXR_Win::EndFrame()
 	
 }
 
-void idXR_Win::SetActionSet(idStr name)
+void idXRLocal::SetActionSet(idStr name)
 {
 	for (idXrActionSet actionSet : actionSets) {
 		if (!actionSet.name.Cmp(name.c_str())) {
@@ -302,7 +302,7 @@ void idXR_Win::SetActionSet(idStr name)
 	}
 }
 
-XrPath idXR_Win::StringToXRPath(const char* strPath)
+XrPath idXRLocal::StringToXRPath(const char* strPath)
 {
 	XrPath xrPath;
 	if (xrStringToPath(instance, strPath, &xrPath) != XR_SUCCESS) {
@@ -311,7 +311,7 @@ XrPath idXR_Win::StringToXRPath(const char* strPath)
 	return xrPath;
 }
 
-idStr idXR_Win::XRPathToString(XrPath xrPath)
+idStr idXRLocal::XRPathToString(XrPath xrPath)
 {
 	uint32_t length;
 	char buffer[XR_MAX_PATH_LENGTH];
@@ -322,7 +322,7 @@ idStr idXR_Win::XRPathToString(XrPath xrPath)
 	return idStr();
 }
 
-void idXR_Win::CreateXrMappings()
+void idXRLocal::CreateXrMappings()
 {
 	handPaths.push_back(StringToXRPath("/user/hand/left"));
 	handPaths.push_back(StringToXRPath("/user/hand/right"));
@@ -364,7 +364,7 @@ void idXR_Win::CreateXrMappings()
 	actionSets.push_back(gameActionSet);
 }
 
-idXR_Win::idXrAction idXR_Win::CreateAction(XrActionSet actionSet, const char* name, XrActionType type, uint32_t mappedKey, std::vector<const char*> subActions)
+idXRLocal::idXrAction idXRLocal::CreateAction(XrActionSet actionSet, const char* name, XrActionType type, uint32_t mappedKey, std::vector<const char*> subActions)
 {
 	idXrAction action;
 	action.name = name;
@@ -387,7 +387,7 @@ idXR_Win::idXrAction idXR_Win::CreateAction(XrActionSet actionSet, const char* n
 	return action;
 }
 
-void idXR_Win::SuggestBindings(const char* profilePath, std::vector<XrActionSuggestedBinding> bindings)
+void idXRLocal::SuggestBindings(const char* profilePath, std::vector<XrActionSuggestedBinding> bindings)
 {
 	XrInteractionProfileSuggestedBinding ipsb{ XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING };
 	ipsb.interactionProfile = StringToXRPath(profilePath);
@@ -399,7 +399,7 @@ void idXR_Win::SuggestBindings(const char* profilePath, std::vector<XrActionSugg
 	}
 }
 
-XrSpace idXR_Win::CreateActionPoseSpace(XrAction action, const char* subPath)
+XrSpace idXRLocal::CreateActionPoseSpace(XrAction action, const char* subPath)
 {
 	XrSpace space;
 	const XrPosef poseId = { {0.0f, 0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f} };
@@ -415,7 +415,7 @@ XrSpace idXR_Win::CreateActionPoseSpace(XrAction action, const char* subPath)
 	return space;
 }
 
-void idXR_Win::FinalizeActions()
+void idXRLocal::FinalizeActions()
 {
 	idXrActionSet menuActionSet = GetActionSetByName("MENU");
 	idXrAction menuPointer = GetActionByName("MENU", "menu-pointer");
@@ -430,7 +430,7 @@ void idXR_Win::FinalizeActions()
 
 }
 
-void idXR_Win::PollActions()
+void idXRLocal::PollActions()
 {
 	idXrActionSet expectedIdActionSet = GetActionSetByName(expectedActionSet);
 	XrActiveActionSet activeActionSet{};
@@ -448,7 +448,7 @@ void idXR_Win::PollActions()
 	}
 }
 
-void idXR_Win::RetrieveActionState(idXrAction action)
+void idXRLocal::RetrieveActionState(idXrAction action)
 {
 	XrActionStateGetInfo actionStateGI{ XR_TYPE_ACTION_STATE_GET_INFO };
 	actionStateGI.action = action.action;
@@ -489,7 +489,7 @@ void idXR_Win::RetrieveActionState(idXrAction action)
 
 }
 
-idXR_Win::idXrAction idXR_Win::GetActionByName(idStr setName, idStr name)
+idXRLocal::idXrAction idXRLocal::GetActionByName(idStr setName, idStr name)
 {
 	for (idXrActionSet actionSet : actionSets) {
 		if (!actionSet.name.Cmp(setName)) {
@@ -503,7 +503,7 @@ idXR_Win::idXrAction idXR_Win::GetActionByName(idStr setName, idStr name)
 	return {};
 }
 
-idXR_Win::idXrActionSet idXR_Win::GetActionSetByName(idStr setName)
+idXRLocal::idXrActionSet idXRLocal::GetActionSetByName(idStr setName)
 {
 	for (idXrActionSet actionSet : actionSets) {
 		if (!actionSet.name.Cmp(setName)) {
@@ -513,7 +513,7 @@ idXR_Win::idXrActionSet idXR_Win::GetActionSetByName(idStr setName)
 	return {};
 }
 
-void idXR_Win::MapActionStateToUsrCmd(idXrAction action)
+void idXRLocal::MapActionStateToUsrCmd(idXrAction action)
 {
 	for (int i = 0; i < 2; i++) {
 		switch (action.type) {
@@ -565,14 +565,14 @@ void idXR_Win::MapActionStateToUsrCmd(idXrAction action)
 	}
 }
 
-void idXR_Win::ProccessHMDInput()
+void idXRLocal::ProccessHMDInput()
 {
 	idVec3 viewAngles = ConvertQuatToVec3(headLocation.pose.orientation);
 	usercmdGen->SetAngles(viewAngles);
 	usercmdGen->SetAngles(viewAngles);
 }
 
-idVec3 idXR_Win::ConvertQuatToVec3(XrQuaternionf viewQuat)
+idVec3 idXRLocal::ConvertQuatToVec3(XrQuaternionf viewQuat)
 {
 	idVec3 viewAngles = idQuat(viewQuat.x, viewQuat.y, viewQuat.z, viewQuat.w).ToAngles().ToAngularVelocity() * 127.0f;
 	viewAngles[PITCH] *= in_invertLook.GetBool() ? 1.0f : -1.0f;
@@ -580,7 +580,7 @@ idVec3 idXR_Win::ConvertQuatToVec3(XrQuaternionf viewQuat)
 	return viewAngles;
 }
 
-uint idXR_Win::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index)
+uint idXRLocal::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo, idXRSwapchainType type, int index)
 {
 	uint imageCount = 0;
 	XrSwapchain targetSwapchain = swapchainInfo[index].swapchain;
@@ -595,16 +595,19 @@ uint idXR_Win::EnumerateSwapchainImage(std::vector<SwapchainInfo> swapchainInfo,
 	return imageCount;
 }
 
-void* idXR_Win::CreateFrameBuffer(const FrameBufferCreateInfo& FbCI)
+void* idXRLocal::CreateFrameBuffer(const FrameBufferCreateInfo& FbCI)
 {
 	GLuint fb = 0;
 	if (glConfig.directStateAccess) {
 		glCreateFramebuffers(1, &fb);
 		GLenum attachment = FbCI.aspect == FrameBufferCreateInfo::Aspect::COLOR_BIT ? GL_COLOR_ATTACHMENT0 : GL_DEPTH_ATTACHMENT;
+#ifdef WIN32
 		if (FbCI.view == FrameBufferCreateInfo::View::TYPE_2D_ARRAY) {
 			glNamedFramebufferTextureMultiviewOVR(fb, attachment, (GLuint)(uint64_t)FbCI.image, FbCI.baseMipLevel, FbCI.baseArrayLayer, FbCI.layerCount);
 		}
-		else if (FbCI.view == FrameBufferCreateInfo::View::TYPE_2D) {
+		else
+#endif 
+		if (FbCI.view == FrameBufferCreateInfo::View::TYPE_2D) {
 			glNamedFramebufferTexture(fb, attachment, (GLuint)(uint64_t)FbCI.image, FbCI.baseMipLevel);
 		}
 		else {
@@ -644,7 +647,7 @@ void* idXR_Win::CreateFrameBuffer(const FrameBufferCreateInfo& FbCI)
 
 
 
-bool idXR_Win::InitXR() {
+bool idXRLocal::InitXR() {
 	XrApplicationInfo XRAppInfo;
 	strncpy(XRAppInfo.applicationName, "DOOM BFA\0", 9);
 	XRAppInfo.apiVersion = XR_CURRENT_API_VERSION;
@@ -855,17 +858,17 @@ bool idXR_Win::InitXR() {
 		common->Warning("OpenXR Error: Failed to Initiate the enumeration for Swapchain Formats");
 		return false;
 	}
-	std::vector<int64> formats(formatCount);
+	std::vector<int64_t> formats(formatCount);
 	if (xrEnumerateSwapchainFormats(session, formatCount, &formatCount, formats.data()) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to Enumerate Swapchain Formats");
 		return false;
 	}
 
-	std::vector<int64> supportedColorFormats = {
+	std::vector<int64_t> supportedColorFormats = {
 		GL_SRGB8_ALPHA8
 	};
-	int64 colorFormat = 0;
-	std::vector<int64>::const_iterator colorFormatIterator = std::find_first_of(formats.begin(), formats.end(), supportedColorFormats.begin(), supportedColorFormats.end());
+	int64_t colorFormat = 0;
+	std::vector<int64_t>::const_iterator colorFormatIterator = std::find_first_of(formats.begin(), formats.end(), supportedColorFormats.begin(), supportedColorFormats.end());
 
 	if (colorFormatIterator == formats.end()) {
 		common->Warning("OpenXR Error: Failed to find Color Format");
@@ -948,7 +951,7 @@ bool idXR_Win::InitXR() {
 }
 
 
-void idXR_Win::ShutDownXR()
+void idXRLocal::ShutDownXR()
 {
 	if (GeneralFB > 0) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);

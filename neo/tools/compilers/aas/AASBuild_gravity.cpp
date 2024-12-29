@@ -122,7 +122,7 @@ bool idAASBuild::PortalIsGap( idBrushBSPPortal* portal, int side )
 idAASBuild::GravSubdivLeafNode
 ============
 */
-#define FACE_CHECKED			BIT(31)
+#define FACE_CHECKED			IDBIT(31)
 #define GRAVSUBDIV_EPSILON		0.1f
 
 void idAASBuild::GravSubdivLeafNode( idBrushBSPNode* node )

@@ -398,10 +398,10 @@ void idMenuScreen_Shell_Stereoscopics::idMenuDataSource_StereoSettings::AdjustFi
 	if( fieldIndex == STEREO_FIELD_ENABLE )
 	{
 		int numOptions = NUM_STEREO_ENABLE;
-		if( !renderSystem->HasQuadBufferSupport() )
-		{
-			numOptions--;
-		}
+		// if( !renderSystem->HasQuadBufferSupport() )
+		// {
+		// 	numOptions--;
+		// }
 #ifndef USE_OPENXR
 		numOptions--;
 #endif

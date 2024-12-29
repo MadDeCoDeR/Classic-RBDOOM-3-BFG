@@ -232,11 +232,11 @@ typedef struct stencilStage_s
 	// (if either Pass, Fail or ZFail is set to replace).
 	byte ref = 0;
 
-	// An 8 bit mask as an 0–255 integer, used when comparing the reference value with the contents of the buffer
+	// An 8 bit mask as an 0ï¿½255 integer, used when comparing the reference value with the contents of the buffer
 	// (referenceValue & readMask) comparisonFunction (stencilBufferValue & readMask).
 	byte readMask = 255;
 
-	// An 8 bit mask as an 0–255 integer, used when writing to the buffer.Note that, like other write masks,
+	// An 8 bit mask as an 0ï¿½255 integer, used when writing to the buffer.Note that, like other write masks,
 	// it specifies which bits of stencil buffer will be affected by write
 	// (i.e.WriteMask 0 means that no bits are affected and not that 0 will be written).
 	byte writeMask = 255;
@@ -345,45 +345,45 @@ const int MAX_GLOBAL_SHADER_PARMS	= 12;	// ? this looks like it should only be 8
 // material flags
 typedef enum
 {
-	MF_DEFAULTED				= BIT( 0 ),
-	MF_POLYGONOFFSET			= BIT( 1 ),
-	MF_NOSHADOWS				= BIT( 2 ),
-	MF_FORCESHADOWS				= BIT( 3 ),
-	MF_NOSELFSHADOW				= BIT( 4 ),
-	MF_NOPORTALFOG				= BIT( 5 ),	 // this fog volume won't ever consider a portal fogged out
-	MF_EDITOR_VISIBLE			= BIT( 6 ),	 // in use (visible) per editor
+	MF_DEFAULTED				= IDBIT( 0 ),
+	MF_POLYGONOFFSET			= IDBIT( 1 ),
+	MF_NOSHADOWS				= IDBIT( 2 ),
+	MF_FORCESHADOWS				= IDBIT( 3 ),
+	MF_NOSELFSHADOW				= IDBIT( 4 ),
+	MF_NOPORTALFOG				= IDBIT( 5 ),	 // this fog volume won't ever consider a portal fogged out
+	MF_EDITOR_VISIBLE			= IDBIT( 6 ),	 // in use (visible) per editor
 	// motorsep 11-23-2014; material LOD keys that define what LOD iteration the surface falls into
 	MF_LOD1_SHIFT				= 7,
-	MF_LOD1						= BIT( 7 ),	 // motorsep 11-24-2014; material flag for LOD1 iteration
-	MF_LOD2						= BIT( 8 ),	 // motorsep 11-24-2014; material flag for LOD2 iteration
-	MF_LOD3						= BIT( 9 ),	 // motorsep 11-24-2014; material flag for LOD3 iteration
-	MF_LOD4						= BIT( 10 ), // motorsep 11-24-2014; material flag for LOD4 iteration
-	MF_LOD_PERSISTENT			= BIT( 11 )	 // motorsep 11-24-2014; material flag for persistent LOD iteration
+	MF_LOD1						= IDBIT( 7 ),	 // motorsep 11-24-2014; material flag for LOD1 iteration
+	MF_LOD2						= IDBIT( 8 ),	 // motorsep 11-24-2014; material flag for LOD2 iteration
+	MF_LOD3						= IDBIT( 9 ),	 // motorsep 11-24-2014; material flag for LOD3 iteration
+	MF_LOD4						= IDBIT( 10 ), // motorsep 11-24-2014; material flag for LOD4 iteration
+	MF_LOD_PERSISTENT			= IDBIT( 11 )	 // motorsep 11-24-2014; material flag for persistent LOD iteration
 } materialFlags_t;
 
 // contents flags, NOTE: make sure to keep the defines in doom_defs.script up to date with these!
 typedef enum
 {
-	CONTENTS_SOLID				= BIT( 0 ),	// an eye is never valid in a solid
-	CONTENTS_OPAQUE				= BIT( 1 ),	// blocks visibility (for ai)
-	CONTENTS_WATER				= BIT( 2 ),	// used for water
-	CONTENTS_PLAYERCLIP			= BIT( 3 ),	// solid to players
-	CONTENTS_MONSTERCLIP		= BIT( 4 ),	// solid to monsters
-	CONTENTS_MOVEABLECLIP		= BIT( 5 ),	// solid to moveable entities
-	CONTENTS_IKCLIP				= BIT( 6 ),	// solid to IK
-	CONTENTS_BLOOD				= BIT( 7 ),	// used to detect blood decals
-	CONTENTS_BODY				= BIT( 8 ),	// used for actors
-	CONTENTS_PROJECTILE			= BIT( 9 ),	// used for projectiles
-	CONTENTS_CORPSE				= BIT( 10 ),	// used for dead bodies
-	CONTENTS_RENDERMODEL		= BIT( 11 ),	// used for render models for collision detection
-	CONTENTS_TRIGGER			= BIT( 12 ),	// used for triggers
-	CONTENTS_AAS_SOLID			= BIT( 13 ),	// solid for AAS
-	CONTENTS_AAS_OBSTACLE		= BIT( 14 ),	// used to compile an obstacle into AAS that can be enabled/disabled
-	CONTENTS_FLASHLIGHT_TRIGGER	= BIT( 15 ),	// used for triggers that are activated by the flashlight
+	CONTENTS_SOLID				= IDBIT( 0 ),	// an eye is never valid in a solid
+	CONTENTS_OPAQUE				= IDBIT( 1 ),	// blocks visibility (for ai)
+	CONTENTS_WATER				= IDBIT( 2 ),	// used for water
+	CONTENTS_PLAYERCLIP			= IDBIT( 3 ),	// solid to players
+	CONTENTS_MONSTERCLIP		= IDBIT( 4 ),	// solid to monsters
+	CONTENTS_MOVEABLECLIP		= IDBIT( 5 ),	// solid to moveable entities
+	CONTENTS_IKCLIP				= IDBIT( 6 ),	// solid to IK
+	CONTENTS_BLOOD				= IDBIT( 7 ),	// used to detect blood decals
+	CONTENTS_BODY				= IDBIT( 8 ),	// used for actors
+	CONTENTS_PROJECTILE			= IDBIT( 9 ),	// used for projectiles
+	CONTENTS_CORPSE				= IDBIT( 10 ),	// used for dead bodies
+	CONTENTS_RENDERMODEL		= IDBIT( 11 ),	// used for render models for collision detection
+	CONTENTS_TRIGGER			= IDBIT( 12 ),	// used for triggers
+	CONTENTS_AAS_SOLID			= IDBIT( 13 ),	// solid for AAS
+	CONTENTS_AAS_OBSTACLE		= IDBIT( 14 ),	// used to compile an obstacle into AAS that can be enabled/disabled
+	CONTENTS_FLASHLIGHT_TRIGGER	= IDBIT( 15 ),	// used for triggers that are activated by the flashlight
 	
 	// contents used by utils
-	CONTENTS_AREAPORTAL			= BIT( 20 ),	// portal separating renderer areas
-	CONTENTS_NOCSG				= BIT( 21 ),	// don't cut this brush with CSG operations in the editor
+	CONTENTS_AREAPORTAL			= IDBIT( 20 ),	// portal separating renderer areas
+	CONTENTS_NOCSG				= IDBIT( 21 ),	// don't cut this brush with CSG operations in the editor
 	
 	CONTENTS_REMOVE_UTIL		= ~( CONTENTS_AREAPORTAL | CONTENTS_NOCSG )
 } contentsFlags_t;
@@ -415,21 +415,21 @@ typedef enum
 // surface flags
 typedef enum
 {
-	SURF_TYPE_BIT0				= BIT( 0 ),	// encodes the material type (metal, flesh, concrete, etc.)
-	SURF_TYPE_BIT1				= BIT( 1 ),	// "
-	SURF_TYPE_BIT2				= BIT( 2 ),	// "
-	SURF_TYPE_BIT3				= BIT( 3 ),	// "
+	SURF_TYPE_BIT0				= IDBIT( 0 ),	// encodes the material type (metal, flesh, concrete, etc.)
+	SURF_TYPE_BIT1				= IDBIT( 1 ),	// "
+	SURF_TYPE_BIT2				= IDBIT( 2 ),	// "
+	SURF_TYPE_BIT3				= IDBIT( 3 ),	// "
 	SURF_TYPE_MASK				= ( 1 << NUM_SURFACE_BITS ) - 1,
 	
-	SURF_NODAMAGE				= BIT( 4 ),	// never give falling damage
-	SURF_SLICK					= BIT( 5 ),	// effects game physics
-	SURF_COLLISION				= BIT( 6 ),	// collision surface
-	SURF_LADDER					= BIT( 7 ),	// player can climb up this surface
-	SURF_NOIMPACT				= BIT( 8 ),	// don't make missile explosions
-	SURF_NOSTEPS				= BIT( 9 ),	// no footstep sounds
-	SURF_DISCRETE				= BIT( 10 ),	// not clipped or merged by utilities
-	SURF_NOFRAGMENT				= BIT( 11 ),	// dmap won't cut surface at each bsp boundary
-	SURF_NULLNORMAL				= BIT( 12 )	// renderbump will draw this surface as 0x80 0x80 0x80, which
+	SURF_NODAMAGE				= IDBIT( 4 ),	// never give falling damage
+	SURF_SLICK					= IDBIT( 5 ),	// effects game physics
+	SURF_COLLISION				= IDBIT( 6 ),	// collision surface
+	SURF_LADDER					= IDBIT( 7 ),	// player can climb up this surface
+	SURF_NOIMPACT				= IDBIT( 8 ),	// don't make missile explosions
+	SURF_NOSTEPS				= IDBIT( 9 ),	// no footstep sounds
+	SURF_DISCRETE				= IDBIT( 10 ),	// not clipped or merged by utilities
+	SURF_NOFRAGMENT				= IDBIT( 11 ),	// dmap won't cut surface at each bsp boundary
+	SURF_NULLNORMAL				= IDBIT( 12 )	// renderbump will draw this surface as 0x80 0x80 0x80, which
 								  // won't collect light from any angle
 } surfaceFlags_t;
 

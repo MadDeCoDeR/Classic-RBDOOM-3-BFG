@@ -576,7 +576,7 @@ void idSoundHardware_XAudio2::Init()
 	const char* channelNames[] = { "L", "R", "C", "S", "Lb", "Rb", "Lf", "Rf", "Cb", "Ls", "Rs" };
 	for (int i = 0, ci = 0; ci < sizeof(channelNames) / sizeof(channelNames[0]); ci++)
 	{
-		if ((channelMask & BIT(ci)) == 0)
+		if ((channelMask & IDBIT(ci)) == 0)
 		{
 			continue;
 		}

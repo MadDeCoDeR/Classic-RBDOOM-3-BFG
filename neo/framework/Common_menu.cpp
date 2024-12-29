@@ -62,7 +62,7 @@ void idCommonLocal::InitializeMPMapsModes()
 		{
 			if( mapDef->dict.GetBool( gameModes[j], false ) )
 			{
-				supportedModes |= BIT( j );
+				supportedModes |= IDBIT( j );
 			}
 		}
 		if( supportedModes != 0 )
@@ -99,7 +99,7 @@ void idCommonLocal::OnStartHosting( idMatchParameters& parms )
 		{
 			// Select a map which supports the chosen mode
 			idList<int> supportedMaps;
-			uint32 supportedMode = BIT( parms.gameMode );
+			uint32 supportedMode = IDBIT( parms.gameMode );
 			for( int i = 0; i < mpGameMaps.Num(); i++ )
 			{
 				if( mpGameMaps[i].supportedModes & supportedMode )
@@ -126,7 +126,7 @@ void idCommonLocal::OnStartHosting( idMatchParameters& parms )
 		int numSupportedModes = 0;
 		for( int i = 0; i < 32; i++ )
 		{
-			if( supportedModes & BIT( i ) )
+			if( supportedModes & IDBIT( i ) )
 			{
 				supportedModeList[numSupportedModes] = i;
 				numSupportedModes++;

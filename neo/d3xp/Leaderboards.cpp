@@ -121,7 +121,7 @@ void LeaderboardLocal_Init()
 		{
 		
 			// Check the supported modes on the map.
-			if( maps[ mapIdx ].supportedModes & BIT( modeIdx ) )
+			if( maps[ mapIdx ].supportedModes & IDBIT( modeIdx ) )
 			{
 			
 				const columnGameMode_t gamemode = gameMode_columnDefs[ modeIdx ];

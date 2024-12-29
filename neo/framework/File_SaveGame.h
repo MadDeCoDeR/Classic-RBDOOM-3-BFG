@@ -38,14 +38,14 @@ If you have questions concerning this license or the applicable additional terms
 enum saveGameType_t
 {
 	SAVEGAMEFILE_NONE			= 0,
-	SAVEGAMEFILE_TEXT			= BIT( 0 ),	// implies that no checksum will be used
-	SAVEGAMEFILE_BINARY			= BIT( 1 ),	// implies that a checksum will also be used
-	SAVEGAMEFILE_COMPRESSED		= BIT( 2 ),
-	SAVEGAMEFILE_PIPELINED		= BIT( 3 ),
-	SAVEGAMEFILE_THUMB			= BIT( 4 ),	// for special processing on certain platforms
-	SAVEGAMEFILE_BKGRND_IMAGE	= BIT( 5 ),	// for special processing on certain platforms, large background used on PS3
-	SAVEGAMEFILE_AUTO_DELETE	= BIT( 6 ),	// to be deleted automatically after completed
-	SAVEGAMEFILE_OPTIONAL		= BIT( 7 )	// if this flag is not set and missing, there is an error
+	SAVEGAMEFILE_TEXT			= IDBIT( 0 ),	// implies that no checksum will be used
+	SAVEGAMEFILE_BINARY			= IDBIT( 1 ),	// implies that a checksum will also be used
+	SAVEGAMEFILE_COMPRESSED		= IDBIT( 2 ),
+	SAVEGAMEFILE_PIPELINED		= IDBIT( 3 ),
+	SAVEGAMEFILE_THUMB			= IDBIT( 4 ),	// for special processing on certain platforms
+	SAVEGAMEFILE_BKGRND_IMAGE	= IDBIT( 5 ),	// for special processing on certain platforms, large background used on PS3
+	SAVEGAMEFILE_AUTO_DELETE	= IDBIT( 6 ),	// to be deleted automatically after completed
+	SAVEGAMEFILE_OPTIONAL		= IDBIT( 7 )	// if this flag is not set and missing, there is an error
 };
 
 /*

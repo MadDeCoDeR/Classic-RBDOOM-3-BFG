@@ -258,7 +258,15 @@
       "generator": "Unix Makefiles",
       "inherits": "linux-base",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "USE_OPENXR": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "CMAKE_DISABLE_FIND_PACKAGE_jsoncpp" : {
+          "type": "BOOL",
+          "value": "ON"
+        }
       }
     },
     {
@@ -294,7 +302,15 @@
       "generator": "Unix Makefiles",
       "inherits": "linux-base",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Retail"
+        "CMAKE_BUILD_TYPE": "Retail",
+        "USE_OPENXR": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "CMAKE_DISABLE_FIND_PACKAGE_jsoncpp" : {
+          "type": "BOOL",
+          "value": "ON"
+        }
       }
     },
     {
@@ -317,6 +333,14 @@
           "value": "OFF"
         },
         "INSIDE_PACKAGE": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_OPENXR": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "CMAKE_DISABLE_FIND_PACKAGE_jsoncpp" : {
           "type": "BOOL",
           "value": "ON"
         }

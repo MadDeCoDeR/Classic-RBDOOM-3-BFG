@@ -123,8 +123,8 @@ struct idNullPtr
 #endif
 #endif
 
-#ifndef BIT
-#define BIT( num )				( 1ULL << ( num ) )
+#ifndef IDBIT
+#define IDBIT( num )				( 1ULL << ( num ) )
 #endif
 
 #ifndef NUMBITS

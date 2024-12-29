@@ -68,8 +68,8 @@ public:
 	
 	enum disableVoiceReason_t
 	{
-		REASON_GENERIC				= BIT( 0 ),
-		REASON_PRIVILEGES			= BIT( 1 ),
+		REASON_GENERIC				= IDBIT( 0 ),
+		REASON_PRIVILEGES			= IDBIT( 1 ),
 	};
 	
 	void			SetDisableVoiceReason( disableVoiceReason_t reason );

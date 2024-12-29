@@ -54,9 +54,9 @@ ITEM_GIVE_FEEDBACK | ITEM_GIVE_UPDATE_STATE.
 */
 enum itemGiveFlags_t
 {
-	ITEM_GIVE_FEEDBACK			= BIT( 0 ),
-	ITEM_GIVE_UPDATE_STATE		= BIT( 1 ),
-	ITEM_GIVE_FROM_WEAPON		= BIT( 2 ),			// indicates this was given via a weapon's launchPowerup (for bloodstone powerups)
+	ITEM_GIVE_FEEDBACK			= IDBIT( 0 ),
+	ITEM_GIVE_UPDATE_STATE		= IDBIT( 1 ),
+	ITEM_GIVE_FROM_WEAPON		= IDBIT( 2 ),			// indicates this was given via a weapon's launchPowerup (for bloodstone powerups)
 };
 
 class idItem : public idEntity

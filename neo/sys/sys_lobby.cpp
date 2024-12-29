@@ -677,7 +677,7 @@ void idLobby::HandlePacket( lobbyAddress_t& remoteAddress, idBitMsg fragMsg, idP
 				int usercmdSize = lzwCompressor.Read( usercmdBuffer, sizeof( usercmdBuffer ), true );
 				lzwCompressor.End();
 				
-				float receivedBps = ( receivedBps_quantized / ( float )( BIT( idLobby::BANDWIDTH_REPORTING_BITS ) - 1 ) ) * ( float )idLobby::BANDWIDTH_REPORTING_MAX;
+				float receivedBps = ( receivedBps_quantized / ( float )( IDBIT( idLobby::BANDWIDTH_REPORTING_BITS ) - 1 ) ) * ( float )idLobby::BANDWIDTH_REPORTING_MAX;
 				if( peers[ peerNum ].receivedBpsIndex != snapNum )
 				{
 					peers[ peerNum ].receivedBps = receivedBps;
@@ -4585,7 +4585,7 @@ void idLobby::SendReliable( int type, idBitMsg& msg, bool callReceiveReliable /*
 		}
 		
 		// Don't sent to a user if they are in the exlusion session user mask
-		if( sessionUserMask != 0 && ( sessionUserMask & ( BIT( i ) ) ) == 0 )
+		if( sessionUserMask != 0 && ( sessionUserMask & ( IDBIT( i ) ) ) == 0 )
 		{
 			continue;
 		}

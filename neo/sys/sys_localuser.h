@@ -36,9 +36,9 @@ class idProfileMgr;
 
 enum onlineCaps_t
 {
-	CAP_IS_ONLINE			= BIT( 0 ),
-	CAP_BLOCKED_PERMISSION	= BIT( 1 ),
-	CAP_CAN_PLAY_ONLINE		= BIT( 2 ),
+	CAP_IS_ONLINE			= IDBIT( 0 ),
+	CAP_BLOCKED_PERMISSION	= IDBIT( 1 ),
+	CAP_CAN_PLAY_ONLINE		= IDBIT( 2 ),
 };
 
 class idSerializer;

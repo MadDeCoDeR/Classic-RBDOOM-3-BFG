@@ -409,7 +409,7 @@ void idMenuScreen_Shell_MatchSettings::idMenuDataSource_MatchSettings::AdjustFie
 			}
 			matchParameters.gameMap %= maps.Num();
 			matchParameters.mapName = maps[ matchParameters.gameMap ].mapFile;
-			if( ( maps[matchParameters.gameMap].supportedModes & BIT( matchParameters.gameMode ) ) != 0 )
+			if( ( maps[matchParameters.gameMap].supportedModes & IDBIT( matchParameters.gameMode ) ) != 0 )
 			{
 				// This map supports this mode
 				break;
@@ -434,11 +434,11 @@ void idMenuScreen_Shell_MatchSettings::idMenuDataSource_MatchSettings::AdjustFie
 		}
 		matchParameters.gameMode %= modes.Num();
 		updateMap = false;
-		if( ( maps[matchParameters.gameMap].supportedModes & BIT( matchParameters.gameMode ) ) == 0 )
+		if( ( maps[matchParameters.gameMap].supportedModes & IDBIT( matchParameters.gameMode ) ) == 0 )
 		{
 			for( int i = 0; i < maps.Num(); ++i )
 			{
-				if( ( maps[i].supportedModes & BIT( matchParameters.gameMode ) ) != 0 )
+				if( ( maps[i].supportedModes & IDBIT( matchParameters.gameMode ) ) != 0 )
 				{
 					matchParameters.gameMap = i;
 					updateMap = true;

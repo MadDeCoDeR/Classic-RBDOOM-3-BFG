@@ -110,11 +110,11 @@ int BitsForFormat( textureFormat_t format );
 
 enum textureSamples_t
 {
-	SAMPLE_1	= BIT( 0 ),
-	SAMPLE_2	= BIT( 1 ),
-	SAMPLE_4	= BIT( 2 ),
-	SAMPLE_8	= BIT( 3 ),
-	SAMPLE_16	= BIT( 4 )
+	SAMPLE_1	= IDBIT( 0 ),
+	SAMPLE_2	= IDBIT( 1 ),
+	SAMPLE_4	= IDBIT( 2 ),
+	SAMPLE_8	= IDBIT( 3 ),
+	SAMPLE_16	= IDBIT( 4 )
 };
 
 /*

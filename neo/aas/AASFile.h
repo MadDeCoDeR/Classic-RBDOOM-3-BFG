@@ -41,45 +41,45 @@ If you have questions concerning this license or the applicable additional terms
 #define AAS_FILEVERSION				"1.07"
 
 // travel flags
-#define TFL_INVALID					BIT(0)		// not valid
-#define TFL_WALK					BIT(1)		// walking
-#define TFL_CROUCH					BIT(2)		// crouching
-#define TFL_WALKOFFLEDGE			BIT(3)		// walking of a ledge
-#define TFL_BARRIERJUMP				BIT(4)		// jumping onto a barrier
-#define TFL_JUMP					BIT(5)		// jumping
-#define TFL_LADDER					BIT(6)		// climbing a ladder
-#define TFL_SWIM					BIT(7)		// swimming
-#define TFL_WATERJUMP				BIT(8)		// jump out of the water
-#define TFL_TELEPORT				BIT(9)		// teleportation
-#define TFL_ELEVATOR				BIT(10)		// travel by elevator
-#define TFL_FLY						BIT(11)		// fly
-#define TFL_SPECIAL					BIT(12)		// special
-#define TFL_WATER					BIT(21)		// travel through water
-#define TFL_AIR						BIT(22)		// travel through air
+#define TFL_INVALID					IDBIT(0)		// not valid
+#define TFL_WALK					IDBIT(1)		// walking
+#define TFL_CROUCH					IDBIT(2)		// crouching
+#define TFL_WALKOFFLEDGE			IDBIT(3)		// walking of a ledge
+#define TFL_BARRIERJUMP				IDBIT(4)		// jumping onto a barrier
+#define TFL_JUMP					IDBIT(5)		// jumping
+#define TFL_LADDER					IDBIT(6)		// climbing a ladder
+#define TFL_SWIM					IDBIT(7)		// swimming
+#define TFL_WATERJUMP				IDBIT(8)		// jump out of the water
+#define TFL_TELEPORT				IDBIT(9)		// teleportation
+#define TFL_ELEVATOR				IDBIT(10)		// travel by elevator
+#define TFL_FLY						IDBIT(11)		// fly
+#define TFL_SPECIAL					IDBIT(12)		// special
+#define TFL_WATER					IDBIT(21)		// travel through water
+#define TFL_AIR						IDBIT(22)		// travel through air
 
 // face flags
-#define FACE_SOLID					BIT(0)		// solid at the other side
-#define FACE_LADDER					BIT(1)		// ladder surface
-#define FACE_FLOOR					BIT(2)		// standing on floor when on this face
-#define FACE_LIQUID					BIT(3)		// face seperating two areas with liquid
-#define FACE_LIQUIDSURFACE			BIT(4)		// face seperating liquid and air
+#define FACE_SOLID					IDBIT(0)		// solid at the other side
+#define FACE_LADDER					IDBIT(1)		// ladder surface
+#define FACE_FLOOR					IDBIT(2)		// standing on floor when on this face
+#define FACE_LIQUID					IDBIT(3)		// face seperating two areas with liquid
+#define FACE_LIQUIDSURFACE			IDBIT(4)		// face seperating liquid and air
 
 // area flags
-#define AREA_FLOOR					BIT(0)		// AI can stand on the floor in this area
-#define AREA_GAP					BIT(1)		// area has a gap
-#define AREA_LEDGE					BIT(2)		// if entered the AI bbox partly floats above a ledge
-#define AREA_LADDER					BIT(3)		// area contains one or more ladder faces
-#define AREA_LIQUID					BIT(4)		// area contains a liquid
-#define AREA_CROUCH					BIT(5)		// AI cannot walk but can only crouch in this area
-#define AREA_REACHABLE_WALK			BIT(6)		// area is reachable by walking or swimming
-#define AREA_REACHABLE_FLY			BIT(7)		// area is reachable by flying
+#define AREA_FLOOR					IDBIT(0)		// AI can stand on the floor in this area
+#define AREA_GAP					IDBIT(1)		// area has a gap
+#define AREA_LEDGE					IDBIT(2)		// if entered the AI bbox partly floats above a ledge
+#define AREA_LADDER					IDBIT(3)		// area contains one or more ladder faces
+#define AREA_LIQUID					IDBIT(4)		// area contains a liquid
+#define AREA_CROUCH					IDBIT(5)		// AI cannot walk but can only crouch in this area
+#define AREA_REACHABLE_WALK			IDBIT(6)		// area is reachable by walking or swimming
+#define AREA_REACHABLE_FLY			IDBIT(7)		// area is reachable by flying
 
 // area contents flags
-#define AREACONTENTS_SOLID			BIT(0)		// solid, not a valid area
-#define AREACONTENTS_WATER			BIT(1)		// area contains water
-#define AREACONTENTS_CLUSTERPORTAL	BIT(2)		// area is a cluster portal
-#define AREACONTENTS_OBSTACLE		BIT(3)		// area contains (part of) a dynamic obstacle
-#define AREACONTENTS_TELEPORTER		BIT(4)		// area contains (part of) a teleporter trigger
+#define AREACONTENTS_SOLID			IDBIT(0)		// solid, not a valid area
+#define AREACONTENTS_WATER			IDBIT(1)		// area contains water
+#define AREACONTENTS_CLUSTERPORTAL	IDBIT(2)		// area is a cluster portal
+#define AREACONTENTS_OBSTACLE		IDBIT(3)		// area contains (part of) a dynamic obstacle
+#define AREACONTENTS_TELEPORTER		IDBIT(4)		// area contains (part of) a teleporter trigger
 
 // bits for different bboxes
 #define AREACONTENTS_BBOX_BIT		24

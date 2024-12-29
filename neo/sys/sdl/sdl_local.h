@@ -28,12 +28,20 @@ If you have questions concerning this license or the applicable additional terms
 */
 #ifndef __SDL_LOCAL_H__
 #define __SDL_LOCAL_H__
-
+#include <SDL2/SDL.h>
 // glimp.cpp
 const int GRAB_ENABLE		= ( 1 << 0 );
 const int GRAB_REENABLE		= ( 1 << 1 );
 const int GRAB_HIDECURSOR	= ( 1 << 2 );
 const int GRAB_SETSTATE		= ( 1 << 3 );
+
+#ifdef USE_OPENXR
+#define XR_USE_GRAPHICS_API_OPENGL
+#define XR_USE_PLATFORM_WAYLAND
+#include <openxr/openxr.h>
+#include <openxr/openxr_platform.h>
+static XrGraphicsBindingOpenGLWaylandKHR graphicsBinding{};
+#endif
 
 //GK: Keep that here in order to be used by more than one places
 #if SDL_VERSION_ATLEAST(2, 0, 0)
@@ -43,5 +51,11 @@ static SDL_Window* window = NULL;
 void GLimp_GrabInput( int flags );
 
 char*	Sys_ConsoleInput();
+
+#ifdef USE_OPENXR
+void* GetOpenXRGraphicsBinding();
+#endif
+
+void Sys_QueEvent( sysEventType_t type, int value, int value2, int ptrLength, void *ptr, int inputDeviceNum );
 
 #endif

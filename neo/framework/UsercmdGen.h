@@ -40,17 +40,17 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 // usercmd_t->button bits
-const int BUTTON_ATTACK			= BIT( 0 );
-const int BUTTON_RUN			= BIT( 1 );
-const int BUTTON_ZOOM			= BIT( 2 );
-const int BUTTON_SCORES			= BIT( 3 );
-const int BUTTON_USE			= BIT( 4 );
-const int BUTTON_JUMP			= BIT( 5 );
-const int BUTTON_CROUCH			= BIT( 6 );
-const int BUTTON_CHATTING		= BIT( 7 );
+const int BUTTON_ATTACK			= IDBIT( 0 );
+const int BUTTON_RUN			= IDBIT( 1 );
+const int BUTTON_ZOOM			= IDBIT( 2 );
+const int BUTTON_SCORES			= IDBIT( 3 );
+const int BUTTON_USE			= IDBIT( 4 );
+const int BUTTON_JUMP			= IDBIT( 5 );
+const int BUTTON_CROUCH			= IDBIT( 6 );
+const int BUTTON_CHATTING		= IDBIT( 7 );
 //GK: Two new bits for cycling weapons
-const int BUTTON_NEXTWEAP       = BIT( 8 );
-const int BUTTON_PREVWEAP		= BIT( 9 );
+const int BUTTON_NEXTWEAP       = IDBIT( 8 );
+const int BUTTON_PREVWEAP		= IDBIT( 9 );
 
 // usercmd_t->impulse commands
 const int IMPULSE_0				= 0;			// weap 0

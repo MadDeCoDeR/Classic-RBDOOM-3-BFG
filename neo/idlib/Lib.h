@@ -104,7 +104,7 @@ class idVec4;
 #endif
 
 #ifndef BIT
-#define BIT( num )				( 1ULL << ( num ) )
+#define IDBIT( num )				( 1ULL << ( num ) )
 #endif
 
 #define	MAX_STRING_CHARS		1024		// max length of a string

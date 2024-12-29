@@ -56,12 +56,12 @@ permutations defined by the vertexMask_t bits on the Xbox 360 (see MAX_VERTEX_DE
 */
 enum vertexMask_t
 {
-	VERTEX_MASK_XYZ			= BIT( PC_ATTRIB_INDEX_VERTEX ),
-	VERTEX_MASK_ST			= BIT( PC_ATTRIB_INDEX_ST ),
-	VERTEX_MASK_NORMAL		= BIT( PC_ATTRIB_INDEX_NORMAL ),
-	VERTEX_MASK_COLOR		= BIT( PC_ATTRIB_INDEX_COLOR ),
-	VERTEX_MASK_TANGENT		= BIT( PC_ATTRIB_INDEX_TANGENT ),
-	VERTEX_MASK_COLOR2		= BIT( PC_ATTRIB_INDEX_COLOR2 ),
+	VERTEX_MASK_XYZ			= IDBIT( PC_ATTRIB_INDEX_VERTEX ),
+	VERTEX_MASK_ST			= IDBIT( PC_ATTRIB_INDEX_ST ),
+	VERTEX_MASK_NORMAL		= IDBIT( PC_ATTRIB_INDEX_NORMAL ),
+	VERTEX_MASK_COLOR		= IDBIT( PC_ATTRIB_INDEX_COLOR ),
+	VERTEX_MASK_TANGENT		= IDBIT( PC_ATTRIB_INDEX_TANGENT ),
+	VERTEX_MASK_COLOR2		= IDBIT( PC_ATTRIB_INDEX_COLOR2 ),
 };
 
 
@@ -197,9 +197,9 @@ enum renderParm_t
 
 enum rpStage_t
 {
-	SHADER_STAGE_VERTEX		= BIT( 0 ),
-	SHADER_STAGE_FRAGMENT	= BIT( 1 ),
-	SHADER_STAGE_COMPUTE	= BIT( 2 ), // RB: for future use
+	SHADER_STAGE_VERTEX		= IDBIT( 0 ),
+	SHADER_STAGE_FRAGMENT	= IDBIT( 1 ),
+	SHADER_STAGE_COMPUTE	= IDBIT( 2 ), // RB: for future use
 	
 	SHADER_STAGE_DEFAULT	= SHADER_STAGE_VERTEX | SHADER_STAGE_FRAGMENT
 };
@@ -214,13 +214,13 @@ enum rpBinding_t
 #define VERTEX_UNIFORM_ARRAY_NAME				"_va_"
 #define FRAGMENT_UNIFORM_ARRAY_NAME				"_fa_"
 
-static const int AT_VS_IN			= BIT( 1 );
-static const int AT_VS_OUT			= BIT( 2 );
-static const int AT_PS_IN			= BIT( 3 );
-static const int AT_PS_OUT			= BIT( 4 );
-static const int AT_VS_OUT_RESERVED = BIT( 5 );
-static const int AT_PS_IN_RESERVED	= BIT( 6 );
-static const int AT_PS_OUT_RESERVED = BIT( 7 );
+static const int AT_VS_IN			= IDBIT( 1 );
+static const int AT_VS_OUT			= IDBIT( 2 );
+static const int AT_PS_IN			= IDBIT( 3 );
+static const int AT_PS_OUT			= IDBIT( 4 );
+static const int AT_VS_OUT_RESERVED = IDBIT( 5 );
+static const int AT_PS_IN_RESERVED	= IDBIT( 6 );
+static const int AT_PS_OUT_RESERVED = IDBIT( 7 );
 
 struct attribInfo_t
 {

@@ -110,12 +110,12 @@ typedef struct
 #define	ANIM_BIT_QY			4
 #define	ANIM_BIT_QZ			5
 
-#define	ANIM_TX				BIT( ANIM_BIT_TX )
-#define	ANIM_TY				BIT( ANIM_BIT_TY )
-#define	ANIM_TZ				BIT( ANIM_BIT_TZ )
-#define	ANIM_QX				BIT( ANIM_BIT_QX )
-#define	ANIM_QY				BIT( ANIM_BIT_QY )
-#define	ANIM_QZ				BIT( ANIM_BIT_QZ )
+#define	ANIM_TX				IDBIT( ANIM_BIT_TX )
+#define	ANIM_TY				IDBIT( ANIM_BIT_TY )
+#define	ANIM_TZ				IDBIT( ANIM_BIT_TZ )
+#define	ANIM_QX				IDBIT( ANIM_BIT_QX )
+#define	ANIM_QY				IDBIT( ANIM_BIT_QY )
+#define	ANIM_QZ				IDBIT( ANIM_BIT_QZ )
 
 typedef enum
 {

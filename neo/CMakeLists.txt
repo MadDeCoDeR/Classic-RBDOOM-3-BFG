@@ -173,7 +173,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -DNDEBUG -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
 	set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -g -rdynamic -O3 -DID_RETAIL -DALLOW_DEV -D_GLDEBUG -DNDEBUG -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing -Werror -Wno-error=invalid-pch -Wno-error=invalid-offsetof ${my_warn_flags}")
 	#set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -Os -ffast-math -fno-unsafe-math-optimizations -fomit-frame-pointer -fno-strict-aliasing ${my_warn_flags}")
-	set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RETAIL} -s -O3 -DID_RETAIL -DNDEBUG -ffast-math -fno-strict-aliasing -Werror -Wno-error=invalid-pch -Wno-error=invalid-offsetof ${my_warn_flags}" CACHE STRING "" FORCE)
+	set(CMAKE_C_FLAGS_RETAIL "${CMAKE_C_FLAGS_RETAIL} -s -O3 -DID_RETAIL -DNDEBUG -ffast-math -fno-strict-aliasing -Werror -Wno-error=invalid-pch -Wno-error=invalid-offsetof -Wno-error=uninitialized ${my_warn_flags}" CACHE STRING "" FORCE)
 	
 	
 
@@ -503,8 +503,8 @@ if (USE_OPENXR)
 	set(BUILD_API_LAYERS ON)
 	FetchContent_Declare(
 		OpenXR
-		URL_HASH MD5=927EE8D4699DFB4DDD9B0A16A37EDBFC
-		URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.1.37.tar.gz
+		URL_HASH MD5=A8DE805EE5C34C180A5B630EBD816850
+		URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.1.43.tar.gz
 		SOURCE_DIR
 		../neo/libs/openxr
 	)
@@ -1067,11 +1067,6 @@ if (USE_DXGI)
 else()
 	list(APPEND WIN32_SOURCES sys/win32/win_glimp.cpp)
 endif()
-
-if (USE_OPENXR)
-	list(APPEND WIN32_SOURCES sys/win32/win_oxr.cpp)
-	list(APPEND WIN32_INCLUDES sys/win32/win_oxr.h)
-endif()
 	
 if(MSVC)
 	list(APPEND WIN32_SOURCES sys/win32/win_cpu.cpp)
@@ -1437,6 +1432,12 @@ include_directories(
 #			${CMAKE_CURRENT_SOURCE_DIR}/libs/curl/lib
 #			${CMAKE_CURRENT_SOURCE_DIR}/libs/openal/lib)
 
+
+if (USE_OPENXR)
+		list(APPEND RBDOOM3_INCLUDES ${RENDERER_OPENXR_INCLUDES})
+		list(APPEND RBDOOM3_SOURCES ${RENDERER_OPENXR_SOURCES})
+	endif()
+
 if(MSVC)
 
 	# if(MSVC_VERSION EQUAL 1700)
@@ -1525,11 +1526,6 @@ if(MSVC)
 		set(OpenGL_LIBRARIES
 			opengl32
 			glu32)
-	endif()
-
-	if (USE_OPENXR)
-		list(APPEND RBDOOM3_INCLUDES ${RENDERER_OPENXR_INCLUDES})
-		list(APPEND RBDOOM3_SOURCES ${RENDERER_OPENXR_SOURCES})
 	endif()
 
 	
@@ -2071,6 +2067,9 @@ else()
 			${GLU_LIBRARY}
 	    ${CMAKE_DL_LIBS}
 			)
+		if (USE_OPENXR)
+			target_link_libraries(DoomBFA openxr-gfxwrapper openxr_loader)
+		endif()
 	endif()
 	
 endif()

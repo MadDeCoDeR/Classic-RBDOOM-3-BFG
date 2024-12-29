@@ -190,8 +190,8 @@ private:
 	enum swfNamedVarFlags_t
 	{
 		SWF_VAR_FLAG_NONE = 0,
-		SWF_VAR_FLAG_READONLY = BIT( 1 ),
-		SWF_VAR_FLAG_DONTENUM = BIT( 2 )
+		SWF_VAR_FLAG_READONLY = IDBIT( 1 ),
+		SWF_VAR_FLAG_DONTENUM = IDBIT( 2 )
 	};
 	struct swfNamedVar_t
 	{

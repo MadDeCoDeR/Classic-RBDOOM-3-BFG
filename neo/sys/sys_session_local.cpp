@@ -2383,7 +2383,7 @@ void idSessionLocal::SendUsercmds( idBitMsg& msg )
 			hostPeer.receivedBpsIndex = sequence;
 			hostPeer.receivedBps = incomingBPS;
 		}
-		uint16 incomingBPS_quantized = idMath::Ftoi( incomingBPS * ( ( BIT( idLobby::BANDWIDTH_REPORTING_BITS ) - 1 )  / idLobby::BANDWIDTH_REPORTING_MAX ) );
+		uint16 incomingBPS_quantized = idMath::Ftoi( incomingBPS * ( ( IDBIT( idLobby::BANDWIDTH_REPORTING_BITS ) - 1 )  / idLobby::BANDWIDTH_REPORTING_MAX ) );
 		
 		byte buffer[idPacketProcessor::MAX_FINAL_PACKET_SIZE];
 		lzwCompressionData_t lzwData;

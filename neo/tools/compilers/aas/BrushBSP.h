@@ -115,8 +115,8 @@ private:
 //
 //===============================================================
 
-#define NODE_VISITED		BIT(30)
-#define NODE_DONE			BIT(31)
+#define NODE_VISITED		IDBIT(30)
+#define NODE_DONE			IDBIT(31)
 
 class idBrushBSPNode
 {

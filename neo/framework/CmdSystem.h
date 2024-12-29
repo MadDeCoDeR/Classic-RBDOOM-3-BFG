@@ -48,12 +48,12 @@ If you have questions concerning this license or the applicable additional terms
 typedef enum
 {
 	CMD_FL_ALL				= -1,
-	CMD_FL_CHEAT			= BIT( 0 ),	// command is considered a cheat
-	CMD_FL_SYSTEM			= BIT( 1 ),	// system command
-	CMD_FL_RENDERER			= BIT( 2 ),	// renderer command
-	CMD_FL_SOUND			= BIT( 3 ),	// sound command
-	CMD_FL_GAME				= BIT( 4 ),	// game command
-	CMD_FL_TOOL				= BIT( 5 )	// tool command
+	CMD_FL_CHEAT			= IDBIT( 0 ),	// command is considered a cheat
+	CMD_FL_SYSTEM			= IDBIT( 1 ),	// system command
+	CMD_FL_RENDERER			= IDBIT( 2 ),	// renderer command
+	CMD_FL_SOUND			= IDBIT( 3 ),	// sound command
+	CMD_FL_GAME				= IDBIT( 4 ),	// game command
+	CMD_FL_TOOL				= IDBIT( 5 )	// tool command
 } cmdFlags_t;
 
 // parameters for command buffer stuffing

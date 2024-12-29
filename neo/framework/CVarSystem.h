@@ -82,25 +82,25 @@ If you have questions concerning this license or the applicable additional terms
 typedef enum
 {
 	CVAR_ALL				= -1,		// all flags
-	CVAR_BOOL				= BIT( 0 ),	// variable is a boolean
-	CVAR_INTEGER			= BIT( 1 ),	// variable is an integer
-	CVAR_FLOAT				= BIT( 2 ),	// variable is a float
-	CVAR_SYSTEM				= BIT( 3 ),	// system variable
-	CVAR_RENDERER			= BIT( 4 ),	// renderer variable
-	CVAR_SOUND				= BIT( 5 ),	// sound variable
-	CVAR_GUI				= BIT( 6 ),	// gui variable
-	CVAR_GAME				= BIT( 7 ),	// game variable
-	CVAR_TOOL				= BIT( 8 ),	// tool variable
+	CVAR_BOOL				= IDBIT( 0 ),	// variable is a boolean
+	CVAR_INTEGER			= IDBIT( 1 ),	// variable is an integer
+	CVAR_FLOAT				= IDBIT( 2 ),	// variable is a float
+	CVAR_SYSTEM				= IDBIT( 3 ),	// system variable
+	CVAR_RENDERER			= IDBIT( 4 ),	// renderer variable
+	CVAR_SOUND				= IDBIT( 5 ),	// sound variable
+	CVAR_GUI				= IDBIT( 6 ),	// gui variable
+	CVAR_GAME				= IDBIT( 7 ),	// game variable
+	CVAR_TOOL				= IDBIT( 8 ),	// tool variable
 	// original doom3 used to have CVAR_USERINFO ("sent to servers, available to menu") here
-	CVAR_SERVERINFO			= BIT( 10 ),	// sent from servers, available to menu
-	CVAR_NETWORKSYNC		= BIT( 11 ),	// cvar is synced from the server to clients
-	CVAR_STATIC				= BIT( 12 ),	// statically declared, not user created
-	CVAR_CHEAT				= BIT( 13 ),	// variable is considered a cheat
-	CVAR_NOCHEAT			= BIT( 14 ),	// variable is not considered a cheat
-	CVAR_INIT				= BIT( 15 ),	// can only be set from the command-line
-	CVAR_ROM				= BIT( 16 ),	// display only, cannot be set by user at all
-	CVAR_ARCHIVE			= BIT( 17 ),	// set to cause it to be saved to a config file
-	CVAR_MODIFIED			= BIT( 18 )	// set when the variable is modified
+	CVAR_SERVERINFO			= IDBIT( 10 ),	// sent from servers, available to menu
+	CVAR_NETWORKSYNC		= IDBIT( 11 ),	// cvar is synced from the server to clients
+	CVAR_STATIC				= IDBIT( 12 ),	// statically declared, not user created
+	CVAR_CHEAT				= IDBIT( 13 ),	// variable is considered a cheat
+	CVAR_NOCHEAT			= IDBIT( 14 ),	// variable is not considered a cheat
+	CVAR_INIT				= IDBIT( 15 ),	// can only be set from the command-line
+	CVAR_ROM				= IDBIT( 16 ),	// display only, cannot be set by user at all
+	CVAR_ARCHIVE			= IDBIT( 17 ),	// set to cause it to be saved to a config file
+	CVAR_MODIFIED			= IDBIT( 18 )	// set when the variable is modified
 } cvarFlags_t;
 
 

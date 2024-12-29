@@ -243,9 +243,9 @@ public:
 	enum runResult_t
 	{
 		RUN_OK			= 0,
-		RUN_PROGRESS	= BIT( 0 ),
-		RUN_DONE		= BIT( 1 ),
-		RUN_STALLED		= BIT( 2 )
+		RUN_PROGRESS	= IDBIT( 0 ),
+		RUN_DONE		= IDBIT( 1 ),
+		RUN_STALLED		= IDBIT( 2 )
 	};
 	
 	int						RunJobs( unsigned int threadNum, threadJobListState_t& state, bool singleJob );

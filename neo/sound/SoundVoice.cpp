@@ -118,7 +118,7 @@ void idSoundVoice_Base::InitSurround( int outputChannels, int channelMask )
 	memset( invMap, 0, sizeof( invMap ) );
 	for( int i = 0, c = 0; i < idWaveFile::CHANNEL_INDEX_MAX && c < MAX_CHANNELS_PER_VOICE; i++ )
 	{
-		if( dstMask & BIT( i ) )
+		if( dstMask & IDBIT( i ) )
 		{
 			if( i == idWaveFile::CHANNEL_INDEX_LOW_FREQUENCY )
 			{

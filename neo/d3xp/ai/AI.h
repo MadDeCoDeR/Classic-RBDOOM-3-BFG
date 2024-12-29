@@ -133,11 +133,11 @@ typedef struct obstaclePath_s
 // path prediction
 typedef enum
 {
-	SE_BLOCKED			= BIT( 0 ),
-	SE_ENTER_LEDGE_AREA	= BIT( 1 ),
-	SE_ENTER_OBSTACLE	= BIT( 2 ),
-	SE_FALL				= BIT( 3 ),
-	SE_LAND				= BIT( 4 )
+	SE_BLOCKED			= IDBIT( 0 ),
+	SE_ENTER_LEDGE_AREA	= IDBIT( 1 ),
+	SE_ENTER_OBSTACLE	= IDBIT( 2 ),
+	SE_FALL				= IDBIT( 3 ),
+	SE_LAND				= IDBIT( 4 )
 } stopEvent_t;
 
 typedef struct predictedPath_s

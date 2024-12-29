@@ -538,7 +538,7 @@ static int CompileGLSLtoSPIRV( const char* filename, const idStr& dataGLSL, cons
 		idLib::Printf( "%s\n", shader.getInfoDebugLog() );
 	}
 	
-	// All that’s left to do now is to convert the program’s intermediate representation into SpirV:
+	// All thatï¿½s left to do now is to convert the programï¿½s intermediate representation into SpirV:
 	std::vector<unsigned int>	spirV;
 	spv::SpvBuildLogger			logger;
 	glslang::SpvOptions			spvOptions;
@@ -655,7 +655,7 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 		idStrList compileMacros;
 		for( int j = 0; j < MAX_SHADER_MACRO_NAMES; j++ )
 		{
-			if( BIT( j ) & shader.shaderFeatures )
+			if( IDBIT( j ) & shader.shaderFeatures )
 			{
 				const char* macroName = GetGLSLMacroName( ( shaderFeature_t ) j );
 				compileMacros.Append( idStr( macroName ) );
@@ -669,7 +669,7 @@ void idRenderProgManager::LoadShader( shader_t& shader )
 		if(	idStr::Icmp( shader.name.c_str(), "heatHaze" ) == 0 ||
 				idStr::Icmp( shader.name.c_str(), "heatHazeWithMask" ) == 0 ||
 				idStr::Icmp( shader.name.c_str(), "heatHazeWithMaskAndVertex" ) == 0 ||
-				( BIT( USE_GPU_SKINNING ) & shader.shaderFeatures ) )
+				( IDBIT( USE_GPU_SKINNING ) & shader.shaderFeatures ) )
 		{
 			hasGPUSkinning = true;
 		}

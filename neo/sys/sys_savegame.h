@@ -80,20 +80,20 @@ class idSaveGameManager;
 enum saveGameError_t
 {
 	SAVEGAME_E_NONE								= 0,
-	SAVEGAME_E_CANCELLED						= BIT( 0 ),
-	SAVEGAME_E_INSUFFICIENT_ROOM				= BIT( 1 ),
-	SAVEGAME_E_CORRUPTED						= BIT( 2 ),
-	SAVEGAME_E_UNABLE_TO_SELECT_STORAGE_DEVICE	= BIT( 3 ),
-	SAVEGAME_E_UNKNOWN							= BIT( 4 ),
-	SAVEGAME_E_INVALID_FILENAME					= BIT( 5 ),
-	SAVEGAME_E_STEAM_ERROR						= BIT( 6 ),
-	SAVEGAME_E_FOLDER_NOT_FOUND					= BIT( 7 ),
-	SAVEGAME_E_FILE_NOT_FOUND					= BIT( 8 ),
-	SAVEGAME_E_DLC_NOT_FOUND					= BIT( 9 ),
-	SAVEGAME_E_INVALID_USER						= BIT( 10 ),
-	SAVEGAME_E_PROFILE_TOO_BIG					= BIT( 11 ),
-	SAVEGAME_E_DISC_SWAP						= BIT( 12 ),
-	SAVEGAME_E_INCOMPATIBLE_NEWER_VERSION		= BIT( 13 ),
+	SAVEGAME_E_CANCELLED						= IDBIT( 0 ),
+	SAVEGAME_E_INSUFFICIENT_ROOM				= IDBIT( 1 ),
+	SAVEGAME_E_CORRUPTED						= IDBIT( 2 ),
+	SAVEGAME_E_UNABLE_TO_SELECT_STORAGE_DEVICE	= IDBIT( 3 ),
+	SAVEGAME_E_UNKNOWN							= IDBIT( 4 ),
+	SAVEGAME_E_INVALID_FILENAME					= IDBIT( 5 ),
+	SAVEGAME_E_STEAM_ERROR						= IDBIT( 6 ),
+	SAVEGAME_E_FOLDER_NOT_FOUND					= IDBIT( 7 ),
+	SAVEGAME_E_FILE_NOT_FOUND					= IDBIT( 8 ),
+	SAVEGAME_E_DLC_NOT_FOUND					= IDBIT( 9 ),
+	SAVEGAME_E_INVALID_USER						= IDBIT( 10 ),
+	SAVEGAME_E_PROFILE_TOO_BIG					= IDBIT( 11 ),
+	SAVEGAME_E_DISC_SWAP						= IDBIT( 12 ),
+	SAVEGAME_E_INCOMPATIBLE_NEWER_VERSION		= IDBIT( 13 ),
 	
 	SAVEGAME_E_BITS_USED						= 14,
 	SAVEGAME_E_NUM								= SAVEGAME_E_BITS_USED + 1	// because we're counting "none"
@@ -103,16 +103,16 @@ enum saveGameError_t
 enum saveGameModeBitfield_t
 {
 	SAVEGAME_MBF_NONE				= 0,
-	SAVEGAME_MBF_LOAD				= BIT( 0 ),		// standard file load (can be individual/multiple files described in parms)
-	SAVEGAME_MBF_SAVE				= BIT( 1 ),		// standard file save (can be individual/multiple files described in parms)
-	SAVEGAME_MBF_DELETE_FOLDER		= BIT( 2 ),		// standard package delete
-	SAVEGAME_MBF_DELETE_ALL_FOLDERS	= BIT( 3 ),		// deletes all of the savegame folders (should only be used in testing)
-	SAVEGAME_MBF_ENUMERATE			= BIT( 4 ),		// gets listing of all savegame folders, typically used with READ_DETAILS to read the description file
-	SAVEGAME_MBF_NO_COMPRESS		= BIT( 5 ),		// tells the system the files aren't compressed, usually only needed when reading the descriptors file internally
-	SAVEGAME_MBF_ENUMERATE_FILES	= BIT( 6 ),		// enumerates all the files within a particular savegame folder (can be individual/multiple files or pattern described in parms)
-	SAVEGAME_MBF_DELETE_FILES		= BIT( 7 ),		// deletes individual files within a particular savegame folder (can be individual/multiple files or pattern described in parms)
-	SAVEGAME_MBF_READ_DETAILS		= BIT( 8 ),		// reads the description file (if specified, parms.enumeratedEntry.name & parms.enumeratedEntry.type must be specified)
-	SAVEGAME_MBF_KEEP_FOLDER		= BIT( 9 )		// don't delete the folder before saving
+	SAVEGAME_MBF_LOAD				= IDBIT( 0 ),		// standard file load (can be individual/multiple files described in parms)
+	SAVEGAME_MBF_SAVE				= IDBIT( 1 ),		// standard file save (can be individual/multiple files described in parms)
+	SAVEGAME_MBF_DELETE_FOLDER		= IDBIT( 2 ),		// standard package delete
+	SAVEGAME_MBF_DELETE_ALL_FOLDERS	= IDBIT( 3 ),		// deletes all of the savegame folders (should only be used in testing)
+	SAVEGAME_MBF_ENUMERATE			= IDBIT( 4 ),		// gets listing of all savegame folders, typically used with READ_DETAILS to read the description file
+	SAVEGAME_MBF_NO_COMPRESS		= IDBIT( 5 ),		// tells the system the files aren't compressed, usually only needed when reading the descriptors file internally
+	SAVEGAME_MBF_ENUMERATE_FILES	= IDBIT( 6 ),		// enumerates all the files within a particular savegame folder (can be individual/multiple files or pattern described in parms)
+	SAVEGAME_MBF_DELETE_FILES		= IDBIT( 7 ),		// deletes individual files within a particular savegame folder (can be individual/multiple files or pattern described in parms)
+	SAVEGAME_MBF_READ_DETAILS		= IDBIT( 8 ),		// reads the description file (if specified, parms.enumeratedEntry.name & parms.enumeratedEntry.type must be specified)
+	SAVEGAME_MBF_KEEP_FOLDER		= IDBIT( 9 )		// don't delete the folder before saving
 };
 
 typedef interlockedInt_t saveGameHandle_t;

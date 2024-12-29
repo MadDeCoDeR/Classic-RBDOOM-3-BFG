@@ -40,15 +40,15 @@ static const int MAX_LOCAL_PLAYERS		= 2;
 static const int MAX_INPUT_DEVICES		= 4;
 enum matchFlags_t
 {
-	MATCH_STATS						= BIT( 0 ),		// Match will upload leaderboard/achievement scores
-	MATCH_ONLINE					= BIT( 1 ),		// Match will require users to be online
-	MATCH_RANKED					= BIT( 2 ),		// Match will affect rank
-	MATCH_PRIVATE					= BIT( 3 ),		// Match will NOT be searchable through FindOrCreateMatch
-	MATCH_INVITE_ONLY				= BIT( 4 ),		// Match visible through invite only
+	MATCH_STATS						= IDBIT( 0 ),		// Match will upload leaderboard/achievement scores
+	MATCH_ONLINE					= IDBIT( 1 ),		// Match will require users to be online
+	MATCH_RANKED					= IDBIT( 2 ),		// Match will affect rank
+	MATCH_PRIVATE					= IDBIT( 3 ),		// Match will NOT be searchable through FindOrCreateMatch
+	MATCH_INVITE_ONLY				= IDBIT( 4 ),		// Match visible through invite only
 	
-	MATCH_REQUIRE_PARTY_LOBBY		= BIT( 5 ),		// This session uses a party lobby
-	MATCH_PARTY_INVITE_PLACEHOLDER	= BIT( 6 ),		// Party is never shown in the UI, it's simply used as a placeholder for invites
-	MATCH_JOIN_IN_PROGRESS			= BIT( 7 ),		// Join in progress supported for this match
+	MATCH_REQUIRE_PARTY_LOBBY		= IDBIT( 5 ),		// This session uses a party lobby
+	MATCH_PARTY_INVITE_PLACEHOLDER	= IDBIT( 6 ),		// Party is never shown in the UI, it's simply used as a placeholder for invites
+	MATCH_JOIN_IN_PROGRESS			= IDBIT( 7 ),		// Join in progress supported for this match
 };
 
 ID_INLINE bool MatchTypeIsOnline( uint8 matchFlags )
@@ -439,7 +439,7 @@ public:
 	
 	enum sessionOption_t
 	{
-		OPTION_LEAVE_WITH_PARTY			= BIT( 0 ),		// As a party leader, whether or not to drag your party members with you when you leave a game lobby
+		OPTION_LEAVE_WITH_PARTY			= IDBIT( 0 ),		// As a party leader, whether or not to drag your party members with you when you leave a game lobby
 		OPTION_ALL						= 0xFFFFFFFF
 	};
 	
