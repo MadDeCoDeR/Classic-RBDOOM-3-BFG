@@ -30,9 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Game_local.h"
-#ifdef USE_OPENXR
-#include "renderer/OpenXR/XRCommon.h"
-#endif
 
 // _D3XP : rename all gameLocal->time to gameLocal->slow.time for merge!
 
