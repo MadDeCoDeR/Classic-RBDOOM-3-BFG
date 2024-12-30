@@ -856,7 +856,7 @@ bool idXRLocal::InitXR() {
 		result = xrCreateInstance(&ici, &instance);
 	}
 	if (result != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to initiate Instace with Error code: %s", XrResultMap[result]);
+		common->Warning("OpenXR Error: Failed to initiate Instace with Error code: %s", static_cast<std::string>(XrResultMap[result]));
 		return false;
 	}
 
@@ -952,7 +952,7 @@ bool idXRLocal::InitXR() {
 	sci.systemId = systemId;
 	XrResult sessionResult = xrCreateSession(instance, &sci, &session);
 	if (sessionResult != XR_SUCCESS) {
-		common->Warning("OpenXR Error: Failed to create Session with Error code: %s", XrResultMap[sessionResult]);
+		common->Warning("OpenXR Error: Failed to create Session with Error code: %s", static_cast<std::string>(XrResultMap[sessionResult]));
 		return false;
 	}
 	float refreshRate = 60.0f;
