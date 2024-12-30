@@ -292,6 +292,14 @@
         "INSIDE_PACKAGE": {
           "type": "BOOL",
           "value": "ON"
+        },
+        "USE_OPENXR": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "CMAKE_DISABLE_FIND_PACKAGE_jsoncpp" : {
+          "type": "BOOL",
+          "value": "ON"
         }
       }
     },
