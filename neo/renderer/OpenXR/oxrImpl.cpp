@@ -655,7 +655,7 @@ bool idXRLocal::InitXR() {
 	XRAppInfo.engineVersion = atoi(ENGINE_VERSION);
 	strncpy(XRAppInfo.engineName, "DOOM BFA\0", 9);
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(XR_DEBUG)
 	this->extensions.push_back(XR_EXT_DEBUG_UTILS_EXTENSION_NAME);
 #endif
 	this->extensions.push_back(XR_KHR_OPENGL_ENABLE_EXTENSION_NAME);
@@ -740,7 +740,7 @@ bool idXRLocal::InitXR() {
 	sprintf(xrVersion, "%d.%d.%d", XR_VERSION_MAJOR(instanceProperties.runtimeVersion), XR_VERSION_MINOR(instanceProperties.runtimeVersion), XR_VERSION_PATCH(instanceProperties.runtimeVersion));
 	common->Printf("OpenXR Have been initialized\n------------------------------------------------\nRuntime Name: %s\nRuntime Version: %s\n------------------------------------------------\n", instanceProperties.runtimeName, xrVersion);
 	
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(XR_DEBUG)
 	if (std::find(activeExtensions.begin(), activeExtensions.end(), XR_EXT_DEBUG_UTILS_EXTENSION_NAME) != activeExtensions.end()) {
 		XrDebugUtilsMessengerCreateInfoEXT dmci{ XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT };
 		dmci.messageSeverities = XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT | XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT;
@@ -985,7 +985,7 @@ void idXRLocal::ShutDownXR()
 	if (session != XR_NULL_HANDLE && xrDestroySession(session) != XR_SUCCESS) {
 		common->Warning("OpenXR Error: Failed to close OpenXR Session");
 	}
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(XR_DEBUG)
 	PFN_xrDestroyDebugUtilsMessengerEXT xrDestroyDebugMessager;
 	if (instance != XR_NULL_HANDLE && xrGetInstanceProcAddr(instance, "xrDestroyDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&xrDestroyDebugMessager) == XR_SUCCESS) {
 		if (debugMessager != XR_NULL_HANDLE && xrDestroyDebugMessager(debugMessager) != XR_SUCCESS) {
