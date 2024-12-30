@@ -69,7 +69,7 @@ private:
 	std::vector<const char*> activeExtensions = {};
 	std::vector<std::string> APILayers = {};
 	std::vector<std::string> extensions = {};
-#ifdef _DEBUG
+#if defined(_DEBUG) || defined(XR_DEBUG)
 	XrDebugUtilsMessengerEXT debugMessager = {};
 #endif
 	XrFormFactor formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
