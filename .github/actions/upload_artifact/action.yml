@@ -10,6 +10,9 @@ inputs:
     vcpkg_triplet:
         required: true
         type: string
+    additional_paths:
+        required: false
+        type: string
 outputs:
     artifact_name: 
         description: 'Echo of the input'  
@@ -30,3 +33,4 @@ runs:
                 ./COPYING.txt
                 ./alsoft.ini
                 ./README.md
+                ${{inputs.additional_paths}}

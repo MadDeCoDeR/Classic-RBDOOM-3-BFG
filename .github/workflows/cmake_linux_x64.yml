@@ -57,6 +57,9 @@ jobs:
             artifact_name: linux-${{inputs.version}}-${{inputs.build_type}}
             executable_path: ./build/DoomBFA
             vcpkg_triplet: x64-linux
+            additional_paths: |
+                            ./build/_deps/openxr-build/src/loader/*.so*
+                            ./build/_deps/openxr-build/src/loader/*.so
     
         - name: Configure CMake Debug
           id: step9
