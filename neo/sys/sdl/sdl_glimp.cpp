@@ -313,6 +313,9 @@ bool GLimp_Init( glimpParms_t parms )
 			continue;
 		}
 
+		SDL_VERSION(&windowInfo.version);
+		SDL_GetWindowWMInfo(window, &windowInfo);
+
 		Uint32 rmask, gmask, bmask, amask;
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
     	int shift = (doom_icon.bytes_per_pixel == 3) ? 8 : 0;
@@ -406,7 +409,7 @@ bool GLimp_Init( glimpParms_t parms )
 	// DG: disable cursor, we have two cursors in menu (because mouse isn't grabbed in menu)
 	SDL_ShowCursor( SDL_DISABLE );
 	// DG end
-	
+	SDL_SetWindowGrab(window, SDL_FALSE);
 	return true;
 }
 /*
@@ -995,9 +998,24 @@ Sys_ChangeTitle
 #ifdef USE_OPENXR
 void* GetOpenXRGraphicsBinding()
 {
-	
-	graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_WAYLAND_KHR};
-    graphicsBinding.display = NULL;
-	return &graphicsBinding;
+	static void* graphicsBinding;
+	switch(windowInfo.subsystem) {
+		case SDL_SYSWM_X11: {
+			XrGraphicsBindingOpenGLXlibKHR x11Binding {};
+			x11Binding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR};
+			x11Binding.xDisplay = windowInfo.info.x11.display;
+			graphicsBinding = &x11Binding;
+			break;
+		}
+		case SDL_SYSWM_WAYLAND: {
+			XrGraphicsBindingOpenGLWaylandKHR waylandBinding {};
+			waylandBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_WAYLAND_KHR};
+			waylandBinding.display = windowInfo.info.wl.display;
+			graphicsBinding = &waylandBinding;
+			break;
+		}
+
+	}
+	return graphicsBinding;
 }
 #endif
