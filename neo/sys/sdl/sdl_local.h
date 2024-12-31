@@ -58,6 +58,8 @@ void GLimp_GrabInput( int flags );
 char*	Sys_ConsoleInput();
 
 #ifdef USE_OPENXR
+static XrGraphicsBindingOpenGLXlibKHR x11Binding {};
+static XrGraphicsBindingOpenGLWaylandKHR waylandBinding {};
 void* GetOpenXRGraphicsBinding();
 #endif
 

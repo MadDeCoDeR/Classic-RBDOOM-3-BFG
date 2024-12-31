@@ -998,24 +998,19 @@ Sys_ChangeTitle
 #ifdef USE_OPENXR
 void* GetOpenXRGraphicsBinding()
 {
-	static void* graphicsBinding;
 	switch(windowInfo.subsystem) {
 		case SDL_SYSWM_X11: {
-			XrGraphicsBindingOpenGLXlibKHR x11Binding {};
 			x11Binding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR};
 			x11Binding.xDisplay = windowInfo.info.x11.display;
-			graphicsBinding = &x11Binding;
-			break;
+			return &x11Binding;
 		}
 		case SDL_SYSWM_WAYLAND: {
-			XrGraphicsBindingOpenGLWaylandKHR waylandBinding {};
 			waylandBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_WAYLAND_KHR};
 			waylandBinding.display = windowInfo.info.wl.display;
-			graphicsBinding = &waylandBinding;
-			break;
+			return &waylandBinding;
 		}
 
 	}
-	return graphicsBinding;
+	return NULL;
 }
 #endif
