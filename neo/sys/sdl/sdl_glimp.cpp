@@ -1002,6 +1002,7 @@ void* GetOpenXRGraphicsBinding()
 		case SDL_SYSWM_X11: {
 			x11Binding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR};
 			x11Binding.xDisplay = windowInfo.info.x11.display;
+			x11Binding.visualid = windowInfo.info.x11.window;
 			return &x11Binding;
 		}
 		case SDL_SYSWM_WAYLAND: {
