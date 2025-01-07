@@ -2156,29 +2156,62 @@ G_InitNew
 		::g->respawnmonsters = false;
 
 	//GK: Use original source code for the fast parameter
+	int fastlevel = 0;
 	if (::g->fastparm || (skill == sk_nightmare && ::g->gameskill != sk_nightmare))
 	{
-		for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
-			::g->states[i].tics >>= 1;
-		mobjinfo[MT_BRUISERSHOT].speed = 20 * FRACUNIT;
-		mobjinfo[MT_HEADSHOT].speed = 20 * FRACUNIT;
-		mobjinfo[MT_TROOPSHOT].speed = 20 * FRACUNIT;
+		fastlevel = 1;
+		::g->fastleveldirty = true;
+		::g->fasttics = 1;
+		
 	}
-	else if (skill != sk_nightmare && ::g->gameskill == sk_nightmare)
+	else if ((skill != sk_nightmare && ::g->gameskill == sk_nightmare) || (skill != sk_masochism && ::g->gameskill == sk_masochism))
 	{
-		for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
-			::g->states[i].tics <<= 1;
-		mobjinfo[MT_BRUISERSHOT].speed = 15 * FRACUNIT;
-		mobjinfo[MT_HEADSHOT].speed = 10 * FRACUNIT;
-		mobjinfo[MT_TROOPSHOT].speed = 10 * FRACUNIT;
+		fastlevel = 0;
+		::g->fastleveldirty = true;
+		
 	}
-	else if (skill != sk_masochism && ::g->gameskill == sk_masochism)
+	else if (skill == sk_masochism && ::g->gameskill != sk_masochism)
 	{
-		for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
-			::g->states[i].tics <<= 1;
-		mobjinfo[MT_BRUISERSHOT].speed = 5 * FRACUNIT;
-		mobjinfo[MT_HEADSHOT].speed = 5 * FRACUNIT;
-		mobjinfo[MT_TROOPSHOT].speed = 5 * FRACUNIT;
+		fastlevel = 2;
+		::g->fastleveldirty = true;
+		::g->fasttics = 2;
+	}
+
+	if (::g->fastleveldirty) {
+		switch(fastlevel) {
+			case 1: {
+				for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
+					::g->states[i].tics >>= ::g->fasttics;
+				mobjinfo[MT_BRUISERSHOT].speed = 20 * FRACUNIT;
+				mobjinfo[MT_HEADSHOT].speed = 20 * FRACUNIT;
+				mobjinfo[MT_TROOPSHOT].speed = 20 * FRACUNIT;
+				break;
+			}
+			case 2: {
+				for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
+					::g->states[i].tics >>= ::g->fasttics;
+				mobjinfo[MT_BRUISERSHOT].speed = 40 * FRACUNIT;
+				mobjinfo[MT_HEADSHOT].speed = 40 * FRACUNIT;
+				mobjinfo[MT_TROOPSHOT].speed = 40 * FRACUNIT;
+				break;
+			}
+			case 0: {
+				for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
+					::g->states[i].tics <<= ::g->fasttics;
+				mobjinfo[MT_BRUISERSHOT].speed = 15 * FRACUNIT;
+				mobjinfo[MT_HEADSHOT].speed = 10 * FRACUNIT;
+				mobjinfo[MT_TROOPSHOT].speed = 10 * FRACUNIT;
+				break;
+			}
+		}
+		for (int i = 0; i < mobjinfo.size(); i++) {
+			if (mobjinfo[i].altSpeed > -1) {
+				int swap = mobjinfo[i].speed;
+				mobjinfo[i].speed = mobjinfo[i].altSpeed;
+				mobjinfo[i].altSpeed = swap;
+			}
+		}
+		::g->fastleveldirty = false;
 	}
 	// force ::g->players to be initialized upon first level load         
 	for (i=0 ; i<MAXPLAYERS ; i++) 

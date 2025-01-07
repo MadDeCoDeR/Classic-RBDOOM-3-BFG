@@ -431,7 +431,7 @@ int checkstate(char* text) {
 
 void setThing(int pos, char* varname, int varval) {
 	//GK: This works (suprisingly)
-	dehobj tvars[27] = {
+	dehobj tvars[28] = {
 		{"Initial frame ",MAXINT,NULL,&mobjinfo[pos].spawnstate},
 		{"Hit points ",MAXINT,NULL,&mobjinfo[pos].spawnhealth},
 		{"First moving frame ",MAXINT,NULL,&mobjinfo[pos].seestate},
@@ -458,9 +458,10 @@ void setThing(int pos, char* varname, int varval) {
 		{"Infighting group", MAXINT, NULL, &mobjinfo[pos].infightingGroup},
 		{"Projectile group", MAXINT, NULL, &mobjinfo[pos].projectileGroup},
 		{"Splash group", MAXINT, NULL, &mobjinfo[pos].splashGroup},
-		{"MBF21 Bits ",MAXINT,NULL, NULL, NULL, NULL, NULL, NULL, NULL, &mobjinfo[pos].flags2}
+		{"MBF21 Bits ",MAXINT,NULL, NULL, NULL, NULL, NULL, NULL, NULL, &mobjinfo[pos].flags2},
+		{"Fast speed ",MAXINT,NULL, &mobjinfo[pos].altSpeed},
 	};
-	for (int i = 0; i < 27; i++) {
+	for (int i = 0; i < 28; i++) {
 		if (!idStr::Icmp(varname, tvars[i].name)) {
 			if (varval < tvars[i].limit) {
 				if (tvars[i].llval != NULL) {

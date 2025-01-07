@@ -207,6 +207,8 @@ gameaction_t    gameaction;
 gamestate_t     gamestate;
 gamestate_t		oldgamestate;
 skill_t         gameskill; 
+qboolean        fastleveldirty;
+int             fasttics;
 qboolean		respawnmonsters;
 int             gameepisode; 
 int             gamemap; 

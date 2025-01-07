@@ -1179,7 +1179,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_POSSESSED
@@ -1209,7 +1210,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_SHOTGUY
@@ -1239,7 +1241,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_VILE
@@ -1269,7 +1272,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	MF2_SHORTMRANGE | MF2_DMGIGNORED | MF2_NOTHRESHOLD			//flags2
+	MF2_SHORTMRANGE | MF2_DMGIGNORED | MF2_NOTHRESHOLD,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_FIRE
@@ -1299,7 +1303,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_UNDEAD
@@ -1329,7 +1334,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	MF2_RANGEHALF | MF2_LONGMELEE			//flags2
+	MF2_RANGEHALF | MF2_LONGMELEE,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_TRACER
@@ -1359,7 +1365,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_SMOKE
@@ -1389,7 +1396,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_FATSO
@@ -1419,7 +1427,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	MF2_MAP07BOSS1			//flags2
+	MF2_MAP07BOSS1,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_FATSHOT
@@ -1449,7 +1458,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_CHAINGUY
@@ -1479,7 +1489,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_TROOP
@@ -1509,7 +1520,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_SERGEANT
@@ -1539,7 +1551,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_SHADOWS
@@ -1569,7 +1582,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_HEAD
@@ -1599,7 +1613,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_BRUISER
@@ -1629,7 +1644,8 @@ extern "C"
 	0,			//infightingGroup
 	1,			//projectileGroup
 	0,			//splashGroup
-	MF2_E1M8BOSS			//flags2
+	MF2_E1M8BOSS,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_BRUISERSHOT
@@ -1659,7 +1675,8 @@ extern "C"
 	0,			//infightingGroup
 	1,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_KNIGHT
@@ -1689,7 +1706,8 @@ extern "C"
 	0,			//infightingGroup
 	1,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_SKULL
@@ -1719,7 +1737,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	MF2_RANGEHALF			//flags2
+	MF2_RANGEHALF,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_SPIDER
@@ -1749,7 +1768,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	MF2_NORADIUSDMG	| MF2_RANGEHALF | MF2_E3M8BOSS | MF2_E4M8BOSS | MF2_FULLVOLSOUNDS	//flags2
+	MF2_NORADIUSDMG	| MF2_RANGEHALF | MF2_E3M8BOSS | MF2_E4M8BOSS | MF2_FULLVOLSOUNDS,	//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_BABY
@@ -1779,7 +1799,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	MF2_MAP07BOSS2			//flags2
+	MF2_MAP07BOSS2,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_CYBORG
@@ -1809,7 +1830,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	MF2_NORADIUSDMG	| MF2_HIGHERMPROB | MF2_RANGEHALF | MF2_E2M8BOSS | MF2_E4M6BOSS | MF2_FULLVOLSOUNDS	//flags2
+	MF2_NORADIUSDMG	| MF2_HIGHERMPROB | MF2_RANGEHALF | MF2_E2M8BOSS | MF2_E4M6BOSS | MF2_FULLVOLSOUNDS,	//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_PAIN
@@ -1839,7 +1861,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_WOLFSS
@@ -1869,7 +1892,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_KEEN
@@ -1899,7 +1923,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_BOSSBRAIN
@@ -1929,7 +1954,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_BOSSSPIT
@@ -1959,7 +1985,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_BOSSTARGET
@@ -1989,7 +2016,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_SPAWNSHOT
@@ -2019,7 +2047,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_SPAWNFIRE
@@ -2049,7 +2078,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_BARREL
@@ -2079,7 +2109,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	MF2_NEUTRAL_SPLASH			//flags2
+	MF2_NEUTRAL_SPLASH,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_TROOPSHOT
@@ -2109,7 +2140,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_HEADSHOT
@@ -2139,7 +2171,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_ROCKET
@@ -2169,7 +2202,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_PLASMA
@@ -2199,7 +2233,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_BFG
@@ -2229,7 +2264,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_ARACHPLAZ
@@ -2259,7 +2295,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_PUFF
@@ -2289,7 +2326,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_BLOOD
@@ -2319,7 +2357,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_TFOG
@@ -2349,7 +2388,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_IFOG
@@ -2379,7 +2419,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_TELEPORTMAN
@@ -2409,7 +2450,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_EXTRABFG
@@ -2439,7 +2481,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC0
@@ -2469,7 +2512,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC1
@@ -2499,7 +2543,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC2
@@ -2529,7 +2574,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC3
@@ -2559,7 +2605,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC4
@@ -2589,7 +2636,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC5
@@ -2619,7 +2667,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC6
@@ -2649,7 +2698,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC7
@@ -2679,7 +2729,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC8
@@ -2709,7 +2760,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC9
@@ -2739,7 +2791,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC10
@@ -2769,7 +2822,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC11
@@ -2799,7 +2853,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC12
@@ -2829,7 +2884,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_INV
@@ -2859,7 +2915,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC13
@@ -2889,7 +2946,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_INS
@@ -2919,7 +2977,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC14
@@ -2949,7 +3008,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC15
@@ -2979,7 +3039,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC16
@@ -3009,7 +3070,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MEGA
@@ -3039,7 +3101,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_CLIP
@@ -3069,7 +3132,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC17
@@ -3099,7 +3163,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC18
@@ -3129,7 +3194,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC19
@@ -3159,7 +3225,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC20
@@ -3189,7 +3256,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC21
@@ -3219,7 +3287,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC22
@@ -3249,7 +3318,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC23
@@ -3279,7 +3349,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC24
@@ -3309,7 +3380,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC25
@@ -3339,7 +3411,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_CHAINGUN
@@ -3369,7 +3442,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC26
@@ -3399,7 +3473,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC27
@@ -3429,7 +3504,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC28
@@ -3459,7 +3535,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_SHOTGUN
@@ -3489,7 +3566,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_SUPERSHOTGUN
@@ -3519,7 +3597,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC29
@@ -3549,7 +3628,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC30
@@ -3579,7 +3659,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC31
@@ -3609,7 +3690,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC32
@@ -3639,7 +3721,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC33
@@ -3669,7 +3752,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC34
@@ -3699,7 +3783,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC35
@@ -3729,7 +3814,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC36
@@ -3759,7 +3845,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC37
@@ -3789,7 +3876,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC38
@@ -3819,7 +3907,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC39
@@ -3849,7 +3938,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC40
@@ -3879,7 +3969,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC41
@@ -3909,7 +4000,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC42
@@ -3939,7 +4031,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC43
@@ -3969,7 +4062,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC44
@@ -3999,7 +4093,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC45
@@ -4029,7 +4124,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC46
@@ -4059,7 +4155,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC47
@@ -4089,7 +4186,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC48
@@ -4119,7 +4217,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC49
@@ -4149,7 +4248,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC50
@@ -4179,7 +4279,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC51
@@ -4209,7 +4310,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC52
@@ -4239,7 +4341,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC53
@@ -4269,7 +4372,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC54
@@ -4299,7 +4403,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC55
@@ -4329,7 +4434,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC56
@@ -4359,7 +4465,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC57
@@ -4389,7 +4496,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC58
@@ -4419,7 +4527,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC59
@@ -4449,7 +4558,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC60
@@ -4479,7 +4589,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC61
@@ -4509,7 +4620,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC62
@@ -4539,7 +4651,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC63
@@ -4569,7 +4682,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC64
@@ -4599,7 +4713,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC65
@@ -4629,7 +4744,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC66
@@ -4659,7 +4775,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC67
@@ -4689,7 +4806,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC68
@@ -4719,7 +4837,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC69
@@ -4749,7 +4868,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC70
@@ -4779,7 +4899,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC71
@@ -4809,7 +4930,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC72
@@ -4839,7 +4961,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC73
@@ -4869,7 +4992,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC74
@@ -4899,7 +5023,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC75
@@ -4929,7 +5054,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC76
@@ -4959,7 +5085,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC77
@@ -4989,7 +5116,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC78
@@ -5019,7 +5147,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC79
@@ -5049,7 +5178,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC80
@@ -5079,7 +5209,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC81
@@ -5109,7 +5240,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC82
@@ -5139,7 +5271,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC83
@@ -5169,7 +5302,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC84
@@ -5199,7 +5333,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC85
@@ -5229,7 +5364,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	},
 
 	{		// MT_MISC86
@@ -5259,7 +5395,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2
+	0,			//flags2
+	-1			//altspeed
 	}
 		,
 
@@ -5291,7 +5428,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2                                   
+	0,			//flags2
+	-1			//altspeed                                   
 },
 
 // For use with wind and current effects
@@ -5322,7 +5460,8 @@ extern "C"
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0			//flags2                                   
+	0,			//flags2
+	-1			//altspeed                                   
 }
 };
 //std::vector<state_t> tempStates(arrStates, arrStates + NUMSTATES);
