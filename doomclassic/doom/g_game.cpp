@@ -2204,11 +2204,11 @@ G_InitNew
 				break;
 			}
 		}
-		for (int i = 0; i < mobjinfo.size(); i++) {
-			if (mobjinfo[i].altSpeed > -1) {
-				int swap = mobjinfo[i].speed;
-				mobjinfo[i].speed = mobjinfo[i].altSpeed;
-				mobjinfo[i].altSpeed = swap;
+		for (int j = 0; j < mobjinfo.size(); j++) {
+			if (mobjinfo[j].altSpeed > -1) {
+				int swap = mobjinfo[j].speed;
+				mobjinfo[j].speed = mobjinfo[j].altSpeed;
+				mobjinfo[j].altSpeed = swap;
 			}
 		}
 		::g->fastleveldirty = false;
