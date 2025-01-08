@@ -246,7 +246,7 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 			swr_free(&swr_ctx);
 		}
 
-		avcodec_close(dec_ctx);
+		avcodec_free_context(&dec_ctx);
 
 		av_free(fmt_ctx->pb);
 		avformat_close_input(&fmt_ctx);
@@ -445,7 +445,6 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 			swr_free(&swr_ctx);
 		}
 
-		avcodec_close(dec_ctx);
 		avcodec_free_context(&dec_ctx);
 
 		avformat_close_input(&fmt_ctx);

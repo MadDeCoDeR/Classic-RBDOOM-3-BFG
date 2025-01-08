@@ -992,7 +992,6 @@ void idCinematicLocal::Close()
 		if (audio_stream_index >= 0) {
 			if (dec_ctx2)
 			{
-				avcodec_close(dec_ctx2);
 				avcodec_free_context(&dec_ctx2);
 			}
 
@@ -1019,7 +1018,6 @@ void idCinematicLocal::Close()
 		
 		if( dec_ctx )
 		{
-			avcodec_close( dec_ctx );
 			avcodec_free_context(&dec_ctx);
 		}
 		
