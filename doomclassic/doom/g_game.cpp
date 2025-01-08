@@ -2204,7 +2204,7 @@ G_InitNew
 				break;
 			}
 		}
-		for (int j = 0; j < mobjinfo.size(); j++) {
+		for (size_t j = 0; j < mobjinfo.size(); j++) {
 			if (mobjinfo[j].altSpeed > -1) {
 				int swap = mobjinfo[j].speed;
 				mobjinfo[j].speed = mobjinfo[j].altSpeed;
