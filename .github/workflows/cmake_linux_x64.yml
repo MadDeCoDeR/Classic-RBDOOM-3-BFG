@@ -93,3 +93,10 @@ jobs:
             additional_paths: |
                             ./build/_deps/openxr-build/src/loader/*.so*
                             ./build/_deps/openxr-build/src/loader/*.so
+
+        - name: Save logs - VCPKG
+          if: ${{ failure() }}
+          uses: actions/upload-artifact@v4
+          with:
+              name: vcpkg-linux-logs
+              path: ${{github.workspace}}/vcpkg/buildtree/*/*.log
