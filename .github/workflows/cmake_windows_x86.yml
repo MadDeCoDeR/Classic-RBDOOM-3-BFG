@@ -38,9 +38,9 @@ jobs:
               uses: actions/cache@v3
               with: 
                 path: ${{github.workspace}}/build/vcpkg_installed
-                key: ${{runner.os}}-vcpkg-${{hashfiles('neo/windows-32-bit-status')}}
+                key: ${{runner.os}}-32-vcpkg-${{hashfiles('neo/windows-32-bit-status')}}
                 restore-keys: |
-                    ${{ runner.OS }}-vcpkg-
+                    ${{ runner.OS }}-32-vcpkg-
 
             - name: Configure CMake
               working-directory: ${{github.workspace}}/neo
