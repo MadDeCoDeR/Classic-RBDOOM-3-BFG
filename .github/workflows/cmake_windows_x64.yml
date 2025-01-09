@@ -65,3 +65,10 @@ jobs:
             artifact_name: windows-${{inputs.version}}-debug-x64
             executable_path: ./build/retwithdebugsymbols/DoomBFA.*
             vcpkg_triplet: x64-windows-static-md
+
+        - name: Save logs - VCPKG
+          if: ${{ failure() }}
+          uses: actions/upload-artifact@v4
+          with:
+              name: vcpkg-windows-64-logs
+              path: ${{github.workspace}}/vcpkg/buildtrees/*/*.log

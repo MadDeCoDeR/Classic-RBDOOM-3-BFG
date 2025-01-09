@@ -57,3 +57,10 @@ jobs:
                 artifact_name: windows-${{inputs.version}}-${{inputs.build_type}}-x86
                 executable_path: ./build/${{inputs.build_type}}/DoomBFA.exe
                 vcpkg_triplet: x86-windows-static-md
+              
+            - name: Save logs - VCPKG
+              if: ${{ failure() }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: vcpkg-windows-32-logs
+                  path: ${{github.workspace}}/vcpkg/buildtrees/*/*.log
