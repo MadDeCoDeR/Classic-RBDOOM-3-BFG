@@ -137,7 +137,7 @@ P_GiveAmmo
 	switch (ammo)
 	{
 	case am_clip:
-		if (player->readyweapon == wp_fist)
+		if (weaponinfo[player->readyweapon].flags & WPF_AUTOSWITCHFROM)
 		{
 			if (player->weaponowned[wp_chaingun])
 				player->pendingweapon = wp_chaingun;
@@ -147,8 +147,7 @@ P_GiveAmmo
 		break;
 
 	case am_shell:
-		if (player->readyweapon == wp_fist
-			|| player->readyweapon == wp_pistol)
+		if (weaponinfo[player->readyweapon].flags & WPF_AUTOSWITCHFROM)
 		{
 			if (player->weaponowned[wp_shotgun])
 				player->pendingweapon = wp_shotgun;
@@ -156,8 +155,7 @@ P_GiveAmmo
 		break;
 
 	case am_cell:
-		if (player->readyweapon == wp_fist
-			|| player->readyweapon == wp_pistol)
+		if (weaponinfo[player->readyweapon].flags & WPF_AUTOSWITCHFROM)
 		{
 			if (player->weaponowned[wp_plasma])
 				player->pendingweapon = wp_plasma;
@@ -165,7 +163,7 @@ P_GiveAmmo
 		break;
 
 	case am_misl:
-		if (player->readyweapon == wp_fist)
+		if (weaponinfo[player->readyweapon].flags & WPF_AUTOSWITCHFROM)
 		{
 			if (player->weaponowned[wp_missile])
 				player->pendingweapon = wp_missile;
@@ -1003,7 +1001,7 @@ P_DamageMobj
 		&& !(target->flags & MF_NOCLIP)
 		&& (!source
 		|| !source->player
-		|| source->player->readyweapon != wp_chainsaw))
+		|| !(weaponinfo[source->player->readyweapon].flags & WPF_NOTHRUST)))
 	{
 		ang = R_PointToAngle2 ( inflictor->x,
 			inflictor->y,

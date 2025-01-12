@@ -370,8 +370,7 @@ A_WeaponReady
 	if (player->cmd.buttons & BT_ATTACK)
 	{
 		if ( !player->attackdown
-			|| (player->readyweapon != wp_missile
-			&& player->readyweapon != wp_bfg) )
+			|| !(weaponinfo[player->readyweapon].flags & WPF_NOAUTOFIRE) )
 		{
 			player->attackdown = true;
 			P_FireWeapon (player);		
@@ -547,14 +546,14 @@ A_Punch
 
 	angle = player->mo->angle;
 	angle += (P_Random()-P_Random())<<18;
-	slope = P_AimLineAttack (player->mo, angle, MELEERANGE);
+	slope = P_AimLineAttack (player->mo, angle, player->mo->info->meleeRange);
 	//GK: Move puffs up and down based on player's view
 	if (cl_freelook.GetBool() && !::g->demorecording && ::g->gamestate != GS_DEMOLEVEL)
 	{
 		angle -= 2 << 26;
 		slope = -(((::g->mouseposy) << FRACBITS) / 473);
 	}
-	P_LineAttack (player->mo, angle, MELEERANGE, slope, damage);
+	P_LineAttack (player->mo, angle, player->mo->info->meleeRange, slope, damage);
 
 	// turn to face target
 	if (::g->linetarget)
@@ -585,14 +584,14 @@ A_Saw
 	angle += (P_Random()-P_Random())<<18;
 
 	// use meleerange + 1 se the puff doesn't skip the flash
-	slope = P_AimLineAttack (player->mo, angle, MELEERANGE+1);
+	slope = P_AimLineAttack (player->mo, angle, player->mo->info->meleeRange+1);
 	//GK: Move puffs up and down based on player's view
 	if (cl_freelook.GetBool() && !::g->demorecording && ::g->gamestate != GS_DEMOLEVEL)
 	{
 		angle -= 2 << 26;
 		slope = -(((::g->mouseposy) << FRACBITS) / 473);
 	}
-	P_LineAttack (player->mo, angle, MELEERANGE+1, slope, damage);
+	P_LineAttack (player->mo, angle, player->mo->info->meleeRange+1, slope, damage);
 
 	if (!::g->linetarget)
 	{

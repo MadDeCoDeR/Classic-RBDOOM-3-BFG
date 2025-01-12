@@ -62,7 +62,8 @@ void initWeapons() {
 			S_PUNCHDOWN,
 			S_PUNCH,
 			S_PUNCH1,
-			S_NULL
+			S_NULL,
+			WPF_FLEEMELEE | WPF_AUTOSWITCHFROM | WPF_NOAUTOSWITCHTO
 		},
 		{
 			// pistol
@@ -71,7 +72,8 @@ void initWeapons() {
 			S_PISTOLDOWN,
 			S_PISTOL,
 			S_PISTOL1,
-			S_PISTOLFLASH
+			S_PISTOLFLASH,
+			WPF_AUTOSWITCHFROM
 		},
 		{
 			// shotgun
@@ -98,7 +100,8 @@ void initWeapons() {
 			S_MISSILEDOWN,
 			S_MISSILE,
 			S_MISSILE1,
-			S_MISSILEFLASH1
+			S_MISSILEFLASH1,
+			WPF_NOAUTOFIRE
 		},
 		{
 			// plasma rifle
@@ -116,7 +119,8 @@ void initWeapons() {
 			S_BFGDOWN,
 			S_BFG,
 			S_BFG1,
-			S_BFGFLASH1
+			S_BFGFLASH1,
+			WPF_NOAUTOFIRE
 		},
 		{
 			// chainsaw
@@ -125,7 +129,8 @@ void initWeapons() {
 			S_SAWDOWN,
 			S_SAW,
 			S_SAW1,
-			S_NULL
+			S_NULL,
+			WPF_FLEEMELEE | WPF_NOTHRUST | WPF_NOAUTOSWITCHTO
 		},
 		{
 			// super shotgun

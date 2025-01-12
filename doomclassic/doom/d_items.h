@@ -45,8 +45,19 @@ typedef struct
     int		readystate;
     int		atkstate;
     int		flashstate;
-
+    int     flags;
 } weaponinfo_t;
+
+typedef enum
+{
+    WPF_NOTHRUST	= 0x001,
+    WPF_SILENT = 0x002,
+    WPF_NOAUTOFIRE  = 0x004,
+    WPF_FLEEMELEE = 0x008,
+    WPF_AUTOSWITCHFROM = 0x010,
+    WPF_NOAUTOSWITCHTO = 0x020
+} weaponflags_t;
+
 //GK: No more constant variable
 extern  /*const*/ weaponinfo_t    weaponinfo[NUMWEAPONS];
 void initWeapons();

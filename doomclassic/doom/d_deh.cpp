@@ -401,7 +401,13 @@ dehbits mobfl[] = {
 {"E4M6BOSS", MF2_E4M6BOSS},
 {"E4M8BOSS", MF2_E4M8BOSS},
 {"RIP", MF2_RIP},
-{"FULLVOLSOUNDS", MF2_FULLVOLSOUNDS}
+{"FULLVOLSOUNDS", MF2_FULLVOLSOUNDS},
+{"NOTHRUST", WPF_NOTHRUST},
+{"SILENT", WPF_SILENT},
+{"NOAUTOFIRE", WPF_NOAUTOFIRE},
+{"FLEEMELEE", WPF_FLEEMELEE},
+{"AUTOSWITCHFROM", WPF_AUTOSWITCHFROM},
+{"NOAUTOSWITCHTO", WPF_NOAUTOSWITCHTO}
 };
 
 int checkstate(char* text) {
@@ -431,7 +437,7 @@ int checkstate(char* text) {
 
 void setThing(int pos, char* varname, int varval) {
 	//GK: This works (suprisingly)
-	dehobj tvars[28] = {
+	dehobj tvars[29] = {
 		{"Initial frame ",MAXINT,NULL,&mobjinfo[pos].spawnstate},
 		{"Hit points ",MAXINT,NULL,&mobjinfo[pos].spawnhealth},
 		{"First moving frame ",MAXINT,NULL,&mobjinfo[pos].seestate},
@@ -460,8 +466,9 @@ void setThing(int pos, char* varname, int varval) {
 		{"Splash group", MAXINT, NULL, &mobjinfo[pos].splashGroup},
 		{"MBF21 Bits ",MAXINT,NULL, NULL, NULL, NULL, NULL, NULL, NULL, &mobjinfo[pos].flags2},
 		{"Fast speed ",MAXINT,NULL, &mobjinfo[pos].altSpeed},
+		{"Melee range ", MAXINT, NULL, &mobjinfo[pos].meleeRange}
 	};
-	for (int i = 0; i < 28; i++) {
+	for (int i = 0; i < 29; i++) {
 		if (!idStr::Icmp(varname, tvars[i].name)) {
 			if (varval < tvars[i].limit) {
 				if (tvars[i].llval != NULL) {
@@ -538,15 +545,16 @@ void setFrame(int pos, char* varname, int varval) {
 }
 
 void setWeapon(int pos, char* varname, int varval) {
-	dehobj wvars[6] = {
+	dehobj wvars[7] = {
 		{"Select frame ",MAXINT,NULL,&weaponinfo[pos].downstate},
 		{"Deselect frame ",MAXINT,NULL,&weaponinfo[pos].upstate},
 		{"Bobbing frame ",MAXINT,NULL,&weaponinfo[pos].readystate},
 		{"Shooting frame ",MAXINT,NULL,&weaponinfo[pos].atkstate},
 		{"Firing frame ",MAXINT,NULL,&weaponinfo[pos].flashstate},
-		{"Ammo type ",NUMAMMO,NULL,NULL,NULL,NULL,NULL,NULL,&weaponinfo[pos].ammo}
+		{"Ammo type ",NUMAMMO,NULL,NULL,NULL,NULL,NULL,NULL,&weaponinfo[pos].ammo},
+		{"MBF21 Bits ", MAXINT, NULL, &weaponinfo[pos].flags}
 	};
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 7; i++) {
 		if (!idStr::Icmp(varname, wvars[i].name)) {
 			if (varval < wvars[i].limit) {
 				switch (i) {
@@ -911,7 +919,7 @@ void parsetext(char* text) {
 			if (!tv3.empty()) {
 				if (state != 6 && state != 9) {
 					varval = atoi(tv3.c_str());
-					if (state == 1 && (!idStr::Icmp(varname, "Bits ") || !idStr::Icmp(varname, "MBF21 Bits ")) && varval == 0) {
+					if ((state == 1 || state == 4)&& (!idStr::Icmp(varname, "Bits ") || !idStr::Icmp(varname, "MBF21 Bits ")) && varval == 0) {
 						varval = Generateflags(strdup(tv3.c_str()));
 					}
 				}

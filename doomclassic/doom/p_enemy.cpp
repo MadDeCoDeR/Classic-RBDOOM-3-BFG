@@ -167,7 +167,7 @@ qboolean P_CheckMeleeRange (mobj_t*	actor)
     pl = actor->target;
     dist = P_AproxDistance (pl->x-actor->x, pl->y-actor->y);
 
-    if (dist >= MELEERANGE-20*FRACUNIT+pl->info->radius)
+    if (dist >= actor->info->meleeRange-20*FRACUNIT+pl->info->radius)
 	return false;
 	
     if (! P_CheckSight (actor, actor->target) )
@@ -523,7 +523,7 @@ P_LookForPlayers
 		dist = P_AproxDistance (player->mo->x - actor->x,
 					player->mo->y - actor->y);
 		// if real close, react anyway
-		if (dist > MELEERANGE)
+		if (dist > actor->target->info->meleeRange)
 		    continue;	// behind back
 	    }
 	}

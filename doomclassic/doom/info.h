@@ -1386,7 +1386,7 @@ typedef struct
     int splashGroup;
     uint64 flags2;
     int altSpeed;
-
+    int meleeRange;
 } mobjinfo_t;
 
 extern /*const*/ std::vector<mobjinfo_t> mobjinfo;

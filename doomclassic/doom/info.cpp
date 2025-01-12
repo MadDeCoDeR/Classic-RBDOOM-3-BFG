@@ -1180,7 +1180,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_POSSESSED
@@ -1211,7 +1212,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_SHOTGUY
@@ -1242,7 +1244,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_VILE
@@ -1273,7 +1276,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_SHORTMRANGE | MF2_DMGIGNORED | MF2_NOTHRESHOLD,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_FIRE
@@ -1304,7 +1308,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_UNDEAD
@@ -1335,7 +1340,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_RANGEHALF | MF2_LONGMELEE,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_TRACER
@@ -1366,7 +1372,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_SMOKE
@@ -1397,7 +1404,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_FATSO
@@ -1428,7 +1436,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_MAP07BOSS1,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_FATSHOT
@@ -1459,7 +1468,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_CHAINGUY
@@ -1490,7 +1500,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_TROOP
@@ -1521,7 +1532,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_SERGEANT
@@ -1552,7 +1564,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_SHADOWS
@@ -1583,7 +1596,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_HEAD
@@ -1614,7 +1628,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_BRUISER
@@ -1645,7 +1660,8 @@ extern "C"
 	1,			//projectileGroup
 	0,			//splashGroup
 	MF2_E1M8BOSS,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_BRUISERSHOT
@@ -1676,7 +1692,8 @@ extern "C"
 	1,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_KNIGHT
@@ -1707,7 +1724,8 @@ extern "C"
 	1,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_SKULL
@@ -1738,7 +1756,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_RANGEHALF,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_SPIDER
@@ -1769,7 +1788,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_NORADIUSDMG	| MF2_RANGEHALF | MF2_E3M8BOSS | MF2_E4M8BOSS | MF2_FULLVOLSOUNDS,	//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_BABY
@@ -1800,7 +1820,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_MAP07BOSS2,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_CYBORG
@@ -1831,7 +1852,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_NORADIUSDMG	| MF2_HIGHERMPROB | MF2_RANGEHALF | MF2_E2M8BOSS | MF2_E4M6BOSS | MF2_FULLVOLSOUNDS,	//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_PAIN
@@ -1862,7 +1884,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_WOLFSS
@@ -1893,7 +1916,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_KEEN
@@ -1924,7 +1948,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_BOSSBRAIN
@@ -1955,7 +1980,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_BOSSSPIT
@@ -1986,7 +2012,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_BOSSTARGET
@@ -2017,7 +2044,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_SPAWNSHOT
@@ -2048,7 +2076,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_SPAWNFIRE
@@ -2079,7 +2108,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_BARREL
@@ -2110,7 +2140,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_NEUTRAL_SPLASH,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_TROOPSHOT
@@ -2141,7 +2172,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_HEADSHOT
@@ -2172,7 +2204,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_ROCKET
@@ -2203,7 +2236,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_PLASMA
@@ -2234,7 +2268,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_BFG
@@ -2265,7 +2300,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_ARACHPLAZ
@@ -2296,7 +2332,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_PUFF
@@ -2327,7 +2364,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_BLOOD
@@ -2358,7 +2396,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_TFOG
@@ -2389,7 +2428,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_IFOG
@@ -2420,7 +2460,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_TELEPORTMAN
@@ -2451,7 +2492,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_EXTRABFG
@@ -2482,7 +2524,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC0
@@ -2513,7 +2556,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC1
@@ -2544,7 +2588,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC2
@@ -2575,7 +2620,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC3
@@ -2606,7 +2652,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC4
@@ -2637,7 +2684,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC5
@@ -2668,7 +2716,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC6
@@ -2699,7 +2748,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC7
@@ -2730,7 +2780,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC8
@@ -2761,7 +2812,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC9
@@ -2792,7 +2844,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC10
@@ -2823,7 +2876,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC11
@@ -2854,7 +2908,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC12
@@ -2885,7 +2940,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_INV
@@ -2916,7 +2972,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC13
@@ -2947,7 +3004,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_INS
@@ -2978,7 +3036,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC14
@@ -3009,7 +3068,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC15
@@ -3040,7 +3100,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC16
@@ -3071,7 +3132,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MEGA
@@ -3102,7 +3164,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_CLIP
@@ -3133,7 +3196,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC17
@@ -3164,7 +3228,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC18
@@ -3195,7 +3260,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC19
@@ -3226,7 +3292,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC20
@@ -3257,7 +3324,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC21
@@ -3288,7 +3356,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC22
@@ -3319,7 +3388,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC23
@@ -3350,7 +3420,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC24
@@ -3381,7 +3452,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC25
@@ -3412,7 +3484,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_CHAINGUN
@@ -3443,7 +3516,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC26
@@ -3474,7 +3548,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC27
@@ -3505,7 +3580,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC28
@@ -3536,7 +3612,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_SHOTGUN
@@ -3567,7 +3644,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_SUPERSHOTGUN
@@ -3598,7 +3676,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC29
@@ -3629,7 +3708,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC30
@@ -3660,7 +3740,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC31
@@ -3691,7 +3772,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC32
@@ -3722,7 +3804,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC33
@@ -3753,7 +3836,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC34
@@ -3784,7 +3868,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC35
@@ -3815,7 +3900,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC36
@@ -3846,7 +3932,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC37
@@ -3877,7 +3964,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC38
@@ -3908,7 +3996,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC39
@@ -3939,7 +4028,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC40
@@ -3970,7 +4060,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC41
@@ -4001,7 +4092,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC42
@@ -4032,7 +4124,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC43
@@ -4063,7 +4156,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC44
@@ -4094,7 +4188,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC45
@@ -4125,7 +4220,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC46
@@ -4156,7 +4252,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC47
@@ -4187,7 +4284,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC48
@@ -4218,7 +4316,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC49
@@ -4249,7 +4348,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC50
@@ -4280,7 +4380,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC51
@@ -4311,7 +4412,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC52
@@ -4342,7 +4444,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC53
@@ -4373,7 +4476,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC54
@@ -4404,7 +4508,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC55
@@ -4435,7 +4540,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC56
@@ -4466,7 +4572,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC57
@@ -4497,7 +4604,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC58
@@ -4528,7 +4636,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC59
@@ -4559,7 +4668,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC60
@@ -4590,7 +4700,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC61
@@ -4621,7 +4732,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC62
@@ -4652,7 +4764,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC63
@@ -4683,7 +4796,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC64
@@ -4714,7 +4828,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC65
@@ -4745,7 +4860,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC66
@@ -4776,7 +4892,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC67
@@ -4807,7 +4924,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC68
@@ -4838,7 +4956,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC69
@@ -4869,7 +4988,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC70
@@ -4900,7 +5020,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC71
@@ -4931,7 +5052,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC72
@@ -4962,7 +5084,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC73
@@ -4993,7 +5116,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC74
@@ -5024,7 +5148,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC75
@@ -5055,7 +5180,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC76
@@ -5086,7 +5212,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC77
@@ -5117,7 +5244,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC78
@@ -5148,7 +5276,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC79
@@ -5179,7 +5308,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC80
@@ -5210,7 +5340,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC81
@@ -5241,7 +5372,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC82
@@ -5272,7 +5404,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC83
@@ -5303,7 +5436,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC84
@@ -5334,7 +5468,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC85
@@ -5365,7 +5500,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	},
 
 	{		// MT_MISC86
@@ -5396,7 +5532,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed
+	-1,			//altspeed
+	MELEERANGE		//meleeRange
 	}
 		,
 
@@ -5429,7 +5566,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed                                   
+	-1,			//altspeed
+	MELEERANGE		//meleeRange                                   
 },
 
 // For use with wind and current effects
@@ -5461,7 +5599,8 @@ extern "C"
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
-	-1			//altspeed                                   
+	-1,			//altspeed
+	MELEERANGE		//meleeRange                                   
 }
 };
 //std::vector<state_t> tempStates(arrStates, arrStates + NUMSTATES);
