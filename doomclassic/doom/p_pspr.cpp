@@ -211,12 +211,10 @@ qboolean P_CheckAmmo (player_t* player)
 	ammo = weaponinfo[player->readyweapon].ammo;
 
 	// Minimal amount for one shot varies.
-	if (player->readyweapon == wp_bfg)
+	if (player->readyweapon == wp_bfg && ::g->BFGCELL != 40)
 		count = ::g->BFGCELL;
-	else if (player->readyweapon == wp_supershotgun)
-		count = 2;	// Double barrel.
 	else
-		count = 1;	// Regular.
+		count = weaponinfo[player->readyweapon].clipAmmo;	// Regular.
 
 	// Some do not need ammunition anyway.
 	// Return if current ammunition sufficient.

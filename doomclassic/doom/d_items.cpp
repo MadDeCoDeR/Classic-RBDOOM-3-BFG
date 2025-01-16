@@ -63,7 +63,8 @@ void initWeapons() {
 			S_PUNCH,
 			S_PUNCH1,
 			S_NULL,
-			WPF_FLEEMELEE | WPF_AUTOSWITCHFROM | WPF_NOAUTOSWITCHTO
+			WPF_FLEEMELEE | WPF_AUTOSWITCHFROM | WPF_NOAUTOSWITCHTO,
+			0
 		},
 		{
 			// pistol
@@ -73,7 +74,8 @@ void initWeapons() {
 			S_PISTOL,
 			S_PISTOL1,
 			S_PISTOLFLASH,
-			WPF_AUTOSWITCHFROM
+			WPF_AUTOSWITCHFROM,
+			1
 		},
 		{
 			// shotgun
@@ -82,7 +84,9 @@ void initWeapons() {
 			S_SGUNDOWN,
 			S_SGUN,
 			S_SGUN1,
-			S_SGUNFLASH1
+			S_SGUNFLASH1,
+			0,
+			1
 		},
 		{
 			// chaingun
@@ -91,7 +95,9 @@ void initWeapons() {
 			S_CHAINDOWN,
 			S_CHAIN,
 			S_CHAIN1,
-			S_CHAINFLASH1
+			S_CHAINFLASH1,
+			0,
+			1
 		},
 		{
 			// missile launcher
@@ -101,7 +107,8 @@ void initWeapons() {
 			S_MISSILE,
 			S_MISSILE1,
 			S_MISSILEFLASH1,
-			WPF_NOAUTOFIRE
+			WPF_NOAUTOFIRE,
+			1
 		},
 		{
 			// plasma rifle
@@ -110,7 +117,8 @@ void initWeapons() {
 			S_PLASMADOWN,
 			S_PLASMA,
 			S_PLASMA1,
-			S_PLASMAFLASH1
+			S_PLASMAFLASH1,
+			1
 		},
 		{
 			// bfg 9000
@@ -120,7 +128,8 @@ void initWeapons() {
 			S_BFG,
 			S_BFG1,
 			S_BFGFLASH1,
-			WPF_NOAUTOFIRE
+			WPF_NOAUTOFIRE,
+			40
 		},
 		{
 			// chainsaw
@@ -130,7 +139,8 @@ void initWeapons() {
 			S_SAW,
 			S_SAW1,
 			S_NULL,
-			WPF_FLEEMELEE | WPF_NOTHRUST | WPF_NOAUTOSWITCHTO
+			WPF_FLEEMELEE | WPF_NOTHRUST | WPF_NOAUTOSWITCHTO,
+			0
 		},
 		{
 			// super shotgun
@@ -139,7 +149,8 @@ void initWeapons() {
 			S_DSGUNDOWN,
 			S_DSGUN,
 			S_DSGUN1,
-			S_DSGUNFLASH1
+			S_DSGUNFLASH1,
+			2
 		},
 	};
 	memcpy(weaponinfo, tweaponinfo, sizeof(tweaponinfo));

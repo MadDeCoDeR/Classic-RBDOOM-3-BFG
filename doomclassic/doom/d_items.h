@@ -46,6 +46,7 @@ typedef struct
     int		atkstate;
     int		flashstate;
     int     flags;
+    int     clipAmmo;
 } weaponinfo_t;
 
 typedef enum

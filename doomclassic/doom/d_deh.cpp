@@ -545,16 +545,17 @@ void setFrame(int pos, char* varname, int varval) {
 }
 
 void setWeapon(int pos, char* varname, int varval) {
-	dehobj wvars[7] = {
+	dehobj wvars[8] = {
 		{"Select frame ",MAXINT,NULL,&weaponinfo[pos].downstate},
 		{"Deselect frame ",MAXINT,NULL,&weaponinfo[pos].upstate},
 		{"Bobbing frame ",MAXINT,NULL,&weaponinfo[pos].readystate},
 		{"Shooting frame ",MAXINT,NULL,&weaponinfo[pos].atkstate},
 		{"Firing frame ",MAXINT,NULL,&weaponinfo[pos].flashstate},
 		{"Ammo type ",NUMAMMO,NULL,NULL,NULL,NULL,NULL,NULL,&weaponinfo[pos].ammo},
-		{"MBF21 Bits ", MAXINT, NULL, &weaponinfo[pos].flags}
+		{"MBF21 Bits ", MAXINT, NULL, &weaponinfo[pos].flags},
+		{"Ammo per shot ", MAXINT, NULL, &weaponinfo[pos].clipAmmo}
 	};
-	for (int i = 0; i < 7; i++) {
+	for (int i = 0; i < 8; i++) {
 		if (!idStr::Icmp(varname, wvars[i].name)) {
 			if (varval < wvars[i].limit) {
 				switch (i) {
