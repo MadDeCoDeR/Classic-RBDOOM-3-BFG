@@ -211,8 +211,10 @@ qboolean P_CheckAmmo (player_t* player)
 	ammo = weaponinfo[player->readyweapon].ammo;
 
 	// Minimal amount for one shot varies.
-	if (player->readyweapon == wp_bfg && ::g->BFGCELL != 40)
+	if (player->readyweapon == wp_bfg && ::g->BFGCELL != 40){
+		weaponinfo[wp_bfg].clipAmmo = ::g->BFGCELL;
 		count = ::g->BFGCELL;
+	}
 	else
 		count = weaponinfo[player->readyweapon].clipAmmo;	// Regular.
 
@@ -226,28 +228,28 @@ qboolean P_CheckAmmo (player_t* player)
 	do
 	{
 		if (player->weaponowned[wp_plasma]
-		&& player->ammo[am_cell]
+		&& player->ammo[am_cell]>weaponinfo[wp_plasma].clipAmmo
 		&& (::g->gamemode != shareware) )
 		{
 			player->pendingweapon = wp_plasma;
 		}
 		else if (player->weaponowned[wp_supershotgun] 
-		&& player->ammo[am_shell]>2
+		&& player->ammo[am_shell]>weaponinfo[wp_supershotgun].clipAmmo
 			&& (::g->gamemode == commercial) )
 		{
 			player->pendingweapon = wp_supershotgun;
 		}
 		else if (player->weaponowned[wp_chaingun]
-		&& player->ammo[am_clip])
+		&& player->ammo[am_clip]>weaponinfo[wp_chaingun].clipAmmo)
 		{
 			player->pendingweapon = wp_chaingun;
 		}
 		else if (player->weaponowned[wp_shotgun]
-		&& player->ammo[am_shell])
+		&& player->ammo[am_shell]>weaponinfo[wp_shotgun].clipAmmo)
 		{
 			player->pendingweapon = wp_shotgun;
 		}
-		else if (player->ammo[am_clip])
+		else if (player->ammo[am_clip]>weaponinfo[wp_pistol].clipAmmo)
 		{
 			player->pendingweapon = wp_pistol;
 		}
@@ -256,12 +258,12 @@ qboolean P_CheckAmmo (player_t* player)
 			player->pendingweapon = wp_chainsaw;
 		}
 		else if (player->weaponowned[wp_missile]
-		&& player->ammo[am_misl])
+		&& player->ammo[am_misl]>weaponinfo[wp_missile].clipAmmo)
 		{
 			player->pendingweapon = wp_missile;
 		}
 		else if (player->weaponowned[wp_bfg]
-		&& player->ammo[am_cell]>40
+		&& player->ammo[am_cell]>weaponinfo[wp_bfg].clipAmmo
 			&& (::g->gamemode != shareware) )
 		{
 			player->pendingweapon = wp_bfg;
@@ -631,7 +633,7 @@ A_FireMissile
  pspdef_t*	psp ) 
 {
 	if( (player->cheats & CF_INFAMMO) == false ) {
-		player->ammo[weaponinfo[player->readyweapon].ammo]--;
+		player->ammo[weaponinfo[player->readyweapon].ammo] -= weaponinfo[player->readyweapon].clipAmmo;
 	}
 	P_SpawnPlayerMissile (player->mo, MT_ROCKET);
 
@@ -650,7 +652,7 @@ A_FireBFG
  pspdef_t*	psp ) 
 {
 	if( (player->cheats & CF_INFAMMO) == false ) {
-		player->ammo[weaponinfo[player->readyweapon].ammo] -= ::g->BFGCELL;
+		player->ammo[weaponinfo[player->readyweapon].ammo] -= weaponinfo[player->readyweapon].clipAmmo;
 	}
 
 	P_SpawnPlayerMissile (player->mo, MT_BFG);
@@ -670,7 +672,7 @@ A_FirePlasma
  pspdef_t*	psp ) 
 {	
 	if( (player->cheats & CF_INFAMMO) == false ) {
-		player->ammo[weaponinfo[player->readyweapon].ammo]--;
+		player->ammo[weaponinfo[player->readyweapon].ammo] -= weaponinfo[player->readyweapon].clipAmmo;
 	}
 
 	P_SetPsprite (player,
@@ -755,7 +757,7 @@ A_FirePistol
 
 	P_SetMobjState (player->mo, S_PLAY_ATK2);
 	if( (player->cheats & CF_INFAMMO ) == false ) {
-		player->ammo[weaponinfo[player->readyweapon].ammo]--;
+		player->ammo[weaponinfo[player->readyweapon].ammo] -= weaponinfo[player->readyweapon].clipAmmo;
 	}
 
 	P_SetPsprite (player,
@@ -785,7 +787,7 @@ A_FireShotgun
 	P_SetMobjState (player->mo, S_PLAY_ATK2);
 
 	if( ( player->cheats & CF_INFAMMO ) == false ) {
-		player->ammo[weaponinfo[player->readyweapon].ammo]--;
+		player->ammo[weaponinfo[player->readyweapon].ammo] -= weaponinfo[player->readyweapon].clipAmmo;
 	}
 
 	P_SetPsprite (player,
@@ -821,7 +823,7 @@ A_FireShotgun2
 	P_SetMobjState (player->mo, S_PLAY_ATK2);
 
 	if( (player->cheats & CF_INFAMMO) == false ) {
-		player->ammo[weaponinfo[player->readyweapon].ammo]-=2;
+		player->ammo[weaponinfo[player->readyweapon].ammo] -= weaponinfo[player->readyweapon].clipAmmo;
 	}
 
 	P_SetPsprite (player,
@@ -862,7 +864,7 @@ A_FireCGun
 
 	P_SetMobjState (player->mo, S_PLAY_ATK2);
 	if( (player->cheats & CF_INFAMMO) == false ) {
-		player->ammo[weaponinfo[player->readyweapon].ammo]--;
+		player->ammo[weaponinfo[player->readyweapon].ammo] -= weaponinfo[player->readyweapon].clipAmmo;
 	}
 	P_SetPsprite (player,
 		ps_flash,

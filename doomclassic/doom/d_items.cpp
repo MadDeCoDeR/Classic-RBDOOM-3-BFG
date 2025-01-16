@@ -118,6 +118,7 @@ void initWeapons() {
 			S_PLASMA,
 			S_PLASMA1,
 			S_PLASMAFLASH1,
+			0,
 			1
 		},
 		{
@@ -150,6 +151,7 @@ void initWeapons() {
 			S_DSGUN,
 			S_DSGUN1,
 			S_DSGUNFLASH1,
+			0,
 			2
 		},
 	};
