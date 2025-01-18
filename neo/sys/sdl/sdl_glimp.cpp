@@ -1002,7 +1002,14 @@ void* GetOpenXRGraphicsBinding()
 		case SDL_SYSWM_X11: {
 			x11Binding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR};
 			x11Binding.xDisplay = windowInfo.info.x11.display;
-			x11Binding.visualid = windowInfo.info.x11.window;
+			XWindowAttributes xattrs;
+			XGetWindowAttributes(windowInfo.info.x11.display, windowInfo.info.x11.window, &xattrs);
+			x11Binding.visualid = XVisualIDFromVisual(xattrs.visual);
+			GLXContext context = (GLXContext)SDL_GL_GetCurrentContext();
+			x11Binding.glxContext = context;
+			x11Binding.glxDrawable = glXGetCurrentDrawable();
+			int elements = 0;
+			x11Binding.glxFBConfig = glXGetFBConfigs(x11Binding.xDisplay, 0, &elements)[0];
 			return &x11Binding;
 		}
 		case SDL_SYSWM_WAYLAND: {
