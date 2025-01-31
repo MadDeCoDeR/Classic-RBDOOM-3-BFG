@@ -1820,6 +1820,11 @@ void idMaterial::ParseStage( idLexer& src, const textureRepeat_t trpDefault )
 		{
 			continue;
 		}
+		if (!token.Icmp("uncompressedCubeMap"))
+		{
+			td = TD_HIGHQUALITY_CUBE;	// motorsep 05-17-2015; token to mark cubemap/skybox to be uncompressed texture
+			continue;
+		}
 		if( !token.Icmp( "nopicmip" ) )
 		{
 			continue;

@@ -191,6 +191,11 @@ ID_INLINE void idImage::DeriveOpts()
 			case TD_LOOKUP_TABLE_RGBA:
 				opts.format = FMT_RGBA8;
 				break;
+			case TD_HIGHQUALITY_CUBE:
+				opts.colorFormat = CFM_DEFAULT;
+				opts.format = FMT_RGBA8;
+				opts.gammaMips = true;
+				break;
 			default:
 				assert( false );
 				opts.format = FMT_RGBA8;
