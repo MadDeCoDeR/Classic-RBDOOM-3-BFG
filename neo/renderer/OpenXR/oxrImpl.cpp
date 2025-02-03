@@ -24,6 +24,8 @@
 #include "precompiled.h"
 #include "oxrImpl.h"
 #include <map>
+//#define _USE_MATH_DEFINES
+//#include <math.h>
 idCVar vr_recordInitialPosition("vr_recordInitialPosition", "1", CVAR_BOOL, "Boolean to Determine if the current HMD Input must be recorded for initial Position");
 extern idCVar in_invertLook;
 
@@ -700,12 +702,13 @@ void idXRLocal::ProccessHMDInput()
 {
 	idVec3 viewAngles = ConvertQuatToVec3(headLocation.pose.orientation);
 	usercmdGen->SetAngles(viewAngles);
-	usercmdGen->SetAngles(viewAngles);
 }
 
 idVec3 idXRLocal::ConvertQuatToVec3(XrQuaternionf viewQuat)
 {
-	idVec3 viewAngles = idQuat(viewQuat.x, viewQuat.y, viewQuat.z, viewQuat.w).ToAngles().ToAngularVelocity() * 127.0f;
+	idVec3 viewAngles = idQuat(viewQuat.x, viewQuat.y, viewQuat.z, viewQuat.w).ToAngles().ToAngularVelocity() * 60.0f;
+	viewAngles.Clamp(idVec3(-180), idVec3(180));
+
 	viewAngles[PITCH] *= in_invertLook.GetBool() ? 1.0f : -1.0f;
 	viewAngles[ROLL] *= 0.0f;
 	return viewAngles;
