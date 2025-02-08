@@ -656,7 +656,10 @@ A_FireBFG
 	}
 
 	P_SpawnPlayerMissile (player->mo, MT_BFG);
-
+	if (!player->inBFGStates) {
+		player->inBFGStates = true;
+		player->bfgTargets = 0;
+	}
 	if( ::g->plyr == player ) {
 	}
 }
@@ -926,6 +929,8 @@ void A_BFGSpray (mobj_t* mo, void * )
 		if (!::g->linetarget)
 			continue;
 
+		mo->target->player->bfgTargets++;
+		mo->target->player->inBFGStates = false;
 		P_SpawnMobj (::g->linetarget->x,
 			::g->linetarget->y,
 			::g->linetarget->z + (::g->linetarget->height>>2),
@@ -937,6 +942,7 @@ void A_BFGSpray (mobj_t* mo, void * )
 
 		P_DamageMobj (::g->linetarget, mo->target,mo->target, damage);
 	}
+	
 }
 
 

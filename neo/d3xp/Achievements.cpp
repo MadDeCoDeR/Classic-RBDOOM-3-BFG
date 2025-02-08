@@ -46,7 +46,7 @@ const struct achievementInfo_t
 	bool lifetime; // true means the current count is stored on the player profile.  Doesn't matter for single count achievements.
 } achievementInfo [ACHIEVEMENTS_NUM] =
 {
-	{ 50, true }, // ACHIEVEMENT_EARN_ALL_50_TROPHIES
+	//{ 50, true }, // ACHIEVEMENT_EARN_ALL_50_TROPHIES
 	{ 1, true }, // ACHIEVEMENT_COMPLETED_DIFFICULTY_0
 	{ 1, true }, // ACHIEVEMENT_COMPLETED_DIFFICULTY_1
 	{ 1, true }, // ACHIEVEMENT_COMPLETED_DIFFICULTY_2
@@ -130,6 +130,7 @@ idAchievementManager::Init
 void idAchievementManager::Init( idPlayer* player )
 {
 	owner = player;
+	
 	SyncAchievments();
 }
 
@@ -370,13 +371,13 @@ void idAchievementManager::RestorePersistentData( const idDict& spawnArgs )
 idAchievementManager::LocalUser_CompleteAchievement
 ========================
 */
-void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
+void idAchievementManager::LocalUser_CompleteAchievement( int id )
 {
 	idLocalUser* localUser = session->GetSignInManager().GetMasterLocalUser();
 	
 	// Check to see if we've already given the achievement.
 	// If so, don't do again because we don't want to autosave every time a trigger is hit
-	if( localUser == NULL || localUser->GetProfile()->GetAchievement( id ) )
+	if( !isClassicDoomOnly() && ( localUser == NULL || localUser->GetProfile()->GetAchievement( id ) ))
 	{
 		common->Printf("You already have the Achievement\n");
 		return;
@@ -411,6 +412,11 @@ void idAchievementManager::LocalUser_CompleteAchievement( achievement_t id )
 	session->GetAchievementSystem().AchievementUnlock( localUser, id );
 }
 
+bool idAchievementManager::isClassicDoomOnly()
+{
+	return session->GetAchievementSystem().GetNumberOfAchievements() < 65;
+}
+
 /*
 ========================
 idAchievementManager::CheckDoomClassicsAchievements
@@ -431,133 +437,143 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 	idLocalUser* localUser = session->GetSignInManager().GetMasterLocalUser();
 	if( localUser != NULL && localUser->GetProfile() != NULL )
 	{
-	
-		// GENERAL ACHIEVEMENT UNLOCKING.
-		if( currentGame == DOOM_CLASSIC )
-		{
-			LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM1_NEOPHYTE_COMPLETE_ANY_LEVEL );
-		}
-		else if( currentGame == DOOM2_CLASSIC )
-		{
-			LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM2_JUST_GETTING_STARTED_COMPLETE_ANY_LEVEL );
-		}
-		
-		// Complete Any Level on Nightmare.
-		if( difficulty == sk_nightmare && currentGame == DOOM_CLASSIC )
-		{
-			LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM1_NIGHTMARE_COMPLETE_ANY_LEVEL_NIGHTMARE );
-		}
-		
-		const bool gotAllKills = killcount >= totalkills;
-		const bool gotAllItems = itemcount >= totalitems;
-		const bool gotAllSecrets = secretcount >= totalsecret;
-		
-		if( gotAllItems && gotAllKills && gotAllSecrets )
-		{
-			if( currentGame == DOOM_CLASSIC )
+
+		if (session->GetAchievementSystem().GetNumberOfAchievements() == 65) {
+			// GENERAL ACHIEVEMENT UNLOCKING.
+			if (currentGame == DOOM_CLASSIC)
 			{
-				LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM1_BURNING_OUT_OF_CONTROL_COMPLETE_KILLS_ITEMS_SECRETS );
+				LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM1_NEOPHYTE_COMPLETE_ANY_LEVEL);
 			}
-			else if( currentGame == DOOM2_CLASSIC )
+			else if (currentGame == DOOM2_CLASSIC)
 			{
-				LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM2_BURNING_OUT_OF_CONTROL_COMPLETE_KILLS_ITEMS_SECRETS );
+				LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM2_JUST_GETTING_STARTED_COMPLETE_ANY_LEVEL);
 			}
-		}
-		
-		// DOOM EXPANSION ACHIEVEMENTS
-		if( expansion == doom )
-		{
-		
-			if( map == 8 )
+
+			// Complete Any Level on Nightmare.
+			if (difficulty == sk_nightmare && currentGame == DOOM_CLASSIC)
 			{
-			
-				// Medium or higher skill level.
-				if( difficulty >= sk_medium )
-				{
-					localUser->SetStatInt( STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM + ( episode - 1 ), 1 );
-				}
-				
-				// Hard or higher skill level.
-				if( difficulty >= sk_hard )
-				{
-					localUser->SetStatInt( STAT_DOOM_COMPLETED_EPISODE_1_HARD + ( episode - 1 ), 1 );
-					localUser->SetStatInt( STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM + ( episode - 1 ), 1 );
-				}
-				
-				if( difficulty == sk_nightmare )
-				{
-					localUser->SetStatInt( STAT_DOOM_COMPLETED_EPISODE_1_HARD + ( episode - 1 ), 1 );
-					localUser->SetStatInt( STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM + ( episode - 1 ), 1 );
-				}
-				
-				// Save the Settings.
-				localUser->SaveProfileSettings();
+				LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM1_NIGHTMARE_COMPLETE_ANY_LEVEL_NIGHTMARE);
 			}
-			
-			// Check to see if we've completed all episodes.
-			const int episode1completed = localUser->GetStatInt( STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM );
-			const int episode2completed = localUser->GetStatInt( STAT_DOOM_COMPLETED_EPISODE_2_MEDIUM );
-			const int episode3completed = localUser->GetStatInt( STAT_DOOM_COMPLETED_EPISODE_3_MEDIUM );
-			const int episode4completed = localUser->GetStatInt( STAT_DOOM_COMPLETED_EPISODE_4_MEDIUM );
-			
-			const int episode1completed_hard = localUser->GetStatInt( STAT_DOOM_COMPLETED_EPISODE_1_HARD );
-			const int episode2completed_hard = localUser->GetStatInt( STAT_DOOM_COMPLETED_EPISODE_2_HARD );
-			const int episode3completed_hard = localUser->GetStatInt( STAT_DOOM_COMPLETED_EPISODE_3_HARD );
-			const int episode4completed_hard = localUser->GetStatInt( STAT_DOOM_COMPLETED_EPISODE_4_HARD );
-			
-			if( currentGame == DOOM_CLASSIC )
+
+			const bool gotAllKills = killcount >= totalkills;
+			const bool gotAllItems = itemcount >= totalitems;
+			const bool gotAllSecrets = secretcount >= totalsecret;
+
+			if (gotAllItems && gotAllKills && gotAllSecrets)
 			{
-				if( episode1completed )
+				if (currentGame == DOOM_CLASSIC)
 				{
-					LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM1_EPISODE1_COMPLETE_MEDIUM );
+					LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM1_BURNING_OUT_OF_CONTROL_COMPLETE_KILLS_ITEMS_SECRETS);
 				}
-				
-				if( episode2completed )
+				else if (currentGame == DOOM2_CLASSIC)
 				{
-					LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM1_EPISODE2_COMPLETE_MEDIUM );
-				}
-				
-				if( episode3completed )
-				{
-					LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM1_EPISODE3_COMPLETE_MEDIUM );
-				}
-				
-				if( episode4completed )
-				{
-					LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM1_EPISODE4_COMPLETE_MEDIUM );
-				}
-				
-				if( episode1completed_hard && episode2completed_hard && episode3completed_hard && episode4completed_hard )
-				{
-					LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM1_RAMPAGE_COMPLETE_ALL_HARD );
+					LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM2_BURNING_OUT_OF_CONTROL_COMPLETE_KILLS_ITEMS_SECRETS);
 				}
 			}
-		}
-		else if( expansion == doom2 )
-		{
-		
-			if( map == 30 )
+
+			// DOOM EXPANSION ACHIEVEMENTS
+			if (expansion == doom)
 			{
-			
-				if( currentGame == DOOM2_CLASSIC )
+
+				if (map == 8)
 				{
-					LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM2_FROM_EARTH_TO_HELL_COMPLETE_HELL_ON_EARTH );
-					
-					if( difficulty >= sk_hard )
+
+					// Medium or higher skill level.
+					if (difficulty >= sk_medium)
 					{
-						LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM2_SUPERIOR_FIREPOWER_COMPLETE_ALL_HARD );
+						localUser->SetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM + (episode - 1), 1);
+					}
+
+					// Hard or higher skill level.
+					if (difficulty >= sk_hard)
+					{
+						localUser->SetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_HARD + (episode - 1), 1);
+						localUser->SetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM + (episode - 1), 1);
+					}
+
+					if (difficulty == sk_nightmare)
+					{
+						localUser->SetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_HARD + (episode - 1), 1);
+						localUser->SetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM + (episode - 1), 1);
+					}
+
+					// Save the Settings.
+					localUser->SaveProfileSettings();
+				}
+
+				// Check to see if we've completed all episodes.
+				const int episode1completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM);
+				const int episode2completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_2_MEDIUM);
+				const int episode3completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_3_MEDIUM);
+				const int episode4completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_4_MEDIUM);
+
+				const int episode1completed_hard = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_HARD);
+				const int episode2completed_hard = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_2_HARD);
+				const int episode3completed_hard = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_3_HARD);
+				const int episode4completed_hard = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_4_HARD);
+
+				if (currentGame == DOOM_CLASSIC)
+				{
+					if (episode1completed)
+					{
+						LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM1_EPISODE1_COMPLETE_MEDIUM);
+					}
+
+					if (episode2completed)
+					{
+						LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM1_EPISODE2_COMPLETE_MEDIUM);
+					}
+
+					if (episode3completed)
+					{
+						LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM1_EPISODE3_COMPLETE_MEDIUM);
+					}
+
+					if (episode4completed)
+					{
+						LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM1_EPISODE4_COMPLETE_MEDIUM);
+					}
+
+					if (episode1completed_hard && episode2completed_hard && episode3completed_hard && episode4completed_hard)
+					{
+						LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM1_RAMPAGE_COMPLETE_ALL_HARD);
 					}
 				}
 			}
-		}
-		else if( expansion ==  pack_nerve )
-		{
-			if( map == 8 )
+			else if (expansion == doom2)
 			{
-			
-				if( currentGame == DOOM2_CLASSIC )
+
+				if (map == 30)
 				{
-					LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM2_AND_BACK_AGAIN_COMPLETE_NO_REST );
+
+					if (currentGame == DOOM2_CLASSIC)
+					{
+						LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM2_FROM_EARTH_TO_HELL_COMPLETE_HELL_ON_EARTH);
+
+						if (difficulty >= sk_hard)
+						{
+							LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM2_SUPERIOR_FIREPOWER_COMPLETE_ALL_HARD);
+						}
+					}
+				}
+			}
+			else if (expansion == pack_nerve)
+			{
+				if (map == 8)
+				{
+
+					if (currentGame == DOOM2_CLASSIC)
+					{
+						LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM2_AND_BACK_AGAIN_COMPLETE_NO_REST);
+					}
+				}
+			}
+		} else {
+			Globals* classicData = (Globals*)DoomLib::GetGlobalData(DoomLib::GetPlayer());
+			if (classicData != NULL) {
+				player_t* palyer = classicData->plyr;
+				if (palyer->health == 200 && palyer->armorpoints == 200) {
+					LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_HEALTH_AND_ARMOR);
 				}
 			}
 		}
@@ -652,8 +668,34 @@ CONSOLE_COMMAND( AchievementsList, "Lists achievements and status", NULL )
 		return;
 	}
 	idPlayerProfile* profile = user->GetProfile();
-	
-	idArray<bool, 66> achievementState;
+	idList<const char*> achNames;
+	int index = 0;
+	while (true) {
+		if (::op) {
+			idStr achName = ::op->openAchievement()->GetAchievementDevName(index);
+			if (achName != "") {
+				bool state;
+				bool res = ::op->openAchievement()->GetAchievement(achName.c_str(), &state);
+				const char* sInfo = "";
+				if (!state)
+				{
+					sInfo = S_COLOR_YELLOW "locked" S_COLOR_DEFAULT;
+				}
+				else
+				{
+					sInfo = S_COLOR_GREEN "unlocked" S_COLOR_DEFAULT;
+				}
+				idStr achDisplayName = ::op->openAchievement()->GetAchievementName(achName);
+				idStr achDescription = ::op->openAchievement()->GetAchievementDescription(achName);
+				bool hidden = ::op->openAchievement()->GetAchievementHidden(achName);
+				idLib::Printf("%02d: %s | %12.12s | %s%s: %s\n", index, achName.c_str(), sInfo, hidden ? "(hidden) " : "", achDisplayName.c_str(), achDescription.c_str());
+				index++;
+				continue;
+			}
+			break;
+		}
+	}
+	/*idArray<bool, 66> achievementState;
 	bool achievementStateValid = session->GetAchievementSystem().GetAchievementState( user, achievementState );
 	
 	for( int i = 0; i < ACHIEVEMENTS_NUM; i++ )
@@ -702,5 +744,5 @@ CONSOLE_COMMAND( AchievementsList, "Lists achievements and status", NULL )
 		bool descriptionValid = session->GetAchievementSystem().GetAchievementDescription( user, i, data );
 		
 		idLib::Printf( "%02d: %2d/%2d | %12.12s | %12.12s | %s%s\n", i, count, achievementInfo[i].required, pInfo, sInfo, descriptionValid ? data.hidden ? "(hidden) " : "" : "(unknown) ", descriptionValid ? data.name : "" );
-	}
+	}*/
 }

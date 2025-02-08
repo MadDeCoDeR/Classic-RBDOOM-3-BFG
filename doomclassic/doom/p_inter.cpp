@@ -835,25 +835,30 @@ P_KillMobj
 		if ( source->player->readyweapon == wp_fist && source->player->powers[pw_strength] && !common->IsMultiplayer()) {
 			source->player->berserkKills++;
 			idLib::Printf( "Player has %d berserk kills\n", source->player->berserkKills );
-			if ( source->player->berserkKills == 20 ) {
-				switch( DoomLib::GetGameSKU() ) {
-				case GAME_SKU_DOOM2_BFG: {
-					// Removing trophies for DOOM and DOOM II BFG due to point limit.
-					//gameLocal->UnlockAchievement( Doom2BFG_Trophies::MAN_AND_A_HALF_20_BERSERK_KILLS );
-					break;
-				}
-				case GAME_SKU_DCC: {
-					// Not for PC.
-					//gameLocal->UnlockAchievement( DOOM_ACHIEVEMENT_20KILLS_BERSERKER );
-					break;
-				}
-				default: {
-					// No unlocks for other SKUs.
-					break;
-				}
-				}
+			if (idAchievementManager::isClassicDoomOnly() && source->player->berserkKills == 20 ) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_BERSERK);
 			}
 		}
+
+		//GK: D1&2 Barrel Kills
+		if (source->type == MT_BARREL && source->spawnpoint.x == source->player->lastHitBarrel.x && source->spawnpoint.y == source->player->lastHitBarrel.y) {
+			source->player->barrelKills++;
+			if (idAchievementManager::isClassicDoomOnly() && source->player->barrelKills == 2) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_BARREL);
+			}
+		}
+		else if (source->type == MT_BARREL && (source->spawnpoint.x != source->player->lastHitBarrel.x || source->spawnpoint.y != source->player->lastHitBarrel.y)) {
+			source->player->barrelKills = 1;
+			source->player->lastHitBarrel = source->spawnpoint;
+		}
+
+		if (source->player->bfgTargets && !source->player->inBFGStates) {
+			if (idAchievementManager::isClassicDoomOnly() && source->player->bfgTargets == 1) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_OVERKILL);
+			}
+			source->player->bfgTargets = 0;
+		}
+
 	}
 	else if (!::g->netgame && (target->flags & MF_COUNTKILL) )
 	{
@@ -861,7 +866,9 @@ P_KillMobj
 		// even those caused by other monsters
 		::g->players[0].killcount++;
 	}
-
+	if (target->type == MT_BARREL && source->player) {
+		target->player = source->player;
+	}
 	if (target->player)
 	{
 		// count environment kills against you

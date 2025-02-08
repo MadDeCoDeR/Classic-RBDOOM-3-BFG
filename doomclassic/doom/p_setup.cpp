@@ -766,6 +766,10 @@ P_SetupLevel
 
 		::g->players[i].chainsawKills = 0;
 		::g->players[i].berserkKills = 0;
+		::g->players[i].barrelKills = 0;
+		::g->players[i].lastHitBarrel = mapthing_t();
+		::g->players[i].bfgTargets = 0;
+		::g->players[i].inBFGStates = false;
 	}
 
 	// Initial height of PointOfView

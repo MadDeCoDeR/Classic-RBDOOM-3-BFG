@@ -134,6 +134,10 @@ public:
 	//GK: Show achievement progress when asked
 	virtual void			ShowAchievementProgress(const int achievementID, int progress, int max) = 0;
 	
+	virtual void			CountAchievements() = 0;
+	virtual int				GetNumberOfAchievements() {
+		return numberOfAchievements;
+	}
 protected:
 	// Retrieves the index from the local user list
 	int				GetLocalUserIndex( idLocalUser* user ) const
@@ -142,6 +146,8 @@ protected:
 	}
 	
 	idStaticList< idLocalUser*, MAX_LOCAL_PLAYERS > users;
+	idList<idStr> achievementDevNames;
+	int				numberOfAchievements;
 };
 
 #endif // __SYS_ACHIEVEMENTS_H__

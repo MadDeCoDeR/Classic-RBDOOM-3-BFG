@@ -365,6 +365,9 @@ qboolean PIT_CheckThing (mobj_t* thing)
 	    return !(thing->flags & MF_SOLID);	
 	}
 	
+	if (::g->tmthing->target && ::g->tmthing->target->player && ::g->tmthing->type == MT_BFG) {
+		::g->tmthing->target->player->bfgTargets++;
+	}
 	// damage / explode
 	damage = ((P_Random()%8)+1)*::g->tmthing->info->damage;
 	P_DamageMobj (thing, ::g->tmthing, ::g->tmthing->target, damage);

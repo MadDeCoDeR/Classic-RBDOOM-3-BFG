@@ -148,6 +148,10 @@ typedef struct player_s
 
 	int			chainsawKills;
 	int			berserkKills;
+    int			barrelKills;
+    mapthing_t  lastHitBarrel;
+    bool        inBFGStates;
+    int         bfgTargets;
 
     // Hint messages.
     const char*		message;	

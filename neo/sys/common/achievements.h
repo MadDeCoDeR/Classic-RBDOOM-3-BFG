@@ -46,6 +46,7 @@ public:
 	bool	GetAchievementDescription( idLocalUser* user, const int id, achievementDescription_t& data ) const;
 	bool	GetAchievementState( idLocalUser* user, idArray< bool, idAchievementSystem::MAX_ACHIEVEMENTS >& achievements ) const;
 	void	ShowAchievementProgress(const int achievementID, int progress, int max);
+	void	CountAchievements();
 };
 
 #endif // __WIN_ACHIEVEMENTS_H__

@@ -31,9 +31,9 @@ If you have questions concerning this license or the applicable additional terms
 enum achievement_t
 {
 
-	ACHIEVEMENT_INVALID = -1,
+	ACHIEVEMENT_INVALID = -2,
 	
-	ACHIEVEMENT_EARN_ALL_50_TROPHIES,					// 0 // DONE -- (automagic?)
+	ACHIEVEMENT_EARN_ALL_50_TROPHIES = -1,					// 0 // DONE -- (automagic?)
 	
 	ACHIEVEMENT_COMPLETED_DIFFICULTY_0,					// 1 // DONE -- Recruit
 	ACHIEVEMENT_COMPLETED_DIFFICULTY_1,					// 2 // DONE -- Marine
@@ -124,6 +124,14 @@ enum achievement_t
 	STAT_DOOM_COMPLETED_EPISODE_4_HARD,
 };
 
+enum classicAchievement_t {
+	CLASSIC_ACHIEVEMENT_INVALID = -1,
+	CLASSIC_ACHIEVEMENT_HEALTH_AND_ARMOR,
+	CLASSIC_ACHIEVEMENT_BARREL,
+	CLASSIC_ACHIEVEMENT_BERSERK,
+	CLASSIC_ACHIEVEMENT_OVERKILL
+};
+
 compile_time_assert( ACHIEVEMENTS_NUM <= idPlayerProfile::MAX_PLAYER_PROFILE_STATS );
 
 /*
@@ -192,14 +200,14 @@ public:
 	void		SavePersistentData( idDict& playerInfo );
 	void		RestorePersistentData( const idDict& spawnArgs );
 	
-	static void LocalUser_CompleteAchievement( achievement_t id );
-	
+	static void LocalUser_CompleteAchievement( int id );
+	static bool isClassicDoomOnly();
 	// RB begin
 #if defined(USE_DOOMCLASSIC)
 	static void	CheckDoomClassicsAchievements( int killcount, int itemcount, int secretcount, int skill, int mission, int map, int episode, int totalkills, int totalitems, int totalsecret );
 #endif
 	// RB end
-	
+
 private:
 	idEntityPtr< idPlayer >	owner;
 	idArray<int, ACHIEVEMENTS_NUM> counts; // How many times has each achievement been given
@@ -214,6 +222,7 @@ private:
 	
 	idLocalUser* 	GetLocalUser();
 	void			SyncAchievments();
+	
 };
 
 #endif // !__ACHIEVEMENTS_H__
