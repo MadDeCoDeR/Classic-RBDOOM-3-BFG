@@ -678,18 +678,19 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 						LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_MASTER);
 					}
 				}
+				break;
 			}
 			case pack_lor: {
 				if (map == 8)
 				{
-					localUser->SetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM + (episode - 1), 1);
+					localUser->SetStatInt(STAT_DOOM_LOR_COMPLETED_EPISODE_1_MEDIUM + (episode - 1), 1);
 					// Save the Settings.
 					localUser->SaveProfileSettings();
 				}
 
 				// Check to see if we've completed all episodes.
-				const int episode1completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM);
-				const int episode2completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_2_MEDIUM);
+				const int episode1completed = localUser->GetStatInt(STAT_DOOM_LOR_COMPLETED_EPISODE_1_MEDIUM);
+				const int episode2completed = localUser->GetStatInt(STAT_DOOM_LOR_COMPLETED_EPISODE_2_MEDIUM);
 				if (episode1completed && episode2completed)
 				{
 					LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_LOR);
@@ -697,8 +698,8 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 
 				break;
 			}
-			}
 		}
+	}
 		
 	}
 }
