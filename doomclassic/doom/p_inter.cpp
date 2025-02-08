@@ -789,45 +789,17 @@ P_KillMobj
 		// DHM - Nerve :: Check for killing cyberdemon with fists achievement
 		// JAF TROPHY int port = gameLocal->GetPortForPlayer( DoomLib::GetPlayer() );
 
-		if ( source->player->readyweapon == wp_fist && target->type == MT_CYBORG && !common->IsMultiplayer() ) {
-			switch( DoomLib::GetGameSKU() ) {
-			case GAME_SKU_DOOM2_BFG: {
-				// Removing trophies for DOOM and DOOM II BFG due to point limit.
-				//gameLocal->UnlockAchievement( Doom2BFG_Trophies::YOU_HAVE_HUGE_GUTS_KILL_CYBERDEMON_WITH_FISTS );
-				break;
-			}
-			case GAME_SKU_DCC: {
-				// Not for PC.
-				//session->GetAchievementSystem().AchievementUnlock( session->GetSignInManager().GetMasterLocalUser(), DOOM_ACHIEVEMENT_KILL_CYBER_DEMON_WITH_FISTS );
-				break;
-			}
-			default: {
-				// No unlocks for other SKUs.
-				break;
-			}
+		if ( source->player->readyweapon == wp_pistol && target->type == MT_CYBORG && !common->IsMultiplayer() ) {
+			if (idAchievementManager::isClassicDoomOnly()) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_PISTOL);
 			}
 		}
 
 		// DHM - Nerve :: Chainsaw kills
 		if ( source->player->readyweapon == wp_chainsaw && !common->IsMultiplayer() ) {
 			source->player->chainsawKills++;
-			if ( source->player->chainsawKills == 20 ) {
-				switch( DoomLib::GetGameSKU() ) {
-				case GAME_SKU_DOOM2_BFG: {
-					// Removing trophies for DOOM and DOOM II BFG due to point limit.
-					//gameLocal->UnlockAchievement( Doom2BFG_Trophies::GREAT_COMMUNICATOR_20_CHAINSAW_KILLS );
-					break;
-				}
-				case GAME_SKU_DCC: {
-					// Not for PC.
-					//gameLocal->UnlockAchievement( DOOM_ACHIEVEMENT_20KILLS_CHAINSAW );
-					break;
-				}
-				default: {
-					// No unlocks for other SKUs.
-					break;
-				}
-				}
+			if ( idAchievementManager::isClassicDoomOnly() && source->player->chainsawKills == 100 ) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CHAINSAW);
 			}
 		}
 
@@ -852,6 +824,7 @@ P_KillMobj
 			source->player->lastHitBarrel = source->spawnpoint;
 		}
 
+		//GK: D1&2 BFG Overkill
 		if (source->player->bfgTargets && !source->player->inBFGStates) {
 			if (idAchievementManager::isClassicDoomOnly() && source->player->bfgTargets == 1) {
 				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_OVERKILL);

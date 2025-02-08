@@ -414,7 +414,7 @@ void idAchievementManager::LocalUser_CompleteAchievement( int id )
 
 bool idAchievementManager::isClassicDoomOnly()
 {
-	return session->GetAchievementSystem().GetNumberOfAchievements() < 65;
+	return session->GetAchievementSystem().GetNumberOfAchievements() < ACHIEVEMENTS_NUM;
 }
 
 /*
@@ -438,7 +438,7 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 	if( localUser != NULL && localUser->GetProfile() != NULL )
 	{
 
-		if (session->GetAchievementSystem().GetNumberOfAchievements() == 65) {
+		if (session->GetAchievementSystem().GetNumberOfAchievements() == ACHIEVEMENTS_NUM) {
 			// GENERAL ACHIEVEMENT UNLOCKING.
 			if (currentGame == DOOM_CLASSIC)
 			{
@@ -467,7 +467,7 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 				}
 				else if (currentGame == DOOM2_CLASSIC)
 				{
-					LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM2_BURNING_OUT_OF_CONTROL_COMPLETE_KILLS_ITEMS_SECRETS);
+					LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM2_BURNING_OUT_OF_CONTROL_COMPLETE_KILLS_ITEMS_SECRETS);	
 				}
 			}
 
@@ -576,6 +576,128 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 					LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_HEALTH_AND_ARMOR);
 				}
 			}
+
+			// Complete Any Level on Nightmare.
+			if (difficulty == sk_nightmare)
+			{
+				LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_NIGHTMARE);
+			}
+
+			const bool gotAllKills = killcount >= totalkills;
+			const bool gotAllItems = itemcount >= totalitems;
+			const bool gotAllSecrets = secretcount >= totalsecret;
+
+			if (gotAllItems && gotAllKills && gotAllSecrets)
+			{
+				LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_PERFECT_FINISH);
+			}
+
+			if (gotAllKills && totalkills > 0 && difficulty >= sk_medium) {
+				LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_KILL_ALL);
+			}
+
+			if (gotAllItems && totalitems > 0) {
+				LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_HOARDER);
+			}
+
+			// DOOM EXPANSION ACHIEVEMENTS
+			switch (expansion) {
+			case doom:
+			{
+
+				if (map == 8)
+				{
+					localUser->SetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM + (episode - 1), 1);
+
+					// Save the Settings.
+					localUser->SaveProfileSettings();
+				}
+
+				// Check to see if we've completed all episodes.
+				const int episode1completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM);
+				const int episode2completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_2_MEDIUM);
+				const int episode3completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_3_MEDIUM);
+				const int episode4completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_4_MEDIUM);
+
+				if (currentGame == DOOM_CLASSIC)
+				{
+					if (episode1completed && episode2completed && episode3completed && episode4completed)
+					{
+						LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_DOOM);
+					}
+				}
+				break;
+			}
+			case doom2:
+			case pack_tnt:
+			case pack_plut:
+			{
+
+				if (map == 30)
+				{
+
+					if (currentGame == DOOM2_CLASSIC)
+					{
+						switch (expansion) {
+						case doom2:
+							LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_DOOM2);
+							break;
+						case pack_tnt:
+							LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_EVILUTION);
+							break;
+						case pack_plut:
+							LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_PLUTONIA);
+							break;
+						}
+					}
+				}
+				break;
+			}
+			case pack_nerve:
+			case pack_romero:
+			{
+				if (map == 8)
+				{
+
+					if (currentGame == DOOM2_CLASSIC)
+					{
+						LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_NRFTL);
+					}
+					else if (currentGame == DOOM_CLASSIC) {
+						LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_ROMERO);
+					}
+				}
+				break;
+			}
+			case pack_master: {
+				if (map == 20)
+				{
+
+					if (currentGame == DOOM2_CLASSIC)
+					{
+						LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_MASTER);
+					}
+				}
+			}
+			case pack_lor: {
+				if (map == 8)
+				{
+					localUser->SetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM + (episode - 1), 1);
+					// Save the Settings.
+					localUser->SaveProfileSettings();
+				}
+
+				// Check to see if we've completed all episodes.
+				const int episode1completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM);
+				const int episode2completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_2_MEDIUM);
+				if (episode1completed && episode2completed)
+				{
+					LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_LOR);
+				}
+
+				break;
+			}
+			}
 		}
 		
 	}
@@ -667,7 +789,7 @@ CONSOLE_COMMAND( AchievementsList, "Lists achievements and status", NULL )
 		idLib::Printf( "Must be signed in\n" );
 		return;
 	}
-	idPlayerProfile* profile = user->GetProfile();
+	//idPlayerProfile* profile = user->GetProfile();
 	idList<const char*> achNames;
 	int index = 0;
 	while (true) {
@@ -675,7 +797,7 @@ CONSOLE_COMMAND( AchievementsList, "Lists achievements and status", NULL )
 			idStr achName = ::op->openAchievement()->GetAchievementDevName(index);
 			if (achName != "") {
 				bool state;
-				bool res = ::op->openAchievement()->GetAchievement(achName.c_str(), &state);
+				::op->openAchievement()->GetAchievement(achName.c_str(), &state);
 				const char* sInfo = "";
 				if (!state)
 				{

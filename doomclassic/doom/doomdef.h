@@ -64,6 +64,8 @@ typedef enum
   pack_plut,	// Plutonia pack
   pack_master,	// Master levels
   pack_nerve,	// Nerve levels
+  pack_romero,  // SIGIL
+  pack_lor,     // Legacy of Rust
   pack_custom,  // GK: Custom Expansion
  
   none
