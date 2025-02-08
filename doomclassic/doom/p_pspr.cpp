@@ -336,6 +336,7 @@ A_WeaponReady
 ( player_t*	player,
  pspdef_t*	psp )
 {	
+	player->CGunShoots = 0;
 	int	newstate;
 	int		angle;
 	if (!psp) //GK:SANITY CHECK
@@ -880,7 +881,10 @@ A_FireCGun
 	P_BulletSlope (player->mo);
 
 	P_GunShot (player->mo, !player->refire);
-
+	player->CGunShoots += weaponinfo[player->readyweapon].clipAmmo;
+	if (idAchievementManager::isClassicDoomOnly() && player->CGunShoots >= 200) {
+		idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CHAINGUN);
+	}
 	if( ::g->plyr == player ) {
 	}
 }

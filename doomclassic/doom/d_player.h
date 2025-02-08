@@ -152,6 +152,7 @@ typedef struct player_s
     mapthing_t  lastHitBarrel;
     bool        inBFGStates;
     int         bfgTargets;
+    int         CGunShoots;
 
     // Hint messages.
     const char*		message;	

@@ -770,6 +770,7 @@ P_SetupLevel
 		::g->players[i].lastHitBarrel = mapthing_t();
 		::g->players[i].bfgTargets = 0;
 		::g->players[i].inBFGStates = false;
+		::g->players[i].CGunShoots = 0;
 	}
 
 	// Initial height of PointOfView
