@@ -295,7 +295,8 @@ struct mobj_t
     // Thing being chased/attacked (or NULL),
     // also the originator for missiles.
     mobj_t*	target;
-
+    mobj_t* originalTarget;
+    mobj_t* killer;
     // Reaction time: if non 0, don't attack yet.
     // Used by player to freeze a bit after teleporting.
     int			reactiontime;   

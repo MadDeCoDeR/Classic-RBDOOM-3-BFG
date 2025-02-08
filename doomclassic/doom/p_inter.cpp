@@ -64,6 +64,7 @@ If you have questions concerning this license or the applicable additional terms
 void
 P_KillMobj
 (mobj_t*	source,
+	mobj_t* inflictor,
 	mobj_t*	target); //GK: Allow soulsphere to kill you
 //GK: Reset ammo values just in case they changed by using deHacked
 void ResetAmmo() {
@@ -435,7 +436,7 @@ P_TouchSpecialThing
 	case SPR_SOUL:
 		player->health += ::g->psoul;
 		if (player->health <= 0) {
-			P_KillMobj(NULL, player->mo);
+			P_KillMobj(NULL, NULL, player->mo);
 		}
 		if (player->health > ::g->msoul)
 			player->health = ::g->msoul;
@@ -755,6 +756,7 @@ idPlayerProfile * IsOnlineDeathmatchWithLocalProfile() {
 void
 P_KillMobj
 ( mobj_t*	source,
+	mobj_t* inflictor,
 	mobj_t*	target )
 {
 	mobjtype_t	item;
@@ -812,18 +814,6 @@ P_KillMobj
 			}
 		}
 
-		//GK: D1&2 Barrel Kills
-		if (source->type == MT_BARREL && source->spawnpoint.x == source->player->lastHitBarrel.x && source->spawnpoint.y == source->player->lastHitBarrel.y) {
-			source->player->barrelKills++;
-			if (idAchievementManager::isClassicDoomOnly() && source->player->barrelKills == 2) {
-				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_BARREL);
-			}
-		}
-		else if (source->type == MT_BARREL && (source->spawnpoint.x != source->player->lastHitBarrel.x || source->spawnpoint.y != source->player->lastHitBarrel.y)) {
-			source->player->barrelKills = 1;
-			source->player->lastHitBarrel = source->spawnpoint;
-		}
-
 		//GK: D1&2 BFG Overkill
 		if (source->player->bfgTargets && !source->player->inBFGStates) {
 			if (idAchievementManager::isClassicDoomOnly() && source->player->bfgTargets == 1) {
@@ -839,9 +829,7 @@ P_KillMobj
 		// even those caused by other monsters
 		::g->players[0].killcount++;
 	}
-	if (target->type == MT_BARREL && source->player) {
-		target->player = source->player;
-	}
+	target->killer = source;
 	if (target->player)
 	{
 		// count environment kills against you
@@ -874,8 +862,29 @@ P_KillMobj
 	if (target->tics < 1)
 		target->tics = 1;
 
+	if (source != NULL) {
+		//GK: D1&2 In fight Kill
+		if (!target->player && !source->player && source->originalTarget->player) {
+			if (idAchievementManager::isClassicDoomOnly()) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_INFIGHT);
+			}
+		}
+	}
 	//	I_StartSound (&actor->r, actor->info->deathsound);
 
+	if (inflictor != NULL) {
+		//GK: D1&2 Barrel Kills
+		if (inflictor->type == MT_BARREL && inflictor->killer && inflictor->killer->player && inflictor->spawnpoint.x == inflictor->killer->player->lastHitBarrel.x && inflictor->spawnpoint.y == inflictor->killer->player->lastHitBarrel.y) {
+			inflictor->killer->player->barrelKills++;
+			if (idAchievementManager::isClassicDoomOnly() && inflictor->killer->player->barrelKills == 2) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_BARREL);
+			}
+		}
+		else if (inflictor->type == MT_BARREL && inflictor->killer && inflictor->killer->player && (inflictor->spawnpoint.x != inflictor->killer->player->lastHitBarrel.x || inflictor->spawnpoint.y != inflictor->killer->player->lastHitBarrel.y)) {
+			inflictor->killer->player->barrelKills = 1;
+			inflictor->killer->player->lastHitBarrel = inflictor->spawnpoint;
+		}
+	}
 
 	// Drop stuff.
 	// This determines the kind of object spawned
@@ -1072,7 +1081,7 @@ P_DamageMobj
 	target->health -= damage;	
 	if (target->health <= 0)
 	{
-		P_KillMobj (source, target);
+		P_KillMobj (source, inflictor, target);
 		return;
 	}
 

@@ -527,7 +527,9 @@ P_LookForPlayers
 		    continue;	// behind back
 	    }
 	}
-		
+	if (actor->target == NULL) {
+		actor->originalTarget = player->mo;
+	}
 	actor->target = player->mo;
 	return true;
     }
@@ -591,6 +593,9 @@ void A_Look (mobj_t* actor, void * )
     if (targ
 	&& (targ->flags & MF_SHOOTABLE) )
     {
+		if (actor->originalTarget == NULL) {
+			actor->originalTarget = targ;
+		}
 	actor->target = targ;
 
 	if ( actor->flags & MF_AMBUSH )
