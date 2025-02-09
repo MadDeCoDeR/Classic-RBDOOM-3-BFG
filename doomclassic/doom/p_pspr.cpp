@@ -933,8 +933,6 @@ void A_BFGSpray (mobj_t* mo, void * )
 		if (!::g->linetarget)
 			continue;
 
-		mo->target->player->bfgTargets++;
-		mo->target->player->inBFGStates = false;
 		P_SpawnMobj (::g->linetarget->x,
 			::g->linetarget->y,
 			::g->linetarget->z + (::g->linetarget->height>>2),
@@ -944,9 +942,15 @@ void A_BFGSpray (mobj_t* mo, void * )
 		for (j=0;j<15;j++)
 			damage += (P_Random()&7) + 1;
 
-		P_DamageMobj (::g->linetarget, mo->target,mo->target, damage);
+		P_DamageMobj (::g->linetarget, mo, mo->target, damage);
 	}
-	
+
+	//GK: D1&2 BFG Overkill
+	if (idAchievementManager::isClassicDoomOnly() && mo->target->player->bfgTargets == 1) {
+		idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_OVERKILL);
+	}
+	mo->target->player->bfgTargets = 0;
+	mo->target->player->inBFGStates = false;
 }
 
 

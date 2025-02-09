@@ -814,12 +814,8 @@ P_KillMobj
 			}
 		}
 
-		//GK: D1&2 BFG Overkill
-		if (source->player->bfgTargets && !source->player->inBFGStates) {
-			if (idAchievementManager::isClassicDoomOnly() && source->player->bfgTargets == 1) {
-				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_OVERKILL);
-			}
-			source->player->bfgTargets = 0;
+		if (inflictor && inflictor->type == MT_BFG) {
+			source->player->bfgTargets++;
 		}
 
 	}
