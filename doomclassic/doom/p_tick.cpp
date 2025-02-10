@@ -84,7 +84,7 @@ void P_AddThinker (thinker_t* thinker)
 void P_RemoveThinker (thinker_t* thinker)
 {
   // FIXED?:Now the unallocation will be instant.
-	thinker->function.acv = (actionf_v)(-1);
+	thinker->function = (actionf_v)(-1);
 	//thinker->next->prev = thinker->prev;
 	//thinker->prev->next = thinker->next;
 	//Z_Free(thinker);
@@ -112,7 +112,7 @@ void P_RunThinkers (void)
     currentthinker = ::g->thinkercap.next;
     while (currentthinker != &::g->thinkercap)
     {
-		 if ( currentthinker->function.acv == (actionf_v)(-1) )
+		 if (std::holds_alternative<actionf_v>(currentthinker->function) && std::get<actionf_v>(currentthinker->function) == (actionf_v)(-1) )
 		 {
 			 // time to remove it
 			 currentthinker->next->prev = currentthinker->prev;
@@ -121,8 +121,8 @@ void P_RunThinkers (void)
 		 }
 		 else
 		 {
-			 if (currentthinker->function.acp1)
-				 currentthinker->function.acp1 ((mobj_t*)currentthinker);
+			 if (std::holds_alternative<actionf_p1>(currentthinker->function))
+				 std::get<actionf_p1>(currentthinker->function) ((mobj_t*)currentthinker);
 		 }
 	currentthinker = currentthinker->next;
     }

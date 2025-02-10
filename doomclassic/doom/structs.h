@@ -629,5 +629,5 @@ typedef struct {
 
 typedef struct {
 	const char* name;
-	actionf_p2 func;
+	actionf_t func;
 }dehcptr;

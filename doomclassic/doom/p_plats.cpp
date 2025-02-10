@@ -178,7 +178,7 @@ EV_DoPlat
 	plat->type = type;
 	plat->sector = sec;
 	plat->sector->floordata = plat;
-	plat->thinker.function.acp1 = (actionf_p1) T_PlatRaise;
+	plat->thinker.function = (actionf_p1) T_PlatRaise;
 	plat->crush = false;
 	plat->tag = line->tag;
 	
@@ -267,7 +267,7 @@ void P_ActivateInStasis(int tag)
 	    && (::g->activeplats[i])->status == in_stasis)
 	{
 	    (::g->activeplats[i])->status = (::g->activeplats[i])->oldstatus;
-	    (::g->activeplats[i])->thinker.function.acp1
+	    (::g->activeplats[i])->thinker.function
 	      = (actionf_p1) T_PlatRaise;
 	}
 }
@@ -283,7 +283,7 @@ void EV_StopPlat(line_t* line)
 	{
 	    (::g->activeplats[j])->oldstatus = (::g->activeplats[j])->status;
 	    (::g->activeplats[j])->status = in_stasis;
-	    (::g->activeplats[j])->thinker.function.acv = (actionf_v)NULL;
+	    (::g->activeplats[j])->thinker.function = (actionf_v)NULL;
 	}
 }
 

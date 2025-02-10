@@ -252,7 +252,7 @@ EV_DoCeiling
 	ceiling = (ceiling_t*)DoomLib::Z_Malloc(sizeof(*ceiling), PU_CEILING, 0);
 	P_AddThinker (&ceiling->thinker);
 	sec->ceilingdata = ceiling;
-	ceiling->thinker.function.acp1 = (actionf_p1)T_MoveCeiling;
+	ceiling->thinker.function = (actionf_p1)T_MoveCeiling;
 	ceiling->sector = sec;
 	ceiling->crush = false;
 	
@@ -351,7 +351,7 @@ int P_ActivateInStasisCeiling(line_t* line)
 	    && (::g->activeceilings[i]->direction == 0))
 	{
 	    ::g->activeceilings[i]->direction = ::g->activeceilings[i]->olddirection;
-	    ::g->activeceilings[i]->thinker.function.acp1
+	    ::g->activeceilings[i]->thinker.function
 	      = (actionf_p1)T_MoveCeiling;
 		j = 1;
 	}
@@ -378,7 +378,7 @@ int	EV_CeilingCrushStop(line_t	*line)
 	    && (::g->activeceilings[i]->direction != 0))
 	{
 	    ::g->activeceilings[i]->olddirection = ::g->activeceilings[i]->direction;
-	    ::g->activeceilings[i]->thinker.function.acv = (actionf_v)NULL;
+	    ::g->activeceilings[i]->thinker.function = (actionf_v)NULL;
 	    ::g->activeceilings[i]->direction = 0;		// in-stasis
 	    rtn = 1;
 	}

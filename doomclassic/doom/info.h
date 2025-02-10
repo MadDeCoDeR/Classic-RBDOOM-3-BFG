@@ -1174,7 +1174,7 @@ typedef struct state_s
 	//  int					filler;
  // };
 #ifdef _MSC_VER
-  actionf_p2			action;
+  actionf_t			action;
 #else
   struct {
     actionf_p2			action;
@@ -1184,7 +1184,13 @@ typedef struct state_s
 
   int			nextstate;
   long			misc1, misc2;
+  long          args[8];
+  int           flags;
 } state_t;
+
+typedef enum {
+    FF_FAST = 0x001
+}state_flags;
 
 extern /*const*/ std::vector<state_t>	tempStates;
 extern /*const*/ std::vector<state_t>	origStates;
@@ -1393,6 +1399,6 @@ extern /*const*/ std::vector<mobjinfo_t> mobjinfo;
 
 void resetValues();
 void init_cptrs();
-actionf_p2 getFunc(char* func);
+actionf_t getFunc(char* func);
 #endif
 

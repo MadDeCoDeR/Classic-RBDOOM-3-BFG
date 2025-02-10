@@ -80,8 +80,11 @@ P_SetMobjState
 
 		// Modified handling.
 		// Call action functions when the state is set
-		if (st->action)		
-			st->action(mobj, NULL);	
+		if (std::holds_alternative<actionf_p2>(st->action))
+			std::get<actionf_p2>(st->action)(mobj, NULL);
+
+		if (std::holds_alternative<actionf_p1>(st->action))
+			std::get<actionf_p1>(st->action)(mobj);
 
 		state = st->nextstate;
 	} while (!mobj->tics);
@@ -432,7 +435,7 @@ void P_MobjThinker (mobj_t* mobj)
 		P_XYMovement (mobj);
 
 		// FIXME: decent NOP/NULL/Nil function pointer please.
-		if (mobj->thinker.function.acv == (actionf_v) (-1))
+		if (std::holds_alternative<actionf_v>(mobj->thinker.function) && std::get<actionf_v>(mobj->thinker.function) == (actionf_v) (-1))
 			return;		// mobj was removed
 	}
 	if ( (mobj->z != mobj->floorz)
@@ -441,7 +444,7 @@ void P_MobjThinker (mobj_t* mobj)
 		P_ZMovement (mobj);
 
 		// FIXME: decent NOP/NULL/Nil function pointer please.
-		if (mobj->thinker.function.acv == (actionf_v) (-1))
+		if (std::holds_alternative<actionf_v>(mobj->thinker.function) && std::get<actionf_v>(mobj->thinker.function) == (actionf_v) (-1))
 			return;		// mobj was removed
 	}
 
@@ -459,7 +462,7 @@ void P_MobjThinker (mobj_t* mobj)
       P_DamageMobj(mobj, NULL, NULL, 10000);
 
       // must have been removed
-      if (mobj->thinker.function.acv == (actionf_v) (-1))
+      if (std::holds_alternative<actionf_v>(mobj->thinker.function) && std::get<actionf_v>(mobj->thinker.function) == (actionf_v) (-1))
         return;
     }
   }
@@ -558,7 +561,7 @@ P_SpawnMobj
 			mobj->z = z;
 
 	}
-	mobj->thinker.function.acp1 = (actionf_p1)P_MobjThinker;
+	mobj->thinker.function = (actionf_p1)P_MobjThinker;
 
 	P_AddThinker (&mobj->thinker);
 

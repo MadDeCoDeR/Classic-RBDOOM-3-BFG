@@ -407,7 +407,8 @@ dehbits mobfl[] = {
 {"NOAUTOFIRE", WPF_NOAUTOFIRE},
 {"FLEEMELEE", WPF_FLEEMELEE},
 {"AUTOSWITCHFROM", WPF_AUTOSWITCHFROM},
-{"NOAUTOSWITCHTO", WPF_NOAUTOSWITCHTO}
+{"NOAUTOSWITCHTO", WPF_NOAUTOSWITCHTO},
+{"SKIL5FAST", FF_FAST }
 };
 
 int checkstate(char* text) {
@@ -514,15 +515,24 @@ void extendSpriteNames(int newSize) {
 }
 
 void setFrame(int pos, char* varname, int varval) {
-	dehobj fvars[6] = {
+	dehobj fvars[15] = {
 		{"Sprite subnumber ",MAXINT,NULL,NULL,&tempStates[pos].frame},
 		{"Duration ",MAXINT,NULL,NULL,&tempStates[pos].tics},
 		{"Unknown 1 ",MAXINT,NULL,NULL,&tempStates[pos].misc1},
 		{"Unknown 2 ",MAXINT,NULL,NULL,&tempStates[pos].misc2},
+		{"Args1 ",MAXINT,NULL,NULL,&tempStates[pos].args[0]},
+		{"Args2 ",MAXINT,NULL,NULL,&tempStates[pos].args[1]},
+		{"Args3 ",MAXINT,NULL,NULL,&tempStates[pos].args[2]},
+		{"Args4 ",MAXINT,NULL,NULL,&tempStates[pos].args[3]},
+		{"Args5 ",MAXINT,NULL,NULL,&tempStates[pos].args[4]},
+		{"Args6 ",MAXINT,NULL,NULL,&tempStates[pos].args[5]},
+		{"Args7 ",MAXINT,NULL,NULL,&tempStates[pos].args[6]},
+		{"Args8 ",MAXINT,NULL,NULL,&tempStates[pos].args[7]},
 		{"Sprite number ",MAXINT,NULL, &tempStates[pos].sprite},
-		{"Next frame ",MAXINT,NULL,&tempStates[pos].nextstate}
+		{"Next frame ",MAXINT,NULL,&tempStates[pos].nextstate},
+		{"MBF21 Bits ", MAXINT, NULL, &tempStates[pos].flags}
 	};
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 15; i++) {
 		if (!idStr::Icmp(varname, fvars[i].name)) {
 			if (varval < fvars[i].limit) {
 				switch (i) {
@@ -920,7 +930,7 @@ void parsetext(char* text) {
 			if (!tv3.empty()) {
 				if (state != 6 && state != 9) {
 					varval = atoi(tv3.c_str());
-					if ((state == 1 || state == 4)&& (!idStr::Icmp(varname, "Bits ") || !idStr::Icmp(varname, "MBF21 Bits ")) && varval == 0) {
+					if ((state == 1 || state == 4 || state == 2)&& (!idStr::Icmp(varname, "Bits ") || !idStr::Icmp(varname, "MBF21 Bits ")) && varval == 0) {
 						varval = Generateflags(strdup(tv3.c_str()));
 					}
 				}

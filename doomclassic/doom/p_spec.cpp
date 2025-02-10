@@ -1816,7 +1816,7 @@ int EV_DoDonut(line_t*	line)
 			floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_FLOOR, 0);
 			P_AddThinker (&floor->thinker);
 			s2->floordata = floor;
-			floor->thinker.function.acp1 = (actionf_p1) T_MoveFloor;
+			floor->thinker.function = (actionf_p1) T_MoveFloor;
 			floor->type = donutRaise;
 			floor->crush = false;
 			floor->direction = 1;
@@ -1830,7 +1830,7 @@ int EV_DoDonut(line_t*	line)
 			floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_FLOOR, 0);
 			P_AddThinker (&floor->thinker);
 			s1->floordata = floor;
-			floor->thinker.function.acp1 = (actionf_p1) T_MoveFloor;
+			floor->thinker.function = (actionf_p1) T_MoveFloor;
 			floor->type = lowerFloor;
 			floor->crush = false;
 			floor->direction = -1;
@@ -2202,7 +2202,7 @@ static void Add_Scroller(int type, fixed_t dx, fixed_t dy,
 	int control, int affectee, int accel)
 {
 	scroll_t *s =(scroll_t*) DoomLib::Z_Malloc(sizeof *s, PU_LEVSPEC, 0);
-	s->thinker.function.acp1 = (actionf_p1)T_Scroll;
+	s->thinker.function = (actionf_p1)T_Scroll;
 	s->type =static_cast<scrollers>( type);
 	s->dx = dx;
 	s->dy = dy;

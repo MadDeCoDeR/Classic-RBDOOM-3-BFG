@@ -307,7 +307,7 @@ EV_DoFloor
 	floor = (floormove_t*)DoomLib::Z_Malloc(sizeof(*floor), PU_FLOOR, 0);
 	P_AddThinker (&floor->thinker);
 	sec->floordata = floor;
-	floor->thinker.function.acp1 = (actionf_p1) T_MoveFloor;
+	floor->thinker.function = (actionf_p1) T_MoveFloor;
 	floor->type = floortype;
 	floor->crush = false;
 
@@ -510,7 +510,7 @@ EV_BuildStairs
 	floor = (floormove_t*)DoomLib::Z_Malloc(sizeof(*floor), PU_FLOOR, 0);
 	P_AddThinker (&floor->thinker);
 	sec->floordata = floor;
-	floor->thinker.function.acp1 = (actionf_p1) T_MoveFloor;
+	floor->thinker.function = (actionf_p1) T_MoveFloor;
 	floor->direction = 1;
 	floor->sector = sec;
 	switch(type)
@@ -565,7 +565,7 @@ EV_BuildStairs
 		P_AddThinker (&floor->thinker);
 
 		sec->floordata = floor;
-		floor->thinker.function.acp1 = (actionf_p1) T_MoveFloor;
+		floor->thinker.function = (actionf_p1) T_MoveFloor;
 		floor->direction = 1;
 		floor->sector = sec;
 		floor->speed = speed;
@@ -667,7 +667,7 @@ int EV_DoElevator
 		P_AddThinker(&elevator->thinker);
 		sec->floordata = elevator; //jff 2/22/98
 		sec->ceilingdata = elevator; //jff 2/22/98
-		elevator->thinker.function.acp1 = (actionf_p1)T_MoveElevator;
+		elevator->thinker.function = (actionf_p1)T_MoveElevator;
 		elevator->type = elevtype;
 
 		// set up the fields according to the type of elevator action

@@ -34,7 +34,7 @@ void A_InstaKill(mobj_t* mo, void*);
 
 //GK: Declare custom Code Pointers here
 dehcptr customcptr[] = {
-	{"InstaKill", (actionf_p2)A_InstaKill}
+	{"InstaKill", (actionf_p1)A_InstaKill}
 };
 #endif
 
@@ -84,7 +84,7 @@ void idTest(const idCmdArgs& args) {
 	classic->plyr->message = "Hello World !!!";
 }
 
-void A_InstaKill(mobj_t* mo, void*) {
+void A_InstaKill(mobj_t* mo) {
 	mo->health = 0;
 }
 #endif

@@ -101,7 +101,7 @@ EV_Teleport
 		 thinker = thinker->next)
 	    {
 		// not a mobj
-		if (thinker->function.acp1 != (actionf_p1)P_MobjThinker)
+		if (!std::holds_alternative<actionf_p1>(thinker->function) || (std::holds_alternative<actionf_p1>(thinker->function) && std::get<actionf_p1>(thinker->function) != (actionf_p1)P_MobjThinker))
 		    continue;	
 
 		m = (mobj_t *)thinker;
@@ -170,7 +170,7 @@ int EV_SilentTeleport(line_t *line, int side, mobj_t *thing)
 
 	for (i = -1; (i = P_FindSectorFromLineTag(line, i)) >= 0;)
 		for (th = ::g->thinkercap.next; th != &::g->thinkercap; th = th->next)
-			if (th->function.acp1 == (actionf_p1)P_MobjThinker &&
+			if ((std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker) &&
 				(m = (mobj_t *)th)->type == MT_TELEPORTMAN &&
 				m->subsector->sector - ::g->sectors == i)
 			{

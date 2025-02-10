@@ -26,6 +26,7 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
+#include <variant>
 #ifndef __D_THINK__
 #define __D_THINK__
 
@@ -43,15 +44,9 @@ If you have questions concerning this license or the applicable additional terms
 struct mobj_t;
 typedef  void (*actionf_v)();
 typedef  void (*actionf_p1)( mobj_t* );
-typedef  void (*actionf_p2)( void*, void* );
+typedef  void (*actionf_p2)( void*, void*);
 
-typedef union
-{
-  actionf_p1	acp1;
-  actionf_v	acv;
-  actionf_p2	acp2;
-
-} actionf_t;
+typedef std::variant<actionf_p1, actionf_v, actionf_p2> actionf_t;
 
 
 

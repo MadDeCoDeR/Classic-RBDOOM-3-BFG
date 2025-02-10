@@ -2180,24 +2180,18 @@ G_InitNew
 	if (::g->fastleveldirty) {
 		switch(fastlevel) {
 			case 1: {
-				for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
-					::g->states[i].tics >>= ::g->fasttics;
 				mobjinfo[MT_BRUISERSHOT].speed = 20 * FRACUNIT;
 				mobjinfo[MT_HEADSHOT].speed = 20 * FRACUNIT;
 				mobjinfo[MT_TROOPSHOT].speed = 20 * FRACUNIT;
 				break;
 			}
 			case 2: {
-				for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
-					::g->states[i].tics >>= ::g->fasttics;
 				mobjinfo[MT_BRUISERSHOT].speed = 40 * FRACUNIT;
 				mobjinfo[MT_HEADSHOT].speed = 40 * FRACUNIT;
 				mobjinfo[MT_TROOPSHOT].speed = 40 * FRACUNIT;
 				break;
 			}
 			case 0: {
-				for (i = S_SARG_RUN1; i <= S_SARG_PAIN2; i++)
-					::g->states[i].tics <<= ::g->fasttics;
 				mobjinfo[MT_BRUISERSHOT].speed = 15 * FRACUNIT;
 				mobjinfo[MT_HEADSHOT].speed = 10 * FRACUNIT;
 				mobjinfo[MT_TROOPSHOT].speed = 10 * FRACUNIT;
@@ -2209,6 +2203,16 @@ G_InitNew
 				int swap = mobjinfo[j].speed;
 				mobjinfo[j].speed = mobjinfo[j].altSpeed;
 				mobjinfo[j].altSpeed = swap;
+			}
+		}
+		for (size_t o = 0; o < ::g->states.size(); o++) {
+			if (::g->states[o].flags & FF_FAST) {
+				if (fastlevel) {
+					::g->states[o].tics >>= ::g->fasttics;
+				}
+				else{
+					::g->states[o].tics <<= ::g->fasttics;
+				}
 			}
 		}
 		::g->fastleveldirty = false;

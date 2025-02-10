@@ -965,7 +965,7 @@ void R_PrecacheLevel (void)
 	
     for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
     {
-	if (th->function.acp1 == (actionf_p1)P_MobjThinker)
+	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker)
 	    spritepresent[((mobj_t *)th)->sprite] = 1;
     }
 	

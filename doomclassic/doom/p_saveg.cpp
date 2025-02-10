@@ -240,7 +240,7 @@ int GetMOIndex( mobj_t* findme ) {
 
 	for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
 	{
-		if (th->function.acp1 == (actionf_p1)P_MobjThinker) {
+		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker) {
 			index++;
 			mobj = (mobj_t*)th;
 
@@ -263,7 +263,7 @@ mobj_t* GetMO( int index ) {
 
 	for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
 	{
-		if (th->function.acp1 == (actionf_p1)P_MobjThinker) {
+		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker) {
 			testindex++;
 
 			if ( testindex == index ) {
@@ -301,7 +301,7 @@ void P_ArchiveThinkers (void)
 		//mobj_t*	test = (mobj_t*)th;
 		//I_Printf( "%3d: %x == function\n", index++, th->function.acp1 );
 
-		if (th->function.acp1 == (actionf_p1)P_MobjThinker)
+		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker)
 		{
 			*::g->save_p++ = tc_mobj;
 			PADSAVEP();
@@ -362,7 +362,7 @@ void P_ArchiveThinkers (void)
 			continue;
 		}
 
-		if (th->function.acv == (actionf_v)NULL)
+		if (std::holds_alternative<actionf_v>(th->function) && std::get<actionf_v>(th->function) == (actionf_v)NULL)
 		{
 			size_t ci;
 			for (ci = 0; ci < ::g->cellind;ci++)
@@ -381,7 +381,7 @@ void P_ArchiveThinkers (void)
 			continue;
 		}
 
-		if (th->function.acp1 == (actionf_p1)T_MoveCeiling)
+		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_MoveCeiling)
 		{
 			*::g->save_p++ = tc_ceiling;
 			PADSAVEP();
@@ -392,7 +392,7 @@ void P_ArchiveThinkers (void)
 			continue;
 		}
 
-		if (th->function.acp1 == (actionf_p1)T_VerticalDoor)
+		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_VerticalDoor)
 		{
 			*::g->save_p++ = tc_door;
 			PADSAVEP();
@@ -403,7 +403,7 @@ void P_ArchiveThinkers (void)
 			continue;
 		}
 
-		if (th->function.acp1 == (actionf_p1)T_MoveFloor)
+		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_MoveFloor)
 		{
 			*::g->save_p++ = tc_floor;
 			PADSAVEP();
@@ -414,7 +414,7 @@ void P_ArchiveThinkers (void)
 			continue;
 		}
 
-		if (th->function.acp1 == (actionf_p1)T_PlatRaise)
+		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_PlatRaise)
 		{
 			*::g->save_p++ = tc_plat;
 			PADSAVEP();
@@ -425,7 +425,7 @@ void P_ArchiveThinkers (void)
 			continue;
 		}
 
-		if (th->function.acp1 == (actionf_p1)T_FireFlicker)
+		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_FireFlicker)
 		{
 			*::g->save_p++ = tc_fire;
 			PADSAVEP();
@@ -436,7 +436,7 @@ void P_ArchiveThinkers (void)
 			continue;
 		}
 
-		if (th->function.acp1 == (actionf_p1)T_LightFlash)
+		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_LightFlash)
 		{
 			*::g->save_p++ = tc_flash;
 			PADSAVEP();
@@ -447,7 +447,7 @@ void P_ArchiveThinkers (void)
 			continue;
 		}
 
-		if (th->function.acp1 == (actionf_p1)T_StrobeFlash)
+		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_StrobeFlash)
 		{
 			*::g->save_p++ = tc_strobe;
 			PADSAVEP();
@@ -458,7 +458,7 @@ void P_ArchiveThinkers (void)
 			continue;
 		}
 
-		if (th->function.acp1 == (actionf_p1)T_Glow)
+		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_Glow)
 		{
 			*::g->save_p++ = tc_glow;
 			PADSAVEP();
@@ -535,7 +535,7 @@ void P_UnArchiveThinkers (void)
 	{
 		next = currentthinker->next;
 
-		if (currentthinker->function.acp1 == (actionf_p1)P_MobjThinker)
+		if (std::holds_alternative<actionf_p1>(currentthinker->function) && std::get<actionf_p1>(currentthinker->function) == (actionf_p1)P_MobjThinker)
 			P_RemoveMobj ((mobj_t *)currentthinker);
 		else
 			Z_Free(currentthinker);
@@ -569,7 +569,7 @@ void P_UnArchiveThinkers (void)
 			// fixup mobj_t pointers now that all thinkers have been restored
 			mo_index = 0;
 			for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next) {
-				if (th->function.acp1 == (actionf_p1)P_MobjThinker) {
+				if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker) {
 					mobj = (mobj_t*)th;
 
 					mobj->target = GetMO( unmo[mo_index].mo_targets );
@@ -653,7 +653,7 @@ void P_UnArchiveThinkers (void)
 			mobj->info = &mobjinfo[mobj->type];
 			mobj->floorz = mobj->subsector->sector->floorheight;
 			mobj->ceilingz = mobj->subsector->sector->ceilingheight;
-			mobj->thinker.function.acp1 = (actionf_p1)P_MobjThinker;
+			mobj->thinker.function = (actionf_p1)P_MobjThinker;
 
 			// Read in 'target' and store for fixup
 			int a, b, foundIndex;
@@ -712,8 +712,8 @@ void P_UnArchiveThinkers (void)
 			ceiling->sector = &::g->sectors[(intptr_t)ceiling->sector];
 			ceiling->sector->ceilingdata = ceiling;
 
-			if (ceiling->thinker.function.acp1)
-				ceiling->thinker.function.acp1 = (actionf_p1)T_MoveCeiling;
+			if (std::holds_alternative<actionf_p1>(ceiling->thinker.function))
+				ceiling->thinker.function = (actionf_p1)T_MoveCeiling;
 
 			P_AddThinker (&ceiling->thinker);
 			P_AddActiveCeiling(ceiling);
@@ -726,7 +726,7 @@ void P_UnArchiveThinkers (void)
 			::g->save_p += sizeof(*door);
 			door->sector = &::g->sectors[(intptr_t)door->sector];
 			door->sector->ceilingdata = door;
-			door->thinker.function.acp1 = (actionf_p1)T_VerticalDoor;
+			door->thinker.function = (actionf_p1)T_VerticalDoor;
 			P_AddThinker (&door->thinker);
 			break;
 
@@ -737,7 +737,7 @@ void P_UnArchiveThinkers (void)
 			::g->save_p += sizeof(*floor);
 			floor->sector = &::g->sectors[(intptr_t)floor->sector];
 			floor->sector->floordata = floor;
-			floor->thinker.function.acp1 = (actionf_p1)T_MoveFloor;
+			floor->thinker.function = (actionf_p1)T_MoveFloor;
 			P_AddThinker (&floor->thinker);
 			break;
 
@@ -749,8 +749,8 @@ void P_UnArchiveThinkers (void)
 			plat->sector = &::g->sectors[(intptr_t)plat->sector];
 			plat->sector->floordata = plat;
 
-			if (plat->thinker.function.acp1)
-				plat->thinker.function.acp1 = (actionf_p1)T_PlatRaise;
+			if (std::holds_alternative<actionf_p1>(plat->thinker.function))
+				plat->thinker.function = (actionf_p1)T_PlatRaise;
 
 			P_AddThinker (&plat->thinker);
 			P_AddActivePlat(plat);
@@ -762,7 +762,7 @@ void P_UnArchiveThinkers (void)
 			memcpy (fire, ::g->save_p, sizeof(*fire));
 			::g->save_p += sizeof(*fire);
 			fire->sector = &::g->sectors[(intptr_t)fire->sector];
-			fire->thinker.function.acp1 = (actionf_p1)T_FireFlicker;
+			fire->thinker.function = (actionf_p1)T_FireFlicker;
 			P_AddThinker (&fire->thinker);
 			break;
 
@@ -772,7 +772,7 @@ void P_UnArchiveThinkers (void)
 			memcpy (flash, ::g->save_p, sizeof(*flash));
 			::g->save_p += sizeof(*flash);
 			flash->sector = &::g->sectors[(intptr_t)flash->sector];
-			flash->thinker.function.acp1 = (actionf_p1)T_LightFlash;
+			flash->thinker.function = (actionf_p1)T_LightFlash;
 			P_AddThinker (&flash->thinker);
 			break;
 
@@ -782,7 +782,7 @@ void P_UnArchiveThinkers (void)
 			memcpy (strobe, ::g->save_p, sizeof(*strobe));
 			::g->save_p += sizeof(*strobe);
 			strobe->sector = &::g->sectors[(intptr_t)strobe->sector];
-			strobe->thinker.function.acp1 = (actionf_p1)T_StrobeFlash;
+			strobe->thinker.function = (actionf_p1)T_StrobeFlash;
 			P_AddThinker (&strobe->thinker);
 			break;
 
@@ -792,7 +792,7 @@ void P_UnArchiveThinkers (void)
 			memcpy (glow, ::g->save_p, sizeof(*glow));
 			::g->save_p += sizeof(*glow);
 			glow->sector = &::g->sectors[(intptr_t)glow->sector];
-			glow->thinker.function.acp1 = (actionf_p1)T_Glow;
+			glow->thinker.function = (actionf_p1)T_Glow;
 			P_AddThinker (&glow->thinker);
 			break;
 
@@ -837,7 +837,7 @@ void P_ArchiveSpecials (void)
     // save off the current thinkers
     for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
     {
-	if (th->function.acv == (actionf_v)NULL)
+	if (std::holds_alternative<actionf_v>(th->function) && std::get<actionf_v>(th->function) == (actionf_v)NULL)
 	{
 		size_t ci;
 	    for (ci = 0; ci < ::g->cellind;ci++)
@@ -856,7 +856,7 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (th->function.acp1 == (actionf_p1)T_MoveCeiling)
+	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_MoveCeiling)
 	{
 	    *::g->save_p++ = tc_ceiling;
 	    PADSAVEP();
@@ -867,7 +867,7 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (th->function.acp1 == (actionf_p1)T_VerticalDoor)
+	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_VerticalDoor)
 	{
 	    *::g->save_p++ = tc_door;
 	    PADSAVEP();
@@ -878,7 +878,7 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (th->function.acp1 == (actionf_p1)T_MoveFloor)
+	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_MoveFloor)
 	{
 	    *::g->save_p++ = tc_floor;
 	    PADSAVEP();
@@ -889,7 +889,7 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (th->function.acp1 == (actionf_p1)T_PlatRaise)
+	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_PlatRaise)
 	{
 	    *::g->save_p++ = tc_plat;
 	    PADSAVEP();
@@ -900,7 +900,7 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (th->function.acp1 == (actionf_p1)T_LightFlash)
+	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_LightFlash)
 	{
 	    *::g->save_p++ = tc_flash;
 	    PADSAVEP();
@@ -911,7 +911,7 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (th->function.acp1 == (actionf_p1)T_StrobeFlash)
+	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_StrobeFlash)
 	{
 	    *::g->save_p++ = tc_strobe;
 	    PADSAVEP();
@@ -922,7 +922,7 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (th->function.acp1 == (actionf_p1)T_Glow)
+	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_Glow)
 	{
 	    *::g->save_p++ = tc_glow;
 	    PADSAVEP();
@@ -933,7 +933,7 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 	//GK:BOOM's elevator and scroller related stuff
-	if (th->function.acp1 == (actionf_p1)T_MoveElevator)
+	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_MoveElevator)
 	{
 		*::g->save_p++ = tc_elevator;
 		PADSAVEP();
@@ -944,7 +944,7 @@ void P_ArchiveSpecials (void)
 		continue;
 	}
 
-	if (th->function.acp1 == (actionf_p1)T_Scroll)
+	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_Scroll)
 	{
 		*::g->save_p++ = tc_scroll;
 		PADSAVEP();
@@ -995,8 +995,8 @@ void P_UnArchiveSpecials (void)
 	    ceiling->sector = &::g->sectors[(intptr_t)ceiling->sector];
 	    ceiling->sector->ceilingdata = ceiling;
 
-	    if (ceiling->thinker.function.acp1)
-		ceiling->thinker.function.acp1 = (actionf_p1)T_MoveCeiling;
+	    if (std::holds_alternative<actionf_p1>(ceiling->thinker.function))
+		ceiling->thinker.function = (actionf_p1)T_MoveCeiling;
 
 	    P_AddThinker (&ceiling->thinker);
 	    P_AddActiveCeiling(ceiling);
@@ -1009,7 +1009,7 @@ void P_UnArchiveSpecials (void)
 	    ::g->save_p += sizeof(*door);
 	    door->sector = &::g->sectors[(intptr_t)door->sector];
 	    door->sector->ceilingdata = door;
-	    door->thinker.function.acp1 = (actionf_p1)T_VerticalDoor;
+	    door->thinker.function = (actionf_p1)T_VerticalDoor;
 	    P_AddThinker (&door->thinker);
 	    break;
 				
@@ -1020,7 +1020,7 @@ void P_UnArchiveSpecials (void)
 	    ::g->save_p += sizeof(*floor);
 	    floor->sector = &::g->sectors[(intptr_t)floor->sector];
 	    floor->sector->floordata = floor;
-	    floor->thinker.function.acp1 = (actionf_p1)T_MoveFloor;
+	    floor->thinker.function = (actionf_p1)T_MoveFloor;
 	    P_AddThinker (&floor->thinker);
 	    break;
 				
@@ -1032,8 +1032,8 @@ void P_UnArchiveSpecials (void)
 	    plat->sector = &::g->sectors[(intptr_t)plat->sector];
 	    plat->sector->floordata = plat;
 
-	    if (plat->thinker.function.acp1)
-		plat->thinker.function.acp1 = (actionf_p1)T_PlatRaise;
+		if (std::holds_alternative<actionf_p1>(plat->thinker.function))
+		plat->thinker.function = (actionf_p1)T_PlatRaise;
 
 	    P_AddThinker (&plat->thinker);
 	    P_AddActivePlat(plat);
@@ -1045,7 +1045,7 @@ void P_UnArchiveSpecials (void)
 	    memcpy (flash, ::g->save_p, sizeof(*flash));
 	    ::g->save_p += sizeof(*flash);
 	    flash->sector = &::g->sectors[(intptr_t)flash->sector];
-	    flash->thinker.function.acp1 = (actionf_p1)T_LightFlash;
+	    flash->thinker.function = (actionf_p1)T_LightFlash;
 	    P_AddThinker (&flash->thinker);
 	    break;
 				
@@ -1055,7 +1055,7 @@ void P_UnArchiveSpecials (void)
 	    memcpy (strobe, ::g->save_p, sizeof(*strobe));
 	    ::g->save_p += sizeof(*strobe);
 	    strobe->sector = &::g->sectors[(intptr_t)strobe->sector];
-	    strobe->thinker.function.acp1 = (actionf_p1)T_StrobeFlash;
+	    strobe->thinker.function = (actionf_p1)T_StrobeFlash;
 	    P_AddThinker (&strobe->thinker);
 	    break;
 				
@@ -1065,7 +1065,7 @@ void P_UnArchiveSpecials (void)
 	    memcpy (glow, ::g->save_p, sizeof(*glow));
 	    ::g->save_p += sizeof(*glow);
 	    glow->sector = &::g->sectors[(intptr_t)glow->sector];
-	    glow->thinker.function.acp1 = (actionf_p1)T_Glow;
+	    glow->thinker.function = (actionf_p1)T_Glow;
 	    P_AddThinker (&glow->thinker);
 	    break;
 		//GK:BOOM's elevator and scroller related stuff
@@ -1075,7 +1075,7 @@ void P_UnArchiveSpecials (void)
 		  memcpy(elevator, ::g->save_p, sizeof(*elevator));
 		  ::g->save_p += sizeof(*elevator);
 		  elevator->sector = &::g->sectors[(intptr_t)elevator->sector];
-		  elevator->thinker.function.acp1 = (actionf_p1)T_MoveElevator;
+		  elevator->thinker.function = (actionf_p1)T_MoveElevator;
 		  P_AddThinker(&elevator->thinker);
 		  break;
 
@@ -1084,7 +1084,7 @@ void P_UnArchiveSpecials (void)
 		  scroll = (scroll_t*)DoomLib::Z_Malloc(sizeof(*scroll), PU_DOOR, NULL);
 		  memcpy(scroll, ::g->save_p, sizeof(*scroll));
 		  ::g->save_p += sizeof(*scroll);
-		  scroll->thinker.function.acp1 = (actionf_p1)T_Scroll;
+		  scroll->thinker.function = (actionf_p1)T_Scroll;
 		  P_AddThinker(&scroll->thinker);
 		  break;
 				

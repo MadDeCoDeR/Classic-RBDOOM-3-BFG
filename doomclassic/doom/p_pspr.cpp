@@ -135,13 +135,12 @@ P_SetPsprite
 
 		// Call action routine.
 		// Modified handling.
-		if (state->action)
+		if (std::holds_alternative<actionf_p2>(state->action))
 		{
-			state->action(player, psp);
+			std::get<actionf_p2>(state->action)(player, psp);
 			if (!psp->state)
 				break;
 		}
-
 		stnum = psp->state->nextstate;
 
 	} while (!psp->tics);
@@ -914,7 +913,7 @@ void A_Light2 (player_t *player, pspdef_t *psp)
 // A_BFGSpray
 // Spawn a BFG explosion on every monster in view
 //
-void A_BFGSpray (mobj_t* mo, void * ) 
+void A_BFGSpray (mobj_t* mo) 
 {
 	int			i;
 	int			j;

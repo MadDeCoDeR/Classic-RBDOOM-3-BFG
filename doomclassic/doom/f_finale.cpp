@@ -754,7 +754,7 @@ void F_StartCast (void)
 }
 
 int F_CastRandomJump(state_t* frame) {
-	if ((frame->action == (actionf_p2)A_RandomJump) && M_Random() < frame->misc2) {
+	if ((std::holds_alternative<actionf_p2>(frame->action) && std::get<actionf_p2>(frame->action) == (actionf_p2)A_RandomJump) && M_Random() < frame->misc2) {
 		return frame->misc1;
 	}
 	else {
