@@ -150,13 +150,15 @@ void idAchievementSystemWin::ShowAchievementProgress(const int achievementID, in
 void idAchievementSystemWin::CountAchievements()
 {
 	numberOfAchievements = 0;
-	while (true) {
-		idStr achName = ::op->openAchievement()->GetAchievementDevName(numberOfAchievements);
-		if (achName != "") {
-			achievementDevNames.AddUnique(achName);
-			numberOfAchievements++;
-			continue;
+	if (::op) {
+		while (true) {
+			idStr achName = ::op->openAchievement()->GetAchievementDevName(numberOfAchievements);
+			if (achName != "") {
+				achievementDevNames.AddUnique(achName);
+				numberOfAchievements++;
+				continue;
+			}
+			break;
 		}
-		break;
 	}
 }
