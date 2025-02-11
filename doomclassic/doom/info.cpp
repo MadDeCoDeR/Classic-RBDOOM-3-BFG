@@ -176,6 +176,8 @@ extern "C"
 	void A_BrainExplode(void* p1);
 	void A_RandomJump(void* p1, void* p2);
 	void A_Spawn(void* p1);
+	//GK: MBF21 CodePointers
+	void A_SpawnObject(void* p1);
 };
 
 
@@ -5707,7 +5709,8 @@ std::vector<dehcptr> tempcptrval {
 { "SpawnFly",(actionf_p1)A_SpawnFly },
 { "BrainExplode",(actionf_p1)A_BrainExplode },
 { "RandomJump", (actionf_p2)A_RandomJump },
-{ "Spawn", (actionf_p1)A_Spawn }
+{ "Spawn", (actionf_p1)A_Spawn },
+{ "SpawnObject", (actionf_p1)A_SpawnObject }
 };
 
 void init_cptrs() {

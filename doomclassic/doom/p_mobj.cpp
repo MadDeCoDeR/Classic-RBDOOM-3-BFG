@@ -1044,4 +1044,39 @@ P_SpawnPlayerMissile
 	P_CheckMissileSpawn (th);
 }
 
+extern "C" {
+void A_SpawnObject(mobj_t* mo) {
+	if (!mo->state->args[0])
+		return;
 
+	mobjtype_t type = (mobjtype_t)(mo->state->args[0] - 1);
+	angle_t angle = mo->angle + (uint)(((int64)mo->state->args[1] << 16) / 360);
+	int shiftedAngle = angle >> ANGLETOFINESHIFT;
+	int xOffset = FixedMul(mo->state->args[2], finecosine[shiftedAngle]) - FixedMul(mo->state->args[3], finesine[shiftedAngle]);
+	int yOffset = FixedMul(mo->state->args[2], finesine[shiftedAngle]) + FixedMul(mo->state->args[3], finecosine[shiftedAngle]);
+	int zOffset = mo->state->args[4];
+	int xVelocity = FixedMul(mo->state->args[5], finecosine[shiftedAngle]) - FixedMul(mo->state->args[6], finesine[shiftedAngle]);
+	int yVelocity = FixedMul(mo->state->args[5], finesine[shiftedAngle]) + FixedMul(mo->state->args[6], finecosine[shiftedAngle]);
+	int zVelocity = mo->state->args[7];
+
+	mobj_t* child = P_SpawnMobj(mo->x + xOffset, mo->y + yOffset, mo->z + zOffset, type);
+	if (!child)
+		return;
+
+	child->angle = angle;
+	child->momx = xVelocity;
+	child->momy = yVelocity;
+	child->momz = zVelocity;
+
+	if (child->flags & MF_MISSILE) {
+		if (mo->flags & MF_MISSILE) {
+			child->target = mo->target;
+			child->tracer = mo->tracer;
+		} else {
+			child->target = mo;
+			child->tracer = mo->target;
+		}
+	}
+
+}
+}
