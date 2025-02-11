@@ -30,7 +30,7 @@
 #ifdef GAME_DLL
 //GK: Declare the fuctions here
 void idTest(const idCmdArgs& args);
-void A_InstaKill(mobj_t* mo, void*);
+void A_InstaKill(mobj_t* mo);
 
 //GK: Declare custom Code Pointers here
 dehcptr customcptr[] = {

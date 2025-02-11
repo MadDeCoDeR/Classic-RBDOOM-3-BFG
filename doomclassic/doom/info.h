@@ -1173,14 +1173,8 @@ typedef struct state_s
 	 // actionf_p2			action; // <- this was left
 	//  int					filler;
  // };
-#ifdef _MSC_VER
+
   actionf_t			action;
-#else
-  struct {
-    actionf_p2			action;
-    //  int					filler;
-  };
-#endif
 
   int			nextstate;
   long			misc1, misc2;
