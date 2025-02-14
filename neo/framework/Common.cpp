@@ -1255,8 +1255,9 @@ void LoadPlatformDLL()
 				::op->SetAdditionalInfo("large image", "dbfa");
 				::op->SetAdditionalInfo("small image", "dbfa");
 				::op->SetAdditionalInfo("status", "Strting Game");
-				::op->openInput()->Start();
-				if (!idStr::Icmp("Steam", ::op->API_Name())) {
+				
+				if (!idStr::Icmp("Steam", ::op->API_Name())  && ::op->IsPortable()) {
+					::op->openInput()->Start();
 					::op->openInput()->RegisterInputConfigurationFile(fileSystem->RelativePathToOSPath("bfa_actions.vdf"));
 				}
 				//::op->SetNotificationsPosition(0, 0); //GK: Who knows maybe someone want it on top left
@@ -1273,7 +1274,9 @@ void UnloadPlatformDLL()
 	// shut down the platform object
 	if (::op != NULL)
 	{
-		::op->openInput()->Stop();
+		if (::op->IsPortable()) {
+			::op->openInput()->Stop();
+		}
 		::op->API_Shutdown();		
 	}
 
