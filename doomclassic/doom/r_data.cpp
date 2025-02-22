@@ -314,8 +314,9 @@ void R_GenerateLookup (int texnum)
 	// Part of fix for medusa bug for multipatched 2s normals.
 	//GK: Give struct a name in c++ calloc must be cast in order to work and using (struct*) is not an option
 	struct ct{
-		unsigned short patches, posts;
-	} *count =(ct*) calloc(sizeof *count, texture->width);
+		unsigned int patches, posts;
+	};
+	std::vector<ct> count;
 	{
 		//GK: Either keep the for loops or make them while loops both has the same result
 		for (i = texture->patchcount-1;
@@ -334,17 +335,29 @@ void R_GenerateLookup (int texnum)
 
 			if (x2 > texture->width)
 				x2 = texture->width;
+
+			for (int xi = 0; xi < x2; xi++) {
+				count.push_back({0, 0});
+			}
+
 			for (; x < x2; x++)
 			{
 				// killough 4/9/98: keep a count of the number of posts in column,
 				// to fix Medusa bug while allowing for transparent multipatches.
 
-				const postColumn_t *col = (postColumn_t*)((byte*)realpatch + LONG(cofs[x]));
-				for (; col->topdelta != 0xff; count[x].posts++) 
-						col = (postColumn_t *)((byte *)col + col->length + 4);
-				count[x].patches++;
-				collump[x] = pat;
-				colofs[x] = LONG(cofs[x]) + 3;
+				if (LONG(cofs[x]) < W_LumpLength(pat) && LONG(cofs[x]) >= 0)
+				{
+					postColumn_t *col = (postColumn_t *)((byte *)realpatch + LONG(cofs[x]));
+
+					if (col->length < W_LumpLength(pat) && x < texture->width)
+					{
+						for (; col->topdelta != 0xff; count[x].posts++)
+							col = (postColumn_t *)((byte *)col + col->length + 4);
+						count[x].patches++;
+						collump[x] = pat;
+						colofs[x] = LONG(cofs[x]) + 3;
+					}
+				}
 			}
 		}
 	}
@@ -356,8 +369,8 @@ void R_GenerateLookup (int texnum)
 		{
 			if (!count[x].patches)
 			{
-				I_Printf("R_GenerateLookup: column without a patch (%s)\n",
-					texture->name);
+				I_Printf("R_GenerateLookup: column without a patch (%s:%d)\n",
+					texture->name, x);
 				return;
 			}
 			// I_Error ("R_GenerateLookup: column without a patch");
@@ -391,7 +404,7 @@ void R_GenerateLookup (int texnum)
 		}
 		::g->s_texturecompositesize[texnum] = csize;
 	}
-	free(count);  // killough 4/9/98
+	//free(count);  // killough 4/9/98
 }
 
 
