@@ -536,11 +536,12 @@ void setFrame(int pos, char* varname, int varval) {
 		if (!idStr::Icmp(varname, fvars[i].name)) {
 			if (varval < fvars[i].limit) {
 				switch (i) {
-				case 4:
+				case 12:
 					extendSpriteNames(varval);
 					*fvars[i].ival = varval;
 					break;
-				case 5:
+				case 13:
+				case 14:
 					//*fvars[i].stval = static_cast<statenum_t>(varval);
 					*fvars[i].ival = varval;
 					break;
