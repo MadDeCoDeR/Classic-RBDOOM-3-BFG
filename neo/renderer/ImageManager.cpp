@@ -388,6 +388,8 @@ idImage*	idImageManager::ImageFromFile( const char* _name, textureFilter_t filte
 	// strip any .tga file extensions from anywhere in the _name, including image program parameters
 	idStrStatic< MAX_OSPATH > name = _name;
 	name.Replace( ".tga", "" );
+	name.Replace(".jpg", "");
+	name.Replace(".png", "");
 	name.BackSlashesToSlashes();
 	
 	//
