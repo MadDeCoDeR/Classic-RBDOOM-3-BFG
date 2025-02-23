@@ -2160,7 +2160,7 @@ void T_Scroll(scroll_t *s)
 
 		for (size_t i = 0; i < ::g->sector_list.size(); i++) {
 			msecnode_t* node = ::g->sector_list[i].get();
-			if (node != NULL) {
+			if (node != NULL && node->m_thing != NULL) {
 				if (node->m_sector == sec) {
 					if (!((thing = node->m_thing)->flags & MF_NOCLIP) &&
 						(!(thing->z > height) || thing->z < waterheight))

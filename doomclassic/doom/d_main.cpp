@@ -405,7 +405,9 @@ void D_PageTicker (void)
 //
 void D_PageDrawer (void)
 {
-	V_DrawPatch (0,0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName(::g->pagename, PU_CACHE_SHARED), W_GetNumForName(::g->pagename)), false);
+	//GK: Wide TITLEPIC image supprt
+	patch_t* image = img2lmp(W_CacheLumpName(::g->pagename, PU_CACHE_SHARED), W_GetNumForName(::g->pagename));
+	V_DrawPatch (0,0, 0, /*(patch_t*)*/image, image->width > ORIGINAL_WIDTH);
 }
 
 
