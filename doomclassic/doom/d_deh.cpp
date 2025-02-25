@@ -886,11 +886,11 @@ void setMisc(char* varname, int varval) {
 
 void setSpriteName(char* varname, char* vartext) {
 	int index = atoi(varname);
-	if (index > sprnames.size()) {
+	if ((size_t)index > sprnames.size()) {
 		extendSpriteNames(index + 1);
 	}
 	vartext++;
-	sprnames[index] = vartext;
+	sprnames[(size_t)index] = vartext;
 }
 
 std::vector<std::string> getlines(char* text) {
