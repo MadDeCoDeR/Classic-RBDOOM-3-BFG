@@ -412,7 +412,7 @@ dehbits mobfl[] = {
 };
 
 int checkstate(char* text) {
-	const char* stable[11] = {
+	const char* stable[13] = {
 		"Thing",
 		"Frame",
 		"Text",
@@ -423,10 +423,12 @@ int checkstate(char* text) {
 		"par",
 		"[STRINGS]",
 		"Sound",
-		"Misc"
+		"Misc",
+		"[SPRITES]",
+		"[SOUNDS]"
 	};
 	if (text != NULL) {
-		for (int i = 0; i < 11; i++) {
+		for (int i = 0; i < 13; i++) {
 			if (!idStr::Icmp(text, stable[i])) {
 				return i + 1;
 			}
@@ -882,6 +884,15 @@ void setMisc(char* varname, int varval) {
 	}
 }
 
+void setSpriteName(char* varname, char* vartext) {
+	int index = atoi(varname);
+	if (index > sprnames.size()) {
+		extendSpriteNames(index + 1);
+	}
+	vartext++;
+	sprnames[index] = vartext;
+}
+
 std::vector<std::string> getlines(char* text) {
 	std::vector<std::string> lines;
 	int size = strlen(text);
@@ -929,13 +940,13 @@ void parsetext(char* text) {
 			varname = strtok(strdup(linedtext[i].c_str()), "=");
 			std::string tv3 = strtok(NULL, "=");
 			if (!tv3.empty()) {
-				if (state != 6 && state != 9) {
+				if (state != 6 && state != 9 && state != 12) {
 					varval = atoi(tv3.c_str());
 					if ((state == 1 || state == 4 || state == 2)&& (!idStr::Icmp(varname, "Bits ") || !idStr::Icmp(varname, "MBF21 Bits ")) && varval == 0) {
 						varval = Generateflags(strdup(tv3.c_str()));
 					}
 				}
-				else if (state == 6) {
+				else if (state == 6 || state == 12) {
 					varfunc = strdup(tv3.c_str());
 				}
 				else {
@@ -989,6 +1000,9 @@ void parsetext(char* text) {
 				break;
 			case 11:
 				setMisc(varname, varval);
+				break;
+			case 12:
+				setSpriteName(varname, varfunc);
 				break;
 			}
 
