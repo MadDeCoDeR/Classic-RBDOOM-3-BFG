@@ -1027,6 +1027,9 @@ int W_LumpLength (int lump)
     if (lump >= numlumps)
 		I_Error ("W_LumpLength: %i >= numlumps",lump);
 
+	if (lump < 0)
+		return -1;
+
     return lumpinfo[lump].size;
 }
 

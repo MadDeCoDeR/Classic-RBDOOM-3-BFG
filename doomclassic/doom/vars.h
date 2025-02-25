@@ -618,7 +618,7 @@ std::vector<line_t>		linespeciallist{};
 animdef_t animdefs[23]; //GK: Make this global in order to be used and elsewhere
 // p_spec.vars end // 
 //  p_switch.vars begin // 
-int		switchlist[MAXSWITCHES * 2];
+std::vector<int>		switchlist;
 int		numswitches;
 button_t        buttonlist[MAXBUTTONS];
 // p_switch.vars end // 

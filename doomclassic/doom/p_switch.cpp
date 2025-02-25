@@ -113,10 +113,13 @@ void P_InitSwitchList(void)
     int		episode;
 	switchlist_t* alphSwitchList;
 	alphSwitchList = (switchlist_t *)W_CacheLumpName("SWITCHES", PU_STATIC); 
+	int listByteSize = W_LumpLength(W_GetNumForName("SWITCHES"));
 	if (!alphSwitchList) {//GK:Check if SWITCHES lump exist. If not then load the vanilla list
 		alphSwitchList = tSwitchList;
+		listByteSize = sizeof(tSwitchList);
 	}
-	
+	size_t switchSize = listByteSize / sizeof(switchlist_t);
+	::g->switchlist.resize(switchSize * 2);
     episode = 1;
 
 	if (::g->gamemode == registered || ::g->gamemode == retail)
