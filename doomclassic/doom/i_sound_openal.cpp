@@ -712,8 +712,8 @@ void I_InitSoundAL()
 				activeSounds[i].sample = av_sample;
 			} else {
 				// Previously loaded already?
-				S_sfx[i].data = S_sfx[i].link->data;
-				int pointer = (S_sfx[i].link-S_sfx) / sizeof(sfxinfo_t);
+				S_sfx[i].data = S_sfx[S_sfx[i].link].data;
+				int pointer = S_sfx[i].link;//(S_sfx[i].link-S_sfx.data()) / sizeof(sfxinfo_t);
 				lengths[i] = lengths[pointer]; //GK: Get Linked sfx rate, sample and length
 				av_rate = activeSounds[pointer].rate;
 				av_sample = activeSounds[pointer].sample;

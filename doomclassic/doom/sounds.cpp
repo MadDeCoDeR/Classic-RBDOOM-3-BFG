@@ -43,8 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 // Information about all the sfx
 //
 
-sfxinfo_t S_sfx[128] =
-{
+std::vector<sfxinfo_t> S_sfx {
   // S_sfx[0] needs to be a dummy for odd reasons.
   { "none", false,  0, 0, -1, -1, 0 },
 
@@ -133,7 +132,7 @@ sfxinfo_t S_sfx[128] =
   { "punch", false, 64, 0, -1, -1, 0 },
   { "hoof", false, 70, 0, -1, -1, 0 },
   { "metal", false, 70, 0, -1, -1, 0 },
-  { "chgun", false, 64, &S_sfx[sfx_pistol], 150, 0, 0 },
+  { "chgun", false, 64, sfx_pistol, 150, 0, 0 },
   { "tink", false, 60, 0, -1, -1, 0 },
   { "bdopn", false, 100, 0, -1, -1, 0 },
   { "bdcls", false, 100, 0, -1, -1, 0 },
@@ -155,12 +154,12 @@ sfxinfo_t S_sfx[128] =
   { "skeact", false, 70, 0, -1, -1, 0 },
   { "skesit", false, 70, 0, -1, -1, 0 },
   { "skeatk", false, 70, 0, -1, -1, 0 },
-  { "radio", false, 60, 0, -1, -1, 0 } 
+  { "radio", false, 60, 0, -1, -1, 0 }, 
 };
 //GK: More Headache than it's worth
 //GK: DeHackeD change it and it must reset
 void ResetSfx() {
-	sfxinfo_t tS_sfx[128] =
+	std::vector<sfxinfo_t> tS_sfx
 	{
 		// S_sfx[0] needs to be a dummy for odd reasons.
 		{ "none", false,  0, 0, -1, -1, 0 },
@@ -250,7 +249,7 @@ void ResetSfx() {
 		{ "punch", false, 64, 0, -1, -1, 0 },
 		{ "hoof", false, 70, 0, -1, -1, 0 },
 		{ "metal", false, 70, 0, -1, -1, 0 },
-		{ "chgun", false, 64, &S_sfx[sfx_pistol], 150, 0, 0 },
+		{ "chgun", false, 64, sfx_pistol, 150, 0, 0 },
 		{ "tink", false, 60, 0, -1, -1, 0 },
 		{ "bdopn", false, 100, 0, -1, -1, 0 },
 		{ "bdcls", false, 100, 0, -1, -1, 0 },
@@ -272,7 +271,7 @@ void ResetSfx() {
 		{ "skeact", false, 70, 0, -1, -1, 0 },
 		{ "skesit", false, 70, 0, -1, -1, 0 },
 		{ "skeatk", false, 70, 0, -1, -1, 0 },
-		{ "radio", false, 60, 0, -1, -1, 0 }
+		{ "radio", false, 60, 0, -1, -1, 0 },
 	};
-	memcpy(S_sfx, tS_sfx, sizeof(tS_sfx));
+	S_sfx = tS_sfx;
 }

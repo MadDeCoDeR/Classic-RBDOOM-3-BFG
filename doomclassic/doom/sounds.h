@@ -49,7 +49,7 @@ struct sfxinfo_struct
     int		priority;
 
     // referenced sound if a link
-    sfxinfo_t*	link;
+    int	link;
 
     // pitch if a link
     int		pitch;
@@ -95,7 +95,7 @@ typedef struct
 
 
 // the complete set of sound effects
-extern sfxinfo_t	S_sfx[];
+extern std::vector<sfxinfo_t>	S_sfx;
 void ResetSfx(); //GK: And it's back
 // the complete set of music
 extern musicinfo_t	S_music[];

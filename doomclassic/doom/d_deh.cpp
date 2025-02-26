@@ -516,6 +516,12 @@ void extendSpriteNames(int newSize) {
 	}
 }
 
+void extendSoundNames(int newSize) {
+	if (newSize >= (int)S_sfx.size() - 1) {
+		S_sfx.resize(newSize + 2, { "none", false,  0, 0, -1, -1, 0 });
+	}
+}
+
 void setFrame(int pos, char* varname, int varval) {
 	dehobj fvars[15] = {
 		{"Sprite subnumber ",MAXINT,NULL,NULL,&tempStates[pos].frame},
@@ -893,6 +899,15 @@ void setSpriteName(char* varname, char* vartext) {
 	sprnames[(size_t)index] = vartext;
 }
 
+void setSoundName(char* varname, char* vartext) {
+	int index = atoi(varname);
+	if ((size_t)index > S_sfx.size()) {
+		extendSoundNames(index + 1);
+	}
+	vartext++;
+	S_sfx[(size_t)index].name = vartext;
+}
+
 std::vector<std::string> getlines(char* text) {
 	std::vector<std::string> lines;
 	int size = strlen(text);
@@ -940,13 +955,13 @@ void parsetext(char* text) {
 			varname = strtok(strdup(linedtext[i].c_str()), "=");
 			std::string tv3 = strtok(NULL, "=");
 			if (!tv3.empty()) {
-				if (state != 6 && state != 9 && state != 12) {
+				if (state != 6 && state != 9 && state != 12 && state != 13) {
 					varval = atoi(tv3.c_str());
 					if ((state == 1 || state == 4 || state == 2)&& (!idStr::Icmp(varname, "Bits ") || !idStr::Icmp(varname, "MBF21 Bits ")) && varval == 0) {
 						varval = Generateflags(strdup(tv3.c_str()));
 					}
 				}
-				else if (state == 6 || state == 12) {
+				else if (state == 6 || state == 12 || state == 13) {
 					varfunc = strdup(tv3.c_str());
 				}
 				else {
@@ -1003,6 +1018,9 @@ void parsetext(char* text) {
 				break;
 			case 12:
 				setSpriteName(varname, varfunc);
+				break;
+			case 13:
+				setSoundName(varname, varfunc);
 				break;
 			}
 
