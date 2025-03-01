@@ -860,7 +860,7 @@ P_KillMobj
 
 	if (source != NULL) {
 		//GK: D1&2 In fight Kill
-		if (!target->player && !source->player && source->originalTarget->player) {
+		if (!target->player && !source->player && source->originalTarget && source->originalTarget->player) {
 			if (idAchievementManager::isClassicDoomOnly()) {
 				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_INFIGHT);
 			}
