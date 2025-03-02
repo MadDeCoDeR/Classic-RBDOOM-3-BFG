@@ -44,6 +44,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "doomstat.h"
 
+#include <variant>
+
 extern bool globalNetworking;
 
 extern idCVar cl_freelook;
@@ -80,11 +82,11 @@ P_SetMobjState
 
 		// Modified handling.
 		// Call action functions when the state is set
-		if (std::holds_alternative<actionf_p2>(st->action))
-			std::get<actionf_p2>(st->action)(mobj, NULL);
+		if (const actionf_p2* action_p2 = std::get_if<actionf_p2>(&st->action))
+			(*action_p2)(mobj, NULL);
 
-		if (std::holds_alternative<actionf_p1>(st->action))
-			std::get<actionf_p1>(st->action)(mobj);
+		if (const actionf_p1* action_p1 = std::get_if<actionf_p1>(&st->action))
+			(*action_p1)(mobj);
 
 		state = st->nextstate;
 	} while (!mobj->tics);
@@ -435,16 +437,23 @@ void P_MobjThinker (mobj_t* mobj)
 		P_XYMovement (mobj);
 
 		// FIXME: decent NOP/NULL/Nil function pointer please.
-		if (std::holds_alternative<actionf_v>(mobj->thinker.function) && std::get<actionf_v>(mobj->thinker.function) == (actionf_v) (-1))
+		bool skip = false;
+		if (const actionf_v* currentAction = std::get_if<actionf_v>(&mobj->thinker.function)) {
+			skip = (*currentAction) == (actionf_v)(-1);
+		}
+		if (skip)
 			return;		// mobj was removed
 	}
 	if ( (mobj->z != mobj->floorz)
 		|| mobj->momz )
 	{
 		P_ZMovement (mobj);
-
+		bool skip = false;
+		if (const actionf_v* currentAction = std::get_if<actionf_v>(&mobj->thinker.function)) {
+			skip = (*currentAction) == (actionf_v)(-1);
+		}
 		// FIXME: decent NOP/NULL/Nil function pointer please.
-		if (std::holds_alternative<actionf_v>(mobj->thinker.function) && std::get<actionf_v>(mobj->thinker.function) == (actionf_v) (-1))
+		if (skip)
 			return;		// mobj was removed
 	}
 
@@ -462,7 +471,11 @@ void P_MobjThinker (mobj_t* mobj)
       P_DamageMobj(mobj, NULL, NULL, 10000);
 
       // must have been removed
-      if (std::holds_alternative<actionf_v>(mobj->thinker.function) && std::get<actionf_v>(mobj->thinker.function) == (actionf_v) (-1))
+	  bool skip = true;
+	  if (const actionf_p1* thAction = std::get_if<actionf_p1>(&mobj->thinker.function)) {
+		  skip = (*thAction) != (actionf_p1)P_MobjThinker;
+	  }
+	  if (skip)
         return;
     }
   }

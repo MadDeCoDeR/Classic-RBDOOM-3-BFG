@@ -2321,8 +2321,7 @@ static void P_SpawnScrollers(void)
 		case 85:                  // jff 1/30/98 2-way scroll
 			Add_Scroller(sc_side, -FRACUNIT, 0, -1, ::g->lines[i].sidenum[0], accel);
 			break;
-		        case 1024: // special 255 with tag control
-
+		case 1024: // special 255 with tag control
         case 1025:
         case 1026:
           if (l->tag == 0)

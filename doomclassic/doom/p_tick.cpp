@@ -112,7 +112,11 @@ void P_RunThinkers (void)
     currentthinker = ::g->thinkercap.next;
     while (currentthinker != &::g->thinkercap)
     {
-		 if (std::holds_alternative<actionf_v>(currentthinker->function) && std::get<actionf_v>(currentthinker->function) == (actionf_v)(-1) )
+		bool skip = false;
+		if (const actionf_v* currentAction = std::get_if<actionf_v>(&currentthinker->function)) {
+			skip = (*currentAction) == (actionf_v)(-1);
+		}
+		if (skip)
 		 {
 			 // time to remove it
 			 currentthinker->next->prev = currentthinker->prev;
@@ -121,8 +125,8 @@ void P_RunThinkers (void)
 		 }
 		 else
 		 {
-			 if (std::holds_alternative<actionf_p1>(currentthinker->function))
-				 std::get<actionf_p1>(currentthinker->function) ((mobj_t*)currentthinker);
+			 if (const actionf_p1* action_p1 = std::get_if<actionf_p1>(&currentthinker->function))
+				 (*action_p1) ((mobj_t*)currentthinker);
 		 }
 	currentthinker = currentthinker->next;
     }

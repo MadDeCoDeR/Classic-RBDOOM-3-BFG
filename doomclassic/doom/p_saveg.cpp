@@ -240,7 +240,11 @@ int GetMOIndex( mobj_t* findme ) {
 
 	for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
 	{
-		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker) {
+		bool countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)P_MobjThinker;
+		}
+		if (countIn) {
 			index++;
 			mobj = (mobj_t*)th;
 
@@ -263,7 +267,11 @@ mobj_t* GetMO( int index ) {
 
 	for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
 	{
-		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker) {
+		bool countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)P_MobjThinker;
+		}
+		if (countIn) {
 			testindex++;
 
 			if ( testindex == index ) {
@@ -301,7 +309,11 @@ void P_ArchiveThinkers (void)
 		//mobj_t*	test = (mobj_t*)th;
 		//I_Printf( "%3d: %x == function\n", index++, th->function.acp1 );
 
-		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker)
+		bool countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)P_MobjThinker;
+		}
+		if (countIn)
 		{
 			*::g->save_p++ = tc_mobj;
 			PADSAVEP();
@@ -361,8 +373,11 @@ void P_ArchiveThinkers (void)
 			}
 			continue;
 		}
-
-		if (std::holds_alternative<actionf_v>(th->function) && std::get<actionf_v>(th->function) == (actionf_v)NULL)
+		countIn = false;
+		if (const actionf_v* currentAction = std::get_if<actionf_v>(&th->function)) {
+			countIn = (*currentAction) == (actionf_v)NULL;
+		}
+		if (countIn)
 		{
 			size_t ci;
 			for (ci = 0; ci < ::g->cellind;ci++)
@@ -380,8 +395,11 @@ void P_ArchiveThinkers (void)
 			}
 			continue;
 		}
-
-		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_MoveCeiling)
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_MoveCeiling;
+		}
+		if (countIn)
 		{
 			*::g->save_p++ = tc_ceiling;
 			PADSAVEP();
@@ -391,8 +409,11 @@ void P_ArchiveThinkers (void)
 			ceiling->sector = (sector_t *)(ceiling->sector - ::g->sectors);
 			continue;
 		}
-
-		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_VerticalDoor)
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_VerticalDoor;
+		}
+		if (countIn)
 		{
 			*::g->save_p++ = tc_door;
 			PADSAVEP();
@@ -402,8 +423,11 @@ void P_ArchiveThinkers (void)
 			door->sector = (sector_t *)(door->sector - ::g->sectors);
 			continue;
 		}
-
-		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_MoveFloor)
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_MoveFloor;
+		}
+		if (countIn)
 		{
 			*::g->save_p++ = tc_floor;
 			PADSAVEP();
@@ -413,8 +437,11 @@ void P_ArchiveThinkers (void)
 			floor->sector = (sector_t *)(floor->sector - ::g->sectors);
 			continue;
 		}
-
-		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_PlatRaise)
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_PlatRaise;
+		}
+		if (countIn)
 		{
 			*::g->save_p++ = tc_plat;
 			PADSAVEP();
@@ -424,8 +451,11 @@ void P_ArchiveThinkers (void)
 			plat->sector = (sector_t *)(plat->sector - ::g->sectors);
 			continue;
 		}
-
-		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_FireFlicker)
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_FireFlicker;
+		}
+		if (countIn)
 		{
 			*::g->save_p++ = tc_fire;
 			PADSAVEP();
@@ -435,8 +465,11 @@ void P_ArchiveThinkers (void)
 			fire->sector = (sector_t *)(fire->sector - ::g->sectors);
 			continue;
 		}
-
-		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_LightFlash)
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_LightFlash;
+		}
+		if (countIn)
 		{
 			*::g->save_p++ = tc_flash;
 			PADSAVEP();
@@ -446,8 +479,11 @@ void P_ArchiveThinkers (void)
 			flash->sector = (sector_t *)(flash->sector - ::g->sectors);
 			continue;
 		}
-
-		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_StrobeFlash)
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_StrobeFlash;
+		}
+		if (countIn)
 		{
 			*::g->save_p++ = tc_strobe;
 			PADSAVEP();
@@ -457,8 +493,11 @@ void P_ArchiveThinkers (void)
 			strobe->sector = (sector_t *)(strobe->sector - ::g->sectors);
 			continue;
 		}
-
-		if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_Glow)
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_Glow;
+		}
+		if (countIn)
 		{
 			*::g->save_p++ = tc_glow;
 			PADSAVEP();
@@ -534,8 +573,11 @@ void P_UnArchiveThinkers (void)
 	while (currentthinker != &::g->thinkercap)
 	{
 		next = currentthinker->next;
-
-		if (std::holds_alternative<actionf_p1>(currentthinker->function) && std::get<actionf_p1>(currentthinker->function) == (actionf_p1)P_MobjThinker)
+		bool countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&currentthinker->function)) {
+			countIn = (*currentAction) == (actionf_p1)P_MobjThinker;
+		}
+		if (countIn)
 			P_RemoveMobj ((mobj_t *)currentthinker);
 		else
 			Z_Free(currentthinker);
@@ -569,7 +611,11 @@ void P_UnArchiveThinkers (void)
 			// fixup mobj_t pointers now that all thinkers have been restored
 			mo_index = 0;
 			for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next) {
-				if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker) {
+				bool countIn = false;
+				if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+					countIn = (*currentAction) == (actionf_p1)P_MobjThinker;
+				}
+				if (countIn) {
 					mobj = (mobj_t*)th;
 
 					mobj->target = GetMO( unmo[mo_index].mo_targets );
@@ -712,7 +758,7 @@ void P_UnArchiveThinkers (void)
 			ceiling->sector = &::g->sectors[(intptr_t)ceiling->sector];
 			ceiling->sector->ceilingdata = ceiling;
 
-			if (std::holds_alternative<actionf_p1>(ceiling->thinker.function))
+			if (const actionf_p1* action_p1 = std::get_if<actionf_p1>(&ceiling->thinker.function))
 				ceiling->thinker.function = (actionf_p1)T_MoveCeiling;
 
 			P_AddThinker (&ceiling->thinker);
@@ -749,7 +795,7 @@ void P_UnArchiveThinkers (void)
 			plat->sector = &::g->sectors[(intptr_t)plat->sector];
 			plat->sector->floordata = plat;
 
-			if (std::holds_alternative<actionf_p1>(plat->thinker.function))
+			if (const actionf_p1* action_p1 = std::get_if<actionf_p1>(&plat->thinker.function))
 				plat->thinker.function = (actionf_p1)T_PlatRaise;
 
 			P_AddThinker (&plat->thinker);
@@ -837,7 +883,11 @@ void P_ArchiveSpecials (void)
     // save off the current thinkers
     for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
     {
-	if (std::holds_alternative<actionf_v>(th->function) && std::get<actionf_v>(th->function) == (actionf_v)NULL)
+	bool countIn = false;
+	if (const actionf_v* currentAction = std::get_if<actionf_v>(&th->function)) {
+		countIn = (*currentAction) == (actionf_v)NULL;
+	}
+	if (countIn)
 	{
 		size_t ci;
 	    for (ci = 0; ci < ::g->cellind;ci++)
@@ -856,7 +906,11 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_MoveCeiling)
+	countIn = false;
+	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+		countIn = (*currentAction) == (actionf_p1)T_MoveCeiling;
+	}
+	if (countIn)
 	{
 	    *::g->save_p++ = tc_ceiling;
 	    PADSAVEP();
@@ -867,7 +921,11 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_VerticalDoor)
+	countIn = false;
+	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+		countIn = (*currentAction) == (actionf_p1)T_VerticalDoor;
+	}
+	if (countIn)
 	{
 	    *::g->save_p++ = tc_door;
 	    PADSAVEP();
@@ -878,7 +936,11 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_MoveFloor)
+	countIn = false;
+	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+		countIn = (*currentAction) == (actionf_p1)T_MoveFloor;
+	}
+	if (countIn)
 	{
 	    *::g->save_p++ = tc_floor;
 	    PADSAVEP();
@@ -889,7 +951,11 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_PlatRaise)
+	countIn = false;
+	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+		countIn = (*currentAction) == (actionf_p1)T_PlatRaise;
+	}
+	if (countIn)
 	{
 	    *::g->save_p++ = tc_plat;
 	    PADSAVEP();
@@ -900,7 +966,11 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_LightFlash)
+	countIn = false;
+	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+		countIn = (*currentAction) == (actionf_p1)T_LightFlash;
+	}
+	if (countIn)
 	{
 	    *::g->save_p++ = tc_flash;
 	    PADSAVEP();
@@ -911,7 +981,11 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_StrobeFlash)
+	countIn = false;
+	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+		countIn = (*currentAction) == (actionf_p1)T_StrobeFlash;
+	}
+	if (countIn)
 	{
 	    *::g->save_p++ = tc_strobe;
 	    PADSAVEP();
@@ -922,7 +996,11 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 			
-	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_Glow)
+	countIn = false;
+	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+		countIn = (*currentAction) == (actionf_p1)T_Glow;
+	}
+	if (countIn)
 	{
 	    *::g->save_p++ = tc_glow;
 	    PADSAVEP();
@@ -933,7 +1011,11 @@ void P_ArchiveSpecials (void)
 	    continue;
 	}
 	//GK:BOOM's elevator and scroller related stuff
-	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_MoveElevator)
+	countIn = false;
+	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+		countIn = (*currentAction) == (actionf_p1)T_MoveElevator;
+	}
+	if (countIn)
 	{
 		*::g->save_p++ = tc_elevator;
 		PADSAVEP();
@@ -943,8 +1025,11 @@ void P_ArchiveSpecials (void)
 		elevator->sector = (sector_t *)(elevator->sector - ::g->sectors);
 		continue;
 	}
-
-	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)T_Scroll)
+	countIn = false;
+	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+		countIn = (*currentAction) == (actionf_p1)T_Scroll;
+	}
+	if (countIn)
 	{
 		*::g->save_p++ = tc_scroll;
 		PADSAVEP();
@@ -995,7 +1080,7 @@ void P_UnArchiveSpecials (void)
 	    ceiling->sector = &::g->sectors[(intptr_t)ceiling->sector];
 	    ceiling->sector->ceilingdata = ceiling;
 
-	    if (std::holds_alternative<actionf_p1>(ceiling->thinker.function))
+	    if (const actionf_p1* action_p1 = std::get_if<actionf_p1>(&ceiling->thinker.function))
 		ceiling->thinker.function = (actionf_p1)T_MoveCeiling;
 
 	    P_AddThinker (&ceiling->thinker);
@@ -1032,7 +1117,7 @@ void P_UnArchiveSpecials (void)
 	    plat->sector = &::g->sectors[(intptr_t)plat->sector];
 	    plat->sector->floordata = plat;
 
-		if (std::holds_alternative<actionf_p1>(plat->thinker.function))
+		if (const actionf_p1* action_p1 = std::get_if<actionf_p1>(&plat->thinker.function))
 		plat->thinker.function = (actionf_p1)T_PlatRaise;
 
 	    P_AddThinker (&plat->thinker);

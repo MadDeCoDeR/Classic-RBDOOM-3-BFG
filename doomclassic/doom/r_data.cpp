@@ -978,7 +978,11 @@ void R_PrecacheLevel (void)
 	
     for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
     {
-	if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker)
+		bool countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)P_MobjThinker;
+		}
+		if (countIn)
 	    spritepresent[((mobj_t *)th)->sprite] = 1;
     }
 	

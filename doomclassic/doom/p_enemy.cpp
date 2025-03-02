@@ -557,7 +557,11 @@ void A_KeenDie (mobj_t* mo)
     // to see if all Keens are dead
     for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
     {
-	if (!std::holds_alternative<actionf_p1>(th->function) || (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) != (actionf_p1)P_MobjThinker))
+	bool skip = true;
+	if (const actionf_p1* thAction = std::get_if<actionf_p1>(&th->function)) {
+		skip = (*thAction) != (actionf_p1)P_MobjThinker;
+	}
+	if (skip)
 	    continue;
 
 	mo2 = (mobj_t *)th;
@@ -1447,7 +1451,11 @@ A_PainShootSkull
     currentthinker = ::g->thinkercap.next;
     while (currentthinker != &::g->thinkercap)
     {
-		if ((std::holds_alternative<actionf_p1>(currentthinker->function) && std::get<actionf_p1>(currentthinker->function) == (actionf_p1)P_MobjThinker)
+		bool countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&currentthinker->function)) {
+			countIn = (*currentAction) == (actionf_p1)P_MobjThinker;
+		}
+		if (countIn
 	    && ((mobj_t *)currentthinker)->type == MT_SKULL)
 	    count++;
 	currentthinker = currentthinker->next;
@@ -1713,7 +1721,11 @@ void A_BossDeath (mobj_t* mo)
     // if all bosses are dead
     for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
     {
-	if (!std::holds_alternative<actionf_p1>(th->function) || (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) != (actionf_p1)P_MobjThinker))
+	bool skip = true;
+	if (const actionf_p1* thAction = std::get_if<actionf_p1>(&th->function)) {
+		skip = (*thAction) != (actionf_p1)P_MobjThinker;
+	}
+	if (skip)
 	    continue;
 	
 	mo2 = (mobj_t *)th;
@@ -1862,7 +1874,11 @@ void A_BrainAwake (mobj_t* mo)
 	 thinker != &::g->thinkercap ;
 	 thinker = thinker->next)
     {
-	if (std::holds_alternative<actionf_p1>(thinker->function) || (std::holds_alternative<actionf_p1>(thinker->function) && std::get<actionf_p1>(thinker->function) != (actionf_p1)P_MobjThinker))
+	bool skip = true;
+	if (const actionf_p1* thAction = std::get_if<actionf_p1>(&thinker->function)) {
+		skip = (*thAction) != (actionf_p1)P_MobjThinker;
+	}
+	if (skip)
 	    continue;	// not a mobj
 
 	m = (mobj_t *)thinker;
@@ -1951,7 +1967,11 @@ void A_BrainSpit (mobj_t*	mo)
 		int numEnemies = 0;
 
 		for ( thinker_t* th = ::g->thinkercap.next; th != &::g->thinkercap; th = th->next ) {
-			if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker ) {
+			bool countIn = false;
+			if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+				countIn = (*currentAction) == (actionf_p1)P_MobjThinker;
+			}
+			if (countIn ) {
 				mobj_t* obj = (mobj_t*)th;
 
 				if ( obj->flags & MF_CORPSE ) {
@@ -1966,7 +1986,11 @@ void A_BrainSpit (mobj_t*	mo)
 		if ( numCorpse > 48 ) {
 			for ( int i = 0; i < 12; i++ ) {
 				for ( thinker_t* th = ::g->thinkercap.next; th != &::g->thinkercap; th = th->next ) {
-					if (std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker ) {
+					bool countIn = false;
+					if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+						countIn = (*currentAction) == (actionf_p1)P_MobjThinker;
+					}
+					if (countIn ) {
 						mobj_t* obj = (mobj_t*)th;
 
 						if ( obj->flags & MF_CORPSE ) {
@@ -2103,6 +2127,12 @@ void A_Spawn(mobj_t* mo) {
 	if (mo->state->misc1) {
 		mobj_t* newmobj = P_SpawnMobj(mo->x, mo->y, (mo->state->misc2 << FRACBITS) + mo->z, (mobjtype_t)(mo->state->misc1 - 1));
 		if (!newmobj) {}
+	}
+}
+
+void A_PlaySound(mobj_t* mo) {
+	if (mo->state->misc1 > -1) {
+		S_StartSound(mo->state->misc2 > 0? NULL : mo, mo->state->misc1);
 	}
 }
 

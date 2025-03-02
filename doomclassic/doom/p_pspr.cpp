@@ -135,9 +135,9 @@ P_SetPsprite
 
 		// Call action routine.
 		// Modified handling.
-		if (std::holds_alternative<actionf_p2>(state->action))
+		if (const actionf_p2* action_p2 = std::get_if<actionf_p2>(&state->action))
 		{
-			std::get<actionf_p2>(state->action)(player, psp);
+			(*action_p2)(player, psp);
 			if (!psp->state)
 				break;
 		}

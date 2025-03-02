@@ -101,7 +101,11 @@ EV_Teleport
 		 thinker = thinker->next)
 	    {
 		// not a mobj
-		if (!std::holds_alternative<actionf_p1>(thinker->function) || (std::holds_alternative<actionf_p1>(thinker->function) && std::get<actionf_p1>(thinker->function) != (actionf_p1)P_MobjThinker))
+		bool skip = true;
+		if (const actionf_p1* thAction = std::get_if<actionf_p1>(&thinker->function)) {
+			skip = (*thAction) != (actionf_p1)P_MobjThinker;
+		}
+		if (skip)
 		    continue;	
 
 		m = (mobj_t *)thinker;
@@ -169,9 +173,13 @@ int EV_SilentTeleport(line_t *line, int side, mobj_t *thing)
 		return 0;
 
 	for (i = -1; (i = P_FindSectorFromLineTag(line, i)) >= 0;)
-		for (th = ::g->thinkercap.next; th != &::g->thinkercap; th = th->next)
-			if ((std::holds_alternative<actionf_p1>(th->function) && std::get<actionf_p1>(th->function) == (actionf_p1)P_MobjThinker) &&
-				(m = (mobj_t *)th)->type == MT_TELEPORTMAN &&
+		for (th = ::g->thinkercap.next; th != &::g->thinkercap; th = th->next) {
+			bool countIn = false;
+			if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+				countIn = (*currentAction) == (actionf_p1)P_MobjThinker;
+			}
+			if (countIn &&
+				(m = (mobj_t*)th)->type == MT_TELEPORTMAN &&
 				m->subsector->sector - ::g->sectors == i)
 			{
 				// Height of thing above ground, in case of mid-air teleports:
@@ -193,7 +201,7 @@ int EV_SilentTeleport(line_t *line, int side, mobj_t *thing)
 				fixed_t momy = thing->momy;
 
 				// Whether this is a player, and if so, a pointer to its player_t
-				player_t *player = thing->player;
+				player_t* player = thing->player;
 
 				// Attempt to teleport, aborting if blocked
 				if (!P_TeleportMove(thing, m->x, m->y))
@@ -227,6 +235,7 @@ int EV_SilentTeleport(line_t *line, int side, mobj_t *thing)
 				}
 				return 1;
 			}
+		}
 	return 0;
 }
 //
