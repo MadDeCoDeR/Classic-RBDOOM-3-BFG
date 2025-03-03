@@ -64,13 +64,13 @@ P_SetMobjState
 ( mobj_t*	mobj,
  int	state )
 {
-	const state_t*	st;
+	state_t*	st;
 
 	do
 	{
 		if (state == S_NULL)
 		{
-			mobj->state = (const state_t *) S_NULL;
+			mobj->state = (state_t *) S_NULL;
 			P_RemoveMobj (mobj);
 			return false;
 		}
@@ -529,7 +529,7 @@ P_SpawnMobj
  mobjtype_t	type )
 {
 	mobj_t*	mobj;
-	const state_t*	st;
+	state_t*	st;
 	const mobjinfo_t*	info;
 
 	mobj = (mobj_t*)DoomLib::Z_Malloc(sizeof(*mobj), PU_MOBJ, NULL);

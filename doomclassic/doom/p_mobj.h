@@ -283,7 +283,7 @@ struct mobj_t
     const mobjinfo_t*		info;	// &mobjinfo[mobj->type]
     
     int			tics;	// state tic counter
-    const state_t*		state;
+    state_t*		state;
     int			flags;
     uint64         flags2;
     int			health;

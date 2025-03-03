@@ -529,6 +529,7 @@ mobj_t*		usething;
 mobj_t*		bombsource;
 mobj_t*		bombspot;
 int		bombdamage;
+int		bombdistance;
 qboolean		crushchange;
 qboolean		nofit;
 // Temporary holder for thing_sectorlist threads

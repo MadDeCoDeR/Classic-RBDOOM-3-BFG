@@ -1048,7 +1048,7 @@ void parsetext(char* text) {
 						if (statepos >= (int)tempStates.size()) {
 							//I_Error("No such Frame found");
 							//int oldsize = tempStates.size();
-							tempStates.resize(statepos + 1);
+							tempStates.resize(statepos + 1, { SPR_TROO,0,-1,{(actionf_v)NULL},S_NULL,0,0 });
 							/*for (int i = oldsize; i < tempStates.size(); i++) {
 								tempStates[i].nextstate = i + 1;
 							}*/

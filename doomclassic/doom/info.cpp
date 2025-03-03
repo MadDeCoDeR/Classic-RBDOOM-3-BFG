@@ -177,8 +177,17 @@ extern "C"
 	void A_RandomJump(void* p1, void* p2);
 	void A_Spawn(void* p1);
 	void A_PlaySound(void* p1);
+	void A_Detonate(void* p1);
+	void A_Mushroom(void* p1);
+	void A_Turn(void* p1);
+	void A_Face(void* p1);
+	void A_Scratch(void* p1);
+	void A_LineEffect(void* p1);
+	void A_Die(void* p1);
 	//GK: MBF21 CodePointers
 	void A_SpawnObject(void* p1);
+	void A_RadiusDamage(void* p1);
+	void A_RemoveFlags(void* p1);
 };
 
 
@@ -5634,7 +5643,7 @@ void resetValues() {
 
 
 std::vector<dehcptr> tempcptrval {
-	{ "NULL", (actionf_v)NULL },
+{ "NULL", (actionf_v)NULL },
 { "Light0",(actionf_p2)A_Light0 },
 { "WeaponReady",(actionf_p2)A_WeaponReady },
 { "Lower",(actionf_p2)A_Lower },
@@ -5712,7 +5721,16 @@ std::vector<dehcptr> tempcptrval {
 { "RandomJump", (actionf_p2)A_RandomJump },
 { "Spawn", (actionf_p1)A_Spawn },
 { "PlaySound", (actionf_p1)A_PlaySound },
-{ "SpawnObject", (actionf_p1)A_SpawnObject }
+{ "Detonate", (actionf_p1)A_Detonate },
+{ "Mushroom", (actionf_p1)A_Mushroom },
+{ "Turn", (actionf_p1)A_Turn },
+{ "Face", (actionf_p1)A_Face },
+{ "Scratch", (actionf_p1)A_Scratch },
+{ "LineEffect", (actionf_p1)A_LineEffect },
+{ "Die", (actionf_p1)A_Die },
+{ "SpawnObject", (actionf_p1)A_SpawnObject },
+{ "RadiusDamage", (actionf_p1)A_RadiusDamage },
+{ "RemoveFlags", (actionf_p1)A_RemoveFlags }
 };
 
 void init_cptrs() {

@@ -779,22 +779,18 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 	// Now delete any nodes that won't be used. These are the ones where
 	// m_thing is still NULL.
 
-	// for (msecnode_t* node : ::g->sector_list)
-	// {
-	// 	if (node != NULL) {
-	// 		if (node->m_thing == NULL)
-	// 		{
-	// 			if (node == ::g->sector_list[::g->headsecind - 1]) {
-	// 				::g->sector_list[::g->headsecind - 1] = NULL;
-	// 				::g->headsecind--;
-	// 				if (::g->headsecind < 0) {
-	// 					::g->headsecind = 0;
-	// 				}
-	// 				P_DelSecnode(node);
-	// 			}
-	// 		}
-	// 	}
-	// }
+	 for (size_t j = 0; j < ::g->sector_list.size(); j++)
+	 {
+	 	if (::g->sector_list[j] != NULL) {
+	 		if (::g->sector_list[j]->m_thing == NULL)
+	 		{
+				::g->sector_list[j] = nullptr;
+	 		}
+	 	}
+	 }
+	 ::g->sector_list.erase(std::remove(::g->sector_list.begin(), ::g->sector_list.end(), nullptr), ::g->sector_list.end());
+	 ::g->sector_list.shrink_to_fit();
+	 ::g->headsecind = ::g->sector_list.size();
 }
 
 
@@ -1518,19 +1514,23 @@ qboolean PIT_RadiusAttack (mobj_t* thing)
     if (dist < 0)
 	dist = 0;
 
-    if (dist >= ::g->bombdamage)
+    if (dist >= ::g->bombdistance)
 	return true;	// out of range
 
     if ( P_CheckSight (thing, ::g->bombspot) )
     {
 	// must be in direct path
-	P_DamageMobj (thing, ::g->bombspot, ::g->bombsource, ::g->bombdamage - dist);
+	P_DamageMobj (thing, ::g->bombspot, ::g->bombsource,::g->bombdamage == ::g->bombdistance ? (::g->bombdamage - dist) : ((::g->bombdamage * (::g->bombdistance - dist) / ::g->bombdistance) + 1));
     }
     
     return true;
 }
 
-
+void P_RadiusAttack(mobj_t* spot,
+	mobj_t* source,
+	int		damage) {
+	P_RadiusAttack(spot, source, damage, damage);
+}
 //
 // P_RadiusAttack
 // Source is the creature that caused the explosion at spot.
@@ -1539,7 +1539,8 @@ void
 P_RadiusAttack
 ( mobj_t*	spot,
   mobj_t*	source,
-  int		damage )
+  int		damage,
+  int		distance)
 {
     int		x;
     int		y;
@@ -1551,7 +1552,7 @@ P_RadiusAttack
     
     fixed_t	dist;
 	
-    dist = (damage+MAXRADIUS)<<FRACBITS;
+    dist = (distance+MAXRADIUS)<<FRACBITS;
     yh = (spot->y + dist - ::g->bmaporgy)>>MAPBLOCKSHIFT;
     yl = (spot->y - dist - ::g->bmaporgy)>>MAPBLOCKSHIFT;
     xh = (spot->x + dist - ::g->bmaporgx)>>MAPBLOCKSHIFT;
@@ -1559,6 +1560,7 @@ P_RadiusAttack
     ::g->bombspot = spot;
     ::g->bombsource = source;
     ::g->bombdamage = damage;
+	::g->bombdistance = distance;
 	
     for (y=yl ; y<=yh ; y++)
 	for (x=xl ; x<=xh ; x++)

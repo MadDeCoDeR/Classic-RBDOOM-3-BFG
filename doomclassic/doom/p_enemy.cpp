@@ -2136,5 +2136,98 @@ void A_PlaySound(mobj_t* mo) {
 	}
 }
 
+void A_Detonate(mobj_t* thingy)
+{
+	P_RadiusAttack(thingy, thingy->target, thingy->info->damage);
+}
+
+//
+// killough 9/98: a mushroom explosion effect, sorta :)
+// Original idea: Linguica
+//
+
+void A_Mushroom(mobj_t* actor)
+{
+	int i, j, n = actor->info->damage;
+
+	// Mushroom parameters are part of code pointer's state
+	fixed_t misc1 = actor->state->misc1 ? actor->state->misc1 : FRACUNIT * 4;
+	fixed_t misc2 = actor->state->misc2 ? actor->state->misc2 : FRACUNIT / 2;
+
+	A_Explode(actor);               // make normal explosion
+
+	for (i = -n; i <= n; i += 8)    // launch mushroom cloud
+		for (j = -n; j <= n; j += 8)
+		{
+			mobj_t target = *actor, * mo;
+			target.x += i << FRACBITS;    // Aim in many directions from source
+			target.y += j << FRACBITS;
+			target.z += P_AproxDistance(i, j) * misc1;           // Aim fairly high
+			mo = P_SpawnMissile(actor, &target, MT_FATSHOT);    // Launch fireball
+			mo->momx = FixedMul(mo->momx, misc2);
+			mo->momy = FixedMul(mo->momy, misc2);               // Slow down a bit
+			mo->momz = FixedMul(mo->momz, misc2);
+			mo->flags &= ~MF_NOGRAVITY;   // Make debris fall under gravity
+		}
+}
+
+void A_Turn(mobj_t* mo) {
+	mo->angle += ((uint64)mo->state->misc1 << 32) / 360;
+}
+
+void A_Face(mobj_t* mo) {
+	mo->angle = ((uint64)mo->state->misc1 << 32) / 360;
+}
+
+void A_Scratch(mobj_t* mo) {
+	if (mo->target && (A_FaceTarget(mo), P_CheckMeleeRange(mo))) {
+		if (mo->state->misc2) {
+			S_StartSound(mo, mo->state->misc2);
+		}
+		if (mo->state->misc1) {
+			P_DamageMobj(mo->target, mo, mo, mo->state->misc1);
+		}
+	}
+}
+
+void A_LineEffect(mobj_t *mo) {
+	for (size_t i = 0; i < ::g->numlines; i++) {
+		if (::g->lines[i].special == mo->state->misc1 && ::g->lines[i].tag == mo->state->misc2) {
+			if (!P_UseSpecialLine(mo, &::g->lines[i], 0)) {
+				P_CrossSpecialLine(i, 0, mo);
+			}
+			mo->state->misc1 = (long)::g->lines[i].special;
+			break;
+		}
+	}
+}
+
+void A_Die(mobj_t* mo) {
+	P_DamageMobj(mo, NULL, NULL, mo->health);
+}
+
+//MBF21
+void A_RadiusDamage(mobj_t* thingy)
+{
+	P_RadiusAttack(thingy, thingy->target, thingy->state->args[0], thingy->state->args[1]);
+}
+
+void A_RemoveFlags(mobj_t* mo) {
+	int flags = mo->state->args[0];
+	int flags2 = mo->state->args[1];
+	bool updateBlockmap = ((flags & MF_NOBLOCKMAP) && (mo->flags & MF_NOBLOCKMAP)) || ((flags & MF_NOSECTOR) && (mo->flags & MF_NOSECTOR));
+
+	if (updateBlockmap) {
+		P_SetThingPosition(mo);
+	}
+
+	mo->flags &= ~flags;
+	mo->flags2 &= ~flags2;
+
+	if (updateBlockmap) {
+		P_SetThingPosition(mo);
+	}
+}
+
 }; // extern "C"
 
