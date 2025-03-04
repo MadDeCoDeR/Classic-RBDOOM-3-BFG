@@ -111,7 +111,7 @@ extern int		itemrespawntime[ITEMQUESIZE];
 extern int		iquehead;
 extern int		iquetail;
 
-extern std::vector<msecnode_t*> sector_list;
+extern std::vector<std::shared_ptr<msecnode_t>> sector_list;
 
 
 void P_RespawnSpecials (void);
@@ -225,6 +225,7 @@ qboolean P_CheckSight (mobj_t* t1, mobj_t* t2);
 void 	P_UseLines (player_t* player);
 
 qboolean P_ChangeSector (sector_t* sector, qboolean crunch);
+qboolean P_CheckSector (sector_t* sector, qboolean crunch);
 
 extern mobj_t*	linetarget;	// who got hit (or NULL)
 
@@ -289,6 +290,7 @@ void ResetAmmo();
 //
 #include "p_spec.h"
 
+int     P_GetMoveFactor(mobj_t* mo);                        // phares  3/6/98
 
 #endif	// __P_LOCAL__
 

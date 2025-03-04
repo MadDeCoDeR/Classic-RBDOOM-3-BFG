@@ -102,6 +102,52 @@ qboolean PIT_StompThing (mobj_t* thing)
     return true;
 }
 
+// P_GetMoveFactor() returns the value by which the x,y     // phares 3/19/98
+// movements are multiplied to add to player movement.      //     |
+//     V
+int P_GetMoveFactor(mobj_t *mo)
+{
+	int movefactor = ORIG_FRICTION_FACTOR;
+
+	// If the floor is icy or muddy, it's harder to get moving. This is where
+	// the different friction factors are applied to 'trying to move'. In
+	// p_mobj.c, the friction factors are applied as you coast and slow down.
+
+	int momentum, friction;
+
+	if (!::g->demoplayback &&
+		!(mo->flags & (MF_NOGRAVITY | MF_NOCLIP)))
+	{
+		friction = mo->friction;
+		if (friction == ORIG_FRICTION) // normal floor
+			;
+		else if (friction > ORIG_FRICTION) // ice
+		{
+			movefactor = mo->movefactor;
+			mo->movefactor = ORIG_FRICTION_FACTOR; // reset
+		}
+		else // sludge
+		{
+
+			// phares 3/11/98: you start off slowly, then increase as
+			// you get better footing
+
+			momentum = (P_AproxDistance(mo->momx, mo->momy));
+			movefactor = mo->movefactor;
+			if (momentum > MORE_FRICTION_MOMENTUM << 2)
+				movefactor <<= 3;
+
+			else if (momentum > MORE_FRICTION_MOMENTUM << 1)
+				movefactor <<= 2;
+
+			else if (momentum > MORE_FRICTION_MOMENTUM)
+				movefactor <<= 1;
+
+			mo->movefactor = ORIG_FRICTION_FACTOR; // reset
+		}
+	} //     ^
+	return (movefactor); //     |
+} // phares 3/19/98
 
 //
 // P_TeleportMove
@@ -574,6 +620,7 @@ P_TryMove
 
     return true;
 }
+
 // phares 3/16/98
 //
 // P_AddSecnode() searches the current list to see if this sector is
@@ -583,13 +630,11 @@ P_TryMove
 
 void P_AddSecnode(sector_t* s, mobj_t* thing)
 {
-	for (size_t i = 0; i < ::g->headsecind; i++) {
-		if (::g->sector_list[i] != NULL) {
-			if (::g->sector_list[i]->m_sector == s)   // Already have a node for this sector?
-			{
-				::g->sector_list[i]->m_thing = thing; // Yes. Setting m_thing says 'keep it'.
-				return;
-			}
+	for (size_t i = 0; i < ::g->sector_list.size(); i++) {
+		if (::g->sector_list[i]->m_sector == s)   // Already have a node for this sector?
+		{
+			::g->sector_list[i]->m_thing = thing; // Yes. Setting m_thing says 'keep it'.
+			return;
 		}
 		
 	}
@@ -599,13 +644,12 @@ void P_AddSecnode(sector_t* s, mobj_t* thing)
 		::g->sector_list.reserve(::g->sector_list.size() + 100);
 }
 	//::g->specind = 0;
-	msecnode_t* tnode = ::g->sector_list.emplace_back(std::make_unique<msecnode_t>()).get();
+	std::shared_ptr<msecnode_t> tnode = ::g->sector_list.emplace_back(std::make_shared<msecnode_t>());
 #else
 	if (::g->sector_list.size() == ::g->sector_list.capacity()) {
-		::g->sector_list.resize(::g->sector_list.size() + 100);
+		::g->sector_list.resize(::g->sector_list.size() + 100, std::make_shared<msecnode_t>());
 	}
-	::g->sector_list[::g->headsecind] = std::make_unique<msecnode_t>();
-	msecnode_t* tnode = ::g->sector_list[::g->headsecind].get();
+	std::shared_ptr<msecnode_t> tnode = ::g->sector_list[::g->headsecind];
 #endif
 	::g->headsecind++;
 	tnode->visited = 0;
@@ -744,7 +788,7 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 
 	for (size_t i = 0; i < ::g->sector_list.size(); i++)
 	{
-		msecnode_t* node = ::g->sector_list[i].get();
+		std::shared_ptr<msecnode_t> node = ::g->sector_list[i];
 		if (node != NULL) {
 			node->m_thing = NULL;
 		}
@@ -778,19 +822,18 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 
 	// Now delete any nodes that won't be used. These are the ones where
 	// m_thing is still NULL.
-
-	 for (size_t j = 0; j < ::g->sector_list.size(); j++)
+	std::vector<std::shared_ptr<msecnode_t>> toBeDeleted;
+	 for (size_t i = 0; i < ::g->sector_list.size(); i++)
 	 {
-	 	if (::g->sector_list[j] != NULL) {
-	 		if (::g->sector_list[j]->m_thing == NULL)
-	 		{
-				::g->sector_list[j] = nullptr;
-	 		}
-	 	}
+		if (::g->sector_list[i]->m_thing == NULL)
+		{
+			toBeDeleted.push_back(::g->sector_list[i]);
+		}
 	 }
-	 ::g->sector_list.erase(std::remove(::g->sector_list.begin(), ::g->sector_list.end(), nullptr), ::g->sector_list.end());
-	 ::g->sector_list.shrink_to_fit();
-	 ::g->headsecind = ::g->sector_list.size();
+	 for (size_t j = 0; j < toBeDeleted.size(); j++) {
+		::g->sector_list.erase(std::remove(::g->sector_list.begin(), ::g->sector_list.end(), toBeDeleted[j]), ::g->sector_list.end());
+		::g->headsecind--;
+	 }
 }
 
 
@@ -861,17 +904,35 @@ void P_HitSlideLine (line_t* ld)
     
     fixed_t		movelen;
     fixed_t		newlen;
-	
-	
-    if (ld->slopetype == ST_HORIZONTAL)
+	bool icyfloor = ::g->slidemo->player && (::g->onground && (::g->slidemo->friction > ORIG_FRICTION));
+
+	if (ld->slopetype == ST_HORIZONTAL)
+	{
+		if (icyfloor && (abs(::g->tmymove) > abs(::g->tmxmove)))
+		{
+			::g->tmxmove /= 2; // absorb half the momentum
+			::g->tmymove = -::g->tmymove/2;
+      		S_StartSound(::g->slidemo,sfx_oof); // oooff!
+		}
+		else
+		{
+			::g->tmymove = 0;
+		}
+		return;
+	}
+
+	if (ld->slopetype == ST_VERTICAL)
     {
-	::g->tmymove = 0;
-	return;
-    }
-    
-    if (ld->slopetype == ST_VERTICAL)
-    {
-	::g->tmxmove = 0;
+		if (icyfloor && (abs(::g->tmxmove) > abs(::g->tmymove)))
+		{
+			::g->tmxmove = -::g->tmxmove / 2; // absorb half the momentum
+			::g->tmymove /= 2;
+			S_StartSound(::g->slidemo, sfx_oof); // oooff!
+		}
+		else
+		{
+			::g->tmxmove = 0;
+		}
 	return;
     }
 	
@@ -885,18 +946,39 @@ void P_HitSlideLine (line_t* ld)
     moveangle = R_PointToAngle2 (0,0, ::g->tmxmove, ::g->tmymove);
     deltaangle = moveangle-lineangle;
 
-    if (deltaangle > ANG180)
-	deltaangle += ANG180;
-    //	I_Error ("SlideLine: ang>ANG180");
+	// killough 3/2/98:
+  // The moveangle+=10 breaks v1.9 demo compatibility in
+  // some demos, so it needs demo_compatibility switch.
 
-    lineangle >>= ANGLETOFINESHIFT;
-    deltaangle >>= ANGLETOFINESHIFT;
-	
-    movelen = P_AproxDistance (::g->tmxmove, ::g->tmymove);
-    newlen = FixedMul (movelen, finecosine[deltaangle]);
+	if (!::g->demoplayback)
+		moveangle += 10;				// prevents sudden path reversal due to        // phares
+										// rounding error                              //   |
+	deltaangle = moveangle - lineangle; //   V
+	movelen = P_AproxDistance(::g->tmxmove, ::g->tmymove);
+	if (icyfloor && (deltaangle > ANG45) && (deltaangle < ANG90 + ANG45))
+	{
+		moveangle = lineangle - deltaangle;
+		movelen /= 2;					// absorb
+		S_StartSound(::g->slidemo, sfx_oof); // oooff!
+		moveangle >>= ANGLETOFINESHIFT;
+		::g->tmxmove = FixedMul(movelen, finecosine[moveangle]);
+		::g->tmymove = FixedMul(movelen, finesine[moveangle]);
+	} //   ^
+	else //   |
+	{	 // phares
+		if (deltaangle > ANG180)
+			deltaangle += ANG180;
+		//	I_Error ("SlideLine: ang>ANG180");
 
-    ::g->tmxmove = FixedMul (newlen, finecosine[lineangle]);	
-    ::g->tmymove = FixedMul (newlen, finesine[lineangle]);	
+		lineangle >>= ANGLETOFINESHIFT;
+		deltaangle >>= ANGLETOFINESHIFT;
+
+		movelen = P_AproxDistance(::g->tmxmove, ::g->tmymove);
+		newlen = FixedMul(movelen, finecosine[deltaangle]);
+
+		::g->tmxmove = FixedMul(newlen, finecosine[lineangle]);
+		::g->tmymove = FixedMul(newlen, finesine[lineangle]);
+	}
 }
 
 
@@ -1669,5 +1751,52 @@ P_ChangeSector
 	
     return ::g->nofit;
 }
+
+//
+// P_CheckSector
+// jff 3/19/98 added to just check monsters on the periphery
+// of a moving sector instead of all in bounding box of the
+// sector. Both more accurate and faster.
+//
+
+qboolean P_CheckSector(sector_t* sector,qboolean crunch) {
+	std::shared_ptr<msecnode_t> n;
+  
+	if (::g->demoplayback) // use the old routine for old demos though
+	  return P_ChangeSector(sector,crunch);
+  
+	::g->nofit = false;
+	::g->crushchange = crunch;
+  
+	// killough 4/4/98: scan list front-to-back until empty or exhausted,
+	// restarting from beginning after each thing is processed. Avoids
+	// crashes, and is sure to examine all things in the sector, and only
+	// the things which are in the sector, until a steady-state is reached.
+	// Things can arbitrarily be inserted and removed and it won't mess up.
+	//
+	// killough 4/7/98: simplified to avoid using complicated counter
+  
+	// Mark all things invalid
+  
+	for (size_t i = 0; i < ::g->sector_list.size(); i++) {
+	  if (::g->sector_list[i]->m_sector == sector) {
+		  ::g->sector_list[i]->visited = false;
+	  }
+	}
+  
+	for (size_t j = 0; j < ::g->sector_list.size(); j++)
+	{ // go through list
+		n = ::g->sector_list[j];
+		if (!n->visited) // unprocessed thing found
+		{
+			n->visited = true;						// mark thing as processed
+			if (n->m_thing && !(n->m_thing->flags & MF_NOBLOCKMAP)) // jff 4/7/98 don't do these
+				PIT_ChangeSector(n->m_thing);			// process it
+			break;									// exit and start over
+		}
+	}
+  
+	return ::g->nofit;
+	}
 
 

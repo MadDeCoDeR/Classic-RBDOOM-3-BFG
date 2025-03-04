@@ -868,6 +868,11 @@ int EV_SilentTeleport
 #define LockedKindShift            5
 #define LockedSpeedShift           3
 
+#define FRICTION_MASK   0x100
+#define FRICTION_SHIFT  8
+#define PUSH_MASK       0x200
+#define PUSH_SHIFT      9
+
 // define names for the TriggerType field of the general linedefs
 
 typedef enum
@@ -1081,5 +1086,42 @@ typedef struct {
 void T_Scroll
 (scroll_t *);      // killough 3/7/98: scroll effect thinker
 
+// phares 3/12/98: added new model of friction for ice/sludge effects
+
+typedef struct {
+    thinker_t thinker;   // Thinker structure for friction
+    int friction;        // friction value (E800 = normal)
+    int movefactor;      // inertia factor when adding to momentum
+    int affectee;        // Number of affected sector
+  } friction_t;
+  
+  // phares 3/20/98: added new model of Pushers for push/pull effects
+  
+  typedef enum
+    {
+      p_push,
+      p_pull,
+      p_wind,
+      p_current,
+    } pusherType_t;
+
+  typedef struct {
+    thinker_t thinker;   // Thinker structure for Pusher
+    pusherType_t type;
+    mobj_t* source;      // Point source if point pusher
+    int x_mag;           // X Strength
+    int y_mag;           // Y Strength
+    int magnitude;       // Vector strength for point pusher
+    int radius;          // Effective radius for point pusher
+    int x;               // X of point source if point pusher
+    int y;               // Y of point source if point pusher
+    int affectee;        // Number of affected sector
+  } pusher_t;
+
+  void T_Friction
+( friction_t * );    // phares 3/12/98: friction thinker
+
+void T_Pusher
+( pusher_t * );      // phares 3/20/98: Push thinker
 #endif
 

@@ -216,6 +216,15 @@ If you have questions concerning this license or the applicable additional terms
 //  p_mobj.defs begin // 
 #define STOPSPEED		0x1000
 #define FRICTION		0xe800
+// phares 3/20/98:
+//
+// Player friction is variable, based on controlling
+// linedefs. More friction can create mud, sludge,
+// magnetized floors, etc. Less friction can create ice.
+
+#define MORE_FRICTION_MOMENTUM 15000       // mud factor based on momentum
+#define ORIG_FRICTION          0xE800      // original value
+#define ORIG_FRICTION_FACTOR   2048        // original value
 // p_mobj.defs end // 
 //  p_pspr.defs begin // 
 #define LOWERSPEED		FRACUNIT*6

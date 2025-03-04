@@ -178,11 +178,13 @@ void P_MovePlayer (player_t* player)
 		player->mo->z += game->GetCVarFloat("pm_jumpheight")*(2048*4);
 	}
 
+	int movefactor = P_GetMoveFactor(player->mo);
+
 	if (cmd->forwardmove && (::g->onground || ::g->jump))
-		P_Thrust (player, player->mo->angle, cmd->forwardmove*2048);
+		P_Thrust (player, player->mo->angle, cmd->forwardmove*movefactor);
 
 	if (cmd->sidemove && (::g->onground || ::g->jump))
-		P_Thrust (player, player->mo->angle-ANG90, cmd->sidemove*2048);
+		P_Thrust (player, player->mo->angle-ANG90, cmd->sidemove*movefactor);
 
 	if ( (cmd->forwardmove || cmd->sidemove) 
 		&& player->mo->state == &::g->states[S_PLAY] )

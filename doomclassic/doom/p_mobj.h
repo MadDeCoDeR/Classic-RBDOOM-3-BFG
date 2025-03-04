@@ -318,6 +318,10 @@ struct mobj_t
     // Thing being chased/attacked for tracers.
     mobj_t*	tracer;	
 
+    // Friction values for the sector the object is in
+    int friction;                                           // phares 3/17/98
+    int movefactor;
+
 	// a linked list of sectors where this object appears
 	//struct msecnode_s* touching_sectorlist;                 // phares 3/14/98
     

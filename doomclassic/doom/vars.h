@@ -533,7 +533,7 @@ int		bombdistance;
 qboolean		crushchange;
 qboolean		nofit;
 // Temporary holder for thing_sectorlist threads
-std::vector<std::unique_ptr<msecnode_t>> sector_list;                             // phares 3/16/98
+std::vector<std::shared_ptr<msecnode_t>> sector_list;                             // phares 3/16/98
 size_t headsecind;
 // p_map.vars end // 
 //  p_maputl.vars begin // 
@@ -617,6 +617,7 @@ size_t		numlinespecials;
 long		linespecind;
 std::vector<line_t>		linespeciallist{};
 animdef_t animdefs[23]; //GK: Make this global in order to be used and elsewhere
+pusher_t* tmpusher; // pusher structure for blockmap searches
 // p_spec.vars end // 
 //  p_switch.vars begin // 
 std::vector<int>		switchlist;
