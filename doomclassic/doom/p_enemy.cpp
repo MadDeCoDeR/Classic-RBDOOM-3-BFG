@@ -2191,7 +2191,7 @@ void A_Scratch(mobj_t* mo) {
 }
 
 void A_LineEffect(mobj_t *mo) {
-	for (size_t i = 0; i < ::g->numlines; i++) {
+	for (long i = 0; i < ::g->numlines; i++) {
 		if (::g->lines[i].special == mo->state->misc1 && ::g->lines[i].tag == mo->state->misc2) {
 			if (!P_UseSpecialLine(mo, &::g->lines[i], 0)) {
 				P_CrossSpecialLine(i, 0, mo);
