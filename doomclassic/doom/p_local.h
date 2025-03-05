@@ -121,7 +121,7 @@ P_SpawnMobj
 ( fixed_t	x,
   fixed_t	y,
   fixed_t	z,
-  mobjtype_t	type );
+  int	type );
 
 void 	P_RemoveMobj (mobj_t* th);
 qboolean	P_SetMobjState (mobj_t* mobj, int state);
@@ -129,8 +129,8 @@ void 	P_MobjThinker (mobj_t* mobj);
 
 void	P_SpawnPuff (fixed_t x, fixed_t y, fixed_t z);
 void 	P_SpawnBlood (fixed_t x, fixed_t y, fixed_t z, int damage);
-mobj_t* P_SpawnMissile (mobj_t* source, mobj_t* dest, mobjtype_t type);
-void	P_SpawnPlayerMissile (mobj_t* source, mobjtype_t type);
+mobj_t* P_SpawnMissile (mobj_t* source, mobj_t* dest, int type);
+void	P_SpawnPlayerMissile (mobj_t* source, int type);
 
 
 //

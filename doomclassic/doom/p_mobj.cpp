@@ -550,7 +550,7 @@ P_SpawnMobj
 ( fixed_t	x,
  fixed_t	y,
  fixed_t	z,
- mobjtype_t	type )
+ int	type )
 {
 	mobj_t*	mobj;
 	state_t*	st;
@@ -874,7 +874,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
 	else
 		z = ONFLOORZ;
 
-	mobj = (mobj_t*)P_SpawnMobj (x,y,z, (mobjtype_t)i);
+	mobj = (mobj_t*)P_SpawnMobj (x,y,z, i);
 	mobj->spawnpoint = *mthing;
 
 	if (mobj->tics > 0)
@@ -984,7 +984,7 @@ mobj_t*
 P_SpawnMissile
 ( mobj_t*	source,
  mobj_t*	dest,
- mobjtype_t	type )
+ int	type )
 {
 	mobj_t*	th;
 	angle_t	an;
@@ -1029,7 +1029,7 @@ P_SpawnMissile
 void
 P_SpawnPlayerMissile
 ( mobj_t*	source,
- mobjtype_t	type )
+ int	type )
 {
 	mobj_t*	th;
 	angle_t	an;

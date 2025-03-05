@@ -444,23 +444,23 @@ void setThing(int pos, char* varname, int varval) {
 		{"Initial frame ",MAXINT,NULL,&mobjinfo[pos].spawnstate},
 		{"Hit points ",MAXINT,NULL,&mobjinfo[pos].spawnhealth},
 		{"First moving frame ",MAXINT,NULL,&mobjinfo[pos].seestate},
-		{"Alert sound ",NUMSFX,NULL,&mobjinfo[pos].seesound},
+		{"Alert sound ",MAXINT,NULL,&mobjinfo[pos].seesound},
 		{"Reaction time ",MAXINT,NULL,&mobjinfo[pos].reactiontime},
-		{"Attack sound ",NUMSFX,NULL,&mobjinfo[pos].attacksound},
+		{"Attack sound ",MAXINT,NULL,&mobjinfo[pos].attacksound},
 		{"Injury frame ",MAXINT,NULL,&mobjinfo[pos].painstate},
 		{"Pain chance ",MAXINT,NULL,&mobjinfo[pos].painchance},
-		{"Pain sound ",NUMSFX,NULL,&mobjinfo[pos].painsound},
+		{"Pain sound ",MAXINT,NULL,&mobjinfo[pos].painsound},
 		{"Close attack frame ",MAXINT,NULL,&mobjinfo[pos].meleestate},
 		{"Far attack frame ",MAXINT,NULL,&mobjinfo[pos].missilestate},
 		{"Death frame ",MAXINT,NULL,&mobjinfo[pos].deathstate,},
 		{"Exploding frame ",MAXINT,NULL,&mobjinfo[pos].xdeathstate},
-		{"Death sound ",NUMSFX,NULL,&mobjinfo[pos].deathsound},
+		{"Death sound ",MAXINT,NULL,&mobjinfo[pos].deathsound},
 		{"Speed ",MAXINT,NULL,&mobjinfo[pos].speed},
 		{"Width ",MAXINT,NULL,&mobjinfo[pos].radius},
 		{"Height ",MAXINT,NULL,&mobjinfo[pos].height},
 		{"Mass ",MAXINT,NULL,&mobjinfo[pos].mass},
 		{"Missle damage ",MAXINT,NULL,&mobjinfo[pos].damage},
-		{"Action sound ",NUMSFX,NULL,&mobjinfo[pos].activesound},
+		{"Action sound ",MAXINT,NULL,&mobjinfo[pos].activesound},
 		{"Bits ",MAXINT,NULL,&mobjinfo[pos].flags},
 		{"Respawn frame ", MAXINT,NULL,&mobjinfo[pos].raisestate},
 		{"ID # ",MAXINT,NULL,&mobjinfo[pos].doomednum},
@@ -518,7 +518,7 @@ void extendSpriteNames(int newSize) {
 
 void extendSoundNames(int newSize) {
 	if (newSize >= (int)S_sfx.size() - 1) {
-		S_sfx.resize(newSize + 2, { "none", false,  0, 0, -1, -1, 0 });
+		S_sfx.resize(newSize + 2, { "none", false,  64, 0, -1, -1, 0 });
 	}
 }
 
@@ -726,7 +726,7 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 			delete[] ltxt;
 			return;
 		}
-			for (int m = 0; m < NUMSPRITES - 1; m++) {
+			for (int m = 0; m < sprnames.size() - 1; m++) {
 				if (!idStr::Icmp(otxt, sprnames[m])) {
 					sprnames[m] = ntxt;
 					delete[] otxt;
@@ -753,7 +753,7 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 					return;
 				}
 			}
-			for (int m = 1; m < NUMSFX; m++) {
+			for (int m = 1; m < S_sfx.size(); m++) {
 				if (!idStr::Icmp(otxt, S_sfx[m].name)) {
 					S_sfx[m].name = ntxt;
 					delete[] otxt;
@@ -1151,7 +1151,7 @@ void parsetext(char* text) {
 						break;
 						//More Headache than it's worth
 					case 10:
-						if (statepos >= NUMSFX) {
+						if (statepos >= S_sfx.size()) {
 							I_Error("No such Sound found");
 						}
 						break;

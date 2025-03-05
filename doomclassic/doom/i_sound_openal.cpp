@@ -125,13 +125,13 @@ extern float			x_SoundVolume;
 extern float			x_MusicVolume;
 
 // The actual lengths of all sound effects.
-static int 		lengths[NUMSFX];
-ALuint			alBuffers[NUMSFX];
+std::vector<int> 		lengths;
+std::vector<ALuint>			alBuffers;
 activeSoundAL_t		activeSounds[NUM_SOUNDBUFFERS] = {0};
 
 extern int			S_initialized;
 extern bool		Music_initialized;
-static bool		soundHardwareInitialized = false;
+bool		soundHardwareInitialized = false;
 static int		numOutputChannels = 0;
 static int		channelMask = 0;
 
@@ -305,11 +305,11 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 	}
 	
 	// none found, so use the oldest one
-	if ( i == NUM_SOUNDBUFFERS ) {
+	if ( i == NUM_SOUNDBUFFERS) {
 		i = oldestnum;
 		sound = &activeSounds[i];
 	}
-	sound = &activeSounds[id]; //GK: use the coresponding channel of this sfx
+	//sound = &activeSounds[id]; //GK: use the coresponding channel of this sfx
 	alSourceStop( sound->alSourceVoice );
 	
 	// Attach the source voice to the correct buffer
@@ -429,7 +429,7 @@ void I_StopSoundAL ( int handle, int player )
 		break;
 	}
 	
-	if ( i == NUM_SOUNDBUFFERS )
+	if ( i == NUM_SOUNDBUFFERS)
 		return;
 	
 	// Stop the sound
@@ -573,7 +573,7 @@ void I_ShutdownSoundAL( void )
 		}
 		
 		// Free allocated sound memory
-		for ( i = 1; i < NUMSFX; i++ ) {
+		for ( i = 1; i < S_sfx.size(); i++ ) {
 			alDeleteBuffers(1, &alBuffers[i]); //GK: Restart the AL buffers in order to clear them from previous sfx
 			alGenBuffers(1, &alBuffers[i]);
 			if ( S_sfx[i].data && !(S_sfx[i].link) ) {
@@ -603,16 +603,8 @@ void I_InitSoundHardwareAL( int numOutputChannels_, int channelMask_ )
 	::channelMask = channelMask_;
 	I_InitMusicAL(); //GK: Just to be sure that music will play
 	// Initialize source voices
-	for ( int i = 0; i < NUM_SOUNDBUFFERS; i++ ) {
-		I_InitSoundChannelAL( i, numOutputChannels );
-	}
-
-	// Create OpenAL buffers for all sounds
-	for ( int i = 1; i < NUMSFX; i++ ) {
-		alGenBuffers( (ALuint)1, &alBuffers[i] );
-		if (S_sfx[i].data) {
-			alBufferData(alBuffers[i], activeSounds[i].sample, (byte*)S_sfx[i].data, lengths[i], activeSounds[i].rate);
-		}
+	for (int i = 0; i < NUM_SOUNDBUFFERS; i++) {
+		I_InitSoundChannelAL(i, numOutputChannels);
 	}
 	
 	alGenAuxiliaryEffectSlotsRef(1, &clslot);
@@ -652,7 +644,7 @@ void I_ShutdownSoundHardwareAL()
 	}
 
 	// Delete OpenAL buffers for all sounds
-	alDeleteBuffers(NUMSFX, alBuffers );
+	alDeleteBuffers(alBuffers.size(), alBuffers.data());
 	
 	if (alIsAuxiliaryEffectSlotRef(clslot)) {
 		alDeleteAuxiliaryEffectSlotsRef(1,&clslot);
@@ -702,8 +694,22 @@ void I_InitSoundAL()
 		doom_Listener.Position.x	= 0.f;
 		doom_Listener.Position.y	= 0.f;
 		doom_Listener.Position.z	= 0.f;
+
+		if (lengths.empty()) {
+			lengths.resize(S_sfx.size(), 0);
+		}
+		if (alBuffers.empty()) {
+			alBuffers.resize(S_sfx.size(), INT_MAX);
+
+
+
+			// Create OpenAL buffers for all sounds
+			for (int i = 1; i < S_sfx.size(); i++) {
+				alGenBuffers((ALuint)1, &alBuffers[i]);
+			}
+		}
 		
-		for ( int i = 1; i < NUMSFX; i++ ) {
+		for ( int i = 1; i < S_sfx.size(); i++ ) {
 			// Alias? Example is the chaingun sound linked to pistol.
 			if ( !S_sfx[i].link ) {
 				// Load data from WAD file.

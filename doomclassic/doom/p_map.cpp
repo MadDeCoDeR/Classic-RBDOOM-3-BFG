@@ -641,13 +641,18 @@ void P_AddSecnode(sector_t* s, mobj_t* thing)
 	
 #if _ITERATOR_DEBUG_LEVEL < 2
 	if (::g->sector_list.size() == ::g->sector_list.capacity()) {
-		::g->sector_list.reserve(::g->sector_list.size() + 100);
+		::g->sector_list.reserve(::g->sector_list.size() + 1);
 }
 	//::g->specind = 0;
 	std::shared_ptr<msecnode_t> tnode = ::g->sector_list.emplace_back(std::make_shared<msecnode_t>());
 #else
 	if (::g->sector_list.size() == ::g->sector_list.capacity()) {
-		::g->sector_list.resize(::g->sector_list.size() + 100, std::make_shared<msecnode_t>());
+		::g->sector_list.resize(::g->sector_list.size() + 1);
+		for (size_t i = 0; i < ::g->sector_list.size(); i++) {
+			if (::g->sector_list[i] == NULL) {
+				::g->sector_list[i] = std::make_shared<msecnode_t>();
+			}
+		}
 	}
 	std::shared_ptr<msecnode_t> tnode = ::g->sector_list[::g->headsecind];
 #endif
@@ -823,6 +828,7 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 	// Now delete any nodes that won't be used. These are the ones where
 	// m_thing is still NULL.
 	std::vector<std::shared_ptr<msecnode_t>> toBeDeleted;
+
 	 for (size_t i = 0; i < ::g->sector_list.size(); i++)
 	 {
 		if (::g->sector_list[i]->m_thing == NULL)
@@ -831,8 +837,8 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 		}
 	 }
 	 for (size_t j = 0; j < toBeDeleted.size(); j++) {
-		::g->sector_list.erase(std::remove(::g->sector_list.begin(), ::g->sector_list.end(), toBeDeleted[j]), ::g->sector_list.end());
-		::g->headsecind--;
+		::g->sector_list.erase(std::find(::g->sector_list.begin(), ::g->sector_list.end(), toBeDeleted[j]));
+		::g->headsecind -= 1;
 	 }
 }
 

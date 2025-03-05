@@ -279,7 +279,7 @@ struct mobj_t
     // If == validcount, already checked.
     int			validcount;
 
-    mobjtype_t		type;
+    int		type;
     const mobjinfo_t*		info;	// &mobjinfo[mobj->type]
     
     int			tics;	// state tic counter
