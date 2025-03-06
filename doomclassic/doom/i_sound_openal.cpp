@@ -558,7 +558,7 @@ I_ShutdownSound
 void I_ShutdownSoundAL( void )
 {
 	//int done = 0;
-	int i;
+	size_t i;
 	
 	if ( S_initialized ) {
 		// Stop all sounds
@@ -704,12 +704,12 @@ void I_InitSoundAL()
 
 
 			// Create OpenAL buffers for all sounds
-			for (int i = 1; i < S_sfx.size(); i++) {
+			for (size_t i = 1; i < S_sfx.size(); i++) {
 				alGenBuffers((ALuint)1, &alBuffers[i]);
 			}
 		}
 		
-		for ( int i = 1; i < S_sfx.size(); i++ ) {
+		for ( size_t i = 1; i < S_sfx.size(); i++ ) {
 			// Alias? Example is the chaingun sound linked to pistol.
 			if ( !S_sfx[i].link ) {
 				// Load data from WAD file.

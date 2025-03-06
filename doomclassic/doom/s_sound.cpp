@@ -156,7 +156,7 @@ void S_Init
 	::g->mus_looping = 0;
 
 	// Note that sounds have not been cached (yet).
-	for (i=1 ; i<S_sfx.size() ; i++)
+	for (i=1 ; (size_t)i<S_sfx.size() ; i++)
 		S_sfx[i].lumpnum = S_sfx[i].usefulness = -1;
 }
 
@@ -280,7 +280,7 @@ S_StartSoundAtVolume
 	sfx_id, S_sfx[sfx_id].name );*/
 
 	// check for bogus sound #
-	if (sfx_id < 1 || sfx_id > S_sfx.size())
+	if (sfx_id < 1 || (size_t)sfx_id > S_sfx.size())
 		I_Error("Bad sfx #: %d", sfx_id);
 
 	sfx = &S_sfx[sfx_id];

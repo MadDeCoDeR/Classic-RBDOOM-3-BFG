@@ -726,7 +726,7 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 			delete[] ltxt;
 			return;
 		}
-			for (int m = 0; m < sprnames.size() - 1; m++) {
+			for (size_t m = 0; m < sprnames.size() - 1; m++) {
 				if (!idStr::Icmp(otxt, sprnames[m])) {
 					sprnames[m] = ntxt;
 					delete[] otxt;
@@ -753,7 +753,7 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 					return;
 				}
 			}
-			for (int m = 1; m < S_sfx.size(); m++) {
+			for (size_t m = 1; m < S_sfx.size(); m++) {
 				if (!idStr::Icmp(otxt, S_sfx[m].name)) {
 					S_sfx[m].name = ntxt;
 					delete[] otxt;
@@ -1151,7 +1151,7 @@ void parsetext(char* text) {
 						break;
 						//More Headache than it's worth
 					case 10:
-						if (statepos >= S_sfx.size()) {
+						if ((size_t)statepos >= S_sfx.size()) {
 							I_Error("No such Sound found");
 						}
 						break;
