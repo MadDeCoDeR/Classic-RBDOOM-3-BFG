@@ -459,7 +459,7 @@ void setThing(int pos, char* varname, int varval) {
 		{"Width ",MAXINT,NULL,&mobjinfo[pos].radius},
 		{"Height ",MAXINT,NULL,&mobjinfo[pos].height},
 		{"Mass ",MAXINT,NULL,&mobjinfo[pos].mass},
-		{"Missle damage ",MAXINT,NULL,&mobjinfo[pos].damage},
+		{"Missile damage ",MAXINT,NULL,&mobjinfo[pos].damage},
 		{"Action sound ",MAXINT,NULL,&mobjinfo[pos].activesound},
 		{"Bits ",MAXINT,NULL,&mobjinfo[pos].flags},
 		{"Respawn frame ", MAXINT,NULL,&mobjinfo[pos].raisestate},
