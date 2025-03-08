@@ -291,6 +291,7 @@ void ResetAmmo();
 #include "p_spec.h"
 
 int     P_GetMoveFactor(mobj_t* mo);                        // phares  3/6/98
+void P_AddSecnode(sector_t* s, mobj_t* thing);
 
 #endif	// __P_LOCAL__
 

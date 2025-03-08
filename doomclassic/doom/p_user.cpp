@@ -104,6 +104,12 @@ void P_CalcHeight (player_t* player)
 
 	// DHM - NERVE :: player bob reduced by 25%, MAXBOB reduced by 25% as well
 	player->bob = (fixed_t)( (float)(player->bob) * 0.75f );
+	if (player->mo->friction > ORIG_FRICTION) // ice?
+      {
+      if (player->bob > (MAXBOB>>2))
+        player->bob = MAXBOB>>2;
+      }
+    else
 	if (player->bob>MAXBOB)
 		player->bob = MAXBOB;
 
@@ -114,7 +120,7 @@ void P_CalcHeight (player_t* player)
 		if (player->viewz > player->mo->ceilingz-4*FRACUNIT)
 			player->viewz = player->mo->ceilingz-4*FRACUNIT;
 
-		player->viewz = player->mo->z + player->viewheight;
+//		player->viewz = player->mo->z + player->viewheight;
 		return;
 	}
 

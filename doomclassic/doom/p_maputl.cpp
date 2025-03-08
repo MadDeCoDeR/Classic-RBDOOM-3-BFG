@@ -447,6 +447,7 @@ P_SetThingPosition (mobj_t* thing)
 	// added, new sector links are created.
 
 		P_CreateSecNodeList(thing, thing->x, thing->y);
+        P_AddSecnode(sec, thing);
 		//int thingKey = thing->type & thing->spawnpoint.x & thing->spawnpoint.y;
 		//::g->sector_list_map.emplace(std::pair<int, std::deque<msecnode_t*>>( thingKey, ::g->sector_list )); // Attach to Thing's mobj_t
 		//std::deque<msecnode_t*> tlist;

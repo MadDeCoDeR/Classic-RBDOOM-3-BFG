@@ -46,6 +46,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "d_exp.h"
 
+#include "p_user.h"
+
 //
 // TELEPORTATION
 //
@@ -228,7 +230,7 @@ int EV_SilentTeleport(line_t *line, int side, mobj_t *thing)
 					player->deltaviewheight = 0;
 
 					// Set player's view according to the newly set parameters
-					//P_CalcHeight(player);
+					P_CalcHeight(player);
 
 					// Reset the delta to have the same dynamics as before
 					player->deltaviewheight = deltaviewheight;
@@ -357,7 +359,7 @@ int EV_SilentLineTeleport(line_t *line, int side, mobj_t *thing,
 				player->deltaviewheight = 0;
 
 				// Set player's view according to the newly set parameters
-				//P_CalcHeight(player);
+				P_CalcHeight(player);
 
 				// Reset the delta to have the same dynamics as before
 				player->deltaviewheight = deltaviewheight;

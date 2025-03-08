@@ -630,14 +630,14 @@ P_TryMove
 
 void P_AddSecnode(sector_t* s, mobj_t* thing)
 {
-	for (size_t i = 0; i < ::g->sector_list.size(); i++) {
-		if (::g->sector_list[i]->m_sector == s)   // Already have a node for this sector?
-		{
-			::g->sector_list[i]->m_thing = thing; // Yes. Setting m_thing says 'keep it'.
-			return;
-		}
+	// for (size_t i = 0; i < ::g->sector_list.size(); i++) {
+	// 	if (::g->sector_list[i]->m_sector == s)   // Already have a node for this sector?
+	// 	{
+	// 		::g->sector_list[i]->m_thing = thing; // Yes. Setting m_thing says 'keep it'.
+	// 		return;
+	// 	}
 		
-	}
+	// }
 	
 #if _ITERATOR_DEBUG_LEVEL < 2
 	if (::g->sector_list.size() == ::g->sector_list.capacity()) {
