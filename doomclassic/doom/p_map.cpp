@@ -638,6 +638,14 @@ void P_AddSecnode(sector_t* s, mobj_t* thing)
 	// 	}
 		
 	// }
+
+	for (size_t i = 0; i < ::g->sector_list.size(); i++) {
+		if (::g->sector_list[i]->m_sector == s && ::g->sector_list[i]->m_thing == thing)   // Already have a node for this sector?
+			{
+		 		return;
+		 	}
+
+	 }
 	
 #if _ITERATOR_DEBUG_LEVEL < 2
 	if (::g->sector_list.size() == ::g->sector_list.capacity()) {
@@ -794,7 +802,7 @@ void P_CreateSecNodeList(mobj_t* thing, fixed_t x, fixed_t y)
 	for (size_t i = 0; i < ::g->sector_list.size(); i++)
 	{
 		std::shared_ptr<msecnode_t> node = ::g->sector_list[i];
-		if (node != NULL) {
+		if (node != NULL && ::g->sector_list[i]->m_thing == thing) {
 			node->m_thing = NULL;
 		}
 	}
