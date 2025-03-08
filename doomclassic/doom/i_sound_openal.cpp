@@ -125,7 +125,7 @@ extern float			x_SoundVolume;
 extern float			x_MusicVolume;
 
 // The actual lengths of all sound effects.
-std::vector<int> 		lengths;
+static std::vector<int> 		lengths;
 std::vector<ALuint>			alBuffers;
 activeSoundAL_t		activeSounds[NUM_SOUNDBUFFERS] = {0};
 
