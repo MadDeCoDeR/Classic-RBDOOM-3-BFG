@@ -168,32 +168,22 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 		}
 		else
 		{
-			while ((count-=2)>=0)   // texture height is a power of 2 -- killough
-          {
-            *dest = dc_colormap[dc_source[(frac>>FRACBITS) & mheight]];
-            dest += ::g->SCREENWIDTH; 
-            frac += fracstep;
-            *dest = dc_colormap[dc_source[(frac>>FRACBITS) & mheight]];
-            dest += ::g->SCREENWIDTH; 
-            frac += fracstep;
-          }
-        if (count & 1)
-          *dest = dc_colormap[dc_source[(frac>>FRACBITS) & mheight]];
 			//GK: for texture height which is power of 2 do the vanilla procedure (eliminate weird red bottom lines and game breaking bugs)
-			// do//while ((count -= 2) >= 0)   // texture height is a power of 2 -- killough
-			// {
-			// 	const int truncated1 = frac >> FRACBITS;
-			// 	//GK:Now that it has the right height use the mheight and no more the 127
-			// 	const int wrapped1 = truncated1 & mheight;
-			// 	*dest = dc_colormap[dc_source[wrapped1]];
-			// 	dest += ::g->SCREENWIDTH;
-			// 	frac += fracstep;
-			// 	//*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
-			// 	//dest += SCREENWIDTH;
-			// 	//frac += fracstep;
-			// } while (count--);
-			//if (count & 1)
-			//	*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
+			 do//while ((count -= 2) >= 0)   // texture height is a power of 2 -- killough
+			 {
+			 	const int truncated1 = frac >> FRACBITS;
+			 	//GK:Now that it has the right height use the mheight and no more the 127
+				
+			 	const int wrapped1 = truncated1 & mheight;
+			 	*dest = dc_colormap[dc_source[wrapped1]];
+			 	dest += ::g->SCREENWIDTH;
+			 	frac += fracstep;
+			 	//*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
+			 	//dest += SCREENWIDTH;
+			 	//frac += fracstep;
+			 } while (count--);
+			if (count & 1)
+				*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
 		}
 	}
 } 
