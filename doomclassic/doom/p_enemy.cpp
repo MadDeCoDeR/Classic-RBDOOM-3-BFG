@@ -2229,5 +2229,44 @@ void A_RemoveFlags(mobj_t* mo) {
 	}
 }
 
+void A_MonsterProjectile(mobj_t* mo) {
+	int type, angle, pitch, spawnofs_xy, spawnofs_z;
+	int an;
+
+	if (!mo->target || !mo->state->args[0])
+		return;
+
+	type = mo->state->args[0] - 1;
+	angle = mo->state->args[1];
+	pitch = mo->state->args[2];
+	spawnofs_xy = mo->state->args[3];
+	spawnofs_z = mo->state->args[4];
+
+	A_FaceTarget(mo);
+	mobj_t* missle = P_SpawnMissile(mo, mo->target, type);
+	if (!missle)
+		return;
+
+	// adjust angle
+	missle->angle += (unsigned int)(((int64_t)angle << 16) / 360);
+	an = missle->angle >> ANGLETOFINESHIFT;
+	missle->momx = FixedMul(missle->info->speed, finecosine[an]);
+	missle->momy = FixedMul(missle->info->speed, finesine[an]);
+
+	// adjust pitch (approximated, using Doom's ye olde
+	// finetangent table; same method as monster aim)
+	missle->momz += FixedMul(missle->info->speed, DegToSlope(pitch));
+
+	// adjust position
+	an = (mo->angle - ANG90) >> ANGLETOFINESHIFT;
+	missle->x += FixedMul(spawnofs_xy, finecosine[an]);
+	missle->y += FixedMul(spawnofs_xy, finesine[an]);
+	missle->z += spawnofs_z;
+
+	// always set the 'tracer' field, so this pointer
+	// can be used to fire seeker missiles at will.
+	missle->tracer = mo->target;
+}
+
 }; // extern "C"
 

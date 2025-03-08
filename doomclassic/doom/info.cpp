@@ -188,6 +188,7 @@ extern "C"
 	void A_SpawnObject(void* p1);
 	void A_RadiusDamage(void* p1);
 	void A_RemoveFlags(void* p1);
+	void A_MonsterProjectile(void* p1);
 };
 
 
@@ -5730,7 +5731,8 @@ std::vector<dehcptr> tempcptrval {
 { "Die", (actionf_p1)A_Die },
 { "SpawnObject", (actionf_p1)A_SpawnObject },
 { "RadiusDamage", (actionf_p1)A_RadiusDamage },
-{ "RemoveFlags", (actionf_p1)A_RemoveFlags }
+{ "RemoveFlags", (actionf_p1)A_RemoveFlags },
+{ "MonsterProjectile", (actionf_p1)A_MonsterProjectile }
 };
 
 void init_cptrs() {
