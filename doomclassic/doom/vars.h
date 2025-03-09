@@ -1004,6 +1004,7 @@ size_t			planeind;
 //visplane_t*		lastvisplane; 
 visplane_t*		floorplane; 
 visplane_t*		ceilingplane; 
+fixed_t			planeXoffs, planeYoffs;
 // r_plane end //
 
 // r_main begin //GK: Allowing to change constant on the go

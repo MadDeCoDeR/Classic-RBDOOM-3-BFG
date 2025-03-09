@@ -132,8 +132,8 @@ R_MapPlane
     length = FixedMul (distance,::g->distscale[x1]);
     angle = (GetViewAngle() + ::g->xtoviewangle[x1])>>ANGLETOFINESHIFT;
 	extern fixed_t GetViewX(); extern fixed_t GetViewY();
-    ::g->ds_xfrac = GetViewX() + FixedMul(finecosine[angle], length);
-    ::g->ds_yfrac = -GetViewY() - FixedMul(finesine[angle], length);
+    ::g->ds_xfrac = GetViewX() + FixedMul(finecosine[angle], length) + ::g->planeXoffs;
+    ::g->ds_yfrac = -GetViewY() - FixedMul(finesine[angle], length) + ::g->planeYoffs;
 
     if (::g->fixedcolormap)
 	::g->ds_colormap = ::g->fixedcolormap;
@@ -236,7 +236,7 @@ visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel,fixed_t xoff
 	}
 		for (uint i = 0; i < ::g->planeind; i++) {
 			check = ::g->visplanes[i].get();
-			if (height == check->height && picnum == check->picnum && lightlevel == check->lightlevel && xoffs == check->xoffs && check->yoffs) {
+			if (height == check->height && picnum == check->picnum && lightlevel == check->lightlevel && xoffs == check->xoffs && yoffs == check->yoffs) {
 				break;
 			}
 		}
@@ -526,6 +526,8 @@ void R_DrawPlanes (void)
 				   ::g->flattranslation[::g->visplanes[i]->picnum],
 				   PU_CACHE_SHARED);
 	
+	::g->planeXoffs = ::g->visplanes[i]->xoffs;
+	::g->planeYoffs = ::g->visplanes[i]->yoffs;
 	::g->planeheight = abs(::g->visplanes[i]->height-::g->viewz);
 	light = (::g->visplanes[i]->lightlevel >> LIGHTSEGSHIFT)+::g->extralight;
 

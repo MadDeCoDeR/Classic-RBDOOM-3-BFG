@@ -915,3 +915,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 
 	::g->accumulatedTimeDeltas.resize(100, 0); //GK: For that to be exceeded the game must run more than @3500 or @4000 FPS
 	::g->firstFrame = true;
+
+	::g->planeXoffs = ::g->planeYoffs = 0;
