@@ -709,6 +709,29 @@ void P_AddSecnode(sector_t* s, mobj_t* thing)
 	//return(node);
 }
 
+/**
+ --------------------------------------------
+	P_DeleteSecNodesFromThing
+ --------------------------------------------
+ Removes all secnodes from the sector_list that are assosiated with
+ the given thing
+*/
+void P_DeleteSecNodesFromThing(mobj_t* th) {
+	std::vector<std::shared_ptr<msecnode_t>> toBeDeleted;
+
+	for (size_t i = 0; i < ::g->sector_list.size(); i++)
+	{
+		if (::g->sector_list[i]->m_thing == th)
+		{
+			toBeDeleted.push_back(::g->sector_list[i]);
+		}
+	}
+	for (size_t j = 0; j < toBeDeleted.size(); j++) {
+		::g->sector_list.erase(std::find(::g->sector_list.begin(), ::g->sector_list.end(), toBeDeleted[j]));
+		::g->headsecind -= 1;
+	}
+}
+
 // P_DelSecnode() deletes a sector node from the list of
 // sectors this object appears in. Returns a pointer to the next node
 // on the linked list, or NULL.

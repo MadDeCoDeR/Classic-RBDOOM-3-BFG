@@ -361,6 +361,7 @@ void P_UnsetThingPosition (mobj_t* thing)
 	else
 	    thing->subsector->sector->thinglist = thing->snext;
     }
+	P_DeleteSecNodesFromThing(thing);
 	// phares 3/14/98
 		//
 		// Save the sector list pointed to by touching_sectorlist.
