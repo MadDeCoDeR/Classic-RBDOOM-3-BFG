@@ -727,6 +727,9 @@ void setText(std::vector<std::string>lines, int i,int il,int nl) {
 			return;
 		}
 			for (size_t m = 0; m < sprnames.size() - 1; m++) {
+				if (!sprnames[m]) {
+					continue;
+				}
 				if (!idStr::Icmp(otxt, sprnames[m])) {
 					sprnames[m] = ntxt;
 					delete[] otxt;
@@ -1048,7 +1051,7 @@ void parsetext(char* text) {
 						if (statepos >= (int)tempStates.size()) {
 							//I_Error("No such Frame found");
 							//int oldsize = tempStates.size();
-							tempStates.resize(statepos + 1, { SPR_TROO,0,-1,{(actionf_v)NULL},S_NULL,0,0 });
+							tempStates.resize(statepos + 1, { SPR_SP00,0,-1,{(actionf_v)NULL},S_NULL,0,0 });
 							/*for (int i = oldsize; i < tempStates.size(); i++) {
 								tempStates[i].nextstate = i + 1;
 							}*/

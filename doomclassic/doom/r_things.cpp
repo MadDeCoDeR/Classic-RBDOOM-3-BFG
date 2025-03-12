@@ -174,7 +174,7 @@ void R_InitSpriteDefs (const std::vector <char*> namelist)
  //   while (*check != NULL)
 	//check++;
 
-	::g->numsprites = namelist.size() - 1;//check-namelist;
+	::g->numsprites = namelist.size();//check-namelist;
 	
     if (!::g->numsprites)
 	return;
@@ -197,6 +197,9 @@ void R_InitSpriteDefs (const std::vector <char*> namelist)
     // Just compare 4 characters as ints
     for (i=0 ; i < ::g->numsprites ; i++)
     {
+		if (!namelist[i]) {
+			continue;
+		}
 	::g->spritename = namelist[i];
 	memset (::g->sprtemp,-1, sizeof(::g->sprtemp));
 		
@@ -212,9 +215,9 @@ void R_InitSpriteDefs (const std::vector <char*> namelist)
 		frame = lumpinfo[l].name[4] - 'A';
 		rotation = lumpinfo[l].name[5] - '0';
 		//GK: modified sprites are literally replacing vanilla ones here so this checkup is useless
-		//if (::g->modifiedgame)
-		//    patched = W_GetNumForName (lumpinfo[l].name);
-		//else
+		/*if (::g->modifiedgame)
+		    patched = W_GetNumForName (lumpinfo[l].name);
+		else*/
 		    patched = l;
 
 		R_InstallSpriteLump (patched, frame, rotation, false);
@@ -589,14 +592,14 @@ void R_ProjectSprite (mobj_t* thing)
     
     // decide which patch to use for sprite relative to player
 #ifdef RANGECHECK
-    if (thing->sprite >= ::g->sprind)
+    if (thing->sprite >= ::g->sprites.size())
 	I_Error ("R_ProjectSprite: invalid sprite number %i ",
 		 thing->sprite);
 #endif
 	//GK:Sanity check
 	int ind = 0;
-	if (thing->sprite >= ::g->sprind) {
-		ind = ::g->sprind-1;
+	if (thing->sprite >= ::g->sprites.size()) {
+		ind = ::g->sprites.size()-1;
 	}
 	else {
 		ind = thing->sprite;
@@ -607,7 +610,14 @@ void R_ProjectSprite (mobj_t* thing)
 	I_Error ("R_ProjectSprite: invalid sprite frame %i : %i \n",
 		 thing->sprite, thing->frame);
 #endif
+	if (!sprdef->spriteframes) {
+		return;
+	}
     sprframe = &sprdef->spriteframes[ thing->frame & FF_FRAMEMASK];
+
+	if (sprframe == NULL || sprframe->lump[0] < 0 || sprframe->lump[0] > (::g->lastspritelump - ::g->firstspritelump)) {
+		return;
+	}
 
     if (sprframe->rotate)
     {
@@ -752,26 +762,31 @@ void R_DrawPSprite (pspdef_t* psp)
     
     // decide which patch to use
 #ifdef RANGECHECK
-    if ( psp->state->sprite >= ::g->sprind)
+    if ( psp->state->sprite >= ::g->sprites.size())
 	I_Error ("R_ProjectSprite: invalid sprite number %i ",
 		 psp->state->sprite);
 #endif
 	//GK:Sanity check
 	int index = 0;
-	if (psp->state->sprite >= ::g->sprind) {
-		index = ::g->sprind-1;
+	if (psp->state->sprite >= ::g->sprites.size()) {
+		index = ::g->sprites.size()-1;
 	}
 	else {
 		index = psp->state->sprite;
 	}
-		sprdef = ::g->sprites[index];
+	sprdef = ::g->sprites[index];
 #ifdef RANGECHECK
     if ( (psp->state->frame & FF_FRAMEMASK)  >= sprdef->numframes)
 	I_Error ("R_ProjectSprite: invalid sprite frame %i : %i ",
 		 psp->state->sprite, psp->state->frame);
 #endif
+	if (!sprdef->spriteframes) {
+		return;
+	}
     sprframe = &sprdef->spriteframes[ psp->state->frame & FF_FRAMEMASK ];
-
+	if (sprframe == NULL || sprframe->lump[0] < 0 || sprframe->lump[0] > (::g->lastspritelump - ::g->firstspritelump)) {
+		return;
+	}
     lump = sprframe->lump[0];
     flip = (qboolean)sprframe->flip[0];
     

@@ -67,7 +67,7 @@ If you have questions concerning this license or the applicable additional terms
 	// [BH] blood splats, [crispy] unused
 	(char*) "BLD2",
 	//// [BH] 100 extra sprite names to use in dehacked patches
-  (char*)NULL
+	(char*)NULL
 };
 // RB end
 void resetSprnames() {
@@ -193,7 +193,7 @@ extern "C"
 
 
 /*const*/ std::vector<state_t> tempStates {
-	{SPR_TROO,0,-1,{(actionf_v)NULL},S_NULL,0,0},	// S_NULL
+	{SPR_SP00,0,-1,{(actionf_v)NULL},S_NULL,0,0},	// S_NULL
 	{SPR_SHTG,4,0,{(actionf_p2)A_Light0},S_NULL,0,0},	// S_LIGHTDONE
 	{SPR_PUNG,0,1,{(actionf_p2)A_WeaponReady},S_PUNCH,0,0},	// S_PUNCH
 	{SPR_PUNG,0,1,{(actionf_p2)A_Lower},S_PUNCHDOWN,0,0},	// S_PUNCHDOWN

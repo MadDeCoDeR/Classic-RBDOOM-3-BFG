@@ -1638,8 +1638,9 @@ qboolean PIT_RadiusAttack (mobj_t* thing)
 
     if ( P_CheckSight (thing, ::g->bombspot) )
     {
+		int damage = ::g->bombdamage == ::g->bombdistance ? (::g->bombdamage - dist) : ((::g->bombdamage * (::g->bombdistance - dist) / ::g->bombdistance) + 1);
 	// must be in direct path
-	P_DamageMobj (thing, ::g->bombspot, ::g->bombsource,::g->bombdamage == ::g->bombdistance ? (::g->bombdamage - dist) : ((::g->bombdamage * (::g->bombdistance - dist) / ::g->bombdistance) + 1));
+	P_DamageMobj (thing, ::g->bombspot, ::g->bombsource, damage);
     }
     
     return true;
