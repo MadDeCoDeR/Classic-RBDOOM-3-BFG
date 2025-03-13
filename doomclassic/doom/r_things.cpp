@@ -598,7 +598,7 @@ void R_ProjectSprite (mobj_t* thing)
 #endif
 	//GK:Sanity check
 	int ind = 0;
-	if (thing->sprite >= ::g->sprites.size()) {
+	if (thing->sprite >= (int)::g->sprites.size()) {
 		ind = ::g->sprites.size()-1;
 	}
 	else {
@@ -768,7 +768,7 @@ void R_DrawPSprite (pspdef_t* psp)
 #endif
 	//GK:Sanity check
 	int index = 0;
-	if (psp->state->sprite >= ::g->sprites.size()) {
+	if (psp->state->sprite >= (int)::g->sprites.size()) {
 		index = ::g->sprites.size()-1;
 	}
 	else {
