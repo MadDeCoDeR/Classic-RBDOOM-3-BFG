@@ -169,7 +169,7 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 		else
 		{
 			//GK: for texture height which is power of 2 do the vanilla procedure (eliminate weird red bottom lines and game breaking bugs)
-			 while ((count -= 2) >= 0)   // texture height is a power of 2 -- killough
+			 do //while ((count -= 2) >= 0)   // texture height is a power of 2 -- killough
 			 {
 			 	int truncated1 = frac >> FRACBITS;
 			 	//GK:Now that it has the right height use the mheight and no more the 127
@@ -178,12 +178,12 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 			 	*dest = dc_colormap[dc_source[wrapped1]];
 			 	dest += ::g->SCREENWIDTH;
 			 	frac += fracstep;
-				truncated1 = frac >> FRACBITS;
-				wrapped1 = truncated1 & mheight;
-			 	*dest = dc_colormap[dc_source[wrapped1]];
-			 	dest += ::g->SCREENWIDTH;
-			 	frac += fracstep;
-			 } //while (count--);
+				// truncated1 = frac >> FRACBITS;
+				// wrapped1 = truncated1 & mheight;
+			 	// *dest = dc_colormap[dc_source[wrapped1]];
+			 	// dest += ::g->SCREENWIDTH;
+			 	// frac += fracstep;
+			 } while (count--);
 			if (count & 1)
 				*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
 		}
