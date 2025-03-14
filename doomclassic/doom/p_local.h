@@ -225,7 +225,6 @@ qboolean P_CheckSight (mobj_t* t1, mobj_t* t2);
 void 	P_UseLines (player_t* player);
 
 qboolean P_ChangeSector (sector_t* sector, qboolean crunch);
-qboolean P_CheckSector (sector_t* sector, qboolean crunch);
 
 extern mobj_t*	linetarget;	// who got hit (or NULL)
 
