@@ -190,7 +190,6 @@ void R_GenerateComposite (int texnum)
     postColumn_t*	patchcol;
     short*			collump;
     unsigned *	colofs;// killough 4/9/98: make 32-bit
-	
     texture = ::g->s_textures[texnum];
 
     block = (byte*)DoomLib::Z_Malloc (::g->s_texturecompositesize[texnum],
@@ -549,7 +548,7 @@ void R_InitTextures (void)
     for (i=0 ; i<nummappatches ; i++)
     {
 		strncpy (name,name_p+i*8, 8);
-		patchlookup[i] = W_CheckNumForName (name);
+		patchlookup[i] = W_CheckNumForName (name, W_CheckNumForName("P_END"));
     }
     Z_Free(names);
     
@@ -621,7 +620,6 @@ void R_InitTextures (void)
 				I_Error ("R_InitTextures: bad texture directory");
 		
 			mtexture = (maptexture_t *) ( (byte *)maptex + offset);
-
 			texture = ::g->s_textures[i] = (texture_t*)DoomLib::Z_Malloc (sizeof(texture_t)
 				+ sizeof(texpatch_t)*(SHORT(mtexture->patchcount)-1), PU_STATIC_SHARED, 0);
 
