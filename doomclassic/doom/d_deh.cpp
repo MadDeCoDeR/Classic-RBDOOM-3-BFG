@@ -608,6 +608,10 @@ void setCptr(char* varname, char* varfunc) {
 		if (strlen(name) > 1 && strlen(varfunc) > 1) {
 			if (!idStr::Icmp(name, "FRAME") && pos < (int)tempStates.size()) {
 				tempStates[pos].action = getFunc(varfunc);
+				//GK: Looping Action without next Frame detected. Set itself as next Frame
+				if (std::find(loopingActions.begin(), loopingActions.end(), varfunc) != loopingActions.end() && tempStates[pos].nextstate == 0) {
+					tempStates[pos].nextstate = pos;
+				}
 			}
 		}
 	}

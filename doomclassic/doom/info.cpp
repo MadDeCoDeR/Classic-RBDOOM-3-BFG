@@ -189,6 +189,18 @@ extern "C"
 	void A_RadiusDamage(void* p1);
 	void A_RemoveFlags(void* p1);
 	void A_MonsterProjectile(void* p1);
+	void A_WeaponProjectile(void* p1, void* p2);
+	void A_WeaponBulletAttack(void* p1, void* p2);
+	void A_WeaponJump(void* p1, void* p2);
+};
+
+/* GK: Some Frame Actions(mainly Weapon ones) require to be running in a loop.
+So using that list the DEHACKED parser can set those frame to have as next frame themselfs (if they didn't had any next Frame) in oder to loop using those Actions.
+*/
+std::vector<idStr> loopingActions = {
+	"Raise",
+	"Lower",
+	"WeaponReady"
 };
 
 
@@ -5732,7 +5744,10 @@ std::vector<dehcptr> tempcptrval {
 { "SpawnObject", (actionf_p1)A_SpawnObject },
 { "RadiusDamage", (actionf_p1)A_RadiusDamage },
 { "RemoveFlags", (actionf_p1)A_RemoveFlags },
-{ "MonsterProjectile", (actionf_p1)A_MonsterProjectile }
+{ "MonsterProjectile", (actionf_p1)A_MonsterProjectile },
+{ "WeaponProjectile", (actionf_p2)A_WeaponProjectile },
+{ "WeaponBulletAttack", (actionf_p2)A_WeaponBulletAttack },
+{ "WeaponJump", (actionf_p2)A_WeaponJump }
 };
 
 void init_cptrs() {

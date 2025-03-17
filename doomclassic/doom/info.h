@@ -1396,5 +1396,7 @@ extern /*const*/ std::vector<mobjinfo_t> mobjinfo;
 void resetValues();
 void init_cptrs();
 actionf_t getFunc(char* func);
+
+extern std::vector<idStr> loopingActions;
 #endif
 

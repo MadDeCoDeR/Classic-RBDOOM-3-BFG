@@ -320,7 +320,20 @@ void P_DropWeapon (player_t* player)
 		weaponinfo[player->readyweapon].downstate);
 }
 
+int P_RandomHitscanSlope(fixed_t spread)
+{
+	int angle;
 
+	angle = (FixedToAngle(abs(spread)) * (P_Random() - P_Random())) / 255;
+
+	// clamp it, yo
+	if (angle > ANG90)
+		return finetangent[0];
+	else if (-angle > ANG90)
+		return finetangent[FINEANGLES / 2 - 1];
+	else
+		return finetangent[(ANG90 - angle) >> ANGLETOFINESHIFT];
+}
 
 extern "C" {
 //
@@ -962,6 +975,97 @@ A_BFGsound
  pspdef_t*	psp )
 {
 	S_StartSound (player->mo, sfx_bfg);
+}
+
+void A_WeaponProjectile(player_t* player,
+	pspdef_t* psp)
+{
+	int type, angle, pitch, spawnofs_xy, spawnofs_z;
+	mobj_t* mo;
+	int an;
+
+	if (!psp->state || !psp->state->args[0])
+		return;
+
+	type = psp->state->args[0] - 1;
+	angle = psp->state->args[1];
+	pitch = psp->state->args[2];
+	spawnofs_xy = psp->state->args[3];
+	spawnofs_z = psp->state->args[4];
+
+	mo = P_SpawnPlayerMissile(player->mo, type);
+	if (!mo)
+		return;
+
+	// adjust angle
+	mo->angle += (unsigned int)(((int64_t)angle << FRACBITS) / 360);
+	an = mo->angle >> ANGLETOFINESHIFT;
+	mo->momx = FixedMul(mo->info->speed, finecosine[an]);
+	mo->momy = FixedMul(mo->info->speed, finesine[an]);
+
+	// adjust pitch (approximated, using Doom's ye olde
+	// finetangent table; same method as autoaim)
+	mo->momz += FixedMul(mo->info->speed, DegToSlope(pitch));
+
+	// adjust position
+	an = (player->mo->angle - ANG90) >> ANGLETOFINESHIFT;
+	mo->x += FixedMul(spawnofs_xy, finecosine[an]);
+	mo->y += FixedMul(spawnofs_xy, finesine[an]);
+	mo->z += spawnofs_z;
+
+	// set tracer to the player's autoaim target,
+	// so player seeker missiles prioritizing the
+	// baddie the player is actually aiming at. ;)
+	mo->tracer = ::g->linetarget;
+}
+
+void A_WeaponBulletAttack(player_t* player,
+	pspdef_t* psp)
+{
+	angle_t	angle;
+	fixed_t slope;
+	int		damage;
+	fixed_t hspread, vspread;
+	uint	numBullets = 1;
+	uint	damageBase = 5;
+	uint	damageDice = 3;
+
+	hspread = psp->state->args[0];
+	vspread = psp->state->args[1];
+	if (psp->state->args[2] >= 0) {
+		numBullets = psp->state->args[2];
+	}
+	if (psp->state->args[3] >= 0) {
+		damageBase = psp->state->args[3];
+	}
+	if (psp->state->args[4] >= 0) {
+		damageDice = psp->state->args[4];
+	}
+
+	P_SetMobjState(player->mo, S_PLAY_ATK2);
+
+	P_BulletSlope(player->mo);
+
+	for (uint i = 0; i < numBullets; i++)
+	{
+		damage = damageBase * (P_Random() % damageDice + 1);
+		angle = player->mo->angle;
+		angle += (FixedToAngle(abs(hspread)) * (P_Random() - P_Random())) / 255;
+		slope = ::g->bulletslope;
+		slope += P_RandomHitscanSlope(vspread);
+		P_LineAttack(player->mo,
+			angle,
+			MISSILERANGE,
+			slope, damage);
+	}
+}
+
+void A_WeaponJump(player_t* player,
+	pspdef_t* psp)
+{
+	if (P_Random() < psp->state->args[1]) {
+		P_SetPsprite(player, ps_weapon, psp->state->args[0]);
+	}
 }
 
 }; // extern "C"
