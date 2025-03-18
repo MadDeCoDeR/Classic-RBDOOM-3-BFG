@@ -192,6 +192,12 @@ extern "C"
 	void A_WeaponProjectile(void* p1, void* p2);
 	void A_WeaponBulletAttack(void* p1, void* p2);
 	void A_WeaponJump(void* p1, void* p2);
+	void A_WeaponSound(void* p1, void* p2);
+	void A_ConsumeAmmo(void* p1, void* p2);
+	void A_CheckAmmo(void* p1, void* p2);
+	void A_RefireTo(void* p1, void* p2);
+	void A_GunFlashTo(void* p1, void* p2);
+	void A_WeaponAlert(void* p1, void* p2);
 };
 
 /* GK: Some Frame Actions(mainly Weapon ones) require to be running in a loop.
@@ -5747,7 +5753,13 @@ std::vector<dehcptr> tempcptrval {
 { "MonsterProjectile", (actionf_p1)A_MonsterProjectile },
 { "WeaponProjectile", (actionf_p2)A_WeaponProjectile },
 { "WeaponBulletAttack", (actionf_p2)A_WeaponBulletAttack },
-{ "WeaponJump", (actionf_p2)A_WeaponJump }
+{ "WeaponJump", (actionf_p2)A_WeaponJump },
+{ "WeaponSound", (actionf_p2)A_WeaponSound },
+{ "ConsumeAmmo", (actionf_p2)A_ConsumeAmmo },
+{ "CheckAmmo", (actionf_p2)A_CheckAmmo },
+{ "RefireTo", (actionf_p2)A_RefireTo },
+{ "GunFlashTo", (actionf_p2)A_GunFlashTo },
+{ "WeaponAlert", (actionf_p2)A_WeaponAlert }
 };
 
 void init_cptrs() {

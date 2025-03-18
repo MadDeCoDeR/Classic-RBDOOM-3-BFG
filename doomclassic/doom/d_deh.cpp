@@ -471,6 +471,7 @@ void setThing(int pos, char* varname, int varval) {
 		{"Fast speed ",MAXINT,NULL, &mobjinfo[pos].altSpeed},
 		{"Melee range ", MAXINT, NULL, &mobjinfo[pos].meleeRange}
 	};
+	mobjinfo[pos].meleeRange = MELEERANGE;
 	for (int i = 0; i < 29; i++) {
 		if (!idStr::Icmp(varname, tvars[i].name)) {
 			if (varval < tvars[i].limit) {

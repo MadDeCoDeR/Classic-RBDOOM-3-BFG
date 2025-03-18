@@ -1042,8 +1042,6 @@ void A_WeaponBulletAttack(player_t* player,
 		damageDice = psp->state->args[4];
 	}
 
-	P_SetMobjState(player->mo, S_PLAY_ATK2);
-
 	P_BulletSlope(player->mo);
 
 	for (uint i = 0; i < numBullets; i++)
@@ -1060,12 +1058,69 @@ void A_WeaponBulletAttack(player_t* player,
 	}
 }
 
+void A_WeaponSound(player_t* player,
+	pspdef_t* psp) {
+	if (psp->state && psp->state->args[0] >= 0) {
+		S_StartSound(psp->state->args[1] ? NULL : player->mo, psp->state->args[0]);
+	}
+}
+
 void A_WeaponJump(player_t* player,
 	pspdef_t* psp)
 {
 	if (P_Random() < psp->state->args[1]) {
 		P_SetPsprite(player, ps_weapon, psp->state->args[0]);
 	}
+}
+
+void A_ConsumeAmmo(player_t* player,
+	pspdef_t* psp) {
+	if (psp->state) {
+		int clipAmount = psp->state->args[0] == 0 ? weaponinfo[player->readyweapon].clipAmmo : psp->state->args[0];
+		if ((player->cheats & CF_INFAMMO) == false && weaponinfo[player->readyweapon].ammo != am_noammo) {
+			player->ammo[weaponinfo[player->readyweapon].ammo] -= clipAmount;
+		}
+		if (player->ammo[weaponinfo[player->readyweapon].ammo] < 0) {
+			player->ammo[weaponinfo[player->readyweapon].ammo] = 0;
+		}
+	}
+}
+
+void A_CheckAmmo(player_t* player,
+	pspdef_t* psp) {
+	if (psp->state) {
+		int minAmount = psp->state->args[1] ? psp->state->args[1] : weaponinfo[player->readyweapon].clipAmmo;
+		if ((player->cheats & CF_INFAMMO) == false && weaponinfo[player->readyweapon].ammo != am_noammo) {
+			if (player->ammo[weaponinfo[player->readyweapon].ammo] < minAmount) {
+				P_SetPsprite(player, ps_weapon, psp->state->args[0]);
+			}
+		}
+	}
+}
+
+void A_RefireTo(player_t* player,
+	pspdef_t* psp) {
+	if (psp->state) {
+		bool hasAmmo = psp->state->args[1] ? true : player->ammo[weaponinfo[player->readyweapon].ammo] > 0;
+		if ((player->cmd.buttons & BT_ATTACK)
+			&& player->pendingweapon == wp_nochange
+			&& player->health && hasAmmo) {
+			P_SetPsprite(player, ps_weapon, psp->state->args[0]);
+		}
+	}
+}
+void A_GunFlashTo(player_t* player,
+	pspdef_t* psp) {
+	if (psp->state) {
+		if (psp->state->args[1]) {
+			P_SetMobjState(player->mo, S_PLAY_ATK2);
+		}
+		P_SetPsprite(player, ps_flash, psp->state->args[0]);
+	}
+}
+void A_WeaponAlert(player_t* player,
+	pspdef_t* psp) {
+	P_NoiseAlert(player->mo, player->mo);
 }
 
 }; // extern "C"
