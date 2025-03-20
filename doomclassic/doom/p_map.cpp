@@ -606,14 +606,15 @@ P_TryMove
     {
 		while (::g->numspechit--)
 		{
+			
 			// see if the line was crossed
-			//ld = ::g->spechit[::g->numspechit];
-			side = P_PointOnLineSide (thing->x, thing->y, ::g->spechit[::g->numspechit]);
-			oldside = P_PointOnLineSide (oldx, oldy, ::g->spechit[::g->numspechit]);
-			if (side != oldside)
+			line_t* ld = ::g->spechit[::g->numspechit];
+			if (ld->special)
 			{
-			if (::g->spechit[::g->numspechit]->special)
-				P_CrossSpecialLine (::g->spechit[::g->numspechit] -::g->lines, oldside, thing);
+				side = P_PointOnLineSide(thing->x, thing->y, ld);
+				oldside = P_PointOnLineSide(oldx, oldy, ld);
+				if (side != oldside)
+					P_CrossSpecialLine (ld -::g->lines, oldside, thing);
 			}
 		}
     }

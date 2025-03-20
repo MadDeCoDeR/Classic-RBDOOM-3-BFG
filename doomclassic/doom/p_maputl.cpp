@@ -98,9 +98,9 @@ P_PointOnLineSide
     left = FixedMul ( line->dy>>FRACBITS , dx );
     right = FixedMul ( dy , line->dx>>FRACBITS );
 	
-    if (right < left)
-	return 0;		// front side
-    return 1;			// back side
+	return right >= left;
+	//return 0;		// front side
+    //return 1;			// back side
 }
 
 

@@ -412,14 +412,21 @@ void R_DrawMaskedColumn (postColumn_t* column)
     int		topscreen;
     int 	bottomscreen;
     fixed_t	basetexturemid;
+	int top = -1;
 	
     basetexturemid = ::g->dc_texturemid;
 	
-    for ( ; column->topdelta != 0xff ; ) 
+    while (column->topdelta != 0xff) 
     {
+		if (column->topdelta <= top) {
+			top += column->topdelta;
+		}
+		else {
+			top = column->topdelta;
+		}
 	// calculate unclipped screen coordinates
 	//  for post
-	topscreen = ::g->sprtopscreen + ::g->spryscale*column->topdelta;
+	topscreen = ::g->sprtopscreen + ::g->spryscale*top;
 	bottomscreen = topscreen + ::g->spryscale*column->length;
 
 	::g->dc_yl = (topscreen+FRACUNIT-1)>>FRACBITS;
@@ -433,7 +440,7 @@ void R_DrawMaskedColumn (postColumn_t* column)
 	if (::g->dc_yl <= ::g->dc_yh && ::g->dc_yh < ::g->viewheight)
 	{
 	    ::g->dc_source = (byte *)column + 3;
-	    ::g->dc_texturemid = basetexturemid - (column->topdelta<<FRACBITS);
+	    ::g->dc_texturemid = basetexturemid - (top <<FRACBITS);
 	    // ::g->dc_source = (byte *)column + 3 - column->topdelta;
 
 	    // Drawn by either R_DrawColumn
