@@ -208,6 +208,10 @@ void P_SetThingPosition (mobj_t* thing);
 // P_MAP
 //
 
+//jff 3/21/98 Set if line absorbs use by player
+//allow multiple push/switch triggers to be used on one push
+#define ML_PASSUSE      512
+
 // If "floatok" true, move would be ok
 // if within "tmfloorz - tmceilingz".
 extern qboolean		floatok;
