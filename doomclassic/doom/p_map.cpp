@@ -257,8 +257,8 @@ qboolean PIT_CheckLine (line_t* ld)
 	if ( ld->flags & ML_BLOCKING || (::g->tmthing->player && ld->flags & ML_BLOCKPLAYERS))
 	    return false;	// explicitly blocking everything
 
-	if ( !::g->tmthing->player && ld->flags & ML_BLOCKMONSTERS || 
-	(ld->flags & ML_BLOCKLANDMONSTERS && !(::g->tmthing->flags & MF_FLOAT)) )
+	if ( !::g->tmthing->player && (ld->flags & ML_BLOCKMONSTERS || 
+	(ld->flags & ML_BLOCKLANDMONSTERS && !(::g->tmthing->flags & MF_FLOAT))) )
 	    return false;	// block monsters only
     }
 
