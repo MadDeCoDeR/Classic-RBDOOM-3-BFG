@@ -796,8 +796,8 @@ P_CrossSpecialLine
 
 	case 39:
 		// TELEPORT!
-		EV_Teleport( line, side, thing );
-		line->special = 0;
+		if (EV_Teleport( line, side, thing ))
+			line->special = 0;
 		break;
 
 	case 40:
@@ -910,8 +910,8 @@ P_CrossSpecialLine
 		// TELEPORT MonsterONLY
 		if (!thing->player)
 		{
-			EV_Teleport( line, side, thing );
-			line->special = 0;
+			if (EV_Teleport( line, side, thing ))
+				line->special = 0;
 		}
 		break;
 
