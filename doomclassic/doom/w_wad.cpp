@@ -738,6 +738,7 @@ void W_FreeWadFiles() {
 			free(::g->cpatch[i]);
 			::g->cpatch[i] = NULL;
 		}
+		ResetSfx();
 		resetValues();
 		//resetWeapons();
 		ResetAmmo();

@@ -549,6 +549,9 @@ void R_InitTextures (void)
     {
 		strncpy (name,name_p+i*8, 8);
 		patchlookup[i] = W_CheckNumForName (name, W_CheckNumForName("P_END"));
+		if (patchlookup[i] == -1) {
+			patchlookup[i] = W_CheckNumForName (name);
+		}
     }
     Z_Free(names);
     

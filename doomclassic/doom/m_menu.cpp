@@ -2196,6 +2196,7 @@ void M_CloseGame()
 		alAuxiliaryEffectSlotiRef((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
 	
 //#endif
+	ResetSfx();
 	resetValues();
 	//resetWeapons();
 	ResetAmmo();
