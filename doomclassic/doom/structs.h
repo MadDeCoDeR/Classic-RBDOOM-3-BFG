@@ -608,6 +608,7 @@ typedef struct map_s{//GK:Store information for the custom expansion maps
 	char* secretmapname;
 	bool monstertelefrag;
 	std::vector<boss_t> bossData;
+	char* titlepic;
 }map_t;
 
 typedef struct {//GK:Store information for the custom expansion clusters

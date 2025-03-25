@@ -1567,14 +1567,14 @@ void WI_loadData(void)
 			strcpy(name,"INTERPIC");
 	}
 
-	if (::g->gamemission == pack_custom && ::g->gamemode == retail && ::g->clusters[::g->wbs->epsd].interpic){
+	if (::g->gamemission == pack_custom && (::g->gamemode == retail || ::g->episodicExpansion) && ::g->clusters[::g->wbs->epsd].interpic) {
 		strcpy(name, ::g->clusters[::g->wbs->epsd].interpic);
 	}
 
 	// background
 	::g->bg = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_BACK), W_GetNumForName(name));
 
-	V_DrawPatch(0, 0, 1, ::g->bg, false);
+	V_DrawPatch(0, 0, 1, ::g->bg, ::g->bg->width > 320);
 
 
     // UNUSED unsigned char *pic = ::g->screens[1];
@@ -1587,6 +1587,20 @@ void WI_loadData(void)
     //   pic++;
     // }
     //}
+
+	if (::g->gamemission == pack_custom && ::g->maps[0].titlepic) {
+		::g->lnames = (patch_t**)DoomLib::Z_Malloc(sizeof(patch_t*) * (::g->mapmax), PU_WI_LNAME, 0);
+		for (i = 0; i < ::g->mapmax; i++)
+		{
+			if (!::g->maps[i].titlepic) {
+				continue;
+			}
+			sprintf(name, ::g->maps[i].titlepic);
+			if (W_CheckNumForName(name) > 0) {
+				::g->lnames[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_LNAME), W_GetNumForName(name));
+			}
+		}
+	} else
 
 	if (::g->gamemode == commercial)
 	{

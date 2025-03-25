@@ -752,11 +752,12 @@ void setMAPSTR(int pos, char* name, char* value) {
 			{"allowmonstertelefrags",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].monstertelefrag},
 			{"mastermindboss", MAXINT},
 			{"cyberboss", MAXINT},
-			{"bossaction", MAXINT}
+			{"bossaction", MAXINT},
+			{"titlepic", MAXINT, &::g->maps[pos].titlepic}
 
 		};
 
-		for (int i = 0; i < 17; i++) {
+		for (int i = 0; i < 19; i++) {
 			if (!idStr::Icmp(name, mapstr[i].name)) {
 				bool found = false;
 				switch (i + 1) {
@@ -814,6 +815,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 				case 5:
 				case 10:
 				case 11:
+				case 19:
 					*mapstr[i].sval = value;
 					break;
 				case 1:
