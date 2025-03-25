@@ -108,6 +108,7 @@ void M_DrawReadThis1(void);
 void M_DrawReadThis2(void);
 void M_DrawNewGame(void);
 void M_DrawEpisode(void);
+void M_DrawExpansion(void);
 void M_DrawOptions(void);
 void M_DrawSound(void);
 void M_DrawVideo(void);

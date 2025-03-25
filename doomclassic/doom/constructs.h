@@ -180,36 +180,36 @@ menu_t  temp_EpiDef = {
 memcpy( &::g->EpiDef, &temp_EpiDef, sizeof(temp_EpiDef) );
 //GK: Add Evilution and Plutonia as expansion options for DOOM II
 menuitem_t temp_ExpansionMenu[5] = {
-	{1,"M_EPI1", M_Expansion,'h'},
-	{1,"M_EPI2", M_Expansion,'n'},
-	{ 1,"M_EPI3", M_Expansion,'t' },
-	{ 1,"M_EPI4", M_Expansion,'p' },
-	{ 1,"M_EPI5", M_Expansion,'m' },
+	{1,"M_EXP1", M_Expansion,'h'},
+	{1,"M_EXP2", M_Expansion,'n'},
+	{ 1,"M_EXP3", M_Expansion,'t' },
+	{ 1,"M_EXP4", M_Expansion,'p' },
+	{ 1,"M_EXP5", M_Expansion,'m' },
 };
 memcpy( ::g->ExpansionMenu, temp_ExpansionMenu, sizeof(temp_ExpansionMenu) );
 menu_t  temp_ExpDef = {
 	ex_end,		// # of menu items
 	&::g->MainDef,		// previous menu
 	::g->ExpansionMenu,	// menuitem_t ->
-	M_DrawEpisode,	// drawing routine ->
+	M_DrawExpansion,	// drawing routine ->
 	48,63,              // x,y
 	ex1			// lastOn
 };
 memcpy( &::g->ExpDef, &temp_ExpDef, sizeof(temp_ExpDef) );
 //GK: Add Evilution and Plutonia as expansion options for DOOM II
 menuitem_t temp_LoadExpMenu[5] = {
-	{1,"M_EPI1", M_LoadExpansion,'h'},
-	{1,"M_EPI2", M_LoadExpansion,'n'},
-	{ 1,"M_EPI3", M_LoadExpansion,'t' },
-	{ 1,"M_EPI4", M_LoadExpansion,'p' },
-	{ 1,"M_EPI5", M_LoadExpansion,'m' },
+	{1,"M_EXP1", M_LoadExpansion,'h'},
+	{1,"M_EXP2", M_LoadExpansion,'n'},
+	{ 1,"M_EXP3", M_LoadExpansion,'t' },
+	{ 1,"M_EXP4", M_LoadExpansion,'p' },
+	{ 1,"M_EXP5", M_LoadExpansion,'m' },
 };
 memcpy( ::g->LoadExpMenu, temp_LoadExpMenu, sizeof(temp_LoadExpMenu) );
 menu_t  temp_LoadExpDef = {
 	ex_end,		// # of menu items
 	&::g->MainDef,		// previous menu
 	::g->LoadExpMenu,	// menuitem_t ->
-	M_DrawEpisode,	// drawing routine ->
+	M_DrawExpansion,	// drawing routine ->
 	48,63,              // x,y
 	ex1			// lastOn
 };

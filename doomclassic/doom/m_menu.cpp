@@ -257,6 +257,7 @@ void M_DrawReadThis1(void);
 void M_DrawReadThis2(void);
 void M_DrawNewGame(void);
 void M_DrawEpisode(void);
+void M_DrawExpansion(void);
 void M_DrawOptions(void);
 void M_DrawSound(void);
 void M_DrawVideo(void);
@@ -1335,6 +1336,11 @@ void M_NewGame(int choice)
 void M_DrawEpisode(void)
 {
 	V_DrawPatchDirect (54,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_EPISOD",PU_CACHE_SHARED), W_GetNumForName("M_EPISOD")), false);
+}
+
+void M_DrawExpansion(void)
+{
+	V_DrawPatchDirect(54, 38, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_EXPAN", PU_CACHE_SHARED), W_GetNumForName("M_EXPAN")), false);
 }
 
 void M_VerifyNightmare(int ch)
