@@ -578,6 +578,12 @@ typedef struct zstats_s {
 } zstats_t;
 // z_zone.structs end // 
 
+typedef struct boss_s {
+	int name;
+	char* action;
+	long tag;
+}boss_t;
+
 typedef struct map_s{//GK:Store information for the custom expansion maps
 	int index;
 	int secretmap = 0;
@@ -601,8 +607,7 @@ typedef struct map_s{//GK:Store information for the custom expansion maps
 	char* nextmapname;
 	char* secretmapname;
 	bool monstertelefrag;
-	int bossname;
-	char* bossaction;
+	std::vector<boss_t> bossData;
 }map_t;
 
 typedef struct {//GK:Store information for the custom expansion clusters

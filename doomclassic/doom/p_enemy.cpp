@@ -1599,36 +1599,25 @@ void A_BossDeath (mobj_t* mo)
     mobj_t*	mo2;
     line_t	junk;
     int		i;
-	bool ok = false; //GK:Oversimplyfication for the if case on map 07's logic
+	size_t ok = false; //GK:Oversimplyfication for the if case on map 07's logic
 		
 	if (::g->gamemission == pack_custom && ::g->map) { //GK:Custom expansion related stuff
-		if (::g->gamemode == retail) {
-			if (::g->clusters[::g->gameepisode - 1].startmap) {
-				if (::g->maps[::g->map - 1].bossname) {
-					if (mo->type != ::g->maps[::g->map - 1].bossname) {
-						return;
-					}
-					else {
-						ok = true;
-					}
+		for (size_t i1 = 0; i1 < ::g->maps[::g->map - 1].bossData.size(); i1++) {
+			if (::g->maps[::g->map - 1].bossData[i1].name) {
+				if (mo->type != ::g->maps[::g->map - 1].bossData[i1].name) {
+					return;
 				}
 				else {
-					if (!::g->maps[::g->map - 1].miniboss) {
-						return;
-					}
-					else {
-						ok = true;
-					}
+					ok = i1;
 				}
 			}
 		}
+
+		if (!::g->maps[::g->map - 1].miniboss) {
+			return;
+		}
 		else {
-			if (!::g->maps[::g->map - 1].miniboss) {
-				return;
-			}
-			else {
-				ok = true;
-			}
+			ok = true;
 		}
 	}else
     if ( ::g->gamemode == commercial)
@@ -1738,6 +1727,20 @@ void A_BossDeath (mobj_t* mo)
 	}
     }
 	
+	if (::g->gamemission == pack_custom) {
+		junk.tag = ::g->maps[::g->map - 1].bossData[ok].tag ? ::g->maps[::g->map - 1].bossData[ok].tag : 666;
+		if (::g->maps[::g->map - 1].bossData[ok].action) {
+			if (!idStr::Icmp("openDoor", ::g->maps[::g->map - 1].bossData[ok].action)) {
+				EV_DoDoor(&junk, blazeOpen);
+				return;
+			}
+			if (!idStr::Icmp("lowerFloor", ::g->maps[::g->map - 1].bossData[ok].action)) {
+				EV_DoFloor(&junk, lowerFloorToLowest);
+				return;
+			}
+		}
+	} else
+
     // victory!
     if ( ::g->gamemode == commercial)
     {
@@ -1760,43 +1763,28 @@ void A_BossDeath (mobj_t* mo)
     }
     else
     {
-		if (::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode - 1].startmap) {
+		switch (::g->gameepisode)
+		{
+		case 1:
 			junk.tag = 666;
-			if (::g->maps[::g->map - 1].bossaction) {
-				if (!idStr::Icmp("openDoor", ::g->maps[::g->map - 1].bossaction)) {
-					EV_DoDoor(&junk, blazeOpen);
-					return;
-				}
-				if (!idStr::Icmp("lowerFloor", ::g->maps[::g->map - 1].bossaction)) {
-					EV_DoFloor(&junk, lowerFloorToLowest);
-					return;
-				}
-			}
-		}
-		else {
-			switch (::g->gameepisode)
+			EV_DoFloor(&junk, lowerFloorToLowest);
+			return;
+			break;
+
+		case 4:
+			switch (::g->gamemap)
 			{
-			case 1:
+			case 6:
+				junk.tag = 666;
+				EV_DoDoor(&junk, blazeOpen);
+				return;
+				break;
+
+			case 8:
 				junk.tag = 666;
 				EV_DoFloor(&junk, lowerFloorToLowest);
 				return;
 				break;
-
-			case 4:
-				switch (::g->gamemap)
-				{
-				case 6:
-					junk.tag = 666;
-					EV_DoDoor(&junk, blazeOpen);
-					return;
-					break;
-
-				case 8:
-					junk.tag = 666;
-					EV_DoFloor(&junk, lowerFloorToLowest);
-					return;
-					break;
-				}
 			}
 		}
     }

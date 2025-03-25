@@ -1374,7 +1374,7 @@ void M_ChooseSkill(int choice)
 		return;
 	}
 	
-	if ( ::g->gamemode != commercial ) {
+	if ( ::g->gamemode != commercial  || ::g->episodicExpansion) {
 		static int startLevel = 1;
 		G_DeferedInitNew((skill_t)choice,::g->epi+1, startLevel);
 		{ //GK: Set Endmap for the selected episode
@@ -1503,7 +1503,12 @@ void M_Expansion(int choice)
 					M_SetupNextMenu(&::g->DevDef);
 				}
 				else {
-					M_SetupNextMenu(&::g->NewDef);
+					if (::g->episodicExpansion) {
+						M_SetupNextMenu(&::g->EpiDef);
+					}
+					else {
+						M_SetupNextMenu(&::g->NewDef);
+					}
 				}
 			}
 			else if (choice == 4 && DoomLib::use_doomit && doomit.GetInteger() == 0) {

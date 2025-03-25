@@ -269,8 +269,7 @@ enum CLUSTER {
 
 void setMapNum() {
 	::g->map = 0;
-	switch (::g->gamemode) {
-	case retail:
+	if (::g->gamemode == retail || ::g->episodicExpansion) {
 		if (::g->clusters.size()) {
 			if (::g->clusters[::g->gameepisode - 1].startmap) {
 				int map = ::g->gamemap >= ::g->clusters[::g->gameepisode - 1].startmap ? (::g->gamemap - ::g->clusters[::g->gameepisode - 1].startmap) : (::g->gamemap - 1);
@@ -280,10 +279,8 @@ void setMapNum() {
 				::g->map = 0;
 			}
 		}
-		break;
-	case commercial:
+	} else {
 		::g->map = ::g->gamemap;
-		break;
 	}
 }
 
@@ -359,7 +356,7 @@ void setMAP(int index,char* value1, char* value2, char* value3) {
 	int map;
 	//int endmap;
 	
-	if (::g->gamemode == retail) {
+	if (::g->gamemode == retail || ::g->episodicExpansion) {
 		if (beginepisode) {
 			if (episodecount >= (int)::g->clusters.size()) {
 				::g->clusters.resize(episodecount + 1);
@@ -429,7 +426,7 @@ void EX_add(int lump) {
 	//Nullify save directory (use custom one in order to avoid future conflicts)
 	::g->savedir = NULL;
 	//Auto configuration: Pre set intermission music
-	if (::g->gamemode == retail) {
+	if (::g->gamemode == retail || ::g->episodicExpansion) {
 		beginepisode = false;
 		::g->intermusic = mus_inter;
 	}
@@ -493,7 +490,7 @@ void parseexptext(char* text) {
 						val1 = mapcount - 1;
 					}
 					//First level on DOOM 1. Increase Episodecount and if the beginEpisode haven't been triggered trigger it
-					if (::g->gamemode == retail && val1 == 0) {
+					if ((::g->gamemode == retail || ::g->episodicExpansion) && val1 == 0) {
 						//episodecount++;
 						if (!beginepisode) {
 							beginepisode = true;
@@ -524,7 +521,7 @@ void parseexptext(char* text) {
 							val1 = atoi(t + 1) - 1;
 					}
 					if ((!::g->clusterind || ::g->clusterind <= (int)::g->clusters.size()) && ::g->clusterind <= val1) {
-						if (::g->gamemode == retail) {
+						if (::g->gamemode == retail || ::g->episodicExpansion) {
 							if (val1 + 1 > ::g->EpiDef.numitems) {
 								::g->EpiDef.numitems = val1 + 1;
 								int newval = val1 + 1;
@@ -539,7 +536,7 @@ void parseexptext(char* text) {
 					episodecount = val1;
 						if (!atoi(t)) {
 							::g->clusters[val1].mapname = t;
-						if (::g->gamemode == retail) {
+						if (::g->gamemode == retail || ::g->episodicExpansion) {
 							beginepisode = true;
 						}
 					}
@@ -692,6 +689,9 @@ void setEXP(char* name, int value) {
 		::g->endmap = value;
 		return;
 	}
+	if (!idStr::Icmp(name, "episodic_expansion")) {
+		::g->episodicExpansion = value;
+	}
 }
 
 void setSAVEDIR( char* value) {
@@ -699,7 +699,7 @@ void setSAVEDIR( char* value) {
 }
 
 void setMAPINT(int pos,char* name, int value) {
-	if (::g->gamemode == retail) {
+	if (::g->gamemode == retail || ::g->episodicExpansion) {
 		pos = calculateD1map(pos,episodecount)-1;
 	}
 	expobj mapint[] = {
@@ -731,12 +731,12 @@ void setMAPSTR(int pos, char* name, char* value) {
 		}
 	}
 
-	if (::g->gamemode == retail) {
+	if (::g->gamemode == retail || ::g->episodicExpansion) {
 		pos = calculateD1map(pos,episodecount) -1;
 	}
 		expobj mapstr[] = {
-			{"miniboss",MAXINT, &::g->maps[pos].bossaction,NULL,NULL,NULL,&::g->maps[pos].miniboss},
-			{"map07special",MAXINT, &::g->maps[pos].bossaction,NULL,NULL,NULL,&::g->maps[pos].miniboss},
+			{"miniboss",MAXINT, NULL,NULL,NULL,NULL,&::g->maps[pos].miniboss},
+			{"map07special",MAXINT, NULL,NULL,NULL,NULL,&::g->maps[pos].miniboss},
 			{"secret_final",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].fsecret},
 			{"final_flat",MAXINT,&::g->maps[pos].fflatname,&::g->maps[pos].fflat},
 			{"final_text",MAXINT,&::g->maps[pos].ftext},
@@ -750,8 +750,9 @@ void setMAPSTR(int pos, char* name, char* value) {
 			{"thingsecret",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].tsecret},
 			{"cspeclsecret",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].cspecls},
 			{"allowmonstertelefrags",MAXINT,NULL,NULL,NULL,NULL,&::g->maps[pos].monstertelefrag},
-			{"mastermindboss", MAXINT, &::g->maps[pos].bossaction, &::g->maps[pos].bossname},
-			{"cyberboss", MAXINT, &::g->maps[pos].bossaction, &::g->maps[pos].bossname}
+			{"mastermindboss", MAXINT},
+			{"cyberboss", MAXINT},
+			{"bossaction", MAXINT}
 
 		};
 
@@ -804,7 +805,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 					}
 					if (!idStr::Icmpn(value, "EndGame", 7) || !idStr::Icmpn(value, "endbunny", 8)) {
 						::g->endmap = pos + 1;
-						if (::g->gamemode == retail) {
+						if (::g->gamemode == retail || ::g->episodicExpansion) {
 							::g->clusters[episodecount].endmap = abs(::g->endmap - (::g->clusters[episodecount].startmap - 1));
 							beginepisode = true;
 						}
@@ -817,7 +818,6 @@ void setMAPSTR(int pos, char* name, char* value) {
 					break;
 				case 1:
 				case 2:
-					*mapstr[i].sval = value;
 				case 3:
 				case 12:
 				case 13:
@@ -826,14 +826,16 @@ void setMAPSTR(int pos, char* name, char* value) {
 					*mapstr[i].bval = true;
 					break;
 				case 16:
-					*mapstr[i].ival = MT_SPIDER;
-					*mapstr[i].sval = value;
+					::g->maps[pos].bossData.push_back({ MT_SPIDER, value, 666 });
 					break;
 				case 17:
-					*mapstr[i].ival = MT_CYBORG;
-					*mapstr[i].sval = value;
+					::g->maps[pos].bossData.push_back({ MT_CYBORG, value, 666 });
 					break;
-
+				case 18:
+					idStr parsedValue = value;
+					idList<idStr> parsedPieces = parsedValue.Split(", ");
+					::g->maps[pos].bossData.push_back({ atoi(parsedPieces[0].c_str()), strdup(parsedPieces[1].c_str()), atol(parsedPieces[2].c_str()) });
+					break;
 				}
 				break;
 			}

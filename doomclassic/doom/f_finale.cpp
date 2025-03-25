@@ -1138,7 +1138,7 @@ void F_Drawer (void)
 	switch (ending)
 	{
 	  case 1:
-	    if ( ::g->gamemode == retail )
+	    if ( ::g->gamemode == retail || ::g->episodicExpansion)
 	      V_DrawPatch (0,0,0,
 			  /*(patch_t*)*/img2lmp(W_CacheLumpName("CREDIT",PU_CACHE_SHARED), W_GetNumForName("CREDIT")), false);
 	    else

@@ -2234,6 +2234,7 @@ G_InitNew
 	//GK: When setting the gamemap set and the map for the custom expansion
 	if (::g->gamemission == pack_custom) {
 		setMapNum();
+		::g->gamemap = ::g->map;
 	}
 
 	::g->viewactive = true;
