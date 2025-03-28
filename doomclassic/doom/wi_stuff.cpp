@@ -1595,7 +1595,7 @@ void WI_loadData(void)
 			if (!::g->maps[i].titlepic) {
 				continue;
 			}
-			sprintf(name, ::g->maps[i].titlepic);
+			sprintf(name, "%s", ::g->maps[i].titlepic);
 			if (W_CheckNumForName(name) > 0) {
 				::g->lnames[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_LNAME), W_GetNumForName(name));
 			}
