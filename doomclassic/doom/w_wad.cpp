@@ -991,7 +991,7 @@ int W_GetNumForName ( const char* name)
 		&& idStr::Icmp("HELP2", name)
 		&& idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name)
 		&& idStr::Icmp("MAP33",name) && idStr::Icmp("CWILV32", name)
-		&& idStr::Icmp("SWITCHES", name) && idStr::Icmp("EXPINFO", name) && idStr::Icmp("DEHACKED", name)) //TITLEPIC might not exist
+		&& idStr::Icmp("SWITCHES", name) && idStr::Icmp("ANIMATED", name) && idStr::Icmp("EXPINFO", name) && idStr::Icmp("DEHACKED", name)) //TITLEPIC might not exist
       I_Error ("W_GetNumForName: %s not found!", name);
 	//GK End
       
@@ -1012,7 +1012,7 @@ idList<int> W_GetNumsForName(const char* name)
 		&& idStr::Icmp("HELP2", name)
 		&& idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name)
 		&& idStr::Icmp("MAP33", name) && idStr::Icmp("CWILV32", name)
-		&& idStr::Icmp("SWITCHES", name) && idStr::Icmp("EXPINFO", name) && idStr::Icmp("DEHACKED", name)) //TITLEPIC might not exist
+		&& idStr::Icmp("SWITCHES", name) && idStr::Icmp("ANIMATED", name) && idStr::Icmp("EXPINFO", name) && idStr::Icmp("DEHACKED", name)) //TITLEPIC might not exist
 		I_Error("W_GetNumForName: %s not found!", name);
 	//GK End
 
@@ -1162,7 +1162,7 @@ W_CacheLumpName
 		point = W_GetNumForName("DMENUPIC");
 	}
 
-	if (!idStr::Icmp("SWITCHES", name) && point == -1) { //Handle no SWITCHES lump
+	if ((!idStr::Icmp("SWITCHES", name) || !idStr::Icmp("ANIMATED", name))&& point == -1) { //Handle no SWITCHES lump
 		return NULL;
 	}
 	//GK end
@@ -1183,7 +1183,7 @@ W_LoadLumpName
 		point = W_GetNumForName("DMENUPIC");
 	}
 
-	if (!idStr::Icmp("SWITCHES", name) && point == -1) { //Handle no SWITCHES lump
+	if ((!idStr::Icmp("SWITCHES", name) || !idStr::Icmp("ANIMATED", name)) && point == -1) { //Handle no SWITCHES lump
 		return NULL;
 	}
 	//GK end

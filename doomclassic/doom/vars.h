@@ -608,8 +608,8 @@ fixed_t		t2y;
 int		sightcounts[2];
 // p_sight.vars end // 
 //  p_spec.vars begin // 
-anim_t2		anims[MAXANIMS];
-anim_t2*		lastanim;
+std::vector<anim_t2>		anims;
+//anim_t2*		lastanim;
 qboolean		levelTimer;
 int		levelTimeCount;
 int		levelFragCount;

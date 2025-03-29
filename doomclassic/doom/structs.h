@@ -394,7 +394,7 @@ typedef enum
 //  p_spec.structs begin // 
 typedef struct
 {
-	qboolean	istexture;
+	char	istexture;
 	int		picnum;
 	int		basepic;
 	int		numpics;
@@ -403,10 +403,10 @@ typedef struct
 } anim_t2;
 typedef struct
 {
-	qboolean	istexture;	// if false, it is a flat
+	char	istexture;	// if false, it is a flat
 	char	endname[9];
 	char	startname[9];
-	int		speed;
+	byte	speed[4]; //GK: Padding fix
 } animdef_t;
 // p_spec.structs end // 
 //  r_bsp.structs begin // 

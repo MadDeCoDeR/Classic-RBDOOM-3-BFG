@@ -134,40 +134,51 @@ static void P_SpawnPushers(void);
 void P_InitPicAnims (void)
 {
 	int		i;
+	size_t index = 0;
+	animdef_t* animList = NULL;
+	animList = (animdef_t*)W_CacheLumpName("ANIMATED", PU_CACHE);
+	int animListSize = W_LumpLength(W_GetNumForName("ANIMATED"));
+	if (!animList) {
+		animList = ::g->animdefs;
+		animListSize = sizeof(::g->animdefs);
+	}
+
 
 
 	//	Init animation
-	::g->lastanim = ::g->anims;
-	for (i=0 ; ::g->animdefs[i].istexture != (qboolean)-1 ; i++)
+	//::g->lastanim = ::g->anims;
+	int animSize = animListSize / sizeof(animdef_t);
+	::g->anims.resize(animSize * 2);
+	for (i=0 ; animList[i].istexture != -1 ; i++)
 	{
-		if (::g->animdefs[i].istexture)
+		if (animList[i].istexture)
 		{
 			// different episode ?
-			if (R_CheckTextureNumForName(::g->animdefs[i].startname) == -1)
+			if (R_CheckTextureNumForName(animList[i].startname) == -1)
 				continue;	
 
-			::g->lastanim->picnum = R_TextureNumForName (::g->animdefs[i].endname);
-			::g->lastanim->basepic = R_TextureNumForName (::g->animdefs[i].startname);
+			::g->anims[index].picnum = R_TextureNumForName (animList[i].endname);
+			::g->anims[index].basepic = R_TextureNumForName (animList[i].startname);
 		}
 		else
 		{
-			if (W_CheckNumForName(::g->animdefs[i].startname) == -1)
+			if (W_CheckNumForName(animList[i].startname) == -1)
 				continue;
 
-			::g->lastanim->picnum = R_FlatNumForName (::g->animdefs[i].endname);
-			::g->lastanim->basepic = R_FlatNumForName (::g->animdefs[i].startname);
+			::g->anims[index].picnum = R_FlatNumForName (animList[i].endname);
+			::g->anims[index].basepic = R_FlatNumForName (animList[i].startname);
 		}
 
-		::g->lastanim->istexture = ::g->animdefs[i].istexture;
-		::g->lastanim->numpics = ::g->lastanim->picnum - ::g->lastanim->basepic + 1;
+		::g->anims[index].istexture = animList[i].istexture;
+		::g->anims[index].numpics = ::g->anims[index].picnum - ::g->anims[index].basepic + 1;
 
-		if (::g->lastanim->numpics < 2)
+		if (::g->anims[index].numpics < 2)
 			I_Error ("P_InitPicAnims: bad cycle from %s to %s",
-				::g->animdefs[i].startname,
-				::g->animdefs[i].endname);
+				animList[i].startname,
+				animList[i].endname);
 
-		::g->lastanim->speed = ::g->animdefs[i].speed;
-		::g->lastanim++;
+		memcpy(&::g->anims[index].speed, animList[i].speed, 4);
+		index++;
 	}
 
 }
@@ -1690,10 +1701,8 @@ int PlayerFrags( int playernum ) {
 
 void P_UpdateSpecials (void)
 {
-	anim_t2*	anim;
 	int		pic;
 	int		i;
-	//line_t*	line;
 
 
 	//	LEVEL TIMER
@@ -1722,12 +1731,12 @@ void P_UpdateSpecials (void)
 	}
 
 	//	ANIMATE FLATS AND TEXTURES GLOBALLY
-	for (anim = ::g->anims ; anim < ::g->lastanim ; anim++)
+	for (anim_t2 &anim : ::g->anims)
 	{
-		for (i=anim->basepic ; i<anim->basepic+anim->numpics ; i++)
+		for (i=anim.basepic ; i<anim.basepic+anim.numpics ; i++)
 		{
-			pic = anim->basepic + ( (::g->leveltime/anim->speed + i)%anim->numpics );
-			if (anim->istexture)
+			pic = anim.basepic + ( (::g->leveltime/anim.speed + i)%anim.numpics );
+			if (anim.istexture)
 				::g->texturetranslation[i] = pic;
 			else
 				::g->flattranslation[i] = pic;
