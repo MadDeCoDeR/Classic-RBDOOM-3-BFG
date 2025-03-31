@@ -471,6 +471,7 @@ void setThing(int pos, char* varname, int varval) {
 		{"Fast speed ",MAXINT,NULL, &mobjinfo[pos].altSpeed},
 		{"Melee range ", MAXINT, NULL, &mobjinfo[pos].meleeRange}
 	};
+	mobjinfo[pos].altSpeed = -1;
 	mobjinfo[pos].meleeRange = MELEERANGE;
 	for (int i = 0; i < 29; i++) {
 		if (!idStr::Icmp(varname, tvars[i].name)) {
@@ -1056,7 +1057,7 @@ void parsetext(char* text) {
 						if (statepos >= (int)tempStates.size()) {
 							//I_Error("No such Frame found");
 							//int oldsize = tempStates.size();
-							tempStates.resize(statepos + 1, { SPR_SP00,0,-1,{(actionf_v)NULL},S_NULL,0,0 });
+							tempStates.resize(statepos + 1, { SPR_SP00,0, -1,{(actionf_v)NULL},S_NULL,0,0 });
 							/*for (int i = oldsize; i < tempStates.size(); i++) {
 								tempStates[i].nextstate = i + 1;
 							}*/

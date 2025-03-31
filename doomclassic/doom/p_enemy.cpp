@@ -1605,19 +1605,20 @@ void A_BossDeath (mobj_t* mo)
 		for (size_t i1 = 0; i1 < ::g->maps[::g->map - 1].bossData.size(); i1++) {
 			if (::g->maps[::g->map - 1].bossData[i1].name) {
 				if (mo->type != ::g->maps[::g->map - 1].bossData[i1].name) {
-					return;
+					continue;
 				}
 				else {
-					ok = i1;
+					ok = i1 + 1;
+					break;
 				}
 			}
 		}
 
-		if (!::g->maps[::g->map - 1].miniboss) {
+		if (!::g->maps[::g->map - 1].miniboss || (::g->maps[::g->map - 1].bossData.size() > 0 && !ok)) {
 			return;
 		}
 		else {
-			ok = true;
+			ok = !ok ? true: ok;
 		}
 	}else
     if ( ::g->gamemode == commercial)
@@ -1728,13 +1729,13 @@ void A_BossDeath (mobj_t* mo)
     }
 	
 	if (::g->gamemission == pack_custom) {
-		junk.tag = ::g->maps[::g->map - 1].bossData[ok].tag ? ::g->maps[::g->map - 1].bossData[ok].tag : 666;
-		if (::g->maps[::g->map - 1].bossData[ok].action) {
-			if (!idStr::Icmp("openDoor", ::g->maps[::g->map - 1].bossData[ok].action)) {
+		junk.tag = ::g->maps[::g->map - 1].bossData[ok - 1].tag ? ::g->maps[::g->map - 1].bossData[ok - 1].tag : 666;
+		if (::g->maps[::g->map - 1].bossData[ok - 1].action) {
+			if (!idStr::Icmp("openDoor", ::g->maps[::g->map - 1].bossData[ok - 1].action)) {
 				EV_DoDoor(&junk, blazeOpen);
 				return;
 			}
-			if (!idStr::Icmp("lowerFloor", ::g->maps[::g->map - 1].bossData[ok].action)) {
+			if (!idStr::Icmp("lowerFloor", ::g->maps[::g->map - 1].bossData[ok - 1].action)) {
 				EV_DoFloor(&junk, lowerFloorToLowest);
 				return;
 			}

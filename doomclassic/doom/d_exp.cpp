@@ -581,7 +581,7 @@ void parseexptext(char* text) {
 				if (::g->mapmax && val1 > ::g->mapmax) {
 					val1 = ::g->mapmax - 1;
 				}
-						if (!val3) {
+						if (!val3 || idStr(t).Find(',') > -1) {
 								varval = t;
 								setMAPSTR(val1, varname, varval);
 						} 
@@ -835,7 +835,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 					break;
 				case 18:
 					idStr parsedValue = value;
-					idList<idStr> parsedPieces = parsedValue.Split(", ");
+					idList<idStr> parsedPieces = parsedValue.Split(",");
 					::g->maps[pos].bossData.push_back({ atoi(parsedPieces[0].c_str()), strdup(parsedPieces[1].c_str()), atol(parsedPieces[2].c_str()) });
 					break;
 				}

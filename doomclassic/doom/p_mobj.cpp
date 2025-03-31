@@ -106,7 +106,8 @@ void P_ExplodeMissile (mobj_t* mo)
 
 	mo->tics -= P_Random()&3;
 
-	if (mo->tics < 1)
+	//GK: Possible Bad Hack. If a missle has negative tics and does no damage the don't force it to move to another state. Which means that the missle will either not work properly if it's expected to already exploit this or it will stay in the world like a corpse
+	if (mo->tics < 1 && mo->info->damage > 0)
 		mo->tics = 1;
 
 	mo->flags &= ~MF_MISSILE;

@@ -206,7 +206,8 @@ So using that list the DEHACKED parser can set those frame to have as next frame
 std::vector<idStr> loopingActions = {
 	"Raise",
 	"Lower",
-	"WeaponReady"
+	"WeaponReady",
+	"Look"
 };
 
 
