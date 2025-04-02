@@ -2204,18 +2204,9 @@ void A_RadiusDamage(mobj_t* thingy)
 void A_RemoveFlags(mobj_t* mo) {
 	int flags = mo->state->args[0];
 	int flags2 = mo->state->args[1];
-	bool updateBlockmap = ((flags & MF_NOBLOCKMAP) && (mo->flags & MF_NOBLOCKMAP)) || ((flags & MF_NOSECTOR) && (mo->flags & MF_NOSECTOR));
-
-	if (updateBlockmap) {
-		P_SetThingPosition(mo);
-	}
 
 	mo->flags &= ~flags;
 	mo->flags2 &= ~flags2;
-
-	if (updateBlockmap) {
-		P_SetThingPosition(mo);
-	}
 }
 
 void A_MonsterProjectile(mobj_t* mo) {
