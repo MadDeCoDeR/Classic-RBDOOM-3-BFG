@@ -386,6 +386,8 @@ typedef enum
     tc_glow,
 	tc_elevator,    //jff 2/22/98 new elevator type thinker                 
 	tc_scroll,      // killough 3/7/98: new scroll effect thinker
+	tc_friction,
+	tc_pusher,
     tc_endspecials,
 	tc_fire
 

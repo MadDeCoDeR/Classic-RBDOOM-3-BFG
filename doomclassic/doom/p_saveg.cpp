@@ -298,6 +298,7 @@ void P_ArchiveThinkers (void)
 	lightflash_t*	flash;
 	strobe_t*		strobe;
 	glow_t*			glow;
+	elevator_t* elevator;
 
 	int i;
 	
@@ -507,6 +508,55 @@ void P_ArchiveThinkers (void)
 			glow->sector = (sector_t *)(glow->sector - ::g->sectors);
 			continue;
 		}
+
+		//GK:BOOM's elevator and scroller related stuff
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_MoveElevator;
+		}
+		if (countIn)
+		{
+			*::g->save_p++ = tc_elevator;
+			PADSAVEP();
+			elevator = (elevator_t*)::g->save_p;
+			memcpy(elevator, th, sizeof(*elevator));
+			::g->save_p += sizeof(*elevator);
+			elevator->sector = (sector_t*)(elevator->sector - ::g->sectors);
+			continue;
+		}
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_Scroll;
+		}
+		if (countIn)
+		{
+			*::g->save_p++ = tc_scroll;
+			memcpy(::g->save_p, th, sizeof(scroll_t));
+			::g->save_p += sizeof(scroll_t);
+			continue;
+		}
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_Friction;
+		}
+		if (countIn)
+		{
+			*::g->save_p++ = tc_friction;
+			memcpy(::g->save_p, th, sizeof(friction_t));
+			::g->save_p += sizeof(friction_t);
+			continue;
+		}
+		countIn = false;
+		if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+			countIn = (*currentAction) == (actionf_p1)T_Pusher;
+		}
+		if (countIn)
+		{
+			*::g->save_p++ = tc_pusher;
+			memcpy(::g->save_p, th, sizeof(pusher_t));
+			::g->save_p += sizeof(pusher_t);
+			continue;
+		}
 	}
 
 	// add a terminating marker
@@ -543,6 +593,10 @@ void P_UnArchiveThinkers (void)
 	lightflash_t*	flash;
 	strobe_t*		strobe;
 	glow_t*			glow;
+	elevator_t* elevator;
+	scroll_t* scroll;
+	friction_t* friction;
+	pusher_t* pusher;
 
 	thinker_t*	th;
 
@@ -841,7 +895,42 @@ void P_UnArchiveThinkers (void)
 			glow->thinker.function = (actionf_p1)T_Glow;
 			P_AddThinker (&glow->thinker);
 			break;
+			//GK:BOOM's elevator and scroller related stuff
+		case tc_elevator:
+			PADSAVEP();
+			elevator = (elevator_t*)DoomLib::Z_Malloc(sizeof(*elevator), PU_DOOR, NULL);
+			memcpy(elevator, ::g->save_p, sizeof(*elevator));
+			::g->save_p += sizeof(*elevator);
+			elevator->sector = &::g->sectors[(intptr_t)elevator->sector];
+			elevator->sector->floordata = elevator;
+			elevator->sector->ceilingdata = elevator;
+			elevator->thinker.function = (actionf_p1)T_MoveElevator;
+			P_AddThinker(&elevator->thinker);
+			break;
 
+		case tc_scroll:
+			scroll = (scroll_t*)DoomLib::Z_Malloc(sizeof(scroll_t), PU_LEVEL, NULL);
+			memcpy(scroll, ::g->save_p, sizeof(scroll_t));
+			::g->save_p += sizeof(scroll_t);
+			scroll->thinker.function = (actionf_p1)T_Scroll;
+			P_AddThinker(&scroll->thinker);
+			break;
+
+		case tc_friction:
+			friction = (friction_t*)DoomLib::Z_Malloc(sizeof(friction_t), PU_LEVEL, NULL);
+			memcpy(friction, ::g->save_p, sizeof(friction_t));
+			::g->save_p += sizeof(friction_t);
+			friction->thinker.function = (actionf_p1)T_Friction;
+			P_AddThinker(&friction->thinker);
+			break;
+		case tc_pusher:
+			pusher = (pusher_t*)DoomLib::Z_Malloc(sizeof(pusher_t), PU_LEVEL, NULL);
+			memcpy(pusher, ::g->save_p, sizeof(pusher_t));
+			::g->save_p += sizeof(pusher_t);
+			pusher->thinker.function = (actionf_p1)T_Pusher;
+			pusher->source = P_GetPushThing(pusher->affectee);
+			P_AddThinker(&pusher->thinker);
+			break;
 		default:
 			I_Error ("Unknown tclass %i in savegame",tclass);
 		}
@@ -866,320 +955,359 @@ void P_UnArchiveThinkers (void)
 // T_Glow, (glow_t: sector_t *),
 // T_PlatRaise, (plat_t: sector_t *), - active list
 //
-void P_ArchiveSpecials (void)
-{
-    thinker_t*		th;
-    ceiling_t*		ceiling;
-    vldoor_t*		door;
-    floormove_t*	floor;
-    plat_t*		plat;
-    lightflash_t*	flash;
-    strobe_t*		strobe;
-    glow_t*		glow;
-	elevator_t* elevator;
-	scroll_t* scroll;
-    //int			i;
-	
-    // save off the current thinkers
-    for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
-    {
-	bool countIn = false;
-	if (const actionf_v* currentAction = std::get_if<actionf_v>(&th->function)) {
-		countIn = (*currentAction) == (actionf_v)NULL;
-	}
-	if (countIn)
-	{
-		size_t ci;
-	    for (ci = 0; ci < ::g->cellind;ci++)
-		if (::g->activeceilings[ci] == (ceiling_t *)th)
-		    break;
-	    
-	    if (ci< ::g->cellind)
-	    {
-		*::g->save_p++ = tc_ceiling;
-		PADSAVEP();
-		ceiling = (ceiling_t *)::g->save_p;
-		memcpy (ceiling, th, sizeof(*ceiling));
-		::g->save_p += sizeof(*ceiling);
-		ceiling->sector = (sector_t *)(ceiling->sector - ::g->sectors);
-	    }
-	    continue;
-	}
-			
-	countIn = false;
-	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
-		countIn = (*currentAction) == (actionf_p1)T_MoveCeiling;
-	}
-	if (countIn)
-	{
-	    *::g->save_p++ = tc_ceiling;
-	    PADSAVEP();
-	    ceiling = (ceiling_t *)::g->save_p;
-	    memcpy (ceiling, th, sizeof(*ceiling));
-	    ::g->save_p += sizeof(*ceiling);
-	    ceiling->sector = (sector_t *)(ceiling->sector - ::g->sectors);
-	    continue;
-	}
-			
-	countIn = false;
-	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
-		countIn = (*currentAction) == (actionf_p1)T_VerticalDoor;
-	}
-	if (countIn)
-	{
-	    *::g->save_p++ = tc_door;
-	    PADSAVEP();
-	    door = (vldoor_t *)::g->save_p;
-	    memcpy (door, th, sizeof(*door));
-	    ::g->save_p += sizeof(*door);
-	    door->sector = (sector_t *)(door->sector - ::g->sectors);
-	    continue;
-	}
-			
-	countIn = false;
-	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
-		countIn = (*currentAction) == (actionf_p1)T_MoveFloor;
-	}
-	if (countIn)
-	{
-	    *::g->save_p++ = tc_floor;
-	    PADSAVEP();
-	    floor = (floormove_t *)::g->save_p;
-	    memcpy (floor, th, sizeof(*floor));
-	    ::g->save_p += sizeof(*floor);
-	    floor->sector = (sector_t *)(floor->sector - ::g->sectors);
-	    continue;
-	}
-			
-	countIn = false;
-	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
-		countIn = (*currentAction) == (actionf_p1)T_PlatRaise;
-	}
-	if (countIn)
-	{
-	    *::g->save_p++ = tc_plat;
-	    PADSAVEP();
-	    plat = (plat_t *)::g->save_p;
-	    memcpy (plat, th, sizeof(*plat));
-	    ::g->save_p += sizeof(*plat);
-	    plat->sector = (sector_t *)(plat->sector - ::g->sectors);
-	    continue;
-	}
-			
-	countIn = false;
-	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
-		countIn = (*currentAction) == (actionf_p1)T_LightFlash;
-	}
-	if (countIn)
-	{
-	    *::g->save_p++ = tc_flash;
-	    PADSAVEP();
-	    flash = (lightflash_t *)::g->save_p;
-	    memcpy (flash, th, sizeof(*flash));
-	    ::g->save_p += sizeof(*flash);
-	    flash->sector = (sector_t *)(flash->sector - ::g->sectors);
-	    continue;
-	}
-			
-	countIn = false;
-	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
-		countIn = (*currentAction) == (actionf_p1)T_StrobeFlash;
-	}
-	if (countIn)
-	{
-	    *::g->save_p++ = tc_strobe;
-	    PADSAVEP();
-	    strobe = (strobe_t *)::g->save_p;
-	    memcpy (strobe, th, sizeof(*strobe));
-	    ::g->save_p += sizeof(*strobe);
-	    strobe->sector = (sector_t *)(strobe->sector - ::g->sectors);
-	    continue;
-	}
-			
-	countIn = false;
-	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
-		countIn = (*currentAction) == (actionf_p1)T_Glow;
-	}
-	if (countIn)
-	{
-	    *::g->save_p++ = tc_glow;
-	    PADSAVEP();
-	    glow = (glow_t *)::g->save_p;
-	    memcpy (glow, th, sizeof(*glow));
-	    ::g->save_p += sizeof(*glow);
-	    glow->sector = (sector_t *)(glow->sector - ::g->sectors);
-	    continue;
-	}
-	//GK:BOOM's elevator and scroller related stuff
-	countIn = false;
-	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
-		countIn = (*currentAction) == (actionf_p1)T_MoveElevator;
-	}
-	if (countIn)
-	{
-		*::g->save_p++ = tc_elevator;
-		PADSAVEP();
-		elevator = (elevator_t *)::g->save_p;
-		memcpy(elevator, th, sizeof(*elevator));
-		::g->save_p += sizeof(*elevator);
-		elevator->sector = (sector_t *)(elevator->sector - ::g->sectors);
-		continue;
-	}
-	countIn = false;
-	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
-		countIn = (*currentAction) == (actionf_p1)T_Scroll;
-	}
-	if (countIn)
-	{
-		*::g->save_p++ = tc_scroll;
-		PADSAVEP();
-		scroll = (scroll_t *)::g->save_p;
-		memcpy(scroll, th, sizeof(*scroll));
-		::g->save_p += sizeof(*scroll);
-		continue;
-	}
-
-    }
-	
-    // add a terminating marker
-    *::g->save_p++ = tc_endspecials;	
-
-}
-
-
+//GK: Both ArchiveSpecials and UnArchiveSpecials are DEPRECATED. Comment out just in case they still have anything useful
+//void P_ArchiveSpecials (void)
+//{
+//    thinker_t*		th;
+//    ceiling_t*		ceiling;
+//    vldoor_t*		door;
+//    floormove_t*	floor;
+//    plat_t*		plat;
+//    lightflash_t*	flash;
+//    strobe_t*		strobe;
+//    glow_t*		glow;
+//	elevator_t* elevator;
+//    //int			i;
+//	
+//    // save off the current thinkers
+//    for (th = ::g->thinkercap.next ; th != &::g->thinkercap ; th=th->next)
+//    {
+//	bool countIn = false;
+//	if (const actionf_v* currentAction = std::get_if<actionf_v>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_v)NULL;
+//	}
+//	if (countIn)
+//	{
+//		size_t ci;
+//	    for (ci = 0; ci < ::g->cellind;ci++)
+//		if (::g->activeceilings[ci] == (ceiling_t *)th)
+//		    break;
+//	    
+//	    if (ci< ::g->cellind)
+//	    {
+//		*::g->save_p++ = tc_ceiling;
+//		PADSAVEP();
+//		ceiling = (ceiling_t *)::g->save_p;
+//		memcpy (ceiling, th, sizeof(*ceiling));
+//		::g->save_p += sizeof(*ceiling);
+//		ceiling->sector = (sector_t *)(ceiling->sector - ::g->sectors);
+//	    }
+//	    continue;
+//	}
+//			
+//	countIn = false;
+//	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_p1)T_MoveCeiling;
+//	}
+//	if (countIn)
+//	{
+//	    *::g->save_p++ = tc_ceiling;
+//	    PADSAVEP();
+//	    ceiling = (ceiling_t *)::g->save_p;
+//	    memcpy (ceiling, th, sizeof(*ceiling));
+//	    ::g->save_p += sizeof(*ceiling);
+//	    ceiling->sector = (sector_t *)(ceiling->sector - ::g->sectors);
+//	    continue;
+//	}
+//			
+//	countIn = false;
+//	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_p1)T_VerticalDoor;
+//	}
+//	if (countIn)
+//	{
+//	    *::g->save_p++ = tc_door;
+//	    PADSAVEP();
+//	    door = (vldoor_t *)::g->save_p;
+//	    memcpy (door, th, sizeof(*door));
+//	    ::g->save_p += sizeof(*door);
+//	    door->sector = (sector_t *)(door->sector - ::g->sectors);
+//	    continue;
+//	}
+//			
+//	countIn = false;
+//	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_p1)T_MoveFloor;
+//	}
+//	if (countIn)
+//	{
+//	    *::g->save_p++ = tc_floor;
+//	    PADSAVEP();
+//	    floor = (floormove_t *)::g->save_p;
+//	    memcpy (floor, th, sizeof(*floor));
+//	    ::g->save_p += sizeof(*floor);
+//	    floor->sector = (sector_t *)(floor->sector - ::g->sectors);
+//	    continue;
+//	}
+//			
+//	countIn = false;
+//	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_p1)T_PlatRaise;
+//	}
+//	if (countIn)
+//	{
+//	    *::g->save_p++ = tc_plat;
+//	    PADSAVEP();
+//	    plat = (plat_t *)::g->save_p;
+//	    memcpy (plat, th, sizeof(*plat));
+//	    ::g->save_p += sizeof(*plat);
+//	    plat->sector = (sector_t *)(plat->sector - ::g->sectors);
+//	    continue;
+//	}
+//			
+//	countIn = false;
+//	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_p1)T_LightFlash;
+//	}
+//	if (countIn)
+//	{
+//	    *::g->save_p++ = tc_flash;
+//	    PADSAVEP();
+//	    flash = (lightflash_t *)::g->save_p;
+//	    memcpy (flash, th, sizeof(*flash));
+//	    ::g->save_p += sizeof(*flash);
+//	    flash->sector = (sector_t *)(flash->sector - ::g->sectors);
+//	    continue;
+//	}
+//			
+//	countIn = false;
+//	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_p1)T_StrobeFlash;
+//	}
+//	if (countIn)
+//	{
+//	    *::g->save_p++ = tc_strobe;
+//	    PADSAVEP();
+//	    strobe = (strobe_t *)::g->save_p;
+//	    memcpy (strobe, th, sizeof(*strobe));
+//	    ::g->save_p += sizeof(*strobe);
+//	    strobe->sector = (sector_t *)(strobe->sector - ::g->sectors);
+//	    continue;
+//	}
+//			
+//	countIn = false;
+//	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_p1)T_Glow;
+//	}
+//	if (countIn)
+//	{
+//	    *::g->save_p++ = tc_glow;
+//	    PADSAVEP();
+//	    glow = (glow_t *)::g->save_p;
+//	    memcpy (glow, th, sizeof(*glow));
+//	    ::g->save_p += sizeof(*glow);
+//	    glow->sector = (sector_t *)(glow->sector - ::g->sectors);
+//	    continue;
+//	}
+//	//GK:BOOM's elevator and scroller related stuff
+//	countIn = false;
+//	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_p1)T_MoveElevator;
+//	}
+//	if (countIn)
+//	{
+//		*::g->save_p++ = tc_elevator;
+//		PADSAVEP();
+//		elevator = (elevator_t *)::g->save_p;
+//		memcpy(elevator, th, sizeof(*elevator));
+//		::g->save_p += sizeof(*elevator);
+//		elevator->sector = (sector_t *)(elevator->sector - ::g->sectors);
+//		continue;
+//	}
+//	countIn = false;
+//	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_p1)T_Scroll;
+//	}
+//	if (countIn)
+//	{
+//		*::g->save_p++ = tc_scroll;
+//		memcpy(::g->save_p, th, sizeof(scroll_t));
+//		::g->save_p += sizeof(scroll_t);
+//		continue;
+//	}
+//	countIn = false;
+//	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_p1)T_Friction;
+//	}
+//	if (countIn)
+//	{
+//		*::g->save_p++ = tc_friction;
+//		memcpy(::g->save_p, th, sizeof(friction_t));
+//		::g->save_p += sizeof(friction_t);
+//		continue;
+//	}
+//	countIn = false;
+//	if (const actionf_p1* currentAction = std::get_if<actionf_p1>(&th->function)) {
+//		countIn = (*currentAction) == (actionf_p1)T_Pusher;
+//	}
+//	if (countIn)
+//	{
+//		*::g->save_p++ = tc_pusher;
+//		memcpy(::g->save_p, th, sizeof(pusher_t));
+//		::g->save_p += sizeof(pusher_t);
+//		continue;
+//	}
 //
-// P_UnArchiveSpecials
+//    }
+//	
+//    // add a terminating marker
+//    *::g->save_p++ = tc_endspecials;	
 //
-void P_UnArchiveSpecials (void)
-{
-    byte		tclass;
-    ceiling_t*		ceiling;
-    vldoor_t*		door;
-    floormove_t*	floor;
-    plat_t*		plat;
-    lightflash_t*	flash;
-    strobe_t*		strobe;
-    glow_t*		glow;
-	elevator_t* elevator;
-	scroll_t* scroll;
-
-    // read in saved thinkers
-    while (1)
-    {
-	tclass = *::g->save_p++;
-	switch (tclass)
-	{
-	  case tc_endspecials:
-	    return;	// end of list
-			
-	  case tc_ceiling:
-	    PADSAVEP();
-	    ceiling = (ceiling_t*)DoomLib::Z_Malloc(sizeof(*ceiling), PU_CEILING, NULL);
-	    memcpy (ceiling, ::g->save_p, sizeof(*ceiling));
-	    ::g->save_p += sizeof(*ceiling);
-	    ceiling->sector = &::g->sectors[(intptr_t)ceiling->sector];
-	    ceiling->sector->ceilingdata = ceiling;
-
-	    if (const actionf_p1* action_p1 = std::get_if<actionf_p1>(&ceiling->thinker.function))
-		ceiling->thinker.function = (actionf_p1)T_MoveCeiling;
-
-	    P_AddThinker (&ceiling->thinker);
-	    P_AddActiveCeiling(ceiling);
-	    break;
-				
-	  case tc_door:
-	    PADSAVEP();
-	    door = (vldoor_t*)DoomLib::Z_Malloc(sizeof(*door), PU_DOOR, NULL);
-	    memcpy (door, ::g->save_p, sizeof(*door));
-	    ::g->save_p += sizeof(*door);
-	    door->sector = &::g->sectors[(intptr_t)door->sector];
-	    door->sector->ceilingdata = door;
-	    door->thinker.function = (actionf_p1)T_VerticalDoor;
-	    P_AddThinker (&door->thinker);
-	    break;
-				
-	  case tc_floor:
-	    PADSAVEP();
-	    floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_FLOOR, NULL);
-	    memcpy (floor, ::g->save_p, sizeof(*floor));
-	    ::g->save_p += sizeof(*floor);
-	    floor->sector = &::g->sectors[(intptr_t)floor->sector];
-	    floor->sector->floordata = floor;
-	    floor->thinker.function = (actionf_p1)T_MoveFloor;
-	    P_AddThinker (&floor->thinker);
-	    break;
-				
-	  case tc_plat:
-	    PADSAVEP();
-	    plat = (plat_t*)DoomLib::Z_Malloc (sizeof(*plat), PU_PLATS, NULL);
-	    memcpy (plat, ::g->save_p, sizeof(*plat));
-	    ::g->save_p += sizeof(*plat);
-	    plat->sector = &::g->sectors[(intptr_t)plat->sector];
-	    plat->sector->floordata = plat;
-
-		if (const actionf_p1* action_p1 = std::get_if<actionf_p1>(&plat->thinker.function))
-		plat->thinker.function = (actionf_p1)T_PlatRaise;
-
-	    P_AddThinker (&plat->thinker);
-	    P_AddActivePlat(plat);
-	    break;
-				
-	  case tc_flash:
-	    PADSAVEP();
-	    flash = (lightflash_t*)DoomLib::Z_Malloc (sizeof(*flash), PU_LIGHTS, NULL);
-	    memcpy (flash, ::g->save_p, sizeof(*flash));
-	    ::g->save_p += sizeof(*flash);
-	    flash->sector = &::g->sectors[(intptr_t)flash->sector];
-	    flash->thinker.function = (actionf_p1)T_LightFlash;
-	    P_AddThinker (&flash->thinker);
-	    break;
-				
-	  case tc_strobe:
-	    PADSAVEP();
-	    strobe = (strobe_t*)DoomLib::Z_Malloc (sizeof(*strobe), PU_LIGHTS, NULL);
-	    memcpy (strobe, ::g->save_p, sizeof(*strobe));
-	    ::g->save_p += sizeof(*strobe);
-	    strobe->sector = &::g->sectors[(intptr_t)strobe->sector];
-	    strobe->thinker.function = (actionf_p1)T_StrobeFlash;
-	    P_AddThinker (&strobe->thinker);
-	    break;
-				
-	  case tc_glow:
-	    PADSAVEP();
-	    glow = (glow_t*)DoomLib::Z_Malloc (sizeof(*glow), PU_LIGHTS, NULL);
-	    memcpy (glow, ::g->save_p, sizeof(*glow));
-	    ::g->save_p += sizeof(*glow);
-	    glow->sector = &::g->sectors[(intptr_t)glow->sector];
-	    glow->thinker.function = (actionf_p1)T_Glow;
-	    P_AddThinker (&glow->thinker);
-	    break;
-		//GK:BOOM's elevator and scroller related stuff
-	  case tc_elevator:
-		  PADSAVEP();
-		  elevator = (elevator_t*)DoomLib::Z_Malloc(sizeof(*elevator), PU_DOOR, NULL);
-		  memcpy(elevator, ::g->save_p, sizeof(*elevator));
-		  ::g->save_p += sizeof(*elevator);
-		  elevator->sector = &::g->sectors[(intptr_t)elevator->sector];
-		  elevator->thinker.function = (actionf_p1)T_MoveElevator;
-		  P_AddThinker(&elevator->thinker);
-		  break;
-
-	  case tc_scroll:
-		  PADSAVEP();
-		  scroll = (scroll_t*)DoomLib::Z_Malloc(sizeof(*scroll), PU_DOOR, NULL);
-		  memcpy(scroll, ::g->save_p, sizeof(*scroll));
-		  ::g->save_p += sizeof(*scroll);
-		  scroll->thinker.function = (actionf_p1)T_Scroll;
-		  P_AddThinker(&scroll->thinker);
-		  break;
-				
-	  default:
-	    I_Error ("P_UnarchiveSpecials:Unknown tclass %i "
-		     "in savegame",tclass);
-	}
-	
-    }
-
-}
+//}
+//
+//
+////
+//// P_UnArchiveSpecials
+////
+//void P_UnArchiveSpecials (void)
+//{
+//    byte		tclass;
+//    ceiling_t*		ceiling;
+//    vldoor_t*		door;
+//    floormove_t*	floor;
+//    plat_t*		plat;
+//    lightflash_t*	flash;
+//    strobe_t*		strobe;
+//    glow_t*		glow;
+//	elevator_t* elevator;
+//	scroll_t* scroll;
+//	friction_t* friction;
+//	pusher_t* pusher;
+//
+//    // read in saved thinkers
+//    while (1)
+//    {
+//	tclass = *::g->save_p++;
+//	switch (tclass)
+//	{
+//	  case tc_endspecials:
+//	    return;	// end of list
+//			
+//	  case tc_ceiling:
+//	    PADSAVEP();
+//	    ceiling = (ceiling_t*)DoomLib::Z_Malloc(sizeof(*ceiling), PU_CEILING, NULL);
+//	    memcpy (ceiling, ::g->save_p, sizeof(*ceiling));
+//	    ::g->save_p += sizeof(*ceiling);
+//	    ceiling->sector = &::g->sectors[(intptr_t)ceiling->sector];
+//	    ceiling->sector->ceilingdata = ceiling;
+//
+//	    if (const actionf_p1* action_p1 = std::get_if<actionf_p1>(&ceiling->thinker.function))
+//		ceiling->thinker.function = (actionf_p1)T_MoveCeiling;
+//
+//	    P_AddThinker (&ceiling->thinker);
+//	    P_AddActiveCeiling(ceiling);
+//	    break;
+//				
+//	  case tc_door:
+//	    PADSAVEP();
+//	    door = (vldoor_t*)DoomLib::Z_Malloc(sizeof(*door), PU_DOOR, NULL);
+//	    memcpy (door, ::g->save_p, sizeof(*door));
+//	    ::g->save_p += sizeof(*door);
+//	    door->sector = &::g->sectors[(intptr_t)door->sector];
+//	    door->sector->ceilingdata = door;
+//	    door->thinker.function = (actionf_p1)T_VerticalDoor;
+//	    P_AddThinker (&door->thinker);
+//	    break;
+//				
+//	  case tc_floor:
+//	    PADSAVEP();
+//	    floor = (floormove_t*)DoomLib::Z_Malloc (sizeof(*floor), PU_FLOOR, NULL);
+//	    memcpy (floor, ::g->save_p, sizeof(*floor));
+//	    ::g->save_p += sizeof(*floor);
+//	    floor->sector = &::g->sectors[(intptr_t)floor->sector];
+//	    floor->sector->floordata = floor;
+//	    floor->thinker.function = (actionf_p1)T_MoveFloor;
+//	    P_AddThinker (&floor->thinker);
+//	    break;
+//				
+//	  case tc_plat:
+//	    PADSAVEP();
+//	    plat = (plat_t*)DoomLib::Z_Malloc (sizeof(*plat), PU_PLATS, NULL);
+//	    memcpy (plat, ::g->save_p, sizeof(*plat));
+//	    ::g->save_p += sizeof(*plat);
+//	    plat->sector = &::g->sectors[(intptr_t)plat->sector];
+//	    plat->sector->floordata = plat;
+//
+//		if (const actionf_p1* action_p1 = std::get_if<actionf_p1>(&plat->thinker.function))
+//		plat->thinker.function = (actionf_p1)T_PlatRaise;
+//
+//	    P_AddThinker (&plat->thinker);
+//	    P_AddActivePlat(plat);
+//	    break;
+//				
+//	  case tc_flash:
+//	    PADSAVEP();
+//	    flash = (lightflash_t*)DoomLib::Z_Malloc (sizeof(*flash), PU_LIGHTS, NULL);
+//	    memcpy (flash, ::g->save_p, sizeof(*flash));
+//	    ::g->save_p += sizeof(*flash);
+//	    flash->sector = &::g->sectors[(intptr_t)flash->sector];
+//	    flash->thinker.function = (actionf_p1)T_LightFlash;
+//	    P_AddThinker (&flash->thinker);
+//	    break;
+//				
+//	  case tc_strobe:
+//	    PADSAVEP();
+//	    strobe = (strobe_t*)DoomLib::Z_Malloc (sizeof(*strobe), PU_LIGHTS, NULL);
+//	    memcpy (strobe, ::g->save_p, sizeof(*strobe));
+//	    ::g->save_p += sizeof(*strobe);
+//	    strobe->sector = &::g->sectors[(intptr_t)strobe->sector];
+//	    strobe->thinker.function = (actionf_p1)T_StrobeFlash;
+//	    P_AddThinker (&strobe->thinker);
+//	    break;
+//				
+//	  case tc_glow:
+//	    PADSAVEP();
+//	    glow = (glow_t*)DoomLib::Z_Malloc (sizeof(*glow), PU_LIGHTS, NULL);
+//	    memcpy (glow, ::g->save_p, sizeof(*glow));
+//	    ::g->save_p += sizeof(*glow);
+//	    glow->sector = &::g->sectors[(intptr_t)glow->sector];
+//	    glow->thinker.function = (actionf_p1)T_Glow;
+//	    P_AddThinker (&glow->thinker);
+//	    break;
+//		//GK:BOOM's elevator and scroller related stuff
+//	  case tc_elevator:
+//		  PADSAVEP();
+//		  elevator = (elevator_t*)DoomLib::Z_Malloc(sizeof(*elevator), PU_DOOR, NULL);
+//		  memcpy(elevator, ::g->save_p, sizeof(*elevator));
+//		  ::g->save_p += sizeof(*elevator);
+//		  elevator->sector = &::g->sectors[(intptr_t)elevator->sector];
+//		  elevator->sector->floordata = elevator;
+//		  elevator->sector->ceilingdata = elevator;
+//		  elevator->thinker.function = (actionf_p1)T_MoveElevator;
+//		  P_AddThinker(&elevator->thinker);
+//		  break;
+//
+//	  case tc_scroll:
+//		  scroll = (scroll_t*)DoomLib::Z_Malloc(sizeof(scroll_t), PU_LEVEL, NULL);
+//		  memcpy(scroll, ::g->save_p, sizeof(scroll_t));
+//		  ::g->save_p += sizeof(scroll_t);
+//		  scroll->thinker.function = (actionf_p1)T_Scroll;
+//		  P_AddThinker(&scroll->thinker);
+//		  break;
+//
+//	  case tc_friction:
+//		  friction = (friction_t*)DoomLib::Z_Malloc(sizeof(friction_t), PU_LEVEL, NULL);
+//		  memcpy(friction, ::g->save_p, sizeof(friction_t));
+//		  ::g->save_p += sizeof(friction_t);
+//		  friction->thinker.function = (actionf_p1)T_Friction;
+//		  P_AddThinker(&friction->thinker);
+//		  break;
+//	  case tc_pusher:
+//		  pusher = (pusher_t*)DoomLib::Z_Malloc(sizeof(pusher_t), PU_LEVEL, NULL);
+//		  memcpy(pusher, ::g->save_p, sizeof(pusher_t));
+//		  ::g->save_p += sizeof(pusher_t);
+//		  pusher->thinker.function = (actionf_p1)T_Pusher;
+//		  pusher->source = P_GetPushThing(pusher->affectee);
+//		  P_AddThinker(&pusher->thinker);
+//		  break;
+//				
+//	  default:
+//	    I_Error ("P_UnarchiveSpecials:Unknown tclass %i "
+//		     "in savegame",tclass);
+//	}
+//	
+//    }
+//
+//}
 
 

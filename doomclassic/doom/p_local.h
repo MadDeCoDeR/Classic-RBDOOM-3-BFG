@@ -296,6 +296,7 @@ void ResetAmmo();
 int     P_GetMoveFactor(mobj_t* mo);                        // phares  3/6/98
 void P_AddSecnode(sector_t* s, mobj_t* thing);
 void P_DeleteSecNodesFromThing(mobj_t* th); //GK
+mobj_t* P_GetPushThing(int s);
 
 #endif	// __P_LOCAL__
 
