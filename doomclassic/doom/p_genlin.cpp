@@ -384,7 +384,13 @@ manual_ceiling:
       default:
         break;
     }
-    Dirn? ceiling->topheight : ceiling->bottomheight = targheight;
+    //GK: Undo One liner since it wasn't stable
+    if (Dirn) {
+        ceiling->topheight = targheight;
+    }
+    else {
+        ceiling->bottomheight = targheight;
+    }
 
     // set texture/type change properties
     if (ChgT)     // if a texture change is indicated
