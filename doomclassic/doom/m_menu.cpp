@@ -992,19 +992,23 @@ void M_DrawReadThis1(void)
 	::g->inhelpscreens = true;
 	switch ( ::g->gamemode )
 	{
-	case commercial:
-		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("HELP",PU_CACHE_SHARED), W_GetNumForName("HELP")), false);
+	case commercial: {
+		patch_t* image1 = img2lmp(W_CacheLumpName("HELP",PU_CACHE_SHARED), W_GetNumForName("HELP"));
+		V_DrawPatchDirect (0,0,0, image1, image1->width > ORIGINAL_WIDTH);
 		break;
+	}
 	case shareware:
 	case registered:
-	case retail:
-			V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP1", PU_CACHE_SHARED), W_GetNumForName("HELP1")), false);
+	case retail: {
+			patch_t* image2 = img2lmp(W_CacheLumpName("HELP1",PU_CACHE_SHARED), W_GetNumForName("HELP1"));
+			V_DrawPatchDirect(0, 0, 0, image2, image2->width > ORIGINAL_WIDTH);
 			//GK: For ultimate DOOM check if we are using mod that add additional HELP lumps. If not then instantly close "Read This!" 
 			if (W_GetNumForName("HELP2") <= -1 && W_GetNumForName("HELP01") <= -1) {
 				mh = -1;
 				::g->ReadMenu1[0].routine = M_FinishReadThis;
 			}
 		break;
+	}
 	default:
 		break;
 	}
@@ -1019,7 +1023,8 @@ void M_DrawExtraReadThis(int choice) {
 void M_DrawErt(void) {
 	::g->inhelpscreens = true;
 	if (W_GetNumForName("HELP02") > -1) {
-		V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP02", PU_CACHE_SHARED), W_GetNumForName("HELP02")), false);
+		patch_t* image = img2lmp(W_CacheLumpName("HELP02",PU_CACHE_SHARED), W_GetNumForName("HELP02"));
+		V_DrawPatchDirect(0, 0, 0, image, image->width > ORIGINAL_WIDTH);
 	}
 	mh = 0;
 	::g->ReadMenu2[0].routine = M_FinishReadThis;
@@ -1038,12 +1043,14 @@ void M_DrawReadThis2(void)
 	case retail:
 		//GK: In case we use mod that uses additional HELP lumps
 			if (W_GetNumForName("HELP2") > -1) {
-				V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP2", PU_CACHE_SHARED), W_GetNumForName("HELP2")), false);
+				patch_t* image1 = img2lmp(W_CacheLumpName("HELP2",PU_CACHE_SHARED), W_GetNumForName("HELP2"));
+				V_DrawPatchDirect(0, 0, 0, image1, image1->width > ORIGINAL_WIDTH);
 			}
 			else
 			{
 				if (W_GetNumForName("HELP01") > -1) {
-					V_DrawPatchDirect(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP01", PU_CACHE_SHARED), W_GetNumForName("HELP01")), false);
+					patch_t* image2 = img2lmp(W_CacheLumpName("HELP01",PU_CACHE_SHARED), W_GetNumForName("HELP01"));
+					V_DrawPatchDirect(0, 0, 0, image2, image2->width > ORIGINAL_WIDTH);
 					mh = 1;
 
 				}
@@ -1053,14 +1060,18 @@ void M_DrawReadThis2(void)
 				}*/
 			}
 		break;
-	case commercial:
+	case commercial: {
 		// This hack keeps us from having to change menus.
-		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("CREDIT",PU_CACHE_SHARED), W_GetNumForName("CREDIT")), false);
+		patch_t* image3 = img2lmp(W_CacheLumpName("CREDIT",PU_CACHE_SHARED), W_GetNumForName("CREDIT"));
+		V_DrawPatchDirect (0,0,0, image3, image3->width > ORIGINAL_WIDTH);
 		break;
+	}
 	case shareware:
-	case registered:
-		V_DrawPatchDirect (0,0,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("HELP2",PU_CACHE_SHARED), W_GetNumForName("HELP2")), false);
+	case registered: {
+		patch_t* image4 = img2lmp(W_CacheLumpName("HELP2",PU_CACHE_SHARED), W_GetNumForName("HELP2"));
+		V_DrawPatchDirect (0,0,0, image4, image4->width > ORIGINAL_WIDTH);
 		break;
+	}
 	default:
 		break;
 	}

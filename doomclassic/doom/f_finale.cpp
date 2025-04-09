@@ -192,8 +192,8 @@ void F_StartFinale (void)
 		endOfMission = true;
 	}
 	if (::g->gamemission == pack_custom ) { //GK: Custom expansion related stuff
-		if (::g->gamemode == retail && (int)::g->clusters.size() >= ::g->gameepisode) {
-			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+		if ((::g->gamemode == retail && (int)::g->clusters.size() >= ::g->gameepisode) || ::g->episodicExpansion) {
+			map = ::g->episodicExpansion ? ::g->gamemap : ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
 			if (map == ::g->clusters[::g->gameepisode - 1].endmap) {
 				endOfMission = true;
 			}
@@ -521,11 +521,18 @@ void F_Ticker (void)
 	// check for skipping
 	int map = 0;
 	bool keepRolling = false;
-	if (::g->gamemode == retail && ::g->gamemission == pack_custom && (int)::g->clusters.size() >= ::g->gameepisode) {
-		map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
-		keepRolling = ::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode - 1].startmap && map != ::g->clusters[::g->gameepisode - 1].endmap;
+	bool includeCustom = false;
+	// if ((::g->gamemode == retail || ::g->episodicExpansion) && ::g->gamemission == pack_custom && (int)::g->clusters.size() >= ::g->gameepisode) {
+	// 	map = ::g->episodicExpansion ? ::g->gamemap : ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
+	// 	keepRolling = ::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode - 1].startmap && map != ::g->clusters[::g->gameepisode - 1].endmap;
+	// }
+	if (::g->gamemission == pack_custom) {
+		if (::g->gamemode == commercial) {
+			includeCustom = ::g->episodicExpansion ? ::g->clusters[::g->gameepisode - 1].endmode == 5 : true;
+		}
 	}
-	if ( (::g->gamemode == commercial || (::g->gamemode == retail && !keepRolling)) && ( ::g->finalecount > 50) )
+
+	if ( ((::g->gamemode == commercial && ::g->gamemission != pack_custom)|| includeCustom) && ( ::g->finalecount > 50) )
 	{
 		// go on to the next level
 		for (i=0 ; i<MAXPLAYERS ; i++)
@@ -558,7 +565,7 @@ void F_Ticker (void)
 
 			}
 			else if (::g->gamemode != retail && ::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
-				if (::g->gamemap == ::g->endmap) {
+				if ((!::g->episodicExpansion && ::g->gamemap == ::g->endmap) || (::g->episodicExpansion && ::g->gamemap == ::g->clusters[::g->gameepisode - 1].endmap && ::g->clusters[::g->gameepisode - 1].endmode == 5)) {
 					F_StartCast();
 					castStarted = true;
 				}
@@ -582,7 +589,7 @@ void F_Ticker (void)
 		return;
     }
 	
-    if ( ::g->gamemode == commercial) {
+    if ( (::g->gamemode == commercial && ::g->gamemission != pack_custom) || includeCustom ) {
 		startButtonPressed = false;
 		return;
 	}
@@ -994,7 +1001,8 @@ void F_CastDrawer (void)
     patch_t*		patch;
 
 	if (::g->castcredit) {
-		V_DrawPatch(0, 0, 0, /*(patch_t*)*/img2lmp(W_CacheLumpName("CREDIT", PU_CACHE_SHARED), W_GetNumForName("CREDIT")), false);
+		patch_t* image1 = img2lmp(W_CacheLumpName("CREDIT", PU_CACHE_SHARED), W_GetNumForName("CREDIT"));
+		V_DrawPatch(0, 0, 0, /*(patch_t*)*/image1, image1->width > ORIGINAL_WIDTH);
 		return;
 	}
 
@@ -1002,7 +1010,8 @@ void F_CastDrawer (void)
 		return;
     
     // erase the entire screen to a background
-    V_DrawPatch (0,0,0, /*(patch_t*)*/img2lmp(W_CacheLumpName (finaleflat[11], PU_CACHE_SHARED), W_GetNumForName(finaleflat[11])), false);
+	patch_t* image2 = img2lmp(W_CacheLumpName(finaleflat[11], PU_CACHE_SHARED), W_GetNumForName(finaleflat[11]));
+    V_DrawPatch (0,0,0, /*(patch_t*)*/image2, image2->width > ORIGINAL_WIDTH);
 
     F_CastPrint (*castorder[::g->castnum].name);
     
@@ -1138,23 +1147,26 @@ void F_Drawer (void)
 	switch (ending)
 	{
 	  case 1:
-	    if ( ::g->gamemode == retail || ::g->episodicExpansion)
-	      V_DrawPatch (0,0,0,
-			  /*(patch_t*)*/img2lmp(W_CacheLumpName("CREDIT",PU_CACHE_SHARED), W_GetNumForName("CREDIT")), false);
-	    else
-	      V_DrawPatch (0,0,0,
-			  /*(patch_t*)*/img2lmp(W_CacheLumpName("HELP2",PU_CACHE_SHARED), W_GetNumForName("HELP2")), false);
+	    if ( ::g->gamemode == retail || ::g->episodicExpansion) {
+			patch_t* image1 = img2lmp(W_CacheLumpName("CREDIT", PU_CACHE_SHARED), W_GetNumForName("CREDIT"));
+	      	V_DrawPatch (0,0,0, image1, image1->width > ORIGINAL_WIDTH);
+		}
+	    else {
+			patch_t* image2 = img2lmp(W_CacheLumpName("HELP2", PU_CACHE_SHARED), W_GetNumForName("HELP2"));
+	      	V_DrawPatch (0,0,0, image2, image2->width > ORIGINAL_WIDTH);
+		}
 	    break;
-	  case 2:
-	    V_DrawPatch(0,0,0,
-			/*(patch_t*)*/img2lmp(W_CacheLumpName("VICTORY2",PU_CACHE_SHARED), W_GetNumForName("VICTORY2")), false);
+	  case 2: {
+	  	patch_t* image3 = img2lmp(W_CacheLumpName("VICTORY2", PU_CACHE_SHARED), W_GetNumForName("VICTORY2"));
+	    V_DrawPatch(0,0,0, image3, image3->width > ORIGINAL_WIDTH);
 	    break;
+		}
 	  case 3:
 	    F_BunnyScroll ();
 	    break;
 	  case 4:
-	    V_DrawPatch (0,0,0,
-			 /*(patch_t*)*/img2lmp(W_CacheLumpName("ENDPIC",PU_CACHE_SHARED), W_GetNumForName("ENDPIC")), false);
+	  	patch_t* image4 = img2lmp(W_CacheLumpName("ENDPIC", PU_CACHE_SHARED), W_GetNumForName("ENDPIC"));
+	    V_DrawPatch (0,0,0, image4, image4->width > ORIGINAL_WIDTH);
 	    break;
 	}
     }

@@ -1602,9 +1602,9 @@ void G_WorldDone (void)
 		::g->players[::g->consoleplayer].didsecret = true; 
 
 	if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
-		if (::g->gamemode == retail && (int)::g->clusters.size() >= ::g->gameepisode) {
+		if ((::g->gamemode == retail && (int)::g->clusters.size() >= ::g->gameepisode) || ::g->episodicExpansion) {
 			if (::g->clusters[::g->gameepisode - 1].startmap > -1 && ::g->clusters[::g->gameepisode - 1].endmap > ::g->clusters[::g->gameepisode - 1].startmap) {
-				int map = (::g->clusters[::g->gameepisode - 1].startmap - 1) + ::g->gamemap;
+				int map = ::g->episodicExpansion ? ::g->gamemap : (::g->clusters[::g->gameepisode - 1].startmap - 1) + ::g->gamemap;
 				if (map == ::g->clusters[::g->gameepisode - 1].endmap) {
 					F_StartFinale();
 				}
@@ -1616,7 +1616,7 @@ void G_WorldDone (void)
 			}
 		}
 	}
-	if ( ::g->gamemode == commercial )
+	if ( ::g->gamemode == commercial  && !::g->episodicExpansion)
 	{
 
 		if (::g->gamemission == pack_master) {

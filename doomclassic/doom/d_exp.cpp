@@ -807,7 +807,7 @@ void setMAPSTR(int pos, char* name, char* value) {
 					if (!idStr::Icmpn(value, "EndGame", 7) || !idStr::Icmpn(value, "endbunny", 8)) {
 						::g->endmap = pos + 1;
 						if (::g->gamemode == retail || ::g->episodicExpansion) {
-							::g->clusters[episodecount].endmap = abs(::g->endmap - (::g->clusters[episodecount].startmap - 1));
+							::g->clusters[episodecount].endmap = ::g->episodicExpansion ? ::g->endmap : abs(::g->endmap - (::g->clusters[episodecount].startmap - 1));
 							beginepisode = true;
 						}
 					}
@@ -912,7 +912,6 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 		}
 	}
 	int c = 0;
-	char musname[20];
 	expobj clusterobj[] = {
 		{"flat",MAXINT,&::g->clusters[pos].ftex,&::g->clusters[pos].fflat},
 		{"music",MAXINT,NULL,&::g->clusters[pos].fmusic},
@@ -941,19 +940,19 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 				*clusterobj[i].sval = value;
 				break;
 			case MUSIC:
-				c = 0;
-				while (value[c] != '_' && c < (int)strlen(value)) {
-					c++;
-				}
-				if (c == (int)strlen(value)) {
-					c = 0;
-				}
-				if (c) {
-					c++;
-				}
-				sprintf(musname, "%s", value + c);
-				for (int j = 1; j < 80; j++) {
-
+				// c = 0;
+				// while (value[c] != '_' && c < (int)strlen(value)) {
+				// 	c++;
+				// }
+				// if (c == (int)strlen(value)) {
+				// 	c = 0;
+				// }
+				// if (c) {
+				// 	c++;
+				// }
+				
+				for (int j = 1; j < 1024; j++) {
+					char* musname = value + 2;
 					if (::g->S_music[j].name == NULL) {
 						::g->S_music[j].name = musname;
 						::g->totalmus++;
@@ -1022,8 +1021,12 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 					}
 					lval += t;
 					lval += "\n";*/
-					lines[linepos] = strtok(strdup(lines[linepos].c_str()), " ");
-					lines[linepos] = strtok(NULL, " ");
+					idList<idStr> lineParts = idStr(lines[linepos].c_str()).Split(" ");
+					if (lineParts.Num() > 1) {
+						lines[linepos] = lineParts[1];
+					} else {
+						linepos++;
+					}
 					for (uint j = linepos; j < lines.size(); j++) {
 						/*if (lines[j].c_str()[lines[j].size()-1] == '\"') {
 							lines[j].at(lines[j].size()-1) = '\0';
