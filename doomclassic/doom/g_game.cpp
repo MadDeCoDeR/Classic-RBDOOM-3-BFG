@@ -2462,6 +2462,10 @@ void G_DoPlayDemo (void)
 	// DHM - Nerve :: We support old and new demo versions
 	demoversion = *::g->demo_p++;
 
+	if (demoversion > VERSION) { //GK: Prevent incompatible DEMOs from playing
+		return;
+	}
+
 	skill = (skill_t)*::g->demo_p++; 
 	episode = *::g->demo_p++;
 	if ( demoversion == VERSION ) {
