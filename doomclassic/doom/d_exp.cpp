@@ -911,7 +911,7 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 			value[strlen(value) - 1] = '\0';
 		}
 	}
-	int c = 0;
+//	int c = 0;
 	expobj clusterobj[] = {
 		{"flat",MAXINT,&::g->clusters[pos].ftex,&::g->clusters[pos].fflat},
 		{"music",MAXINT,NULL,&::g->clusters[pos].fmusic},

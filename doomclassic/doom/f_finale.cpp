@@ -519,8 +519,8 @@ void F_Ticker (void)
     int		i;
     
 	// check for skipping
-	int map = 0;
-	bool keepRolling = false;
+	//int map = 0;
+	//bool keepRolling = false;
 	bool includeCustom = false;
 	// if ((::g->gamemode == retail || ::g->episodicExpansion) && ::g->gamemission == pack_custom && (int)::g->clusters.size() >= ::g->gameepisode) {
 	// 	map = ::g->episodicExpansion ? ::g->gamemap : ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
