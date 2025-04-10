@@ -32,6 +32,8 @@ runs:
         run: |
           cp -r -u  -f ./BFA_Assets/* .
           rm -r ./BFA_Assets
+          cp -r -u  -f ./BFA_Assets_classic/* .
+          rm -r ./BFA_Assets_classic
           rm -r ./base/renderprogs
           mkdir third-party-licenses
           ${{inputs.commands}}

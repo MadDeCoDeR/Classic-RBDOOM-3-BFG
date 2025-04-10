@@ -66,6 +66,19 @@ jobs:
           mv ./build/_deps/openxr-build/src/loader/* .
           chmod +x DoomBFA
           chmod +x DoomBFA.sh
+    - name: Upload Linux Classic Edition Production Artifact
+      uses: ./.github/actions/package_formatter
+      with:
+        artifact_name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}-classic
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        access_token: ${{ secrets.GITHUB_TOKEN }}
+        commands: |
+              mv ./build/DoomBFA DoomBFA
+              mv ./base/DoomBFA.sh DoomBFA.sh
+              mv ./build/vcpkg_installed/x64-linux/share/* ./third-party-licenses
+              mv ./build/_deps/openxr-build/src/loader/* .
+              chmod +x DoomBFA
+              chmod +x DoomBFA.sh
     - name: Upload Linux Debug Artifact
       uses: ./.github/actions/package_formatter
       with:
@@ -88,6 +101,15 @@ jobs:
         commands: |
           mv ./build/${{env.BUILD_TYPE}}/* .
           mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
+    - name: Upload x64 Windows Production Artifact
+      uses: ./.github/actions/package_formatter
+      with:
+        artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}-x64-classic
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        access_token: ${{ secrets.GITHUB_TOKEN }}
+        commands: |
+            mv ./build/${{env.BUILD_TYPE}}/* .
+            mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
     - name: Upload x64 Windows Debug Artifact
       uses: ./.github/actions/package_formatter
       with:
