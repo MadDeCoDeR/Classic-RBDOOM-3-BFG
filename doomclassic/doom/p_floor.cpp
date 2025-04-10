@@ -369,6 +369,14 @@ EV_DoFloor
 		P_FindNextHighestFloor(sec,sec->floorheight);
 	    break;
 
+	 case lowerFloorToNearest:
+		  floor->direction = -1;
+		  floor->sector = sec;
+		  floor->speed = FLOORSPEED;
+		  floor->floordestheight =
+			  P_FindNextLowestFloor(sec, sec->floorheight);
+		  break;
+
 	  case raiseFloor24:
 	    floor->direction = 1;
 	    floor->sector = sec;
