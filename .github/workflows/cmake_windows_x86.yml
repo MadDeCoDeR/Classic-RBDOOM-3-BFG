@@ -37,7 +37,9 @@ jobs:
             - name: Cache Windows vcpkg
               uses: actions/cache@v3
               with: 
-                path: ${{github.workspace}}/build/vcpkg_installed
+                path: |
+                    ${{github.workspace}}/vcpkg/buildtrees
+                    ${{github.workspace}}/vcpkg/packages
                 key: ${{runner.os}}-32-vcpkg-${{hashfiles('neo/windows-32-bit-status')}}
                 restore-keys: |
                     ${{ runner.OS }}-32-vcpkg-
