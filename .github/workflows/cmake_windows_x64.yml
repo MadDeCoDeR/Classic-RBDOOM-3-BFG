@@ -23,6 +23,12 @@ jobs:
           with:
             repository: MadDeCoDeR/BFA-Assets
             path: BFA_Assets
+
+        - uses: actions/checkout@v3
+          with:
+            repository: MadDeCoDeR/BFA-Assets
+            ref: classic
+            path: BFA_Assets_classic
     
         - name: setup-msbuild
           uses: microsoft/setup-msbuild@v2
@@ -58,6 +64,17 @@ jobs:
             artifact_name: windows-${{inputs.version}}-${{inputs.build_type}}-x64
             executable_path: ./build/${{inputs.build_type}}/DoomBFA.exe
             vcpkg_triplet: x64-windows-static-md
+            additional_paths: |
+                            ./BFA_Assets/*
+
+        - name: Archive Classic Edition production artifacts
+          uses: ./.github/actions/upload_artifact
+          with:
+            artifact_name: windows-${{inputs.version}}-${{inputs.build_type}}-x64-classic
+            executable_path: ./build/${{inputs.build_type}}/DoomBFA.exe
+            vcpkg_triplet: x64-windows-static-md
+            additional_paths: |
+                          ./BFA_Assets_classic/*
         
         - name: Archive debug artifacts
           uses: ./.github/actions/upload_artifact
@@ -65,6 +82,8 @@ jobs:
             artifact_name: windows-${{inputs.version}}-debug-x64
             executable_path: ./build/retwithdebugsymbols/DoomBFA.*
             vcpkg_triplet: x64-windows-static-md
+            additional_paths: |
+                            ./BFA_Assets/*
 
         - name: Save logs - VCPKG
           if: ${{ failure() }}

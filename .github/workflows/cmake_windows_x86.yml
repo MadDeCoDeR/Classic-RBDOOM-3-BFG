@@ -57,6 +57,8 @@ jobs:
                 artifact_name: windows-${{inputs.version}}-${{inputs.build_type}}-x86
                 executable_path: ./build/${{inputs.build_type}}/DoomBFA.exe
                 vcpkg_triplet: x86-windows-static-md
+                additional_paths: |
+                            ./BFA_Assets/*
               
             - name: Save logs - VCPKG
               if: ${{ failure() }}

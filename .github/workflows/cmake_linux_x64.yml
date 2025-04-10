@@ -26,6 +26,13 @@ jobs:
           with:
             repository: MadDeCoDeR/BFA-Assets
             path: BFA_Assets
+
+        - uses: actions/checkout@v3
+          id: step21
+          with:
+            repository: MadDeCoDeR/BFA-Assets
+            ref: classic
+            path: BFA_Assets_classic
     
         - name: Download Depedencies
           id: step4
@@ -68,7 +75,20 @@ jobs:
             additional_paths: |
                             ./build/_deps/openxr-build/src/loader/*.so*
                             ./build/_deps/openxr-build/src/loader/*.so
+                            ./BFA_Assets/*
     
+        - name: Archive Classic Edition production artifacts
+          id: step81
+          uses: ./.github/actions/upload_artifact
+          with:
+            artifact_name: linux-${{inputs.version}}-${{inputs.build_type}}-classic
+            executable_path: ./build/DoomBFA
+            vcpkg_triplet: x64-linux
+            additional_paths: |
+                          ./build/_deps/openxr-build/src/loader/*.so*
+                          ./build/_deps/openxr-build/src/loader/*.so
+                          ./BFA_Assets_classic/*
+
         - name: Configure CMake Debug
           id: step9
           env:
@@ -95,6 +115,7 @@ jobs:
             additional_paths: |
                             ./build/_deps/openxr-build/src/loader/*.so*
                             ./build/_deps/openxr-build/src/loader/*.so
+                            ./BFA_Assets/*
 
         - name: Save logs - VCPKG
           if: ${{ failure() }}
