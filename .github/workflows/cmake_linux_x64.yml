@@ -44,9 +44,7 @@ jobs:
           id: step5
           uses: actions/cache@v3
           with: 
-              path: |
-                    ${{github.workspace}}/vcpkg/buildtrees
-                    ${{github.workspace}}/vcpkg/packages
+              path: ${{github.workspace}}/build/vcpkg_installed
               key: ${{runner.os}}-vcpkg-${{hashfiles('neo/linux-status')}}
               restore-keys: |
                 ${{ runner.OS }}-vcpkg-
