@@ -366,12 +366,13 @@ void ST_refreshBackground(void)
 	if (!in_photomode.GetBool()) {
 		if (::g->st_statusbaron)
 		{
-			if (::g->sbar->width > 320) {
-				if (::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) {
-					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true);
-				} else {
-					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true, ::g->mapt->width, ::g->spwr->width);
-				}
+			if (::g->sbar->width > ORIGINAL_WIDTH) {
+				int offsets = (::g->sbar->width - ::g->renderingWidth) / 2;
+				//if (::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) {
+					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true, offsets, offsets);
+				/*} else {
+					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true, ::g->mapt->width + offsets, ::g->spwr->width + offsets);
+				}*/
 			} else {
 				V_DrawPatch(ST_X + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->sbar, true);
 			}

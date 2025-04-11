@@ -993,15 +993,23 @@ void M_DrawReadThis1(void)
 	switch ( ::g->gamemode )
 	{
 	case commercial: {
-		patch_t* image1 = img2lmp(W_CacheLumpName("HELP",PU_CACHE_SHARED), W_GetNumForName("HELP"));
-		V_DrawPatchDirect (0,0,0, image1, image1->width > ORIGINAL_WIDTH);
+		if (W_GetNumForName("HELP") <= -1) {
+			mh = -1;
+			::g->ReadMenu1[0].routine = M_FinishReadThis;
+		}
+		else {
+			patch_t* image1 = img2lmp(W_CacheLumpName("HELP", PU_CACHE_SHARED), W_GetNumForName("HELP"));
+			int offsets1 = (image1->width - ::g->renderingWidth) / 2;
+			V_DrawPatch(0, 0, 0, image1, image1->width > ORIGINAL_WIDTH, offsets1, offsets1);
+		}
 		break;
 	}
 	case shareware:
 	case registered:
 	case retail: {
 			patch_t* image2 = img2lmp(W_CacheLumpName("HELP1",PU_CACHE_SHARED), W_GetNumForName("HELP1"));
-			V_DrawPatchDirect(0, 0, 0, image2, image2->width > ORIGINAL_WIDTH);
+			int offsets2 = (image2->width - ::g->renderingWidth) / 2;
+			V_DrawPatch(0, 0, 0, image2, image2->width > ORIGINAL_WIDTH, offsets2, offsets2);
 			//GK: For ultimate DOOM check if we are using mod that add additional HELP lumps. If not then instantly close "Read This!" 
 			if (W_GetNumForName("HELP2") <= -1 && W_GetNumForName("HELP01") <= -1) {
 				mh = -1;
@@ -1024,7 +1032,8 @@ void M_DrawErt(void) {
 	::g->inhelpscreens = true;
 	if (W_GetNumForName("HELP02") > -1) {
 		patch_t* image = img2lmp(W_CacheLumpName("HELP02",PU_CACHE_SHARED), W_GetNumForName("HELP02"));
-		V_DrawPatchDirect(0, 0, 0, image, image->width > ORIGINAL_WIDTH);
+		int offsets = (image->width - ::g->renderingWidth) / 2;
+		V_DrawPatch(0, 0, 0, image, image->width > ORIGINAL_WIDTH, offsets, offsets);
 	}
 	mh = 0;
 	::g->ReadMenu2[0].routine = M_FinishReadThis;
@@ -1044,13 +1053,15 @@ void M_DrawReadThis2(void)
 		//GK: In case we use mod that uses additional HELP lumps
 			if (W_GetNumForName("HELP2") > -1) {
 				patch_t* image1 = img2lmp(W_CacheLumpName("HELP2",PU_CACHE_SHARED), W_GetNumForName("HELP2"));
-				V_DrawPatchDirect(0, 0, 0, image1, image1->width > ORIGINAL_WIDTH);
+				int offsets1 = (image1->width - ::g->renderingWidth) / 2;
+				V_DrawPatch(0, 0, 0, image1, image1->width > ORIGINAL_WIDTH, offsets1, offsets1);
 			}
 			else
 			{
 				if (W_GetNumForName("HELP01") > -1) {
 					patch_t* image2 = img2lmp(W_CacheLumpName("HELP01",PU_CACHE_SHARED), W_GetNumForName("HELP01"));
-					V_DrawPatchDirect(0, 0, 0, image2, image2->width > ORIGINAL_WIDTH);
+					int offsets2 = (image2->width - ::g->renderingWidth) / 2;
+					V_DrawPatch(0, 0, 0, image2, image2->width > ORIGINAL_WIDTH, offsets2, offsets2);
 					mh = 1;
 
 				}
@@ -1063,13 +1074,15 @@ void M_DrawReadThis2(void)
 	case commercial: {
 		// This hack keeps us from having to change menus.
 		patch_t* image3 = img2lmp(W_CacheLumpName("CREDIT",PU_CACHE_SHARED), W_GetNumForName("CREDIT"));
-		V_DrawPatchDirect (0,0,0, image3, image3->width > ORIGINAL_WIDTH);
+		int offsets3 = (image3->width - ::g->renderingWidth) / 2;
+		V_DrawPatch(0,0,0, image3, image3->width > ORIGINAL_WIDTH, offsets3, offsets3);
 		break;
 	}
 	case shareware:
 	case registered: {
 		patch_t* image4 = img2lmp(W_CacheLumpName("HELP2",PU_CACHE_SHARED), W_GetNumForName("HELP2"));
-		V_DrawPatchDirect (0,0,0, image4, image4->width > ORIGINAL_WIDTH);
+		int offsets4 = (image4->width - ::g->renderingWidth) / 2;
+		V_DrawPatch (0,0,0, image4, image4->width > ORIGINAL_WIDTH, offsets4, offsets4);
 		break;
 	}
 	default:
@@ -2249,7 +2262,13 @@ void M_CloseGame()
 void M_GameSelection(int choice)
 {
 	M_CloseGame();
-	common->SwitchToGame( DOOM3_BFG );
+	if (!common->IsNewDOOM3()) {
+		common->SwitchToGame(DOOM3_BFG);
+	}
+	else {
+		currentGame_t currentGame = common->GetCurrentGame();
+		common->SwitchToGame(currentGame == DOOM_CLASSIC ? DOOM2_CLASSIC : DOOM_CLASSIC);
+	}
 }
 
 void M_ChangeSensitivity(int choice)
@@ -3153,9 +3172,9 @@ void M_Drawer (void)
 	// DRAW MENU
 	::g->md_x = ::g->currentMenu->x;
 	::g->md_y = ::g->currentMenu->y;
-	if (::g->currentMenu->menuitems == ::g->QuitDef.menuitems && common->IsNewDOOM3()) {
+	/*if (::g->currentMenu->menuitems == ::g->QuitDef.menuitems && common->IsNewDOOM3()) {
 		::g->currentMenu->numitems = 2;
-	}
+	}*/
 	if (::g->currentMenu->menuitems == pageDef.menuitems && ::g->itemOn >= 10 ) {
 		if (!aspect) 
 		{

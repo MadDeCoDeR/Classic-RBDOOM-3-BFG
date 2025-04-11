@@ -1079,6 +1079,7 @@ const char*		spritename;
 int ASPECT_IMAGE_SCALER;
 int SCREENWIDTH;
 int ASPECT_POS_OFFSET;
+int renderingWidth;
 //#ifdef USE_OPENAL
 bool hasreverb;
 std::vector<EFXEAXREVERBPROPERTIES*>reverbs;
