@@ -367,7 +367,7 @@ void ST_refreshBackground(void)
 		if (::g->st_statusbaron)
 		{
 			if (::g->sbar->width > ORIGINAL_WIDTH) {
-				int offsets = (::g->sbar->width - ::g->renderingWidth) / 2;
+				int offsets = ::g->sbar->width > ORIGINAL_WIDTH ? abs(::g->sbar->width - ::g->renderingWidth) / 2 : 0;
 				//if (::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) {
 					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true, offsets, offsets);
 				/*} else {

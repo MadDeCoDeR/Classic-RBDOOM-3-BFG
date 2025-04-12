@@ -1573,8 +1573,8 @@ void WI_loadData(void)
 
 	// background
 	::g->bg = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_BACK), W_GetNumForName(name));
-	int offsets = (::g->bg->width - ::g->renderingWidth) / 2;
-	V_DrawPatch(0, 0, 1, ::g->bg, ::g->bg->width > 320, offsets, offsets);
+	int offsets = ::g->bg->width > ORIGINAL_WIDTH ? abs(::g->bg->width - ::g->renderingWidth) / 2 : 0;
+	V_DrawPatch(0, 0, 1, ::g->bg, ::g->bg->width > ORIGINAL_WIDTH, offsets, offsets);
 
 
     // UNUSED unsigned char *pic = ::g->screens[1];

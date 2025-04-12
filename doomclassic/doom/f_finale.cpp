@@ -1002,7 +1002,7 @@ void F_CastDrawer (void)
 
 	if (::g->castcredit) {
 		patch_t* image1 = img2lmp(W_CacheLumpName("CREDIT", PU_CACHE_SHARED), W_GetNumForName("CREDIT"));
-		int offsets1 = (image1->width - ::g->renderingWidth) / 2;
+		int offsets1 = image1->width > ORIGINAL_WIDTH ? abs(image1->width - ::g->renderingWidth) / 2 : 0;
 		V_DrawPatch(0, 0, 0, /*(patch_t*)*/image1, image1->width > ORIGINAL_WIDTH, offsets1, offsets1);
 		return;
 	}
@@ -1012,7 +1012,7 @@ void F_CastDrawer (void)
     
     // erase the entire screen to a background
 	patch_t* image2 = img2lmp(W_CacheLumpName(finaleflat[11], PU_CACHE_SHARED), W_GetNumForName(finaleflat[11]));
-	int offsets2 = (image2->width - ::g->renderingWidth) / 2;
+	int offsets2 = image2->width > ORIGINAL_WIDTH ? abs(image2->width - ::g->renderingWidth) / 2 : 0;
     V_DrawPatch (0,0,0, /*(patch_t*)*/image2, image2->width > ORIGINAL_WIDTH, offsets2, offsets2);
 
     F_CastPrint (*castorder[::g->castnum].name);
@@ -1151,18 +1151,18 @@ void F_Drawer (void)
 	  case 1:
 	    if ( ::g->gamemode == retail || ::g->episodicExpansion) {
 			patch_t* image1 = img2lmp(W_CacheLumpName("CREDIT", PU_CACHE_SHARED), W_GetNumForName("CREDIT"));
-			int offsets1 = (image1->width - ::g->renderingWidth) / 2;
+			int offsets1 = image1->width > ORIGINAL_WIDTH ? abs(image1->width - ::g->renderingWidth) / 2 : 0;
 	      	V_DrawPatch (0,0,0, image1, image1->width > ORIGINAL_WIDTH, offsets1, offsets1);
 		}
 	    else {
 			patch_t* image2 = img2lmp(W_CacheLumpName("HELP2", PU_CACHE_SHARED), W_GetNumForName("HELP2"));
-			int offsets2 = (image2->width - ::g->renderingWidth) / 2;
+			int offsets2 = image2->width > ORIGINAL_WIDTH ? abs(image2->width - ::g->renderingWidth) / 2 : 0;
 	      	V_DrawPatch (0,0,0, image2, image2->width > ORIGINAL_WIDTH, offsets2, offsets2);
 		}
 	    break;
 	  case 2: {
 	  	patch_t* image3 = img2lmp(W_CacheLumpName("VICTORY2", PU_CACHE_SHARED), W_GetNumForName("VICTORY2"));
-		int offsets3 = (image3->width - ::g->renderingWidth) / 2;
+		int offsets3 = image3->width > ORIGINAL_WIDTH ? abs(image3->width - ::g->renderingWidth) / 2 : 0;
 	    V_DrawPatch(0,0,0, image3, image3->width > ORIGINAL_WIDTH, offsets3);
 	    break;
 		}
@@ -1171,7 +1171,7 @@ void F_Drawer (void)
 	    break;
 	  case 4:
 	  	patch_t* image4 = img2lmp(W_CacheLumpName("ENDPIC", PU_CACHE_SHARED), W_GetNumForName("ENDPIC"));
-		int offsets4 = (image4->width - ::g->renderingWidth) / 2;
+		int offsets4 = image4->width > ORIGINAL_WIDTH ? abs(image4->width - ::g->renderingWidth) / 2 : 0;
 	    V_DrawPatch (0,0,0, image4, image4->width > ORIGINAL_WIDTH, offsets4, offsets4);
 	    break;
 	}
