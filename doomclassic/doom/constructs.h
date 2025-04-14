@@ -917,3 +917,6 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->firstFrame = true;
 
 	::g->planeXoffs = ::g->planeYoffs = 0;
+
+	::g->wi_anim_offset = 0;
+	::g->wi_anim_aspect = false;

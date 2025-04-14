@@ -945,6 +945,8 @@ anim_t epsd0animinfo[10];
 anim_t epsd1animinfo[9];
 anim_t epsd2animinfo[6];
 anim_t* wi_stuff_anims[NUMEPISODES];
+int wi_anim_offset;
+bool wi_anim_aspect;
 int NUMANIMS[NUMEPISODES];
 const char* chat_macros[10];
 int acceleratestage;

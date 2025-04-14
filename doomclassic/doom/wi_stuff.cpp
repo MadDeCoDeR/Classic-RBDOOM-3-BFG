@@ -459,7 +459,7 @@ void WI_drawAnimatedBack(void)
     {
 		 a = &::g->wi_stuff_anims[::g->wbs->epsd][i];
 		 if (a->ctr >= 0)
-			 V_DrawPatch(a->loc.x, a->loc.y, FB, a->p[a->ctr], false);
+			 V_DrawPatch(a->loc.x + ::g->wi_anim_offset, a->loc.y, FB, a->p[a->ctr], ::g->wi_anim_aspect);
     }
 }
 
@@ -1575,6 +1575,11 @@ void WI_loadData(void)
 	::g->bg = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_BACK), W_GetNumForName(name));
 	int offsets = ::g->bg->width > ORIGINAL_WIDTH ? abs(::g->bg->width - ::g->renderingWidth) / 2 : 0;
 	V_DrawPatch(0, 0, 1, ::g->bg, ::g->bg->width > ORIGINAL_WIDTH, offsets, offsets);
+
+	//GK: Rewritten for scalling
+	int minorOffset = (::g->gamemode == retail && ::g->wbs->epsd > 0) ? 9 : 10;
+	::g->wi_anim_offset = (::g->bg->width > ORIGINAL_WIDTH && ::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) ? (abs(::g->bg->width - ::g->renderingWidth)/GLOBAL_IMAGE_SCALER) + minorOffset: 0;
+	::g->wi_anim_aspect = ::g->bg->width > ORIGINAL_WIDTH;
 
 
     // UNUSED unsigned char *pic = ::g->screens[1];
