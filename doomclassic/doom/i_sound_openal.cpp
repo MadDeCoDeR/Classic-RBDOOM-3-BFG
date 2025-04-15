@@ -586,6 +586,8 @@ void I_ShutdownSoundAL( void )
 	
 	I_StopSongAL( 0 );
 	ResetSfx(); //GK: At last I found where I can reset the dehacked sound editor without screwing over the game
+	lengths.clear();
+	alBuffers.clear();
 	S_initialized = 0;
 }
 
