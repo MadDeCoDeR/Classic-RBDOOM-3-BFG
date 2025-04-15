@@ -203,7 +203,11 @@ void CinematicAudio_OpenAL::ShutdownAudio()
 	}
 
 	if (alIsBuffer(alMusicBuffercin[0])) {
-		alDeleteBuffers(NUM_BUFFERS, alMusicBuffercin);
+		for (int i = 0; i < NUM_BUFFERS; i++) {
+			if (alIsBuffer(alMusicBuffercin[i])) {
+				alDeleteBuffers(1, &alMusicBuffercin[i]);
+			}
+		}
 	}
 	while (!tBuffer.empty()) {
 		uint8_t* data = tBuffer.front();

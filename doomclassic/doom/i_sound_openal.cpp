@@ -574,12 +574,16 @@ void I_ShutdownSoundAL( void )
 		
 		// Free allocated sound memory
 		for ( i = 1; i < S_sfx.size(); i++ ) {
-			alDeleteBuffers(1, &alBuffers[i]); //GK: Restart the AL buffers in order to clear them from previous sfx
-			alGenBuffers(1, &alBuffers[i]);
 			if ( S_sfx[i].data && !(S_sfx[i].link) ) {
 				free( S_sfx[i].data );
 				S_sfx[i].data = NULL;
 				lengths[i] = 0;
+			}
+		}
+
+		for (size_t j = 0; j < alBuffers.size(); j++) {
+			if (alIsBuffer(alBuffers[j])) {
+				alDeleteBuffers(1, &alBuffers[j]);
 			}
 		}
 	}
@@ -646,7 +650,11 @@ void I_ShutdownSoundHardwareAL()
 	}
 
 	// Delete OpenAL buffers for all sounds
-	alDeleteBuffers(alBuffers.size(), alBuffers.data());
+	for (size_t j = 0; j < alBuffers.size(); j++) {
+		if (alIsBuffer(alBuffers[j])) {
+			alDeleteBuffers(1, &alBuffers[j]);
+		}
+	}
 	
 	if (alIsAuxiliaryEffectSlotRef(clslot)) {
 		alDeleteAuxiliaryEffectSlotsRef(1,&clslot);
