@@ -82,7 +82,7 @@ struct ExpansionData {
 	GameMission_t				pack_type;
 	const char *				expansionName;
 	const char *				iWadFilename;
-	const char *				pWadFilename;
+	std::vector<std::string>	pWadFilenames;
 	const char *				saveImageFile;
 	const char **				mapNames;
 
@@ -146,7 +146,9 @@ namespace DoomLib
 	extern int					chosenSkill;
 	extern int					chosenEpisode;
 	extern bool					use_doomit;
-	extern bool					hexp[4];
+	extern bool					skipToMenu;
+	extern bool					commercialEpisode;
+	extern bool					hexp[6];
 	extern int					selection;
 
 	extern char*				otherfiles[5][20];

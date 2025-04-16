@@ -114,15 +114,15 @@ namespace DoomLib
 	};
 
 	const ExpansionData App_Expansion_Data_Local[] = {
-		{	ExpansionData::IWAD, retail,		doom,			"DOOM",								DOOMWADDIR"DOOM.WAD",		NULL,							"base/textures/DOOMICON.PNG"	, Doom_MapNames },
-		{	ExpansionData::IWAD, commercial,	doom2,			"DOOM 2",							DOOMWADDIR"DOOM2.WAD",		NULL,							"base/textures/DOOM2ICON.PNG"	, Doom2_MapNames },
-		{	ExpansionData::IWAD, commercial,	pack_tnt,		"FINAL DOOM: TNT EVILUTION",		DOOMWADDIR"TNT.WAD",		NULL,							"base/textures/TNTICON.PNG"		, TNT_MapNames },
-		{	ExpansionData::IWAD, commercial,	pack_plut,		"FINAL DOOM: PLUTONIA EXPERIMENT",	DOOMWADDIR"PLUTONIA.WAD",	NULL,							"base/textures/PLUTICON.PNG"	, Plut_MapNames },
-		{	ExpansionData::PWAD, commercial,	pack_master,	"DOOM 2: MASTER LEVELS",			DOOMWADDIR"DOOM2.WAD",		DOOMWADDIR"MASTERLEVELS.WAD",	"base/textures/MASTICON.PNG"	, Mast_MapNames },
-		{	ExpansionData::PWAD, commercial,	pack_nerve,		"DOOM 2: NO REST FOR THE LIVING",	DOOMWADDIR"DOOM2.WAD",		DOOMWADDIR"NERVE.WAD",			"base/textures/NERVEICON.PNG"	, Nerve_MapNames },
-		{	ExpansionData::PWAD, retail,		pack_romero,	"DOOM: SIGIL",						DOOMWADDIR"DOOM.WAD",		DOOMWADDIR"SIGIL.WAD",			"base/textures/SIGIL.PNG"		, Doom_MapNames },
-		{	ExpansionData::PWAD, retail,		pack_lor,		"DOOM: Legacy Of Rust",				DOOMWADDIR"DOOM2.WAD",		DOOMWADDIR"ID1.WAD",			"base/textures/LOR.PNG"			, Doom2_MapNames },
-		{	ExpansionData::IWAD, shareware,		doom,			"DOOM Shareware",					DOOMWADDIR"DOOM1.WAD",		NULL,							"base/textures/DOOMICON.PNG"	, Doom_MapNames }
+		{	ExpansionData::IWAD, retail,		doom,			"DOOM",								DOOMWADDIR"DOOM.WAD",		{},																											"base/textures/DOOMICON.PNG"	, Doom_MapNames },
+		{	ExpansionData::IWAD, commercial,	doom2,			"DOOM 2",							DOOMWADDIR"DOOM2.WAD",		{},																											"base/textures/DOOM2ICON.PNG"	, Doom2_MapNames },
+		{	ExpansionData::IWAD, commercial,	pack_tnt,		"FINAL DOOM: TNT EVILUTION",		DOOMWADDIR"TNT.WAD",		{},																											"base/textures/TNTICON.PNG"		, TNT_MapNames },
+		{	ExpansionData::IWAD, commercial,	pack_plut,		"FINAL DOOM: PLUTONIA EXPERIMENT",	DOOMWADDIR"PLUTONIA.WAD",	{},																											"base/textures/PLUTICON.PNG"	, Plut_MapNames },
+		{	ExpansionData::PWAD, commercial,	pack_master,	"DOOM 2: MASTER LEVELS",			DOOMWADDIR"DOOM2.WAD",		{DOOMWADDIR"MASTERLEVELS.WAD", DOOMWADDIR"mlbls.wad"},														"base/textures/MASTICON.PNG"	, Mast_MapNames },
+		{	ExpansionData::PWAD, commercial,	pack_nerve,		"DOOM 2: NO REST FOR THE LIVING",	DOOMWADDIR"DOOM2.WAD",		{DOOMWADDIR"NERVE.WAD"},																					"base/textures/NERVEICON.PNG"	, Nerve_MapNames },
+		{	ExpansionData::PWAD, retail,		pack_romero,	"DOOM: SIGIL",						DOOMWADDIR"DOOM.WAD",		{DOOMWADDIR"SIGIL.WAD", DOOMWADDIR"SIGIL_BFG.wad", DOOMWADDIR"SIGIL2.WAD", DOOMWADDIR"SIGIL_II_BFG.wad"},	"base/textures/SIGIL.PNG"		, Doom_MapNames },
+		{	ExpansionData::PWAD, commercial,	pack_lor,		"DOOM: Legacy Of Rust",				DOOMWADDIR"DOOM2.WAD",		{DOOMWADDIR"ID1.WAD", DOOMWADDIR"ID1_BFG.wad"},																"base/textures/LOR.PNG"			, Doom2_MapNames },
+		{	ExpansionData::IWAD, shareware,		doom,			"DOOM Shareware",					DOOMWADDIR"DOOM1.WAD",		{},																										    "base/textures/DOOMICON.PNG"	, Doom_MapNames }
 	};
 
 	int classicRemap[K_LAST_KEY];
@@ -177,7 +177,9 @@ namespace DoomLib
 	int								chosenSkill = 0;
 	int								chosenEpisode = 1;
 	bool							use_doomit = false;
-	bool							hexp[4];
+	bool							skipToMenu = false;
+	bool							commercialEpisode = false;
+	bool							hexp[6];
 	int								selection = -1;
 	char*							otherfiles[5][20];
 	char*							generalfiles[20]; //GK:Keep track of global mods for save file checks

@@ -1828,6 +1828,14 @@ void W_CheckExp() {
 		fileSystem->CloseFile(file);
 		DoomLib::hexp[3] = true;
 	}
+	if (idFile* file = fileSystem->OpenFileRead("wads/SIGIL.WAD")) {
+		fileSystem->CloseFile(file);
+		DoomLib::hexp[4] = true;
+	}
+	if (idFile* file = fileSystem->OpenFileRead("wads/ID1.WAD")) {
+		fileSystem->CloseFile(file);
+		DoomLib::hexp[5] = true;
+	}
 }
 //GK:Do here the modded save check
 bool W_CheckMods(int sc, std::vector<std::string> filelist) {

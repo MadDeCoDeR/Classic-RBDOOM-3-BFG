@@ -556,7 +556,9 @@ void IdentifyVersion(void)
 
 	if (expansion->type == ExpansionData::PWAD) {
 		D_AddFile(expansion->iWadFilename);
-		D_AddFile(expansion->pWadFilename);
+		for(int i = 0; i < expansion->pWadFilenames.size(); i++) {
+			D_AddFile(expansion->pWadFilenames[i].c_str());
+		}
 
 	}
 	else {
@@ -649,9 +651,9 @@ void D_DoomMain(void)
 	if (::g->gamemode == commercial) {
 		D_AddFile("wads/ua.wad");
 	}
-	if (::g->gamemission == pack_master) {
-		D_AddFile("wads/mlbls.wad");
-	}
+	// if (::g->gamemission == pack_master) {
+	// 	D_AddFile("wads/mlbls.wad");
+	// }
 	//GK: New pwad for compatibility with the original DOOM And DOOMII IWADs
 	D_AddFile("wads/newopt.wad");
 
@@ -784,9 +786,9 @@ void D_DoomMain(void)
 			if (::g->gamemode == commercial) {
 				D_AddFile("wads/ua.wad");
 			}
-			if (::g->gamemission == pack_master) {
-				D_AddFile("wads/mlbls.wad");
-			}
+			// if (::g->gamemission == pack_master) {
+			// 	D_AddFile("wads/mlbls.wad");
+			// }
 		}
 	}
 	p = M_CheckParm ("-file");

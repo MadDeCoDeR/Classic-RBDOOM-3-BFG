@@ -412,7 +412,7 @@ menuitem_t QuitMenu[3];
 menu_t  MainDef;
 menuitem_t* EpisodeMenu; //GK: Dynamic menu
 menu_t  EpiDef;
-menuitem_t ExpansionMenu[5];
+menuitem_t ExpansionMenu[6];
 menu_t  ExpDef;
 menuitem_t NewGameMenu[5];
 menu_t  NewDef;
@@ -430,7 +430,7 @@ menuitem_t VideoMenu[7];
 menu_t  VideoDef;
 menuitem_t LoadMenu[6];
 menu_t  LoadDef;
-menuitem_t LoadExpMenu[5];
+menuitem_t LoadExpMenu[6];
 menu_t  LoadExpDef;
 menuitem_t SaveMenu[6];
 menu_t  SaveDef;

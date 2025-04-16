@@ -160,6 +160,8 @@ typedef enum
 	ep2,
 	ep3,
 	ep4,
+	ep5,
+	ep6,
 	ep_end
 } episodes_e;
 typedef enum
@@ -169,6 +171,7 @@ typedef enum
 	ex3,
 	ex4,
 	ex5,
+	ex6,
 	ex_end
 } expansions_e;
 typedef enum

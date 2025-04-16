@@ -161,13 +161,15 @@ menu_t  temp_MainDef = {
 
 
 memcpy( &::g->MainDef, &temp_MainDef, sizeof(temp_MainDef) );
-menuitem_t temp_EpisodeMenu[4] = {
+menuitem_t temp_EpisodeMenu[6] = {
 	{1,"M_EPI1", M_Episode,'k'},
 	{1,"M_EPI2", M_Episode,'t'},
 	{1,"M_EPI3", M_Episode,'i'},
-	{1,"M_EPI4", M_Episode,'t'}
+	{1,"M_EPI4", M_Episode,'t'},
+	{1,"M_EPI5", M_Episode,'s'},
+	{1,"M_EPI6", M_Episode,'s'}
 };
-::g->EpisodeMenu = (menuitem_t*)malloc(4 * sizeof(menuitem_t));
+::g->EpisodeMenu = (menuitem_t*)malloc(6 * sizeof(menuitem_t));
 memcpy( ::g->EpisodeMenu, temp_EpisodeMenu, sizeof(temp_EpisodeMenu) );
 menu_t  temp_EpiDef = {
 	ep_end,		// # of menu items
@@ -179,12 +181,13 @@ menu_t  temp_EpiDef = {
 };
 memcpy( &::g->EpiDef, &temp_EpiDef, sizeof(temp_EpiDef) );
 //GK: Add Evilution and Plutonia as expansion options for DOOM II
-menuitem_t temp_ExpansionMenu[5] = {
+menuitem_t temp_ExpansionMenu[6] = {
 	{1,"M_EXP1", M_Expansion,'h'},
 	{1,"M_EXP2", M_Expansion,'n'},
 	{ 1,"M_EXP3", M_Expansion,'t' },
 	{ 1,"M_EXP4", M_Expansion,'p' },
 	{ 1,"M_EXP5", M_Expansion,'m' },
+	{ 1,"M_EXP6", M_Expansion,'l' },
 };
 memcpy( ::g->ExpansionMenu, temp_ExpansionMenu, sizeof(temp_ExpansionMenu) );
 menu_t  temp_ExpDef = {
@@ -197,12 +200,13 @@ menu_t  temp_ExpDef = {
 };
 memcpy( &::g->ExpDef, &temp_ExpDef, sizeof(temp_ExpDef) );
 //GK: Add Evilution and Plutonia as expansion options for DOOM II
-menuitem_t temp_LoadExpMenu[5] = {
+menuitem_t temp_LoadExpMenu[6] = {
 	{1,"M_EXP1", M_LoadExpansion,'h'},
 	{1,"M_EXP2", M_LoadExpansion,'n'},
 	{ 1,"M_EXP3", M_LoadExpansion,'t' },
 	{ 1,"M_EXP4", M_LoadExpansion,'p' },
 	{ 1,"M_EXP5", M_LoadExpansion,'m' },
+	{ 1,"M_EXP6", M_LoadExpansion,'l' },
 };
 memcpy( ::g->LoadExpMenu, temp_LoadExpMenu, sizeof(temp_LoadExpMenu) );
 menu_t  temp_LoadExpDef = {

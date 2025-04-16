@@ -1405,8 +1405,12 @@ void M_ChooseSkill(int choice)
 	}
 	
 	if ( ::g->gamemode != commercial  || ::g->episodicExpansion) {
-		static int startLevel = 1;
-		G_DeferedInitNew((skill_t)choice,::g->epi+1, startLevel);
+		//static int startLevel = 1;
+		DoomLib::SetCurrentExpansion( DoomLib::idealExpansion );
+		DoomLib::skipToNew = true;
+		DoomLib::chosenSkill = choice;
+		DoomLib::chosenEpisode = ::g->epi;
+		//G_DeferedInitNew((skill_t)choice,::g->epi+1, startLevel);
 		{ //GK: Set Endmap for the selected episode
 			if ((int)::g->clusters.size() <= ::g->epi){
 				::g->gamemission = doom;
@@ -1423,6 +1427,7 @@ void M_ChooseSkill(int choice)
 					::g->endmap = ::g->clusters[::g->epi].endmap;
 				}
 			}
+			
 		}
 		M_ClearMenus ();
 	} else {
@@ -1450,6 +1455,9 @@ void M_Episode(int choice)
 		M_StartMessage(SWSTRINGBFG, NULL, true);
 		return;
 	}
+	if (::g->gamemode == retail && DoomLib::hexp[4] && choice > 3) {
+		DoomLib::SetIdealExpansion(pack_romero );
+	} 
 
 	::g->epi = choice;
 	if (inDevMode) {
@@ -1515,6 +1523,15 @@ void M_Expansion(int choice)
 			procced = false;
 			M_StartMessage(EXPROMT, NULL, false);
 		}
+	} else if (choice == 5) {
+		if (DoomLib::hexp[5]) {
+			DoomLib::SetIdealExpansion(pack_lor);
+			mission = pack_lor;
+		}
+		else {
+			procced = false;
+			M_StartMessage(EXPROMT, NULL, false);
+		}
 	}
 		if (procced) {
 			if (inDevMode) {
@@ -1533,12 +1550,9 @@ void M_Expansion(int choice)
 					M_SetupNextMenu(&::g->DevDef);
 				}
 				else {
-					if (::g->episodicExpansion) {
-						M_SetupNextMenu(&::g->EpiDef);
-					}
-					else {
-						M_SetupNextMenu(&::g->NewDef);
-					}
+					DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
+					DoomLib::skipToMenu = true;
+					DoomLib::commercialEpisode = choice == 5;
 				}
 			}
 			else if (choice == 4 && DoomLib::use_doomit && doomit.GetInteger() == 0) {
@@ -1549,6 +1563,7 @@ void M_Expansion(int choice)
 					M_SetupNextMenu(&::g->NewDef);
 				}
 			}
+			
 		}
 		else {
 			M_SetupNextMenu(&::g->MainDef);
@@ -3175,6 +3190,14 @@ void M_Drawer (void)
 	/*if (::g->currentMenu->menuitems == ::g->QuitDef.menuitems && common->IsNewDOOM3()) {
 		::g->currentMenu->numitems = 2;
 	}*/
+	if (::g->currentMenu->menuitems == ::g->EpiDef.menuitems && (::g->gamemission != pack_custom && !DoomLib::hexp[4])) {
+		::g->currentMenu->numitems = 4;
+	}
+	if ((::g->currentMenu->menuitems == ::g->ExpDef.menuitems || ::g->currentMenu->menuitems == ::g->LoadExpDef.menuitems) && !DoomLib::hexp[5]) {
+		::g->ExpDef.numitems = 5;
+		::g->LoadExpDef.numitems = 5;
+	}
+
 	if (::g->currentMenu->menuitems == pageDef.menuitems && ::g->itemOn >= 10 ) {
 		if (!aspect) 
 		{
