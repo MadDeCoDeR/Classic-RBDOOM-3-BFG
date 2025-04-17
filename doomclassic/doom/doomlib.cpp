@@ -178,7 +178,6 @@ namespace DoomLib
 	int								chosenEpisode = 1;
 	bool							use_doomit = false;
 	bool							skipToMenu = false;
-	bool							commercialEpisode = false;
 	bool							hexp[6];
 	int								selection = -1;
 	char*							otherfiles[5][20];

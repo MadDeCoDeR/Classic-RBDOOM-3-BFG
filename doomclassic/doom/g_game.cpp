@@ -1961,6 +1961,7 @@ qboolean G_DoSaveGame (void)
 	else {
 		switch (DoomLib::idealExpansion) {
 			case doom:
+			case pack_romero:
 				localsavedir = "DOOM";
 				break;
 			case doom2:
@@ -1977,6 +1978,9 @@ qboolean G_DoSaveGame (void)
 				break;
 			case pack_master:
 				localsavedir = "DOOM2_MASTER";
+				break;
+			case pack_lor:
+				localsavedir = "DOOM2_LOR";
 				break;
 		}
 	}

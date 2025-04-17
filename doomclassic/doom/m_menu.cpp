@@ -458,6 +458,7 @@ void M_ReadSaveStrings(void)
 		else {
 			switch (DoomLib::idealExpansion) {
 				case doom:
+				case pack_romero:
 					localsavedir = "DOOM";
 					break;
 				case doom2:
@@ -474,6 +475,9 @@ void M_ReadSaveStrings(void)
 					break;
 				case pack_master:
 					localsavedir = "DOOM2_MASTER";
+					break;
+			    case pack_lor:
+					localsavedir = "DOOM2_LOR";
 					break;
 			}
 		}
@@ -513,6 +517,7 @@ bool M_CheckQuickSave(void)
 		else {
 			switch (DoomLib::idealExpansion) {
 			case doom:
+			case pack_romero:
 				localsavedir = "DOOM";
 				break;
 			case doom2:
@@ -529,6 +534,9 @@ bool M_CheckQuickSave(void)
 				break;
 			case pack_master:
 				localsavedir = "DOOM2_MASTER";
+				break;
+			case pack_lor:
+				localsavedir = "DOOM2_LOR";
 				break;
 			}
 		}
@@ -600,9 +608,12 @@ void M_DeleteSelected(int ch) {
 //
 void M_LoadSelect(int choice)
 {
-	if( ::g->gamemode != commercial ) {
+	/*if( ::g->gamemode != commercial ) {
 		G_LoadGame ( ::g->savegamepaths[ choice ] );
-	} else {
+	} else*/ {
+		if (::g->gamemode == retail && DoomLib::hexp[4]) {
+			DoomLib::SetIdealExpansion(pack_romero);
+		}
 		DoomLib::use_doomit = false;
 		strcpy( DoomLib::loadGamePath, ::g->savegamepaths[ choice ] );
 		if (G_CheckSave(DoomLib::loadGamePath)) {
@@ -656,6 +667,15 @@ void M_LoadExpansion(int choice)
 	case 4:
 		if (DoomLib::hexp[2]) {
 			DoomLib::SetIdealExpansion(pack_master);
+		}
+		else {
+			procced = false;
+			M_StartMessage(EXPROMT, NULL, false);
+		}
+		break;
+	case 5:
+		if (DoomLib::hexp[5]) {
+			DoomLib::SetIdealExpansion(pack_lor);
 		}
 		else {
 			procced = false;
@@ -1552,7 +1572,6 @@ void M_Expansion(int choice)
 				else {
 					DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
 					DoomLib::skipToMenu = true;
-					DoomLib::commercialEpisode = choice == 5;
 				}
 			}
 			else if (choice == 4 && DoomLib::use_doomit && doomit.GetInteger() == 0) {

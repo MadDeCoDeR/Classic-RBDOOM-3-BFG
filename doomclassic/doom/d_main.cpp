@@ -556,7 +556,7 @@ void IdentifyVersion(void)
 
 	if (expansion->type == ExpansionData::PWAD) {
 		D_AddFile(expansion->iWadFilename);
-		for(int i = 0; i < expansion->pWadFilenames.size(); i++) {
+		for(size_t i = 0; i < expansion->pWadFilenames.size(); i++) {
 			D_AddFile(expansion->pWadFilenames[i].c_str());
 		}
 

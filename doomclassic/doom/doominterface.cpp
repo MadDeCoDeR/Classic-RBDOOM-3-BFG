@@ -151,7 +151,7 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 			::g->menuactive = 0;
 		}
 		if (DoomLib::skipToMenu) {
-			if (DoomLib::commercialEpisode) {
+			if (::g->episodicExpansion) {
 				::g->currentMenu = &::g->EpiDef;
 			} else {
 				::g->currentMenu = &::g->NewDef;
