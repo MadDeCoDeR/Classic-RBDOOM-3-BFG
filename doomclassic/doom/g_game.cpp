@@ -1764,6 +1764,13 @@ qboolean G_CheckSave(char* name) {
 		}
 	}
 	else {
+		//GK: No mods but the DOOM 1 episode is above 4
+		::g->save_p += 11;
+		int gameskill = (skill_t)*::g->save_p++; 
+		int gameepisode = *::g->save_p++; 
+		if (::g->gamemode == retail && gameepisode > 4 && DoomLib::hexp[4]) {
+			DoomLib::SetIdealExpansion(pack_romero);
+		} 
 		Z_Free(::g->savebuffer);
 		return true;
 	}

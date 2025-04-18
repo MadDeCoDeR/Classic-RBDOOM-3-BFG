@@ -611,9 +611,7 @@ void M_LoadSelect(int choice)
 	/*if( ::g->gamemode != commercial ) {
 		G_LoadGame ( ::g->savegamepaths[ choice ] );
 	} else*/ {
-		if (::g->gamemode == retail && DoomLib::hexp[4]) {
-			DoomLib::SetIdealExpansion(pack_romero);
-		}
+		
 		DoomLib::use_doomit = false;
 		strcpy( DoomLib::loadGamePath, ::g->savegamepaths[ choice ] );
 		if (G_CheckSave(DoomLib::loadGamePath)) {

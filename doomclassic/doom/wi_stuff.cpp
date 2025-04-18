@@ -257,7 +257,7 @@ void localCalculateAchievements(bool epComplete)
 #ifdef __MONOLITH__
 			player_t* player = &::g->players[::g->consoleplayer];
 			// Calculate Any Achievements earned from stat cumulation.
-			idAchievementManager::CheckDoomClassicsAchievements( player->killcount, player->itemcount, player->secretcount, ::g->gameskill, ::g->gamemission, ::g->gamemap, ::g->gameepisode, ::g->totalkills, ::g->totalitems, ::g->totalsecret );
+			idAchievementManager::CheckDoomClassicsAchievements( player->killcount, player->itemcount, player->secretcount, ::g->gameskill, DoomLib::expansionSelected, ::g->gamemap, ::g->gameepisode, ::g->totalkills, ::g->totalitems, ::g->totalsecret );
 #endif
 
 	}
