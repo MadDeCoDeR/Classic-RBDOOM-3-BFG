@@ -600,6 +600,10 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 				LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_HOARDER);
 			}
 
+			if (gotAllKills && totalkills > 0 && difficulty >= sk_hard && !classicData->plyr->gotHit) {
+				LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_UNTOUCHABLE);
+			}
+
 			// DOOM EXPANSION ACHIEVEMENTS
 			switch (expansion) {
 			case doom:

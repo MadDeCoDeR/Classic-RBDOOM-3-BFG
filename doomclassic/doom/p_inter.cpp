@@ -814,6 +814,37 @@ P_KillMobj
 			}
 		}
 
+		if (source->player->readyweapon == wp_fist && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
+			source->player->fistKills++;
+			if (source->player->fistKills == 25) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_FISTS);
+			}
+		}
+
+		if (source->player->readyweapon == wp_shotgun && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
+			if ((I_GetTime() - source->player->lastShotgunKillTime) < 1) {
+				source->player->shotgunKills++;
+			} else {
+				source->player->shotgunKills = 1;
+			}
+			source->player->lastShotgunKillTime = I_GetTime();
+			if (source->player->shotgunKills >= 3) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_BOOMSTICK);
+			}
+		}
+
+		if (source->player->readyweapon == wp_supershotgun && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
+			if ((I_GetTime() - source->player->lastShotgunKillTime) < 1) {
+				source->player->doubleShotgunKills++;
+			} else {
+				source->player->doubleShotgunKills = 1;
+			}
+			source->player->lastShotgunKillTime = I_GetTime();
+			if (source->player->doubleShotgunKills >= 4) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_DOUBLEBOOMSTICK);
+			}
+		}
+
 		if (inflictor && inflictor->type == MT_BFG) {
 			source->player->bfgTargets++;
 		}
@@ -860,7 +891,7 @@ P_KillMobj
 
 	if (source != NULL) {
 		//GK: D1&2 In fight Kill
-		if (!target->player && !source->player && source->originalTarget && source->originalTarget->player) {
+		if (!target->player && !source->player) {
 			if (idAchievementManager::isClassicDoomOnly()) {
 				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_INFIGHT);
 			}
@@ -1031,6 +1062,7 @@ P_DamageMobj
 		//int additional_time = 500.0f * damageFloat;
 
 		if( ::g->plyr == player ) {
+			::g->plyr->gotHit = true;
 		}
 
 

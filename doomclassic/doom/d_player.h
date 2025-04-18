@@ -153,6 +153,11 @@ typedef struct player_s
     bool        inBFGStates;
     int         bfgTargets;
     int         CGunShoots;
+    int         fistKills;
+    int         shotgunKills;
+    int         doubleShotgunKills;
+    int         lastShotgunKillTime;
+    bool        gotHit;
 
     // Hint messages.
     const char*		message;	

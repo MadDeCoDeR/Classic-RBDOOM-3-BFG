@@ -1436,6 +1436,9 @@ void G_DoCompleted (void)
 	::g->wminfo.epsd = ::g->gameepisode -1; 
 	::g->wminfo.last = ::g->gamemap -1;
 
+	if (::g->secretexit && idAchievementManager::isClassicDoomOnly()) {
+		idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_SECRET_LEVEL);
+	}
 	// ::g->wminfo.next is 0 biased, unlike ::g->gamemap
 	if ( ::g->gamemode == commercial)
 	{

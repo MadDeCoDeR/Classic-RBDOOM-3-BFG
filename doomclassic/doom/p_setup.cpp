@@ -771,6 +771,11 @@ P_SetupLevel
 		::g->players[i].bfgTargets = 0;
 		::g->players[i].inBFGStates = false;
 		::g->players[i].CGunShoots = 0;
+		::g->players[i].fistKills = 0;
+		::g->players[i].shotgunKills = 0;
+		::g->players[i].doubleShotgunKills = 0;
+		::g->players[i].lastShotgunKillTime = 0;
+		::g->players[i].gotHit = false;
 	}
 
 	// Initial height of PointOfView
