@@ -398,7 +398,7 @@ void idAchievementManager::LocalUser_CompleteAchievement( int id )
 		else {
 			name = "warp";
 		}
-		common->Printf("You cheat with %s", name.c_str());
+		common->Printf("You cheat with %s\n", name.c_str());
 		if( ::op && !cheatingDialogShown && !(common->IsNewDOOM3() && (cvarSystem->GetCVarInteger("com_game_mode") == 1 || cvarSystem->GetCVarInteger("com_game_mode") == 2)))
 		{
 			common->Dialog().AddDialog( GDM_ACHIEVEMENTS_DISABLED_DUE_TO_CHEATING, DIALOG_ACCEPT, NULL, NULL, true );
@@ -437,6 +437,26 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 	idLocalUser* localUser = session->GetSignInManager().GetMasterLocalUser();
 	if( localUser != NULL && localUser->GetProfile() != NULL )
 	{
+#ifdef ID_RETAIL					//GK No achievments if we use classic parameters
+#ifndef GAME_DLL
+	Globals* classic = (Globals*)::GetClassicData();
+	if( common->GetConsoleUsed() || (classic != NULL && classic->classichUsed) || (classic != NULL && classic->warpUsed))
+	{
+		std::string name;
+		if (common->GetConsoleUsed()) {
+			name = "console";
+		}
+		else if (classic != NULL && classic->classichUsed) {
+			name = "classich";
+		}
+		else {
+			name = "warp";
+		}
+		common->Printf("You cheat with %s\n", name.c_str());
+		return;
+	}
+#endif
+#endif
 
 		if (session->GetAchievementSystem().GetNumberOfAchievements() == ACHIEVEMENTS_NUM) {
 			// GENERAL ACHIEVEMENT UNLOCKING.
@@ -611,17 +631,17 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 
 				if (map == 8)
 				{
-					localUser->SetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM + (episode - 1), 1);
+					localUser->SetStatInt(STAT_DOOM_COMPLETED_EPISODE_1 + (episode - 1), 1);
 
 					// Save the Settings.
 					localUser->SaveProfileSettings();
 				}
 
 				// Check to see if we've completed all episodes.
-				const int episode1completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_1_MEDIUM);
-				const int episode2completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_2_MEDIUM);
-				const int episode3completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_3_MEDIUM);
-				const int episode4completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_4_MEDIUM);
+				const int episode1completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_1);
+				const int episode2completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_2);
+				const int episode3completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_3);
+				const int episode4completed = localUser->GetStatInt(STAT_DOOM_COMPLETED_EPISODE_4);
 
 				if (currentGame == DOOM_CLASSIC)
 				{
@@ -684,20 +704,20 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 				}
 				break;
 			}
-			case pack_lor: {
-				if (map == 8)
+			case pack_kex: {
+				if (map == 7 || map == 14)
 				{
-					localUser->SetStatInt(STAT_DOOM_LOR_COMPLETED_EPISODE_1_MEDIUM + (episode - 1), 1);
+					localUser->SetStatInt(STAT_DOOM_KEX_COMPLETED_EPISODE_1 + (episode - 1), 1);
 					// Save the Settings.
 					localUser->SaveProfileSettings();
 				}
 
 				// Check to see if we've completed all episodes.
-				const int episode1completed = localUser->GetStatInt(STAT_DOOM_LOR_COMPLETED_EPISODE_1_MEDIUM);
-				const int episode2completed = localUser->GetStatInt(STAT_DOOM_LOR_COMPLETED_EPISODE_2_MEDIUM);
+				const int episode1completed = localUser->GetStatInt(STAT_DOOM_KEX_COMPLETED_EPISODE_1);
+				const int episode2completed = localUser->GetStatInt(STAT_DOOM_KEX_COMPLETED_EPISODE_2);
 				if (episode1completed && episode2completed)
 				{
-					LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_LOR);
+					LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CAMPAIGN_KEX);
 				}
 
 				break;

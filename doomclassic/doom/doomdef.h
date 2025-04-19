@@ -65,7 +65,7 @@ typedef enum
   pack_master,	// Master levels
   pack_nerve,	// Nerve levels
   pack_romero,  // SIGIL
-  pack_lor,     // Legacy of Rust
+  pack_kex,     // Legacy of Rust
   pack_custom,  // GK: Custom Expansion
  
   none

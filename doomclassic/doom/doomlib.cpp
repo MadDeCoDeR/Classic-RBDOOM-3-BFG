@@ -121,7 +121,7 @@ namespace DoomLib
 		{	ExpansionData::PWAD, commercial,	pack_master,	"DOOM 2: MASTER LEVELS",			DOOMWADDIR"DOOM2.WAD",		{DOOMWADDIR"MASTERLEVELS.WAD", DOOMWADDIR"mlbls.wad"},														"base/textures/MASTICON.PNG"	, Mast_MapNames },
 		{	ExpansionData::PWAD, commercial,	pack_nerve,		"DOOM 2: NO REST FOR THE LIVING",	DOOMWADDIR"DOOM2.WAD",		{DOOMWADDIR"NERVE.WAD"},																					"base/textures/NERVEICON.PNG"	, Nerve_MapNames },
 		{	ExpansionData::PWAD, retail,		pack_romero,	"DOOM: SIGIL",						DOOMWADDIR"DOOM.WAD",		{DOOMWADDIR"SIGIL.WAD", DOOMWADDIR"SIGIL_BFG.wad", DOOMWADDIR"SIGIL2.WAD", DOOMWADDIR"SIGIL_II_BFG.wad"},	"base/textures/SIGIL.PNG"		, Doom_MapNames },
-		{	ExpansionData::PWAD, commercial,	pack_lor,		"DOOM: Legacy Of Rust",				DOOMWADDIR"DOOM2.WAD",		{DOOMWADDIR"ID1.WAD", DOOMWADDIR"ID1_BFG.wad"},																"base/textures/LOR.PNG"			, Doom2_MapNames },
+		{	ExpansionData::PWAD, commercial,	pack_kex,		"DOOM: Legacy Of Rust",				DOOMWADDIR"DOOM2.WAD",		{DOOMWADDIR"ID1.WAD", DOOMWADDIR"ID1_BFG.wad"},																"base/textures/LOR.PNG"			, Doom2_MapNames },
 		{	ExpansionData::IWAD, shareware,		doom,			"DOOM Shareware",					DOOMWADDIR"DOOM1.WAD",		{},																										    "base/textures/DOOMICON.PNG"	, Doom_MapNames }
 	};
 

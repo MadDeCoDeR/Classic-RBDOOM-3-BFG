@@ -1988,8 +1988,8 @@ qboolean G_DoSaveGame (void)
 			case pack_master:
 				localsavedir = "DOOM2_MASTER";
 				break;
-			case pack_lor:
-				localsavedir = "DOOM2_LOR";
+			case pack_kex:
+				localsavedir = "DOOM2_KEX";
 				break;
 		}
 	}

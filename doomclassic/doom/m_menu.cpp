@@ -476,8 +476,8 @@ void M_ReadSaveStrings(void)
 				case pack_master:
 					localsavedir = "DOOM2_MASTER";
 					break;
-			    case pack_lor:
-					localsavedir = "DOOM2_LOR";
+			    case pack_kex:
+					localsavedir = "DOOM2_KEX";
 					break;
 			}
 		}
@@ -535,8 +535,8 @@ bool M_CheckQuickSave(void)
 			case pack_master:
 				localsavedir = "DOOM2_MASTER";
 				break;
-			case pack_lor:
-				localsavedir = "DOOM2_LOR";
+			case pack_kex:
+				localsavedir = "DOOM2_KEX";
 				break;
 			}
 		}
@@ -673,7 +673,7 @@ void M_LoadExpansion(int choice)
 		break;
 	case 5:
 		if (DoomLib::hexp[5]) {
-			DoomLib::SetIdealExpansion(pack_lor);
+			DoomLib::SetIdealExpansion(pack_kex);
 		}
 		else {
 			procced = false;
@@ -1543,8 +1543,8 @@ void M_Expansion(int choice)
 		}
 	} else if (choice == 5) {
 		if (DoomLib::hexp[5]) {
-			DoomLib::SetIdealExpansion(pack_lor);
-			mission = pack_lor;
+			DoomLib::SetIdealExpansion(pack_kex);
+			mission = pack_kex;
 		}
 		else {
 			procced = false;

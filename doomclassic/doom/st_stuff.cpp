@@ -638,7 +638,7 @@ ST_Responder (event_t* ev)
 			//cht_GetParam(&cheat_clev, buf);
 			//for (int i = 0; i < 3; i++) buf[i] = ev->data1;
 
-			if (::g->gamemode == commercial)
+			if (::g->gamemode == commercial && !::g->episodicExpansion)
 			{
 				epsd = 0;
 				//GK: Buffers are geting number + 1 (except 0 which equals 11)
@@ -677,7 +677,7 @@ ST_Responder (event_t* ev)
 			}
 
 			if (::g->gamemission == pack_custom) {//GK:Custom expansion related stuff
-				if (::g->gamemode == commercial) {
+				if (::g->gamemode == commercial && !::g->episodicExpansion) {
 					if (map > ::g->mapmax)
 						return false;
 					while (!::g->maps[map - 1].lumpname) {
