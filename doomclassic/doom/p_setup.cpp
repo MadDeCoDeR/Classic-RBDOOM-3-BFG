@@ -776,6 +776,12 @@ P_SetupLevel
 		::g->players[i].doubleShotgunKills = 0;
 		::g->players[i].lastShotgunKillTime = 0;
 		::g->players[i].gotHit = false;
+		::g->players[i].missleGibs = 0;
+		::g->players[i].missleGibTime = 0;
+		::g->players[i].plasmaKills = 0;
+		::g->players[i].lastPlasmaKillTime = 0;
+		::g->players[i].calamityKills = 0;
+		::g->players[i].lastCalamityKillTime = 0;
 	}
 
 	// Initial height of PointOfView

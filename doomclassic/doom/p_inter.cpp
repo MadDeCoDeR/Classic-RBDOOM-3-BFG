@@ -845,6 +845,30 @@ P_KillMobj
 			}
 		}
 
+		if (source->player->readyweapon == wp_plasma && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
+			if ((::g->cnt_time - source->player->lastPlasmaKillTime) < 5) {
+				source->player->plasmaKills++;
+			} else {
+				source->player->plasmaKills = 1;
+			}
+			source->player->plasmaKills = ::g->cnt_time;
+			if (source->player->plasmaKills >= 5) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_PLASMA);
+			}
+		}
+
+		if (source->player->readyweapon == wp_bfg && DoomLib::expansionSelected == pack_kex && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
+			if ((I_GetTime() - source->player->lastCalamityKillTime) < 1) {
+				source->player->calamityKills++;
+			} else {
+				source->player->calamityKills = 1;
+			}
+			source->player->lastCalamityKillTime = I_GetTime();
+			if (source->player->calamityKills >= 50) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_SUPERWEAPON);
+			}
+		}
+
 		if (inflictor && inflictor->type == MT_BFG) {
 			source->player->bfgTargets++;
 		}
@@ -880,6 +904,19 @@ P_KillMobj
 	if (target->health < -target->info->spawnhealth
 		&& target->info->xdeathstate)
 	{
+		if (idAchievementManager::isClassicDoomOnly()) {
+			if (source != NULL && source->player && source->player->readyweapon == wp_missile && inflictor && inflictor->type == MT_ROCKET) {
+				if ((I_GetTime() - source->player->missleGibTime) < 1) {
+					source->player->missleGibs++;
+				} else {
+					source->player->missleGibs = 1;
+				}
+				source->player->missleGibTime = I_GetTime();
+				if (source->player->missleGibs >= 3) {
+					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_ROCKET_LAUNCHER);
+				}
+			}
+		}
 		P_SetMobjState (target, target->info->xdeathstate);
 	}
 	else

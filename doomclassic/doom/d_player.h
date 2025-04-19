@@ -158,6 +158,12 @@ typedef struct player_s
     int         doubleShotgunKills;
     int         lastShotgunKillTime;
     bool        gotHit;
+    int         missleGibs;
+    int         missleGibTime;
+    int         plasmaKills;
+    int         lastPlasmaKillTime;
+    int         calamityKills;
+    int         lastCalamityKillTime;
 
     // Hint messages.
     const char*		message;	

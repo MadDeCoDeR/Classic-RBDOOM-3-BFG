@@ -49,6 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "Main.h"
 #include "d_exp.h"
 
+#include "../../neo/d3xp/Game_local.h"
 // If "floatok" true, move would be ok
 // if within "tmfloorz - tmceilingz".
 
@@ -1724,14 +1725,17 @@ qboolean PIT_ChangeSector (mobj_t*	thing)
     // crunch bodies to giblets
     if (thing->health <= 0)
     {
-	P_SetMobjState (thing, S_GIBS);
+		if (idAchievementManager::isClassicDoomOnly()) {
+			idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_DOOR_CRUSH);
+		}
+		P_SetMobjState (thing, S_GIBS);
 
-	thing->flags &= ~MF_SOLID;
-	thing->height = 0;
-	thing->radius = 0;
+		thing->flags &= ~MF_SOLID;
+		thing->height = 0;
+		thing->radius = 0;
 
-	// keep checking
-	return true;		
+		// keep checking
+		return true;		
     }
 
     // crunch dropped items
