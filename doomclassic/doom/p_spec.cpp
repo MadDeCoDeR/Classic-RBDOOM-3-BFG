@@ -120,6 +120,7 @@ If you have questions concerning this license or the applicable additional terms
 };*/
 
 // killough 3/7/98: Initialize generalized scrolling
+static void P_InitTagLists(void);
 static void P_SpawnScrollers(void);
 static void P_SpawnFriction(void);
 static void P_SpawnPushers(void);
@@ -431,13 +432,18 @@ P_FindSectorFromLineTag
 ( line_t*	line,
  int		start )
 {
-	int	i;
+	start = start >= 0 ? ::g->sectors[start].nexttag :
+		::g->sectors[(unsigned)line->tag % (unsigned)::g->numsectors].firsttag;
+	while (start >= 0 && ::g->sectors[start].tag != line->tag)
+		start = ::g->sectors[start].nexttag;
+	return start;
+	// int	i;
 
-	for (i = start+1; i < ::g->numsectors; i++)
-		if (::g->sectors[i].tag == line->tag)
-			return i;
+	// for (i = start+1; i < ::g->numsectors; i++)
+	// 	if (::g->sectors[i].tag == line->tag)
+	// 		return i;
 
-	return -1;
+	// return -1;
 }
 
 
@@ -2020,6 +2026,7 @@ void P_SpawnSpecials (void)
 		}
 	}
 
+	P_InitTagLists();
 	P_SpawnScrollers(); // killough 3/7/98: Add generalized scrollers
 	P_SpawnFriction();
 	P_SpawnPushers();
@@ -2797,6 +2804,32 @@ int P_FindLineFromLineTag(const line_t *line, int start)
 	while (start >= 0 && ::g->lines[start].tag != line->tag)
 		start = ::g->lines[start].nexttag;
 	return start;
+}
+
+// Hash the sector tags across the sectors and linedefs.
+static void P_InitTagLists(void)
+{
+  int i;
+
+  for (i=::g->numsectors; --i>=0; )        // Initially make all slots empty.
+    ::g->sectors[i].firsttag = -1;
+  for (i=::g->numsectors; --i>=0; )        // Proceed from last to first sector
+    {                                 // so that lower sectors appear first
+      int j = (unsigned) ::g->sectors[i].tag % (unsigned) ::g->numsectors; // Hash func
+      ::g->sectors[i].nexttag = ::g->sectors[j].firsttag;   // Prepend sector to chain
+      ::g->sectors[j].firsttag = i;
+    }
+
+  // killough 4/17/98: same thing, only for linedefs
+
+  for (i=::g->numlines; --i>=0; )        // Initially make all slots empty.
+  ::g->lines[i].firsttag = -1;
+  for (i=::g->numlines; --i>=0; )        // Proceed from last to first linedef
+    {                               // so that lower linedefs appear first
+      int j = (unsigned) ::g->lines[i].tag % (unsigned) ::g->numlines; // Hash func
+      ::g->lines[i].nexttag = ::g->lines[j].firsttag;   // Prepend linedef to chain
+      ::g->lines[j].firsttag = i;
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////
