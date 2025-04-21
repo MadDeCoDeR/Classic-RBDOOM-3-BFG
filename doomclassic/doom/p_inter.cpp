@@ -845,13 +845,13 @@ P_KillMobj
 			}
 		}
 
-		if (source->player->readyweapon == wp_plasma && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
-			if ((::g->cnt_time - source->player->lastPlasmaKillTime) < 5) {
+		if (source->player->readyweapon == wp_plasma && DoomLib::expansionSelected != pack_kex && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
+			if ((::g->normaltime - source->player->lastPlasmaKillTime) < 5) {
 				source->player->plasmaKills++;
 			} else {
 				source->player->plasmaKills = 1;
 			}
-			source->player->plasmaKills = ::g->cnt_time;
+			source->player->lastPlasmaKillTime = ::g->normaltime;
 			if (source->player->plasmaKills >= 5) {
 				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_PLASMA);
 			}

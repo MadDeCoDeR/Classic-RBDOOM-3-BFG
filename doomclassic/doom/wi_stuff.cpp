@@ -351,8 +351,8 @@ WI_drawOnLnode
 
     if (fits && i<2)
     {
-	V_DrawPatch(lnodes[::g->wbs->epsd][n].x, lnodes[::g->wbs->epsd][n].y,
-		    FB, c[i], false);
+	V_DrawPatch(lnodes[::g->wbs->epsd][n].x  + ::g->wi_anim_offset, lnodes[::g->wbs->epsd][n].y,
+		    FB, c[i], ::g->wi_anim_aspect);
     }
     else
     {
