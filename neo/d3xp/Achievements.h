@@ -142,13 +142,13 @@ enum classicAchievement_t {
 	CLASSIC_ACHIEVEMENT_DOOR_CRUSH, //DONE --> TESTED
 	CLASSIC_ACHIEVEMENT_INFIGHT, //DONE --> TESTED
 	CLASSIC_ACHIEVEMENT_FISTS, //DONE --> TESTED
-	CLASSIC_ACHIEVEMENT_FLAME,
+	CLASSIC_ACHIEVEMENT_FLAME, //DONE --> UNTESTED
 	CLASSIC_ACHIEVEMENT_HOARDER, //DONE --> TESTED
 	CLASSIC_ACHIEVEMENT_PERFECT_FINISH, //DONE --> TESTED
 	CLASSIC_ACHIEVEMENT_KILL_ALL, //DONE --> UNTESTED
 	CLASSIC_ACHIEVEMENT_KILLPEDIA,
 	CLASSIC_ACHIEVEMENT_NIGHTMARE, //DONE --> UNTESTED
-	CLASSIC_ACHIEVEMENT_PAR,
+	CLASSIC_ACHIEVEMENT_PAR, //DONE --> UNTESTED
 	CLASSIC_ACHIEVEMENT_PISTOL, //DONE --> TESTED
 	CLASSIC_ACHIEVEMENT_PLASMA, //DONE --> TESTED
 	CLASSIC_ACHIEVEMENT_ROCKET_LAUNCHER, //DONE --> TESTED
@@ -166,7 +166,10 @@ enum classicAchievement_t {
 	STAT_DOOM_COMPLETED_EPISODE_4,
 
 	STAT_DOOM_KEX_COMPLETED_EPISODE_1,
-	STAT_DOOM_KEX_COMPLETED_EPISODE_2
+	STAT_DOOM_KEX_COMPLETED_EPISODE_2,
+	STAT_DOOM_CHAINSAW,
+	STAT_DOOM_INCINERATOR,
+	STAT_DOOM_KILLPEDIA_,
 };
 
 compile_time_assert( ACHIEVEMENTS_NUM <= idPlayerProfile::MAX_PLAYER_PROFILE_STATS );
@@ -238,6 +241,9 @@ public:
 	void		RestorePersistentData( const idDict& spawnArgs );
 	
 	static void LocalUser_CompleteAchievement( int id );
+	static void LocalUser_IncreaseCounter( int id );
+	static int 	LocalUser_GetCounter( int id );
+	static void LocalUser_ResetCounter( int id );
 	static bool isClassicDoomOnly();
 	// RB begin
 #if defined(USE_DOOMCLASSIC)
@@ -259,6 +265,8 @@ private:
 	
 	idLocalUser* 	GetLocalUser();
 	void			SyncAchievments();
+
+	static bool 	CheckClassicDOOMForCheating();
 	
 };
 

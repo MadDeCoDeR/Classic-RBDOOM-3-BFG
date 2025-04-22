@@ -764,7 +764,6 @@ P_SetupLevel
 		::g->players[i].killcount = ::g->players[i].secretcount 
 			= ::g->players[i].itemcount = 0;
 
-		::g->players[i].chainsawKills = 0;
 		::g->players[i].berserkKills = 0;
 		::g->players[i].barrelKills = 0;
 		::g->players[i].lastHitBarrel = mapthing_t();

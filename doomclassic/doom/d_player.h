@@ -146,7 +146,7 @@ typedef struct player_s
     int			itemcount;
     int			secretcount;
 
-	int			chainsawKills;
+	int			parTimes;
 	int			berserkKills;
     int			barrelKills;
     mapthing_t  lastHitBarrel;

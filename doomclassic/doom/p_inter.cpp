@@ -799,8 +799,10 @@ P_KillMobj
 
 		// DHM - Nerve :: Chainsaw kills
 		if ( source->player->readyweapon == wp_chainsaw && !common->IsMultiplayer() ) {
-			source->player->chainsawKills++;
-			if ( idAchievementManager::isClassicDoomOnly() && source->player->chainsawKills == 100 ) {
+			//source->player->chainsawKills++;
+			idAchievementManager::LocalUser_IncreaseCounter(STAT_DOOM_CHAINSAW);
+			if ( idAchievementManager::isClassicDoomOnly() && idAchievementManager::LocalUser_GetCounter(STAT_DOOM_CHAINSAW) == 100 ) {
+				idAchievementManager::LocalUser_ResetCounter(STAT_DOOM_CHAINSAW);
 				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CHAINSAW);
 			}
 		}
@@ -866,6 +868,15 @@ P_KillMobj
 			source->player->lastCalamityKillTime = I_GetTime();
 			if (source->player->calamityKills >= 50) {
 				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_SUPERWEAPON);
+			}
+		}
+
+		if (source->player->readyweapon == wp_plasma && DoomLib::expansionSelected == pack_kex && !common->IsMultiplayer() && (target->type == MT_SPIDER || target->type == MT_BABY || target->type == 153))
+		{
+			idAchievementManager::LocalUser_IncreaseCounter(STAT_DOOM_INCINERATOR);
+			if (idAchievementManager::isClassicDoomOnly() && idAchievementManager::LocalUser_GetCounter(STAT_DOOM_INCINERATOR) == 30) {
+				idAchievementManager::LocalUser_ResetCounter(STAT_DOOM_INCINERATOR);
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_FLAME);
 			}
 		}
 

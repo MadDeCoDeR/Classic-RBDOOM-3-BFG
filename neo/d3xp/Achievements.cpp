@@ -365,24 +365,7 @@ void idAchievementManager::RestorePersistentData( const idDict& spawnArgs )
 	}
 }
 
-
-/*
-========================
-idAchievementManager::LocalUser_CompleteAchievement
-========================
-*/
-void idAchievementManager::LocalUser_CompleteAchievement( int id )
-{
-	idLocalUser* localUser = session->GetSignInManager().GetMasterLocalUser();
-	
-	// Check to see if we've already given the achievement.
-	// If so, don't do again because we don't want to autosave every time a trigger is hit
-	if( !isClassicDoomOnly() && ( localUser == NULL || localUser->GetProfile()->GetAchievement( id ) ))
-	{
-		common->Printf("You already have the Achievement\n");
-		return;
-	}
-	
+bool idAchievementManager::CheckClassicDOOMForCheating() {
 #ifdef ID_RETAIL					//GK No achievments if we use classic parameters
 #ifndef GAME_DLL
 	Globals* classic = (Globals*)::GetClassicData();
@@ -404,10 +387,33 @@ void idAchievementManager::LocalUser_CompleteAchievement( int id )
 			common->Dialog().AddDialog( GDM_ACHIEVEMENTS_DISABLED_DUE_TO_CHEATING, DIALOG_ACCEPT, NULL, NULL, true );
 			cheatingDialogShown = true;
 		}
-		return;
+		return true;
 	}
 #endif
 #endif
+	return false;
+}
+
+/*
+========================
+idAchievementManager::LocalUser_CompleteAchievement
+========================
+*/
+void idAchievementManager::LocalUser_CompleteAchievement( int id )
+{
+	idLocalUser* localUser = session->GetSignInManager().GetMasterLocalUser();
+	
+	// Check to see if we've already given the achievement.
+	// If so, don't do again because we don't want to autosave every time a trigger is hit
+	if( !isClassicDoomOnly() && ( localUser == NULL || localUser->GetProfile()->GetAchievement( id ) ))
+	{
+		common->Printf("You already have the Achievement\n");
+		return;
+	}
+	
+	if (CheckClassicDOOMForCheating()) {
+		return;
+	}
 	
 	session->GetAchievementSystem().AchievementUnlock( localUser, id );
 }
@@ -415,6 +421,27 @@ void idAchievementManager::LocalUser_CompleteAchievement( int id )
 bool idAchievementManager::isClassicDoomOnly()
 {
 	return session->GetAchievementSystem().GetNumberOfAchievements() < ACHIEVEMENTS_NUM;
+}
+
+void idAchievementManager::LocalUser_IncreaseCounter(int id) {
+	if (CheckClassicDOOMForCheating()) {
+		return;
+	}
+
+	idLocalUser* localUser = session->GetSignInManager().GetMasterLocalUser();
+	int currentStat = localUser->GetStatInt(id);
+
+	localUser->SetStatInt(id, currentStat++);
+}
+
+int idAchievementManager::LocalUser_GetCounter(int id) {
+	idLocalUser* localUser = session->GetSignInManager().GetMasterLocalUser();
+	return localUser->GetStatInt(id);
+}
+
+void idAchievementManager::LocalUser_ResetCounter(int id) {
+	idLocalUser* localUser = session->GetSignInManager().GetMasterLocalUser();
+	localUser->SetStatInt(id, 0);
 }
 
 /*
@@ -437,26 +464,10 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 	idLocalUser* localUser = session->GetSignInManager().GetMasterLocalUser();
 	if( localUser != NULL && localUser->GetProfile() != NULL )
 	{
-#ifdef ID_RETAIL					//GK No achievments if we use classic parameters
-#ifndef GAME_DLL
-	Globals* classic = (Globals*)::GetClassicData();
-	if( common->GetConsoleUsed() || (classic != NULL && classic->classichUsed) || (classic != NULL && classic->warpUsed))
-	{
-		std::string name;
-		if (common->GetConsoleUsed()) {
-			name = "console";
+
+		if (CheckClassicDOOMForCheating()) {
+			return;
 		}
-		else if (classic != NULL && classic->classichUsed) {
-			name = "classich";
-		}
-		else {
-			name = "warp";
-		}
-		common->Printf("You cheat with %s\n", name.c_str());
-		return;
-	}
-#endif
-#endif
 
 		if (session->GetAchievementSystem().GetNumberOfAchievements() == ACHIEVEMENTS_NUM) {
 			// GENERAL ACHIEVEMENT UNLOCKING.
@@ -622,6 +633,13 @@ void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int ite
 
 			if (gotAllKills && totalkills > 0 && difficulty >= sk_hard && !classicData->plyr->gotHit) {
 				LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_UNTOUCHABLE);
+			}
+
+			if (classicData->cnt_time <= classicData->cnt_par && difficulty >= sk_hard) {
+				classicData->plyr->parTimes++;
+				if (classicData->plyr->parTimes == 8) {
+					LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_PAR);
+				}
 			}
 
 			// DOOM EXPANSION ACHIEVEMENTS
