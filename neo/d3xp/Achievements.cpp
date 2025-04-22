@@ -432,6 +432,7 @@ void idAchievementManager::LocalUser_IncreaseCounter(int id) {
 	int currentStat = localUser->GetStatInt(id);
 
 	localUser->SetStatInt(id, currentStat++);
+	localUser->SaveProfileSettings();
 }
 
 int idAchievementManager::LocalUser_GetCounter(int id) {
@@ -442,6 +443,7 @@ int idAchievementManager::LocalUser_GetCounter(int id) {
 void idAchievementManager::LocalUser_ResetCounter(int id) {
 	idLocalUser* localUser = session->GetSignInManager().GetMasterLocalUser();
 	localUser->SetStatInt(id, 0);
+	localUser->SaveProfileSettings();
 }
 
 /*
