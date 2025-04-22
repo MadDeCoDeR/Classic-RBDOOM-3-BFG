@@ -1089,18 +1089,18 @@ void F_BunnyScroll (void)
 
     V_MarkRect (0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
 	
-    scrolled = 320 - (::g->finalecount-230)/2;
-    if (scrolled > 320)
-	scrolled = 320;
+    scrolled = p1->width - (::g->finalecount-230)/2;
+    if (scrolled > p1->width)
+	scrolled = p1->width;
     if (scrolled < 0)
 	scrolled = 0;
 		
-    for ( x=0 ; x<ORIGINAL_WIDTH ; x++)
+    for ( x=0 ; x< 320 ; x++)
     {
-	if (x+scrolled < 320)
+	if (x+scrolled < p1->width)
 	    F_DrawPatchCol (x, p1, x+scrolled);
 	else
-	    F_DrawPatchCol (x, p2, x+scrolled - 320);		
+	    F_DrawPatchCol (x, p2, x+scrolled - p1->width);		
     }
 	
     if (::g->finalecount < 1130)
@@ -1163,7 +1163,7 @@ void F_Drawer (void)
 	  case 2: {
 	  	patch_t* image3 = img2lmp(W_CacheLumpName("VICTORY2", PU_CACHE_SHARED), W_GetNumForName("VICTORY2"));
 		int offsets3 = image3->width > ORIGINAL_WIDTH ? abs(image3->width - ::g->renderingWidth) / 2 : 0;
-	    V_DrawPatch(0,0,0, image3, image3->width > ORIGINAL_WIDTH, offsets3);
+	    V_DrawPatch(0,0,0, image3, image3->width > ORIGINAL_WIDTH, offsets3, offsets3);
 	    break;
 		}
 	  case 3:

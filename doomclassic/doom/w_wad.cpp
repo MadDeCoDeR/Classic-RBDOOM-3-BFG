@@ -1812,6 +1812,14 @@ return;
 }
 
 void W_CheckExp() {
+	if (idFile *file = fileSystem->OpenFileRead("wads/DOOM.WAD")) {
+		fileSystem->CloseFile(file);
+		DoomLib::hasGame++;
+	}
+	if (idFile *file = fileSystem->OpenFileRead("wads/DOOM2.WAD")) {
+		fileSystem->CloseFile(file);
+		DoomLib::hasGame++;
+	}
 	if (idFile *file = fileSystem->OpenFileRead("wads/TNT.WAD")) {
 		fileSystem->CloseFile(file);
 		DoomLib::hexp[0] = true;

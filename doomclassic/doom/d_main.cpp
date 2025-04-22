@@ -692,35 +692,9 @@ void D_DoomMain(void)
 		::g->respawnparm = M_CheckParm("-respawn");
 	}
 	::g->fastparm = M_CheckParm("-fast");
-	
-	switch (::g->gamemode)
-	{
-	case retail:
-		sprintf(::g->title,
-			"The Ultimate DOOM v%i.%i",
-			VERSION / 100, VERSION % 100);
-		break;
-	case shareware:
-		sprintf(::g->title,
-			"DOOM Shareware v%i.%i",
-			VERSION / 100, VERSION % 100);
-		break;
-	case registered:
-		sprintf(::g->title,
-			"DOOM Registered v%i.%i",
-			VERSION / 100, VERSION % 100);
-		break;
-	case commercial:
-		sprintf(::g->title,
-			"DOOM 2: Hell on Earth v%i.%i",
-			VERSION / 100, VERSION % 100);
-		break;
-	default:
-		sprintf(::g->title,
-			"Public DOOM - v%i.%i",
-			VERSION / 100, VERSION % 100);
-		break;
-	}
+	sprintf(::g->title,
+		"%s v%i.%i", DoomLib::GetCurrentExpansion()->displayName,
+		VERSION / 100, VERSION % 100);
 
 	if (::g->devparm)
 		I_Printf(D_DEVSTR);

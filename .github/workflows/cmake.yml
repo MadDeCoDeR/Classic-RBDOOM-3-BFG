@@ -79,6 +79,8 @@ jobs:
               mv ./build/_deps/openxr-build/src/loader/* .
               chmod +x DoomBFA
               chmod +x DoomBFA.sh
+              chmod +x UDOOM.sh
+              chmod +x DOOM2.sh
     - name: Upload Linux Debug Artifact
       uses: ./.github/actions/package_formatter
       with:

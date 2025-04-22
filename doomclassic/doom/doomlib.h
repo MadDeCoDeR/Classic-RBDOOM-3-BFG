@@ -85,8 +85,7 @@ struct ExpansionData {
 	std::vector<std::string>	pWadFilenames;
 	const char *				saveImageFile;
 	const char **				mapNames;
-
-
+	const char*                 displayName;
 };
 
 extern bool useTech5Packets;
@@ -147,6 +146,7 @@ namespace DoomLib
 	extern int					chosenEpisode;
 	extern bool					use_doomit;
 	extern bool					skipToMenu;
+	extern short                hasGame;
 	extern bool					hexp[6];
 	extern int					selection;
 

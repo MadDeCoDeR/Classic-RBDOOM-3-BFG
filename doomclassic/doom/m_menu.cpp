@@ -3204,9 +3204,9 @@ void M_Drawer (void)
 	// DRAW MENU
 	::g->md_x = ::g->currentMenu->x;
 	::g->md_y = ::g->currentMenu->y;
-	/*if (::g->currentMenu->menuitems == ::g->QuitDef.menuitems && common->IsNewDOOM3()) {
+	if (::g->currentMenu->menuitems == ::g->QuitDef.menuitems && DoomLib::hasGame == 1) {
 		::g->currentMenu->numitems = 2;
-	}*/
+	}
 	if (::g->currentMenu->menuitems == ::g->EpiDef.menuitems && (::g->gamemission != pack_custom && !DoomLib::hexp[4])) {
 		::g->currentMenu->numitems = 4;
 	}
