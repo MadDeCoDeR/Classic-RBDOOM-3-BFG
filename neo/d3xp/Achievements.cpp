@@ -429,9 +429,9 @@ void idAchievementManager::LocalUser_IncreaseCounter(int id) {
 	}
 
 	idLocalUser* localUser = session->GetSignInManager().GetMasterLocalUser();
-	int currentStat = localUser->GetStatInt(id);
+	int currentStat = localUser->GetStatInt(id) + 1;
 
-	localUser->SetStatInt(id, currentStat++);
+	localUser->SetStatInt(id, currentStat);
 	localUser->SaveProfileSettings();
 }
 
