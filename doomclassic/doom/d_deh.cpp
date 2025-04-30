@@ -64,6 +64,7 @@ typedef struct{
 	statenum_t* stval;
 	ammotype_t* amval;
 	uint64* llval;
+	uint*  uival;
 }dehobj;
 
 dehstr strval[] = {
@@ -382,6 +383,8 @@ dehbits mobfl[] = {
 { "TRANSLATION",MF_TRANSLATION },
 // Hmm ???.
 { "TRANSSHIFT",MF_TRANSSHIFT },
+
+{"TRANSLUCENT", MF_TRANSLUCENT},
 //MBF21 Bits
 { "LOGRAV", MF2_LOGRAV },
 {"SHORTMRANGE", MF2_SHORTMRANGE},
@@ -461,7 +464,7 @@ void setThing(int pos, char* varname, int varval) {
 		{"Mass ",MAXINT,NULL,&mobjinfo[pos].mass},
 		{"Missile damage ",MAXINT,NULL,&mobjinfo[pos].damage},
 		{"Action sound ",MAXINT,NULL,&mobjinfo[pos].activesound},
-		{"Bits ",MAXINT,NULL,&mobjinfo[pos].flags},
+		{"Bits ",MAXINT, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &mobjinfo[pos].flags},
 		{"Respawn frame ", MAXINT,NULL,&mobjinfo[pos].raisestate},
 		{"ID # ",MAXINT,NULL,&mobjinfo[pos].doomednum},
 		{"Infighting group", MAXINT, NULL, &mobjinfo[pos].infightingGroup},
@@ -478,6 +481,8 @@ void setThing(int pos, char* varname, int varval) {
 			if (varval < tvars[i].limit) {
 				if (tvars[i].llval != NULL) {
 					*tvars[i].llval = varval;
+				} else if (tvars[i].uival != NULL) {
+					*tvars[i].uival = varval;
 				} else {
 					*tvars[i].ival = varval;
 				}

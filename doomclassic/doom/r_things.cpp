@@ -489,6 +489,13 @@ R_DrawVisSprite
 	::g->dc_translation = ::g->translationtables - 256 +
 	    ( (vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT-8) );
     }
+	else if (vis->mobjflags & MF_TRANSLUCENT) // phares
+        {
+          colfunc = R_DrawTLColumn;
+          ::g->tranmap = ::g->main_tranmap;       // killough 4/11/98
+        }
+      else
+        colfunc = R_DrawColumn;         // killough 3/14/98, 4/11/98
 	
     ::g->dc_iscale = abs(vis->xiscale)>>::g->detailshift;
     ::g->dc_texturemid = vis->texturemid;
@@ -700,7 +707,7 @@ void R_ProjectSprite (mobj_t* thing)
     else if (thing->frame & FF_FULLBRIGHT)
     {
 	// full bright
-	vis->colormap = ::g->colormaps;
+	vis->colormap = ::g->colormaps[0];
     }
     
     else
@@ -853,7 +860,7 @@ void R_DrawPSprite (pspdef_t* psp)
     else if (psp->state->frame & FF_FULLBRIGHT)
     {
 	// full bright
-	vis->colormap = ::g->colormaps;
+	vis->colormap = ::g->colormaps[0];
     }
     else
     {

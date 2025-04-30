@@ -86,6 +86,19 @@ R_RenderMaskedSegRange
     //   for horizontal / vertical / diagonal. Diagonal?
     // OPTIMIZE: get rid of LIGHTSEGSHIFT globally
     ::g->curline = ds->curline;
+
+	// killough 4/11/98: draw translucent 2s normal textures
+
+	colfunc = R_DrawColumn;
+	if (::g->curline->linedef->tranlump >= 0 )
+	  {
+		colfunc = R_DrawTLColumn;
+		::g->tranmap = ::g->main_tranmap;
+		if (::g->curline->linedef->tranlump > 0)
+		::g->tranmap = (byte*)W_CacheLumpNum(::g->curline->linedef->tranlump-1, PU_STATIC);
+	  }
+	// killough 4/11/98: end translucent 2s normal code
+
     ::g->frontsector = ::g->curline->frontsector;
     ::g->backsector = ::g->curline->backsector;
     texnum = ::g->texturetranslation[::g->curline->sidedef->midtexture];
@@ -159,6 +172,11 @@ R_RenderMaskedSegRange
 	}
 	::g->spryscale += ::g->rw_scalestep;
     }
+
+	
+  // Except for main_tranmap, mark others purgable at this point
+  if (::g->curline->linedef->tranlump > 0)
+    Z_ChangeTag(::g->tranmap, PU_CACHE); // killough 4/11/98
 	
 }
 

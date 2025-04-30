@@ -662,7 +662,7 @@ int*		spriteheight;
 fixed_t*	spritewidth;	
 fixed_t*	spriteoffset;
 fixed_t*	spritetopoffset;
-lighttable_t	*colormaps;
+lighttable_t **colormaps;
 int		flatmemory;
 int		texturememory;
 int		spritememory;
@@ -1151,3 +1151,17 @@ int prevMouseTime;
 idAngles prevAngleDelta;
 
 bool runTic;
+
+std::vector<vertex_t> nanoVertexes;
+size_t numnanovertex;
+
+
+bool needsNodeRebuild;
+
+// killough 4/17/98: make firstcolormaplump,lastcolormaplump external
+int firstcolormaplump, lastcolormaplump;      // killough 4/17/98
+
+byte *tranmap;         // translucency filter maps 256x256  // phares 
+byte *main_tranmap;    // killough 4/11/98
+
+int numcolormaps;

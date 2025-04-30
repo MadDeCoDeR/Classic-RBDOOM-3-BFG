@@ -40,6 +40,7 @@ If you have questions concerning this license or the applicable additional terms
 //
 #define FRACBITS		16
 #define FRACUNIT		(1<<FRACBITS)
+#define FRACMASK        (FRACUNIT - 1)
 
 typedef int fixed_t;
 

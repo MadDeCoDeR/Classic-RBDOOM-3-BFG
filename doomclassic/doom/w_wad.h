@@ -76,6 +76,14 @@ typedef struct
 } lumpinfo_t;
 
 
+// killough 4/17/98: namespace tags, to prevent conflicts between resources
+enum {
+    ns_global=0,
+    ns_sprites,
+    ns_flats,
+    ns_colormaps
+  } colormaps_e;
+
 
 extern	void**		lumpcache;
 extern	std::vector<void*>      directlumpcache;

@@ -296,6 +296,113 @@ void R_DrawColumnLow ( lighttable_t * dc_colormap,
 	} while (count--);
 }
 
+// Here is the version of R_DrawColumn that deals with translucent  // phares
+// textures and sprites. It's identical to R_DrawColumn except      //    |
+// for the spot where the color index is stuffed into *dest. At     //    V
+// that point, the existing color index and the new color index
+// are mapped through the TRANMAP lump filters to get a new color
+// index whose RGB values are the average of the existing and new
+// colors.
+//
+// Since we're concerned about performance, the 'translucent or
+// opaque' decision is made outside this routine, not down where the
+// actual code differences are.
+
+void R_DrawTLColumn (lighttable_t * dc_colormap,
+	byte * dc_source)                                           
+{ 
+  int              count; 
+  byte    *dest;           // killough
+  fixed_t frac;            // killough
+  fixed_t          fracstep;
+  int theght = 1; //GK:Get the height of EVERYTHING
+	int mheight = 0;
+	if (::g->usesprite) {
+		theght = ::g->spriteheight[::g->texnum];
+	}
+	else if (::g->issky) {
+		theght = 1 ;
+	}
+	else {
+		theght = ::g->s_textureheight[::g->texnum]>>FRACBITS;
+	}
+
+  count = ::g->dc_yh - ::g->dc_yl + 1; 
+
+  // Zero length, column does not exceed a pixel.
+  if (count <= 0)
+    return; 
+                                 
+#ifdef RANGECHECK 
+  if ((unsigned)::g->dc_x >= MAX_SCREENWIDTH
+      || ::g->dc_yl < 0
+      || ::g->dc_yh >= MAX_SCREENHEIGHT) 
+    I_Error ("R_DrawColumn: %i to %i at %i", ::g->dc_yl, ::g->dc_yh, ::g->dc_x); 
+#endif 
+
+  // Framebuffer destination address.
+  // Use ylookup LUT to avoid multiply with ScreenWidth.
+  // Use columnofs LUT for subwindows? 
+
+  dest = ::g->ylookup[::g->dc_yl] + ::g->columnofs[::g->dc_x];  
+  
+  // Determine scaling,
+  //  which is the only mapping to be done.
+
+  fracstep = ::g->dc_iscale; 
+  frac = ::g->dc_texturemid + (::g->dc_yl-::g->centery)*fracstep; 
+
+  // Inner loop that does the actual texture mapping,
+  //  e.g. a DDA-lile scaling.
+  // This is as fast as it gets.       (Yeah, right!!! -- killough)
+  //
+  // killough 2/1/98, 2/21/98: more performance tuning
+  
+  {
+    const byte *source = dc_source;            
+    const lighttable_t *colormap = dc_colormap; 
+    int heightmask = theght-1;
+    if (theght & heightmask)   // not a power of 2 -- killough
+      {
+        heightmask++;
+        heightmask <<= FRACBITS;
+          
+        if (frac < 0)
+          while ((frac += heightmask) <  0);
+        else
+          while (frac >= heightmask)
+            frac -= heightmask;
+        
+        do
+          {
+            // Re-map color indices from wall texture column
+            //  using a lighting/special effects LUT.
+            
+            // heightmask is the Tutti-Frutti fix -- killough
+              
+            *dest = ::g->tranmap[(*dest<<8)+colormap[source[frac>>FRACBITS]]]; // phares
+            dest += ::g->SCREENWIDTH;          // killough 11/98
+            if ((frac += fracstep) >= heightmask)
+              frac -= heightmask;
+          } 
+        while (--count);
+      }
+    else
+      {
+        while ((count-=2)>=0)   // texture height is a power of 2 -- killough
+          {
+            *dest = ::g->tranmap[(*dest<<8)+colormap[source[(frac>>FRACBITS) & heightmask]]]; // phares
+            dest += ::g->SCREENWIDTH;   // killough 11/98
+            frac += fracstep;
+            *dest = ::g->tranmap[(*dest<<8)+colormap[source[(frac>>FRACBITS) & heightmask]]]; // phares
+            dest += ::g->SCREENWIDTH;   // killough 11/98
+            frac += fracstep;
+          }
+        if (count & 1)
+          *dest = ::g->tranmap[(*dest<<8)+colormap[source[(frac>>FRACBITS) & heightmask]]]; // phares
+      }
+  }
+} 
 
 //
 // Spectre/Invisibility.
@@ -387,7 +494,7 @@ void R_DrawFuzzColumn ( lighttable_t * dc_colormap,
 		//  a pixel that is either one column
 		//  left or right of the current one.
 		// Add index from colormap to index.
-		*dest = ::g->colormaps[6*256+dest[::g->fuzzoffset[::g->fuzzpos]]]; 
+		*dest = ::g->colormaps[0][6*256+dest[::g->fuzzoffset[::g->fuzzpos]]]; 
 
 		// Clamp table lookup index.
 		if (++::g->fuzzpos == FUZZTABLE) 

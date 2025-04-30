@@ -55,6 +55,9 @@ void 	R_DrawColumn ( lighttable_t * dc_colormap,
 void 	R_DrawColumnLow ( lighttable_t * dc_colormap,
 						  byte * dc_source );
 
+void R_DrawTLColumn (lighttable_t * dc_colormap,
+						byte * dc_source);
+
 // The Spectre/Invisibility effect.
 void 	R_DrawFuzzColumn ( lighttable_t * dc_colormap,
 						  byte * dc_source );

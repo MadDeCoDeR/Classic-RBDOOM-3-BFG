@@ -207,7 +207,10 @@ typedef enum
     //  use a translation table for player colormaps
     MF_TRANSLATION  	= 0xc000000,
     // Hmm ???.
-    MF_TRANSSHIFT	= 26
+    MF_TRANSSHIFT	= 26,
+
+    // Translucent sprite?                                          // phares
+    MF_TRANSLUCENT      = 0x80000000,                               // phares
 
 } mobjflag_t;
 
@@ -284,7 +287,7 @@ struct mobj_t
     
     int			tics;	// state tic counter
     state_t*		state;
-    int			flags;
+    uint			flags;
     uint64         flags2;
     int			health;
 

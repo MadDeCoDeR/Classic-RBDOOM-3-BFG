@@ -924,3 +924,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 
 	::g->wi_anim_offset = 0;
 	::g->wi_anim_aspect = false;
+
+	::g->needsNodeRebuild = false;

@@ -915,7 +915,7 @@ void D_DoomMain(void)
 	I_Printf ("Z_Init: Init zone memory allocation daemon. \n");
 	//GK: Allow the user to set the Z-Memory (What Could Possibly go wrong?)
 	int zcheck = M_CheckParm("-zmem");
-	::g->zmem = 30;
+	::g->zmem = 40;
 	if (zcheck) {
 		::g->zmem = atoi(::g->myargv[zcheck + 1]);
 	}

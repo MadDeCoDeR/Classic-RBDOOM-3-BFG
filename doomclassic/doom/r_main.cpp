@@ -652,7 +652,7 @@ void R_InitLightTables (void)
 			if (level >= NUMCOLORMAPS)
 				level = NUMCOLORMAPS-1;
 
-			::g->zlight[i][j] = ::g->colormaps + level*256;
+			::g->zlight[i][j] = ::g->colormaps[0] + level*256;
 		}
 	}
 }
@@ -780,7 +780,7 @@ void R_ExecuteSetViewSize (void)
 			if (level >= NUMCOLORMAPS)
 				level = NUMCOLORMAPS-1;
 
-			::g->scalelight[i][j] = ::g->colormaps + level*256;
+			::g->scalelight[i][j] = ::g->colormaps[0] + level*256;
 		}
 	}
 }
@@ -940,7 +940,7 @@ void R_SetupFrame (player_t* player)
 	if (player->fixedcolormap)
 	{
 		::g->fixedcolormap =
-			::g->colormaps
+			::g->colormaps[0]
 			+ player->fixedcolormap*256*sizeof(lighttable_t);
 
 		::g->walllights = ::g->scalelightfixed;

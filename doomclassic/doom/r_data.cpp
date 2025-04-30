@@ -783,24 +783,116 @@ void R_ClearSpriteLumps(void)
 }
 
 
-
 //
 // R_InitColormaps
 //
-void R_InitColormaps (void)
+// killough 3/20/98: rewritten to allow dynamic colormaps
+// and to remove unnecessary 256-byte alignment
+//
+// killough 4/4/98: Add support for C_START/C_END markers
+//
+
+void R_InitColormaps(void)
 {
-    int	lump, length;
-    
-    // Load in the light tables, 
-    //  256 byte align tables.
-    lump = W_GetNumForName("COLORMAP"); 
-    length = W_LumpLength (lump) + 255; 
-    ::g->colormaps = (lighttable_t*)DoomLib::Z_Malloc (length, PU_STATIC, 0); 
-    ::g->colormaps = (byte *)( ((intptr_t)::g->colormaps + 255)&~0xff);
-    W_ReadLump (lump,::g->colormaps); 
+  int i;
+  ::g->firstcolormaplump = W_GetNumForName("C_START");
+  ::g->lastcolormaplump  = W_GetNumForName("C_END");
+  ::g->numcolormaps = ::g->lastcolormaplump - ::g->firstcolormaplump;
+  ::g->colormaps = (lighttable_t**) Z_Malloc(sizeof(*::g->colormaps) * ::g->numcolormaps, PU_STATIC, 0);
+
+  ::g->colormaps[0] = (lighttable_t*)W_CacheLumpNum(W_GetNumForName("COLORMAP"), PU_STATIC);
+
+  for (i=1; i<::g->numcolormaps; i++)
+  ::g->colormaps[i] = (lighttable_t*)W_CacheLumpNum(i+::g->firstcolormaplump, PU_STATIC);
 }
 
+// killough 4/4/98: get colormap number from name
+// killough 4/11/98: changed to return -1 for illegal names
+// killough 4/17/98: changed to use ns_colormaps tag
 
+int R_ColormapNumForName(const char *name)
+{
+  int i = 0;
+  if (idStr::Cmpn(name,"COLORMAP",8))     // COLORMAP predefined to return 0
+    if ((i = (W_CheckNumForName)(name, ns_colormaps)) != -1)
+      i -= ::g->firstcolormaplump;
+  return i;
+}
+
+//
+// R_InitTranMap
+//
+// Initialize translucency filter map
+//
+// By Lee Killough 2/21/98
+//
+
+int tran_filter_pct = 66;       // filter percent
+
+#define TSC 12        /* number of fixed point digits in filter percent */
+
+//GK: No Point to keep it in file. Generate it everytime
+void R_InitTranMap(int progress)
+{
+	// Compose a default transparent filter map based on PLAYPAL.
+	unsigned char *playpal = (unsigned char *)W_CacheLumpName("PLAYPAL", PU_STATIC);
+	struct
+	{
+		unsigned char pct;
+		unsigned char playpal[256 * 3];
+	} cache;
+
+	::g->main_tranmap = (byte *)Z_Malloc(256 * 256, PU_STATIC, 0); // killough 4/11/98
+
+	long pal[3][256], tot[256], pal_w1[3][256];
+	long w1 = ((unsigned long)tran_filter_pct << TSC) / 100;
+	long w2 = (1l << TSC) - w1;
+
+	// First, convert playpal into long int type, and transpose array,
+	// for fast inner-loop calculations. Precompute tot array.
+
+	int i = 255;
+	const unsigned char *p = playpal + 255 * 3;
+	do
+	{
+		long t, d;
+		pal_w1[0][i] = (pal[0][i] = t = p[0]) * w1;
+		d = t * t;
+		pal_w1[1][i] = (pal[1][i] = t = p[1]) * w1;
+		d += t * t;
+		pal_w1[2][i] = (pal[2][i] = t = p[2]) * w1;
+		d += t * t;
+		p -= 3;
+		tot[i] = d << (TSC - 1);
+	} while (--i >= 0);
+
+	// Next, compute all entries using minimum arithmetic.
+
+	int k, j;
+	byte *tp = ::g->main_tranmap;
+	for (k = 0; k < 256; k++)
+	{
+		long r1 = pal[0][k] * w2;
+		long g1 = pal[1][k] * w2;
+		long b1 = pal[2][k] * w2;
+
+		for (j = 0; j < 256; j++, tp++)
+		{
+			int color = 255;
+			long err;
+			long r = pal_w1[0][j] + r1;
+			long g = pal_w1[1][j] + g1;
+			long b = pal_w1[2][j] + b1;
+			long best = LONG_MAX;
+			do
+				if ((err = tot[color] - pal[0][color] * r - pal[1][color] * g - pal[2][color] * b) < best)
+					best = err, *tp = color;
+			while (--color >= 0);
+		}
+	}
+
+	Z_ChangeTag(playpal, PU_CACHE);
+}
 
 //
 // R_InitData
@@ -816,6 +908,8 @@ void R_InitData (void)
     I_Printf ("\nInitFlats");
     R_InitSpriteLumps ();
     I_Printf ("\nInitSprites");
+	R_InitTranMap(1);     
+	I_Printf ("\nInitTranMap");              // killough 2/21/98, 3/6/98
     R_InitColormaps ();
     I_Printf ("\nInitColormaps");
 }

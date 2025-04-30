@@ -149,6 +149,8 @@ typedef	struct
 	// killough 4/11/98: support for lightlevels coming from another sector
 	int floorlightsec, ceilinglightsec;
 
+    int bottommap, midmap, topmap; // killough 4/4/98: dynamic colormaps
+
 	// list of mobjs that are at least partially in the sector
     // thinglist is a subset of touching_thinglist
 	//struct msecnode_s *touching_thinglist;               // phares 3/14/98 
@@ -181,6 +183,12 @@ typedef struct
 
     // Sector the SideDef is facing.
     sector_t*	sector;
+
+    // killough 4/4/98, 4/11/98: highest referencing special linedef's type,
+  // or lump number of special effect. Allows texture names to be overloaded
+  // for other functions.
+
+  int special;
     
 } side_t;
 
@@ -269,7 +277,7 @@ typedef struct subsector_s
 //
 // The LineSeg.
 //
-typedef struct
+typedef struct seg_s
 {
     vertex_t*	v1;
     vertex_t*	v2;
@@ -287,6 +295,8 @@ typedef struct
     sector_t*	frontsector;
     sector_t*	backsector;
     
+    // NanoBSP
+    struct seg_s *next;
 } seg_t;
 
 

@@ -1381,7 +1381,7 @@ typedef struct
     int	mass;
     int	damage;
     int	activesound;
-    int	flags;
+    uint	flags;
     int	raisestate;
     int infightingGroup;
     int projectileGroup;

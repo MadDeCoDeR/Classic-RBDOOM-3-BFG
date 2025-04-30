@@ -54,7 +54,7 @@ extern int*			spriteheight;//GK: Keep track of ALL the sprite heights
 extern fixed_t*		spriteoffset;
 extern fixed_t*		spritetopoffset;
 
-extern lighttable_t*	colormaps;
+extern lighttable_t **colormaps;
 
 extern int		viewwidth;
 extern int		scaledviewwidth;

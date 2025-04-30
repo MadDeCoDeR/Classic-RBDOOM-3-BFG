@@ -463,7 +463,7 @@ void R_DrawPlanes (void)
 	    //  i.e. ::g->colormaps[0] is used.
 	    // Because of this hack, sky is not affected
 	    //  by INVUL inverse mapping.
-	    ::g->dc_colormap = ::g->colormaps;
+	    ::g->dc_colormap = ::g->colormaps[0];
 	    ::g->dc_texturemid = ::g->skytexturemid;
 		int ttmid = 100 * FRACUNIT;
 		if (::g->skytexturemid > ttmid) { //GK:Tall skies support

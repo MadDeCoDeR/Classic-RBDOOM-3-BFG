@@ -62,6 +62,7 @@ If you have questions concerning this license or the applicable additional terms
 #define PU_WI_BACK      25
 #define PU_LEVEL		50	// static until level exited
 #define PU_LEVSPEC		51      // a special thinker in a level
+#define PU_NANO_CACHE   52
 // Tags >= 100 are purgable whenever needed.
 #define PU_PURGELEVEL	100
 #define PU_CACHE 101
@@ -101,6 +102,10 @@ int     Z_FreeMemory (void);
 
 template< class _type_ >
 bool MallocForLump( int lump, size_t size, _type_ * & ptr, int tag ) {
+    //GK: Nothing to allocate here
+    if (size <= 0) {
+        return false;
+    }
 	ptr = static_cast< _type_ * >( Z_Malloc( size, tag, 0 ) );
 
 	return true;
