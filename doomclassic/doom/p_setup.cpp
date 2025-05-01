@@ -56,6 +56,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "s_efx.h"
 
 #include "sound/OpenAL/AL_EAX.h"
+
+#define NO_INDEX        ((long)-1)
 //#endif
 void	P_SpawnMapThing (mapthing_t*	mthing);
 
@@ -531,10 +533,12 @@ void P_LoadLineDefs (int lump)
   memset (::g->lines, 0, ::g->numlines*sizeof(line_t));
   data = (byte*)W_CacheLumpNum (lump,PU_LINES);
 
-  for (i=0; i<::g->numlines; i++)
+  maplinedef_t *mld = (maplinedef_t *) data;
+  line_t *ld = ::g->lines;
+
+  for (i=0; i<::g->numlines; i++, mld++, ld++)
     {
-      maplinedef_t *mld = (maplinedef_t *) data + i;
-      line_t *ld = ::g->lines+i;
+      
       vertex_t *v1, *v2;
 
       ld->flags = SHORT(mld->flags);
@@ -572,11 +576,11 @@ void P_LoadLineDefs (int lump)
           ld->bbox[BOXTOP] = v1->y;
         }
 
-      ld->sidenum[0] = SHORT(mld->sidenum[0]);
-      ld->sidenum[1] = SHORT(mld->sidenum[1]);
+		ld->sidenum[0] = (int)mld->sidenum[0] == -1 ? -1l : (int)mld->sidenum[0] & 0xffff;
+		ld->sidenum[1] = (int)mld->sidenum[1] == -1 ? -1l : (int)mld->sidenum[1] & 0xffff;
 
       // killough 4/4/98: support special sidedef interpretation below
-      if (ld->sidenum[0] != -1 && ld->special)
+      if (ld->sidenum[0] != NO_INDEX && ld->special)
 	  ::g->sides[*ld->sidenum].special = ld->special;
     }
   Z_Free (data);
@@ -587,20 +591,19 @@ void P_LoadLineDefs (int lump)
 
 void P_LoadLineDefs2(int lump)
 {
-  int i = ::g->numlines;
   line_t *ld = ::g->lines;
-  for (;i--;ld++)
+  for (int i=0 ; i < ::g->numlines ; i++, ld++)
     {
       // killough 11/98: fix common wad errors (missing sidedefs):
 
-      if (ld->sidenum[0] == -1)
-	ld->sidenum[0] = 0;  // Substitute dummy sidedef for missing right side
+       if (ld->sidenum[0] == NO_INDEX)
+	 		ld->sidenum[0] = 0;  // Substitute dummy sidedef for missing right side
 
-      if (ld->sidenum[1] == -1)
-	ld->flags &= ~ML_TWOSIDED;  // Clear 2s flag for missing left side
+      if (ld->sidenum[1] == NO_INDEX)
+			ld->flags &= ~ML_TWOSIDED;  // Clear 2s flag for missing left side
 
-      ld->frontsector = ld->sidenum[0]!=-1 ? ::g->sides[ld->sidenum[0]].sector : NULL;
-      ld->backsector  = ld->sidenum[1]!=-1 ? ::g->sides[ld->sidenum[1]].sector : NULL;
+      ld->frontsector = ld->sidenum[0]!= NO_INDEX ? ::g->sides[ld->sidenum[0]].sector : 0;
+      ld->backsector  = ld->sidenum[1]!= NO_INDEX ? ::g->sides[ld->sidenum[1]].sector : 0;
       switch (ld->special)
         {                       // killough 4/11/98: handle special types
           int lump, j;
@@ -639,10 +642,10 @@ void P_LoadSideDefs2(int lump)
   byte *data = (byte*)W_CacheLumpNum(lump,PU_SIDES);
   int  i;
 
-  for (i=0; i<::g->numsides; i++)
+  mapsidedef_t *msd = (mapsidedef_t *) data;
+  side_t *sd = ::g->sides;
+  for (i=0; i<::g->numsides; i++, msd++, sd++)
     {
-      mapsidedef_t *msd = (mapsidedef_t *) data + i;
-      side_t *sd = ::g->sides + i;
       sector_t *sec;
 
       sd->textureoffset = SHORT(msd->textureoffset)<<FRACBITS;
@@ -1017,7 +1020,7 @@ static void P_CreateBlockMap(void)
 
 static void P_CreateBlockMap(void)
 {
-  int i;
+  uint i;
   fixed_t minx = INT_MAX, miny = INT_MAX, maxx = INT_MIN, maxy = INT_MIN;
 
   // First find limits of map
@@ -1128,7 +1131,7 @@ static void P_CreateBlockMap(void)
     // 4 words, unused if this routine is called, are reserved at the start.
 
     {
-      int count = tot+6;  // we need at least 1 word per block, plus reserved's
+      uint count = tot+6;  // we need at least 1 word per block, plus reserved's
 
       for (i = 0; i < tot; i++)
 	if (bmap[i].n)
@@ -1618,8 +1621,8 @@ P_SetupLevel
 		// note: most of this ordering is important	
 		P_ActMap(lumpnum + ML_ACTMAP);
 		
-		P_LoadVertexes(lumpnum + ML_VERTEXES);
-		P_LoadSectors(lumpnum + ML_SECTORS);
+		P_LoadVertexes  (lumpnum + ML_VERTEXES);
+		P_LoadSectors   (lumpnum + ML_SECTORS);
 		P_LoadSideDefs  (lumpnum+ML_SIDEDEFS);             // killough 4/4/98
 		P_LoadLineDefs  (lumpnum+ML_LINEDEFS);             //       |
 		P_LoadSideDefs2 (lumpnum+ML_SIDEDEFS);             //       |

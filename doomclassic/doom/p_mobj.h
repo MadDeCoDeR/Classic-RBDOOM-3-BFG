@@ -123,7 +123,7 @@ If you have questions concerning this license or the applicable additional terms
 //
 // Misc. mobj flags
 //
-typedef enum
+typedef enum: uint
 {
     // Call P_SpecialThing when touched.
     MF_SPECIAL		= 1,

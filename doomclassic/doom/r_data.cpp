@@ -836,11 +836,6 @@ void R_InitTranMap(int progress)
 {
 	// Compose a default transparent filter map based on PLAYPAL.
 	unsigned char *playpal = (unsigned char *)W_CacheLumpName("PLAYPAL", PU_STATIC);
-	struct
-	{
-		unsigned char pct;
-		unsigned char playpal[256 * 3];
-	} cache;
 
 	::g->main_tranmap = (byte *)Z_Malloc(256 * 256, PU_STATIC, 0); // killough 4/11/98
 

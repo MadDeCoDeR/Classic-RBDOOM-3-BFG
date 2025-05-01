@@ -56,7 +56,7 @@
 #define MIN(a, b)  ((a) < (b) ? (a) : (b))
 
 #ifndef NO_INDEX
-#define NO_INDEX  ((int) -1)
+#define NO_INDEX  ((long) -1)
 #endif
 
 
@@ -806,9 +806,9 @@ void BSP_BuildNodes (void)
 	BSP_CountStuff (root);
 
 	// allocate the global arrays
-	::g->nodes      = (node_t*)DoomLib::Z_Malloc (::g->numnodes*sizeof(node_t), PU_LEVEL, NULL);
-	::g->subsectors = (subsector_t*)DoomLib::Z_Malloc (::g->numsubsectors*sizeof(subsector_t), PU_LEVEL, NULL);
-	::g->segs       = (seg_t*) DoomLib::Z_Malloc (::g->numsegs*sizeof(seg_t), PU_LEVEL, NULL);
+	::g->nodes      = (node_t*)DoomLib::Z_Malloc (::g->numnodes*sizeof(node_t), PU_NODE, NULL);
+	::g->subsectors = (subsector_t*)DoomLib::Z_Malloc (::g->numsubsectors*sizeof(subsector_t), PU_SECTORS, NULL);
+	::g->segs       = (seg_t*) DoomLib::Z_Malloc (::g->numsegs*sizeof(seg_t), PU_SEGS, NULL);
 
 	// clear the initial contents
 	memset (::g->nodes, 0, ::g->numnodes*sizeof(node_t));

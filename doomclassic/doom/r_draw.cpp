@@ -316,7 +316,6 @@ void R_DrawTLColumn (lighttable_t * dc_colormap,
   fixed_t frac;            // killough
   fixed_t          fracstep;
   int theght = 1; //GK:Get the height of EVERYTHING
-	int mheight = 0;
 	if (::g->usesprite) {
 		theght = ::g->spriteheight[::g->texnum];
 	}
