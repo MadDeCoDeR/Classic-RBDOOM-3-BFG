@@ -606,16 +606,16 @@ void P_LoadLineDefs2(int lump)
       ld->backsector  = ld->sidenum[1]!= NO_INDEX ? ::g->sides[ld->sidenum[1]].sector : 0;
       switch (ld->special)
         {                       // killough 4/11/98: handle special types
-          int lump, j;
+          int l, j;
 
         case 260:               // killough 4/11/98: translucent 2s textures
-            lump = ::g->sides[*ld->sidenum].special; // translucency from sidedef
+            l = ::g->sides[*ld->sidenum].special; // translucency from sidedef
             if (!ld->tag)                       // if tag==0,
-              ld->tranlump = lump;              // affect this linedef only
+              ld->tranlump = l;              // affect this linedef only
             else
               for (j=0;j<::g->numlines;j++)          // if tag!=0,
                 if (::g->lines[j].tag == ld->tag)    // affect all matching linedefs
-				::g->lines[j].tranlump = lump;
+				::g->lines[j].tranlump = l;
             break;
         }
     }
@@ -1020,12 +1020,11 @@ static void P_CreateBlockMap(void)
 
 static void P_CreateBlockMap(void)
 {
-  uint i;
   fixed_t minx = INT_MAX, miny = INT_MAX, maxx = INT_MIN, maxy = INT_MIN;
 
   // First find limits of map
 
-  for (i=0; i<::g->numvertexes; i++)
+  for (long i=0; i<::g->numvertexes; i++)
     {
       if (::g->vertexes[i].x >> FRACBITS < minx)
 	minx = ::g->vertexes[i].x >> FRACBITS;
@@ -1068,7 +1067,7 @@ static void P_CreateBlockMap(void)
     unsigned tot = ::g->bmapwidth * ::g->bmapheight;            // size of blockmap
     bmap_t *bmap = (bmap_t*)calloc(sizeof *bmap, tot); // array of blocklists
 
-    for (i=0; i < ::g->numlines; i++)
+    for (long i=0; i < ::g->numlines; i++)
       {
 	// starting coordinates
 	int x = (::g->lines[i].v1->x >> FRACBITS) - minx;
@@ -1133,7 +1132,7 @@ static void P_CreateBlockMap(void)
     {
       uint count = tot+6;  // we need at least 1 word per block, plus reserved's
 
-      for (i = 0; i < tot; i++)
+      for (unsigned i = 0; i < tot; i++)
 	if (bmap[i].n)
 	  count += bmap[i].n + 2; // 1 header word + 1 trailer word + blocklist
 
@@ -1149,7 +1148,7 @@ static void P_CreateBlockMap(void)
       ::g->blockmaplump[ndx++] = 0;    // Store an empty blockmap list at start
       ::g->blockmaplump[ndx++] = -1;   // (Used for compression)
 
-      for (i = 4; i < tot; i++, bp++)
+      for (unsigned i = 4; i < tot; i++, bp++)
 	if (bp->n)                                      // Non-empty blocklist
 	  {
 	    ::g->blockmaplump[::g->blockmaplump[i] = ndx++] = 0;  // Store index & header

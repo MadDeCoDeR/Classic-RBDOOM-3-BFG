@@ -458,8 +458,8 @@ seg_t * BSP_PickNode_Fast (seg_t * soup)
 	}
 
 	// check that each partition is viable
-	struct NodeEval v_eval;
-	struct NodeEval h_eval;
+	struct NodeEval v_eval = {};
+	struct NodeEval h_eval = {};
 
 	bool vert_ok  = (vert_part  != NULL) && BSP_EvalPartition (vert_part,  soup, &v_eval);
 	bool horiz_ok = (horiz_part != NULL) && BSP_EvalPartition (horiz_part, soup, &h_eval);
