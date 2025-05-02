@@ -238,6 +238,7 @@ If you have questions concerning this license or the applicable additional terms
 // p_saveg.defs end // 
 //  p_setup.defs begin // 
 #define MAX_DEATHMATCH_STARTS	10
+#define NO_INDEX        ((long)-1)
 // p_setup.defs end // 
 //  p_spec.defs begin // 
 #define MAXANIMS                32 //GK: For now just increased it

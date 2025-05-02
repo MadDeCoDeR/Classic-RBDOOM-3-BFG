@@ -27,5 +27,6 @@
             }
         }
     },
-    "cmake.skipConfigureIfCachePresent": true
+    "cmake.skipConfigureIfCachePresent": true,
+    "C_Cpp.errorSquiggles": "enabled"
 }

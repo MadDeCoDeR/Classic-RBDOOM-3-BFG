@@ -4,20 +4,33 @@
             "name": "Linux",
             "browse": {
                 "path": [
-                    "${workspaceFolder}"
+                    "./neo",
+                    "./doomclassic/doom"
                 ],
                 "limitSymbolsToIncludedHeaders": true
             },
             "includePath": [
-                "${workspaceFolder}",
-                "${workspaceFolder}/neo"
+                "./neo/**",
+                "./doomclassic/doom"
             ],
-            "defines": [],
-            //"compilerPath": "/usr/bin/gcc",
+            "defines": ["ID_RETAIL",
+             "ALLOW_DEV",
+             "_GLDEBUG",
+             "NDEBUG",
+             "XR_DEBUG",
+             "USE_OPENXR",
+             "USE_DOOMCLASSIC",
+             "ID_ENABLE_DOOM_CLASSIC_NETWORKING",
+             "__DOOM__",
+             "__DOOM_DLL__",
+             "USE_OPENAL",
+             "USE_FFMPEG",
+             "CPUSTRING=${CPU_TYPE}"],
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "clang-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "compilerPath": "/usr/bin/gcc"
         }
     ],
     "version": 4

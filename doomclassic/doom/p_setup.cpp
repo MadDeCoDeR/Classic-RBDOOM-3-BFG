@@ -56,8 +56,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "s_efx.h"
 
 #include "sound/OpenAL/AL_EAX.h"
-
-#define NO_INDEX        ((long)-1)
 //#endif
 void	P_SpawnMapThing (mapthing_t*	mthing);
 
