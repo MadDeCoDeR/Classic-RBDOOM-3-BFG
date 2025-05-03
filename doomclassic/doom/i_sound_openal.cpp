@@ -581,7 +581,7 @@ void I_ShutdownSoundAL( void )
 			}
 		}
 
-		for (size_t j = 0; j < alBuffers.size(); j++) {
+		for (size_t j = 0; j < S_sfx.size(); j++) {
 			if (alIsBuffer(alBuffers[j])) {
 				alDeleteBuffers(1, &alBuffers[j]);
 			}
@@ -650,7 +650,7 @@ void I_ShutdownSoundHardwareAL()
 	}
 
 	// Delete OpenAL buffers for all sounds
-	for (size_t j = 0; j < alBuffers.size(); j++) {
+	for (size_t j = 0; j < S_sfx.size(); j++) {
 		if (alIsBuffer(alBuffers[j])) {
 			alDeleteBuffers(1, &alBuffers[j]);
 		}
@@ -714,7 +714,7 @@ void I_InitSoundAL()
 
 
 			// Create OpenAL buffers for all sounds
-			for (size_t i = 1; i < S_sfx.size(); i++) {
+			for (size_t i = 0; i < S_sfx.size(); i++) {
 				alGenBuffers((ALuint)1, &alBuffers[i]);
 			}
 		}
