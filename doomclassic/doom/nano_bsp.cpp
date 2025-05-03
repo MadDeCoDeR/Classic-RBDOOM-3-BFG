@@ -82,7 +82,7 @@ struct Nanode
 void BSP_NewVertex (fixed_t vx, fixed_t vy)
 {
 	if(::g->nanoVertexes.size() < ::g->numnanovertex + 1) {
-		::g->nanoVertexes.resize(100, {0, 0});
+		::g->nanoVertexes.resize(::g->numnanovertex + 100, {0, 0});
 	}
 	//vertex_t * vert = (vertex_t*) DoomLib::Z_Malloc(sizeof(vertex_t), PU_LEVEL, NULL);
 	::g->nanoVertexes[::g->numnanovertex].x = vx;
