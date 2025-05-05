@@ -649,10 +649,13 @@ void I_ShutdownSoundHardwareAL()
 		}
 	}
 
-	// Delete OpenAL buffers for all sounds
-	for (size_t j = 0; j < S_sfx.size(); j++) {
-		if (alIsBuffer(alBuffers[j])) {
-			alDeleteBuffers(1, &alBuffers[j]);
+
+	if (alBuffers.size() > 0) {
+		// Delete OpenAL buffers for all sounds
+		for (size_t j = 0; j < S_sfx.size(); j++) {
+			if (alIsBuffer(alBuffers[j])) {
+				alDeleteBuffers(1, &alBuffers[j]);
+			}
 		}
 	}
 	
