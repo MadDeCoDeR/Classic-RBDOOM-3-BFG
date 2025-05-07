@@ -333,9 +333,9 @@ void R_DrawTLColumn (lighttable_t * dc_colormap,
     return; 
                                  
 #ifdef RANGECHECK 
-  if ((unsigned)::g->dc_x >= MAX_SCREENWIDTH
+  if ((unsigned)::g->dc_x >= MAXWIDTH
       || ::g->dc_yl < 0
-      || ::g->dc_yh >= MAX_SCREENHEIGHT) 
+      || ::g->dc_yh >= MAXHEIGHT) 
     I_Error ("R_DrawColumn: %i to %i at %i", ::g->dc_yl, ::g->dc_yh, ::g->dc_x); 
 #endif 
 

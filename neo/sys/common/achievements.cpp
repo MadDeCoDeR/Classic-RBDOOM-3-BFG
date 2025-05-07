@@ -66,7 +66,8 @@ void idAchievementSystemWin::AchievementUnlock( idLocalUser* user, int achieveme
 {
 #ifndef ALLOW_DEV
 	if (::op) {
-		::op->openAchievement()->UnlockAchievement(achievementDevNames[achievementID]);//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
+		idStr achievementName = idStr::Icmpn(achievementDevNames[achievementID], STEAM_ACHIEVEMENT_PREFIX, 4) != 0 ? achievementDevNames[achievementID] : va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID);
+		::op->openAchievement()->UnlockAchievement(achievementName);//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
 	}
 #endif
 }
@@ -79,7 +80,8 @@ idAchievementSystemWin::AchievementLock
 void idAchievementSystemWin::AchievementLock( idLocalUser* user, const int achievementID )
 {
 	if (::op) {
-		::op->openAchievement()->LockAchievement(achievementDevNames[achievementID]);//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
+		idStr achievementName = idStr::Icmpn(achievementDevNames[achievementID], STEAM_ACHIEVEMENT_PREFIX, 4) != 0 ? achievementDevNames[achievementID] : va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID);
+		::op->openAchievement()->LockAchievement(achievementName);//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
 	}
 }
 
