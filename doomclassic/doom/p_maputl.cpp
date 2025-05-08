@@ -37,6 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "doomdef.h"
 #include "p_local.h"
+#include "i_system.h"
 
 
 // State.
@@ -510,7 +511,7 @@ P_BlockLinesIterator
   qboolean(*func)(line_t*) )
 {
     int			offset;
-    long*		list;
+    const int*		list;
     line_t*		ld;
 	
     if (x<0
@@ -524,9 +525,14 @@ P_BlockLinesIterator
     offset = y*::g->bmapwidth+x;
 	
     offset = *(::g->blockmap+offset);
+    list = ::g->blockmaplump+offset;
 
-    for ( list = ::g->blockmaplump+offset ; *list != -1 ; list++)
+    for (  ; *list != -1 ; list++)
     {
+#ifdef RANGECHECK
+      if(*list < 0 || *list >= ::g->numlines)
+        I_Error("P_BlockLinesIterator: index >= numlines");
+#endif
 	ld = &::g->lines[*list];
 
 	if (ld->validcount == ::g->validcount)

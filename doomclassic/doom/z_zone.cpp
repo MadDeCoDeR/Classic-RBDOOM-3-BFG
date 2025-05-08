@@ -95,7 +95,7 @@ int FindStatIndexByTag(int tag) {
 
 void InitStats() {
 #if _ITERATOR_DEBUG_LEVEL < 2
-	for (int i = 1; i < 26; i++) {
+	for (int i = 1; i < 27; i++) {
 		::g->zstats.push_back({ i, 0 });
 	}
 	::g->zstats.push_back({ PU_LEVEL, 0 });
@@ -103,8 +103,8 @@ void InitStats() {
 	::g->zstats.push_back({ PU_PURGELEVEL, 0 });
 	::g->zstats.push_back({ PU_CACHE, 0 });
 #else
-	::g->zstats.resize(29 * sizeof(zstats_t));
-	for (int i = 1; i < 26; i++) {
+	::g->zstats.resize(30 * sizeof(zstats_t));
+	for (int i = 1; i < 27; i++) {
 		::g->zstats[i - 1] = { i, 0 };
 	}
 	::g->zstats[25] = { PU_LEVEL, 0 };

@@ -60,6 +60,7 @@ If you have questions concerning this license or the applicable additional terms
 #define PU_WI_LNAME     23
 #define PU_WI_FRONT     24
 #define PU_WI_BACK      25
+#define PU_SSECTORS     26
 #define PU_LEVEL		50	// static until level exited
 #define PU_LEVSPEC		51      // a special thinker in a level
 #define PU_NANO_CACHE   52

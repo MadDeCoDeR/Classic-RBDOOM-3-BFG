@@ -320,7 +320,23 @@ typedef struct
     
 } node_t;
 
+typedef struct Nanode  nanode_t;
 
+struct Nanode
+{
+	// when non-NULL, this is actually a leaf of the BSP tree
+	seg_t * segs;
+
+	// final index number of this node / leaf
+	int  index;
+
+	// partition line (start coord, delta to end)
+	fixed_t  x, y, dx, dy;
+
+	// right and left children
+	struct Nanode * right;
+	struct Nanode * left;
+};
 
 
 // posts are runs of non masked source pixels

@@ -195,7 +195,7 @@ void P_LoadSubsectors (int lump)
 
 	::g->numsubsectors = W_LumpLength (lump) / sizeof(mapsubsector_t);
 
-	if (MallocForLump( lump, ::g->numsubsectors*sizeof(subsector_t), ::g->subsectors, PU_SECTORS ))
+	if (MallocForLump( lump, ::g->numsubsectors*sizeof(subsector_t), ::g->subsectors, PU_SSECTORS ))
 	{
 		data = (byte*)W_CacheLumpNum (lump,PU_CACHE_SHARED); // ALAN: LOADTIME
 
@@ -688,7 +688,7 @@ void P_LoadSideDefs2(int lump)
   Z_Free (data);
 }
 
-#if 0
+#if 1
 
 // jff 10/6/98
 // New code added to speed up calculation of internal blockmap
@@ -966,7 +966,7 @@ static void P_CreateBlockMap(void)
   // Create the blockmap lump
 
   //blockmaplump = malloc_IfSameLevel(blockmaplump, sizeof(*blockmaplump) * (4 + NBlocks + linetotal));
-  ::g->blockmaplump = (long*)Z_Malloc(sizeof(*::g->blockmaplump) * (4 + NBlocks + linetotal), PU_BLOCKMAP, 0);
+  ::g->blockmaplump = (int*)Z_Malloc(sizeof(*::g->blockmaplump) * (4 + NBlocks + linetotal), PU_BLOCKMAP, 0);
 
   // blockmap header
 
@@ -1003,6 +1003,7 @@ static void P_CreateBlockMap(void)
 }
 #endif
 
+#if 0
 //
 // killough 10/98:
 //
@@ -1164,16 +1165,19 @@ static void P_CreateBlockMap(void)
   }
 }
 
+#endif
 //
 // P_LoadBlockMap
 //
 void P_LoadBlockMap (int lump)
 {
-	if (::g->needsNodeRebuild) {
+	int		count;
+
+	count = W_LumpLength(lump);
+	if ( count < 4 || (count/2) >= 0x10000)  {
 		P_CreateBlockMap();
 	} else {
 		int		i;
-		int		count;
 
 		bool firstTime = false;
 		if (!lumpcache[lump]) {			// SMF - solution for double endian conversion issue
@@ -1187,7 +1191,7 @@ void P_LoadBlockMap (int lump)
 		count = W_LumpLength (lump)/2;
 
 		if ( firstTime ) {				// SMF
-			::g->blockmaplump = (long*)Z_Malloc(sizeof(*::g->blockmaplump)*count, PU_BLOCKMAP, 0);
+			::g->blockmaplump = (int*)Z_Malloc(sizeof(*::g->blockmaplump)*count, PU_BLOCKMAP, 0);
 			::g->blockmaplump[0] = SHORT(bl[0]);
 			::g->blockmaplump[1] = SHORT(bl[1]);
 			::g->blockmaplump[2] = (long)(SHORT(bl[2])) & FRACMASK;
@@ -1205,11 +1209,13 @@ void P_LoadBlockMap (int lump)
 		::g->bmapheight = ( ::g->blockmaplump[3] );
 
 		// clear out mobj chains
-		count = sizeof(*::g->blocklinks)* ::g->bmapwidth*::g->bmapheight;
-		::g->blocklinks = (mobj_t**)Z_Malloc (count,PU_BLOCKMAP, 0);
-		memset (::g->blocklinks, 0, count);
-		::g->blockmap = ::g->blockmaplump + 4;
+		
 	}
+
+	count = sizeof(*::g->blocklinks)* ::g->bmapwidth*::g->bmapheight;
+	::g->blocklinks = (mobj_t**)Z_Malloc (count,PU_BLOCKMAP, 0);
+	memset (::g->blocklinks, 0, count);
+	::g->blockmap = ::g->blockmaplump + 4;
 }
 
 //P_ResetAct
@@ -1401,6 +1407,45 @@ void P_RemoveSlimeTrails(void)                // killough 10/98
 	free(hit);
 }
 
+// [FG] support maps with NODES in uncompressed XNOD/XGLN or compressed
+// ZNOD/ZGLN formats, or DeePBSP format
+
+qboolean P_CheckMapFormat(int lumpnum)
+{
+    qboolean format = true;
+    int size_subs = 0, size_nodes = 0;
+
+    //!
+    // @category mod
+    //
+    // Forces extended (non-GL) ZDoom nodes.
+    //
+	size_subs = W_LumpLength(lumpnum + ML_SSECTORS);
+
+	if (size_subs < sizeof(mapsubsector_t))
+	{
+		format = false;
+	}
+
+    if (format)
+    {
+        size_nodes = W_LumpLength(lumpnum + ML_NODES);
+
+        if (size_nodes < sizeof(mapnode_t))
+        {
+            format = false;
+        }
+    }
+
+    // [FG] no nodes for exactly one subsector
+    if (size_subs == sizeof(mapsubsector_t) && size_nodes == 0)
+    {
+        format = true;
+    }
+
+    return format;
+}
+
 
 //
 // P_SetupLevel
@@ -1415,6 +1460,7 @@ P_SetupLevel
 	int		i;
 	char	lumpname[17];
 	int		lumpnum;
+	qboolean mapFormat;
 
 	::g->totalkills = ::g->totalitems = ::g->totalsecret = ::g->wminfo.maxfrags = 0;
 	::g->wminfo.partime = 3600 * TICRATE; //GK: Time Really SUCKS
@@ -1560,6 +1606,7 @@ P_SetupLevel
 
 	lumpnum = W_GetNumForName (lumpname);
 
+	mapFormat = P_CheckMapFormat(lumpnum);
 	::g->leveltime = 0;
 	bool buildNodes = false;
 	for (int i3 = 0; i3 < 6; i3++)
@@ -1614,7 +1661,7 @@ P_SetupLevel
 	}
 	else {
 
-		::g->needsNodeRebuild = W_LumpLength(lumpnum + ML_NODES) == 0 || W_LumpLength(lumpnum + ML_SSECTORS) == 0;
+		::g->needsNodeRebuild = !mapFormat;
 		// note: most of this ordering is important	
 		P_ActMap(lumpnum + ML_ACTMAP);
 		

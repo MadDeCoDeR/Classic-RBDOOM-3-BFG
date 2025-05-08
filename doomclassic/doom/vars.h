@@ -589,8 +589,8 @@ long		nummapthings;
 mapthing_t*		mapthings; //GK: For udmf is better to store them too
 long		bmapwidth;
 long		bmapheight;	// size in mapblocks
-long*		blockmap;	// int for larger maps
-long*		blockmaplump;		
+int*		blockmap;	// int for larger maps
+int*		blockmaplump;		
 fixed_t		bmaporgx;
 fixed_t		bmaporgy;
 mobj_t**	blocklinks;		
@@ -1152,8 +1152,14 @@ idAngles prevAngleDelta;
 
 bool runTic;
 
-std::vector<vertex_t> nanoVertexes;
+std::vector<std::unique_ptr<vertex_t>> nanoVertexes;
 size_t numnanovertex;
+
+std::vector<std::unique_ptr<seg_t>> nanoSegs;
+size_t numnanoseg;
+
+std::vector<std::unique_ptr<nanode_t>> nanoNodes;
+size_t numnanonode;
 
 
 bool needsNodeRebuild;

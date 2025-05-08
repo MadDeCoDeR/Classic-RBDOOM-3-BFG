@@ -413,6 +413,8 @@ idStr ParseClassicMemoryTag(int tag) {
 		return idStr("WI_FRONT");
 	case 25:
 		return idStr("WI_BACK");
+	case 26:
+		return idStr("SSECTORS");
 	case 50:
 		return idStr("LEVEL");
 	case 51:

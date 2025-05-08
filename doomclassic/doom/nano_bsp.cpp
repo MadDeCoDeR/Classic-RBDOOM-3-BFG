@@ -60,51 +60,36 @@
 #endif
 
 
-typedef struct Nanode  nanode_t;
-
-struct Nanode
-{
-	// when non-NULL, this is actually a leaf of the BSP tree
-	seg_t * segs;
-
-	// final index number of this node / leaf
-	int  index;
-
-	// partition line (start coord, delta to end)
-	fixed_t  x, y, dx, dy;
-
-	// right and left children
-	struct Nanode * right;
-	struct Nanode * left;
-};
-
-
-void BSP_NewVertex (fixed_t vx, fixed_t vy)
+vertex_t* BSP_NewVertex (fixed_t vx, fixed_t vy)
 {
 	if(::g->nanoVertexes.size() < ::g->numnanovertex + 1) {
-		::g->nanoVertexes.resize(::g->numnanovertex + 100, {0, 0});
+		::g->nanoVertexes.resize(::g->numnanovertex + 100);
 	}
-	//vertex_t * vert = (vertex_t*) DoomLib::Z_Malloc(sizeof(vertex_t), PU_LEVEL, NULL);
-	::g->nanoVertexes[::g->numnanovertex].x = vx;
-	::g->nanoVertexes[::g->numnanovertex].y = vy;
+	::g->nanoVertexes[::g->numnanovertex] = std::make_unique<vertex_t>();
+	::g->nanoVertexes[::g->numnanovertex].get()->x = vx;
+	::g->nanoVertexes[::g->numnanovertex].get()->y = vy;
 	::g->numnanovertex++;
-	//vert->r_x = x; // [FG] Woof!'ism
-	//vert->r_y = y; //
-	//return vert;
+	return ::g->nanoVertexes[::g->numnanovertex - 1].get();
 }
 
 seg_t * BSP_NewSeg (void)
 {
-	seg_t * seg = (seg_t*) malloc (sizeof(seg_t));
-	memset (seg, 0, sizeof(*seg));
-	return seg;
+	if(::g->nanoSegs.size() < ::g->numnanoseg + 1) {
+		::g->nanoSegs.resize(::g->numnanoseg + 100);
+	}
+	::g->nanoSegs[::g->numnanoseg] = std::make_unique<seg_t>();
+	::g->numnanoseg++;
+	return ::g->nanoSegs[::g->numnanoseg - 1].get();
 }
 
 nanode_t * BSP_NewNode (void)
 {
-	nanode_t * node = (nanode_t*) malloc (sizeof(nanode_t));
-	memset (node, 0, sizeof(*node));
-	return node;
+	if(::g->nanoNodes.size() < ::g->numnanonode + 1) {
+		::g->nanoNodes.resize(::g->numnanonode + 100);
+	}
+	::g->nanoNodes[::g->numnanonode] = std::make_unique<nanode_t>();
+	::g->numnanonode++;
+	return ::g->nanoNodes[::g->numnanonode - 1].get();
 }
 
 /* DEBUG:
@@ -619,13 +604,13 @@ void BSP_SplitSegs (seg_t * part, seg_t * soup, seg_t ** lefts, seg_t ** rights)
 
 		BSP_ComputeIntersection (part, S, &ix, &iy);
 
-		BSP_NewVertex (ix, iy);
+		vertex_t * iv = BSP_NewVertex (ix, iy);
 
 		seg_t * T = BSP_NewSeg ();
 
 		T->v2 = S->v2;
-		T->v1 = &::g->nanoVertexes[::g->numnanovertex - 1];
-		S->v2 = &::g->nanoVertexes[::g->numnanovertex - 1];
+		T->v1 = iv;
+		S->v2 = iv;
 
 		T->angle   = S->angle;
 		T->sidedef = S->sidedef;
@@ -742,12 +727,19 @@ void BSP_WriteSubsector (nanode_t * N)
 		N->segs = seg->next;
 		seg->next = NULL;
 
+		seg_t* writeSeg = &::g->segs[nano_seg_index];
+		writeSeg->offset = seg->offset;
+		writeSeg->angle = seg->angle;
+		writeSeg->backsector = seg->backsector;
+		writeSeg->frontsector = seg->frontsector;
+		writeSeg->linedef = seg->linedef;
+		writeSeg->sidedef = seg->sidedef;
+		writeSeg->v1 = seg->v1;
+		writeSeg->v2 = seg->v2;
 		// copy and free it
-		memcpy (&::g->segs[nano_seg_index], seg, sizeof(seg_t));
-		::g->segs[nano_seg_index].v1 = seg->v1;
-		::g->segs[nano_seg_index].v2 = seg->v2;
+		//memcpy (&::g->segs[nano_seg_index], seg, sizeof(seg_t));
 
-		free (seg);
+		//free (seg);
 
 		nano_seg_index += 1;
 		out->numlines  += 1;
@@ -784,7 +776,7 @@ unsigned int BSP_WriteNode (nanode_t * N, fixed_t * bbox)
 
 		BSP_MergeBounds (bbox, out->bbox[0], out->bbox[1]);
 	}
-	free (N);
+	//free (N);
 
 	return index;
 }
@@ -807,12 +799,13 @@ void BSP_BuildNodes (void)
 
 	// allocate the global arrays
 	::g->nodes      = (node_t*)DoomLib::Z_Malloc (::g->numnodes*sizeof(node_t), PU_NODE, NULL);
-	::g->subsectors = (subsector_t*)DoomLib::Z_Malloc (::g->numsubsectors*sizeof(subsector_t), PU_SECTORS, NULL);
+	::g->subsectors = (subsector_t*)DoomLib::Z_Malloc (::g->numsubsectors*sizeof(subsector_t), PU_SSECTORS, NULL);
 	::g->segs       = (seg_t*) DoomLib::Z_Malloc (::g->numsegs*sizeof(seg_t), PU_SEGS, NULL);
 
 	// clear the initial contents
 	memset (::g->nodes, 0, ::g->numnodes*sizeof(node_t));
 	memset (::g->subsectors, 0, ::g->numsubsectors*sizeof(subsector_t));
+	memset (::g->segs, 0, ::g->numsegs*sizeof(seg_t));
 
 	nano_seg_index = 0;
 
@@ -820,5 +813,9 @@ void BSP_BuildNodes (void)
 
 	// this also frees stuff as it goes
 	BSP_WriteNode (root, dummy);
-	//Z_FreeTags(PU_NANO_CACHE, PU_NANO_CACHE);
+
+	::g->nanoNodes.clear();
+	::g->numnanonode = 0;
+	::g->nanoSegs.clear();
+	::g->numnanoseg = 0;
 }
