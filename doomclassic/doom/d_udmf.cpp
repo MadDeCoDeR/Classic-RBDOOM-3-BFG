@@ -48,6 +48,7 @@ typedef struct {
 	vertex_t** vvalue;
 	long* lvalue;
 	sector_t** secvalue;
+	unsigned short* usvalue;
 }vertype;
 
 
@@ -120,17 +121,17 @@ void ParseLinedef(std::vector<std::string> lines, int index) {
 	::g->lines[index].flags = 0;
 	vertype lt[15] = {
 		{"id",NULL,&::g->lines[index].tag},
-		{"v1",NULL,NULL,&::g->lines[index].v1},
+		{"v1",NULL,NULL, &::g->lines[index].v1},
 		{"v2",NULL,NULL,&::g->lines[index].v2},
-		{"blocking",NULL,&::g->lines[index].flags},
-		{"blockmonsters",NULL,&::g->lines[index].flags},
-		{"twosided",NULL,&::g->lines[index].flags},
-		{"dontpegtop",NULL,&::g->lines[index].flags},
-		{"dontpegbottom",NULL,&::g->lines[index].flags},
-		{"secret",NULL,&::g->lines[index].flags},
-		{"blocksound",NULL,&::g->lines[index].flags },
-		{"dontdraw",NULL,&::g->lines[index].flags },
-		{"mapped",NULL,&::g->lines[index].flags },
+		{"blocking",NULL, NULL, NULL, NULL, NULL, &::g->lines[index].flags},
+		{"blockmonsters", NULL, NULL, NULL, NULL, NULL, &::g->lines[index].flags},
+		{"twosided", NULL, NULL, NULL, NULL, NULL, &::g->lines[index].flags},
+		{"dontpegtop", NULL, NULL, NULL, NULL, NULL, &::g->lines[index].flags},
+		{"dontpegbottom", NULL, NULL, NULL, NULL, NULL, &::g->lines[index].flags},
+		{"secret", NULL, NULL, NULL, NULL, NULL, &::g->lines[index].flags},
+		{"blocksound", NULL, NULL, NULL, NULL, NULL, &::g->lines[index].flags },
+		{"dontdraw", NULL, NULL, NULL, NULL, NULL, &::g->lines[index].flags },
+		{"mapped", NULL, NULL, NULL, NULL, NULL, &::g->lines[index].flags },
 		{"special",NULL,&::g->lines[index].special },
 		{"sidefront",NULL,NULL,NULL,&::g->lines[index].sidenum[0] },
 		{"sideback",NULL,NULL,NULL,&::g->lines[index].sidenum[1] },
@@ -147,31 +148,31 @@ void ParseLinedef(std::vector<std::string> lines, int index) {
 					*lt[k].vvalue=&::g->vertexes[SHORT(atoi(token2)) & 0xffff];
 					break;
 				case 3:
-					*lt[k].svalue = *lt[k].svalue | ML_BLOCKING;
+					*lt[k].usvalue = *lt[k].usvalue | ML_BLOCKING;
 					break;
 				case 4:
-					*lt[k].svalue = *lt[k].svalue | ML_BLOCKMONSTERS;
+					*lt[k].usvalue = *lt[k].usvalue | ML_BLOCKMONSTERS;
 					break;
 				case 5:
-					*lt[k].svalue = *lt[k].svalue | ML_TWOSIDED;
+					*lt[k].usvalue = *lt[k].usvalue | ML_TWOSIDED;
 					break;
 				case 6:
-					*lt[k].svalue = *lt[k].svalue | ML_DONTPEGTOP;
+					*lt[k].usvalue = *lt[k].usvalue | ML_DONTPEGTOP;
 					break;
 				case 7:
-					*lt[k].svalue = *lt[k].svalue | ML_DONTPEGBOTTOM;
+					*lt[k].usvalue = *lt[k].usvalue | ML_DONTPEGBOTTOM;
 					break;
 				case 8:
-					*lt[k].svalue = *lt[k].svalue | ML_SECRET;
+					*lt[k].usvalue = *lt[k].usvalue | ML_SECRET;
 					break;
 				case 9:
-					*lt[k].svalue = *lt[k].svalue | ML_SOUNDBLOCK;
+					*lt[k].usvalue = *lt[k].usvalue | ML_SOUNDBLOCK;
 					break;
 				case 10:
-					*lt[k].svalue = *lt[k].svalue | ML_DONTDRAW;
+					*lt[k].usvalue = *lt[k].usvalue | ML_DONTDRAW;
 					break;
 				case 11:
-					*lt[k].svalue = *lt[k].svalue | ML_MAPPED;
+					*lt[k].usvalue = *lt[k].usvalue | ML_MAPPED;
 					break;
 				case 13:
 				case 14:

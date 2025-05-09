@@ -37,10 +37,17 @@ If you have questions concerning this license or the applicable additional terms
 
 // State.
 #include "r_state.h"
+#include "m_bbox.h"
 
 //
 // P_CheckSight
 //
+// killough 4/19/98:
+// Convert LOS info to struct for reentrancy and efficiency of data locality
+
+typedef struct {
+    fixed_t bbox[4];
+} los_t;
 
 
 
@@ -130,7 +137,7 @@ P_InterceptVector2
 // Returns true
 //  if ::g->strace crosses the given subsector successfully.
 //
-qboolean P_CrossSubsector (int num)
+qboolean P_CrossSubsector (int num, los_t* los)
 {
     seg_t*		seg;
     line_t*		line;
@@ -170,6 +177,19 @@ qboolean P_CrossSubsector (int num)
 	    continue;
 	
 	line->validcount = ::g->validcount;
+
+    // OPTIMIZE: killough 4/20/98: Added quick bounding-box rejection test
+
+      // [FG] Compatibility bug in P_CrossSubsector
+      // http://prboom.sourceforge.net/mbf-bugs.html
+    if (!::g->demoplayback)
+    {
+        if (line->bbox[BOXLEFT] > los->bbox[BOXRIGHT] ||
+            line->bbox[BOXRIGHT] < los->bbox[BOXLEFT] ||
+            line->bbox[BOXBOTTOM] > los->bbox[BOXTOP] ||
+            line->bbox[BOXTOP] < los->bbox[BOXBOTTOM])
+            continue;
+    }
 		
 	v1 = line->v1;
 	v2 = line->v2;
@@ -250,41 +270,25 @@ qboolean P_CrossSubsector (int num)
 //
 // P_CrossBSPNode
 // Returns true
-//  if ::g->strace crosses the given node successfully.
+//  if strace crosses the given node successfully.
 //
-qboolean P_CrossBSPNode (int bspnum)
+// killough 4/20/98: rewritten to remove tail recursion, clean up, and optimize
+
+static boolean P_CrossBSPNode(int bspnum, los_t* los)
 {
-    node_t*	bsp;
-    int		side;
-
-    if (bspnum & NF_SUBSECTOR)
+    while (!(bspnum & NF_SUBSECTOR))
     {
-	if (bspnum == -1)
-	    return P_CrossSubsector (0);
-	else
-	    return P_CrossSubsector (bspnum&(~NF_SUBSECTOR));
+        const node_t* bsp = ::g->nodes + bspnum;
+        int side = P_DivlineSide(::g->strace.x, ::g->strace.y, (divline_t*)bsp) & 1;
+        if (side == P_DivlineSide(::g->t2x, ::g->t2y, (divline_t*)bsp))
+            bspnum = bsp->children[side]; // doesn't touch the other side
+        else         // the partition plane is crossed here
+            if (!P_CrossBSPNode(bsp->children[side], los))
+                return 0;  // cross the starting side
+            else
+                bspnum = bsp->children[side ^ 1];  // cross the ending side
     }
-		
-    bsp = &::g->nodes[bspnum];
-    
-    // decide which side the start point is on
-    side = P_DivlineSide (::g->strace.x, ::g->strace.y, (divline_t *)bsp);
-    if (side == 2)
-	side = 0;	// an "on" should cross both ::g->sides
-
-    // cross the starting side
-    if (!P_CrossBSPNode (bsp->children[side]) )
-	return false;
-	
-    // the partition plane is crossed here
-    if (side == P_DivlineSide (::g->t2x, ::g->t2y,(divline_t *)bsp))
-    {
-	// the line doesn't touch the other side
-	return true;
-    }
-    
-    // cross the ending side		
-    return P_CrossBSPNode (bsp->children[side^1]);
+    return P_CrossSubsector(bspnum == -1 ? 0 : bspnum & ~NF_SUBSECTOR, los);
 }
 
 
@@ -304,6 +308,7 @@ P_CheckSight
     int		pnum;
     int		bytenum;
     int		bitnum;
+    los_t los;
     
     // First check for trivial rejection.
 
@@ -340,8 +345,18 @@ P_CheckSight
     ::g->strace.dx = t2->x - t1->x;
     ::g->strace.dy = t2->y - t1->y;
 
+    if (t1->x > t2->x)
+        los.bbox[BOXRIGHT] = t1->x, los.bbox[BOXLEFT] = t2->x;
+    else
+        los.bbox[BOXRIGHT] = t2->x, los.bbox[BOXLEFT] = t1->x;
+
+    if (t1->y > t2->y)
+        los.bbox[BOXTOP] = t1->y, los.bbox[BOXBOTTOM] = t2->y;
+    else
+        los.bbox[BOXTOP] = t2->y, los.bbox[BOXBOTTOM] = t1->y;
+
     // the head node is the last node output
-    return P_CrossBSPNode (::g->numnodes-1);	
+    return P_CrossBSPNode (::g->numnodes-1, &los);	
 }
 
 

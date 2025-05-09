@@ -540,36 +540,32 @@ void R_Subsector (int num)
 
 //
 // RenderBSPNode
-// Renders all ::g->subsectors below a given node,
+// Renders all subsectors below a given node,
 //  traversing subtree recursively.
 // Just call with BSP root.
-void R_RenderBSPNode (int bspnum)
+//
+// killough 5/2/98: reformatted, removed tail recursion
+
+void R_RenderBSPNode(int bspnum)
 {
-    node_t*	bsp;
-    int		side;
-
-    // Found a subsector?
-    if (bspnum & NF_SUBSECTOR)
+    while (!(bspnum & NF_SUBSECTOR))  // Found a subsector?
     {
-	if (bspnum == -1)			
-	    R_Subsector (0);
-	else
-	    R_Subsector (bspnum&(~NF_SUBSECTOR));
-	return;
+        node_t* bsp = &::g->nodes[bspnum];
+
+        // Decide which side the view point is on.
+        int side = R_PointOnSide(::g->viewx, ::g->viewy, bsp);
+
+        // Recursively divide front space.
+        R_RenderBSPNode(bsp->children[side]);
+
+        // Possibly divide back space.
+
+        if (!R_CheckBBox(bsp->bbox[side ^= 1]))
+            return;
+
+        bspnum = bsp->children[side];
     }
-		
-    bsp = &::g->nodes[bspnum];
-    
-	extern fixed_t GetViewX(); extern fixed_t GetViewY();
-    // Decide which side the view point is on.
-    side = R_PointOnSide (GetViewX(), GetViewY(), bsp);
-
-    // Recursively divide front space.
-    R_RenderBSPNode (bsp->children[side]); 
-
-    // Possibly divide back space.
-    if (R_CheckBBox (bsp->bbox[side^1]))	
-	R_RenderBSPNode (bsp->children[side^1]);
+    R_Subsector(bspnum == -1 ? 0 : bspnum & ~NF_SUBSECTOR);
 }
 
 

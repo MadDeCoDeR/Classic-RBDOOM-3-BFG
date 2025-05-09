@@ -478,6 +478,7 @@ void DoomLib::Shutdown() {
 		glob->visplanes.clear();
 		CleanVector(glob->reverbs);
 		glob->sector_list.clear();
+		glob->nanoVertexes.clear();
 		for (size_t j = 0; j < glob->acts.size(); j++) {
 			CleanVector(glob->acts[j]);
 		}

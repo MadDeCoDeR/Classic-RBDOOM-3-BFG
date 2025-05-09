@@ -717,11 +717,9 @@ void BSP_WriteSubsector (nanode_t * N)
 	out->firstline = nano_seg_index;
 	out->sector    = NULL;  // determined in P_GroupLines
 
-	seg_t * seg;
-
 	while (N->segs != NULL)
 	{
-		seg = N->segs;
+		seg_t* seg = N->segs;
 
 		// unlink this seg from the list
 		N->segs = seg->next;
@@ -766,8 +764,7 @@ unsigned int BSP_WriteNode (nanode_t * N, fixed_t * bbox)
 		out->dx = N->dx;
 		out->dy = N->dy;
 
-		int c;
-		for (c = 0 ; c < 2 ; c++)
+		for (int c = 0 ; c < 2 ; c++)
 		{
 			nanode_t * child = (c == 0) ? N->right : N->left;
 
@@ -783,10 +780,9 @@ unsigned int BSP_WriteNode (nanode_t * N, fixed_t * bbox)
 
 void BSP_BuildNodes (void)
 {
-	if (::g->numnanovertex > 0) {
-		::g->nanoVertexes.clear();
-		::g->numnanovertex = 0;
-	}
+
+	::g->nanoVertexes.clear();
+	::g->numnanovertex = 0;
 	seg_t * list = BSP_CreateSegs ();
 
 	nanode_t * root = BSP_SubdivideSegs (list);

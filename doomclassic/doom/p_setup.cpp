@@ -318,7 +318,22 @@ void P_LoadNodes (int lump)
 			no->dy = SHORT(mn->dy)<<FRACBITS;
 			for (j=0 ; j<2 ; j++)
 			{
-				no->children[j] = SHORT(mn->children[j]);
+				no->children[j] = SHORT(mn->children[j]) & 0xffff;
+
+				// [FG] extended nodes
+				if (no->children[j] == (unsigned short)-1)
+					no->children[j] = (unsigned short) -1;
+				else
+					if (no->children[j] & NF_SUBSECTOR_VANILLA)
+					{
+						no->children[j] &= ~NF_SUBSECTOR_VANILLA;
+
+						if (no->children[j] >= ::g->numsubsectors)
+							no->children[j] = 0;
+
+						no->children[j] |= NF_SUBSECTOR;
+					}
+
 				for (k=0 ; k<4 ; k++)
 					no->bbox[j][k] = SHORT(mn->bbox[j][k])<<FRACBITS;
 			}
@@ -539,11 +554,11 @@ void P_LoadLineDefs (int lump)
       
       vertex_t *v1, *v2;
 
-      ld->flags = SHORT(mld->flags);
+      ld->flags = SHORT(mld->flags) & 0xffff;
       ld->special = SHORT(mld->special);
       ld->tag = SHORT(mld->tag);
-      v1 = ld->v1 = &::g->vertexes[SHORT(mld->v1)];
-      v2 = ld->v2 = &::g->vertexes[SHORT(mld->v2)];
+      v1 = ld->v1 = &::g->vertexes[SHORT(mld->v1) & 0xffff];
+      v2 = ld->v2 = &::g->vertexes[SHORT(mld->v2) & 0xffff];
       ld->dx = v2->x - v1->x;
       ld->dy = v2->y - v1->y;
 

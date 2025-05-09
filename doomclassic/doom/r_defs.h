@@ -219,7 +219,7 @@ typedef struct line_s
     fixed_t	dy;
 
     // Animation related.
-    short	flags;
+    unsigned short	flags;
     short	special;
     short	tag;
 
@@ -316,7 +316,7 @@ typedef struct
     fixed_t	bbox[2][4];
 
     // If NF_SUBSECTOR its a subsector.
-    unsigned short children[2];
+    int children[2];
     
 } node_t;
 
