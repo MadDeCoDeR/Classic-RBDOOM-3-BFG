@@ -274,7 +274,7 @@ qboolean P_CrossSubsector (int num, los_t* los)
 //
 // killough 4/20/98: rewritten to remove tail recursion, clean up, and optimize
 
-static boolean P_CrossBSPNode(int bspnum, los_t* los)
+static qboolean P_CrossBSPNode(int bspnum, los_t* los)
 {
     while (!(bspnum & NF_SUBSECTOR))
     {
