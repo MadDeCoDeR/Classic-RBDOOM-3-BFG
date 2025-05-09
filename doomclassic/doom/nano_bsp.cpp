@@ -783,6 +783,10 @@ unsigned int BSP_WriteNode (nanode_t * N, fixed_t * bbox)
 
 void BSP_BuildNodes (void)
 {
+	if (::g->numnanovertex > 0) {
+		::g->nanoVertexes.clear();
+		::g->numnanovertex = 0;
+	}
 	seg_t * list = BSP_CreateSegs ();
 
 	nanode_t * root = BSP_SubdivideSegs (list);

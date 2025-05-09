@@ -722,7 +722,10 @@ void I_InitSoundAL()
 			}
 		}
 		
-		for ( size_t i = 1; i < S_sfx.size(); i++ ) {
+		for ( size_t i = 0; i < S_sfx.size(); i++ ) {
+			if (!idStr::Cmp(S_sfx[i].name, "none")) {
+				continue;
+			}
 			// Alias? Example is the chaingun sound linked to pistol.
 			if ( !S_sfx[i].link ) {
 				// Load data from WAD file.
