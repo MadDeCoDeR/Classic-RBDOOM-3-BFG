@@ -303,24 +303,20 @@ P_CheckSight
 ( mobj_t*	t1,
   mobj_t*	t2 )
 {
-    int		s1;
-    int		s2;
-    int		pnum;
-    int		bytenum;
-    int		bitnum;
-    los_t los;
-    
     // First check for trivial rejection.
 
     // Determine subsector entries in REJECT table.
-    s1 = (t1->subsector->sector - ::g->sectors);
-    s2 = (t2->subsector->sector - ::g->sectors);
-    pnum = s1*::g->numsectors + s2;
-    bytenum = pnum>>3;
-    bitnum = 1 << (pnum&7);
+    const sector_t *s1 = t1->subsector->sector;
+    const sector_t *s2 = t2->subsector->sector;
+    int pnum = (s1-::g->sectors)*numsectors + (s2-::g->sectors);
+    los_t los;
 
-    // Check in REJECT table.
-    if (::g->rejectmatrix[bytenum]&bitnum)
+  // First check for trivial rejection.
+  // Determine subsector entries in REJECT table.
+  //
+  // Check in REJECT table.
+
+  if (::g->rejectmatrix[pnum>>3] & (1 << (pnum&7)))   // can't possibly be connected
     {
 	::g->sightcounts[0]++;
 
