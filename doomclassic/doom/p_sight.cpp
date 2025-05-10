@@ -284,7 +284,7 @@ static qboolean P_CrossBSPNode(int bspnum, los_t* los)
             bspnum = bsp->children[side]; // doesn't touch the other side
         else         // the partition plane is crossed here
             if (!P_CrossBSPNode(bsp->children[side], los))
-                return 0;  // cross the starting side
+                return false;  // cross the starting side
             else
                 bspnum = bsp->children[side ^ 1];  // cross the ending side
     }
@@ -308,7 +308,7 @@ P_CheckSight
     // Determine subsector entries in REJECT table.
     const sector_t *s1 = t1->subsector->sector;
     const sector_t *s2 = t2->subsector->sector;
-    int pnum = (s1-::g->sectors)*numsectors + (s2-::g->sectors);
+    int pnum = (s1-::g->sectors)*::g->numsectors + (s2-::g->sectors);
     los_t los;
 
   // First check for trivial rejection.
