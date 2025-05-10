@@ -467,9 +467,9 @@ void setThing(int pos, char* varname, int varval) {
 		{"Bits ",MAXINT, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &mobjinfo[pos].flags},
 		{"Respawn frame ", MAXINT,NULL,&mobjinfo[pos].raisestate},
 		{"ID # ",MAXINT,NULL,&mobjinfo[pos].doomednum},
-		{"Infighting group", MAXINT, NULL, &mobjinfo[pos].infightingGroup},
-		{"Projectile group", MAXINT, NULL, &mobjinfo[pos].projectileGroup},
-		{"Splash group", MAXINT, NULL, &mobjinfo[pos].splashGroup},
+		{"Infighting group ", MAXINT, NULL, &mobjinfo[pos].infightingGroup},
+		{"Projectile group ", MAXINT, NULL, &mobjinfo[pos].projectileGroup},
+		{"Splash group ", MAXINT, NULL, &mobjinfo[pos].splashGroup},
 		{"MBF21 Bits ",MAXINT,NULL, NULL, NULL, NULL, NULL, NULL, NULL, &mobjinfo[pos].flags2},
 		{"Fast speed ",MAXINT,NULL, &mobjinfo[pos].altSpeed},
 		{"Melee range ", MAXINT, NULL, &mobjinfo[pos].meleeRange}
@@ -492,22 +492,28 @@ void setThing(int pos, char* varname, int varval) {
 	}
 
 	//MBF21 sanity check
-	if (mobjinfo[pos].infightingGroup < 0) {
-		I_Error("DEHACKED Error: Infighting Group is negative");
-	} else {
-		mobjinfo[pos].infightingGroup = mobjinfo[pos].infightingGroup + IG_END;
+	if (mobjinfo[pos].infightingGroup != SG_DEFAULT) {
+		if (mobjinfo[pos].infightingGroup < 0) {
+			I_Error("DEHACKED Error: Infighting Group is negative");
+		} else {
+			mobjinfo[pos].infightingGroup = mobjinfo[pos].infightingGroup + IG_END;
+		}
 	}
 
-	if (mobjinfo[pos].projectileGroup < 0) {
-		mobjinfo[pos].projectileGroup = PG_GROUPLESS;
-	} else {
-		mobjinfo[pos].projectileGroup = mobjinfo[pos].projectileGroup + PG_END;
+	if (mobjinfo[pos].projectileGroup != PG_DEFAULT) {
+		if (mobjinfo[pos].projectileGroup < 0) {
+			mobjinfo[pos].projectileGroup = PG_GROUPLESS;
+		} else {
+			mobjinfo[pos].projectileGroup = mobjinfo[pos].projectileGroup + PG_END;
+		}
 	}
 
-	if (mobjinfo[pos].splashGroup < 0) {
-		I_Error("DEHACKED Error: Splash Group is negative");
-	} else {
-		mobjinfo[pos].splashGroup = mobjinfo[pos].splashGroup + SG_END;
+	if (mobjinfo[pos].splashGroup != SG_DEFAULT) {
+		if (mobjinfo[pos].splashGroup < 0) {
+			I_Error("DEHACKED Error: Splash Group is negative");
+		} else {
+			mobjinfo[pos].splashGroup = mobjinfo[pos].splashGroup + SG_END;
+		}
 	}
 }
 

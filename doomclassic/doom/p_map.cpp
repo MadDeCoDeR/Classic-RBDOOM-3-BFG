@@ -1598,12 +1598,12 @@ void P_UseLines (player_t*	player)
 // RADIUS ATTACK
 //
 
-qboolean P_SplashImmune(mobj_t *target, mobj_t *source, mobj_t *spot)
+qboolean P_SplashImmune(mobj_t *target, mobj_t *spot)
 {
+	I_Printf("%d\n", mobjinfo[target->type].splashGroup);
   return // not neutral, not default behaviour, and same group
-    !(spot->flags2 & MF2_NEUTRAL_SPLASH) &&
     mobjinfo[target->type].splashGroup != SG_DEFAULT &&
-    mobjinfo[target->type].splashGroup == mobjinfo[source->type].splashGroup;
+    mobjinfo[target->type].splashGroup == mobjinfo[spot->type].splashGroup;
 }
 
 //
@@ -1620,7 +1620,7 @@ qboolean PIT_RadiusAttack (mobj_t* thing)
     if (!(thing->flags & MF_SHOOTABLE) )
 	return true;
 
-	if (::g->bombsource && P_SplashImmune(thing, ::g->bombsource, ::g->bombspot))
+	if (P_SplashImmune(thing, ::g->bombspot))
     return true;
 
     // Boss spider and cyborg
