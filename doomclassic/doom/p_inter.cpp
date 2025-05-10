@@ -871,7 +871,7 @@ P_KillMobj
 			}
 		}
 
-		if (source->player->readyweapon == wp_plasma && DoomLib::expansionSelected == pack_kex && !common->IsMultiplayer() && (target->type == MT_SPIDER || target->type == MT_BABY || target->type == 153))
+		if (source->player->readyweapon == wp_plasma && DoomLib::expansionSelected == pack_kex && !common->IsMultiplayer() && (target->type == MT_SPIDER || target->type == MT_BABY || target->type == 152))
 		{
 			idAchievementManager::LocalUser_IncreaseCounter(STAT_DOOM_INCINERATOR);
 			if (idAchievementManager::isClassicDoomOnly() && idAchievementManager::LocalUser_GetCounter(STAT_DOOM_INCINERATOR) == 30) {

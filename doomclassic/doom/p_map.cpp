@@ -1600,7 +1600,6 @@ void P_UseLines (player_t*	player)
 
 qboolean P_SplashImmune(mobj_t *target, mobj_t *spot)
 {
-	I_Printf("%d\n", mobjinfo[target->type].splashGroup);
   return // not neutral, not default behaviour, and same group
     mobjinfo[target->type].splashGroup != SG_DEFAULT &&
     mobjinfo[target->type].splashGroup == mobjinfo[spot->type].splashGroup;
