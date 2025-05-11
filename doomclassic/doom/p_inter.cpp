@@ -57,6 +57,34 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../../neo/d3xp/Game_local.h"
 
+const std::map<int, int> killpediaMap = {
+	{MT_POSSESSED, STAT_DOOM_KILLPEDIA_POSSESSED},
+	{MT_SHOTGUY, STAT_DOOM_KILLPEDIA_SHOTGUY},
+	{MT_VILE, STAT_DOOM_KILLPEDIA_VILE},
+	{MT_UNDEAD, STAT_DOOM_KILLPEDIA_UNDEAD},
+	{MT_FATSO, STAT_DOOM_KILLPEDIA_FATSO},
+	{MT_CHAINGUY, STAT_DOOM_KILLPEDIA_CHAINGUY},
+	{MT_TROOP, STAT_DOOM_KILLPEDIA_TROOP},
+	{MT_SERGEANT, STAT_DOOM_KILLPEDIA_SERGEANT},
+	{MT_SHADOWS, STAT_DOOM_KILLPEDIA_SHADOWS},
+	{MT_HEAD, STAT_DOOM_KILLPEDIA_HEAD},
+	{MT_BRUISER, STAT_DOOM_KILLPEDIA_BRUISER},
+	{MT_KNIGHT, STAT_DOOM_KILLPEDIA_KNIGHT},
+	{MT_SKULL, STAT_DOOM_KILLPEDIA_SKULL},
+	{MT_SPIDER, STAT_DOOM_KILLPEDIA_SPIDER},
+	{MT_BABY, STAT_DOOM_KILLPEDIA_BABY},
+	{MT_CYBORG, STAT_DOOM_KILLPEDIA_CYBORG},
+	{MT_PAIN, STAT_DOOM_KILLPEDIA_PAIN},
+	{150, STAT_DOOM_KILLPEDIA_GHOUL},
+	{151, STAT_DOOM_KILLPEDIA_BANSHEE},
+	{152, STAT_DOOM_KILLPEDIA_MINDWEAVER},
+	{153, STAT_DOOM_KILLPEDIA_SHOCK},
+	{154, STAT_DOOM_KILLPEDIA_VASSAGO},
+	{155, STAT_DOOM_KILLPEDIA_TYRANT},
+	{156, STAT_DOOM_KILLPEDIA_TYRANT},
+	{157, STAT_DOOM_KILLPEDIA_TYRANT}
+};
+
 // a weapon is found with two clip loads,
 // a big item has five clip loads
 /*const*/ int	maxammo[NUMAMMO] = {200, 50, 300, 50};
@@ -788,100 +816,116 @@ P_KillMobj
 			}
 		}
 
-		// DHM - Nerve :: Check for killing cyberdemon with fists achievement
-		// JAF TROPHY int port = gameLocal->GetPortForPlayer( DoomLib::GetPlayer() );
+		if (!::g->demoplayback) {
+			// DHM - Nerve :: Check for killing cyberdemon with fists achievement
+			// JAF TROPHY int port = gameLocal->GetPortForPlayer( DoomLib::GetPlayer() );
 
-		if ( source->player->readyweapon == wp_pistol && target->type == MT_CYBORG && !common->IsMultiplayer() ) {
-			if (idAchievementManager::isClassicDoomOnly()) {
-				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_PISTOL);
+			if (source->player->readyweapon == wp_pistol && target->type == MT_CYBORG && !common->IsMultiplayer()) {
+				if (idAchievementManager::isClassicDoomOnly()) {
+					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_PISTOL);
+				}
 			}
-		}
 
-		// DHM - Nerve :: Chainsaw kills
-		if ( source->player->readyweapon == wp_chainsaw && !common->IsMultiplayer() ) {
-			//source->player->chainsawKills++;
-			idAchievementManager::LocalUser_IncreaseCounter(STAT_DOOM_CHAINSAW);
-			if ( idAchievementManager::isClassicDoomOnly() && idAchievementManager::LocalUser_GetCounter(STAT_DOOM_CHAINSAW) == 100 ) {
-				idAchievementManager::LocalUser_ResetCounter(STAT_DOOM_CHAINSAW);
-				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CHAINSAW);
+			// DHM - Nerve :: Chainsaw kills
+			if (source->player->readyweapon == wp_chainsaw && !common->IsMultiplayer()) {
+				//source->player->chainsawKills++;
+				idAchievementManager::LocalUser_IncreaseCounter(STAT_DOOM_CHAINSAW);
+				if (idAchievementManager::isClassicDoomOnly() && idAchievementManager::LocalUser_GetCounter(STAT_DOOM_CHAINSAW) == 100) {
+					idAchievementManager::LocalUser_ResetCounter(STAT_DOOM_CHAINSAW);
+					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CHAINSAW);
+				}
 			}
-		}
 
-		// DHM - Nerve :: Berserker kills
-		if ( source->player->readyweapon == wp_fist && source->player->powers[pw_strength] && !common->IsMultiplayer()) {
-			source->player->berserkKills++;
-			idLib::Printf( "Player has %d berserk kills\n", source->player->berserkKills );
-			if (idAchievementManager::isClassicDoomOnly() && source->player->berserkKills == 20 ) {
-				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_BERSERK);
+			// DHM - Nerve :: Berserker kills
+			if (source->player->readyweapon == wp_fist && source->player->powers[pw_strength] && !common->IsMultiplayer()) {
+				source->player->berserkKills++;
+				idLib::Printf("Player has %d berserk kills\n", source->player->berserkKills);
+				if (idAchievementManager::isClassicDoomOnly() && source->player->berserkKills == 20) {
+					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_BERSERK);
+				}
 			}
-		}
 
-		if (source->player->readyweapon == wp_fist && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
-			source->player->fistKills++;
-			if (source->player->fistKills == 25) {
-				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_FISTS);
+			if (source->player->readyweapon == wp_fist && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
+				source->player->fistKills++;
+				if (source->player->fistKills == 25) {
+					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_FISTS);
+				}
 			}
-		}
 
-		if (source->player->readyweapon == wp_shotgun && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
-			if ((I_GetTime() - source->player->lastShotgunKillTime) < 1) {
-				source->player->shotgunKills++;
-			} else {
-				source->player->shotgunKills = 1;
+			if (source->player->readyweapon == wp_shotgun && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
+				if ((I_GetTime() - source->player->lastShotgunKillTime) < 1) {
+					source->player->shotgunKills++;
+				}
+				else {
+					source->player->shotgunKills = 1;
+				}
+				source->player->lastShotgunKillTime = I_GetTime();
+				if (source->player->shotgunKills >= 3) {
+					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_BOOMSTICK);
+				}
 			}
-			source->player->lastShotgunKillTime = I_GetTime();
-			if (source->player->shotgunKills >= 3) {
-				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_BOOMSTICK);
-			}
-		}
 
-		if (source->player->readyweapon == wp_supershotgun && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
-			if ((I_GetTime() - source->player->lastShotgunKillTime) < 1) {
-				source->player->doubleShotgunKills++;
-			} else {
-				source->player->doubleShotgunKills = 1;
+			if (source->player->readyweapon == wp_supershotgun && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
+				if ((I_GetTime() - source->player->lastShotgunKillTime) < 1) {
+					source->player->doubleShotgunKills++;
+				}
+				else {
+					source->player->doubleShotgunKills = 1;
+				}
+				source->player->lastShotgunKillTime = I_GetTime();
+				if (source->player->doubleShotgunKills >= 4) {
+					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_DOUBLEBOOMSTICK);
+				}
 			}
-			source->player->lastShotgunKillTime = I_GetTime();
-			if (source->player->doubleShotgunKills >= 4) {
-				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_DOUBLEBOOMSTICK);
-			}
-		}
 
-		if (source->player->readyweapon == wp_plasma && DoomLib::expansionSelected != pack_kex && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
-			if ((::g->normaltime - source->player->lastPlasmaKillTime) < 5) {
-				source->player->plasmaKills++;
-			} else {
-				source->player->plasmaKills = 1;
+			if (source->player->readyweapon == wp_plasma && DoomLib::expansionSelected != pack_kex && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
+				if ((::g->normaltime - source->player->lastPlasmaKillTime) < 5) {
+					source->player->plasmaKills++;
+				}
+				else {
+					source->player->plasmaKills = 1;
+				}
+				source->player->lastPlasmaKillTime = ::g->normaltime;
+				if (source->player->plasmaKills >= 5) {
+					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_PLASMA);
+				}
 			}
-			source->player->lastPlasmaKillTime = ::g->normaltime;
-			if (source->player->plasmaKills >= 5) {
-				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_PLASMA);
-			}
-		}
 
-		if (source->player->readyweapon == wp_bfg && DoomLib::expansionSelected == pack_kex && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
-			if ((I_GetTime() - source->player->lastCalamityKillTime) < 1) {
-				source->player->calamityKills++;
-			} else {
-				source->player->calamityKills = 1;
+			if (source->player->readyweapon == wp_bfg && DoomLib::expansionSelected == pack_kex && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
+				if ((I_GetTime() - source->player->lastCalamityKillTime) < 1) {
+					source->player->calamityKills++;
+				}
+				else {
+					source->player->calamityKills = 1;
+				}
+				source->player->lastCalamityKillTime = I_GetTime();
+				if (source->player->calamityKills >= 50) {
+					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_SUPERWEAPON);
+				}
 			}
-			source->player->lastCalamityKillTime = I_GetTime();
-			if (source->player->calamityKills >= 50) {
-				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_SUPERWEAPON);
-			}
-		}
 
-		if (source->player->readyweapon == wp_plasma && DoomLib::expansionSelected == pack_kex && !common->IsMultiplayer() && (target->type == MT_SPIDER || target->type == MT_BABY || target->type == 152))
-		{
-			idAchievementManager::LocalUser_IncreaseCounter(STAT_DOOM_INCINERATOR);
-			if (idAchievementManager::isClassicDoomOnly() && idAchievementManager::LocalUser_GetCounter(STAT_DOOM_INCINERATOR) == 30) {
-				idAchievementManager::LocalUser_ResetCounter(STAT_DOOM_INCINERATOR);
-				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_FLAME);
+			if (source->player->readyweapon == wp_plasma && DoomLib::expansionSelected == pack_kex && !common->IsMultiplayer() && (target->type == MT_SPIDER || target->type == MT_BABY || target->type == 152))
+			{
+				idAchievementManager::LocalUser_IncreaseCounter(STAT_DOOM_INCINERATOR);
+				if (idAchievementManager::isClassicDoomOnly() && idAchievementManager::LocalUser_GetCounter(STAT_DOOM_INCINERATOR) == 30) {
+					idAchievementManager::LocalUser_ResetCounter(STAT_DOOM_INCINERATOR);
+					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_FLAME);
+				}
 			}
-		}
 
-		if (inflictor && inflictor->type == MT_BFG) {
-			source->player->bfgTargets++;
+			if (killpediaMap.count(target->type)) {
+				if (!idAchievementManager::LocalUser_GetCounter(killpediaMap.at(target->type))) {
+					idAchievementManager::LocalUser_IncreaseCounter(killpediaMap.at(target->type));
+					idAchievementManager::LocalUser_IncreaseCounter(STAT_DOOM_KILLPEDIA_ALL);
+				}
+				if (idAchievementManager::isClassicDoomOnly() && idAchievementManager::LocalUser_GetCounter(STAT_DOOM_KILLPEDIA_ALL) == 23) {
+					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_KILLPEDIA);
+				}
+			}
+
+			if (inflictor && inflictor->type == MT_BFG) {
+				source->player->bfgTargets++;
+			}
 		}
 
 	}
@@ -915,7 +959,7 @@ P_KillMobj
 	if (target->health < -target->info->spawnhealth
 		&& target->info->xdeathstate)
 	{
-		if (idAchievementManager::isClassicDoomOnly()) {
+		if (idAchievementManager::isClassicDoomOnly() && !::g->demoplayback) {
 			if (source != NULL && source->player && source->player->readyweapon == wp_missile && inflictor && inflictor->type == MT_ROCKET) {
 				if ((I_GetTime() - source->player->missleGibTime) < 1) {
 					source->player->missleGibs++;
@@ -939,7 +983,7 @@ P_KillMobj
 
 	if (source != NULL) {
 		//GK: D1&2 In fight Kill
-		if (!target->player && !source->player) {
+		if (!target->player && !source->player && !::g->demoplayback) {
 			if (idAchievementManager::isClassicDoomOnly()) {
 				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_INFIGHT);
 			}
@@ -947,7 +991,7 @@ P_KillMobj
 	}
 	//	I_StartSound (&actor->r, actor->info->deathsound);
 
-	if (inflictor != NULL) {
+	if (inflictor != NULL && !::g->demoplayback) {
 		//GK: D1&2 Barrel Kills
 		if (inflictor->type == MT_BARREL && inflictor->killer && inflictor->killer->player && inflictor->spawnpoint.x == inflictor->killer->player->lastHitBarrel.x && inflictor->spawnpoint.y == inflictor->killer->player->lastHitBarrel.y) {
 			inflictor->killer->player->barrelKills++;
