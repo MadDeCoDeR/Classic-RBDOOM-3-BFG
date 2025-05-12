@@ -251,7 +251,7 @@ struct mobj_t
 
     // More list: links in sector (if needed)
     mobj_t*	snext;
-    mobj_t*	sprev;
+    mobj_t** sprev; // killough 8/10/98: change to ptr-to-ptr
 
     //More drawing info: to determine current sprite.
     angle_t		angle;	// orientation
@@ -262,7 +262,7 @@ struct mobj_t
     // Interaction info, by BLOCKMAP.
     // Links in blocks (if needed).
     mobj_t*	bnext;
-    mobj_t*	bprev;
+    mobj_t** bprev; // killough 8/11/98: change to ptr-to-ptr
     
     struct subsector_s*	subsector;
 

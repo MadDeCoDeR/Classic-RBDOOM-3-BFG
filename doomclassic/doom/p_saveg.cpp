@@ -341,7 +341,9 @@ void P_ArchiveThinkers (void)
 			*::g->save_p++ = moIndex >> 8;
 			*::g->save_p++ = moIndex;
 
-			moIndex = GetMOIndex( mobj->sprev );
+			//GK: For now keep storing snext, sprev, bnext and bprev in order to avoid save file incompatibilities
+			mobj_t* sprev = mobj->sprev ? *mobj->sprev : NULL;
+			moIndex = GetMOIndex( sprev );
 			*::g->save_p++ = moIndex >> 8;
 			*::g->save_p++ = moIndex;
 
@@ -357,7 +359,8 @@ void P_ArchiveThinkers (void)
 			*::g->save_p++ = moIndex >> 8;
 			*::g->save_p++ = moIndex;
 
-			moIndex = GetMOIndex( mobj->bprev );
+			mobj_t* bprev = mobj->bprev ? *mobj->bprev : NULL;
+			moIndex = GetMOIndex( bprev );
 			*::g->save_p++ = moIndex >> 8;
 			*::g->save_p++ = moIndex;
 
@@ -675,15 +678,12 @@ void P_UnArchiveThinkers (void)
 					mobj->target = GetMO( unmo[mo_index].mo_targets );
 					mobj->tracer = GetMO(unmo[mo_index].mo_tracers );
 
-					mobj->snext = GetMO(unmo[mo_index].mo_snext );
-					mobj->sprev = GetMO(unmo[mo_index].mo_sprev );
+					//GK: Set the Think's position using the standard method instead of setting it from the save file, in order to avoid infinite loops
+					P_SetThingPosition(mobj);
 
 					if (unmo[mo_index].mo_shead ) {
 						mobj->subsector->sector->thinglist = mobj;
 					}
-
-					mobj->bnext = GetMO(unmo[mo_index].mo_bnext );
-					mobj->bprev = GetMO(unmo[mo_index].mo_bprev );
 
 					if (unmo[mo_index].mo_bhead ) {
 						// Is this the head of a block list?

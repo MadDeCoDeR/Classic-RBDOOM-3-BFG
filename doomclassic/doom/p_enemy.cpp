@@ -2205,8 +2205,19 @@ void A_RemoveFlags(mobj_t* mo) {
 	int flags = mo->state->args[0];
 	int flags2 = mo->state->args[1];
 
+	// unlink/relink the thing from the blockmap if
+  // the NOBLOCKMAP or NOSECTOR flags are removed
+	qboolean update_blockmap = ((flags & MF_NOBLOCKMAP) && (mo->flags & MF_NOBLOCKMAP))
+		|| ((flags & MF_NOSECTOR) && (mo->flags & MF_NOSECTOR));
+
+	if (update_blockmap)
+		P_UnsetThingPosition(mo);
+
 	mo->flags &= ~flags;
 	mo->flags2 &= ~flags2;
+
+	if (update_blockmap)
+		P_SetThingPosition(mo);
 }
 
 void A_MonsterProjectile(mobj_t* mo) {
