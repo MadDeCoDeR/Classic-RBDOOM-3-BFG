@@ -671,7 +671,7 @@ P_TouchSpecialThing
 			return;
 
 		// DHM - Nerve :: Give achievement
-		if ( !common->IsMultiplayer() ) {
+		if ( !common->IsMultiplayer() && !idAchievementManager::isClassicDoomOnly()) {
 			switch( DoomLib::GetGameSKU() ) {
 				case GAME_SKU_DOOM2_BFG: {
 #ifdef __MONOLITH__
