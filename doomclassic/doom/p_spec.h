@@ -872,6 +872,8 @@ int EV_SilentTeleport
 #define FRICTION_SHIFT  8
 #define PUSH_MASK       0x200
 #define PUSH_SHIFT      9
+#define SECRET_MASK     0x80
+#define SECRET_SHIFT    7
 
 // define names for the TriggerType field of the general linedefs
 

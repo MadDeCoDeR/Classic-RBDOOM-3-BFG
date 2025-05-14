@@ -1551,6 +1551,48 @@ P_ShootSpecialLine
 }
 
 
+void P_GiveSecret(player_t* player) {
+	player->secretcount++;
+	//GK send message when secret found
+	::g->plyr->message = GOTSECRET;
+	S_StartSound(player->mo, sfx_getpow);
+
+
+	if (!::g->demoplayback && (::g->usergame && !::g->netgame)) {
+		// DHM - Nerve :: Let's give achievements in real time in Doom 2
+		if (!common->IsMultiplayer()) {
+			if (idAchievementManager::isClassicDoomOnly()) {
+				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_SECRET_AREA);
+			}
+			else {
+				switch (DoomLib::GetGameSKU()) {
+				case GAME_SKU_DOOM1_BFG: {
+					// Removing trophies for DOOM and DOOM II BFG due to point limit.
+					//gameLocal->UnlockAchievement( Doom1BFG_Trophies::SCOUT_FIND_ANY_SECRET );
+					break;
+				}
+				case GAME_SKU_DOOM2_BFG: {
+#ifdef __MONOLITH__
+					//gameLocal->UnlockAchievement( Doom2BFG_Trophies::IMPORTANT_LOOKING_DOOR_FIND_ANY_SECRET );
+					idAchievementManager::LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM2_IMPORTANT_LOOKING_DOOR_FIND_ANY_SECRET);
+#endif
+					break;
+				}
+				case GAME_SKU_DCC: {
+					// Not on PC.
+					//gameLocal->UnlockAchievement( DOOM_ACHIEVEMENT_FIND_SECRET );
+					break;
+				}
+				default: {
+					// No unlocks for other SKUs.
+					break;
+				}
+				}
+			}
+		}
+	}
+}
+
 
 //
 // P_PlayerInSpecialSector
@@ -1599,47 +1641,8 @@ void P_PlayerInSpecialSector (player_t* player)
 
 		case 9:
 			// SECRET SECTOR
-			player->secretcount++;
-			//GK send message when secret found
-			::g->plyr->message = GOTSECRET;
-			S_StartSound(player->mo, sfx_getpow);
 			sector->special = 0;
-
-
-			if ( !::g->demoplayback && ( ::g->usergame && !::g->netgame ) ) {
-				// DHM - Nerve :: Let's give achievements in real time in Doom 2
-				if ( !common->IsMultiplayer() ) {
-					if (idAchievementManager::isClassicDoomOnly()) {
-						idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_SECRET_AREA);
-					} else {
-						switch( DoomLib::GetGameSKU() ) {
-							case GAME_SKU_DOOM1_BFG: {
-								// Removing trophies for DOOM and DOOM II BFG due to point limit.
-								//gameLocal->UnlockAchievement( Doom1BFG_Trophies::SCOUT_FIND_ANY_SECRET );
-								break;
-							}
-							case GAME_SKU_DOOM2_BFG: {
-		#ifdef __MONOLITH__
-								//gameLocal->UnlockAchievement( Doom2BFG_Trophies::IMPORTANT_LOOKING_DOOR_FIND_ANY_SECRET );
-								idAchievementManager::LocalUser_CompleteAchievement(ACHIEVEMENT_DOOM2_IMPORTANT_LOOKING_DOOR_FIND_ANY_SECRET );
-		#endif
-								break;
-							}
-							case GAME_SKU_DCC: {
-								// Not on PC.
-								//gameLocal->UnlockAchievement( DOOM_ACHIEVEMENT_FIND_SECRET );
-								break;
-							}
-							default: {
-								// No unlocks for other SKUs.
-								break;
-							}
-						}
-					}
-				}
-			}
-
-
+			P_GiveSecret(player);
 			break;
 
 		case 11:
@@ -1685,6 +1688,45 @@ void P_PlayerInSpecialSector (player_t* player)
 				G_SecretExitLevel();
 				break;
 		}
+	}
+	else {
+		switch ((sector->special & DAMAGE_MASK) >> DAMAGE_SHIFT)
+		{
+		case 0: // no damage
+			break;
+		case 1: // 2/5 damage per 31 ticks
+			if (!player->powers[pw_ironfeet])
+				if (!(::g->leveltime & 0x1f))
+					P_DamageMobj(player->mo, NULL, NULL, 5);
+			break;
+		case 2: // 5/10 damage per 31 ticks
+			if (!player->powers[pw_ironfeet])
+				if (!(::g->leveltime & 0x1f))
+					P_DamageMobj(player->mo, NULL, NULL, 10);
+			break;
+		case 3: // 10/20 damage per 31 ticks
+			if (!player->powers[pw_ironfeet]
+				|| (P_Random() < 5))  // take damage even with suit
+			{
+				if (!(::g->leveltime & 0x1f))
+					P_DamageMobj(player->mo, NULL, NULL, 20);
+			}
+			break;
+		}
+
+		if (sector->special & SECRET_MASK)
+		{
+			sector->special &= ~SECRET_MASK;
+			if (sector->special < 32) // if all extended bits clear,
+				sector->special = 0;    // sector is not special anymore
+			P_GiveSecret(player);
+		}
+
+		// phares 3/19/98:
+		//
+		// If FRICTION_MASK or PUSH_MASK is set, we don't care at this
+		// point, since the code to deal with those situations is
+		// handled by Thinkers.
 	}
 }
 
