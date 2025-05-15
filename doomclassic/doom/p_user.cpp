@@ -55,6 +55,29 @@ If you have questions concerning this license or the applicable additional terms
 idCVar cl_jump("cl_jump", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable jumping on classic Doom");
 idCVar cl_freelookclamp("cl_freelookclamp", "550", CVAR_INTEGER | CVAR_ARCHIVE, "Set the absolute mousey clamp limit", -4000, 4000);
 
+const idList<int> retailWeaponOrder = {
+	wp_fist,
+	wp_pistol,
+	wp_shotgun,
+	wp_chaingun,
+	wp_missile,
+	wp_plasma,
+	wp_bfg,
+	wp_chainsaw
+};
+
+const idList<int> commercialWeaponOrder = {
+	wp_fist,
+	wp_pistol,
+	wp_shotgun,
+	wp_supershotgun,
+	wp_chaingun,
+	wp_missile,
+	wp_plasma,
+	wp_bfg,
+	wp_chainsaw
+};
+
 //
 // P_Thrust
 // Moves the given origin along a given angle.
@@ -554,11 +577,21 @@ As it turns out the old method (to just call P_Ticker) was causing incompatibili
 That way it can be called directly from g_game once the input is detected or from the original place when
 recording and playing Demos.
 */
+
+//GK: Rewriten for custom weapon circle order (just put Super Shotgun between the shotgun and the chaingun)
 void P_CircleWeapons(player_t* player, int nextPrevWeapon) {
 	if (player->mo == NULL)
 		return;
+
+	idList<int> weaponOrder = (::g->gamemode == retail) ? retailWeaponOrder : commercialWeaponOrder;
+	int MaxWeapons = weaponOrder.Num();
 	weapontype_t newweapon = wp_fist;
-	newweapon = player->readyweapon;
+	if (!::g->demoplayback && !::g->demorecording) {
+		newweapon = (weapontype_t)weaponOrder.FindIndex(player->readyweapon);
+	}
+	else {
+		newweapon = player->readyweapon;
+	}
 
 	for (int k = 0; k < NUMWEAPONS; ++k)
 	{
@@ -567,22 +600,29 @@ void P_CircleWeapons(player_t* player, int nextPrevWeapon) {
 		if (newweapon == wp_nochange)
 			continue;
 
-		weapontype_t maxweapon = (::g->gamemode == retail) ? wp_chainsaw : wp_supershotgun;
-
 		if (newweapon < 0)
-			newweapon = maxweapon;
+			newweapon = (weapontype_t)(MaxWeapons - 1);
 
-		if (newweapon > maxweapon)
+		if (newweapon >= MaxWeapons)
 			newweapon = wp_fist;
+
+		//GK: In Demos avoid using the custom weapon order
+		if (!::g->demoplayback && !::g->demorecording) {
+			newweapon = (weapontype_t)weaponOrder[newweapon];
+		}
 
 
 		if (player->weaponowned[newweapon] && newweapon != player->readyweapon)
 		{
-			
+
 			player->pendingweapon = newweapon;
 			break;
 		}
+		if (!::g->demoplayback && !::g->demorecording) {
+			newweapon = (weapontype_t)weaponOrder.FindIndex(newweapon);
+		}
 	}
+	
 }
 
 
