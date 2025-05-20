@@ -897,8 +897,8 @@ void R_SetupThirdPersonView(player_t* player) {
 //
 void R_SetupFrame (player_t* player)
 {		
-	unsigned		i, cm;
-	int mousepos;
+	unsigned		i;
+	int mousepos, cm;
 
 	::g->viewplayer = player;
 	//GK: Either thirdPerson Camera or FirstPerson
