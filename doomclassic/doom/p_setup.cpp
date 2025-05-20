@@ -246,6 +246,27 @@ void P_LoadSectors (int lump)
 		//ss->touching_thinglist = NULL;            // phares 3/14/98
 		//GK: Load the reverbs based on sector's index
 		ss->counter = i;
+
+		ss->nextsec = -1; //jff 2/26/98 add fields to support locking out
+      	ss->prevsec = -1; // stair retriggering until build completes
+
+		 // killough 3/7/98:
+      ss->floor_xoffs = 0;
+      ss->floor_yoffs = 0;      // floor and ceiling flats offsets
+      ss->ceiling_xoffs = 0;
+      ss->ceiling_yoffs = 0;
+      ss->heightsec = -1;       // sector used to get floor and ceiling height
+      ss->floorlightsec = -1;   // sector used to get floor lighting
+      // killough 3/7/98: end changes
+
+      // killough 4/11/98 sector used to get ceiling lighting:
+      ss->ceilinglightsec = -1;
+
+      // killough 4/4/98: colormaps:
+      ss->bottommap = ss->midmap = ss->topmap = 0;
+
+      // killough 10/98: sky textures coming from sidedefs:
+      ss->sky = 0;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 		if (!common->UseAlternativeAudioAPI()) {
 #endif

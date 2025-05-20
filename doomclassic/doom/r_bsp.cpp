@@ -76,6 +76,7 @@ void R_ClearDrawSegs (void)
 #endif
     }
     ::g->drawsegind = 1;
+    ::g->ds_p = ::g->drawsegs[0].get();
     //::g->ds_p = ::g->drawsegs;
 }
 
@@ -267,6 +268,7 @@ void R_AddLine (seg_t*	line)
     angle_t		angle2;
     angle_t		span;
     angle_t		tspan;
+    static sector_t tempsec;     // killough 3/8/98: ceiling/water hack
     
     ::g->curline = line;
 
@@ -327,6 +329,9 @@ void R_AddLine (seg_t*	line)
     if (!::g->backsector)
 		goto clipsolid;		
 
+      // killough 3/8/98, 4/4/98: hack for invisible ceilings / deep water
+    ::g->backsector = R_FakeFlat(::g->backsector, &tempsec, NULL, NULL, true);
+
     // Closed door.
     if (::g->backsector->ceilingheight <= ::g->frontsector->floorheight
 	|| ::g->backsector->floorheight >= ::g->frontsector->ceilingheight)
@@ -345,7 +350,18 @@ void R_AddLine (seg_t*	line)
     if (::g->backsector->ceilingpic == ::g->frontsector->ceilingpic
 	&& ::g->backsector->floorpic == ::g->frontsector->floorpic
 	&& ::g->backsector->lightlevel == ::g->frontsector->lightlevel
-	&& ::g->curline->sidedef->midtexture == 0)
+	&& ::g->curline->sidedef->midtexture == 0
+
+    // killough 3/7/98: Take flats offsets into account:
+    && ::g->backsector->floor_xoffs == ::g->frontsector->floor_xoffs
+    && ::g->backsector->floor_yoffs == ::g->frontsector->floor_yoffs
+    && ::g->backsector->ceiling_xoffs == ::g->frontsector->ceiling_xoffs
+    && ::g->backsector->ceiling_yoffs == ::g->frontsector->ceiling_yoffs
+
+    // killough 4/16/98: consider altered lighting
+    && ::g->backsector->floorlightsec == ::g->frontsector->floorlightsec
+    && ::g->backsector->ceilinglightsec == ::g->frontsector->ceilinglightsec
+    )
     {
 		return;
     }
@@ -491,6 +507,9 @@ void R_Subsector (int num)
     int			count;
     seg_t*		line;
     subsector_t*	sub;
+    sector_t    tempsec;              // killough 3/7/98: deep water hack
+    int         floorlightlevel;      // killough 3/16/98: set floor lightlevel
+    int         ceilinglightlevel;    // killough 4/11/98
 	
 #ifdef RANGECHECK
     if (num>=::g->numsubsectors)
@@ -504,11 +523,17 @@ void R_Subsector (int num)
     ::g->frontsector = sub->sector;
     count = sub->numlines;
     line = &::g->segs[sub->firstline];
+    // killough 3/8/98, 4/4/98: Deep water / fake ceiling effect
+    ::g->frontsector = R_FakeFlat(::g->frontsector, &tempsec, &floorlightlevel,
+                           &ceilinglightlevel, false);   // killough 4/11/98
 
-    if (::g->frontsector->floorheight < ::g->viewz)
+    if (::g->frontsector->floorheight < ::g->viewz || // killough 3/7/98
+    (::g->frontsector->heightsec != -1 &&
+     ::g->sectors[::g->frontsector->heightsec].ceilingpic == ::g->skyflatnum))
     {
 		::g->floorplane = R_FindPlane (::g->frontsector->floorheight,
-					::g->frontsector->floorpic,
+					::g->frontsector->floorpic == ::g->skyflatnum &&  // kilough 10/98
+		::g->frontsector->sky & PL_SKYFLAT ? ::g->frontsector->sky : ::g->frontsector->floorpic,
 					::g->frontsector->lightlevel,
 			::g->frontsector->floor_xoffs,
 			::g->frontsector->floor_yoffs); //GK:just some generalized linedef stuff
@@ -520,7 +545,8 @@ void R_Subsector (int num)
 	|| ::g->frontsector->ceilingpic == ::g->skyflatnum)
     {
 		 ::g->ceilingplane = R_FindPlane (::g->frontsector->ceilingheight,
-						::g->frontsector->ceilingpic,
+						::g->frontsector->ceilingpic == ::g->skyflatnum &&  // kilough 10/98
+		::g->frontsector->sky & PL_SKYFLAT ? ::g->frontsector->sky : ::g->frontsector->ceilingpic,
 						::g->frontsector->lightlevel, ::g->frontsector->ceiling_xoffs, ::g->frontsector->ceiling_yoffs);
     }
     else
@@ -568,5 +594,108 @@ void R_RenderBSPNode(int bspnum)
     R_Subsector(bspnum == -1 ? 0 : bspnum & ~NF_SUBSECTOR);
 }
 
+//
+// killough 3/7/98: Hack floor/ceiling heights for deep water etc.
+//
+// If player's view height is underneath fake floor, lower the
+// drawn ceiling to be just under the floor height, and replace
+// the drawn floor and ceiling textures, and light level, with
+// the control sector's.
+//
+// Similar for ceiling, only reflected.
+//
+// killough 4/11/98, 4/13/98: fix bugs, add 'back' parameter
+//
 
+sector_t *R_FakeFlat(sector_t *sec, sector_t *tempsec,
+                     int *floorlightlevel, int *ceilinglightlevel,
+                     qboolean back)
+{
+  if (floorlightlevel)
+    *floorlightlevel = sec->floorlightsec == -1 ?
+      sec->lightlevel : ::g->sectors[sec->floorlightsec].lightlevel;
+
+  if (ceilinglightlevel)
+    *ceilinglightlevel = sec->ceilinglightsec == -1 ? // killough 4/11/98
+      sec->lightlevel : ::g->sectors[sec->ceilinglightsec].lightlevel;
+
+  if (sec->heightsec != -1)
+    {
+      const sector_t *s = &::g->sectors[sec->heightsec];
+      int heightsec = ::g->viewplayer->mo->subsector->sector->heightsec;
+      int underwater = heightsec!=-1 && ::g->viewz<=::g->sectors[heightsec].floorheight;
+
+      // Replace sector being drawn, with a copy to be hacked
+      *tempsec = *sec;
+
+      // Replace floor and ceiling height with other sector's heights.
+      tempsec->floorheight   = s->floorheight;
+      tempsec->ceilingheight = s->ceilingheight;
+
+      if ((underwater && (tempsec->  floorheight = sec->floorheight,
+                          tempsec->ceilingheight = s->floorheight-1,
+                          !back)) || ::g->viewz <= s->floorheight)
+        {                   // head-below-floor hack
+          tempsec->floorpic    = s->floorpic;
+          tempsec->floor_xoffs = s->floor_xoffs;
+          tempsec->floor_yoffs = s->floor_yoffs;
+
+          if (underwater)
+            if (s->ceilingpic == ::g->skyflatnum)
+              {
+                tempsec->floorheight   = tempsec->ceilingheight+1;
+                tempsec->ceilingpic    = tempsec->floorpic;
+                tempsec->ceiling_xoffs = tempsec->floor_xoffs;
+                tempsec->ceiling_yoffs = tempsec->floor_yoffs;
+              }
+            else
+              {
+                tempsec->ceilingpic    = s->ceilingpic;
+                tempsec->ceiling_xoffs = s->ceiling_xoffs;
+                tempsec->ceiling_yoffs = s->ceiling_yoffs;
+              }
+
+          tempsec->lightlevel  = s->lightlevel;
+
+          if (floorlightlevel)
+            *floorlightlevel = s->floorlightsec == -1 ? s->lightlevel :
+            ::g->sectors[s->floorlightsec].lightlevel; // killough 3/16/98
+
+          if (ceilinglightlevel)
+            *ceilinglightlevel = s->ceilinglightsec == -1 ? s->lightlevel :
+            ::g->sectors[s->ceilinglightsec].lightlevel; // killough 4/11/98
+        }
+      else
+        if (heightsec != -1 && ::g->viewz >= ::g->sectors[heightsec].ceilingheight &&
+            sec->ceilingheight > s->ceilingheight)
+          {   // Above-ceiling hack
+            tempsec->ceilingheight = s->ceilingheight;
+            tempsec->floorheight   = s->ceilingheight + 1;
+
+            tempsec->floorpic    = tempsec->ceilingpic    = s->ceilingpic;
+            tempsec->floor_xoffs = tempsec->ceiling_xoffs = s->ceiling_xoffs;
+            tempsec->floor_yoffs = tempsec->ceiling_yoffs = s->ceiling_yoffs;
+
+            if (s->floorpic != ::g->skyflatnum)
+              {
+                tempsec->ceilingheight = sec->ceilingheight;
+                tempsec->floorpic      = s->floorpic;
+                tempsec->floor_xoffs   = s->floor_xoffs;
+                tempsec->floor_yoffs   = s->floor_yoffs;
+              }
+
+            tempsec->lightlevel  = s->lightlevel;
+
+            if (floorlightlevel)
+              *floorlightlevel = s->floorlightsec == -1 ? s->lightlevel :
+              ::g->sectors[s->floorlightsec].lightlevel; // killough 3/16/98
+
+            if (ceilinglightlevel)
+              *ceilinglightlevel = s->ceilinglightsec == -1 ? s->lightlevel :
+              ::g->sectors[s->ceilinglightsec].lightlevel; // killough 4/11/98
+          }
+      sec = tempsec;               // Use other sector
+    }
+  return sec;
+}
 

@@ -897,7 +897,7 @@ void R_SetupThirdPersonView(player_t* player) {
 //
 void R_SetupFrame (player_t* player)
 {		
-	unsigned		i;
+	unsigned		i, cm;
 	int mousepos;
 
 	::g->viewplayer = player;
@@ -939,6 +939,19 @@ void R_SetupFrame (player_t* player)
 		//GK: End
 	::g->viewsin = finesine[GetViewAngle()>>ANGLETOFINESHIFT];
 	::g->viewcos = finecosine[GetViewAngle()>>ANGLETOFINESHIFT];
+
+	// killough 3/20/98, 4/4/98: select colormap based on player status
+
+  if (player->mo->subsector->sector->heightsec != -1)
+    {
+      const sector_t *s = player->mo->subsector->sector->heightsec + ::g->sectors;
+      cm = ::g->viewz < s->floorheight ? s->bottommap : ::g->viewz > s->ceilingheight ?
+        s->topmap : s->midmap;
+      if (cm < 0 || cm > ::g->numcolormaps)
+        cm = 0;
+    }
+  else
+    cm = 0;
 
 	::g->sscount = 0;
 

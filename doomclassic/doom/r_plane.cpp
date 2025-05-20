@@ -230,7 +230,7 @@ void R_ClearPlanes (void)
 visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel,fixed_t xoffs,fixed_t yoffs ) {
 	visplane_t*	check = NULL;
 	
-    if (picnum == ::g->skyflatnum) {
+    if (picnum == ::g->skyflatnum || picnum & PL_SKYFLAT) {
 		height = 0;			// all skys map together
 		lightlevel = 0;
 	}
@@ -455,7 +455,7 @@ void R_DrawPlanes (void)
 
 	
 	// sky flat
-	if (::g->visplanes[i]->picnum == ::g->skyflatnum)
+	if (::g->visplanes[i]->picnum == ::g->skyflatnum || ::g->visplanes[i]->picnum & PL_SKYFLAT)
 	{
 	    ::g->dc_iscale = ::g->pspriteiscale>>::g->detailshift;
 	    
@@ -464,9 +464,21 @@ void R_DrawPlanes (void)
 	    // Because of this hack, sky is not affected
 	    //  by INVUL inverse mapping.
 	    ::g->dc_colormap = ::g->colormaps[0];
-	    ::g->dc_texturemid = ::g->skytexturemid;
+		if (::g->visplanes[i]->picnum & PL_SKYFLAT) {
+			// Sky Linedef
+	    	const line_t *l = &::g->lines[::g->visplanes[i]->picnum & ~PL_SKYFLAT];
+
+	    	// Sky transferred from first sidedef
+	    	const side_t *s = *l->sidenum + ::g->sides;
+
+	    	// Vertical offset allows careful sky positioning.
+
+	    	::g->dc_texturemid = s->rowoffset - 28*FRACUNIT;
+		} else {
+	    	::g->dc_texturemid = ::g->skytexturemid;
+		}
 		int ttmid = 100 * FRACUNIT;
-		if (::g->skytexturemid > ttmid) { //GK:Tall skies support
+		if (::g->dc_texturemid > ttmid) { //GK:Tall skies support
 			::g->dc_iscale = ::g->dc_iscale *2.0f;
 		}
 		unsigned short mintop = USHRT_MAX;

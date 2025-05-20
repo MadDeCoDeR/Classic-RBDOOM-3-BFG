@@ -80,6 +80,7 @@ R_RenderMaskedSegRange
     postColumn_t*	col;
     int				lightnum;
     int				texnum;
+	sector_t tempsec;      // killough 4/13/98
     
     // Calculate light table.
     // Use different light tables
@@ -103,7 +104,9 @@ R_RenderMaskedSegRange
     ::g->backsector = ::g->curline->backsector;
     texnum = ::g->texturetranslation[::g->curline->sidedef->midtexture];
 	
-    lightnum = (::g->frontsector->lightlevel >> LIGHTSEGSHIFT)+::g->extralight;
+    // killough 4/13/98: get correct lightlevel for 2s normal textures
+  lightnum = (R_FakeFlat(::g->frontsector, &tempsec, NULL, NULL, false)
+              ->lightlevel >> LIGHTSEGSHIFT)+::g->extralight;
 
     if (::g->curline->v1->y == ::g->curline->v2->y)
 	lightnum--;
@@ -158,7 +161,24 @@ R_RenderMaskedSegRange
 		::g->dc_colormap = ::g->walllights[index];
 	    }
 			
-	    ::g->sprtopscreen = ::g->centeryfrac - FixedMul(::g->dc_texturemid, ::g->spryscale);
+	    // killough 3/2/98:
+        //
+        // This calculation used to overflow and cause crashes in Doom:
+        //
+        // sprtopscreen = centeryfrac - FixedMul(dc_texturemid, spryscale);
+        //
+        // This code fixes it, by using double-precision intermediate
+        // arithmetic and by skipping the drawing of 2s normals whose
+        // mapping to screen coordinates is totally out of range:
+
+        {
+          long long t = ((long long) ::g->centeryfrac << FRACBITS) -
+            (long long) ::g->dc_texturemid * ::g->spryscale;
+          if (t + (long long) ::g->s_textureheight[texnum] * ::g->spryscale < 0 ||
+              t > (long long) MAXHEIGHT << FRACBITS*2)
+            continue;        // skip if the texture is out of screen's range
+          ::g->sprtopscreen = (long)(t >> FRACBITS);
+        }
 	    ::g->dc_iscale = 0xffffffffu / (unsigned)::g->spryscale;
 	    
 	    // draw the texture
@@ -208,15 +228,16 @@ void R_RenderSegLoop (void)
     for ( ; ::g->rw_x < ::g->rw_stopx ; ::g->rw_x++)
     {
 		// mark floor / ceiling areas
-		yl = (::g->topfrac+HEIGHTUNIT-1)>>HEIGHTBITS;
+		yh, yl = (::g->topfrac+HEIGHTUNIT-1)>>HEIGHTBITS;
 
 		// no space above wall?
-		if (yl < ::g->ceilingclip[::g->rw_x]+1)
-			yl = ::g->ceilingclip[::g->rw_x]+1;
+		bottom, top = ::g->ceilingclip[::g->rw_x] + 1;
+
+		if (yl < top)
+			yl = top;
 		
 		if (::g->markceiling)
 		{
-			top = ::g->ceilingclip[::g->rw_x]+1;
 			bottom = yl-1;
 
 			if (bottom >= ::g->floorclip[::g->rw_x])
@@ -230,17 +251,15 @@ void R_RenderSegLoop (void)
 		}
 		
 		yh = ::g->bottomfrac>>HEIGHTBITS;
+		bottom = ::g->floorclip[::g->rw_x] - 1;
 
-		if (yh >= ::g->floorclip[::g->rw_x])
-			yh = ::g->floorclip[::g->rw_x]-1;
+		if (yh > bottom)
+			yh = bottom;
 
 		if (::g->markfloor)
 		{
-			top = yh+1;
-			bottom = ::g->floorclip[::g->rw_x]-1;
-			if (top <= ::g->ceilingclip[::g->rw_x])
-				top = ::g->ceilingclip[::g->rw_x]+1;
-			if (top <= bottom)
+			top = yh < ::g->ceilingclip[::g->rw_x] ? ::g->ceilingclip[::g->rw_x] : yh;
+			if (++top <= bottom)
 			{
 				::g->floorplane->top[::g->rw_x] = top;
 				::g->floorplane->bottom[::g->rw_x] = bottom;
@@ -411,7 +430,7 @@ R_StoreWallRange
     sineval = finesine[distangle>>ANGLETOFINESHIFT];
     ::g->rw_distance = FixedMul (hyp, sineval);
 		
-	::g->ds_p = ::g->drawsegs[::g->drawsegind - 1].get();
+	
     ::g->ds_p->x1 = ::g->rw_x = start;
     ::g->ds_p->x2 = stop;
     ::g->ds_p->curline = ::g->curline;
@@ -477,6 +496,12 @@ R_StoreWallRange
 	}
 	::g->rw_midtexturemid += ::g->sidedef->rowoffset;
 
+	{      // killough 3/27/98: reduce offset
+        fixed_t h = ::g->s_textureheight[::g->sidedef->midtexture];
+        if (h & (h-FRACUNIT))
+          ::g->rw_midtexturemid %= h;
+      }
+
 	::g->ds_p->silhouette = SIL_BOTH;
 	::g->ds_p->sprtopclip = ::g->screenheightarray;
 	::g->ds_p->sprbottomclip = ::g->negonearray;
@@ -540,7 +565,17 @@ R_StoreWallRange
 			
 	if (::g->worldlow != ::g->worldbottom 
 	    || ::g->backsector->floorpic != ::g->frontsector->floorpic
-	    || ::g->backsector->lightlevel != ::g->frontsector->lightlevel)
+	    || ::g->backsector->lightlevel != ::g->frontsector->lightlevel
+	// killough 3/7/98: Add checks for (x,y) offsets
+        || ::g->backsector->floor_xoffs != ::g->frontsector->floor_xoffs
+        || ::g->backsector->floor_yoffs != ::g->frontsector->floor_yoffs
+
+        // killough 4/15/98: prevent 2s normals
+        // from bleeding through deep water
+        || ::g->frontsector->heightsec != -1
+
+        // killough 4/17/98: draw floors if different light levels
+        || ::g->backsector->floorlightsec != ::g->frontsector->floorlightsec)
 	{
 	    ::g->markfloor = true;
 	}
@@ -553,7 +588,18 @@ R_StoreWallRange
 			
 	if (::g->worldhigh != ::g->worldtop 
 	    || ::g->backsector->ceilingpic != ::g->frontsector->ceilingpic
-	    || ::g->backsector->lightlevel != ::g->frontsector->lightlevel)
+	    || ::g->backsector->lightlevel != ::g->frontsector->lightlevel
+	// killough 3/7/98: Add checks for (x,y) offsets
+        || ::g->backsector->ceiling_xoffs != ::g->frontsector->ceiling_xoffs
+        || ::g->backsector->ceiling_yoffs != ::g->frontsector->ceiling_yoffs
+
+        // killough 4/15/98: prevent 2s normals
+        // from bleeding through fake ceilings
+        || (::g->frontsector->heightsec != -1 &&
+            ::g->frontsector->ceilingpic!=::g->skyflatnum)
+
+        // killough 4/17/98: draw ceilings if different light levels
+        || ::g->backsector->ceilinglightsec != ::g->frontsector->ceilinglightsec)
 	{
 	    ::g->markceiling = true;
 	}
@@ -605,7 +651,23 @@ R_StoreWallRange
 		::g->rw_bottomtexturemid = ::g->worldlow;
 	}
 	::g->rw_toptexturemid += ::g->sidedef->rowoffset;
+
+	// killough 3/27/98: reduce offset
+      {
+        fixed_t h = ::g->s_textureheight[::g->sidedef->toptexture];
+        if (h & (h-FRACUNIT))
+          ::g->rw_toptexturemid %= h;
+      }
+
 	::g->rw_bottomtexturemid += ::g->sidedef->rowoffset;
+
+	// killough 3/27/98: reduce offset
+      {
+        fixed_t h;
+        h = ::g->s_textureheight[::g->sidedef->bottomtexture];
+        if (h & (h-FRACUNIT))
+          ::g->rw_bottomtexturemid %= h;
+      }
 	
 	// allocate space for masked texture tables
 	if (::g->sidedef->midtexture)
@@ -665,19 +727,22 @@ R_StoreWallRange
     //  of the view plane, it is definitely invisible
     //  and doesn't need to be marked.
     
-  
-    if (::g->frontsector->floorheight >= ::g->viewz)
-    {
-	// above view plane
-	::g->markfloor = false;
-    }
-    
-    if (::g->frontsector->ceilingheight <= ::g->viewz 
-	&& ::g->frontsector->ceilingpic != ::g->skyflatnum)
-    {
-	// below view plane
-	::g->markceiling = false;
-    }
+  // killough 3/7/98: add deep water check
+  if (::g->frontsector->heightsec == -1)
+  {
+		if (::g->frontsector->floorheight >= ::g->viewz)
+		{
+		// above view plane
+		::g->markfloor = false;
+		}
+		
+		if (::g->frontsector->ceilingheight <= ::g->viewz 
+		&& ::g->frontsector->ceilingpic != ::g->skyflatnum)
+		{
+		// below view plane
+		::g->markceiling = false;
+		}
+	}
 
     
     // calculate incremental stepping values for texture edges
@@ -710,10 +775,16 @@ R_StoreWallRange
     
     // render it
 	 if (::g->markceiling)
+	 	if (::g->ceilingplane)   // killough 4/11/98: add NULL ptr checks
 		 ::g->ceilingplane = R_CheckPlane (::g->ceilingplane, ::g->rw_x, ::g->rw_stopx-1);
+		else
+		 ::g->markceiling = 0;
 
 	 if (::g->markfloor)
+	 	if (::g->floorplane)     // killough 4/11/98: add NULL ptr checks
 		 ::g->floorplane = R_CheckPlane (::g->floorplane, ::g->rw_x, ::g->rw_stopx-1);
+		else
+		 ::g->markfloor = 0;
 
     R_RenderSegLoop ();
 
@@ -746,6 +817,7 @@ R_StoreWallRange
 	::g->ds_p->bsilheight = MAXINT;
     }
 	AddDrawSeg();
+	::g->ds_p = ::g->drawsegs[::g->drawsegind - 1].get();
 }
 
 
