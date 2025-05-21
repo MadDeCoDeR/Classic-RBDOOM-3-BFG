@@ -441,11 +441,6 @@ qboolean PIT_CheckThing (mobj_t* thing)
 		
 
 		P_DamageMobj(thing, ripper, ripper->target, damage);
-		//if (thing->flags2 & MF2_PUSHABLE && !(tmthing->flags2 & MF2_CANNOTPUSH))
-		{                   // Push thing
-			thing->momx += ripper->momx >> 2;
-			thing->momy += ripper->momy >> 2;
-		}
 		::g->numspechit = 0;
 		return (true);
 	}
