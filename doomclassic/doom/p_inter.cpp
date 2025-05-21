@@ -892,7 +892,7 @@ P_KillMobj
 			}
 
 			if (source->player->readyweapon == wp_bfg && DoomLib::expansionSelected == pack_kex && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
-				if ((I_GetTime() - source->player->lastCalamityKillTime) < 1) {
+				if ((I_GetTime() - source->player->lastCalamityKillTime) < 10) {
 					source->player->calamityKills++;
 				}
 				else {
@@ -913,12 +913,12 @@ P_KillMobj
 				}
 			}
 
-			if (killpediaMap.count(target->type)) {
+			if (idAchievementManager::isClassicDoomOnly() && killpediaMap.count(target->type)) {
 				if (!idAchievementManager::LocalUser_GetCounter(killpediaMap.at(target->type))) {
 					idAchievementManager::LocalUser_IncreaseCounter(killpediaMap.at(target->type));
 					idAchievementManager::LocalUser_IncreaseCounter(STAT_DOOM_KILLPEDIA_ALL);
 				}
-				if (idAchievementManager::isClassicDoomOnly() && idAchievementManager::LocalUser_GetCounter(STAT_DOOM_KILLPEDIA_ALL) == 23) {
+				if (idAchievementManager::LocalUser_GetCounter(STAT_DOOM_KILLPEDIA_ALL) == 23) {
 					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_KILLPEDIA);
 				}
 			}

@@ -432,18 +432,19 @@ qboolean PIT_CheckThing (mobj_t* thing)
 
 	if (::g->tmthing->flags2 & MF2_RIP)
 	{
+		mobj_t* ripper = ::g->tmthing; //GK: P_Spawnblood replace tmthing and that can mess up the rest of the ripper logic
 		damage = ((P_Random() & 3) + 2) * ::g->tmthing->info->damage;
 		if (!(thing->flags & MF_NOBLOOD))
 			P_SpawnBlood(::g->tmthing->x, ::g->tmthing->y, ::g->tmthing->z, damage);
-		if (::g->tmthing->info->ripsound)
-			S_StartSound(::g->tmthing, ::g->tmthing->info->ripsound);
+		if (ripper->info->ripsound)
+			S_StartSound(ripper, ripper->info->ripsound);
 		
 
-		P_DamageMobj(thing, ::g->tmthing, ::g->tmthing->target, damage);
+		P_DamageMobj(thing, ripper, ripper->target, damage);
 		//if (thing->flags2 & MF2_PUSHABLE && !(tmthing->flags2 & MF2_CANNOTPUSH))
 		{                   // Push thing
-			thing->momx += ::g->tmthing->momx >> 2;
-			thing->momy += ::g->tmthing->momy >> 2;
+			thing->momx += ripper->momx >> 2;
+			thing->momy += ripper->momy >> 2;
 		}
 		::g->numspechit = 0;
 		return (true);
