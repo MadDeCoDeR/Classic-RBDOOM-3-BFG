@@ -1389,6 +1389,7 @@ typedef struct
     uint64 flags2;
     int altSpeed;
     int meleeRange;
+    int ripsound;
 } mobjinfo_t;
 
 extern /*const*/ std::vector<mobjinfo_t> mobjinfo;

@@ -443,7 +443,7 @@ int checkstate(char* text) {
 
 void setThing(int pos, char* varname, int varval) {
 	//GK: This works (suprisingly)
-	dehobj tvars[29] = {
+	dehobj tvars[30] = {
 		{"Initial frame ",MAXINT,NULL,&mobjinfo[pos].spawnstate},
 		{"Hit points ",MAXINT,NULL,&mobjinfo[pos].spawnhealth},
 		{"First moving frame ",MAXINT,NULL,&mobjinfo[pos].seestate},
@@ -472,11 +472,13 @@ void setThing(int pos, char* varname, int varval) {
 		{"Splash group ", MAXINT, NULL, &mobjinfo[pos].splashGroup},
 		{"MBF21 Bits ",MAXINT,NULL, NULL, NULL, NULL, NULL, NULL, NULL, &mobjinfo[pos].flags2},
 		{"Fast speed ",MAXINT,NULL, &mobjinfo[pos].altSpeed},
-		{"Melee range ", MAXINT, NULL, &mobjinfo[pos].meleeRange}
+		{"Melee range ", MAXINT, NULL, &mobjinfo[pos].meleeRange},
+		{"Rip Sound ", MAXINT, NULL, &mobjinfo[pos].ripsound}
 	};
 	mobjinfo[pos].altSpeed = -1;
 	mobjinfo[pos].meleeRange = MELEERANGE;
-	for (int i = 0; i < 29; i++) {
+	mobjinfo[pos].ripsound = sfx_None;
+	for (int i = 0; i < 30; i++) {
 		if (!idStr::Icmp(varname, tvars[i].name)) {
 			if (varval < tvars[i].limit) {
 				if (tvars[i].llval != NULL) {

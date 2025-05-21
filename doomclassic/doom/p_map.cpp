@@ -411,6 +411,25 @@ qboolean PIT_CheckThing (mobj_t* thing)
 	    // didn't do any damage
 	    return !(thing->flags & MF_SOLID);	
 	}
+
+	if (::g->tmthing->flags2 & MF2_RIP)
+	{
+		damage = ((P_Random() & 3) + 2) * ::g->tmthing->info->damage;
+		if (!(thing->flags & MF_NOBLOOD))
+			P_SpawnBlood(::g->tmthing->x, ::g->tmthing->y, ::g->tmthing->z, damage);
+		if (::g->tmthing->info->ripsound)
+			S_StartSound(::g->tmthing, ::g->tmthing->info->ripsound);
+		
+
+		P_DamageMobj(thing, ::g->tmthing, ::g->tmthing->target, damage);
+		//if (thing->flags2 & MF2_PUSHABLE && !(tmthing->flags2 & MF2_CANNOTPUSH))
+		{                   // Push thing
+			thing->momx += ::g->tmthing->momx >> 2;
+			thing->momy += ::g->tmthing->momy >> 2;
+		}
+		::g->numspechit = 0;
+		return (true);
+	}
 	
 	// damage / explode
 	damage = ((P_Random()%8)+1)*::g->tmthing->info->damage;

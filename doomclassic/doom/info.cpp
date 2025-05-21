@@ -1213,7 +1213,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_POSSESSED
@@ -1245,7 +1246,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_SHOTGUY
@@ -1277,7 +1279,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_VILE
@@ -1309,7 +1312,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	MF2_SHORTMRANGE | MF2_DMGIGNORED | MF2_NOTHRESHOLD,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_FIRE
@@ -1341,7 +1345,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_UNDEAD
@@ -1373,7 +1378,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	MF2_RANGEHALF | MF2_LONGMELEE,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_TRACER
@@ -1405,7 +1411,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_SMOKE
@@ -1437,7 +1444,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_FATSO
@@ -1469,7 +1477,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	MF2_MAP07BOSS1,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_FATSHOT
@@ -1501,7 +1510,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_CHAINGUY
@@ -1533,7 +1543,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_TROOP
@@ -1565,7 +1576,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_SERGEANT
@@ -1597,7 +1609,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_SHADOWS
@@ -1629,7 +1642,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_HEAD
@@ -1661,7 +1675,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_BRUISER
@@ -1693,7 +1708,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	MF2_E1M8BOSS,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_BRUISERSHOT
@@ -1725,7 +1741,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_KNIGHT
@@ -1757,7 +1774,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_SKULL
@@ -1789,7 +1807,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	MF2_RANGEHALF,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_SPIDER
@@ -1821,7 +1840,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	MF2_NORADIUSDMG	| MF2_RANGEHALF | MF2_E3M8BOSS | MF2_E4M8BOSS | MF2_FULLVOLSOUNDS,	//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_BABY
@@ -1853,7 +1873,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	MF2_MAP07BOSS2,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_CYBORG
@@ -1885,7 +1906,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	MF2_NORADIUSDMG	| MF2_HIGHERMPROB | MF2_RANGEHALF | MF2_E2M8BOSS | MF2_E4M6BOSS | MF2_FULLVOLSOUNDS,	//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_PAIN
@@ -1917,7 +1939,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_WOLFSS
@@ -1949,7 +1972,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_KEEN
@@ -1981,7 +2005,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_BOSSBRAIN
@@ -2013,7 +2038,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_BOSSSPIT
@@ -2045,7 +2071,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_BOSSTARGET
@@ -2077,7 +2104,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_SPAWNSHOT
@@ -2109,7 +2137,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_SPAWNFIRE
@@ -2141,7 +2170,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_BARREL
@@ -2173,7 +2203,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	MF2_NEUTRAL_SPLASH,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_TROOPSHOT
@@ -2205,7 +2236,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_HEADSHOT
@@ -2237,7 +2269,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_ROCKET
@@ -2269,7 +2302,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_PLASMA
@@ -2301,7 +2335,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_BFG
@@ -2333,7 +2368,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_ARACHPLAZ
@@ -2365,7 +2401,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_PUFF
@@ -2397,7 +2434,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_BLOOD
@@ -2429,7 +2467,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_TFOG
@@ -2461,7 +2500,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_IFOG
@@ -2493,7 +2533,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_TELEPORTMAN
@@ -2525,7 +2566,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_EXTRABFG
@@ -2557,7 +2599,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC0
@@ -2589,7 +2632,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC1
@@ -2621,7 +2665,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC2
@@ -2653,7 +2698,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC3
@@ -2685,7 +2731,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC4
@@ -2717,7 +2764,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC5
@@ -2749,7 +2797,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC6
@@ -2781,7 +2830,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC7
@@ -2813,7 +2863,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC8
@@ -2845,7 +2896,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC9
@@ -2877,7 +2929,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC10
@@ -2909,7 +2962,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC11
@@ -2941,7 +2995,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC12
@@ -2973,7 +3028,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_INV
@@ -3005,7 +3061,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC13
@@ -3037,7 +3094,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_INS
@@ -3069,7 +3127,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC14
@@ -3101,7 +3160,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC15
@@ -3133,7 +3193,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC16
@@ -3165,7 +3226,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MEGA
@@ -3197,7 +3259,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_CLIP
@@ -3229,7 +3292,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC17
@@ -3261,7 +3325,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC18
@@ -3293,7 +3358,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC19
@@ -3325,7 +3391,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC20
@@ -3357,7 +3424,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC21
@@ -3389,7 +3457,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC22
@@ -3421,7 +3490,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC23
@@ -3453,7 +3523,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC24
@@ -3485,7 +3556,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC25
@@ -3517,7 +3589,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_CHAINGUN
@@ -3549,7 +3622,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC26
@@ -3581,7 +3655,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC27
@@ -3613,7 +3688,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC28
@@ -3645,7 +3721,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_SHOTGUN
@@ -3677,7 +3754,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_SUPERSHOTGUN
@@ -3709,7 +3787,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC29
@@ -3741,7 +3820,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC30
@@ -3773,7 +3853,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC31
@@ -3805,7 +3886,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC32
@@ -3837,7 +3919,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC33
@@ -3869,7 +3952,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC34
@@ -3901,7 +3985,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC35
@@ -3933,7 +4018,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC36
@@ -3965,7 +4051,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC37
@@ -3997,7 +4084,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC38
@@ -4029,7 +4117,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC39
@@ -4061,7 +4150,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC40
@@ -4093,7 +4183,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC41
@@ -4125,7 +4216,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC42
@@ -4157,7 +4249,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC43
@@ -4189,7 +4282,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC44
@@ -4221,7 +4315,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC45
@@ -4253,7 +4348,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC46
@@ -4285,7 +4381,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC47
@@ -4317,7 +4414,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC48
@@ -4349,7 +4447,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC49
@@ -4381,7 +4480,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC50
@@ -4413,7 +4513,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC51
@@ -4445,7 +4546,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC52
@@ -4477,7 +4579,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC53
@@ -4509,7 +4612,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC54
@@ -4541,7 +4645,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC55
@@ -4573,7 +4678,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC56
@@ -4605,7 +4711,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC57
@@ -4637,7 +4744,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC58
@@ -4669,7 +4777,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC59
@@ -4701,7 +4810,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC60
@@ -4733,7 +4843,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC61
@@ -4765,7 +4876,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC62
@@ -4797,7 +4909,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC63
@@ -4829,7 +4942,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC64
@@ -4861,7 +4975,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC65
@@ -4893,7 +5008,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC66
@@ -4925,7 +5041,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC67
@@ -4957,7 +5074,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC68
@@ -4989,7 +5107,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC69
@@ -5021,7 +5140,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC70
@@ -5053,7 +5173,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC71
@@ -5085,7 +5206,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC72
@@ -5117,7 +5239,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC73
@@ -5149,7 +5272,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC74
@@ -5181,7 +5305,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC75
@@ -5213,7 +5338,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC76
@@ -5245,7 +5371,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC77
@@ -5277,7 +5404,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC78
@@ -5309,7 +5437,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC79
@@ -5341,7 +5470,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC80
@@ -5373,7 +5503,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC81
@@ -5405,7 +5536,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC82
@@ -5437,7 +5569,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC83
@@ -5469,7 +5602,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC84
@@ -5501,7 +5635,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC85
@@ -5533,7 +5668,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	},
 
 	{		// MT_MISC86
@@ -5565,7 +5701,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound
 	}
 		,
 
@@ -5599,7 +5736,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange                                   
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound                                   
 },
 
 // For use with wind and current effects
@@ -5632,7 +5770,8 @@ std::vector<idStr> loopingActions = {
 	0,			//splashGroup
 	0,			//flags2
 	-1,			//altspeed
-	MELEERANGE		//meleeRange                                   
+	MELEERANGE,		//meleeRange
+	sfx_None	//Rip Sound                                   
 }
 };
 //std::vector<state_t> tempStates(arrStates, arrStates + NUMSTATES);
