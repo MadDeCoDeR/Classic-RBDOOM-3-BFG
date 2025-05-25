@@ -2460,7 +2460,7 @@ std::vector<idStr> loopingActions = {
 	100,		// mass
 	0,		// damage
 	sfx_None,		// activesound
-	MF_NOBLOCKMAP,		// flags
+	MF_NOBLOCKMAP | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
 	0,			//infightingGroup
 	0,			//projectileGroup
@@ -2592,7 +2592,7 @@ std::vector<idStr> loopingActions = {
 	100,		// mass
 	0,		// damage
 	sfx_None,		// activesound
-	MF_NOBLOCKMAP | MF_NOGRAVITY,		// flags
+	MF_NOBLOCKMAP | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
 	0,			//infightingGroup
 	0,			//projectileGroup
@@ -4110,7 +4110,7 @@ std::vector<idStr> loopingActions = {
 	100,		// mass
 	0,		// damage
 	sfx_None,		// activesound
-	MF_SOLID,		// flags
+	MF_SOLID | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
 	0,			//infightingGroup
 	0,			//projectileGroup
