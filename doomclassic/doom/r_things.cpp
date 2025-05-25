@@ -666,11 +666,6 @@ void R_ProjectSprite (mobj_t* thing)
 
 	gzt = thing->z + ::g->spritetopoffset[lump];
 
-  // killough 4/9/98: clip things which are out of view due to height
-  if (thing->z > ::g->viewz + FixedDiv(::g->centeryfrac, xscale) ||
-      gzt      < ::g->viewz - FixedDiv(::g->centeryfrac-::g->viewheight, xscale))
-    return;
-
   // killough 3/27/98: exclude things totally separated
   // from the viewer, by either water or fake ceilings
   // killough 4/11/98: improve sprite clipping for underwater/fake ceilings
