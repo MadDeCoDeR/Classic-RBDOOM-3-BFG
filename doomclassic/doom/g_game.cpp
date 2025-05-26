@@ -1143,6 +1143,7 @@ void G_PlayerReborn (int player)
 	p->weaponowned[wp_fist] = true;
 	p->weaponowned[wp_pistol] = true;
 	p->ammo[am_clip] = ::g->iammo;
+	p->parTimes = 0;
 	// TODO: PC
 #if 0
 	p->cheats = gameLocal->cheats;
