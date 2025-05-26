@@ -366,12 +366,12 @@ void R_GenerateLookup (int texnum)
 		
 		for (x = texture->width-1; x >=0; x--)
 		{
-			if (!count[x].patches)
-			{
-				I_Error("R_GenerateLookup: column without a patch (%s:%d)\n",
-					texture->name, x);
-				return;
-			}
+			// if (!count[x].patches)
+			// {
+			// 	I_Error("R_GenerateLookup: column without a patch (%s:%d)\n",
+			// 		texture->name, x);
+			// 	return;
+			// }
 			// I_Error ("R_GenerateLookup: column without a patch");
 
 			if (count[x].patches > 1 && x<texture->width)
@@ -760,10 +760,12 @@ void R_InitSpriteLumps (void)
 	if (!(i&63))
 	    I_Printf (".");
 	patch = /*(patch_t*)*/img2lmp(W_CacheLumpNum (::g->firstspritelump+i, PU_CACHE_SHARED),::g->firstspritelump + i);
-	::g->spriteheight[i] = SHORT(patch->height);//GK:Get the sprite height
-	::g->spritewidth[i] = SHORT(patch->width)<<FRACBITS;
-	::g->spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;
-	::g->spritetopoffset[i] = SHORT(patch->topoffset)<<FRACBITS;
+	if (patch) {
+		::g->spriteheight[i] = SHORT(patch->height);//GK:Get the sprite height
+		::g->spritewidth[i] = SHORT(patch->width)<<FRACBITS;
+		::g->spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;
+		::g->spritetopoffset[i] = SHORT(patch->topoffset)<<FRACBITS;
+	}
     }
 }
 

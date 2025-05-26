@@ -29,7 +29,7 @@
         },
         "USE_SYSTEM_LIBPNG": {
           "type": "BOOL",
-          "value": "ON"
+          "value": "OFF"
         },
         "USE_SYSTEM_LIBJPEG": {
           "type": "BOOL",
@@ -188,7 +188,7 @@
         },
         "USE_SYSTEM_LIBPNG": {
           "type": "BOOL",
-          "value": "ON"
+          "value": "OFF"
         },
         "USE_SYSTEM_LIBJPEG": {
           "type": "BOOL",
