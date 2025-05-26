@@ -758,6 +758,9 @@ void G_DoLoadLevel ()
 	::g->sendpause = ::g->sendsave = ::g->paused = false; 
 	memset (::g->mousebuttons, 0, sizeof(::g->mousearray) / sizeof(qboolean)); 
 	memset (::g->joybuttons, 0, sizeof(::g->joyarray) / sizeof(qboolean));
+
+	//GK: Framerate interpolation Time Delta Refresh
+	::g->lastTicTime = Sys_Milliseconds();
 }
 
 //
