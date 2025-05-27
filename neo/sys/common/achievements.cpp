@@ -66,7 +66,7 @@ void idAchievementSystemWin::AchievementUnlock( idLocalUser* user, int achieveme
 {
 #ifndef ALLOW_DEV
 	if (::op) {
-		idStr achievementName = idStr::Cmpn(achievementDevNames[achievementID], STEAM_ACHIEVEMENT_PREFIX, 4) != 0 ? achievementDevNames[achievementID] : va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID);
+		idStr achievementName = idStr::Cmpn(achievementDevNames[0], STEAM_ACHIEVEMENT_PREFIX, 4) != 0 ? achievementDevNames[achievementID] : va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID);
 		::op->openAchievement()->UnlockAchievement(achievementName);//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
 	}
 #endif
@@ -80,7 +80,7 @@ idAchievementSystemWin::AchievementLock
 void idAchievementSystemWin::AchievementLock( idLocalUser* user, const int achievementID )
 {
 	if (::op) {
-		idStr achievementName = idStr::Cmpn(achievementDevNames[achievementID], STEAM_ACHIEVEMENT_PREFIX, 4) != 0 ? achievementDevNames[achievementID] : va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID);
+		idStr achievementName = idStr::Cmpn(achievementDevNames[0], STEAM_ACHIEVEMENT_PREFIX, 4) != 0 ? achievementDevNames[achievementID] : va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID);
 		::op->openAchievement()->LockAchievement(achievementName);//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
 	}
 }
@@ -107,9 +107,14 @@ idAchievementSystemWin::GetAchievementDescription
 bool idAchievementSystemWin::GetAchievementDescription( idLocalUser* user, const int achievementID, achievementDescription_t& data ) const
 {
 	if (::op) {
-		strcpy(data.name, ::op->openAchievement()->GetAchievementName(achievementDevNames[achievementID]));//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
-		strcpy(data.description, ::op->openAchievement()->GetAchievementDescription(achievementDevNames[achievementID]));//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
-		data.hidden = ::op->openAchievement()->GetAchievementHidden(achievementDevNames[achievementID]);//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
+		if (achievementDevNames.Num() - 1 < achievementID) {
+			return false;
+		}
+		idStr achievementName = idStr::Cmpn(achievementDevNames[0], STEAM_ACHIEVEMENT_PREFIX, 4) != 0 ? achievementDevNames[achievementID] : va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID);
+		strcpy(data.devName, achievementName);
+		strcpy(data.name, ::op->openAchievement()->GetAchievementName(achievementName));//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
+		strcpy(data.description, ::op->openAchievement()->GetAchievementDescription(achievementName));//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
+		data.hidden = ::op->openAchievement()->GetAchievementHidden(achievementName);//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
 		return true;
 	}
 	return false;
@@ -162,5 +167,8 @@ void idAchievementSystemWin::CountAchievements()
 			}
 			break;
 		}
+		//GK: Padding
+		achievementDevNames.AddUnique("invalid");
+		numberOfAchievements++;
 	}
 }

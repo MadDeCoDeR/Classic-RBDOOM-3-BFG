@@ -37,10 +37,12 @@ struct achievementDescription_t
 {
 	void	Clear()
 	{
+		devName[0] = '\0';
 		name[0] = '\0';
 		description[0] = '\0';
 		hidden = false;
 	};
+	char	devName[500];
 	char	name[500];
 	char	description[1000];
 	bool	hidden;

@@ -1579,9 +1579,6 @@ P_LineAttack
 qboolean	PTR_UseTraverse (intercept_t* in)
 {
     int		side;
-	if (in->d.line->special == 31) {
-		I_Printf("Break me\n");
-	}
 	
     if (!in->d.line->special)
     {

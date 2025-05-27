@@ -838,11 +838,10 @@ CONSOLE_COMMAND( AchievementsList, "Lists achievements and status", NULL )
 	idList<const char*> achNames;
 	int index = 0;
 	while (true) {
-		if (::op) {
-			idStr achName = ::op->openAchievement()->GetAchievementDevName(index);
-			if (achName != "") {
+		achievementDescription_t achData;
+		if (session->GetAchievementSystem().GetAchievementDescription(user, index, achData)) {
 				bool state;
-				::op->openAchievement()->GetAchievement(achName.c_str(), &state);
+				::op->openAchievement()->GetAchievement(achData.devName, &state);
 				const char* sInfo = "";
 				if (!state)
 				{
@@ -852,15 +851,11 @@ CONSOLE_COMMAND( AchievementsList, "Lists achievements and status", NULL )
 				{
 					sInfo = S_COLOR_GREEN "unlocked" S_COLOR_DEFAULT;
 				}
-				idStr achDisplayName = ::op->openAchievement()->GetAchievementName(achName);
-				idStr achDescription = ::op->openAchievement()->GetAchievementDescription(achName);
-				bool hidden = ::op->openAchievement()->GetAchievementHidden(achName);
-				idLib::Printf("%02d: %s | %12.12s | %s%s: %s\n", index, achName.c_str(), sInfo, hidden ? "(hidden) " : "", achDisplayName.c_str(), achDescription.c_str());
+				idLib::Printf("%02d: %s | %12.12s | %s%s: %s\n", index, achData.devName, sInfo, achData.hidden ? "(hidden) " : "", achData.name, achData.description);
 				index++;
 				continue;
-			}
-			break;
 		}
+		break;
 	}
 	/*idArray<bool, 66> achievementState;
 	bool achievementStateValid = session->GetAchievementSystem().GetAchievementState( user, achievementState );
