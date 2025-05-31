@@ -401,20 +401,19 @@ void ST_refreshBackground(void)
 				yOffset = ((SCREENHEIGHT / GLOBAL_IMAGE_SCALER) / 7) * -1;
 				powerYOffset = -15;
 			}
-			V_DrawPatch(ST_X + xOffset, ST_ARMORY + yOffset, FG, ::g->hear, true);
-
-			V_DrawPatch((ST_AMMO0X + (::g->ASPECT_POS_OFFSET - 7) - ((4 - ::g->ASPECT_IMAGE_SCALER) * 50)) - xOffset, (ST_ARMORY + 4) + yOffset, FG, ::g->fullarms, true);
-
-			V_DrawPatch((ST_AMMO0X + (::g->ASPECT_POS_OFFSET + 36) - ((4 - ::g->ASPECT_IMAGE_SCALER) * 50)) - xOffset, (ST_ARMORY + 8) + yOffset, FG, ::g->fullslash, true);
-
+			//Health and Armor BG
+			V_DrawPatch(ST_X + xOffset, ((ORIGINAL_HEIGHT -::g->hear->height) - 5) + yOffset, FG, ::g->hear, true);
+			//Ammo and weapons BG
+			V_DrawPatch((::g->renderingWidth - (::g->fullarms->width + 12)) - xOffset, (ORIGINAL_HEIGHT - ::g->fullarms->height) + yOffset, FG, ::g->fullarms, true);
+			// Ammo slash (centering a div difficulty level: DOOM)
+			V_DrawPatch(((::g->renderingWidth - (::g->fullarms->width / 2)) - 10) - xOffset, ((ORIGINAL_HEIGHT - (::g->fullarms->height/ 2)) - 9) + yOffset, FG, ::g->fullslash, true);
+			//Keys BG (VR Special repositioning)
 			V_DrawPatch((renderSystem->GetStereo3DMode() == STEREO3D_VR ? ::g->hear->width / 2 : ST_X ) + xOffset, (renderSystem->GetStereo3DMode() == STEREO3D_VR ? ORIGINAL_HEIGHT - (::g->hear->height + 5) : ORIGINAL_HEIGHT - 11) + yOffset, FG, ::g->fullkeys, true);
-
-			int powerX = (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER) - 30;
-
-			V_DrawPatch(powerX - xOffset, ((ORIGINAL_HEIGHT / 2) - 5) + powerYOffset, FG, ::g->fullpwr, true);
-
-			V_DrawPatch((powerX - 10) - xOffset, 16 - yOffset, FG, ::g->fulltime, true);
-
+			//Power up Timers BG
+			V_DrawPatch((::g->renderingWidth - ::g->fullpwr->width) - xOffset, ((ORIGINAL_HEIGHT / 2) - 5) + powerYOffset, FG, ::g->fullpwr, true);
+			//Map Time BG
+			V_DrawPatch((::g->renderingWidth - ::g->fulltime->width) - xOffset, ::g->fulltime->height - yOffset, FG, ::g->fulltime, true);
+			//Frag BG (The long forgoten)
 			if (::g->deathmatch) {
 				V_DrawPatch(((::g->SCREENWIDTH / 2) - 30) - xOffset, ((SCREENHEIGHT / GLOBAL_IMAGE_SCALER) - 20) + yOffset, FG, ::g->fullfrag, true);
 			}
@@ -1643,8 +1642,8 @@ void ST_createWidgets(void)
 void ST_createFullScreenWidgets() {
 
 	int xscale = (2 - (::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER));
-	int powerX = (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER) - 2;
 	int powerY = (SCREENHEIGHT / GLOBAL_IMAGE_SCALER) / 2;
+	int useAspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
 	int i;
 	int xOffset = 0;
 	int yOffset = 0;
@@ -1656,8 +1655,8 @@ void ST_createFullScreenWidgets() {
 	}
 	// map time
 	STlib_initAspectNum(&::g->w_f_time,
-		powerX - xOffset,
-		20 - yOffset,
+		(::g->renderingWidth - 3) - xOffset,
+		(::g->fulltime->height + 4) - yOffset,
 		::g->fullnum,
 		&::g->normaltime,
 		&::g->st_statusbaroff,
@@ -1665,8 +1664,8 @@ void ST_createFullScreenWidgets() {
 
 	// ready weapon ammo
 	STlib_initNum(&::g->w_f_ready,
-		(ST_ARMORX + (100 / xscale)) - xOffset,
-		(ST_AMMOY + 8) + yOffset,
+		((::g->renderingWidth - ::g->fullarms->width) - (useAspect ? 24 : -30)) - xOffset,
+		((ORIGINAL_HEIGHT - (::g->fullarms->height / 2)) - 9) + yOffset,
 		::g->fullnum,
 		&::g->plyr->ammo[weaponinfo[::g->plyr->readyweapon].ammo],
 		&::g->st_statusbaroff,
@@ -1677,8 +1676,8 @@ void ST_createFullScreenWidgets() {
 
 	// health percentage
 	STlib_initPercent(&::g->w_f_health,
-		(ST_HEALTHX - (35 / xscale) + (30 * (xscale - 1))) + xOffset,
-		(ST_HEALTHY + 12) + yOffset,
+		((useAspect ? ((::g->hear->width / 2) - 2) : (::g->hear->width - 10)) - 5) + xOffset,
+		((ORIGINAL_HEIGHT - ::g->hear->height) + 8) + yOffset,
 		::g->fullnum,
 		&::g->plyr->health,
 		&::g->st_statusbaroff,
@@ -1699,15 +1698,15 @@ void ST_createFullScreenWidgets() {
 			::g->weaponcond[wp_shotgun] = 2;
 		}
 		STlib_initMultIcon(&::g->w_f_arms[i],
-			(ST_ARMORX + (66 / xscale) - (10 * (xscale - 1)) + (i * 13) - ((4 - ::g->ASPECT_IMAGE_SCALER) * 7)) - xOffset,
-			(ST_AMMOY + 20) + yOffset,
+			((::g->renderingWidth - ::g->fullarms->width) - ((useAspect ? 59 : 6) - (i * 13))) - xOffset,
+			((ORIGINAL_HEIGHT - (::g->fullarms->height / 2)) + 3) + yOffset,
 			::g->arms[i], (int*)&::g->weaponcond[i + 1],
 			&::g->st_armson);
 	}
 
 	// frags sum
 	STlib_initNum(&::g->w_f_frags,
-		((::g->SCREENWIDTH / 2) - ((45 / xscale) -  (30 * (xscale - 1)))) - xOffset,
+		((::g->SCREENWIDTH / 2) - ((45 / xscale) - (30 * (xscale - 1)))) - xOffset,
 		(ORIGINAL_HEIGHT - 13) + yOffset,
 		::g->fullnum,
 		&::g->st_fragscount,
@@ -1716,8 +1715,8 @@ void ST_createFullScreenWidgets() {
 
 	// armor percentage - should be colored later
 	STlib_initPercent(&::g->w_f_armor,
-		(ST_HEALTHX - (92 / xscale) + (4 * (xscale - 1)) + (2 * (xscale - 2))) + xOffset,
-		(ST_ARMORY + 7) + yOffset,
+		((useAspect ? ((::g->hear->width / 4) - 30) : ((::g->hear->width / 2) - 8)) - 5) + xOffset,
+		((ORIGINAL_HEIGHT - ::g->hear->height) + 3) + yOffset,
 		::g->fullnum,
 		&::g->plyr->armorpoints,
 		&::g->st_statusbaroff, ::g->fullpercent);
@@ -1745,78 +1744,34 @@ void ST_createFullScreenWidgets() {
 		&::g->st_statusbaroff);
 
 	// max ammo count (all four kinds)
-	STlib_initNum(&::g->w_f_maxammo[0],
-		(ST_ARMORX + (135 / xscale) + (20 * (xscale - 1))) - xOffset,
-		(ST_AMMOY + 8) + yOffset,
-		::g->fullnum,
-		&::g->plyr->maxammo[0],
-		&::g->st_statusbaroff,
-		ST_MAXAMMO0WIDTH);
+	for (int ai = 0; ai < 4; ai++) {
+		STlib_initNum(&::g->w_f_maxammo[ai],
+			((::g->renderingWidth - ::g->fullarms->width) - (useAspect ? -10 : -62)) - xOffset,
+			((ORIGINAL_HEIGHT - (::g->fullarms->height / 2)) - 9) + yOffset,
+			::g->fullnum,
+			&::g->plyr->maxammo[ai],
+			&::g->st_statusbaroff,
+			ST_MAXAMMO0WIDTH);
+	}
 
-	STlib_initNum(&::g->w_f_maxammo[1],
-		(ST_ARMORX + (135 / xscale) + (20 * (xscale - 1))) - xOffset,
-		(ST_AMMOY + 8) + yOffset,
-		::g->fullnum,
-		&::g->plyr->maxammo[1],
-		&::g->st_statusbaroff,
-		ST_MAXAMMO1WIDTH);
-
-	STlib_initNum(&::g->w_f_maxammo[2],
-		(ST_ARMORX + (135 / xscale) + (20 * (xscale - 1))) - xOffset,
-		(ST_AMMOY + 8) + yOffset,
-		::g->fullnum,
-		&::g->plyr->maxammo[2],
-		&::g->st_statusbaroff,
-		ST_MAXAMMO2WIDTH);
-
-	STlib_initNum(&::g->w_f_maxammo[3],
-		(ST_ARMORX + (135 / xscale) + (20 * (xscale - 1))) - xOffset,
-		(ST_AMMOY + 8) + yOffset,
-		::g->fullnum,
-		&::g->plyr->maxammo[3],
-		&::g->st_statusbaroff,
-		ST_MAXAMMO3WIDTH);
+	idList<powertype_t> powerMap = {
+		pw_invulnerability,
+		pw_strength,
+		pw_infrared,
+		pw_invisibility,
+		pw_ironfeet
+	};
 
 	// power up timers(all 5 of them)
-	STlib_initAspectNum(&::g->w_f_power[0],
-		powerX - xOffset,
-		powerY + powerYOffset,
-		::g->shortnum,
-		&::g->normalpowers[pw_invulnerability],
-		&::g->st_statusbaroff,
-		ST_POWER0WIDTH);
-
-	STlib_initAspectNum(&::g->w_f_power[1],
-		powerX - xOffset,
-		(powerY + 8) + powerYOffset,
-		::g->shortnum,
-		&::g->normalpowers[pw_strength],
-		&::g->st_statusbaroff,
-		ST_POWER1WIDTH);
-
-	STlib_initAspectNum(&::g->w_f_power[2],
-		powerX - xOffset,
-		(powerY + 16) + powerYOffset,
-		::g->shortnum,
-		&::g->normalpowers[pw_infrared],
-		&::g->st_statusbaroff,
-		ST_POWER2WIDTH);
-
-	STlib_initAspectNum(&::g->w_f_power[3],
-		powerX - xOffset,
-		(powerY + 24) + powerYOffset,
-		::g->shortnum,
-		&::g->normalpowers[pw_invisibility],
-		&::g->st_statusbaroff,
-		ST_POWER3WIDTH);
-
-	STlib_initAspectNum(&::g->w_f_power[4],
-		powerX - xOffset,
-		(powerY + 32) + powerYOffset,
-		::g->shortnum,
-		&::g->normalpowers[pw_ironfeet],
-		&::g->st_statusbaroff,
-		ST_POWER4WIDTH);
+	for (int pi = 0; pi < 5; pi++) {
+		STlib_initAspectNum(&::g->w_f_power[pi],
+			(::g->renderingWidth - 3) - xOffset,
+			(powerY + (pi * 8)) + powerYOffset,
+			::g->shortnum,
+			&::g->normalpowers[powerMap[pi]],
+			&::g->st_statusbaroff,
+			ST_POWER0WIDTH);
+	}
 }
 
 
