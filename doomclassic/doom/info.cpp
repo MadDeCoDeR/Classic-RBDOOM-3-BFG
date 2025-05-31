@@ -2856,7 +2856,7 @@ std::vector<idStr> loopingActions = {
 	100,		// mass
 	0,		// damage
 	sfx_None,		// activesound
-	MF_SPECIAL | MF_NOTDMATCH,		// flags
+	MF_SPECIAL | MF_NOTDMATCH | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
 	0,			//infightingGroup
 	0,			//projectileGroup
@@ -2889,7 +2889,7 @@ std::vector<idStr> loopingActions = {
 	100,		// mass
 	0,		// damage
 	sfx_None,		// activesound
-	MF_SPECIAL | MF_NOTDMATCH,		// flags
+	MF_SPECIAL | MF_NOTDMATCH | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
 	0,			//infightingGroup
 	0,			//projectileGroup
@@ -2922,7 +2922,7 @@ std::vector<idStr> loopingActions = {
 	100,		// mass
 	0,		// damage
 	sfx_None,		// activesound
-	MF_SPECIAL | MF_NOTDMATCH,		// flags
+	MF_SPECIAL | MF_NOTDMATCH | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
 	0,			//infightingGroup
 	0,			//projectileGroup
