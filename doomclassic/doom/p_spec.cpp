@@ -820,7 +820,8 @@ P_CrossSpecialLine
 	case 40:
 		// RaiseCeilingLowerFloor
 		EV_DoCeiling( line, raiseToHighest );
-		EV_DoFloor( line, lowerFloorToLowest );
+		if (::g->demoplayback || ::g->demorecording)
+			EV_DoFloor( line, lowerFloorToLowest );
 		line->special = 0;
 		break;
 
