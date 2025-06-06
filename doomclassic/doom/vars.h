@@ -464,6 +464,7 @@ int     quitsounds2[8];
  int     lastx ;
 short	md_x;
 short	md_y;
+bool inDevMode;
 // m_menu.vars end // 
 //  m_misc.vars begin // 
 const char * g_pszSaveFile ;
