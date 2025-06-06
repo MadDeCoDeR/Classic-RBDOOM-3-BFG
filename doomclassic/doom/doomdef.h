@@ -124,7 +124,7 @@ typedef enum
 // So there.
 //#define SCREENWIDTH  320//320
 //SCREEN_MUL*BASE_WIDTH //320
-//#define SCREENHEIGHT 200//200
+//#define ::g->SCREENHEIGHT 200//200
 //(int)(SCREEN_MUL*BASE_WIDTH*INV_ASPECT_RATIO) //200
 
 

@@ -185,12 +185,12 @@ V_CopyRect
     V_MarkRect (destx, desty, width, height); 
 
 	// SMF - rewritten for scaling
-	srcx *= (aspect ? GLOBAL_IMAGE_SCALER : ::g->ASPECT_IMAGE_SCALER); //GK: For x-axis use the aspect image scaler and not the global
-	srcy *= GLOBAL_IMAGE_SCALER;
-	destx *= (aspect ? GLOBAL_IMAGE_SCALER : ::g->ASPECT_IMAGE_SCALER);
-	desty *= GLOBAL_IMAGE_SCALER;
-	width *= (aspect ? GLOBAL_IMAGE_SCALER : ::g->ASPECT_IMAGE_SCALER);
-	height *= GLOBAL_IMAGE_SCALER;
+	srcx *= (aspect ? ::g->GLOBAL_IMAGE_SCALER : ::g->ASPECT_IMAGE_SCALER); //GK: For x-axis use the aspect image scaler and not the global
+	srcy *= ::g->GLOBAL_IMAGE_SCALER;
+	destx *= (aspect ? ::g->GLOBAL_IMAGE_SCALER : ::g->ASPECT_IMAGE_SCALER);
+	desty *= ::g->GLOBAL_IMAGE_SCALER;
+	width *= (aspect ? ::g->GLOBAL_IMAGE_SCALER : ::g->ASPECT_IMAGE_SCALER);
+	height *= ::g->GLOBAL_IMAGE_SCALER;
 
 	src = ::g->screens[srcscrn] + srcy * ::g->SCREENWIDTH + srcx;
 	dest = ::g->screens[destscrn] + desty * ::g->SCREENWIDTH + destx;
@@ -252,7 +252,7 @@ V_DrawPatch
 	for ( ; col < w ; x++, col++ ) {
 		column = (postColumn_t *)((byte *)patch + LONG(patch->columnofs[col]));
 
-		destx = x * (aspect ? GLOBAL_IMAGE_SCALER : 1);
+		destx = x * (aspect ? ::g->GLOBAL_IMAGE_SCALER : 1);
 
 		// step through the posts in a column
 		while (column->topdelta != 0xff ) {
@@ -263,10 +263,10 @@ V_DrawPatch
 			while (count--) {
 				int scaledx, scaledy;
 				scaledx = destx * (aspect ? 1 : ::g->ASPECT_IMAGE_SCALER);
-				scaledy = desty * GLOBAL_IMAGE_SCALER;
+				scaledy = desty * ::g->GLOBAL_IMAGE_SCALER;
 				byte src = *source++;
 
-				for ( int i = 0; i < GLOBAL_IMAGE_SCALER; i++ ) {
+				for ( int i = 0; i < ::g->GLOBAL_IMAGE_SCALER; i++ ) {
 					for ( int j = 0; j < ::g->ASPECT_IMAGE_SCALER; j++ ) {
 						::g->screens[scrn][( scaledx + j ) + ( scaledy + i ) * ::g->SCREENWIDTH] = src;
 					}
@@ -339,10 +339,10 @@ V_DrawPatchFlipped
 			{
 				int scaledx, scaledy;
 				scaledx = destx * ::g->ASPECT_IMAGE_SCALER;
-				scaledy = desty * GLOBAL_IMAGE_SCALER;
+				scaledy = desty * ::g->GLOBAL_IMAGE_SCALER;
 				byte src = *source++;
 
-				for ( int i = 0; i < GLOBAL_IMAGE_SCALER; i++ ) {
+				for ( int i = 0; i < ::g->GLOBAL_IMAGE_SCALER; i++ ) {
 					for ( int j = 0; j < ::g->ASPECT_IMAGE_SCALER; j++ ) {
 						::g->screens[scrn][( scaledx + j ) + ( scaledy + i ) * ::g->SCREENWIDTH] = src;
 					}
@@ -445,7 +445,7 @@ V_DrawBlock
     if (x<0
 	||x+width >::g->SCREENWIDTH
 	|| y<0
-	|| y+height>SCREENHEIGHT
+	|| y+height>::g->SCREENHEIGHT
 	|| (unsigned)scrn>4 )
     {
 	I_Error ("Bad V_DrawBlock");
@@ -485,7 +485,7 @@ V_GetBlock
     if (x<0
 	||x+width >::g->SCREENWIDTH
 	|| y<0
-	|| y+height>SCREENHEIGHT
+	|| y+height>::g->SCREENHEIGHT
 	|| (unsigned)scrn>4 )
     {
 	I_Error ("Bad V_DrawBlock");
@@ -515,9 +515,9 @@ void V_Init (void)
 
     // stick these in low dos memory on PCs
 
-    base = (byte*)DoomLib::Z_Malloc(::g->SCREENWIDTH*SCREENHEIGHT*4, PU_STATIC, 0);
+    base = (byte*)DoomLib::Z_Malloc(::g->SCREENWIDTH*::g->SCREENHEIGHT*4, PU_STATIC, 0);
 
     for (i=0 ; i<4 ; i++)
-		::g->screens[i] = base + i* ::g->SCREENWIDTH*SCREENHEIGHT;
+		::g->screens[i] = base + i* ::g->SCREENWIDTH*::g->SCREENHEIGHT;
 }
 

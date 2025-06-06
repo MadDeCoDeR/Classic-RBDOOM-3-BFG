@@ -368,7 +368,7 @@ void ST_refreshBackground(void)
 		{
 			if (::g->sbar->width > ORIGINAL_WIDTH) {
 				int offsets = ::g->sbar->width > ORIGINAL_WIDTH ? abs(::g->sbar->width - ::g->renderingWidth) / 2 : 0;
-				//if (::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) {
+				//if (::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER) {
 					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true, offsets, offsets);
 				/*} else {
 					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true, ::g->mapt->width + offsets, ::g->spwr->width + offsets);
@@ -377,7 +377,7 @@ void ST_refreshBackground(void)
 				V_DrawPatch(ST_X + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->sbar, true);
 			}
 			short widthoffset = 0;
-			if (::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) {
+			if (::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER) {
 				V_DrawPatch(ST_X, 0, BG, ::g->mapt, true);
 				widthoffset += ::g->mapt->width;
 				V_DrawPatch(ST_X + ST_WIDTH + widthoffset, 0, BG, ::g->spwr, true);
@@ -397,8 +397,8 @@ void ST_refreshBackground(void)
 			int yOffset = 0;
 			int powerYOffset = 0;
 			if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
-				xOffset = (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER) / 6;
-				yOffset = ((SCREENHEIGHT / GLOBAL_IMAGE_SCALER) / 7) * -1;
+				xOffset = (::g->SCREENWIDTH / ::g->GLOBAL_IMAGE_SCALER) / 6;
+				yOffset = ((::g->SCREENHEIGHT / ::g->GLOBAL_IMAGE_SCALER) / 7) * -1;
 				powerYOffset = -15;
 			}
 			//Health and Armor BG
@@ -415,9 +415,9 @@ void ST_refreshBackground(void)
 			V_DrawPatch((::g->renderingWidth - ::g->fulltime->width) - xOffset, ::g->fulltime->height - yOffset, FG, ::g->fulltime, true);
 			//Frag BG (The long forgoten)
 			if (::g->deathmatch) {
-				V_DrawPatch(((::g->SCREENWIDTH / 2) - 30) - xOffset, ((SCREENHEIGHT / GLOBAL_IMAGE_SCALER) - 20) + yOffset, FG, ::g->fullfrag, true);
+				V_DrawPatch(((::g->SCREENWIDTH / 2) - 30) - xOffset, ((::g->SCREENHEIGHT / ::g->GLOBAL_IMAGE_SCALER) - 20) + yOffset, FG, ::g->fullfrag, true);
 			}
-			//V_CopyRect(ST_X, 0, BG, (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER), (SCREENHEIGHT / GLOBAL_IMAGE_SCALER), ST_X, 0, FG, true);
+			//V_CopyRect(ST_X, 0, BG, (::g->SCREENWIDTH / ::g->GLOBAL_IMAGE_SCALER), (::g->SCREENHEIGHT / ::g->GLOBAL_IMAGE_SCALER), ST_X, 0, FG, true);
 		}
 	}
 
@@ -1641,16 +1641,16 @@ void ST_createWidgets(void)
 
 void ST_createFullScreenWidgets() {
 
-	int xscale = (2 - (::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER));
-	int powerY = (SCREENHEIGHT / GLOBAL_IMAGE_SCALER) / 2;
-	int useAspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+	int xscale = ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER ? 1 : 2;
+	int powerY = (::g->SCREENHEIGHT / ::g->GLOBAL_IMAGE_SCALER) / 2;
+	int useAspect = ::g->ASPECT_IMAGE_SCALER - ::g->GLOBAL_IMAGE_SCALER;
 	int i;
 	int xOffset = 0;
 	int yOffset = 0;
 	int powerYOffset = 0;
 	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
-		xOffset = (::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER) / 6;
-		yOffset = ((SCREENHEIGHT / GLOBAL_IMAGE_SCALER) / 7) * -1;
+		xOffset = (::g->SCREENWIDTH / ::g->GLOBAL_IMAGE_SCALER) / 6;
+		yOffset = ((::g->SCREENHEIGHT / ::g->GLOBAL_IMAGE_SCALER) / 7) * -1;
 		powerYOffset = -15;
 	}
 	// map time
@@ -1803,8 +1803,8 @@ void ST_Init (void)
 {
 	::g->veryfirsttime = 0;
 	ST_loadData();
-	::g->screens[4] = (byte *) DoomLib::Z_Malloc(::g->SCREENWIDTH * SCREENHEIGHT /*ST_WIDTH*ST_HEIGHT*/, PU_STATIC, 0);
-	memset( ::g->screens[4], 0, ::g->SCREENWIDTH * SCREENHEIGHT );
+	::g->screens[4] = (byte *) DoomLib::Z_Malloc(::g->SCREENWIDTH * ::g->SCREENHEIGHT /*ST_WIDTH*ST_HEIGHT*/, PU_STATIC, 0);
+	memset( ::g->screens[4], 0, ::g->SCREENWIDTH * ::g->SCREENHEIGHT );
 }
 
 

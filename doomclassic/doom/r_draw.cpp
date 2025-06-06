@@ -104,8 +104,8 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 
 	
 	//GK:Sanity check
-	if (::g->dc_yh >= SCREENHEIGHT) {
-		::g->dc_yh = SCREENHEIGHT - 1;
+	if (::g->dc_yh >= ::g->SCREENHEIGHT) {
+		::g->dc_yh = ::g->SCREENHEIGHT - 1;
 	}
 	
 	if (::g->dc_yl < 0) {
@@ -123,7 +123,7 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 	#ifdef RANGECHECK 
 		if ((unsigned)::g->dc_x >= (unsigned)::g->SCREENWIDTH
 			|| ::g->dc_yl < 0
-			|| ::g->dc_yh >= SCREENHEIGHT) 
+			|| ::g->dc_yh >= ::g->SCREENHEIGHT) 
 			I_Error ("R_DrawColumn: %i to %i at %i", ::g->dc_yl, ::g->dc_yh, ::g->dc_x); 
 	#endif 
 
@@ -261,7 +261,7 @@ void R_DrawColumnLow ( lighttable_t * dc_colormap,
 #ifdef RANGECHECK 
 	if ((unsigned)::g->dc_x >= (unsigned)::g->SCREENWIDTH
 		|| ::g->dc_yl < 0
-		|| ::g->dc_yh >= SCREENHEIGHT)
+		|| ::g->dc_yh >= ::g->SCREENHEIGHT)
 	{
 
 		I_Error ("R_DrawColumn: %i to %i at %i", ::g->dc_yl, ::g->dc_yh, ::g->dc_x);
@@ -436,7 +436,7 @@ void R_DrawFuzzColumn ( lighttable_t * dc_colormap,
 
 #ifdef RANGECHECK 
 	if ((unsigned)::g->dc_x >= (unsigned)::g->SCREENWIDTH
-		|| ::g->dc_yl < 0 || ::g->dc_yh >= SCREENHEIGHT)
+		|| ::g->dc_yl < 0 || ::g->dc_yh >= ::g->SCREENHEIGHT)
 	{
 		I_Error ("R_DrawFuzzColumn: %i to %i at %i",
 			::g->dc_yl, ::g->dc_yh, ::g->dc_x);
@@ -525,7 +525,7 @@ void R_DrawTranslatedColumn ( lighttable_t * dc_colormap,
 #ifdef RANGECHECK 
 	if ((unsigned)::g->dc_x >= (unsigned)::g->SCREENWIDTH
 		|| ::g->dc_yl < 0
-		|| ::g->dc_yh >= SCREENHEIGHT)
+		|| ::g->dc_yh >= ::g->SCREENHEIGHT)
 	{
 		I_Error ( "R_DrawColumn: %i to %i at %i",
 			::g->dc_yl, ::g->dc_yh, ::g->dc_x);
@@ -654,7 +654,7 @@ void R_DrawSpan ( fixed_t xfrac,
 	if (::g->ds_x2 < ::g->ds_x1
 		|| ::g->ds_x1<0
 		|| ::g->ds_x2>= ::g->SCREENWIDTH
-		|| (unsigned)::g->ds_y>SCREENHEIGHT)
+		|| (unsigned)::g->ds_y>::g->SCREENHEIGHT)
 	{
 		I_Error( "R_DrawSpan: %i to %i at %i",
 			::g->ds_x1,::g->ds_x2,::g->ds_y);
@@ -783,7 +783,7 @@ void R_DrawSpanLow ( fixed_t xfrac,
 	if (::g->ds_x2 < ::g->ds_x1
 		|| ::g->ds_x1<0
 		|| ::g->ds_x2>= ::g->SCREENWIDTH
-		|| (unsigned)::g->ds_y>SCREENHEIGHT)
+		|| (unsigned)::g->ds_y>::g->SCREENHEIGHT)
 	{
 		I_Error( "R_DrawSpan: %i to %i at %i",
 			::g->ds_x1,::g->ds_x2,::g->ds_y);
@@ -842,7 +842,7 @@ R_InitBuffer
 	if (width == ::g->SCREENWIDTH)
 		::g->viewwindowy = 0; 
 	else 
-		::g->viewwindowy = (SCREENHEIGHT-SBARHEIGHT-height) >> 1; 
+		::g->viewwindowy = (::g->SCREENHEIGHT-SBARHEIGHT-height) >> 1; 
 
 	// Preclaculate all row offsets.
 	for (i=0 ; i<height ; i++) 
@@ -885,7 +885,7 @@ void R_FillBackScreen (void)
 	src = (byte*)W_CacheLumpName (name, PU_CACHE_SHARED); 
 	dest = ::g->screens[1]; 
 
-	for (y=0 ; y<SCREENHEIGHT-SBARHEIGHT ; y++) { 
+	for (y=0 ; y<::g->SCREENHEIGHT-SBARHEIGHT ; y++) { 
 		for (x=0 ; x< ::g->SCREENWIDTH/64 ; x++) 	{
 			memcpy(dest, src+((y&63)<<6), 64); 
 			dest += 64; 
@@ -897,10 +897,10 @@ void R_FillBackScreen (void)
 		} 
 	} 
 
-	width = ::g->scaledviewwidth / GLOBAL_IMAGE_SCALER;
-	height = ::g->viewheight / GLOBAL_IMAGE_SCALER;
-	windowx = ::g->viewwindowx / GLOBAL_IMAGE_SCALER;
-	windowy = ::g->viewwindowy / GLOBAL_IMAGE_SCALER;
+	width = ::g->scaledviewwidth / ::g->GLOBAL_IMAGE_SCALER;
+	height = ::g->viewheight / ::g->GLOBAL_IMAGE_SCALER;
+	windowx = ::g->viewwindowx / ::g->GLOBAL_IMAGE_SCALER;
+	windowy = ::g->viewwindowy / ::g->GLOBAL_IMAGE_SCALER;
 
 	patch = /*(patch_t*)*/img2lmp(W_CacheLumpName ("brdr_t",PU_CACHE_SHARED), W_GetNumForName("brdr_t"));
 	for (x=0 ; x<width ; x+=8) {
@@ -969,7 +969,7 @@ void R_DrawViewBorder (void)
 	if (::g->scaledviewwidth == ::g->SCREENWIDTH)
 		return; 
 
-	top = ((SCREENHEIGHT-SBARHEIGHT)-::g->viewheight)/2; 
+	top = ((::g->SCREENHEIGHT-SBARHEIGHT)-::g->viewheight)/2; 
 	side = (::g->SCREENWIDTH-::g->scaledviewwidth)/2;
 
 	// copy top and one line of left side 
@@ -990,7 +990,7 @@ void R_DrawViewBorder (void)
 	} 
 
 	// ? 
-	V_MarkRect (0,0, ::g->SCREENWIDTH, SCREENHEIGHT-SBARHEIGHT);
+	V_MarkRect (0,0, ::g->SCREENWIDTH, ::g->SCREENHEIGHT-SBARHEIGHT);
 } 
 
 

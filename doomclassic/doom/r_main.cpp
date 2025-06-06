@@ -44,6 +44,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "r_sky.h"
 #include "i_system.h"
 #include "m_misc.h"
+#include <cmath>
 
 
 
@@ -721,11 +722,11 @@ void R_ExecuteSetViewSize (void)
 
 	// SMF - temp
 	::g->scaledviewwidth *= ::g->ASPECT_IMAGE_SCALER;
-	::g->viewheight *= GLOBAL_IMAGE_SCALER;
+	::g->viewheight *= ::g->GLOBAL_IMAGE_SCALER;
 
 	::g->detailshift = ::g->setdetail;
 	::g->viewwidth = ::g->scaledviewwidth >>::g->detailshift;
-	::g->ow = (ORIGINAL_WIDTH*GLOBAL_IMAGE_SCALER) >> ::g->detailshift; //GK: Keep the original width for the player sprite scale
+	::g->ow = (ORIGINAL_WIDTH*::g->GLOBAL_IMAGE_SCALER) >> ::g->detailshift; //GK: Keep the original width for the player sprite scale
 	//GK: End
 
 	::g->centery = ::g->viewheight/2;
@@ -777,7 +778,7 @@ void R_ExecuteSetViewSize (void)
 		nocollide_startmap = ((::g->reallightlevels -1-i)*2)*NUMCOLORMAPS/ ::g->reallightlevels;
 		for (j=0 ; j<::g->reallightscale ; j++)
 		{
-			level = nocollide_startmap - j* (ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER)/(::g->ow << ::g->detailshift)/DISTMAP;
+			level = nocollide_startmap - j* (ORIGINAL_WIDTH * ::g->GLOBAL_IMAGE_SCALER)/(::g->ow << ::g->detailshift)/DISTMAP;
 
 			if (level < 0)
 				level = 0;
@@ -886,7 +887,7 @@ void R_SetupThirdPersonView(player_t* player) {
 	SetViewY(player->mo->y - yposoffset);
 	
 	SetViewAngle( (pangle- tpviewangle) + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
-	/*int ogwidth = ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER;*/
+	/*int ogwidth = ORIGINAL_WIDTH * ::g->GLOBAL_IMAGE_SCALER;*/
 	int viewzoffset = /*((::g->SCREENWIDTH - ogwidth) * 1000) +*/ (game->GetCVarFloat("pm_thirdPersonHeight") * FRACUNIT);
 	::g->viewz = player->viewz + viewzoffset;
 }
@@ -911,7 +912,7 @@ void R_SetupFrame (player_t* player)
 		SetViewY(player->mo->y);
 		SetViewAngle(player->mo->angle + ::g->viewangleoffset, player->mo->viewangle + ::g->viewangleoffset);
 		//GK: Adjust the height if aspect ratio correction is on
-		//int ogwidth = ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER;
+		//int ogwidth = ORIGINAL_WIDTH * ::g->GLOBAL_IMAGE_SCALER;
 		::g->viewz = player->viewz /*+ ((::g->SCREENWIDTH - ogwidth) * 1000)*/;
 	}
 	::g->extralight = player->extralight;
@@ -1021,17 +1022,35 @@ void R_RenderPlayerView (player_t* player)
 
 void R_Initwidth() {
 	//GK: Calculate x-axis image scale and Rendering width
+	int engineWidth = ::renderSystem->GetWidth();
+	int engineHeight = ::renderSystem->GetHeight();
 	if (r_aspectcorrect.GetBool()) {
-		::g->ASPECT_IMAGE_SCALER = GLOBAL_IMAGE_SCALER + 1;
+		::g->GLOBAL_IMAGE_SCALER = std::floor(engineHeight / ORIGINAL_HEIGHT);
+		::g->ASPECT_IMAGE_SCALER = std::floor(engineWidth / ORIGINAL_WIDTH);
+		while(true) {
+			float engineAspect = engineWidth / engineHeight;
+			float gameAspect = (ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER) / (ORIGINAL_HEIGHT * ::g->GLOBAL_IMAGE_SCALER);
+			if (engineAspect != gameAspect) {
+				::g->ASPECT_IMAGE_SCALER = gameAspect > engineAspect ? ::g->ASPECT_IMAGE_SCALER - 1 : ::g->ASPECT_IMAGE_SCALER + 1;
+				if (::g->ASPECT_IMAGE_SCALER == ::g->GLOBAL_IMAGE_SCALER) {
+					::g->GLOBAL_IMAGE_SCALER--;
+				}
+			} else {
+				break;
+			}
+		}
 	}
 	else {
-		::g->ASPECT_IMAGE_SCALER = GLOBAL_IMAGE_SCALER;
+		::g->GLOBAL_IMAGE_SCALER = std::floor((engineHeight < engineWidth ? engineHeight : engineWidth) / ORIGINAL_HEIGHT);
+		::g->ASPECT_IMAGE_SCALER = ::g->GLOBAL_IMAGE_SCALER;
 	}
 
 	::g->SCREENWIDTH = ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER;
-	::g->renderingWidth = ::g->SCREENWIDTH / GLOBAL_IMAGE_SCALER;
-	::g->ASPECT_POS_OFFSET = (((::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER) * ORIGINAL_WIDTH) / 2) / GLOBAL_IMAGE_SCALER;
+	::g->SCREENHEIGHT = ORIGINAL_HEIGHT * ::g->GLOBAL_IMAGE_SCALER;
+	::g->renderingWidth = ::g->SCREENWIDTH / ::g->GLOBAL_IMAGE_SCALER;
+	::g->ASPECT_POS_OFFSET = (((::g->ASPECT_IMAGE_SCALER - ::g->GLOBAL_IMAGE_SCALER) * ORIGINAL_WIDTH) / 2) / ::g->GLOBAL_IMAGE_SCALER;
 	::g->finit_width = ::g->SCREENWIDTH; //GK: Set here the auto-map width
+	::g->finit_height = ::g->SCREENHEIGHT - (32 * ::g->GLOBAL_IMAGE_SCALER);
 	int temp_fuzzoffset[FUZZTABLE] = { //GK: Init fuzztable here since FUZZOFF is relying on SCREENWIDTH
 		FUZZOFF,-FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,
 		FUZZOFF,FUZZOFF,-FUZZOFF,FUZZOFF,FUZZOFF,FUZZOFF,-FUZZOFF,

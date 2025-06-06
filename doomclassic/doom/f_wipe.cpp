@@ -128,7 +128,7 @@ int wipe_doMelt( int width, int height, int ticks ) {
 			}
 			else if (::g->wipe_y[i] < height) {
 
-				dy = (::g->wipe_y[i] < 16 * GLOBAL_IMAGE_SCALER) ? ::g->wipe_y[i]+1 : 8 * GLOBAL_IMAGE_SCALER;
+				dy = (::g->wipe_y[i] < 16 * ::g->GLOBAL_IMAGE_SCALER) ? ::g->wipe_y[i]+1 : 8 * ::g->GLOBAL_IMAGE_SCALER;
 
 				if (::g->wipe_y[i]+dy >= height)
 					dy = height - ::g->wipe_y[i];

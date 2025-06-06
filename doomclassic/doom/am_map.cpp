@@ -182,7 +182,7 @@ const unsigned char cheat_amap_seq[] =
 cheatseq_t cheat_amap = cheatseq_t(cheat_amap_seq, 0);
 
 //GK End
-//extern byte ::g->screens[][SCREENWIDTH*SCREENHEIGHT];
+//extern byte ::g->screens[][SCREENWIDTH*::g->SCREENHEIGHT];
 
 
 
@@ -1209,7 +1209,7 @@ void AM_drawMarks(void)
 			fx = CXMTOF(::g->markpoints[i].x);
 			fy = CYMTOF(::g->markpoints[i].y);
 			if (fx >= ::g->f_x && fx <= ::g->f_w - w && fy >= ::g->f_y && fy <= ::g->f_h - h)
-				V_DrawPatch(fx/GLOBAL_IMAGE_SCALER, fy/GLOBAL_IMAGE_SCALER, FB, ::g->marknums[i], false);
+				V_DrawPatch(fx/::g->GLOBAL_IMAGE_SCALER, fy/::g->GLOBAL_IMAGE_SCALER, FB, ::g->marknums[i], false);
 		}
 	}
 

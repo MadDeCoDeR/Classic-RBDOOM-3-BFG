@@ -388,7 +388,7 @@ void M_ScreenShot (void)
     
     // save the pcx file
     WritePCXfile (lbmname, linear,
-		  SCREENWIDTH, SCREENHEIGHT,
+		  SCREENWIDTH, ::g->SCREENHEIGHT,
 		  (byte*)W_CacheLumpName ("PLAYPAL",PU_CACHE_SHARED));
 	
     ::g->players[::g->consoleplayer].message = "screen shot";

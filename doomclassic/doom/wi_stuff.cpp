@@ -269,8 +269,8 @@ void localCalculateAchievements(bool epComplete)
 
 void WI_slamBackground(void)
 {
-    memcpy(::g->screens[0], ::g->screens[1], ::g->SCREENWIDTH * SCREENHEIGHT);
-    V_MarkRect (0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
+    memcpy(::g->screens[0], ::g->screens[1], ::g->SCREENWIDTH * ::g->SCREENHEIGHT);
+    V_MarkRect (0, 0, ::g->SCREENWIDTH, ::g->SCREENHEIGHT);
 }
 
 // The ticker is used to detect keys
@@ -339,7 +339,7 @@ WI_drawOnLnode
 	if (left >= 0
 	    && right < ::g->SCREENWIDTH
 	    && top >= 0
-	    && bottom < SCREENHEIGHT)
+	    && bottom < ::g->SCREENHEIGHT)
 	{
 	    fits = true;
 	}
@@ -1578,7 +1578,7 @@ void WI_loadData(void)
 
 	//GK: Rewritten for scalling
 	int minorOffset = (::g->gamemode == retail && ::g->wbs->epsd > 0) ? 9 : 10;
-	::g->wi_anim_offset = (::g->bg->width > ORIGINAL_WIDTH && ::g->ASPECT_IMAGE_SCALER > GLOBAL_IMAGE_SCALER) ? (abs(::g->bg->width - ::g->renderingWidth)/GLOBAL_IMAGE_SCALER) + minorOffset: 0;
+	::g->wi_anim_offset = (::g->bg->width > ORIGINAL_WIDTH && ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER) ? (abs(::g->bg->width - ::g->renderingWidth)/::g->GLOBAL_IMAGE_SCALER) + minorOffset: 0;
 	::g->wi_anim_aspect = ::g->bg->width > ORIGINAL_WIDTH;
 
 
@@ -1586,7 +1586,7 @@ void WI_loadData(void)
     // if (::g->gamemode == commercial)
     // {
     // darken the background image
-    // while (pic != ::g->screens[1] + SCREENHEIGHT*SCREENWIDTH)
+    // while (pic != ::g->screens[1] + ::g->SCREENHEIGHT*SCREENWIDTH)
     // {
     //   *pic = ::g->colormaps[256*25 + *pic];
     //   pic++;

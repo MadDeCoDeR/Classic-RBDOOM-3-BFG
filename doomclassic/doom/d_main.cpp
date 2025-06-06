@@ -179,7 +179,7 @@ void D_Wipe()
 	if (tics != 0)
 	{
 		::g->wipestart = nowtime;
-		::g->wipedone = wipe_ScreenWipe( 0, 0, ::g->SCREENWIDTH, SCREENHEIGHT, tics );
+		::g->wipedone = wipe_ScreenWipe( 0, 0, ::g->SCREENWIDTH, ::g->SCREENHEIGHT, tics );
 
 		// DHM - Nerve :: Demo recording :: Stop large hitch on first frame after the wipe
 		if ( ::g->wipedone ) {
@@ -200,7 +200,7 @@ void D_Display (void)
 		return;                    // for comparative timing / profiling
 
 	redrawsbar = false;
-	//int scaler = GLOBAL_IMAGE_SCALER - (::g->ASPECT_IMAGE_SCALER-GLOBAL_IMAGE_SCALER);//GK: Calculate image scaling based on aspect ratio
+	//int scaler = ::g->GLOBAL_IMAGE_SCALER - (::g->ASPECT_IMAGE_SCALER-::g->GLOBAL_IMAGE_SCALER);//GK: Calculate image scaling based on aspect ratio
 	// change the view size if needed
 	if (::g->setsizeneeded)
 	{
@@ -213,7 +213,7 @@ void D_Display (void)
 	if (::g->gamestate != ::g->wipegamestate)
 	{
 		::g->wipe = true;
-		wipe_StartScreen(0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
+		wipe_StartScreen(0, 0, ::g->SCREENWIDTH, ::g->SCREENHEIGHT);
 	}
 	else
 		::g->wipe = false;
@@ -249,12 +249,12 @@ void D_Display (void)
 		if (::g->automapactive)
 			AM_Drawer();
 
-		if (::g->wipe || (::g->viewheight != 200 * GLOBAL_IMAGE_SCALER && ::g->fullscreen))
+		if (::g->wipe || (::g->viewheight != 200 * ::g->GLOBAL_IMAGE_SCALER && ::g->fullscreen))
 			redrawsbar = true;
 		if (::g->inhelpscreensstate && !::g->inhelpscreens)
 			redrawsbar = true;              // just put away the help screen
-		ST_Drawer(::g->viewheight == 200 * GLOBAL_IMAGE_SCALER, redrawsbar);
-		::g->fullscreen = ::g->viewheight == 200 * GLOBAL_IMAGE_SCALER;
+		ST_Drawer(::g->viewheight == 200 * ::g->GLOBAL_IMAGE_SCALER, redrawsbar);
+		::g->fullscreen = ::g->viewheight == 200 * ::g->GLOBAL_IMAGE_SCALER;
 		break;
 
 	case GS_INTERMISSION:
@@ -284,7 +284,7 @@ void D_Display (void)
 	}
 
 	// see if the border needs to be updated to the screen
-	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && !::g->automapactive && ::g->scaledviewwidth != (320 * GLOBAL_IMAGE_SCALER) )
+	if ((::g->gamestate == GS_LEVEL || ::g->gamestate == GS_DEMOLEVEL) && !::g->automapactive && ::g->scaledviewwidth != (320 * ::g->GLOBAL_IMAGE_SCALER) )
 	{
 		if (::g->menuactive || ::g->menuactivestate || !::g->viewactivestate)
 			::g->borderdrawcount = 3;
@@ -327,7 +327,7 @@ void D_Display (void)
 	}
 
 	// \ update
-	wipe_EndScreen(0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
+	wipe_EndScreen(0, 0, ::g->SCREENWIDTH, ::g->SCREENHEIGHT);
 
 	::g->wipestart = I_GetTime () - 1;
 
@@ -915,7 +915,7 @@ void D_DoomMain(void)
 	I_Printf ("Z_Init: Init zone memory allocation daemon. \n");
 	//GK: Allow the user to set the Z-Memory (What Could Possibly go wrong?)
 	int zcheck = M_CheckParm("-zmem");
-	::g->zmem = 45;
+	::g->zmem = 100;
 	if (zcheck) {
 		::g->zmem = atoi(::g->myargv[zcheck + 1]);
 	}

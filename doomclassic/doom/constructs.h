@@ -33,7 +33,7 @@ extern idCVar r_vidMode;
 	::g->leveljuststarted = 1; 	// kluge until AM_LevelInit() is called
 	::g->automapactive = false;
 	//::g->finit_width = BASE_WIDTH;
-	::g->finit_height = SCREENHEIGHT - (32 * GLOBAL_IMAGE_SCALER);
+	//::g->finit_height = ::g->SCREENHEIGHT - (32 * ::g->GLOBAL_IMAGE_SCALER);
 	::g->scale_mtof = (fixed_t)INITSCALEMTOF;
 	::g->markpointnum = 0; // next point to be assigned
 	::g->followplayer = 1; // specifies whether to follow the player around
