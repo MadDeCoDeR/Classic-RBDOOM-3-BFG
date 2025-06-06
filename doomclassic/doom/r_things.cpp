@@ -621,7 +621,7 @@ void R_ProjectSprite (mobj_t* thing)
 	}
     sprdef = ::g->sprites[ind];
 #ifdef RANGECHECK
-    if ( (thing->frame&FF_FRAMEMASK) >= sprdef->numframes )
+    if ( sprdef->spriteframes && (thing->frame&FF_FRAMEMASK) >= sprdef->numframes )
 	I_Error ("R_ProjectSprite: invalid sprite frame %i : %i \n",
 		 thing->sprite, thing->frame);
 #endif

@@ -228,7 +228,7 @@ void R_RenderSegLoop (void)
     for ( ; ::g->rw_x < ::g->rw_stopx ; ::g->rw_x++)
     {
 		// mark floor / ceiling areas
-		yh, yl = (::g->topfrac+HEIGHTUNIT-1)>>HEIGHTBITS;
+		yh, yl = (int)((::g->topfrac+HEIGHTUNIT-1)>>HEIGHTBITS);
 
 		// no space above wall?
 		bottom, top = ::g->ceilingclip[::g->rw_x] + 1;
@@ -250,7 +250,7 @@ void R_RenderSegLoop (void)
 			}
 		}
 		
-		yh = ::g->bottomfrac>>HEIGHTBITS;
+		yh = (int)(::g->bottomfrac>>HEIGHTBITS);
 		bottom = ::g->floorclip[::g->rw_x] - 1;
 
 		if (yh > bottom)
@@ -271,6 +271,7 @@ void R_RenderSegLoop (void)
 	{
 	    // calculate texture offset
 	    angle = (::g->rw_centerangle + ::g->xtoviewangle[::g->rw_x])>>ANGLETOFINESHIFT;
+		angle &= 0xFFF; // Prevent finetangent overflow.
 	    texturecolumn = ::g->rw_offset-FixedMul(finetangent[angle],::g->rw_distance);
 	    texturecolumn >>= FRACBITS;
 	    // calculate lighting

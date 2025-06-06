@@ -167,9 +167,9 @@ void I_SetPalette (byte* palette,int palsize)
 {
 
 	int i;
-	int maxcolors = palsize/3;
+	//int maxcolors = palsize/3;
 	// set the X colormap entries
-	for (i=0 ; i<maxcolors ; i++)
+	for (i=0 ; i<256 ; i++)
 	{
 		int r,b,g;
 		r = gammatable[::g->usegamma][*palette++];

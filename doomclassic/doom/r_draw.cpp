@@ -101,8 +101,8 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 	else {
 		theght = ::g->s_textureheight[::g->texnum]>>FRACBITS;
 	}
+
 	
-	mheight = theght - 1;
 	//GK:Sanity check
 	if (::g->dc_yh >= SCREENHEIGHT) {
 		::g->dc_yh = SCREENHEIGHT - 1;
@@ -114,10 +114,10 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 	if (::g->dc_yl >= ::g->viewheight) {
 		::g->dc_yl = ::g->viewheight - 1;
 	}
-	count = ::g->dc_yh - ::g->dc_yl ; 
+	count = ::g->dc_yh - ::g->dc_yl + 1; 
 
 	// Zero length, column does not exceed a pixel.
-	if (count >= 0) {
+	if (count > 0) {
 		//return; 
 
 	#ifdef RANGECHECK 
@@ -136,6 +136,7 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 		//  which is the only mapping to be done.
 		fracstep = ::g->dc_iscale; 
 		frac = ::g->dc_texturemid + (::g->dc_yl-::g->centery)*fracstep; 
+		mheight = theght - 1;
 		if (theght & mheight) { // not a power of 2 -- killough
 			mheight++;
 			mheight <<= FRACBITS;
@@ -156,34 +157,25 @@ void R_DrawColumn ( lighttable_t * dc_colormap,
 
 				// heightmask is the Tutti-Frutti fix -- killough
 
-				const int truncated1 = frac >> FRACBITS;
-				//const int wrapped1 = truncated1 & mheight;
-
-				*dest = dc_colormap[dc_source[truncated1]];
+				*dest = dc_colormap[dc_source[frac >> FRACBITS]];
 				dest += ::g->SCREENWIDTH;
 				if ((frac += fracstep) >= mheight)
 					frac -= mheight;
 				
-			} while (count--);
+			} while (--count);
 		}
 		else
 		{
-			//GK: for texture height which is power of 2 do the vanilla procedure (eliminate weird red bottom lines and game breaking bugs)
-			 //while ((count -= 2) >= 0)   // texture height is a power of 2 -- killough
-			 do {
-			 	int truncated1 = frac >> FRACBITS;
-			 	//GK:Now that it has the right height use the mheight and no more the 127
-				
-			 	int wrapped1 = truncated1 & mheight;
-			 	*dest = dc_colormap[dc_source[wrapped1]];
+			 while ((count -= 2) >= 0) { // texture height is a power of 2 -- killough
+			 //do {
+			 	*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
 			 	dest += ::g->SCREENWIDTH;
 			 	frac += fracstep;
-				/*truncated1 = frac >> FRACBITS;
-				wrapped1 = truncated1 & mheight;
-			 	*dest = dc_colormap[dc_source[wrapped1]];
+			 	*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
 			 	dest += ::g->SCREENWIDTH;
-			 	frac += fracstep;*/
-			 } while (count--);
+			 	frac += fracstep;
+			 }
+			// } while (count--);
 			if (count & 1)
 				*dest = dc_colormap[dc_source[(frac >> FRACBITS) & mheight]];
 		}
