@@ -178,6 +178,7 @@ namespace DoomLib
 	int								chosenEpisode = 1;
 	bool							use_doomit = false;
 	bool							skipToMenu = false;
+	bool							skipToDev = false;
 	short                           hasGame = 0;
 	bool							hexp[6];
 	int								selection = -1;

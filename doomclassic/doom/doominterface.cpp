@@ -150,8 +150,11 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 			DoomLib::skipToNew = false;
 			::g->menuactive = 0;
 		}
-		if (DoomLib::skipToMenu) {
-			if (::g->episodicExpansion) {
+		if (DoomLib::skipToMenu || DoomLib::skipToDev) {
+			if (DoomLib::skipToDev) {
+				::g->inDevMode = true;
+			}
+			if (::g->episodicExpansion || ::g->gamemode != commercial) {
 				::g->currentMenu = &::g->EpiDef;
 			} else {
 				::g->currentMenu = &::g->NewDef;
@@ -159,6 +162,7 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 			::g->itemOn = ::g->currentMenu->lastOn;
 			::g->menuactive = 1;
 			DoomLib::skipToMenu = false;
+			DoomLib::skipToDev = false;
 		}
 
 		DoomLib::SetPlayer(-1);

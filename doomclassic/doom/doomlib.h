@@ -146,6 +146,7 @@ namespace DoomLib
 	extern int					chosenEpisode;
 	extern bool					use_doomit;
 	extern bool					skipToMenu;
+	extern bool					skipToDev;
 	extern short                hasGame;
 	extern bool					hexp[6];
 	extern int					selection;

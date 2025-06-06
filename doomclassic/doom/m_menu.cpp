@@ -307,7 +307,7 @@ int modeSize = 0;
 int pageIndex = 0;
 int numPages = 0;
 int activePageItems = 0;
-bool inDevMode = false;
+
 menu_t pageDef;
 //
 // DOOM MENU
@@ -1337,12 +1337,18 @@ void M_Dev(int choice)
 		M_StartMessage(NEWGAME, NULL, false);
 		return;
 	}
-	inDevMode = true;
+	::g->inDevMode = true;
 	pageIndex = 0;
 	if (::g->gamemode == commercial)
 		M_SetupNextMenu(&::g->ExpDef);
-	else
-		M_SetupNextMenu(&::g->EpiDef);
+	else {
+		if (!DoomLib::hexp[4]) {
+			M_SetupNextMenu(&::g->EpiDef);
+		} else {
+			DoomLib::SetCurrentExpansion(pack_romero);
+			DoomLib::skipToDev = true;
+		}
+	}
 }
 
 
@@ -1478,7 +1484,7 @@ void M_Episode(int choice)
 	} 
 
 	::g->epi = choice;
-	if (inDevMode) {
+	if (::g->inDevMode) {
 		M_SetupNextMenu(&::g->DevDef);
 	}else {
 		M_SetupNextMenu(&::g->NewDef);
@@ -1489,7 +1495,7 @@ void M_Episode(int choice)
 void M_Expansion(int choice)
 {
 	::g->exp = choice;
-	if (inDevMode) {
+	if (::g->inDevMode) {
 		pageIndex = 0;
 		::g->gamemission = doom2;
 	}
@@ -1552,11 +1558,11 @@ void M_Expansion(int choice)
 		}
 	}
 		if (procced) {
-			if (inDevMode) {
+			if (::g->inDevMode) {
 				::g->gamemission = mission;
 			}
 			if (choice == 4 && !DoomLib::use_doomit) {
-				if (inDevMode) {
+				if (::g->inDevMode) {
 					M_SetupNextMenu(&::g->DevDef);
 				}
 				else {
@@ -1564,8 +1570,9 @@ void M_Expansion(int choice)
 				}
 			}
 			else if (choice != 4) {
-				if (inDevMode) {
-					M_SetupNextMenu(&::g->DevDef);
+				if (::g->inDevMode) {
+					DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
+					DoomLib::skipToDev = true;
 				}
 				else {
 					DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
@@ -1573,7 +1580,7 @@ void M_Expansion(int choice)
 				}
 			}
 			else if (choice == 4 && DoomLib::use_doomit && doomit.GetInteger() == 0) {
-				if (inDevMode) {
+				if (::g->inDevMode) {
 					M_SetupNextMenu(&::g->DevDef);
 				}
 				else {
@@ -1655,8 +1662,9 @@ void M_StartDev(int choice) {
 	skill_t skill = sk_medium;
 #endif
 	int startLevel = (choice + 1) + (pageIndex * 10);
-	if (::g->gamemode != commercial) {
+	if (::g->gamemode != commercial || ::g->episodicExpansion) {
 		G_DeferedInitNew(skill, ::g->epi + 1, startLevel);
+		if (::g->gamemode != commercial)
 		{ //GK: Set Endmap for the selected episode
 			if ((int)::g->clusters.size() <= ::g->epi) {
 				::g->gamemission = doom;
@@ -1686,6 +1694,17 @@ void M_StartDev(int choice) {
 	}
 }
 
+size_t GetEpisodicMapsSize() {
+	size_t count = 0;
+	for(size_t i = 0; i < ::g->maps.size(); i++) {
+		if (::g->maps[i].cluster == (::g->epi + 1)) {
+			count++;
+		}
+	}
+
+	return count;
+}
+
 void M_DrawDev(void) {
 	V_DrawPatchDirect(108, 10, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_DEV", PU_CACHE_SHARED), W_GetNumForName("M_DEV")), false);
 	switch ((GameMission_t)::g->gamemission) {
@@ -1702,7 +1721,7 @@ void M_DrawDev(void) {
 		numPages = 2;
 		break;
 	case pack_custom:
-		numPages = ::g->maps.size() / 10;
+		numPages = (::g->episodicExpansion || ::g->gamemode != commercial) ? GetEpisodicMapsSize() / 10 : ::g->maps.size() / 10;
 		break;
 	}
 	M_DrawPagedText(::g->DevDef, [&](int i) {
@@ -1745,6 +1764,32 @@ void M_DrawDev(void) {
 			}
 			break;
 		case pack_custom:
+			if (::g->episodicExpansion || ::g->gamemode != commercial) {
+				if(!::g->clusters[::g->epi].startmap) {
+					if (i < 9) {
+						res = mapnames[(::g->epi) * 9 + i];
+						activePageItems++;
+					}
+					break;
+				}
+				int maxmaps = ::g->clusters[::g->epi].endmap < ::g->clusters[::g->epi].startmap ? ::g->clusters[::g->epi].endmap + 1 : (::g->clusters[::g->epi].endmap - ::g->clusters[::g->epi].startmap) + 2;
+				if (i >= maxmaps) {
+					break;
+				}
+				if (i == (maxmaps - 1) && ::g->maps[0].cluster) {
+					for (size_t mapi = (::g->maps.size() - 1); mapi > 0; mapi--) {
+						if (::g->maps[mapi].cluster == (::g->epi + 1)) {
+							i = mapi;
+							break;
+						}
+					}
+				} else {
+					if (::g->maps[i].cluster != (::g->epi + 1)) {
+						i = ::g->clusters[::g->epi].startmap + (i - 1);
+					}
+				}
+				
+			}
 			if (::g->maps[i].realname != NULL) {
 				res = ::g->maps[i].realname;
 				activePageItems++;
@@ -3098,7 +3143,7 @@ qboolean M_Responder (event_t* ev)
 		::g->currentMenu->lastOn = ::g->itemOn;
 		M_CheckReset();
 		if (::g->currentMenu->prevMenu && ::g->currentMenu->prevMenu == &::g->MainDef) {
-			inDevMode = false;
+			::g->inDevMode = false;
 		}
 		if (::g->currentMenu->prevMenu)
 		{
@@ -3143,7 +3188,7 @@ void M_StartControlPanel (void)
 	// intro might call this repeatedly
 	if (::g->menuactive)
 		return;
-	inDevMode = false;
+	::g->inDevMode = false;
 	::g->menuactive = 1;
 	::g->currentMenu = &::g->MainDef;
 	::g->itemOn = ::g->currentMenu->lastOn;

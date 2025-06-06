@@ -2092,7 +2092,18 @@ G_DeferedInitNew
  int		map) 
 { 
 	::g->d_skill = skill; 
-	::g->d_episode = episode; 
+	::g->d_episode = episode;
+	if (::g->gamemission == pack_custom && ::g->episodicExpansion) {
+		int maxmaps = (::g->clusters[episode - 1].endmap - ::g->clusters[episode - 1].startmap) + 1;
+		if (map > maxmaps) {
+			for (size_t mapi = (::g->maps.size() - 1); mapi > 0; mapi--) {
+				if (::g->maps[mapi].cluster == episode) {
+					map = mapi + 1;
+					break;
+				}
+			}
+		}
+	} 
 	::g->d_map = map;
 
 	//::g->d_map = 30;
