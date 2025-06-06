@@ -362,7 +362,7 @@ void R_GenerateLookup (int texnum)
 	{
 	  int pat = patch->patch;
 	  realpatch = img2lmp(W_CacheLumpNum(pat, PU_CACHE_SHARED), pat);
-	  int x, x1 = patch++->originx, x2 = x1 + SHORT(realpatch->width);
+	  x, x1 = patch++->originx, x2 = x1 + SHORT(realpatch->width);
 	  const int *cofs = realpatch->columnofs - x1;
 	  
 	  if (x2 > texture->width)
