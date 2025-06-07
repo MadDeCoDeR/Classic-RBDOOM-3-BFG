@@ -369,6 +369,17 @@ void P_PlayerThink (player_t* player)
 		player->mo->flags &= ~MF_JUSTATTACKED;
 	}
 
+	int time_delta = (::g->gametic - ::g->lastMasocTick) / TICRATE;
+	if (::g->gameskill == sk_masochism && time_delta == 3) {
+		::g->lastMasocTick = ::g->gametic;
+		if (player->health > 25) {
+			player->health -= ((player->health - 5) < 25) ? (player->health - 25) : 5;
+		}
+		if (player->health <= 0) {
+			player->playerstate = PST_DEAD;
+		}
+	}
+
 
 	if (player->playerstate == PST_DEAD)
 	{
@@ -376,13 +387,7 @@ void P_PlayerThink (player_t* player)
 		return;
 	}
 
-	int time_delta = (::g->gametic - ::g->lastMasocTick) / TICRATE;
-	if (::g->gameskill == sk_masochism && time_delta == 3) {
-		::g->lastMasocTick = ::g->gametic;
-		if (player->health > 25) {
-			player->health -= ((player->health - 5) < 25) ? (player->health - 25) : 5;
-		}
-	}
+	
 
 	// Move around.
 	// Reactiontime is used to prevent movement

@@ -753,6 +753,8 @@ void P_SpawnPlayer (mapthing_t* mthing)
 	p->fixedcolormap = 0;
 	p->viewheight = VIEWHEIGHT;
 
+	::g->lastMasocTick = ::g->gametic;
+
 	// setup gun psprite
 	P_SetupPsprites (p);
 

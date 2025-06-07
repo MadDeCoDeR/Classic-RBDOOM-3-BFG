@@ -945,6 +945,7 @@ P_KillMobj
 		target->flags &= ~MF_SOLID;
 		target->player->playerstate = PST_DEAD;
 		P_DropWeapon (target->player);
+		target->player->playerstate = PST_DEAD;
 
 		if (target->player == &::g->players[::g->consoleplayer]
 			&& ::g->automapactive)
