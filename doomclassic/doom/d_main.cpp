@@ -739,6 +739,9 @@ void D_DoomMain(void)
 			case 5:
 				DoomLib::SetIdealExpansion(pack_master);
 				break;
+			case 6:
+				DoomLib::SetIdealExpansion(pack_kex);
+				break;
 			default:
 				DoomLib::SetIdealExpansion(doom2);
 				break;
@@ -765,6 +768,27 @@ void D_DoomMain(void)
 			// }
 		}
 	}
+
+	p = M_CheckParm("-episode");
+	if (p && p < ::g->myargc - 1)
+	{
+		::g->startepisode = ::g->myargv[p + 1][0] - '0';
+		if (::g->startepisode <= 0 || ((!DoomLib::hexp[4] && ::g->startepisode > 4) || (DoomLib::hexp[4] && ::g->startepisode > 6)))
+			::g->startepisode = 1;
+		::g->startmap = 1;
+		::g->autostart = true;
+
+		if (DoomLib::hexp[4] && ::g->startepisode > 4) {
+			DoomLib::SetCurrentExpansion(pack_romero);
+			::g->autostart = true;
+			::g->startmap = 1;
+			//DoomLib::skipToNew = true;
+			//GK: Re init wad files to apply the change
+			IdentifyVersion();
+			D_AddFile("wads/newopt.wad");
+		}
+	}
+
 	p = M_CheckParm ("-file");
 	if (p)
 	{
@@ -880,16 +904,6 @@ void D_DoomMain(void)
 #endif
 			::g->autostart = true;
 		}
-
-		p = M_CheckParm("-episode");
-		if (p && p < ::g->myargc - 1)
-		{
-			::g->startepisode = ::g->myargv[p + 1][0] - '0';
-			if (::g->startepisode <= 0 || ::g->startepisode > 4)
-				::g->startepisode = 1;
-			::g->startmap = 1;
-			::g->autostart = true;
-		}
 	}
 	//GK:Re-enable Network Related stuff
 	p = M_CheckParm ("-timer");
@@ -1000,7 +1014,7 @@ void D_DoomMain(void)
 			else
 			{
 				::g->startepisode = episode;
-				if (episode <= 0 || episode > 4)
+				if (episode <= 0 || (!DoomLib::hexp[4] && episode > 4) || (DoomLib::hexp[4] && episode > 6))
 					::g->startepisode = 1;
 				::g->startmap = map;
 				if (map <= 0 || map > 9)
