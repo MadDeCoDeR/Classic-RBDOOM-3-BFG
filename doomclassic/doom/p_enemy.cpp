@@ -156,10 +156,13 @@ P_NoiseAlert
 //
 // P_CheckMeleeRange
 //
-qboolean P_CheckMeleeRange (mobj_t*	actor)
+qboolean P_CheckMeleeRange (mobj_t*	actor, int meleerange = -1)
 {
     mobj_t*	pl;
     fixed_t	dist;
+	if (meleerange < 0) {
+		meleerange = actor->info->meleeRange;
+	}
 	
     if (!actor->target)
 	return false;
@@ -167,7 +170,7 @@ qboolean P_CheckMeleeRange (mobj_t*	actor)
     pl = actor->target;
     dist = P_AproxDistance (pl->x-actor->x, pl->y-actor->y);
 
-    if (dist >= actor->info->meleeRange-20*FRACUNIT+pl->info->radius)
+    if (dist >= meleerange-20*FRACUNIT+pl->info->radius)
 	return false;
 	
     if (! P_CheckSight (actor, actor->target) )
@@ -2258,6 +2261,129 @@ void A_MonsterProjectile(mobj_t* mo) {
 	// can be used to fire seeker missiles at will.
 	missle->tracer = mo->target;
 }
+void A_MonsterBulletAttack(mobj_t* mo) {
+	fixed_t hspread, vspread;
+	uint numbullets = 1, damagebase = 3, damagedice = 5;
+	int bangle, slope, angle, damage;
+
+	if (!mo->target || !mo->state->args[0])
+		return;
+
+	hspread = mo->state->args[0];
+	vspread = mo->state->args[1];
+	numbullets = mo->state->args[2];
+	damagebase = mo->state->args[3];
+	damagedice = mo->state->args[4];
+
+	S_StartSound (mo, mo->info->attacksound);
+	A_FaceTarget(mo);
+	bangle = mo->angle;
+    slope = P_AimLineAttack (mo, bangle, MISSILERANGE);
+
+    for (uint i=0 ; i< numbullets ; i++)
+    {
+	angle = bangle + ((P_Random()-P_Random())<<hspread);
+	damage = ((P_Random()% damagedice)+1)*damagebase;
+	slope += ((P_Random()-P_Random())<<vspread);
+	P_LineAttack (mo, angle, MISSILERANGE, slope, damage);
+    }
+}
+
+void A_MonsterMeleeAttack(mobj_t* mo) {
+	uint damagebase = 3, damagedice = 8, sound;
+	fixed_t range = -1;
+	int		damage;
+
+    if (!mo->target || !mo->state->args[0])
+	return;
+
+	damagebase = mo->state->args[0];
+	damagedice = mo->state->args[1];
+	sound = mo->state->args[2];
+	range = mo->state->args[3];
+		
+    A_FaceTarget (mo);
+    if (P_CheckMeleeRange (mo, range))
+    {
+		S_StartSound (mo, sound);
+		damage = ((P_Random()%damagedice)+1)*damagebase;
+		P_DamageMobj (mo->target, mo, mo, damage);
+    }
+}
+
+void A_NoiseAlert(mobj_t* mo) {
+	P_NoiseAlert(mo, mo);
+}
+
+void A_HealChase(mobj_t* actor) {
+	int			xl;
+    int			xh;
+    int			yl;
+    int			yh;
+    
+    int			bx;
+    int			by;
+	uint		state;
+	uint		sound;
+
+	if (!actor->state->args[0]) 
+		return;
+
+	state = actor->state->args[0];
+	sound = actor->state->args[1];
+
+    const mobjinfo_t*	info;
+    mobj_t*		temp;
+	
+    if (actor->movedir != DI_NODIR_CL)
+    {
+		// check for corpses to raise
+		::g->viletryx =
+			actor->x + actor->info->speed*xspeed[actor->movedir];
+		::g->viletryy =
+			actor->y + actor->info->speed*yspeed[actor->movedir];
+
+		xl = (::g->viletryx - ::g->bmaporgx - MAXRADIUS*2)>>MAPBLOCKSHIFT;
+		xh = (::g->viletryx - ::g->bmaporgx + MAXRADIUS*2)>>MAPBLOCKSHIFT;
+		yl = (::g->viletryy - ::g->bmaporgy - MAXRADIUS*2)>>MAPBLOCKSHIFT;
+		yh = (::g->viletryy - ::g->bmaporgy + MAXRADIUS*2)>>MAPBLOCKSHIFT;
+		
+		::g->vileobj = actor;
+		for (bx=xl ; bx<=xh ; bx++)
+		{
+			for (by=yl ; by<=yh ; by++)
+			{
+				// Call PIT_VileCheck to check
+				// whether object is a corpse
+				// that canbe raised.
+				if (!P_BlockThingsIterator(bx,by,PIT_VileCheck))
+				{
+					// got one!
+					temp = actor->target;
+					actor->target = ::g->corpsehit;
+					A_FaceTarget (actor);
+					actor->target = temp;
+							
+					P_SetMobjState (actor, state);
+					S_StartSound (::g->corpsehit, sound);
+					info = ::g->corpsehit->info;
+					
+					P_SetMobjState (::g->corpsehit,info->raisestate);
+					::g->corpsehit->height <<= 2;
+					::g->corpsehit->flags = info->flags;
+					::g->corpsehit->health = info->spawnhealth;
+					::g->corpsehit->target = NULL;
+
+					return;
+				}
+			}
+		}
+    }
+
+    // Return to normal attack.
+    A_Chase (actor);
+}
+
 
 }; // extern "C"
 

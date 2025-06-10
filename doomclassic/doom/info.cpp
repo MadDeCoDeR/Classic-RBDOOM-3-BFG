@@ -189,6 +189,10 @@ extern "C"
 	void A_RadiusDamage(void* p1);
 	void A_RemoveFlags(void* p1);
 	void A_MonsterProjectile(void* p1);
+	void A_MonsterBulletAttack(void* p1);
+	void A_MonsterMeleeAttack(void* p1);
+	void A_NoiseAlert(void* p1);
+	void A_HealChase(void* p1);
 	void A_WeaponProjectile(void* p1, void* p2);
 	void A_WeaponBulletAttack(void* p1, void* p2);
 	void A_WeaponJump(void* p1, void* p2);
@@ -5891,6 +5895,10 @@ std::vector<dehcptr> tempcptrval {
 { "RadiusDamage", (actionf_p1)A_RadiusDamage },
 { "RemoveFlags", (actionf_p1)A_RemoveFlags },
 { "MonsterProjectile", (actionf_p1)A_MonsterProjectile },
+{ "MonsterBulletAttack", (actionf_p1)A_MonsterBulletAttack },
+{ "MonsterMeleeAttack", (actionf_p1)A_MonsterMeleeAttack },
+{ "NoiseAlert", (actionf_p1)A_NoiseAlert },
+{ "HealChase", (actionf_p1)A_HealChase },
 { "WeaponProjectile", (actionf_p2)A_WeaponProjectile },
 { "WeaponBulletAttack", (actionf_p2)A_WeaponBulletAttack },
 { "WeaponJump", (actionf_p2)A_WeaponJump },
