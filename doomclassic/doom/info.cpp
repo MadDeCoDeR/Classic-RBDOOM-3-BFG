@@ -193,6 +193,9 @@ extern "C"
 	void A_MonsterMeleeAttack(void* p1);
 	void A_NoiseAlert(void* p1);
 	void A_HealChase(void* p1);
+	void A_SeekTracer(void* p1);
+	void A_FindTracer(void* p1);
+	void A_ClearTracer(void* p1);
 	void A_WeaponProjectile(void* p1, void* p2);
 	void A_WeaponBulletAttack(void* p1, void* p2);
 	void A_WeaponJump(void* p1, void* p2);
@@ -5899,6 +5902,9 @@ std::vector<dehcptr> tempcptrval {
 { "MonsterMeleeAttack", (actionf_p1)A_MonsterMeleeAttack },
 { "NoiseAlert", (actionf_p1)A_NoiseAlert },
 { "HealChase", (actionf_p1)A_HealChase },
+{ "SeekTracer", (actionf_p1)A_SeekTracer },
+{ "FindTracer", (actionf_p1)A_FindTracer },
+{ "ClearTracer", (actionf_p1)A_ClearTracer},
 { "WeaponProjectile", (actionf_p2)A_WeaponProjectile },
 { "WeaponBulletAttack", (actionf_p2)A_WeaponBulletAttack },
 { "WeaponJump", (actionf_p2)A_WeaponJump },
