@@ -542,6 +542,245 @@ P_LookForPlayers
 }
 
 
+//----------------------------------------------------------------------------
+//
+// FUNC P_FaceMobj
+//
+// Returns 1 if 'source' needs to turn clockwise, or 0 if 'source' needs
+// to turn counter clockwise.  'delta' is set to the amount 'source'
+// needs to turn.
+//
+//----------------------------------------------------------------------------
+
+int P_FaceMobj(mobj_t *source, mobj_t *target, angle_t *delta)
+{
+	angle_t diff;
+	angle_t angle1;
+	angle_t angle2;
+
+	angle1 = source->angle;
+	angle2 = R_PointToAngle2(source->x, source->y, target->x, target->y);
+	if(angle2 > angle1)
+	{
+		diff = angle2-angle1;
+		if(diff > ANG180)
+		{
+			*delta = ANGMAX-diff;
+			return(0);
+		}
+		else
+		{
+			*delta = diff;
+			return(1);
+		}
+	}
+	else
+	{
+		diff = angle1-angle2;
+		if(diff > ANG180)
+		{
+			*delta = ANGMAX-diff;
+			return(1);
+		}
+		else
+		{
+			*delta = diff;
+			return(0);
+		}
+	}
+}
+
+//
+// P_CheckFov
+// Returns true if t2 is within t1's field of view.
+// Not directly related to P_CheckSight, but often
+// used in tandem.
+//
+// Adapted from Eternity, so big thanks to Quasar
+//
+qboolean P_CheckFov(mobj_t *t1, mobj_t *t2, angle_t fov)
+{
+  angle_t angle, minang, maxang;
+
+  angle = R_PointToAngle2(t1->x, t1->y, t2->x, t2->y);
+  minang = t1->angle - fov / 2;
+  maxang = t1->angle + fov / 2;
+
+  return((minang > maxang) ? angle >= minang || angle <= maxang
+                           : angle >= minang && angle <= maxang);
+}
+
+static mobj_t *RoughBlockCheck(mobj_t *mo, int index, angle_t fov)
+{
+  mobj_t *link;
+
+  link = ::g->blocklinks[index];
+  while (link)
+  {
+    // skip non-shootable actors
+    if (!(link->flags & MF_SHOOTABLE))
+    {
+      link = link->bnext;
+      continue;
+    }
+
+    // // skip dormant actors
+    // if (link->flags2 & MF2_DORMANT)
+    // {
+    //     link = link->bnext;
+    //     continue;
+    // }
+
+    // skip the projectile's owner
+    if (link == mo->target)
+    {
+      link = link->bnext;
+      continue;
+    }
+
+    // skip actors on the same "team", unless infighting or deathmatching
+    if (mo->target &&
+      !((link->flags ^ mo->target->flags) & MF_FRIEND) &&
+      mo->target->target != link &&
+      !(::g->deathmatch && link->player && mo->target->player))
+    {
+      link = link->bnext;
+      continue;
+    }
+
+    // skip actors outside of specified FOV
+    if (fov > 0 && !P_CheckFov(mo, link, fov))
+    {
+      link = link->bnext;
+      continue;
+    }
+
+    // skip actors not in line of sight
+    if (!P_CheckSight(mo, link))
+    {
+      link = link->bnext;
+      continue;
+    }
+
+    // all good! return it.
+    return link;
+  }
+
+  // couldn't find a valid target
+  return NULL;
+}
+
+//
+// P_RoughTargetSearch
+// Searches though the surrounding mapblocks for monsters/players
+// based on Hexen's P_RoughMonsterSearch
+//
+// distance is in MAPBLOCKUNITS
+
+mobj_t *P_RoughTargetSearch(mobj_t *mo, angle_t fov, int distance)
+{
+  int blockX;
+  int blockY;
+  int startX, startY;
+  int blockIndex;
+  int firstStop;
+  int secondStop;
+  int thirdStop;
+  int finalStop;
+  int count;
+  mobj_t *target;
+
+  startX = (mo->x - ::g->bmaporgx) >> MAPBLOCKSHIFT;
+  startY = (mo->y - ::g->bmaporgy) >> MAPBLOCKSHIFT;
+
+  if (startX >= 0 && startX < ::g->bmapwidth && startY >= 0 && startY < ::g->bmapheight)
+  {
+    if ((target = RoughBlockCheck(mo, startY*::g->bmapwidth + startX, fov)))
+    { // found a target right away
+      return target;
+    }
+  }
+  for (count = 1; count <= distance; count++)
+  {
+    blockX = startX - count;
+    blockY = startY - count;
+
+    if (blockY < 0)
+    {
+      blockY = 0;
+    }
+    else if (blockY >= ::g->bmapheight)
+    {
+      blockY = ::g->bmapheight - 1;
+    }
+    if (blockX < 0)
+    {
+      blockX = 0;
+    }
+    else if (blockX >= ::g->bmapwidth)
+    {
+      blockX = ::g->bmapwidth - 1;
+    }
+    blockIndex = blockY * ::g->bmapwidth + blockX;
+    firstStop = startX + count;
+    if (firstStop < 0)
+    {
+      continue;
+    }
+    if (firstStop >= ::g->bmapwidth)
+    {
+      firstStop = ::g->bmapwidth - 1;
+    }
+    secondStop = startY + count;
+    if (secondStop < 0)
+    {
+      continue;
+    }
+    if (secondStop >= ::g->bmapheight)
+    {
+      secondStop = ::g->bmapheight - 1;
+    }
+    thirdStop = secondStop * ::g->bmapwidth + blockX;
+    secondStop = secondStop * ::g->bmapwidth + firstStop;
+    firstStop += blockY * ::g->bmapwidth;
+    finalStop = blockIndex;
+
+    // Trace the first block section (along the top)
+    for (; blockIndex <= firstStop; blockIndex++)
+    {
+      if ((target = RoughBlockCheck(mo, blockIndex, fov)))
+      {
+        return target;
+      }
+    }
+    // Trace the second block section (right edge)
+    for (blockIndex--; blockIndex <= secondStop; blockIndex += ::g->bmapwidth)
+    {
+      if ((target = RoughBlockCheck(mo, blockIndex, fov)))
+      {
+        return target;
+      }
+    }
+    // Trace the third block section (bottom edge)
+    for (blockIndex -= ::g->bmapwidth; blockIndex >= thirdStop; blockIndex--)
+    {
+      if ((target = RoughBlockCheck(mo, blockIndex, fov)))
+      {
+        return target;
+      }
+    }
+    // Trace the final block section (left edge)
+    for (blockIndex++; blockIndex > finalStop; blockIndex -= ::g->bmapwidth)
+    {
+      if ((target = RoughBlockCheck(mo, blockIndex, fov)))
+      {
+        return target;
+      }
+    }
+  }
+  return NULL;
+}
+
 extern "C" {
 //
 // A_KeenDie
@@ -2382,6 +2621,85 @@ void A_HealChase(mobj_t* actor) {
 
     // Return to normal attack.
     A_Chase (actor);
+}
+
+void A_SeekTracer(mobj_t *actor)
+{
+	int dir;
+	int dist;
+	angle_t delta;
+	angle_t angle;
+	mobj_t *target;
+	angle_t thresh;
+	angle_t turnMax;
+
+	if (!actor->state->args[0]) 
+		return;
+
+	thresh = FixedToAngle(actor->state->args[0]);
+	turnMax = FixedToAngle(actor->state->args[1]);
+
+	target = (mobj_t *)actor->tracer;
+	if(target == NULL)
+	{
+		return;
+	}
+	if(!(target->flags&MF_SHOOTABLE))
+	{ // Target died
+		actor->tracer = 0;
+		return;
+	}
+	dir = P_FaceMobj(actor, target, &delta);
+	if(delta > thresh)
+	{
+		delta >>= 1;
+		if(delta > turnMax)
+		{
+			delta = turnMax;
+		}
+	}
+	if(dir)
+	{ // Turn clockwise
+		actor->angle += delta;
+	}
+	else
+	{ // Turn counter clockwise
+		actor->angle -= delta;
+	}
+	angle = actor->angle>>ANGLETOFINESHIFT;
+	actor->momx = FixedMul(actor->info->speed, finecosine[angle]);
+	actor->momy = FixedMul(actor->info->speed, finesine[angle]);
+	{ // Need to seek vertically
+		dist = P_AproxDistance(target->x-actor->x, target->y-actor->y);
+		dist = dist/actor->info->speed;
+		if(dist < 1)
+		{
+			dist = 1;
+		}
+		actor->momz = (target->z + (target->height/2) - actor->z)/dist;
+	}
+}
+
+void A_FindTracer(mobj_t* actor) {
+	angle_t fov;
+	uint rangeblocks;
+
+	if (actor->tracer) {
+		return;
+	}
+
+	if (!actor->state->args[0]) {
+		return;
+	}
+
+	fov = FixedToAngle(actor->state->args[0]);
+	rangeblocks = actor->state->args[1];
+
+	actor->tracer = P_RoughTargetSearch(actor, fov, rangeblocks);
+}
+
+void A_ClearTracer(mobj_t* mo) {
+	mo->tracer = NULL;
 }
 
 
