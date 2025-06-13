@@ -337,8 +337,8 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 			switch (wParam) {
 			case VK_RETURN:  	// alt-enter toggles full-screen
 				{
-					int displayNum = !renderSystem->IsFullScreen();
-					if (!renderSystem->IsFullScreen()) {
+					int displayNum = 0;
+					if (renderSystem->IsFullScreen() == 0) {
 						HMONITOR hmonitor = MonitorFromWindow(win32.hWnd, MONITOR_DEFAULTTONEAREST);
 						MONITORINFOEX monitorinfoex;
 						monitorinfoex.cbSize = sizeof(MONITORINFOEX);
@@ -374,6 +374,11 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 			else if( key == K_PAUSE )
 			{
 				key = K_NUMLOCK;
+			}
+			//GK: Why this has to be done manually?
+			else if (wParam == VK_LWIN || wParam == VK_RWIN) {
+				SendMessage(hWnd, WM_SYSCOMMAND, SC_TASKLIST, 0);
+				break;
 			}
 			Sys_QueEvent( SE_KEY, key, true, 0, NULL, 0 );
 			
