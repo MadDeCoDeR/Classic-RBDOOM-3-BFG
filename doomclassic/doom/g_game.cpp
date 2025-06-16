@@ -1300,53 +1300,6 @@ void G_ScreenShot (void)
 } 
 
 
-// DHM - Nerve :: Added episode 4 par times
-// DOOM Par Times
-/*const*/ int pars[5][10] = 
-{ 
-	{0}, 
-	{0,30,75,120,90,165,180,180,30,165},
-	{0,90,90,90,120,90,360,240,30,170},
-	{0,90,45,90,150,90,90,165,30,135},
-	{0,165,255,135,150,180,390,135,360,180}
-}; 
-
-// DOOM II Par Times
-/*const*/ int cpars[33] =
-{
-	30,90,120,120,90,150,120,120,270,90,		//  1-10
-	210,150,150,150,210,150,420,150,210,150,	// 11-20
-	240,150,180,150,150,300,330,420,300,180,	// 21-30
-	120,30,240									// 31-33
-};
-
-int npars[9] =
-{
-	75,105,120,105,210,105,165,105,135			// 1-9
-};
-
-void ResetPars(void) {
-	 int tpars[5][10] =
-	{
-		{ 0 },
-	{ 0,30,75,120,90,165,180,180,30,165 },
-	{ 0,90,90,90,120,90,360,240,30,170 },
-	{ 0,90,45,90,150,90,90,165,30,135 },
-	{ 0,165,255,135,150,180,390,135,360,180 }
-	};
-	memcpy(pars, tpars, sizeof(tpars));
-
-	int tcpars[33] =
-	{
-		30,90,120,120,90,150,120,120,270,90,		//  1-10
-		210,150,150,150,210,150,420,150,210,150,	// 11-20
-		240,150,180,150,150,300,330,420,300,180,	// 21-30
-		120,30,240									// 31-33
-	};
-	memcpy(cpars, tcpars, sizeof(tcpars));
-}
-
-
 //
 // G_DoCompleted 
 //
@@ -1555,27 +1508,6 @@ void G_DoCompleted (void)
 	::g->wminfo.maxitems = ::g->totalitems; 
 	::g->wminfo.maxsecret = ::g->totalsecret; 
 	::g->wminfo.maxfrags = 0; 
-
-	if ( ::g->gamemode == commercial ) {
-		switch (::g->gamemission) {
-		case pack_nerve:
-			::g->wminfo.partime = TICRATE * npars[::g->gamemap - 1];
-			break;
-		default:
-			::g->wminfo.partime = TICRATE * cpars[::g->gamemap - 1];
-			break;
-		}
-	}
-	else {
-		if (::g->gameepisode < 5 && ::g->gamemap < 10) {
-			::g->wminfo.partime = TICRATE * pars[::g->gameepisode][::g->gamemap];
-		}
-	}
-
-	if (::g->gamemission == pack_custom && ::g->map) {
-		if (::g->maps[::g->map -1].par)
-		::g->wminfo.partime = TICRATE * ::g->maps[::g->map - 1].par;
-	}
 
 	::g->wminfo.pnum = ::g->consoleplayer; 
 

@@ -851,6 +851,7 @@ qboolean		st_armson;
 qboolean		st_fragson; 
 patch_t*		sbar; // AffLANHACK IGNORE
 patch_t*		tallnum[10]; // AffLANHACK IGNORE
+patch_t*		bluenum[10]; // AffLANHACK IGNORE
 patch_t*		tallpercent; // AffLANHACK IGNORE
 patch_t*		fullnum[10]; // AffLANHACK IGNORE
 patch_t*		fullpercent; // AffLANHACK IGNORE

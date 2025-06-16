@@ -1135,6 +1135,7 @@ void ST_drawWidgets(qboolean refresh)
 
 	// used by ::g->w_frags widget
 	::g->st_fragson = ::g->deathmatch && ::g->st_statusbaron; 
+	::g->w_time.p = (::g->normaltime < (::g->wminfo.partime / TICRATE)) ? ::g->tallnum : ::g->bluenum;
 	STlib_updateNum(&::g->w_time, refresh);
 	STlib_updateNum(&::g->w_ready, refresh);
 
@@ -1175,6 +1176,7 @@ void ST_drawFullWidgets(qboolean refresh)
 
 	// used by ::g->w_frags widget
 	::g->st_fragson = ::g->deathmatch && cl_HUD.GetBool();
+	::g->w_f_time.p = (::g->normaltime < (::g->wminfo.partime / TICRATE)) ? ::g->fullnum : ::g->shortnum;
 	STlib_updateNum(&::g->w_f_time, refresh);
 	STlib_updateNum(&::g->w_f_ready, refresh);
 
@@ -1286,6 +1288,9 @@ void ST_loadGraphics(void)
 	{
 		sprintf(namebuf, "STTNUM%d", i);
 		::g->tallnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
+
+		sprintf(namebuf, "STWNUM%d", i);
+		::g->bluenum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
 
 		sprintf(namebuf, "STCFN0%d", 48 + i);
 		::g->fullnum[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(namebuf, PU_STATUS_FRONT), W_GetNumForName(namebuf));
@@ -1657,7 +1662,7 @@ void ST_createFullScreenWidgets() {
 	STlib_initAspectNum(&::g->w_f_time,
 		(::g->renderingWidth - 3) - xOffset,
 		(::g->fulltime->height + 4) - yOffset,
-		::g->fullnum,
+		::g->fullnum ,
 		&::g->normaltime,
 		&::g->st_statusbaroff,
 		ST_TIMEWIDTH);
