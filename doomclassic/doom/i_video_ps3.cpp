@@ -171,11 +171,11 @@ void I_SetPalette (byte* palette,int palsize)
 	// set the X colormap entries
 	for (i=0 ; i<256 ; i++)
 	{
-		int r,b,g;
+		unsigned int r,b,g;
 		r = gammatable[::g->usegamma][*palette++];
 		g = gammatable[::g->usegamma][*palette++];
 		b = gammatable[::g->usegamma][*palette++];
-		::g->XColorMap[i] = I_PackColor(0xff, r, g, b);
+		::g->XColorMap[i] = I_PackColor(0xffu, r, g, b);
 	}
 
 }
