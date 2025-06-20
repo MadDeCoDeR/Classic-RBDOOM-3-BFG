@@ -199,6 +199,9 @@ void R_GenerateComposite (int texnum)
     short*			collump;
     unsigned *	colofs;// killough 4/9/98: make 32-bit
     texture = ::g->s_textures[texnum];
+	//GK: BFG Rendering weirdness (?). For textures with height bigger than 254 
+	// use the texture height as a limit to when we will stop using the abolut topdelta and instead use relative. This fixes Tutti-Frutti issues with wall textures of height 256 or higher
+	int reltopMax = texture->height > 254 ? texture->height : 254;
 
     block = (byte*)DoomLib::Z_Malloc (::g->s_texturecompositesize[texnum],
 		      PU_CACHE_SHARED, 
@@ -269,7 +272,7 @@ void R_GenerateComposite (int texnum)
 			for (;;)  // reconstruct the column by scanning transparency marks
 			{
 				unsigned len;
-				while (j < texture->height && reltop < 254 && !mark[j]) // skip transparent cells
+				while (j < texture->height && reltop < reltopMax && !mark[j]) // skip transparent cells
 					j++, reltop++;
 				if (j >= texture->height)           // if at end of column
 				{
@@ -279,13 +282,13 @@ void R_GenerateComposite (int texnum)
 				col->topdelta = relative ? reltop : j;                  // starting offset of post
 
 				// [FG] once we pass the 254 boundary, topdelta becomes relative
-				if ((abstop = j) >= 254)
+				if ((abstop = j) >= reltopMax)
 				{
 				relative = true;
 				reltop = 0;
 				}
 
-				for (len = 0; j < texture->height && reltop < 254 && mark[j]; j++, reltop++)
+				for (len = 0; j < texture->height && reltop < reltopMax && mark[j]; j++, reltop++)
 					len++;                    // count opaque cells
 													  // copy opaque cells from the temporary back into the column
 				col->length = len;
