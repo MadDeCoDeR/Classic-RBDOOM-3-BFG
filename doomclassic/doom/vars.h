@@ -729,7 +729,7 @@ player_t*		viewplayer;
 int			detailshift;	
 angle_t			clipangle;
 int			viewangletox[FINEANGLES/2];
-angle_t			xtoviewangle[BASE_WIDTH+1];
+angle_t			xtoviewangle[MAXWIDTH+1];
 lighttable_t*		scalelight[LIGHTLEVELS][MAXLIGHTSCALE];
 lighttable_t*		scalelightfixed[MAXLIGHTSCALE];
 lighttable_t*		zlight[LIGHTLEVELS][MAXLIGHTZ];
@@ -746,20 +746,20 @@ planefunction_t		floorfunc;
 planefunction_t		ceilingfunc;
 short			openings[MAXOPENINGS];
 short*			lastopening;
-short			floorclip[BASE_WIDTH];
-short			ceilingclip[BASE_WIDTH];
-int			spanstart[SCREENHEIGHT];
-int			spanstop[SCREENHEIGHT];
+short			floorclip[MAXWIDTH];
+short			ceilingclip[MAXWIDTH];
+int			spanstart[MAXHEIGHT];
+int			spanstop[MAXHEIGHT];
 int		planezlight;
 fixed_t			planeheight;
-fixed_t			yslope[SCREENHEIGHT];
-fixed_t			distscale[BASE_WIDTH];
+fixed_t			yslope[MAXHEIGHT];
+fixed_t			distscale[MAXWIDTH];
 fixed_t			basexscale;
 fixed_t			baseyscale;
-fixed_t			cachedheight[SCREENHEIGHT];
-fixed_t			cacheddistance[SCREENHEIGHT];
-fixed_t			cachedxstep[SCREENHEIGHT];
-fixed_t			cachedystep[SCREENHEIGHT];
+fixed_t			cachedheight[MAXHEIGHT];
+fixed_t			cacheddistance[MAXHEIGHT];
+fixed_t			cachedxstep[MAXHEIGHT];
+fixed_t			cachedystep[MAXHEIGHT];
 // r_plane.vars end // 
 //  r_segs.vars begin // 
 qboolean		segtextured;	
@@ -1081,7 +1081,9 @@ const char*		spritename;
 //GK: Aspect ratio image scaler and screenwidth are keept
 //as global variables since they get calculated based on the r_aspectcorrect CVar
 int ASPECT_IMAGE_SCALER;
+int GLOBAL_IMAGE_SCALER;
 int SCREENWIDTH;
+int SCREENHEIGHT;
 int ASPECT_POS_OFFSET;
 int renderingWidth;
 //#ifdef USE_OPENAL

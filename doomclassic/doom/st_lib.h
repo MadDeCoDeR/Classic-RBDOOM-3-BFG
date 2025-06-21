@@ -197,6 +197,16 @@ STlib_initPercent
   qboolean*		on,
   patch_t*		percent );
 
+void
+STlib_initAspectPercent
+( st_percent_t*		p,
+  int			x,
+  int			y,
+  patch_t**		pl,
+  int*			num,
+  qboolean*		on,
+  patch_t*		percent );
+
 
 void
 STlib_updatePercent

@@ -48,11 +48,11 @@ typedef void (*planefunction_t) (int top, int bottom);
 extern planefunction_t	floorfunc;
 extern planefunction_t	ceilingfunc_t;
 
-extern short		floorclip[BASE_WIDTH];
-extern short		ceilingclip[BASE_WIDTH];
+extern short		floorclip[MAXWIDTH];
+extern short		ceilingclip[MAXWIDTH];
 
-extern fixed_t		yslope[BASE_WIDTH];
-extern fixed_t		distscale[BASE_WIDTH];
+extern fixed_t		yslope[MAXWIDTH];
+extern fixed_t		distscale[MAXWIDTH];
 
 void R_InitPlanes (void);
 void R_ClearPlanes (void);

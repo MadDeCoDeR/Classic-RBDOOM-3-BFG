@@ -2385,7 +2385,7 @@ void M_Key(int choice)
 }
 
 void M_ChangeKeys(int choice) {
-	//int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+	//int aspect = ::g->ASPECT_IMAGE_SCALER - ::g->GLOBAL_IMAGE_SCALER;
 	if (M_HandlePaging(choice)) {
 		return;
 	}
@@ -3037,7 +3037,7 @@ qboolean M_Responder (event_t* ev)
 		}
 	}
 	// Keys usable within menu
-	//int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+	//int aspect = ::g->ASPECT_IMAGE_SCALER - ::g->GLOBAL_IMAGE_SCALER;
 	switch (ch)
 	{
 	case KEY_DOWNARROW:
@@ -3245,7 +3245,7 @@ void M_Drawer (void)
 
 	if (::g->currentMenu->routine)
 		::g->currentMenu->routine();         // call Draw routine
-	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+	int aspect = ::g->ASPECT_IMAGE_SCALER - ::g->GLOBAL_IMAGE_SCALER;
 	// DRAW MENU
 	::g->md_x = ::g->currentMenu->x;
 	::g->md_y = ::g->currentMenu->y;
@@ -3577,7 +3577,7 @@ void M_DrawPagedText(menu_t def, std::function<std::string(int)> func)
 	pageDef = def;
 	int bindStart = 0;
 	int bindEnd = 0;
-	int aspect = ::g->ASPECT_IMAGE_SCALER - GLOBAL_IMAGE_SCALER;
+	int aspect = ::g->ASPECT_IMAGE_SCALER - ::g->GLOBAL_IMAGE_SCALER;
 	bindStart = pageIndex * 10;
 	int endOffs = bindStart == 0 ? 1 : 2;
 	bindEnd = (bindStart + 10) + endOffs;

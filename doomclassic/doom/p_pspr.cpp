@@ -564,7 +564,7 @@ A_Punch
 	if (cl_freelook.GetBool() && !::g->demorecording && ::g->gamestate != GS_DEMOLEVEL)
 	{
 		angle -= 2 << 26;
-		slope = -(((::g->mouseposy) << FRACBITS) / 473);
+		slope = -(((::g->mouseposy) << FRACBITS) / (::g->SCREENHEIGHT - (127 * (::g->GLOBAL_IMAGE_SCALER/ 3.0f))));
 	}
 	P_LineAttack (player->mo, angle, player->mo->info->meleeRange, slope, damage);
 
@@ -602,7 +602,7 @@ A_Saw
 	if (cl_freelook.GetBool() && !::g->demorecording && ::g->gamestate != GS_DEMOLEVEL)
 	{
 		angle -= 2 << 26;
-		slope = -(((::g->mouseposy) << FRACBITS) / 473);
+		slope = -(((::g->mouseposy) << FRACBITS) / (::g->SCREENHEIGHT - (127 * (::g->GLOBAL_IMAGE_SCALER/ 3.0f))));
 	}
 	P_LineAttack (player->mo, angle, player->mo->info->meleeRange+1, slope, damage);
 
@@ -733,7 +733,7 @@ void P_BulletSlope (mobj_t*	mo)
 	{
 		if ((game->GetCVarBool("aa_targetAimAssistEnable") && !::g->linetarget) || !game->GetCVarBool("aa_targetAimAssistEnable")) {
 			an -= 2 << 26;
-			::g->bulletslope = -(((::g->mouseposy) << FRACBITS) / 473);
+			::g->bulletslope = -(((::g->mouseposy) << FRACBITS) / (::g->SCREENHEIGHT - (127 * (::g->GLOBAL_IMAGE_SCALER/ 3.0f))));
 		}
 	}
 }

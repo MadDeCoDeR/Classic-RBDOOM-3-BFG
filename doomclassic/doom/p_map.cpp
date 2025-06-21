@@ -1310,7 +1310,7 @@ PTR_AimTraverse (intercept_t* in)
 	thingbottomslope = ::g->bottomslope;
 
 	if (!cl_freelook.GetBool() || game->GetCVarBool("aa_targetAimAssistEnable") || ::g->demorecording || ::g->demoplayback || ::g->shootthing != ::g->viewplayer->mo) {
-		::g->aimslope = (thingtopslope + thingbottomslope) / 2;
+		::g->aimslope = (thingtopslope + thingbottomslope) / (::g->GLOBAL_IMAGE_SCALER - 1);
 	}
 	/*else {
 		if (game->GetCVarBool("aa_targetAimAssistEnable")) {

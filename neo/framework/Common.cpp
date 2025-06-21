@@ -2364,6 +2364,9 @@ void idCommonLocal::PerformGameSwitch()
 		
 		DoomLib::skipToNew = false;
 		DoomLib::skipToLoad = false;
+
+		doomClassicWidth = 0;
+		doomClassicHeight = 0;
 		
 		// Reset match parameters for the classics.
 		DoomLib::matchParms = idMatchParameters();
@@ -2387,6 +2390,7 @@ void idCommonLocal::PerformGameSwitch()
 	else if( idealCurrentGame == DOOM3_BFG )
 	{
 		DoomLib::Interface.Shutdown();
+		free(doomClassicImageData);
 		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
 		com_engineHz_latched = com_engineHz.GetFloat();
 		Sys_ChangeTitle(common->IsNewDOOM3() ? NEW_GAME_NAME : GAME_NAME);

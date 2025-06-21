@@ -625,9 +625,11 @@ private:
 	static const int			DOOMCLASSIC_RENDERHEIGHT = 200 * 3;
 	static const int			DOOMCLASSIC_BYTES_PER_PIXEL = 4;
 	//GK: Having this higher than expected doesn't giving any issue
-	static const int			DOOMCLASSIC_IMAGE_SIZE_IN_BYTES = DOOMCLASSIC_RENDERWIDTH_CORRECT * DOOMCLASSIC_RENDERHEIGHT * DOOMCLASSIC_BYTES_PER_PIXEL;
+	//static const int			DOOMCLASSIC_IMAGE_SIZE_IN_BYTES = DOOMCLASSIC_RENDERWIDTH_CORRECT * DOOMCLASSIC_RENDERHEIGHT * DOOMCLASSIC_BYTES_PER_PIXEL;
 	
-	byte	doomClassicImageData[DOOMCLASSIC_IMAGE_SIZE_IN_BYTES];
+	byte*	doomClassicImageData;
+	int		doomClassicWidth;
+	int		doomClassicHeight;
 
 	bool clRestart = false; //GK: Use to signal engine reboot from Classic DOOM engine
 	//GK begin

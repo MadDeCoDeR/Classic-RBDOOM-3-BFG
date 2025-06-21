@@ -260,9 +260,9 @@ If you have questions concerning this license or the applicable additional terms
 //  r_draw.defs begin // 
 //#define MAXWIDTH			1120
 //#define MAXHEIGHT			832
-#define SBARHEIGHT		32 * GLOBAL_IMAGE_SCALER
+#define SBARHEIGHT		32 * ::g->GLOBAL_IMAGE_SCALER
 #define FUZZTABLE		50 
-#define FUZZOFF	(::g->SCREENWIDTH) //GK: If the aspect ratio correction is off with the BASE_WIDTH it was making specters moving paintings
+#define FUZZOFF	(::g->SCREENWIDTH) //GK: If the aspect ratio correction is off with the MAXWIDTH it was making specters moving paintings
 // r_draw.defs end // 
 //  r_main.defs begin // 
 #define FIELDOFVIEW		2048	
@@ -271,7 +271,7 @@ If you have questions concerning this license or the applicable additional terms
 //  r_plane.defs begin // 
 #define MAXVISPLANES	128
 //#define MAXVISPLANES	384 //GK: No nedded anymore
-#define MAXOPENINGS	BASE_WIDTH*256 //GK: For now just increased it
+#define MAXOPENINGS	MAXWIDTH*256 //GK: For now just increased it
 // r_plane.defs end // 
 //  r_segs.defs begin // 
 #define HEIGHTBITS		12

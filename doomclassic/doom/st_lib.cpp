@@ -201,6 +201,19 @@ STlib_initPercent
     p->p = percent;
 }
 
+void
+STlib_initAspectPercent
+( st_percent_t*		p,
+  int			x,
+  int			y,
+  patch_t**		pl,
+  int*			num,
+  qboolean*		on,
+  patch_t*		percent )
+{
+    STlib_initAspectNum(&p->n, x, y, pl, num, on, 3);
+    p->p = percent;
+}
 
 
 

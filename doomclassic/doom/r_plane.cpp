@@ -55,7 +55,7 @@ void AddNewVisplane();
 
 //
 // Clip values are the solid pixel bounding the range.
-//  ::g->floorclip starts out SCREENHEIGHT
+//  ::g->floorclip starts out ::g->SCREENHEIGHT
 //  ::g->ceilingclip starts out -1
 //
 
@@ -350,26 +350,26 @@ R_MakeSpans
 {
 	//GK:Sanity check
 	int tt1, tt2, tb1, tb2;
-	if (t1 >= SCREENHEIGHT) {
-		tt1 = SCREENHEIGHT - 1;
+	if (t1 >= ::g->SCREENHEIGHT) {
+		tt1 = ::g->SCREENHEIGHT - 1;
 	}
 	else {
 		tt1 = t1;
 	}
-	if (b1 >= SCREENHEIGHT) {
-		tb1 = SCREENHEIGHT - 1;
+	if (b1 >= ::g->SCREENHEIGHT) {
+		tb1 = ::g->SCREENHEIGHT - 1;
 	}
 	else {
 		tb1 = b1;
 	}
-	if (t2 >= SCREENHEIGHT) {
-		tt2 = SCREENHEIGHT - 1;
+	if (t2 >= ::g->SCREENHEIGHT) {
+		tt2 = ::g->SCREENHEIGHT - 1;
 	}
 	else {
 		tt2 = t2;
 	}
-	if (b2 >= SCREENHEIGHT) {
-		tb2 = SCREENHEIGHT - 1;
+	if (b2 >= ::g->SCREENHEIGHT) {
+		tb2 = ::g->SCREENHEIGHT - 1;
 	}
 	else {
 		tb2 = b2;

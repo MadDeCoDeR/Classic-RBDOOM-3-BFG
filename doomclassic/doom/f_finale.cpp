@@ -646,7 +646,7 @@ void F_TextWrite (void)
 	}
     dest = ::g->screens[0];
 	
-    for (y=0 ; y<SCREENHEIGHT ; y++)
+    for (y=0 ; y<::g->SCREENHEIGHT ; y++)
     {
 	for (x=0 ; x< ::g->SCREENWIDTH/64 ; x++)
 	{
@@ -660,7 +660,7 @@ void F_TextWrite (void)
 	}
     }
 
-    V_MarkRect (0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
+    V_MarkRect (0, 0, ::g->SCREENWIDTH, ::g->SCREENHEIGHT);
     
     // draw some of the text onto the screen
     cx = 10;
@@ -1056,10 +1056,10 @@ F_DrawPatchCol( int x, patch_t* patch, int col ) {
 		{
 			int scaledx, scaledy;
 			scaledx = destx * ::g->ASPECT_IMAGE_SCALER;
-			scaledy = desty * GLOBAL_IMAGE_SCALER;
+			scaledy = desty * ::g->GLOBAL_IMAGE_SCALER;
 			byte src = *source++;
 
-			for ( int i = 0; i < GLOBAL_IMAGE_SCALER; i++ ) {
+			for ( int i = 0; i < ::g->GLOBAL_IMAGE_SCALER; i++ ) {
 				for ( int j = 0; j < ::g->ASPECT_IMAGE_SCALER; j++ ) {
 					::g->screens[0][( scaledx + j ) + ( scaledy + i ) * ::g->SCREENWIDTH] = src;
 				}
@@ -1087,7 +1087,7 @@ void F_BunnyScroll (void)
     p1 =  /*(patch_t*)*/img2lmp(W_CacheLumpName ("PFUB2", PU_FINALE), W_GetNumForName("PFUB2"));
     p2 =  /*(patch_t*)*/img2lmp(W_CacheLumpName ("PFUB1", PU_FINALE), W_GetNumForName("PFUB1"));
 
-    V_MarkRect (0, 0, ::g->SCREENWIDTH, SCREENHEIGHT);
+    V_MarkRect (0, 0, ::g->SCREENWIDTH, ::g->SCREENHEIGHT);
 	
     scrolled = p1->width - (::g->finalecount-230)/2;
     if (scrolled > p1->width)

@@ -196,7 +196,8 @@ void P_MovePlayer (player_t* player)
 	player->mo->angle += (cmd->angleturn << 16);
 	player->mo->viewangle += (cmd->angleview << 16) /*- ::g->assistslope*/;
 	//::g->assistslope = 0;
-	player->mo->viewangle = idMath::ClampInt((-1 * idMath::Abs(cl_freelookclamp.GetInteger())) << 19, idMath::Abs(cl_freelookclamp.GetInteger()) << 19, player->mo->viewangle);
+	int offset = 6.333333333f * ::g->GLOBAL_IMAGE_SCALER;
+	player->mo->viewangle = idMath::ClampInt((-1 * idMath::Abs(cl_freelookclamp.GetInteger()* (::g->GLOBAL_IMAGE_SCALER/3.0f))) << 19, idMath::Abs(cl_freelookclamp.GetInteger()* (::g->GLOBAL_IMAGE_SCALER/3.0f)) << 19, player->mo->viewangle);
 
 	// Do not let the player control movement
 	//  if not ::g->onground.

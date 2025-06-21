@@ -50,27 +50,27 @@ typedef unsigned int dword;
 #define ACTUALTEXTUREWIDTH	1024		// should always be equal to or larger
 #define ACTUALTEXTUREHEIGHT	1024
 
-#define GLOBAL_IMAGE_SCALER	3
+//#define GLOBAL_IMAGE_SCALER	3
 
 #define ORIGINAL_WIDTH		320
 #define ORIGINAL_HEIGHT		200
 //GK: SCREENWIDTH along side with it's own image scaler are now global variables
 //#define WIDTH				( ORIGINAL_WIDTH * GLOBAL_IMAGE_SCALER )
-#define HEIGHT				( ORIGINAL_HEIGHT * GLOBAL_IMAGE_SCALER )
+//#define HEIGHT				( ORIGINAL_HEIGHT * GLOBAL_IMAGE_SCALER )
 
 
 //#define TEXTUREWIDTH		WIDTH
-#define TEXTUREHEIGHT		HEIGHT
+//#define TEXTUREHEIGHT		HEIGHT
 //GK: For Array initialization use the BASE_WIDTH which is equal to the WIDTH when aspect ratio correction is enabled
-#define ASPECT_OFFSET (GLOBAL_IMAGE_SCALER + 1)
+//#define ASPECT_OFFSET (GLOBAL_IMAGE_SCALER + 1)
 
-#define	BASE_WIDTH			(ORIGINAL_WIDTH*ASPECT_OFFSET)
+//#define	BASE_WIDTH			(ORIGINAL_WIDTH*ASPECT_OFFSET)
 //#define SCREENWIDTH			WIDTH
 //GK: End
-#define SCREENHEIGHT		HEIGHT
+//#define SCREENHEIGHT		HEIGHT
 
-#define MAXWIDTH			1920
-#define MAXHEIGHT			832
+#define MAXWIDTH			3200
+#define MAXHEIGHT			2000
 
 // DG: provide MAXINT seems to be available on MSVC but not MinGW,
 // so use the standard defines from limits.h

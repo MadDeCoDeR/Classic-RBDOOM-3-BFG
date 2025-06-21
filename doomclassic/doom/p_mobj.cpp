@@ -1061,13 +1061,13 @@ P_SpawnPlayerMissile
 	{
 		if ((game->GetCVarBool("aa_targetAimAssistEnable") && !::g->linetarget) || !game->GetCVarBool("aa_targetAimAssistEnable")) {
 			an = source->angle;
-			slope = -(((::g->mouseposy) << FRACBITS) / 473); //GK: Taken from Heretic source and altered in order to work with idTech 5 input
+			slope = -(((::g->mouseposy) << FRACBITS) / (::g->SCREENHEIGHT - (127 * (::g->GLOBAL_IMAGE_SCALER/ 3.0f)))); //GK: Taken from Heretic source and altered in order to work with idTech 5 input
 		}
 	}
 
 	x = source->x;
 	y = source->y;
-	z = source->z + 4*8*FRACUNIT - (((::g->mouseposy) << FRACBITS) / 473);
+	z = source->z + 4*8*FRACUNIT - (((::g->mouseposy) << FRACBITS) / (::g->SCREENHEIGHT - (127 * (::g->GLOBAL_IMAGE_SCALER/ 3.0f))));
 
 	th = P_SpawnMobj (x,y,z, type);
 
