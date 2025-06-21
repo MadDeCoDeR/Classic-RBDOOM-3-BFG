@@ -1648,7 +1648,6 @@ void ST_createFullScreenWidgets() {
 
 	int xscale = ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER ? 1 : 2;
 	int powerY = (::g->SCREENHEIGHT / ::g->GLOBAL_IMAGE_SCALER) / 2;
-	int useAspect = ::g->ASPECT_IMAGE_SCALER - ::g->GLOBAL_IMAGE_SCALER;
 	int i;
 	int xOffset = 0;
 	int yOffset = 0;

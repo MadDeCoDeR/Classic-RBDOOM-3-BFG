@@ -348,52 +348,24 @@ R_MakeSpans
   int		t2,
   int		b2 )
 {
-	//GK:Sanity check
-	int tt1, tt2, tb1, tb2;
-	if (t1 >= ::g->SCREENHEIGHT) {
-		tt1 = ::g->SCREENHEIGHT - 1;
-	}
-	else {
-		tt1 = t1;
-	}
-	if (b1 >= ::g->SCREENHEIGHT) {
-		tb1 = ::g->SCREENHEIGHT - 1;
-	}
-	else {
-		tb1 = b1;
-	}
-	if (t2 >= ::g->SCREENHEIGHT) {
-		tt2 = ::g->SCREENHEIGHT - 1;
-	}
-	else {
-		tt2 = t2;
-	}
-	if (b2 >= ::g->SCREENHEIGHT) {
-		tb2 = ::g->SCREENHEIGHT - 1;
-	}
-	else {
-		tb2 = b2;
-	}
-    while (tt1 < tt2 && tt1<=tb1)
+    while (t1 < t2 && t1<=b1)
     {	
-	R_MapPlane (tt1,::g->spanstart[tt1],x-1);
-	tt1++;
+	R_MapPlane (t1,::g->spanstart[t1],x-1);
+	t1++;
     }
-    while (tb1 > tb2 && tb1>=tt1)
+    while (b1 > b2 && b1>=t1)
     {
-	R_MapPlane (tb1,::g->spanstart[tb1],x-1);
-	tb1--;
+	R_MapPlane (b1,::g->spanstart[b1],x-1);
+	b1--;
     }
 	
-    while (tt2 < tt1 && tt2<=tb2)
+    while (t2 < t1 && t2<=b2)
     {
-	::g->spanstart[tt2] = x;
-	tt2++;
+	::g->spanstart[t2++] = x;
     }
-    while (tb2 > tb1 && tb2>=tt2)
+    while (b2 > b1 && b2>=t2)
     {
-	::g->spanstart[tb2] = x;
-	tb2--;
+	::g->spanstart[b2--] = x;
     }
 }
 
