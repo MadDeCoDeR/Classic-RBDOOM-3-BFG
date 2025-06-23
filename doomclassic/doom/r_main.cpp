@@ -1057,7 +1057,7 @@ void R_Initwidth() {
 	::g->SCREENWIDTH = ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER;
 	::g->SCREENHEIGHT = ORIGINAL_HEIGHT * ::g->GLOBAL_IMAGE_SCALER;
 	::g->renderingWidth = ::g->SCREENWIDTH / ::g->GLOBAL_IMAGE_SCALER;
-	int aspectDiff = ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER ? 1 : 0;
+	//int aspectDiff = ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER ? 1 : 0;
 	::g->ASPECT_POS_OFFSET = ::g->ASPECT_IMAGE_SCALER - ::g->GLOBAL_IMAGE_SCALER;//(((aspectDiff) * ORIGINAL_WIDTH) / 2) / ::g->GLOBAL_IMAGE_SCALER;
 	::g->finit_width = ::g->SCREENWIDTH; //GK: Set here the auto-map width
 	::g->finit_height = ::g->SCREENHEIGHT - (32 * ::g->GLOBAL_IMAGE_SCALER);
