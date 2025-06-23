@@ -969,6 +969,7 @@ void idCommonLocal::RunDoomClassicFrame()
 			doomClassicHeight = data->SCREENHEIGHT;
 			if (doomClassicImageData) {
 				free(doomClassicImageData);
+				doomClassicImageData = NULL;
 			}
 			doomClassicImageData = (byte*)malloc(doomClassicWidth * doomClassicHeight * DOOMCLASSIC_BYTES_PER_PIXEL);
 		}

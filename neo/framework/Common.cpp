@@ -2391,6 +2391,7 @@ void idCommonLocal::PerformGameSwitch()
 	{
 		DoomLib::Interface.Shutdown();
 		free(doomClassicImageData);
+		doomClassicImageData = NULL;
 		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
 		com_engineHz_latched = com_engineHz.GetFloat();
 		Sys_ChangeTitle(common->IsNewDOOM3() ? NEW_GAME_NAME : GAME_NAME);
