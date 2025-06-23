@@ -93,6 +93,7 @@ If you have questions concerning this license or the applicable additional terms
 const fixed_t*		finecosine = &finesine[FINEANGLES/4];
 
 idCVar cl_freelook("cl_freelook", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Classic Doom freelook");
+idCVar cl_dscaling("cl_dscaling", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Classic Doom Dynamic Scaling");
 //GK: AW Yeah! This is Happening!
 /*extern idCVar pm_thirdPerson;
 extern idCVar pm_thirdPersonRange;
@@ -1024,24 +1025,29 @@ void R_RenderPlayerView (player_t* player)
 void R_Initwidth() {
 	//GK: Calculate x-axis image scale and Rendering widthAdd commentMore actions
 
-	int engineWidth = ::renderSystem->GetWidth();
-	int engineHeight = ::renderSystem->GetHeight();
-	int maxMultx = MAXWIDTH / ORIGINAL_WIDTH;
-	int maxMulty = MAXHEIGHT / ORIGINAL_HEIGHT;
-	//GK: Use the original "Aspect Correct" resolution as the target aspect ratio in order to keep HUD and Status bar elements consistent
-	float goldenAspect = (ORIGINAL_WIDTH * 4.0f) / (ORIGINAL_HEIGHT * 3.0f);
-	::g->GLOBAL_IMAGE_SCALER = std::clamp((engineHeight / ORIGINAL_HEIGHT), 1, maxMultx);
-	::g->ASPECT_IMAGE_SCALER = std::clamp((engineWidth / ORIGINAL_WIDTH), 1, maxMulty);
+	if (cl_dscaling.GetBool()) {
+		int engineWidth = ::renderSystem->GetWidth();
+		int engineHeight = ::renderSystem->GetHeight();
+		int maxMultx = MAXWIDTH / ORIGINAL_WIDTH;
+		int maxMulty = MAXHEIGHT / ORIGINAL_HEIGHT;
+		//GK: Use the original "Aspect Correct" resolution as the target aspect ratio in order to keep HUD and Status bar elements consistent
+		float goldenAspect = (ORIGINAL_WIDTH * 4.0f) / (ORIGINAL_HEIGHT * 3.0f);
+		::g->GLOBAL_IMAGE_SCALER = std::clamp((engineHeight / ORIGINAL_HEIGHT), 1, maxMultx);
+		::g->ASPECT_IMAGE_SCALER = std::clamp((engineWidth / ORIGINAL_WIDTH), 1, maxMulty);
 
-	while(true) {
-		float gameAspect = (ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER * 1.0f) / (ORIGINAL_HEIGHT * ::g->GLOBAL_IMAGE_SCALER * 1.0f);
-		if (goldenAspect != gameAspect && ::g->GLOBAL_IMAGE_SCALER > 3) {
-			::g->ASPECT_IMAGE_SCALER = std::clamp(gameAspect > goldenAspect ? ::g->ASPECT_IMAGE_SCALER - 1 : ::g->ASPECT_IMAGE_SCALER + 1, 3, maxMultx);
-			if (gameAspect <= goldenAspect)
-				::g->GLOBAL_IMAGE_SCALER--;
-		} else {
-			break;
+		while(true) {
+			float gameAspect = (ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER * 1.0f) / (ORIGINAL_HEIGHT * ::g->GLOBAL_IMAGE_SCALER * 1.0f);
+			if (goldenAspect != gameAspect && ::g->GLOBAL_IMAGE_SCALER >= 3) {
+				::g->ASPECT_IMAGE_SCALER = std::clamp(gameAspect > goldenAspect ? ::g->ASPECT_IMAGE_SCALER - 1 : ::g->ASPECT_IMAGE_SCALER + 1, 3, maxMultx);
+				if (gameAspect <= goldenAspect)
+					::g->GLOBAL_IMAGE_SCALER--;
+			} else {
+				break;
+			}
 		}
+	} else {
+		::g->ASPECT_IMAGE_SCALER = 4;
+		::g->GLOBAL_IMAGE_SCALER = 3;
 	}
 	
 	if (!r_aspectcorrect.GetBool()) {
@@ -1052,7 +1058,7 @@ void R_Initwidth() {
 	::g->SCREENHEIGHT = ORIGINAL_HEIGHT * ::g->GLOBAL_IMAGE_SCALER;
 	::g->renderingWidth = ::g->SCREENWIDTH / ::g->GLOBAL_IMAGE_SCALER;
 	int aspectDiff = ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER ? 1 : 0;
-	::g->ASPECT_POS_OFFSET = (((aspectDiff) * ORIGINAL_WIDTH) / 2) / ::g->GLOBAL_IMAGE_SCALER;
+	::g->ASPECT_POS_OFFSET = ::g->ASPECT_IMAGE_SCALER - ::g->GLOBAL_IMAGE_SCALER;//(((aspectDiff) * ORIGINAL_WIDTH) / 2) / ::g->GLOBAL_IMAGE_SCALER;
 	::g->finit_width = ::g->SCREENWIDTH; //GK: Set here the auto-map width
 	::g->finit_height = ::g->SCREENHEIGHT - (32 * ::g->GLOBAL_IMAGE_SCALER);
 	int temp_fuzzoffset[FUZZTABLE] = { //GK: Init fuzztable here since FUZZOFF is relying on SCREENWIDTH

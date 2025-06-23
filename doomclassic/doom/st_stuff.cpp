@@ -1439,8 +1439,8 @@ void ST_createWidgets(void)
 		ST_TIMEWIDTH);
 
 	// ready weapon ammo
-	STlib_initNum(&::g->w_ready,
-		(ST_AMMOX + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0)),
+	STlib_initAspectNum(&::g->w_ready,
+		(ST_AMMOX  + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ),
 		ST_AMMOY,
 		::g->tallnum,
 		&::g->plyr->ammo[weaponinfo[::g->plyr->readyweapon].ammo],
@@ -1451,8 +1451,8 @@ void ST_createWidgets(void)
 	::g->w_ready.data = ::g->plyr->readyweapon; 
 
 	// health percentage
-	STlib_initPercent(&::g->w_health,
-		ST_HEALTHX + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectPercent(&::g->w_health,
+		ST_HEALTHX + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_HEALTHY,
 		::g->tallnum,
 		&::g->plyr->health,
@@ -1460,8 +1460,8 @@ void ST_createWidgets(void)
 		::g->tallpercent);
 
 	// ::g->arms background
-	STlib_initBinIcon(&::g->w_armsbg,
-		ST_ARMSBGX + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectBinIcon(&::g->w_armsbg,
+		ST_ARMSBGX + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_ARMSBGY,
 		::g->armsbg,
 		&::g->st_notdeathmatch,
@@ -1481,16 +1481,16 @@ void ST_createWidgets(void)
 		if (::g->plyr->readyweapon == wp_supershotgun) {
 			::g->weaponcond[wp_shotgun] = 2;
 		}
-		STlib_initMultIcon(&::g->w_arms[i],
-			(ST_ARMSX+(i%3)*ST_ARMSXSPACE) + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+		STlib_initAspectMultIcon(&::g->w_arms[i],
+			(ST_ARMSX+(i%3)*ST_ARMSXSPACE) + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 			ST_ARMSY+(i/3)*ST_ARMSYSPACE,
 			::g->arms[i], (int *) &::g->weaponcond[i + 1],
 			&::g->st_armson);
 	}
 
 	// frags sum
-	STlib_initNum(&::g->w_frags,
-		ST_FRAGSX + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectNum(&::g->w_frags,
+		ST_FRAGSX + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_FRAGSY,
 		::g->tallnum,
 		&::g->st_fragscount,
@@ -1498,70 +1498,70 @@ void ST_createWidgets(void)
 		ST_FRAGSWIDTH);
 
 	// ::g->faces
-	STlib_initMultIcon(&::g->w_faces,
-		ST_FACESX + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectMultIcon(&::g->w_faces,
+		ST_FACESX + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_FACESY,
 		::g->faces,
 		&::g->st_faceindex,
 		&::g->st_statusbaron);
 
 	// armor percentage - should be colored later
-	STlib_initPercent(&::g->w_armor,
-		ST_ARMORX + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectPercent(&::g->w_armor,
+		ST_ARMORX + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_ARMORY,
 		::g->tallnum,
 		&::g->plyr->armorpoints,
 		&::g->st_statusbaron, ::g->tallpercent);
 
 	// ::g->keyboxes 0-2
-	STlib_initMultIcon(&::g->w_keyboxes[0],
-		ST_KEY0X + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectMultIcon(&::g->w_keyboxes[0],
+		ST_KEY0X + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_KEY0Y,
 		::g->keys,
 		&::g->keyboxes[0],
 		&::g->st_statusbaron);
 
-	STlib_initMultIcon(&::g->w_keyboxes[1],
-		ST_KEY1X + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectMultIcon(&::g->w_keyboxes[1],
+		ST_KEY1X + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_KEY1Y,
 		::g->keys,
 		&::g->keyboxes[1],
 		&::g->st_statusbaron);
 
-	STlib_initMultIcon(&::g->w_keyboxes[2],
-		ST_KEY2X + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectMultIcon(&::g->w_keyboxes[2],
+		ST_KEY2X + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_KEY2Y,
 		::g->keys,
 		&::g->keyboxes[2],
 		&::g->st_statusbaron);
 
 	// ammo count (all four kinds)
-	STlib_initNum(&::g->w_ammo[0],
-		ST_AMMO0X + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectNum(&::g->w_ammo[0],
+		ST_AMMO0X + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_AMMO0Y,
 		::g->shortnum,
 		&::g->plyr->ammo[0],
 		&::g->st_statusbaron,
 		ST_AMMO0WIDTH);
 
-	STlib_initNum(&::g->w_ammo[1],
-		ST_AMMO1X + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectNum(&::g->w_ammo[1],
+		ST_AMMO1X + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_AMMO1Y,
 		::g->shortnum,
 		&::g->plyr->ammo[1],
 		&::g->st_statusbaron,
 		ST_AMMO1WIDTH);
 
-	STlib_initNum(&::g->w_ammo[2],
-		ST_AMMO2X + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectNum(&::g->w_ammo[2],
+		ST_AMMO2X + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_AMMO2Y,
 		::g->shortnum,
 		&::g->plyr->ammo[2],
 		&::g->st_statusbaron,
 		ST_AMMO2WIDTH);
 
-	STlib_initNum(&::g->w_ammo[3],
-		ST_AMMO3X + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectNum(&::g->w_ammo[3],
+		ST_AMMO3X + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_AMMO3Y,
 		::g->shortnum,
 		&::g->plyr->ammo[3],
@@ -1569,32 +1569,32 @@ void ST_createWidgets(void)
 		ST_AMMO3WIDTH);
 
 	// max ammo count (all four kinds)
-	STlib_initNum(&::g->w_maxammo[0],
-		ST_MAXAMMO0X + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectNum(&::g->w_maxammo[0],
+		ST_MAXAMMO0X + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_MAXAMMO0Y,
 		::g->shortnum,
 		&::g->plyr->maxammo[0],
 		&::g->st_statusbaron,
 		ST_MAXAMMO0WIDTH);
 
-	STlib_initNum(&::g->w_maxammo[1],
-		ST_MAXAMMO1X + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectNum(&::g->w_maxammo[1],
+		ST_MAXAMMO1X + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_MAXAMMO1Y,
 		::g->shortnum,
 		&::g->plyr->maxammo[1],
 		&::g->st_statusbaron,
 		ST_MAXAMMO1WIDTH);
 
-	STlib_initNum(&::g->w_maxammo[2],
-		ST_MAXAMMO2X + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectNum(&::g->w_maxammo[2],
+		ST_MAXAMMO2X + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_MAXAMMO2Y,
 		::g->shortnum,
 		&::g->plyr->maxammo[2],
 		&::g->st_statusbaron,
 		ST_MAXAMMO2WIDTH);
 
-	STlib_initNum(&::g->w_maxammo[3],
-		ST_MAXAMMO3X + (::g->ASPECT_POS_OFFSET ? (::g->mapt->width / 2.0f) : 0),
+	STlib_initAspectNum(&::g->w_maxammo[3],
+		ST_MAXAMMO3X + (::g->ASPECT_POS_OFFSET ? ::g->mapt->width : 0) ,
 		ST_MAXAMMO3Y,
 		::g->shortnum,
 		&::g->plyr->maxammo[3],

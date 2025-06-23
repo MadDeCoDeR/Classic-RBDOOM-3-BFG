@@ -251,6 +251,15 @@ STlib_initBinIcon
   qboolean*		on );
 
 void
+STlib_initAspectBinIcon
+( st_binicon_t*		b,
+  int			x,
+  int			y,
+  patch_t*		i,
+  qboolean*		val,
+  qboolean*		on );
+
+void
 STlib_updateBinIcon
 ( st_binicon_t*		bi,
   qboolean		refresh );

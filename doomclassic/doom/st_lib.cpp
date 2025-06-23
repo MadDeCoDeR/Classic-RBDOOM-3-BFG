@@ -318,6 +318,23 @@ STlib_initBinIcon
     b->p	= i;
 }
 
+void
+STlib_initAspectBinIcon
+( st_binicon_t*		b,
+  int			x,
+  int			y,
+  patch_t*		i,
+  qboolean*		val,
+  qboolean*		on )
+{
+    b->x	= x;
+    b->y	= y;
+    b->oldval	= 0;
+    b->val	= val;
+    b->on	= on;
+    b->p	= i;
+}
+
 
 
 void
