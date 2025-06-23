@@ -597,6 +597,11 @@ void idSoundEmitterLocal::Update( int currentTime )
 {
 	if( channels.Num() == 0 )
 	{
+		//GK: In case captions are shown remove them
+		if (hasCaption) {
+			game->GetLocalPlayer()->hud->clearCaption(shaderName);
+			hasCaption = false;
+		}
 		return;
 	}
 
@@ -613,15 +618,27 @@ void idSoundEmitterLocal::Update( int currentTime )
 	
 	if( s_singleEmitter.GetInteger() > 0 && s_singleEmitter.GetInteger() != index )
 	{
+		//GK: In case captions are shown remove them
+		if (hasCaption) {
+			game->GetLocalPlayer()->hud->clearCaption(shaderName);
+		}
 		return;
 	}
 	if( soundWorld->listener.area == -1 )
 	{
 		// listener is outside the world
+		//GK: In case captions are shown remove them
+		if (hasCaption) {
+			game->GetLocalPlayer()->hud->clearCaption(shaderName);
+		}
 		return;
 	}
 	if( soundSystemLocal.muted || soundWorld != soundSystemLocal.currentSoundWorld )
 	{
+		//GK: In case captions are shown remove them
+		if (hasCaption) {
+			game->GetLocalPlayer()->hud->clearCaption(shaderName);
+		}
 		return;
 	}
 	float maxDistance = 0.0f;
@@ -644,6 +661,7 @@ void idSoundEmitterLocal::Update( int currentTime )
 			}
 		}
 	}
+
 	if(maxDistanceValid && directDistance >= maxDistance)
 	{
 		// too far away to possibly hear it
@@ -657,6 +675,10 @@ void idSoundEmitterLocal::Update( int currentTime )
 	if (hasCaption && hasMultipleCaptions) {
 		idCaption* caption;
 		for (int i = 0; i < channels.Num(); i++) {
+			if (channels[i]->hardwareVoice == NULL) {
+				continue;
+			}
+
 			int time = currentTime - channels[i]->startTime;
 			if (soundSystemLocal.ccdecl.FindCaptionWithTimeCode(shaderName.c_str(), time, &caption)) {
 				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
@@ -816,6 +838,8 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 		soundWorld->writeDemo->WriteInt( shaderFlags );
 	}
 
+	int currentTime = soundWorld->GetSoundTime();
+
 	if (soundSystemLocal.ccloaded) {
 		idCaption* caption; 
 		if (soundSystemLocal.ccdecl.HasMultipleCaptions(shader->GetName())) {
@@ -840,7 +864,7 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 		return 0;
 	}
 	
-	int currentTime = soundWorld->GetSoundTime();
+	
 	
 	bool showStartSound = s_showStartSound.GetBool();
 	if( showStartSound )
