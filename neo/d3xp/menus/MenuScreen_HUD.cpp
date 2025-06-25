@@ -2480,7 +2480,7 @@ const char*		idMenuScreen_HUDLocal::GetlocationName() {
 
 void	idMenuScreen_HUDLocal::setCaption(idStr caption, idVec4 color, int priority, idStr shaderName) {
 	if (subtitles != NULL) {
-		subtitleShaderName = shaderName;
+		
 		if (!subtitles->IsVisible()) {
 			subtitles->SetVisible(true);
 			subtitles->PlayFrame("rollOn");
@@ -2498,6 +2498,7 @@ void	idMenuScreen_HUDLocal::setCaption(idStr caption, idVec4 color, int priority
 		textColor.a = color.w;
 		subtitlesText->color = textColor;
 		subtitlePriority = priority;
+		subtitleShaderName = shaderName;
 
 	}
 }

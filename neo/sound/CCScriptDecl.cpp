@@ -2,6 +2,8 @@
 
 #include "CCScriptDecl.h"
 
+idCVar com_debugCaptions("com_debugCaptions", "0", CVAR_BOOL | CVAR_SOUND | CVAR_NOCHEAT, "Enable/Disable Console Debug for the caption system");
+
 bool CCScriptDecl::LoadFile(const char* fileName, bool OSPath)
 {
 	idLexer src;
@@ -35,13 +37,14 @@ bool CCScriptDecl::FindCaption(const char* name, idCaption** caption)
 
 bool CCScriptDecl::FindCaptionWithTimeCode(const char* name, int timecode, idCaption** caption)
 {
+	*caption = NULL;
+	idList<idCaption*> namedCaptions;
 	for (int i = 0; i < captions.Num(); i++) {
-		if (!idStr::Icmp(name, captions[i]->GetName().c_str()) && abs(timecode - captions[i]->GetTimeCode()) < 10) {
+		if (!idStr::Icmp(name, captions[i]->GetName()) && timecode >= captions[i]->GetTimeCode()) {
 			*caption = captions[i];
-			return true;
 		}
 	}
-	return false;
+	return *caption != NULL;
 }
 
 bool CCScriptDecl::HasMultipleCaptions(const char* name)
