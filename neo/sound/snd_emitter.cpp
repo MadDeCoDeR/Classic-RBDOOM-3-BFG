@@ -321,32 +321,32 @@ void idSoundChannel::UpdateVolume( int currentTime )
 		currentAmplitude = amplitude;
 	}
 
-	if (emitter->hasCaption && volumeDB == DB_SILENCE && (parms.soundShaderFlags & SSF_VO)) {
-		game->GetLocalPlayer()->hud->clearCaption(emitter->shaderName);
+	if (hasCaption && volumeDB == DB_SILENCE) {
+		game->GetLocalPlayer()->hud->clearCaption(shaderName);
 	}
 
-	if (emitter->hasCaption && volumeDB != DB_SILENCE) {
-		if (emitter->hasMultipleCaptions) {
+	if (hasCaption && volumeDB != DB_SILENCE) {
+		if (hasMultipleCaptions) {
 			idCaption* caption;
-				if (hardwareVoice == NULL || !(parms.soundShaderFlags & SSF_VO)) {
+				if (hardwareVoice == NULL) {
 					return;
 				}
 				int time = currentTime - startTime;
-				if (soundSystemLocal.ccdecl.FindCaptionWithTimeCode(emitter->shaderName.c_str(), time, &caption)) {
-					game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), emitter->shaderName);
-					emitter->subTimestamp = time;
+				if (soundSystemLocal.ccdecl.FindCaptionWithTimeCode(shaderName.c_str(), time, &caption)) {
+					game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
+					subTimestamp = time;
 					if (com_debugCaptions.GetBool()) {
-						common->Printf("Caption Details: Name: %s, Timestamp: %d\n", emitter->shaderName.c_str(), time);
+						common->Printf("Caption Details: Name: %s, Timestamp: %d\n", shaderName.c_str(), time);
 					}
 				}
 		}
 		else {
 			if (!game->GetLocalPlayer()->hud->hasCaption()) {
 				idCaption* caption;
-				if (soundSystemLocal.ccdecl.FindCaption(emitter->shaderName.c_str(), &caption)) {
-					game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), emitter->shaderName);
+				if (soundSystemLocal.ccdecl.FindCaption(shaderName.c_str(), &caption)) {
+					game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
 					if (com_debugCaptions.GetBool()) {
-						common->Printf("Caption Details: Name: %s\n", emitter->shaderName.c_str());
+						common->Printf("Caption Details: Name: %s\n", shaderName.c_str());
 					}
 				}
 			}
@@ -513,9 +513,6 @@ void idSoundEmitterLocal::Init( int i, idSoundWorldLocal* sw )
 		soundWorld->writeDemo->WriteInt( SCMD_ALLOC_EMITTER );
 		soundWorld->writeDemo->WriteInt( index );
 	}
-
-	hasCaption = false;
-	hasMultipleCaptions = false;
 }
 
 /*
@@ -607,16 +604,14 @@ bool idSoundEmitterLocal::CheckForCompletion( int currentTime )
 		
 		if( chan->CheckForCompletion( currentTime ) )
 		{
+			if (chan->hasCaption) {
+				game->GetLocalPlayer()->hud->clearCaption(chan->shaderName);
+				chan->hasCaption = false;
+			}
 			channels.RemoveIndex( i );
 			soundWorld->FreeSoundChannel( chan );
-			if (hasMultipleCaptions && (chan->parms.soundShaderFlags & SSF_VO)) {
-				game->GetLocalPlayer()->hud->clearCaption(shaderName);
-			}
+			
 		}
-	}
-	if (hasCaption && channels.Num() == 0) {
-		game->GetLocalPlayer()->hud->clearCaption(shaderName);
-		hasCaption = false;
 	}
 	return ( canFree && channels.Num() == 0 );
 }
@@ -826,27 +821,6 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 		soundWorld->writeDemo->WriteFloat( diversity );
 		soundWorld->writeDemo->WriteInt( shaderFlags );
 	}
-
-	int currentTime = soundWorld->GetSoundTime();
-
-	if (soundSystemLocal.ccloaded) {
-		idCaption* caption; 
-		if (soundSystemLocal.ccdecl.HasMultipleCaptions(shader->GetName())) {
-			hasCaption = true;
-			hasMultipleCaptions = true;
-			shaderName = shader->GetName();
-		}
-		else{
-			if (soundSystemLocal.ccdecl.FindCaption(shader->GetName(), &caption)) {
-				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shader->GetName());
-				hasCaption = true;
-				shaderName = shader->GetName();
-				if (com_debugCaptions.GetBool()) {
-					common->Printf("Caption Details: Name: %s\n", shaderName.c_str());
-				}
-			}
-		}
-	}
 	
 	if( s_noSound.GetBool() )
 	{
@@ -854,7 +828,7 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 	}
 	
 	
-	
+	int currentTime = soundWorld->GetSoundTime();
 	bool showStartSound = s_showStartSound.GetBool();
 	if( showStartSound )
 	{
@@ -1010,6 +984,27 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 	chan->leadinSample = leadinSample;
 	chan->loopingSample = loopingSample;
 	chan->allowSlow = allowSlow;
+	chan->hasCaption = false;
+	chan->hasMultipleCaptions = false;
+
+	if (soundSystemLocal.ccloaded) {
+		idCaption* caption; 
+		if (soundSystemLocal.ccdecl.HasMultipleCaptions(shader->GetName())) {
+			chan->hasCaption = true;
+			chan->hasMultipleCaptions = true;
+			chan->shaderName = shader->GetName();
+		}
+		else{
+			if (soundSystemLocal.ccdecl.FindCaption(shader->GetName(), &caption)) {
+				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shader->GetName());
+				chan->hasCaption = true;
+				chan->shaderName = shader->GetName();
+				if (com_debugCaptions.GetBool()) {
+					common->Printf("Caption Details: Name: %s\n", chan->shaderName.c_str());
+				}
+			}
+		}
+	}
 	
 	// return length of sound in milliseconds
 	int length = chan->leadinSample->LengthInMsec();

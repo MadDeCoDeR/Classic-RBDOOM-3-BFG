@@ -252,6 +252,12 @@ public:
 	// hardwareVoice will be freed and NULL'd when a sound is out of range,
 	// and reallocated when it comes back in range
 	idSoundVoice* 			hardwareVoice;
+
+	//GK: has caption
+	bool		hasCaption;
+	bool		hasMultipleCaptions;
+	idStr		shaderName;
+	int			subTimestamp;
 	
 	// only allocated by the soundWorld block allocator
 	idSoundChannel();
@@ -449,12 +455,6 @@ public:
 	float		directDistance;
 	float		spatializedDistance;
 	idVec3		spatializedOrigin;
-
-	//GK: has caption
-	bool		hasCaption;
-	bool		hasMultipleCaptions;
-	idStr		shaderName;
-	int			subTimestamp;
 	
 	// sound emitters are only allocated by the soundWorld block allocator
 	idSoundEmitterLocal();
