@@ -766,6 +766,7 @@ qboolean		segtextured;
 qboolean		markfloor;	
 qboolean		markceiling;
 qboolean		maskedtexture;
+qboolean		fixedRelTop; //GK: Use this as a flag to NOT use the Texture's height as a relative TOP and instead use the 254
 int		toptexture;
 int		bottomtexture;
 int		midtexture;

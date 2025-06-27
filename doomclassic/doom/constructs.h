@@ -928,3 +928,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->needsNodeRebuild = false;
 
 	::g->inDevMode = false;
+
+	::g->fixedRelTop = false;

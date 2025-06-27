@@ -182,8 +182,11 @@ R_RenderMaskedSegRange
 	    ::g->dc_iscale = 0xffffffffu / (unsigned)::g->spryscale;
 	    
 	    // draw the texture
+		qboolean fixedTemp = ::g->fixedRelTop;
+		::g->fixedRelTop = true;
 	    col = (postColumn_t *)( 
 		(byte *)R_GetColumn(texnum,::g->maskedtexturecol[::g->dc_x]) -3);
+		::g->fixedRelTop = fixedTemp;
 		::g->texnum = texnum; //GK:How do I miss this one??
 		::g->usesprite = false;
 		::g->issky = false;

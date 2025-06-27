@@ -201,7 +201,7 @@ void R_GenerateComposite (int texnum)
     texture = ::g->s_textures[texnum];
 	//GK: BFG Rendering weirdness (?). For textures with height bigger than 254 
 	// use the texture height as a limit to when we will stop using the abolut topdelta and instead use relative. This fixes Tutti-Frutti issues with wall textures of height 256 or higher
-	int reltopMax = texture->height > 254 ? texture->height : 254;
+	int reltopMax = texture->height > 254 && !::g->fixedRelTop ? texture->height : 254;
 
     block = (byte*)DoomLib::Z_Malloc (::g->s_texturecompositesize[texnum],
 		      PU_CACHE_SHARED, 
