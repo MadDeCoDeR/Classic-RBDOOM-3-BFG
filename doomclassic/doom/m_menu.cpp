@@ -3000,6 +3000,9 @@ qboolean M_Responder (event_t* ev)
 			I_SetPalette ((byte*)W_CacheLumpName ("PLAYPAL",PU_CACHE_SHARED),W_LumpLength(W_GetNumForName("PLAYPAL")));
 			return true;
 #endif
+		case KEY_F12:
+		idKeyInput::ExecKeyBinding( K_F12 );
+		return true;
 		//case KEY_F12: //GK: Why not
 		//	M_Alwaysrun(0);
 		//	S_StartSound(NULL, sfx_swtchn);
