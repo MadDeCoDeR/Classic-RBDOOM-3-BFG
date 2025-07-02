@@ -347,7 +347,7 @@ bool rep = false;
 bool relp = false;
 bool inzip = false;
 
-void W_AddFile ( const char *filename)
+void W_AddFile ( const char *filename, const char *lumpName = NULL)
 {
     wadinfo_t		header;
    // std::vector<lumpinfo_t>::iterator	lump_p;
@@ -368,7 +368,7 @@ void W_AddFile ( const char *filename)
     // open the file and add to directory
     if ( (handle = fileSystem->OpenFileRead(filename)) == 0)
     {
-		if (!idStr::Icmp(filename, "wads/DOOM1.wad") || !idStr::Icmp(filename, "wads/DOOM.wad") || !idStr::Icmp(filename, "wads/DOOM2.wad") || !idStr::Icmp(filename, "wads/NERVE.wad") || !idStr::Icmp(filename, "wads/newopt.wad") || !idStr::Icmp(filename, "wads/ua.wad") || !idStr::Icmp(filename, "wads/mlbls.wad")) {
+		if (!idStr::Icmp(filename, "wads/DOOM1.wad") || !idStr::Icmp(filename, "wads/DOOM.wad") || !idStr::Icmp(filename, "wads/DOOM2.wad") || !idStr::Icmp(filename, "wads/NERVE.wad") || !idStr::Icmp(filename, "wads/newopt.wad") || !idStr::Icmp(filename, "wads/ua.wad")) {
 			common->FatalError("Doom Classic Error : Unable to load %s", filename);
 		}
 		I_Printf (" couldn't open %s\n",filename);
@@ -493,7 +493,7 @@ void W_AddFile ( const char *filename)
 	for (; filelumpPointer < fileinfo.end() ; i++,/*lump_p++,*/ filelumpPointer++)
 	{
 		//GK: replace lumps between "_START" and "_END" markers instead of append
-		if (!iwad) {	
+		if (!iwad && !lumpName) {	
 			 char marker[9];
 			 char end [7];
 			if (!idStr::Icmpn(filelumpPointer->name+2,"_START",6) || !idStr::Icmpn(filelumpPointer->name + 1, "_START", 6)) {
@@ -633,7 +633,10 @@ void W_AddFile ( const char *filename)
 			
 		}
 		else {
-		lumpinfo_t tlump__;
+			if (lumpName && idStr::Cmp(lumpName, filelumpPointer->name)) {
+				continue;
+			}
+			lumpinfo_t tlump__;
 			tlump__.handle = handle;
 			tlump__.position = LONG(filelumpPointer->filepos);
 			tlump__.size = LONG(filelumpPointer->size);
@@ -655,8 +658,19 @@ void W_AddFile ( const char *filename)
 	}
 }
 
+void W_LoadLumpFromFile(const char* filename, const char* lumpName) {
+	W_AddFile(filename, lumpName);
 
+	DoomLib::Z_Free(lumpcache);
+	// set up caching
+		uint size = lumpinfo.size() * sizeof(*lumpcache);
+		lumpcache = (void**)DoomLib::Z_Malloc(size, PU_STATIC_SHARED, 0 );
 
+		if (!lumpcache)
+			I_Error ("Couldn't allocate lumpcache");
+
+		memset (lumpcache,0, size);
+}
 
 //
 // W_Reload

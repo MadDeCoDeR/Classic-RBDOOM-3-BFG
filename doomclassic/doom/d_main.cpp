@@ -944,6 +944,10 @@ void D_DoomMain(void)
 
 	I_Printf ("W_Init: Init WADfiles.\n");
 	W_InitMultipleFiles (wadfiles);
+	if (DoomLib::expansionSelected == doom && DoomLib::hexp[4]) {
+		W_LoadLumpFromFile("wads/sigil.wad", "M_EPI5");
+		W_LoadLumpFromFile("wads/sigil2.wad", "M_EPI6");
+	}
 
 	idList<int> expinfoPointer = W_GetNumsForName("EXPINFO");
 	if (expinfoPointer[0] >= 0) {
