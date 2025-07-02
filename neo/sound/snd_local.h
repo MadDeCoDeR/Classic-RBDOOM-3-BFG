@@ -522,7 +522,7 @@ public:
 	virtual cinData_t		ImageForTime( const int milliseconds, const bool waveform );
 	
 	// Free all sounds loaded during the last map load
-	virtual	void			BeginLevelLoad();
+	virtual	void			BeginLevelLoad(const char* mapstring);
 	
 	// We might want to defer the loading of new sounds to this point
 	virtual	void			EndLevelLoad(const char* mapstring);

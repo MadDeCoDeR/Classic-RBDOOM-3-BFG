@@ -321,11 +321,11 @@ void idSoundChannel::UpdateVolume( int currentTime )
 		currentAmplitude = amplitude;
 	}
 
-	if (hasCaption && volumeDB == DB_SILENCE) {
+	if (hasCaption && (volumeDB <= DB_SILENCE || hardwareVoice == NULL)) {
 		game->GetLocalPlayer()->hud->clearCaption(shaderName);
 	}
 
-	if (hasCaption && volumeDB != DB_SILENCE) {
+	if (hasCaption && volumeDB > DB_SILENCE) {
 		if (hasMultipleCaptions) {
 			idCaption* caption;
 				if (hardwareVoice == NULL) {
@@ -989,6 +989,9 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 
 	if (soundSystemLocal.ccloaded) {
 		idCaption* caption; 
+		if (com_debugCaptions.GetBool()) {
+			common->Printf("Caption Load: Check if sound shader '%s' has captions\n", shader->GetName());
+		}
 		if (soundSystemLocal.ccdecl.HasMultipleCaptions(shader->GetName())) {
 			chan->hasCaption = true;
 			chan->hasMultipleCaptions = true;
@@ -1003,6 +1006,10 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 					common->Printf("Caption Details: Name: %s\n", chan->shaderName.c_str());
 				}
 			}
+		}
+
+		if (com_debugCaptions.GetBool() && !chan->hasCaption) {
+			common->Printf("Caption Load: Failed to find captions for '%s'\n", shader->GetName());
 		}
 	}
 	

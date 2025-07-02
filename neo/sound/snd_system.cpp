@@ -617,7 +617,7 @@ cinData_t idSoundSystemLocal::ImageForTime( const int milliseconds, const bool w
 idSoundSystemLocal::BeginLevelLoad
 ========================
 */
-void idSoundSystemLocal::BeginLevelLoad()
+void idSoundSystemLocal::BeginLevelLoad(const char* mapstring)
 {
 	insideLevelLoad = true;
 	for( int i = 0; i < samples.Num(); i++ )
@@ -639,6 +639,20 @@ void idSoundSystemLocal::BeginLevelLoad()
 		ccdecl.Clear();
 		ccloaded = false;
 	}
+	//GK: Moved this here since some audio entries are loaded and setup during the level load and not while the level is playing
+	idStr ccname("cc/");
+	idStr ccmapname(mapstring);
+	idStr ccgenericname("generic");
+
+	ccgenericname.SetFileExtension(".ccsript");
+	ccmapname.SetFileExtension(".ccscript");
+	ccmapname.StripPath();
+	ccname += sys_lang.GetString();
+	ccname += "/";
+	ccname += ccgenericname;
+	ccloaded = ccdecl.LoadFile(ccname);
+	ccname = ccname.SubStr(0, ccname.Last('/')) + "/" + ccmapname;
+	ccloaded = ccloaded || ccdecl.LoadFile(ccname);
 }
 
 
@@ -783,19 +797,7 @@ void idSoundSystemLocal::EndLevelLoad(const char* mapstring)
 	}
 
 
-	idStr ccname("cc/");
-	idStr ccmapname(mapstring);
-	idStr ccgenericname("generic");
-
-	ccgenericname.SetFileExtension(".ccsript");
-	ccmapname.SetFileExtension(".ccscript");
-	ccmapname.StripPath();
-	ccname += sys_lang.GetString();
-	ccname += "/";
-	ccname += ccgenericname;
-	ccloaded = ccdecl.LoadFile(ccname);
-	ccname = ccname.SubStr(0, ccname.Last('/')) + "/" + ccmapname;
-	ccloaded = ccloaded || ccdecl.LoadFile(ccname);
+	
 	int	end = Sys_Milliseconds();
 	
 	common->Printf( "%5i sounds loaded in %5.1f seconds\n", loadCount, ( end - start ) * 0.001 );
