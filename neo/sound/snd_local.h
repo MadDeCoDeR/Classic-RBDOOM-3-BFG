@@ -258,6 +258,7 @@ public:
 	bool		hasMultipleCaptions;
 	idStr		shaderName;
 	int			subTimestamp;
+	bool		hasCheckedForCaption;
 	
 	// only allocated by the soundWorld block allocator
 	idSoundChannel();
