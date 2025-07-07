@@ -259,6 +259,7 @@ public:
 	idStr		shaderName;
 	int			subTimestamp;
 	bool		hasCheckedForCaption;
+	void		ClearCaption();
 	
 	// only allocated by the soundWorld block allocator
 	idSoundChannel();

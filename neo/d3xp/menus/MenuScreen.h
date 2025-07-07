@@ -1957,7 +1957,8 @@ public:
 		subtitles(NULL),
 		subtitlesText(NULL),
 		subtitlePriority(-1),
-		inCinematic(false)
+		inCinematic(false),
+		subtitleShaderName("Dummy")
 	{
 	}
 	

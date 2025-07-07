@@ -2509,7 +2509,8 @@ bool idMenuScreen_HUDLocal::hasCaption()
 }
 
 void	idMenuScreen_HUDLocal::clearCaption(idStr shaderName) {
-	if (subtitles != NULL && !shaderName.Icmp(this->subtitleShaderName)) {
+	bool mustClear = subtitles != NULL && !shaderName.Icmp(this->subtitleShaderName);
+	if (mustClear) {
 		subtitles->PlayFrame("rollOff");
 		subtitlesText->SetText("");
 		subtitlePriority = 1000;
@@ -2521,6 +2522,9 @@ void idMenuScreen_HUDLocal::setCinematic(bool value)
 	if (this->inCinematic == value) {
 		return;
 	}
+	subtitles->PlayFrame("rollOff");
+	subtitlesText->SetText("");
+	subtitlePriority = 1000;
 	this->inCinematic = value;
 	if (stamina != NULL) {
 		stamina->GetSprite()->SetVisible(!value);

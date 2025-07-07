@@ -293,6 +293,7 @@ static float AdjustForCushionChannels( const idStaticList< idActiveChannel, MAX_
 		if( targetCushionDB < DB_SILENCE )
 		{
 			targetCushionDB = DB_SILENCE;
+			activeEmitterChannels[uncushionedChannels].channel->ClearCaption();
 		}
 		else if( targetCushionDB > s_cushionFadeLimit.GetFloat() )
 		{
@@ -431,6 +432,9 @@ void idSoundWorldLocal::Update()
 					continue;
 				}
 #endif
+				
+				channel->ClearCaption();
+				
 			}
 			
 			// Calculate the sort key.

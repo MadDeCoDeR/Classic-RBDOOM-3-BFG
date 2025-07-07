@@ -125,6 +125,11 @@ float idSoundFade::GetVolume( const int soundTime ) const
 	}
 }
 
+void idSoundChannel::ClearCaption()
+{
+	game->GetLocalPlayer()->hud->clearCaption(shaderName);
+}
+
 /*
 ========================
 idSoundChannel::idSoundChannel
@@ -347,11 +352,14 @@ void idSoundChannel::UpdateVolume( int currentTime )
 		}
 	}
 
-	if (hasCaption && (volumeDB <= DB_SILENCE || CheckForCompletion(currentTime))) {
+	if (hasCaption && volumeDB <= DB_SILENCE) {
 		game->GetLocalPlayer()->hud->clearCaption(shaderName);
 	}
 
 	if (hasCaption && volumeDB > DB_SILENCE) {
+		if (!idStr::Cmp(shaderName, "")) {
+			shaderName = soundShader->GetName();
+		}
 		if (hasMultipleCaptions) {
 			idCaption* caption;
 				if (hardwareVoice == NULL) {
@@ -979,6 +987,12 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 		}
 	}
 	
+	//for (int i = 0; i < channels.Num(); i++) {
+	//	if (channels[i]->hasCaption && channels[i]->logicalChannel == channel) {
+	//		game->GetLocalPlayer()->hud->clearCaption(shader->GetName());
+	//	}
+	//}
+	//CheckForCompletion(currentTime);
 	// set all the channel parameters here,
 	// a hardware voice will be allocated next update if the volume is high enough to be audible
 	if( channels.Num() == channels.Max() )
