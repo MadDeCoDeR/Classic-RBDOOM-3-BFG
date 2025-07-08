@@ -37,6 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 //extern idCVar flashlight_batteryDrainTimeMS;
 
 extern idCVar in_alwaysRun;
+extern idCVar com_debugCaptions;
 
 /*
 ========================
@@ -2486,6 +2487,9 @@ void	idMenuScreen_HUDLocal::setCaption(idStr caption, idVec4 color, int priority
 			subtitles->PlayFrame("rollOn");
 		}
 		else {
+			if (com_debugCaptions.GetBool()) {
+				common->Printf("\nNew Caption priority: %d, Old Caption Priority: %d\n", priority, subtitlePriority);
+			}
 			if (priority > subtitlePriority) {
 				return;
 			}

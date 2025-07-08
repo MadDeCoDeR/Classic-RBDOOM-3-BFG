@@ -341,6 +341,7 @@ void idSoundChannel::UpdateVolume( int currentTime )
 			if (soundSystemLocal.ccdecl.FindCaption(soundShader->GetName(), &caption)) {
 				hasCaption = true;
 				shaderName = soundShader->GetName();
+
 				if (com_debugCaptions.GetBool()) {
 					common->Printf("Caption Details: Name: %s\n", shaderName.c_str());
 				}
@@ -352,7 +353,7 @@ void idSoundChannel::UpdateVolume( int currentTime )
 		}
 	}
 
-	if (hasCaption && volumeDB <= DB_SILENCE) {
+	if (hasCaption && (volumeDB <= DB_SILENCE || hardwareVoice == NULL || idStr::Cmp(shaderName, soundShader->GetName()))) {
 		game->GetLocalPlayer()->hud->clearCaption(shaderName);
 	}
 
@@ -375,16 +376,14 @@ void idSoundChannel::UpdateVolume( int currentTime )
 				}
 		}
 		else {
-			if (!game->GetLocalPlayer()->hud->hasCaption()) {
-				idCaption* caption;
-				if (soundSystemLocal.ccdecl.FindCaption(shaderName.c_str(), &caption)) {
-					game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
-					if (com_debugCaptions.GetBool()) {
-						common->Printf("Caption Details: Name: %s\n", shaderName.c_str());
-					}
+			idCaption* caption;
+			if (soundSystemLocal.ccdecl.FindCaption(shaderName.c_str(), &caption)) {
+				game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
+				if (com_debugCaptions.GetBool()) {
+					common->Printf("Caption Details: Name: %s\n", shaderName.c_str());
 				}
 			}
-		}
+	}
 	}
 }
 
