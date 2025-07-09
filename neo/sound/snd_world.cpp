@@ -1166,6 +1166,7 @@ void idSoundWorldLocal::WriteToSaveGame( idFile* savefile )
 			savefile->WriteBool(channel->hasCaption);
 			savefile->WriteBool(channel->hasMultipleCaptions);
 			savefile->WriteBool(channel->hasCheckedForCaption);
+			savefile->WriteInt(channel->subStartTime);
 			helper::WriteShaderParms( savefile, channel->parms );
 			helper::WriteSoundFade( savefile, channel->volumeFade );
 			savefile->WriteString( channel->soundShader->GetName() );
@@ -1269,6 +1270,7 @@ void idSoundWorldLocal::ReadFromSaveGame( idFile* savefile )
 			savefile->ReadBool(channel->hasCaption);
 			savefile->ReadBool(channel->hasMultipleCaptions);
 			savefile->ReadBool(channel->hasCheckedForCaption);
+			savefile->ReadInt(channel->subStartTime);
 			helper::ReadShaderParms( savefile, channel->parms );
 			helper::ReadSoundFade( savefile, channel->volumeFade, timeDelta );
 			savefile->ReadString( shaderName );

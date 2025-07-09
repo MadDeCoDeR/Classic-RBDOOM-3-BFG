@@ -257,7 +257,7 @@ public:
 	bool		hasCaption;
 	bool		hasMultipleCaptions;
 	idStr		shaderName;
-	int			subTimestamp;
+	int			subStartTime;
 	bool		hasCheckedForCaption;
 	void		ClearCaption();
 	

@@ -127,7 +127,9 @@ float idSoundFade::GetVolume( const int soundTime ) const
 
 void idSoundChannel::ClearCaption()
 {
-	game->GetLocalPlayer()->hud->clearCaption(shaderName);
+	if (game->GetLocalPlayer() != NULL) {
+		game->GetLocalPlayer()->hud->clearCaption(shaderName);
+	}
 }
 
 /*
@@ -192,6 +194,10 @@ void idSoundChannel::Mute()
 	{
 		soundSystemLocal.FreeVoice( hardwareVoice );
 		hardwareVoice = NULL;
+		if (game->GetLocalPlayer() != NULL) {
+			game->GetLocalPlayer()->hud->clearCaption(soundShader->GetName());
+		}
+
 	}
 }
 
@@ -366,10 +372,9 @@ void idSoundChannel::UpdateVolume( int currentTime )
 				if (hardwareVoice == NULL) {
 					return;
 				}
-				int time = currentTime - startTime;
+				int time = currentTime - subStartTime;
 				if (soundSystemLocal.ccdecl.FindCaptionWithTimeCode(shaderName.c_str(), time, &caption)) {
 					game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
-					subTimestamp = time;
 					if (com_debugCaptions.GetBool()) {
 						common->Printf("Caption Details: Name: %s, Timestamp: %d\n", shaderName.c_str(), time);
 					}
@@ -444,6 +449,8 @@ void idSoundChannel::UpdateHardware( float volumeAdd, int currentTime )
 		
 		issueStart = true;
 		startOffset = currentTime - startTime;
+		subStartTime = currentTime - subStartTime;
+		
 	}
 	
 	if( omni || global || emitterIsListener )
@@ -558,6 +565,9 @@ void idSoundEmitterLocal::Reset()
 	for( int i = 0; i < channels.Num(); i++ )
 	{
 		soundWorld->FreeSoundChannel( channels[i] );
+		if (game->GetLocalPlayer() != NULL) {
+			game->GetLocalPlayer()->hud->clearCaption(channels[i]->soundShader->GetName());
+		}
 	}
 	channels.Clear();
 	Init( index, soundWorld );
@@ -927,6 +937,7 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 				{
 					idLib::Printf( S_COLOR_YELLOW "OVERRIDE %s: ", chan->soundShader->GetName() );
 				}
+				game->GetLocalPlayer()->hud->clearCaption(chan->soundShader->GetName());
 				channels.RemoveIndex( i );
 				soundWorld->FreeSoundChannel( chan );
 				break;
@@ -1040,6 +1051,7 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 	}
 	
 	chan->startTime = currentTime - startOffset;
+	chan->subStartTime = currentTime;
 	
 	if( ( chanParms.soundShaderFlags & SSF_LOOPING ) != 0 )
 	{
