@@ -960,10 +960,10 @@ void idCommonLocal::RunDoomClassicFrame()
 		DoomLib::expansionDirty = false;
 	}
 	//GK: begin
-	if( DoomLib::Interface.Frame( doomTics, &userCmdMgr ) )
+	if (DoomLib::Interface.Frame(doomTics, &userCmdMgr))
 	{
-		Globals* data = ( Globals* )DoomLib::GetGlobalData( 0 );
-		
+		Globals* data = (Globals*)DoomLib::GetGlobalData(0);
+
 		if (doomClassicWidth != data->SCREENWIDTH || doomClassicHeight != data->SCREENHEIGHT) {
 			doomClassicWidth = data->SCREENWIDTH;
 			doomClassicHeight = data->SCREENHEIGHT;
@@ -975,30 +975,32 @@ void idCommonLocal::RunDoomClassicFrame()
 		}
 		/*idArray< unsigned int, 256 > palette;
 		std::copy( data->XColorMap, data->XColorMap + palette.Num(), palette.Ptr() );*/
-		
+
+
 		// Do the palette lookup.
-		for( int row = 0; row < doomClassicHeight; ++row )
+		for (int row = 0; row < doomClassicHeight; ++row)
 		{
-			for( int column = 0; column < doomClassicWidth; ++column )
+			for (int column = 0; column < doomClassicWidth; ++column)
 			{
 				const int doomScreenPixelIndex = row * doomClassicWidth + column;
 				const byte paletteIndex = data->screens[0][doomScreenPixelIndex];
 				const unsigned int paletteColor = data->XColorMap[paletteIndex];
-				const byte red = ( paletteColor & 0xFF000000 ) >> 24;
-				const byte green = ( paletteColor & 0x00FF0000 ) >> 16;
-				const byte blue = ( paletteColor & 0x0000FF00 ) >> 8;
+				const byte red = (paletteColor & 0xFF000000) >> 24;
+				const byte green = (paletteColor & 0x00FF0000) >> 16;
+				const byte blue = (paletteColor & 0x0000FF00) >> 8;
 				const byte alpha = /*r_clblurry.GetBool() ? (paletteColor & 0x000000FF) - data->blurryoffset : */(paletteColor & 0x000000FF);
-				
+
 				const int imageDataPixelIndex = row * doomClassicWidth * DOOMCLASSIC_BYTES_PER_PIXEL + column * DOOMCLASSIC_BYTES_PER_PIXEL;
-				doomClassicImageData[imageDataPixelIndex]		= red;
-				doomClassicImageData[imageDataPixelIndex + 1]	= green;
-				doomClassicImageData[imageDataPixelIndex + 2]	= blue;
-				doomClassicImageData[imageDataPixelIndex + 3]	= alpha;
+				doomClassicImageData[imageDataPixelIndex] = red;
+				doomClassicImageData[imageDataPixelIndex + 1] = green;
+				doomClassicImageData[imageDataPixelIndex + 2] = blue;
+				doomClassicImageData[imageDataPixelIndex + 3] = alpha;
 			}
 		}
+
+		//GK: End
+		renderSystem->UploadImage("_doomClassic", doomClassicImageData, doomClassicWidth, doomClassicHeight);
 	}
-	//GK: End
-	renderSystem->UploadImage( "_doomClassic", doomClassicImageData, doomClassicWidth, doomClassicHeight );
 	doomTics++;
 }
 
