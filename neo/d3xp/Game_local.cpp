@@ -1614,6 +1614,10 @@ bool idGameLocal::InitFromSaveGame( const char* mapName, idRenderWorld* renderWo
 			}
 		}
 	}
+
+	if (saveGameVersion != BUILD_NUMBER) {
+		return false;
+	}
 	
 	savegame.ReadInt( entityDefBits );
 	
