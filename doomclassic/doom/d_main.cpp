@@ -82,6 +82,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "framework/FileSystem.h"
 #include "d_exp.h"
 #include "d_deh.h"
+#include "d_id24.h"
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -968,6 +969,17 @@ void D_DoomMain(void)
 			if (dehackeds[i] >= prev && dehackeds[i] < W_GetLumpCount()) {
 				prev = dehackeds[i];
 				loaddeh(dehackeds[i]);
+			}
+		}
+	}
+
+	idList<int> SkyDefs = W_GetNumsForName("SKYDEFS");
+	if (SkyDefs[0] >= 0) {
+		int prev = 0;
+		for (int i = 0; i < SkyDefs.Num(); i++) {
+			if (SkyDefs[i] >= prev && SkyDefs[i] < W_GetLumpCount()) {
+				prev = SkyDefs[i];
+				ReadSkyDef(SkyDefs[i]);
 			}
 		}
 	}

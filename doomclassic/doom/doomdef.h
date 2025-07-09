@@ -355,5 +355,12 @@ typedef enum {
     ns_colormaps
   } colormaps_e;
 
+//GK: ID24
+
+typedef struct skyflatmap_s {
+    char* flat;
+    char* sky;
+}skyflatmap_t;
+
 #endif          // __DOOMDEF__
 

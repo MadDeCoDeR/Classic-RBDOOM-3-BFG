@@ -32,6 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 //#include "doomlib.h"
 
 #include <vector>
+#include <map>
 #include <string>
 #ifndef _WINDOWS //GK: Use these headers here in order to properly init SendFunc on linux
 #include <sys/socket.h>

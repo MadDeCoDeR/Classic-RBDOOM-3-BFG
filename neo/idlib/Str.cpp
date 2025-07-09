@@ -2609,10 +2609,21 @@ idList<idStr> idStr::Split(const char* delimiter) {
 	while (pos > -1) {
 		//Always check + 1 otherwise it will get the previous delimiter
 		pos = Find(delimiter, false, oldPos + 1);
-		idStr token = SubStr(oldPos + 1, pos);
-		if (token.Length() > 0) {
+		if (pos == 0) {
 			oldPos = pos;
-			strings.Append(token);
+			idStr token = SubStr(oldPos + 1);
+			if (token.Length() > 0) {
+				oldPos = -1;
+				*this = token;
+				continue;
+			}
+		}
+		else {
+			idStr token = SubStr(oldPos + 1, pos);
+			if (token.Length() > 0) {
+				oldPos = pos;
+				strings.Append(token);
+			}
 		}
 	}
 	//in case the split didn't work don't return empty handed. Return the original String.
@@ -2633,7 +2644,7 @@ idStr idStr::SubStr(ID_INT start, ID_INT end)
 	}
 	//This is how many characters we want to take (+1 for null termination)
 	ID_INT tmpLen = end - start;
-	char tmpBuffer[256];
+	char tmpBuffer[4086];
 	strncpy(tmpBuffer, data + start, tmpLen);
 	tmpBuffer[tmpLen] = '\0';
 	return va("%s", tmpBuffer);

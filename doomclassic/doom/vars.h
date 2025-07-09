@@ -1176,3 +1176,6 @@ byte *tranmap;         // translucency filter maps 256x256  // phares
 byte *main_tranmap;    // killough 4/11/98
 
 int numcolormaps;
+
+//GK: ID24
+std::vector <std::unique_ptr<skyflatmap_t>> skyFlatMaps;
