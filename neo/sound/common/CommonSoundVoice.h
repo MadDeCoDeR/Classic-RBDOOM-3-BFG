@@ -79,6 +79,10 @@ public:
 		return sampleRate;
 	}
 
+	virtual int						GetPlayingTimestamp(){
+		return 0;
+	}
+
 protected:
 	friend class idSoundhardware;
 	friend class idSoundSample;

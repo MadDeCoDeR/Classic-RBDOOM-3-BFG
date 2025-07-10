@@ -38,7 +38,6 @@ bool CCScriptDecl::FindCaption(const char* name, idCaption** caption)
 bool CCScriptDecl::FindCaptionWithTimeCode(const char* name, int timecode, idCaption** caption)
 {
 	*caption = NULL;
-	idList<idCaption*> namedCaptions;
 	for (int i = 0; i < captions.Num(); i++) {
 		if (!idStr::Icmp(name, captions[i]->GetName()) && timecode >= captions[i]->GetTimeCode()) {
 			*caption = captions[i];

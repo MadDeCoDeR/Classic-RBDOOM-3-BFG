@@ -91,6 +91,8 @@ public:
 	int						GetChannel() {
 		return channel;
 	}
+
+	int						GetPlayingTimestamp();
 	
 private:
 	friend class idSoundHardware_OpenAL;

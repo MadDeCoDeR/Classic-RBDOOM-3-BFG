@@ -69,6 +69,8 @@ public:
 	
 	// callback function
 	void					OnBufferStart( idSoundSample* sample, int bufferNumber );
+
+	int						GetPlayingTimestamp();
 	
 private:
 	friend class idSoundHardware_XAudio2;

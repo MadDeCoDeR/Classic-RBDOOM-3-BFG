@@ -372,7 +372,7 @@ void idSoundChannel::UpdateVolume( int currentTime )
 				if (hardwareVoice == NULL) {
 					return;
 				}
-				int time = currentTime - subStartTime;
+				int time = hardwareVoice->GetPlayingTimestamp();
 				if (soundSystemLocal.ccdecl.FindCaptionWithTimeCode(shaderName.c_str(), time, &caption)) {
 					game->GetLocalPlayer()->hud->setCaption(caption->GetCaption(), caption->GetColor(), caption->GetPriority(), shaderName);
 					if (com_debugCaptions.GetBool()) {

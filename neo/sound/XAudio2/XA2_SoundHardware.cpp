@@ -864,6 +864,10 @@ AudioDevice* idSoundHardware_XAudio2::GetSelectedDevice() {
 	return &selectedDevice;
 }
 
+int	idSoundHardware_XAudio2::GetPlayingTimestamp() {
+	return 0;
+}
+
 
 /*
 ================================================
