@@ -2526,9 +2526,9 @@ void idMenuScreen_HUDLocal::setCinematic(bool value)
 	if (this->inCinematic == value) {
 		return;
 	}
-	subtitles->PlayFrame("rollOff");
-	subtitlesText->SetText("");
-	subtitlePriority = 1000;
+	// subtitles->PlayFrame("rollOff");
+	// subtitlesText->SetText("");
+	// subtitlePriority = 1000;
 	this->inCinematic = value;
 	if (stamina != NULL) {
 		stamina->GetSprite()->SetVisible(!value);
