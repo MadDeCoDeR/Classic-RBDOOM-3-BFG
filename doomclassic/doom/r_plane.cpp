@@ -221,16 +221,37 @@ void R_ClearPlanes (void)
     ::g->baseyscale = -FixedDiv (finesine[angle],::g->centerxfrac_ow);
 }
 
+//GK: Begin
+/*
+		FindSkyFlatMapIndex
+==================================
 
+Checks the plane picnum if it belongs to the SKYDEFS flatmapping
+and return the index of the array.
+If it fails it return -1
+*/
+int FindSkyFlatMapIndex(int picnum) {
+	int result = -1;
+	if (!::g->skyFlatMaps.empty()) {
+		for (int i = 0; i < ::g->skyFlatMaps.size(); i++) {
+			if (picnum == R_FlatNumForName(::g->skyFlatMaps[i]->flat)) {
+				result = i;
+				break;
+			}
+		}
+	}
 
+	return result;
+}
+//GK: End
 
 //
 // R_FindPlane
 //
 visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel,fixed_t xoffs,fixed_t yoffs ) {
 	visplane_t*	check = NULL;
-	
-    if (picnum == ::g->skyflatnum || picnum & PL_SKYFLAT) {
+	int skyFlatMapIndex = FindSkyFlatMapIndex(picnum);
+    if (picnum == ::g->skyflatnum || picnum & PL_SKYFLAT || skyFlatMapIndex > -1) {
 		height = 0;			// all skys map together
 		lightlevel = 0;
 	}
@@ -261,6 +282,7 @@ visplane_t* R_FindPlane( fixed_t height, int picnum, int lightlevel,fixed_t xoff
     check->maxx = -1;
 	check->xoffs = xoffs;
 	check->yoffs = yoffs;
+	check->skyflatmapindex = skyFlatMapIndex;
 
     memset(check->top,0xff,sizeof(check->top));
 
@@ -392,6 +414,25 @@ void R_DrawFakeSkyPlane(int x) {
 	colfunc(::g->dc_colormap, ::g->dc_source);
 }
 
+//GK: Begin
+/*
+
+		R_DrawSkyMappedPlane		
+====================================
+
+Similar to R_DrawSkyPlane but instead of using ::g->skytexture it uses a sky texture asigned from 
+the SKYDEFS flatMapping.
+The first argument is the same as it is in R_DrawSkyPlane
+The second argument is an index for the flatmapping array
+*/
+void R_DrawSkyMappedPlane(int x, int index) {
+	int angle = R_InitSkyPlane(x);
+	int mappedTexture = R_TextureNumForName(::g->skyFlatMaps[index]->sky);
+	::g->dc_source = R_GetColumn(mappedTexture, angle);
+	::g->issky = false;
+	colfunc(::g->dc_colormap, ::g->dc_source);
+}
+//GK: End
 
 //
 // R_DrawPlanes
@@ -427,7 +468,7 @@ void R_DrawPlanes (void)
 
 	
 	// sky flat
-	if (::g->visplanes[i]->picnum == ::g->skyflatnum || ::g->visplanes[i]->picnum & PL_SKYFLAT)
+	if (::g->visplanes[i]->picnum == ::g->skyflatnum || ::g->visplanes[i]->picnum & PL_SKYFLAT || ::g->visplanes[i]->skyflatmapindex > -1)
 	{
 	    ::g->dc_iscale = ::g->pspriteiscale>>::g->detailshift;
 	    
@@ -479,7 +520,11 @@ void R_DrawPlanes (void)
 					R_DrawFakeSkyPlane(x);
 				}
 				else {
-					R_DrawSkyPlane(x);
+					if (::g->visplanes[i]->skyflatmapindex > -1) {
+					R_DrawSkyMappedPlane(x, ::g->visplanes[i]->skyflatmapindex);
+					} else {
+						R_DrawSkyPlane(x);
+					}
 				}
 			}
 			if (::g->dc_yl < ::g->visplanes[i]->top[x]) {
@@ -489,12 +534,20 @@ void R_DrawPlanes (void)
 				::g->dc_yl = ::g->visplanes[i]->top[x] - ::g->mouseposy;
 			}
 			::g->dc_yh = ::g->visplanes[i]->bottom[x];
-			R_DrawSkyPlane(x);
+			if (::g->visplanes[i]->skyflatmapindex > -1) {
+					R_DrawSkyMappedPlane(x, ::g->visplanes[i]->skyflatmapindex);
+				} else {
+					R_DrawSkyPlane(x);
+				}
 		}
 		else {
 			::g->dc_yl = ::g->visplanes[i]->top[x];
 			if (abs(viewheight) < realheight && ::g->visplanes[i]->bottom[x] < mintop) {
-				R_DrawSkyPlane(x);
+				if (::g->visplanes[i]->skyflatmapindex > -1) {
+					R_DrawSkyMappedPlane(x, ::g->visplanes[i]->skyflatmapindex);
+				} else {
+					R_DrawSkyPlane(x);
+				}
 			}
 			else {
 				R_DrawFakeSkyPlane(x);
@@ -559,6 +612,8 @@ void AddNewVisplane() {
 		::g->visplanes[::g->planeind]->minx = 0;
 		::g->visplanes[::g->planeind]->maxx = 0;
 		std::fill(::g->visplanes[::g->planeind]->bottom, ::g->visplanes[::g->planeind]->bottom + ::g->SCREENWIDTH, 0);
+		::g->visplanes[::g->planeind]->xoffs = ::g->visplanes[::g->planeind]->yoffs = 0;
+		::g->visplanes[::g->planeind]->skyflatmapindex = -1;
 		::g->visplanes[::g->planeind]->nervePad1 = 0;
 		::g->visplanes[::g->planeind]->nervePad2 = 0;
 		::g->visplanes[::g->planeind]->nervePad3 = 0;
