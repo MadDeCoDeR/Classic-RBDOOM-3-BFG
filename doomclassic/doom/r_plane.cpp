@@ -235,7 +235,7 @@ If it fails it return -1
 int FindSkyFlatMapIndex(int picnum) {
 	int result = -1;
 	if (!::g->skyFlatMaps.empty()) {
-		for (int i = 0; i < ::g->skyFlatMaps.size(); i++) {
+		for (size_t i = 0; i < ::g->skyFlatMaps.size(); i++) {
 			if (picnum == R_FlatNumForName(::g->skyFlatMaps[i]->flat)) {
 				result = i;
 				break;
