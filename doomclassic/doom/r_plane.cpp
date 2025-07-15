@@ -198,10 +198,12 @@ void R_ClearPlanes (void)
 #if _ITERATOR_DEBUG_LEVEL < 2
 		::g->visplanes.reserve(MAXVISPLANES);
 		::g->visplanes.emplace_back(std::make_unique<visplane_t>());
+		::g->visplanes[::g->planeind]->skyflatmapindex = -1;
 #else
 		::g->visplanes.resize(MAXVISPLANES);
 		for (int vpi = 0; vpi < MAXVISPLANES; vpi++) {
 			::g->visplanes[vpi] = std::make_unique<visplane_t>();
+			::g->visplanes[vpi]->skyflatmapindex = -1;
 		}
 #endif
 	}
@@ -598,10 +600,12 @@ void AddNewVisplane() {
 			::g->visplanes.reserve(::g->visplanes.size() + MAXVISPLANES);
 		}
 		::g->visplanes.emplace_back(std::make_unique<visplane_t>());
+		::g->visplanes[::g->planeind]->skyflatmapindex = -1;
 #else
 		::g->visplanes.resize(::g->visplanes.size() + MAXVISPLANES);
 		for (int vpi = ::g->planeind; vpi < ::g->visplanes.size(); vpi++) {
 			::g->visplanes[vpi] = std::make_unique<visplane_t>();
+			::g->visplanes[vpi]->skyflatmapindex = -1;
 		}
 #endif
 	}

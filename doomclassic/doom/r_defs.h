@@ -539,7 +539,7 @@ typedef struct
   int			minx;
   int			maxx;
   fixed_t xoffs, yoffs;         // killough 2/28/98: Support scrolling flats
-  int           skyflatmapindex = -1; //GK: ID24 SKYDEFS FlatMapping
+  int           skyflatmapindex; //GK: ID24 SKYDEFS FlatMapping
   // leave pads for [minx-1]/[maxx+1]
   int			nervePad1;
   int			nervePad2;
