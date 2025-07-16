@@ -455,6 +455,7 @@ void idPlayerView::SingleView( const renderView_t* _view, idMenuHandler_HUD* hud
 		if( player->pdaMenu != NULL )
 		{
 			player->pdaMenu->Update();
+			player->DrawHUD(hudManager);
 		}
 		return;
 	}

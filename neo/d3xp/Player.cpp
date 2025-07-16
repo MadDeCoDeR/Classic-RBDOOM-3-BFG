@@ -7666,6 +7666,9 @@ void idPlayer::TogglePDA()
 	{
 		objectiveSystemOpen = !objectiveSystemOpen;
 		pdaMenu->ActivateMenu( objectiveSystemOpen );
+		if (hud) {
+			hud->setCinematic(objectiveSystemOpen);
+		}
 		
 		if( objectiveSystemOpen )
 		{

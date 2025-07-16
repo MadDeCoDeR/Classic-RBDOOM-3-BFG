@@ -85,13 +85,13 @@ void idMenuScreen_HUDLocal::ShowScreen( const mainMenuTransition_t transitionTyp
 	stamina = root.GetNestedObj( "_bottomLeft", "stamina" );
 	stamina->GetSprite()->SetXPos(stamina->GetSprite()->GetXPos() + xOffset);
 	stamina->GetSprite()->SetYPos(stamina->GetSprite()->GetYPos() + yOffset);
+	location = root.GetNestedSprite("_bottomLeft", "location");
 	locationName = root.GetNestedText( "_bottomLeft", "location", "txtVal" );
-	idSWFSpriteInstance* locationNameSprite = root.GetNestedSprite("_bottomLeft", "location");
-	locationNameSprite->SetXPos(locationNameSprite->GetXPos() + xOffset);
-	locationNameSprite->SetYPos((locationNameSprite->GetYPos() + yOffset));
+	location->SetXPos(location->GetXPos() + xOffset);
+	location->SetYPos((location->GetYPos() + yOffset));
 	if (renderSystem->GetStereo3DMode() == STEREO3D_VR) {
-		locationNameSprite->SetXPos(locationNameSprite->GetXPos() - 190);
-		locationNameSprite->SetYPos(locationNameSprite->GetYPos() + 15);
+		location->SetXPos(location->GetXPos() - 190);
+		location->SetYPos(location->GetYPos() + 15);
 	}
 	tipInfo = root.GetNestedObj( "_left", "tip" );
 	tipInfo->GetSprite()->SetXPos(tipInfo->GetSprite()->GetXPos() + topXOffset);
@@ -286,7 +286,7 @@ idMenuScreen_HUD::UpdateHealth
 void idMenuScreen_HUDLocal::UpdateHealthArmor( idPlayer* player )
 {
 
-	if( !playerInfo || !player || game->CheckInCinematic())
+	if( !playerInfo || !player || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -380,7 +380,7 @@ idMenuScreen_HUD::UpdateStamina
 void idMenuScreen_HUDLocal::UpdateStamina( idPlayer* player )
 {
 
-	if( !stamina || !player || game->CheckInCinematic())
+	if( !stamina || !player || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -418,7 +418,7 @@ idMenuScreen_HUD::UpdateLocation
 void idMenuScreen_HUDLocal::UpdateWeaponInfo( idPlayer* player )
 {
 
-	if( !player || !ammoInfo || game->CheckInCinematic())
+	if( !player || !ammoInfo || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -606,7 +606,7 @@ idMenuScreen_HUD::GiveWeapon
 void idMenuScreen_HUDLocal::GiveWeapon( idPlayer* player, int weaponIndex )
 {
 
-	if( common->IsMultiplayer() || game->CheckInCinematic())
+	if( common->IsMultiplayer() || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -652,7 +652,7 @@ idMenuScreen_HUD::UpdateWeaponStates
 void idMenuScreen_HUDLocal::UpdatePickupInfo( int index, const idStr& name )
 {
 
-	if( !pickupInfo || game->CheckInCinematic())
+	if( !pickupInfo || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -674,7 +674,7 @@ idMenuScreen_HUD::IsPickupListReady
 bool idMenuScreen_HUDLocal::IsPickupListReady()
 {
 
-	if( !pickupInfo || game->CheckInCinematic())
+	if( !pickupInfo || game->CheckInCinematic() || this->inCinematic)
 	{
 		return false;
 	}
@@ -695,7 +695,7 @@ idMenuScreen_HUD::UpdateWeaponStates
 void idMenuScreen_HUDLocal::ShowPickups()
 {
 
-	if( !pickupInfo || game->CheckInCinematic())
+	if( !pickupInfo || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -795,7 +795,7 @@ idMenuScreen_HUD::UpdateCursorState
 void idMenuScreen_HUDLocal::UpdateCursorState()
 {
 
-	if( !cursorTalking && !cursorInCombat && !cursorGrabber && !cursorItem && !game->CheckInCinematic())
+	if( !cursorTalking && !cursorInCombat && !cursorGrabber && !cursorItem && !game->CheckInCinematic() && !this->inCinematic)
 	{
 	
 		cursorNone = true;
@@ -1030,7 +1030,7 @@ idMenuScreen_HUD::UpdateSoulCube
 void idMenuScreen_HUDLocal::UpdateSoulCube( bool ready )
 {
 
-	if( !soulcubeInfo || game->CheckInCinematic())
+	if( !soulcubeInfo || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -1091,7 +1091,7 @@ idMenuScreen_HUD::UpdateWeaponStates
 void idMenuScreen_HUDLocal::UpdateWeaponStates( idPlayer* player, bool weaponChanged )
 {
 
-	if( !weaponPills || game->CheckInCinematic())
+	if( !weaponPills || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -1347,7 +1347,7 @@ idMenuScreen_HUD::UpdateLocation
 void idMenuScreen_HUDLocal::UpdateLocation( idPlayer* player )
 {
 
-	if( !locationName || !player || game->CheckInCinematic())
+	if( !locationName || !player || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -1561,7 +1561,7 @@ idMenuScreen_HUD::UpdatedSecurity
 void  idMenuScreen_HUDLocal::ToggleNewVideo( bool show )
 {
 
-	if( !newVideo || game->CheckInCinematic())
+	if( !newVideo || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -1586,7 +1586,7 @@ idMenuScreen_HUD::UpdatedSecurity
 void  idMenuScreen_HUDLocal::ToggleNewPDA( bool show )
 {
 
-	if( !newPDA || game->CheckInCinematic())
+	if( !newPDA || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -1611,7 +1611,7 @@ idMenuScreen_HUD::UpdatedSecurity
 void  idMenuScreen_HUDLocal::UpdateAudioLog( bool show )
 {
 
-	if( !audioLog || game->CheckInCinematic())
+	if( !audioLog || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -2301,7 +2301,7 @@ idMenuScreen_HUD::UpdateFlashlight
 void idMenuScreen_HUDLocal::UpdateFlashlight( idPlayer* player )
 {
 
-	if( !player || !flashlight || game->CheckInCinematic())
+	if( !player || !flashlight || game->CheckInCinematic() || this->inCinematic)
 	{
 		return;
 	}
@@ -2532,6 +2532,7 @@ void idMenuScreen_HUDLocal::setCinematic(bool value)
 	this->inCinematic = value;
 	if (stamina != NULL) {
 		stamina->GetSprite()->SetVisible(!value);
+		stamina->GetSprite()->PlayFrame(value ? "rollOn" : "rollOff");
 	}
 	if (playerInfo != NULL) {
 		playerInfo->GetSprite()->SetVisible(!value);
@@ -2539,8 +2540,8 @@ void idMenuScreen_HUDLocal::setCinematic(bool value)
 	if (tipInfo != NULL) {
 		tipInfo->GetSprite()->SetVisible(!value);
 	}
-	if (locationName != NULL && value) {
-		locationName->SetText("");
+	if (location != NULL && value) {
+		location->SetVisible(!value);
 	}
 	if (security != NULL) {
 		security->SetVisible(!value);

@@ -2065,6 +2065,8 @@ public:
 		idSWFSpriteInstance* 	mpInfo;
 		idSWFSpriteInstance* 	mpHitInfo;
 
+		idSWFSpriteInstance*	location;
+
 		idSWFTextInstance* 		locationName;
 		idSWFTextInstance* 		securityText;
 		idSWFTextInstance* 		newPDAName;
