@@ -57,6 +57,26 @@ int64 FindClosure(const char* json, int64 startIndex,const char openingToken, co
 	return closingIndex;
 }
 
+int64 FindEndOfLine(const char* json, int64 startIndex) {
+	
+	idStr idJson = idStr(json);
+	int64 eolIndex = idJson.Length();
+	int64 indexes[5] = {
+		idJson.Find(',', startIndex + 1),
+		idJson.Find('\r', startIndex + 1),
+		idJson.Find('\n', startIndex + 1),
+		idJson.Find('}', startIndex + 1),
+		idJson.Find(']', startIndex + 1)
+	};
+	for (int i = 0; i < 5; i++) {
+		if (indexes[i] > -1 && indexes[i] < eolIndex) {
+			eolIndex = indexes[i];
+		}
+	}
+
+	return eolIndex == idJson.Length() ? -1 : eolIndex;
+}
+
 
 std::map<std::string, idStr> RetrieveFlatJsonObj(const char* json) {
 	std::map<std::string, idStr> jObj;
@@ -126,7 +146,7 @@ std::map<std::string, idStr> RetrieveFlatJsonObj(const char* json) {
 		}
 		default: {
 			if (activeKey) {
-				int64 commaIndex = idJson.Find(',', jsonCharIndex + 1);
+				int64 commaIndex = FindEndOfLine(idJson.c_str(), jsonCharIndex);
 				idStr value = idJson.SubStr(jsonCharIndex, commaIndex);
 				if (commaIndex > -1) {
 					jsonCharIndex = commaIndex;
