@@ -1244,7 +1244,7 @@ bool D_DoomMainPoll(void)
 			}
 			G_InitNew (::g->startskill, ::g->startepisode, ::g->startmap );
 		} else if(  ::g->gameaction != ga_newgame) {
-			if (!initonce) {
+			if (::g->gamemode == commercial && !initonce) {
 				initonce = true;
 				M_ChangeMenuExp(cl_expMenu.GetInteger());
 			}
