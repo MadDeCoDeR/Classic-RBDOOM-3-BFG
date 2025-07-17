@@ -157,7 +157,12 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 			if (::g->episodicExpansion || ::g->gamemode != commercial) {
 				::g->currentMenu = &::g->EpiDef;
 			} else {
-				::g->currentMenu = &::g->NewDef;
+				if (::g->inDevMode) {
+					::g->currentMenu = &::g->DevDef;
+				}
+				else {
+					::g->currentMenu = &::g->NewDef;
+				}
 			}
 			::g->itemOn = ::g->currentMenu->lastOn;
 			::g->menuactive = 1;

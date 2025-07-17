@@ -678,7 +678,7 @@ void D_DoomMain(void)
 	::g->classichUsed = false;
 	::g->warpUsed = false;
 	//GK: Check here for deathmatch
-	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+	if (!initonce) {
 		::g->devparm = M_CheckParm("-devparm");
 		if (M_CheckParm("-altdeath"))
 			::g->deathmatch = 2;
@@ -688,7 +688,7 @@ void D_DoomMain(void)
 	::g->classiccheats = M_CheckParm("-classich");
 	::g->classichUsed = ::g->classiccheats;
 	//GK End
-	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+	if (!initonce) {
 		::g->nomonsters = M_CheckParm("-nomonsters") || ::g->deathmatch;
 		::g->respawnparm = M_CheckParm("-respawn");
 	}
@@ -699,7 +699,7 @@ void D_DoomMain(void)
 
 	if (::g->devparm)
 		I_Printf(D_DEVSTR);
-	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+	if (!initonce) {
 		if (M_CheckParm("-cdrom"))
 		{
 			I_Printf(D_CDROM);
@@ -770,23 +770,25 @@ void D_DoomMain(void)
 		}
 	}
 
-	p = M_CheckParm("-episode");
-	if (p && p < ::g->myargc - 1)
-	{
-		::g->startepisode = ::g->myargv[p + 1][0] - '0';
-		if (::g->startepisode <= 0 || ((!DoomLib::hexp[4] && ::g->startepisode > 4) || (DoomLib::hexp[4] && ::g->startepisode > 6)))
-			::g->startepisode = 1;
-		::g->startmap = 1;
-		::g->autostart = true;
-
-		if (DoomLib::hexp[4] && ::g->startepisode > 4) {
-			DoomLib::SetCurrentExpansion(pack_romero);
-			::g->autostart = true;
+	if (!initonce) {
+		p = M_CheckParm("-episode");
+		if (p && p < ::g->myargc - 1)
+		{
+			::g->startepisode = ::g->myargv[p + 1][0] - '0';
+			if (::g->startepisode <= 0 || ((!DoomLib::hexp[4] && ::g->startepisode > 4) || (DoomLib::hexp[4] && ::g->startepisode > 6)))
+				::g->startepisode = 1;
 			::g->startmap = 1;
-			//DoomLib::skipToNew = true;
-			//GK: Re init wad files to apply the change
-			IdentifyVersion();
-			D_AddFile("wads/newopt.wad");
+			::g->autostart = true;
+
+			if (DoomLib::hexp[4] && ::g->startepisode > 4) {
+				DoomLib::SetCurrentExpansion(pack_romero);
+				::g->autostart = true;
+				::g->startmap = 1;
+				//DoomLib::skipToNew = true;
+				//GK: Re init wad files to apply the change
+				IdentifyVersion();
+				D_AddFile("wads/newopt.wad");
+			}
 		}
 	}
 
@@ -891,7 +893,7 @@ void D_DoomMain(void)
 	if ( DoomLib::matchParms.gameSkill != -1) {
 		::g->startskill = (skill_t)DoomLib::matchParms.gameSkill;
 	}
-	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+	if (!initonce) {
 		// get skill / episode / map from cmdline
 		p = M_CheckParm("-skill");
 		if (p && p < ::g->myargc - 1)
@@ -986,7 +988,7 @@ void D_DoomMain(void)
 	Sys_ChangeTitle(::g->title);
 	I_Printf("                        %s                           \n", ::g->title);
 
-	if (::g->gamemode == retail || (::g->gamemode == commercial && !initonce)) {
+	if (!initonce) {
 		p = M_CheckParm("-warp");
 		if (p && p < ::g->myargc - 1)
 		{
@@ -1237,12 +1239,12 @@ bool D_DoomMainPoll(void)
 	if ( ::g->gameaction != ga_loadgame && ::g->gameaction != ga_playdemo )
 	{
 		if (::g->autostart || ::g->netgame ) {
-			if (::g->gamemode == commercial && !initonce) {
+			if (!initonce) {
 				initonce = true;
 			}
 			G_InitNew (::g->startskill, ::g->startepisode, ::g->startmap );
 		} else if(  ::g->gameaction != ga_newgame) {
-			if (::g->gamemode == commercial && !initonce) {
+			if (!initonce) {
 				initonce = true;
 				M_ChangeMenuExp(cl_expMenu.GetInteger());
 			}
