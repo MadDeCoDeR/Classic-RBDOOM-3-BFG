@@ -945,6 +945,47 @@ void R_InitTranMap(int progress)
 	Z_ChangeTag(playpal, PU_CACHE);
 }
 
+//GK: Begin
+/**
+		R_InitGreyscaleMap
+====================================
+Generate a grey scale color map in order to be used as a substitude for the fuzz effect sprites
+if the user have choosen to disable the fuzz effects (cl_noFuzz)
+*/
+void R_InitGreyscaleMap() {
+	unsigned char* playpal = (unsigned char*)W_CacheLumpName("PLAYPAL", PU_CACHE);
+	::g->greyscalemap = (lighttable_t*)Z_Malloc(256 * 256, PU_STATIC, 0);
+	byte* gp = ::g->greyscalemap;
+	int color = 0;
+	int palIndex = 0;
+	byte idealColor[256];
+	unsigned char* p = playpal;
+	for (int i = 0; i < 256; i++) {
+		idealColor[i] = (p[0] + p[1] + p[2]) / 3;
+		p += 3;
+	}
+	while (color < 256) {
+		int best = INT_MAX;
+		do {
+			if (playpal[palIndex] == playpal[palIndex + 1] && playpal[palIndex] == playpal[palIndex + 2]) {
+				int colorDiff = playpal[palIndex] - idealColor[color];
+				if (colorDiff > -1 && colorDiff < best) {
+					best = colorDiff;
+					*gp = (palIndex / 3);
+					if (colorDiff == 0) {
+						break;
+					}
+				}
+			}
+			palIndex += 3;
+		} while (palIndex < (256 * 3));
+		gp++;
+		palIndex = 0;
+		color++;
+	}
+
+}
+
 //
 // R_InitData
 // Locates all the lumps
@@ -961,6 +1002,7 @@ void R_InitData (void)
     I_Printf ("\nInitSprites");
 	R_InitTranMap(1);     
 	I_Printf ("\nInitTranMap");              // killough 2/21/98, 3/6/98
+	R_InitGreyscaleMap();
     R_InitColormaps ();
     I_Printf ("\nInitColormaps");
 }

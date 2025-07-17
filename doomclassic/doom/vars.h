@@ -1177,5 +1177,7 @@ byte *main_tranmap;    // killough 4/11/98
 
 int numcolormaps;
 
+lighttable_t* greyscalemap; //GK: GreyscaleMap
+
 //GK: ID24
 std::vector <std::unique_ptr<skyflatmap_t>> skyFlatMaps;

@@ -94,6 +94,7 @@ const fixed_t*		finecosine = &finesine[FINEANGLES/4];
 
 idCVar cl_freelook("cl_freelook", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Classic Doom freelook");
 idCVar cl_dscaling("cl_dscaling", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Classic Doom Dynamic Scaling");
+idCVar cl_noFuzz("cl_noFuzz", "0", CVAR_BOOL | CVAR_ARCHIVE, "Enable/Disable Fuzz rendering");
 //GK: AW Yeah! This is Happening!
 /*extern idCVar pm_thirdPerson;
 extern idCVar pm_thirdPersonRange;
@@ -740,14 +741,14 @@ void R_ExecuteSetViewSize (void)
 	if (!::g->detailshift)
 	{
 		colfunc = basecolfunc = R_DrawColumn;
-		fuzzcolfunc = R_DrawFuzzColumn;
+		fuzzcolfunc = cl_noFuzz.GetBool() ? R_DrawTLColumn : R_DrawFuzzColumn;
 		transcolfunc = R_DrawTranslatedColumn;
 		spanfunc = R_DrawSpan;
 	}
 	else
 	{
 		colfunc = basecolfunc = R_DrawColumnLow;
-		fuzzcolfunc = R_DrawFuzzColumn;
+		fuzzcolfunc = cl_noFuzz.GetBool() ? R_DrawTLColumn : R_DrawFuzzColumn;
 		transcolfunc = R_DrawTranslatedColumn;
 		spanfunc = R_DrawSpanLow;
 	}

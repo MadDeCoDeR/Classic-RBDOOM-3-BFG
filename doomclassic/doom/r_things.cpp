@@ -77,7 +77,7 @@ If you have questions concerning this license or the applicable additional terms
 //  and range check thing_t ::g->sprites patches
 
 
-
+extern idCVar cl_noFuzz;
 
 
 
@@ -482,6 +482,9 @@ R_DrawVisSprite
     {
 	// NULL colormap = shadow draw
 	colfunc = fuzzcolfunc;
+	if (cl_noFuzz.GetBool()) {
+		::g->dc_colormap = ::g->greyscalemap; //GK: Fuzz effect usually has no colrmap. Since the DrawTLColumn requires one, then give it a greyscale one instead
+	}
     }
     else if (vis->mobjflags & MF_TRANSLATION)
     {
