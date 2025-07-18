@@ -483,7 +483,7 @@ R_DrawVisSprite
 	// NULL colormap = shadow draw
 	colfunc = fuzzcolfunc;
 	if (cl_noFuzz.GetBool()) {
-		::g->dc_colormap = ::g->greyscalemap; //GK: Fuzz effect usually has no colrmap. Since the DrawTLColumn requires one, then give it a greyscale one instead
+		::g->dc_colormap = ::g->greyscalemap + 256 * 124; //GK: Fuzz effect usually has no colrmap. Since the DrawTLColumn requires one, then give it a greyscale one instead
 		::g->tranmap = ::g->main_tranmap;       // killough 4/11/98
 	}
     }

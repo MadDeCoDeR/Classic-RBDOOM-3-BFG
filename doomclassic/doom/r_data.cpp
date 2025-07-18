@@ -954,7 +954,7 @@ if the user have choosen to disable the fuzz effects (cl_noFuzz)
 */
 void R_InitGreyscaleMap() {
 	unsigned char* playpal = (unsigned char*)W_CacheLumpName("PLAYPAL", PU_CACHE);
-	::g->greyscalemap = (lighttable_t*)Z_Malloc(256 * 34, PU_STATIC, 0);
+	::g->greyscalemap = (lighttable_t*)Z_Malloc(256 * 125, PU_STATIC, 0);
 	byte* gp = ::g->greyscalemap;
 	int color = 0;
 	uint palIndex = 0;
@@ -964,13 +964,13 @@ void R_InitGreyscaleMap() {
 		idealColor[i] = (p[0] + p[1] + p[2]) / 3;
 		p += 3;
 	}
-	int lightOffset = 0;
-	while(lightOffset < 34) {
+	byte lightOffset = 0;
+	while(lightOffset < 125) {
 	while (color < 256) {
 			uint best = INT32_MAX;
 			do {
 				if (playpal[palIndex] == playpal[palIndex + 1] && playpal[palIndex] == playpal[palIndex + 2]) {
-					uint colorDiff = abs(playpal[palIndex] - (idealColor[color] + lightOffset));
+					uint colorDiff = abs(playpal[palIndex] - std::clamp(idealColor[color] - lightOffset, 0, 255));
 					if (colorDiff < best) {
 						best = colorDiff;
 						*gp = (palIndex / 3);
@@ -985,6 +985,7 @@ void R_InitGreyscaleMap() {
 			palIndex = 0;
 			color++;
 		}
+		color = 0;
 		lightOffset++;
 	}
 
