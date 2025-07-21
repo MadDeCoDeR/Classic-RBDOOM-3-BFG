@@ -795,7 +795,7 @@ idMenuScreen_HUD::UpdateCursorState
 void idMenuScreen_HUDLocal::UpdateCursorState()
 {
 
-	if( !cursorTalking && !cursorInCombat && !cursorGrabber && !cursorItem && !game->CheckInCinematic() && !this->inCinematic)
+	if( (!cursorTalking && !cursorInCombat && !cursorGrabber && !cursorItem) || (game->CheckInCinematic() || this->inCinematic))
 	{
 	
 		cursorNone = true;
