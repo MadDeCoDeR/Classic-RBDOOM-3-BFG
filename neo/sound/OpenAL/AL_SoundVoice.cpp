@@ -704,8 +704,10 @@ void idSoundVoice_OpenAL::OnBufferStart( idSoundSample* sample, int bufferNumber
 }
 
 int idSoundVoice_OpenAL::GetPlayingTimestamp() {
-	float seconds;
-	alGetSourcef(openalSource, AL_SEC_OFFSET, &seconds);
+	float seconds = -1.0f;
+	if (IsPlaying()) {
+		alGetSourcef(openalSource, AL_SEC_OFFSET, &seconds);
+	}
 
-	return ((int)(seconds * 1000.0f));
+	return seconds >= 0 ? ((int)(seconds * 1000.0f)) : -1;
 }

@@ -643,16 +643,18 @@ void idSoundSystemLocal::BeginLevelLoad(const char* mapstring)
 	idStr ccname("cc/");
 	idStr ccmapname(mapstring);
 	idStr ccgenericname("generic");
+	idStr ccFileExtension(".ccscript");
 
-	ccgenericname.SetFileExtension(".ccsript");
-	ccmapname.SetFileExtension(".ccscript");
+	ccgenericname.SetFileExtension(ccFileExtension);
+	ccmapname.SetFileExtension(ccFileExtension);
 	ccmapname.StripPath();
 	ccname += sys_lang.GetString();
 	ccname += "/";
 	ccname += ccgenericname;
 	ccloaded = ccdecl.LoadFile(ccname);
 	ccname = ccname.SubStr(0, ccname.Last('/')) + "/" + ccmapname;
-	ccloaded = ccloaded || ccdecl.LoadFile(ccname);
+	bool ccmaploaded = ccdecl.LoadFile(ccname);
+	ccloaded = ccloaded || ccmaploaded;
 }
 
 
