@@ -296,6 +296,7 @@ void idTarget_EndLevel::Event_Activate( idEntity* activator )
 				}
 			}
 		}
+		gameLocal->inCinematic = false;
 		gameLocal->Shell_SetGameComplete();
 		return;
 	}
