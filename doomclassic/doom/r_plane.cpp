@@ -434,6 +434,20 @@ void R_DrawSkyMappedPlane(int x, int index) {
 	::g->issky = false;
 	colfunc(::g->dc_colormap, ::g->dc_source);
 }
+
+void R_DrawSky(int x, int i, bool normalSky) {
+	if (normalSky) {
+		if (::g->visplanes[i]->skyflatmapindex > -1) {
+			R_DrawSkyMappedPlane(x, ::g->visplanes[i]->skyflatmapindex);
+		}
+		else {
+			R_DrawSkyPlane(x);
+		}
+	}
+	else {
+		R_DrawFakeSkyPlane(x);
+	}
+}
 //GK: End
 
 //
@@ -504,12 +518,13 @@ void R_DrawPlanes (void)
 			// onthe world and when player is looking above
 			// it then a monochromatic pixel will be drawn
 			// in order to avoid HOMs
-			
+			bool normalSky = true;
+
 		::g->dc_yl = ::g->visplanes[i]->top[x] - ::g->mouseposy;
 		::g->dc_yh = ::g->visplanes[i]->bottom[x];
-		int realheight = (::g->s_textureheight[::g->skytexture] >> FRACBITS) * 3;
+		int realheight = (::g->s_textureheight[::g->skytexture] >> FRACBITS) * ::g->GLOBAL_IMAGE_SCALER;
 		int viewheight = ::g->visplanes[i]->bottom[x] - ::g->visplanes[i]->top[x];
-		if (::g->visplanes[i]->top[x] < mintop && ::g->visplanes[i]->top[x] <= realheight - ::g->visplanes[i]->top[x]) {
+		if (::g->visplanes[i]->top[x] < mintop && ::g->visplanes[i]->top[x] <= (realheight - ::g->visplanes[i]->top[x])) {
 			mintop = ::g->visplanes[i]->top[x];
 		}
 		if (::g->dc_yl <= ::g->dc_yh)
@@ -518,16 +533,10 @@ void R_DrawPlanes (void)
 				::g->dc_yh = ::g->dc_yl;
 				::g->dc_yl = ::g->visplanes[i]->top[x];
 			
-				if (::g->dc_yl <= realheight - ::g->visplanes[i]->top[x]) {
-					R_DrawFakeSkyPlane(x);
+				if (::g->dc_yl <= (realheight - ::g->visplanes[i]->top[x])) {
+					normalSky = false;
 				}
-				else {
-					if (::g->visplanes[i]->skyflatmapindex > -1) {
-					R_DrawSkyMappedPlane(x, ::g->visplanes[i]->skyflatmapindex);
-					} else {
-						R_DrawSkyPlane(x);
-					}
-				}
+				R_DrawSky(x, i, normalSky);
 			}
 			if (::g->dc_yl < ::g->visplanes[i]->top[x]) {
 				::g->dc_yl = ::g->visplanes[i]->top[x];
@@ -536,26 +545,15 @@ void R_DrawPlanes (void)
 				::g->dc_yl = ::g->visplanes[i]->top[x] - ::g->mouseposy;
 			}
 			::g->dc_yh = ::g->visplanes[i]->bottom[x];
-			if (::g->visplanes[i]->skyflatmapindex > -1) {
-					R_DrawSkyMappedPlane(x, ::g->visplanes[i]->skyflatmapindex);
-				} else {
-					R_DrawSkyPlane(x);
-				}
+			normalSky = true;
 		}
 		else {
 			::g->dc_yl = ::g->visplanes[i]->top[x];
-			if (abs(viewheight) < realheight && ::g->visplanes[i]->bottom[x] < mintop) {
-				if (::g->visplanes[i]->skyflatmapindex > -1) {
-					R_DrawSkyMappedPlane(x, ::g->visplanes[i]->skyflatmapindex);
-				} else {
-					R_DrawSkyPlane(x);
-				}
-			}
-			else {
-				R_DrawFakeSkyPlane(x);
-			}
+			normalSky = abs(viewheight) < realheight && ::g->visplanes[i]->bottom[x] < mintop;
 			
 		}
+		R_DrawSky(x, i, normalSky);
+			
 	    }
 	    continue;
 	}
