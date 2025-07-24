@@ -435,17 +435,17 @@ void R_DrawSkyMappedPlane(int x, int index) {
 	colfunc(::g->dc_colormap, ::g->dc_source);
 }
 
-void R_DrawSky(int x, int i, bool normalSky) {
+void R_DrawSky(int x, int i, int texture, bool normalSky) {
 	if (normalSky) {
 		if (::g->visplanes[i]->skyflatmapindex > -1) {
 			R_DrawSkyMappedPlane(x, ::g->visplanes[i]->skyflatmapindex);
 		}
 		else {
-			R_DrawSkyPlane(x);
+			R_DrawSkyPlane(x, texture);
 		}
 	}
 	else {
-		R_DrawFakeSkyPlane(x);
+		R_DrawFakeSkyPlane(x, texture);
 	}
 }
 //GK: End
@@ -542,7 +542,7 @@ void R_DrawPlanes (void)
 				if (::g->dc_yl <= (realheight - ::g->visplanes[i]->top[x])) {
 					normalSky = false;
 				}
-				R_DrawSky(x, i, normalSky);
+				R_DrawSky(x, i, skyToRender, normalSky);
 			}
 			if (::g->dc_yl < ::g->visplanes[i]->top[x]) {
 				::g->dc_yl = ::g->visplanes[i]->top[x];
@@ -558,7 +558,7 @@ void R_DrawPlanes (void)
 			normalSky = abs(viewheight) < realheight && ::g->visplanes[i]->bottom[x] < mintop;
 			
 		}
-		R_DrawSky(x, i, normalSky);
+		R_DrawSky(x, i, skyToRender, normalSky);
 			
 	    }
 	    continue;
