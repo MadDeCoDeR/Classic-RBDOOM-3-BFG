@@ -1121,7 +1121,7 @@ void idUsercmdGenLocal::CmdButtons()
 	}
 	
 	// check the run button
-	if( toggled_run.on || in_alwaysRun.GetInteger() == 1 || (in_alwaysRun.GetInteger() == 2 && common->IsMultiplayer()))
+	if( toggled_run.on || ((in_alwaysRun.GetInteger() == 1 || (in_alwaysRun.GetInteger() == 2 && common->IsMultiplayer())) && !common->IsPlayingDoomClassic()))
 	{
 		cmd.buttons |= BUTTON_RUN;
 	}
@@ -1166,7 +1166,7 @@ void idUsercmdGenLocal::InitCurrent()
 	memset( &cmd, 0, sizeof( cmd ) );
 	cmd.impulseSequence = impulseSequence;
 	cmd.impulse = impulse;
-	cmd.buttons |= ( in_alwaysRun.GetInteger() == 1 || (in_alwaysRun.GetInteger() == 2 && common->IsMultiplayer())) ? BUTTON_RUN : 0;
+	cmd.buttons |= (( in_alwaysRun.GetInteger() == 1 || (in_alwaysRun.GetInteger() == 2 && common->IsMultiplayer())) && !common->IsPlayingDoomClassic()) ? BUTTON_RUN : 0;
 }
 
 /*

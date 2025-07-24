@@ -178,20 +178,20 @@ bool IsPlayerRunning( const usercmd_t & command ) {
 	}
 
 	// DHM - Nerve :: Always Run setting
-	idLocalUser * user = session->GetSignInManager().GetLocalUserByIndex( DoomLib::GetPlayer() );
+	//idLocalUser * user = session->GetSignInManager().GetLocalUserByIndex( DoomLib::GetPlayer() );
 	bool autorun = false;
 
 
 	// GK DONE: PC
 #if 1
-	if( user) {
+	//if( user) {
 		//idPlayerProfileDoom * profile = static_cast< idPlayerProfileDoom * >( user->GetProfile() );
 
 		//if( profile && profile->GetAlwaysRun() ) {
 		if (in_alwaysRunCl.GetBool()){
 			autorun = true;
 		}
-	}
+	//}
 #endif
 
 	if ( command.buttons & BUTTON_RUN  ) {
