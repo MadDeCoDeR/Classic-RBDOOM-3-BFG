@@ -393,25 +393,25 @@ R_MakeSpans
     }
 }
 
-int R_InitSkyPlane(int x) {
+int R_InitSkyPlane(int x, int texture) {
 	extern angle_t GetViewAngle();
-	int angle = (GetViewAngle() + ::g->xtoviewangle[x]) >> ANGLETOSKYSHIFT;
+	int angle = ((GetViewAngle() + ::g->xtoviewangle[x]) ^ ::g->flipImg) >> ANGLETOSKYSHIFT;
 	::g->dc_x = x;
-	::g->texnum = ::g->skytexture; //GK:Get sky texture's height for use in R_DrawColumn
+	::g->texnum = texture; //GK:Get sky texture's height for use in R_DrawColumn
 	::g->usesprite = false;
 	return angle;
 }
 
-void R_DrawSkyPlane(int x) {
-	int angle = R_InitSkyPlane(x);
-	::g->dc_source = R_GetColumn(::g->skytexture, angle);
+void R_DrawSkyPlane(int x, int texture) {
+	int angle = R_InitSkyPlane(x, texture);
+	::g->dc_source = R_GetColumn(texture, angle);
 	::g->issky = false;
 	colfunc(::g->dc_colormap, ::g->dc_source);
 }
 
-void R_DrawFakeSkyPlane(int x) {
-	int angle = R_InitSkyPlane(x);
-	::g->dc_source = R_GetSkyColumn(::g->skytexture, angle);
+void R_DrawFakeSkyPlane(int x, int texture) {
+	int angle = R_InitSkyPlane(x, texture);
+	::g->dc_source = R_GetSkyColumn(texture, angle);
 	::g->issky = true;
 	colfunc(::g->dc_colormap, ::g->dc_source);
 }
@@ -428,8 +428,8 @@ The first argument is the same as it is in R_DrawSkyPlane
 The second argument is an index for the flatmapping array
 */
 void R_DrawSkyMappedPlane(int x, int index) {
-	int angle = R_InitSkyPlane(x);
 	int mappedTexture = R_TextureNumForName(::g->skyFlatMaps[index]->sky);
+	int angle = R_InitSkyPlane(x, mappedTexture);
 	::g->dc_source = R_GetColumn(mappedTexture, angle);
 	::g->issky = false;
 	colfunc(::g->dc_colormap, ::g->dc_source);
@@ -482,10 +482,11 @@ void R_DrawPlanes (void)
 	if (::g->visplanes[i]->minx > ::g->visplanes[i]->maxx)
 	    continue;
 
-	
+	::g->flipImg = 0;
 	// sky flat
 	if (::g->visplanes[i]->picnum == ::g->skyflatnum || ::g->visplanes[i]->picnum & PL_SKYFLAT || ::g->visplanes[i]->skyflatmapindex > -1)
 	{
+		int skyToRender = ::g->skytexture;
 	    ::g->dc_iscale = ::g->pspriteiscale>>::g->detailshift;
 	    
 	    // Sky is allways drawn full bright,
@@ -500,9 +501,14 @@ void R_DrawPlanes (void)
 	    	// Sky transferred from first sidedef
 	    	const side_t *s = *l->sidenum + ::g->sides;
 
+			// Texture comes from upper texture of reference sidedef
+        skyToRender = ::g->texturetranslation[s->toptexture];
+
 	    	// Vertical offset allows careful sky positioning.
 
 	    	::g->dc_texturemid = s->rowoffset - 28*FRACUNIT;
+
+			::g->flipImg = l->special == 272 ? 0u : ~0u;
 		} else {
 	    	::g->dc_texturemid = ::g->skytexturemid;
 		}

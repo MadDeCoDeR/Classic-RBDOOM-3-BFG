@@ -733,6 +733,7 @@ angle_t			xtoviewangle[MAXWIDTH+1];
 lighttable_t*		scalelight[LIGHTLEVELS][MAXLIGHTSCALE];
 lighttable_t*		scalelightfixed[MAXLIGHTSCALE];
 lighttable_t*		zlight[LIGHTLEVELS][MAXLIGHTZ];
+angle_t     flipImg;
 int			extralight;			
 qboolean		setsizeneeded;
 int		setblocks;
