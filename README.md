@@ -135,7 +135,7 @@ This project's GitHub.net Git repository can be checked out through Git with the
 If you don't want to use git, you can download the source as a zip file at
 	https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/archive/master.zip
 
-Tip: Make sure to change the file path on line 3 of neo/CMakeLists.txt to the folder path of vcpkg you have installed on your system (if you have it already installed)
+Tip: Make sure to change the file path on line 7 of neo/CMakeLists.txt to the folder path of vcpkg you have installed on your system (if you have it already installed)
 
 
 ## 5) COMPILING ON WINDOWS WITH VISUAL STUDIO
