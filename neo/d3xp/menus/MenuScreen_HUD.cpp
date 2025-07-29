@@ -2532,7 +2532,6 @@ void idMenuScreen_HUDLocal::setCinematic(bool value)
 	this->inCinematic = value;
 	if (stamina != NULL) {
 		stamina->GetSprite()->SetVisible(!value);
-		stamina->GetSprite()->PlayFrame(value ? "rollOn" : "rollOff");
 	}
 	if (playerInfo != NULL) {
 		playerInfo->GetSprite()->SetVisible(!value);
