@@ -7677,6 +7677,13 @@ void idPlayer::TogglePDA()
 				hud->ClearNewPDAInfo();
 			}
 		}
+		//GK: Console Command Shineniganians Moment. Using both map and give pda commands might result into losing other weapons
+		//you got from the map command. Which can lead to an infinite loop where you keep opening the PDA
+		if ( !objectiveSystemOpen ) {
+			if (!(this->inventory.weapons & (1 << this->previousWeapon))) { //GK: Oops the weapon went for Milk
+				this->SelectWeapon(weapon_fists, false); //GK: Too lazy to figure out which num is the pistol so put the fists instead
+			}
+		}
 	}
 }
 
