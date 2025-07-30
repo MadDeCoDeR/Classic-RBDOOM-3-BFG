@@ -2539,22 +2539,22 @@ void idMenuScreen_HUDLocal::setCinematic(bool value)
 	if (tipInfo != NULL) {
 		tipInfo->GetSprite()->SetVisible(!value);
 	}
-	if (location != NULL && value) {
+	if (location != NULL) {
 		location->SetVisible(!value);
 	}
 	if (security != NULL) {
 		security->SetVisible(!value);
 	}
-	if (securityText != NULL && value) {
+	if (securityText != NULL) {
 		securityText->SetText("");
 	}
 	if (newPDADownload != NULL) {
 		newPDADownload->SetVisible(!value);
 	}
-	if (newPDAName != NULL && value) {
+	if (newPDAName != NULL) {
 		newPDAName->SetText("");
 	}
-	if (newPDAHeading != NULL && value) {
+	if (newPDAHeading != NULL) {
 		newPDAHeading->SetText("");
 	}
 	if (newPDA != NULL) {
@@ -2608,10 +2608,10 @@ void idMenuScreen_HUDLocal::setCinematic(bool value)
 	if (combatCursor != NULL) {
 		combatCursor->SetVisible(!value);
 	}
-	if (talkCursor != NULL && value) {
+	if (talkCursor != NULL) {
 		talkCursor->SetVisible(!value);
 	}
-	if (grabberCursor != NULL && value) {
+	if (grabberCursor != NULL) {
 		grabberCursor->SetVisible(!value);
 	}
 	if (weaponPills != NULL) {
