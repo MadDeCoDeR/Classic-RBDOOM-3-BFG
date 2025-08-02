@@ -297,7 +297,7 @@ fixed_t	P_FindHighestFloorSurrounding(sector_t *sec)
 	int			i;
 	line_t*		check;
 	sector_t*		other;
-	fixed_t		floor = -500*FRACUNIT;
+	fixed_t		floor = !::g->compatibility ? -500*FRACUNIT : -32000*FRACUNIT;;
 
 	for (i=0 ;i < sec->linecount ; i++)
 	{
@@ -764,8 +764,8 @@ P_CrossSpecialLine
 
 	case 19:
 		// Lower Floor
-		EV_DoFloor(line,lowerFloor);
-		line->special = 0;
+		if (EV_DoFloor(line,lowerFloor))
+			line->special = 0;
 		break;
 
 	case 22:
@@ -2501,7 +2501,7 @@ fixed_t P_FindShortestTextureAround(int secnum)
 	int i;
 	sector_t *sec = &::g->sectors[secnum];
 
-	/*if (!compatibility)*/
+	if (::g->compatibility)
 		minsize = 32000 << FRACBITS; //jff 3/13/98 prevent overflow in height calcs
 
 	for (i = 0; i < sec->linecount; i++)
@@ -2683,7 +2683,7 @@ fixed_t P_FindShortestUpperAround(int secnum)
 	int i;
 	sector_t *sec = &::g->sectors[secnum];
 
-	/*if (!compatibility)*/
+	if (::g->compatibility)
 		minsize = 32000 << FRACBITS; //jff 3/13/98 prevent overflow
 									 // in height calcs
 	for (i = 0; i < sec->linecount; i++)

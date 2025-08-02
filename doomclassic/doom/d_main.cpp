@@ -985,6 +985,11 @@ void D_DoomMain(void)
 			}
 		}
 	}
+
+	if (W_CheckNumForName("COMPLVL") > -1) {
+		idStr compStr = idStr((char*)W_CacheLumpName("COMPLVL", PU_CACHE));
+		::g->compatibility = !compStr.Icmp("mbf21");
+	}
 	Sys_ChangeTitle(::g->title);
 	I_Printf("                        %s                           \n", ::g->title);
 

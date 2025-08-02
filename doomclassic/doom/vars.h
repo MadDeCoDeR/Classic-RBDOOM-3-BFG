@@ -1182,3 +1182,5 @@ lighttable_t* greyscalemap; //GK: GreyscaleMap
 
 //GK: ID24
 std::vector <std::unique_ptr<skyflatmap_t>> skyFlatMaps;
+
+int compatibility; //GK: Values: 0 = Vanilla, 1 = MBF21
