@@ -624,7 +624,7 @@ void setCptr(char* varname, char* varfunc) {
 			if (!idStr::Icmp(name, "FRAME") && pos < (int)tempStates.size()) {
 				tempStates[pos].action = getFunc(varfunc);
 				//GK: Looping Action without next Frame detected. Set itself as next Frame
-				if (std::find(loopingActions.begin(), loopingActions.end(), varfunc) != loopingActions.end() && tempStates[pos].nextstate == 0) {
+				if (std::find(loopingActions.begin(), loopingActions.end(), varfunc) != loopingActions.end() && tempStates[pos].nextstate == -1) {
 					tempStates[pos].nextstate = pos;
 				}
 			}
@@ -1070,7 +1070,7 @@ void parsetext(char* text) {
 						if (statepos >= (int)tempStates.size()) {
 							//I_Error("No such Frame found");
 							//int oldsize = tempStates.size();
-							tempStates.resize(statepos + 1, { SPR_SP00,0, -1,{(actionf_v)NULL},S_NULL,0,0 });
+							tempStates.resize(statepos + 1, { SPR_SP00,0, -1,{(actionf_v)NULL},-1,0,0 });
 							/*for (int i = oldsize; i < tempStates.size(); i++) {
 								tempStates[i].nextstate = i + 1;
 							}*/

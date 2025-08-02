@@ -68,6 +68,9 @@ P_SetMobjState
 
 	do
 	{
+		if (state < S_NULL) {
+			state = mobj->info->spawnstate;
+		}
 		if (state == S_NULL)
 		{
 			mobj->state = (state_t *) S_NULL;
