@@ -3612,9 +3612,13 @@ void idPlayer::DrawHUD( idMenuHandler_HUD* _hudManager )
 {
 	SCOPED_PROFILE_EVENT( "idPlayer::DrawHUD" );
 	
-	if( !weapon.GetEntity() || influenceActive != INFLUENCE_NONE || privateCameraView || /*gameLocal->GetCamera() ||*/ !g_showHud.GetBool() )
+	if( !weapon.GetEntity() || privateCameraView || /*gameLocal->GetCamera() ||*/ !g_showHud.GetBool() )
 	{
 		return;
+	}
+
+	if (influenceActive != INFLUENCE_NONE ) {
+		_hudManager->GetHud()->setCinematic(true);
 	}
 	
 	if( common->IsMultiplayer() )
