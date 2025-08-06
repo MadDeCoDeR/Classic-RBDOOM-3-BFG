@@ -187,6 +187,7 @@ extern "C"
 	//GK: MBF21 CodePointers
 	void A_SpawnObject(void* p1);
 	void A_RadiusDamage(void* p1);
+	void A_AddFlags(void* p1);
 	void A_RemoveFlags(void* p1);
 	void A_MonsterProjectile(void* p1);
 	void A_MonsterBulletAttack(void* p1);
@@ -196,6 +197,12 @@ extern "C"
 	void A_SeekTracer(void* p1);
 	void A_FindTracer(void* p1);
 	void A_ClearTracer(void* p1);
+	void A_JumpIfHealthBelow(void* p1);
+	void A_JumpIfTargetInSight(void* p1);
+	void A_JumpIfTargetCloser(void* p1);
+	void A_JumpIfTracerInSight(void* p1);
+	void A_JumpIfTracerCloser(void* p1);
+	void A_JumpIfFlagsSet(void* p1);
 	void A_WeaponProjectile(void* p1, void* p2);
 	void A_WeaponBulletAttack(void* p1, void* p2);
 	void A_WeaponJump(void* p1, void* p2);
@@ -5913,7 +5920,14 @@ std::vector<dehcptr> tempcptrval {
 { "CheckAmmo", (actionf_p2)A_CheckAmmo },
 { "RefireTo", (actionf_p2)A_RefireTo },
 { "GunFlashTo", (actionf_p2)A_GunFlashTo },
-{ "WeaponAlert", (actionf_p2)A_WeaponAlert }
+{ "WeaponAlert", (actionf_p2)A_WeaponAlert },
+{ "JumpIfHealthBelow", (actionf_p1)A_JumpIfHealthBelow },
+{ "JumpIfTargetInSight", (actionf_p1)A_JumpIfTargetInSight },
+{ "JumpIfTargetCloser", (actionf_p1)A_JumpIfTargetCloser },
+{ "JumpIfTracerInSight", (actionf_p1)A_JumpIfTracerInSight },
+{ "JumpIfTracerCloser", (actionf_p1)A_JumpIfTracerCloser },
+{ "AddFlags", (actionf_p1)A_AddFlags },
+{ "JumpIfFlagsSet", (actionf_p1)A_JumpIfFlagsSet }
 };
 
 void init_cptrs() {

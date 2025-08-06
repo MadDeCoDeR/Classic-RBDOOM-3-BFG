@@ -2443,6 +2443,25 @@ void A_RadiusDamage(mobj_t* thingy)
 	P_RadiusAttack(thingy, thingy->target, thingy->state->args[0], thingy->state->args[1]);
 }
 
+void A_AddFlags(mobj_t* mo) {
+	int flags = mo->state->args[0];
+	int flags2 = mo->state->args[1];
+
+	// unlink/relink the thing from the blockmap if
+  // the NOBLOCKMAP or NOSECTOR flags are removed
+	qboolean update_blockmap = ((flags & MF_NOBLOCKMAP) && (mo->flags & MF_NOBLOCKMAP))
+		|| ((flags & MF_NOSECTOR) && (mo->flags & MF_NOSECTOR));
+
+	if (update_blockmap)
+		P_UnsetThingPosition(mo);
+
+	mo->flags |= flags;
+	mo->flags2 |= flags2;
+
+	if (update_blockmap)
+		P_SetThingPosition(mo);
+}
+
 void A_RemoveFlags(mobj_t* mo) {
 	int flags = mo->state->args[0];
 	int flags2 = mo->state->args[1];
@@ -2702,6 +2721,87 @@ void A_ClearTracer(mobj_t* mo) {
 	mo->tracer = NULL;
 }
 
+void A_JumpIfHealthBelow(mobj_t* mo) {
+	uint state;
+	int helathThreshold = 100;
+
+    if (!mo->state->args[0])
+	return;
+
+	state = mo->state->args[0];
+	helathThreshold = mo->state->args[1];
+		
+    if (mo->health < helathThreshold) {
+		P_SetMobjState(mo, state);
+	}
+}
+
+void P_JumpIfInSight(mobj_t* mo, mobj_t* target) {
+	uint state;
+	fixed_t fov;
+
+    if (!target || !mo->state->args[0])
+	return;
+
+	state = mo->state->args[0];
+	fov = mo->state->args[1];
+
+	if (fov > 0 && !P_CheckFov(mo, target, FixedToAngle(fov))) {
+		return;
+	}
+		
+    if (P_CheckSight(mo, target)) {
+		P_SetMobjState(mo, state);
+	}
+}
+
+void P_JumpIfCloser(mobj_t* mo, mobj_t* target) {
+	uint state;
+	fixed_t distance;
+
+    if (!target || !mo->state->args[0])
+	return;
+
+	state = mo->state->args[0];
+	distance = mo->state->args[1];
+		
+    if (distance > P_AproxDistance(mo->x - target->x, mo->y - target->y)) {
+		P_SetMobjState(mo, state);
+	}
+}
+
+void A_JumpIfTargetInSight(mobj_t* mo) {
+	P_JumpIfInSight(mo, mo->target);
+}
+
+void A_JumpIfTargetCloser(mobj_t* mo) {
+	P_JumpIfCloser(mo, mo->target);
+}
+
+void A_JumpIfTracerInSight(mobj_t* mo) {
+	P_JumpIfInSight(mo, mo->tracer);
+}
+
+void A_JumpIfTracerCloser(mobj_t* mo) {
+	P_JumpIfCloser(mo, mo->tracer);
+}
+
+void A_JumpIfFlagsSet(mobj_t* mo) {
+	uint state;
+	int flags;
+	int flags2;
+
+	if (!mo->state->args[0])
+		return;
+	
+	state = mo->state->args[0];
+	flags = mo->state->args[1];
+	flags2 = mo->state->args[2];
+
+	if ((mo->flags & flags) == flags && (mo->flags2 & flags2) == flags2) {
+		P_SetMobjState(mo, state);
+	}
+}
 
 }; // extern "C"
 
