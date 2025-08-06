@@ -40,7 +40,7 @@ typedef struct
 #define NAMEKEY( code, strId ) { K_##code, #code, strId }
 #define NAMEKEY2( code ) { K_##code, #code, #code }
 
-#define ALIASKEY( alias, code ) { K_##code, alias, "" }
+#define ALIASKEY( alias, code ) { K_##code, alias, alias }
 
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
 keyname_t keynames[] =
@@ -56,8 +56,8 @@ keyname_t keynames[] =
 	NAMEKEY2( 8 ),
 	NAMEKEY2( 9 ),
 	NAMEKEY2( 0 ),
-	NAMEKEY( MINUS, "-" ),
-	NAMEKEY( EQUALS, "=" ),
+	//NAMEKEY( MINUS, "-" ),
+	//NAMEKEY( EQUALS, "=" ),
 	NAMEKEY( BACKSPACE, "#str_07022" ),
 	NAMEKEY( TAB, "#str_07018" ),
 	NAMEKEY2( Q ),
@@ -70,8 +70,8 @@ keyname_t keynames[] =
 	NAMEKEY2( I ),
 	NAMEKEY2( O ),
 	NAMEKEY2( P ),
-	NAMEKEY( LBRACKET, "[" ),
-	NAMEKEY( RBRACKET, "]" ),
+	//NAMEKEY( LBRACKET, "[" ),
+	//NAMEKEY( RBRACKET, "]" ),
 	NAMEKEY( ENTER, "#str_07019" ),
 	NAMEKEY( LCTRL, "#str_07028" ),
 	NAMEKEY2( A ),
@@ -87,7 +87,7 @@ keyname_t keynames[] =
 	NAMEKEY( APOSTROPHE, "#str_07130" ),
 	NAMEKEY( GRAVE, "`" ),
 	NAMEKEY( LSHIFT, "#str_07029" ),
-	NAMEKEY( BACKSLASH, "\\" ),
+	//NAMEKEY( BACKSLASH, "\\" ),
 	NAMEKEY2( Z ),
 	NAMEKEY2( X ),
 	NAMEKEY2( C ),
@@ -95,9 +95,9 @@ keyname_t keynames[] =
 	NAMEKEY2( B ),
 	NAMEKEY2( N ),
 	NAMEKEY2( M ),
-	NAMEKEY( COMMA, "," ),
-	NAMEKEY( PERIOD, "." ),
-	NAMEKEY( SLASH, "/" ),
+	//NAMEKEY( COMMA, "," ),
+	//NAMEKEY( PERIOD, "." ),
+	//NAMEKEY( SLASH, "/" ),
 	NAMEKEY( RSHIFT, "#str_bind_RSHIFT" ),
 	NAMEKEY( KP_STAR, "#str_07126" ),
 	NAMEKEY( LALT, "#str_07027" ),
