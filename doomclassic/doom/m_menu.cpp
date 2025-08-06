@@ -2116,7 +2116,7 @@ void M_DrawKey(void) {
 		std::string res;
 		if (i < numBinds) {
 			activePageItems++;
-			keyBindings_t bind = idKeyInput::KeyBindingsFromBinding(keyboardBinds[i].bind, false, true);
+			keyBindings_t bind = idKeyInput::KeyBindingsFromBinding(keyboardBinds[i].bind, false, false);
 
 			idStr bindings;
 
