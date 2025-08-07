@@ -2788,8 +2788,8 @@ void A_JumpIfTracerCloser(mobj_t* mo) {
 
 void A_JumpIfFlagsSet(mobj_t* mo) {
 	uint state;
-	int flags;
-	int flags2;
+	uint flags;
+	uint64 flags2;
 
 	if (!mo->state->args[0])
 		return;
