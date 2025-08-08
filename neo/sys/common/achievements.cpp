@@ -67,6 +67,7 @@ void idAchievementSystemWin::AchievementUnlock( idLocalUser* user, int achieveme
 #ifndef ALLOW_DEV
 	if (::op) {
 		idStr achievementName = GetAchievementName(achievementID);
+		common->Printf("Trying to unlock ach '%s' with id '%d'\n");
 		::op->openAchievement()->UnlockAchievement(achievementName);//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
 	}
 #endif
