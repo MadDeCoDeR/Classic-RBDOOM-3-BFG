@@ -121,7 +121,7 @@ void idSignInManagerWin::RegisterLocalUser( int inputDevice )
 		nameSource = ::op->GetPlatformUserName();
 	}
 	
-	if( idStr::Length( nameSource ) == 0 )
+	if( nameSource == NULL || idStr::Length( nameSource ) == 0 )
 	{
 		// ui_name was empty => default to hostname
 #ifdef _WIN32

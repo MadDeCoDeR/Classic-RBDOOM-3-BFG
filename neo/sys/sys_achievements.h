@@ -146,6 +146,11 @@ protected:
 	{
 		return users.FindIndex( user );
 	}
+
+	idStr	GetAchievementName(int id) const
+	{
+		return achievementDevNames[0].SubStr(4).IsNumeric() ? va("%s%d", "ach_", id) : achievementDevNames[id];
+	}
 	
 	idStaticList< idLocalUser*, MAX_LOCAL_PLAYERS > users;
 	idList<idStr> achievementDevNames;

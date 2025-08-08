@@ -2633,7 +2633,7 @@ idList<idStr> idStr::Split(const char* delimiter) {
 	return strings;
 }
 
-idStr idStr::SubStr(ID_INT start, ID_INT end)
+idStr idStr::SubStr(ID_INT start, ID_INT end) const
 {
 	if (end == -1) {
 		end = Length();

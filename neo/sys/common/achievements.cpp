@@ -66,7 +66,7 @@ void idAchievementSystemWin::AchievementUnlock( idLocalUser* user, int achieveme
 {
 #ifndef ALLOW_DEV
 	if (::op) {
-		idStr achievementName = idStr::Cmpn(achievementDevNames[0], STEAM_ACHIEVEMENT_PREFIX, 4) != 0 ? achievementDevNames[achievementID] : va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID);
+		idStr achievementName = GetAchievementName(achievementID);
 		::op->openAchievement()->UnlockAchievement(achievementName);//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
 	}
 #endif
@@ -80,7 +80,7 @@ idAchievementSystemWin::AchievementLock
 void idAchievementSystemWin::AchievementLock( idLocalUser* user, const int achievementID )
 {
 	if (::op) {
-		idStr achievementName = idStr::Cmpn(achievementDevNames[0], STEAM_ACHIEVEMENT_PREFIX, 4) != 0 ? achievementDevNames[achievementID] : va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID);
+		idStr achievementName = GetAchievementName(achievementID);
 		::op->openAchievement()->LockAchievement(achievementName);//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
 	}
 }
@@ -107,10 +107,10 @@ idAchievementSystemWin::GetAchievementDescription
 bool idAchievementSystemWin::GetAchievementDescription( idLocalUser* user, const int achievementID, achievementDescription_t& data ) const
 {
 	if (::op) {
-		if (achievementDevNames.Num() - 1 < achievementID) {
+		if (achievementDevNames.Num() - 1 <= achievementID) {
 			return false;
 		}
-		idStr achievementName = idStr::Cmpn(achievementDevNames[0], STEAM_ACHIEVEMENT_PREFIX, 4) != 0 ? achievementDevNames[achievementID] : va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID);
+		idStr achievementName = GetAchievementName(achievementID);
 		strcpy(data.devName, achievementName);
 		strcpy(data.name, ::op->openAchievement()->GetAchievementName(achievementName));//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));
 		strcpy(data.description, ::op->openAchievement()->GetAchievementDescription(achievementName));//va("%s%d", STEAM_ACHIEVEMENT_PREFIX, achievementID));

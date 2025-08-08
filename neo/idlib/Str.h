@@ -358,7 +358,7 @@ public:
 
 	//GK: A little something from Higher level languages
 	idList<idStr>		Split(const char* delimeter);
-	idStr				SubStr(ID_INT start, ID_INT end = -1);
+	idStr				SubStr(ID_INT start, ID_INT end = -1) const;
 	//GK: End
 	
 protected:
