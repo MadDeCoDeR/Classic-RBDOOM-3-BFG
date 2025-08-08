@@ -2527,7 +2527,12 @@ M_StartMessage
 {
 	::g->messageLastMenuActive = ::g->menuactive;
 	::g->messageToPrint = 1;
-	::g->messageString = (char *)string;
+	if (::g->messageString) {
+		Z_Free(::g->messageString);
+		::g->messageString = NULL;
+	}
+	::g->messageString = (char*)Z_Malloc(strlen(string) * sizeof(char), PU_STATIC_SHARED, NULL);
+	strcpy(::g->messageString, string);
 	::g->messageRoutine = (messageRoutine_t)routine;
 	::g->messageNeedsInput = input;
 	::g->menuactive = true;
@@ -3473,7 +3478,7 @@ void M_Remap(event_t* ev) {
 			else
 			{
 				newmap = ev->data1;
-				idStr bindName = idKeyInput::LocalizedKeyName(static_cast<keyNum_t>(ev->data1));
+				idStr bindName = idKeyInput::KeyNumToString(static_cast<keyNum_t>(ev->data1));
 				for (int b = 0; b < numLayBinds; b++)
 				{
 					if (bindName.Icmp(joyLayoutBinds[b].bind) == 0)
