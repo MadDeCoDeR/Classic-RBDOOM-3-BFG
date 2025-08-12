@@ -553,20 +553,20 @@ const char* Sys_DefaultBasePath()
 	//GK: This might take a while especially if the game is not installed so show a splash screen the the engine's ico until then
 	Sys_CreateThread((xthread_t)ShowSplash, NULL, THREAD_LOWEST, "Show Splash", CORE_ANY);
 #endif
-	//common->Printf( "WARNING: using hardcoded default base path %s\n", DEFAULT_BASEPATH );
 	idList<idStr> basePaths;
 	basePaths.Append(idStr(getenv("HOME")));
 	basePaths.Append(idStr("/run/media/"));
 	basePaths.Append(idStr("/media/"));
 	struct stat commonStat;
-	for (int i = 0; i < 3; i++) {
+	common->Printf( "NOTE: using known search paths to find the _common.resources\n");
+	for (int i = 0; i < basePaths.Num(); i++) {
 		basepath = findFile(basePaths[i].c_str(), "_common.resources");
 
 		if (basepath.Find("_common.resources") != -1) {
 			break;
 		}
 	}
-	if (stat(basepath.c_str(), &commonStat) < 0) {
+	if (stat(basepath.c_str(), &commonStat) < 0 || S_ISDIR(commonStat.st_mode)) {
 #if SDL_VERSION_ATLEAST(2, 0, 0)
 		//GK: Multi-thread sanity check, make sure the splash screen has been properly disposed before we do anything else (either throw an error or return the found game folder)
 		idScopedCriticalSection cs(mutex);
@@ -575,7 +575,7 @@ const char* Sys_DefaultBasePath()
 			Sys_Sleep(1);
 		}
 #endif
-		common->FatalError("Failed to find the Game's base path\nPlease install a compatible Game");
+		common->FatalError("Failed to find the Game's path.\nPlease use the launch argument '+set fs_basepath' to set the Game's directory instead.\nAnd make sure it has the right permisions to access the Game's directory.\n\nCompatible Games:\n - DOOM 3 BFG Edition\n - DOOM 3 (2019)\n - DOOM BFA: Classic Edition");
 	}
 	if (basepath.Find("_common.resources") != -1) {
 		basepath = basepath.SubStr(0, basepath.FindLast("/"));
