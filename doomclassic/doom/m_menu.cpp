@@ -2398,7 +2398,11 @@ void M_ChangeKeys(int choice) {
 		::g->bindIndex = choice;
 	}*/
 	char tempMsg[128];
-	sprintf(tempMsg, KEYMSG, keyboardBinds[::g->bindIndex].display);
+	if (!idLib::joystick) {
+		sprintf(tempMsg, KEYMSG, keyboardBinds[::g->bindIndex].display);
+	} else {
+		sprintf(tempMsg, KEYMSGGP, keyboardBinds[::g->bindIndex].display);
+	}
 	M_StartMessage(tempMsg, NULL, false);
 	
 }
@@ -2531,8 +2535,8 @@ M_StartMessage
 		Z_Free(::g->messageString);
 		::g->messageString = NULL;
 	}
-	::g->messageString = (char*)Z_Malloc(strlen(string) * sizeof(char), PU_STATIC_SHARED, NULL);
-	strcpy(::g->messageString, string);
+	::g->messageString = (char*)Z_Malloc((strlen(string) * sizeof(char)) + sizeof(char), PU_STATIC_SHARED, NULL);
+	strcpy(::g->messageString, string + '\0');
 	::g->messageRoutine = (messageRoutine_t)routine;
 	::g->messageNeedsInput = input;
 	::g->menuactive = true;
@@ -3452,7 +3456,7 @@ void M_RemapConfirm(int ch) {
 void M_Remap(event_t* ev) {
 	
 	newmap = -1;
-	if (ev->data1 == K_ESCAPE) {
+	if (ev->data1 == K_ESCAPE || ev->data1 == K_JOY9) {
 		::g->captureBind = false;
 		M_StopMessage();
 		M_SetupNextMenu(&::g->KeyDef);

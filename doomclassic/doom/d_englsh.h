@@ -49,6 +49,10 @@ If you have questions concerning this license or the applicable additional terms
 #define PRESSJOY2JOY1	\
 "\t\t\t\tpress #JOY02 or #JOY01."
 
+#define PRESSESCTOCANCEL 	"Press Esc to cancel."
+#define PRESSJOY15TOCANCEL	\
+"\t\t\t\tPress #JOY15 to cancel."
+
 #define QUITMSG	"are you sure you want to\nquit this great game?"
 #define LOADNET 	"you can't do load while in a net game!\n\n" PRESSKEY
 #define QLOADNET	"you can't quickload during a netgame!\n\n" PRESSKEY
@@ -65,7 +69,8 @@ If you have questions concerning this license or the applicable additional terms
 #define DELSAVGP	"Are you sure you want to\ndelete this save file?\n\n" PRESSJOY1JOY2
 #define DELSAVGPJ	"Are you sure you want to\ndelete this save file?\n\n" PRESSJOY2JOY1
 #define EXPROMT		"Missing Expansion File!\n\n" PRESSKEY
-#define	KEYMSG		"Press any key to remap '%s'.\nPress 'ESC' to go back\n" PRESSKEY
+#define	KEYMSG		"Press any key to remap '%s'.\n" PRESSESCTOCANCEL
+#define	KEYMSGGP	"Press any key to remap '%s'.\n" PRESSJOY15TOCANCEL
 #define REMAPKEY	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSYN
 #define REMAPKEYGP	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSJOY1JOY2
 #define REMAPKEYGPJ	"Are you sure you want to unmap '%s'\nand remap it to '%s' ?\n\n" PRESSJOY2JOY1
