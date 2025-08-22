@@ -103,7 +103,7 @@ void D_DoAdvanceDemo (void);
 bool initonce = false;
 
 idCVar cl_expMenu("cl_expMenu", "1", CVAR_INTEGER, "Change DOOM 2 Menu based on expansion 1 = DOOM 2, 2 = TNT: Evilution, 3 = The Plutonia Experiment, 4 = Master Levels, 5 = No Rest For the Living", 1, 5);
-idCVar cl_ScreenSize("cl_ScreenSize", "0", CVAR_INTEGER | CVAR_BOOL, "Store ScreenSize input", 0, 1);
+idCVar cl_ScreenSize("cl_ScreenSize", "0", CVAR_INTEGER | CVAR_BOOL | CVAR_ARCHIVE, "Store ScreenSize input", 0, 1);
 
 
 const char*		wadfiles[MAXWADFILES] =
