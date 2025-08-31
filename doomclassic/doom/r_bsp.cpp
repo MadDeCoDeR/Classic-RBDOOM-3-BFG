@@ -533,7 +533,7 @@ void R_Subsector (int num)
     {
 		::g->floorplane = R_FindPlane (::g->frontsector->floorheight,
 					::g->frontsector->floorpic == ::g->skyflatnum &&  // kilough 10/98
-		::g->frontsector->sky & PL_SKYFLAT ? ::g->frontsector->sky : ::g->frontsector->floorpic,
+		::g->frontsector->sky & PL_SKYFLAT ? ::g->frontsector->sky : ::g->frontsector->floorpic < -1 ? ::g->frontsector->ceilingpic : ::g->frontsector->floorpic, //GK: Ugly hack time: For some reason (and until I find it) floorpic data can be corrupted. So instead use ceilingpic in it's place
 					::g->frontsector->lightlevel,
 			::g->frontsector->floor_xoffs,
 			::g->frontsector->floor_yoffs); //GK:just some generalized linedef stuff
