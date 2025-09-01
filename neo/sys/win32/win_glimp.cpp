@@ -474,11 +474,11 @@ static int GLW_ChoosePixelFormat( const HDC hdc, const int multisamples, const b
 		WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
 		WGL_STENCIL_BITS_ARB, 8,
 		WGL_DEPTH_BITS_ARB, 24,
-		WGL_COLOR_BITS_ARB, 32,/*
+		WGL_COLOR_BITS_ARB, 32,
 		WGL_RED_BITS_ARB, 8,
 		WGL_BLUE_BITS_ARB, 8,
 		WGL_GREEN_BITS_ARB, 8,
-		WGL_ALPHA_BITS_ARB, 8,*/
+		WGL_ALPHA_BITS_ARB, 8,
 		WGL_STEREO_ARB, ( stereo3D ? TRUE : FALSE ),
 		WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB, TRUE,
 		0, 0
@@ -509,6 +509,8 @@ static bool GLW_InitDriver( glimpParms_t parms )
 		1,								// version number
 		PFD_DRAW_TO_WINDOW |			// support window
 		PFD_SUPPORT_OPENGL |			// support OpenGL
+		PFD_GENERIC_FORMAT |
+		PFD_GENERIC_ACCELERATED |
 		PFD_DOUBLEBUFFER,				// double buffered
 		PFD_TYPE_RGBA,					// RGBA type
 		32,								// 32-bit color depth
