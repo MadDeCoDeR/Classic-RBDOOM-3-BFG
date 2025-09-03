@@ -25,6 +25,7 @@ SOFTWARE.
 #include "OpenDLC.h"
 #include "OpenApplication.h"
 #include "OpenInput.h"
+#include "OpenMultiplayer.h"
 
 class OPlatform
 {
@@ -61,6 +62,10 @@ public:
 	* Get an Instance of the OpenInput Class. (for special API Input functions)
 	*/
 	virtual OpenInput* openInput() = 0;
+	/*
+	* Get an Instance of the OpenMultiplayer Class. (for Online Multiplayer functions)
+	*/
+	virtual OpenMultiplayer* openMultiplayer() = 0;
 	virtual const char* GetPlatformUserName() = 0;
 	virtual void ShowUser( unsigned int id) = 0;
 	/*
@@ -77,7 +82,7 @@ public:
 	virtual unsigned char GetBatteryLevel() = 0;
 	virtual bool ShowFloatingTextBox(int type, int xpos, int ypos, int width, int height) = 0;
 	virtual void SetNotificationsPosition(unsigned int x, unsigned int y) = 0;
-	virtual unsigned long long CreateLobby(int type, int maxplayers) = 0;
+	
 	virtual bool SetAdditionalInfo(const char* key, const char* value) = 0;
 };
 
@@ -85,4 +90,6 @@ extern OPlatform* op;
 
 extern "C" {
 	typedef OPlatform* (*GetPlatformAPI_t)();
+	extern OPlatform* GetPlatformAPI();
 }
+
