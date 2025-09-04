@@ -4325,7 +4325,7 @@ void idRenderBackend::CalculateAutomaticExposure()
 		// FIXME
 #if !defined(USE_VULKAN)
 		// read back the contents
-		glReadPixels( 0, 0, 64, 64, GL_RGBA8, GL_FLOAT, image );
+		glReadPixels( 0, 0, 64, 64,  GL_RGBA, GL_FLOAT, image );
 #endif
 		
 		sum = 0.0f;
@@ -5881,7 +5881,7 @@ void idRenderBackend::PostProcess( const void* data )
 		/*
 		 * The shader has three passes, chained together as follows:
 		 *
-		 *                           |input|------------------·
+		 *                           |input|------------------ï¿½
 		 *                              v                     |
 		 *                    [ SMAA*EdgeDetection ]          |
 		 *                              v                     |
@@ -5891,7 +5891,7 @@ void idRenderBackend::PostProcess( const void* data )
 		 *                              v                     |
 		 *                          |blendTex|                |
 		 *                              v                     |
-		 *                [ SMAANeighborhoodBlending ] <------·
+		 *                [ SMAANeighborhoodBlending ] <------ï¿½
 		 *                              v
 		 *                           |output|
 		*/
