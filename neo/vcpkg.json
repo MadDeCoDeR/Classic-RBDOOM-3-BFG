@@ -11,7 +11,7 @@
     },
     "rapidjson",
     {
-      "name": "sdl2",
+      "name": "sdl3",
       "default-features": false,
       "features": [
         "ibus",

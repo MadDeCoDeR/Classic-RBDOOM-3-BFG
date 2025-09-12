@@ -29,7 +29,7 @@
 //                                         according to USB doc, so probably it doesn't need mapping here)
 
 // maps SDL2 scancodes to directinput keynums/scancodes - dinput_key = scanCodeToKeyNum[(int)your_sdl2_scancode];
-static int scanCodeToKeyNum[SDL_NUM_SCANCODES] =
+static int scanCodeToKeyNum[SDL_SCANCODE_COUNT] =
 {
 	0x0, 	//	SDL_SCANCODE_UNKNOWN = 0, => 0 should also work for dinput codes as "not assigned/unknown"
 	0x0, 	//	// 1 (unused)

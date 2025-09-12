@@ -17,9 +17,6 @@ option(MONOLITH
 option(USE_PRECOMPILED_HEADERS
 		"Use precompiled headers during build" ON)
 		
-option(SDL2
-		"Use SDL2 instead of SDL1.2" ON)
-		
 option(USE_XAUDIO2
 		"Use XAudio2 alongside OpenAL Soft" OFF)
 
@@ -1873,15 +1870,9 @@ else()
 			link_directories(${FFMPEG_LIBRARIES_DIRS})
 		endif()
 
-		if(SDL2)
-			find_package(SDL2 REQUIRED)
-			include_directories(${SDL2_INCLUDE_DIR})
-			set(SDLx_LIBRARY ${SDL2_LIBRARY})
-		else()
-			find_package(SDL REQUIRED)
-			include_directories(${SDL_INCLUDE_DIR})
-			set(SDLx_LIBRARY ${SDL_LIBRARY})
-		endif()
+		find_package(SDL3 REQUIRED)
+		include_directories(${SDL3_INCLUDE_DIR})
+		set(SDLx_LIBRARY SDL3::SDL3)
 
 		if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 			list(REMOVE_ITEM POSIX_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/sys/posix/platform_linux.cpp)

@@ -43,7 +43,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <signal.h>
 #include <fcntl.h>
 #include <fnmatch.h>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include "../sdl/res/doom_ico.cpp"
 
 // RB begin
@@ -462,7 +462,6 @@ Get the default base path
 Try to be intelligent: if there is no BASE_GAMEDIR, try the next path
 ================
 */
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 idSysMutex mutex, mutex1; //GK: Bidirectional communication requires two mutexes
 bool isDone = false;
 
@@ -473,45 +472,57 @@ Then it properly disposes the data it allocated and send a signal back that it i
 */
 void ShowSplash (void* data) {
 	int windowPos = SDL_WINDOWPOS_UNDEFINED;
-	SDL_Window* splashWindow = SDL_CreateWindow("", windowPos, windowPos, 800, 600, SDL_WINDOW_BORDERLESS);
-	SDL_Renderer* renderer = SDL_CreateRenderer(splashWindow, -1, SDL_RENDERER_ACCELERATED);
+	SDL_PropertiesID props = SDL_CreateProperties();
+    SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, "");
+    SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, windowPos);
+    SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, windowPos);
+    SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, 800);
+    SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, 600);
+    // For window flags you should use separate window creation properties,
+    // but for easier migration from SDL2 you can use the following:
+    SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER, SDL_WINDOW_BORDERLESS);
+    SDL_Window* splashWindow = SDL_CreateWindowWithProperties(props);
+    SDL_DestroyProperties(props);
+	SDL_Renderer* renderer = SDL_CreateRenderer(splashWindow, NULL);
 	Uint32 rmask, gmask, bmask, amask;
+		SDL_PixelFormat format;
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-	int shift = (doom_icon.bytes_per_pixel == 3) ? 8 : 0;
-	rmask = 0xff000000 >> shift;
-	gmask = 0x00ff0000 >> shift;
-	bmask = 0x0000ff00 >> shift;
-	amask = 0x000000ff >> shift;
+    	int shift = (doom_icon.bytes_per_pixel == 3) ? 8 : 0;
+    	rmask = 0xff000000 >> shift;
+    	gmask = 0x00ff0000 >> shift;
+    	bmask = 0x0000ff00 >> shift;
+    	amask = 0x000000ff >> shift;
+		format = SDL_PIXELFORMAT_RGBA8888;
 #else // little endian, like x86
-	rmask = 0x000000ff;
-	gmask = 0x0000ff00;
-	bmask = 0x00ff0000;
-	amask = (doom_icon.bytes_per_pixel == 3) ? 0 : 0xff000000;
+    	rmask = 0x000000ff;
+    	gmask = 0x0000ff00;
+    	bmask = 0x00ff0000;
+    	amask = (doom_icon.bytes_per_pixel == 3) ? 0 : 0xff000000;
+		format = SDL_PIXELFORMAT_ABGR8888;
 #endif
-		
-	SDL_Surface* surf = SDL_CreateRGBSurfaceFrom((void*)doom_icon.pixel_data, doom_icon.width, doom_icon.height,
-		doom_icon.bytes_per_pixel * 8, doom_icon.bytes_per_pixel * doom_icon.width, rmask, gmask, bmask, amask);
+		SDL_Surface* surf = SDL_CreateSurfaceFrom(doom_icon.width, doom_icon.height, format, (void*)doom_icon.pixel_data, doom_icon.width * 4);
+#if 0
+		SDL_Surface* surf = SDL_CreateRGBSurfaceFrom((void*)doom_icon.pixel_data, doom_icon.width, doom_icon.height,
+		 doom_icon.bytes_per_pixel * 8, doom_icon.bytes_per_pixel * doom_icon.width, rmask, gmask, bmask, amask);
+#endif
 	SDL_Texture* splashImage = SDL_CreateTextureFromSurface(renderer, surf);
-	int w, h;
-	SDL_QueryTexture(splashImage, NULL, NULL, &w, &h);
+	SDL_FRect rectangle = {0, 0, 800, 600};
 
-	SDL_Rect rectangle = {0, 0, 800, 600};
 
 	while(!isDone) {
 		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, splashImage, NULL, &rectangle);
+		SDL_RenderTexture(renderer, splashImage, NULL, &rectangle);
 		SDL_RenderPresent(renderer);
 	}
 
 	SDL_DestroyTexture(splashImage);
-	SDL_FreeSurface(surf);
+	SDL_DestroySurface(surf);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(splashWindow);
 
 	idScopedCriticalSection cs1(mutex1);
 	isDone = false;
 }
-#endif
 
 const char* Sys_DefaultBasePath()
 {
@@ -549,10 +560,8 @@ const char* Sys_DefaultBasePath()
 		}
 	}
 
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 	//GK: This might take a while especially if the game is not installed so show a splash screen the the engine's ico until then
 	Sys_CreateThread((xthread_t)ShowSplash, NULL, THREAD_LOWEST, "Show Splash", CORE_ANY);
-#endif
 	idList<idStr> basePaths;
 	basePaths.Append(idStr(getenv("HOME")));
 	basePaths.Append(idStr("/run/media/"));
@@ -567,28 +576,24 @@ const char* Sys_DefaultBasePath()
 		}
 	}
 	if (stat(basepath.c_str(), &commonStat) < 0 || S_ISDIR(commonStat.st_mode)) {
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 		//GK: Multi-thread sanity check, make sure the splash screen has been properly disposed before we do anything else (either throw an error or return the found game folder)
 		idScopedCriticalSection cs(mutex);
 		isDone = true;
 		while(isDone) {
 			Sys_Sleep(1);
 		}
-#endif
 		common->FatalError("Failed to find the Game's path.\nPlease use the launch argument '+set fs_basepath' to set the Game's directory instead.\nAnd make sure it has the right permisions to access the Game's directory.\n\nCompatible Games:\n - DOOM 3 BFG Edition\n - DOOM 3 (2019)\n - DOOM BFA: Classic Edition");
 	}
 	if (basepath.Find("_common.resources") != -1) {
 		basepath = basepath.SubStr(0, basepath.FindLast("/"));
 		basepath = basepath.SubStr(0, basepath.FindLast("/"));
 	}
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 	//GK: Multi-thread sanity check, make sure the splash screen has been properly disposed before we do anything else (either throw an error or return the found game folder)
 	idScopedCriticalSection cs(mutex);
 	isDone = true;
 	while(isDone) {
 		Sys_Sleep(1);
 	}
-#endif
 	//GK: Crazy const char desease
 	return basepath;
 }
@@ -890,17 +895,10 @@ Posix_EarlyInit/Posix_LateInit is better
   and also it needs all the flags for proper setup (without SDL_INIT_GAMECONTROLLER latest versions cause performance degregation when using a controller)
  */
 void Sys_Init() {
-	#if SDL_VERSION_ATLEAST(2, 0, 0)
-	if( !SDL_WasInit( SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) )
-#else
-	if( !SDL_WasInit( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) )
-#endif
+	SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland,x11");
+	if( !SDL_WasInit( SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC) )
 	{
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-		if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC ) )
-#else
-		if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_JOYSTICK ) )
-#endif
+		if( !SDL_Init( SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC ) )
 			common->FatalError( "Error while initializing SDL: %s", SDL_GetError() );
 	}
  }
@@ -1777,9 +1775,7 @@ void Sys_Error( const char* error, ... )
 	va_end( argptr );
 	Sys_Printf(text);
 	Sys_Printf( "\n" );
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "System Error", text, NULL);
-#endif
 	Posix_Exit( EXIT_FAILURE );
 }
 

@@ -38,40 +38,13 @@ If you have questions concerning this license or the applicable additional terms
 #undef strcasecmp
 #undef vsnprintf
 // DG end
-
-#include <SDL.h>
-#if !SDL_VERSION_ATLEAST(2, 0, 0)
-#include "SDL_thread.h"
-#endif
+#include <SDL3/SDL.h>
 
 #include "renderer/RenderCommon.h"
 #include "sdl_local.h"
 #include "../posix/posix_public.h"
 #include "../common/localuser.h"
 #include "../../framework/Common.h"
-
-#if !SDL_VERSION_ATLEAST(2, 0, 0)
-#define SDL_Keycode SDLKey
-#define SDLK_APPLICATION SDLK_COMPOSE
-#define SDLK_SCROLLLOCK SDLK_SCROLLOCK
-#define SDLK_LGUI SDLK_LSUPER
-#define SDLK_RGUI SDLK_RSUPER
-#define SDLK_KP_0 SDLK_KP0
-#define SDLK_KP_1 SDLK_KP1
-#define SDLK_KP_2 SDLK_KP2
-#define SDLK_KP_3 SDLK_KP3
-#define SDLK_KP_4 SDLK_KP4
-#define SDLK_KP_5 SDLK_KP5
-#define SDLK_KP_6 SDLK_KP6
-#define SDLK_KP_7 SDLK_KP7
-#define SDLK_KP_8 SDLK_KP8
-#define SDLK_KP_9 SDLK_KP9
-#define SDLK_NUMLOCKCLEAR SDLK_NUMLOCK
-#define SDLK_PRINTSCREEN SDLK_PRINT
-// DG: SDL1 doesn't seem to have defines for scancodes.. add the (only) one we need
-#define SDL_SCANCODE_GRAVE 49 // in SDL2 this is 53.. but according to two different systems and keyboards this works for SDL1
-// DG end
-#endif
 
 static const int MAX_JOYSTICKS = 4; //GK: This thing still works only on PC right? Apparently no
 
@@ -84,11 +57,7 @@ extern idCVar com_emergencyexit;
 // DG end
 SDL_Thread* joyThread = nullptr;
 //GK: This function will run as a thread in order to capture when a joystick is connected or disconnected
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 void JoystickSamplingThread( void* data );
-#else
-int JoystickSamplingThread( void* data ); //GK: SDL 1.2 require the thread to have an int as return value
-#endif
 //GK End
 
 const char* kbdNames[] =
@@ -165,14 +134,14 @@ static joystick_poll_t joystick_polls[42];
 static int numEvents = 0;
 int joyAxis[MAX_JOYSTICKS][6];
 SDL_Joystick* joy = NULL;
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-static SDL_GameController* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
+static SDL_Gamepad* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
 static SDL_Haptic *haptic[MAX_JOYSTICKS] = {NULL}; //GK: Joystick rumble support
 static int registeredControllers = 0;
-#endif
 static bool joyThreadKill = false;
 int SDL_joystick_has_hat = 0;
 bool buttonStates[MAX_JOYSTICKS][K_LAST_KEY];	// For keeping track of button up/down events
+extern SDL_Window* window;
+
 
 #define	MAX_QUED_EVENTS		256
 #define	MASK_QUED_EVENTS	( MAX_QUED_EVENTS - 1 )
@@ -181,14 +150,13 @@ sysEvent_t	eventQue[MAX_QUED_EVENTS];
 int			eventHead = 0;
 int			eventTail = 0;
 
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-
 #include "sdl2_scancode_mappings.h"
+#include <map>
 
 static int SDLScanCodeToKeyNum( SDL_Scancode sc )
 {
 	int idx = int( sc );
-	assert( idx >= 0 && idx < SDL_NUM_SCANCODES );
+	assert( idx >= 0 && idx < SDL_SCANCODE_COUNT );
 	
 	return scanCodeToKeyNum[idx];
 }
@@ -197,7 +165,7 @@ static SDL_Scancode KeyNumToSDLScanCode( int keyNum )
 {
 	if( keyNum < K_JOY1 )
 	{
-		for( int i = 0; i < SDL_NUM_SCANCODES; ++i )
+		for( int i = 0; i < SDL_SCANCODE_COUNT; ++i )
 		{
 			if( scanCodeToKeyNum[i] == keyNum )
 			{
@@ -227,7 +195,7 @@ static void ConvertUTF8toUTF32( const char* utf8str, int32* utf32buf )
 	size_t len = strlen( utf8str );
 	
 	size_t inbytesleft = len;
-	size_t outbytesleft = 4 * SDL_TEXTINPUTEVENT_TEXT_SIZE; // *4 because utf-32 needs 4x as much space as utf-8
+	size_t outbytesleft = 4 * len; // *4 because utf-32 needs 4x as much space as utf-8
 	char* outbuf = ( char* )utf32buf;
 	size_t n = SDL_iconv( cd, &utf8str, &inbytesleft, &outbuf, &outbytesleft );
 	
@@ -236,422 +204,13 @@ static void ConvertUTF8toUTF32( const char* utf8str, int32* utf32buf )
 		common->Warning( "Converting UTF-8 string \"%s\" from SDL_TEXTINPUT to UTF-32 failed!", utf8str );
 		
 		// clear utf32-buffer, just to be sure there's no garbage..
-		memset( utf32buf, 0, SDL_TEXTINPUTEVENT_TEXT_SIZE * sizeof( int32 ) );
+		memset( utf32buf, 0, len * sizeof( int32 ) );
 	}
 	
 	// reset cd so it can be used again
 	SDL_iconv( cd, NULL, &inbytesleft, NULL, &outbytesleft );
 	
 }
-
-#else // SDL1.2
-static int SDL_KeyToDoom3Key( SDL_Keycode key, bool& isChar )
-{
-	isChar = false;
-	
-	if( key >= SDLK_SPACE && key < SDLK_DELETE )
-	{
-		isChar = true;
-		//return key;// & 0xff;
-	}
-	
-	switch( key )
-	{
-		case SDLK_ESCAPE:
-			return K_ESCAPE;
-			
-		case SDLK_SPACE:
-			return K_SPACE;
-			
-		//case SDLK_EXCLAIM:
-		/*
-		SDLK_QUOTEDBL:
-		SDLK_HASH:
-		SDLK_DOLLAR:
-		SDLK_AMPERSAND:
-		SDLK_QUOTE		= 39,
-		SDLK_LEFTPAREN		= 40,
-		SDLK_RIGHTPAREN		= 41,
-		SDLK_ASTERISK		= 42,
-		SDLK_PLUS		= 43,
-		SDLK_COMMA		= 44,
-		SDLK_MINUS		= 45,
-		SDLK_PERIOD		= 46,
-		SDLK_SLASH		= 47,
-		*/
-		case SDLK_0:
-			return K_0;
-			
-		case SDLK_1:
-			return K_1;
-			
-		case SDLK_2:
-			return K_2;
-			
-		case SDLK_3:
-			return K_3;
-			
-		case SDLK_4:
-			return K_4;
-			
-		case SDLK_5:
-			return K_5;
-			
-		case SDLK_6:
-			return K_6;
-			
-		case SDLK_7:
-			return K_7;
-			
-		case SDLK_8:
-			return K_8;
-			
-		case SDLK_9:
-			return K_9;
-			
-		// DG: add some missing keys..
-		case SDLK_UNDERSCORE:
-			return K_UNDERLINE;
-			
-		case SDLK_MINUS:
-			return K_MINUS;
-			
-		case SDLK_COMMA:
-			return K_COMMA;
-			
-		case SDLK_COLON:
-			return K_COLON;
-			
-		case SDLK_SEMICOLON:
-			return K_SEMICOLON;
-			
-		case SDLK_PERIOD:
-			return K_PERIOD;
-			
-		case SDLK_AT:
-			return K_AT;
-			
-		case SDLK_EQUALS:
-			return K_EQUALS;
-		// DG end
-		
-		/*
-		SDLK_COLON		= 58,
-		SDLK_SEMICOLON		= 59,
-		SDLK_LESS		= 60,
-		SDLK_EQUALS		= 61,
-		SDLK_GREATER		= 62,
-		SDLK_QUESTION		= 63,
-		SDLK_AT			= 64,
-		*/
-		/*
-		   Skip uppercase letters
-		 */
-		/*
-		SDLK_LEFTBRACKET	= 91,
-		SDLK_BACKSLASH		= 92,
-		SDLK_RIGHTBRACKET	= 93,
-		SDLK_CARET		= 94,
-		SDLK_UNDERSCORE		= 95,
-		SDLK_BACKQUOTE		= 96,
-		*/
-		
-		case SDLK_a:
-			return K_A;
-			
-		case SDLK_b:
-			return K_B;
-			
-		case SDLK_c:
-			return K_C;
-			
-		case SDLK_d:
-			return K_D;
-			
-		case SDLK_e:
-			return K_E;
-			
-		case SDLK_f:
-			return K_F;
-			
-		case SDLK_g:
-			return K_G;
-			
-		case SDLK_h:
-			return K_H;
-			
-		case SDLK_i:
-			return K_I;
-			
-		case SDLK_j:
-			return K_J;
-			
-		case SDLK_k:
-			return K_K;
-			
-		case SDLK_l:
-			return K_L;
-			
-		case SDLK_m:
-			return K_M;
-			
-		case SDLK_n:
-			return K_N;
-			
-		case SDLK_o:
-			return K_O;
-			
-		case SDLK_p:
-			return K_P;
-			
-		case SDLK_q:
-			return K_Q;
-			
-		case SDLK_r:
-			return K_R;
-			
-		case SDLK_s:
-			return K_S;
-			
-		case SDLK_t:
-			return K_T;
-			
-		case SDLK_u:
-			return K_U;
-			
-		case SDLK_v:
-			return K_V;
-			
-		case SDLK_w:
-			return K_W;
-			
-		case SDLK_x:
-			return K_X;
-			
-		case SDLK_y:
-			return K_Y;
-			
-		case SDLK_z:
-			return K_Z;
-			
-		case SDLK_RETURN:
-			return K_ENTER;
-			
-		case SDLK_BACKSPACE:
-			return K_BACKSPACE;
-			
-		case SDLK_PAUSE:
-			return K_PAUSE;
-			
-		// DG: add tab key support
-		case SDLK_TAB:
-			return K_TAB;
-		// DG end
-		
-		//case SDLK_APPLICATION:
-		//	return K_COMMAND;
-		case SDLK_CAPSLOCK:
-			return K_CAPSLOCK;
-			
-		case SDLK_SCROLLLOCK:
-			return K_SCROLL;
-			
-		case SDLK_POWER:
-			return K_POWER;
-			
-		case SDLK_UP:
-			return K_UPARROW;
-			
-		case SDLK_DOWN:
-			return K_DOWNARROW;
-			
-		case SDLK_LEFT:
-			return K_LEFTARROW;
-			
-		case SDLK_RIGHT:
-			return K_RIGHTARROW;
-			
-		case SDLK_LGUI:
-			return K_LWIN;
-			
-		case SDLK_RGUI:
-			return K_RWIN;
-		//case SDLK_MENU:
-		//	return K_MENU;
-		
-		case SDLK_LALT:
-			return K_LALT;
-			
-		case SDLK_RALT:
-			return K_RALT;
-			
-		case SDLK_RCTRL:
-			return K_RCTRL;
-			
-		case SDLK_LCTRL:
-			return K_LCTRL;
-			
-		case SDLK_RSHIFT:
-			return K_RSHIFT;
-			
-		case SDLK_LSHIFT:
-			return K_LSHIFT;
-			
-		case SDLK_INSERT:
-			return K_INS;
-			
-		case SDLK_DELETE:
-			return K_DEL;
-			
-		case SDLK_PAGEDOWN:
-			return K_PGDN;
-			
-		case SDLK_PAGEUP:
-			return K_PGUP;
-			
-		case SDLK_HOME:
-			return K_HOME;
-			
-		case SDLK_END:
-			return K_END;
-			
-		case SDLK_F1:
-			return K_F1;
-			
-		case SDLK_F2:
-			return K_F2;
-			
-		case SDLK_F3:
-			return K_F3;
-			
-		case SDLK_F4:
-			return K_F4;
-			
-		case SDLK_F5:
-			return K_F5;
-			
-		case SDLK_F6:
-			return K_F6;
-			
-		case SDLK_F7:
-			return K_F7;
-			
-		case SDLK_F8:
-			return K_F8;
-			
-		case SDLK_F9:
-			return K_F9;
-			
-		case SDLK_F10:
-			return K_F10;
-			
-		case SDLK_F11:
-			return K_F11;
-			
-		case SDLK_F12:
-			return K_F12;
-		// K_INVERTED_EXCLAMATION;
-		
-		case SDLK_F13:
-			return K_F13;
-			
-		case SDLK_F14:
-			return K_F14;
-			
-		case SDLK_F15:
-			return K_F15;
-			
-		case SDLK_KP_7:
-			return K_KP_7;
-			
-		case SDLK_KP_8:
-			return K_KP_8;
-			
-		case SDLK_KP_9:
-			return K_KP_9;
-			
-		case SDLK_KP_4:
-			return K_KP_4;
-			
-		case SDLK_KP_5:
-			return K_KP_5;
-			
-		case SDLK_KP_6:
-			return K_KP_6;
-			
-		case SDLK_KP_1:
-			return K_KP_1;
-			
-		case SDLK_KP_2:
-			return K_KP_2;
-			
-		case SDLK_KP_3:
-			return K_KP_3;
-			
-		case SDLK_KP_ENTER:
-			return K_KP_ENTER;
-			
-		case SDLK_KP_0:
-			return K_KP_0;
-			
-		case SDLK_KP_PERIOD:
-			return K_KP_DOT;
-			
-		case SDLK_KP_DIVIDE:
-			return K_KP_SLASH;
-		// K_SUPERSCRIPT_TWO;
-		
-		case SDLK_KP_MINUS:
-			return K_KP_MINUS;
-		// K_ACUTE_ACCENT;
-		
-		case SDLK_KP_PLUS:
-			return K_KP_PLUS;
-			
-		case SDLK_NUMLOCKCLEAR:
-			return K_NUMLOCK;
-			
-		case SDLK_KP_MULTIPLY:
-			return K_KP_STAR;
-			
-		case SDLK_KP_EQUALS:
-			return K_KP_EQUALS;
-			
-		// K_MASCULINE_ORDINATOR;
-		// K_GRAVE_A;
-		// K_AUX1;
-		// K_CEDILLA_C;
-		// K_GRAVE_E;
-		// K_AUX2;
-		// K_AUX3;
-		// K_AUX4;
-		// K_GRAVE_I;
-		// K_AUX5;
-		// K_AUX6;
-		// K_AUX7;
-		// K_AUX8;
-		// K_TILDE_N;
-		// K_GRAVE_O;
-		// K_AUX9;
-		// K_AUX10;
-		// K_AUX11;
-		// K_AUX12;
-		// K_AUX13;
-		// K_AUX14;
-		// K_GRAVE_U;
-		// K_AUX15;
-		// K_AUX16;
-		
-		case SDLK_PRINTSCREEN:
-			return K_PRINTSCREEN;
-			
-		case SDLK_MODE:
-			return K_RALT;
-	}
-	
-	return 0;
-}
-#endif // SDL2
 
 static void PushConsoleEvent( const char* s )
 {
@@ -664,7 +223,7 @@ static void PushConsoleEvent( const char* s )
 	
 	SDL_Event event;
 	
-	event.type = SDL_USEREVENT;
+	event.type = SDL_EVENT_USER;
 	event.user.code = SE_CONSOLE;
 	event.user.data1 = ( void* )len;
 	event.user.data2 = b;
@@ -694,17 +253,9 @@ void Sys_InitInput()
 	memset( &old, 0, sizeof(joyState) );
 	memset( &joystick_polls, 0, sizeof(joystick_polls) );
 	
-#if !SDL_VERSION_ATLEAST(2, 0, 0)
-	SDL_EnableUNICODE( 1 );
-	SDL_EnableKeyRepeat( SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL );
-#endif
 	in_keyboard.SetModified();
 	//GK: Insted of initializing only once the joystick run a thread that will allow the dynamic connection/disconnection of it
-	#if SDL_VERSION_ATLEAST(2, 0, 0)
 	joyThread = SDL_CreateThread((SDL_ThreadFunction)JoystickSamplingThread,"Joystic",NULL);
-	#else
-	joyThread = SDL_CreateThread(JoystickSamplingThread,NULL);
-	#endif
 	//GK:End
 	while(eventHead - eventTail < MAX_QUED_EVENTS) {
 		Sys_GenerateEvents();
@@ -831,6 +382,7 @@ void Sys_GrabMouseCursor( bool grabIt )
 	GLimp_GrabInput( flags );
 }
 
+static std::map<SDL_JoystickID, int> reverseControllerMap;
 /*
 ================
 Sys_QueEvent
@@ -861,14 +413,12 @@ void Sys_QueEvent( sysEventType_t type, int value, int value2, int ptrLength, vo
 	ev->inputDevice = inputDeviceNum;
 }
 
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 // utf-32 version of the textinput event
-static int32 uniStr[SDL_TEXTINPUTEVENT_TEXT_SIZE] = {0};
+static int32 uniStr[512] = {0};
 static size_t uniStrPos = 0;
 // DG: fake a "mousewheel not pressed anymore" event for SDL2
 // so scrolling in menus stops after one step
 static int mwheelRel = 0;
-#endif
 static int32 uniChar = 0;
 
 // void PushJoyButton( int key, bool value )
@@ -898,20 +448,18 @@ void SDL_Poll()
 	// WM0110: previous state of joystick hat
 	static int previous_hat_state = SDL_HAT_CENTERED;
 
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 	if( uniStr[0] != 0 )
 	{
 		Sys_QueEvent(SE_CHAR, uniStr[uniStrPos], 1, 0, NULL, 0);
 		
 		++uniStrPos;
 		
-		if( !uniStr[uniStrPos] || uniStrPos == SDL_TEXTINPUTEVENT_TEXT_SIZE )
+		if( !uniStr[uniStrPos] || uniStrPos == 512 )
 		{
 			memset( uniStr, 0, sizeof( uniStr ) );
 			uniStrPos = 0;
 		}
 	}
-#endif
 	if( uniChar )
 	{
 		Sys_QueEvent(SE_CHAR, uniChar, 1, 0, NULL, 0);
@@ -919,22 +467,22 @@ void SDL_Poll()
 		uniChar = 0;
 	}
 
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 	if( mwheelRel )
 	{
 		Sys_QueEvent(SE_KEY, mwheelRel, 0, 0, NULL, 0);
 		mwheelRel = 0;
 	}
-#endif
 
 	if (console->Active()) {
-		if (!SDL_IsTextInputActive()) {
-			SDL_StartTextInput();
+		if (!SDL_TextInputActive(window)) {
+			if (!SDL_StartTextInput(window)) {
+				common->Warning("Error initializing text input: %s\n", SDL_GetError());
+			}
 		}
 	}
 	else {
-		if (SDL_IsTextInputActive()) {
-			SDL_StopTextInput();
+		if (SDL_TextInputActive(window)) {
+			SDL_StopTextInput(window);
 		}
 	}
 	// loop until there is an event we care about (will return then) or no more events
@@ -942,18 +490,14 @@ void SDL_Poll()
 	{
 		switch (ev.type)
 		{
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-		case SDL_WINDOWEVENT:
-			switch (ev.window.event)
-			{
-			case SDL_WINDOWEVENT_FOCUS_GAINED:
+			case SDL_EVENT_WINDOW_FOCUS_GAINED:
 			{
 				// unset modifier, in case alt-tab was used to leave window and ALT is still set
 				// as that can cause fullscreen-toggling when pressing enter...
 				SDL_Keymod currentmod = SDL_GetModState();
-				int newmod = KMOD_NONE;
-				if (currentmod & KMOD_CAPS) // preserve capslock
-					newmod |= KMOD_CAPS;
+				int newmod = SDL_KMOD_NONE;
+				if (currentmod & SDL_KMOD_CAPS) // preserve capslock
+					newmod |= SDL_KMOD_CAPS;
 
 				SDL_SetModState((SDL_Keymod)newmod);
 
@@ -966,7 +510,7 @@ void SDL_Poll()
 				break;
 			}
 
-			case SDL_WINDOWEVENT_FOCUS_LOST:
+			case SDL_EVENT_WINDOW_FOCUS_LOST:
 				SDL_MinimizeWindow(window);
 				// DG: pause the game when focus is lost, that also un-grabs the input
 				soundSystem->SetMute(true);
@@ -975,12 +519,13 @@ void SDL_Poll()
 				// DG end
 				break;
 
-			case SDL_WINDOWEVENT_LEAVE:
+			case SDL_EVENT_WINDOW_MOUSE_LEAVE:
 				// mouse has left the window
 				Sys_QueEvent(SE_MOUSE_LEAVE, 0, 0, 0, NULL, 0);
+				break;
 
 				// DG: handle resizing and moving of window
-			case SDL_WINDOWEVENT_RESIZED:
+			case SDL_EVENT_WINDOW_RESIZED:
 			{
 				int w = ev.window.data1;
 				int h = ev.window.data2;
@@ -993,7 +538,7 @@ void SDL_Poll()
 				break;
 			}
 
-			case SDL_WINDOWEVENT_MOVED:
+			case SDL_EVENT_WINDOW_MOVED:
 			{
 				int x = ev.window.data1;
 				int y = ev.window.data2;
@@ -1002,72 +547,16 @@ void SDL_Poll()
 				cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 				break;
 			}
-			case SDL_WINDOWEVENT_CLOSE:
+			case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 			{
 				com_emergencyexit.SetBool(true);
 				soundSystem->SetMute(true);
 				cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "quit\n");
 				break;
 			}
-			}
-
-			continue; // handle next event
-#else // SDL 1.2
-		case SDL_ACTIVEEVENT:
-		{
-			// DG: (un-)pause the game when focus is gained, that also (un-)grabs the input
-			bool pause = true;
-
-			if (ev.active.gain)
-			{
-
-				pause = false;
-
-				// unset modifier, in case alt-tab was used to leave window and ALT is still set
-				// as that can cause fullscreen-toggling when pressing enter...
-				SDLMod currentmod = SDL_GetModState();
-				int newmod = KMOD_NONE;
-				if (currentmod & KMOD_CAPS) // preserve capslock
-					newmod |= KMOD_CAPS;
-
-				SDL_SetModState((SDLMod)newmod);
-			}
-
-			cvarSystem->SetCVarBool("com_pause", pause);
-
-			if (ev.active.state == SDL_APPMOUSEFOCUS && !ev.active.gain)
-			{
-				// the mouse has left the window.
-				Sys_QueEvent(SE_MOUSE_LEAVE, 0, 0, 0, NULL, 0);
-			}
-
-		}
-
-		continue; // handle next event
-
-		case SDL_VIDEOEXPOSE:
-			continue; // handle next event
-
-		// DG: handle resizing and moving of window
-		case SDL_VIDEORESIZE:
-		{
-			int w = ev.resize.w;
-			int h = ev.resize.h;
-			r_windowWidth.SetInteger(w);
-			r_windowHeight.SetInteger(h);
-
-			glConfig.nativeScreenWidth = w;
-			glConfig.nativeScreenHeight = h;
-
-			// for some reason this needs a vid_restart in SDL1 but not SDL2 so GLimp_SetScreenParms() is called
-			cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
-			continue; // handle next event
-		}
-		// DG end
-#endif // SDL1.2
-
-		case SDL_KEYDOWN:
-			if (ev.key.keysym.sym == SDLK_RETURN && (ev.key.keysym.mod & KMOD_ALT) > 0)
+			continue;
+		case SDL_EVENT_KEY_DOWN:
+			if (ev.key.key == SDLK_RETURN && (ev.key.mod & SDL_KMOD_ALT) > 0)
 			{
 				// DG: go to fullscreen on current display, instead of always first display
 				int fullscreen = 0;
@@ -1080,7 +569,7 @@ void SDL_Poll()
 					windowRect->y = r_windowY.GetInteger();
 					windowRect->w = r_windowWidth.GetInteger();
 					windowRect->h = r_windowHeight.GetInteger();
-					fullscreen = SDL_GetRectDisplayIndex(windowRect) + 1;
+					fullscreen = SDL_GetDisplayForRect(windowRect);
 					delete(windowRect);
 					if (fullscreen <= 0) {
 						common->Printf("SDL2: Failed to detect Display index from Window with error message: %s\n", SDL_GetError());
@@ -1094,7 +583,7 @@ void SDL_Poll()
 			}
 
 			// DG: ctrl-g to un-grab mouse - yeah, left ctrl shoots, then just use right ctrl :)
-			if (ev.key.keysym.sym == SDLK_g && (ev.key.keysym.mod & KMOD_CTRL) > 0)
+			if (ev.key.key == SDLK_G && (ev.key.mod & SDL_KMOD_CTRL) > 0)
 			{
 				bool grab = cvarSystem->GetCVarBool("in_nograb");
 				grab = !grab;
@@ -1103,88 +592,45 @@ void SDL_Poll()
 			}
 			// DG end
 
-#if ! SDL_VERSION_ATLEAST(2, 0, 0)
-				// DG: only do this for key-down, don't care about isChar from SDL_KeyToDoom3Key.
-				//     if unicode is not 0  it should work..
-			if (ev.key.state == SDL_PRESSED)
-			{
-				uniChar = ev.key.keysym.sym; // for SE_CHAR
-			}
-			// DG end
-#endif // SDL 1.2
-
 			// fall through
-		case SDL_KEYUP:
+		case SDL_EVENT_KEY_UP:
 		{
 			bool isChar;
 
 			// DG: special case for SDL_SCANCODE_GRAVE - the console key under Esc
-			if (ev.key.keysym.scancode == SDL_SCANCODE_GRAVE)
+			if (ev.key.scancode == SDL_SCANCODE_GRAVE)
 			{
 				key = K_GRAVE;
 				uniChar = K_BACKSPACE; // bad hack to get empty console inputline..
 			} // DG end, the original code is in the else case
 			else
 			{
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-				key = SDLScanCodeToKeyNum(ev.key.keysym.scancode);
+				key = SDLScanCodeToKeyNum(ev.key.scancode);
 
 				if (key == 0)
 				{
 					// SDL2 has no ev.key.keysym.unicode anymore.. but the scancode should work well enough for console
-					if (ev.type == SDL_KEYDOWN) // FIXME: don't complain if this was an ASCII char and the console is open?
-						common->Warning("unmapped SDL key %d scancode %d", ev.key.keysym.sym, ev.key.keysym.scancode);
+					if (ev.type == SDL_EVENT_KEY_DOWN) // FIXME: don't complain if this was an ASCII char and the console is open?
+						common->Warning("unmapped SDL key %d scancode %d", ev.key.key, ev.key.scancode);
 
 					continue; // just handle next event
 				}
-#else // SDL1.2
-				key = SDL_KeyToDoom3Key(ev.key.keysym.sym, isChar);
-
-				if (key == 0)
-				{
-					unsigned char uc = ev.key.keysym.unicode & 0xff;
-					// check if its an unmapped console key
-					if (uc == Sys_GetConsoleKey(false) || uc == Sys_GetConsoleKey(true))
-					{
-						key = K_GRAVE;
-						uniChar = K_BACKSPACE; // bad hack to get empty console inputline..
-					}
-					else
-					{
-						if (uniChar)
-						{
-							res.evType = SE_CHAR;
-							res.evValue = uniChar;
-
-							uniChar = 0;
-
-							return res;
-						}
-
-						if (ev.type == SDL_KEYDOWN) // FIXME: don't complain if this was an ASCII char and the console is open?
-							common->Warning("unmapped SDL key %d (0x%x) scancode %d", ev.key.keysym.sym, ev.key.keysym.unicode, ev.key.keysym.scancode);
-
-						continue; // just handle next event
-					}
-				}
-#endif // SDL 1.2
 			}
 
 			//res.evType = SE_KEY;
 			//res.evValue = key;
 			//res.evValue2 = ev.key.state == SDL_PRESSED ? 1 : 0;
 
-			kbd_polls.Append(kbd_poll_t(key, ev.key.state == SDL_PRESSED));
+			kbd_polls.Append(kbd_poll_t(key, ev.key.down == true));
 
-			if (key == K_BACKSPACE && ev.key.state == SDL_PRESSED)
+			if (key == K_BACKSPACE && ev.key.down == true)
 				uniChar = key;
 
-			Sys_QueEvent(SE_KEY, key, (ev.key.state == SDL_PRESSED ? 1 : 0), 0, NULL, 0);
+			Sys_QueEvent(SE_KEY, key, (ev.key.down == true ? 1 : 0), 0, NULL, 0);
 			//return res;
 		}
 		break;
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-		case SDL_TEXTINPUT:
+		case SDL_EVENT_TEXT_INPUT:
 			if (ev.text.text[0] != '\0')
 			{
 				// fill uniStr array for SE_CHAR events
@@ -1208,9 +654,8 @@ void SDL_Poll()
 			}
 
 			continue; // just handle next event
-#endif // SDL2
 
-		case SDL_MOUSEMOTION:
+		case SDL_EVENT_MOUSE_MOTION:
 			// DG: return event with absolute mouse-coordinates when in menu
 			// to fix cursor problems in windowed mode
 			if (game && game->Shell_IsActive())
@@ -1234,13 +679,13 @@ void SDL_Poll()
 
 			//return res;
 			break;
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-		case SDL_FINGERDOWN:
-		case SDL_FINGERUP:
-		case SDL_FINGERMOTION:
+
+		case SDL_EVENT_FINGER_DOWN:
+		case SDL_EVENT_FINGER_UP:
+		case SDL_EVENT_FINGER_MOTION:
 			continue; // Avoid 'unknown event' spam when testing with touchpad by skipping this
 
-		case SDL_MOUSEWHEEL:
+		case SDL_EVENT_MOUSE_WHEEL:
 			//res.evType = SE_KEY;
 
 			//res.evValue = (ev.wheel.y > 0) ? K_MWHEELUP : K_MWHEELDOWN;
@@ -1254,39 +699,25 @@ void SDL_Poll()
 
 			//return res;
 			break;
-#endif // SDL2
 
-		case SDL_MOUSEBUTTONDOWN:
-		case SDL_MOUSEBUTTONUP:
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+		case SDL_EVENT_MOUSE_BUTTON_UP:
 			res.evType = SE_KEY;
 
 			switch (ev.button.button)
 			{
 			case SDL_BUTTON_LEFT:
 				res.evValue = K_MOUSE1;
-				mouse_polls.Append(mouse_poll_t(M_ACTION1, ev.button.state == SDL_PRESSED ? 1 : 0));
+				mouse_polls.Append(mouse_poll_t(M_ACTION1, ev.button.down == true ? 1 : 0));
 				break;
 			case SDL_BUTTON_MIDDLE:
 				res.evValue = K_MOUSE3;
-				mouse_polls.Append(mouse_poll_t(M_ACTION3, ev.button.state == SDL_PRESSED ? 1 : 0));
+				mouse_polls.Append(mouse_poll_t(M_ACTION3, ev.button.down == true ? 1 : 0));
 				break;
 			case SDL_BUTTON_RIGHT:
 				res.evValue = K_MOUSE2;
-				mouse_polls.Append(mouse_poll_t(M_ACTION2, ev.button.state == SDL_PRESSED ? 1 : 0));
+				mouse_polls.Append(mouse_poll_t(M_ACTION2, ev.button.down == true ? 1 : 0));
 				break;
-
-#if !SDL_VERSION_ATLEAST(2, 0, 0)
-			case SDL_BUTTON_WHEELUP:
-				res.evValue = K_MWHEELUP;
-				if (ev.button.state == SDL_PRESSED)
-					mouse_polls.Append(mouse_poll_t(M_DELTAZ, 1));
-				break;
-			case SDL_BUTTON_WHEELDOWN:
-				res.evValue = K_MWHEELDOWN;
-				if (ev.button.state == SDL_PRESSED)
-					mouse_polls.Append(mouse_poll_t(M_DELTAZ, -1));
-				break;
-#endif // SDL1.2
 
 			default:
 				// handle X1 button and above
@@ -1294,7 +725,8 @@ void SDL_Poll()
 				{
 					int buttonIndex = ev.button.button - SDL_BUTTON_LEFT;
 					res.evValue = K_MOUSE1 + buttonIndex;
-					mouse_polls.Append(mouse_poll_t(M_ACTION1 + buttonIndex, ev.button.state == SDL_PRESSED ? 1 : 0));
+					mouse_polls.Append(mouse_poll_t(M_ACTION1 + buttonIndex, ev.button.down == true ? 1 : 0));
+					break;
 				}
 				else // unsupported mouse button
 				{
@@ -1302,420 +734,60 @@ void SDL_Poll()
 				}
 			}
 
-			res.evValue2 = ev.button.state == SDL_PRESSED ? 1 : 0;
+			res.evValue2 = ev.button.down == true ? 1 : 0;
 
 			Sys_QueEvent(res.evType, res.evValue, res.evValue2, 0, NULL, 0);
 			break;
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 			// GameController
-		case SDL_JOYAXISMOTION:
-		case SDL_JOYHATMOTION:
-		case SDL_JOYBUTTONDOWN:
-		case SDL_JOYBUTTONUP:
-		case SDL_JOYDEVICEADDED:
-		case SDL_JOYDEVICEREMOVED:
+		case SDL_EVENT_JOYSTICK_AXIS_MOTION:
+		case SDL_EVENT_JOYSTICK_HAT_MOTION:
+		case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+		case SDL_EVENT_JOYSTICK_BUTTON_UP:
+		case SDL_EVENT_JOYSTICK_ADDED:
+		case SDL_EVENT_JOYSTICK_REMOVED:
+		case SDL_EVENT_JOYSTICK_UPDATE_COMPLETE:
+		case SDL_EVENT_GAMEPAD_UPDATE_COMPLETE:
 			// Avoid 'unknown event' spam
 			continue;
-		case SDL_CONTROLLERAXISMOTION:
-			joyEvent = (sys_jEvents)(J_AXIS_LEFT_X + ev.caxis.axis);
+		case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+			joyEvent = (sys_jEvents)(J_AXIS_LEFT_X + ev.gaxis.axis);
 			switch(joyEvent) {
 				case J_AXIS_LEFT_X:
-					current[ev.caxis.which].LXThumb = ev.caxis.value;
+					current[reverseControllerMap[ev.gaxis.which]].LXThumb = ev.gaxis.value;
 					break;
 				case J_AXIS_LEFT_Y:
-					current[ev.caxis.which].LYThumb = ev.caxis.value;
+					current[reverseControllerMap[ev.gaxis.which]].LYThumb = ev.gaxis.value;
 					break;
 				case J_AXIS_RIGHT_X:
-					current[ev.caxis.which].RXThumb = ev.caxis.value;
+					current[reverseControllerMap[ev.gaxis.which]].RXThumb = ev.gaxis.value;
 					break;
 				case J_AXIS_RIGHT_Y:
-					current[ev.caxis.which].RYThumb = ev.caxis.value;
+					current[reverseControllerMap[ev.gaxis.which]].RYThumb = ev.gaxis.value;
 					break;
 				case J_AXIS_LEFT_TRIG:
-					current[ev.caxis.which].LTrigger = ev.caxis.value;
+					current[reverseControllerMap[ev.gaxis.which]].LTrigger = ev.gaxis.value;
 					break;
 				case J_AXIS_RIGHT_TRIG:
-					current[ev.caxis.which].RTrigger = ev.caxis.value;
+					current[reverseControllerMap[ev.gaxis.which]].RTrigger = ev.gaxis.value;
 					break;
 
 			}
 			break;
-		case SDL_CONTROLLERBUTTONDOWN:
-		case SDL_CONTROLLERBUTTONUP:
-			current[ev.cbutton.which].buttons[ev.cbutton.button] = (ev.cbutton.state == SDL_PRESSED ? 1 : 0);
+		case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+		case SDL_EVENT_GAMEPAD_BUTTON_UP:
+			current[reverseControllerMap[ev.gbutton.which]].buttons[ev.gbutton.button] = (ev.gbutton.down == true ? 1 : 0);
 			break;
 		//GK: Steam Deck Hack: For some reason Steam Deck spams these two events
-		case SDL_CONTROLLERDEVICEADDED:
-		case SDL_CONTROLLERDEVICEREMAPPED:
+		case SDL_EVENT_GAMEPAD_ADDED:
+		case SDL_EVENT_GAMEPAD_REMAPPED:
+		case SDL_EVENT_KEYMAP_CHANGED:
 			continue;
-#else
-			// WM0110
-			// NOTE: it seems that the key bindings for the GUI and for the game are
-			// totally independant. I think the event returned by this function seems to work
-			// on the GUI and the event returned by Sys_ReturnJoystickInputEvent() works on
-			// the game.
-			// Also, remember that joystick keys must be binded to actions in order to work!
-			case SDL_JOYBUTTONDOWN:
-			case SDL_JOYBUTTONUP:
-				// sys_public.h: evValue is an axis number and evValue2 is the current state (-127 to 127)
-				// WM0110: joystick ranges must be between (-32769, 32768)!
-				res.evType = SE_KEY;
-				switch( ev.jbutton.button )
-				{
-					case 0:
-						res.evValue = K_JOY1;
-						joystick_polls.Append( joystick_poll_t( J_ACTION1, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
 				
-					case 1:
-						res.evValue = K_JOY2;
-						joystick_polls.Append( joystick_poll_t( J_ACTION2, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-				
-					case 2:
-						res.evValue = K_JOY3;
-						joystick_polls.Append( joystick_poll_t( J_ACTION3, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-				
-					case 3:
-						res.evValue = K_JOY4;
-						joystick_polls.Append( joystick_poll_t( J_ACTION4, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-				
-					case 4:
-						res.evValue = K_JOY5;
-						joystick_polls.Append( joystick_poll_t( J_ACTION5, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-				
-					case 5:
-						res.evValue = K_JOY6;
-						joystick_polls.Append( joystick_poll_t( J_ACTION6, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-				
-					case 6:
-						res.evValue = K_JOY7;
-						joystick_polls.Append( joystick_poll_t( J_ACTION7, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-				
-					case 7:
-						res.evValue = K_JOY8;
-						joystick_polls.Append( joystick_poll_t( J_ACTION8, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-				
-					case 8:
-						res.evValue = K_JOY9;
-						joystick_polls.Append( joystick_poll_t( J_ACTION9, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-				
-					case 9:
-						res.evValue = K_JOY10;
-						joystick_polls.Append( joystick_poll_t( J_ACTION10, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-				
-					case 10:
-						res.evValue = K_JOY11;
-						joystick_polls.Append( joystick_poll_t( J_ACTION11, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						break;
-				
-					// D-PAD left (XBox 360 wireless)
-					case 11:
-						// If joystick has a hat, then use the hat as D-PAD. If not, D-PAD is mapped
-						// to buttons.
-						if( SDL_joystick_has_hat )
-						{
-							res.evValue = K_JOY12;
-							joystick_polls.Append( joystick_poll_t( J_ACTION12, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						}
-						else
-						{
-							res.evValue = K_JOY_DPAD_LEFT;
-							joystick_polls.Append( joystick_poll_t( J_DPAD_LEFT, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						}
-						break;
-				
-					// D-PAD right
-					case 12:
-						if( SDL_joystick_has_hat )
-						{
-							res.evValue = K_JOY13;
-							joystick_polls.Append( joystick_poll_t( J_ACTION13, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						}
-						else
-						{
-							res.evValue = K_JOY_DPAD_RIGHT;
-							joystick_polls.Append( joystick_poll_t( J_DPAD_RIGHT, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						}
-						break;
-				
-					// D-PAD up
-					case 13:
-						if( SDL_joystick_has_hat )
-						{
-							res.evValue = K_JOY14;
-							joystick_polls.Append( joystick_poll_t( J_ACTION14, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						}
-						else
-						{
-							res.evValue = K_JOY_DPAD_UP;
-							joystick_polls.Append( joystick_poll_t( J_DPAD_UP, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						}
-						break;
-				
-					// D-PAD down
-					case 14:
-						if( SDL_joystick_has_hat )
-						{
-							res.evValue = K_JOY15;
-							joystick_polls.Append( joystick_poll_t( J_ACTION15, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						}
-						else
-						{
-							res.evValue = K_JOY_DPAD_DOWN;
-							joystick_polls.Append( joystick_poll_t( J_DPAD_DOWN, ev.jbutton.state == SDL_PRESSED ? 1 : 0 ) );
-						}
-						break;
-				
-					default:
-						common->Warning( "Sys_GetEvent(): Unknown joystick button number %i\n", ev.jbutton.button );
-						continue; // just try next event
-				}
-				res.evValue2 = ev.jbutton.state == SDL_PRESSED ? 1 : 0;
-				
-				return res;
-				
-			case SDL_JOYHATMOTION:
-				// If this is not the first hat, ignore this event.
-				if( ev.jhat.which != 0 )
-					continue; // just try next event
-				
-				res.evType = SE_KEY;
-				if( ev.jhat.value & SDL_HAT_UP )
-				{
-					res.evValue = K_JOY_DPAD_UP;
-					joystick_polls.Append( joystick_poll_t( J_DPAD_UP, 1 ) );
-					res.evValue2 = 1;
-					previous_hat_state = J_DPAD_UP;
-				}
-				else if( ev.jhat.value & SDL_HAT_DOWN )
-				{
-					res.evValue = K_JOY_DPAD_DOWN;
-					joystick_polls.Append( joystick_poll_t( J_DPAD_DOWN, 1 ) );
-					res.evValue2 = 1;
-					previous_hat_state = J_DPAD_DOWN;
-				}
-				else if( ev.jhat.value & SDL_HAT_RIGHT )
-				{
-					res.evValue = K_JOY_DPAD_RIGHT;
-					joystick_polls.Append( joystick_poll_t( J_DPAD_RIGHT, 1 ) );
-					res.evValue2 = 1;
-					previous_hat_state = J_DPAD_RIGHT;
-				}
-				else if( ev.jhat.value & SDL_HAT_LEFT )
-				{
-					res.evValue = K_JOY_DPAD_LEFT;
-					joystick_polls.Append( joystick_poll_t( J_DPAD_LEFT, 1 ) );
-					res.evValue2 = 1;
-					previous_hat_state = J_DPAD_LEFT;
-				}
-				// SDL_HAT_CENTERED is defined as 0
-				else if( ev.jhat.value == SDL_HAT_CENTERED )
-				{
-					// We need to know the previous state to know which event to send.
-					if( previous_hat_state == J_DPAD_UP )
-					{
-						res.evValue = K_JOY_DPAD_UP;
-						joystick_polls.Append( joystick_poll_t( J_DPAD_UP, 0 ) );
-						res.evValue2 = 0;
-					}
-					else if( previous_hat_state == J_DPAD_DOWN )
-					{
-						res.evValue = K_JOY_DPAD_DOWN;
-						joystick_polls.Append( joystick_poll_t( J_DPAD_DOWN, 0 ) );
-						res.evValue2 = 0;
-					}
-					else if( previous_hat_state == J_DPAD_RIGHT )
-					{
-						res.evValue = K_JOY_DPAD_RIGHT;
-						joystick_polls.Append( joystick_poll_t( J_DPAD_RIGHT, 0 ) );
-						res.evValue2 = 0;
-					}
-					else if( previous_hat_state == J_DPAD_LEFT )
-					{
-						res.evValue = K_JOY_DPAD_LEFT;
-						joystick_polls.Append( joystick_poll_t( J_DPAD_LEFT, 0 ) );
-						res.evValue2 = 0;
-					}
-					else if( previous_hat_state == SDL_HAT_CENTERED )
-					{
-						common->Warning( "Sys_GetEvent(): SDL_JOYHATMOTION: previous state SDL_HAT_CENTERED repeated!\n" );
-						continue; // just try next event
-					}
-					else
-					{
-						common->Warning( "Sys_GetEvent(): SDL_JOYHATMOTION: unknown previous hat state %i\n", previous_hat_state );
-						continue; // just try next event
-					}
-				
-					previous_hat_state = SDL_HAT_CENTERED;
-				}
-				else
-				{
-					common->Warning( "Sys_GetEvent(): Unknown SDL_JOYHATMOTION value %i\n", ev.jhat.value );
-					continue; // just try next event
-				}
-				
-				return res;
-				
-			case SDL_JOYAXISMOTION:
-				res.evType = SE_JOYSTICK;
-				// SDL joystick range is: -32768 to 32767, which is what is expected
-				// in void idUsercmdGenLocal::Joystick( int deviceNum ).
-				switch( ev.jaxis.axis )
-				{
-						//const int range = 16384;
-						int triggerValue;
-						bool triggered;
-						int percent;
-						int axis;
-				
-					// LEFT trigger
-					case 2:
-						// Convert TRIGGER value from space (-32768, 32767) to (0, 32767)
-						triggerValue = ( ev.jaxis.value + 32768 ) / 2;
-						// common->Printf("Sys_GetEvent: LEFT trigger value = %i / converted value = %i\n", ev.jaxis.value, trigger_value);
-						res.evValue = J_AXIS_LEFT_TRIG;
-				
-						joystick_polls.Append( joystick_poll_t( J_AXIS_LEFT_TRIG, triggerValue ) );
-						break;
-				
-					// Right trigger
-					case 5:
-						triggerValue = ( ev.jaxis.value + 32768 ) / 2;
-						// common->Printf("Sys_GetEvent: RIGHT trigger value = %i / converted value = %i\n", ev.jaxis.value, trigger_value);
-						res.evValue = J_AXIS_RIGHT_TRIG;
-				
-						joystick_polls.Append( joystick_poll_t( J_AXIS_RIGHT_TRIG, triggerValue ) );
-						break;
-				
-					// LEFT X
-					case 0:
-						res.evValue = J_AXIS_LEFT_X;
-						joystick_polls.Append( joystick_poll_t( J_AXIS_LEFT_X, ev.jaxis.value ) );
-				
-						triggered = ( ev.jaxis.value > 16384 );
-						if( buttonStates[K_JOY_STICK1_RIGHT] != triggered )
-						{
-							buttonStates[K_JOY_STICK1_RIGHT] = triggered;
-				
-							res.evType = SE_KEY;
-							res.evValue = K_JOY_STICK1_RIGHT;
-							res.evValue2 = triggered;
-						}
-				
-						triggered = ( ev.jaxis.value < -16384 );
-						if( buttonStates[K_JOY_STICK1_LEFT] != triggered )
-						{
-							buttonStates[K_JOY_STICK1_LEFT] = triggered;
-				
-							res.evType = SE_KEY;
-							res.evValue = K_JOY_STICK1_LEFT;
-							res.evValue2 = triggered;
-						}
-						break;
-				
-					// LEFT Y
-					case 1:
-						res.evValue = J_AXIS_LEFT_Y;
-						joystick_polls.Append( joystick_poll_t( J_AXIS_LEFT_Y, ev.jaxis.value ) );
-				
-						triggered = ( ev.jaxis.value > 16384 );
-						if( buttonStates[K_JOY_STICK1_DOWN] != triggered )
-						{
-							buttonStates[K_JOY_STICK1_DOWN] = triggered;
-				
-							res.evType = SE_KEY;
-							res.evValue = K_JOY_STICK1_DOWN;
-							res.evValue2 = triggered;
-						}
-				
-						triggered = ( ev.jaxis.value < -16384 );
-						if( buttonStates[K_JOY_STICK1_UP] != triggered )
-						{
-							buttonStates[K_JOY_STICK1_UP] = triggered;
-				
-							res.evType = SE_KEY;
-							res.evValue = K_JOY_STICK1_UP;
-							res.evValue2 = triggered;
-						}
-				
-						break;
-				
-					// RIGHT X
-					case 3:
-						res.evValue = J_AXIS_RIGHT_X;
-						joystick_polls.Append( joystick_poll_t( J_AXIS_RIGHT_X, ev.jaxis.value ) );
-				
-						triggered = ( ev.jaxis.value > 16384 );
-						if( buttonStates[K_JOY_STICK2_RIGHT] != triggered )
-						{
-							buttonStates[K_JOY_STICK2_RIGHT] = triggered;
-				
-							res.evType = SE_KEY;
-							res.evValue = K_JOY_STICK2_RIGHT;
-							res.evValue2 = triggered;
-						}
-				
-						triggered = ( ev.jaxis.value < -16384 );
-						if( buttonStates[K_JOY_STICK2_LEFT] != triggered )
-						{
-							buttonStates[K_JOY_STICK2_LEFT] = triggered;
-				
-							res.evType = SE_KEY;
-							res.evValue = K_JOY_STICK2_LEFT;
-							res.evValue2 = triggered;
-						}
-						break;
-				
-					// RIGHT Y
-					case 4:
-						res.evValue = J_AXIS_RIGHT_Y;
-						joystick_polls.Append( joystick_poll_t( J_AXIS_RIGHT_Y, ev.jaxis.value ) );
-				
-						triggered = ( ev.jaxis.value > 16384 );
-						if( buttonStates[K_JOY_STICK2_DOWN] != triggered )
-						{
-							buttonStates[K_JOY_STICK2_DOWN] = triggered;
-				
-							res.evType = SE_KEY;
-							res.evValue = K_JOY_STICK2_DOWN;
-							res.evValue2 = triggered;
-						}
-				
-						triggered = ( ev.jaxis.value < -16384 );
-						if( buttonStates[K_JOY_STICK2_UP] != triggered )
-						{
-							buttonStates[K_JOY_STICK2_UP] = triggered;
-				
-							res.evType = SE_KEY;
-							res.evValue = K_JOY_STICK2_UP;
-							res.evValue2 = triggered;
-						}
-						break;
-				
-					default:
-						common->Warning( "Sys_GetEvent(): Unknown joystick axis number %i\n", ev.jaxis.axis );
-						continue; // just try next event
-				}
-				
-				return res;
-				// WM0110
-#endif
-				
-			case SDL_QUIT:
+			case SDL_EVENT_QUIT:
 				PushConsoleEvent( "quit" );
 				Sys_QueEvent(no_more_events.evType, no_more_events.evValue, no_more_events.evValue2, no_more_events.evPtrLength, no_more_events.evPtr, 0); // don't handle next event, just quit.
 				break;
-			case SDL_USEREVENT:
+			case SDL_EVENT_USER:
 				switch( ev.user.code )
 				{
 					case SE_CONSOLE:
@@ -1764,7 +836,7 @@ void Sys_ClearEvents()
 	SDL_Event ev;
 	eventHead = eventTail = 0;
 	
-	SDL_FlushEvents(SDL_FIRSTEVENT, SDL_LASTEVENT);
+	SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
 	// while( SDL_PollEvent( &ev ) )
 	// 	;
 		
@@ -1855,23 +927,19 @@ const char* Sys_GetKeyName( keyNum_t keynum )
 {
 	// unfortunately, in SDL1.2 there is no way to get the keycode for a scancode, so this doesn't work there.
 	// so this is SDL2-only.
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-	
 	SDL_Scancode scancode = KeyNumToSDLScanCode( ( int )keynum );
-	SDL_Keycode keycode = SDL_GetKeyFromScancode( scancode );
+	SDL_Keycode keycode = SDL_GetKeyFromScancode( scancode, SDL_KMOD_NONE,  true);
 	
 	const char* ret = SDL_GetKeyName( keycode );
 	if( ret != NULL && ret[0] != '\0' )
 	{
 		return ret;
 	}
-#endif
 	return NULL;
 }
 
 char* Sys_GetClipboardData()
 {
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 	char* txt = SDL_GetClipboardText();
 	
 	if( txt == NULL )
@@ -1887,16 +955,11 @@ char* Sys_GetClipboardData()
 	char* ret = Mem_CopyString( txt );
 	SDL_free( txt );
 	return ret;
-#else
-	return NULL; // SDL1.2 doesn't support clipboard
-#endif
 }
 
 void Sys_SetClipboardData( const char* string )
 {
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 	SDL_SetClipboardText( string );
-#endif
 }
 
 
@@ -1909,7 +972,6 @@ void Sys_SetRumble( int device, int low, int hi )
 	//GK: This is the code for the rumble effect by using SDL_Haptic.
 	//It doesn't affect the game's performance (Remember NO SDL_Delay)
 
-	#if SDL_VERSION_ATLEAST(2, 0, 0)
 	if(haptic[device]){ //GK: Make sure the rumble code will run ONLY if the SDL_Haptic device is already initialized
 	
 	SDL_HapticEffect effect;
@@ -1922,23 +984,20 @@ void Sys_SetRumble( int device, int low, int hi )
 	effect.leftright.large_magnitude = hi;
 	effect.leftright.length = 1000;
 	//GK:Ps3 controller fix
-	if(SDL_HapticNumEffectsPlaying(haptic[device]) >= SDL_HapticNumEffects(haptic[device])){
-		SDL_HapticDestroyEffect(haptic[device],0);
+	if(SDL_GetMaxHapticEffectsPlaying(haptic[device]) >= SDL_GetMaxHapticEffects(haptic[device])){
+		SDL_DestroyHapticEffect(haptic[device],0);
 	}
 	//GK:End of fix
-	effect_id = SDL_HapticNewEffect( haptic[device], &effect );
+	effect_id = SDL_CreateHapticEffect( haptic[device], &effect );
 	if(effect_id < 0){
 		common->Printf("%s\n",SDL_GetError());
 		return;
 	}
 
-	 if(SDL_HapticRunEffect( haptic[device], effect_id, 1 )<0){
+	 if(SDL_RunHapticEffect( haptic[device], effect_id, 1 )<0){
 		 common->Printf("%s\n",SDL_GetError());
 	 }
 	}
-	   
-
-	#endif
 }
 
 //GK: Direct copy from Windows Implementation
@@ -2093,16 +1152,12 @@ void Sys_EndJoystickInputEvents()
 
 bool Sys_hasConnectedController() {
 	bool hasConnected = false;
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 	for (int i = 0; i < MAX_JOYSTICKS; i++) {
 		if (gcontroller[i]) {
 			hasConnected = true;
 			break;
 		}
 	}
-#else
-	hasConnected = joy != NULL;
-#endif
 	return hasConnected;
 }
 
@@ -2112,35 +1167,25 @@ static int	threadTimeDeltas[256];
 static int	threadPacket[256];
 static int	threadCount;
 static int	defaultAvailable;
-#if SDL_VERSION_ATLEAST(2, 0, 0)
+
+
 void JoystickSamplingThread(void* data){
-#else
-int JoystickSamplingThread(void* data){
-#endif
 
 	static int prevTime = 0;
 	static uint64 nextCheck[MAX_JOYSTICKS] = { 0 };
 	const uint64 waitTime = 5000;// 000; // poll every 5 seconds to see if a controller was connected
 	while(1){
 		if (joyThreadKill) {
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 			for(int i = 0; i < MAX_JOYSTICKS; i++) {
 				if(haptic[i]){
-					SDL_HapticClose(haptic[i]);
+					SDL_CloseHaptic(haptic[i]);
 					haptic[i] = NULL;
 				}
 				if(gcontroller[i]){
-					SDL_GameControllerClose(gcontroller[i]);
+					SDL_CloseGamepad(gcontroller[i]);
 				}
 				gcontroller[i]=NULL;
 			}
-#else
-			if (joy)
-			{
-				SDL_JoystickClose(joy);
-			}
-			joy = NULL;
-#endif
 			break;
 		}
 		int	now = Sys_Microseconds();
@@ -2157,39 +1202,55 @@ int JoystickSamplingThread(void* data){
 		threadTimeDeltas[threadCount & 255] = delta;
 		threadCount++;
 		if(now>=nextCheck[0]){ //GK: Similar to the windows thread
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-	SDL_GameController* controller = NULL;
+	SDL_Gamepad* controller = NULL;
 	int inactive = 0;
 	int available = -1;
 	bool alreadyConnected = false;
-	for( int i = 0; i < MAX_JOYSTICKS; ++i )
+	int count = 0;
+	SDL_JoystickID* controllers = SDL_GetGamepads(&count);
+	if (count == 0) {
+		reverseControllerMap.clear();
+		count = 4; //GK: Clean time
+	}
+	for( uint32 i = 0; i < count; i++ )
 	{
-		if( SDL_IsGameController( i ) )
+		if( SDL_IsGamepad( controllers[i] ) )
 		{
 			if (!gcontroller[i]) {
-				controller = SDL_GameControllerOpen( i );
+				controller = SDL_OpenGamepad( controllers[i] );
 				if( controller )
 				{
 					if (available < 0) {
 						available = i;
 					}
+					reverseControllerMap.insert(std::make_pair(controllers[i], i));
 					nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
-					idLib::Printf("	Controller Connected: %s\n", SDL_GameControllerName(controller));
+					idLib::Printf("	Controller Connected: %s\n", SDL_GetGamepadName(controller));
 					gcontroller[i]=controller;
+					int hcount = 0;
+					SDL_HapticID* haptics = SDL_GetHaptics(&hcount);
 					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
-					haptic[i] = SDL_HapticOpenFromJoystick(SDL_GameControllerGetJoystick(gcontroller[i])); //GK: Make sure it mounted to the right controller
-					if(haptic[i]){
-						if(SDL_HapticRumbleInit( haptic[i] ) < 0){
-							//common->Printf("Failed to rumble\n");
+					for (int j = 0; j < hcount; j++) {
+						haptic[i] = SDL_OpenHaptic(haptics[j]); //GK: Make sure it mounted to the right controller
+						if(haptic[i]){
+							if(SDL_InitHapticRumble( haptic[i] ) < 0){
+								//common->Printf("Failed to rumble\n");
+							}
+						if ((SDL_GetHapticFeatures(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
+							SDL_CloseHaptic(haptic[i]);
+							haptic[i] = NULL;
+							// common->Printf("Failed to find rumble effect\n");
 						}
-					if ((SDL_HapticQuery(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
-						SDL_HapticClose(haptic[i]);
-						haptic[i] = NULL;
-						// common->Printf("Failed to find rumble effect\n");
+						idLib::Printf("Found haptic Device %d\n",SDL_GetMaxHapticEffects(haptic[i]));
+						break;
+						} else {
+							common->Printf("Error Initializing Haptic Device: %s\n", SDL_GetError());
+						}
 					}
-					idLib::Printf("Found haptic Device %d\n",SDL_HapticNumEffects(haptic[i]));
 					}
-					}
+					SDL_free(haptics);
+				} else {
+					common->Warning("Error Initializing controller: %s\n", SDL_GetError());
 				}
 			} else {
 				alreadyConnected = true;
@@ -2200,17 +1261,18 @@ int JoystickSamplingThread(void* data){
 		}else{
 			inactive++;
 					if(haptic[i]){
-						SDL_HapticClose(haptic[i]);
+						SDL_CloseHaptic(haptic[i]);
 						haptic[i] = NULL;
 					}
 					if(gcontroller[i]){
-						SDL_GameControllerClose(gcontroller[i]);
+						SDL_CloseGamepad(gcontroller[i]);
 					}
 					gcontroller[i]=NULL;
 					nextCheck[0] = now + waitTime;
 					continue;
 		}
 	}
+	SDL_free(controllers);
 	if (!alreadyConnected) {
 		//GK: Enable controller layout if there is one controller connected
 		registeredControllers = 4-inactive;
@@ -2225,89 +1287,9 @@ int JoystickSamplingThread(void* data){
 		}
 	}
 	/*idLib::joystick = inactive >= 4 ? false : true;*/
-#else
-	
-	int numJoysticks = SDL_NumJoysticks();
-	//common->Printf( "Sys_InitInput: Joystic - Found %i joysticks\n", numJoysticks );
-//#if !SDL_VERSION_ATLEAST(2, 0, 0)
-	int inactive = 0;
-	int available = -1;
-	for (i = 0; i < numJoysticks; i++) {
-		//common->Printf( " Joystick %i name '%s'\n", i, SDL_JoystickName( i ) );
-//#endif
-
-	// Open first available joystick and use it
-		if (SDL_NumJoysticks() > 0)
-		{
-			joy = SDL_JoystickOpen(i);
-
-			if (joy)
-			{
-				if (available < 0) {
-					available = i;
-				}
-				nextCheck[0] = 0;
-				int num_hats;
-
-				num_hats = SDL_JoystickNumHats(joy);
-				//common->Printf( "Opened Joystick number 0\n" );
-			//common->Printf( "Number of Axes: %d\n", SDL_JoystickNumAxes( joy ) );
-			//common->Printf( "Number of Buttons: %d\n", SDL_JoystickNumButtons( joy ) );
-			//common->Printf( "Number of Hats: %d\n", num_hats );
-			//common->Printf( "Number of Balls: %d\n", SDL_JoystickNumBalls( joy ) );
-
-				SDL_joystick_has_hat = 0;
-				if (num_hats)
-				{
-					SDL_joystick_has_hat = 1;
-				}
-				break;
-			}
-			else
-			{
-				inactive++;
-				nextCheck[0] = now + waitTime;
-				if (joy)
-				{
-					//common->Printf( "Sys_ShutdownInput: closing SDL joystick.\n" );
-					SDL_JoystickClose(joy);
-				}
-				joy = NULL;
-				//common->Printf( "Couldn't open Joystick 0\n" );
-			}
-		}
-		else
-		{
-			inactive = 4;
-			nextCheck[0] = now + waitTime;
-			if (joy)
-			{
-				//common->Printf( "Sys_ShutdownInput: closing SDL joystick.\n" );
-				SDL_JoystickClose(joy);
-			}
-			joy = NULL;
-		}
-	}
-	//GK: Enable controller layout if there is one controller connected
-	if (inactive < MAX_JOYSTICKS) {
-		if (session->GetSignInManager().GetMasterLocalUser() != NULL) {
-			((idLocalUserWin*)session->GetSignInManager().GetMasterLocalUser())->SetInputDevice(available);
-		}
-		else {
-			defaultAvailable = available;
-		}
-	}
-	//idLib::joystick = inactive >= 4 ? false : true;
-	// WM0110
-#endif
 		}else{
 			continue;
 		}
-#if SDL_VERSION_ATLEAST(2, 0, 0)
 		SDL_Delay(4);
-#endif
 	}
-	#if !SDL_VERSION_ATLEAST(2, 0, 0)
-	return 0; //GK: Don't forget SDL 1.2 require to return int value despite the fact that never does
-	#endif
 }

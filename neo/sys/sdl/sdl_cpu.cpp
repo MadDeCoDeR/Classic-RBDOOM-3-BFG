@@ -36,8 +36,7 @@ If you have questions concerning this license or the applicable additional terms
 #undef strncmp
 #undef vsnprintf
 // DG end
-
-#include <SDL_cpuinfo.h>
+#include <SDL3/SDL_cpuinfo.h>
 
 
 #pragma warning(disable:4740)	// warning C4740: flow in or out of inline asm code suppresses global optimization
@@ -195,11 +194,13 @@ cpuid_t Sys_GetCPUId()
 		flags |= CPUID_MMX;
 	}
 	
+#if 0
 	// check for 3DNow!
 	if( SDL_Has3DNow() )
 	{
 		flags |= CPUID_3DNOW;
 	}
+#endif
 	
 	// check for Streaming SIMD Extensions
 	if( SDL_HasSSE() )

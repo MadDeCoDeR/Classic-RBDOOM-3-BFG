@@ -170,10 +170,12 @@ void idMenuScreen_Shell_Resolution::ShowScreen( const mainMenuTransition_t trans
 	for( int displayNum = 0 ; ; displayNum++ )
 	{
 		idList<vidMode_t>& modeList = displays.Alloc();
-		if( !R_GetModeListForDisplay( displayNum, modeList ) )
+		if( !R_GetModeListForDisplay( displayNum, modeList ))
 		{
 			displays.RemoveIndex( displays.Num() - 1 );
-			break;
+			if (displayNum > 0) {
+				break;
+			}
 		}
 	}
 	for( int displayNum = 0 ; displayNum < displays.Num(); displayNum++ )

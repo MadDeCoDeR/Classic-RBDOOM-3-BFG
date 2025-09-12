@@ -28,8 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 */
 #ifndef __SDL_LOCAL_H__
 #define __SDL_LOCAL_H__
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
+#include <SDL3/SDL.h>
 // glimp.cpp
 const int GRAB_ENABLE		= ( 1 << 0 );
 const int GRAB_REENABLE		= ( 1 << 1 );
@@ -45,12 +44,6 @@ const int GRAB_SETSTATE		= ( 1 << 3 );
 #include <GL/glx.h>
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
-#endif
-
-//GK: Keep that here in order to be used by more than one places
-#if SDL_VERSION_ATLEAST(2, 0, 0)
-static SDL_Window* window = NULL;
-static SDL_SysWMinfo windowInfo; //GK: Keep System Info for the Window SDL has created
 #endif
 
 void GLimp_GrabInput( int flags );
