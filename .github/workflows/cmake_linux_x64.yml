@@ -21,6 +21,12 @@ jobs:
           with:
             submodules: recursive
     
+        - name: Patch OpenAL-Soft
+          id: step1f
+          run: |
+            cd vcpkg
+            git apply ${{github.workspace}}/.github/tools/openal-fix.patch
+            
         - uses: actions/checkout@v3
           id: step2
           with:
