@@ -327,7 +327,7 @@ patch_t* PNG2lmp(unsigned char* buffer) {
 	::g->cpatch[flmp - 1] = (patch_t*)malloc(imagesize);
 	memcpy(::g->cpatch[flmp-1],patch,imagesize);
 #ifdef _DEBUG
-	char* ddir = "base//lmps//";
+	const char* ddir = "base//lmps//";
 #ifdef _WIN32
 	CreateDirectory(ddir, NULL);
 #else
@@ -494,7 +494,7 @@ patch_t* JPEG2lmp(unsigned char* buffer, int size) {
 		::g->cpatch[flmp - 1] =(patch_t*) malloc(imagesize);
 		memcpy(::g->cpatch[flmp - 1], patch, imagesize);
 #ifdef _DEBUG
-		char* ddir = "base//lmps//";
+		const char* ddir = "base//lmps//";
 #ifdef _WIN32
 		CreateDirectory(ddir, NULL);
 #else

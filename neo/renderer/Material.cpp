@@ -434,7 +434,7 @@ void idMaterial::ParseSort( idLexer& src )
 	}
 	else
 	{
-		sort = atof( token );
+		sort = static_cast<materialSort_t>( atof(token) );
 	}
 }
 

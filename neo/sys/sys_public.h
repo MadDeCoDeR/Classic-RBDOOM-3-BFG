@@ -37,6 +37,10 @@ If you have questions concerning this license or the applicable additional terms
 #pragma clang diagnostic ignored "-Wmicrosoft-enum-forward-reference"
 #endif
 
+#ifdef _MSC_VER
+#pragma warning( disable: 4471 )
+#endif
+
 /*
 ===============================================================================
 

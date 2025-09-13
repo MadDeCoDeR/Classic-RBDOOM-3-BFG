@@ -993,7 +993,7 @@ int idHashTable<Type>::GetSpread() const
 	error = 0;
 	for( i = 0; i < tablesize; i++ )
 	{
-		numItems = 0;
+		int numItems = 0;
 		for( node = heads[ i ]; node != NULL; node = node->next )
 		{
 			numItems++;

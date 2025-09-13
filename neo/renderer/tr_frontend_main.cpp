@@ -265,7 +265,7 @@ static void R_SortDrawSurfs( drawSurf_t** drawSurfs, const int numDrawSurfs )
 	assert( numDrawSurfs <= 0xFFFF );
 	for( int i = 0; i < numDrawSurfs; i++ )
 	{
-		float sort = SS_POST_PROCESS - drawSurfs[i]->sort;
+		float sort = static_cast<float>(SS_POST_PROCESS) - drawSurfs[i]->sort;
 		assert( sort >= 0.0f );
 		
 		uint64 dist = 0;

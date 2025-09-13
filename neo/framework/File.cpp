@@ -1344,7 +1344,9 @@ int idFile_Permanent::Read( void* buffer, int len )
 		DWORD bytesRead;
 		if( !ReadFile( o, buf, block, &bytesRead, NULL ) )
 		{
-			idLib::Warning( "idFile_Permanent::Read failed with %d from %s", GetLastError(), name.c_str() );
+			char msgbuf[256];
+			Sys_ParseError(GetLastError(), msgbuf, 256);
+			idLib::Warning( "idFile_Permanent::Read failed from %s with error message:\n%s", name.c_str(), msgbuf );
 		}
 		read = bytesRead;
 #else
@@ -2082,32 +2084,32 @@ CONSOLE_COMMAND( testEndianNessWrite, "Tests the read/write compatibility betwee
 	file->Write( testData.i, sizeof( testData.i ) / sizeof( testData.i[0] ) );
 }
 
-CONSOLE_COMMAND( testEndianNessRead, "Tests the read/write compatibility between platforms", 0 )
-{
-	idFileLocal file( fileSystem->OpenFileRead( testEndianNessFilename ) );
-	if( file == NULL )
-	{
-		idLib::Printf( "Couldn't find the %s testfile.\n", testEndianNessFilename );
-		return;
-	}
-	
-	testEndianNess_t srcData;
-	testEndianNess_t testData;
-	
-	memset( &testData, 0, sizeof( testData ) );
-	
-	file->ReadBig( testData.a );
-	file->ReadBig( testData.b );
-	file->ReadFloat( testData.c );
-	file->ReadFloat( testData.d );
-	file->ReadString( testData.e );
-	file->ReadVec3( testData.f );
-	file->ReadBig( testData.g );
-	file->ReadBig( testData.h );
-	file->Read( testData.i, sizeof( testData.i ) / sizeof( testData.i[0] ) );
-	
-	assert( srcData == testData );
-}
+//CONSOLE_COMMAND( testEndianNessRead, "Tests the read/write compatibility between platforms", 0 )
+//{
+//	idFileLocal file( fileSystem->OpenFileRead( testEndianNessFilename ) );
+//	if( file == NULL )
+//	{
+//		idLib::Printf( "Couldn't find the %s testfile.\n", testEndianNessFilename );
+//		return;
+//	}
+//	
+//	testEndianNess_t srcData;
+//	testEndianNess_t testData;
+//	
+//	memset( &testData, 0, sizeof( testData ) );
+//	
+//	file->ReadBig( testData.a );
+//	file->ReadBig( testData.b );
+//	file->ReadFloat( testData.c );
+//	file->ReadFloat( testData.d );
+//	file->ReadString( testData.e );
+//	file->ReadVec3( testData.f );
+//	file->ReadBig( testData.g );
+//	file->ReadBig( testData.h );
+//	file->Read( testData.i, sizeof( testData.i ) / sizeof( testData.i[0] ) );
+//	
+//	assert( srcData == testData );
+//}
 
 CONSOLE_COMMAND( testEndianNessReset, "Tests the read/write compatibility between platforms", 0 )
 {

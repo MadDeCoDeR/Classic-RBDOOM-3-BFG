@@ -475,7 +475,7 @@ public:
 		return spawnArgs;
 	}
 	
-	bool					RequirementMet( idEntity* activator, const idStr& requires, int removeItem );
+	bool					RequirementMet( idEntity* activator, const idStr& requirement, int removeItem );
 	
 	void					AlertAI( idEntity* ent );
 	idActor* 				GetAlertEntity();

@@ -728,7 +728,7 @@ public:
 	}
 	
 	// get sort order
-	const float			GetSort() const
+	const materialSort_t			GetSort() const
 	{
 		return sort;
 	}
@@ -741,7 +741,7 @@ public:
 	// this is only used by the gui system to force sorting order
 	// on images referenced from tga's instead of materials.
 	// this is done this way as there are 2000 tgas the guis use
-	void				SetSort( float s ) const
+	void				SetSort( materialSort_t s ) const
 	{
 		sort = s;
 	};
@@ -960,7 +960,7 @@ private:
 	decalInfo_t			decalInfo;
 	
 	
-	mutable	float		sort;				// lower numbered shaders draw before higher numbered
+	mutable materialSort_t		sort;				// lower numbered shaders draw before higher numbered
 	int					stereoEye;
 	deform_t			deform;
 	int					deformRegisters[4];		// numeric parameter for deforms

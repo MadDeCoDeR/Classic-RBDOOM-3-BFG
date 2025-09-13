@@ -1049,7 +1049,7 @@ ID_INLINE void idBitMsg::WriteQuantizedUFloat( float value )
 	{
 		// Scaling up (scale should be >= 1) (Preserve whole numbers when possible)
 		enum { scale = storeMax / _max_ };
-		WriteBits( idMath::ClampInt( 0, storeMax, idMath::Ftoi( value * scale ) ), _numBits_ );
+		WriteBits( idMath::ClampInt( 0, storeMax, idMath::Ftoi( value * static_cast<float>(scale) ) ), _numBits_ );
 	}
 }
 
