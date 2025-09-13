@@ -23,7 +23,7 @@ jobs:
           id: step1f
           run: |
             cd vcpkg
-            git apply ../tools/openal-fix.patch
+            git apply ../.github/tools/openal-fix.patch
 
         - uses: actions/checkout@v3
           with:
