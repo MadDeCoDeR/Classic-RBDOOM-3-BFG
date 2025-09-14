@@ -35,6 +35,7 @@ CinematicAudio_OpenAL::CinematicAudio_OpenAL():
 	offset(0),
 	trigger(false)
 {
+	CheckError();
 	alGenSources(1, &alMusicSourceVoicecin);
 
 	alSource3i(alMusicSourceVoicecin, AL_POSITION, 0, 0, 0);
@@ -115,9 +116,7 @@ void CinematicAudio_OpenAL::PlayAudio(uint8_t* data, int size)
 					freeBuffers.pop();
 					alBufferData(bufid, av_sample_cin, tempdata, tempSize, av_rate_cin);
 					alSourceQueueBuffers(alMusicSourceVoicecin, 1, &bufid);
-					ALenum error = alGetError();
-					if (error != AL_NO_ERROR) {
-						common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
+					if (!CheckError()) {
 						return;
 					}
 					av_freep(&tempdata);
@@ -134,9 +133,7 @@ void CinematicAudio_OpenAL::PlayAudio(uint8_t* data, int size)
 		offset++;
 		if (offset == MIN_BUFFERS) {
 			alSourceQueueBuffers(alMusicSourceVoicecin, offset, alMusicBuffercin);
-			ALenum error = alGetError();
-			if (error != AL_NO_ERROR) {
-				common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
+			if (!CheckError()) {
 				return;
 			}
 			for (int k = 0; k < MIN_BUFFERS; k++) {
@@ -155,9 +152,7 @@ void CinematicAudio_OpenAL::PlayAudio(uint8_t* data, int size)
 				return;
 			}
 			alSourcePlay(alMusicSourceVoicecin);
-			ALenum error = alGetError();
-			if (error != AL_NO_ERROR) {
-				common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
+			if (!CheckError()) {
 				return;
 			}
 		}
@@ -220,4 +215,14 @@ void CinematicAudio_OpenAL::ShutdownAudio()
 	while (!freeBuffers.empty()) {
 		freeBuffers.pop();
 	}
+}
+
+bool CinematicAudio_OpenAL::CheckError() {
+	bool result = true;
+	ALenum error = alGetError();
+	if (error != AL_NO_ERROR) {
+		common->Warning("OpenAL Cinematic: %s\n", alGetString(error));
+		result = false;
+	}
+	return result;
 }

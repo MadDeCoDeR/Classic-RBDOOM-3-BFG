@@ -52,7 +52,7 @@ private:
 	std::queue<uint8_t*> tBuffer;
 	std::queue<int> sizes;
 	std::queue<ALuint> freeBuffers;
-	
+	bool CheckError();
 };
 
 #endif
