@@ -1391,7 +1391,7 @@ void G_DoCompleted (void)
 
 	::g->wminfo.didsecret = ::g->players[::g->consoleplayer].didsecret; 
 	::g->wminfo.epsd = ::g->gameepisode -1; 
-	::g->wminfo.last = ::g->gamemap -1;
+	::g->wminfo.last = ::g->gamemission == pack_custom && (::g->gamemode == retail || ::g->episodicExpansion) ? ((::g->maps[::g->map - 1].nextmap - 1) - (::g->clusters[::g->gameepisode - 1].startmap - 1)) - 1 : ::g->gamemap - 1;
 
 	if (::g->secretexit && idAchievementManager::isClassicDoomOnly()) {
 		idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_SECRET_LEVEL);
@@ -2194,7 +2194,9 @@ G_InitNew
 	//GK: When setting the gamemap set and the map for the custom expansion
 	if (::g->gamemission == pack_custom) {
 		setMapNum();
-		::g->gamemap = ::g->map;
+		if (::g->gamemode == commercial && ::g->episodicExpansion) {
+			::g->gamemap = ::g->map;
+		}
 	}
 
 	::g->viewactive = true;
