@@ -516,6 +516,7 @@ EV_BuildStairs
 	// new floor thinker
 	rtn = 1;
 	floor = (floormove_t*)DoomLib::Z_Malloc(sizeof(*floor), PU_FLOOR, 0);
+	floor->type = deadEnd;
 	P_AddThinker (&floor->thinker);
 	sec->floordata = floor;
 	floor->thinker.function = (actionf_p1) T_MoveFloor;

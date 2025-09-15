@@ -632,6 +632,7 @@ qboolean P_CanUnlockGenDoor
 //
 typedef enum
 {
+    deadEnd = -1, //GK: Used for the build stairs fix
     // lower floor to highest surrounding floor
     lowerFloor,
     
