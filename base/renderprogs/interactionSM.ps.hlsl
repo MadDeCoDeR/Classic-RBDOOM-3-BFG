@@ -183,7 +183,7 @@ void main( PS_IN fragment, out PS_OUT result )
 	shadowTexcoord.z = dot4( modelPosition, shadowMatrixZ );
 	shadowTexcoord.w = dot4( modelPosition, shadowMatrixW );
 	
-	float bias = 0.001 * tan( acos( ldotN ) );
+	float bias = 0.05 * tan( acos( ldotN ) );
 	bias = clamp( bias, 0.0, 0.01 ); //GK: Putting that limit seems to resolve shadow acne but still many shadows are missing
 	//float bias = 0.001;
 	
@@ -283,7 +283,7 @@ void main( PS_IN fragment, out PS_OUT result )
 	const half roughness = specMapSRGB.r;
 	const half glossiness = 1.0 - roughness;
 
-	// the vast majority of real-world materials (anything not metal or gems) have F(0°)
+	// the vast majority of real-world materials (anything not metal or gems) have F(0ï¿½)
 	// values in a very narrow range (~0.02 - 0.08)
 	
 	// approximate non-metals with linear RGB 0.04 which is 0.08 * 0.5 (default in UE4)
