@@ -407,8 +407,9 @@ void NetUpdate ( idUserCmdMgr * userCmdMgr )
 		//I_Printf ("mk:%i ",::g->maketic);
 
 		// Grab the latest tech5 command
-
-		G_BuildTiccmd (&::g->localcmds[::g->maketic%BACKUPTICS], userCmdMgr, newtics );
+		if (!::g->eventSkip) {
+			G_BuildTiccmd(&::g->localcmds[::g->maketic % BACKUPTICS], userCmdMgr, newtics);
+		}
 		::g->maketic++;
 	}
 	

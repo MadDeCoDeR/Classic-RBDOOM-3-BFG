@@ -154,7 +154,8 @@ void D_ProcessEvents (void)
 			}
 			continue;
 		}
-		if (M_Responder (ev))
+		::g->eventSkip = M_Responder(ev);
+		if (::g->eventSkip)
 			continue;               // menu ate the event
 		G_Responder (ev);
 	}

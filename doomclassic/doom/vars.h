@@ -1184,3 +1184,5 @@ lighttable_t* greyscalemap; //GK: GreyscaleMap
 std::vector <std::unique_ptr<skyflatmap_t>> skyFlatMaps;
 
 int compatibility; //GK: Values: 0 = Vanilla, 1 = MBF21
+
+bool eventSkip; //GK: The menu ATE the EVENT
