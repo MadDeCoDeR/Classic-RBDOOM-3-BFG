@@ -1208,6 +1208,9 @@ void JoystickSamplingThread(void* data){
 	bool alreadyConnected = false;
 	int count = 0;
 	SDL_JoystickID* controllers = SDL_GetGamepads(&count);
+	int hcount = 0;
+	SDL_HapticID* haptics = SDL_GetHaptics(&hcount);
+	int selectedHaptic = -1;
 	if (count == 0) {
 		reverseControllerMap.clear();
 		count = 4; //GK: Clean time
@@ -1217,6 +1220,21 @@ void JoystickSamplingThread(void* data){
 		if( SDL_IsGamepad( controllers[i] ) )
 		{
 			if (!gcontroller[i]) {
+				const char* controllerName = SDL_GetGamepadNameForID(controllers[i]);
+				for (int j = 0; j < hcount; j++) {
+					const char* hapticName = SDL_GetHapticNameForID(haptics[j]);
+					common->Printf("Controller Name: %s\nHaptic Name: %s\n", controllerName, hapticName);
+					if (!idStr::Cmp(controllerName, hapticName)) {
+						selectedHaptic = j;
+					}
+				}
+				if (hcount > 0 && selectedHaptic == -1) {
+					if (count >= hcount) {
+						continue;
+					} else {
+						selectedHaptic = 0;
+					}
+				}
 				controller = SDL_OpenGamepad( controllers[i] );
 				if( controller )
 				{
@@ -1227,20 +1245,10 @@ void JoystickSamplingThread(void* data){
 					nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
 					idLib::Printf("Controller Connected: %s\n", SDL_GetGamepadName(controller));
 					gcontroller[i]=controller;
-					int hcount = 0;
-					SDL_HapticID* haptics = SDL_GetHaptics(&hcount);
+					
 					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
-						int selected = -1;
-						const char* controllerName = SDL_GetGamepadName(gcontroller[i]);
-						common->Printf("Found Haptic Devices:\n");
-						for (int j = 0; j < hcount; j++) {
-							const char* hapticName = SDL_GetHapticNameForID(haptics[j]);
-							common->Printf("\t%s\n", hapticName);
-							if (!idStr::Cmp(controllerName, hapticName)) {
-								selected = j;
-							}
-						}
-						haptic[i] = SDL_OpenHaptic(haptics[selected]); //GK: Make sure it mounted to the right controller
+						
+						haptic[i] = SDL_OpenHaptic(haptics[selectedHaptic]); //GK: Make sure it mounted to the right controller
 						if(haptic[i]){
 							if(SDL_InitHapticRumble( haptic[i] ) < 0){
 								common->Printf("Failed to initialize rumble support with Error: %s\n", SDL_GetError());
@@ -1256,7 +1264,6 @@ void JoystickSamplingThread(void* data){
 						}
 					
 					}
-					SDL_free(haptics);
 				} else {
 					common->Warning("Error Initializing controller: %s\n", SDL_GetError());
 				}
@@ -1280,6 +1287,7 @@ void JoystickSamplingThread(void* data){
 					continue;
 		}
 	}
+	SDL_free(haptics);
 	SDL_free(controllers);
 	if (!alreadyConnected) {
 		//GK: Enable controller layout if there is one controller connected
