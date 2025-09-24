@@ -123,7 +123,8 @@ menu_t  temp_QuitDef = {
 	::g->QuitMenu,	// menuitem_t ->
 	M_DrawQuit,	// drawing routine ->
 	48,63,              // x,y
-	g_accept			// lastOn
+	g_accept,			// lastOn
+	M_CheckAvailableGames
 };
 memcpy( &::g->QuitDef, &temp_QuitDef, sizeof(temp_QuitDef) );
 //GK: Re-enable the Read This! option
@@ -156,7 +157,8 @@ menu_t  temp_MainDef = {
 		::g->MainMenu,
 		M_DrawMainMenu,
 		97,64,
-		0
+		0,
+		M_True
 };
 
 
@@ -177,7 +179,8 @@ menu_t  temp_EpiDef = {
 		::g->EpisodeMenu,	// menuitem_t ->
 		M_DrawEpisode,	// drawing routine ->
 		48,63,              // x,y
-		ep1			// lastOn
+		ep1,			// lastOn
+		M_CheckEpisodes
 };
 memcpy( &::g->EpiDef, &temp_EpiDef, sizeof(temp_EpiDef) );
 //GK: Add Evilution and Plutonia as expansion options for DOOM II
@@ -196,7 +199,8 @@ menu_t  temp_ExpDef = {
 	::g->ExpansionMenu,	// menuitem_t ->
 	M_DrawExpansion,	// drawing routine ->
 	48,63,              // x,y
-	ex1			// lastOn
+	ex1,			// lastOn
+	M_CheckExpansions
 };
 memcpy( &::g->ExpDef, &temp_ExpDef, sizeof(temp_ExpDef) );
 //GK: Add Evilution and Plutonia as expansion options for DOOM II
@@ -215,7 +219,8 @@ menu_t  temp_LoadExpDef = {
 	::g->LoadExpMenu,	// menuitem_t ->
 	M_DrawExpansion,	// drawing routine ->
 	48,63,              // x,y
-	ex1			// lastOn
+	ex1,			// lastOn
+	M_CheckExpansions
 };
 memcpy( &::g->LoadExpDef, &temp_LoadExpDef, sizeof(temp_LoadExpDef) );
 
@@ -233,7 +238,8 @@ menu_t  temp_NewDef = {
 		::g->NewGameMenu,	// menuitem_t ->
 		M_DrawNewGame,	// drawing routine ->
 		48,63,              // x,y
-		hurtme		// lastOn
+		hurtme,		// lastOn
+		M_True
 };
 memcpy( &::g->NewDef, &temp_NewDef, sizeof(temp_NewDef) );
 menuitem_t temp_OptionsMenu[8] = {
@@ -255,7 +261,8 @@ menu_t  temp_OptionsDef = {
 		::g->OptionsMenu,
 		M_DrawOptions,
 		60,37,
-		0
+		0,
+		M_True
 };
 memcpy( &::g->OptionsDef, &temp_OptionsDef, sizeof(temp_OptionsDef) );
 menuitem_t temp_VideoMenu[7] = {
@@ -276,7 +283,8 @@ menu_t  temp_VideoDef = {
 		::g->VideoMenu,
 		M_DrawVideo,
 		60,64,
-		0
+		0,
+		M_CheckVideoSettings
 };
 memcpy(&::g->VideoDef, &temp_VideoDef, sizeof(temp_VideoDef));
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
@@ -306,7 +314,8 @@ menu_t  temp_SoundDef = {
 		::g->SoundMenu,
 		M_DrawSound,
 		80,64,
-		0
+		0,
+		M_True
 };
 memcpy( &::g->SoundDef, &temp_SoundDef, sizeof(temp_SoundDef) );
 menuitem_t temp_LoadMenu[6] = {
@@ -324,7 +333,8 @@ menu_t  temp_LoadDef = {
 		::g->LoadMenu,
 		M_DrawLoad,
 		80,54,
-		0
+		0,
+		M_True
 };
 memcpy( &::g->LoadDef, &temp_LoadDef, sizeof(temp_LoadDef) );
 menuitem_t temp_SaveMenu[6] = {
@@ -342,7 +352,8 @@ menu_t  temp_SaveDef = {
 		::g->SaveMenu,
 		M_DrawSave,
 		80,54,
-		0
+		0,
+		M_True
 };
 memcpy( &::g->SaveDef, &temp_SaveDef, sizeof(temp_SaveDef) );
 //Gk: Begin
@@ -357,7 +368,8 @@ menu_t  temp_MasterDef = {
 	::g->MasterMenu,
 	M_DrawMaster,
 	80,54,
-	0
+	0,
+	M_True
 };
 memcpy(&::g->MasterDef, &temp_MasterDef, sizeof(temp_MasterDef));
 menuitem_t temp_DoomitMenu[10] = {
@@ -390,7 +402,8 @@ menu_t  temp_DoomitDef = {
 	::g->DOOMIT,
 	M_DrawDoomIT,
 	100,30,
-	0
+	0,
+	M_True
 };
 memcpy(&::g->DOOMITDef, &temp_DoomitDef, sizeof(temp_DoomitDef));
 
@@ -415,7 +428,8 @@ menu_t  temp_DevDef = {
 	::g->DevMenu,
 	M_DrawDev,
 	40,30,
-	0
+	0,
+	M_True
 };
 memcpy(&::g->DevDef, &temp_DevDef, sizeof(temp_DevDef));
 //Gk:End
@@ -430,7 +444,8 @@ menu_t  temp_ReadDef1 = {
 		::g->ReadMenu1,
 		M_DrawReadThis1,
 		280,185,
-		0
+		0,
+		M_True
 };
 memcpy( &::g->ReadDef1, &temp_ReadDef1, sizeof(temp_ReadDef1) );
 
@@ -444,7 +459,8 @@ menu_t  temp_ReadDef2 = {
 	::g->ReadMenu2,
 	M_DrawReadThis2,
 	280,185,
-	0
+	0,
+	M_True
 };
 memcpy(&::g->ReadDef2, &temp_ReadDef2, sizeof(temp_ReadDef2));
 
@@ -478,7 +494,8 @@ menu_t  temp_ResDef = {
 	::g->ResMenu,
 	M_DrawRes,
 	40,30,
-	0
+	0,
+	M_True
 };
 memcpy(&::g->ResDef, &temp_ResDef, sizeof(temp_ResDef));
 
@@ -521,7 +538,8 @@ menu_t  temp_GameDef = {
 		::g->GameMenu,
 		M_DrawGame,
 		60,64,
-		0
+		0,
+		M_CheckGameSettings
 };
 memcpy(&::g->GameDef, &temp_GameDef, sizeof(temp_GameDef));
 menuitem_t temp_CtlMenu[9] = {
@@ -542,7 +560,8 @@ menu_t  temp_CtlDef = {
 		::g->CtlMenu,
 		M_DrawCtl,
 		60,37,
-		0
+		0,
+		M_True
 };
 memcpy(&::g->CtlDef, &temp_CtlDef, sizeof(temp_CtlDef));
 
@@ -586,7 +605,8 @@ menu_t  temp_KeyDef = {
 	::g->KeyMenu,
 	M_DrawKey,
 	40,30,
-	0
+	0,
+	M_True
 };
 memcpy(&::g->KeyDef, &temp_KeyDef, sizeof(temp_KeyDef));
 //GK: End

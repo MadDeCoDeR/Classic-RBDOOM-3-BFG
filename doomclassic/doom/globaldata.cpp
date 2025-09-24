@@ -134,6 +134,13 @@ void M_StartMessage(const char *string,messageRoutine_t routine,qboolean input);
 void M_StopMessage(void);
 void M_ClearMenus (void);
 
+bool M_True(int index);
+bool M_CheckVideoSettings(int index);
+bool M_CheckGameSettings(int index);
+bool M_CheckAvailableGames(int index);
+bool M_CheckExpansions(int index);
+bool M_CheckEpisodes(int index);
+
 extern const anim_t temp_epsd0animinfo[10];
 extern const anim_t temp_epsd1animinfo[9];
 extern const anim_t temp_epsd2animinfo[6];

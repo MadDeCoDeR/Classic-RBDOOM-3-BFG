@@ -286,6 +286,14 @@ void M_ClearMenus (void);
 
 void M_DrawExtraReadThis(int choice);
 void M_DrawErt(void);
+
+//GK: Check Routines
+bool M_True(int index);
+bool M_CheckVideoSettings(int index);
+bool M_CheckGameSettings(int index);
+bool M_CheckAvailableGames(int index);
+bool M_CheckExpansions(int index);
+bool M_CheckEpisodes(int index);
 //GK: Support for additional HELP lumps
 menuitem_t etrareadthis[1] = {
 	{ 1,"", M_FinishReadThis,'0' }
@@ -3070,15 +3078,13 @@ qboolean M_Responder (event_t* ev)
 					::g->itemOn += (11 - ::g->itemOn);
 				}
 			}
-			else if ((::g->currentMenu == &::g->VideoDef && (!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR) && ::g->itemOn == vsync) ) {
-				::g->itemOn = vsync + 2;
-			}
-			else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == look) {
-				::g->itemOn = jump;
+			else if (!::g->currentMenu->checkRoutine(::g->itemOn + 1)) {
+				::g->itemOn++;
+				continue;
 			}
 			else ::g->itemOn++;
 			S_StartSound(NULL,sfx_pstop);
-		} while(::g->currentMenu->menuitems[::g->itemOn].status==-1);
+		} while((!::g->currentMenu->checkRoutine(::g->itemOn)) || ::g->currentMenu->menuitems[::g->itemOn].status==-1);
 		return true;
 
 	case KEY_UPARROW:
@@ -3095,16 +3101,16 @@ qboolean M_Responder (event_t* ev)
 				}
 				else ::g->itemOn = ::g->currentMenu->numitems - 1;
 			}
-			else if ((::g->currentMenu == &::g->VideoDef && (!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR) && ::g->itemOn == framerate))
-				::g->itemOn = framerate - 2;
-			else if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn == jump)
-				::g->itemOn = look;
+			else if (!::g->currentMenu->checkRoutine(::g->itemOn - 1)) {
+				::g->itemOn--;
+				continue;
+			}
 			else if (::g->currentMenu->menuitems == pageDef.menuitems && pageIndex == numPages && ::g->itemOn == 11) {
 					::g->itemOn -= (12 - activePageItems);
 			}
 			else ::g->itemOn--;
 			S_StartSound(NULL,sfx_pstop);
-		} while(::g->currentMenu->menuitems[::g->itemOn].status==-1);
+		} while((!::g->currentMenu->checkRoutine(::g->itemOn)) || ::g->currentMenu->menuitems[::g->itemOn].status==-1);
 		return true;
 
 	case KEY_LEFTARROW:
@@ -3261,16 +3267,6 @@ void M_Drawer (void)
 	// DRAW MENU
 	::g->md_x = ::g->currentMenu->x;
 	::g->md_y = ::g->currentMenu->y;
-	if (::g->currentMenu->menuitems == ::g->QuitDef.menuitems && DoomLib::hasGame == 1) {
-		::g->currentMenu->numitems = 2;
-	}
-	if (::g->currentMenu->menuitems == ::g->EpiDef.menuitems && (::g->gamemission != pack_custom && !DoomLib::hexp[4])) {
-		::g->currentMenu->numitems = 4;
-	}
-	if ((::g->currentMenu->menuitems == ::g->ExpDef.menuitems || ::g->currentMenu->menuitems == ::g->LoadExpDef.menuitems) && !DoomLib::hexp[5]) {
-		::g->ExpDef.numitems = 5;
-		::g->LoadExpDef.numitems = 5;
-	}
 
 	if (::g->currentMenu->menuitems == pageDef.menuitems && ::g->itemOn >= 10 ) {
 		if (!aspect) 
@@ -3287,15 +3283,15 @@ void M_Drawer (void)
 	}
 	max = ::g->currentMenu->numitems;
 	
-
+	int renderedItems = 0;
+	idList<int> inactiveIndexes;
 	for (i=0;i<max;i++)
 	{
-		if (::g->currentMenu == &::g->VideoDef && (!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR) && i == refresh) {
-			 continue;
-		}
-		if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && i == aim) {
+		if (!::g->currentMenu->checkRoutine(i)) {
+			inactiveIndexes.AddUnique(i);
 			continue;
 		}
+		renderedItems++;
 		if (::g->currentMenu->menuitems[i].name[0])
 			V_DrawPatchDirect (::g->md_x,::g->md_y,0,
 				/*(patch_t*)*/img2lmp(W_CacheLumpName(::g->currentMenu->menuitems[i].name ,PU_CACHE_SHARED), W_GetNumForName(::g->currentMenu->menuitems[i].name)), false);
@@ -3306,18 +3302,22 @@ void M_Drawer (void)
 			::g->md_y += LINEHEIGHT;
 		}
 	}
+	int inactiveItems = max - renderedItems;
 	//GK: Remove the skull while showing the Read This!
 	if (!::g->inhelpscreens) {
 		// DRAW SKULL
 		int lineoffs = ::g->itemOn*LINEHEIGHT;
 		if (::g->currentMenu == &::g->OptionsDef && ::g->itemOn > messages) {
 			lineoffs += (optoffs*LINEHEIGHT);
-		}
-		if ((::g->currentMenu == &::g->VideoDef && (!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR) && ::g->itemOn > refresh)) {
-			lineoffs = (::g->itemOn - 1) * LINEHEIGHT;
-		}
-		if (::g->currentMenu == &::g->GameDef && !cl_freelook.GetBool() && ::g->itemOn > aim) {
-			lineoffs = (::g->itemOn - 1) * LINEHEIGHT;
+		} else {
+			for (int j = 0; j < inactiveIndexes.Num(); j++) {
+				if (::g->itemOn > inactiveIndexes[j]) {
+					lineoffs = (::g->itemOn - (j + 1)) * LINEHEIGHT;
+				}
+			}
+			if (::g->itemOn > renderedItems) {
+				lineoffs = (renderedItems - 1) * LINEHEIGHT;
+			}
 		}
 		if (::g->currentMenu->menuitems == pageDef.menuitems && ::g->itemOn >= 10) {
 			lineoffs = LINEHEIGHT * (::g->itemOn - 10);
@@ -3633,4 +3633,26 @@ bool M_HandlePaging(int choice)
 		}
 	}
 	return false;
+}
+
+//GK: Check Routines
+bool M_True(int index) {
+	return true;
+}
+
+bool M_CheckVideoSettings(int index) {
+	return index == refresh ? !((!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR)) : true;
+}
+bool M_CheckGameSettings(int index) {
+	return index == aim ? cl_freelook.GetBool() : true;
+}
+bool M_CheckAvailableGames(int index) {
+	return index == 2 ? DoomLib::hasGame == 2 : true;
+}
+bool M_CheckExpansions(int index) {
+	idList<int> expMap = {-1, 3, 0, 1, 2, 5}; 
+	return expMap[index] < 0 ? true : DoomLib::hexp[expMap[index]];
+}
+bool M_CheckEpisodes(int index) {
+	return index > 3 ? !(::g->gamemission != pack_custom && !DoomLib::hexp[4]) : true;
 }

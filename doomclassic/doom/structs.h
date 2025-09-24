@@ -117,7 +117,7 @@ typedef struct
 	void	(*routine)(int choice);
 
 	// hotkey in menu
-	char	alphaKey;			
+	char	alphaKey;	
 } menuitem_t;
 typedef struct menu_s
 {
@@ -128,6 +128,7 @@ typedef struct menu_s
 	short		x;
 	short		y;		// x,y of menu
 	short		lastOn;		// last item user was on in menu
+	bool	(*checkRoutine)(int index); //GK: Check if menu item is active or not
 } menu_t;
 typedef enum
 {
