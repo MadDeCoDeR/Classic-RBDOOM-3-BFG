@@ -1210,7 +1210,6 @@ void JoystickSamplingThread(void* data){
 	SDL_JoystickID* controllers = SDL_GetGamepads(&count);
 	int hcount = 0;
 	SDL_HapticID* haptics = SDL_GetHaptics(&hcount);
-	int selectedHaptic = -1;
 	if (count == 0) {
 		reverseControllerMap.clear();
 		count = 4; //GK: Clean time
@@ -1220,21 +1219,6 @@ void JoystickSamplingThread(void* data){
 		if( SDL_IsGamepad( controllers[i] ) )
 		{
 			if (!gcontroller[i]) {
-				const char* controllerName = SDL_GetGamepadNameForID(controllers[i]);
-				for (int j = 0; j < hcount; j++) {
-					const char* hapticName = SDL_GetHapticNameForID(haptics[j]);
-					common->Printf("Controller Name: %s\nHaptic Name: %s\n", controllerName, hapticName);
-					if (!idStr::Cmp(controllerName, hapticName)) {
-						selectedHaptic = j;
-					}
-				}
-				if (hcount > 0 && selectedHaptic == -1) {
-					if (count >= hcount) {
-						continue;
-					} else {
-						selectedHaptic = 0;
-					}
-				}
 				controller = SDL_OpenGamepad( controllers[i] );
 				if( controller )
 				{
@@ -1247,22 +1231,25 @@ void JoystickSamplingThread(void* data){
 					gcontroller[i]=controller;
 					
 					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
-						
-						haptic[i] = SDL_OpenHaptic(haptics[selectedHaptic]); //GK: Make sure it mounted to the right controller
-						if(haptic[i]){
-							if(SDL_InitHapticRumble( haptic[i] ) < 0){
-								common->Printf("Failed to initialize rumble support with Error: %s\n", SDL_GetError());
+						int hcount = 0;
+						SDL_HapticID* haptics = SDL_GetHaptics(&hcount);
+						if (hcount > 0) {
+							haptic[i] = SDL_OpenHaptic(haptics[i]); //GK: Make sure it mounted to the right controller
+							if(haptic[i]){
+								if(SDL_InitHapticRumble( haptic[i] ) < 0){
+									common->Printf("Failed to initialize rumble support with Error: %s\n", SDL_GetError());
+								}
+							if ((SDL_GetHapticFeatures(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
+								SDL_CloseHaptic(haptic[i]);
+								haptic[i] = NULL;
+								// common->Printf("Failed to find rumble effect\n");
 							}
-						if ((SDL_GetHapticFeatures(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
-							SDL_CloseHaptic(haptic[i]);
-							haptic[i] = NULL;
-							// common->Printf("Failed to find rumble effect\n");
+							idLib::Printf("Found haptic Device %d\n",SDL_GetMaxHapticEffects(haptic[i]));
+							} else {
+								common->Printf("Error Opening Haptic Device: %s\n", SDL_GetError());
+							}
+						
 						}
-						idLib::Printf("Found haptic Device %d\n",SDL_GetMaxHapticEffects(haptic[i]));
-						} else {
-							common->Printf("Error Opening Haptic Device: %s\n", SDL_GetError());
-						}
-					
 					}
 				} else {
 					common->Warning("Error Initializing controller: %s\n", SDL_GetError());
