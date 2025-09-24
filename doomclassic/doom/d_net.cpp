@@ -400,7 +400,7 @@ void NetUpdate ( idUserCmdMgr * userCmdMgr )
 		//I_GetEvents( ::g->I_StartTicCallback () );
 		D_ProcessEvents ();
 		if (::g->maketic - gameticdiv >= BACKUPTICS/2-1) {
-			I_Printf( "Out of room for ticcmds: maketic = %d, gameticdiv = %d\n", ::g->maketic, gameticdiv );
+			//I_Printf( "Out of room for ticcmds: maketic = %d, gameticdiv = %d\n", ::g->maketic, gameticdiv ); //GK: Don't spam the logs when the game is out of focus
 			break;          // can't hold any more
 		}
 
