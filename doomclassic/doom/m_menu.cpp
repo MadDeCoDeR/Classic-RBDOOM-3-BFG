@@ -3302,7 +3302,6 @@ void M_Drawer (void)
 			::g->md_y += LINEHEIGHT;
 		}
 	}
-	int inactiveItems = max - renderedItems;
 	//GK: Remove the skull while showing the Read This!
 	if (!::g->inhelpscreens) {
 		// DRAW SKULL
