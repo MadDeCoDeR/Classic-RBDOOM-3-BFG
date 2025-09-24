@@ -1688,6 +1688,11 @@ qboolean G_CheckSave(char* name) {
 			}
 			ok = W_CheckMods(sc, filelist);
 		}
+		::g->save_p += 12;
+		int gameepisode = *::g->save_p++; 
+		if (::g->gamemode == retail && ::g->gamemission != pack_custom && gameepisode > 4 && DoomLib::hexp[4]) {
+			DoomLib::SetIdealExpansion(pack_romero);
+		} 
 		Z_Free(::g->savebuffer);
 		if (!ok) {
 			loadingGame = false;
