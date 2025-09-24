@@ -1242,13 +1242,15 @@ void JoystickSamplingThread(void* data){
 							if ((SDL_GetHapticFeatures(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
 								SDL_CloseHaptic(haptic[i]);
 								haptic[i] = NULL;
-								// common->Printf("Failed to find rumble effect\n");
+								common->Printf("Failed to find rumble effect\n");
 							}
 							idLib::Printf("Found haptic Device %d\n",SDL_GetMaxHapticEffects(haptic[i]));
 							} else {
 								common->Printf("Error Opening Haptic Device: %s\n", SDL_GetError());
 							}
 						
+						} else {
+							common->Printf("Failed to find Haptic devices with error: %s\n", SDL_GetError());
 						}
 					}
 				} else {
