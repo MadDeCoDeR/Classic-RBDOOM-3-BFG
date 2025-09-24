@@ -798,7 +798,7 @@ void SDL_Poll()
 				}
 				continue; // just handle next event
 			default:
-				common->Warning( "unknown event %u", ev.type );
+				//common->Warning( "unknown event %u", ev.type ); //GK: We don't have to log everything
 				continue; // just handle next event
 		}
 	}
@@ -1225,16 +1225,23 @@ void JoystickSamplingThread(void* data){
 					}
 					reverseControllerMap.insert(std::make_pair(controllers[i], i));
 					nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
-					idLib::Printf("	Controller Connected: %s\n", SDL_GetGamepadName(controller));
+					idLib::Printf("Controller Connected: %s\n", SDL_GetGamepadName(controller));
 					gcontroller[i]=controller;
 					int hcount = 0;
 					SDL_HapticID* haptics = SDL_GetHaptics(&hcount);
 					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
-					for (int j = 0; j < hcount; j++) {
-						haptic[i] = SDL_OpenHaptic(haptics[j]); //GK: Make sure it mounted to the right controller
+						int selected = -1;
+						const char* controllerName = SDL_GetGamepadName(gcontroller[i]);
+						for (int j = 0; j < hcount; j++) {
+							const char* hapticName = SDL_GetHapticNameForID(haptics[j]);
+							if (!idStr::Cmp(controllerName, hapticName)) {
+								selected = j;
+							}
+						}
+						haptic[i] = SDL_OpenHaptic(haptics[selected]); //GK: Make sure it mounted to the right controller
 						if(haptic[i]){
 							if(SDL_InitHapticRumble( haptic[i] ) < 0){
-								//common->Printf("Failed to rumble\n");
+								common->Printf("Failed to initialize rumble support with Error: %s\n", SDL_GetError());
 							}
 						if ((SDL_GetHapticFeatures(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
 							SDL_CloseHaptic(haptic[i]);
@@ -1242,11 +1249,10 @@ void JoystickSamplingThread(void* data){
 							// common->Printf("Failed to find rumble effect\n");
 						}
 						idLib::Printf("Found haptic Device %d\n",SDL_GetMaxHapticEffects(haptic[i]));
-						break;
 						} else {
-							common->Printf("Error Initializing Haptic Device: %s\n", SDL_GetError());
+							common->Printf("Error Opening Haptic Device: %s\n", SDL_GetError());
 						}
-					}
+					
 					}
 					SDL_free(haptics);
 				} else {
