@@ -1232,8 +1232,10 @@ void JoystickSamplingThread(void* data){
 					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
 						int selected = -1;
 						const char* controllerName = SDL_GetGamepadName(gcontroller[i]);
+						common->Printf("Found Haptic Devices:\n");
 						for (int j = 0; j < hcount; j++) {
 							const char* hapticName = SDL_GetHapticNameForID(haptics[j]);
+							common->Printf("\t%s\n", hapticName);
 							if (!idStr::Cmp(controllerName, hapticName)) {
 								selected = j;
 							}
