@@ -183,15 +183,15 @@ void main( PS_IN fragment, out PS_OUT result )
 	shadowTexcoord.z = dot4( modelPosition, shadowMatrixZ );
 	shadowTexcoord.w = dot4( modelPosition, shadowMatrixW );
 	
-	float bias = 0.05 * tan( acos( ldotN ) );
-	bias = clamp( bias, 0.0, 0.01 ); //GK: Putting that limit seems to resolve shadow acne but still many shadows are missing
+	float bias = 0.0003 * atan( acos( ldotN ) );
+	bias = clamp( bias, 0.0, 0.001 ); //GK: Putting that limit seems to resolve shadow acne but still many shadows are missing
 	//float bias = 0.001;
 	
 	shadowTexcoord.xyz /= shadowTexcoord.w;
 	
 	shadowTexcoord.z = shadowTexcoord.z * rpScreenCorrectionFactor.w;
 	//shadowTexcoord.z = shadowTexcoord.z * 0.999991;
-	shadowTexcoord.z = shadowTexcoord.z - bias;
+    shadowTexcoord.z = shadowTexcoord.z-bias;
 	shadowTexcoord.w = float(shadowIndex);
 
 #if 0
