@@ -1994,6 +1994,7 @@ void M_HUD(int choice)
 void M_FullScreen( int choice ) {
 	r_fullscreen.SetInteger( r_fullscreen.GetInteger() == 0 ? 1 : r_fullscreen.GetInteger() == 1 ? -1 : 0 );
 	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "vid_restart\n" );
+	R_Initwidth(); //GK: Restart the classic Doom renderer
 }
 
 void M_Aspect(int choice) {
@@ -2046,6 +2047,7 @@ void M_SetRes(int choice) {
 	//}
 	cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 	M_SetupNextMenu(::g->currentMenu->prevMenu);
+	R_Initwidth(); //GK: Restart the classic Doom renderer
 }
 
 void M_Sync(int choice) {

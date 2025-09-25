@@ -1029,21 +1029,26 @@ void R_Initwidth() {
 	if (cl_dscaling.GetBool()) {
 		int engineWidth = ::renderSystem->GetWidth();
 		int engineHeight = ::renderSystem->GetHeight();
-		int maxMultx = MAXWIDTH / ORIGINAL_WIDTH;
-		int maxMulty = MAXHEIGHT / ORIGINAL_HEIGHT;
-		//GK: Use the original "Aspect Correct" resolution as the target aspect ratio in order to keep HUD and Status bar elements consistent
-		float goldenAspect = (ORIGINAL_WIDTH * 4.0f) / (ORIGINAL_HEIGHT * 3.0f);
-		::g->GLOBAL_IMAGE_SCALER = std::clamp((engineHeight / ORIGINAL_HEIGHT), 1, maxMultx);
-		::g->ASPECT_IMAGE_SCALER = std::clamp((engineWidth / ORIGINAL_WIDTH), 1, maxMulty);
+		if (::g->engineWidth != engineWidth || ::g->engineHeight != engineHeight) {
+			::g->engineWidth = engineWidth;
+			::g->engineHeight = engineHeight;
+			int maxMultx = MAXWIDTH / ORIGINAL_WIDTH;
+			int maxMulty = MAXHEIGHT / ORIGINAL_HEIGHT;
+			//GK: Use the original "Aspect Correct" resolution as the target aspect ratio in order to keep HUD and Status bar elements consistent
+			float goldenAspect = (ORIGINAL_WIDTH * 4.0f) / (ORIGINAL_HEIGHT * 3.0f);
+			::g->GLOBAL_IMAGE_SCALER = std::clamp((engineHeight / ORIGINAL_HEIGHT), 1, maxMultx);
+			::g->ASPECT_IMAGE_SCALER = std::clamp((engineWidth / ORIGINAL_WIDTH), 1, maxMulty);
 
-		while(true) {
-			float gameAspect = (ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER * 1.0f) / (ORIGINAL_HEIGHT * ::g->GLOBAL_IMAGE_SCALER * 1.0f);
-			if (goldenAspect != gameAspect && ::g->GLOBAL_IMAGE_SCALER >= 3) {
-				::g->ASPECT_IMAGE_SCALER = std::clamp(gameAspect > goldenAspect ? ::g->ASPECT_IMAGE_SCALER - 1 : ::g->ASPECT_IMAGE_SCALER + 1, 3, maxMultx);
-				if (gameAspect <= goldenAspect)
-					::g->GLOBAL_IMAGE_SCALER--;
-			} else {
-				break;
+			while (true) {
+				float gameAspect = (ORIGINAL_WIDTH * ::g->ASPECT_IMAGE_SCALER * 1.0f) / (ORIGINAL_HEIGHT * ::g->GLOBAL_IMAGE_SCALER * 1.0f);
+				if (goldenAspect != gameAspect && ::g->GLOBAL_IMAGE_SCALER >= 3) {
+					::g->ASPECT_IMAGE_SCALER = std::clamp(gameAspect > goldenAspect ? ::g->ASPECT_IMAGE_SCALER - 1 : ::g->ASPECT_IMAGE_SCALER + 1, 3, maxMultx);
+					if (gameAspect <= goldenAspect)
+						::g->GLOBAL_IMAGE_SCALER--;
+				}
+				else {
+					break;
+				}
 			}
 		}
 	} else {

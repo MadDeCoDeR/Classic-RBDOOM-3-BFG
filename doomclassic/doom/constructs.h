@@ -952,3 +952,7 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->fixedRelTop = false;
 
 	::g->compatibility = 0;
+
+	::g->engineWidth = 0;
+
+	::g->engineHeight = 0;
