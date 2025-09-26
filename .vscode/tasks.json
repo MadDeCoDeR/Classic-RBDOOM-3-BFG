@@ -8,7 +8,7 @@
             "type": "shell",
             "command": "make DoomBFA",
             "options": {
-                "cwd":"${workspaceRoot}/build"
+                "cwd":"${workspaceRoot}/buildRelwithdebuginfo"
             },
             "group": {
                 "kind": "build",
@@ -31,7 +31,18 @@
                     "severity": 4,
                     "message": 5
                 }
-                }
+            }
+        },
+        {
+            "label": "Install Shaders",
+            "type": "shell",
+            "command": "cp -r -u -v ${workspaceRoot}/base/renderprogs/* ./base/renderprogs",
+            "options": {
+                "cwd": "/absolute/path/to/game/directory/",
+            },
+            "dependsOn": [
+                "MakeFile"
+            ]
         }
     ]
 }

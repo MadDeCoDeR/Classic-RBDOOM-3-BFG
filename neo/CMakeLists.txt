@@ -1802,6 +1802,11 @@ if(MSVC)
 	add_library(external ${LIB_INCLUDES} ${LIB_SOURCES})
 	target_compile_options(external PRIVATE /WX- /W3 /sdl-)
 	add_custom_target(shaders SOURCES ${SHADERS})
+	add_custom_command(
+        TARGET shaders POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_CURRENT_SOURCE_DIR}/../base/renderprogs
+                ${VS_DEBUGGER_WORKING_DIRECTORY}/base/renderprogs)
 	add_executable(DoomBFA WIN32 ${RBDOOM3_INCLUDES} ${RBDOOM3_SOURCES})
 	#GK: Allow to compile and run the game from VS
 	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT DoomBFA)
@@ -1818,7 +1823,7 @@ if(MSVC)
 					   COMMENT "Copy OpenAL dll")
 	endif(NOT OPENAL_FOUND)
 		
-	add_dependencies(DoomBFA idlib external)
+	add_dependencies(DoomBFA idlib external shaders)
 	target_link_libraries(DoomBFA
 		idlib
 		external
