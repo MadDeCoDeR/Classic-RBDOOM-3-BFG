@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <Working_directory>C:/Program Files (x86)/Steam/steamapps/common/DOOM 3 BFG Edition</Working_directory>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="Working_directory">
+      <Value>$(Working_directory)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

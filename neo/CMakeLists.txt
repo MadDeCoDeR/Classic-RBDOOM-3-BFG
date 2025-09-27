@@ -1797,20 +1797,22 @@ if(MSVC)
 	endif()
 	
 	set_source_files_properties( ${SHADERS} PROPERTIES VS_TOOL_OVERRIDE "None" )
-	
+
 	list(APPEND RBDOOM3_SOURCES ${WIN32_RESOURCES})
 	add_library(external ${LIB_INCLUDES} ${LIB_SOURCES})
 	target_compile_options(external PRIVATE /WX- /W3 /sdl-)
 	add_custom_target(shaders SOURCES ${SHADERS})
+	set_target_properties(shaders PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/PropertySheet.props")
 	add_custom_command(
         TARGET shaders POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
                 ${CMAKE_CURRENT_SOURCE_DIR}/../base/renderprogs
-                ${VS_DEBUGGER_WORKING_DIRECTORY}/base/renderprogs)
+                \"$(Working_directory)/base/renderprogs\")
 	add_executable(DoomBFA WIN32 ${RBDOOM3_INCLUDES} ${RBDOOM3_SOURCES})
+	set_target_properties(DoomBFA PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/PropertySheet.props")
 	#GK: Allow to compile and run the game from VS
 	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT DoomBFA)
-	set_target_properties(DoomBFA PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "C:/Program Files (x86)/Steam/steamapps/common/DOOM 3 BFG Edition")
+	set_target_properties(DoomBFA PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$(Working_directory)")
 	#GK: add +set r_fullscreen "0" command line (VS DEBUGGER and Fullscreen not a good mix)
 	set_target_properties(DoomBFA PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "+set r_fullscreen 0")
 	
