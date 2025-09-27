@@ -1801,13 +1801,19 @@ if(MSVC)
 	list(APPEND RBDOOM3_SOURCES ${WIN32_RESOURCES})
 	add_library(external ${LIB_INCLUDES} ${LIB_SOURCES})
 	target_compile_options(external PRIVATE /WX- /W3 /sdl-)
-	add_custom_target(shaders SOURCES ${SHADERS})
+	add_custom_target(shaders SOURCES ${SHADERS} DEPENDS copy_shaders)
 	set_target_properties(shaders PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/PropertySheet.props")
 	add_custom_command(
-        TARGET shaders POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        OUTPUT copy_shaders
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${CMAKE_CURRENT_SOURCE_DIR}/../base/renderprogs
-                \"$(Working_directory)/base/renderprogs\")
+                \"$(Working_directory)/base/renderprogs\"
+		DEPENDS
+			always_rebuild)
+	add_custom_command(
+		OUTPUT always_rebuild
+		COMMAND ${CMAKE_COMMAND} -E echo
+    )
 	add_executable(DoomBFA WIN32 ${RBDOOM3_INCLUDES} ${RBDOOM3_SOURCES})
 	set_target_properties(DoomBFA PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/PropertySheet.props")
 	#GK: Allow to compile and run the game from VS
