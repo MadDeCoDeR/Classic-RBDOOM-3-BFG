@@ -220,7 +220,7 @@ A) Preperation
 
 		// ffmpeg-devel is found in the rpm-fusion repo. Can be enabled from Gnome Software if not already enabled
 		
-		> dnf install cmake gcc-c++
+		> dnf install cmake gcc-c++ freeglut-devel mesa-libGLU-devel libXmu-devel libXi-devel mesa-libGL-devel libX11-devel libXft-devel libXext-devel libdecor-devel wayland-devel nasm autoconf libtool perl python3-jinja2 libXrandr-devel libXxf86vm-devel vulkan-headers wayland-protocols-devel libXfixes-devel libXcursor-devel libXi-devel
 	
 	On ArchLinux 
 	
