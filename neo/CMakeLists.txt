@@ -1534,7 +1534,7 @@ if(MSVC)
 	#if(OPENAL)
 		add_definitions(-DUSE_OPENAL)
 	
-		find_package(OpenAL)
+		find_package(OpenAL CONFIG REQUIRED)
 		if (OPENAL_FOUND)
 			include_directories(${OPENAL_INCLUDE_DIR})
 			# if (MSVC AND ALL_STATIC)
