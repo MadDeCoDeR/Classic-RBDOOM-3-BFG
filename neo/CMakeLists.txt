@@ -511,6 +511,31 @@ if (USE_OPENXR)
 	)
 endif(USE_OPENXR)
 
+add_definitions(-DUSE_OPENAL)
+	
+find_package(OpenAL CONFIG REQUIRED)
+if (OPENAL_FOUND)
+	include_directories(${OPENAL_INCLUDE_DIR})
+	# if (MSVC AND ALL_STATIC)
+	# 	set(OpenAL_LIBRARY
+	# 	optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/OpenAL32"
+	# 	debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/OpenAL32")
+	# else()
+		set(OpenAL_LIBRARY PRIVATE OpenAL::OpenAL)
+	# endif()
+else (OPENAL_FOUND)
+	if (MSVC)
+		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
+	
+		link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/libs/${OS_CPU})
+
+		set(OpenAL_LIBRARY
+			OpenAL32)
+		install(FILES libs/openal-soft/libs/${OS_CPU}/OpenAL32.dll DESTINATION .)
+	else()
+		find_package(OpenAL)
+	endif(MSVC)
+endif (OPENAL_FOUND)
 	
 add_subdirectory(idlib)
 
@@ -1532,29 +1557,6 @@ if(MSVC)
 			${SOUND_COMMON_SOURCES})
 	
 	#if(OPENAL)
-		add_definitions(-DUSE_OPENAL)
-	
-		find_package(OpenAL)
-		if (OPENAL_FOUND)
-			include_directories(${OPENAL_INCLUDE_DIR})
-			if (MSVC AND ALL_STATIC)
-				set(OpenAL_LIBRARY
-				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/OpenAL32"
-				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/OpenAL32")
-			else()
-				set(OpenAL_LIBRARY ${OPENAL_LIBRARY})
-			endif()
-		else (OPENAL_FOUND)
-			include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
-		
-			link_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/libs/${OS_CPU})
-
-			set(OpenAL_LIBRARY
-				OpenAL32)
-			install(FILES libs/openal-soft/libs/${OS_CPU}/OpenAL32.dll DESTINATION .)
-		endif (OPENAL_FOUND)
-		
-		
 		list(APPEND RBDOOM3_INCLUDES 
 			${OPENAL_INCLUDES}
 			${DOOMCLASSIC_OPENAL_INCLUDES})
@@ -1903,9 +1905,6 @@ else()
 			${SOUND_COMMON_SOURCES})
 			
 		#if(OPENAL)
-			find_package(OpenAL REQUIRED)
-			add_definitions(-DUSE_OPENAL)
-
 			include_directories(${OPENAL_INCLUDE_DIR})
 			
 			#if(CMAKE_CL_64)
