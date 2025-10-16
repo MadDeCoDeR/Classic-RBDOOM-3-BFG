@@ -521,7 +521,7 @@ if (OPENAL_FOUND)
 	# 	optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/OpenAL32"
 	# 	debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/OpenAL32")
 	# else()
-		set(OpenAL_LIBRARY PRIVATE OpenAL::OpenAL)
+		set(OpenAL_LIBRARY OpenAL::OpenAL)
 	# endif()
 else (OPENAL_FOUND)
 	if (MSVC)
