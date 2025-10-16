@@ -65,6 +65,12 @@ jobs:
           working-directory: ${{github.workspace}}/neo
           run: cmake -B ${{github.workspace}}/build --preset=linux-${{inputs.build_type}}
     
+        - name: Save vcpkg_installed cache
+          uses: actions/cache/save@v3
+          with:
+              path: ${{github.workspace}}/build/vcpkg_installed
+              key: ${{runner.os}}-vcpkg-${{hashfiles('neo/linux-status')}}
+
         - name: Build
           id: step7
           env:
