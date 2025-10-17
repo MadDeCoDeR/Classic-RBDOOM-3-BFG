@@ -31,10 +31,12 @@
 #include <functional>
 #ifdef _WIN32
 #include "sys/win32/win_local.h"
+#include "gfxwrapper_opengl.h"
 #else
+#include "gfxwrapper_opengl.h"
 #include "sys/sdl/sdl_local.h"
 #endif
-#include "gfxwrapper_opengl.h"
+
 class idXRLocal :public idXR {
 public:
 	idXRLocal() {}

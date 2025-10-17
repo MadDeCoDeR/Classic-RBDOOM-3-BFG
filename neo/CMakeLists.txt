@@ -512,8 +512,11 @@ if (USE_OPENXR)
 endif(USE_OPENXR)
 
 add_definitions(-DUSE_OPENAL)
-	
-find_package(OpenAL CONFIG REQUIRED)
+if (MSVC)
+	find_package(OpenAL)
+else()
+	find_package(OpenAL CONFIG REQUIRED)
+endif()
 if (OPENAL_FOUND)
 	include_directories(${OPENAL_INCLUDE_DIR})
 	if (MSVC AND ALL_STATIC)
