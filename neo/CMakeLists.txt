@@ -516,13 +516,13 @@ add_definitions(-DUSE_OPENAL)
 find_package(OpenAL CONFIG REQUIRED)
 if (OPENAL_FOUND)
 	include_directories(${OPENAL_INCLUDE_DIR})
-	# if (MSVC AND ALL_STATIC)
-	# 	set(OpenAL_LIBRARY
-	# 	optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/OpenAL32"
-	# 	debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/OpenAL32")
-	# else()
+	if (MSVC AND ALL_STATIC)
+		set(OpenAL_LIBRARY
+		optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/OpenAL32"
+		debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/OpenAL32")
+	else()
 		set(OpenAL_LIBRARY OpenAL::OpenAL)
-	# endif()
+	endif()
 else (OPENAL_FOUND)
 	if (MSVC)
 		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
