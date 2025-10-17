@@ -27,7 +27,6 @@
 #include <string.h>
 #include <framework/Licensee.h>
 #include <stdlib.h>
-#include "gfxwrapper_opengl.h"
 #include "renderer/RenderCommon.h"
 #include <functional>
 #ifdef _WIN32
@@ -35,6 +34,7 @@
 #else
 #include "sys/sdl/sdl_local.h"
 #endif
+#include "gfxwrapper_opengl.h"
 class idXRLocal :public idXR {
 public:
 	idXRLocal() {}
