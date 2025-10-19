@@ -127,6 +127,21 @@ void GLimp_GetSupportedVersion(int* major, int* minor) {
 	}
 }
 
+int SDL_GetDisplayFromIndex(int index) {
+	int count = 0;
+	SDL_DisplayID* displays = SDL_GetDisplays(&count);
+	// DG: SDL2 implementation
+
+	if (displays == 0 || index >= count)
+	{
+		// requested invalid displaynum
+		SDL_free(displays);
+		return index;
+	}
+	return displays[index - 1];
+	SDL_free(displays);
+}
+
 /*
 ===================
 GLimp_Init
@@ -276,7 +291,8 @@ bool GLimp_Init( glimpParms_t parms )
 			else
 			{
 				// -1 because SDL starts counting displays at 0, while parms.fullScreen starts at 1
-				windowPos = SDL_WINDOWPOS_UNDEFINED_DISPLAY( ( parms.fullScreen ) );
+				SDL_DisplayID displayID = displays[parms.fullScreen - 1];
+				windowPos = SDL_WINDOWPOS_UNDEFINED_DISPLAY( ( displayID ) );
 			}
 			SDL_free(displays);
 		}
@@ -403,7 +419,7 @@ static int ScreenParmsHandleDisplayIndex( glimpParms_t parms )
 	int displayIdx;
 	if( parms.fullScreen > 0 )
 	{
-		displayIdx = parms.fullScreen; // first display for SDL is 0, in parms it's 1
+		displayIdx = 0; // first display for SDL is 0, in parms it's 1
 	}
 	else // -2 == use current display
 	{
@@ -420,6 +436,7 @@ static int ScreenParmsHandleDisplayIndex( glimpParms_t parms )
 		SDL_free(displays);
 		return -1;
 	}
+	displayIdx = displayIdx == 0 ? displays[parms.fullScreen - 1] : displayIdx;
 	SDL_free(displays);
 	
 	if( parms.fullScreen != glConfig.isFullscreen )
@@ -441,39 +458,63 @@ static int ScreenParmsHandleDisplayIndex( glimpParms_t parms )
 
 static bool SetScreenParmsFullscreen( glimpParms_t parms )
 {
-	SDL_DisplayMode m = {0};
+	SDL_DisplayMode* m = NULL;
 	int displayIdx = ScreenParmsHandleDisplayIndex( parms );
 	if( displayIdx < 0 )
 		return false;
 		
 	// get current mode of display the window should be full-screened on
 	
-	m = *SDL_GetCurrentDisplayMode( displayIdx );
+	int modeCount = -1;
+	SDL_DisplayMode** displayModes = SDL_GetFullscreenDisplayModes(displayIdx, &modeCount);
+	int wDiff = INT32_MAX;
+	int hDiff = INT32_MAX;
+	for (int i = 0; i < modeCount; i++) {
+		int nwDiff = abs(displayModes[i]->w - parms.width);
+		int nhDiff = abs(displayModes[i]->h - parms.height);
+		if (nwDiff < wDiff || nhDiff < hDiff) {
+			wDiff = nwDiff;
+			hDiff = hDiff;
+			m = displayModes[i];
+		}
+		if (wDiff == 0 || hDiff == 0) {
+			m = displayModes[i];
+			break;
+		}
+	}
 	
 	// GK: Similar to Windows get the Display mode closest to what the monitor can offer (AND DONT CHECK THE REFRESH RATE)
 
 
-	if (parms.width < m.w || parms.height < m.h) {
-		m.w = parms.width;
-		m.h = parms.height;
-	}
-	
+	// if (parms.width < m.w || parms.height < m.h) {
+	// 	m.w = parms.width;
+	// 	m.h = parms.height;
+	// }
+
 	// if we're currently not in fullscreen mode, we need to switch to fullscreen
-	if( !( SDL_GetWindowFlags( window ) & SDL_WINDOW_FULLSCREEN ) )
+	//if( SDL_GetWindowFullscreenMode(window) == NULL)
 	{
 		if( SDL_SetWindowFullscreen( window, true ) < 0 )
 		{
 			common->Warning( "Couldn't switch to fullscreen mode, reason: %s!", SDL_GetError() );
 			return false;
 		}
-
-		// set that displaymode
-		if( SDL_SetWindowFullscreenMode( window, &m ) < 0 )
-		{
-			common->Warning( "Couldn't set window mode for fullscreen, reason: %s", SDL_GetError() );
-			return false;
-		}
+		SDL_SyncWindow(window);
 	}
+	
+	// set that displaymode
+	if( SDL_SetWindowFullscreenMode( window, m ) < 0 )
+	{
+		common->Warning( "Couldn't set window mode for fullscreen, reason: %s", SDL_GetError() );
+		return false;
+	}
+	SDL_SyncWindow(window);
+	const SDL_DisplayMode* mode = SDL_GetWindowFullscreenMode(window);
+	if (m->displayID != mode->displayID && m->w != mode->w && m->h != mode->h) {
+		common->Warning( "Window mode is not applied, reason: %s", SDL_GetError() );
+		return false;
+	}
+	
 	return true;
 }
 
@@ -686,19 +727,20 @@ R_GetModeListForDisplay
 bool R_GetModeListForDisplay( const unsigned requestedDisplayNum, idList<vidMode_t>& modeList )
 {
 	assert( requestedDisplayNum >= 0 );
-	unsigned displayId = requestedDisplayNum + 1;
+	unsigned displayIndex = requestedDisplayNum + 1;
 	
 	modeList.Clear();
 
 	int count = 0;
 	SDL_DisplayID* displays = SDL_GetDisplays(&count);
 	// DG: SDL2 implementation
-	if (displays == 0 || displayId > count)
+	if (displays == 0 || displayIndex > count)
 	{
 		// requested invalid displaynum
 		SDL_free(displays);
 		return false;
 	}
+	SDL_DisplayID displayId = displays[displayIndex - 1];
 	SDL_free(displays);
 	int numModes = 0;
 	SDL_DisplayMode** modes = SDL_GetFullscreenDisplayModes(displayId, &numModes);
@@ -755,10 +797,11 @@ bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>&
 		SDL_free(displays);
 		return false;
 	}
+	SDL_DisplayID displayId = displays[requestedDisplayNum - 1];
 	SDL_free(displays);
 
 	int numModes = 0;
-	SDL_DisplayMode** modes = SDL_GetFullscreenDisplayModes(requestedDisplayNum, &numModes);
+	SDL_DisplayMode** modes = SDL_GetFullscreenDisplayModes(displayId, &numModes);
 	if (numModes > 0)
 	{
 		for (int i = 0; i < numModes; i++)
@@ -800,7 +843,8 @@ bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>&
 
 bool R_GetScreenResolution(const unsigned displayNum, int& w, int& h, int& hz) {
 
-	const SDL_DisplayMode* current = SDL_GetCurrentDisplayMode((SDL_DisplayID)displayNum);
+	SDL_DisplayID display = SDL_GetDisplayFromIndex(displayNum);
+	const SDL_DisplayMode* current = SDL_GetCurrentDisplayMode(display);
 	if (current != NULL) {
 		w = current->w;
 		h = current->h;

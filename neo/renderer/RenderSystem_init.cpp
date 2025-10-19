@@ -467,6 +467,7 @@ void R_SetNewMode( const bool fullInit )
 			if( modeList.Num() < 1 )
 			{
 				idLib::Printf( "Going to safe mode because mode list failed." );
+				r_fullscreen.SetInteger(0);
 				vidMode_t mode;
 				mode.width = 1280;
 				mode.height = 720;

@@ -413,6 +413,21 @@ void Sys_QueEvent( sysEventType_t type, int value, int value2, int ptrLength, vo
 	ev->inputDevice = inputDeviceNum;
 }
 
+int SDL_DisplayIDToIndex(SDL_DisplayID displayId) {
+	int displayCount = -1;
+	SDL_DisplayID* displays = SDL_GetDisplays(&displayCount);
+	if (displayCount > 0) {
+		for (int i = 0; i < displayCount; i++) {
+			if (displays[i] == displayId) {
+				SDL_free(displays);
+				return i + 1;
+			}
+		}
+	}
+	SDL_free(displays);
+	return displayId;
+}
+
 // utf-32 version of the textinput event
 static int32 uniStr[512] = {0};
 static size_t uniStrPos = 0;
@@ -570,6 +585,7 @@ void SDL_Poll()
 					windowRect->w = r_windowWidth.GetInteger();
 					windowRect->h = r_windowHeight.GetInteger();
 					fullscreen = SDL_GetDisplayForRect(windowRect);
+					fullscreen = SDL_DisplayIDToIndex(fullscreen);
 					delete(windowRect);
 					if (fullscreen <= 0) {
 						common->Printf("SDL2: Failed to detect Display index from Window with error message: %s\n", SDL_GetError());
