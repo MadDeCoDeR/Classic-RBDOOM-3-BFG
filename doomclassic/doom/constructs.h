@@ -272,7 +272,7 @@ menuitem_t temp_VideoMenu[7] = {
 	{1, "M_REF", M_Refresh, 'd'},
 	{1,"M_FPS", M_Framerate,'p'},
 	{1,"M_ASP", M_Aspect,'m'},//GK: Allow the player to switch aspect ratio
-	{1,"M_LGT", M_Light,'l'}//GK: Allow the player to switch lighting mode
+	{1,"M_ADGR", M_AdvGr,'g'}//GK: Advaced Graphics
 	
 	//{1, "M_BLURR", M_Blurry,'b'}//GK: Allow the player to enable blurry effect
 };
@@ -465,7 +465,7 @@ menu_t  temp_ReadDef2 = {
 memcpy(&::g->ReadDef2, &temp_ReadDef2, sizeof(temp_ReadDef2));
 
 menuitem_t temp_ResMenu[20] = {
-	{ 1,"", M_SetRes,'1' },
+{ 1,"", M_SetRes,'1' },
 { 1,"", M_SetRes,'2' },
 { 1,"", M_SetRes,'3' },
 { 1,"", M_SetRes,'4' },
@@ -498,6 +498,23 @@ menu_t  temp_ResDef = {
 	M_True
 };
 memcpy(&::g->ResDef, &temp_ResDef, sizeof(temp_ResDef));
+
+menuitem_t temp_AdvGMenu[2] = {
+{1,"M_LGT", M_Light,'l'},//GK: Allow the player to switch lighting mode
+{ 1,"M_FUSS", M_Fuss,'f' }
+
+};
+memcpy(::g->AdvGMenu, temp_AdvGMenu, sizeof(temp_AdvGMenu));
+menu_t  temp_AdvGDef = {
+	2,
+	&::g->VideoDef,
+	::g->AdvGMenu,
+	M_DrawAdvG,
+	54,30,
+	0,
+	M_True
+};
+memcpy(&::g->AdvGDef, &temp_AdvGDef, sizeof(temp_AdvGDef));
 
 int     temp_quitsounds[8] = {
 	sfx_pldeth,

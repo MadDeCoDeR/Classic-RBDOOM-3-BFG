@@ -451,6 +451,8 @@ menuitem_t CtlMenu[9];
 menu_t  CtlDef;
 menuitem_t KeyMenu[30];
 menu_t  KeyDef;
+menuitem_t AdvGMenu[2];
+menu_t  AdvGDef;
 char    tempstring[256];
 int     epi;
 int     exp;

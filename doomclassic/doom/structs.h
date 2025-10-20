@@ -226,10 +226,17 @@ typedef enum
 	refresh,
 	framerate,
 	detail,	//GK: Use this value for aspect ratio option
-	light, //GK: Use this value for light modes
+	advg, //GK: Use this value for light modes
 	//blurry,
 	video_end
 } video_e;
+
+typedef enum
+{
+	light, //GK: Use this value for light modes
+	fuzz,
+	advg_end
+} advG_e;
 typedef enum
 {
 	run,
