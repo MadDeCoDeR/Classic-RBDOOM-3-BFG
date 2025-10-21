@@ -107,6 +107,7 @@ extern idCVar cl_HUD;
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 extern idCVar s_useXAudio2;
 #endif
+extern idCVar cl_noFuzz;
 
 extern idCVar in_photomode;
 extern idCVar in_toggleRun;
@@ -211,6 +212,7 @@ void M_SetRes(int choice);
 void M_Refresh(int choice);
 void M_Framerate(int choice);
 void M_Blurry(int choice);
+void M_AdvGr(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
@@ -240,6 +242,7 @@ void M_ChangeKeys(int choice);
 void M_Rumble(int choice);
 void M_Layout(int choice);
 void M_ToggleRun(int choice);
+void M_Fuss(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
@@ -269,6 +272,7 @@ void M_DrawGame(void);
 void M_DrawRes(void);
 void M_DrawCtl(void);
 void M_DrawKey(void);
+void M_DrawAdvG(void);
 
 void M_DrawSaveLoadBorder(int x,int y);
 void M_SetupNextMenu(menu_t *menudef);
@@ -1184,7 +1188,7 @@ void M_DrawVideo(void)
 	int aspect = r_aspect.GetInteger() >= 1 ? 1 : 0;
 	int correct = r_aspectcorrect.GetInteger();
 	int asoffset = 165 - (6 * correct); //GK: The word "correct" is larger than the others and therefor it requires different x offset
-	int reallight = r_clight.GetInteger();
+	
 	int fullscreenOnOff = r_fullscreen.GetInteger() >= 1 ? 1 : r_fullscreen.GetInteger() < 0 ? 2 : 0;
 	//int blurryeffect = r_clblurry.GetInteger();
 	int syncValue = r_swapInterval.GetInteger();
@@ -1205,8 +1209,7 @@ void M_DrawVideo(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(fullNames[fullscreenOnOff], PU_CACHE_SHARED), W_GetNumForName(fullNames[fullscreenOnOff])), false);
 	V_DrawPatchDirect(::g->VideoDef.x + asoffset, ::g->VideoDef.y + LINEHEIGHT * (detail - offset), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(detailNames[aspect + correct], PU_CACHE_SHARED), W_GetNumForName(detailNames[aspect + correct])), false);
-	V_DrawPatchDirect(::g->VideoDef.x + 135, ::g->VideoDef.y + LINEHEIGHT * (light - offset), 0,
-		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])), false);
+	
 	V_DrawPatchDirect(::g->VideoDef.x + 105, ::g->VideoDef.y + LINEHEIGHT * (vsync - (offset == 3 ? offset - 1 : 0)), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(syncNames[syncValue], PU_CACHE_SHARED), W_GetNumForName(syncNames[syncValue])), false);
 	//V_DrawPatchDirect(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (blurry), 0,
@@ -1883,6 +1886,16 @@ void M_DrawRes(void) {
 		});
 }
 
+void M_DrawAdvG(void) {
+	V_DrawPatchDirect(54, 10, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_ADGR", PU_CACHE_SHARED), W_GetNumForName("M_ADGR")), false);
+	int reallight = r_clight.GetInteger();
+	int fuzzeffect = !cl_noFuzz.GetBool(); 
+
+	V_DrawPatchDirect(::g->AdvGDef.x + 135, ::g->AdvGDef.y + LINEHEIGHT * (light), 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])), false);
+	V_DrawPatchDirect(::g->AdvGDef.x + 150, ::g->AdvGDef.y + LINEHEIGHT * (fuzz), 0,
+		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[fuzzeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[fuzzeffect])), false);
+}
 
 //
 //      Toggle messages on/off
@@ -1987,6 +2000,10 @@ void M_HUD(int choice)
 {
 	cl_HUD.SetBool(cl_HUD.GetBool() ? 0 : 1);
 }
+
+void M_Fuss(int choice) {
+	cl_noFuzz.SetBool(cl_noFuzz.GetBool() ? 0 : 1);
+}
 //GK:End
 //
 //      Toggle Fullscreen
@@ -2088,6 +2105,11 @@ void M_Refresh(int choice) {
 
 void M_Blurry(int choice) {
 	r_clblurry.SetBool(!r_clblurry.GetBool());
+}
+
+void M_AdvGr(int choice) {
+	pageIndex = 0;
+	M_SetupNextMenu(&::g->AdvGDef);
 }
 
 char	layNames[2][9] =

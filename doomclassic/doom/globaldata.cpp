@@ -66,6 +66,7 @@ void M_SetRes(int choice);
 void M_Refresh(int choice);
 void M_Framerate(int choice);
 void M_Blurry(int choice);
+void M_AdvGr(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
@@ -92,6 +93,7 @@ void M_ChangeKeys(int choice);
 void M_Rumble(int choice);
 void M_Layout(int choice);
 void M_ToggleRun(int choice);
+void M_Fuss(int choice);
 
 void M_FinishReadThis(int choice);
 void M_LoadSelect(int choice);
@@ -120,6 +122,7 @@ void M_DrawGame(void);
 void M_DrawRes(void);
 void M_DrawCtl(void);
 void M_DrawKey(void);
+void M_DrawAdvG(void);
 
 void M_DrawSaveLoadBorder(int x,int y);
 void M_SetupNextMenu(menu_t *menudef);
