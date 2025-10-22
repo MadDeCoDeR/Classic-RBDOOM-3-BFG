@@ -89,6 +89,8 @@ extern bool waitingForWipe;
 extern idCVar in_alwaysRunCl;
 extern idCVar cl_jump;
 extern idCVar cl_engineHz_interp;
+extern idCVar r_aspect;
+idCVar cl_inDemo("cl_inDemo", "0", CVAR_BOOL | CVAR_NOCHEAT | CVAR_ROM, "");
 
 bool	loadingGame = false;
 
@@ -127,6 +129,7 @@ bool demoDebugOn = false;
 
 float ogHz = 0.0f;
 int ogtr[3] = { 0, 0, 0 };
+bool ogAspect = false;
 // 
 // controls (have defaults) 
 // 
@@ -251,17 +254,21 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 	if (::g->demoplayback || ::g->demorecording) {
 		com_engineHz_denominator = 100LL * TICRATE;
 		com_engineHz_latched = TICRATE;
-		int tempticrate[3] = { 0, -1, -1 };
-		memcpy(::g->ticrate, tempticrate, sizeof(tempticrate));
+		
+		//int tempticrate[3] = { 0, -1, -1 };
+		//memcpy(::g->ticrate, tempticrate, sizeof(tempticrate));
 	}
-	else if (ogHz){
+	else 
+	if (ogHz){
 		com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? com_engineHz.GetInteger() : ogHz);
 		com_engineHz_latched = ogHz;
+		cl_inDemo.SetBool(false);
+		R_Initwidth();
 		ogHz = 0;
-		for (int i1 = 0; i1 < 3; i1++) {
-			::g->ticrate[i1] = ogtr[i1];
-			ogtr[i1] = 0;
-		}
+		// for (int i1 = 0; i1 < 3; i1++) {
+		// 	::g->ticrate[i1] = ogtr[i1];
+		// 	ogtr[i1] = 0;
+		// }
 	}
 
 	if (::g->menuactive && !::g->demoplayback) {
@@ -2335,6 +2342,10 @@ void G_RecordDemo (char* name)
 	for (int i = 0; i < 3; i++) {
 		ogtr[i] = ::g->ticrate[i];
 	}
+	com_engineHz_denominator = 100LL * TICRATE;
+	com_engineHz_latched = TICRATE;
+	R_Initwidth(); //GK: Restart the classic Doom renderer
+	cl_inDemo.SetBool(true);
 } 
  
  
@@ -2508,6 +2519,11 @@ void G_DoPlayDemo (void)
 	for (int i3 = 0; i3 < 3; i3++) {
 		ogtr[i3] = ::g->ticrate[i3];
 	}
+	com_engineHz_denominator = 100LL * TICRATE;
+	com_engineHz_latched = TICRATE;
+	R_Initwidth(); //GK: Restart the classic Doom renderer
+	cl_inDemo.SetBool(true);
+	
 } 
 
 //

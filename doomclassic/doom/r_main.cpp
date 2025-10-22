@@ -1026,7 +1026,7 @@ void R_RenderPlayerView (player_t* player)
 void R_Initwidth() {
 	//GK: Calculate x-axis image scale and Rendering widthAdd commentMore actions
 
-	if (cl_dscaling.GetBool()) {
+	if (cl_dscaling.GetBool() && !(::g->demoplayback || ::g->demorecording)) {
 		int engineWidth = ::renderSystem->GetWidth();
 		int engineHeight = ::renderSystem->GetHeight();
 		if (::g->engineWidth != engineWidth || ::g->engineHeight != engineHeight) {
@@ -1056,7 +1056,7 @@ void R_Initwidth() {
 		::g->GLOBAL_IMAGE_SCALER = 3;
 	}
 	
-	if (!r_aspectcorrect.GetBool()) {
+	if (!r_aspectcorrect.GetBool() || ::g->demoplayback || ::g->demorecording) {
 		::g->ASPECT_IMAGE_SCALER = ::g->GLOBAL_IMAGE_SCALER;
 	}
 
