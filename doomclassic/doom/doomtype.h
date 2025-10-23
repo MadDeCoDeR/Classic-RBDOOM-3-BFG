@@ -31,8 +31,10 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <limits>
 
-//#define false 0
-//#define true 1
+#if !defined(false) && !defined(true)
+#define false 0
+#define true 1
+#endif
 typedef int qboolean;
 
 
