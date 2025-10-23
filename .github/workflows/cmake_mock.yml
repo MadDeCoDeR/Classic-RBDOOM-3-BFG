@@ -1,0 +1,31 @@
+name: CMake
+
+on:
+  push:
+    branches:
+      - 'frappedia'
+    # paths:
+    # - .github/workflows/cmake.yml
+  
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.) 
+  BUILD_TYPE: retail
+  VERSION: RC
+
+jobs:
+  linux-build:
+    uses: ./.github/workflows/cmake_linux_x64.yml
+    with: 
+      build_type: retail
+      version: RC
+  windows-build:
+    uses: ./.github/workflows/cmake_windows_x64.yml
+    with: 
+      build_type: retail
+      version: RC
+  windows-32-bit-build:
+    uses: ./.github/workflows/cmake_windows_x86.yml
+    with: 
+      build_type: retail
+      version: RC
