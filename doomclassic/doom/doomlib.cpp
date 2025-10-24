@@ -176,6 +176,7 @@ namespace DoomLib
 	bool							skipToNew = false;
 	int								chosenSkill = 0;
 	int								chosenEpisode = 1;
+	int								chosenMap = 1;
 	bool							use_doomit = false;
 	bool							skipToMenu = false;
 	bool							skipToDev = false;

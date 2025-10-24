@@ -1402,25 +1402,54 @@ void M_DrawExpansion(void)
 	V_DrawPatchDirect(54, 38, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_EXPAN", PU_CACHE_SHARED), W_GetNumForName("M_EXPAN")), false);
 }
 
-void M_VerifyNightmare(int ch)
-{
-	if (ch != KEY_ENTER)
-		return;
+void M_StartEpisodicGame(int episode, int map, int skill) {
+	DoomLib::SetCurrentExpansion( DoomLib::idealExpansion );
+		DoomLib::skipToNew = true;
+		DoomLib::chosenSkill = skill;
+		DoomLib::chosenEpisode = episode;
+		DoomLib::chosenMap = map;
+		{ //GK: Set Endmap for the selected episode
+			if ((int)::g->clusters.size() <= episode){
+				::g->gamemission = doom;
+			}
+			else {
+				if (!::g->clusters[::g->epi].startmap && ::g->clusters[::g->epi].mapname == NULL) {
+					::g->gamemission = doom;
+				}
+				else {
+					::g->gamemission = pack_custom;
+					if (!::g->clusters[::g->epi].endmap) {
+						::g->clusters[::g->epi].endmap = ::g->clusters[::g->epi].startmap + 7;
+					}
+					::g->endmap = ::g->clusters[::g->epi].endmap;
+				}
+			}
+			
+		}
+}
 
-	if (::g->gamemode != commercial) {
-		static int startLevel = 1;
-		G_DeferedInitNew((skill_t)nightmare, ::g->epi + 1, startLevel);
-		
-	}
-	else {
-		if (DoomLib::idealExpansion == pack_master && state == 0)
+void M_StartExpansionGame(int episode, int map, int skill) {
+	if (DoomLib::idealExpansion == pack_master && state == 0)
 			DoomLib::use_doomit = false;
 		if (DoomLib::idealExpansion != pack_master)
 			DoomLib::use_doomit = false;
 		DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
 		DoomLib::skipToNew = true;
-		DoomLib::chosenSkill = nightmare;
-		DoomLib::chosenEpisode = ::g->epi + 1;
+		DoomLib::chosenSkill = skill;
+		DoomLib::chosenEpisode = episode + 1;
+		DoomLib::chosenMap = map;
+}
+
+void M_VerifyNightmare(int ch)
+{
+	if (ch != KEY_ENTER)
+		return;
+
+	if (::g->gamemode != commercial || ::g->episodicExpansion) {
+		M_StartEpisodicGame(::g->epi, 1, nightmare);
+	}
+	else {
+		M_StartExpansionGame(::g->epi, 1, nightmare);
 	}
 	M_ClearMenus();
 }
@@ -1439,41 +1468,11 @@ void M_ChooseSkill(int choice)
 		return;
 	}
 	
-	if ( ::g->gamemode != commercial  || ::g->episodicExpansion) {
-		//static int startLevel = 1;
-		DoomLib::SetCurrentExpansion( DoomLib::idealExpansion );
-		DoomLib::skipToNew = true;
-		DoomLib::chosenSkill = choice;
-		DoomLib::chosenEpisode = ::g->epi;
-		//G_DeferedInitNew((skill_t)choice,::g->epi+1, startLevel);
-		{ //GK: Set Endmap for the selected episode
-			if ((int)::g->clusters.size() <= ::g->epi){
-				::g->gamemission = doom;
-			}
-			else {
-				if (!::g->clusters[::g->epi].startmap && ::g->clusters[::g->epi].mapname == NULL) {
-					::g->gamemission = doom;
-				}
-				else {
-					::g->gamemission = pack_custom;
-					if (!::g->clusters[::g->epi].endmap) {
-						::g->clusters[::g->epi].endmap = ::g->clusters[::g->epi].startmap + 7;
-					}
-					::g->endmap = ::g->clusters[::g->epi].endmap;
-				}
-			}
-			
-		}
-		M_ClearMenus ();
-	} else {
-		if (DoomLib::idealExpansion == pack_master && state == 0)
-			DoomLib::use_doomit = false;
-		if (DoomLib::idealExpansion != pack_master)
-			DoomLib::use_doomit = false;
-		DoomLib::SetCurrentExpansion( DoomLib::idealExpansion );
-		DoomLib::skipToNew = true;
-		DoomLib::chosenSkill = choice;
-		DoomLib::chosenEpisode = ::g->epi+1;
+	if (::g->gamemode != commercial || ::g->episodicExpansion) {
+		M_StartEpisodicGame(::g->epi, 1, choice);
+	}
+	else {
+		M_StartExpansionGame(::g->epi, 1, choice);
 	}
 }
 
@@ -1674,34 +1673,10 @@ void M_StartDev(int choice) {
 #endif
 	int startLevel = (choice + 1) + (pageIndex * 10);
 	if (::g->gamemode != commercial || ::g->episodicExpansion) {
-		G_DeferedInitNew(skill, ::g->epi + 1, startLevel);
-		if (::g->gamemode != commercial)
-		{ //GK: Set Endmap for the selected episode
-			if ((int)::g->clusters.size() <= ::g->epi) {
-				::g->gamemission = doom;
-			}
-			else {
-				if (!::g->clusters[::g->epi].startmap && ::g->clusters[::g->epi].mapname == NULL) {
-					::g->gamemission = doom;
-				}
-				else {
-					::g->gamemission = pack_custom;
-					if (!::g->clusters[::g->epi].endmap) {
-						::g->clusters[::g->epi].endmap = ::g->clusters[::g->epi].startmap + 7;
-					}
-					::g->endmap = ::g->clusters[::g->epi].endmap;
-				}
-			}
-		}
-		M_ClearMenus();
+		M_StartEpisodicGame(::g->epi, startLevel, skill);
 	}
 	else {
-		DoomLib::use_doomit = true;
-		DoomLib::selection = startLevel;
-		DoomLib::SetCurrentExpansion(DoomLib::idealExpansion);
-		DoomLib::skipToNew = true;
-		DoomLib::chosenSkill = skill;
-		DoomLib::chosenEpisode = ::g->epi + 1;
+		M_StartExpansionGame(::g->epi, startLevel, skill);
 	}
 }
 
