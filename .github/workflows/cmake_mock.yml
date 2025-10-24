@@ -1,11 +1,11 @@
-name: CMake
+name: CMake Mock
 
 on:
-  push:
+  pull_request:
+    types: [opened, reopened]
     branches:
-      - 'frappedia'
-    # paths:
-    # - .github/workflows/cmake.yml
+      - 'master'
+      - 'main'
   
 
 env:
