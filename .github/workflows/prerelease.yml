@@ -42,6 +42,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Get log messages
       id: messages
+      working-directory: ${{ github.workspace }}
       run: echo "messages=$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s)" >> $GITHUB_OUTPUT
     - name: Get current date
       id: date
