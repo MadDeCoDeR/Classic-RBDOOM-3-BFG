@@ -2476,7 +2476,19 @@ void G_DoPlayDemo (void)
 	if (mission > doom2 && mission != ::g->gamemission)
 		DoomLib::SetCurrentExpansion(mission);
 
+	ogHz = com_engineHz_latched;
+	for (int i3 = 0; i3 < 3; i3++) {
+		ogtr[i3] = ::g->ticrate[i3];
+	}
+	com_engineHz_denominator = 100LL * TICRATE;
+	com_engineHz_latched = TICRATE;
+	::g->demoplayback = true;
+	::g->engineWidth = 0;
+	::g->engineHeight = 0;
+	R_Initwidth(); //GK: Restart the classic Doom renderer
+	
 	G_InitNew (skill, episode, map ); 
+	::g->demoplayback = true;
 	R_SetViewSize (::g->screenblocks + 1, ::g->detailLevel);
 	::g->demostarttic = ::g->gametic;
 	m_inDemoMode.SetBool( true );
@@ -2514,14 +2526,7 @@ void G_DoPlayDemo (void)
 	}
 
 	::g->usergame = false;
-	::g->demoplayback = true;
-	ogHz = com_engineHz_latched;
-	for (int i3 = 0; i3 < 3; i3++) {
-		ogtr[i3] = ::g->ticrate[i3];
-	}
-	com_engineHz_denominator = 100LL * TICRATE;
-	com_engineHz_latched = TICRATE;
-	R_Initwidth(); //GK: Restart the classic Doom renderer
+	
 	cl_inDemo.SetBool(true);
 	
 } 

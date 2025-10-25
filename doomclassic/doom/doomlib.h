@@ -144,6 +144,7 @@ namespace DoomLib
 	extern bool					skipToNew;
 	extern int					chosenSkill;
 	extern int					chosenEpisode;
+	extern int					chosenMap;
 	extern bool					use_doomit;
 	extern bool					skipToMenu;
 	extern bool					skipToDev;
