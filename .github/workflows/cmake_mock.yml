@@ -3,7 +3,9 @@ name: CMake Mock
 on:
   pull_request:
     types: [opened, reopened]
-    branches: [ 'master', 'main']
+    branches: 
+      - 'master'
+      - 'main'
   
 
 env:
