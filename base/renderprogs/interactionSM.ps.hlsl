@@ -183,15 +183,23 @@ void main( PS_IN fragment, out PS_OUT result )
 	shadowTexcoord.z = dot4( modelPosition, shadowMatrixZ );
 	shadowTexcoord.w = dot4( modelPosition, shadowMatrixW );
 	
-	float bias = 0.0003 * atan( acos( ldotN ) );
+    float bias = 0.0f;
+#if 1
+#if defined( LIGHT_POINT )
+	bias = 0.0003 * atan( acos( ldotN ) );
+#endif
+#if defined( LIGHT_PARALLEL )
+	bias = 0.0005 * atan( acos( ldotN ) );
+#endif
 	bias = clamp( bias, 0.0, 0.001 ); //GK: Putting that limit seems to resolve shadow acne but still many shadows are missing
 	//float bias = 0.001;
+#endif
 	
 	shadowTexcoord.xyz /= shadowTexcoord.w;
 	
 	shadowTexcoord.z = shadowTexcoord.z * rpScreenCorrectionFactor.w;
 	//shadowTexcoord.z = shadowTexcoord.z * 0.999991;
-    shadowTexcoord.z = shadowTexcoord.z-bias;
+    shadowTexcoord.z = shadowTexcoord.z - bias;
 	shadowTexcoord.w = float(shadowIndex);
 
 #if 0
@@ -240,7 +248,7 @@ void main( PS_IN fragment, out PS_OUT result )
 	float2(-0.7005203, 0.4596822),
 	float2(-0.9713828, -0.06329931) );
 	
-	float shadow = 0.0;
+	float shadow = 1.0;
 	
 	// RB: casting a float to int and using it as index can really kill the performance ...
 	float numSamples = 12.0f; //int(rpScreenCorrectionFactor.w);
