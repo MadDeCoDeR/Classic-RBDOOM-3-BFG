@@ -111,6 +111,8 @@ jobs:
         artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}-x64
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         access_token: ${{ secrets.GITHUB_TOKEN }}
+        second_token: ${{ secrets.GH_PAT }}
+        run-id: ${{ steps.run_id.outputs.run_id }}
         commands: |
           mv ./build/${{env.BUILD_TYPE}}/* .
           mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
@@ -131,6 +133,8 @@ jobs:
         artifact_name: windows-${{env.VERSION}}-debug-x64
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         access_token: ${{ secrets.GITHUB_TOKEN }}
+        second_token: ${{ secrets.GH_PAT }}
+        run-id: ${{ steps.run_id.outputs.run_id }}
         commands: |
           mv ./build/retwithdebugsymbols/* .
           mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
