@@ -48,7 +48,7 @@ jobs:
         COMMITS=$(git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s)
         {
           echo 'messages<<EOF'
-          cat "${COMMITS}"
+          echo "${COMMITS}"
           echo EOF
         } >> $GITHUB_OUTPUT
     - name: Get current date
