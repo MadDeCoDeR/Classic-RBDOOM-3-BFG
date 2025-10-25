@@ -21,11 +21,18 @@ outputs:
 runs:
   using: "composite"
   steps:
+      - name: Get run Id
+        id: run_id
+        run: echo "::set-output name=run_id::gh run list --workflow 'CMake Mock' --limit 1 --status completed | awk '{print $13}'"
+        env:
+          GITHUB_TOKEN: ${{ inputs.access_token }}
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ${{inputs.artifact_name}}
+          github-token: ${{ secrets.GH_PAT }}
           path: ${{github.workspace}}/temp
+          run-id: ${{ steps.run_id.outputs.run_id }}
       - name: Zip artifact files
         shell: bash
         working-directory: ${{github.workspace}}/temp
