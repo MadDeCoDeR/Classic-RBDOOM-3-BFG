@@ -16,10 +16,11 @@ jobs:
         runs-on: ubuntu-latest
     
         steps:
-        - uses: actions/checkout@v3
+        - uses: actions/checkout@v5
           id: step1
           with:
             submodules: recursive
+            ref: ${{ github.event.pull_request.head.sha }}
     
         # - name: Patch OpenAL-Soft
         #   id: step1f
@@ -27,13 +28,13 @@ jobs:
         #     cd vcpkg
         #     git apply ../.github/tools/openal-fix.patch
             
-        - uses: actions/checkout@v3
+        - uses: actions/checkout@v5
           id: step2
           with:
             repository: MadDeCoDeR/BFA-Assets
             path: BFA_Assets
 
-        - uses: actions/checkout@v3
+        - uses: actions/checkout@v5
           id: step21
           with:
             repository: MadDeCoDeR/BFA-Assets

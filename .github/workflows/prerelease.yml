@@ -1,4 +1,4 @@
-name: CMake
+name: Pre Release
 
 on:
   push:
@@ -15,29 +15,29 @@ env:
   VERSION: RC
 
 jobs:
-  linux-build:
-    uses: ./.github/workflows/cmake_linux_x64.yml
-    with: 
-      build_type: retail
-      version: RC
-  windows-build:
-    uses: ./.github/workflows/cmake_windows_x64.yml
-    with: 
-      build_type: retail
-      version: RC
-  windows-32-bit-build:
-    uses: ./.github/workflows/cmake_windows_x86.yml
-    with: 
-      build_type: retail
-      version: RC
+  # linux-build:
+  #   uses: ./.github/workflows/cmake_linux_x64.yml
+  #   with: 
+  #     build_type: retail
+  #     version: RC
+  # windows-build:
+  #   uses: ./.github/workflows/cmake_windows_x64.yml
+  #   with: 
+  #     build_type: retail
+  #     version: RC
+  # windows-32-bit-build:
+  #   uses: ./.github/workflows/cmake_windows_x86.yml
+  #   with: 
+  #     build_type: retail
+  #     version: RC
   make-release:
-    needs: [ linux-build, windows-build, windows-32-bit-build ]
+    # needs: [ linux-build, windows-build, windows-32-bit-build ]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Get log messages
       id: messages
-      run: echo "git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s"
+      run: git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H-%M-%s')"

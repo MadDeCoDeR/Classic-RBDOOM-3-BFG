@@ -1,0 +1,19 @@
+name: auto pr
+
+on:
+    push:
+        branches: ['frappedia']
+
+jobs:
+    autopr:
+        runs-on: ubuntu-latest
+        steps:
+            - name: pull repo
+              uses: actions/checkout@v5
+              with:
+                ref: frappedia
+            - name: autopr
+              working-directory: ${{ github.workspace }}
+              run: gh pr create -B master -H frappedia --title 'Merge latest commit by the Admin' --body 'Automatic'
+              env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
