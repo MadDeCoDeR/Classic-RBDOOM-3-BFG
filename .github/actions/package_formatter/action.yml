@@ -13,6 +13,12 @@ inputs:
     access_token:
         required: true
         type: string
+    second_token:
+        required: true
+        type: string
+    run-id:
+        required: true
+        type: string
 outputs:
     artifact_name: 
         description: 'Echo of the input'  
@@ -21,18 +27,13 @@ outputs:
 runs:
   using: "composite"
   steps:
-      - name: Get run Id
-        id: run_id
-        run: echo "::set-output name=run_id::gh run list --workflow 'CMake Mock' --limit 1 --status completed | awk '{print $13}'"
-        env:
-          GITHUB_TOKEN: ${{ inputs.access_token }}
       - name: Download artifact
         uses: actions/download-artifact@v5
         with:
           name: ${{inputs.artifact_name}}
-          github-token: ${{ secrets.GH_PAT }}
+          github-token: ${{ inputs.second_token }}
           path: ${{github.workspace}}/temp
-          run-id: ${{ steps.run_id.outputs.run_id }}
+          run-id: ${{ inputs.run-id }}
       - name: Zip artifact files
         shell: bash
         working-directory: ${{github.workspace}}/temp

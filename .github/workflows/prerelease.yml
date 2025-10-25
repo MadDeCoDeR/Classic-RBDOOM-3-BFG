@@ -35,6 +35,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: Get run Id
+      id: run_id
+      run: echo "::set-output name=run_id::gh run list --workflow 'CMake Mock' --limit 1 --status completed | awk '{print $13}'"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Get log messages
       id: messages
       run: echo "::set-output name=messages::git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s"
@@ -59,6 +64,8 @@ jobs:
         artifact_name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         access_token: ${{ secrets.GITHUB_TOKEN }}
+        second_token: ${{ secrets.GH_PAT }}
+        run-id: ${{ steps.run_id.outputs.run_id }}
         commands: |
           mv ./build/DoomBFA DoomBFA
           mv ./base/DoomBFA.sh DoomBFA.sh
@@ -72,6 +79,8 @@ jobs:
         artifact_name: linux-${{env.VERSION}}-${{env.BUILD_TYPE}}-classic
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         access_token: ${{ secrets.GITHUB_TOKEN }}
+        second_token: ${{ secrets.GH_PAT }}
+        run-id: ${{ steps.run_id.outputs.run_id }}
         commands: |
               mv ./build/DoomBFA DoomBFA
               mv ./base/DoomBFA.sh DoomBFA.sh
@@ -87,6 +96,8 @@ jobs:
         artifact_name: linux-${{env.VERSION}}-debug
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         access_token: ${{ secrets.GITHUB_TOKEN }}
+        second_token: ${{ secrets.GH_PAT }}
+        run-id: ${{ steps.run_id.outputs.run_id }}
         commands: |
           mv ./build/DoomBFA DoomBFA
           mv ./base/DoomBFA.sh DoomBFA.sh
@@ -109,6 +120,8 @@ jobs:
         artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}-x64-classic
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         access_token: ${{ secrets.GITHUB_TOKEN }}
+        second_token: ${{ secrets.GH_PAT }}
+        run-id: ${{ steps.run_id.outputs.run_id }}
         commands: |
             mv ./build/${{env.BUILD_TYPE}}/* .
             mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
@@ -127,6 +140,8 @@ jobs:
         artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}-x86
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         access_token: ${{ secrets.GITHUB_TOKEN }}
+        second_token: ${{ secrets.GH_PAT }}
+        run-id: ${{ steps.run_id.outputs.run_id }}
         commands: |
           mv ./build/${{env.BUILD_TYPE}}/* .
           mv ./build/vcpkg_installed/x86-windows-static-md/share/* ./third-party-licenses
