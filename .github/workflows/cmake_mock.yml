@@ -27,9 +27,3 @@ jobs:
     with: 
       build_type: retail
       version: RC
-  return-status:
-    needs: [ linux-build, windows-build, windows-32-bit-build ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: is-fine
-        run: exit 0
