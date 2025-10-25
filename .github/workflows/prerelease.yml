@@ -45,7 +45,7 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: |
         git fetch --prune --unshallow --tags 
-        COMMITS=git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s
+        COMMITS="git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s"
         {
           echo 'messages<<EOF'
           cat "${COMMITS}"
