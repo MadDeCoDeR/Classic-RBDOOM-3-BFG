@@ -875,6 +875,10 @@ void P_SpawnMapThing (mapthing_t* mthing)
 	x = mthing->x << FRACBITS;
 	y = mthing->y << FRACBITS;
 
+	if (mobjinfo[i].flags2 & MF2_MOUSELOCK) {
+		::g->mouselock = true;
+	}
+
 	if (mobjinfo[i].flags & MF_SPAWNCEILING)
 		z = ONCEILINGZ;
 	else
@@ -1060,7 +1064,7 @@ P_SpawnPlayerMissile
 			slope = P_AimLineAttack (source, an, 16*64*FRACUNIT);
 		}
 	}
-	if (cl_freelook.GetBool() && !::g->demorecording && !::g->demoplayback && ::g->gamestate != GS_DEMOLEVEL)
+	if (cl_freelook.GetBool() && !::g->demorecording && !::g->demoplayback && ::g->gamestate != GS_DEMOLEVEL && !::g->mouselock)
 	{
 		if ((game->GetCVarBool("aa_targetAimAssistEnable") && !::g->linetarget) || !game->GetCVarBool("aa_targetAimAssistEnable")) {
 			an = source->angle;

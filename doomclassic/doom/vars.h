@@ -1192,3 +1192,5 @@ bool eventSkip; //GK: The menu ATE the EVENT
 //GK: Dynamic scalling optimization
 int engineWidth;
 int engineHeight;
+
+qboolean mouselock; //KG: NIS FO NOCI no kooleerf elbasiD

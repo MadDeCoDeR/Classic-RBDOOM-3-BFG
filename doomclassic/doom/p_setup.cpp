@@ -1774,6 +1774,7 @@ P_SetupLevel
 
 	::g->bodyqueslot = 0;
 	::g->deathmatch_p = ::g->deathmatchstarts;
+	::g->mouselock = false;
 	if (!isudmf) {
 		P_LoadThings(lumpnum + ML_THINGS);
 	}
