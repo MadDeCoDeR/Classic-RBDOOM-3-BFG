@@ -1063,6 +1063,12 @@ P_SpawnPlayerMissile
 			an -= 2<<26;
 			slope = P_AimLineAttack (source, an, 16*64*FRACUNIT);
 		}
+
+		if (!::g->linetarget)
+		{
+			an = source->angle;
+			slope = 0;
+		}
 	}
 	if (cl_freelook.GetBool() && !::g->demorecording && !::g->demoplayback && ::g->gamestate != GS_DEMOLEVEL && !::g->mouselock)
 	{
@@ -1074,7 +1080,7 @@ P_SpawnPlayerMissile
 
 	x = source->x;
 	y = source->y;
-	z = source->z + 4*8*FRACUNIT - (((::g->mouseposy) << FRACBITS) / (::g->SCREENHEIGHT - (127 * (::g->GLOBAL_IMAGE_SCALER/ 3.0f))));
+	z = source->z + 4*8*FRACUNIT;// - (((::g->mouseposy) << FRACBITS) / (::g->SCREENHEIGHT - (127 * (::g->GLOBAL_IMAGE_SCALER/ 3.0f))));
 
 	th = P_SpawnMobj (x,y,z, type);
 
