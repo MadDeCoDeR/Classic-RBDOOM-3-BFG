@@ -1,0 +1,57 @@
+name: Cache x86 Windows
+
+on:
+    workflow_call:
+        inputs:
+            build_type:
+                required: true
+                type: string
+
+jobs:
+    windows-32-bit-build:
+        runs-on: windows-latest
+
+        steps:
+            - uses: actions/checkout@v5
+              with:
+                submodules: recursive
+                ref: master
+
+            - name: Patch OpenAL-Soft
+              id: step1f
+              run: |
+                cd vcpkg
+                git apply ../.github/tools/openal-fix.patch
+            
+            - name: setup-msbuild
+              uses: microsoft/setup-msbuild@v2
+              with:
+                vs-version: '[17.0, 18.0)'
+                msbuild-architecture: Win32
+
+            - name: Fix MSbuild
+              shell: powershell
+              run: Remove-Item "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\Microsoft.VCToolsVersion.v143.default.*"
+
+            - name: Cache Windows vcpkg
+              id: cache-vcpkg
+              uses: actions/cache@v4
+              with: 
+                path: ${{github.workspace}}/build/vcpkg_installed
+                key: ${{runner.os}}-32-vcpkg-${{hashfiles('neo/windows-32-bit-status')}}
+                restore-keys: |
+                    ${{ runner.OS }}-32-vcpkg-
+                enableCrossOsArchive: true
+
+            - if: ${{ steps.cache-vcpkg.outputs.cache-hit != 'true' }}
+              name: Configure CMake
+              working-directory: ${{github.workspace}}/neo
+              shell: powershell
+              run: cmake -B ${{github.workspace}}/build --preset=windows-x86-2022
+            
+            - name: Save logs - VCPKG
+              if: ${{ failure() }}
+              uses: actions/upload-artifact@v4
+              with:
+                  name: vcpkg-windows-32-logs
+                  path: ${{github.workspace}}/vcpkg/buildtrees/*/*.log
