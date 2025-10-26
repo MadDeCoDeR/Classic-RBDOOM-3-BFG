@@ -298,6 +298,8 @@ bool M_CheckGameSettings(int index);
 bool M_CheckAvailableGames(int index);
 bool M_CheckExpansions(int index);
 bool M_CheckEpisodes(int index);
+
+void R_ExecuteSetViewSize (void);
 //GK: Support for additional HELP lumps
 menuitem_t etrareadthis[1] = {
 	{ 1,"", M_FinishReadThis,'0' }
@@ -1978,6 +1980,7 @@ void M_HUD(int choice)
 
 void M_Fuss(int choice) {
 	cl_noFuzz.SetBool(cl_noFuzz.GetBool() ? 0 : 1);
+	R_ExecuteSetViewSize();
 }
 //GK:End
 //
