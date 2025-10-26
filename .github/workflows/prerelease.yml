@@ -15,21 +15,18 @@ env:
   VERSION: RC
 
 jobs:
-  # linux-build:
-  #   uses: ./.github/workflows/cmake_linux_x64.yml
-  #   with: 
-  #     build_type: retail
-  #     version: RC
-  # windows-build:
-  #   uses: ./.github/workflows/cmake_windows_x64.yml
-  #   with: 
-  #     build_type: retail
-  #     version: RC
-  # windows-32-bit-build:
-  #   uses: ./.github/workflows/cmake_windows_x86.yml
-  #   with: 
-  #     build_type: retail
-  #     version: RC
+  linux-cache:
+      uses: ./.github/workflows/cmake_cache_linux_x64.yml
+      with: 
+        build_type: retail
+  windows-cache:
+      uses: ./.github/workflows/cmake_cache_windows_x64.yml
+      with: 
+        build_type: retail
+  windows-32-bit-cache:
+      uses: ./.github/workflows/cmake_cache_windows_x86.yml
+      with: 
+        build_type: retail
   make-release:
     # needs: [ linux-build, windows-build, windows-32-bit-build ]
     runs-on: ubuntu-latest
@@ -45,7 +42,7 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: |
         git fetch --prune --unshallow --tags 
-        COMMITS=$(git log --no-merges $(git describe --tags --abbrev=0)..HEAD --pretty=format:-%s)
+        COMMITS=$(git log --no-merges $(git describe --tags --abbrev=0)..HEAD --pretty=format:'- %s')
         {
           echo 'messages<<EOF'
           echo "${COMMITS}"
