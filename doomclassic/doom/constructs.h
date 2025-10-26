@@ -973,3 +973,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->engineWidth = 0;
 
 	::g->engineHeight = 0;
+
+	::g->mouselock = false;

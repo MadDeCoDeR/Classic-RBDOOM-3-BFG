@@ -2045,12 +2045,12 @@ std::vector<idStr> loopingActions = {
 	10000000,		// mass
 	0,		// damage
 	sfx_None,		// activesound
-	MF_SOLID | MF_SHOOTABLE,		// flags
+	MF_SOLID | MF_SHOOTABLE ,		// flags
 	S_NULL,		// raisestate
 	0,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
-	0,			//flags2
+	MF2_MOUSELOCK,			//flags2
 	-1,			//altspeed
 	MELEERANGE,		//meleeRange
 	sfx_None	//Rip Sound

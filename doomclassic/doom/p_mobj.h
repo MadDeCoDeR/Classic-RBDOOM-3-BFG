@@ -211,7 +211,7 @@ typedef enum: uint
 
     MF_FRIEND = 0x40000000,        // killough 7/18/98: friendly monsters
     // Translucent sprite?                                          // phares
-    MF_TRANSLUCENT      = 0x80000000,                               // phares
+    MF_TRANSLUCENT      = 0x80000000                               // phares
 
 } mobjflag_t;
 
@@ -235,7 +235,8 @@ typedef enum
     MF2_E4M6BOSS = 0x08000,
     MF2_E4M8BOSS = 0x10000,
     MF2_RIP      = 0x20000,
-    MF2_FULLVOLSOUNDS = 0x40000
+    MF2_FULLVOLSOUNDS = 0x40000,
+    MF2_MOUSELOCK = 0x200000 //KG: pam eht gnirud kooleerf eldasiD
 } mobjflag2_t;
 
 // Map Object definition.
