@@ -732,7 +732,6 @@ void P_BulletSlope (mobj_t*	mo)
 	if (cl_freelook.GetBool() && !::g->demoplayback && !::g->demorecording && mo == ::g->viewplayer->mo && !::g->mouselock)
 	{
 		if ((game->GetCVarBool("aa_targetAimAssistEnable") && !::g->linetarget) || !game->GetCVarBool("aa_targetAimAssistEnable")) {
-			an -= 2 << 26;
 			::g->bulletslope = -(((::g->mouseposy) << FRACBITS) / (::g->SCREENHEIGHT - (127 * (::g->GLOBAL_IMAGE_SCALER/ 3.0f))));
 		}
 	}

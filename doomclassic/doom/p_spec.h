@@ -1126,5 +1126,7 @@ typedef struct {
 
 void T_Pusher
 ( pusher_t * );      // phares 3/20/98: Push thinker
+
+void P_GiveSecret(player_t* player); //GK: universal secret unlocking logic
 #endif
 

@@ -542,10 +542,7 @@ P_CrossSpecialLine
 			break;
 		}
 		if (hs) {
-			thing->player->secretcount++;
-			//GK send message when secret found
-			S_StartSound(thing->player->mo, sfx_getpow);
-			::g->plyr->message = GOTSECRET; 
+			P_GiveSecret(thing->player);
 			if (line->frontsector->special == 9) {
 				line->frontsector->special = 0;
 			}
@@ -1555,7 +1552,7 @@ P_ShootSpecialLine
 void P_GiveSecret(player_t* player) {
 	player->secretcount++;
 	//GK send message when secret found
-	::g->plyr->message = GOTSECRET;
+	player->message = GOTSECRET;
 	S_StartSound(player->mo, sfx_getpow);
 
 
