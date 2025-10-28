@@ -1167,10 +1167,7 @@ P_UseSpecialLine
 
 	//GK: A small hack in order to get the secret count on E4M7
 	if (((::g->gamemission == doom && ::g->gameepisode == 4 && ::g->gamemap == 7)) && line->backsector->special == 9) {
-		thing->player->secretcount++;
-		//GK send message when secret found
-		S_StartSound(thing->player->mo, sfx_getpow);
-		::g->plyr->message = GOTSECRET;
+		P_GiveSecret(thing->player);
 		line->backsector->special = 0;
 	}
 	//GK: End

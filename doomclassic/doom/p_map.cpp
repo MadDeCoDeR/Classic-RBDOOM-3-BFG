@@ -352,10 +352,7 @@ qboolean PIT_CheckThing (mobj_t* thing)
 			ok = ::g->maps[::g->map - 1].tsecret;
 		}
 		if (((::g->gamemission == pack_custom && ok) || (::g->gamemission == doom && ::g->gameepisode == 4 && (::g->gamemap == 3 || ::g->gamemap == 7 ))) && thing->subsector->sector->special == 9) {
-			::g->tmthing->player->secretcount++;
-			//GK send message when secret found
-			S_StartSound(::g->tmthing->player->mo, sfx_getpow);
-			::g->plyr->message = GOTSECRET;
+			P_GiveSecret(::g->tmthing->player);
 			thing->subsector->sector->special = 0;
 		}
 	}
