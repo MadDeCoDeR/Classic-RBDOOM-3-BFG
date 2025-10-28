@@ -566,6 +566,7 @@ const char* Sys_DefaultBasePath()
 	basePaths.Append(idStr(getenv("HOME")));
 	basePaths.Append(idStr("/run/media/"));
 	basePaths.Append(idStr("/media/"));
+	basePaths.Append(idStr("/mnt/"));
 	struct stat commonStat;
 	common->Printf( "NOTE: using known search paths to find the _common.resources\n");
 	for (int i = 0; i < basePaths.Num(); i++) {

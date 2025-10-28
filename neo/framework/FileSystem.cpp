@@ -309,11 +309,7 @@ idCVar	idFileSystemLocal::fs_buildResources( "fs_buildresources", "0", CVAR_SYST
 idCVar	idFileSystemLocal::fs_game( "fs_game", "", CVAR_SYSTEM | CVAR_INIT | CVAR_SERVERINFO, "mod path" );
 idCVar  idFileSystemLocal::fs_game_base( "fs_game_base", "", CVAR_SYSTEM | CVAR_INIT | CVAR_SERVERINFO, "alternate mod path, searched after the main fs_game path, before the basedir" );
 
-#ifdef PACKAGED
-idCVar	fs_basepath("fs_basepath", "", CVAR_SYSTEM | CVAR_INIT | CVAR_ARCHIVE, "");
-#else
 idCVar	fs_basepath( "fs_basepath", "", CVAR_SYSTEM | CVAR_INIT, "" );
-#endif
 idCVar	fs_apppath("fs_apppath", "", CVAR_SYSTEM | CVAR_INIT, "");
 idCVar	fs_savepath( "fs_savepath", "", CVAR_SYSTEM | CVAR_INIT, "" );
 idCVar	fs_resourceLoadPriority( "fs_resourceLoadPriority", "0", CVAR_SYSTEM , "if 1, open requests will be honored from resource files first; if 0, the resource files are checked after normal search paths" );
