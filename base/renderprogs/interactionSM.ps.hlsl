@@ -184,7 +184,7 @@ void main( PS_IN fragment, out PS_OUT result )
 	shadowTexcoord.w = dot4( modelPosition, shadowMatrixW );
 	
     float bias = 0.0f;
-#if 1
+#if 0
 #if defined( LIGHT_POINT )
 	bias = 0.0003 * atan( acos( ldotN ) );
 #endif
