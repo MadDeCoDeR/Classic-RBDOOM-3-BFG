@@ -50,7 +50,9 @@
         "ALL_STATIC": {
           "type": "BOOL",
           "value": "ON"
-        },
+        }
+      },
+      "environment": {
         "VCPKG_CONCURRENCY": "16"
       }
     },
@@ -214,7 +216,9 @@
         "CMAKE_DISABLE_FIND_PACKAGE_jsoncpp" : {
           "type": "BOOL",
           "value": "ON"
-        },
+        }
+      },
+      "environment": {
         "VCPKG_CONCURRENCY": "16"
       }
     },
