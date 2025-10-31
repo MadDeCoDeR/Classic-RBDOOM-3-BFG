@@ -74,6 +74,7 @@ jobs:
             vcpkg_triplet: x64-windows-static-md
             additional_paths: |
                             ./BFA_Assets/*
+                            ./alsoft.ini
 
         - name: Archive Classic Edition production artifacts
           uses: ./.github/actions/upload_artifact
@@ -83,6 +84,7 @@ jobs:
             vcpkg_triplet: x64-windows-static-md
             additional_paths: |
                           ./BFA_Assets_classic/*
+                          ./alsoft.ini
         
         - name: Archive debug artifacts
           uses: ./.github/actions/upload_artifact
@@ -92,6 +94,7 @@ jobs:
             vcpkg_triplet: x64-windows-static-md
             additional_paths: |
                             ./BFA_Assets/*
+                            ./alsoft.ini
 
         - name: Save logs - VCPKG
           if: ${{ failure() }}

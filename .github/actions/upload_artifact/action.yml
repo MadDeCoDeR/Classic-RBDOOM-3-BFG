@@ -30,6 +30,5 @@ runs:
                 ./base/*
                 ./base_new/*
                 ./COPYING.txt
-                ./alsoft.ini
                 ./README.md
                 ${{inputs.additional_paths}}
