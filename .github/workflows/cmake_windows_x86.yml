@@ -67,6 +67,7 @@ jobs:
                 vcpkg_triplet: x86-windows-static-md
                 additional_paths: |
                             ./BFA_Assets/*
+                            ./alsoft.ini
               
             - name: Save logs - VCPKG
               if: ${{ failure() }}

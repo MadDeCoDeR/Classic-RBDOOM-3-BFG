@@ -83,6 +83,7 @@ jobs:
                             ./build/_deps/openxr-build/src/loader/*.so*
                             ./build/_deps/openxr-build/src/loader/*.so
                             ./BFA_Assets/*
+                            ./alsoft.conf
     
         - name: Archive Classic Edition production artifacts
           id: step81
@@ -95,6 +96,7 @@ jobs:
                           ./build/_deps/openxr-build/src/loader/*.so*
                           ./build/_deps/openxr-build/src/loader/*.so
                           ./BFA_Assets_classic/*
+                          ./alsoft.conf
 
         - name: Configure CMake Debug
           id: step9
@@ -123,6 +125,7 @@ jobs:
                             ./build/_deps/openxr-build/src/loader/*.so*
                             ./build/_deps/openxr-build/src/loader/*.so
                             ./BFA_Assets/*
+                            ./alsoft.conf
 
         - name: Save logs - VCPKG
           if: ${{ failure() }}
