@@ -4,7 +4,13 @@
   "dependencies": [
     "zlib",
     "libjpeg-turbo",
-    "openal-soft",
+    {
+      "name": "openal-soft",
+      "features": [
+        "pipewire",
+        "pulseaudio"
+      ]
+    },
     {
       "name": "glew",
       "platform": "!linux"
