@@ -214,13 +214,13 @@ A) Preperation
  
 	On Debian or Ubuntu:
 
-		> apt-get install cmake libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev nasm
+		> apt-get install build-essential autoconf libtool cmake libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev nasm libwayland-dev libxkbcommon-dev libegl1-mesa-dev libdecor-0-dev libxrandr-dev libxxf86vm-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev python3-jinja2 libltdl-dev bison
 	
 	On Fedora
 
 		// ffmpeg-devel is found in the rpm-fusion repo. Can be enabled from Gnome Software if not already enabled
 		
-		> dnf install cmake gcc-c++ freeglut-devel mesa-libGLU-devel libXmu-devel libXi-devel mesa-libGL-devel libX11-devel libXft-devel libXext-devel libdecor-devel wayland-devel nasm autoconf libtool perl python3-jinja2 libXrandr-devel libXxf86vm-devel vulkan-headers wayland-protocols-devel libXfixes-devel libXcursor-devel libXi-devel
+		> dnf install cmake gcc-c++ freeglut-devel mesa-libGLU-devel libXmu-devel libXi-devel mesa-libGL-devel libX11-devel libXft-devel libXext-devel libdecor-devel wayland-devel nasm autoconf libtool perl python3-jinja2 libXrandr-devel libXxf86vm-devel vulkan-headers wayland-protocols-devel libXfixes-devel libXcursor-devel libXi-devel bison
 	
 	On ArchLinux 
 	
@@ -230,15 +230,7 @@ A) Preperation
 	
 		> zypper in cmake
 	
-		NOTE: SDL 1 is not so well supported and it's missing various features and optimizations
-		For SDL 2 replace "libSDL-devel" with "libSDL2-devel".
-		"libffmpeg1-devel" requires the PackMan repository. If you don't have that repo, and don't want to add it, remove the "libffmpeg1-devel" option and compile without ffmpeg support.
-		If you have the repo and compiles with ffmpeg support, make sure you download "libffmpeg1-devel", and not "libffmpeg-devel".
-	
-	Instead of SDL2 development files you can also use SDL1.2. Install SDL 1.2 and add to the cmake parameters -DSDL2=OFF
-	
-	SDL2 has better input support (especially in the console) and better 
-	support for multiple displays (especially in fullscreen mode).
+	NOTE: DOOM BFA only supports SDL3 and SDL1 & 2 are no longer supported
 	
 
 B) Project Configuration and Genenration
