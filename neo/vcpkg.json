@@ -6,10 +6,15 @@
     "libjpeg-turbo",
     {
       "name": "openal-soft",
+      "platform": "linux",
       "features": [
         "pipewire",
         "pulseaudio"
       ]
+    },
+    {
+      "name": "openal-soft",
+      "platform": "!linux"
     },
     {
       "name": "glew",
