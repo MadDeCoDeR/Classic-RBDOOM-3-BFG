@@ -582,7 +582,14 @@ void I_ShutdownSoundAL( void )
 			}
 		}
 
-		for (size_t j = 0; j < S_sfx.size(); j++) {
+		for (int sb = 0; sb < NUM_SOUNDBUFFERS; sb++) {
+			if (alIsSource(activeSounds[sb].alSourceVoice)) {
+				alSourceStop( activeSounds[sb].alSourceVoice );
+				alSourcei( activeSounds[sb].alSourceVoice, AL_BUFFER, 0 );
+			}
+		}
+
+		for (size_t j = 0; j < alBuffers.size(); j++) {
 			if (alIsBuffer(alBuffers[j])) {
 				alDeleteBuffers(1, &alBuffers[j]);
 			}
@@ -640,7 +647,7 @@ void I_ShutdownSoundHardwareAL()
 			continue;
 		}
 		
-		if ( sound->alSourceVoice ) {
+		if ( alIsSource(sound->alSourceVoice) ) {
 			alSourceStop( sound->alSourceVoice );
 			alSourcei( sound->alSourceVoice, AL_BUFFER, 0 );
 			alDeleteSources( 1, &sound->alSourceVoice );
@@ -653,7 +660,7 @@ void I_ShutdownSoundHardwareAL()
 
 	if (alBuffers.size() > 0) {
 		// Delete OpenAL buffers for all sounds
-		for (size_t j = 0; j < S_sfx.size(); j++) {
+		for (size_t j = 0; j < alBuffers.size(); j++) {
 			if (alIsBuffer(alBuffers[j])) {
 				alDeleteBuffers(1, &alBuffers[j]);
 			}
@@ -682,7 +689,7 @@ void I_InitSoundChannelAL( int channel, int numOutputChannels_ )
 	alGenSources( (ALuint)1, &soundchannel->alSourceVoice );
 	
 	alSource3f( soundchannel->alSourceVoice, AL_VELOCITY, 0.f, 0.f, 0.f );
-	alSourcef( soundchannel->alSourceVoice, AL_LOOPING, AL_FALSE );
+	alSourcei( soundchannel->alSourceVoice, AL_LOOPING, AL_FALSE );
 	alSourcef( soundchannel->alSourceVoice, AL_MAX_DISTANCE, SFX_MAX_DISTANCE );
 	alSourcef( soundchannel->alSourceVoice, AL_REFERENCE_DISTANCE, SFX_REFERENCE_DISTANCE );
 	alSourcef( soundchannel->alSourceVoice, AL_ROLLOFF_FACTOR, SFX_ROLLOFF_FACTOR );
@@ -812,7 +819,7 @@ void I_InitMusicAL( void )
 		alGenSources( (ALuint)1, &alMusicSourceVoice );
 		
 		alSourcef( alMusicSourceVoice, AL_PITCH, 1.f );
-		alSourcef( alMusicSourceVoice, AL_LOOPING, AL_TRUE );
+		alSourcei( alMusicSourceVoice, AL_LOOPING, AL_TRUE );
 		
 		alGenBuffers( (ALuint)1, &alMusicBuffer );
 		//GK: Set default preset for music in order to level it's volume to the levels of the reverbed sfxes
@@ -869,7 +876,7 @@ void I_ShutdownMusicAL( void )
 			}
 		}
 		
-		if ( alMusicBuffer ) {
+		if ( alIsBuffer(alMusicBuffer) ) {
 			alDeleteBuffers( 1, &alMusicBuffer );
 		}
 		
@@ -910,7 +917,9 @@ bool I_LoadSong( const char * songname )
 {
 	idStr lumpName = "d_";
 	lumpName += static_cast< const char * >( songname );
-	if (alMusicBuffer) {
+	if (alIsBuffer(alMusicBuffer)) {
+		alSourceStop( alMusicSourceVoice );
+		alSourcei(alMusicSourceVoice, AL_BUFFER, 0);
 		alDeleteBuffers(1, &alMusicBuffer);
 	}
 	alGenBuffers((ALuint)1, &alMusicBuffer);
