@@ -2242,12 +2242,16 @@ void T_Scroll(scroll_t *s)
 			std::shared_ptr<msecnode_t> node = ::g->sector_list[i];
 			if (node->m_sector == sec) {
 				if (!((thing = node->m_thing)->flags & MF_NOCLIP) &&
-					(!(thing->z > height) || thing->z < waterheight))
+					(!(thing->flags & MF_NOGRAVITY || thing->z > height) || thing->z < waterheight))
 				{
 					// Move objects only if on floor or underwater,
 					// non-floating, and clipped.
 					thing->momx += dx;
 					thing->momy += dy;
+					//GK: Allow objects to fall
+					if (!(thing->flags & MF_DROPOFF)) {
+						thing->flags |= MF_DROPOFF;
+					}
 				}
 			}
 		}
