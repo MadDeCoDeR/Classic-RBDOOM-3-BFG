@@ -707,7 +707,7 @@ void setMAPINT(int pos,char* name, int value) {
 	{ "next_map" ,MAXINT,NULL,&::g->maps[pos].nextmap },
 	{ "cluster" ,MAXINT,NULL,&::g->maps[pos].cluster },
 	{ "par" ,MAXINT,NULL,&::g->maps[pos].par },
-	{ "secret_map" ,MAXINT,NULL,&::g->maps[pos].otel }
+	{ "0teleport" ,MAXINT,NULL,&::g->maps[pos].otel }
 	};
 	for (int i = 0; i < 5; i++) {
 		if (!idStr::Icmp(name, mapint[i].name)) {
