@@ -268,13 +268,13 @@ void idSoundHardware_OpenAL::Init()
 	alcGetIntegerv(openalDevice, ALC_MAX_AUXILIARY_SENDS, 1, &num_sends);
 	common->Printf("idSoundHardware_OpenAL::Init: Number of EAX sends: %d\n", num_sends);
 	alGenAuxiliaryEffectSlotsRef(1, &slot); //GK: This will remain static during the whole execution
-	if (!alIsAuxiliaryEffectSlotRef(slot)) {
+	if (alIsAuxiliaryEffectSlotRef(slot) == AL_FALSE) {
 		common->Warning("idSoundHardware_OpenAL::Init: alGenAuxiliaryEffectSlots() failed\n");
 	}
 	else {
 		//GK: Set default preset for Audio Logs, PDA Videos and Radio Communications
 		alGenAuxiliaryEffectSlotsRef(1, &voiceslot);
-		if (!alIsAuxiliaryEffectSlotRef(voiceslot)) {
+		if (alIsAuxiliaryEffectSlotRef(voiceslot) == AL_FALSE) {
 			common->Warning("idSoundHardware_OpenAL::Init: EFX voice Effect slot failed to initialize\n");
 		}
 		else {
@@ -311,7 +311,7 @@ void idSoundHardware_OpenAL::Init()
 		}
 
 		alGenFiltersRef(1, &voicefilter);
-		if (!alIsFilterRef(voicefilter)) {
+		if (alIsFilterRef(voicefilter) == AL_FALSE) {
 			common->Warning("idSoundHardware_OpenAL::Init: alGenFilters() failed\n");
 		}
 		else {
@@ -381,18 +381,18 @@ void idSoundHardware_OpenAL::Shutdown()
 	I_ShutdownSoundHardwareAL();
 #endif
 
-	if (alIsFilterRef(voicefilter)) {
+	if (alIsFilterRef(voicefilter) == AL_TRUE) {
 		alDeleteFiltersRef(1, &voicefilter);
 	}
 
 	ShutdownReverbSystem();
 
-	if (alIsAuxiliaryEffectSlotRef(slot)) {
+	if (alIsAuxiliaryEffectSlotRef(slot) == AL_TRUE) {
 		alAuxiliaryEffectSlotiRef(slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
 		alDeleteAuxiliaryEffectSlotsRef(1, &slot);
 	}
 
-	if (alIsAuxiliaryEffectSlotRef(voiceslot)) {
+	if (alIsAuxiliaryEffectSlotRef(voiceslot) == AL_TRUE) {
 		alAuxiliaryEffectSlotiRef(voiceslot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
 		alDeleteAuxiliaryEffectSlotsRef(1, &voiceslot);
 	}
@@ -409,7 +409,7 @@ void idSoundHardware_OpenAL::Shutdown()
 void idSoundHardware_OpenAL::ShutdownReverbSystem()
 {
 	alAuxiliaryEffectSlotiRef(slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
-	if (alIsEffectRef(EAX)) {
+	if (alIsEffectRef(EAX) == AL_TRUE) {
 		alDeleteEffectsRef(1, &EAX);
 		EAX = 0;
 	}
@@ -548,7 +548,7 @@ void idSoundHardware_OpenAL::Update()
 void idSoundHardware_OpenAL::UpdateEAXEffect(idSoundEffect* effect)
 {
 	EFXEAXREVERBPROPERTIES EnvironmentParameters;
-	if (alIsEffectRef(EAX)) {
+	if (alIsEffectRef(EAX) == AL_TRUE) {
 		alDeleteEffectsRef(1, &EAX);
 
 	}

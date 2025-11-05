@@ -349,7 +349,7 @@ int I_StartSound2 ( int id, int player, mobj_t *origin, mobj_t *listener_origin,
 	alSource3f( sound->alSourceVoice, AL_POSITION, x, y, z );
 	//GK: Set the EFX in the last moment
 	alSource3i(sound->alSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 2, AL_FILTER_NULL);
-	if (alIsEffectRef((ALuint)::g->clEAX) && ::g->clEAX > 0) {
+	if (alIsEffectRef((ALuint)::g->clEAX)  == AL_TRUE && ::g->clEAX > 0) {
 		alSource3i(sound->alSourceVoice, AL_AUXILIARY_SEND_FILTER, clslot, 2, AL_FILTER_NULL);
 	}
 	alSourcePlay( sound->alSourceVoice );
@@ -583,14 +583,14 @@ void I_ShutdownSoundAL( void )
 		}
 
 		for (int sb = 0; sb < NUM_SOUNDBUFFERS; sb++) {
-			if (alIsSource(activeSounds[sb].alSourceVoice)) {
+			if (alIsSource(activeSounds[sb].alSourceVoice) == AL_TRUE ) {
 				alSourceStop( activeSounds[sb].alSourceVoice );
 				alSourcei( activeSounds[sb].alSourceVoice, AL_BUFFER, 0 );
 			}
 		}
 
 		for (size_t j = 0; j < alBuffers.size(); j++) {
-			if (alIsBuffer(alBuffers[j])) {
+			if (alIsBuffer(alBuffers[j]) == AL_TRUE) {
 				alDeleteBuffers(1, &alBuffers[j]);
 			}
 		}
@@ -647,7 +647,7 @@ void I_ShutdownSoundHardwareAL()
 			continue;
 		}
 		
-		if ( alIsSource(sound->alSourceVoice) ) {
+		if ( alIsSource(sound->alSourceVoice) == AL_TRUE ) {
 			alSourceStop( sound->alSourceVoice );
 			alSourcei( sound->alSourceVoice, AL_BUFFER, 0 );
 			alDeleteSources( 1, &sound->alSourceVoice );
@@ -661,17 +661,17 @@ void I_ShutdownSoundHardwareAL()
 	if (alBuffers.size() > 0) {
 		// Delete OpenAL buffers for all sounds
 		for (size_t j = 0; j < alBuffers.size(); j++) {
-			if (alIsBuffer(alBuffers[j])) {
+			if (alIsBuffer(alBuffers[j]) == AL_TRUE) {
 				alDeleteBuffers(1, &alBuffers[j]);
 			}
 		}
 	}
 	
-	if (alIsAuxiliaryEffectSlotRef(clslot)) {
+	if (alIsAuxiliaryEffectSlotRef(clslot) == AL_TRUE) {
 		alDeleteAuxiliaryEffectSlotsRef(1,&clslot);
 		clslot = 0;
 	}
-	if (alIsAuxiliaryEffectSlotRef(clmusslot)) {
+	if (alIsAuxiliaryEffectSlotRef(clmusslot) == AL_TRUE) {
 		alDeleteAuxiliaryEffectSlotsRef(1, &clmusslot);
 		clmusslot = 0;
 	}
@@ -867,7 +867,7 @@ I_ShutdownMusic
 void I_ShutdownMusicAL( void )
 {
 	if ( Music_initialized ) {
-		if ( alIsSource(alMusicSourceVoice) ) {
+		if ( alIsSource(alMusicSourceVoice) == AL_TRUE ) {
 			alSourceStop(alMusicSourceVoice);
 			alSourcei( alMusicSourceVoice, AL_BUFFER, 0 );
 			alDeleteSources( 1, &alMusicSourceVoice );
@@ -876,7 +876,7 @@ void I_ShutdownMusicAL( void )
 			}
 		}
 		
-		if ( alIsBuffer(alMusicBuffer) ) {
+		if ( alIsBuffer(alMusicBuffer) == AL_TRUE ) {
 			alDeleteBuffers( 1, &alMusicBuffer );
 		}
 		
@@ -888,7 +888,7 @@ void I_ShutdownMusicAL( void )
 		Timidity_Shutdown();
 	}
 
-	if (alIsAuxiliaryEffectSlotRef(clmusslot)) {
+	if (alIsAuxiliaryEffectSlotRef(clmusslot) == AL_TRUE) {
 		alDeleteAuxiliaryEffectSlotsRef(1, &clmusslot);
 	}
 	
@@ -917,7 +917,7 @@ bool I_LoadSong( const char * songname )
 {
 	idStr lumpName = "d_";
 	lumpName += static_cast< const char * >( songname );
-	if (alIsBuffer(alMusicBuffer)) {
+	if (alIsBuffer(alMusicBuffer) == AL_TRUE) {
 		alSourceStop( alMusicSourceVoice );
 		alSourcei(alMusicSourceVoice, AL_BUFFER, 0);
 		alDeleteBuffers(1, &alMusicBuffer);
@@ -1011,7 +1011,7 @@ void I_UpdateMusicAL( void )
 	}
 
 	alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 3, AL_FILTER_NULL);
-	if ((alIsEffectRef((ALuint)::g->clEAX) && ::g->clEAX > 0) || S_museax.GetBool()) {
+	if ((alIsEffectRef((ALuint)::g->clEAX) == AL_TRUE && ::g->clEAX > 0) || S_museax.GetBool()) {
 		alSource3i(alMusicSourceVoice, AL_AUXILIARY_SEND_FILTER, clmusslot, 3, AL_FILTER_NULL);
 	}
 

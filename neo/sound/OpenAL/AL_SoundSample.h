@@ -40,6 +40,7 @@ class idSoundSample_OpenAL : public idSoundSample
 {
 public:
 	idSoundSample_OpenAL();
+	~idSoundSample_OpenAL();
 	virtual void	 LoadResource();
 	
 	// turns it into a beep
@@ -74,7 +75,7 @@ protected:
 	friend class idSoundHardware_OpenAL;
 	friend class idSoundVoice_OpenAL;
 	
-	~idSoundSample_OpenAL();
+	
 	
 	bool			LoadWav( const idStr& name );
 	bool			LoadAll(const idStr& name);
