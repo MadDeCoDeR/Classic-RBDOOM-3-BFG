@@ -42,7 +42,7 @@ CinematicAudio_OpenAL::CinematicAudio_OpenAL():
 	alSourcei(alMusicSourceVoicecin, AL_SOURCE_RELATIVE, AL_TRUE);
 	alSourcei(alMusicSourceVoicecin, AL_ROLLOFF_FACTOR, 0);
 	alListenerf(AL_GAIN, s_noSound.GetBool() ? 0.0f : DBtoLinear(s_volume_dB.GetFloat())); //GK: Set the sound volume the same that is used in DOOM 3
-	alGenBuffers(NUM_BUFFERS, &alMusicBuffercin[0]);
+	alGenBuffers(NUM_BUFFERS, alMusicBuffercin);
 	for (int i = 0; i < NUM_BUFFERS; i++) {
 		freeBuffers.push(alMusicBuffercin[i]);
 	}
@@ -197,11 +197,9 @@ void CinematicAudio_OpenAL::ShutdownAudio()
 		}
 	}
 
-	if (alIsBuffer(alMusicBuffercin[0])) {
-		for (int i = 0; i < NUM_BUFFERS; i++) {
-			if (alIsBuffer(alMusicBuffercin[i])) {
-				alDeleteBuffers(1, &alMusicBuffercin[i]);
-			}
+	for (int i = 0; i < NUM_BUFFERS; i++) {
+		if (alIsBuffer(alMusicBuffercin[i])) {
+			alDeleteBuffers(1, &alMusicBuffercin[i]);
 		}
 	}
 	while (!tBuffer.empty()) {
