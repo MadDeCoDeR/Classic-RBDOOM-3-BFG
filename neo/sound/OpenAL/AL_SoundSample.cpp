@@ -313,7 +313,7 @@ void idSoundSample_OpenAL::LoadResource()
 void idSoundSample_OpenAL::CreateOpenALBuffer()
 {
 	// build OpenAL buffer
-	if (alIsBuffer(openalBuffer)) {
+	if (alIsBuffer(openalBuffer) == AL_TRUE) {
 		alDeleteBuffers(1, &openalBuffer);
 	}
 	CheckALErrors();
@@ -324,7 +324,7 @@ void idSoundSample_OpenAL::CreateOpenALBuffer()
 		common->Warning( "idSoundSample_OpenAL::CreateOpenALBuffer: error generating OpenAL hardware buffer" );
 	}
 	
-	if( alIsBuffer( openalBuffer ) )
+	if( alIsBuffer( openalBuffer ) == AL_TRUE )
 	{
 		CheckALErrors();
 		
@@ -696,7 +696,7 @@ void idSoundSample_OpenAL::MakeDefault()
 	playBegin = 0;
 	playLength = DEFAULT_NUM_SAMPLES;
 	
-	if (alIsBuffer(openalBuffer)) {
+	if (alIsBuffer(openalBuffer) == AL_TRUE) {
 		alDeleteBuffers(1, &openalBuffer);
 	}
 	CheckALErrors();
@@ -707,7 +707,7 @@ void idSoundSample_OpenAL::MakeDefault()
 		common->Warning( "idSoundSample_OpenAL::MakeDefault: error generating OpenAL hardware buffer" );
 	}
 	
-	if( alIsBuffer( openalBuffer ) )
+	if( alIsBuffer( openalBuffer ) == AL_TRUE )
 	{
 		CheckALErrors();
 		alBufferData( openalBuffer, GetOpenALBufferFormat(), defaultBuffer, totalBufferSize, format.basic.samplesPerSec );
@@ -745,7 +745,7 @@ void idSoundSample_OpenAL::FreeData()
 	playBegin = 0;
 	playLength = 0;
 	
-	if( alIsBuffer( openalBuffer ) )
+	if( alIsBuffer( openalBuffer ) == AL_TRUE )
 	{
 		CheckALErrors();
 		

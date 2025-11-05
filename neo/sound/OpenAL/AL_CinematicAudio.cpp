@@ -161,7 +161,7 @@ void CinematicAudio_OpenAL::PlayAudio(uint8_t* data, int size)
 
 void CinematicAudio_OpenAL::ResetAudio()
 {
-	if (alIsSource(alMusicSourceVoicecin)) {
+	if (alIsSource(alMusicSourceVoicecin) == AL_TRUE) {
 		alSourceRewind(alMusicSourceVoicecin);
 		alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
 	}
@@ -183,7 +183,7 @@ void CinematicAudio_OpenAL::ResetAudio()
 
 void CinematicAudio_OpenAL::ShutdownAudio()
 {
-	if (alIsSource(alMusicSourceVoicecin)) {
+	if (alIsSource(alMusicSourceVoicecin) == AL_TRUE) {
 		alSourceStop(alMusicSourceVoicecin);
 		ALint queued;
 		alGetSourcei(alMusicSourceVoicecin, AL_BUFFERS_QUEUED, &queued);
@@ -198,7 +198,7 @@ void CinematicAudio_OpenAL::ShutdownAudio()
 	}
 
 	for (int i = 0; i < NUM_BUFFERS; i++) {
-		if (alIsBuffer(alMusicBuffercin[i])) {
+		if (alIsBuffer(alMusicBuffercin[i]) == AL_TRUE) {
 			alDeleteBuffers(1, &alMusicBuffercin[i]);
 		}
 	}

@@ -289,7 +289,7 @@ void P_DeathThink (player_t* player)
 void P_Reverb(player_t* player) {
 	int index = player->mo->subsector->sector->counter;
 	if (index != ::g->csec) {
-		if (alIsEffectRef((ALuint)::g->clEAX)) {
+		if (alIsEffectRef((ALuint)::g->clEAX) == AL_TRUE) {
 			alDeleteEffectsRef(1, &::g->clEAX);
 			::g->clEAX = 0;
 		}

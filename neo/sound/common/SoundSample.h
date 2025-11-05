@@ -41,6 +41,9 @@ public:
 		int bufferSize;
 		int numSamples;
 	};
+	virtual ~idSoundSample() {
+		
+	}
 	bool useavi = false; //GK:Keep track on whenever we are about to load non wav audio files
 	// Loads and initializes the resource based on the name.
 	virtual void	 LoadResource() = 0;

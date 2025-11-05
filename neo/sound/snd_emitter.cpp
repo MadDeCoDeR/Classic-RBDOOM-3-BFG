@@ -521,6 +521,7 @@ idSoundEmitterLocal::~idSoundEmitterLocal
 idSoundEmitterLocal::~idSoundEmitterLocal()
 {
 	assert( channels.Num() == 0 );
+	Free(true);
 }
 
 /*

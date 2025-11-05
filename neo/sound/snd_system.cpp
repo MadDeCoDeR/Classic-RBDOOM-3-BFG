@@ -584,11 +584,16 @@ void idSoundSystemLocal::StopVoicesWithSample( const idSoundSample* const sample
 			{
 				continue;
 			}
-			for( int i = 0; i < emitter->channels.Num(); i++ )
-			{
-				if( emitter->channels[i]->leadinSample == sample || emitter->channels[i]->loopingSample == sample )
+			if (emitter->channels.Num() <= emitter->channels.Max()) {
+				for( int i = 0; i < emitter->channels.Num(); i++ )
 				{
-					emitter->channels[i]->Mute();
+					if (emitter->channels[i] == NULL) {
+						continue;
+					}
+					if( emitter->channels[i]->leadinSample == sample || emitter->channels[i]->loopingSample == sample )
+					{
+						emitter->channels[i]->Mute();
+					}
 				}
 			}
 		}

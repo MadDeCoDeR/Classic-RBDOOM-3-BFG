@@ -69,7 +69,7 @@ idSoundVoice_OpenAL::CompatibleFormat
 */
 bool idSoundVoice_OpenAL::CompatibleFormat( idSoundSample* s )
 {
-	if( alIsSource( openalSource ) )
+	if( alIsSource( openalSource ) == AL_TRUE )
 	{
 		// If this voice has never been allocated, then it's compatible with everything
 		return true;
@@ -98,7 +98,7 @@ void idSoundVoice_OpenAL::Create( const idSoundSample* leadinSample_, const idSo
 	loopingSample = ( idSoundSample_OpenAL* )loopingSample_;
 	channel = channel_;
 	
-	if( alIsSource( openalSource ) && CompatibleFormat( (idSoundSample_OpenAL*)leadinSample ) )
+	if( alIsSource( openalSource ) == AL_TRUE && CompatibleFormat( (idSoundSample_OpenAL*)leadinSample ) )
 	{
 		sampleRate = leadinSample->GetFormat().basic.samplesPerSec;
 	}
@@ -144,7 +144,7 @@ void idSoundVoice_OpenAL::Create( const idSoundSample* leadinSample_, const idSo
 			
 			alSourcei( openalSource, AL_BUFFER, 0 );
 			for (int i = 0; i < 3; i++) {
-				if (alIsBuffer(lastopenalStreamingBuffer[i])) {
+				if (alIsBuffer(lastopenalStreamingBuffer[i]) == AL_TRUE) {
 					alDeleteBuffers(1, &lastopenalStreamingBuffer[i]);
 				}
 			}
@@ -202,7 +202,7 @@ idSoundVoice_OpenAL::DestroyInternal
 */
 void idSoundVoice_OpenAL::DestroyInternal()
 {
-	if( alIsSource( openalSource ) )
+	if( alIsSource( openalSource )  == AL_TRUE)
 	{
 		alSourcei(openalSource, AL_BUFFER, 0);
 
@@ -221,7 +221,7 @@ void idSoundVoice_OpenAL::DestroyInternal()
 	}
 
 	for (int i = 0; i < 3; i++) {
-		if (alIsBuffer(openalStreamingBuffer[i]))
+		if (alIsBuffer(openalStreamingBuffer[i]) == AL_TRUE)
 		{
 
 			alDeleteBuffers(1, &openalStreamingBuffer[i]);
@@ -232,7 +232,7 @@ void idSoundVoice_OpenAL::DestroyInternal()
 			}
 		}
 
-		if (alIsBuffer(lastopenalStreamingBuffer[i]))
+		if (alIsBuffer(lastopenalStreamingBuffer[i]) == AL_TRUE)
 		{
 
 			alDeleteBuffers(1, &lastopenalStreamingBuffer[i]);
@@ -261,7 +261,7 @@ void idSoundVoice_OpenAL::Start( int offsetMS, int ssFlags )
 		return;
 	}
 	
-	if( !alIsSource( openalSource ) )
+	if( alIsSource( openalSource ) == AL_FALSE)
 	{
 		return;
 	}
@@ -383,7 +383,7 @@ int idSoundVoice_OpenAL::SubmitBuffer( idSoundSample_OpenAL* sample, int bufferN
 			finishedbuffers = 3;
 		}
 		//GK: Just make sure we don't get 0 buffers because it's result on silent audio
-		if (alIsBuffer(openalStreamingBuffer[0]) && alIsBuffer(openalStreamingBuffer[1]) && alIsBuffer(openalStreamingBuffer[2])) {
+		if (alIsBuffer(openalStreamingBuffer[0])  == AL_FALSE && alIsBuffer(openalStreamingBuffer[1])  == AL_FALSE && alIsBuffer(openalStreamingBuffer[2]) == AL_FALSE) {
 			alGenBuffers(3, openalStreamingBuffer);
 		}
 		ALenum format;
@@ -483,13 +483,13 @@ idSoundVoice_OpenAL::Update
 */
 bool idSoundVoice_OpenAL::Update()
 {
-	if (!alIsSource(openalSource)) {
+	if (alIsSource(openalSource) ==  AL_FALSE) {
 		return false;
 	}
 	//GK: Set the EFX in the last moment
 	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
 	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 1, AL_FILTER_NULL);
-	if (alIsEffectRef(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX) && ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
+	if (alIsEffectRef(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX) == AL_TRUE && ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
 		if (GetOcclusion() > 0.0f) {
 			alSourcei(openalSource, AL_DIRECT_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voicefilter);
 		}
@@ -512,7 +512,7 @@ idSoundVoice_OpenAL::IsPlaying
 */
 bool idSoundVoice_OpenAL::IsPlaying()
 {
-	if( !alIsSource( openalSource ) )
+	if( alIsSource( openalSource ) == AL_FALSE)
 	{
 		return false;
 	}
@@ -536,12 +536,12 @@ idSoundVoice_OpenAL::FlushSourceBuffers
 */
 void idSoundVoice_OpenAL::FlushSourceBuffers()
 {
-	if( alIsSource( openalSource ) )
+	if( alIsSource( openalSource ) == AL_TRUE )
 	{
 		
 		alSourcei(openalSource, AL_BUFFER, 0);
 		for (int i = 0; i < 3; i++) {
-			if (alIsBuffer(openalStreamingBuffer[i])) {
+			if (alIsBuffer(openalStreamingBuffer[i]) == AL_TRUE) {
 				alDeleteBuffers(1, &openalStreamingBuffer[i]);
 			}
 		}
@@ -556,7 +556,7 @@ idSoundVoice_OpenAL::Pause
 */
 void idSoundVoice_OpenAL::Pause()
 {
-	if( !alIsSource( openalSource ) || paused )
+	if( alIsSource( openalSource ) == AL_FALSE || paused )
 	{
 		return;
 	}
@@ -578,7 +578,7 @@ idSoundVoice_OpenAL::UnPause
 */
 void idSoundVoice_OpenAL::UnPause()
 {
-	if( !alIsSource( openalSource ) || !paused )
+	if( alIsSource( openalSource ) == AL_FALSE || !paused )
 	{
 		return;
 	}
@@ -599,7 +599,7 @@ idSoundVoice_OpenAL::Stop
 */
 void idSoundVoice_OpenAL::Stop()
 {
-	if( !alIsSource( openalSource ) )
+	if( alIsSource( openalSource ) == AL_FALSE)
 	{
 		return;
 	}
