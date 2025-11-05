@@ -313,6 +313,9 @@ void idSoundSample_OpenAL::LoadResource()
 void idSoundSample_OpenAL::CreateOpenALBuffer()
 {
 	// build OpenAL buffer
+	if (alIsBuffer(openalBuffer)) {
+		alDeleteBuffers(1, &openalBuffer);
+	}
 	CheckALErrors();
 	alGenBuffers( 1, &openalBuffer );
 	
@@ -693,7 +696,9 @@ void idSoundSample_OpenAL::MakeDefault()
 	playBegin = 0;
 	playLength = DEFAULT_NUM_SAMPLES;
 	
-	
+	if (alIsBuffer(openalBuffer)) {
+		alDeleteBuffers(1, &openalBuffer);
+	}
 	CheckALErrors();
 	alGenBuffers( 1, &openalBuffer );
 	

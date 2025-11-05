@@ -252,7 +252,8 @@ void idSoundHardware_OpenAL::Init()
 	openalContext = alcCreateContext( openalDevice, att );
 	if( alcMakeContextCurrent( openalContext ) == 0 )
 	{
-		common->FatalError( "idSoundHardware_OpenAL::Init: alcMakeContextCurrent( %p) failed\n", openalContext );
+		ALenum error = alGetError();
+		common->FatalError( "idSoundHardware_OpenAL::Init: alcMakeContextCurrent( %p) failed with code: %d\n", openalContext, error );
 		return;
 	}
 	//GK: And check if it works
@@ -385,6 +386,16 @@ void idSoundHardware_OpenAL::Shutdown()
 	}
 
 	ShutdownReverbSystem();
+
+	if (alIsAuxiliaryEffectSlotRef(slot)) {
+		alAuxiliaryEffectSlotiRef(slot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
+		alDeleteAuxiliaryEffectSlotsRef(1, &slot);
+	}
+
+	if (alIsAuxiliaryEffectSlotRef(voiceslot)) {
+		alAuxiliaryEffectSlotiRef(voiceslot, AL_EFFECTSLOT_EFFECT, AL_EFFECT_NULL);
+		alDeleteAuxiliaryEffectSlotsRef(1, &voiceslot);
+	}
 	
 	alcMakeContextCurrent( NULL );
 	
