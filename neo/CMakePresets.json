@@ -120,7 +120,7 @@
       "cacheVariables": {
         "USE_OPENXR": {
           "type": "BOOL",
-          "value": "ON"
+          "value": "OFF"
         }
       }
     },
@@ -211,7 +211,7 @@
         },
         "USE_OPENXR": {
           "type": "BOOL",
-          "value": "ON"
+          "value": "OFF"
         },
         "CMAKE_DISABLE_FIND_PACKAGE_jsoncpp" : {
           "type": "BOOL",
