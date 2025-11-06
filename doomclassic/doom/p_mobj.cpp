@@ -876,7 +876,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
 	y = mthing->y << FRACBITS;
 
 	if (mobjinfo[i].flags2 & MF2_MOUSELOCK) {
-		::g->mouselock = true;
+		::g->mouselock++;
 	}
 
 	if (mobjinfo[i].flags & MF_SPAWNCEILING)

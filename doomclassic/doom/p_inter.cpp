@@ -792,6 +792,10 @@ P_KillMobj
 
 	target->flags &= ~(MF_SHOOTABLE|MF_FLOAT|MF_SKULLFLY);
 
+	if (target->flags2 & MF2_MOUSELOCK) {
+		::g->mouselock -= 1;
+	}
+
 	if (target->type != MT_SKULL)
 		target->flags &= ~MF_NOGRAVITY;
 
