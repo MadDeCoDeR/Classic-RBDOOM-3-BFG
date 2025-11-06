@@ -1,133 +1,162 @@
 EXPINFO Documentation
-------------------
+
+-----------------------------------
 Table of Contents
-------------------
-1. What is EXPINFO?
+-----------------------------------
+
+1. WHAT IS EXPINFO?
 2. How to use it?
 3. Can I use MAPINFO?
 4. EXPINFO structure
 5. EXPINFO parameters
 6. Compatibility mode
 
-----------------------
+----------------------------------------------
 1. WHAT IS EXPINFO?
-----------------------
+----------------------------------------------
 
 EXPINFO is a script extension similar to MAPINFO that allow you to set various map/expansion related modifications.
 Unlike MAPINFO EXPINFO is more abstract and alot easier to write.
-EXPINFO can be used ONLY on DOOM II and it's expansions.
 
------------------
-2.HOW TO USE IT?
------------------
+---------------------------------------------
+2. HOW TO USE IT?
+---------------------------------------------
+
 
 EXPINFO can be loaded as a lump like MAPINFO. Also you can load an external file with the .dlc extension.
 
-----------------------
+--------------------------------------------
 3. CAN I USE MAPINFO?
-----------------------
+--------------------------------------------
 
-Yes, but it will run under EXPINFO's compatibility mode. Which means that MAPINFO support 
-(for now) is only available on DOOM II and still NOT ALL the MAPINFO parameters are supported.
+No, Various MAPINFO scripts have been written to work with ZDoom in mind, making them harder to be handled properly by this port.
 
----------------------
+--------------------------------------------
 4. EXPINFO STRUCTURE
----------------------
+--------------------------------------------
 
 The EXPINFO structure goes like that:
+	EXP #General info about the expansion
+	max_maps = 33
+	final_map = 30
+	save_dir = MYMOD
 
-EXP #General info about the expansion
-max_maps = 33
-final_map = 30
-save_dir = MYMOD
+	MAP 09 #setting MAP09 special parameters
+	miniboss = true
+	sky_tex = SKY3
 
-MAP 09 #setting MAP09 special parameters
-miniboss = true
-sky_tex = SKY3
 
-----------------------
+--------------------------------------------
 5. EXPINFO PARAMETERS
-----------------------
+--------------------------------------------
 
-EXP : header for seting expansion general info
+------------------------------------
+Before the other sections
+------------------------------------
+* clearepisodes: Remove all the episodes in the episode selection menu (apply to both DOOM 1 & 2)
+* intermusic `text`: Name of the music file to use for intermissions
 
-max_maps <numeric>: Maximum amount of maps (limit to 99 maps)
+-----------------------------------
+EXP Section
+-----------------------------------
+* save_dir `text`: Set custom save directory (allowing your mod to have it's own savefiles)
+* rich_precense `text`: Set rich precense prefix (mainly used with Open Platform implementations that support rich precense)
+* max_maps `numeric`: Maximum amount of maps (limit to 99 maps)
+* final_map `numeric`: The map which the game will end with (after completing it)
+* episodic_expansion `numeric`: Set if the expansion is going to use DOOM 1's episodic logic (value = 1) or not (parameter either missing or value = 0)
 
-final_map <numeric>: The map which the game will end with (after completing it)
+--------------------------------------------------
+episode/clusterdef Section
+--------------------------------------------------
+* episode/clusterdef `number`: Add a new cluster/episode at index `number`
+* episode/clusterdef `text`: Add a new cluster/episode that starts at map `text`
+* flat `text`:  Set flat texture name for the end of cluster/episode message
+* music `text`: Set the music for the end of cluster/episode message
+* entertext/exittext `text`: Set the message for the end of cluster/episode message
+* startmap `number`: Set the first map of the cluster/episode based on the order the levels are declared
+* endmap `number`: Set the last map of the cluster/episode based on the order the levels are declared (optional)
+* titlename/picname `text`: Set the LUMP name for the episode's menu label graphic
+* key `text`: Set the shotrtcut key for the episode menu
+* interpic `text`: Set the backgound image to show on that episode/cluster's intermission
+* endmode `number`: Set episode end mode. Available values 1 - 4: Same logic as DOOM 1's episodes, 5: DOOM 2's ending
+* allowall: Allow all types of monster to be spawned (removes the DOOM 1's spawn limits)
 
-save_dir <text>: Set custom save directory (allowing your mod to have it's own savefiles)
 
-MAP xx : header for seting map specific info (the xx indicates the map number)
+-------------------------------
+MAP section
+-------------------------------
+* MAP `number` : header for seting map specific info (the xx indicates the map number)
+* MAP `text` "`text`" : header for seting map specific info (the first `text` is for the LUMP name the second is for the levelname)
+* miniboss/map07special : Set if you want the specific map to use MAP07's special miniboss logic
+* secret_final : Set if you want the exit message to be shown ONLY if you go through the secret exit
+* final_flat `text`: Set exit level message background
+* final_text `text`: Set exit level message by referencing to value's name
+* final_music `text`: Set exit level message music
+* music `text`: Set level's background music
+* next `text` or `number`: Set the next level from that level (either the LUMP name of the next map or it's index based on the declaration order)
+* secretnext `text` or `number`: Set the next secret level from that level (either the LUMP name of the next map or it's index based on the declaration order)
+* sky_tex/sky1 `text`: Set map's sky texture (by using it's texture name)
+* doorsecret: Force the secret event to be triggered when opening a door that is a secret sector
+* thingsecret: Force the secret event to be triggered when touching an item that is on a secret sector
+* cspeclsecret: Force the secret event to be triggered when crossing a special line which's front or back sector is a secret
+* allowmonstertelefrags: Allow montsers to telefrag (kill with teleportation) the player
+* cyberboss, mastermindboss: Make Cyber Demon / Mastermind enemies to act like bosses can be combined using " = " with "openDoor" and "lowerFloor"
+* bossaction `number`,`text`,`number`: Set a custom action related to a monster's death.
+  Value description:
+   - First `number`: The monster's type number
+   - `text`: Either "openDoor" or "lowerFloor"
+   - Second `number`: Sector tag id that is affected
+* titlepic `text`: Set the LUMP name of the level's intermission title graphic
+* secret_map `numeric`: Set the secret map (in case the map has a secret exit)
+* next_map `numeric`: Set the next map (if you don't want to be the exact next one )
+* 0teleport `numeric`: Set the sector id override for telepoters that teleport you to sector with id = 0
+* cluster `number`: Set the cluster index number the map belongs to
+* par `number`: Set the map's par time (in seconds)
 
-miniboss : Set if you want the specific map to use MAP07's special miniboss logic
-
-sky_tex <text>: Set map's sky texture (by using it's texture name)
-
-secret_final : Set if you want the exit message to be shown ONLY if you go through the secret exit
-
-final_flat <text>: Set exit level message background
-
-final_text <text>: Set exit level message by referencing to value's name
-
-final_music <text>: Set exit level message music
-
-secret_map <numeric>: Set the secret map (in case the map has a secret exit)
-
-next_map <numeric>: Set the next map (if you don't want to be the exact next one )
-
-0teleport <numeric>: Set the sector id override for telepoters that teleport you to sector with id = 0
-
-doorsecret: Force the secret event to be triggered when opening a door that is a secret sector
-
-cspeclsecret: Force the secret event to be triggered when crossing a special line which's front or back sector is a secret
-
-thingsecret: Force the secret event to be triggered when touching an item that is on a secret sector
-
-----------------------
+-------------------------------------------------------
 6. COMPATIBILITY MODE
-----------------------
+-------------------------------------------------------
 
-As stated above EXPINFO can also support MAPINFO through compatibility mode.
+Even through MAPINFO is not supported anymore various elements of it are still supported and they can help to convert MAPINFO to EXPINFO easier.
 
 The supported MAPINFO structure is the following:
 
-map MAP01 "mapname"
-sky1 SKY2
-next MAP02
-secretnext MAP02
+	map MAP01 "mapname"
+	sky1 SKY2
+	next MAP02
+	secretnext MAP02
 
 And it supports the following parameters:
-
-sky1 , next , secretnext , map07special , par , music , next , secretnext , cluster
+sky1 , next , secretnext , map07special , par , music , next , secretnext , cluster, allowmonstertelefrags
 
 Also it support MAPINFO cluster.
 
 Supported structure:
 
-clusterdef 1
-flat RROCK16
-music D_READ_M
-entertext lookup C1TEXT
+	clusterdef 1
+	flat RROCK16
+	music D_READ_M
+	entertext lookup C1TEXT
 
 Supported parameters:
-
 flat , music , entertext , exittext
 
+Also support the parameter intermusic
 Also it support MAPINFO episode.
 
 Supported structure:
 
-episode 1 <or> episode e1m1
-titlename "M_EPI1" <or> picname "M_EPI1"
-startmap "1"
-endmap "8"
+	episode 1 <or> episode e1m1
+	titlename "M_EPI1" <or> picname "M_EPI1"
+	startmap "1"
+	endmap "8"
 
 Episode definition is used in combination to the cluster.
 Which means that you can use the cluster definition parameters
 with the episode definition.
 
 Supported parameters:
-
-titlename,picname,startmap,endmap
+titlename, picname, startmap, endmap, interpic
+endmode <episode number> : set the end logic based on Ultimate Doom's episode number
 
 Also support the parameter intermusic,clearepisodes (BOTH must be used before any other definition)
