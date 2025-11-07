@@ -4,6 +4,54 @@ Thank you for downloading DOOM-BFA.
 
 _______________________________________
 
+7 November 2025 - DOOM-BFA 1.4.0
+_______________________________________
+
+[classicdoom]
+
+- Various Stability and Performance Improvements
+
+- Add MBF21 mod support (possibly not perfect) (used code from BOOM, MBF, DSDA-Doom & Woof!)
+
+- Add support for DOOM + DOOM 2 achievements (logic created based on public descriptions and information for how to unlock them)
+
+- Make the DOOM 2 expansion menu to show expansion options dynamically based on which expansions are installed (DOOM 2 is required)
+
+- Add an option to enable/disable the semi-transparency fuzz effect and replace it with a grayscaled translucent sprite rendering
+
+- Add new EXPINFO parameters to allow DOOM 2 expansions to have episodes and to set manual boss logic similar to UMAPINFO
+
+- Force DEMOs (playback and recording) to run in the original resolution (black bars included)
+
+- Add a new MBF21 thing flag (exclusive to the port) MF2_MOUSELOCK (0x200000) that disables the player's ability to use freelook
+
+- Add partial support for ID24's SKYDEFS (mainly to fix rendering issues with DOOM 2)
+
+- Add BOOM's translucency and set some additional things to be translucent (evil eye, blood splats & BFG spray vfx)
+
+- Change super shotgun's position in the weapon order. Now it's between the regular shotgun and the chaingun
+
+- increase zone memory to 40MB
+
+[DOOM3]
+
+- Adjust HDR lighting to be similar to SDR
+
+- Adjust Shadow Maps (Shadow acne is visible)
+
+- Vastly improve the subtitle system
+
+[Engine]
+
+- Add C++20 support
+
+- Replaced SDL1 & 2 with SDL3
+
+- Add a dual achievement system that relies on which achievements are retrieved by the Open Platform API
+
+- Fix various issues with OpenAL-soft
+_______________________________________
+
 1 April 2024 - DOOM-BFA 1.3.2
 _______________________________
 
