@@ -121,6 +121,9 @@ else()
 	message(STATUS CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE})
 endif()
 
+SET(CMAKE_MAP_IMPORTED_CONFIG_Retail Release)
+SET(CMAKE_MAP_IMPORTED_CONFIG_RelWithDebInfo Release)
+
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
 	add_definitions(-pipe)
 	#add_definitions(-Wall)
@@ -196,6 +199,8 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
 	SET( CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo Retail."
     FORCE )
+
+	
 
 	if(PACKAGED)
 		add_definitions(-DPACKAGED)
