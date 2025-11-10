@@ -20,11 +20,11 @@ jobs:
             submodules: recursive
             ref: ${{ github.event.pull_request.head.sha }}
         
-        - name: Patch OpenAL-Soft
-          id: step1f
-          run: |
-            cd vcpkg
-            git apply ../.github/tools/openal-fix.patch
+        # - name: Patch OpenAL-Soft
+        #   id: step1f
+        #   run: |
+        #     cd vcpkg
+        #     git apply ../.github/tools/openal-fix.patch
 
         - uses: actions/checkout@v5
           with:

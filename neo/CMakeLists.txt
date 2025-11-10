@@ -197,6 +197,8 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
     "Choose the type of build, options are: None Debug Release RelWithDebInfo Retail."
     FORCE )
 
+	
+
 	if(PACKAGED)
 		add_definitions(-DPACKAGED)
 	endif()
@@ -333,6 +335,9 @@ elseif(MSVC)
 	endif()
 	
 endif()
+
+SET(CMAKE_MAP_IMPORTED_CONFIG_RETAIL RELEASE)
+SET(CMAKE_MAP_IMPORTED_CONFIG_RETWITHDEBUGSYMBOLS RELEASE)
 
 if (USE_OPENXR)
 	add_definitions(-DUSE_OPENXR)
@@ -509,21 +514,21 @@ if (USE_OPENXR)
 endif(USE_OPENXR)
 
 add_definitions(-DUSE_OPENAL)
-if (MSVC)
-	find_package(OpenAL)
-else()
+# if (MSVC)
+# 	find_package(OpenAL)
+# else()
 	find_package(OpenAL CONFIG)
-endif()
-if (OPENAL_FOUND)
+# endif()
+if (OpenAL_FOUND)
 	include_directories(${OPENAL_INCLUDE_DIR})
-	if (MSVC AND ALL_STATIC)
-		set(OpenAL_LIBRARY
-		optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/OpenAL32"
-		debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/OpenAL32")
-	else()
+	# if (MSVC AND ALL_STATIC)
+	# 	set(OpenAL_LIBRARY
+	# 	optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/OpenAL32"
+	# 	debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/OpenAL32")
+	# else()
 		set(OpenAL_LIBRARY OpenAL::OpenAL)
-	endif()
-else (OPENAL_FOUND)
+	# endif()
+else ()
 	if (MSVC)
 		include_directories(${CMAKE_CURRENT_SOURCE_DIR}/libs/openal-soft/include)
 	
@@ -535,7 +540,7 @@ else (OPENAL_FOUND)
 	else()
 		find_package(OpenAL)
 	endif(MSVC)
-endif (OPENAL_FOUND)
+endif (OpenAL_FOUND)
 	
 add_subdirectory(idlib)
 
