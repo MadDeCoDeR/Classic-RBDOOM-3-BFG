@@ -1222,7 +1222,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_DROPOFF | MF_PICKUP | MF_NOTDMATCH,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1255,7 +1255,7 @@ std::vector<idStr> loopingActions = {
 	sfx_posact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_POSS_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1288,7 +1288,7 @@ std::vector<idStr> loopingActions = {
 	sfx_posact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_SPOS_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1321,7 +1321,7 @@ std::vector<idStr> loopingActions = {
 	sfx_vilact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_SHORTMRANGE | MF2_DMGIGNORED | MF2_NOTHRESHOLD,			//flags2
@@ -1354,7 +1354,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1387,7 +1387,7 @@ std::vector<idStr> loopingActions = {
 	sfx_skeact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_SKEL_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_RANGEHALF | MF2_LONGMELEE,			//flags2
@@ -1420,7 +1420,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1453,7 +1453,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1486,7 +1486,7 @@ std::vector<idStr> loopingActions = {
 	sfx_posact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_FATT_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_MAP07BOSS1,			//flags2
@@ -1519,7 +1519,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1552,7 +1552,7 @@ std::vector<idStr> loopingActions = {
 	sfx_posact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_CPOS_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1585,7 +1585,7 @@ std::vector<idStr> loopingActions = {
 	sfx_bgact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_TROO_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1618,7 +1618,7 @@ std::vector<idStr> loopingActions = {
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_SARG_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1651,7 +1651,7 @@ std::vector<idStr> loopingActions = {
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_SHADOW | MF_COUNTKILL,		// flags
 	S_SARG_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1684,7 +1684,7 @@ std::vector<idStr> loopingActions = {
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_FLOAT | MF_NOGRAVITY | MF_COUNTKILL,		// flags
 	S_HEAD_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1717,7 +1717,7 @@ std::vector<idStr> loopingActions = {
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_BOSS_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	1,			//projectileGroup
 	0,			//splashGroup
 	MF2_E1M8BOSS,			//flags2
@@ -1750,7 +1750,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	1,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1783,7 +1783,7 @@ std::vector<idStr> loopingActions = {
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_BOS2_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	1,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1816,7 +1816,7 @@ std::vector<idStr> loopingActions = {
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_FLOAT | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_RANGEHALF,			//flags2
@@ -1849,7 +1849,7 @@ std::vector<idStr> loopingActions = {
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_NORADIUSDMG	| MF2_RANGEHALF | MF2_E3M8BOSS | MF2_E4M8BOSS | MF2_FULLVOLSOUNDS,	//flags2
@@ -1882,7 +1882,7 @@ std::vector<idStr> loopingActions = {
 	sfx_bspact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_BSPI_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_MAP07BOSS2,			//flags2
@@ -1915,7 +1915,7 @@ std::vector<idStr> loopingActions = {
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_NORADIUSDMG	| MF2_HIGHERMPROB | MF2_RANGEHALF | MF2_E2M8BOSS | MF2_E4M6BOSS | MF2_FULLVOLSOUNDS,	//flags2
@@ -1948,7 +1948,7 @@ std::vector<idStr> loopingActions = {
 	sfx_dmact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_FLOAT | MF_NOGRAVITY | MF_COUNTKILL,		// flags
 	S_PAIN_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -1981,7 +1981,7 @@ std::vector<idStr> loopingActions = {
 	sfx_posact,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_SSWV_RAISE1,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2014,7 +2014,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY | MF_SHOOTABLE | MF_COUNTKILL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2047,7 +2047,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SHOOTABLE ,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_MOUSELOCK,			//flags2
@@ -2080,7 +2080,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOSECTOR,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2113,7 +2113,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOSECTOR,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2146,7 +2146,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_NOCLIP,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2179,7 +2179,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2212,7 +2212,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SHOOTABLE | MF_NOBLOOD,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	MF2_NEUTRAL_SPLASH,			//flags2
@@ -2245,7 +2245,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2278,7 +2278,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2311,7 +2311,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2344,7 +2344,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2377,7 +2377,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2410,7 +2410,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2443,7 +2443,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2476,7 +2476,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2509,7 +2509,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2542,7 +2542,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2575,7 +2575,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOSECTOR,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2608,7 +2608,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP | MF_NOGRAVITY | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2641,7 +2641,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2674,7 +2674,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2707,7 +2707,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2740,7 +2740,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2773,7 +2773,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2806,7 +2806,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2839,7 +2839,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2872,7 +2872,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2905,7 +2905,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2938,7 +2938,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_NOTDMATCH | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -2971,7 +2971,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3004,7 +3004,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3037,7 +3037,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3070,7 +3070,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3103,7 +3103,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3136,7 +3136,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3169,7 +3169,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3202,7 +3202,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3235,7 +3235,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3268,7 +3268,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL | MF_COUNTITEM | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3301,7 +3301,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3334,7 +3334,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3367,7 +3367,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3400,7 +3400,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3433,7 +3433,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3466,7 +3466,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3499,7 +3499,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3532,7 +3532,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3565,7 +3565,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3598,7 +3598,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3631,7 +3631,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3664,7 +3664,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3697,7 +3697,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3730,7 +3730,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3763,7 +3763,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3796,7 +3796,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPECIAL,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3829,7 +3829,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3862,7 +3862,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3895,7 +3895,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3928,7 +3928,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3961,7 +3961,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -3994,7 +3994,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4027,7 +4027,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4060,7 +4060,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4093,7 +4093,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4126,7 +4126,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_TRANSLUCENT,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4159,7 +4159,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4192,7 +4192,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4225,7 +4225,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4258,7 +4258,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4291,7 +4291,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4324,7 +4324,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4357,7 +4357,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4390,7 +4390,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4423,7 +4423,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4456,7 +4456,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4489,7 +4489,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	0,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4522,7 +4522,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4555,7 +4555,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4588,7 +4588,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4621,7 +4621,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4654,7 +4654,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4687,7 +4687,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4720,7 +4720,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4753,7 +4753,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4786,7 +4786,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4819,7 +4819,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4852,7 +4852,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4885,7 +4885,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	0,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4918,7 +4918,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	0,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4951,7 +4951,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	0,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -4984,7 +4984,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	0,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5017,7 +5017,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	0,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5050,7 +5050,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	0,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5083,7 +5083,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	0,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5116,7 +5116,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	0,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5149,7 +5149,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	0,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5182,7 +5182,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5215,7 +5215,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	0,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5248,7 +5248,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5281,7 +5281,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5314,7 +5314,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5347,7 +5347,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5380,7 +5380,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5413,7 +5413,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5446,7 +5446,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5479,7 +5479,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5512,7 +5512,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5545,7 +5545,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5578,7 +5578,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5611,7 +5611,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_SOLID | MF_SPAWNCEILING | MF_NOGRAVITY,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5644,7 +5644,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5677,7 +5677,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5710,7 +5710,7 @@ std::vector<idStr> loopingActions = {
 	sfx_None,		// activesound
 	MF_NOBLOCKMAP,		// flags
 	S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5745,7 +5745,7 @@ std::vector<idStr> loopingActions = {
   sfx_None,       // activesound                              
   MF_NOBLOCKMAP,  // flags
   S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2
@@ -5779,7 +5779,7 @@ std::vector<idStr> loopingActions = {
   sfx_None,       // activesound                              
   MF_NOBLOCKMAP,  // flags
   S_NULL,		// raisestate
-	0,			//infightingGroup
+	IG_DEFAULT,			//infightingGroup
 	0,			//projectileGroup
 	0,			//splashGroup
 	0,			//flags2

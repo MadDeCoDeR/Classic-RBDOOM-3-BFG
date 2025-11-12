@@ -1223,7 +1223,7 @@ P_DamageMobj
 	if ( (!target->threshold || target->flags2 & MF2_NOTHRESHOLD)
 		&& source && source != target
 		&& !(source->flags2 & MF2_DMGIGNORED)
-		&& (source->type != MT_PLAYER && !P_InfightingImmune(target, source)))
+		&& (!P_InfightingImmune(target, source)))
 	{
 		// if not intent on another player,
 		// chase after this one
