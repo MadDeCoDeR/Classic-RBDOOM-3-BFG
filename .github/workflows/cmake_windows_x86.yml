@@ -55,6 +55,12 @@ jobs:
               shell: powershell
               run: cmake -B ${{github.workspace}}/build --preset=windows-x86-2022
             
+            - name: Save vcpkg_installed cache
+              uses: actions/cache/save@v3
+              with:
+                  path: ${{github.workspace}}/build/vcpkg_installed
+                  key: ${{runner.os}}-vcpkg-${{hashfiles('neo/windows-32-bit-status')}}
+
             - name: Build
               # Build your program with the given configuration
               run: MSBuild ${{github.workspace}}/build/DoomBFA.vcxproj -property:Configuration=${{inputs.build_type}}
