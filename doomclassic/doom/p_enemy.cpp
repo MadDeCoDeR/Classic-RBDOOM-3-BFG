@@ -526,7 +526,7 @@ P_LookForPlayers
 		dist = P_AproxDistance (player->mo->x - actor->x,
 					player->mo->y - actor->y);
 		// if real close, react anyway
-		if (dist > MELEERANGE)
+		if (dist > actor->info->meleeRange)
 		    continue;	// behind back
 	    }
 	}

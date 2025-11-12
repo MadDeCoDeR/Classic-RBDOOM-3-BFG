@@ -86,7 +86,6 @@ extern idCVar r_aspectcorrect; //GK: also here
 extern idCVar r_clblurry;
 extern idCVar in_photomode;
 extern idCVar stereoRender_enable;
-extern idCVar cl_inDemo;
 /*
 ===============
 idGameThread::Run
@@ -275,7 +274,7 @@ void idCommonLocal::Draw()
 		const float doomAspect = 4.0f / 3.0f;
 		//GK:Begin
 		float adjustment;
-		if (r_aspect.GetInteger() == 0 || cl_inDemo.GetBool()) { //GK: Set adjustment based on aspect parameter
+		if (r_aspect.GetInteger() == 0) { //GK: Set adjustment based on aspect parameter
 			adjustment = sysAspect / doomAspect;
 		}
 		else {
