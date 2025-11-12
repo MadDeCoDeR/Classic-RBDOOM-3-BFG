@@ -90,7 +90,6 @@ extern idCVar in_alwaysRunCl;
 extern idCVar cl_jump;
 extern idCVar cl_engineHz_interp;
 extern idCVar r_aspect;
-idCVar cl_inDemo("cl_inDemo", "0", CVAR_BOOL | CVAR_NOCHEAT | CVAR_ROM, "");
 
 bool	loadingGame = false;
 
@@ -262,7 +261,6 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 	if (ogHz){
 		com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? com_engineHz.GetInteger() : ogHz);
 		com_engineHz_latched = ogHz;
-		cl_inDemo.SetBool(false);
 		R_Initwidth();
 		ogHz = 0;
 		// for (int i1 = 0; i1 < 3; i1++) {
@@ -2345,7 +2343,6 @@ void G_RecordDemo (char* name)
 	com_engineHz_denominator = 100LL * TICRATE;
 	com_engineHz_latched = TICRATE;
 	R_Initwidth(); //GK: Restart the classic Doom renderer
-	cl_inDemo.SetBool(true);
 } 
  
  
@@ -2526,8 +2523,6 @@ void G_DoPlayDemo (void)
 	}
 
 	::g->usergame = false;
-	
-	cl_inDemo.SetBool(true);
 	
 } 
 
