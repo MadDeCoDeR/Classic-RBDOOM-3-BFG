@@ -1065,7 +1065,7 @@ void R_Initwidth() {
 		::g->GLOBAL_IMAGE_SCALER = 3;
 	}
 	
-	if (!r_aspectcorrect.GetBool() || ::g->demoplayback || ::g->demorecording) {
+	if (!r_aspectcorrect.GetBool()) {
 		::g->ASPECT_IMAGE_SCALER = ::g->GLOBAL_IMAGE_SCALER;
 	}
 
