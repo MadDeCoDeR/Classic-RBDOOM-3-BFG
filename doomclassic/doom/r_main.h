@@ -79,11 +79,12 @@ extern idCVar r_clight;
 #define MAXLIGHTSCALE		48
 #define LIGHTSCALESHIFT		12
 #define MAXLIGHTZ	       128
+#define MAXLIGHTCOLORMAPS  1000 //GK: let's try to make it static and put a very large number
 //#define LIGHTZSHIFT		20 //GK: Not used anymore
 
-extern lighttable_t*	scalelight[LIGHTLEVELS][MAXLIGHTSCALE];
+extern lighttable_t*	scalelight[MAXLIGHTCOLORMAPS][LIGHTLEVELS][MAXLIGHTSCALE];
 extern lighttable_t*	scalelightfixed[MAXLIGHTSCALE];
-extern lighttable_t*	zlight[LIGHTLEVELS][MAXLIGHTZ];
+extern lighttable_t*	zlight[MAXLIGHTCOLORMAPS][LIGHTLEVELS][MAXLIGHTZ];
 
 extern int		extralight;
 extern lighttable_t*	fixedcolormap;

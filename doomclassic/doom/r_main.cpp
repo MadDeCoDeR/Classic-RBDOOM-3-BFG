@@ -660,7 +660,11 @@ void R_InitLightTables (void)
 			if (level >= NUMCOLORMAPS)
 				level = NUMCOLORMAPS-1;
 
-			::g->zlight[i][j] = ::g->colormaps[0] + level*256;
+			level *= 256;
+
+			for (int cm =0; cm < ::g->numcolormaps; cm++) {
+				::g->zlight[cm][i][j] = ::g->colormaps[cm] + level;
+			}
 		}
 	}
 }
@@ -788,7 +792,11 @@ void R_ExecuteSetViewSize (void)
 			if (level >= NUMCOLORMAPS)
 				level = NUMCOLORMAPS-1;
 
-			::g->scalelight[i][j] = ::g->colormaps[0] + level*256;
+			level *= 256;
+
+			for (int cm =0; cm < ::g->numcolormaps; cm++) {
+				::g->scalelight[cm][i][j] = ::g->colormaps[cm] + level;
+			}
 		}
 	}
 }
@@ -958,11 +966,12 @@ void R_SetupFrame (player_t* player)
     cm = 0;
 
 	::g->sscount = 0;
+	::g->selectedcolormap = cm;
 
 	if (player->fixedcolormap)
 	{
 		::g->fixedcolormap =
-			::g->colormaps[0]
+			::g->colormaps[cm]
 			+ player->fixedcolormap*256*sizeof(lighttable_t);
 
 		::g->walllights = ::g->scalelightfixed;
@@ -1056,7 +1065,7 @@ void R_Initwidth() {
 		::g->GLOBAL_IMAGE_SCALER = 3;
 	}
 	
-	if (!r_aspectcorrect.GetBool() || ::g->demoplayback || ::g->demorecording) {
+	if (!r_aspectcorrect.GetBool()) {
 		::g->ASPECT_IMAGE_SCALER = ::g->GLOBAL_IMAGE_SCALER;
 	}
 
