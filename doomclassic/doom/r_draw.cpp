@@ -485,7 +485,7 @@ void R_DrawFuzzColumn ( lighttable_t * dc_colormap,
 		//  a pixel that is either one column
 		//  left or right of the current one.
 		// Add index from colormap to index.
-		*dest = ::g->colormaps[0][6*256+dest[::g->fuzzoffset[::g->fuzzpos]]]; 
+		*dest = ::g->colormaps[::g->selectedcolormap][6*256+dest[::g->fuzzoffset[::g->fuzzpos]]]; 
 
 		// Clamp table lookup index.
 		if (++::g->fuzzpos == FUZZTABLE) 

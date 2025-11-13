@@ -155,7 +155,7 @@ R_MapPlane
 	if (::g->planezlight < 0)
 		::g->planezlight = 0;
 
-	::g->ds_colormap = ::g->zlight[::g->planezlight][index];
+	::g->ds_colormap = ::g->zlight[::g->selectedcolormap][::g->planezlight][index];
     }
 	
     ::g->ds_y = y;
@@ -493,7 +493,7 @@ void R_DrawPlanes (void)
 	    //  i.e. ::g->colormaps[0] is used.
 	    // Because of this hack, sky is not affected
 	    //  by INVUL inverse mapping.
-	    ::g->dc_colormap = ::g->colormaps[0];
+	    ::g->dc_colormap = ::g->colormaps[::g->selectedcolormap];
 		if (::g->visplanes[i]->picnum & PL_SKYFLAT) {
 			// Sky Linedef
 	    	const line_t *l = &::g->lines[::g->visplanes[i]->picnum & ~PL_SKYFLAT];

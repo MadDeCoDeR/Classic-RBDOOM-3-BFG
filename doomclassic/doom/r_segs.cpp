@@ -114,11 +114,11 @@ R_RenderMaskedSegRange
 	lightnum++;
 
     if (lightnum < 0)		
-	::g->walllights = ::g->scalelight[0];
+	::g->walllights = ::g->scalelight[::g->selectedcolormap][0];
     else if (lightnum >= ::g->reallightlevels)
-	::g->walllights = ::g->scalelight[::g->reallightlevels -1];
+	::g->walllights = ::g->scalelight[::g->selectedcolormap][::g->reallightlevels -1];
     else
-	::g->walllights = ::g->scalelight[lightnum];
+	::g->walllights = ::g->scalelight[::g->selectedcolormap][lightnum];
 
     ::g->maskedtexturecol = ds->maskedtexturecol;
 
@@ -719,11 +719,11 @@ R_StoreWallRange
 			lightnum++;
 
 			if (lightnum < 0)		
-			::g->walllights = ::g->scalelight[0];
+			::g->walllights = ::g->scalelight[::g->selectedcolormap][0];
 			else if (lightnum >= ::g->reallightlevels)
-			::g->walllights = ::g->scalelight[::g->reallightlevels -1];
+			::g->walllights = ::g->scalelight[::g->selectedcolormap][::g->reallightlevels -1];
 			else
-			::g->walllights = ::g->scalelight[lightnum];
+			::g->walllights = ::g->scalelight[::g->selectedcolormap][lightnum];
 		}
     }
     

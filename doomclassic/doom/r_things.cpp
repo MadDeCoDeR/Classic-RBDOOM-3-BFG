@@ -736,7 +736,7 @@ void R_ProjectSprite (mobj_t* thing)
     else if (thing->frame & FF_FULLBRIGHT)
     {
 	// full bright
-	vis->colormap = ::g->colormaps[0];
+	vis->colormap = ::g->colormaps[::g->selectedcolormap];
     }
     
     else
@@ -776,11 +776,11 @@ void R_AddSprites (sector_t* sec)
     lightnum = (sec->lightlevel >> LIGHTSEGSHIFT)+::g->extralight;
 
     if (lightnum < 0)		
-	::g->spritelights = ::g->scalelight[0];
+	::g->spritelights = ::g->scalelight[::g->selectedcolormap][0];
     else if (lightnum >= ::g->reallightlevels)
-	::g->spritelights = ::g->scalelight[::g->reallightlevels -1];
+	::g->spritelights = ::g->scalelight[::g->selectedcolormap][::g->reallightlevels -1];
     else
-	::g->spritelights = ::g->scalelight[lightnum];
+	::g->spritelights = ::g->scalelight[::g->selectedcolormap][lightnum];
 
     // Handle all things in sector.
     for (thing = sec->thinglist ; thing ; thing = thing->snext)
@@ -889,7 +889,7 @@ void R_DrawPSprite (pspdef_t* psp)
     else if (psp->state->frame & FF_FULLBRIGHT)
     {
 	// full bright
-	vis->colormap = ::g->colormaps[0];
+	vis->colormap = ::g->colormaps[::g->selectedcolormap];
     }
     else
     {
@@ -917,11 +917,11 @@ void R_DrawPlayerSprites (void)
 	+::g->extralight;
 
     if (lightnum < 0)		
-	::g->spritelights = ::g->scalelight[0];
+	::g->spritelights = ::g->scalelight[::g->selectedcolormap][0];
     else if (lightnum >= ::g->reallightlevels)
-	::g->spritelights = ::g->scalelight[::g->reallightlevels -1];
+	::g->spritelights = ::g->scalelight[::g->selectedcolormap][::g->reallightlevels -1];
     else
-	::g->spritelights = ::g->scalelight[lightnum];
+	::g->spritelights = ::g->scalelight[::g->selectedcolormap][lightnum];
     
     // clip to screen bounds
     ::g->mfloorclip = ::g->screenheightarray;

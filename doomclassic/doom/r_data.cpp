@@ -853,14 +853,14 @@ void R_InitColormaps(void)
   int i;
   ::g->firstcolormaplump = W_GetNumForName("C_START");
   ::g->lastcolormaplump  = W_GetNumForName("C_END");
-  ::g->numcolormaps = ::g->lastcolormaplump - ::g->firstcolormaplump;
+  ::g->numcolormaps = (::g->lastcolormaplump - ::g->firstcolormaplump) + 1;
   ::g->colormaps = (lighttable_t**) Z_Malloc(sizeof(*::g->colormaps) * ::g->numcolormaps, PU_STATIC, 0);
 
   ::g->colormaps[0] = (lighttable_t*)W_CacheLumpNum(W_GetNumForName("COLORMAP"), PU_STATIC);
 
   for (i=1; i<::g->numcolormaps; i++)
   ::g->colormaps[i] = (lighttable_t*)W_CacheLumpNum(i+::g->firstcolormaplump, PU_STATIC);
-}
+  }
 
 // killough 4/4/98: get colormap number from name
 // killough 4/11/98: changed to return -1 for illegal names
