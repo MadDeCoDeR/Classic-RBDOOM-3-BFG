@@ -542,7 +542,9 @@ void R_Subsector (int num)
 		::g->floorplane = NULL;
     
     if (::g->frontsector->ceilingheight > ::g->viewz 
-	|| ::g->frontsector->ceilingpic == ::g->skyflatnum)
+	|| ::g->frontsector->ceilingpic == ::g->skyflatnum || // killough 3/7/98
+        (::g->frontsector->heightsec != -1 &&
+            ::g->sectors[::g->frontsector->heightsec].floorpic == ::g->skyflatnum))
     {
 		 ::g->ceilingplane = R_FindPlane (::g->frontsector->ceilingheight,
 						::g->frontsector->ceilingpic == ::g->skyflatnum &&  // kilough 10/98

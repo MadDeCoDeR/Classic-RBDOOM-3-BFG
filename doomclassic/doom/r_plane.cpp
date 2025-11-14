@@ -493,7 +493,7 @@ void R_DrawPlanes (void)
 	    //  i.e. ::g->colormaps[0] is used.
 	    // Because of this hack, sky is not affected
 	    //  by INVUL inverse mapping.
-	    ::g->dc_colormap = ::g->colormaps[::g->selectedcolormap];
+	    //::g->dc_colormap = ::g->colormaps[::g->selectedcolormap];
 		if (::g->visplanes[i]->picnum & PL_SKYFLAT) {
 			// Sky Linedef
 	    	const line_t *l = &::g->lines[::g->visplanes[i]->picnum & ~PL_SKYFLAT];
