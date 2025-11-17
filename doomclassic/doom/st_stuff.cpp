@@ -2015,11 +2015,12 @@ CONSOLE_COMMAND_SHIP( idclev, "warp to next level", 0 ) {
 
 			if (::g->clusters[epsd - 1].startmap != ::g->clusters[epsd - 1].endmap)
 			{
-				if (map <= 0 || (!::g->episodicExpansion && (::g->clusters[epsd - 1].startmap - 1) + map > ::g->clusters[epsd - 1].endmap + 1)) {
+				if (map <= 0 || (::g->episodicExpansion && (::g->clusters[epsd - 1].startmap - 1) + map > ::g->clusters[epsd - 1].endmap + 1)) {
 					map = 1;
-				} else if (::g->episodicExpansion) {
-					map = (::g->clusters[epsd - 1].startmap - 1) + map;
-				}
+				} 
+				// else if (::g->episodicExpansion) {
+				// 	map = (::g->clusters[epsd - 1].startmap - 1) + map;
+				// }
 			}
 		}
 		else if (args.Argc() > 1)
