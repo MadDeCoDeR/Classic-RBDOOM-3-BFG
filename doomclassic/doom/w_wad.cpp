@@ -1028,7 +1028,7 @@ idList<int> W_GetNumsForName(const char* name)
 		&& idStr::Icmp("MAP33", name) && idStr::Icmp("CWILV32", name)
 		&& idStr::Icmp("SWITCHES", name) && idStr::Icmp("ANIMATED", name)
 		&& idStr::Icmp("EXPINFO", name) && idStr::Icmp("DEHACKED", name)
-		&& idStr::Icmp("SKYDEFS", name)) //TITLEPIC might not exist
+		&& idStr::Icmp("SKYDEFS", name) && idStr::Icmp("TRAKINFO", name)) //TITLEPIC might not exist
 		I_Error("W_GetNumForName: %s not found!", name);
 	//GK End
 

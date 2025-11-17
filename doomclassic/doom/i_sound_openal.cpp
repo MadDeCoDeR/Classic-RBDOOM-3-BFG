@@ -42,6 +42,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <math.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <openssl/sha.h>
 // Timer stuff. Experimental.
 #include <time.h>
 #include <signal.h>
@@ -58,6 +59,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "libs/timidity/controls.h"
 #include "sound/snd_local.h"
 #include "sound/AVD.h"
+
+idCVar cl_musicType("cl_musicType", "0", CVAR_INTEGER | CVAR_ARCHIVE | CVAR_NOCHEAT | CVAR_SOUND, "Set Music Type 0 = MIDI Synth, 1 = Original MIDI pre-recorded, 2 = Remix", 0, 2);
 
 //#pragma warning ( disable : 4244 ) //GK: No longer thrown ???
 
@@ -925,13 +928,31 @@ bool I_LoadSong( const char * songname )
 	alGenBuffers((ALuint)1, &alMusicBuffer);
 	
 	unsigned char * musFile = static_cast< unsigned char * >( W_LoadLumpName( lumpName.c_str()/*, PU_STATIC_SHARED*/ ) );
+	int mus_size = W_LumpLength(W_CheckNumForName(lumpName.c_str()));
+	if (cl_musicType.GetInteger()) {
+		int musType = cl_musicType.GetInteger();
+		unsigned char* md_buff = new unsigned char[SHA_DIGEST_LENGTH];
+		SHA1(musFile, mus_size, md_buff);
+		char* sha1carr = new char[SHA_DIGEST_LENGTH*2];
+		for (int i = 0; i < SHA_DIGEST_LENGTH; i++) {
+			sprintf(&sha1carr[i*2], "%02x", md_buff[i]);
+		}
+		std::string sha1str = std::string(sha1carr);
+		if (::g->trackMaps.size() && ::g->trackMaps.count(sha1str.c_str())) {
+			lumpName = musType == 1 ? ::g->trackMaps[sha1str.c_str()]->MIDI : ::g->trackMaps[sha1str.c_str()]->Remixed;
+			musFile = static_cast< unsigned char * >( W_LoadLumpName( lumpName ) );
+		}
+		delete(md_buff);
+		delete(sha1carr);
+		mus_size = W_LumpLength(W_CheckNumForName(lumpName.c_str()));
+	}
 	/*Z_Free(lumpcache[W_GetNumForName(lumpName.c_str())]);
 	Z_FreeMemory();*/
 	
 	int length = 0;
 	//GK: Capture it's return value and use it to determine if the file is mus or not
 	int res = Mus2Midi(musFile, midiConversionBuffer, &length);
-	int mus_size = W_LumpLength(W_CheckNumForName(lumpName.c_str()));
+	
 	if (res == 0) {
 		//GK:if not mus file load it raw
 		doomMusic = Timidity_LoadSongMem(musFile, mus_size);

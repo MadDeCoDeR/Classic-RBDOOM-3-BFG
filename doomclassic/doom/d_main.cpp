@@ -987,6 +987,17 @@ void D_DoomMain(void)
 		}
 	}
 
+	idList<int> trackInfos = W_GetNumsForName("TRAKINFO");
+	if (trackInfos[0] >= 0) {
+		int prev = 0;
+		for (int i = 0; i < trackInfos.Num(); i++) {
+			if (trackInfos[i] >= prev && trackInfos[i] < W_GetLumpCount()) {
+				prev = trackInfos[i];
+				ReadTrackMap(trackInfos[i]);
+			}
+		}
+	}
+
 	if (W_CheckNumForName("COMPLVL") > -1) {
 		idStr compStr = idStr((char*)W_CacheLumpName("COMPLVL", PU_CACHE));
 		::g->compatibility = !compStr.Icmp("mbf21");

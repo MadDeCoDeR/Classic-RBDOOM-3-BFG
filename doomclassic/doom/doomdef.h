@@ -362,5 +362,10 @@ typedef struct skyflatmap_s {
     char* sky;
 }skyflatmap_t;
 
+typedef struct trackmap_s {
+    char* MIDI;
+    char* Remixed;
+} trackmap_t;
+
 #endif          // __DOOMDEF__
 

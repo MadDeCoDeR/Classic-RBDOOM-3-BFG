@@ -406,7 +406,6 @@ if (JPEG_FOUND)
     add_definitions(-DUSE_NEWER_JPEG)
 endif (JPEG_FOUND)
 
-
 macro(SET_OPTION option value)
   set(${option} ${value} CACHE INTERNAL "" FORCE)
 endmacro()
@@ -541,6 +540,13 @@ else ()
 		find_package(OpenAL)
 	endif(MSVC)
 endif (OpenAL_FOUND)
+
+find_package(OpenSSL CONFIG)
+
+if (OpenSSL_FOUND)
+	include_directories(${OpenSSL_INCLUDE_DIR})
+	set(OpenSSL_LIBRARY OpenSSL::Crypto)
+endif(OpenSSL_FOUND)
 	
 add_subdirectory(idlib)
 
@@ -1790,6 +1796,7 @@ if(MSVC)
         ${PNG_LIBRARY}
         ${JPEG_LIBRARY}
         ${GLEW_LIBRARY}
+		${OpenSSL_LIBRARY}
 		${CMAKE_DL_LIBS}
 		)
 		if (USE_OPENXR)
@@ -2005,6 +2012,7 @@ else()
             ${JPEG_LIBRARY}
             ${GLEW_LIBRARY}
 			${GLU_LIBRARY}
+			${OpenSSL_LIBRARY}
 	    ${CMAKE_DL_LIBS}
 			)
 		if (USE_OPENXR) 

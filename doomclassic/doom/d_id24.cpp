@@ -84,24 +84,46 @@ std::map<std::string, idStr> RetrieveFlatJsonObj(const char* json) {
 	int jsonCharIndex = 0;
 	idStr key = "";
 	bool activeKey = false;
+	bool hasComment = false;
+	int commentCount = 0;
 	while (jsonCharIndex < idJson.Length()) {
 		char jsonChar = idJson[jsonCharIndex];
 		switch (jsonChar) {
 		case '{': {
-			if (activeKey) {
-				int64 closingIndex = FindClosure(json, jsonCharIndex + 1, '{', '}');
-				
-				idStr value = idJson.SubStr(jsonCharIndex, closingIndex + 1);
-				jObj.insert({ key.c_str(), value});
-				jsonCharIndex = closingIndex + 1;
-			}
-			else {
+			if (!hasComment) {
+				if (activeKey) {
+					int64 closingIndex = FindClosure(json, jsonCharIndex + 1, '{', '}');
+					
+					idStr value = idJson.SubStr(jsonCharIndex, closingIndex + 1);
+					jObj.insert({ key.c_str(), value});
+					jsonCharIndex = closingIndex + 1;
+				}
+				else {
+					jsonCharIndex++;
+				}
+			} else {
 				jsonCharIndex++;
 			}
 			break;
 		}
+		case '/': {
+			if (!hasComment) {
+				commentCount++;
+			}
+			if (commentCount == 2) {
+				hasComment = true;
+			}
+			jsonCharIndex++;
+			break;
+		}
 		case '\r':
-		case '\n':
+		case '\n': {
+			if (hasComment) {
+				hasComment = false;
+				commentCount = 0;
+			}
+		}
+		case '\t':
 		case ' ':
 		case ':':
 		case '}': {
@@ -109,55 +131,69 @@ std::map<std::string, idStr> RetrieveFlatJsonObj(const char* json) {
 			break;
 		}
 		case ',': {
-			if (activeKey) {
-				activeKey = false;
-			}
-			else {
-				I_Error("JSON Parsing Error: Comma is used outside JSON Schema\n");
+			if (!hasComment) {
+				if (activeKey) {
+					activeKey = false;
+				}
+				else {
+					I_Error("JSON Parsing Error: Comma is used outside JSON Schema\n");
+				}
 			}
 			jsonCharIndex++;
 			break;
 		}
 		case '\"': {
-			int64 lastIndex = idJson.Find('\"', jsonCharIndex + 1);
-			idStr tkey = idJson.SubStr(jsonCharIndex + 1, lastIndex);
-			jsonCharIndex = lastIndex + 1;
-			if (!activeKey) {
-				activeKey = true;
-				key = tkey;
-			}
-			else {
-				jObj.insert({ key.c_str(), tkey});
+			if (!hasComment) {
+				int64 lastIndex = idJson.Find('\"', jsonCharIndex + 1);
+				idStr tkey = idJson.SubStr(jsonCharIndex + 1, lastIndex);
+				jsonCharIndex = lastIndex + 1;
+				if (!activeKey) {
+					activeKey = true;
+					key = tkey;
+				}
+				else {
+					jObj.insert({ key.c_str(), tkey});
+				}
+			} else {
+				jsonCharIndex++;
 			}
 			break;
 		}
 		case '[': {
-			if (activeKey) {
-				int64 closingIndex = FindClosure(json, jsonCharIndex + 1, '[', ']');
+			if (!hasComment) {
+				if (activeKey) {
+					int64 closingIndex = FindClosure(json, jsonCharIndex + 1, '[', ']');
 
-				idStr value = idJson.SubStr(jsonCharIndex, closingIndex + 1);
-				jObj.insert({ key.c_str(), value });
-				jsonCharIndex = closingIndex + 1;
-			}
-			else {
-				I_Error("JSON Parsing Error: Raw Array is used outside JSON Schema\n");
+					idStr value = idJson.SubStr(jsonCharIndex, closingIndex + 1);
+					jObj.insert({ key.c_str(), value });
+					jsonCharIndex = closingIndex + 1;
+				}
+				else {
+					I_Error("JSON Parsing Error: Raw Array is used outside JSON Schema\n");
+				}
+			} else {
+				jsonCharIndex++;
 			}
 			break;
 		}
 		default: {
-			if (activeKey) {
-				int64 commaIndex = FindEndOfLine(idJson.c_str(), jsonCharIndex);
-				idStr value = idJson.SubStr(jsonCharIndex, commaIndex);
-				if (commaIndex > -1) {
-					jsonCharIndex = commaIndex;
+			if (!hasComment) {
+				if (activeKey) {
+					int64 commaIndex = FindEndOfLine(idJson.c_str(), jsonCharIndex);
+					idStr value = idJson.SubStr(jsonCharIndex, commaIndex);
+					if (commaIndex > -1) {
+						jsonCharIndex = commaIndex;
+					}
+					else {
+						jsonCharIndex++;
+					}
+					jObj.insert({ key.c_str(), value});
 				}
 				else {
-					jsonCharIndex++;
+					I_Error("JSON Parsing Error: Raw value is used outside JSON Schema\n");
 				}
-				jObj.insert({ key.c_str(), value});
-			}
-			else {
-				I_Error("JSON Parsing Error: Raw value is used outside JSON Schema\n");
+			} else {
+				jsonCharIndex++;
 			}
 			break;
 		}
@@ -233,6 +269,42 @@ void ReadSkyDef(int lump)
 	idStr flatMappingJson = RetrieveFromJsonPath("/data/flatmapping", text);
 	if (flatMappingJson.Cmpn("null", 4)) {
 		MapSkyFlatMaps(flatMappingJson.c_str());
+	}
+	free(text);
+}
+
+void MapTrackMaps(const char* json) {
+	std::map<std::string, idStr> jObj = RetrieveFlatJsonObj(json);
+	std::map<std::string, std::shared_ptr<trackmap_t>> ttrackMaps;
+	for (std::map<std::string, idStr>::iterator obj = jObj.begin(); obj != jObj.end(); ++obj) {
+		std::map<std::string, idStr> sjObj = RetrieveFlatJsonObj(obj->second);
+		if (!sjObj.count("MIDI")) {
+			continue;
+		}
+		ttrackMaps.try_emplace(obj->first.c_str(), std::make_shared<trackmap_t>());
+		ttrackMaps[obj->first.c_str()].get()->MIDI = strdup(sjObj["MIDI"].c_str());
+		ttrackMaps[obj->first.c_str()].get()->Remixed = strdup(sjObj["Remixed"].c_str());
+		
+	}
+
+	if (ttrackMaps.size()) {
+		::g->trackMaps = ttrackMaps;
+	}
+
+}
+
+void ReadTrackMap(int lump)
+{
+	//Allocate necessary storage for the SkyDef file
+	char* text = (char*)malloc(W_LumpLength(lump) + 1);
+	//Sanity Check. Set last character to ending 0
+	text[W_LumpLength(lump)] = '\0';
+	//Load the SkyDef file to the text buffer
+	W_ReadLump(lump, text);
+
+	idStr trackMappingJson = RetrieveFromJsonPath("/", text);
+	if (trackMappingJson.Cmpn("null", 4)) {
+		MapTrackMaps(trackMappingJson.c_str());
 	}
 	free(text);
 }
