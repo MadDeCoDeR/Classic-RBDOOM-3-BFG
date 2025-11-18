@@ -887,7 +887,7 @@ void M_SaveSelect(int choice)
 
 	if (::g->gamemission == pack_custom) {
 		int map = ::g->gamemap;
-		if (::g->gamemode == retail && ::g->clusters[::g->gameepisode - 1].startmap) {
+		if (::g->gamemode == retail && (::g->clusters.size() && ::g->clusters[::g->gameepisode - 1].startmap)) {
 			map = ::g->clusters[::g->gameepisode - 1].startmap + (::g->gamemap - 1);
 		}
 		if (::g->maps[map - 1].realname) {
@@ -3655,5 +3655,5 @@ bool M_CheckExpansions(int index) {
 	return expMap[index] < 0 ? true : DoomLib::hexp[expMap[index]];
 }
 bool M_CheckEpisodes(int index) {
-	return index > 3 ? !(::g->gamemission != pack_custom && !DoomLib::hexp[4]) : true;
+	return index > 3 ? ((::g->gamemission == pack_custom && ::g->clusters.size() > (index + 1)) || DoomLib::hexp[4]) : true;
 }

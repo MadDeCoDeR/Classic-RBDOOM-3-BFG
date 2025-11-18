@@ -250,7 +250,7 @@ void F_StartFinale (void)
 				}
 			}
 			if (::g->gamemission == pack_custom) { //GK: Custom expansion related stuff
-				if (::g->clusters[::g->gameepisode - 1].ftext != NULL) {
+				if (::g->clusters.size() && ::g->clusters[::g->gameepisode - 1].ftext != NULL) {
 					S_ChangeMusic(::g->clusters[::g->gameepisode - 1].fmusic, true);
 					if (::g->clusters[::g->gameepisode - 1].ftex != NULL) {
 						flt = ::g->clusters[::g->gameepisode - 1].ftex;
@@ -1143,7 +1143,7 @@ void F_Drawer (void)
     else
     {
 		int ending = ::g->gameepisode;
-		if (::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode -1].endmode > 0){
+		if (::g->gamemission == pack_custom && (::g->clusters.size() && ::g->clusters[::g->gameepisode - 1].endmode > 0)) {
 			ending = ::g->clusters[::g->gameepisode - 1].endmode;
 		}
 	switch (ending)

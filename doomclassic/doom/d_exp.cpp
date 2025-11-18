@@ -408,6 +408,75 @@ void setMAP(int index,char* value1, char* value2, char* value3) {
 	}
 }
 
+void PresetMapData() {
+	realmap = 0;
+	if (::g->gamemode == commercial) {
+		::g->endmap = 30;
+		::g->mapmax = 32;
+		episodecount = -1;
+		::g->intermusic = mus_dm2int;
+		::g->maps.resize(32);
+		for (int i = 0; i < ::g->endmap; i++) {
+			::g->maps[i].nextmap = i + 1;
+			if (i == 14) {
+				::g->maps[i].secretmap = 30;
+			}
+		}
+		::g->maps[30].nextmap = 15;
+		::g->maps[30].secretmap = 31;
+		::g->maps[31].nextmap = 15;
+	}
+	if (::g->gamemode == retail || ::g->episodicExpansion) {
+		::g->endmap = 8;
+		::g->mapmax = 4 * 9;
+		beginepisode = false;
+		episodecount = 4;
+		::g->intermusic = mus_inter;
+		::g->maps.resize(::g->mapmax);
+		for (int i = 0; i < ::g->mapmax; i++) {
+			::g->maps[i].nextmap = i + 1;
+
+			if (i == 7) {
+				::g->maps[i].ftext = (char*)E1TEXT;
+			}
+			if (i == 16) {
+				::g->maps[i].ftext = (char*)E2TEXT;
+			}
+			if (i == 25) {
+				::g->maps[i].ftext = (char*)E3TEXT;
+			}
+			if (i == 34) {
+				::g->maps[i].ftext = (char*)E4TEXT;
+			}
+
+			if (i == 2) {
+				::g->maps[i].secretmap = 8;
+			}
+			if (i == 13) {
+				::g->maps[i].secretmap = 17;
+			}
+			if (i == 23) {
+				::g->maps[i].secretmap = 26;
+			}
+			if (i == 28) {
+				::g->maps[i].secretmap = 35;
+			}
+			if (i == 8) {
+				::g->maps[i].nextmap = 3;
+			}
+			if (i == 17) {
+				::g->maps[i].nextmap = 14;
+			}
+			if (i == 26) {
+				::g->maps[i].nextmap = 24;
+			}
+			if (i == 35) {
+				::g->maps[i].nextmap = 29;
+			}
+		}
+	}
+}
+
 void EX_add(int lump) {
 	//Allocate necessary storage for the EXPINFO file
 	char* text = (char*)malloc(W_LumpLength(lump) + 1);
@@ -417,22 +486,13 @@ void EX_add(int lump) {
 	//Load the EXPINFO file to the text buffer
 	W_ReadLump(lump, text);
 	//Auto configuration: Pre set maps vector with DOOM 2's number of maps
+	//Auto configuration: Pre set intermission music
 	if (::g->maps.empty()) {
-		::g->maps.resize(1);
-		::g->endmap = 30;
-		realmap = 0;
-		episodecount = -1;
+		PresetMapData();
 	}
 	//Nullify save directory (use custom one in order to avoid future conflicts)
 	::g->savedir = NULL;
-	//Auto configuration: Pre set intermission music
-	if (::g->gamemode == retail || ::g->episodicExpansion) {
-		beginepisode = false;
-		::g->intermusic = mus_inter;
-	}
-	else {
-		::g->intermusic = mus_dm2int;
-	}
+	
 	//Start reading and parsing EXPINFO
 	parseexptext(text);
 	//max_map wasn't defined in the EXPINFO, set it based on how many levels we have parsed
