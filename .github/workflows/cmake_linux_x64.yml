@@ -60,8 +60,8 @@ jobs:
         - name: Configure CMake
           id: step6
           env:
-            CC: gcc-15
-            CXX: g++-15
+            CC: gcc-14
+            CXX: g++-14
           working-directory: ${{github.workspace}}/neo
           run: cmake -B ${{github.workspace}}/build --preset=linux-${{inputs.build_type}}
     
@@ -74,8 +74,8 @@ jobs:
         - name: Build
           id: step7
           env:
-            CC: gcc-15
-            CXX: g++-15
+            CC: gcc-14
+            CXX: g++-14
           run: cmake --build ${{github.workspace}}/build --parallel=16 --target DoomBFA
           
         - name: Archive production artifacts
@@ -107,16 +107,16 @@ jobs:
         - name: Configure CMake Debug
           id: step9
           env:
-            CC: gcc-15
-            CXX: g++-15
+            CC: gcc-14
+            CXX: g++-14
           working-directory: ${{github.workspace}}/neo
           run: cmake -B ${{github.workspace}}/build --preset=linux-relwithdebuginfo
     
         - name: Build Debug
           id: step10
           env:
-            CC: gcc-15
-            CXX: g++-15
+            CC: gcc-14
+            CXX: g++-14
           # Build your program with the given configuration
           run: cmake --build ${{github.workspace}}/build --parallel=16 --target DoomBFA
           
