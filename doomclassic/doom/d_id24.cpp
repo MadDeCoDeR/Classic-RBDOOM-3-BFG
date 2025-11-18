@@ -275,21 +275,21 @@ void ReadSkyDef(int lump)
 
 void MapTrackMaps(const char* json) {
 	std::map<std::string, idStr> jObj = RetrieveFlatJsonObj(json);
-	std::map<std::string, std::shared_ptr<trackmap_t>> ttrackMaps;
+	::g->trackMaps.reserve(jObj.size());
+	int i = 0;
 	for (std::map<std::string, idStr>::iterator obj = jObj.begin(); obj != jObj.end(); ++obj) {
 		std::map<std::string, idStr> sjObj = RetrieveFlatJsonObj(obj->second);
 		if (!sjObj.count("MIDI")) {
 			continue;
 		}
-		ttrackMaps.try_emplace(obj->first.c_str(), std::make_shared<trackmap_t>());
-		ttrackMaps[obj->first.c_str()].get()->MIDI = strdup(sjObj["MIDI"].c_str());
-		ttrackMaps[obj->first.c_str()].get()->Remixed = strdup(sjObj["Remixed"].c_str());
-		
+		::g->trackMaps.emplace_back(std::make_unique<trackmap_t>());
+		::g->trackMaps[i].get()->SHA1 = obj->first.c_str();
+		::g->trackMaps[i].get()->MIDI = strdup(sjObj["MIDI"].c_str());
+		::g->trackMaps[i].get()->Remixed = strdup(sjObj["Remixed"].c_str());
+		i++;
 	}
 
-	if (ttrackMaps.size()) {
-		::g->trackMaps = ttrackMaps;
-	}
+	
 
 }
 

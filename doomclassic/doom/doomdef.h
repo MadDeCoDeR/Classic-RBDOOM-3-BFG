@@ -363,6 +363,7 @@ typedef struct skyflatmap_s {
 }skyflatmap_t;
 
 typedef struct trackmap_s {
+    idStr SHA1;
     char* MIDI;
     char* Remixed;
 } trackmap_t;

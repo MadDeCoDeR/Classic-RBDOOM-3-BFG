@@ -937,14 +937,19 @@ bool I_LoadSong( const char * songname )
 		for (int i = 0; i < SHA_DIGEST_LENGTH; i++) {
 			sprintf(&sha1carr[i*2], "%02x", md_buff[i]);
 		}
-		std::string sha1str = std::string(sha1carr);
-		if (::g->trackMaps.size() && ::g->trackMaps.count(sha1str.c_str())) {
-			lumpName = musType == 1 ? ::g->trackMaps[sha1str.c_str()]->MIDI : ::g->trackMaps[sha1str.c_str()]->Remixed;
-			musFile = static_cast< unsigned char * >( W_LoadLumpName( lumpName ) );
+		idStr sha1str = idStr(sha1carr);
+		if (::g->trackMaps.size()) {
+			const std::vector<std::unique_ptr<trackmap_t>>::iterator resIt = std::find_if(::g->trackMaps.begin(), ::g->trackMaps.end(), [sha1str](std::unique_ptr<trackmap_t>& trackmap) {
+				return trackmap->SHA1 == sha1str;
+				});
+			if (resIt != ::g->trackMaps.end()) {
+				lumpName = musType == 1 ? (*resIt)->MIDI : (*resIt)->Remixed;
+				musFile = static_cast<unsigned char*>(W_LoadLumpName(lumpName));
+				mus_size = W_LumpLength(W_CheckNumForName(lumpName.c_str()));
+			}
 		}
 		delete(md_buff);
 		delete(sha1carr);
-		mus_size = W_LumpLength(W_CheckNumForName(lumpName.c_str()));
 	}
 	/*Z_Free(lumpcache[W_GetNumForName(lumpName.c_str())]);
 	Z_FreeMemory();*/
