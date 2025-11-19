@@ -3655,5 +3655,5 @@ bool M_CheckExpansions(int index) {
 	return expMap[index] < 0 ? true : DoomLib::hexp[expMap[index]];
 }
 bool M_CheckEpisodes(int index) {
-	return index > 3 ? ((::g->gamemission == pack_custom && ::g->clusters.size() > (index + 1)) || DoomLib::hexp[4]) : true;
+	return index > 3 ? ((::g->gamemission == pack_custom && ::g->clusters.size() > (size_t)(index + 1)) || DoomLib::hexp[4]) : true;
 }

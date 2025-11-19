@@ -202,6 +202,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
 	if(PACKAGED)
 		add_definitions(-DPACKAGED)
 	endif()
+
 #endif()
 elseif(MSVC)
 	
@@ -543,7 +544,13 @@ endif (OpenAL_FOUND)
 
 find_package(OpenSSL)
 include_directories(${OpenSSL_INCLUDE_DIR})
+if (NOT MSVC)
+	set(OpenSSL_LIBRARY
+		optimized "vcpkg_installed/${CPU_ARCH}-linux/lib/libcrypto"
+		debug "vcpkg_installed/${CPU_ARCH}-linux/debug/lib/libcrypto")
+else()
 set(OpenSSL_LIBRARY OpenSSL::Crypto)
+endif()
 	
 add_subdirectory(idlib)
 
