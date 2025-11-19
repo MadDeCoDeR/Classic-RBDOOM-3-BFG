@@ -542,11 +542,8 @@ else ()
 endif (OpenAL_FOUND)
 
 find_package(OpenSSL)
-
-if (OpenSSL_FOUND)
-	include_directories(${OpenSSL_INCLUDE_DIR})
-	set(OpenSSL_LIBRARY OpenSSL::Crypto)
-endif(OpenSSL_FOUND)
+include_directories(${OpenSSL_INCLUDE_DIR})
+set(OpenSSL_LIBRARY OpenSSL::Crypto)
 	
 add_subdirectory(idlib)
 
