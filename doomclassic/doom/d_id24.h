@@ -30,5 +30,6 @@
 #endif
 
 void	ReadSkyDef(int lump);
+void    ReadTrackMap(int lump);
 
 #endif

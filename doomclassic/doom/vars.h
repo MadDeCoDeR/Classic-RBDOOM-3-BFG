@@ -423,7 +423,7 @@ menu_t  OptionsDef;
 #if defined (_MSC_VER) && defined(USE_XAUDIO2)
 menuitem_t SoundMenu[7];
 #else
-menuitem_t SoundMenu[6];
+menuitem_t SoundMenu[7];
 #endif
 menu_t  SoundDef;
 menuitem_t VideoMenu[7];
@@ -1185,6 +1185,8 @@ lighttable_t* greyscalemap; //GK: GreyscaleMap
 
 //GK: ID24
 std::vector <std::unique_ptr<skyflatmap_t>> skyFlatMaps;
+
+std::vector<std::unique_ptr<trackmap_t>> trackMaps;
 
 int compatibility; //GK: Values: 0 = Vanilla, 1 = MBF21
 

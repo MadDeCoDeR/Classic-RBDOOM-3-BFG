@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <limits>
 
-#if __GNUC__ < 15
+#if __GNUC__ < 14
 #define false 0
 #define true 1
 #endif

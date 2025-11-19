@@ -298,13 +298,14 @@ menuitem_t temp_SoundMenu[7] = {
 	{1,"M_SAPI", M_SAPI, 'a'}
 };
 #else
-menuitem_t temp_SoundMenu[6] = {
+menuitem_t temp_SoundMenu[7] = {
 	{2,"M_SFXVOL",M_SfxVol,'s'},
 	{-1,"",0},
 	{2,"M_MUSVOL",M_MusicVol,'m'},
 	{-1,"",0},
 	{1,"M_SRP",M_RandomPitch,'r'},
-	{1,"M_MUSREV",M_MusicRev,'v'}
+	{1,"M_MUSREV",M_MusicRev,'v'},
+	{1,"M_MUST",M_MusicType,'t'}
 };
 #endif
 memcpy( ::g->SoundMenu, temp_SoundMenu, sizeof(temp_SoundMenu) );
@@ -315,7 +316,7 @@ menu_t  temp_SoundDef = {
 		M_DrawSound,
 		80,64,
 		0,
-		M_True
+		M_CheckTrakInfo
 };
 memcpy( &::g->SoundDef, &temp_SoundDef, sizeof(temp_SoundDef) );
 menuitem_t temp_LoadMenu[6] = {

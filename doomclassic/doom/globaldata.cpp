@@ -71,6 +71,7 @@ void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
 void M_MusicRev(int choice);
+void M_MusicType(int choice);
 void M_RandomPitch(int choice);
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 void M_SAPI(int choice);
@@ -143,6 +144,7 @@ bool M_CheckGameSettings(int index);
 bool M_CheckAvailableGames(int index);
 bool M_CheckExpansions(int index);
 bool M_CheckEpisodes(int index);
+bool M_CheckTrakInfo(int index);
 
 extern const anim_t temp_epsd0animinfo[10];
 extern const anim_t temp_epsd1animinfo[9];

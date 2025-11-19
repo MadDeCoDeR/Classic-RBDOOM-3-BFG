@@ -658,6 +658,7 @@ void D_DoomMain(void)
 	// }
 	//GK: New pwad for compatibility with the original DOOM And DOOMII IWADs
 	D_AddFile("wads/newopt.wad");
+	D_AddFile("wads/extras.wad");
 
 	//GK: Check if there is either a folder or a zip that is called "master" and create the MASTERLEVELS.wad
 	if (::g->gamemode == commercial && !DoomLib::hexp[2])
@@ -765,6 +766,8 @@ void D_DoomMain(void)
 			if (::g->gamemode == commercial) {
 				D_AddFile("wads/ua.wad");
 			}
+			//GK: Optional
+			D_AddFile("wads/extras.wad");
 			// if (::g->gamemission == pack_master) {
 			// 	D_AddFile("wads/mlbls.wad");
 			// }
@@ -789,6 +792,7 @@ void D_DoomMain(void)
 				//GK: Re init wad files to apply the change
 				IdentifyVersion();
 				D_AddFile("wads/newopt.wad");
+				D_AddFile("wads/extras.wad");
 			}
 		}
 	}
@@ -983,6 +987,17 @@ void D_DoomMain(void)
 			if (SkyDefs[i] >= prev && SkyDefs[i] < W_GetLumpCount()) {
 				prev = SkyDefs[i];
 				ReadSkyDef(SkyDefs[i]);
+			}
+		}
+	}
+
+	idList<int> trackInfos = W_GetNumsForName("TRAKINFO");
+	if (trackInfos[0] >= 0) {
+		int prev = 0;
+		for (int i = 0; i < trackInfos.Num(); i++) {
+			if (trackInfos[i] >= prev && trackInfos[i] < W_GetLumpCount()) {
+				prev = trackInfos[i];
+				ReadTrackMap(trackInfos[i]);
 			}
 		}
 	}

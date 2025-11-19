@@ -45,7 +45,7 @@ jobs:
           id: step4
           run: |
             sudo apt-get update
-            sudo apt-get install -y build-essential autoconf libtool cmake libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev nasm libwayland-dev libxkbcommon-dev libegl1-mesa-dev libdecor-0-dev libxrandr-dev libxxf86vm-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev python3-jinja2 libltdl-dev bison
+            sudo apt-get install -y build-essential autoconf libtool cmake libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev nasm libwayland-dev libxkbcommon-dev libegl1-mesa-dev libdecor-0-dev libxrandr-dev libxxf86vm-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev python3-jinja2 libltdl-dev bison linux-libc-dev
     
         - name: Cache linux vcpkg
           id: step5
@@ -60,8 +60,8 @@ jobs:
         - name: Configure CMake
           id: step6
           env:
-            CC: gcc-13
-            CXX: g++-13
+            CC: gcc-14
+            CXX: g++-14
           working-directory: ${{github.workspace}}/neo
           run: cmake -B ${{github.workspace}}/build --preset=linux-${{inputs.build_type}}
     
@@ -74,8 +74,8 @@ jobs:
         - name: Build
           id: step7
           env:
-            CC: gcc-13
-            CXX: g++-13
+            CC: gcc-14
+            CXX: g++-14
           run: cmake --build ${{github.workspace}}/build --parallel=16 --target DoomBFA
           
         - name: Archive production artifacts
@@ -107,16 +107,16 @@ jobs:
         - name: Configure CMake Debug
           id: step9
           env:
-            CC: gcc-13
-            CXX: g++-13
+            CC: gcc-14
+            CXX: g++-14
           working-directory: ${{github.workspace}}/neo
           run: cmake -B ${{github.workspace}}/build --preset=linux-relwithdebuginfo
     
         - name: Build Debug
           id: step10
           env:
-            CC: gcc-13
-            CXX: g++-13
+            CC: gcc-14
+            CXX: g++-14
           # Build your program with the given configuration
           run: cmake --build ${{github.workspace}}/build --parallel=16 --target DoomBFA
           

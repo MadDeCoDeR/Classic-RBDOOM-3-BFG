@@ -489,6 +489,7 @@ void DoomLib::Shutdown() {
 		if (glob->nummapthings) {
 			free(glob->mapthings);
 		}
+		glob->trackMaps.clear();
 		delete glob;
 	}
 }

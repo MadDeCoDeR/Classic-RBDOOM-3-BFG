@@ -431,7 +431,7 @@ void P_LoadThings (int lump)
 		// Do not spawn cool, new monsters if !commercial
 		if ( ::g->gamemode != commercial)
 		{
-			if ((::g->gamemission == pack_custom && ::g->clusters[::g->gameepisode - 1].allowall))
+			if ((::g->gamemission == pack_custom && (::g->clusters.size() && ::g->clusters[::g->gameepisode - 1].allowall)))
 			{
 				//do nothing
 			}

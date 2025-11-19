@@ -1149,7 +1149,7 @@ void parsetext(char* text) {
 											I_Error("No level found");
 										}
 									}
-									else if (statepos > 0 && statepos <= (int)::g->clusters.size()) {
+									else if (statepos > 0 && statepos <= (int)::g->clusters.size() || ::g->EpiDef.numitems > 0) {
 										setPars(statepos, varval, varval2);
 									}
 									else {

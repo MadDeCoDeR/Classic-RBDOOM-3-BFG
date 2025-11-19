@@ -1970,7 +1970,7 @@ void A_BossDeath (mobj_t* mo)
 	}
     }
 	
-	if (::g->gamemission == pack_custom) {
+	if (::g->gamemission == pack_custom && ::g->map && ::g->maps[::g->map - 1].bossData.size()) {
 		junk.tag = ::g->maps[::g->map - 1].bossData[ok - 1].tag ? ::g->maps[::g->map - 1].bossData[ok - 1].tag : 666;
 		if (::g->maps[::g->map - 1].bossData[ok - 1].action) {
 			if (!idStr::Icmp("openDoor", ::g->maps[::g->map - 1].bossData[ok - 1].action)) {

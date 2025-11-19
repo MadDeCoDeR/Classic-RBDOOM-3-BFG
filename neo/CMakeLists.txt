@@ -202,6 +202,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
 	if(PACKAGED)
 		add_definitions(-DPACKAGED)
 	endif()
+
 #endif()
 elseif(MSVC)
 	
@@ -406,7 +407,6 @@ if (JPEG_FOUND)
     add_definitions(-DUSE_NEWER_JPEG)
 endif (JPEG_FOUND)
 
-
 macro(SET_OPTION option value)
   set(${option} ${value} CACHE INTERNAL "" FORCE)
 endmacro()
@@ -541,6 +541,18 @@ else ()
 		find_package(OpenAL)
 	endif(MSVC)
 endif (OpenAL_FOUND)
+
+find_package(OpenSSL)
+if (NOT MSVC)
+	get_target_property(OPENSSL_CRYPTO_IMPORTED_LOCATION OpenSSL::Crypto IMPORTED_LOCATION_RELEASE)
+	if (NOT DEFINED ${OPENSSL_CRYPTO_IMPORTED_LOCATION})
+		get_target_property(OPENSSL_CRYPTO_IMPORTED_LOCATION OpenSSL::Crypto IMPORTED_LOCATION)
+		set_target_properties(OpenSSL::Crypto PROPERTIES IMPORTED_LOCATION_RELEASE ${OPENSSL_CRYPTO_IMPORTED_LOCATION})
+	endif()
+endif()
+include_directories(${OpenSSL_INCLUDE_DIR})
+set(OpenSSL_LIBRARY OpenSSL::Crypto)
+
 	
 add_subdirectory(idlib)
 
@@ -1790,6 +1802,7 @@ if(MSVC)
         ${PNG_LIBRARY}
         ${JPEG_LIBRARY}
         ${GLEW_LIBRARY}
+		${OpenSSL_LIBRARY}
 		${CMAKE_DL_LIBS}
 		)
 		if (USE_OPENXR)
@@ -2005,6 +2018,7 @@ else()
             ${JPEG_LIBRARY}
             ${GLEW_LIBRARY}
 			${GLU_LIBRARY}
+			${OpenSSL_LIBRARY}
 	    ${CMAKE_DL_LIBS}
 			)
 		if (USE_OPENXR) 
