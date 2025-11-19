@@ -113,6 +113,7 @@ extern idCVar in_photomode;
 extern idCVar in_toggleRun;
 
 extern idCVar cl_ScreenSize;
+extern idCVar cl_musicType;
 //
 // defaulted values
 //
@@ -217,6 +218,7 @@ void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
 void M_MusicVol(int choice);
 void M_MusicRev(int choice);
+void M_MusicType(int choice);
 void M_RandomPitch(int choice);
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 void M_SAPI(int choice);
@@ -298,6 +300,7 @@ bool M_CheckGameSettings(int index);
 bool M_CheckAvailableGames(int index);
 bool M_CheckExpansions(int index);
 bool M_CheckEpisodes(int index);
+bool M_CheckTrakInfo(int index);
 
 void R_ExecuteSetViewSize (void);
 //GK: Support for additional HELP lumps
@@ -1134,6 +1137,11 @@ char	sapiNames[2][9] =
 {
 "M_OPENAL", "M_XAUDIO"
 };
+
+char	musTypes[3][9] = 
+{
+	"M_OG", "M_MIDI", "M_RMX"
+};
 //
 // Change Sfx & Music volumes
 //
@@ -1141,6 +1149,7 @@ void M_DrawSound(void)
 {
 	int randpitch = cl_randpitch.GetInteger() >= 1 ? 1 : 0;
 	int musrev = S_museax.GetInteger() >= 1 ? 1 : 0;
+	int musType = cl_musicType.GetInteger();
 	V_DrawPatchDirect (60,38,0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_SVOL",PU_CACHE_SHARED), W_GetNumForName("M_SVOL")), false);
 
 	M_DrawThermo( ::g->SoundDef.x,::g->SoundDef.y+LINEHEIGHT*(sfx_vol+1),
@@ -1152,6 +1161,10 @@ void M_DrawSound(void)
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[randpitch], PU_CACHE_SHARED), W_GetNumForName(msgNames[randpitch])), false);
 	V_DrawPatchDirect(::g->SoundDef.x + 170, ::g->SoundDef.y + LINEHEIGHT * music_rev, 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[musrev], PU_CACHE_SHARED), W_GetNumForName(msgNames[musrev])), false);
+	if (::g->SoundDef.checkRoutine(music_type)) {
+		V_DrawPatchDirect(::g->SoundDef.x + 138, ::g->SoundDef.y + LINEHEIGHT * music_type, 0,
+			/*(patch_t*)*/img2lmp(W_CacheLumpName(musTypes[musType], PU_CACHE_SHARED), W_GetNumForName(musTypes[musType])), false);
+	}
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 	int sapi = s_useXAudio2.GetInteger() >= 1 ? 1 : 0;
 	V_DrawPatchDirect(::g->SoundDef.x + 130, ::g->SoundDef.y + LINEHEIGHT * s_api, 0,
@@ -1309,6 +1322,19 @@ void M_RandomPitch(int choice) {
 
 void M_MusicRev(int choice) {
 	S_museax.SetBool(!S_museax.GetBool());
+}
+
+void M_MusicType(int choice) {
+	cl_musicType.SetInteger(cl_musicType.GetInteger() == 2 ? 0 : cl_musicType.GetInteger() + 1);
+	if (::g->plyr == NULL) {
+		S_StopMusic();
+		if (::g->gamemode == commercial)
+		S_ChangeMusic(mus_dm2ttl, true);
+		else
+		S_ChangeMusic(mus_intro, true);
+	} else {
+		S_Start();
+	}
 }
 
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
@@ -3656,4 +3682,8 @@ bool M_CheckExpansions(int index) {
 }
 bool M_CheckEpisodes(int index) {
 	return index > 3 ? ((::g->gamemission == pack_custom && ::g->clusters.size() > (size_t)(index + 1)) || DoomLib::hexp[4]) : true;
+}
+
+bool M_CheckTrakInfo(int index) {
+	return index == music_type ? ::g->trackMaps.size() : true;
 }

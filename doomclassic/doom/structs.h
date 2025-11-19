@@ -213,6 +213,7 @@ typedef enum
 	sfx_empty2,
 	sound_rp,
 	music_rev,
+	music_type,
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 	s_api,
 #endif

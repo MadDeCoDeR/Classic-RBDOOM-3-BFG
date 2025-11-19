@@ -423,7 +423,7 @@ menu_t  OptionsDef;
 #if defined (_MSC_VER) && defined(USE_XAUDIO2)
 menuitem_t SoundMenu[7];
 #else
-menuitem_t SoundMenu[6];
+menuitem_t SoundMenu[7];
 #endif
 menu_t  SoundDef;
 menuitem_t VideoMenu[7];
