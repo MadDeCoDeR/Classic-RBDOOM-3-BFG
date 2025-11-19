@@ -541,7 +541,7 @@ else ()
 	endif(MSVC)
 endif (OpenAL_FOUND)
 
-find_package(OpenSSL CONFIG)
+find_package(OpenSSL)
 
 if (OpenSSL_FOUND)
 	include_directories(${OpenSSL_INCLUDE_DIR})
