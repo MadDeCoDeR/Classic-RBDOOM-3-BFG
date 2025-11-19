@@ -543,14 +543,14 @@ else ()
 endif (OpenAL_FOUND)
 
 find_package(OpenSSL)
-include_directories(${OpenSSL_INCLUDE_DIR})
-if (NOT MSVC)
-	set(OpenSSL_LIBRARY
-		optimized "vcpkg_installed/x64-linux/lib/libcrypto"
-		debug "vcpkg_installed/x64-linux/debug/lib/libcrypto")
-else()
-set(OpenSSL_LIBRARY OpenSSL::Crypto)
+get_target_property(OPENSSL_CRYPTO_IMPORTED_LOCATION OpenSSL::Crypto IMPORTED_LOCATION_RELEASE)
+if (NOT DEFINED ${OPENSSL_CRYPTO_IMPORTED_LOCATION})
+	get_target_property(OPENSSL_CRYPTO_IMPORTED_LOCATION OpenSSL::Crypto IMPORTED_LOCATION)
+	set_target_properties(OpenSSL::Crypto PROPERTIES IMPORTED_LOCATION_RELEASE ${OPENSSL_CRYPTO_IMPORTED_LOCATION})
 endif()
+include_directories(${OpenSSL_INCLUDE_DIR})
+set(OpenSSL_LIBRARY OpenSSL::Crypto)
+
 	
 add_subdirectory(idlib)
 
