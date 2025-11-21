@@ -29,6 +29,6 @@ jobs:
             - name: autopr
               if: '!steps.check.outputs.skip'
               working-directory: ${{ github.workspace }}
-              run: gh pr create -B master -H frappedia --fill-verbose
+              run: gh pr create --fill-verbose -B master -H frappedia 
               env:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
