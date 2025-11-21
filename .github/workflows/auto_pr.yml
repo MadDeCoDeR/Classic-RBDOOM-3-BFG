@@ -21,6 +21,7 @@ jobs:
                     --jq 'length')
                 if ((prs > 0)); then
                     echo "skip=true" >> "$GITHUB_OUTPUT"
+                fi
             - name: pull repo
               uses: actions/checkout@v5
               with:
