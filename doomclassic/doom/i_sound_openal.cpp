@@ -59,6 +59,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "libs/timidity/controls.h"
 #include "sound/snd_local.h"
 #include "sound/AVD.h"
+#include <charconv>
 
 idCVar cl_musicType("cl_musicType", "0", CVAR_INTEGER | CVAR_ARCHIVE | CVAR_NOCHEAT | CVAR_SOUND, "Set Music Type 0 = MIDI Synth, 1 = Original MIDI pre-recorded, 2 = Remix", 0, 2);
 
@@ -911,6 +912,31 @@ namespace {
 	unsigned char midiConversionBuffer[MaxMidiConversionSize];
 }
 
+
+void MakeWaveHeader(unsigned char* data, int len) {
+	memcpy(data, "RIFF", 4);
+	uint32_t fileSize = 36 + len;
+	memcpy(data + 4, &fileSize, 4);
+	memcpy(data + 8, "WAVE", 4);
+	memcpy(data + 12, "fmt ", 4);
+	uint32_t chunkSize = 16;
+	memcpy(data + 16, &chunkSize, 4);
+	uint16_t format = idWaveFile::FORMAT_PCM;
+	memcpy(data + 20, &format, 2);
+	uint32_t channels = MIDI_CHANNELS;
+	memcpy(data + 22, &channels, 4);
+	uint32_t samplerate = MIDI_RATE;
+	memcpy(data + 24, &samplerate, 4);
+	uint16_t formatBytes = MIDI_CHANNELS * 8 / 8;
+	uint32_t timeBytes = MIDI_RATE * formatBytes;
+	memcpy(data + 28, &timeBytes, 4);
+	memcpy(data + 32, &formatBytes, 2);
+	uint16_t formatBits = 8;
+	memcpy(data + 34, &formatBits, 2);
+	memcpy(data + 36, "data", 4);
+	memcpy(data + 40, &len, 4);
+}
+
 /*
 ======================
 I_LoadSong
@@ -983,6 +1009,15 @@ bool I_LoadSong( const char * songname )
 		Timidity_Stop();
 		Timidity_FreeSong( doomMusic );
 		use_avi = false;
+		if(::g->extportMusic) {
+			idStr filePath = "midi/" + lumpName + ".wav";
+			unsigned char* waveMusBuffer = (unsigned char*)malloc(44 + totalBufferSize);
+			MakeWaveHeader(waveMusBuffer, totalBufferSize);
+			memcpy(waveMusBuffer + 44, musicBuffer, totalBufferSize);
+
+			fileSystem->WriteFile(filePath, waveMusBuffer, totalBufferSize);
+			free(waveMusBuffer);
+		}
 	}
 	else {
 			use_avi = DecodeALAudio(&musFile,&mus_size,&av_rate,&av_sample); //GK: Simplified
