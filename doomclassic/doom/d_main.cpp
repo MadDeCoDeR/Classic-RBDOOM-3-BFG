@@ -679,6 +679,8 @@ void D_DoomMain(void)
 	//GK begin
 	::g->classichUsed = false;
 	::g->warpUsed = false;
+
+	::g->extportMusic = M_CheckParm("-exportMusic");
 	//GK: Check here for deathmatch
 	if (!initonce) {
 		::g->devparm = M_CheckParm("-devparm");

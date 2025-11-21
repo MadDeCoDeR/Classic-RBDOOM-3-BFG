@@ -8,11 +8,26 @@ jobs:
     autopr:
         runs-on: ubuntu-latest
         steps:
+            - name: Check if PR exists
+              id: check
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                prs=$(gh pr list \
+                    --repo "$GITHUB_REPOSITORY" \
+                    --head 'dev' \
+                    --base 'master' \
+                    --json title \
+                    --jq 'length')
+                if ((prs > 0)); then
+                    echo "skip=true" >> "$GITHUB_OUTPUT"
+                fi
             - name: pull repo
               uses: actions/checkout@v5
               with:
                 ref: frappedia
             - name: autopr
+              if: '!steps.check.outputs.skip'
               working-directory: ${{ github.workspace }}
               run: gh pr create -B master -H frappedia --title 'Merge latest commit by the Admin' --body 'Automatic'
               env:

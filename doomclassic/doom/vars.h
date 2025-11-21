@@ -1197,3 +1197,5 @@ int engineWidth;
 int engineHeight;
 
 qboolean mouselock; //KG: NIS FO NOCI no kooleerf elbasiD
+
+qboolean extportMusic; //GK: Music export from TIMIDITY render
