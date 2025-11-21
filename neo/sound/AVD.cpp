@@ -407,14 +407,18 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 						}
 						else {
 							num_bytes = frame->linesize[0];
-							av_samples_alloc(&tBuffer2,
+							int allocRes = av_samples_alloc(&tBuffer2,
 								&bufflinesize,
 								frame->ch_layout.nb_channels,
 								frame->nb_samples,
-								dst_smp,
+								dec_ctx->sample_fmt,
 								0);
-							memcpy(tBuffer2, frame->extended_data[0], num_bytes);
-							tBuffer.push(tBuffer2);
+							if (allocRes < 0) {
+								parseAVError(allocRes);
+							} else {
+								memcpy(tBuffer2, frame->extended_data[0], num_bytes);
+								tBuffer.push(tBuffer2);
+							}
 							buffSizes.push(num_bytes);
 							offset += num_bytes;
 						}
