@@ -74,6 +74,10 @@ option (USE_OPENXR "Use OpenXR for VR support" OFF)
 
 option (INSIDE_PACKAGE 
 					"Compile engine inside a packaged environment" OFF)
+				
+option (IGNORE_IMPORTED_CONFIG 
+					"Ignore IMPORTED_CONFIG" OFF)
+
 if (CMAKE_CL_64)
 	set(CPU_ARCH x64)
 else()
@@ -337,8 +341,10 @@ elseif(MSVC)
 	
 endif()
 
+if (NOT IGNORE_IMPORTED_CONFIG)
 SET(CMAKE_MAP_IMPORTED_CONFIG_RETAIL RELEASE)
 SET(CMAKE_MAP_IMPORTED_CONFIG_RETWITHDEBUGSYMBOLS RELEASE)
+endif()
 
 if (USE_OPENXR)
 	add_definitions(-DUSE_OPENXR)
