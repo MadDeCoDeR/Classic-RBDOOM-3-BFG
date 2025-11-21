@@ -969,8 +969,10 @@ bool I_LoadSong( const char * songname )
 				});
 			if (resIt != ::g->trackMaps.end()) {
 				lumpName = musType == 1 ? (*resIt)->MIDI : (*resIt)->Remixed;
-				musFile = static_cast<unsigned char*>(W_LoadLumpName(lumpName));
-				mus_size = W_LumpLength(W_CheckNumForName(lumpName.c_str()));
+				if (idStr::Cmp(lumpName, "")) {
+					musFile = static_cast<unsigned char*>(W_LoadLumpName(lumpName));
+					mus_size = W_LumpLength(W_CheckNumForName(lumpName.c_str()));
+				}
 			}
 		}
 		delete(md_buff);
