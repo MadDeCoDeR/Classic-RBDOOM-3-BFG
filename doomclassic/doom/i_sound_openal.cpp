@@ -59,7 +59,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "libs/timidity/controls.h"
 #include "sound/snd_local.h"
 #include "sound/AVD.h"
-#include <charconv>
 
 idCVar cl_musicType("cl_musicType", "0", CVAR_INTEGER | CVAR_ARCHIVE | CVAR_NOCHEAT | CVAR_SOUND, "Set Music Type 0 = MIDI Synth, 1 = Original MIDI pre-recorded, 2 = Remix", 0, 2);
 
