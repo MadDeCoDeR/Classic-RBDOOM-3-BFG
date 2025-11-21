@@ -248,11 +248,13 @@ idStr RetrieveFromJsonPath(const char* path, char* json) {
 
 void MapSkyFlatMaps(const char* json) {
 	std::vector<std::map<std::string, idStr>> jArr = RetrieveJsonObjArray(json);
-	::g->skyFlatMaps.reserve(jArr.size());
-	for (size_t i = 0; i < jArr.size(); i++) {
+	size_t i = ::g->skyFlatMaps.size();
+	::g->skyFlatMaps.reserve(::g->skyFlatMaps.capacity() + jArr.size());
+	while(i < jArr.size()) {
 		::g->skyFlatMaps.emplace_back(std::make_unique<skyflatmap_t>());
 		::g->skyFlatMaps[i].get()->flat = strdup(jArr[i]["flat"].c_str());
 		::g->skyFlatMaps[i].get()->sky = strdup(jArr[i]["sky"].c_str());
+		i++;
 	}
 
 }
@@ -275,17 +277,26 @@ void ReadSkyDef(int lump)
 
 void MapTrackMaps(const char* json) {
 	std::map<std::string, idStr> jObj = RetrieveFlatJsonObj(json);
-	::g->trackMaps.reserve(jObj.size());
-	int i = 0;
+	int i = ::g->trackMaps.size();
+	::g->trackMaps.reserve(::g->trackMaps.capacity() + jObj.size());
 	for (std::map<std::string, idStr>::iterator obj = jObj.begin(); obj != jObj.end(); ++obj) {
 		std::map<std::string, idStr> sjObj = RetrieveFlatJsonObj(obj->second);
 		if (!sjObj.count("MIDI")) {
 			continue;
 		}
-		::g->trackMaps.emplace_back(std::make_unique<trackmap_t>());
-		::g->trackMaps[i].get()->SHA1 = obj->first.c_str();
-		::g->trackMaps[i].get()->MIDI = strdup(sjObj["MIDI"].c_str());
-		::g->trackMaps[i].get()->Remixed = strdup(sjObj["Remixed"].c_str());
+		idStr sha1str = obj->first.c_str();
+		const std::vector<std::unique_ptr<trackmap_t>>::iterator resIt = std::find_if(::g->trackMaps.begin(), ::g->trackMaps.end(), [sha1str](std::unique_ptr<trackmap_t>& trackmap) {
+				return trackmap->SHA1 == sha1str;
+				});
+		if (resIt != ::g->trackMaps.end()) {
+			resIt->get()->MIDI = strdup(sjObj["MIDI"].c_str());
+			resIt->get()->Remixed = strdup(sjObj["Remixed"].c_str());
+		} else {
+			::g->trackMaps.emplace_back(std::make_unique<trackmap_t>());
+			::g->trackMaps[i].get()->SHA1 = obj->first.c_str();
+			::g->trackMaps[i].get()->MIDI = strdup(sjObj["MIDI"].c_str());
+			::g->trackMaps[i].get()->Remixed = strdup(sjObj["Remixed"].c_str());
+		}
 		i++;
 	}
 
