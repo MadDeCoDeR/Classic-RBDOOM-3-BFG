@@ -1693,7 +1693,8 @@ qboolean G_CheckSave(char* name) {
 			}
 			ok = W_CheckMods(sc, filelist);
 		}
-		::g->save_p += 12;
+		::g->save_p += strlen(tlab);
+		*::g->save_p++;
 		int gameepisode = *::g->save_p++; 
 		if (::g->gamemode == retail && ::g->gamemission != pack_custom && gameepisode > 4 && DoomLib::hexp[4]) {
 			DoomLib::SetIdealExpansion(pack_romero);
@@ -1715,7 +1716,8 @@ qboolean G_CheckSave(char* name) {
 	else {
 		//GK: No mods but the DOOM 1 episode is above 4
 		::g->save_p += 12;
-		int gameepisode = *::g->save_p++; 
+		*::g->save_p++;
+		int gameepisode = *::g->save_p++;
 		if (::g->gamemode == retail && gameepisode > 4 && DoomLib::hexp[4]) {
 			DoomLib::SetIdealExpansion(pack_romero);
 		} 
