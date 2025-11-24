@@ -15,7 +15,7 @@ jobs:
               run: |
                 prs=$(gh pr list \
                     --repo "$GITHUB_REPOSITORY" \
-                    --head 'dev' \
+                    --head 'frappedia' \
                     --base 'master' \
                     --json title \
                     --jq 'length')
@@ -23,6 +23,7 @@ jobs:
                     echo "skip=true" >> "$GITHUB_OUTPUT"
                 fi
             - name: pull repo
+              if: '!steps.check.outputs.skip'
               uses: actions/checkout@v5
               with:
                 ref: frappedia
