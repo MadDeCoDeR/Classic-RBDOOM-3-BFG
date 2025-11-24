@@ -1431,6 +1431,7 @@ void M_DrawExpansion(void)
 }
 
 void M_StartEpisodicGame(int episode, int map, int skill) {
+	DoomLib::use_doomit = false;
 	DoomLib::SetCurrentExpansion( DoomLib::idealExpansion );
 		DoomLib::skipToNew = true;
 		DoomLib::chosenSkill = skill;
@@ -1496,7 +1497,7 @@ void M_ChooseSkill(int choice)
 		return;
 	}
 	
-	if (::g->gamemode != commercial || ::g->episodicExpansion) {
+	if (::g->gamemode != commercial || (::g->episodicExpansion && !(DoomLib::idealExpansion == pack_master && DoomLib::use_doomit))) {
 		M_StartEpisodicGame(::g->epi, 1, choice);
 	}
 	else {
