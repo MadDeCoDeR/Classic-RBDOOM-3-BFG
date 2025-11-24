@@ -91,6 +91,7 @@ std::map<std::string, idStr> RetrieveFlatJsonObj(const char* json) {
 		switch (jsonChar) {
 		case '{': {
 			if (!hasComment) {
+				commentCount = 0;
 				if (activeKey) {
 					int64 closingIndex = FindClosure(json, jsonCharIndex + 1, '{', '}');
 					
@@ -127,11 +128,13 @@ std::map<std::string, idStr> RetrieveFlatJsonObj(const char* json) {
 		case ' ':
 		case ':':
 		case '}': {
+			commentCount = 0;
 			jsonCharIndex++;
 			break;
 		}
 		case ',': {
 			if (!hasComment) {
+				commentCount = 0;
 				if (activeKey) {
 					activeKey = false;
 				}
@@ -144,6 +147,7 @@ std::map<std::string, idStr> RetrieveFlatJsonObj(const char* json) {
 		}
 		case '\"': {
 			if (!hasComment) {
+				commentCount = 0;
 				int64 lastIndex = idJson.Find('\"', jsonCharIndex + 1);
 				idStr tkey = idJson.SubStr(jsonCharIndex + 1, lastIndex);
 				jsonCharIndex = lastIndex + 1;
@@ -161,6 +165,7 @@ std::map<std::string, idStr> RetrieveFlatJsonObj(const char* json) {
 		}
 		case '[': {
 			if (!hasComment) {
+				commentCount = 0;
 				if (activeKey) {
 					int64 closingIndex = FindClosure(json, jsonCharIndex + 1, '[', ']');
 
@@ -178,6 +183,7 @@ std::map<std::string, idStr> RetrieveFlatJsonObj(const char* json) {
 		}
 		default: {
 			if (!hasComment) {
+				commentCount = 0;
 				if (activeKey) {
 					int64 commaIndex = FindEndOfLine(idJson.c_str(), jsonCharIndex);
 					idStr value = idJson.SubStr(jsonCharIndex, commaIndex);
