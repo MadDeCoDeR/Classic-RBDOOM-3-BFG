@@ -3071,12 +3071,12 @@ void idFileSystemLocal::SetupGameDirectories( const char* gameName )
 	{
 		AddGameDirectory( fs_basepath.GetString(), gameName );
 	}
-#ifdef PACKAGED
+//#ifdef PACKAGED
 	if (fs_apppath.GetString()[0])
 	{
 		AddGameDirectory(fs_apppath.GetString(), gameName);
 	}
-#endif
+//#endif
 	// setup savepath
 	if( fs_savepath.GetString()[0] )
 	{
@@ -3198,12 +3198,12 @@ void idFileSystemLocal::Init()
 	{
 		fs_basepath.SetString( Sys_DefaultBasePath() );
 	}
-#ifdef PACKAGED
+//#ifdef PACKAGED
 	if (fs_apppath.GetString()[0] == '\0')
 	{
 		fs_apppath.SetString(Sys_DefaultAppPath());
 	}
-#endif
+//#endif
 	if( fs_savepath.GetString()[0] == '\0' )
 	{
 		fs_savepath.SetString( Sys_DefaultSavePath() );
