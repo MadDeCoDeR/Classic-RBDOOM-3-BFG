@@ -125,6 +125,9 @@ const char* Sys_DefaultAppPath()
 	struct stat buf;
 	if (stat(DEFAULT_BASEPATH"/base/wads/newopt.wad", &buf) == -1)
 	{
+		if (stat(DEFAULT_FLAT_BASEPATH"/base/wads/newopt.wad", &buf) == -1) {
+			return Sys_EXEPath();
+		}
 		return DEFAULT_FLAT_BASEPATH;
 	}
 	return DEFAULT_BASEPATH;
