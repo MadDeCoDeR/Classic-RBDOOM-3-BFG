@@ -4,6 +4,32 @@ Thank you for downloading DOOM-BFA.
 
 _______________________________________
 
+27 November 2025 - DOOM-BFA 1.4.1
+_______________________________________
+
+[Classic DOOM]
+
+- Fix various issues with demos
+
+- Fix issues with Deep Water effect
+
+- Make Skies to also have inverse ccolormap
+
+- Add support for TRAKINFO
+
+- Allow DOOM 1 + 2's extras.wad to auto load if it is added in base/wads
+
+- Improve auto configuration on EXPINFO
+
+- Add a new launch argument `-exportMusic` that will export any MIDI music file rendered by TIMIDITY in <savedir>/<base or mod folder>/midi
+
+[Engine]
+
+- Fix issues with FFMPEG and non-planar audio
+
+- Allow fs_appPath to be used even in non packaged versions, it will use by default the path where the executable is
+_______________________________________
+
 7 November 2025 - DOOM-BFA 1.4.0
 _______________________________________
 
