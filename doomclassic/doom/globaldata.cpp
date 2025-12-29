@@ -145,6 +145,7 @@ bool M_CheckAvailableGames(int index);
 bool M_CheckExpansions(int index);
 bool M_CheckEpisodes(int index);
 bool M_CheckTrakInfo(int index);
+bool M_CheckItemGfx(int index);
 
 extern const anim_t temp_epsd0animinfo[10];
 extern const anim_t temp_epsd1animinfo[9];

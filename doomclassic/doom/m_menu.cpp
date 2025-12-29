@@ -301,6 +301,7 @@ bool M_CheckAvailableGames(int index);
 bool M_CheckExpansions(int index);
 bool M_CheckEpisodes(int index);
 bool M_CheckTrakInfo(int index);
+bool M_CheckItemGfx(int index);
 
 void R_ExecuteSetViewSize (void);
 //GK: Support for additional HELP lumps
@@ -3687,4 +3688,8 @@ bool M_CheckEpisodes(int index) {
 
 bool M_CheckTrakInfo(int index) {
 	return index == music_type ? ::g->trackMaps.size() : true;
+}
+
+bool M_CheckItemGfx(int index) {
+	return W_CheckNumForName(::g->currentMenu->menuitems[index].name) > 0;
 }

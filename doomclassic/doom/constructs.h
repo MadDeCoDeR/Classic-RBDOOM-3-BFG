@@ -158,7 +158,7 @@ menu_t  temp_MainDef = {
 		M_DrawMainMenu,
 		97,64,
 		0,
-		M_True
+		M_CheckItemGfx
 };
 
 
