@@ -366,6 +366,7 @@ typedef struct trackmap_s {
     idStr SHA1;
     char* MIDI;
     char* Remixed;
+    float Volume;
 } trackmap_t;
 
 #endif          // __DOOMDEF__

@@ -126,6 +126,7 @@ extern const float		GLOBAL_VOLUME_MULTIPLIER;
 
 extern float			x_SoundVolume;
 extern float			x_MusicVolume;
+extern float			x_MusicVolumeMultiplier;
 
 // The actual lengths of all sound effects.
 static std::vector<int> 		lengths;
@@ -936,6 +937,19 @@ void MakeWaveHeader(unsigned char* data, int len) {
 	memcpy(data + 40, &len, 4);
 }
 
+idStr GetSHA1(const unsigned char* data, int len) {
+	unsigned char* md_buff = new unsigned char[SHA_DIGEST_LENGTH];
+	SHA1(data, len, md_buff);
+	char* out = new char[SHA_DIGEST_LENGTH*2];
+	for (int i = 0; i < SHA_DIGEST_LENGTH; i++) {
+		sprintf(&out[i*2], "%02x", md_buff[i]);
+	}
+	idStr result = idStr(out);
+	delete(md_buff);
+	delete(out);
+	return result;
+}
+
 /*
 ======================
 I_LoadSong
@@ -945,6 +959,7 @@ bool I_LoadSong( const char * songname )
 {
 	idStr lumpName = "d_";
 	lumpName += static_cast< const char * >( songname );
+	x_MusicVolumeMultiplier = GLOBAL_VOLUME_MULTIPLIER;
 	if (alIsBuffer(alMusicBuffer) == AL_TRUE) {
 		alSourceStop( alMusicSourceVoice );
 		alSourcei(alMusicSourceVoice, AL_BUFFER, 0);
@@ -956,13 +971,7 @@ bool I_LoadSong( const char * songname )
 	int mus_size = W_LumpLength(W_CheckNumForName(lumpName.c_str()));
 	if (cl_musicType.GetInteger()) {
 		int musType = cl_musicType.GetInteger();
-		unsigned char* md_buff = new unsigned char[SHA_DIGEST_LENGTH];
-		SHA1(musFile, mus_size, md_buff);
-		char* sha1carr = new char[SHA_DIGEST_LENGTH*2];
-		for (int i = 0; i < SHA_DIGEST_LENGTH; i++) {
-			sprintf(&sha1carr[i*2], "%02x", md_buff[i]);
-		}
-		idStr sha1str = idStr(sha1carr);
+		idStr sha1str = GetSHA1(musFile, mus_size);
 		if (::g->trackMaps.size()) {
 			const std::vector<std::unique_ptr<trackmap_t>>::iterator resIt = std::find_if(::g->trackMaps.begin(), ::g->trackMaps.end(), [sha1str](std::unique_ptr<trackmap_t>& trackmap) {
 				return trackmap->SHA1 == sha1str;
@@ -975,9 +984,19 @@ bool I_LoadSong( const char * songname )
 				}
 			}
 		}
-		delete(md_buff);
-		delete(sha1carr);
 	}
+
+	if (::g->trackMaps.size()) {
+			idStr sha1str = GetSHA1(musFile, mus_size);
+			const std::vector<std::unique_ptr<trackmap_t>>::iterator resIt = std::find_if(::g->trackMaps.begin(), ::g->trackMaps.end(), [sha1str](std::unique_ptr<trackmap_t>& trackmap) {
+				return trackmap->SHA1 == sha1str;
+				});
+			if (resIt != ::g->trackMaps.end()) {
+				if((*resIt)->Volume > 0.0f) {
+					x_MusicVolumeMultiplier = (*resIt)->Volume;
+				}
+			}
+		}
 	/*Z_Free(lumpcache[W_GetNumForName(lumpName.c_str())]);
 	Z_FreeMemory();*/
 	
@@ -1079,7 +1098,7 @@ void I_UpdateMusicAL( void )
 
 	if ( alMusicSourceVoice ) {
 		// Set the volume GK: and the music Reverb
-		alSourcef( alMusicSourceVoice, AL_GAIN, x_MusicVolume * GLOBAL_VOLUME_MULTIPLIER );
+		alSourcef( alMusicSourceVoice, AL_GAIN, x_MusicVolume * x_MusicVolumeMultiplier );
 		
 	}
 

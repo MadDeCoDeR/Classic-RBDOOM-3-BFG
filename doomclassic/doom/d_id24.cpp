@@ -287,9 +287,7 @@ void MapTrackMaps(const char* json) {
 	::g->trackMaps.reserve(::g->trackMaps.capacity() + jObj.size());
 	for (std::map<std::string, idStr>::iterator obj = jObj.begin(); obj != jObj.end(); ++obj) {
 		std::map<std::string, idStr> sjObj = RetrieveFlatJsonObj(obj->second);
-		if (!sjObj.count("MIDI")) {
-			continue;
-		}
+		
 		idStr sha1str = obj->first.c_str();
 		const std::vector<std::unique_ptr<trackmap_t>>::iterator resIt = std::find_if(::g->trackMaps.begin(), ::g->trackMaps.end(), [sha1str](std::unique_ptr<trackmap_t>& trackmap) {
 				return trackmap->SHA1 == sha1str;
@@ -297,11 +295,13 @@ void MapTrackMaps(const char* json) {
 		if (resIt != ::g->trackMaps.end()) {
 			resIt->get()->MIDI = strdup(sjObj["MIDI"].c_str());
 			resIt->get()->Remixed = strdup(sjObj["Remixed"].c_str());
+			resIt->get()->Volume = strtof(sjObj["volume"].c_str(), NULL);
 		} else {
 			::g->trackMaps.emplace_back(std::make_unique<trackmap_t>());
 			::g->trackMaps[i].get()->SHA1 = obj->first.c_str();
 			::g->trackMaps[i].get()->MIDI = strdup(sjObj["MIDI"].c_str());
 			::g->trackMaps[i].get()->Remixed = strdup(sjObj["Remixed"].c_str());
+			::g->trackMaps[i].get()->Volume = strtof(sjObj["volume"].c_str(), NULL);
 		}
 		i++;
 	}

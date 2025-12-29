@@ -47,6 +47,7 @@ float			x_SoundVolume = GLOBAL_VOLUME_MULTIPLIER;
 float			x_MusicVolume = GLOBAL_VOLUME_MULTIPLIER;
 int				S_initialized = 0;
 bool			Music_initialized = false;
+float			x_MusicVolumeMultiplier = GLOBAL_VOLUME_MULTIPLIER;
 
 void I_InitSound() {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
