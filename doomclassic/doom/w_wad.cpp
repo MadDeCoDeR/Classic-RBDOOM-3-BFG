@@ -1002,10 +1002,11 @@ int W_GetNumForName ( const char* name)
     i = W_CheckNumForName ( name);
     //GK begin
 	if (i == -1 && idStr::Icmp("TITLEPIC", name)
-		&& idStr::Icmp("HELP2", name)
-		&& idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name)
+		&& idStr::Icmpn("HELP", name, 4)
 		&& idStr::Icmp("MAP33",name) && idStr::Icmp("CWILV32", name)
-		&& idStr::Icmp("SWITCHES", name) && idStr::Icmp("ANIMATED", name) && idStr::Icmp("EXPINFO", name) && idStr::Icmp("DEHACKED", name)) //TITLEPIC might not exist
+		&& idStr::Icmp("SWITCHES", name) && idStr::Icmp("ANIMATED", name)
+		&& idStr::Icmp("EXPINFO", name) && idStr::Icmp("DEHACKED", name)
+		&& idStr::Icmpn("M_", name, 2)) //TITLEPIC might not exist
       I_Error ("W_GetNumForName: %s not found!", name);
 	//GK End
       
@@ -1023,8 +1024,7 @@ idList<int> W_GetNumsForName(const char* name)
 	idList<int> i = W_CheckNumsForName(name);
 	//GK begin
 	if (i[0] == -1 && idStr::Icmp("TITLEPIC", name) 
-		&& idStr::Icmp("HELP2", name)
-		&& idStr::Icmp("HELP01", name) && idStr::Icmp("HELP02", name)
+		&& idStr::Icmpn("HELP", name, 4)
 		&& idStr::Icmp("MAP33", name) && idStr::Icmp("CWILV32", name)
 		&& idStr::Icmp("SWITCHES", name) && idStr::Icmp("ANIMATED", name)
 		&& idStr::Icmp("EXPINFO", name) && idStr::Icmp("DEHACKED", name)
