@@ -962,7 +962,9 @@ bool I_LoadSong( const char * songname )
 {
 	idStr lumpName = "d_";
 	lumpName += static_cast< const char * >( songname );
-	x_MusicVolumeMultiplier = GLOBAL_VOLUME_MULTIPLIER;
+	x_MusicVolumeMultiplier = 1.0f;
+	loopStart = 0;
+	loopEnd = 0;
 	if (alIsBuffer(alMusicBuffer) == AL_TRUE) {
 		alSourceStop( alMusicSourceVoice );
 		alSourcei(alMusicSourceVoice, AL_BUFFER, 0);
@@ -1101,7 +1103,7 @@ void I_UpdateMusicAL( void )
 
 	if ( alMusicSourceVoice ) {
 		// Set the volume GK: and the music Reverb
-		alSourcef( alMusicSourceVoice, AL_GAIN, x_MusicVolume * x_MusicVolumeMultiplier );
+		alSourcef( alMusicSourceVoice, AL_GAIN, x_MusicVolume * (x_MusicVolumeMultiplier * GLOBAL_VOLUME_MULTIPLIER) );
 		
 	}
 
@@ -1116,10 +1118,9 @@ void I_UpdateMusicAL( void )
 				}
 				else {
 					alBufferData(alMusicBuffer, av_sample, musicBuffer, totalBufferSize, av_rate);
-					if (loopStart > 0 && loopEnd > loopStart && alIsExtensionPresent("AL_SOFT_loop_points") == AL_TRUE) {
+					if (loopEnd > loopStart && alIsExtensionPresent("AL_SOFT_loop_points") == AL_TRUE) {
 						ALint loop_points[2] = { loopStart, loopEnd }; /* in sample frames */
 						alBufferiv(alMusicBuffer, AL_LOOP_POINTS_SOFT, loop_points);
-						alGetError();
 					}
 				}
 				alSourcei( alMusicSourceVoice, AL_BUFFER, alMusicBuffer );
