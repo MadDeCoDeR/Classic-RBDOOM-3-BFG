@@ -80,6 +80,9 @@ extern MidiSong* doomMusic;
 extern byte* musicBuffer;
 extern int		totalBufferSize;
 
+extern int loopStart;
+extern int loopEnd;
+
 ALenum av_sample;
 int av_rate;
 bool use_avi;
@@ -1040,7 +1043,7 @@ bool I_LoadSong( const char * songname )
 		}
 	}
 	else {
-			use_avi = DecodeALAudio(&musFile,&mus_size,&av_rate,&av_sample); //GK: Simplified
+			use_avi = DecodeALAudio(&musFile,&mus_size,&av_rate,&av_sample, &loopStart, &loopEnd); //GK: Simplified
 			if (use_avi) {
 				totalBufferSize = mus_size;
 				musicBuffer = musFile;
@@ -1113,6 +1116,11 @@ void I_UpdateMusicAL( void )
 				}
 				else {
 					alBufferData(alMusicBuffer, av_sample, musicBuffer, totalBufferSize, av_rate);
+					if (loopStart > 0 && loopEnd > loopStart && alIsExtensionPresent("AL_SOFT_loop_points") == AL_TRUE) {
+						ALint loop_points[2] = { loopStart, loopEnd }; /* in sample frames */
+						alBufferiv(alMusicBuffer, AL_LOOP_POINTS_SOFT, loop_points);
+						alGetError();
+					}
 				}
 				alSourcei( alMusicSourceVoice, AL_BUFFER, alMusicBuffer );
 				/*free(musicBuffer);

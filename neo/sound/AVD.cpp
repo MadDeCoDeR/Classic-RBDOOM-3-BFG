@@ -28,6 +28,21 @@
 #include <sound/AVD.h>
 #include <queue>
 
+int ParseTimestamp(char* timestamp) {
+	const int secMillis = 1000;
+	const int minMillis = 60 * 1000;
+	const int hourMillis = 60 * 60 * 1000;
+	idStr idTimestamp = idStr(timestamp);
+	idStrList timeMillisStr = idTimestamp.Split(".");
+	idStrList timeSegsStr = timeMillisStr[0].Split(":");
+	int millis = atoi(timeMillisStr[1].c_str());
+	int secs = atoi(timeSegsStr[2].c_str());
+	int mins = atoi(timeSegsStr[1].c_str());
+	int hours = atoi(timeSegsStr[0].c_str());
+
+	return (hours * hourMillis) + (mins * minMillis) + (secs * secMillis) + millis;
+}
+
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext) {
 	if ( *len <= 0) {
@@ -259,13 +274,14 @@ bool DecodeXAudio(byte** audio,int* len, idWaveFile::waveFmt_t* format,bool ext)
 	return true;
 }
 #endif
-bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
+bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample, int* loopStart, int* loopEnd) {
 	if ( *len <= 0) {
 		return false;
 	}
 	int ret = 0;
 	int avindx = 0;
 	AVFormatContext*		fmt_ctx = avformat_alloc_context();
+	const AVDictionaryEntry *tag = NULL;
 #if LIBAVCODEC_VERSION_MAJOR > 58
 	const AVCodec* dec;
 #else
@@ -314,6 +330,20 @@ bool DecodeALAudio(byte** audio, int* len, int *rate, ALenum *sample) {
 		parseAVError(ret);
 		return false;
 	}
+
+	while ((tag = av_dict_iterate(fmt_ctx->streams[avindx]->metadata, tag))) {
+		common->Printf("AVD INFO: %s = %s\n", tag->key, tag->value);
+		if (!idStr::Icmp("LOOP_START", tag->key) && loopStart != NULL) {
+			*loopStart = ParseTimestamp(tag->value);
+			*loopStart = ((*loopStart / 1000) * dec_ctx->sample_rate) + (int)(((*loopStart % 1000) / 1000.0f) * dec_ctx->sample_rate);
+		}
+
+		if (!idStr::Icmp("LOOP_END", tag->key) && loopEnd != NULL) {
+			*loopEnd = ParseTimestamp(tag->value);
+			*loopEnd = ((*loopEnd / 1000) * dec_ctx->sample_rate) + (int)(((*loopEnd % 1000) / 1000.0f) * dec_ctx->sample_rate);
+		}
+	}
+        
 	bool hasplanar = false;
 	AVSampleFormat dst_smp = AV_SAMPLE_FMT_NONE;
 	if (dec_ctx->sample_fmt >= 5) {
@@ -484,3 +514,4 @@ void parseAVError(int error) {
 	av_make_error_string(errorbuff, 256, error);
 	common->Printf("FFMPEG Error: %s\n", errorbuff);
 }
+

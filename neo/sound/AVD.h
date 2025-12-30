@@ -45,6 +45,6 @@ void parseAVError(int error);
 #include <x3daudio.h>
 bool DecodeXAudio(byte** audio, int* len, idWaveFile::waveFmt_t* format,bool ext);
 #endif // !USE_OPENAL
-bool DecodeALAudio(byte** audio, int* len, int *rate ,ALenum *sample );
+bool DecodeALAudio(byte** audio, int* len, int *rate ,ALenum *sample, int* loopStart = NULL, int* loopEnd = NULL);
 const char* GetSampleName(ALenum sample);
 
