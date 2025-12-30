@@ -38,6 +38,8 @@ idCVar S_museax("S_museax", "0", CVAR_BOOL | CVAR_SOUND | CVAR_ARCHIVE, "Set mus
 soundEvent_t soundEvents[128];
 MidiSong* doomMusic;
 byte* musicBuffer;
+int loopStart;
+int loopEnd;
 int totalBufferSize;
 bool	waitingForMusic;
 bool	musicReady;
