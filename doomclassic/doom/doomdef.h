@@ -40,6 +40,11 @@ If you have questions concerning this license or the applicable additional terms
 // DOOM version
 enum { VERSION =  111 };
 
+enum { SAVE_GAME_VERSION = 1 };
+
+#define MIN_SAVE_GAME_VERSION 1
+#define MAX_SAVE_GAME_VERSION 1
+
 
 // Game mode handling - identify IWAD version
 //  to handle IWAD dependend animations etc.

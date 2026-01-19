@@ -1657,6 +1657,17 @@ qboolean G_CheckSave(char* name) {
 	char	vcheck[256];
 	M_ReadFile(::g->savename, &::g->savebuffer);
 	::g->save_p = ::g->savebuffer + SAVESTRINGSIZE;
+
+	int a = *::g->save_p++;
+	int b = *::g->save_p++;
+
+	short savegameVersion = (a << 8) + b;
+
+	if (savegameVersion < MIN_SAVE_GAME_VERSION || savegameVersion > MAX_SAVE_GAME_VERSION) {
+		M_StartMessage("Incompatible Version!\n\npress any button", NULL, false);
+		return false;
+	}
+
 	memset(vcheck, 0, sizeof(vcheck));
 	sprintf(vcheck, "version %i", VERSION);
 	char tlab[256];
@@ -1751,6 +1762,16 @@ qboolean G_DoLoadGame ()
 	::g->consoleplayer = 0;
 
 	::g->save_p = ::g->savebuffer + SAVESTRINGSIZE;
+
+	a = *::g->save_p++;
+	b = *::g->save_p++;
+
+	short savegameVersion = (a << 8) + b;
+
+	if (savegameVersion < MIN_SAVE_GAME_VERSION || savegameVersion > MAX_SAVE_GAME_VERSION) {
+		M_StartMessage("Incompatible Version!\n\npress any button", NULL, false);
+		return false;
+	}
 
 	// skip the description field 
 	memset (vcheck,0,sizeof(vcheck)); 
@@ -1949,6 +1970,8 @@ qboolean G_DoSaveGame (void)
 	memcpy (::g->save_p, description, SAVESTRINGSIZE); 
 	::g->save_p += SAVESTRINGSIZE; 
 
+	*::g->save_p++ = SAVE_GAME_VERSION >> 8;
+	*::g->save_p++ = SAVE_GAME_VERSION;
 	 
 	//GK: if the game uses mods store their names on the save file header
 	if (M_CheckParm("-file")) {

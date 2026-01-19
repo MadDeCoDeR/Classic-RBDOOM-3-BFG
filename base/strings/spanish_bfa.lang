@@ -58,6 +58,7 @@
 	"#str_swf_toggle_zoom" "Cambiar Zoom"
 	"#str_swf_center_camera_button" "Cámara central"
 	"#str_swf_stereo_vr" "Realidad virtual"
+	"#str_dlg_older_incompatible_savegame" "Esta partida es de una versión anterior del juego y no se puede cargar."
 // 	"#str_swf_custom_game" "Nombre del mod"
 // 	"#str_swf_start_map" "Primer mapa para cargar"
 }
