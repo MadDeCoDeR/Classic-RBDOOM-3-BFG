@@ -58,6 +58,7 @@
 	"#str_swf_toggle_zoom" "Basculer le zoom"
 	"#str_swf_center_camera_button" "Caméra centrale"
 	"#str_swf_stereo_vr" "Réalité virtuelle"
+	"#str_dlg_older_incompatible_savegame" "Cette sauvegarde provient d'une version plus ancienne du jeu et ne peut pas être chargée."
 // 	"#str_swf_custom_game" "Nom du mod"
 // 	"#str_swf_start_map" "Première carte à charger"
 }

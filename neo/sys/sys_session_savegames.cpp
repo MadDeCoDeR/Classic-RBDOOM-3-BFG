@@ -400,6 +400,12 @@ saveGameHandle_t idSessionLocal::LoadGameSync( const char* name, saveFileEntryLi
 					parms.errorCode = SAVEGAME_E_INCOMPATIBLE_NEWER_VERSION;
 					return 0;
 				}
+
+				if (details[i].GetSaveVersion() < MIN_COMPATIBLE_VERSION)
+				{
+					parms.errorCode = SAVEGAME_E_INCOMPATIBLE_OLDER_VERSION;
+					return 0;
+				}
 			}
 		}
 		
@@ -784,6 +790,11 @@ bool idSessionLocal::LoadGameCheckDescriptionFile( idSaveLoadParms& parms )
 		if( parms.description.GetSaveVersion() > BUILD_NUMBER )
 		{
 			parms.errorCode = SAVEGAME_E_INCOMPATIBLE_NEWER_VERSION;
+		}
+		if (parms.description.GetSaveVersion() < MIN_COMPATIBLE_VERSION)
+		{
+			parms.errorCode = SAVEGAME_E_INCOMPATIBLE_OLDER_VERSION;
+			return 0;
 		}
 	}
 	

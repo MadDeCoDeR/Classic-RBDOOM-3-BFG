@@ -58,6 +58,7 @@
 	"#str_swf_toggle_zoom" "Toggle Zoom"
 	"#str_swf_center_camera_button" "Center Camera"
 	"#str_swf_stereo_vr" "Virtual Reality"
+	"#str_dlg_older_incompatible_savegame" "This save is from an older version of the game and cannot be loaded."
 //	"#str_swf_custom_game"	"Mod Name"
 //	"#str_swf_start_map"	"First Map to load"
 }

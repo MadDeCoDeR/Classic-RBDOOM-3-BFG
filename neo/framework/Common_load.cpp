@@ -1206,6 +1206,11 @@ bool HandleCommonErrors( const idSaveLoadParms& parms )
 		common->Dialog().AddDialog( GDM_INCOMPATIBLE_NEWER_SAVE, DIALOG_CONTINUE, NULL, NULL, false );
 		return true;
 	}
+	else if (parms.GetError() & SAVEGAME_E_INCOMPATIBLE_OLDER_VERSION)
+	{
+		common->Dialog().AddDialog(GDM_INCOMPATIBLE_OLDER_SAVE, DIALOG_CONTINUE, NULL, NULL, false);
+		return true;
+	}
 	
 	return false;
 }

@@ -58,6 +58,7 @@
 	"#str_swf_toggle_zoom" "ズームの切り替え"
 	"#str_swf_center_camera_button" "センターカメラ"
 	"#str_swf_stereo_vr" "バーチャルリアリティ"
+	"#str_dlg_older_incompatible_savegame" "このセーブは古いバージョンのもので、読み込むことはできません。"
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "最初にロードするマップ"
 }

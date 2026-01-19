@@ -1615,7 +1615,7 @@ bool idGameLocal::InitFromSaveGame( const char* mapName, idRenderWorld* renderWo
 		}
 	}
 
-	if (saveGameVersion != BUILD_NUMBER) {
+	if (saveGameVersion > BUILD_NUMBER || saveGameVersion < MIN_COMPATIBLE_VERSION) {
 		return false;
 	}
 	

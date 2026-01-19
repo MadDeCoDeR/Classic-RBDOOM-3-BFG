@@ -58,6 +58,7 @@
 	"#str_swf_toggle_zoom" "Zoom umschalten"
 	"#str_swf_center_camera_button" "Kamera zentrieren"
 	"#str_swf_stereo_vr" "Virtuelle Realität"
+	"#str_dlg_older_incompatible_savegame" "Dieser Spielstand stammt aus einer älteren Version des Spiels und kann nicht geladen werden."
 // 	"#str_swf_custom_game" "Mod Name"
 // 	"#str_swf_start_map" "Erste zu ladende Karte"
 }
