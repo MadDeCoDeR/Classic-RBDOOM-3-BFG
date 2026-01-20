@@ -518,7 +518,7 @@ void R_DrawPlanes (void)
 		if (::g->dc_texturemid > ttmid) { //GK:Tall skies support
 			::g->dc_iscale = ::g->dc_iscale *2.0f;
 		}
-		unsigned short mintop = USHRT_MAX;
+		
 	    for (x= ::g->visplanes[i]->minx ; x <= ::g->visplanes[i]->maxx ; x++)
 	    {
 			//GK: Sky Freelook Hack
