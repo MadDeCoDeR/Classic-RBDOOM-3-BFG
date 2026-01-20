@@ -518,49 +518,35 @@ void R_DrawPlanes (void)
 		if (::g->dc_texturemid > ttmid) { //GK:Tall skies support
 			::g->dc_iscale = ::g->dc_iscale *2.0f;
 		}
-		unsigned short mintop = USHRT_MAX;
+		
 	    for (x= ::g->visplanes[i]->minx ; x <= ::g->visplanes[i]->maxx ; x++)
 	    {
 			//GK: Sky Freelook Hack
 			// With this hack the sky flat remains static
-			// onthe world and when player is looking above
+			// on the world and when player is looking above
 			// it then a monochromatic pixel will be drawn
 			// in order to avoid HOMs
-			bool normalSky = true;
 
-		::g->dc_yl = ::g->visplanes[i]->top[x] - ::g->mouseposy;
+		int initialTop = ::g->visplanes[i]->top[x];
+		int initialBottom = ::g->visplanes[i]->bottom[x];
+		//GK: Calculate y-axis view position (incomplete, it might cut some of the actual sky texture).
+		// The calculation is based on mouseposy and the player's view height all the while is limited to the veiwplane's top and bottom values in order to avoid pixel bleeding
+		int transformedBottom = std::clamp(abs(::g->mouseposy) + (::g->players[::g->consoleplayer].viewheight / FRACUNIT), initialTop, initialBottom); 
+
+		//GK: First Draw the regular sky
+		::g->dc_yl = ::g->visplanes[i]->top[x];
 		::g->dc_yh = ::g->visplanes[i]->bottom[x];
-		int realheight = (::g->s_textureheight[::g->skytexture] >> FRACBITS) * ::g->GLOBAL_IMAGE_SCALER;
-		int viewheight = ::g->visplanes[i]->bottom[x] - ::g->visplanes[i]->top[x];
-		if (::g->visplanes[i]->top[x] < mintop && ::g->visplanes[i]->top[x] <= (realheight - ::g->visplanes[i]->top[x])) {
-			mintop = ::g->visplanes[i]->top[x];
+		R_DrawSky(x, i, skyToRender, true);
+
+		//GK: If the mouse has moved upwards then try to render the dummy sky pixel to avoid repeated sky textures
+		if (::g->mouseposy < 0) {
+		::g->dc_yl = initialTop;
+		::g->dc_yh = transformedBottom;
+		int roundingError = ::g->dc_yh - ::g->dc_yl; //GK: In some cases when the sky texture is bellow another texture we might get a minor rounding error where it will try to render the dummy sky with height equal to 1
+		if (roundingError > 1) {
+			R_DrawSky(x, i, skyToRender, false);
 		}
-		if (::g->dc_yl <= ::g->dc_yh)
-		{
-			if (::g->dc_yl > ::g->visplanes[i]->top[x]) {
-				::g->dc_yh = ::g->dc_yl;
-				::g->dc_yl = ::g->visplanes[i]->top[x];
-			
-				if (::g->dc_yl <= (realheight - ::g->visplanes[i]->top[x])) {
-					normalSky = false;
-				}
-				R_DrawSky(x, i, skyToRender, normalSky);
-			}
-			if (::g->dc_yl < ::g->visplanes[i]->top[x]) {
-				::g->dc_yl = ::g->visplanes[i]->top[x];
-			}
-			else {
-				::g->dc_yl = ::g->visplanes[i]->top[x] - ::g->mouseposy;
-			}
-			::g->dc_yh = ::g->visplanes[i]->bottom[x];
-			normalSky = true;
 		}
-		else {
-			::g->dc_yl = ::g->visplanes[i]->top[x];
-			normalSky = abs(viewheight) < realheight && ::g->visplanes[i]->bottom[x] < mintop;
-			
-		}
-		R_DrawSky(x, i, skyToRender, normalSky);
 			
 	    }
 	    continue;
