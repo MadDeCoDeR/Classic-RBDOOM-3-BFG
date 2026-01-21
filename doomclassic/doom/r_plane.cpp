@@ -529,9 +529,11 @@ void R_DrawPlanes (void)
 
 		int initialTop = ::g->visplanes[i]->top[x];
 		int initialBottom = ::g->visplanes[i]->bottom[x];
+		int playerViewHeight = ::g->players[::g->consoleplayer].viewheight / FRACUNIT;
+		double correctionMult = std::clamp(abs(::g->mouseposy) / (playerViewHeight * 1.0), 0.0, 2.5);
 		//GK: Calculate y-axis view position (incomplete, it might cut some of the actual sky texture).
 		// The calculation is based on mouseposy and the player's view height all the while is limited to the veiwplane's top and bottom values in order to avoid pixel bleeding
-		int transformedBottom = std::clamp(abs(::g->mouseposy) + (::g->players[::g->consoleplayer].viewheight / FRACUNIT), initialTop, initialBottom); 
+		int transformedBottom = std::clamp((int)(abs(::g->mouseposy) + (playerViewHeight * correctionMult)), initialTop, initialBottom); 
 
 		//GK: First Draw the regular sky
 		::g->dc_yl = ::g->visplanes[i]->top[x];
