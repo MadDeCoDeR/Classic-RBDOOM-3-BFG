@@ -493,23 +493,35 @@ void I_UpdateSoundAL( void )
 	mobj_t *playerObj = ::g->players[0].mo;
 	if ( playerObj ) {
 		angle_t	pAngle = playerObj->angle;
-		fixed_t fx, fz;
+		angle_t psAngle = playerObj->viewangle;
+		fixed_t fx, fz, tx, tz;
 		
 		pAngle >>= ANGLETOFINESHIFT;
+		psAngle >>= ANGLETOFINESHIFT;
 		
 		fx = finecosine[pAngle];
 		fz = finesine[pAngle];
+
+		tx = finecosine[psAngle];
+		tz = finesine[psAngle];
 		
 		doom_Listener.OrientFront.x = (float)(fx) / 65535.f;
 		doom_Listener.OrientFront.y = 0.f;
 		doom_Listener.OrientFront.z = (float)(fz) / 65535.f;
+		doom_Listener.OrientTop.x = (float)(tx) / 65535.f;
+		doom_Listener.OrientTop.y = -1.f;
+		doom_Listener.OrientTop.z = (float)(tz) / 65535.f;
 		doom_Listener.Position.x = (float)(playerObj->x >> FRACBITS);
-		doom_Listener.Position.y = 0.f;
+		doom_Listener.Position.y = (float)(playerObj->z >> FRACBITS);
 		doom_Listener.Position.z = (float)(playerObj->y >> FRACBITS);
 	} else {
 		doom_Listener.OrientFront.x = 0.f;
 		doom_Listener.OrientFront.y = 0.f;
 		doom_Listener.OrientFront.z = 1.f;
+
+		doom_Listener.OrientTop.x = 0.f;
+		doom_Listener.OrientTop.y = -1.f;
+		doom_Listener.OrientTop.z = 0.f;
 		
 		doom_Listener.Position.x = 0.f;
 		doom_Listener.Position.y = 0.f;
