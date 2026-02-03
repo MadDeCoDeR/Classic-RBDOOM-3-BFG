@@ -41,3 +41,5 @@ extern LPALFILTERFV alFilterfvRef;
 extern LPALFILTERI alFilteriRef;
 extern LPALDELETEFILTERS alDeleteFiltersRef;
 extern LPALISFILTER alIsFilterRef;
+
+void RegisterEFXFuncs();
