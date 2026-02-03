@@ -214,7 +214,7 @@ A) Preperation
  
 	On Debian or Ubuntu:
 
-		> apt-get install build-essential autoconf libtool cmake libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev nasm libwayland-dev libxkbcommon-dev libegl1-mesa-dev libdecor-0-dev libxrandr-dev libxxf86vm-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev python3-jinja2 libltdl-dev bison autoconf-archive
+		> apt-get install build-essential autoconf libtool cmake libglu1-mesa-dev freeglut3-dev mesa-common-dev libxmu-dev libxi-dev libgl-dev libx11-dev libxft-dev libxext-dev nasm libwayland-dev libxkbcommon-dev libegl1-mesa-dev libdecor-0-dev libxrandr-dev libxxf86vm-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-glx0-dev libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-randr0-dev python3-jinja2 libltdl-dev bison autoconf-archive libxcursor-dev
 	
 	On Fedora
 
