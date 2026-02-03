@@ -378,23 +378,12 @@ else (ZLIB_FOUND)
     set(ZLIB_LIBRARY "" )
 endif (ZLIB_FOUND)
 
-if(USE_SYSTEM_LIBPNG)
-find_package(PNG REQUIRED)
-endif (USE_SYSTEM_LIBPNG)
 
-if (PNG_FOUND)
-    include_directories(${PNG_INCLUDE_DIRS})
-	if (MSVC AND ALL_STATIC)
-		set(PNG_LIBRARY
-		optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/libpng16"
-		debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/libpng16d")
-	else()
-		set(PNG_LIBRARY ${PNG_LIBRARIES})
-	endif()
-else (PNG_FOUND)
-    include_directories("libs/png")
-    set(PNG_LIBRARY "" )
-endif (PNG_FOUND)
+find_package(Stb REQUIRED)
+
+if (Stb_FOUND)
+    include_directories(${Stb_INCLUDE_DIRS})
+endif (Stb_FOUND)
 
 
 if(USE_SYSTEM_LIBJPEG)

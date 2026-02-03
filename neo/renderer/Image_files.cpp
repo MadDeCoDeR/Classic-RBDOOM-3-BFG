@@ -49,8 +49,11 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height, bool ma
  * You may also wish to include "jerror.h".
  */
 
-#include <jpeglib.h>
-#include <jerror.h>
+
+#include "stb_image.h"
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 // hooks from jpeg lib to our system
 
@@ -119,7 +122,7 @@ void R_WriteTGA( const char* filename, const byte* data, int width, int height, 
 }
 
 static void LoadTGA( const char* name, byte** pic, int* width, int* height, ID_TIME_T* timestamp );
-static void LoadJPG( const char* name, byte** pic, int* width, int* height, ID_TIME_T* timestamp );
+static void LoadSTB_RGBA8( const char* name, byte** pic, int* width, int* height, ID_TIME_T* timestamp );
 
 /*
 ========================================================================
@@ -418,450 +421,103 @@ breakOut:
 /*
 =========================================================
 
-JPG LOADING
+Generic Image LOADING
 
-Interfaces with the huge libjpeg
+Interfaces with the huge Stb_image
 =========================================================
 */
 
 /*
 =============
-LoadJPG
+LoadSTB_RGBA8
 =============
 */
-static void LoadJPG( const char* filename, unsigned char** pic, int* width, int* height, ID_TIME_T* timestamp )
+static void LoadSTB_RGBA8( const char* filename, unsigned char** pic, int* width, int* height, ID_TIME_T* timestamp )
 {
-	/* This struct contains the JPEG decompression parameters and pointers to
-	 * working space (which is allocated as needed by the JPEG library).
-	 */
-	struct jpeg_decompress_struct cinfo;
-	/* We use our private extension JPEG error handler.
-	 * Note that this struct must live as long as the main JPEG parameter
-	 * struct, to avoid dangling-pointer problems.
-	 */
-	/* This struct represents a JPEG error handler.  It is declared separately
-	 * because applications often want to supply a specialized error handler
-	 * (see the second half of this file for an example).  But here we just
-	 * take the easy way out and use the standard error handler, which will
-	 * print a message on stderr and call exit() if compression fails.
-	 * Note that this struct must live as long as the main JPEG parameter
-	 * struct, to avoid dangling-pointer problems.
-	 */
-	struct jpeg_error_mgr jerr;
-	/* More stuff */
-	JSAMPARRAY buffer;		/* Output row buffer */
-	int row_stride;		/* physical row width in output buffer */
-	unsigned char* out;
+
 	byte*	fbuffer;
 	byte*  bbuf;
 	int     len;
-	
-	/* In this example we want to open the input file before doing anything else,
-	 * so that the setjmp() error recovery below can assume the file is open.
-	 * VERY IMPORTANT: use "b" option to fopen() if you are on a machine that
-	 * requires it in order to read binary files.
-	 */
-	
-	// JDC: because fill_input_buffer() blindly copies INPUT_BUF_SIZE bytes,
-	// we need to make sure the file buffer is padded or it may crash
+	int w = 0, h = 0, comp = 0;
+
 	if( pic )
 	{
 		*pic = NULL;		// until proven otherwise
 	}
-	{
-		idFile* f;
-		
-		f = fileSystem->OpenFileRead( filename );
-		if( !f )
-		{
-			return;
-		}
-		len = f->Length();
-		if( timestamp )
-		{
-			*timestamp = f->Timestamp();
-		}
-		if( !pic )
-		{
-			fileSystem->CloseFile( f );
-			return;	// just getting timestamp
-		}
-		fbuffer = ( byte* )Mem_ClearedAlloc( len + 4096, TAG_JPG );
-		f->Read( fbuffer, len );
-		fileSystem->CloseFile( f );
-	}
+	idFile* f;
 	
-	
-	/* Step 1: allocate and initialize JPEG decompression object */
-	
-	/* We have to set up the error handler first, in case the initialization
-	 * step fails.  (Unlikely, but it could happen if you are out of memory.)
-	 * This routine fills in the contents of struct jerr, and returns jerr's
-	 * address which we place into the link field in cinfo.
-	 */
-	cinfo.err = jpeg_std_error( &jerr );
-	
-	/* Now we can initialize the JPEG decompression object. */
-	jpeg_create_decompress( &cinfo );
-	
-	/* Step 2: specify data source (eg, a file) */
-	
-#ifdef USE_NEWER_JPEG
-	jpeg_mem_src( &cinfo, fbuffer, len );
-#else
-	jpeg_stdio_src( &cinfo, fbuffer );
-#endif
-	/* Step 3: read file parameters with jpeg_read_header() */
-	
-	jpeg_read_header( &cinfo, true );
-	/* We can ignore the return value from jpeg_read_header since
-	 *   (a) suspension is not possible with the stdio data source, and
-	 *   (b) we passed TRUE to reject a tables-only JPEG file as an error.
-	 * See libjpeg.doc for more info.
-	 */
-	
-	/* Step 4: set parameters for decompression */
-	
-	/* In this example, we don't need to change any of the defaults set by
-	 * jpeg_read_header(), so we do nothing here.
-	 */
-	
-	/* Step 5: Start decompressor */
-	
-	jpeg_start_decompress( &cinfo );
-	/* We can ignore the return value since suspension is not possible
-	 * with the stdio data source.
-	 */
-	
-	/* We may need to do some setup of our own at this point before reading
-	 * the data.  After jpeg_start_decompress() we have the correct scaled
-	 * output image dimensions available, as well as the output colormap
-	 * if we asked for color quantization.
-	 * In this example, we need to make an output work buffer of the right size.
-	 */
-	/* JSAMPLEs per row in output buffer */
-	row_stride = cinfo.output_width * cinfo.output_components;
-	
-	if( cinfo.output_components != 4 )
-	{
-		common->DWarning( "JPG %s is unsupported color depth (%d)",
-						  filename, cinfo.output_components );
-	}
-	out = ( byte* )R_StaticAlloc( cinfo.output_width * cinfo.output_height * 4, TAG_IMAGE );
-	
-	*pic = out;
-	*width = cinfo.output_width;
-	*height = cinfo.output_height;
-	
-	/* Step 6: while (scan lines remain to be read) */
-	/*           jpeg_read_scanlines(...); */
-	
-	/* Here we use the library's state variable cinfo.output_scanline as the
-	 * loop counter, so that we don't have to keep track ourselves.
-	 */
-	while( cinfo.output_scanline < cinfo.output_height )
-	{
-		/* jpeg_read_scanlines expects an array of pointers to scanlines.
-		 * Here the array is only one element long, but you could ask for
-		 * more than one scanline at a time if that's more convenient.
-		 */
-		bbuf = ( ( out + ( row_stride * cinfo.output_scanline ) ) );
-		buffer = &bbuf;
-		jpeg_read_scanlines( &cinfo, buffer, 1 );
-	}
-	
-	// clear all the alphas to 255
-	{
-		int	i, j;
-		byte*	buf;
-		
-		buf = *pic;
-		
-		j = cinfo.output_width * cinfo.output_height * 4;
-		for( i = 3 ; i < j ; i += 4 )
-		{
-			buf[i] = 255;
-		}
-	}
-	
-	/* Step 7: Finish decompression */
-	
-	jpeg_finish_decompress( &cinfo );
-	/* We can ignore the return value since suspension is not possible
-	 * with the stdio data source.
-	 */
-	
-	/* Step 8: Release JPEG decompression object */
-	
-	/* This is an important step since it will release a good deal of memory. */
-	jpeg_destroy_decompress( &cinfo );
-	
-	/* After finish_decompress, we can close the input file.
-	 * Here we postpone it until after no more JPEG errors are possible,
-	 * so as to simplify the setjmp error logic above.  (Actually, I don't
-	 * think that jpeg_destroy can do an error exit, but why assume anything...)
-	 */
-	Mem_Free( fbuffer );
-	
-	/* At this point you may want to check to see whether any corrupt-data
-	 * warnings occurred (test whether jerr.pub.num_warnings is nonzero).
-	 */
-	
-	/* And we're done! */
-}
-
-// RB begin
-/*
-=========================================================
-
-PNG LOADING
-
-=========================================================
-*/
-
-extern "C"
-{
-#include <png.h>
-
-
-	static void png_Error( png_structp pngPtr, png_const_charp msg )
-	{
-		common->FatalError( "%s", msg );
-	}
-	
-	static void png_Warning( png_structp pngPtr, png_const_charp msg )
-	{
-		common->Warning( "%s", msg );
-	}
-	
-	static void	png_ReadData( png_structp pngPtr, png_bytep data, png_size_t length )
-	{
-#if PNG_LIBPNG_VER_MAJOR == 1 && PNG_LIBPNG_VER_MINOR < 4
-		memcpy(data, (byte*)pngPtr->io_ptr, length);
-
-		pngPtr->io_ptr = ((byte*)pngPtr->io_ptr) + length;
-#else
-		byte** ioptr = (byte**)png_get_io_ptr(pngPtr);
-		memcpy(*ioptr, data, length);
-		*ioptr += length;
-#endif
-	}
-	
-}
-
-/*
-=============
-LoadPNG
-=============
-*/
-static void LoadPNG( const char* filename, unsigned char** pic, int* width, int* height, ID_TIME_T* timestamp )
-{
-	byte*	fbuffer;
-	
-	if( !pic )
-	{
-		fileSystem->ReadFile( filename, NULL, timestamp );
-		return;	// just getting timestamp
-	}
-	
-	*pic = NULL;
-	
-	//
-	// load the file
-	//
-	int fileSize = fileSystem->ReadFile( filename, ( void** )&fbuffer, timestamp );
-	if( fileSize <= 0 && !fbuffer )
+	f = fileSystem->OpenFileRead( filename );
+	if( !f )
 	{
 		return;
 	}
-	
-	// create png_struct with the custom error handlers
-	png_structp pngPtr = png_create_read_struct( PNG_LIBPNG_VER_STRING, ( png_voidp ) NULL, png_Error, png_Warning );
-	if( !pngPtr )
+	len = f->Length();
+	if( timestamp )
 	{
-		common->Error( "LoadPNG( %s ): png_create_read_struct failed", filename );
+		*timestamp = f->Timestamp();
 	}
-	
-	// allocate the memory for image information
-	png_infop infoPtr = png_create_info_struct( pngPtr );
-	if( !infoPtr )
+	if( !pic )
 	{
-		common->Error( "LoadPNG( %s ): png_create_info_struct failed", filename );
+		fileSystem->CloseFile( f );
+		return;	// just getting timestamp
 	}
-	
-	png_set_read_fn( pngPtr, fbuffer, png_ReadData );
-	
-	png_set_sig_bytes( pngPtr, 0 );
-	
-	png_read_info( pngPtr, infoPtr );
-	
-	png_uint_32 pngWidth, pngHeight;
-	int bitDepth, colorType, interlaceType;
-	png_get_IHDR( pngPtr, infoPtr, &pngWidth, &pngHeight, &bitDepth, &colorType, &interlaceType, NULL, NULL );
-	
-	// 16 bit -> 8 bit
-	png_set_strip_16( pngPtr );
-	
-	// 1, 2, 4 bit -> 8 bit
-	if( bitDepth < 8 )
-	{
-		png_set_packing( pngPtr );
+	fbuffer = ( byte* )Mem_ClearedAlloc( len + 4096, TAG_JPG );
+	f->Read( fbuffer, len );
+	fileSystem->CloseFile( f );
+
+	bbuf = stbi_load_from_memory(fbuffer, len, &w, &h, &comp, 4);
+	Mem_Free(fbuffer);
+
+	if (bbuf == NULL) {
+		common->Warning("Failed to load jpg image %s with error: %s\n", filename, stbi_failure_reason());
+		return;
 	}
-	
-#if 1
-	if( colorType & PNG_COLOR_MASK_PALETTE )
-	{
-		png_set_expand( pngPtr );
-	}
-	
-	if( !( colorType & PNG_COLOR_MASK_COLOR ) )
-	{
-		png_set_gray_to_rgb( pngPtr );
-	}
-	
-#else
-	if( colorType == PNG_COLOR_TYPE_PALETTE )
-	{
-		png_set_palette_to_rgb( pngPtr );
-	}
-	
-	if( colorType == PNG_COLOR_TYPE_GRAY && bitDepth < 8 )
-	{
-		png_set_expand_gray_1_2_4_to_8( pngPtr );
-	}
-#endif
-	
-	// set paletted or RGB images with transparency to full alpha so we get RGBA
-	if( png_get_valid( pngPtr, infoPtr, PNG_INFO_tRNS ) )
-	{
-		png_set_tRNS_to_alpha( pngPtr );
-	}
-	
-	// make sure every pixel has an alpha value
-	if( !( colorType & PNG_COLOR_MASK_ALPHA ) )
-	{
-		png_set_filler( pngPtr, 255, PNG_FILLER_AFTER );
-	}
-	
-	png_read_update_info( pngPtr, infoPtr );
-	
-	byte* out = ( byte* )R_StaticAlloc( pngWidth * pngHeight * 4 );
-	
-	*pic = out;
-	*width = pngWidth;
-	*height = pngHeight;
-	
-	png_uint_32 rowBytes = png_get_rowbytes( pngPtr, infoPtr );
-	if (rowBytes) {}
-	
-	png_bytep* rowPointers = ( png_bytep* ) R_StaticAlloc( sizeof( png_bytep ) * pngHeight );
-	for( png_uint_32 row = 0; row < pngHeight; row++ )
-	{
-		rowPointers[row] = ( png_bytep )( out + ( row * pngWidth * 4 ) );
-	}
-	
-	png_read_image( pngPtr, rowPointers );
-	
-	png_read_end( pngPtr, infoPtr );
-	
-	png_destroy_read_struct( &pngPtr, &infoPtr, NULL );
-	
-	R_StaticFree( rowPointers );
-	Mem_Free( fbuffer );
+
+	int size = w * h * 4;
+	*pic = (unsigned char*)R_StaticAlloc(size, TAG_IMAGE);
+	memcpy(*pic, bbuf, size);
+	*width = w;
+	*height = h;
+	stbi_image_free(bbuf);
 }
 
+/*
+==================
+WriteScreenshotForSTBIW
 
-extern "C"
+Callback to each stbi_write_* function
+==================
+*/
+static void WriteScreenshotForSTBIW( void* context, void* data, int size )
 {
-
-	static int png_compressedSize = 0;
-	static void	png_WriteData( png_structp pngPtr, png_bytep data, png_size_t length )
-	{
-#if PNG_LIBPNG_VER_MAJOR == 1 && PNG_LIBPNG_VER_MINOR < 4
-		memcpy((byte*)pngPtr->io_ptr, data, length);
-
-		pngPtr->io_ptr = ((byte*)pngPtr->io_ptr) + length;
-#else
-		byte** ioptr = (byte**)png_get_io_ptr(pngPtr);
-		memcpy(*ioptr, data, length);
-		*ioptr += length;
-#endif
-		
-		png_compressedSize += length;
-	}
-	
-	static void	png_FlushData( png_structp pngPtr ) { }
-	
+	idFile* f = ( idFile* )context;
+	f->Write( data, size );
 }
+
 
 /*
 ================
 R_WritePNG
 ================
 */
-void R_WritePNG( const char* filename, const byte* data, int bytesPerPixel, int width, int height, bool flipVertical, const char* basePath )
+
+void R_WritePNG( const char* filename, const byte* data, int bytesPerPixel, int width, int height, bool flipVertical, const char* basePath)
 {
-	png_structp pngPtr = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, png_Error, png_Warning );
-	if( !pngPtr )
-	{
-		common->Error( "R_WritePNG( %s ): png_create_write_struct failed", filename );
-	}
-	
-	png_infop infoPtr = png_create_info_struct( pngPtr );
-	if( !infoPtr )
-	{
-		common->Error( "R_WritePNG( %s ): png_create_info_struct failed", filename );
-	}
-	
-	png_compressedSize = 0;
-	byte* buffer = ( byte* ) Mem_Alloc( width * height * bytesPerPixel, TAG_TEMP );
-	png_set_write_fn( pngPtr, buffer, png_WriteData, png_FlushData );
-	
-	if( bytesPerPixel == 4 )
-	{
-		png_set_IHDR( pngPtr, infoPtr, width, height, 8, PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT );
-	}
-	else if( bytesPerPixel == 3 )
-	{
-		png_set_IHDR( pngPtr, infoPtr, width, height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT );
-	}
-	else
+	if( bytesPerPixel != 4  && bytesPerPixel != 3 )
 	{
 		common->Error( "R_WritePNG( %s ): bytesPerPixel = %i not supported", filename, bytesPerPixel );
 	}
-	
-	// write header
-	png_write_info( pngPtr, infoPtr );
-	
-	png_bytep* rowPointers = ( png_bytep* ) Mem_Alloc( sizeof( png_bytep ) * height, TAG_TEMP );
-	
-	if( !flipVertical )
+
+	idFileLocal file( fileSystem->OpenFileWrite( filename, basePath ) );
+	if( file == NULL )
 	{
-		for( int row = 0, flippedRow = height - 1; row < height; row++, flippedRow-- )
-		{
-			rowPointers[flippedRow] = ( png_bytep )( data + ( row * width * bytesPerPixel ) );
-		}
+		common->Printf( "R_WritePNG: Failed to open %s\n", filename );
+		return;
 	}
-	else
-	{
-		for( int row = 0; row < height; row++ )
-		{
-			rowPointers[row] = ( png_bytep )( data + ( row * width * bytesPerPixel ) );
-		}
-	}
-	
-	png_write_image( pngPtr, rowPointers );
-	png_write_end( pngPtr, infoPtr );
-	
-	png_destroy_write_struct( &pngPtr, &infoPtr );
-	
-	Mem_Free( rowPointers );
-	
-	fileSystem->WriteFile( filename, buffer, png_compressedSize, basePath );
-	
-	Mem_Free( buffer );
+
+	//stbi_write_png_compression_level = idMath::ClampInt( 0, 9, r_screenshotPngCompression.GetInteger() );
+	stbi_write_png_to_func( WriteScreenshotForSTBIW, file, width, height, bytesPerPixel, data, bytesPerPixel * width );
 }
-// RB end
 
 //===================================================================
 
@@ -874,9 +530,9 @@ typedef struct
 
 static imageExtToLoader_t imageLoaders[] =
 {
-	{"png", LoadPNG},
+	{"png", LoadSTB_RGBA8},
 	{"tga", LoadTGA},
-	{"jpg", LoadJPG},
+	{"jpg", LoadSTB_RGBA8},
 };
 
 static const int numImageLoaders = sizeof( imageLoaders ) / sizeof( imageLoaders[0] );
