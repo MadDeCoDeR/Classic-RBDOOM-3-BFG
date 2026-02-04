@@ -22,12 +22,6 @@ jobs:
               run: |
                 cd vcpkg
                 git apply ../.github/tools/openal-fix.patch
-            
-            - name: setup-msbuild
-              uses: microsoft/setup-msbuild@v2
-              with:
-                vs-version: '[17.0, 18.0)'
-                msbuild-architecture: Win32
 
             - name: Fix MSbuild
               shell: powershell
@@ -47,7 +41,7 @@ jobs:
               name: Configure CMake
               working-directory: ${{github.workspace}}/neo
               shell: powershell
-              run: cmake -B ${{github.workspace}}/build --preset=windows-x86-2022
+              run: cmake -G "Visual Studio 17" -B ${{github.workspace}}/build --preset=windows-x86-2022
             
             - name: Save logs - VCPKG
               if: ${{ failure() }}

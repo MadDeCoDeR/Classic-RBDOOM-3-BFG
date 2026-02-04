@@ -23,12 +23,6 @@ jobs:
             cd vcpkg
             git apply ../.github/tools/openal-fix.patch
     
-        - name: setup-msbuild
-          uses: microsoft/setup-msbuild@v2
-          with:
-            vs-version: '[17.0, 18.0)'
-            msbuild-architecture: x64
-    
         - name: Cache Windows vcpkg
           id: cache-vcpkg
           uses: actions/cache@v4

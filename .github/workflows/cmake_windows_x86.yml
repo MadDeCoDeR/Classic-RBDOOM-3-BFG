@@ -30,12 +30,6 @@ jobs:
               with:
                 repository: MadDeCoDeR/BFA-Assets
                 path: BFA_Assets
-            
-            - name: setup-msbuild
-              uses: microsoft/setup-msbuild@v2
-              with:
-                vs-version: '[17.0, 18.0)'
-                msbuild-architecture: Win32
 
             - name: Fix MSbuild
               shell: powershell
