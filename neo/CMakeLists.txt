@@ -46,9 +46,6 @@ option(PACKAGED
 option(USE_SYSTEM_ZLIB
                 "Use the system zlib instead of the bundled one" OFF)
 
-option(USE_SYSTEM_LIBPNG
-                "Use the system libpng instead of the bundled one" OFF)
-
 option(USE_SYSTEM_LIBJPEG
                 "Use the system libjpeg instead of the bundled one" OFF)
 
@@ -599,14 +596,6 @@ file(GLOB SHADERS ../base/renderprogs/*.hlsl ../base/renderprogs/*.inc )
 file(GLOB IRRXML_INCLUDES libs/irrxml/src/*.h)
 file(GLOB IRRXML_SOURCES libs/irrxml/src/*.cpp)
 
-if (NOT PNG_FOUND)
-    file(GLOB PNG_INCLUDES libs/png/*.h)
-    file(GLOB PNG_SOURCES libs/png/*.c)
-else (NOT PNG_FOUND)
-    set(PNG_INCLUDES "")
-    set(PNG_SOURCES "")
-endif (NOT PNG_FOUND)
-
 if (NOT ZLIB_FOUND)
 file(GLOB ZLIB_INCLUDES libs/zlib/*.h)
 file(GLOB ZLIB_SOURCES libs/zlib/*.c)
@@ -1115,9 +1104,6 @@ source_group("jpeg-6" FILES ${JPEG_SOURCES})
 source_group("libbinkdec" FILES ${BINKDEC_INCLUDES})
 source_group("libbinkdec" FILES ${BINKDEC_SOURCES})
 
-source_group("png" FILES ${PNG_INCLUDES})
-source_group("png" FILES ${PNG_SOURCES})
-
 source_group("zlib" FILES ${ZLIB_INCLUDES})
 source_group("zlib" FILES ${ZLIB_SOURCES})
 
@@ -1267,7 +1253,6 @@ source_group("Tools\\Sound" FILES ${EDITOR_SOUND_SOURCES})
 set(LIB_INCLUDES
 			${IRRXML_INCLUDES}
 			${JPEG_INCLUDES}
-			${PNG_INCLUDES}
 			${ZLIB_INCLUDES}
 			${MINIZIP_INCLUDES}
 			${BINKDEC_INCLUDES}
@@ -1281,7 +1266,6 @@ set(LIB_INCLUDES
 set(LIB_SOURCES
 			${IRRXML_SOURCES}
 			${JPEG_SOURCES}
-			${PNG_SOURCES}
 			${ZLIB_SOURCES}
 			${MINIZIP_SOURCES}
 			${BINKDEC_SOURCES}
@@ -1714,7 +1698,7 @@ if(MSVC)
 	
 	if(USE_PRECOMPILED_HEADERS) 
 		set(RBDOOM3_PRECOMPILED_SOURCES ${RBDOOM3_SOURCES})
-		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${TIMIDITY_SOURCES} ${JPEG_SOURCES} ${PNG_SOURCES} ${ZLIB_SOURCES} ${GLEW_SOURCES} ${BINKDEC_SOURCES})
+		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${TIMIDITY_SOURCES} ${JPEG_SOURCES} ${ZLIB_SOURCES} ${GLEW_SOURCES} ${BINKDEC_SOURCES})
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/libs/zlib/minizip/ioapi.c)
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/renderer/DXT/DXTDecoder.cpp)
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/renderer/DXT/DXTEncoder.cpp)
@@ -1794,7 +1778,6 @@ if(MSVC)
 		${OpenAL_LIBRARY}
 		${FFmpeg_LIBRARIES}
         ${ZLIB_LIBRARY}
-        ${PNG_LIBRARY}
         ${JPEG_LIBRARY}
         ${GLEW_LIBRARY}
 		${OpenSSL_LIBRARY}
@@ -1916,7 +1899,7 @@ else()
 	
 	if(USE_PRECOMPILED_HEADERS) 	
 		set(RBDOOM3_PRECOMPILED_SOURCES ${RBDOOM3_SOURCES})
-		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${TIMIDITY_SOURCES} ${JPEG_SOURCES} ${PNG_SOURCES} ${ZLIB_SOURCES} ${GLEW_SOURCES} ${BINKDEC_SOURCES})
+		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${TIMIDITY_SOURCES} ${JPEG_SOURCES} ${ZLIB_SOURCES} ${GLEW_SOURCES} ${BINKDEC_SOURCES})
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/libs/zlib/minizip/ioapi.c)
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/renderer/DXT/DXTDecoder.cpp)
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/renderer/DXT/DXTEncoder.cpp)
@@ -2009,7 +1992,6 @@ else()
 			${OPENAL_LIBRARY}
 			${FFMPEG_LIBRARIES}
             ${ZLIB_LIBRARY}
-            ${PNG_LIBRARY}
             ${JPEG_LIBRARY}
             ${GLEW_LIBRARY}
 			${GLU_LIBRARY}
