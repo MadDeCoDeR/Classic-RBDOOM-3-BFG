@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include "doomdef.h"
 #include "m_swap.h"
+#undef strncmp
 #define STB_IMAGE_IMPLEMENTATION //GK: This goes First??
 #include "stb_image.h"
 #include "i_video.h"
@@ -544,7 +545,7 @@ patch_t* STB2lmp(unsigned char* buffer, int size) {
 		eh = 0;
 		posc = 0;
 		for (int j = 0; j < patch->height; j++) {
-			byte* pixel = buffer + (i + w * j) * 4;
+			byte* pixel = imageBuffer + (i + w * j) * 4;
 			if (!istrans(pixel)) {
 				byte dpix = GetColorMap(pixel);
 				if (!sc) {
@@ -630,7 +631,7 @@ patch_t* STB2lmp(unsigned char* buffer, int size) {
 				}
 		}
 	}
-	stbi_image_free(buffer);
+	stbi_image_free(imageBuffer);
 	for (int i = 0; i < patch->height; i++) {
 		free(post[i]);
 	}
