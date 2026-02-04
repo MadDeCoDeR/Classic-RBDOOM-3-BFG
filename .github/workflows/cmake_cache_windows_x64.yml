@@ -37,7 +37,7 @@ jobs:
           name: Configure CMake
           working-directory: ${{github.workspace}}/neo
           shell: powershell
-          run: cmake -DCMAKE_SYSTEM_VERSION=10.0.26100.0 -B ${{github.workspace}}/build --preset=windows-x64-2022
+          run: cmake -B ${{github.workspace}}/build --preset=windows-x64-2022  -DCMAKE_SYSTEM_VERSION=10.0.26100.0
 
         - name: Save logs - VCPKG
           if: ${{ failure() }}
