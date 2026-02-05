@@ -27,9 +27,12 @@ jobs:
               shell: powershell
               run: Remove-Item "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\Microsoft.VCToolsVersion.v143.default.*"
 
-            - uses: GuillaumeFalourd/setup-windows10-sdk-action@v2.4
-              with:
-               sdk-version: 26100
+            - name: Fix Windows SDK
+              id:  fix-SDK
+              working-directory: ${{github.workspace}}/.github/tools
+              shell: pwsh
+              run: |
+                .\download-windows-sdk.ps1
 
             - name: Cache Windows vcpkg
               id: cache-vcpkg
