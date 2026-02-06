@@ -36,12 +36,11 @@ jobs:
             repository: MadDeCoDeR/BFA-Assets
             ref: classic
             path: BFA_Assets_classic
-    
-        - name: setup-msbuild
-          uses: microsoft/setup-msbuild@v2
+
+        - name: Set up Visual Studio shell
+          uses: egor-tensin/vs-shell@v2
           with:
-            vs-version: '[17.0, 18.0)'
-            msbuild-architecture: x64
+            arch: x64
     
         - name: Cache Windows vcpkg
           uses: actions/cache@v4

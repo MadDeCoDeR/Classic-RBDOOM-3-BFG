@@ -266,6 +266,7 @@ void idSoundHardware_OpenAL::Init()
 	} else {
 	ALCint num_sends = 0;
 	alcGetIntegerv(openalDevice, ALC_MAX_AUXILIARY_SENDS, 1, &num_sends);
+	RegisterEFXFuncs();
 	common->Printf("idSoundHardware_OpenAL::Init: Number of EAX sends: %d\n", num_sends);
 	alGenAuxiliaryEffectSlotsRef(1, &slot); //GK: This will remain static during the whole execution
 	if (alIsAuxiliaryEffectSlotRef(slot) == AL_FALSE) {

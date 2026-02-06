@@ -25,19 +25,38 @@
 #include "precompiled.h"
 #include "AL_EAX.h"
 
-LPALGENEFFECTS			alGenEffectsRef = (LPALGENEFFECTS)alGetProcAddress("alGenEffects");
-LPALEFFECTI				alEffectiRef = (LPALEFFECTI)alGetProcAddress("alEffecti");
-LPALEFFECTF				alEffectfRef = (LPALEFFECTF)alGetProcAddress("alEffectf");
-LPALEFFECTFV			alEffectfvRef = (LPALEFFECTFV)alGetProcAddress("alEffectfv");
-LPALISEFFECT			alIsEffectRef = (LPALISEFFECT)alGetProcAddress("alIsEffect");
-LPALISAUXILIARYEFFECTSLOT	alIsAuxiliaryEffectSlotRef = (LPALISAUXILIARYEFFECTSLOT)alGetProcAddress("alIsAuxiliaryEffectSlot");
-LPALDELETEAUXILIARYEFFECTSLOTS	alDeleteAuxiliaryEffectSlotsRef = (LPALDELETEAUXILIARYEFFECTSLOTS)alGetProcAddress("alDeleteAuxiliaryEffectSlots");
-LPALDELETEEFFECTS	alDeleteEffectsRef = (LPALDELETEEFFECTS)alGetProcAddress("alDeleteEffects");
-LPALAUXILIARYEFFECTSLOTI	alAuxiliaryEffectSlotiRef = (LPALAUXILIARYEFFECTSLOTI)alGetProcAddress("alAuxiliaryEffectSloti");
-LPALGENAUXILIARYEFFECTSLOTS	alGenAuxiliaryEffectSlotsRef = (LPALGENAUXILIARYEFFECTSLOTS)alGetProcAddress("alGenAuxiliaryEffectSlots");
-LPALGENFILTERS			alGenFiltersRef = (LPALGENFILTERS)alGetProcAddress("alGenFilters");
-LPALFILTERF				alFilterfRef = (LPALFILTERF)alGetProcAddress("alFilterf");
-LPALFILTERFV			alFilterfvRef = (LPALFILTERFV)alGetProcAddress("alFilterfv");
-LPALFILTERI				alFilteriRef = (LPALFILTERI)alGetProcAddress("alFilteri");
-LPALDELETEFILTERS		alDeleteFiltersRef = (LPALDELETEFILTERS)alGetProcAddress("alDeleteFilters");
-LPALISFILTER			alIsFilterRef = (LPALISFILTER)alGetProcAddress("alIsFilter");
+LPALGENEFFECTS			alGenEffectsRef;
+LPALEFFECTI				alEffectiRef;
+LPALEFFECTF				alEffectfRef;
+LPALEFFECTFV			alEffectfvRef;
+LPALISEFFECT			alIsEffectRef;
+LPALISAUXILIARYEFFECTSLOT	alIsAuxiliaryEffectSlotRef;
+LPALDELETEAUXILIARYEFFECTSLOTS	alDeleteAuxiliaryEffectSlotsRef;
+LPALDELETEEFFECTS	alDeleteEffectsRef;
+LPALAUXILIARYEFFECTSLOTI	alAuxiliaryEffectSlotiRef;
+LPALGENAUXILIARYEFFECTSLOTS	alGenAuxiliaryEffectSlotsRef;
+LPALGENFILTERS			alGenFiltersRef;
+LPALFILTERF				alFilterfRef;
+LPALFILTERFV			alFilterfvRef;
+LPALFILTERI				alFilteriRef;
+LPALDELETEFILTERS		alDeleteFiltersRef;
+LPALISFILTER			alIsFilterRef;
+
+void RegisterEFXFuncs() {
+    alGenEffectsRef = (LPALGENEFFECTS)alGetProcAddress("alGenEffects");
+    alEffectiRef = (LPALEFFECTI)alGetProcAddress("alEffecti");
+    alEffectfRef = (LPALEFFECTF)alGetProcAddress("alEffectf");
+    alEffectfvRef = (LPALEFFECTFV)alGetProcAddress("alEffectfv");
+    alIsEffectRef = (LPALISEFFECT)alGetProcAddress("alIsEffect");
+    alIsAuxiliaryEffectSlotRef = (LPALISAUXILIARYEFFECTSLOT)alGetProcAddress("alIsAuxiliaryEffectSlot");
+    alDeleteAuxiliaryEffectSlotsRef = (LPALDELETEAUXILIARYEFFECTSLOTS)alGetProcAddress("alDeleteAuxiliaryEffectSlots");
+    alDeleteEffectsRef = (LPALDELETEEFFECTS)alGetProcAddress("alDeleteEffects");
+    alAuxiliaryEffectSlotiRef = (LPALAUXILIARYEFFECTSLOTI)alGetProcAddress("alAuxiliaryEffectSloti");
+    alGenAuxiliaryEffectSlotsRef = (LPALGENAUXILIARYEFFECTSLOTS)alGetProcAddress("alGenAuxiliaryEffectSlots");
+    alGenFiltersRef = (LPALGENFILTERS)alGetProcAddress("alGenFilters");
+    alFilterfRef = (LPALFILTERF)alGetProcAddress("alFilterf");
+    alFilterfvRef = (LPALFILTERFV)alGetProcAddress("alFilterfv");
+    alFilteriRef = (LPALFILTERI)alGetProcAddress("alFilteri");
+    alDeleteFiltersRef = (LPALDELETEFILTERS)alGetProcAddress("alDeleteFilters");
+    alIsFilterRef = (LPALISFILTER)alGetProcAddress("alIsFilter");
+}

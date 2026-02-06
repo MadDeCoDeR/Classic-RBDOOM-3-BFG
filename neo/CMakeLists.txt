@@ -46,9 +46,6 @@ option(PACKAGED
 option(USE_SYSTEM_ZLIB
                 "Use the system zlib instead of the bundled one" OFF)
 
-option(USE_SYSTEM_LIBPNG
-                "Use the system libpng instead of the bundled one" OFF)
-
 option(USE_SYSTEM_LIBJPEG
                 "Use the system libjpeg instead of the bundled one" OFF)
 
@@ -378,23 +375,12 @@ else (ZLIB_FOUND)
     set(ZLIB_LIBRARY "" )
 endif (ZLIB_FOUND)
 
-if(USE_SYSTEM_LIBPNG)
-find_package(PNG REQUIRED)
-endif (USE_SYSTEM_LIBPNG)
 
-if (PNG_FOUND)
-    include_directories(${PNG_INCLUDE_DIRS})
-	if (MSVC AND ALL_STATIC)
-		set(PNG_LIBRARY
-		optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/libpng16"
-		debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/libpng16d")
-	else()
-		set(PNG_LIBRARY ${PNG_LIBRARIES})
-	endif()
-else (PNG_FOUND)
-    include_directories("libs/png")
-    set(PNG_LIBRARY "" )
-endif (PNG_FOUND)
+find_package(Stb REQUIRED)
+
+if (Stb_FOUND)
+    include_directories(${Stb_INCLUDE_DIRS})
+endif (Stb_FOUND)
 
 
 if(USE_SYSTEM_LIBJPEG)
@@ -609,14 +595,6 @@ file(GLOB SHADERS ../base/renderprogs/*.hlsl ../base/renderprogs/*.inc )
 
 file(GLOB IRRXML_INCLUDES libs/irrxml/src/*.h)
 file(GLOB IRRXML_SOURCES libs/irrxml/src/*.cpp)
-
-if (NOT PNG_FOUND)
-    file(GLOB PNG_INCLUDES libs/png/*.h)
-    file(GLOB PNG_SOURCES libs/png/*.c)
-else (NOT PNG_FOUND)
-    set(PNG_INCLUDES "")
-    set(PNG_SOURCES "")
-endif (NOT PNG_FOUND)
 
 if (NOT ZLIB_FOUND)
 file(GLOB ZLIB_INCLUDES libs/zlib/*.h)
@@ -1126,9 +1104,6 @@ source_group("jpeg-6" FILES ${JPEG_SOURCES})
 source_group("libbinkdec" FILES ${BINKDEC_INCLUDES})
 source_group("libbinkdec" FILES ${BINKDEC_SOURCES})
 
-source_group("png" FILES ${PNG_INCLUDES})
-source_group("png" FILES ${PNG_SOURCES})
-
 source_group("zlib" FILES ${ZLIB_INCLUDES})
 source_group("zlib" FILES ${ZLIB_SOURCES})
 
@@ -1278,7 +1253,6 @@ source_group("Tools\\Sound" FILES ${EDITOR_SOUND_SOURCES})
 set(LIB_INCLUDES
 			${IRRXML_INCLUDES}
 			${JPEG_INCLUDES}
-			${PNG_INCLUDES}
 			${ZLIB_INCLUDES}
 			${MINIZIP_INCLUDES}
 			${BINKDEC_INCLUDES}
@@ -1292,7 +1266,6 @@ set(LIB_INCLUDES
 set(LIB_SOURCES
 			${IRRXML_SOURCES}
 			${JPEG_SOURCES}
-			${PNG_SOURCES}
 			${ZLIB_SOURCES}
 			${MINIZIP_SOURCES}
 			${BINKDEC_SOURCES}
@@ -1567,96 +1540,16 @@ if(MSVC)
 		if (NOT USE_VCPKG)
 			find_package(FFMPEGDNL REQUIRED)
 		else()
-			set(FFMPEG_FOUND TRUE)
+			find_package(FFMPEG COMPONENTS AVCODEC AVDEVICE AVFILTER AVFORMAT AVUTIL SWRESAMPLE SWSCALE REQUIRED)
 		endif()
 		else(USE_PACKAGED_FFMPEG)
 			set(FFMPEG_FOUND FALSE)
 		endif(USE_PACKAGED_FFMPEG)
 
 		if(FFMPEG_FOUND)
-			#include_directories(${FFMPEG_INCLUDE_DIRS})
-			#link_directories(${FFMPEG_LIBRARIES_DIRS})
-			if (MSVC AND ALL_STATIC)
-				include_directories(
-					"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavcodec"
-					"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavdevice"
-					"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavfilter"
-					"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavformat"
-					"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libavutil"
-					"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libswresample"
-					"vcpkg_installed/${CPU_ARCH}-windows-static-md/include/libswscale" 
-				)
-				set(FFmpeg_LIBRARIES
-				psapi.lib
-				uuid.lib
-				oleaut32.lib
-				shlwapi.lib
-				gdi32.lib
-				vfw32.lib
-				secur32.lib
-				ws2_32.lib
-				mfplat.lib
-				mfuuid.lib
-				strmiids.lib
-				ole32.lib
-				user32.lib
-				bcrypt.lib
-				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/avcodec"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/avdevice"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/avfilter"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/avformat"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/avutil"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/swresample"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/swscale" 
-				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/avcodec"
-				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/avdevice"
-				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/avfilter"
-				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/avformat"
-				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/avutil"
-				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/swresample"
-				debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/swscale")
-			elseif(MSVC AND NOT ALL_STATIC)
-			include_directories(
-				"vcpkg_installed/${CPU_ARCH}-windows/include/libavcodec"
-				"vcpkg_installed/${CPU_ARCH}-windows/include/libavdevice"
-				"vcpkg_installed/${CPU_ARCH}-windows/include/libavfilter"
-				"vcpkg_installed/${CPU_ARCH}-windows/include/libavformat"
-				"vcpkg_installed/${CPU_ARCH}-windows/include/libavutil"
-				"vcpkg_installed/${CPU_ARCH}-windows/include/libswresample"
-				"vcpkg_installed/${CPU_ARCH}-windows/include/libswscale" 
-			)
-				set(FFmpeg_LIBRARIES
-				psapi.lib
-				uuid.lib
-				oleaut32.lib
-				shlwapi.lib
-				gdi32.lib
-				vfw32.lib
-				secur32.lib
-				ws2_32.lib
-				mfplat.lib
-				mfuuid.lib
-				strmiids.lib
-				ole32.lib
-				user32.lib
-				bcrypt.lib
-				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/avcodec"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/avdevice"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/avfilter"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/avformat"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/avutil"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/swresample"
-				optimized "vcpkg_installed/${CPU_ARCH}-windows/lib/swscale" 
-				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/avcodec"
-				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/avdevice"
-				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/avfilter"
-				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/avformat"
-				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/avutil"
-				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/swresample"
-				debug "vcpkg_installed/${CPU_ARCH}-windows/debug/lib/swscale")
-			else()
-				set(FFmpeg_LIBRARIES ${FFMPEG_LIBRARIES})
-			endif()
+			include_directories(${FFMPEG_INCLUDE_DIRS})
+			link_directories(${FFMPEG_LIBRARIES_DIRS})
+
 		else(FFMPEG_FOUND)
 			if(CMAKE_CL_64)
 				set(FFMPEG_DIR ffmpeg-win64)
@@ -1725,7 +1618,7 @@ if(MSVC)
 	
 	if(USE_PRECOMPILED_HEADERS) 
 		set(RBDOOM3_PRECOMPILED_SOURCES ${RBDOOM3_SOURCES})
-		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${TIMIDITY_SOURCES} ${JPEG_SOURCES} ${PNG_SOURCES} ${ZLIB_SOURCES} ${GLEW_SOURCES} ${BINKDEC_SOURCES})
+		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${TIMIDITY_SOURCES} ${JPEG_SOURCES} ${ZLIB_SOURCES} ${GLEW_SOURCES} ${BINKDEC_SOURCES})
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/libs/zlib/minizip/ioapi.c)
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/renderer/DXT/DXTDecoder.cpp)
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/renderer/DXT/DXTEncoder.cpp)
@@ -1803,9 +1696,8 @@ if(MSVC)
 		${Vulkan_DEBUG_LIBRARIES}
 		${OpenGL_LIBRARIES}
 		${OpenAL_LIBRARY}
-		${FFmpeg_LIBRARIES}
+		${FFMPEG_LIBRARIES}
         ${ZLIB_LIBRARY}
-        ${PNG_LIBRARY}
         ${JPEG_LIBRARY}
         ${GLEW_LIBRARY}
 		${OpenSSL_LIBRARY}
@@ -1831,7 +1723,7 @@ else()
 	if(UNIX)
 		if(FFMPEG)
 		if (USE_VCPKG)
-			find_package(FFMPEG REQUIRED)
+			find_package(FFMPEG COMPONENTS AVCODEC AVDEVICE AVFILTER AVFORMAT AVUTIL SWRESAMPLE SWSCALE REQUIRED)
 		else(USE_VCPKG)
 			find_package(FFMPEGDNL REQUIRED)
 		endif(USE_VCPKG)
@@ -1927,7 +1819,7 @@ else()
 	
 	if(USE_PRECOMPILED_HEADERS) 	
 		set(RBDOOM3_PRECOMPILED_SOURCES ${RBDOOM3_SOURCES})
-		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${TIMIDITY_SOURCES} ${JPEG_SOURCES} ${PNG_SOURCES} ${ZLIB_SOURCES} ${GLEW_SOURCES} ${BINKDEC_SOURCES})
+		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${TIMIDITY_SOURCES} ${JPEG_SOURCES} ${ZLIB_SOURCES} ${GLEW_SOURCES} ${BINKDEC_SOURCES})
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/libs/zlib/minizip/ioapi.c)
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/renderer/DXT/DXTDecoder.cpp)
 		list(REMOVE_ITEM RBDOOM3_PRECOMPILED_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/renderer/DXT/DXTEncoder.cpp)
@@ -2020,7 +1912,6 @@ else()
 			${OPENAL_LIBRARY}
 			${FFMPEG_LIBRARIES}
             ${ZLIB_LIBRARY}
-            ${PNG_LIBRARY}
             ${JPEG_LIBRARY}
             ${GLEW_LIBRARY}
 			${GLU_LIBRARY}
