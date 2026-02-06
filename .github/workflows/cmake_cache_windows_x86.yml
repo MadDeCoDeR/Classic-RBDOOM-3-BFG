@@ -27,12 +27,10 @@ jobs:
               shell: powershell
               run: Remove-Item "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\Microsoft.VCToolsVersion.v143.default.*"
 
-            - name: Fix Windows SDK
-              id:  fix-SDK
-              working-directory: ${{github.workspace}}/.github/tools
-              shell: pwsh
-              run: |
-                .\download-windows-sdk.ps1
+            - name: Set up Visual Studio shell
+              uses: egor-tensin/vs-shell@v2
+              with:
+                arch: x86
 
             - name: Cache Windows vcpkg
               id: cache-vcpkg

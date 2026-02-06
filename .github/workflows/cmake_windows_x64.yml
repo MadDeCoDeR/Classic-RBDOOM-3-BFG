@@ -37,12 +37,10 @@ jobs:
             ref: classic
             path: BFA_Assets_classic
 
-        - name: Fix Windows SDK
-          id:  fix-SDK
-          working-directory: ${{github.workspace}}/.github/tools
-          shell: pwsh
-          run: |
-            .\download-windows-sdk.ps1
+        - name: Set up Visual Studio shell
+          uses: egor-tensin/vs-shell@v2
+          with:
+            arch: x64
     
         - name: Cache Windows vcpkg
           uses: actions/cache@v4
