@@ -581,6 +581,8 @@ idImage* idImageManager::GetImage( const char* _name ) const
 	// strip any .tga file extensions from anywhere in the _name, including image program parameters
 	idStr name = _name;
 	name.Replace( ".tga", "" );
+	name.Replace( ".jpg", "" );
+	name.Replace( ".png", "" );
 	name.BackSlashesToSlashes();
 	
 	//

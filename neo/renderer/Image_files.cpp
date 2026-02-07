@@ -598,7 +598,7 @@ void R_LoadImage( const char* cname, byte** pic, int* width, int* height, ID_TIM
 	if( !ext.IsEmpty() )
 	{
 		int i;
-		/*for( i = 0; i < numImageLoaders; i++ )
+		for( i = 0; i < numImageLoaders; i++ )
 		{
 			if( !ext.Icmp( imageLoaders[i].ext ) )
 			{
@@ -607,7 +607,7 @@ void R_LoadImage( const char* cname, byte** pic, int* width, int* height, ID_TIM
 			}
 		}
 		
-		if( i < numImageLoaders )*/
+		if( i < numImageLoaders )
 		{
 			if( pic && *pic == NULL )
 			{
@@ -619,7 +619,7 @@ void R_LoadImage( const char* cname, byte** pic, int* width, int* height, ID_TIM
 					
 					if( pic && *pic != NULL )
 					{
-						//common->Warning("image %s failed to load, using %s instead", origName.c_str(), name.c_str());
+						common->Warning("image %s failed to load, using %s instead", origName.c_str(), name.c_str());
 						break;
 					}
 				}
