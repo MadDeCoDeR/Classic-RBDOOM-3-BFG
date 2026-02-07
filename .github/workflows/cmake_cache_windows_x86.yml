@@ -17,12 +17,6 @@ jobs:
                 submodules: recursive
                 ref: master
 
-            - name: Patch OpenAL-Soft
-              id: step1f
-              run: |
-                cd vcpkg
-                git apply ../.github/tools/openal-fix.patch
-
             - name: Fix MSbuild
               shell: powershell
               run: Remove-Item "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\Microsoft.VCToolsVersion.v143.default.*"

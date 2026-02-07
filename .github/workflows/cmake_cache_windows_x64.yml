@@ -16,12 +16,6 @@ jobs:
           with:
             submodules: recursive
             ref: master
-        
-        - name: Patch OpenAL-Soft
-          id: step1f
-          run: |
-            cd vcpkg
-            git apply ../.github/tools/openal-fix.patch
 
         - name: Set up Visual Studio shell
           uses: egor-tensin/vs-shell@v2
