@@ -532,7 +532,9 @@ static imageExtToLoader_t imageLoaders[] =
 {
 	{"png", LoadSTB_RGBA8},
 	{"tga", LoadTGA},
-	{"jpg", LoadSTB_RGBA8},
+	{"jpg", LoadSTB_RGBA8}
+	
+	
 };
 
 static const int numImageLoaders = sizeof( imageLoaders ) / sizeof( imageLoaders[0] );
@@ -595,10 +597,10 @@ void R_LoadImage( const char* cname, byte** pic, int* width, int* height, ID_TIM
 	idStr origName = name;
 	
 // RB begin
-	if( !ext.IsEmpty() )
+	//if( !ext.IsEmpty() )
 	{
 		int i;
-		for( i = 0; i < numImageLoaders; i++ )
+		/*for( i = 0; i < numImageLoaders; i++ )
 		{
 			if( !ext.Icmp( imageLoaders[i].ext ) )
 			{
@@ -607,9 +609,9 @@ void R_LoadImage( const char* cname, byte** pic, int* width, int* height, ID_TIM
 			}
 		}
 		
-		if( i < numImageLoaders )
+		if( i < numImageLoaders )*/
 		{
-			if( pic && *pic == NULL )
+			//if( pic && *pic == NULL )
 			{
 				// image with the specified extension was not found so try all formats
 				for( i = 0; i < numImageLoaders; i++ )
@@ -619,7 +621,7 @@ void R_LoadImage( const char* cname, byte** pic, int* width, int* height, ID_TIM
 					
 					if( pic && *pic != NULL )
 					{
-						common->Warning("image %s failed to load, using %s instead", origName.c_str(), name.c_str());
+						//common->Warning("image %s failed to load, using %s instead", origName.c_str(), name.c_str());
 						break;
 					}
 				}
