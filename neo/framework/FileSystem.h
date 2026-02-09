@@ -51,7 +51,7 @@ If you have questions concerning this license or the applicable additional terms
 */
 
 static const ID_TIME_T	FILE_NOT_FOUND_TIMESTAMP	= ( ID_TIME_T ) - 1;
-static const int		MAX_OSPATH					= 256;
+static const int		MAX_OSPATH					= 512;
 
 // modes for OpenFileByMode
 typedef enum
