@@ -514,9 +514,11 @@ void R_WritePNG( const char* filename, const byte* data, int bytesPerPixel, int 
 		common->Printf( "R_WritePNG: Failed to open %s\n", filename );
 		return;
 	}
-
+	//GK: You can FLIP it like that and get some free fries /j
+	stbi_flip_vertically_on_write(flipVertical);
 	//stbi_write_png_compression_level = idMath::ClampInt( 0, 9, r_screenshotPngCompression.GetInteger() );
 	stbi_write_png_to_func( WriteScreenshotForSTBIW, file, width, height, bytesPerPixel, data, bytesPerPixel * width );
+	stbi_flip_vertically_on_write(!flipVertical);
 }
 
 //===================================================================
