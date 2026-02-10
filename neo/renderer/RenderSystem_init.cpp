@@ -1052,7 +1052,7 @@ void idRenderSystemLocal::TakeScreenshot( int width, int height, const char* fil
 	}
 	if( exten == PNG )
 	{
-		R_WritePNG( finalFileName, buffer, 3, width, height, false, "fs_basepath" );
+		R_WritePNG( finalFileName, buffer, 3, width, height, true, "fs_apppath" ); //GK: Flip YOU STB
 	}
 	else
 	{
@@ -1074,7 +1074,7 @@ void idRenderSystemLocal::TakeScreenshot( int width, int height, const char* fil
 			buffer[i + 2] = temp;
 		}
 		
-		fileSystem->WriteFile( finalFileName, buffer, c, "fs_basepath" );
+		fileSystem->WriteFile( finalFileName, buffer, c, "fs_apppath" );
 	}
 	
 	R_StaticFree( buffer );
