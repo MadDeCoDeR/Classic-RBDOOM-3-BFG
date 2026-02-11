@@ -350,8 +350,8 @@ bool GLimp_Init( glimpParms_t parms )
 
 		 SDL_SetWindowIcon(window, surf);
 
-		if( SDL_GL_SetSwapInterval( r_swapInterval.GetInteger() ) < 0 )
-			common->Warning( "SDL_GL_SWAP_CONTROL not supported" );
+		 glConfig.swapControlTearAvailable = SDL_GL_SetSwapInterval(-1);
+		 r_swapInterval.SetModified();
 			
 		// RB begin
 		SDL_GetWindowSizeInPixels( window, &glConfig.nativeScreenWidth, &glConfig.nativeScreenHeight );
@@ -606,6 +606,21 @@ GLimp_SwapBuffers
 */
 void GLimp_SwapBuffers()
 {
+	if( r_swapInterval.IsModified() )
+	{
+		r_swapInterval.ClearModified();
+		
+		int interval = 0;
+		if( r_swapInterval.GetInteger() == 1 )
+		{
+			interval = ( glConfig.swapControlTearAvailable ) ? -1 : 1;
+		}
+		else if( r_swapInterval.GetInteger() == 2 )
+		{
+			interval = 1;
+		}
+		SDL_GL_SetSwapInterval(interval);
+	}
 	SDL_GL_SwapWindow( window );
 }
 
