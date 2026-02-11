@@ -33,7 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../../doomclassic/doom/i_sound_openal.h"
 #include "AL/alext.h"
 
-LPALCREOPENDEVICESOFT alcReopenDeviceSOFTRef = (LPALCREOPENDEVICESOFT)alGetProcAddress("alcReopenDeviceSOFT");
+LPALCREOPENDEVICESOFT alcReopenDeviceSOFTRef;
 
 
 
@@ -60,7 +60,7 @@ idSoundHardware_OpenAL::idSoundHardware_OpenAL(): idSoundHardware()
 	voices.SetNum( 0 );
 	zombieVoices.SetNum( 0 );
 	freeVoices.SetNum( 0 );
-	
+	alcReopenDeviceSOFTRef = (LPALCREOPENDEVICESOFT)alGetProcAddress("alcReopenDeviceSOFT");
 	//lastResetTime = 0;
 }
 
@@ -165,13 +165,6 @@ void idSoundHardware_OpenAL::parseDeviceName(const ALCchar* wcDevice, char* mbDe
 	wchar_t* wdevs = new wchar_t[wdev_size];
 	MultiByteToWideChar(CP_UTF8, NULL, wcDevice, -1, wdevs, wdev_size);
 	Sys_Wcstrtombstr(mbDevice, wdevs, wdev_size);
-	delete[] wdevs;
-#else
-	wchar_t* wdevs = new wchar_t[512];
-	int wdev_size = mbstowcs(wdevs, wcDevice, strlen(wcDevice));
-	wdevs[wdev_size] = '\0';
-	int mb_size = wcstombs(mbDevice, wdevs, wdev_size);
-	mbDevice[mb_size] = '\0';
 	delete[] wdevs;
 #endif
 }
