@@ -481,6 +481,10 @@ void	R_WriteTGA( const char* filename, const byte* data, int width, int height, 
 void	R_WritePNG( const char* filename, const byte* data, int bytesPerPixel, int width, int height, bool flipVertical = false, const char* basePath = "fs_savepath" );
 // RB end
 
+// GK begin
+void	R_WriteJPG( const char* filename, const byte* data, int bytesPerPixel, int width, int height, bool flipVertical = false, const char* basePath = "fs_savepath" );
+// GK end
+
 class idImageManager
 {
 public:

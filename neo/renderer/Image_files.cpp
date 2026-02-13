@@ -521,6 +521,32 @@ void R_WritePNG( const char* filename, const byte* data, int bytesPerPixel, int 
 	stbi_flip_vertically_on_write(!flipVertical);
 }
 
+/*
+================
+R_WriteJPG
+================
+*/
+
+void R_WriteJPG( const char* filename, const byte* data, int bytesPerPixel, int width, int height, bool flipVertical, const char* basePath)
+{
+	if( bytesPerPixel != 4  && bytesPerPixel != 3 )
+	{
+		common->Error( "R_WriteJPG( %s ): bytesPerPixel = %i not supported", filename, bytesPerPixel );
+	}
+
+	idFileLocal file( fileSystem->OpenFileWrite( filename, basePath ) );
+	if( file == NULL )
+	{
+		common->Printf( "R_WriteJPG: Failed to open %s\n", filename );
+		return;
+	}
+	//GK: You can FLIP it like that and get some free fries /j
+	stbi_flip_vertically_on_write(flipVertical);
+	//stbi_write_png_compression_level = idMath::ClampInt( 0, 9, r_screenshotPngCompression.GetInteger() );
+	stbi_write_jpg_to_func( WriteScreenshotForSTBIW, file, width, height, bytesPerPixel, data, bytesPerPixel * width );
+	stbi_flip_vertically_on_write(!flipVertical);
+}
+
 //===================================================================
 
 
