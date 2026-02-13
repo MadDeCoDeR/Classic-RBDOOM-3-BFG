@@ -928,7 +928,7 @@ void R_ReadTiledPixels( int width, int height, byte* buffer, renderView_t* ref =
 				h = height - yo;
 			}
 			
-			glReadBuffer( GL_FRONT );
+			glReadBuffer( GL_BACK );
 			glReadPixels( 0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, temp );
 			
 			int	row = ( w * 3 + 3 ) & ~3;		// OpenGL pads to dword boundaries
@@ -981,7 +981,7 @@ void idRenderSystemLocal::TakeScreenshot( int width, int height, const char* fil
 	int pix = width * height;
 	const int bufferSize = pix * 3 + 18;
 	
-	if( exten == PNG )
+	if( exten == PNG || exten == JPG)
 	{
 		buffer = ( byte* )R_StaticAlloc( pix * 3 );
 	}
@@ -993,7 +993,7 @@ void idRenderSystemLocal::TakeScreenshot( int width, int height, const char* fil
 	
 	if( blends <= 1 )
 	{
-		if( exten == PNG )
+		if( exten == PNG || exten == JPG)
 		{
 			R_ReadTiledPixels( width, height, buffer, ref );
 		}
@@ -1012,7 +1012,7 @@ void idRenderSystemLocal::TakeScreenshot( int width, int height, const char* fil
 		
 		for( i = 0 ; i < blends ; i++ )
 		{
-			if( exten == PNG )
+			if( exten == PNG || exten == JPG)
 			{
 				R_ReadTiledPixels( width, height, buffer, ref );
 			}
@@ -1023,7 +1023,7 @@ void idRenderSystemLocal::TakeScreenshot( int width, int height, const char* fil
 			
 			for( j = 0 ; j < pix * 3 ; j++ )
 			{
-				if( exten == PNG )
+				if( exten == PNG || exten == JPG)
 				{
 					shortBuffer[j] += buffer[j];
 				}
@@ -1037,7 +1037,7 @@ void idRenderSystemLocal::TakeScreenshot( int width, int height, const char* fil
 		// divide back to bytes
 		for( i = 0 ; i < pix * 3 ; i++ )
 		{
-			if( exten == PNG )
+			if( exten == PNG || exten == JPG)
 			{
 				buffer[i] = shortBuffer[i] / blends;
 			}
@@ -1053,6 +1053,9 @@ void idRenderSystemLocal::TakeScreenshot( int width, int height, const char* fil
 	if( exten == PNG )
 	{
 		R_WritePNG( finalFileName, buffer, 3, width, height, true, "fs_savepath" ); //GK: Flip YOU STB
+	}
+	else if (exten == JPG) {
+		R_WriteJPG( finalFileName, buffer, 3, width, height, true, "fs_savepath" );
 	}
 	else
 	{
@@ -1206,7 +1209,7 @@ void R_ScreenShot_f( const idCmdArgs& args )
 	// put the console away
 	console->Close();
 	
-	tr.TakeScreenshot( width, height, checkname, blends, NULL, PNG );
+	tr.TakeScreenshot( width, height, checkname, blends, NULL, JPG );
 	
 	common->Printf( "Wrote %s\n", checkname.c_str() );
 }
