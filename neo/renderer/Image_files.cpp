@@ -543,7 +543,7 @@ void R_WriteJPG( const char* filename, const byte* data, int bytesPerPixel, int 
 	//GK: You can FLIP it like that and get some free fries /j
 	stbi_flip_vertically_on_write(flipVertical);
 	//stbi_write_png_compression_level = idMath::ClampInt( 0, 9, r_screenshotPngCompression.GetInteger() );
-	stbi_write_jpg_to_func( WriteScreenshotForSTBIW, file, width, height, bytesPerPixel, data, bytesPerPixel * width );
+	stbi_write_jpg_to_func( WriteScreenshotForSTBIW, file, width, height, bytesPerPixel, data, 100 );
 	stbi_flip_vertically_on_write(!flipVertical);
 }
 
