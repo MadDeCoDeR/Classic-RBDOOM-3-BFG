@@ -62,6 +62,7 @@ idCVar r_useOpenGL32( "r_useOpenGL32", "1", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = O
 // RB end
 
 extern idCVar r_fullscreen;
+extern idCVar swf_cursorDPI;
 
 static bool grabbed = false;
 
@@ -279,6 +280,7 @@ bool GLimp_Init( glimpParms_t parms )
 		
 		// DG: set display num for fullscreen
 		int windowPos = SDL_WINDOWPOS_UNDEFINED;
+		int windowPosY = SDL_WINDOWPOS_UNDEFINED;
 		if( parms.fullScreen > 0 )
 		{
 			int count = 0;
@@ -293,8 +295,12 @@ bool GLimp_Init( glimpParms_t parms )
 				// -1 because SDL starts counting displays at 0, while parms.fullScreen starts at 1
 				SDL_DisplayID displayID = displays[parms.fullScreen - 1];
 				windowPos = SDL_WINDOWPOS_UNDEFINED_DISPLAY( ( displayID ) );
+				windowPosY = SDL_WINDOWPOS_UNDEFINED_DISPLAY( ( displayID ) );
 			}
 			SDL_free(displays);
+		} else if (parms.fullScreen == 0) {
+			windowPos = parms.x;
+			windowPosY = parms.y;
 		}
 		// TODO: if parms.fullScreen == -1 there should be a borderless window spanning multiple displays
 		/*
@@ -307,7 +313,7 @@ bool GLimp_Init( glimpParms_t parms )
 		 SDL_PropertiesID props = SDL_CreateProperties();
     	 SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, ENGINE_NAME);
     	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, windowPos);
-    	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, windowPos);
+    	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, windowPosY);
     	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, parms.width);
     	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, parms.height);
     	 // For window flags you should use separate window creation properties,
@@ -367,13 +373,12 @@ bool GLimp_Init( glimpParms_t parms )
 		glConfig.stencilBits = tstencilbits;
 		
 		// RB begin
-		glConfig.displayFrequency = 60;
+		glConfig.displayFrequency = parms.displayHz;
 		glConfig.isStereoPixelFormat = parms.stereo;
 		glConfig.multisamples = parms.multiSamples;
-		
 		glConfig.pixelAspect = 1.0f;	// FIXME: some monitor modes may be distorted
 		// should side-by-side stereo modes be consider aspect 0.5?
-		
+		swf_cursorDPI.SetFloat(SDL_GetWindowPixelDensity(window));
 		// RB end
 		
 		break;
@@ -520,8 +525,7 @@ static bool SetScreenParmsFullscreen( glimpParms_t parms )
 
 static bool SetScreenParmsWindowed( glimpParms_t parms )
 {
-	SDL_SetWindowSize( window, parms.width, parms.height );
-	SDL_SetWindowPosition( window, parms.x, parms.y );
+	
 	
 	// if we're currently in fullscreen mode, we need to disable that
 	if( SDL_GetWindowFlags( window ) & SDL_WINDOW_FULLSCREEN )
@@ -532,6 +536,9 @@ static bool SetScreenParmsWindowed( glimpParms_t parms )
 			return false;
 		}
 	}
+	SDL_SetWindowSize( window, parms.width, parms.height );
+	SDL_SetWindowPosition( window, parms.x, parms.y );
+	
 	return true;
 }
 
@@ -557,6 +564,7 @@ bool GLimp_SetScreenParms( glimpParms_t parms )
 		common->Warning( "GLimp_SetScreenParms: fullScreen -1 (borderless window for multiple displays) currently unsupported!" );
 		return false;
 	}
+	SDL_SyncWindow(window);
 	
 	// Note: the following stuff would also work with SDL1.2
 	SDL_GL_SetAttribute( SDL_GL_STEREO, parms.stereo ? 1 : 0 );
@@ -566,10 +574,10 @@ bool GLimp_SetScreenParms( glimpParms_t parms )
 	
 	glConfig.isFullscreen = parms.fullScreen;
 	glConfig.isStereoPixelFormat = parms.stereo;
-	glConfig.nativeScreenWidth = parms.width > 0 ? parms.width : 1280;
-	glConfig.nativeScreenHeight = parms.height > 0 ? parms.height : 720;
+	SDL_GetWindowSizeInPixels( window, &glConfig.nativeScreenWidth, &glConfig.nativeScreenHeight );
 	glConfig.displayFrequency = parms.displayHz;
 	glConfig.multisamples = parms.multiSamples;
+	swf_cursorDPI.SetFloat(SDL_GetWindowPixelDensity(window));
 	
 	return true;
 }

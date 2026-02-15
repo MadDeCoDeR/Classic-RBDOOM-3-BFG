@@ -162,6 +162,9 @@ void DefaultDeviceChangeThread(void* data) {
 	static uint64 nextCheck = 0;
 	const uint64 waitTime = 5000;
 	while (1) {
+		if (soundSystemLocal.systemClosing) {
+			break;
+		}
 		int	now = Sys_Milliseconds();
 		if (now >= nextCheck) {
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
@@ -233,14 +236,15 @@ void idSoundSystemLocal::Init()
 		idLib::Printf("Creating Default Device Detection Thread\n");
 #if defined(_MSC_VER) && defined(USE_XAUDIO2)
 		if (useXAudio) {
-			Sys_CreateThread((xthread_t)DefaultDeviceChangeThread, ((idSoundHardware_XAudio2*)hardware)->GetSelectedDevice(), THREAD_LOWEST, "Default Audio Device Change Listener", CORE_ANY);
+			threadHandle = Sys_CreateThread((xthread_t)DefaultDeviceChangeThread, ((idSoundHardware_XAudio2*)hardware)->GetSelectedDevice(), THREAD_LOWEST, "Default Audio Device Change Listener", CORE_ANY);
 		}
 		else
 #endif
 		{
-			Sys_CreateThread((xthread_t)DefaultDeviceChangeThread, this->GetInternal(), THREAD_LOWEST, "Default Audio Device Change Listener", CORE_ANY);
+			threadHandle = Sys_CreateThread((xthread_t)DefaultDeviceChangeThread, this->GetInternal(), THREAD_LOWEST, "Default Audio Device Change Listener", CORE_ANY);
 		}
 		initOnce = true;
+		systemClosing = false;
 	}
 }
 
@@ -296,6 +300,8 @@ idSoundSystemLocal::Shutdown
 */
 void idSoundSystemLocal::Shutdown()
 {
+	systemClosing = true;
+	Sys_DestroyThread(threadHandle);
 	hardware->Shutdown();
 	// EAX or not, the list needs to be cleared
 	EFXDatabase.Clear();
