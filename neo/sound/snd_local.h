@@ -598,6 +598,8 @@ public:
 	
 	bool						insideLevelLoad;
 
+	bool						systemClosing;
+
 	idSysMutex					mutex;
 	
 	//-------------------------
@@ -614,6 +616,7 @@ public:
 	private:
 		bool initOnce;
 		bool useXAudio;
+		uintptr_t threadHandle;
 };
 
 extern	idSoundSystemLocal	soundSystemLocal;
