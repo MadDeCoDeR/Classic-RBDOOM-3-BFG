@@ -378,7 +378,7 @@ bool GLimp_Init( glimpParms_t parms )
 		glConfig.multisamples = parms.multiSamples;
 		glConfig.pixelAspect = 1.0f;	// FIXME: some monitor modes may be distorted
 		// should side-by-side stereo modes be consider aspect 0.5?
-		swf_cursorDPI.SetFloat(SDL_GetWindowPixelDensity(window));
+		swf_cursorDPI.SetFloat(SDL_GetWindowDisplayScale(window));
 		// RB end
 		
 		break;
@@ -577,7 +577,7 @@ bool GLimp_SetScreenParms( glimpParms_t parms )
 	SDL_GetWindowSizeInPixels( window, &glConfig.nativeScreenWidth, &glConfig.nativeScreenHeight );
 	glConfig.displayFrequency = parms.displayHz;
 	glConfig.multisamples = parms.multiSamples;
-	swf_cursorDPI.SetFloat(SDL_GetWindowPixelDensity(window));
+	swf_cursorDPI.SetFloat(SDL_GetWindowDisplayScale(window));
 	
 	return true;
 }
