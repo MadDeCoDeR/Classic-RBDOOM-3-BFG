@@ -376,10 +376,12 @@ else (ZLIB_FOUND)
 endif (ZLIB_FOUND)
 
 
-find_package(Stb REQUIRED)
+find_package(Stb)
 
 if (Stb_FOUND)
     include_directories(${Stb_INCLUDE_DIRS})
+else()
+	include_directories("libs/stb")
 endif (Stb_FOUND)
 
 
