@@ -7,11 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#if defined(USE_MFC_TOOLS)
 #include "afxres.h"
-#else
-#include <winresrc.h>
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -65,8 +61,8 @@ IDI_ICON1               ICON                    "res\\doom.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,4,1,0
- PRODUCTVERSION 1,4,1,0
+ FILEVERSION 1,4,2,0
+ PRODUCTVERSION 1,4,2,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -83,12 +79,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "id Software LLC, a ZeniMax Media company"
             VALUE "FileDescription", "DOOM: BFA Edition"
-            VALUE "FileVersion", "1.4.1.0"
+            VALUE "FileVersion", "1.4.2.0"
             VALUE "InternalName", "DoomBFA"
             VALUE "LegalCopyright", "© 1993-2012 id Software LLC, a ZeniMax Media company"
             VALUE "OriginalFilename", "DoomBFA"
             VALUE "ProductName", "DOOM®: BFA Edition"
-            VALUE "ProductVersion", "1.4.1.0"
+            VALUE "ProductVersion", "1.4.2.0"
         END
     END
     BLOCK "VarFileInfo"
