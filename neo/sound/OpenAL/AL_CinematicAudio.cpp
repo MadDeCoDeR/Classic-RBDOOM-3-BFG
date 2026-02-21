@@ -36,16 +36,7 @@ CinematicAudio_OpenAL::CinematicAudio_OpenAL():
 	trigger(false)
 {
 	CheckError();
-	alGenSources(1, &alMusicSourceVoicecin);
-
-	alSource3i(alMusicSourceVoicecin, AL_POSITION, 0, 0, 0);
-	alSourcei(alMusicSourceVoicecin, AL_SOURCE_RELATIVE, AL_TRUE);
-	alSourcei(alMusicSourceVoicecin, AL_ROLLOFF_FACTOR, 0);
-	alListenerf(AL_GAIN, s_noSound.GetBool() ? 0.0f : DBtoLinear(s_volume_dB.GetFloat())); //GK: Set the sound volume the same that is used in DOOM 3
-	alGenBuffers(NUM_BUFFERS, alMusicBuffercin);
-	for (int i = 0; i < NUM_BUFFERS; i++) {
-		freeBuffers.push(alMusicBuffercin[i]);
-	}
+	
 }
 
 void CinematicAudio_OpenAL::InitAudio(void* audioContext)
@@ -83,6 +74,25 @@ void CinematicAudio_OpenAL::InitAudio(void* audioContext)
 		break;
 	}
 	common->Printf("Video audio stream found:\n\tSample Rate: %dHz\n\tSample Format: %s\n", av_rate_cin, GetSampleName(av_sample_cin));
+	if (!alIsSource(alMusicSourceVoicecin)) {
+		alGenSources(1, &alMusicSourceVoicecin);
+	}
+
+	alSource3i(alMusicSourceVoicecin, AL_POSITION, 0, 0, 0);
+	alSourcei(alMusicSourceVoicecin, AL_SOURCE_RELATIVE, AL_TRUE);
+	alSourcei(alMusicSourceVoicecin, AL_ROLLOFF_FACTOR, 0);
+	alListenerf(AL_GAIN, s_noSound.GetBool() ? 0.0f : DBtoLinear(s_volume_dB.GetFloat())); //GK: Set the sound volume the same that is used in DOOM 3
+	
+	for (int i = 0; i < NUM_BUFFERS; i++) {
+		if(alIsBuffer(alMusicBuffercin[i]) == AL_TRUE) {
+			alDeleteBuffers(1, &alMusicBuffercin[i]);
+		}
+	}
+	alGenBuffers(NUM_BUFFERS, alMusicBuffercin);
+	for (int i = 0; i < NUM_BUFFERS; i++) {
+		freeBuffers.push(alMusicBuffercin[i]);
+	}
+	
 	alSourceRewind(alMusicSourceVoicecin);
 	alSourcei(alMusicSourceVoicecin, AL_BUFFER, 0);
 	offset = 0;

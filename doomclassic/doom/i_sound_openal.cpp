@@ -839,7 +839,9 @@ void I_InitMusicAL( void )
 		
 		alSourcef( alMusicSourceVoice, AL_PITCH, 1.f );
 		alSourcei( alMusicSourceVoice, AL_LOOPING, AL_TRUE );
-		
+		if (alIsBuffer(alMusicBuffer)) {
+			alDeleteBuffers(1, &alMusicBuffer);
+		}
 		alGenBuffers( (ALuint)1, &alMusicBuffer );
 		//GK: Set default preset for music in order to level it's volume to the levels of the reverbed sfxes
 		alGenAuxiliaryEffectSlotsRef(1, &clmusslot);
