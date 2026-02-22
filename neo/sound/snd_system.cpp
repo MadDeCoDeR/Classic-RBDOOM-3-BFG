@@ -302,7 +302,6 @@ void idSoundSystemLocal::Shutdown()
 {
 	systemClosing = true;
 	Sys_DestroyThread(threadHandle);
-	hardware->Shutdown();
 	// EAX or not, the list needs to be cleared
 	EFXDatabase.Clear();
 	ccdecl.Clear();
@@ -310,6 +309,7 @@ void idSoundSystemLocal::Shutdown()
 	FreeStreamBuffers();
 	samples.DeleteContents( true );
 	sampleHash.Free();
+	hardware->Shutdown();
 }
 
 /*
