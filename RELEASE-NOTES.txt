@@ -4,6 +4,39 @@ Thank you for downloading DOOM-BFA.
 
 _______________________________________
 
+23 February 2026 - DOOM-BFA 1.4.2
+_______________________________________
+
+[Classic DOOM]
+
+- Add support for TRAKINFO's volume parameter
+
+- Make more relaxed loading some menu items 
+
+- Add support for LOOP tags on non midi audio files
+
+- Fix Sky rendering with freelook
+
+- Improve Spatial Audio code with OpenAL
+
+[DOOM 3]
+
+- Fix issue with loading some textures 
+
+[Engine]
+
+- Make save file version checking more strict on all 3 games
+
+- Replace libpng and libjpg with stb image for loading textures and sprites
+
+- Double maximum number of characters on internal file paths
+
+- Change screenshot format to JPEG
+
+- Fix screenshot issue when using double buffers
+
+_______________________________________
+
 27 November 2025 - DOOM-BFA 1.4.1
 _______________________________________
 
