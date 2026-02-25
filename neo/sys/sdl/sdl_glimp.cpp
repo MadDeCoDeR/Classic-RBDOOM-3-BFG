@@ -808,19 +808,20 @@ R_GetModeListForDisplay
 bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>& refreshList)
 {
 	assert(requestedDisplayNum >= 0);
+	unsigned displayIndex = requestedDisplayNum + 1;
 
 	refreshList.Clear();
 	int count = 0;
 	SDL_DisplayID* displays = SDL_GetDisplays(&count);
 	// DG: SDL2 implementation
 
-	if (displays == 0 || requestedDisplayNum >= count)
+	if (displays == 0 || displayIndex >= count)
 	{
 		// requested invalid displaynum
 		SDL_free(displays);
 		return false;
 	}
-	SDL_DisplayID displayId = displays[requestedDisplayNum - 1];
+	SDL_DisplayID displayId = displays[displayIndex - 1];
 	SDL_free(displays);
 
 	int numModes = 0;
