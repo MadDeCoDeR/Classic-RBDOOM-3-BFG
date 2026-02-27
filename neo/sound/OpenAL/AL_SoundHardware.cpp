@@ -512,7 +512,7 @@ void idSoundHardware_OpenAL::Update()
 	{
 		alListenerf( AL_GAIN, common->GetCurrentGame() == DOOM3_BFG ? DBtoLinear( s_volume_dB.GetFloat() ) : 1.0f );
 	}
-	if (common->GetCurrentGame() == DOOM3_BFG) {
+	if (common->GetCurrentGame() == DOOM3_BFG && game->IsInGame()) {
 		alListenerfv(AL_POSITION, listenerPosition);
 		alListenerfv(AL_ORIENTATION, listenerOrientation);
 	}
