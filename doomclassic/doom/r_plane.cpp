@@ -529,6 +529,9 @@ void R_DrawPlanes (void)
 
 		int initialTop = ::g->visplanes[i]->top[x];
 		int initialBottom = ::g->visplanes[i]->bottom[x];
+		if (initialTop > initialBottom) {
+			continue;
+		}
 		int playerViewHeight = ::g->players[::g->consoleplayer].viewheight / FRACUNIT;
 		double correctionMult = std::clamp(abs(::g->mouseposy) / (playerViewHeight * 1.0), 0.0, 2.5);
 		//GK: Calculate y-axis view position (incomplete, it might cut some of the actual sky texture).
