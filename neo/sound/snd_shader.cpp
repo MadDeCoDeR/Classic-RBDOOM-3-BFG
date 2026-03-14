@@ -74,6 +74,7 @@ idSoundShader::~idSoundShader
 */
 idSoundShader::~idSoundShader()
 {
+	FreeData();
 }
 
 /*
@@ -93,6 +94,7 @@ idSoundShader::idSoundShader::FreeData
 */
 void idSoundShader::FreeData()
 {
+	entries.Clear();
 }
 
 /*

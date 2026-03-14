@@ -42,6 +42,12 @@ const uint32 SOUND_MAGIC_IDMSA = 0x6D7A7274;
 
 extern idCVar sys_lang;
 
+static idList<idStr> supportedExternalFormats = {
+	"ogg",
+	"flac",
+	"mp3"
+};
+
 /*
 ========================
 AllocBuffer
@@ -220,40 +226,18 @@ void idSoundSample_OpenAL::LoadResource()
 		}
 		idStrStatic< MAX_OSPATH > generatedName = "generated/";
 		generatedName.Append( sampleName );
-		
-		{
-			//GK: Just a small mistake can bring a whole world of bugs
-			if( s_useCompression.GetBool() )
-			{
-				sampleName.Append( ".msadpcm" );
-			}
-			else
-			{
-				sampleName.Append( ".wav" );
-			}
-			generatedName.Append( ".idwav" );
-		}
+		generatedName.Append(".idwav");
+		//GK: Just in case we get any odd file name, append a dummy file extension
+		sampleName.Append(".dummy");
 		//GK:First look for ogg,mp3 and flac and then for wav
-		sampleName.SetFileExtension("ogg");
-		loaded = LoadAll(sampleName);
-		if (loaded) {
-			useavi = true;
-			return;
-		}
-		else {
-			sampleName.SetFileExtension("mp3");
+		for (int j = 0; j < supportedExternalFormats.Num(); j++) {
+			sampleName.SetFileExtension(supportedExternalFormats[j]);
 			loaded = LoadAll(sampleName);
 			if (loaded) {
+				// upload PCM data to OpenAL
+				CreateOpenALBuffer();
 				useavi = true;
 				return;
-			}
-			else {
-				sampleName.SetFileExtension("flac");
-				loaded = LoadAll(sampleName);
-				if (loaded) {
-					useavi = true;
-					return;
-				}
 			}
 		}
 		if (s_useCompression.GetBool())
@@ -352,12 +336,12 @@ void idSoundSample_OpenAL::CreateOpenALBuffer()
 		else if( format.basic.formatTag == idWaveFile::FORMAT_XMA2 )
 		{
 			// RB: not used in the PC version of the BFG edition
-			common->Error( "idSoundSample_OpenAL::CreateOpenALBuffer: could not decode XMA2 '%s' to 16 bit format", GetName() );
+			common->Warning( "idSoundSample_OpenAL::CreateOpenALBuffer: could not decode XMA2 '%s' to 16 bit format", GetName() );
 		}
 		else if( format.basic.formatTag == idWaveFile::FORMAT_EXTENSIBLE )
 		{
 			// RB: not used in the PC version of the BFG edition
-			common->Error( "idSoundSample_OpenAL::CreateOpenALBuffer: could not decode extensible WAV format '%s' to 16 bit format", GetName() );
+			common->Warning( "idSoundSample_OpenAL::CreateOpenALBuffer: could not decode extensible WAV format '%s' to 16 bit format", GetName() );
 		}
 		else
 		{
