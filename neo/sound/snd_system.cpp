@@ -682,6 +682,9 @@ void idSoundSystemLocal::Preload( idPreloadManifest& manifest )
 	
 	int	start = Sys_Milliseconds();
 	int numLoaded = 0;
+	if (!preLoad_Samples.GetBool()) {
+		return;
+	}
 	
 	idList< preloadSort_t > preloadSort;
 	preloadSort.Resize( manifest.NumResources() );
