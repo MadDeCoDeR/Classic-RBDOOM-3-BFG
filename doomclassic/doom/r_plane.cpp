@@ -209,7 +209,7 @@ void R_ClearPlanes (void)
 	}
 	::g->planeind++;
 	//::g->lastvisplane = ::g->visplanes;
-    ::g->lastopening = ::g->openings;
+    ::g->lastopening = &::g->openings[0];
 
     // texture calculation
     memset (::g->cachedheight, 0, sizeof(::g->cachedheight));
@@ -527,32 +527,31 @@ void R_DrawPlanes (void)
 			// it then a monochromatic pixel will be drawn
 			// in order to avoid HOMs
 
-		int initialTop = ::g->visplanes[i]->top[x];
-		int initialBottom = ::g->visplanes[i]->bottom[x];
-		if (initialTop > initialBottom) {
-			continue;
-		}
-		int playerViewHeight = ::g->players[::g->consoleplayer].viewheight / FRACUNIT;
-		double correctionMult = std::clamp(abs(::g->mouseposy) / (playerViewHeight * 1.0), 0.0, 2.5);
-		//GK: Calculate y-axis view position (incomplete, it might cut some of the actual sky texture).
-		// The calculation is based on mouseposy and the player's view height all the while is limited to the veiwplane's top and bottom values in order to avoid pixel bleeding
-		int transformedBottom = std::clamp((int)(abs(::g->mouseposy) + (playerViewHeight * correctionMult)), initialTop, initialBottom); 
+			int initialTop = ::g->visplanes[i]->top[x];
+			int initialBottom = ::g->visplanes[i]->bottom[x];
+			if (initialTop > initialBottom) {
+				continue;
+			}
+			int playerViewHeight = ::g->players[::g->consoleplayer].viewheight / FRACUNIT;
+			double correctionMult = std::clamp(abs(::g->mouseposy) / (playerViewHeight * 1.0), 0.0, 2.5);
+			//GK: Calculate y-axis view position (incomplete, it might cut some of the actual sky texture).
+			// The calculation is based on mouseposy and the player's view height all the while is limited to the veiwplane's top and bottom values in order to avoid pixel bleeding
+			int transformedBottom = std::clamp((int)(abs(::g->mouseposy) + (playerViewHeight * correctionMult)), initialTop, initialBottom); 
 
-		//GK: First Draw the regular sky
-		::g->dc_yl = ::g->visplanes[i]->top[x];
-		::g->dc_yh = ::g->visplanes[i]->bottom[x];
-		R_DrawSky(x, i, skyToRender, true);
+			//GK: First Draw the regular sky
+			::g->dc_yl = ::g->visplanes[i]->top[x];
+			::g->dc_yh = ::g->visplanes[i]->bottom[x];
+			R_DrawSky(x, i, skyToRender, true);
 
-		//GK: If the mouse has moved upwards then try to render the dummy sky pixel to avoid repeated sky textures
-		if (::g->mouseposy < 0) {
-		::g->dc_yl = initialTop;
-		::g->dc_yh = transformedBottom;
-		int roundingError = ::g->dc_yh - ::g->dc_yl; //GK: In some cases when the sky texture is bellow another texture we might get a minor rounding error where it will try to render the dummy sky with height equal to 1
-		if (roundingError > 1) {
-			R_DrawSky(x, i, skyToRender, false);
-		}
-		}
-			
+			//GK: If the mouse has moved upwards then try to render the dummy sky pixel to avoid repeated sky textures
+			if (::g->mouseposy < 0) {
+				::g->dc_yl = initialTop;
+				::g->dc_yh = transformedBottom;
+				int roundingError = ::g->dc_yh - ::g->dc_yl; //GK: In some cases when the sky texture is bellow another texture we might get a minor rounding error where it will try to render the dummy sky with height equal to 1
+				if (roundingError > 1) {
+					R_DrawSky(x, i, skyToRender, false);
+				}
+			}
 	    }
 	    continue;
 	}
