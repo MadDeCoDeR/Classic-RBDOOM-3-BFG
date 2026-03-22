@@ -47,7 +47,7 @@ idCVar s_maxSamples( "s_maxSamples", "5", CVAR_INTEGER, "max samples to load per
 idCVar s_useXAudio2("s_useXAudio2", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_ARCHIVE, "set in order to use XAudio 2");
 #endif
 
-idCVar preLoad_Samples( "preLoad_Samples", "1", CVAR_SYSTEM | CVAR_BOOL, "preload samples during beginlevelload" );
+idCVar preLoad_Samples( "preLoad_Samples", "0", CVAR_SYSTEM | CVAR_BOOL, "preload samples during beginlevelload" );
 
 extern idCVar s_device;
 extern idCVar com_pause;

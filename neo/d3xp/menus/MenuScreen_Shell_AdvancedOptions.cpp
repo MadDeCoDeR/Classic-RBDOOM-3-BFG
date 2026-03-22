@@ -486,7 +486,7 @@ void idMenuScreen_Shell_AdvancedOptions::idMenuDataSource_AdvancedSettings::Adju
 			break;
 		case ADV_FIELD_SMHUD:
 		{
-			game->SetCVarBool("pm_smartHUD", AdjustOption(game->GetCVarBool("pm_smartHUD"), genericValues, genericNumValues, adjustAmount));
+			game->SetCVarInteger("pm_smartHUD", AdjustOption(game->GetCVarInteger("pm_smartHUD"), genericValues, genericNumValues, adjustAmount));
 			break;
 		}
 		case ADV_FIELD_LANG:
