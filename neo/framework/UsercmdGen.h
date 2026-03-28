@@ -434,6 +434,34 @@ public:
 		}
 		return numCmds;
 	}
+	//GK: Begin
+	//Unlike the GetPlayerCmds here we want to account for the case the engine FPS is lower than the expected engi9neHz
+	//Instead of using thew writeframes use the readFrames (maybe it's the same).
+	//Anomaly Time(?): If the engine is slow then we read forward otherwise backwards, but somehow the first buffer is the earliest than the rest in both cases.
+	int GetClassicPlayerCmds(int user, usercmd_t** buffer, const int bufferSize)
+	{
+		// Fallback to getting cmds from the userCmdMgr
+		int numCmds = 0;
+
+		for (int i = 0; i < bufferSize; i++)
+		{
+			int index = readFrame[user] % USERCMD_BUFFER_SIZE;
+			buffer[i] = &cmdBuffer[index][user];
+			numCmds++;
+			if (readFrame[user] < writeFrame[user] - 1) {
+				readFrame[user]++;
+			}
+			else if (readFrame[user] > 0)
+			{
+				readFrame[user]--;
+			}
+			else {
+				break;
+			}
+		}
+		return numCmds;
+	}
+	//GK: End
 };
 
 #endif /* !__USERCMDGEN_H__ */
