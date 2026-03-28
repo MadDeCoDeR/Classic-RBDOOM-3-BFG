@@ -300,8 +300,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 		}
 
 		usercmd_t * tech5commands[2] = { 0, 0 };
-
-		const int numCommands = userCmdMgr->GetPlayerCmds( lobbyIndex, tech5commands, 2 );
+		const int numCommands = userCmdMgr->GetClassicPlayerCmds( lobbyIndex, tech5commands, 2);
 
 		usercmd_t prevTech5Command;
 		usercmd_t curTech5Command;
