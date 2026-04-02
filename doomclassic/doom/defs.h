@@ -271,7 +271,7 @@ If you have questions concerning this license or the applicable additional terms
 //  r_plane.defs begin // 
 #define MAXVISPLANES	128
 //#define MAXVISPLANES	384 //GK: No nedded anymore
-#define MAXOPENINGS	MAXWIDTH*256 //GK: For now just increased it
+#define MAXOPENINGS	MAXWIDTH*512 //GK: For now just increased it
 // r_plane.defs end // 
 //  r_segs.defs begin // 
 #define HEIGHTBITS		12

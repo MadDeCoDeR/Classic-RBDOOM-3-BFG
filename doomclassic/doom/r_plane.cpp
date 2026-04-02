@@ -472,8 +472,8 @@ void R_DrawPlanes (void)
 		 ::g->lastvisplane - ::g->visplanes);*/
     
     if (::g->lastopening - ::g->openings > MAXOPENINGS)
-	I_Error ("R_DrawPlanes: opening overflow (%i)",
-		 ::g->lastopening - ::g->openings);
+		I_Error ("R_DrawPlanes: opening overflow (%i)",
+			::g->lastopening - ::g->openings);
 #endif
 
     for (uint i = 0; i < ::g->planeind-1; i++)
