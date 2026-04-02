@@ -978,3 +978,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->mouselock = false;
 
 	::g->extportMusic = false;
+
+	::g->planeind = 0;

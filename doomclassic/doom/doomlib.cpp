@@ -462,16 +462,15 @@ void DoomLib::Shutdown() {
 	W_Shutdown();
 
 	// De-allocate the zone memory (never happened in original doom, until quit)
-	if ( ::g->mainzone ) {
-		free( ::g->mainzone );
-	}
 
 	// Delete the globals
 	if ( globaldata[currentplayer] ) {
 		Globals* glob = globaldata[currentplayer];
-		globaldata[currentplayer] = NULL;
+		
 		//CleanVector(glob->activeceilings); //GK: Contains memory managed by the Zone Memory. Skip
 		//CleanVector(glob->activeplats); //GK: Contains memory managed by the Zone Memory. Skip
+		glob->activeceilings.clear();
+		glob->activeplats.clear();
 		glob->intercepts.clear();
 		glob->drawsegs.clear();
 		CleanVector(glob->sprites);
@@ -490,7 +489,12 @@ void DoomLib::Shutdown() {
 			free(glob->mapthings);
 		}
 		glob->trackMaps.clear();
+		// De-allocate the zone memory (never happened in original doom, until quit)
+		if(glob->mainzone) {
+			free(glob->mainzone);
+		}
 		delete glob;
+		globaldata[currentplayer] = NULL;
 	}
 }
 
