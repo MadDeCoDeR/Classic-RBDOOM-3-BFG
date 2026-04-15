@@ -69,6 +69,18 @@ CinematicAudio_OpenAL::~CinematicAudio_OpenAL()
 			alDeleteBuffers(1, &alMusicBuffercin[i]);
 		}
 	}
+
+	while (!tBuffer.empty()) {
+		uint8_t* data = tBuffer.front();
+		tBuffer.pop();
+		av_freep(&data);
+	}
+	while (!sizes.empty()) {
+		sizes.pop();
+	}
+	while (!freeBuffers.empty()) {
+		freeBuffers.pop();
+	}
 }
 
 void CinematicAudio_OpenAL::InitAudio(void* audioContext)
@@ -221,22 +233,6 @@ void CinematicAudio_OpenAL::ResetAudio()
 	offset = 0;
 	trigger = false;
 
-}
-
-void CinematicAudio_OpenAL::ShutdownAudio()
-{
-	
-	while (!tBuffer.empty()) {
-		uint8_t* data = tBuffer.front();
-		tBuffer.pop();
-		av_freep(&data);
-	}
-	while (!sizes.empty()) {
-		sizes.pop();
-	}
-	while (!freeBuffers.empty()) {
-		freeBuffers.pop();
-	}
 }
 
 bool CinematicAudio_OpenAL::CheckError() {
