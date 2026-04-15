@@ -566,7 +566,7 @@ idCinematicLocal::~idCinematicLocal()
 	imgCb = NULL;
 #endif
 	//GK: Properly close local XAudio2 voice
-	cinematicAudio->ShutdownAudio();
+	delete cinematicAudio;
 	delete img;
 	img = NULL;
 }

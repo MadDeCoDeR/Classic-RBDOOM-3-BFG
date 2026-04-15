@@ -37,7 +37,6 @@ public:
 	void InitAudio(void* audioContext);
 	void PlayAudio(uint8_t* data, int size);
 	void ResetAudio();
-	void ShutdownAudio();
 private:
 	ALuint		alMusicSourceVoicecin;
 	ALuint		alMusicBuffercin[NUM_BUFFERS];

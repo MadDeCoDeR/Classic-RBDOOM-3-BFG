@@ -1953,10 +1953,6 @@ void idCommonLocal::Shutdown()
 	minPrint( "uiManager->Shutdown();\n" );
 	uiManager->Shutdown();
 	
-	// shut down the sound system
-	minPrint( "soundSystem->Shutdown();\n" );
-	soundSystem->Shutdown();
-	
 	// shut down the user command input code
 	minPrint( "usercmdGen->Shutdown();\n" );
 	usercmdGen->Shutdown();
@@ -1968,6 +1964,10 @@ void idCommonLocal::Shutdown()
 	// shutdown the decl manager
 	minPrint( "declManager->Shutdown();\n" );
 	declManager->Shutdown();
+
+	// shut down the sound system
+	minPrint( "soundSystem->Shutdown();\n" );
+	soundSystem->Shutdown();
 	
 	// shut down the renderSystem
 	minPrint( "renderSystem->Shutdown();\n" );
