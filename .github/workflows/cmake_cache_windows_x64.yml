@@ -12,6 +12,11 @@ jobs:
         runs-on: windows-latest
     
         steps:
+        - name: Add msbuild to PATH
+          uses: microsoft/setup-msbuild@v3
+          with:
+            vs-version: '[17,17.14)'
+            msbuild-architecture: x64
         - uses: actions/checkout@v5
           with:
             submodules: recursive
