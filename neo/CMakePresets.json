@@ -176,6 +176,24 @@
       }
     },
     {
+      "name": "windows-x64-2026",
+      "displayName": "VS2026: 64-bit Windows",
+      "inherits": "windows-x64-base",
+      "generator": "Visual Studio 18",
+      "cacheVariables": {
+        "USE_OPENXR": {
+          "type": "BOOL",
+          "value": "OFF"
+        }
+      }
+    },
+    {
+      "name": "windows-x86-2026",
+      "displayName": "VS2026: 32-bit Windows",
+      "inherits": "windows-x86-base",
+      "generator": "Visual Studio 18"
+    },
+    {
       "name": "linux-base",
       "hidden": true,
       "generator": "Unix Makefiles",

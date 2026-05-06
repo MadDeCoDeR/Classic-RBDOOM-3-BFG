@@ -588,7 +588,7 @@ void SDL_Poll()
 					fullscreen = SDL_DisplayIDToIndex(fullscreen);
 					delete(windowRect);
 					if (fullscreen <= 0) {
-						common->Printf("SDL2: Failed to detect Display index from Window with error message: %s\n", SDL_GetError());
+						common->Printf("SDL3: Failed to detect Display index from Window with error message: %s\n", SDL_GetError());
 					}
 					
 				}

@@ -808,7 +808,7 @@ R_GetModeListForDisplay
 bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>& refreshList)
 {
 	assert(requestedDisplayNum >= 0);
-	unsigned displayIndex = requestedDisplayNum + 1;
+	unsigned displayIndex = requestedDisplayNum;
 
 	refreshList.Clear();
 	int count = 0;
@@ -821,7 +821,7 @@ bool R_GetRefreshListForDisplay(const unsigned requestedDisplayNum, idList<int>&
 		SDL_free(displays);
 		return false;
 	}
-	SDL_DisplayID displayId = displays[displayIndex - 1];
+	SDL_DisplayID displayId = displays[displayIndex];
 	SDL_free(displays);
 
 	int numModes = 0;
