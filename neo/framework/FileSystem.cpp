@@ -3423,11 +3423,13 @@ idFile* idFileSystemLocal::OpenFileReadFlags( const char* relativePath, int sear
 		return NULL;
 	}
 	
+#ifdef _WIN32
 	// qpaths are not supposed to have a leading slash
 	if( relativePath[0] == '/' || relativePath[0] == '\\' )
 	{
 		relativePath++;
 	}
+#endif
 	
 	// make absolutely sure that it can't back up the path.
 	// The searchpaths do guarantee that something will always
