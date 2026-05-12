@@ -135,7 +135,6 @@ static int numEvents = 0;
 int joyAxis[MAX_JOYSTICKS][6];
 SDL_Joystick* joy = NULL;
 static SDL_Gamepad* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
-static SDL_Haptic *haptic[MAX_JOYSTICKS] = {NULL}; //GK: Joystick rumble support
 static int registeredControllers = 0;
 static bool joyThreadKill = false;
 int SDL_joystick_has_hat = 0;
@@ -985,34 +984,11 @@ void Sys_SetClipboardData( const char* string )
 
 void Sys_SetRumble( int device, int low, int hi )
 {
-	//GK: This is the code for the rumble effect by using SDL_Haptic.
+	//GK: This is the code for the rumble effect by using the new SDL_RumbleGamepad.
 	//It doesn't affect the game's performance (Remember NO SDL_Delay)
 
-	if(haptic[device]){ //GK: Make sure the rumble code will run ONLY if the SDL_Haptic device is already initialized
-	
-	SDL_HapticEffect effect;
- 	int effect_id;
-	
-	SDL_memset( &effect, 0, sizeof(SDL_HapticEffect) );
-	//GK: SDL2 has support for left-right motor rumble
-	effect.type=SDL_HAPTIC_LEFTRIGHT;
-	effect.leftright.small_magnitude = low;
-	effect.leftright.large_magnitude = hi;
-	effect.leftright.length = 1000;
-	//GK:Ps3 controller fix
-	if(SDL_GetMaxHapticEffectsPlaying(haptic[device]) >= SDL_GetMaxHapticEffects(haptic[device])){
-		SDL_DestroyHapticEffect(haptic[device],0);
-	}
-	//GK:End of fix
-	effect_id = SDL_CreateHapticEffect( haptic[device], &effect );
-	if(effect_id < 0){
-		common->Printf("%s\n",SDL_GetError());
-		return;
-	}
-
-	 if(SDL_RunHapticEffect( haptic[device], effect_id, 1 )<0){
-		 common->Printf("%s\n",SDL_GetError());
-	 }
+	if (gcontroller[device] != nullptr) {
+		SDL_RumbleGamepad(gcontroller[device], idMath::ClampInt( 0, 65535, low ), idMath::ClampInt( 0, 65535, hi ), 1000);
 	}
 }
 
@@ -1193,10 +1169,6 @@ void JoystickSamplingThread(void* data){
 	while(1){
 		if (joyThreadKill) {
 			for(int i = 0; i < MAX_JOYSTICKS; i++) {
-				if(haptic[i]){
-					SDL_CloseHaptic(haptic[i]);
-					haptic[i] = NULL;
-				}
 				if(gcontroller[i]){
 					SDL_CloseGamepad(gcontroller[i]);
 				}
@@ -1224,8 +1196,7 @@ void JoystickSamplingThread(void* data){
 	bool alreadyConnected = false;
 	int count = 0;
 	SDL_JoystickID* controllers = SDL_GetGamepads(&count);
-	int hcount = 0;
-	SDL_HapticID* haptics = SDL_GetHaptics(&hcount);
+	controllers = SDL_GetGamepads(&count); //SDL 3 Weird quirk. It needs to query joystick twice in order to work
 	if (count == 0) {
 		reverseControllerMap.clear();
 		count = 4; //GK: Clean time
@@ -1246,29 +1217,6 @@ void JoystickSamplingThread(void* data){
 					idLib::Printf("Controller Connected: %s\n", SDL_GetGamepadName(controller));
 					gcontroller[i]=controller;
 					
-					if (!haptic[i]){ //GK: Initialize Haptic Device ONLY ONCE after the controller is connected
-						int hcount = 0;
-						SDL_HapticID* haptics = SDL_GetHaptics(&hcount);
-						if (hcount > 0) {
-							haptic[i] = SDL_OpenHaptic(haptics[i]); //GK: Make sure it mounted to the right controller
-							if(haptic[i]){
-								if(SDL_InitHapticRumble( haptic[i] ) < 0){
-									common->Printf("Failed to initialize rumble support with Error: %s\n", SDL_GetError());
-								}
-							if ((SDL_GetHapticFeatures(haptic[i]) & SDL_HAPTIC_LEFTRIGHT)==0){ //GK: Also make sure it has support for left-right motor rumble
-								SDL_CloseHaptic(haptic[i]);
-								haptic[i] = NULL;
-								common->Printf("Failed to find rumble effect\n");
-							}
-							idLib::Printf("Found haptic Device %d\n",SDL_GetMaxHapticEffects(haptic[i]));
-							} else {
-								common->Printf("Error Opening Haptic Device: %s\n", SDL_GetError());
-							}
-						
-						} else {
-							common->Printf("Failed to find Haptic devices with error: %s\n", SDL_GetError());
-						}
-					}
 				} else {
 					common->Warning("Error Initializing controller: %s\n", SDL_GetError());
 				}
@@ -1280,10 +1228,6 @@ void JoystickSamplingThread(void* data){
 			}
 		}else{
 			inactive++;
-					if(haptic[i]){
-						SDL_CloseHaptic(haptic[i]);
-						haptic[i] = NULL;
-					}
 					if(gcontroller[i]){
 						SDL_CloseGamepad(gcontroller[i]);
 					}
@@ -1292,7 +1236,6 @@ void JoystickSamplingThread(void* data){
 					continue;
 		}
 	}
-	SDL_free(haptics);
 	SDL_free(controllers);
 	if (!alreadyConnected) {
 		//GK: Enable controller layout if there is one controller connected
