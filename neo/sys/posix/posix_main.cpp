@@ -900,9 +900,9 @@ Posix_EarlyInit/Posix_LateInit is better
  */
 void Sys_Init() {
 	SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland,x11");
-	if( !SDL_WasInit( SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC) )
+	if( !SDL_WasInit( SDL_INIT_VIDEO | SDL_INIT_GAMEPAD) )
 	{
-		if( !SDL_Init( SDL_INIT_VIDEO | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC ) )
+		if( !SDL_Init( SDL_INIT_VIDEO | SDL_INIT_GAMEPAD ) )
 			common->FatalError( "Error while initializing SDL: %s", SDL_GetError() );
 	}
  }
