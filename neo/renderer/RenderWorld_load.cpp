@@ -850,61 +850,64 @@ bool idRenderWorldLocal::InitFromMap( const char* name )
 	static const byte BPROC_VERSION = 1;
 	static const unsigned int BPROC_MAGIC = ( 'P' << 24 ) | ( 'R' << 16 ) | ( 'O' << 8 ) | BPROC_VERSION;
 	bool loaded = false;
-	idFileLocal file( fileSystem->OpenFileReadMemory( generatedFileName ) );
-	if( file != NULL )
-	{
-		int numEntries = 0;
-		int magic = 0;
-		file->ReadBig( magic );
-		if( magic == BPROC_MAGIC )
+	//GK: Avoid loading from pre generated bproc if the proc file exist (What could possibly go wrong?)
+	if (currentTimeStamp == FILE_NOT_FOUND_TIMESTAMP) {
+		idFileLocal file(fileSystem->OpenFileReadMemory(generatedFileName));
+		if (file != NULL)
 		{
-			file->ReadBig( numEntries );
-			file->ReadString( mapName );
-			file->ReadBig( mapTimeStamp );
-			loaded = true;
-			for( int i = 0; i < numEntries; i++ )
+			int numEntries = 0;
+			int magic = 0;
+			file->ReadBig(magic);
+			if (magic == BPROC_MAGIC)
 			{
-				idStrStatic< MAX_OSPATH > type;
-				file->ReadString( type );
-				type.ToLower();
-				if( type == "model" )
+				file->ReadBig(numEntries);
+				file->ReadString(mapName);
+				file->ReadBig(mapTimeStamp);
+				loaded = true;
+				for (int i = 0; i < numEntries; i++)
 				{
-					idRenderModel* lastModel_ = ReadBinaryModel( file );
-					if( lastModel_ == NULL )
+					idStrStatic< MAX_OSPATH > type;
+					file->ReadString(type);
+					type.ToLower();
+					if (type == "model")
 					{
-						loaded = false;
-						break;
+						idRenderModel* lastModel_ = ReadBinaryModel(file);
+						if (lastModel_ == NULL)
+						{
+							loaded = false;
+							break;
+						}
+						renderModelManager->AddModel(lastModel_);
+						localModels.Append(lastModel_);
 					}
-					renderModelManager->AddModel( lastModel_ );
-					localModels.Append( lastModel_ );
-				}
-				else if( type == "shadowmodel" )
-				{
-					idRenderModel* lastModel__ = ReadBinaryModel( file );
-					if( lastModel__ == NULL )
+					else if (type == "shadowmodel")
 					{
-						loaded = false;
-						break;
+						idRenderModel* lastModel__ = ReadBinaryModel(file);
+						if (lastModel__ == NULL)
+						{
+							loaded = false;
+							break;
+						}
+						renderModelManager->AddModel(lastModel__);
+						localModels.Append(lastModel__);
 					}
-					renderModelManager->AddModel( lastModel__ );
-					localModels.Append( lastModel__ );
-				}
-				else if( type == "interareaportals" )
-				{
-					ReadBinaryAreaPortals( file );
-				}
-				else if( type == "nodes" )
-				{
-					ReadBinaryNodes( file );
-				}
-				else
-				{
-					idLib::Error( "Binary proc file failed, unexpected type %s\n", type.c_str() );
+					else if (type == "interareaportals")
+					{
+						ReadBinaryAreaPortals(file);
+					}
+					else if (type == "nodes")
+					{
+						ReadBinaryNodes(file);
+					}
+					else
+					{
+						idLib::Error("Binary proc file failed, unexpected type %s\n", type.c_str());
+					}
 				}
 			}
 		}
+
 	}
-	
 	if( !loaded )
 	{
 	
