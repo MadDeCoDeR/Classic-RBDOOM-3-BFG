@@ -362,6 +362,38 @@ typedef enum {
 
 //GK: ID24
 
+typedef enum {
+    Normal = 0,
+    Fire = 1,
+    Foreground = 2
+} skyType_e;
+
+typedef struct foretex_s {
+    char* name;
+    int mid;
+    int scrollx;
+    int scrolly;
+    int scalex;
+    int scaley;
+}foretex_t;
+
+typedef struct fireSky_s {
+    int palette[36];
+    float updatetime;
+} fireSky_t;
+
+typedef struct sky_s {
+    skyType_e type;
+    char* name;
+    int mid;
+    int scrollx;
+    int scrolly;
+    int scalex;
+    int scaley;
+    fireSky_t fire;
+    foretex_t foregroundtex;
+}sky_t;
+
 typedef struct skyflatmap_s {
     char* flat;
     char* sky;

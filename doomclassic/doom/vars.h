@@ -1185,6 +1185,17 @@ lighttable_t* greyscalemap; //GK: GreyscaleMap
 
 //GK: ID24
 std::vector <std::unique_ptr<skyflatmap_t>> skyFlatMaps;
+std::vector <std::unique_ptr<sky_t>> skies;
+int           customSkyIndex; //GK: ID24 SKYDEFS Skies
+//GK: Fire Sky Start
+int lastFireTime; //The Last time we run the fire simulation in milliseconds
+bool initFire; //Flag to check if the fire sky is set up
+byte* fireBuffer; //Buffer to store the fire calculations
+int fireHeight; //The texture height for the Fire Sky
+int fireWidth; //The texture width for the Fire Sky
+byte* finalFireBuffer; //Rendering buffer for the fire Sky (only one column)
+//GK: Fire Sky End
+
 
 std::vector<std::unique_ptr<trackmap_t>> trackMaps;
 

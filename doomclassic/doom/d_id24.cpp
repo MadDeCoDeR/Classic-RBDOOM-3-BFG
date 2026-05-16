@@ -252,6 +252,50 @@ idStr RetrieveFromJsonPath(const char* path, char* json) {
 	return tJson;
 }
 
+void MapSkies(const char* json) {
+	std::vector<std::map<std::string, idStr>> jArr = RetrieveJsonObjArray(json);
+	size_t i = ::g->skies.size();
+	::g->skies.reserve(::g->skies.capacity() + jArr.size());
+	while(i < jArr.size()) {
+		::g->skies.emplace_back(std::make_unique<sky_t>());
+		::g->skies[i].get()->type = static_cast<skyType_e>(atoi(jArr[i]["type"].c_str()));
+		::g->skies[i].get()->name = strdup(jArr[i]["name"].c_str());
+		::g->skies[i].get()->mid = atoi(jArr[i]["mid"].c_str());
+		::g->skies[i].get()->scaley = atoi(jArr[i]["scaley"].c_str());
+		::g->skies[i].get()->scalex = atoi(jArr[i]["scalex"].c_str());
+		::g->skies[i].get()->scrollx = atoi(jArr[i]["scrollx"].c_str());
+		::g->skies[i].get()->scrolly = atoi(jArr[i]["scrolly"].c_str());
+		if (jArr[i]["fire"].Cmpn("null", 4)) {
+			std::map<std::string, idStr> jObj = RetrieveFlatJsonObj(jArr[i]["fire"].c_str());
+			::g->skies[i].get()->fire.updatetime = atof(jObj["updatetime"].c_str());
+			idStr parsedPalette = jObj["palette"].SubStr(1, jObj["palette"].Length() - 1);
+			parsedPalette.Replace("\r\n", "");
+			idStrList partitionedPalette = parsedPalette.Split(", ");
+			for (int fp = 0; fp < partitionedPalette.Num(); fp++) {
+				::g->skies[i].get()->fire.palette[fp] = atoi(partitionedPalette[fp].c_str());
+			}
+			//GK: Like the documentation we keep 36 indexes, but the file might have less. 
+			//In that case fill the rest with the first index (usually black color)
+			for (int j = 0; j < (36 - partitionedPalette.Num()); j++) {
+				::g->skies[i].get()->fire.palette[partitionedPalette.Num() + j] = 0;
+			}
+		}
+
+		if (jArr[i]["foregroundtex"].Cmpn("null", 4)) {
+			std::map<std::string, idStr> jObj = RetrieveFlatJsonObj(jArr[i]["foregroundtex"].c_str());
+			::g->skies[i].get()->foregroundtex.name = strdup(jObj["name"].c_str());
+			::g->skies[i].get()->foregroundtex.mid = atoi(jObj["mid"].c_str());
+			::g->skies[i].get()->foregroundtex.scaley = atoi(jObj["scaley"].c_str());
+			::g->skies[i].get()->foregroundtex.scalex = atoi(jObj["scalex"].c_str());
+			::g->skies[i].get()->foregroundtex.scrollx = atoi(jObj["scrollx"].c_str());
+			::g->skies[i].get()->foregroundtex.scrolly = atoi(jObj["scrolly"].c_str());
+		}
+
+		i++;
+	}
+
+}
+
 void MapSkyFlatMaps(const char* json) {
 	std::vector<std::map<std::string, idStr>> jArr = RetrieveJsonObjArray(json);
 	size_t i = ::g->skyFlatMaps.size();
@@ -273,6 +317,10 @@ void ReadSkyDef(int lump)
 	text[W_LumpLength(lump)] = '\0';
 	//Load the SkyDef file to the text buffer
 	W_ReadLump(lump, text);
+	idStr skiesJson = RetrieveFromJsonPath("/data/skies", text);
+	if (skiesJson.Cmpn("null", 4)) {
+		MapSkies(skiesJson.c_str());
+	}
 
 	idStr flatMappingJson = RetrieveFromJsonPath("/data/flatmapping", text);
 	if (flatMappingJson.Cmpn("null", 4)) {
