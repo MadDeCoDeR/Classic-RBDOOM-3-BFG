@@ -469,7 +469,7 @@ The second argument is the sky  type we got from SKYDEF
 void R_DrawFireSky(int x, sky_t* Sky) {
 	int mappedTexture = R_TextureNumForName(Sky->name);
 	int angle = R_InitSkyPlane(x, mappedTexture);
-	::g->dc_source = R_GenerateFireSky(mappedTexture, angle, Sky->fire);
+	::g->dc_source = R_GetFireSkyColumn(mappedTexture, angle, Sky->fire);
 	::g->issky = false;
 	colfunc(::g->dc_colormap, ::g->dc_source);
 }
@@ -517,6 +517,7 @@ void R_DrawPlanes (void)
 			::g->lastopening - ::g->openings);
 #endif
 
+	
     for (uint i = 0; i < ::g->planeind-1; i++)
     {
 		//pl = ::g->visplanes[i];
@@ -525,10 +526,13 @@ void R_DrawPlanes (void)
 
 	::g->flipImg = 0;
 	// sky flat
-	int customSkyIndex = FindCustomSkyIndex(::g->skytexture);
-	::g->customSkyIndex = customSkyIndex;
 	if (::g->visplanes[i]->picnum == ::g->skyflatnum || ::g->visplanes[i]->picnum & PL_SKYFLAT || ::g->visplanes[i]->skyflatmapindex > -1)
 	{
+		int customSkyIndex = FindCustomSkyIndex(::g->skytexture);
+		::g->customSkyIndex = customSkyIndex;
+		if (::g->customSkyIndex > -1) {
+			R_GenerateFireSky(::g->skytexture, ::g->skies[::g->customSkyIndex]->fire);
+		}
 		int skyToRender = ::g->skytexture;
 	    ::g->dc_iscale = ::g->pspriteiscale>>::g->detailshift;
 	    

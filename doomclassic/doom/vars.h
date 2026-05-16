@@ -1190,10 +1190,8 @@ int           customSkyIndex; //GK: ID24 SKYDEFS Skies
 //GK: Fire Sky Start
 int lastFireTime; //The Last time we run the fire simulation in milliseconds
 bool initFire; //Flag to check if the fire sky is set up
-byte* fireBuffer; //Buffer to store the fire calculations
-int fireHeight; //The texture height for the Fire Sky
-int fireWidth; //The texture width for the Fire Sky
-byte* finalFireBuffer; //Rendering buffer for the fire Sky (only one column)
+byte fireBuffer[FIRE_WIDTH * FIRE_HEIGHT]; //Buffer to store the fire calculations
+byte finalFireBuffer[FIRE_HEIGHT]; //Rendering buffer for the fire Sky (only one column)
 //GK: Fire Sky End
 
 

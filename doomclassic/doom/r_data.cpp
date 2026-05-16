@@ -559,35 +559,32 @@ R_GetSkyColumn
 void R_StartTheFire(int src) {
 	byte pixel = ::g->fireBuffer[src];
 	if (pixel == 0) {
-		::g->fireBuffer[src - ::g->fireWidth] = 0;
+		::g->fireBuffer[src - FIRE_WIDTH] = 0;
 	} else {
 		int randm = (rand() % 4); //GK: I guess due to scaling increase this from 3 to 4
-		int dst = src - ::g->fireWidth - randm + 1;
+		int dst = src - FIRE_WIDTH - randm + 1;
 		::g->fireBuffer[dst] = std::clamp(pixel - (randm & 1), 0, 35); //GK: Clamp the result just in case
 	}
 }
 
 // R_GenerateFireSky
 //
-// Initialize, generate and draw the PSX/D64 fire sky
+// Initialize, generate and PSX/D64 fire sky
 // using the ID24's SKYDEF fire field
-byte* R_GenerateFireSky(int tex, int col, fireSky_t fire) {
-	col &= ::g->s_texturewidthmask[tex];
-	if (!::g->initFire) { //GK: Setup Fire Sky
-		texture_t * texture = ::g->s_textures[tex];
-		//GK: Use the Textures diemsions from the texture we are replacing
-		::g->fireHeight = texture->height;
-		::g->fireWidth = texture->width;
-		::g->fireBuffer = (byte*)malloc((::g->fireWidth * ::g->fireHeight * sizeof(byte)));
+void R_GenerateFireSky(int tex, fireSky_t fire) {
+	if (::g->initFire == false) { //GK: Setup Fire Sky
 		//Like the example code
-		for (int i = 0; i < ::g->fireWidth * ::g->fireHeight; i++) {
+		for (int i = 0; i < FIRE_WIDTH * FIRE_HEIGHT; i++) {
 			::g->fireBuffer[i] = 0;
 		}
-		for(int i = 0; i < ::g->fireWidth; i++) {
-			::g->fireBuffer[(::g->fireHeight-1)*::g->fireWidth + i] = 35;
+		for(int i = 0; i < FIRE_WIDTH; i++) {
+			::g->fireBuffer[(FIRE_HEIGHT-1)*FIRE_WIDTH + i] = 35;
 		}
-		::g->finalFireBuffer = (byte*)malloc((::g->fireHeight * sizeof(byte)));
-		int lump = ::g->s_texturecolumnlump[tex][col];
+		int lump = ::g->s_texturecolumnlump[tex][0];
+		if (::g->skybuffer) {
+			free(::g->skybuffer);
+			::g->skybuffer = NULL;
+		}
 		R_GenerateSkyHead(lump, true); //Regenerate the fake sky teture to just black
 		::g->initFire = true;
 	}
@@ -597,18 +594,24 @@ byte* R_GenerateFireSky(int tex, int col, fireSky_t fire) {
 	int currentTime = Sys_Milliseconds();
 	int deltaFireTime = currentTime - ::g->lastFireTime;
 	if (deltaFireTime >= updateTimeMillis) {
-	for (int x = 0; x < ::g->fireWidth; x++) {
-		for (int y = 1; y < ::g->fireHeight; y++) {
-			R_StartTheFire(y * ::g->fireWidth + x);
+	for (int x = 0; x < FIRE_WIDTH; x++) {
+		for (int y = 1; y < FIRE_HEIGHT; y++) {
+			R_StartTheFire(y * FIRE_WIDTH + x);
 		}
 	}
 	::g->lastFireTime = currentTime;
 	}
+}
+
+// R_GetFireSkyColumn
+//
+// Draw and return the requested column from the firesky simulation
+byte* R_GetFireSkyColumn(int tex, int col, fireSky_t fire) {
+	col &= ::g->s_texturewidthmask[tex];
 
 	//Render the wanted column in the final buffer using the palette from fire's definition
-	for (int y = 0; y < ::g->fireHeight; y++) {
-		int index = ::g->fireBuffer[y * ::g->fireWidth + col];
-		::g->finalFireBuffer[y] = fire.palette[index];
+	for (int y = 0; y < FIRE_HEIGHT; y++) {
+		::g->finalFireBuffer[y] = fire.palette[::g->fireBuffer[y * FIRE_WIDTH + col]];
 	}
 
 	return ::g->finalFireBuffer;
@@ -823,16 +826,8 @@ void R_ClearTextures(void) {
 	Z_Free(::g->s_texturecomposite);
 	Z_Free(::g->s_texturecompositesize);
 	Z_Free(::g->texturetranslation);
-
-	if (::g->fireBuffer) {
-		free(::g->fireBuffer);
-		::g->fireBuffer = NULL;
-	}
-	if (::g->finalFireBuffer) {
-		free(::g->finalFireBuffer);
-		::g->finalFireBuffer = NULL;
-	}
 	::g->initFire = false;
+	
 	if (::g->skybuffer) {
 		free(::g->skybuffer);
 		::g->skybuffer = NULL;

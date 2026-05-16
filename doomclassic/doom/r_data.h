@@ -36,6 +36,9 @@ If you have questions concerning this license or the applicable additional terms
 #pragma interface
 #endif
 
+#define FIRE_WIDTH 256
+#define FIRE_HEIGHT 128
+
 // Retrieve column data for span blitting.
 byte*
 R_GetColumn
@@ -48,11 +51,15 @@ R_GetSkyColumn
 (int		tex,
 	int		col);
 
-byte*
+void
 R_GenerateFireSky
 (int    tex,
-int     col,
 fireSky_t   fire);
+
+byte* R_GetFireSkyColumn
+(int tex,
+    int col,
+    fireSky_t fire);
 
 // I/O, setting up the stuff.
 void R_InitData (void);
