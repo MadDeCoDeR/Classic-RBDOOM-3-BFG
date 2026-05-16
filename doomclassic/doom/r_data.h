@@ -48,6 +48,11 @@ R_GetSkyColumn
 (int		tex,
 	int		col);
 
+byte*
+R_GenerateFireSky
+(int    tex,
+int     col,
+fireSky_t   fire);
 
 // I/O, setting up the stuff.
 void R_InitData (void);

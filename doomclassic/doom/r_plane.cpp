@@ -245,6 +245,29 @@ int FindSkyFlatMapIndex(int picnum) {
 
 	return result;
 }
+
+/*
+		FindCustomSkyIndex
+==================================
+
+Checks the texture picnum if it belongs to the SKYDEFS sky name
+and return the index of the array.
+If it fails it return -1
+*/
+
+int FindCustomSkyIndex(int picnum) {
+	int result = -1;
+	if (!::g->skies.empty()) {
+		for (size_t i = 0; i < ::g->skies.size(); i++) {
+			if (picnum == R_TextureNumForName(::g->skies[i]->name)) {
+				result = i;
+				break;
+			}
+		}
+	}
+
+	return result;
+}
 //GK: End
 
 //
@@ -434,11 +457,29 @@ void R_DrawSkyMappedPlane(int x, int index) {
 	::g->issky = false;
 	colfunc(::g->dc_colormap, ::g->dc_source);
 }
+/*
+
+		R_DrawFireSky		
+====================================
+
+Similar to R_DrawSkyMappedPlane but instead of using SKYDEFs flatmapping it actually renders the DOOM PSX fire sky.
+The first argument is the same as it is in R_DrawSkyPlane
+The second argument is the sky  type we got from SKYDEF
+*/
+void R_DrawFireSky(int x, sky_t* Sky) {
+	int mappedTexture = R_TextureNumForName(Sky->name);
+	int angle = R_InitSkyPlane(x, mappedTexture);
+	::g->dc_source = R_GenerateFireSky(mappedTexture, angle, Sky->fire);
+	::g->issky = false;
+	colfunc(::g->dc_colormap, ::g->dc_source);
+}
 
 void R_DrawSky(int x, int i, int texture, bool normalSky) {
 	if (normalSky) {
 		if (::g->visplanes[i]->skyflatmapindex > -1) {
 			R_DrawSkyMappedPlane(x, ::g->visplanes[i]->skyflatmapindex);
+		} else if (::g->customSkyIndex > -1 && ::g->skies[::g->customSkyIndex]->type == skyType_e::Fire) {
+			R_DrawFireSky(x, ::g->skies[::g->customSkyIndex].get());
 		}
 		else {
 			R_DrawSkyPlane(x, texture);
@@ -484,6 +525,8 @@ void R_DrawPlanes (void)
 
 	::g->flipImg = 0;
 	// sky flat
+	int customSkyIndex = FindCustomSkyIndex(::g->skytexture);
+	::g->customSkyIndex = customSkyIndex;
 	if (::g->visplanes[i]->picnum == ::g->skyflatnum || ::g->visplanes[i]->picnum & PL_SKYFLAT || ::g->visplanes[i]->skyflatmapindex > -1)
 	{
 		int skyToRender = ::g->skytexture;
