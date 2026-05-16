@@ -985,12 +985,4 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	
 	::g->initFire = false;
 
-	::g->fireHeight = 0;
-
-	::g->fireBuffer = NULL;
-
-	::g->fireWidth = 0;
-
-	::g->finalFireBuffer = NULL;
-
 	::g->customSkyIndex = -1;
