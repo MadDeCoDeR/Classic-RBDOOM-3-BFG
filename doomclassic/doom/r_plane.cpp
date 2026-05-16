@@ -261,6 +261,7 @@ int FindCustomSkyIndex(int picnum) {
 		for (size_t i = 0; i < ::g->skies.size(); i++) {
 			if (picnum == R_TextureNumForName(::g->skies[i]->name)) {
 				result = i;
+				::g->fireSkyTexture = picnum;
 				break;
 			}
 		}
@@ -466,10 +467,10 @@ Similar to R_DrawSkyMappedPlane but instead of using SKYDEFs flatmapping it actu
 The first argument is the same as it is in R_DrawSkyPlane
 The second argument is the sky  type we got from SKYDEF
 */
-void R_DrawFireSky(int x, sky_t* Sky) {
-	int mappedTexture = R_TextureNumForName(Sky->name);
+void R_DrawFireSky(int x, sky_t* sky) {
+	int mappedTexture = ::g->fireSkyTexture;
 	int angle = R_InitSkyPlane(x, mappedTexture);
-	::g->dc_source = R_GetFireSkyColumn(mappedTexture, angle, Sky->fire);
+	::g->dc_source = R_GetFireSkyColumn(mappedTexture, angle, sky->fire);
 	::g->issky = false;
 	colfunc(::g->dc_colormap, ::g->dc_source);
 }
