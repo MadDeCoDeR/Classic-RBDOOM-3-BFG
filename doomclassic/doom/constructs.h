@@ -986,3 +986,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->initFire = false;
 
 	::g->customSkyIndex = -1;
+
+	::g->fireSkyTexture = 0;
