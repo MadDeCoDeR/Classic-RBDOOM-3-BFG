@@ -826,7 +826,7 @@ void R_ClearTextures(void) {
 	Z_Free(::g->s_texturecomposite);
 	Z_Free(::g->s_texturecompositesize);
 	Z_Free(::g->texturetranslation);
-	::g->initFire = false;
+	//::g->initFire = false;
 	
 	if (::g->skybuffer) {
 		free(::g->skybuffer);
