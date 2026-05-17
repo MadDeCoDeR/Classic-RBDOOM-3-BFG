@@ -529,11 +529,7 @@ void R_DrawPlanes (void)
 	// sky flat
 	if (::g->visplanes[i]->picnum == ::g->skyflatnum || ::g->visplanes[i]->picnum & PL_SKYFLAT || ::g->visplanes[i]->skyflatmapindex > -1)
 	{
-		int customSkyIndex = FindCustomSkyIndex(::g->skytexture);
-		::g->customSkyIndex = customSkyIndex;
-		if (::g->customSkyIndex > -1) {
-			R_GenerateFireSky(::g->skytexture, ::g->skies[::g->customSkyIndex]->fire);
-		}
+		
 		int skyToRender = ::g->skytexture;
 	    ::g->dc_iscale = ::g->pspriteiscale>>::g->detailshift;
 	    
@@ -561,6 +557,12 @@ void R_DrawPlanes (void)
 			::g->flipImg = l->special == 272 ? 0u : ~0u;
 		} else {
 	    	::g->dc_texturemid = ::g->skytexturemid;
+		}
+
+		int customSkyIndex = FindCustomSkyIndex(skyToRender);
+		::g->customSkyIndex = customSkyIndex;
+		if (::g->customSkyIndex > -1) {
+			R_GenerateFireSky(skyToRender, ::g->skies[::g->customSkyIndex]->fire);
 		}
 		int ttmid = 100 * FRACUNIT;
 		if (::g->dc_texturemid > ttmid) { //GK:Tall skies support
