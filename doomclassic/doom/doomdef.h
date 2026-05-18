@@ -385,6 +385,7 @@ typedef struct fireSky_s {
 typedef struct sky_s {
     skyType_e type;
     char* name;
+    int picnum; //GK: Caching
     int mid;
     int scrollx;
     int scrolly;

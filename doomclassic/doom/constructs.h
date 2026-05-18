@@ -982,9 +982,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->planeind = 0;
 
 	::g->lastFireTime = 0;
-	
-	::g->initFire = false;
 
 	::g->customSkyIndex = -1;
-
-	::g->fireSkyTexture = 0;

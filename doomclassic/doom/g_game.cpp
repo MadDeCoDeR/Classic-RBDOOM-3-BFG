@@ -647,7 +647,6 @@ void G_DoLoadLevel ()
 	::g->skyflatnum = R_FlatNumForName ( SKYFLATNAME );
 	//GK: Re-render the sky buffer on every map 
 	//in order to have a color similar to the sky flat
-	::g->initFire = false;
 	if (::g->skybuffer) {
 		free(::g->skybuffer);
 		::g->skybuffer = NULL;
@@ -706,11 +705,20 @@ void G_DoLoadLevel ()
 			::g->skytexture = R_TextureNumForName(::g->maps[::g->map - 1].sky);
 		}
 	}
+
 	if (::g->s_textures[::g->skytexture]->height >= 200) {//GK:Tall skies support
 		::g->skytexturemid = 200 * FRACUNIT;
 	}
 	else {
 		::g->skytexturemid = 100 * FRACUNIT;
+	}
+
+	int customSkyIndex = R_FindCustomSkyIndex(::g->skytexture);
+	if (customSkyIndex > -1) {
+		::g->skytexturemid = ::g->skies[customSkyIndex]->mid * FRACUNIT;
+		if (::g->skies[customSkyIndex]->type == Fire) {
+			R_SetupFireSky(::g->skytexture);
+		}
 	}
 	::g->levelstarttic = ::g->gametic;        // for time calculation
 
