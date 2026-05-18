@@ -589,11 +589,10 @@ void R_GenerateFireSky(int tex, fireSky_t fire) {
 		::g->initFire = true;
 	}
 
-	//Calculate the update time in millis insted of seconds in order to avoid dealing with float point numbers
-	int updateTimeMillis = fire.updatetime * 1000;
-	int currentTime = Sys_Milliseconds();
-	int deltaFireTime = currentTime - ::g->lastFireTime;
-	if (deltaFireTime >= updateTimeMillis) {
+	//Calculate the update time in seconds in order to keep it as accurate as possible
+	float currentTime = Sys_Milliseconds() / 1000.0f;
+	float deltaFireTime = currentTime - ::g->lastFireTime;
+	if (deltaFireTime >= fire.updatetime) {
 	for (int x = 0; x < FIRE_WIDTH; x++) {
 		for (int y = 1; y < FIRE_HEIGHT; y++) {
 			R_StartTheFire(y * FIRE_WIDTH + x);
