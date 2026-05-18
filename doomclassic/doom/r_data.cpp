@@ -832,8 +832,8 @@ void R_InitTextures (void)
 		::g->texturetranslation[i] = i;	
 
 	//GK: Cache picnums associated with sky textures
-	if (::g->skies.size() > 0) {
-		for(int sk = 0; sk < ::g->skies.size(); sk++) {
+	if (!::g->skies.empty()) {
+		for(size_t sk = 0; sk < ::g->skies.size(); sk++) {
 			::g->skies[sk]->picnum = R_TextureNumForName(::g->skies[sk]->name);
 		}
 	}
