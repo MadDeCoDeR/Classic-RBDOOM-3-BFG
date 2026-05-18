@@ -246,29 +246,7 @@ int FindSkyFlatMapIndex(int picnum) {
 	return result;
 }
 
-/*
-		FindCustomSkyIndex
-==================================
 
-Checks the texture picnum if it belongs to the SKYDEFS sky name
-and return the index of the array.
-If it fails it return -1
-*/
-
-int FindCustomSkyIndex(int picnum) {
-	int result = -1;
-	if (!::g->skies.empty()) {
-		for (size_t i = 0; i < ::g->skies.size(); i++) {
-			if (picnum == R_TextureNumForName(::g->skies[i]->name)) {
-				result = i;
-				::g->fireSkyTexture = picnum;
-				break;
-			}
-		}
-	}
-
-	return result;
-}
 //GK: End
 
 //
@@ -467,10 +445,9 @@ Similar to R_DrawSkyMappedPlane but instead of using SKYDEFs flatmapping it actu
 The first argument is the same as it is in R_DrawSkyPlane
 The second argument is the sky  type we got from SKYDEF
 */
-void R_DrawFireSky(int x, sky_t* sky) {
-	int mappedTexture = ::g->fireSkyTexture;
-	int angle = R_InitSkyPlane(x, mappedTexture);
-	::g->dc_source = R_GetFireSkyColumn(mappedTexture, angle, sky->fire);
+void R_DrawFireSky(int x, int texture, sky_t* sky) {
+	int angle = R_InitSkyPlane(x, texture);
+	::g->dc_source = R_GetFireSkyColumn(texture, angle, sky->fire);
 	::g->issky = false;
 	colfunc(::g->dc_colormap, ::g->dc_source);
 }
@@ -480,7 +457,7 @@ void R_DrawSky(int x, int i, int texture, bool normalSky) {
 		if (::g->visplanes[i]->skyflatmapindex > -1) {
 			R_DrawSkyMappedPlane(x, ::g->visplanes[i]->skyflatmapindex);
 		} else if (::g->customSkyIndex > -1 && ::g->skies[::g->customSkyIndex]->type == skyType_e::Fire) {
-			R_DrawFireSky(x, ::g->skies[::g->customSkyIndex].get());
+			R_DrawFireSky(x, texture, ::g->skies[::g->customSkyIndex].get());
 		}
 		else {
 			R_DrawSkyPlane(x, texture);
@@ -559,10 +536,12 @@ void R_DrawPlanes (void)
 	    	::g->dc_texturemid = ::g->skytexturemid;
 		}
 
-		int customSkyIndex = FindCustomSkyIndex(skyToRender);
+		int customSkyIndex = R_FindCustomSkyIndex(skyToRender);
 		::g->customSkyIndex = customSkyIndex;
 		if (::g->customSkyIndex > -1) {
-			R_GenerateFireSky(skyToRender, ::g->skies[::g->customSkyIndex]->fire);
+			if (::g->skies[::g->customSkyIndex]->type == Fire) {
+				R_GenerateFireSky(skyToRender, ::g->skies[::g->customSkyIndex]->fire);
+			}
 		}
 		int ttmid = 100 * FRACUNIT;
 		if (::g->dc_texturemid > ttmid) { //GK:Tall skies support

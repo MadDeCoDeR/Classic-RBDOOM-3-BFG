@@ -51,6 +51,14 @@ R_GetSkyColumn
 (int		tex,
 	int		col);
 
+int 
+R_FindCustomSkyIndex
+(int picnum);
+
+void 
+R_SetupFireSky
+(int tex);
+
 void
 R_GenerateFireSky
 (int    tex,
