@@ -393,7 +393,7 @@ bool idAchievementManager::CheckClassicDOOMForCheating() {
 #endif
 	return false;
 }
-
+#if defined(USE_DOOMCLASSIC)
 /*
 ========================
 idAchievementManager::LocalUser_CompleteAchievement
@@ -454,7 +454,7 @@ Processed when the player finishes a level.
 ========================
 */
 // RB begin
-#if defined(USE_DOOMCLASSIC)
+
 void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int itemcount, int secretcount, int skill, int mission, int map, int episode, int totalkills, int totalitems, int totalsecret )
 {
 
