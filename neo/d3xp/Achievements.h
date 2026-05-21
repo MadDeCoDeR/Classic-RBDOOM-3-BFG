@@ -263,13 +263,14 @@ public:
 	void		SavePersistentData( idDict& playerInfo );
 	void		RestorePersistentData( const idDict& spawnArgs );
 	
-	static void LocalUser_CompleteAchievement( int id );
-	static void LocalUser_IncreaseCounter( int id );
-	static int 	LocalUser_GetCounter( int id );
-	static void LocalUser_ResetCounter( int id );
-	static bool isClassicDoomOnly();
+	
 	// RB begin
 #if defined(USE_DOOMCLASSIC)
+	static void LocalUser_CompleteAchievement(int id);
+	static void LocalUser_IncreaseCounter(int id);
+	static int 	LocalUser_GetCounter(int id);
+	static void LocalUser_ResetCounter(int id);
+	static bool isClassicDoomOnly();
 	static void	CheckDoomClassicsAchievements( int killcount, int itemcount, int secretcount, int skill, int mission, int map, int episode, int totalkills, int totalitems, int totalsecret );
 #endif
 	// RB end
