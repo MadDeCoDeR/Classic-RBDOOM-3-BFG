@@ -110,6 +110,7 @@ idCVar com_emergencyexit("com_emergencyexit", "0", CVAR_BOOL | CVAR_ROM, "Stops 
 
 extern idCVar stereoRender_enable;
 extern idCVar gui_useVRHack;
+extern idCVar cl_inGUI;
 
 idCVar com_engineHz( "com_engineHz", "60", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the engine runs at", 10.0f, 1024.0f );
 idCVar cl_engineHz("cl_engineHz", "35", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the classic engine runs at", 35.0f, 40.0f);
@@ -2185,7 +2186,7 @@ idCommonLocal::ProcessEvent
 bool idCommonLocal::ProcessEvent( const sysEvent_t* event )
 {
 	// hitting escape anywhere brings up the menu
-	if( game && game->IsInGame() )
+	if( game && game->IsInGame() && !cl_inGUI.GetBool())
 	{
 		if( event->evType == SE_KEY && event->evValue2 == 1 && ( event->evValue == K_ESCAPE || event->evValue == K_JOY9 ) )
 		{
@@ -2378,8 +2379,8 @@ void idCommonLocal::PerformGameSwitch()
 		session->UpdateSignInManager();
 		session->GetSignInManager().RegisterLocalUser( 0 );
 		//GK:Re-stabilize the framerate on classic DOOM
-		com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? com_engineHz.GetInteger() : cl_engineHz.GetInteger());
-		com_engineHz_latched = cl_engineHz.GetInteger();
+		com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? com_engineHz.GetFloat() : cl_engineHz.GetFloat());
+		com_engineHz_latched = cl_engineHz.GetFloat();
 		//GK: End
 		DoomLib::SetCurrentExpansion( idealCurrentGame );
 		if (::op != NULL) {

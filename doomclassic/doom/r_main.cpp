@@ -102,7 +102,7 @@ extern idCVar pm_thirdPersonXOff;
 extern idCVar pm_thirdPersonAngle;
 extern idCVar pm_thirdPersonHeight;*/
 // bumped light from gun blasts
-
+extern idCVar cl_inGUI;
 
 
 void (*colfunc) (lighttable_t * dc_colormap,
@@ -1035,7 +1035,7 @@ void R_RenderPlayerView (player_t* player)
 void R_Initwidth() {
 	//GK: Calculate x-axis image scale and Rendering widthAdd commentMore actions
 
-	if (cl_dscaling.GetBool() && !(::g->demoplayback || ::g->demorecording)) {
+	if (cl_dscaling.GetBool() && !(::g->demoplayback || ::g->demorecording) && !cl_inGUI.GetBool()) {
 		int engineWidth = ::renderSystem->GetWidth();
 		int engineHeight = ::renderSystem->GetHeight();
 		if (::g->engineWidth != engineWidth || ::g->engineHeight != engineHeight) {
@@ -1065,7 +1065,7 @@ void R_Initwidth() {
 		::g->GLOBAL_IMAGE_SCALER = 3;
 	}
 	
-	if (!r_aspectcorrect.GetBool()) {
+	if (!r_aspectcorrect.GetBool() || cl_inGUI.GetBool()) {
 		::g->ASPECT_IMAGE_SCALER = ::g->GLOBAL_IMAGE_SCALER;
 	}
 

@@ -44,6 +44,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "GameSSDWindow.h"
 #include "GameBearShootWindow.h"
 #include "GameBustOutWindow.h"
+#include "GameDOOMWindow.h"
 
 bool idWindow::registerIsTemporary[MAX_EXPRESSION_REGISTERS];		// statics to assist during parsing
 //float idWindow::shaderRegisters[MAX_EXPRESSION_REGISTERS];
@@ -2746,6 +2747,18 @@ bool idWindow::Parse( idTokenParser* src, bool rebuild )
 			dwt.simp = NULL;
 			dwt.win = win;
 			drawWindows.Append( dwt );
+		}
+		else if (token == "gameDOOMDef")
+		{
+			idGameDOOMWindow* win = new(TAG_OLD_UI) idGameDOOMWindow(gui);
+			SaveExpressionParseState();
+			win->Parse(src, rebuild);
+			RestoreExpressionParseState();
+			AddChild(win);
+			win->SetParent(this);
+			dwt.simp = NULL;
+			dwt.win = win;
+			drawWindows.Append(dwt);
 		}
 //
 //  added new onEvent

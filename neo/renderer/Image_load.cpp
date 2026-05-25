@@ -478,22 +478,27 @@ void idImage::ActuallyLoadImage(bool fromBackEnd)
 			{
 				idLib::Warning( "Couldn't load image: %s : %s", GetName(), generatedName.c_str() );
 				actuallyloaded = false;
+				
 				// create a default so it doesn't get continuously reloaded
-				opts.width = 8;
-				opts.height = 8;
-				opts.numLevels = 1;
-				DeriveOpts();
-				AllocImage();
-				
-				// clear the data so it's not left uninitialized
-				idTempArray<byte> clear( opts.width * opts.height * 4 );
-				memset( clear.Ptr(), 0, clear.Size() );
-				for( int level = 0; level < opts.numLevels; level++ )
-				{
-					SubImageUpload( level, 0, 0, 0, opts.width >> level, opts.height >> level, clear.Ptr() );
+				if (opts.width <= 0) {
+					opts.width = 8;
+					opts.height = 8;
+					opts.numLevels = 1;
 				}
-				
+				if (texnum == TEXTURE_NOT_LOADED) {
+					DeriveOpts();
+					AllocImage();
+					// clear the data so it's not left uninitialized
+					idTempArray<byte> clear(opts.width * opts.height * 4);
+					memset(clear.Ptr(), 0, clear.Size());
+					for (int level = 0; level < opts.numLevels; level++)
+					{
+						SubImageUpload(level, 0, 0, 0, opts.width >> level, opts.height >> level, clear.Ptr());
+					}
+					
+				}
 				return;
+				
 			}
 			actuallyloaded = true;
 			opts.width = width;
@@ -520,7 +525,9 @@ void idImage::ActuallyLoadImage(bool fromBackEnd)
 		binaryFileTime = im.WriteGeneratedFile( sourceFileTime );
 	}
 	
-	AllocImage();
+	if (idStr::Icmp(GetName(), "_doomClassic")) {
+		AllocImage();
+	}
 	
 	for( int i = 0; i < im.NumImages(); i++ )
 	{
@@ -904,6 +911,7 @@ void idImage::UploadScratch( const byte* data, int cols, int rows )
 	{
 		if( opts.textureType != TT_2D || usage != TD_LOOKUP_TABLE_RGBA )
 		{
+
 			GenerateImage( data, cols, rows, TF_LINEAR, TR_REPEAT, TD_LOOKUP_TABLE_RGBA );
 			return;
 		}
