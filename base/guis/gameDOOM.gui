@@ -1,0 +1,52 @@
+windowDef Desktop {
+	rect	0,0,640,480
+    hideCursor 0
+
+    windowDef gameSelection {
+        rect	0,0,640,480
+        background "guis/assets/white"
+        matcolor 0.9,0.9,0.9, 1
+        visible 1
+        windowDef D1 {
+            rect 5, 10, 320, 400
+            background  "guis/assets/mainmenu/doom_cover"
+            visible 1
+            matcolor 1,1,1,1
+            onAction {
+                set "gameSelection::visible" 0;
+                set "game::visible" 1;
+                set "gameWin::visible" 1;
+                set	"gameWin::gameMode" 1;
+                set "Desktop::hideCursor" 1;
+            }
+        }
+
+        windowDef D2 {
+            rect 340, 10, 320, 400
+            background  "guis/assets/mainmenu/doom2_cover"
+            visible 1
+            matcolor 1,1,1,1
+            onAction {
+                set "gameSelection::visible" 0;
+                set "game::visible" 1;
+                set "gameWin::visible" 1;
+                set	"gameWin::gameMode" 2;
+                set "Desktop::hideCursor" 1;
+            }
+        }
+    }
+
+    windowDef game {
+        rect	0,0,640,480
+        visible 0
+
+        gameDOOMDef gameWin {
+            rect	0,0,640,480
+            background "_doomClassic"
+            matcolor 1,1,1,1
+            backcolor 0,0,0,1
+            visible 0
+            gameMode 0
+        }
+    }
+}

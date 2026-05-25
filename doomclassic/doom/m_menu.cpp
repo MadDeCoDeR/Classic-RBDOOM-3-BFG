@@ -114,6 +114,8 @@ extern idCVar in_toggleRun;
 
 extern idCVar cl_ScreenSize;
 extern idCVar cl_musicType;
+extern idCVar cl_inGUI;
+extern idCVar cl_closeGame;
 //
 // defaulted values
 //
@@ -302,6 +304,7 @@ bool M_CheckExpansions(int index);
 bool M_CheckEpisodes(int index);
 bool M_CheckTrakInfo(int index);
 bool M_CheckItemGfx(int index);
+bool M_CheckSettings(int index);
 
 void R_ExecuteSetViewSize (void);
 //GK: Support for additional HELP lumps
@@ -1200,7 +1203,7 @@ char	syncNames[3][9] =
 void M_DrawVideo(void)
 {
 	V_DrawPatchDirect(60, 38, 0,/*(patch_t*)*/img2lmp(W_CacheLumpName("M_VID", PU_CACHE_SHARED), W_GetNumForName("M_VID")), false);
-
+	if (!cl_inGUI.GetBool()) {
 	int aspect = r_aspect.GetInteger() >= 1 ? 1 : 0;
 	int correct = r_aspectcorrect.GetInteger();
 	int asoffset = 165 - (6 * correct); //GK: The word "correct" is larger than the others and therefor it requires different x offset
@@ -1234,6 +1237,7 @@ void M_DrawVideo(void)
 	M_WriteText(::g->VideoDef.x + 133, ::g->VideoDef.y + LINEHEIGHT * (framerate - offset) + 6, fps.c_str(), false);
 	if (cl_engineHz_interp.GetBool() && stereoRender_enable.GetInteger() != STEREO3D_VR) {
 		M_WriteText(::g->VideoDef.x + 160, ::g->VideoDef.y + LINEHEIGHT * (refresh)+6, refreshString.c_str(), false);
+	}
 	}
 }
 
@@ -2318,12 +2322,17 @@ void M_QuitDOOM(int choice)
 
 void M_ExitGame(int choice)
 {
-	//CleanUncompFiles(true);
-	//GK:logout properly from the netgame
-	if (::g->netgame) {
-		DoomLib::Interface.QuitCurrentGame();
+	if (!cl_inGUI.GetBool()) {
+		//CleanUncompFiles(true);
+		//GK:logout properly from the netgame
+		if (::g->netgame) {
+			DoomLib::Interface.QuitCurrentGame();
+		}
+		common->Quit();
 	}
-	common->Quit();
+	else {
+		cl_closeGame.SetBool(true);
+	}
 }
 
 void M_CancelExit(int choice) {
@@ -3670,13 +3679,13 @@ bool M_True(int index) {
 }
 
 bool M_CheckVideoSettings(int index) {
-	return index == refresh ? !((!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR)) : true;
+	return cl_inGUI.GetBool() ? index == advg : index == refresh ? !((!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR)) : true;
 }
 bool M_CheckGameSettings(int index) {
 	return index == aim ? cl_freelook.GetBool() : true;
 }
 bool M_CheckAvailableGames(int index) {
-	return index == 2 ? DoomLib::hasGame == 2 : true;
+	return index == 2 ? (DoomLib::hasGame == 2 && !cl_inGUI.GetBool()) : true;
 }
 bool M_CheckExpansions(int index) {
 	idList<int> expMap = {-1, 3, 0, 1, 2, 5}; 
@@ -3692,4 +3701,8 @@ bool M_CheckTrakInfo(int index) {
 
 bool M_CheckItemGfx(int index) {
 	return W_CheckNumForName(::g->currentMenu->menuitems[index].name) > 0;
+}
+
+bool M_CheckSettings(int index) {
+	return index == ctl_option ? !cl_inGUI.GetBool() : true;
 }

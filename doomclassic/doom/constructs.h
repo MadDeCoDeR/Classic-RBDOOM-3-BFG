@@ -262,7 +262,7 @@ menu_t  temp_OptionsDef = {
 		M_DrawOptions,
 		60,37,
 		0,
-		M_True
+		M_CheckSettings
 };
 memcpy( &::g->OptionsDef, &temp_OptionsDef, sizeof(temp_OptionsDef) );
 menuitem_t temp_VideoMenu[7] = {

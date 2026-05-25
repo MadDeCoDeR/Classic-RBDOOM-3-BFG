@@ -86,6 +86,7 @@ extern idCVar r_aspectcorrect; //GK: also here
 extern idCVar r_clblurry;
 extern idCVar in_photomode;
 extern idCVar stereoRender_enable;
+extern idCVar cl_inGUI;
 /*
 ===============
 idGameThread::Run
@@ -152,7 +153,7 @@ int idGameThread::Run()
 	{
 		// RB begin
 #if defined(USE_DOOMCLASSIC)
-		if( userCmdMgr->HasUserCmdForPlayer( game->GetLocalClientNum() ) && common->GetCurrentGame() == DOOM3_BFG )
+		if( userCmdMgr->HasUserCmdForPlayer( game->GetLocalClientNum() ) && common->GetCurrentGame() == DOOM3_BFG && !cl_inGUI.GetBool() )
 #else
 		if( userCmdMgr->HasUserCmdForPlayer( game->GetLocalClientNum() ) )
 #endif
@@ -808,9 +809,17 @@ void idCommonLocal::Frame()
 		}
 #endif
 		// RB end
-		
-		// start the game / draw command generation thread going in the background
-		gameReturn_t ret = gameThread.RunGameAndDraw( numGameFrames, userCmdMgr, IsClient(), gameFrame - numGameFrames );
+
+		gameReturn_t ret;
+		if (cl_inGUI.GetBool()) {
+			dummyUserCmdMgr.SetDefaults();
+			// start the game / draw command generation thread going in the background
+			ret = gameThread.RunGameAndDraw(numGameFrames, dummyUserCmdMgr, IsClient(), gameFrame - numGameFrames);
+		}
+		else {
+			// start the game / draw command generation thread going in the background
+			ret = gameThread.RunGameAndDraw(numGameFrames, userCmdMgr, IsClient(), gameFrame - numGameFrames);
+		}
 
 #if defined(USE_DOOMCLASSIC)
 		// If we're in Doom or Doom 2, run tics and upload the new texture.

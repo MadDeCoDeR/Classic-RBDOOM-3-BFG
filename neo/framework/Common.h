@@ -347,6 +347,8 @@ public:
 	virtual void				SwitchToGame( currentGame_t newGame, bool restart = false ) = 0;
 	virtual bool	IsPlayingDoomClassic() const = 0;
 	virtual char**	GetClassicArguents() = 0;
+	virtual void	RunDoomClassicFrame() = 0;
+	virtual void	SetDOOMClassicResolution(int width, int height) = 0;
 #endif
 	// RB end
 	//GK: Neither ucmdMgr

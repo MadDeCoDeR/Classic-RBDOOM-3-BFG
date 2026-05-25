@@ -42,6 +42,7 @@ static const int LOAD_TIP_COUNT = 26;
 extern idCVar r_aspect;						// 0 = original, 1 = strecthed
 extern idCVar r_aspectcorrect;
 extern idCVar doomit;
+extern idCVar cl_inGUI;
 class idGameThread : public idSysThread
 {
 public:
@@ -284,16 +285,22 @@ public:
 #if defined(USE_DOOMCLASSIC)
 	virtual currentGame_t		GetCurrentGame() const
 	{
-		return currentGame;
+		return cl_inGUI.GetBool() ? DOOM_CLASSIC : currentGame;
 	}
 	virtual void				SwitchToGame( currentGame_t newGame, bool restart = false);
 	virtual bool	IsPlayingDoomClassic() const
 	{
-		return GetCurrentGame() != DOOM3_BFG;
+		return GetCurrentGame() != DOOM3_BFG || cl_inGUI.GetBool();
 	}
 
 	virtual char** GetClassicArguents() {
 		return classicargv;
+	}
+	// Doom classic support
+	virtual void	RunDoomClassicFrame();
+	virtual void	SetDOOMClassicResolution(int width, int height) {
+		doomClassicWidth = width;
+		doomClassicHeight = height;
 	}
 #endif
 	// RB end
@@ -475,6 +482,7 @@ private:
 	bool				insideUpdateScreen;		// true while inside ::UpdateScreen()
 	
 	idUserCmdMgr		userCmdMgr;
+	idUserCmdMgr		dummyUserCmdMgr;		//GK: Used for gameDOOMWindow in order to block D3 player from receiving any input
 	
 	int					nextUsercmdSendTime;	// Next time to send usercmds
 	int					nextSnapshotSendTime;	// Next time to send a snapshot
@@ -711,8 +719,6 @@ private:
 	// RB begin
 #if defined(USE_DOOMCLASSIC)
 	// Doom classic support
-	void	RunDoomClassicFrame();
-	void	RenderDoomClassic();
 	void	PerformGameSwitch();
 #endif
 	// RB end
