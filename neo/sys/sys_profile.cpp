@@ -306,7 +306,7 @@ void idProfileMgr::OnSaveSettingsCompleted( idSaveLoadParms* parms )
 {
 	common->Dialog().ShowSaveIndicator( false );
 	
-	if( parms->GetError() != SAVEGAME_E_NONE )
+	if( parms->GetError() != SAVEGAME_E_NONE && parms->GetError() != SAVEGAME_E_INVALID_USER)
 	{
 		common->Dialog().AddDialog( GDM_PROFILE_SAVE_ERROR, DIALOG_CONTINUE, NULL, NULL, false );
 	}
