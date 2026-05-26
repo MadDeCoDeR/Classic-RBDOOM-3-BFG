@@ -1065,7 +1065,7 @@ void R_Initwidth() {
 		::g->GLOBAL_IMAGE_SCALER = 3;
 	}
 	
-	if (!r_aspectcorrect.GetBool() || cl_inGUI.GetBool()) {
+	if (!r_aspectcorrect.GetBool()) {
 		::g->ASPECT_IMAGE_SCALER = ::g->GLOBAL_IMAGE_SCALER;
 	}
 

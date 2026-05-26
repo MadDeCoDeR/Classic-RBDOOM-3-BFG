@@ -34,7 +34,7 @@
 
 extern idCVar cl_engineHz_interp;
 extern idCVar cl_engineHz;
-extern idCVar s_volume_dB;
+extern idCVar r_aspectcorrect;
 idCVar cl_inGUI("cl_inGUI", "0", CVAR_BOOL | CVAR_ROM, "");
 idCVar cl_closeGame("cl_closeGame", "0", CVAR_BOOL | CVAR_ROM, "");
 
@@ -44,10 +44,11 @@ idGameDOOMWindow::idGameDOOMWindow(idUserInterfaceLocal* gui) : idWindow(gui) {
 	gameruning = false;
 	gameMode = 0;
 	originalInterpolation = false;
+	originalAspect = false;
 }
 
 idGameDOOMWindow::~idGameDOOMWindow() {
-	DoomLib::Interface.Shutdown();
+	CloseGame(false);
 }
 
 
@@ -56,11 +57,10 @@ void idGameDOOMWindow::Draw(int time, float x, float y) {
 		ResetGame();
 	}
 	else {
-		common->RunDoomClassicFrame();
-		DoomLib::ApplyRumble();
+		//GK: The Classic DOOM engine can already run on the engine's main frame loop. Use that for better timming
 		common->SW()->Pause();
 		if (cl_closeGame.GetBool()) {
-			CloseGame();
+			CloseGame(true);
 		}
 	}
 }
@@ -120,11 +120,16 @@ void idGameDOOMWindow::ResetGame() {
 	// Reset match parameters for the classics.
 	DoomLib::matchParms = idMatchParameters();
 	//GK:Re-stabilize the framerate on classic DOOM
+	originalAspect = r_aspectcorrect.GetBool();
+	r_aspectcorrect.SetBool(false);
 	originalInterpolation = cl_engineHz_interp.GetBool();
 	cl_engineHz_interp.SetBool(true);
 	cl_engineHz_interp.ClearModified();
 	com_engineHz_denominator = 100LL * (cl_engineHz_interp.GetBool() ? com_engineHz.GetFloat() : cl_engineHz.GetFloat());
 	com_engineHz_latched = cl_engineHz.GetFloat();
+
+	session->UpdateSignInManager();
+	originalViewAngles = usercmdGen->GetAngles();
 	//GK: End
 	DoomLib::SetCurrentExpansion(gameMode - 1);
 	if (::op != NULL) {
@@ -135,16 +140,23 @@ void idGameDOOMWindow::ResetGame() {
 	cl_inGUI.SetBool(true);
 }
 
-void idGameDOOMWindow::CloseGame() {
+void idGameDOOMWindow::CloseGame(bool resetCvars) {
 	DoomLib::Interface.Shutdown();
 
-	common->SW()->UnPause();
+	if (common->SW() != NULL) {
+		common->SW()->UnPause();
+	}
 	gameruning = false;
 	cl_inGUI.SetBool(false);
 	cl_closeGame.SetBool(false);
-	cl_engineHz_interp.SetBool(originalInterpolation);
-	com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
-	com_engineHz_latched = com_engineHz.GetFloat();
+	if (resetCvars) {
+		usercmdGen->SetAngles(originalViewAngles);
+		r_aspectcorrect.SetBool(originalAspect);
+		cl_engineHz_interp.SetBool(originalInterpolation);
+		cl_engineHz_interp.ClearModified();
+		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
+		com_engineHz_latched = com_engineHz.GetFloat();
+	}
 	this->visible = 0;
 	this->parent->GetParent()->SetChildWinVarVal("gameSelection", "visible", "1");
 	this->parent->GetParent()->SetChildWinVarVal("Desktop", "hideCursor", "0");

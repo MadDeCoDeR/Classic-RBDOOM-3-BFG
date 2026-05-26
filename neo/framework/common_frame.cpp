@@ -500,7 +500,7 @@ void idCommonLocal::Frame()
 		eventLoop->RunEventLoop();
 
 		//GK: Pause game if the controller unexpectedly disconnects
-		if (game && idLib::joystick && !Sys_hasConnectedController()) {
+		if (game && idLib::joystick && !Sys_hasConnectedController() && !cl_inGUI.GetBool()) {
 			game->Shell_Show(true);
 		}
 		
@@ -803,7 +803,7 @@ void idCommonLocal::Frame()
 		// RB begin
 #if defined(USE_DOOMCLASSIC)
 		// If we're in Doom or Doom 2, run tics and upload the new texture.
-		if( ( GetCurrentGame() == DOOM_CLASSIC || GetCurrentGame() == DOOM2_CLASSIC ) && !( Dialog().IsDialogPausing() || session->IsSystemUIShowing() ) )
+		if( ( GetCurrentGame() == DOOM_CLASSIC || GetCurrentGame() == DOOM2_CLASSIC || cl_inGUI.GetBool()) && !( Dialog().IsDialogPausing() || session->IsSystemUIShowing() ) )
 		{
 			RunDoomClassicFrame();
 		}
@@ -823,7 +823,7 @@ void idCommonLocal::Frame()
 
 #if defined(USE_DOOMCLASSIC)
 		// If we're in Doom or Doom 2, run tics and upload the new texture.
-		if ((GetCurrentGame() == DOOM_CLASSIC || GetCurrentGame() == DOOM2_CLASSIC) && !(Dialog().IsDialogPausing() || session->IsSystemUIShowing()))
+		if ((GetCurrentGame() == DOOM_CLASSIC || GetCurrentGame() == DOOM2_CLASSIC || cl_inGUI.GetBool()) && !(Dialog().IsDialogPausing() || session->IsSystemUIShowing()))
 		{
 			DoomLib::ApplyRumble();
 		}

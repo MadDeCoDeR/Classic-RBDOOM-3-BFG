@@ -37,11 +37,13 @@ public:
 private:
 	virtual bool		ParseInternalVar(const char* name, idTokenParser* src);
 	void ResetGame();
-	void CloseGame();
+	void CloseGame(bool resetCVars);
 private:
 	idWinBool gameruning;
 	idWinInt gameMode;
 	bool originalInterpolation;
+	bool originalAspect;
+	idVec3 originalViewAngles;
 	
 };
 
