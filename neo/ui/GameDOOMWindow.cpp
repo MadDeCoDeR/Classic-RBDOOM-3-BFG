@@ -129,7 +129,6 @@ void idGameDOOMWindow::ResetGame() {
 	com_engineHz_latched = cl_engineHz.GetFloat();
 
 	session->UpdateSignInManager();
-	idPlayer* player = game->GetLocalPlayer();
 	originalViewAngles = usercmdGen->GetAngles();
 	//GK: End
 	DoomLib::SetCurrentExpansion(gameMode - 1);
