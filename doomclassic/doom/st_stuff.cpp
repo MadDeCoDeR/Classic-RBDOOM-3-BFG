@@ -374,7 +374,8 @@ void ST_refreshBackground(void)
 					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true, ::g->mapt->width + offsets, ::g->spwr->width + offsets);
 				}*/
 			} else {
-				V_DrawPatch(ST_X + ::g->mapt->width, 0, BG, ::g->sbar, true);
+				int xOffset = ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER ? ST_X + ::g->mapt->width : ST_X;
+				V_DrawPatch(xOffset, 0, BG, ::g->sbar, true);
 			}
 			short widthoffset = 0;
 			if (::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER) {
