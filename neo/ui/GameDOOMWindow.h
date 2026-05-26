@@ -41,7 +41,7 @@ private:
 private:
 	idWinBool gameruning;
 	idWinInt gameMode;
-	bool originalInterpolation;;
+	bool originalInterpolation;
 	
 };
 
