@@ -34,9 +34,10 @@
 
 extern idCVar cl_engineHz_interp;
 extern idCVar cl_engineHz;
-extern idCVar r_clear;
+extern idCVar s_volume_dB;
 idCVar cl_inGUI("cl_inGUI", "0", CVAR_BOOL | CVAR_ROM, "");
 idCVar cl_closeGame("cl_closeGame", "0", CVAR_BOOL | CVAR_ROM, "");
+
 
 
 idGameDOOMWindow::idGameDOOMWindow(idUserInterfaceLocal* gui) : idWindow(gui) {
@@ -55,9 +56,9 @@ void idGameDOOMWindow::Draw(int time, float x, float y) {
 		ResetGame();
 	}
 	else {
-		
 		common->RunDoomClassicFrame();
 		DoomLib::ApplyRumble();
+		common->SW()->Pause();
 		if (cl_closeGame.GetBool()) {
 			CloseGame();
 		}
@@ -115,9 +116,7 @@ void idGameDOOMWindow::ResetGame() {
 	DoomLib::Interface.Shutdown();
 	DoomLib::skipToNew = false;
 	DoomLib::skipToLoad = false;
-
 	common->SetDOOMClassicResolution(0, 0);
-
 	// Reset match parameters for the classics.
 	DoomLib::matchParms = idMatchParameters();
 	//GK:Re-stabilize the framerate on classic DOOM
@@ -138,10 +137,14 @@ void idGameDOOMWindow::ResetGame() {
 
 void idGameDOOMWindow::CloseGame() {
 	DoomLib::Interface.Shutdown();
+
+	common->SW()->UnPause();
 	gameruning = false;
 	cl_inGUI.SetBool(false);
 	cl_closeGame.SetBool(false);
 	cl_engineHz_interp.SetBool(originalInterpolation);
+	com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
+	com_engineHz_latched = com_engineHz.GetFloat();
 	this->visible = 0;
 	this->parent->GetParent()->SetChildWinVarVal("gameSelection", "visible", "1");
 	this->parent->GetParent()->SetChildWinVarVal("Desktop", "hideCursor", "0");
