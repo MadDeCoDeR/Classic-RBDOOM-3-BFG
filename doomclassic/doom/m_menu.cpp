@@ -3172,7 +3172,8 @@ qboolean M_Responder (event_t* ev)
 
 	case KEY_ENTER:
 		if (::g->currentMenu->menuitems[::g->itemOn].routine &&
-			::g->currentMenu->menuitems[::g->itemOn].status)
+			::g->currentMenu->menuitems[::g->itemOn].status && 
+			::g->currentMenu->checkRoutine(::g->itemOn))
 		{
 			::g->currentMenu->lastOn = ::g->itemOn;
 			if (::g->currentMenu->menuitems[::g->itemOn].status == 2)
@@ -3215,14 +3216,14 @@ qboolean M_Responder (event_t* ev)
 
 	default:
 		for (i = ::g->itemOn+1;i < ::g->currentMenu->numitems;i++)
-			if (::g->currentMenu->menuitems[i].alphaKey == ch)
+			if (::g->currentMenu->menuitems[i].alphaKey == ch && ::g->currentMenu->checkRoutine(i))
 			{
 				::g->itemOn = i;
 				S_StartSound(NULL,sfx_pstop);
 				return true;
 			}
 			for (i = 0;i <= ::g->itemOn;i++)
-				if (::g->currentMenu->menuitems[i].alphaKey == ch)
+				if (::g->currentMenu->menuitems[i].alphaKey == ch && ::g->currentMenu->checkRoutine(i))
 				{
 					::g->itemOn = i;
 					S_StartSound(NULL,sfx_pstop);
@@ -3345,18 +3346,19 @@ void M_Drawer (void)
 	if (!::g->inhelpscreens) {
 		// DRAW SKULL
 		int lineoffs = ::g->itemOn*LINEHEIGHT;
-		if (::g->currentMenu == &::g->OptionsDef && ::g->itemOn > messages) {
-			lineoffs += (optoffs*LINEHEIGHT);
-		} else {
-			for (int j = 0; j < inactiveIndexes.Num(); j++) {
-				if (::g->itemOn > inactiveIndexes[j]) {
-					lineoffs = (::g->itemOn - (j + 1)) * LINEHEIGHT;
-				}
-			}
-			if (::g->itemOn > renderedItems) {
-				lineoffs = (renderedItems - 1) * LINEHEIGHT;
+		 
+		for (int j = 0; j < inactiveIndexes.Num(); j++) {
+			if (::g->itemOn > inactiveIndexes[j]) {
+				lineoffs = (::g->itemOn - (j + 1)) * LINEHEIGHT;
 			}
 		}
+		if (::g->itemOn > renderedItems) {
+			lineoffs = (renderedItems - 1) * LINEHEIGHT;
+		}
+		if (::g->currentMenu == &::g->OptionsDef && ::g->itemOn > messages) {
+			lineoffs += (optoffs * LINEHEIGHT);
+		}
+		
 		if (::g->currentMenu->menuitems == pageDef.menuitems && ::g->itemOn >= 10) {
 			lineoffs = LINEHEIGHT * (::g->itemOn - 10);
 			if (pageIndex == numPages && !aspect ) {
@@ -3409,6 +3411,15 @@ void M_SetupNextMenu(menu_t *menudef)
 {
 	::g->currentMenu = menudef;
 	::g->itemOn = ::g->currentMenu->lastOn;
+	//GK: First item not visible handling
+	if (!::g->currentMenu->checkRoutine(::g->itemOn)) {
+		for (int i = 0; i < ::g->currentMenu->numitems; i++) {
+			if (::g->currentMenu->checkRoutine(i)) {
+				::g->itemOn = i;
+				break;
+			}
+		}
+	}
 }
 
 
@@ -3578,6 +3589,11 @@ void M_ChangeMenuExp(int exp) {
 					DoomLib::SetCurrentExpansion(exp);
 				}
 				break;
+			case 6:
+				if (DoomLib::hexp[5]) {
+					DoomLib::SetCurrentExpansion(exp);
+				}
+				break;
 			}
 		}
 		else {
@@ -3679,7 +3695,7 @@ bool M_True(int index) {
 }
 
 bool M_CheckVideoSettings(int index) {
-	return cl_inGUI.GetBool() ? index == advg : index == refresh ? !((!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR)) : true;
+	return cl_inGUI.GetBool() ? index == advg : (index == refresh ? !((!cl_engineHz_interp.GetBool() || stereoRender_enable.GetInteger() == STEREO3D_VR)) : true);
 }
 bool M_CheckGameSettings(int index) {
 	return index == aim ? cl_freelook.GetBool() : true;
