@@ -70,6 +70,7 @@ idCVar in_photomode("in_photomode", "0", CVAR_NOCHEAT | CVAR_BOOL, "Enable/Disab
 idCVar in_showViewAngles("in_showViewAngles", "0", CVAR_NOCHEAT | CVAR_BOOL, "Show View Angles");
 
 extern idCVar com_pause;
+extern idCVar cl_inGUI;
 //GK End
 /*
 ================
@@ -1187,7 +1188,7 @@ void idUsercmdGenLocal::MakeCurrent()
 		if (gl != NULL) {
 			inClassicDemo = gl->demoplayback || gl->demorecording;
 		}
-		if (oldTPButtonState != TPButtonState && !inClassicDemo) {
+		if (oldTPButtonState != TPButtonState && !inClassicDemo && !cl_inGUI.GetBool()) {
 			in_photomode.SetBool(TPButtonState ? !in_photomode.GetBool() : in_photomode.GetBool());
 			if (TPButtonState) {
 				if (in_photomode.GetBool()) {
