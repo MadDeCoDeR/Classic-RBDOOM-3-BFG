@@ -388,8 +388,10 @@ void ST_refreshBackground(void)
 			
 
 
-			if (::g->netgame)
-				V_DrawPatch(ST_FX + ::g->ASPECT_POS_OFFSET, 0, BG, ::g->faceback, true);
+			if (::g->netgame) {
+				int fxOffset = ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER ? ST_FX + ::g->mapt->width : ST_FX;
+				V_DrawPatch(fxOffset, 0, BG, ::g->faceback, true);
+			}
 
 			V_CopyRect(ST_X, 0, BG, ST_WIDTH + widthoffset, ST_HEIGHT, ST_X, ST_Y, FG, true);
 		}
@@ -416,7 +418,7 @@ void ST_refreshBackground(void)
 			V_DrawPatch((::g->renderingWidth - ::g->fulltime->width) - xOffset, ::g->fulltime->height - yOffset, FG, ::g->fulltime, true);
 			//Frag BG (The long forgoten)
 			if (::g->deathmatch) {
-				V_DrawPatch(((::g->SCREENWIDTH / 2) - 30) - xOffset, ((::g->SCREENHEIGHT / ::g->GLOBAL_IMAGE_SCALER) - 20) + yOffset, FG, ::g->fullfrag, true);
+				V_DrawPatch(((::g->SCREENWIDTH / 2) - (::g->fullfrag->width/ 2)) - xOffset, ((::g->SCREENHEIGHT / ::g->GLOBAL_IMAGE_SCALER) - 20) + yOffset, FG, ::g->fullfrag, true);
 			}
 			//V_CopyRect(ST_X, 0, BG, (::g->SCREENWIDTH / ::g->GLOBAL_IMAGE_SCALER), (::g->SCREENHEIGHT / ::g->GLOBAL_IMAGE_SCALER), ST_X, 0, FG, true);
 		}
@@ -1647,7 +1649,7 @@ void ST_createWidgets(void)
 
 void ST_createFullScreenWidgets() {
 
-	int xscale = ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER ? 1 : 2;
+	//int xscale = ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER ? 1 : 2;
 	int powerY = (::g->SCREENHEIGHT / ::g->GLOBAL_IMAGE_SCALER) / 2;
 	int i;
 	int xOffset = 0;
@@ -1711,7 +1713,7 @@ void ST_createFullScreenWidgets() {
 
 	// frags sum
 	STlib_initNum(&::g->w_f_frags,
-		((::g->SCREENWIDTH / 2) - ((45 / xscale) - (30 * (xscale - 1)))) - xOffset,
+		((::g->SCREENWIDTH / 2) - ((::g->fullfrag->width / 2) - (::g->fullfrag->width * 0.6))) - xOffset,
 		(ORIGINAL_HEIGHT - 13) + yOffset,
 		::g->fullnum,
 		&::g->st_fragscount,
