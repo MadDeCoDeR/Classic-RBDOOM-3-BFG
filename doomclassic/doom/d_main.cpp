@@ -1080,8 +1080,10 @@ void D_DoomMain(void)
 					if (episode <= 0 || episode > (int)::g->clusters.size())
 						::g->startepisode = 1;
 					::g->startmap = map;
-					if (::g->clusters[::g->startepisode - 1].startmap != ::g->clusters[::g->startepisode - 1].endmap)
-						if (map <= 0 || ::g->clusters[::g->startepisode - 1].startmap - 1 + map > ::g->clusters[::g->startepisode - 1].endmap + 1)
+					int episodeEndmap = ::g->clusters[::g->startepisode - 1].startmap + ::g->clusters[::g->startepisode - 1].endmap;
+					if (::g->clusters[::g->startepisode - 1].startmap != episodeEndmap)
+
+						if (map <= 0 || ::g->clusters[::g->startepisode - 1].startmap - 1 + map > episodeEndmap + 1)
 							::g->startmap = 1;
 				}
 			}
