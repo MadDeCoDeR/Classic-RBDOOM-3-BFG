@@ -300,7 +300,12 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 		}
 
 		usercmd_t * tech5commands[2] = { 0, 0 };
-		const int numCommands = userCmdMgr->GetClassicPlayerCmds( lobbyIndex, tech5commands, 2);
+		int numCommands = 0;
+		if (::g->netgame) {
+			numCommands = userCmdMgr->GetPlayerCmds( lobbyIndex, tech5commands, 2);
+		} else {
+			numCommands = userCmdMgr->GetClassicPlayerCmds( lobbyIndex, tech5commands, 2);
+		}
 
 		usercmd_t prevTech5Command;
 		usercmd_t curTech5Command;
@@ -993,8 +998,11 @@ void G_Ticker (void)
 					// we'll have to call D_QuitNetGame for all local players.
 					D_QuitNetGame();
 
-					session->QuitMatch();
-					common->Dialog().AddDialog( GDM_CONNECTION_LOST_HOST, DIALOG_ACCEPT, NULL, NULL, false );
+					
+					if (!common->IsNewDOOM3()) {
+						session->QuitMatch();
+						common->Dialog().AddDialog( GDM_CONNECTION_LOST_HOST, DIALOG_ACCEPT, NULL, NULL, false );
+					}
 				}
 
 				if (::g->players[i].mo) 
