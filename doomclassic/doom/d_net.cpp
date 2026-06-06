@@ -467,12 +467,13 @@ void CheckAbort(void)
 
 		D_QuitNetGame();
 
-		session->QuitMatch();
+		
 		if (!common->IsNewDOOM3()) {
+			session->QuitMatch();
 			common->Dialog().AddDialog(GDM_OPPONENT_CONNECTION_LOST, DIALOG_ACCEPT, NULL, NULL, false);
 		}
 		else {
-			I_Error("Connection Lost");
+			I_Printf("Connection Lost"); //GK: Make it not so critical
 		}
 	}
 }
@@ -669,6 +670,9 @@ void D_QuitNetGame (void)
 		::g->playeringame[i] = true;
 	for (i=0 ; i < ::g->doomcom.numnodes ; i++)
 		::g->nodeingame[i] = true;
+
+	//GK: Just in case return to the main menu
+	D_StartTitle ();
 }
 
 //GK: Begin

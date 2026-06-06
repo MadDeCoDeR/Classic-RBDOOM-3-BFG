@@ -358,8 +358,11 @@ void I_InitNetwork (void)
 
 			if ( ipAddress == INADDR_NONE ) {
 				I_Error( "Invalid IP Address: %s\n", ipOnly.c_str() );
-				session->QuitMatch();
-				common->Dialog().AddDialog( GDM_OPPONENT_CONNECTION_LOST, DIALOG_ACCEPT, NULL, NULL, false );
+				D_QuitNetGame();
+				if (!common->IsNewDOOM3()) {
+					session->QuitMatch();
+					common->Dialog().AddDialog( GDM_OPPONENT_CONNECTION_LOST, DIALOG_ACCEPT, NULL, NULL, false );
+				}
 			}
 			::g->sendaddress[::g->doomcom.numnodes].sin_addr.s_addr = ipAddress;
 			::g->doomcom.numnodes++;
