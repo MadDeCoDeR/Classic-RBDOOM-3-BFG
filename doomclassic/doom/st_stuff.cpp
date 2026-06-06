@@ -369,13 +369,13 @@ void ST_refreshBackground(void)
 			if (::g->sbar->width > ST_WIDTH) {
 				int offsets = ::g->sbar->width > ST_WIDTH ? abs(::g->sbar->width - ::g->renderingWidth) / 2 : 0;
 				//if (::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER) {
-					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true, offsets, offsets);
+					V_DrawPatch(::g->sbar->leftoffset, ::g->sbar->topoffset, BG, ::g->sbar, true, offsets, offsets);
 				/*} else {
 					V_DrawPatch(ST_X, 0, BG, ::g->sbar, true, ::g->mapt->width + offsets, ::g->spwr->width + offsets);
 				}*/
 			} else {
-				int xOffset = ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER ? ST_X + ::g->mapt->width : ST_X;
-				V_DrawPatch(xOffset, 0, BG, ::g->sbar, true);
+				int xOffset = ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER ? ::g->sbar->leftoffset + ::g->mapt->width : ::g->sbar->leftoffset;
+				V_DrawPatch(xOffset, ::g->sbar->topoffset, BG, ::g->sbar, true);
 			}
 			short widthoffset = 0;
 			if (::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER) {
