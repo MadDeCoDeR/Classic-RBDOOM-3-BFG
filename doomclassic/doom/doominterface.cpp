@@ -37,6 +37,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "g_game.h"
 
 extern void I_SetTime( int );
+extern idCVar cl_inGUI;
+extern idCVar cl_guiArgs;
 
 bool waitingForWipe;
 
@@ -52,6 +54,10 @@ static const char* dargv[4][7] =
 static int				mpArgc[4];
 static char				mpArgV[4][10][32];
 static char*			mpArgVPtr[4][10];
+
+static idList<char*> cargs = {
+					strdup("doomlauncher")
+};
 
 static bool drawFullScreen = false;
 
@@ -111,6 +117,17 @@ void DoomInterface::Startup( int playerscount, bool multiplayer )
 			DoomLib::InitGame(mpArgc[i], mpArgVPtr[i] );
 		} else {
 			//GK begin
+			if (cl_inGUI.GetBool()) {
+				idStrList args = idStr(cl_guiArgs.GetString()).Split(" ");
+				
+				idLib::Printf(" %s", cargs[0]);
+				for (int k = 0; k < args.Num(); k++) {
+					cargs.Append(strdup(args[k].c_str()));
+					idLib::Printf(" %s", cargs[k + 1]);
+				}
+				idLib::Printf("\n");
+				DoomLib::InitGame(cargs.Num(), cargs.Ptr());
+			} else
 			if (common->GetClassicArguents()[1] != NULL && common->GetClassicArguents()[1][0] != '\0') { //GK: Linux getting some things really seriously
 				int o = 0;
 				while (common->GetClassicArguents()[o] != NULL && common->GetClassicArguents()[o][0] != '\0') {
@@ -239,7 +256,10 @@ void I_ShutdownNetwork();
 
 void DoomInterface::Shutdown() {
 	int i;
-
+	if (cargs.Num() > 1) {
+		cargs.Clear();
+		cargs.Append(strdup("doomlauncher"));
+	}
 	for ( i=0; i < numplayers; i++ ) {
 		DoomLib::SetPlayer( i );
 		D_QuitNetGame();

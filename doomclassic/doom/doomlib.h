@@ -176,7 +176,7 @@ namespace DoomLib
 
 	void						SetRumble(float high, int highDuration, float low, int lowDuration);
 	void						ApplyRumble();
-	
+	void						CloseGame();
 };
 
 

@@ -37,6 +37,10 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <sys/types.h>
 #include <map>
+#include "f_finale.h"
+#include "g_game.h"
+#include "p_setup.h"
+#include "sound/OpenAL/AL_EAX.h"
 
 // Store master volume settings in archived cvars, becausue we want them to apply
 // even if a user isn't signed in.
@@ -48,6 +52,8 @@ idCVar m_inDemoMode( "m_inDemoMode", "1", CVAR_INTEGER, "in demo mode", 0, 1 );
 
 extern idCVar in_joystickRumble;
 extern idCVar r_useHDR;
+extern idCVar cl_inGUI;
+extern idCVar in_photomode;
 
 bool	globalNetworking	= false;
 bool	globalPauseTime		= false;
@@ -446,6 +452,49 @@ void CleanVector(std::vector<T*> myVector) {
 	}
 }
 
+void DoomLib::CloseGame() {
+	common->Printf("Reseting Dehacked Patches...\n");
+	::g->cpind = 0;
+	for (uint i = 0; i < ::g->cpatch.size(); i++) {
+		free(::g->cpatch[i]);
+		::g->cpatch[i] = NULL;
+	}
+	//GK: Make sure the other game wont start with reverb
+//#ifdef USE_OPENAL
+#if defined(_MSC_VER) && defined(USE_XAUDIO2)
+	if (!common->UseAlternativeAudioAPI())
+#endif
+		alAuxiliaryEffectSlotiRef((ALuint)::g->clslot, AL_EFFECTSLOT_EFFECT, AL_EFFECTSLOT_NULL);
+
+	//#endif
+	ResetSfx();
+	resetValues();
+	//resetWeapons();
+	ResetAmmo();
+	//resetMapNames();
+	resetEndings();
+	//resetTexts();
+	resetSprnames();
+	ResetPars();
+	ResetFinalflat();
+	P_ResetAct();
+	common->Printf("Reset Completed!!\n");
+	memset(DoomLib::otherfiles, 0, 5 * 20);//GK:Reset this for better checking
+
+	//CleanUncompFiles(); //GK: A good practice would have been to delete the files after
+	//we change the game but W_Shutdown which must be called to free the files causes bugs and crashes
+	initonce = false;
+	//GK:logout properly from the netgame
+	if (::g->netgame) {
+		DoomLib::Interface.QuitCurrentGame();
+	}
+	if (in_photomode.GetBool()) {
+		in_photomode.SetBool(false);
+		idVec3 viewangles;
+		common->GetPhotoMode()->End(&viewangles);
+	}
+}
+
 void DoomLib::Shutdown() {
 	//GK: Reset Dehacked patches also here just in case
 	/*resetValues();
@@ -456,6 +505,9 @@ void DoomLib::Shutdown() {
 	resetTexts();
 	resetSprnames();
 	//D_QuitNetGame ();*/
+	if (::g->gamemode != commercial && cl_inGUI.GetBool()) {
+		CloseGame();
+	}
 	I_ShutdownSound();
 	I_ShutdownGraphics();
 
