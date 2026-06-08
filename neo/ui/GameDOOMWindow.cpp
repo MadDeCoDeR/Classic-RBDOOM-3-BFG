@@ -37,8 +37,7 @@ extern idCVar cl_engineHz;
 extern idCVar r_aspectcorrect;
 idCVar cl_inGUI("cl_inGUI", "0", CVAR_BOOL | CVAR_ROM, "");
 idCVar cl_closeGame("cl_closeGame", "0", CVAR_BOOL | CVAR_ROM, "");
-
-
+idCVar cl_guiArgs("cl_guiArgs", "", CVAR_ROM, "");
 
 idGameDOOMWindow::idGameDOOMWindow(idUserInterfaceLocal* gui) : idWindow(gui) {
 	gameruning = false;
@@ -86,6 +85,10 @@ idWinVar* idGameDOOMWindow::GetWinVarByName(const char* _name, bool winLookup, d
 		retVar = &gameruning;
 	}
 
+	if (idStr::Icmp(_name, "gameArgs") == 0)
+	{
+		retVar = &gameArgs;
+	}
 
 	if (retVar)
 	{
@@ -107,6 +110,15 @@ bool idGameDOOMWindow::ParseInternalVar(const char* _name, idTokenParser* src)
 	{
 		gameruning = src->ParseBool();
 		return true;
+	}
+	if (idStr::Icmp(_name, "gameArgs") == 0)
+	{
+		idToken token;
+		if (src->ReadToken(&token)) {
+			gameArgs = token.c_str();
+			return true;
+		}
+		return false;
 	}
 
 	return idWindow::ParseInternalVar(_name, src);
@@ -137,16 +149,19 @@ void idGameDOOMWindow::ResetGame() {
 	}
 	gameMode = 0;
 	gameruning = true;
+	cl_guiArgs.SetString(gameArgs.c_str());
 	cl_inGUI.SetBool(true);
 }
 
 void idGameDOOMWindow::CloseGame(bool resetCvars) {
 	DoomLib::Interface.Shutdown();
+	DoomLib::expansionDirty = true;
 
 	if (common->SW() != NULL) {
 		common->SW()->UnPause();
 	}
 	gameruning = false;
+	cl_guiArgs.SetString("");
 	cl_inGUI.SetBool(false);
 	cl_closeGame.SetBool(false);
 	if (resetCvars) {

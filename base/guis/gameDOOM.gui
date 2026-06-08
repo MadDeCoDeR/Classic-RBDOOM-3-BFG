@@ -47,6 +47,7 @@ windowDef Desktop {
             backcolor 0,0,0,1
             visible 0
             gameMode 0
+            gameArgs ""
         }
     }
 }

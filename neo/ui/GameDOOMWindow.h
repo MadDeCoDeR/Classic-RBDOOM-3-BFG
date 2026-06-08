@@ -41,6 +41,7 @@ private:
 private:
 	idWinBool gameruning;
 	idWinInt gameMode;
+	idWinStr gameArgs;
 	bool originalInterpolation;
 	bool originalAspect;
 	idVec3 originalViewAngles;
