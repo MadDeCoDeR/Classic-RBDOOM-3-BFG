@@ -1559,10 +1559,13 @@ void P_GiveSecret(player_t* player) {
 	if (!::g->demoplayback && (::g->usergame && !::g->netgame)) {
 		// DHM - Nerve :: Let's give achievements in real time in Doom 2
 		if (!common->IsMultiplayer()) {
+			#ifdef __MONOLITH__
 			if (idAchievementManager::isClassicDoomOnly()) {
 				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_SECRET_AREA);
 			}
-			else {
+			else
+			#endif 
+			{
 				switch (DoomLib::GetGameSKU()) {
 				case GAME_SKU_DOOM1_BFG: {
 					// Removing trophies for DOOM and DOOM II BFG due to point limit.
