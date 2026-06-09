@@ -1309,15 +1309,11 @@ void idCommonLocal::LoadGameDLL()
 	
 	if (dllPath[0])
 	{
-		//GK: If no dll be ok and load monolithic game
-		//common->FatalError( "couldn't find game dynamic library" );
-		//return;
-
-		common->DPrintf("Loading game DLL: '%s'\n", dllPath);
+		DPrintf("Loading game DLL: '%s'\n", dllPath);
 		gameDLL = sys->DLL_Load(dllPath);
 		if (!gameDLL)
 		{
-			common->FatalError("couldn't load game dynamic library");
+			FatalError("couldn't load game dynamic library");
 			return;
 		}
 
@@ -1327,7 +1323,7 @@ void idCommonLocal::LoadGameDLL()
 		{
 			Sys_DLL_Unload(gameDLL);
 			gameDLL = -1;
-			common->FatalError("couldn't find game DLL API");
+			FatalError("couldn't find game DLL API");
 #ifdef WIN32
 			//GK: Just some 64-bit paranoia
 			int lastError = GetLastError();
@@ -1367,8 +1363,15 @@ void idCommonLocal::LoadGameDLL()
 		game = gameExport.game;
 		gameEdit = gameExport.gameEdit;
 	}
+	#ifndef __MONOLITH__
+	else {
+		FatalError( "couldn't find game dynamic library" );
+		return;
+	}
+	#endif
 #ifdef __MONOLITH__
 	else {
+		//GK: If no dll be ok and load monolithic game
 		game = CreateGameInstance();
 		gameEdit = new idGameEdit();
 	}

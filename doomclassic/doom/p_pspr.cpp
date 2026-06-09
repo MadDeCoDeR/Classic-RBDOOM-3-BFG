@@ -893,9 +893,11 @@ A_FireCGun
 
 	P_GunShot (player->mo, !player->refire);
 	player->CGunShoots += weaponinfo[player->readyweapon].clipAmmo;
+	#ifdef __MONOLITH__
 	if (idAchievementManager::isClassicDoomOnly() && player->CGunShoots >= 200) {
 		idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CHAINGUN);
 	}
+	#endif
 	if( ::g->plyr == player ) {
 	}
 }
@@ -957,9 +959,11 @@ void A_BFGSpray (mobj_t* mo)
 	}
 
 	//GK: D1&2 BFG Overkill
+	#ifdef __MONOLITH__
 	if (idAchievementManager::isClassicDoomOnly() && mo->target->player->bfgTargets == 1) {
 		idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_OVERKILL);
 	}
+	#endif
 	mo->target->player->bfgTargets = 0;
 	mo->target->player->inBFGStates = false;
 }

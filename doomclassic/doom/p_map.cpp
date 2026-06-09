@@ -1758,9 +1758,11 @@ qboolean PIT_ChangeSector (mobj_t*	thing)
     // crunch bodies to giblets
     if (thing->health <= 0)
     {
+		#ifdef __MONOLITH__
 		if (idAchievementManager::isClassicDoomOnly()) {
 			idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_DOOR_CRUSH);
 		}
+		#endif
 		P_SetMobjState (thing, S_GIBS);
 
 		thing->flags &= ~MF_SOLID;

@@ -669,14 +669,14 @@ P_TouchSpecialThing
 	case SPR_BFUG:
 		if (!P_GiveWeapon (player, wp_bfg, false) )
 			return;
-
+#ifdef __MONOLITH__
 		// DHM - Nerve :: Give achievement
 		if ( !common->IsMultiplayer() && !idAchievementManager::isClassicDoomOnly()) {
 			switch( DoomLib::GetGameSKU() ) {
 				case GAME_SKU_DOOM2_BFG: {
-#ifdef __MONOLITH__
+
 					idAchievementManager::LocalUser_CompleteAchievement( ACHIEVEMENT_DOOM2_REALLY_BIG_GUN_FIND_BFG_SINGLEPLAYER );
-#endif
+
 				}
 				default: {
 					// No unlocks for other SKUs.
@@ -684,7 +684,7 @@ P_TouchSpecialThing
 				}
 			}
 		}
-
+#endif
 		player->message = GOTBFG9000;
 		sound = sfx_wpnup;	
 		break;
@@ -825,36 +825,44 @@ P_KillMobj
 			// JAF TROPHY int port = gameLocal->GetPortForPlayer( DoomLib::GetPlayer() );
 
 			if (source->player->readyweapon == wp_pistol && target->type == MT_CYBORG && !common->IsMultiplayer()) {
+			#ifdef __MONOLITH__
 				if (idAchievementManager::isClassicDoomOnly()) {
 					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_PISTOL);
 				}
+			#endif
 			}
 
 			// DHM - Nerve :: Chainsaw kills
 			if (source->player->readyweapon == wp_chainsaw && !common->IsMultiplayer()) {
 				//source->player->chainsawKills++;
+				#ifdef __MONOLITH__
 				idAchievementManager::LocalUser_IncreaseCounter(STAT_DOOM_CHAINSAW);
 				if (idAchievementManager::isClassicDoomOnly() && idAchievementManager::LocalUser_GetCounter(STAT_DOOM_CHAINSAW) == 100) {
 					idAchievementManager::LocalUser_ResetCounter(STAT_DOOM_CHAINSAW);
 					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_CHAINSAW);
 				}
+				#endif
 			}
 
 			// DHM - Nerve :: Berserker kills
 			if (source->player->readyweapon == wp_fist && source->player->powers[pw_strength] && !common->IsMultiplayer()) {
 				source->player->berserkKills++;
 				idLib::Printf("Player has %d berserk kills\n", source->player->berserkKills);
+				#ifdef __MONOLITH__
 				if (idAchievementManager::isClassicDoomOnly() && source->player->berserkKills == 20) {
 					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_BERSERK);
 				}
+				#endif
 			}
 
+			#ifdef __MONOLITH__
 			if (source->player->readyweapon == wp_fist && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
 				source->player->fistKills++;
 				if (source->player->fistKills == 25) {
 					idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_FISTS);
 				}
 			}
+			
 
 			if (source->player->readyweapon == wp_shotgun && !common->IsMultiplayer() && idAchievementManager::isClassicDoomOnly()) {
 				if ((I_GetTime() - source->player->lastShotgunKillTime) < 1) {
@@ -927,6 +935,8 @@ P_KillMobj
 				}
 			}
 
+			#endif
+
 			if (inflictor && inflictor->type == MT_BFG) {
 				source->player->bfgTargets++;
 			}
@@ -964,6 +974,7 @@ P_KillMobj
 	if (target->health < -target->info->spawnhealth
 		&& target->info->xdeathstate)
 	{
+		#ifdef __MONOLITH__
 		if (idAchievementManager::isClassicDoomOnly() && !::g->demoplayback) {
 			if (source != NULL && source->player && source->player->readyweapon == wp_missile && inflictor && inflictor->type == MT_ROCKET) {
 				if ((I_GetTime() - source->player->missleGibTime) < 1) {
@@ -977,6 +988,7 @@ P_KillMobj
 				}
 			}
 		}
+		#endif
 		P_SetMobjState (target, target->info->xdeathstate);
 	}
 	else
@@ -989,9 +1001,11 @@ P_KillMobj
 	if (source != NULL) {
 		//GK: D1&2 In fight Kill
 		if (!target->player && !source->player && !::g->demoplayback) {
+			#ifdef __MONOLITH__
 			if (idAchievementManager::isClassicDoomOnly()) {
 				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_INFIGHT);
 			}
+			#endif
 		}
 	}
 	//	I_StartSound (&actor->r, actor->info->deathsound);
@@ -1000,9 +1014,11 @@ P_KillMobj
 		//GK: D1&2 Barrel Kills
 		if (inflictor->type == MT_BARREL && inflictor->killer && inflictor->killer->player && inflictor->spawnpoint.x == inflictor->killer->player->lastHitBarrel.x && inflictor->spawnpoint.y == inflictor->killer->player->lastHitBarrel.y) {
 			inflictor->killer->player->barrelKills++;
+			#ifdef __MONOLITH__
 			if (idAchievementManager::isClassicDoomOnly() && inflictor->killer->player->barrelKills == 2) {
 				idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_BARREL);
 			}
+			#endif
 		}
 		else if (inflictor->type == MT_BARREL && inflictor->killer && inflictor->killer->player && (inflictor->spawnpoint.x != inflictor->killer->player->lastHitBarrel.x || inflictor->spawnpoint.y != inflictor->killer->player->lastHitBarrel.y)) {
 			inflictor->killer->player->barrelKills = 1;

@@ -422,10 +422,7 @@ public:
 	
 	virtual void			GetClientStats( int clientNum, char* data, const int len );
 	
-	virtual bool			IsInGame() const
-	{
-		return GameState() == GAMESTATE_ACTIVE;
-	}
+	virtual bool			IsInGame() const;
 	
 	virtual int				MapPeerToClient( int peer ) const;
 	virtual int				GetLocalClientNum() const;
