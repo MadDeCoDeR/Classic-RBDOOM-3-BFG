@@ -830,3 +830,7 @@ idSoundSystemLocal::FreeVoice
 void idSoundSystemLocal::PrintMemInfo( MemInfo_t* mi )
 {
 }
+
+bool idSoundSystemLocal::SupportsReverbs() {
+	return fileSystem->IsFolder("efxs") == 1;
+}

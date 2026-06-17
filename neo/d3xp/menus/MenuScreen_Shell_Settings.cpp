@@ -29,13 +29,14 @@ If you have questions concerning this license or the applicable additional terms
 #include "precompiled.h"
 #include "../Game_local.h"
 
-const static int NUM_SETTING_OPTIONS = 8;
+const static int NUM_SETTING_OPTIONS = 9;
 
 enum settingMenuCmds_t
 {
 	SETTING_CMD_CONTROLS,
 	SETTING_CMD_GAMEPLAY,
 	SETTING_CMD_SYSTEM,
+	SETTING_CMD_SOUND, //GK: Sound Settings
 	SETTING_CMD_3D,
 	SETTING_CMD_ADV_GRAPH, //GK: New option stuff
 	SETTING_CMD_ADV, //GK: New option stuff
@@ -72,6 +73,10 @@ void idMenuScreen_Shell_Settings::Initialize( idMenuHandler* data )
 	option.Append( "#str_04160" );	// system
 	menuOptions.Append( option );
 	option.Clear();
+
+	option.Append( "#str_swf_sound" );	// sound
+	menuOptions.Append( option );
+	option.Clear();
 	
 	if( renderSystem->IsStereoScopicRenderingSupported() )
 	{
@@ -96,7 +101,7 @@ void idMenuScreen_Shell_Settings::Initialize( idMenuHandler* data )
 	helpWidget->SetSpritePath( GetSpritePath(), "info", "helpTooltip" );
 	AddChild( helpWidget );
 	
-	const char* tips[] = { "#str_02166", "#str_02168", "#str_02170", "#str_swf_customize_3d", "#str_swf_advanced_graphics_desc", "#str_swf_advanced_desc" };
+	const char* tips[] = { "#str_02166", "#str_02168", "#str_02170", "#str_swf_sound_desc", "#str_swf_customize_3d", "#str_swf_advanced_graphics_desc", "#str_swf_advanced_desc" };
 	
 	while( options->GetChildren().Num() < NUM_SETTING_OPTIONS )
 	{
@@ -263,6 +268,11 @@ bool idMenuScreen_Shell_Settings::HandleAction( idWidgetAction& action, const id
 				case SETTING_CMD_SYSTEM:
 				{
 					menuData->SetNextScreen( SHELL_AREA_SYSTEM_OPTIONS, MENU_TRANSITION_SIMPLE );
+					break;
+				}
+				case SETTING_CMD_SOUND:
+				{
+					menuData->SetNextScreen( SHELL_AREA_AUDIO, MENU_TRANSITION_SIMPLE );
 					break;
 				}
 				case SETTING_CMD_3D:
