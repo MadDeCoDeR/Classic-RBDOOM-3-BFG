@@ -32,6 +32,11 @@ If you have questions concerning this license or the applicable additional terms
 
 extern idCVar s_skipHardwareSets;
 extern idCVar s_debugHardware;
+extern idCVar s_volume_voices;
+extern idCVar s_volume_env;
+extern idCVar s_volume_weap;
+extern idCVar s_volume_self;
+extern idCVar s_useEAX;
 
 // The whole system runs at this sample rate
 static int SYSTEM_SAMPLE_RATE = 44100;
@@ -486,10 +491,30 @@ bool idSoundVoice_OpenAL::Update()
 	if (alIsSource(openalSource) ==  AL_FALSE) {
 		return false;
 	}
+
+	float volume = 1.0f;
+	alGetSourcef(openalSource, AL_GAIN, &volume);
+	//GK: Set per channel volume
+	if (channel == 1 || channel == 2 || (channel >8 && channel < 13)) { //Voice
+		alSourcef(openalSource, AL_GAIN, volume * DBtoLinear(s_volume_voices.GetFloat()));
+	}
+
+	if (channel == 0 || channel == 13) { //Environment
+		alSourcef(openalSource, AL_GAIN, volume * DBtoLinear(s_volume_env.GetFloat()));
+	}
+
+	if (channel == 6) { //Weapon
+		alSourcef(openalSource, AL_GAIN, volume * DBtoLinear(s_volume_weap.GetFloat()));
+	}
+
+	if ((channel > 2 && channel < 6) || channel == 8 || channel == 14) { //Self
+		alSourcef(openalSource, AL_GAIN, volume * DBtoLinear(s_volume_self.GetFloat()));
+	}
+
 	//GK: Set the EFX in the last moment
 	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 0, AL_FILTER_NULL);
 	alSource3i(openalSource, AL_AUXILIARY_SEND_FILTER, AL_EFFECTSLOT_NULL, 1, AL_FILTER_NULL);
-	if (alIsEffectRef(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX) == AL_TRUE && ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
+	if (s_useEAX.GetBool() && alIsEffectRef(((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX) == AL_TRUE && ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->EAX > 0) { //GK: OpenAL thinks that 0 is valid effect
 		if (GetOcclusion() > 0.0f) {
 			alSourcei(openalSource, AL_DIRECT_FILTER, ((idSoundHardware_OpenAL*)soundSystemLocal.hardware)->voicefilter);
 		}
@@ -587,6 +612,7 @@ void idSoundVoice_OpenAL::UnPause()
 	{
 		idLib::Printf( "%dms: %i unpausing %s\n", Sys_Milliseconds(), openalSource, leadinSample ? leadinSample->GetName() : "<null>" );
 	}
+
 	alSourcePlay( openalSource );
 	//pSourceVoice->Start( 0, OPERATION_SET );
 	paused = false;
