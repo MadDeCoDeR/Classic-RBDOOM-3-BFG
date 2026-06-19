@@ -69,6 +69,7 @@
 	"#str_swf_self_volume" "Volume del giocatore"
 	"#str_swf_eax" "EAX Audio"
 	"#str_02170" "Personalizza impostazioni video"
+	"#str_swf_cc" "Sottotitoli"
 // 	"#str_swf_custom_game" "Nome mod"
 // 	"#str_swf_start_map" "Prima mappa da caricare"
 }

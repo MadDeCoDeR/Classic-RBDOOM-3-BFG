@@ -69,6 +69,7 @@
 	"#str_swf_self_volume" "Player Volume"
 	"#str_swf_eax" "EAX Audio"
 	"#str_02170" "Customize video settings"
+	"#str_swf_cc" "Subtitles"
 //	"#str_swf_custom_game"	"Mod Name"
 //	"#str_swf_start_map"	"First Map to load"
 }
