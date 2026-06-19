@@ -69,6 +69,7 @@
 	"#str_swf_self_volume" "Volume du lecteur"
 	"#str_swf_eax" "EAX Audio"
 	"#str_02170" "Personnaliser les paramètres vidéo"
+	"#str_swf_cc" "Sous-titres"
 // 	"#str_swf_custom_game" "Nom du mod"
 // 	"#str_swf_start_map" "Première carte à charger"
 }

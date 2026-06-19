@@ -48,7 +48,8 @@ idCVar s_volume_voices( "s_volume_voices", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volu
 idCVar s_volume_env( "s_volume_env", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB for environment sounds" );
 idCVar s_volume_weap( "s_volume_weap", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB for weapons" );
 idCVar s_volume_self( "s_volume_self", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB for the player" );
-idCVar s_useEAX( "s_useEAX", "1", CVAR_ARCHIVE | CVAR_BOOL, "Set if we want to use EAX audio (efx files required)");
+idCVar s_useEAX( "s_useEAX", "1", CVAR_ARCHIVE | CVAR_BOOL, "Set if you want to use EAX audio (efx files required)");
+idCVar s_useCC( "s_useCC", "1", CVAR_ARCHIVE | CVAR_BOOL, "Set if you want to use Subtitles (ccsript files are required)");
 extern idCVar s_noSound;
 
 extern void WriteDeclCache( idDemoFile* f, int demoCategory, int demoCode, declType_t  declType );

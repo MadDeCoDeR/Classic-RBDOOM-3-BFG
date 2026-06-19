@@ -1608,6 +1608,7 @@ public:
 			SOUND_FIELD_WEAP,
 			SOUND_FIELD_SELF,
 			SOUND_FIELD_EAX,
+			SOUND_FIELD_CC,
 			MAX_SOUND_FIELDS
 		};
 		
@@ -1637,6 +1638,7 @@ public:
 		float originalWeapVolume;
 		float originalSelfVolume;
 		bool originalEAX;
+		bool originalCC;
 
 		int AdjustOption(int currentValue, const int values[], int numValues, int adjustment);
 		float LinearAdjust(float input, float currentMin, float currentMax, float desiredMin, float desiredMax) const;

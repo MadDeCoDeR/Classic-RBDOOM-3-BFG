@@ -39,6 +39,7 @@ extern idCVar s_volume_env;
 extern idCVar s_volume_weap;
 extern idCVar s_volume_self;
 extern idCVar s_useEAX;
+extern idCVar s_useCC;
 
 /*
 ========================
@@ -120,6 +121,16 @@ void idMenuScreen_Shell_SoundOptions::Initialize( idMenuHandler* data )
 		control->SetDataSource(&soundData, idMenuDataSource_SoundSettings::SOUND_FIELD_EAX);
 		control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SoundSettings::SOUND_FIELD_EAX);
+		options->AddChild(control);
+	}
+
+	if(soundSystem->HasSubtitles()) {
+		control = new(TAG_SWF) idMenuWidget_ControlButton();
+		control->SetOptionType(OPTION_SLIDER_TEXT);
+		control->SetLabel("#str_swf_cc");
+		control->SetDataSource(&soundData, idMenuDataSource_SoundSettings::SOUND_FIELD_CC);
+		control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SoundSettings::SOUND_FIELD_CC);
 		options->AddChild(control);
 	}
 
@@ -365,6 +376,7 @@ void idMenuScreen_Shell_SoundOptions::idMenuDataSource_SoundSettings::LoadData()
 	originalWeapVolume = s_volume_weap.GetFloat();
 	originalSelfVolume = s_volume_self.GetFloat();
 	originalEAX = s_useEAX.GetBool();
+	originalCC = s_useCC.GetBool();
 }
 
 /*
@@ -480,6 +492,13 @@ void idMenuScreen_Shell_SoundOptions::idMenuDataSource_SoundSettings::AdjustFiel
 			s_useEAX.SetInteger( AdjustOption( s_useEAX.GetInteger(), values, numValues, adjustAmount ) );
 			break;
 		}
+	case SOUND_FIELD_CC:
+		{
+			static const int numValues = 2;
+			static const int values[numValues] = { 0, 1 };
+			s_useCC.SetInteger( AdjustOption( s_useCC.GetInteger(), values, numValues, adjustAmount ) );
+			break;
+		}
 	}
 	cvarSystem->ClearModifiedFlags( CVAR_ARCHIVE );
 }
@@ -515,6 +534,8 @@ idSWFScriptVar idMenuScreen_Shell_SoundOptions::idMenuDataSource_SoundSettings::
 		}
 		case SOUND_FIELD_EAX:
 			return s_useEAX.GetBool() ? "#str_swf_enabled" : "#str_swf_disabled";
+		case SOUND_FIELD_CC:
+			return s_useCC.GetBool() ? "#str_swf_enabled" : "#str_swf_disabled";
 
 
 	}
@@ -549,6 +570,10 @@ bool idMenuScreen_Shell_SoundOptions::idMenuDataSource_SoundSettings::IsDataChan
 		return true;
 	}
 	if( originalEAX != s_useEAX.GetBool() )
+	{
+		return true;
+	}
+	if( originalCC != s_useCC.GetBool() )
 	{
 		return true;
 	}
