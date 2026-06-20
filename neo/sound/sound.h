@@ -337,6 +337,10 @@ public:
 	
 	// prints memory info
 	virtual void			PrintMemInfo( MemInfo_t* mi ) = 0;
+
+	virtual bool			SupportsReverbs() = 0;
+
+	virtual bool			HasSubtitles() = 0;
 };
 
 extern idSoundSystem*	soundSystem;

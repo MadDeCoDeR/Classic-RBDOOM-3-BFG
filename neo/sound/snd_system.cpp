@@ -830,3 +830,13 @@ idSoundSystemLocal::FreeVoice
 void idSoundSystemLocal::PrintMemInfo( MemInfo_t* mi )
 {
 }
+
+bool idSoundSystemLocal::SupportsReverbs() {
+	return fileSystem->IsFolder("efxs") == 1;
+}
+
+bool idSoundSystemLocal::HasSubtitles() {
+	idStr folderPath = idStr("cc/");
+	folderPath += sys_lang.GetString();
+	return fileSystem->IsFolder(folderPath);
+}

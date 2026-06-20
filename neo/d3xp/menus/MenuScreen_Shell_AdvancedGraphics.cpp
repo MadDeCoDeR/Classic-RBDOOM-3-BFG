@@ -207,14 +207,14 @@ void idMenuScreen_Shell_AdvancedGraphics::Update()
 
 	if (options != NULL) {
 		idMenuWidgetList optionChildren = options->GetChildren();
-		if (com_hideSSAO.GetBool() == true && optionChildren.Num() == idMenuDataSource_AdvancedGraphics::MAX_ADVANCED_FIELDS) {
+		if (game->GetCVarBool("com_hideSSAO") == true && optionChildren.Num() == idMenuDataSource_AdvancedGraphics::MAX_ADVANCED_FIELDS) {
 			for (int j = 0; j < optionChildren.Num(); j++) {
 				if (optionChildren[j]->GetDataSourceFieldIndex() == idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSAO) {
 					options->RemoveChild(optionChildren[j]);
 				}
 			}
 		}
-		else if (com_hideSSAO.GetBool() == false && optionChildren.Num() < idMenuDataSource_AdvancedGraphics::MAX_ADVANCED_FIELDS) {
+		else if (game->GetCVarBool("com_hideSSAO") == false && optionChildren.Num() < idMenuDataSource_AdvancedGraphics::MAX_ADVANCED_FIELDS) {
 			idMenuWidget_ControlButton* control = new(TAG_SWF) idMenuWidget_ControlButton();
 			control->SetOptionType(OPTION_SLIDER_TEXT);
 			control->SetLabel("#str_ssao"); //SSAO

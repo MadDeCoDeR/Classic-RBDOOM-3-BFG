@@ -44,6 +44,12 @@ idCVar s_doorDistanceAdd( "s_doorDistanceAdd", "150", CVAR_FLOAT, "reduce sound 
 idCVar s_drawSounds( "s_drawSounds", "0", CVAR_INTEGER, "", 0, 2, idCmdSystem::ArgCompletion_Integer<0, 2> );
 idCVar s_showVoices( "s_showVoices", "0", CVAR_BOOL, "show active voices" );
 idCVar s_volume_dB( "s_volume_dB", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB" );
+idCVar s_volume_voices( "s_volume_voices", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB for voices" );
+idCVar s_volume_env( "s_volume_env", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB for environment sounds" );
+idCVar s_volume_weap( "s_volume_weap", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB for weapons" );
+idCVar s_volume_self( "s_volume_self", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB for the player" );
+idCVar s_useEAX( "s_useEAX", "1", CVAR_ARCHIVE | CVAR_BOOL, "Set if you want to use EAX audio (efx files required)");
+idCVar s_useCC( "s_useCC", "1", CVAR_ARCHIVE | CVAR_BOOL, "Set if you want to use Subtitles (ccsript files are required)");
 extern idCVar s_noSound;
 
 extern void WriteDeclCache( idDemoFile* f, int demoCategory, int demoCode, declType_t  declType );
@@ -364,7 +370,7 @@ void idSoundWorldLocal::Update()
 			EnvironmentID = listener.id;
 		}
 		// only update if change in settings 
-		if (/*soundSystemLocal.s_muteEAXReverb.GetBool()*/listener.id != EnvironmentID) {
+		if (listener.id != EnvironmentID) {
 			soundSystemLocal.hardware->UpdateEAXEffect(effect);
 			if (soundSystemLocal.hardware->IsReverbSupported()) {
 				EAXarea = listener.area;

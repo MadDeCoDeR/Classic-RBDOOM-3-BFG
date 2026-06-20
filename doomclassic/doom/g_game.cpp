@@ -1414,9 +1414,11 @@ void G_DoCompleted (void)
 	::g->wminfo.epsd = ::g->gameepisode -1; 
 	::g->wminfo.last = ::g->gamemission == pack_custom && (::g->gamemode == retail || ::g->episodicExpansion) && (::g->maps.size() && ::g->clusters.size()) ? ((::g->maps[::g->map - 1].nextmap - 1) - (::g->clusters[::g->gameepisode - 1].startmap - 1)) - 1 : ::g->gamemap - 1;
 
+	#ifdef __MONOLITH__
 	if (::g->secretexit && idAchievementManager::isClassicDoomOnly()) {
 		idAchievementManager::LocalUser_CompleteAchievement(CLASSIC_ACHIEVEMENT_SECRET_LEVEL);
 	}
+	#endif
 	// ::g->wminfo.next is 0 biased, unlike ::g->gamemap
 	if ( ::g->gamemode == commercial)
 	{

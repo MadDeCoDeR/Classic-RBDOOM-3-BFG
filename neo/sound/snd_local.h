@@ -531,6 +531,10 @@ public:
 	
 	// prints memory info
 	virtual void			PrintMemInfo( MemInfo_t* mi );
+
+	virtual bool			SupportsReverbs(); 
+
+	virtual bool			HasSubtitles();
 	
 	//-------------------------
 	

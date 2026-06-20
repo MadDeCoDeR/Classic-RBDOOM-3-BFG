@@ -43,6 +43,7 @@ idCVar s_centerFractionVO( "s_centerFractionVO", "0.75", CVAR_FLOAT, "Portion of
 extern idCVar s_playDefaultSound;
 extern idCVar s_noSound;
 extern idCVar com_debugCaptions;
+extern idCVar s_useCC;
 
 /*
 ================================================================================================
@@ -332,7 +333,7 @@ void idSoundChannel::UpdateVolume( int currentTime )
 		currentAmplitude = amplitude;
 	}
 
-	if (soundSystemLocal.ccloaded && !hasCheckedForCaption) {
+	if (s_useCC.GetBool() && soundSystemLocal.ccloaded && !hasCheckedForCaption) {
 		hasCheckedForCaption = true;
 		idCaption* caption;
 		if (com_debugCaptions.GetBool()) {

@@ -6427,3 +6427,8 @@ float idGameLocal::GetRandomFloat()
 const idMaterial*			idGameLocal::GetVideoMaterial(idPlayer* player) {
 	return player->GetVideoMaterial();
  }
+
+ bool idGameLocal::IsInGame() const
+	{
+		return GameState() == GAMESTATE_ACTIVE;
+	}

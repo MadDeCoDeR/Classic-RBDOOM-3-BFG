@@ -1582,6 +1582,86 @@ private:
 };
 
 //GK: Begin
+
+//*
+//================================================
+//idMenuScreen_Shell_SoundOptions
+//================================================
+//*/
+class idMenuScreen_Shell_SoundOptions : public idMenuScreen
+{
+public:
+
+	/*
+	================================================
+	idMenuDataSource_SoundSettings
+	================================================
+	*/
+	class idMenuDataSource_SoundSettings : public idMenuDataSource
+	{
+	public:
+		enum soundSettingFields_t
+		{
+			SOUND_FIELD_MASTER,
+			SOUND_FIELD_VOICES,
+			SOUND_FIELD_ENV,
+			SOUND_FIELD_WEAP,
+			SOUND_FIELD_SELF,
+			SOUND_FIELD_EAX,
+			SOUND_FIELD_CC,
+			MAX_SOUND_FIELDS
+		};
+		
+		idMenuDataSource_SoundSettings();
+		
+		// loads data
+		virtual void				LoadData();
+		
+		// submits data
+		virtual void				CommitData();
+		
+		// says whether something changed with the data
+		virtual bool				IsDataChanged() const;
+		
+		// retrieves a particular field for reading
+		virtual idSWFScriptVar		GetField( const int fieldIndex ) const;
+		
+		// updates a particular field value
+		virtual void				AdjustField( const int fieldIndex, const int adjustAmount );
+		
+		bool						IsRestartRequired() const;
+		
+	private:
+		float originalMasterVolume;
+		float originalVoiceVolume;
+		float originalEnvVolume;
+		float originalWeapVolume;
+		float originalSelfVolume;
+		bool originalEAX;
+		bool originalCC;
+
+		int AdjustOption(int currentValue, const int values[], int numValues, int adjustment);
+		float LinearAdjust(float input, float currentMin, float currentMax, float desiredMin, float desiredMax) const;
+	};
+	
+	idMenuScreen_Shell_SoundOptions() :
+		options( NULL ),
+		btnBack( NULL )
+	{
+	}
+	virtual void				Initialize( idMenuHandler* data );
+	virtual void				Update();
+	virtual void				ShowScreen( const mainMenuTransition_t transitionType );
+	virtual void				HideScreen( const mainMenuTransition_t transitionType );
+	virtual bool				HandleAction( idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled = false );
+	
+private:
+	idMenuWidget_DynamicList* 	options;
+	idMenuDataSource_SoundSettings	soundData;
+	idMenuWidget_Button*			btnBack;
+	
+};
+
 //*
 //================================================
 //idMenuScreen_Shell_AdvancedOptions
