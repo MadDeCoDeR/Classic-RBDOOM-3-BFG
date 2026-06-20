@@ -274,11 +274,6 @@ void MapSkies(const char* json) {
 			for (int fp = 0; fp < partitionedPalette.Num(); fp++) {
 				::g->skies[i].get()->fire.palette[fp] = atoi(partitionedPalette[fp].c_str());
 			}
-			//GK: Like the documentation we keep 36 indexes, but the file might have less. 
-			//In that case fill the rest with the first index (usually black color)
-			for (int j = 0; j < (36 - partitionedPalette.Num()); j++) {
-				::g->skies[i].get()->fire.palette[partitionedPalette.Num() + j] = ::g->skies[i].get()->fire.palette[partitionedPalette.Num() - 1];
-			}
 		}
 
 		if (jArr[i]["foregroundtex"].Cmpn("null", 4)) {

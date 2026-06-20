@@ -378,7 +378,7 @@ typedef struct foretex_s {
 }foretex_t;
 
 typedef struct fireSky_s {
-    int palette[36];
+    int palette[32];
     float updatetime;
 } fireSky_t;
 

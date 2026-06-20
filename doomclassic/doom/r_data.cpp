@@ -586,7 +586,7 @@ void R_StartTheFire(int src) {
 	} else {
 		int randm = (rand() % 4); //GK: I guess due to scaling increase this from 3 to 4
 		int dst = src - FIRE_WIDTH - randm + 1;
-		::g->fireBuffer[dst] = std::clamp(pixel - (randm & 1), 0, 35); //GK: Clamp the result just in case
+		::g->fireBuffer[dst] = std::clamp(pixel - (randm & 1), 0, 31); //GK: Clamp the result just in case
 	}
 }
 
@@ -600,7 +600,7 @@ void R_SetupFireSky(int tex) {
 		::g->fireBuffer[i] = 0;
 	}
 	for(int i = 0; i < FIRE_WIDTH; i++) {
-		::g->fireBuffer[(FIRE_HEIGHT-1)*FIRE_WIDTH + i] = 35;
+		::g->fireBuffer[(FIRE_HEIGHT-1)*FIRE_WIDTH + i] = 31;
 	}
 	int lump = ::g->s_texturecolumnlump[tex][0];
 	if (::g->skybuffer) {
