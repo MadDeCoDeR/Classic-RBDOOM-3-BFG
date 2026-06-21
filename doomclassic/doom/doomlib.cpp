@@ -508,6 +508,7 @@ void DoomLib::Shutdown() {
 	if (::g->gamemode != commercial && cl_inGUI.GetBool()) {
 		CloseGame();
 	}
+	R_ClearData();
 	I_ShutdownSound();
 	I_ShutdownGraphics();
 
