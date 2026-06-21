@@ -448,8 +448,10 @@ The second argument is the sky  type we got from SKYDEF
 void R_DrawFireSky(int x, int texture, sky_t* sky) {
 	int angle = R_InitSkyPlane(x, texture);
 	::g->dc_source = R_GetFireSkyColumn(texture, angle, sky->fire);
-	::g->issky = false;
-	colfunc(::g->dc_colormap, ::g->dc_source);
+	if (::g->dc_source != NULL) {
+		::g->issky = false;
+		colfunc(::g->dc_colormap, ::g->dc_source);
+	}
 }
 
 void R_DrawSky(int x, int i, int texture, bool normalSky) {

@@ -895,6 +895,20 @@ void R_ClearTextures(void) {
 		free(::g->skybuffer);
 		::g->skybuffer = NULL;
 	}
+
+	
+	if (::g->fireBuffer != NULL || ::g->finalFireBuffer != NULL) {
+		::g->stopFireSky = true;
+		Sys_ThreadSleep(8);
+		if (::g->fireBuffer) {
+			free(::g->fireBuffer);
+			::g->fireBuffer = NULL;
+		}
+		if (::g->finalFireBuffer) {
+			free(::g->finalFireBuffer);
+			::g->finalFireBuffer = NULL;
+		}
+	}
 	::g->s_numtextures = 0;
 }
 
@@ -1150,6 +1164,10 @@ void R_InitData (void)
 	R_InitGreyscaleMap();
     R_InitColormaps ();
     I_Printf ("\nInitColormaps");
+	int customSkyIndex = R_FindCustomSkyIndex(::g->skytexture);
+	if (customSkyIndex > -1 && ::g->skies[customSkyIndex]->type == Fire) {
+		R_SetupFireSky(::g->skytexture);
+	}
 }
 
 //
