@@ -1200,6 +1200,7 @@ void JoystickSamplingThread(void* data){
 	bool alreadyConnected = false;
 	int count = 0;
 	SDL_JoystickID* controllers = SDL_GetGamepads(&count);
+	SDL_free(controllers);
 	controllers = SDL_GetGamepads(&count); //SDL 3 Weird quirk. It needs to query joystick twice in order to work
 	if (count == 0) {
 		reverseControllerMap.clear();
@@ -1258,6 +1259,6 @@ void JoystickSamplingThread(void* data){
 		}else{
 			continue;
 		}
-		SDL_Delay(4);
+		SDL_Delay(10);
 	}
 }
