@@ -1189,8 +1189,11 @@ std::vector <std::unique_ptr<sky_t>> skies;
 int           customSkyIndex; //GK: ID24 SKYDEFS Skies
 //GK: Fire Sky Start
 float lastFireTime; //The Last time we run the fire simulation in milliseconds
-byte fireBuffer[FIRE_WIDTH * FIRE_HEIGHT]; //Buffer to store the fire calculations
-byte finalFireBuffer[FIRE_WIDTH * FIRE_HEIGHT]; //Rendering buffer for the fire Sky (only one column)
+byte* fireBuffer;//Buffer to store the fire calculations
+byte* finalFireBuffer;//Rendering buffer for the fire Sky (only one column)
+short fireWidth; //Use the orignal texture's with
+short fireHeight; //Use the original Texture's height
+qboolean stopFireSky; //FireSky rendering is multithreaded, use this flag to prevent the simulation from running when re-initializing the buffers
 //GK: Fire Sky End
 
 

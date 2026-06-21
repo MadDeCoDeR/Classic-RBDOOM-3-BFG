@@ -36,9 +36,6 @@ If you have questions concerning this license or the applicable additional terms
 #pragma interface
 #endif
 
-#define FIRE_WIDTH 256
-#define FIRE_HEIGHT 128
-
 // Retrieve column data for span blitting.
 byte*
 R_GetColumn
