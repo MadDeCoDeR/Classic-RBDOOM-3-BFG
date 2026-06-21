@@ -654,7 +654,11 @@ void SDL_Poll()
 				// return an event with the first/only char
 				//res.evType = SE_CHAR;
 				//res.evValue = uniStr[0];
-				Sys_QueEvent(SE_CHAR, uniStr[0], 1, 0, NULL, 0);
+				if (Sys_GetConsoleKey(false) == uniStr[0] || Sys_GetConsoleKey(true) == uniStr[0]) {
+					Sys_QueEvent(SE_KEY, K_GRAVE, 1, 0, NULL, 0);
+				} else {
+					Sys_QueEvent(SE_CHAR, uniStr[0], 1, 0, NULL, 0);
+				}
 				uniStrPos = 1;
 
 				if (uniStr[1] == 0)
