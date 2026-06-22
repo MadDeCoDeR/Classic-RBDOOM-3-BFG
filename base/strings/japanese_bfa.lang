@@ -67,6 +67,7 @@
 	"#str_swf_env_volume""環境体積"
 	"#str_swf_weap_volume""武器の体量"
 	"#str_swf_self_volume""プレイヤーボリューム"
+	"#str_swf_ui_volume" "ユーザーインターフェースボリューム"
 	"#str_swf_eax" "EAXオーディオ"
 	"#str_02170""ビデオ設定のカスタマイズ"
 	"#str_swf_cc" "字幕"

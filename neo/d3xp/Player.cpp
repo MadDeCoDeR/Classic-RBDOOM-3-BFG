@@ -4814,7 +4814,7 @@ void idPlayer::GiveObjective( const char* title, const char* text, const idMater
 	info.text = text;
 	info.screenshot = screenshot;
 	
-	StartSound( "snd_objectiveup", SND_CHANNEL_ANY, 0, false, NULL );
+	StartSound( "snd_objectiveup", SND_CHANNEL_UI, 0, false, NULL );
 	
 	if( hud )
 	{
@@ -4841,7 +4841,7 @@ void idPlayer::CompleteObjective( const char* title )
 		}
 	}
 	
-	StartSound( "snd_objectiveup", SND_CHANNEL_ANY, 0, false, NULL );
+	StartSound( "snd_objectiveup", SND_CHANNEL_UI, 0, false, NULL );
 	
 	if( hud )
 	{
@@ -6808,7 +6808,7 @@ void idPlayer::UpdateFocus()
 		{
 			command = focusUI->Activate( true, gameLocal->time );
 			HandleGuiCommands( focusGUIent, command );
-			StartSound( "snd_guienter", SND_CHANNEL_ANY, 0, false, NULL );
+			StartSound( "snd_guienter", SND_CHANNEL_UI, 0, false, NULL );
 			// HideTip();
 			// HideObjective();
 		}
@@ -6817,7 +6817,7 @@ void idPlayer::UpdateFocus()
 	{
 		command = oldUI->Activate( false, gameLocal->time );
 		HandleGuiCommands( oldFocus, command );
-		StartSound( "snd_guiexit", SND_CHANNEL_ANY, 0, false, NULL );
+		StartSound( "snd_guiexit", SND_CHANNEL_UI, 0, false, NULL );
 	}
 	
 	if( hud )
@@ -12715,7 +12715,7 @@ idPlayer::HideObjective
 void idPlayer::HideObjective()
 {
 
-	StartSound( "snd_objectivedown", SND_CHANNEL_ANY, 0, false, NULL );
+	StartSound( "snd_objectivedown", SND_CHANNEL_UI, 0, false, NULL );
 	
 	if( hud )
 	{

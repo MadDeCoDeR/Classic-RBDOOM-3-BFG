@@ -67,6 +67,7 @@
 	"#str_swf_env_volume" "Volume ambientale"
 	"#str_swf_weap_volume" "Volume dell'arma"
 	"#str_swf_self_volume" "Volume del giocatore"
+	"#str_swf_ui_volume" "Volume dell'interfaccia utente"
 	"#str_swf_eax" "EAX Audio"
 	"#str_02170" "Personalizza impostazioni video"
 	"#str_swf_cc" "Sottotitoli"

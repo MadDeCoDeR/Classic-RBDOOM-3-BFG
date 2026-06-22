@@ -67,6 +67,7 @@
 	"#str_swf_env_volume" "Environment Volume"
 	"#str_swf_weap_volume" "Weapon Volume"
 	"#str_swf_self_volume" "Player Volume"
+	"#str_swf_ui_volume" "User Interface Volume"
 	"#str_swf_eax" "EAX Audio"
 	"#str_02170" "Customize video settings"
 	"#str_swf_cc" "Subtitles"

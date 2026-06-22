@@ -592,7 +592,7 @@ idSWF::idSWFScriptFunction_playSound::Call
 */
 idSWFScriptVar idSWF::idSWFScriptFunction_playSound::Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 {
-	int channel = SCHANNEL_ANY;
+	int channel = SCHANNEL_UI;
 	// specific channel passed in
 	if( parms.Num() > 1 )
 	{
@@ -612,7 +612,7 @@ idSWF::idSWFScriptFunction_stopSounds::Call
 idSWFScriptVar idSWF::idSWFScriptFunction_stopSounds::Call( idSWFScriptObject* thisObject, const idSWFParmList& parms )
 {
 
-	int channel = SCHANNEL_ANY;
+	int channel = SCHANNEL_UI;
 	if( parms.Num() == 1 )
 	{
 		channel = parms[0].ToInteger();

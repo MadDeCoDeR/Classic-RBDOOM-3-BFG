@@ -1607,6 +1607,7 @@ public:
 			SOUND_FIELD_ENV,
 			SOUND_FIELD_WEAP,
 			SOUND_FIELD_SELF,
+			SOUND_FIELD_UI,
 			SOUND_FIELD_EAX,
 			SOUND_FIELD_CC,
 			MAX_SOUND_FIELDS
@@ -1637,6 +1638,7 @@ public:
 		float originalEnvVolume;
 		float originalWeapVolume;
 		float originalSelfVolume;
+		float originalUIVolume;
 		bool originalEAX;
 		bool originalCC;
 

@@ -156,8 +156,8 @@ public:
 	void Invoke( const char*   functionName, const idSWFParmList& parms, idSWFScriptVar& scriptVar );
 	void Invoke( const char*   functionName, const idSWFParmList& parms, bool& functionExists );
 	
-	int PlaySound( const char* sound, int channel = SCHANNEL_ANY, bool blocking = false );
-	void StopSound( int channel = SCHANNEL_ANY );
+	int PlaySound( const char* sound, int channel = SCHANNEL_UI, bool blocking = false );
+	void StopSound( int channel = SCHANNEL_UI);
 	
 	float GetFrameWidth() const
 	{
