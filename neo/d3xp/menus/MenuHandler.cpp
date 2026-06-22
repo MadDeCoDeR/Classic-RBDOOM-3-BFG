@@ -154,7 +154,7 @@ void idMenuHandler::PlaySound( menuSounds_t type, int channel )
 		return;
 	}
 	
-	int c = SCHANNEL_ANY;
+	int c = SCHANNEL_UI;
 	if( channel != -1 )
 	{
 		c = channel;

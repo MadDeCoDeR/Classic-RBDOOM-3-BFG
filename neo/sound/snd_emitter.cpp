@@ -928,7 +928,7 @@ int idSoundEmitterLocal::StartSound( const idSoundShader* shader, const s_channe
 	}
 	
 	// kill any sound that is currently playing on this channel
-	if( channel != SCHANNEL_ANY )
+	if( channel != SCHANNEL_ANY && channel != SCHANNEL_UI)
 	{
 		for( int i = 0; i < channels.Num(); i++ )
 		{
@@ -1219,7 +1219,7 @@ idSoundEmitterLocal::CurrentlyPlaying
 bool idSoundEmitterLocal::CurrentlyPlaying( const s_channelType channel ) const
 {
 
-	if( channel == SCHANNEL_ANY )
+	if( channel == SCHANNEL_ANY || channel == SCHANNEL_UI)
 	{
 		return ( channels.Num() > 0 );
 	}

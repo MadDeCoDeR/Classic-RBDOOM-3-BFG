@@ -598,7 +598,7 @@ void R_SetupFireSky(int tex) {
 	//Like the example code
 	texture_t* texture = ::g->s_textures[tex];
 	::g->stopFireSky = true;
-	Sys_ThreadSleep(8); //GK: Use sleep here in order to allow the rendering thread to release the buffers and avoid memory errors
+	Sys_ThreadSleep(10); //GK: Use sleep here in order to allow the rendering thread to release the buffers and avoid memory errors
 	if (::g->fireBuffer != NULL) {
 		free(::g->fireBuffer);
 		::g->fireBuffer = NULL;
@@ -899,7 +899,7 @@ void R_ClearTextures(void) {
 	
 	if (::g->fireBuffer != NULL || ::g->finalFireBuffer != NULL) {
 		::g->stopFireSky = true;
-		Sys_ThreadSleep(8);
+		Sys_ThreadSleep(10);
 		if (::g->fireBuffer) {
 			free(::g->fireBuffer);
 			::g->fireBuffer = NULL;

@@ -38,6 +38,7 @@ extern idCVar s_volume_voices;
 extern idCVar s_volume_env;
 extern idCVar s_volume_weap;
 extern idCVar s_volume_self;
+extern idCVar s_volume_ui;
 extern idCVar s_useEAX;
 extern idCVar s_useCC;
 
@@ -113,6 +114,14 @@ void idMenuScreen_Shell_SoundOptions::Initialize( idMenuHandler* data )
 	control->SetupEvents( 2, options->GetChildren().Num() );
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_SoundSettings::SOUND_FIELD_SELF );
 	options->AddChild( control );
+
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_BAR);
+	control->SetLabel("#str_swf_ui_volume");	//UI Volume
+	control->SetDataSource(&soundData, idMenuDataSource_SoundSettings::SOUND_FIELD_UI);
+	control->SetupEvents(2, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SoundSettings::SOUND_FIELD_UI);
+	options->AddChild(control);
 
 	if (soundSystem->SupportsReverbs()) {
 		control = new(TAG_SWF) idMenuWidget_ControlButton();
@@ -375,6 +384,7 @@ void idMenuScreen_Shell_SoundOptions::idMenuDataSource_SoundSettings::LoadData()
 	originalEnvVolume = s_volume_env.GetFloat();
 	originalWeapVolume = s_volume_weap.GetFloat();
 	originalSelfVolume = s_volume_self.GetFloat();
+	originalUIVolume = s_volume_ui.GetFloat();
 	originalEAX = s_useEAX.GetBool();
 	originalCC = s_useCC.GetBool();
 }
@@ -485,6 +495,14 @@ void idMenuScreen_Shell_SoundOptions::idMenuDataSource_SoundSettings::AdjustFiel
 		s_volume_self.SetFloat( DB_SILENCE - ( idMath::Sqrt( clamped / 100.0f ) * DB_SILENCE ) );
 		break;
 	}
+	case SOUND_FIELD_UI:
+	{
+		const float percent = 100.0f * Square(1.0f - (s_volume_ui.GetFloat() / DB_SILENCE));
+		const float adjusted = percent + (float)adjustAmount;
+		const float clamped = idMath::ClampFloat(0.0f, 100.0f, adjusted);
+		s_volume_ui.SetFloat(DB_SILENCE - (idMath::Sqrt(clamped / 100.0f) * DB_SILENCE));
+		break;
+	}
 	case SOUND_FIELD_EAX:
 		{
 			static const int numValues = 2;
@@ -532,6 +550,10 @@ idSWFScriptVar idMenuScreen_Shell_SoundOptions::idMenuDataSource_SoundSettings::
 		{
 			return 100.0f * Square( 1.0f - ( s_volume_self.GetFloat() / DB_SILENCE ) );
 		}
+		case SOUND_FIELD_UI:
+		{
+			return 100.0f * Square(1.0f - (s_volume_ui.GetFloat() / DB_SILENCE));
+		}
 		case SOUND_FIELD_EAX:
 			return s_useEAX.GetBool() ? "#str_swf_enabled" : "#str_swf_disabled";
 		case SOUND_FIELD_CC:
@@ -566,6 +588,10 @@ bool idMenuScreen_Shell_SoundOptions::idMenuDataSource_SoundSettings::IsDataChan
 		return true;
 	}
 	if( originalSelfVolume != s_volume_self.GetFloat() )
+	{
+		return true;
+	}
+	if (originalUIVolume != s_volume_ui.GetFloat())
 	{
 		return true;
 	}

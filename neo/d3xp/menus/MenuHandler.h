@@ -289,7 +289,7 @@ public:
 	virtual idMenuWidget* 	GetChildFromIndex( int index );
 	virtual int				GetPlatform( bool realPlatform = false );
 	virtual void			PlaySound( menuSounds_t type, int channel = -1 );
-	virtual void			StopSound( int channel = SCHANNEL_ANY );
+	virtual void			StopSound( int channel = SCHANNEL_UI);
 	
 	idMenuWidget_CommandBar* 	GetCmdBar()
 	{

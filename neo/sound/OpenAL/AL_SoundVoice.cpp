@@ -36,6 +36,7 @@ extern idCVar s_volume_voices;
 extern idCVar s_volume_env;
 extern idCVar s_volume_weap;
 extern idCVar s_volume_self;
+extern idCVar s_volume_ui;
 extern idCVar s_useEAX;
 
 // The whole system runs at this sample rate
@@ -495,11 +496,11 @@ bool idSoundVoice_OpenAL::Update()
 	float volume = 1.0f;
 	alGetSourcef(openalSource, AL_GAIN, &volume);
 	//GK: Set per channel volume
-	if (channel == 1 || channel == 2 || (channel >8 && channel < 13)) { //Voice
+	if (channel == 1 || channel == 2 || ((channel >8 && channel < 13) && channel != 11)) { //Voice
 		alSourcef(openalSource, AL_GAIN, volume * DBtoLinear(s_volume_voices.GetFloat()));
 	}
 
-	if (channel == 0 || channel == 13) { //Environment
+	if (channel == 0 || channel == 13 || channel == 11) { //Environment
 		alSourcef(openalSource, AL_GAIN, volume * DBtoLinear(s_volume_env.GetFloat()));
 	}
 
@@ -509,6 +510,10 @@ bool idSoundVoice_OpenAL::Update()
 
 	if ((channel > 2 && channel < 6) || channel == 8 || channel == 14) { //Self
 		alSourcef(openalSource, AL_GAIN, volume * DBtoLinear(s_volume_self.GetFloat()));
+	}
+
+	if (channel == 15) {
+		alSourcef(openalSource, AL_GAIN, volume * DBtoLinear(s_volume_ui.GetFloat()));
 	}
 
 	//GK: Set the EFX in the last moment
