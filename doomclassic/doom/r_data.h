@@ -36,6 +36,10 @@ If you have questions concerning this license or the applicable additional terms
 #pragma interface
 #endif
 
+//GK: Use fixed Default sky texture dimensions for the fire sky 
+#define FIRESKY_WIDTH 256
+#define FIRESKY_HEIGHT 128
+
 // Retrieve column data for span blitting.
 byte*
 R_GetColumn
@@ -54,7 +58,8 @@ R_FindCustomSkyIndex
 
 void 
 R_SetupFireSky
-(int tex);
+(int tex,
+fireSky_t fireSky);
 
 void
 R_GenerateFireSky
