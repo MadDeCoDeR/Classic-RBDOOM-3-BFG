@@ -596,7 +596,6 @@ void R_StartTheFire(int src) {
 // when setting up sky metadata on level load 
 void R_SetupFireSky(int tex, fireSky_t fireSky) {
 	//Like the example code
-	texture_t* texture = ::g->s_textures[tex];
 	for (int i = 0; i < FIRESKY_WIDTH * FIRESKY_HEIGHT; i++) {
 		::g->fireBuffer[i] = 0;
 	}
