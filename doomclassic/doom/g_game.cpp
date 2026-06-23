@@ -722,7 +722,7 @@ void G_DoLoadLevel ()
 	if (customSkyIndex > -1) {
 		::g->skytexturemid = ::g->skies[customSkyIndex]->mid * FRACUNIT;
 		if (::g->skies[customSkyIndex]->type == Fire) {
-			R_SetupFireSky(::g->skytexture);
+			R_SetupFireSky(::g->skytexture, ::g->skies[customSkyIndex]->fire);
 		}
 	}
 	::g->levelstarttic = ::g->gametic;        // for time calculation
