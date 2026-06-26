@@ -512,7 +512,7 @@ bool idSoundVoice_OpenAL::Update()
 		alSourcef(openalSource, AL_GAIN, volume * DBtoLinear(s_volume_self.GetFloat()));
 	}
 
-	if (channel == 15) {
+	if (channel == 15 || channel == 7) {
 		alSourcef(openalSource, AL_GAIN, volume * DBtoLinear(s_volume_ui.GetFloat()));
 	}
 
