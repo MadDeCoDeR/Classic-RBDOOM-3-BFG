@@ -83,12 +83,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "id Software LLC, a ZeniMax Media company"
             VALUE "FileDescription", "DOOM: BFA Edition"
-            VALUE "FileVersion", "1.4.2.0"
+            VALUE "FileVersion", "1.4.3.0"
             VALUE "InternalName", "DoomBFA"
             VALUE "LegalCopyright", "© 1993-2012 id Software LLC, a ZeniMax Media company"
             VALUE "OriginalFilename", "DoomBFA"
             VALUE "ProductName", "DOOM®: BFA Edition"
-            VALUE "ProductVersion", "1.4.2.0"
+            VALUE "ProductVersion", "1.4.3.0"
         END
     END
     BLOCK "VarFileInfo"

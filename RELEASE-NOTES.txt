@@ -4,6 +4,52 @@ Thank you for downloading DOOM-BFA.
 
 _______________________________________
 
+27 July 2026 - DOOM-BFA 1.4.3
+_______________________________________
+
+[Classic DOOM]
+
+- Fix issue when loading multiple times from a save file
+
+- Fix issue with mouse input if the engine runs at lower than expected framerate
+
+- Increase MAXOPENING
+
+- Add support for the ID24 FireSky
+
+- Fix issue with -warp launch argument
+
+- Fix issues with HUD & STATUSBAR on Deathmatch games
+
+- Fix some issues related to multiplayer
+
+[DOOM 3]
+
+- Disable audio positioning on the main menu
+
+- Fix issue with audio file loading
+
+- Fix SmartHUD
+
+- Change priority of .proc and .bproc files
+
+- Add a new gui game which allows you to run DOOM 1 & 2 (with sample gui)
+
+- Rename various settings with simpler and less vague language
+
+- Add dedicated Sound settings with per channel volumes and the ability to disable EAX audio and Subtitles
+
+[Engine]
+
+- Fix issue retrieving system's refresh rates on Linux
+
+- Allow to load files that are not in game's folder on Linux
+
+- Replace SDL_Haptic with SDL_GameController for rumble effects on Linux
+
+- Fix memory leak issues and recude CPU usage on idle on Linux
+_______________________________________
+
 23 February 2026 - DOOM-BFA 1.4.2
 _______________________________________
 
