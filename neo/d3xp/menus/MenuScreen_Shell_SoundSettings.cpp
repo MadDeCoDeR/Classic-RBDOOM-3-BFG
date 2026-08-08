@@ -304,6 +304,11 @@ bool idMenuScreen_Shell_SoundOptions::HandleAction( idWidgetAction& action, cons
 			}
 			return true;
 		}
+		case WIDGET_ACTION_ADJUST_FIELD:
+		{
+			updateUi = false;
+			break;
+		}
 		case WIDGET_ACTION_COMMAND:
 		{
 		
