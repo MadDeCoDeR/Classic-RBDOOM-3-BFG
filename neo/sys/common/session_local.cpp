@@ -425,7 +425,7 @@ void idSessionLocalWin::Connect_f( const idCmdArgs& args )
 void Connect_f
 ========================
 */
-CONSOLE_COMMAND( connect, "Connect to the specified IP", NULL )
+CONSOLE_COMMAND_SHIP( connect, "Connect to the specified IP", NULL )
 {
 	sessionLocalWin.Connect_f( args );
 }

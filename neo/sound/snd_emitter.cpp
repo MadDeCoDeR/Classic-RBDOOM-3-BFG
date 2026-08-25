@@ -360,11 +360,11 @@ void idSoundChannel::UpdateVolume( int currentTime )
 		}
 	}
 
-	if (hasCaption && (volumeDB <= DB_SILENCE || hardwareVoice == NULL || idStr::Cmp(shaderName, soundShader->GetName()))) {
+	if ((s_useCC.GetBool() && hasCaption) && (volumeDB <= DB_SILENCE || hardwareVoice == NULL || idStr::Cmp(shaderName, soundShader->GetName()))) {
 		game->GetLocalPlayer()->hud->clearCaption(shaderName);
 	}
 
-	if (hasCaption && volumeDB > DB_SILENCE) {
+	if ((s_useCC.GetBool() && hasCaption) && volumeDB > DB_SILENCE) {
 		if (!idStr::Cmp(shaderName, "")) {
 			shaderName = soundShader->GetName();
 		}
@@ -709,6 +709,10 @@ void idSoundEmitterLocal::Update( int currentTime )
 			if( ( chan->parms.soundShaderFlags & SSF_GLOBAL ) != 0 )
 			{
 				continue;
+			}
+			if (chan->hasCaption && !s_useCC.GetBool()) {
+				game->GetLocalPlayer()->hud->clearCaption(chan->shaderName);
+				chan->hasCheckedForCaption = false;
 			}
 			useOcclusion = useOcclusion || ( ( chan->parms.soundShaderFlags & SSF_NO_OCCLUSION ) == 0 );
 			maxDistanceValid = true;
