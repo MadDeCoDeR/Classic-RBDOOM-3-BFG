@@ -427,7 +427,7 @@ void Connect_f
 */
 CONSOLE_COMMAND_SHIP( connect, "Connect to the specified IP", NULL )
 {
-	sessionLocalWin.Connect_f( args );
+	sessionLocalWin.Connect_f( args);
 }
 
 /*
