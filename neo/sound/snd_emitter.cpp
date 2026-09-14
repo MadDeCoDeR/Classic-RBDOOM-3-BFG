@@ -710,7 +710,7 @@ void idSoundEmitterLocal::Update( int currentTime )
 			{
 				continue;
 			}
-			if (chan->hasCaption && !s_useCC.GetBool()) {
+			if (chan->hasCaption) {
 				game->GetLocalPlayer()->hud->clearCaption(chan->shaderName);
 				chan->hasCheckedForCaption = false;
 			}
