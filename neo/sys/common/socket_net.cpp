@@ -386,7 +386,7 @@ static bool Net_StringToSockaddr( const char* s, sockaddr_in* sadr, bool doDNSRe
 	{
 		return false;
 	}
-	sadr->sin_addr.s_addr = *(in_addr_t*)h->ai_addr->sa_data;
+	sadr->sin_addr.s_addr = *(in_addr_t*)(h->ai_addr->sa_data + 2); //GK: shift by 2 to get the IP address (for some reason)
 	return true;
 }
 
