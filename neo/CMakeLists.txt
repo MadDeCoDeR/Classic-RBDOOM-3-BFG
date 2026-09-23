@@ -406,7 +406,7 @@ if (JPEG_FOUND)
     add_definitions(-DUSE_NEWER_JPEG)
 endif (JPEG_FOUND)
 
-if (!MSVC OR USE_SDL_WIN32)
+if (NOT MSVC OR USE_SDL_WIN32)
 	find_package(SDL3 REQUIRED)
 	include_directories(${SDL3_INCLUDE_DIR})
 	set(SDLx_LIBRARY SDL3::SDL3)
