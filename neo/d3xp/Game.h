@@ -61,6 +61,8 @@ struct gameReturn_t
 	// keep the game time in sync with real time
 	int			vibrationLow;
 	int			vibrationHigh;
+	int			impulseVibrationLow;
+	int			impulseVibrationHigh;
 };
 
 #define TIME_GROUP1		0

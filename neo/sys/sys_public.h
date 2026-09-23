@@ -610,6 +610,7 @@ int				Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] );
 bool			Sys_hasConnectedController();
 // joystick input polling
 void			Sys_SetRumble( int device, int low, int hi );
+void			Sys_SetRumbleTriggers(int device, int low, int hi);
 int				Sys_PollJoystickInputEvents( int deviceNum );
 int				Sys_ReturnJoystickInputEvent( const int n, int& action, int& value );
 void			Sys_EndJoystickInputEvents();

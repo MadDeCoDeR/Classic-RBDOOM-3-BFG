@@ -2974,12 +2974,15 @@ void idGameLocal::BuildReturnValue( gameReturn_t& ret )
 	if( GetLocalPlayer() != NULL )
 	{
 		GetLocalPlayer()->GetControllerShake( ret.vibrationLow, ret.vibrationHigh );
+		GetLocalPlayer()->GetControllerTriggerShake(ret.impulseVibrationLow, ret.impulseVibrationLow);
 	}
 	else
 	{
 		// Dedicated server?
 		ret.vibrationLow = 0;
 		ret.vibrationHigh = 0;
+		ret.impulseVibrationLow = 0;
+		ret.impulseVibrationLow = 0;
 	}
 	
 	// see if a target_sessionCommand has forced a changelevel
