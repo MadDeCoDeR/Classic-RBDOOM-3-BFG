@@ -57,6 +57,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../../neo/d3xp/Game_local.h"
 
+extern idCVar cl_engineHz;
+
 const std::map<int, int> killpediaMap = {
 	{MT_POSSESSED, STAT_DOOM_KILLPEDIA_POSSESSED},
 	{MT_SHOTGUY, STAT_DOOM_KILLPEDIA_SHOTGUY},
@@ -1096,8 +1098,7 @@ P_DamageMobj
 		if (source->player)
 			if ((player_t*)source->player == &::g->players[::g->consoleplayer]) {
 				::g->cross_state = 1;
-				int engineHz_denominator = com_engineHz_denominator / 100;
-				::g->cross_decay = engineHz_denominator - (engineHz_denominator /3.0);
+				::g->cross_decay = cl_engineHz.GetInteger() - (cl_engineHz.GetInteger() /3.0);
 			}
 	}
 	if (source != NULL) {
