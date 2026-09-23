@@ -143,14 +143,14 @@ jobs:
         commands: |
           mv ./build/retwithdebugsymbols/* .
           mv ./build/vcpkg_installed/x64-windows-static-md/share/* ./third-party-licenses
-    - name: Upload x86 Windows Production Artifact
-      uses: ./.github/actions/package_formatter
-      with:
-        artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}-x86
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        access_token: ${{ secrets.GITHUB_TOKEN }}
-        second_token: ${{ secrets.GH_PAT }}
-        run-id: ${{ steps.run_id.outputs.run_id }}
-        commands: |
-          mv ./build/${{env.BUILD_TYPE}}/* .
-          mv ./build/vcpkg_installed/x86-windows-static-md/share/* ./third-party-licenses
+#    - name: Upload x86 Windows Production Artifact
+#      uses: ./.github/actions/package_formatter
+#      with:
+#        artifact_name: windows-${{env.VERSION}}-${{env.BUILD_TYPE}}-x86
+#        upload_url: ${{ steps.create_release.outputs.upload_url }}
+#        access_token: ${{ secrets.GITHUB_TOKEN }}
+#        second_token: ${{ secrets.GH_PAT }}
+#        run-id: ${{ steps.run_id.outputs.run_id }}
+#        commands: |
+#          mv ./build/${{env.BUILD_TYPE}}/* .
+#          mv ./build/vcpkg_installed/x86-windows-static-md/share/* ./third-party-licenses
