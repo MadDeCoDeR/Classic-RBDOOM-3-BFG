@@ -56,7 +56,7 @@ jobs:
           shell: powershell
           run: |
             cmake -B ${{github.workspace}}/build --preset=windows-x64-2026
-            Copy-Item "${{github.workspace}}\build\vcpkg_installed\x64-windows-static-md\lib\zs.lib" -Destination "${{github.workspace}}\build\buildx64\vcpkg_installed\x64-windows-static-md\lib\zlib.lib"
+            Copy-Item "${{github.workspace}}\build\vcpkg_installed\x64-windows-static-md\lib\zs.lib" -Destination "${{github.workspace}}\build\vcpkg_installed\x64-windows-static-md\lib\zlib.lib"
           
         - name: Save vcpkg_installed cache
           uses: actions/cache/save@v3
