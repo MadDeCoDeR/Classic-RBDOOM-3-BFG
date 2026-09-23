@@ -24,8 +24,8 @@ jobs:
     with: 
       build_type: retail
       version: RC
-  windows-32-bit-build:
-    uses: ./.github/workflows/cmake_windows_x86.yml
-    with: 
-      build_type: retail
-      version: RC
+#  windows-32-bit-build:
+#    uses: ./.github/workflows/cmake_windows_x86.yml
+#    with: 
+#      build_type: retail
+#      version: RC

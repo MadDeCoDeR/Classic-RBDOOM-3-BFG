@@ -184,6 +184,10 @@
         "USE_OPENXR": {
           "type": "BOOL",
           "value": "OFF"
+        },
+        "USE_SDL_WIN32": {
+          "type": "BOOL",
+          "value": "ON"
         }
       }
     },
@@ -191,7 +195,13 @@
       "name": "windows-x86-2026",
       "displayName": "VS2026: 32-bit Windows",
       "inherits": "windows-x86-base",
-      "generator": "Visual Studio 18"
+      "generator": "Visual Studio 18",
+      "cacheVariables": {
+        "USE_SDL_WIN32": {
+          "type": "BOOL",
+          "value": "ON"
+        }
+      }
     },
     {
       "name": "linux-base",

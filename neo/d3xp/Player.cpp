@@ -1677,6 +1677,7 @@ idPlayer::idPlayer():
 	playedTimeResidual		= 0;
 	
 	ResetControllerShake();
+	ResetControllerTriggerShake();
 	
 	memset( pdaHasBeenRead, 0, sizeof( pdaHasBeenRead ) );
 	memset( videoHasBeenViewed, 0, sizeof( videoHasBeenViewed ) );
@@ -3874,7 +3875,7 @@ void idPlayer::WeaponFireFeedback( const idDict* weaponDef )
 	
 	if( IsLocallyControlled() )
 	{
-		SetControllerShake( highMagnitude, highDuration, lowMagnitude, lowDuration );
+		SetControllerTriggerShake( highMagnitude, highDuration, lowMagnitude, lowDuration );
 	}
 }
 
@@ -13086,6 +13087,139 @@ void idPlayer::GetControllerShake( int& highMagnitude, int& lowMagnitude ) const
 	
 	lowMagnitude = idMath::Ftoi( lowMag * 65535.0f );
 	highMagnitude = idMath::Ftoi( highMag * 65535.0f );
+}
+
+/*
+========================
+idView::SetControllerShake
+========================
+*/
+void idPlayer::SetControllerTriggerShake(float highMagnitude, int highDuration, float lowMagnitude, int lowDuration)
+{
+
+	// the main purpose of having these buffer is so multiple, individual shake events can co-exist with each other,
+	// for instance, a constant low rumble from the chainsaw when it's idle and a harsh rumble when it's being used.
+
+	// find active buffer with similar magnitude values
+	int activeBufferWithSimilarMags = -1;
+	int inactiveBuffer = -1;
+	for (int i = 0; i < MAX_SHAKE_BUFFER; i++)
+	{
+		if (gameLocal->GetTime() <= controllerTriggerShakeHighTime[i] || gameLocal->GetTime() <= controllerTriggerShakeLowTime[i])
+		{
+			if (idMath::Fabs(highMagnitude - controllerTriggerShakeHighMag[i]) <= 0.1f && idMath::Fabs(lowMagnitude - controllerTriggerShakeLowMag[i]) <= 0.1f)
+			{
+				activeBufferWithSimilarMags = i;
+				break;
+			}
+		}
+		else
+		{
+			if (inactiveBuffer == -1)
+			{
+				inactiveBuffer = i;		// first, inactive buffer..
+			}
+		}
+	}
+
+	if (activeBufferWithSimilarMags > -1)
+	{
+		// average the magnitudes and adjust the time
+		controllerTriggerShakeHighMag[activeBufferWithSimilarMags] += highMagnitude;
+		controllerTriggerShakeHighMag[activeBufferWithSimilarMags] *= 0.5f;
+
+		controllerTriggerShakeLowMag[activeBufferWithSimilarMags] += lowMagnitude;
+		controllerTriggerShakeLowMag[activeBufferWithSimilarMags] *= 0.5f;
+
+		controllerTriggerShakeHighTime[activeBufferWithSimilarMags] = gameLocal->GetTime() + highDuration;
+		controllerTriggerShakeLowTime[activeBufferWithSimilarMags] = gameLocal->GetTime() + lowDuration;
+		controllerShakeTimeGroup = gameLocal->selectedGroup;
+		return;
+	}
+
+	if (inactiveBuffer == -1)
+	{
+		inactiveBuffer = 0;			// FIXME: probably want to use the oldest buffer..
+	}
+
+	controllerTriggerShakeHighMag[inactiveBuffer] = highMagnitude;
+	controllerTriggerShakeLowMag[inactiveBuffer] = lowMagnitude;
+	controllerTriggerShakeHighTime[inactiveBuffer] = gameLocal->GetTime() + highDuration;
+	controllerTriggerShakeLowTime[inactiveBuffer] = gameLocal->GetTime() + lowDuration;
+	controllerShakeTimeGroup = gameLocal->selectedGroup;
+}
+
+/*
+========================
+idView::ResetControllerShake
+========================
+*/
+void idPlayer::ResetControllerTriggerShake()
+{
+	for (int i = 0; i < MAX_SHAKE_BUFFER; i++)
+	{
+		controllerTriggerShakeHighTime[i] = 0;
+	}
+
+	for (int i = 0; i < MAX_SHAKE_BUFFER; i++)
+	{
+		controllerTriggerShakeHighMag[i] = 0.0f;
+	}
+
+	for (int i = 0; i < MAX_SHAKE_BUFFER; i++)
+	{
+		controllerTriggerShakeLowTime[i] = 0;
+	}
+
+	for (int i = 0; i < MAX_SHAKE_BUFFER; i++)
+	{
+		controllerTriggerShakeLowMag[i] = 0.0f;
+	}
+}
+
+/*
+========================
+idPlayer::GetControllerShake
+========================
+*/
+void idPlayer::GetControllerTriggerShake(int& highMagnitude, int& lowMagnitude) const
+{
+
+	if (gameLocal->inCinematic)
+	{
+		// no controller shake during cinematics
+		highMagnitude = 0;
+		lowMagnitude = 0;
+		return;
+	}
+
+	float lowMag = 0.0f;
+	float highMag = 0.0f;
+
+	lowMagnitude = 0;
+	highMagnitude = 0;
+
+	// use highest values from active buffers
+	for (int i = 0; i < MAX_SHAKE_BUFFER; i++)
+	{
+		if (gameLocal->GetTimeGroupTime(controllerShakeTimeGroup) < controllerTriggerShakeLowTime[i])
+		{
+			if (controllerTriggerShakeLowMag[i] > lowMag)
+			{
+				lowMag = controllerTriggerShakeLowMag[i];
+			}
+		}
+		if (gameLocal->GetTimeGroupTime(controllerShakeTimeGroup) < controllerTriggerShakeHighTime[i])
+		{
+			if (controllerTriggerShakeHighMag[i] > highMag)
+			{
+				highMag = controllerTriggerShakeHighMag[i];
+			}
+		}
+	}
+
+	lowMagnitude = idMath::Ftoi(lowMag * 65535.0f);
+	highMagnitude = idMath::Ftoi(highMag * 65535.0f);
 }
 
 /*

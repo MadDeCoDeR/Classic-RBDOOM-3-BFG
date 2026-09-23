@@ -1,5 +1,6 @@
 /* GIMP RGBA C-Source image dump (doom_ico.c) */
-
+#include "precompiled.h"
+#pragma hdrstop
 static const struct {
   unsigned int 	 width;
   unsigned int 	 height;

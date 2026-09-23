@@ -38,7 +38,9 @@ If you have questions concerning this license or the applicable additional terms
 #endif
 // RB end
 
+#ifndef USE_SDL_WIN32
 #include "win_input.h"
+#endif
 #ifdef USE_OPENXR
 #define XR_USE_GRAPHICS_API_OPENGL
 #define XR_USE_PLATFORM_WIN32
@@ -79,8 +81,10 @@ void	DisableTaskKeys( BOOL bDisable, BOOL bBeep, BOOL bTaskMgr );
 
 uint64 Sys_Microseconds();
 
+#ifndef USE_SDL_WIN32
 // window procedure
 LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+#endif
 
 void Conbuf_AppendText( const char* msg );
 
@@ -137,7 +141,7 @@ typedef struct Win32Vars_s
 	CRITICAL_SECTION criticalSections[MAX_CRITICAL_SECTIONS];
 	
 	HINSTANCE		hInstDI;			// direct input
-#ifndef GAME_DLL //GK: Game dll comes here ??
+#if !defined(GAME_DLL) && !defined(USE_SDL_WIN32)//GK: Game dll comes here ??
 	LPDIRECTINPUT8			g_pdi;
 	LPDIRECTINPUTDEVICE8	g_pMouse;
 	LPDIRECTINPUTDEVICE8	g_pKeyboard;

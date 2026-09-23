@@ -383,6 +383,11 @@ public:
 	float					controllerShakeLowMag[ MAX_SHAKE_BUFFER ];		// magnitude of the low frequency controller shake
 	int						controllerShakeHighTime[ MAX_SHAKE_BUFFER ];	// time the controller shake ends for high frequency.
 	int						controllerShakeLowTime[ MAX_SHAKE_BUFFER ];		// time the controller shake ends for low frequency.
+
+	float					controllerTriggerShakeHighMag[MAX_SHAKE_BUFFER];		// magnitude of the high frequency controller Trigger shake
+	float					controllerTriggerShakeLowMag[MAX_SHAKE_BUFFER];		// magnitude of the low frequency controller Trigger shake
+	int						controllerTriggerShakeHighTime[MAX_SHAKE_BUFFER];	// time the controller Trigger shake ends for high frequency.
+	int						controllerTriggerShakeLowTime[MAX_SHAKE_BUFFER];		// time the controller Trigger shake ends for low frequency.
 	int						controllerShakeTimeGroup;
 	
 	bool					hiddenWeapon;		// if the weapon is hidden ( in noWeapons maps )
@@ -483,6 +488,10 @@ public:
 	void					SetControllerShake( float highMagnitude, int highDuration, float lowMagnitude, int lowDuration );
 	void					ResetControllerShake();
 	void					GetControllerShake( int& highMagnitude, int& lowMagnitude ) const;
+	//GK: Impulse Triggers
+	void					SetControllerTriggerShake(float highMagnitude, int highDuration, float lowMagnitude, int lowDuration);
+	void					ResetControllerTriggerShake();
+	void					GetControllerTriggerShake(int& highMagnitude, int& lowMagnitude) const;
 	
 	idAimAssist* 			GetAimAssist()
 	{

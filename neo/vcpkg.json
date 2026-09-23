@@ -31,6 +31,10 @@
       ],
       "platform": "linux"
     },
+    {
+      "name": "sdl3",
+      "platform": "!linux"
+    },
     "ffmpeg",
     "openssl",
     "stb"

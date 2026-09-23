@@ -2870,7 +2870,7 @@ void idWeapon::PresentWeapon( bool showViewModel )
 	
 	if( owner->IsLocallyControlled() )
 	{
-		owner->SetControllerShake( highMagnitude, highDuration, lowMagnitude, lowDuration );
+		owner->SetControllerTriggerShake( highMagnitude, highDuration, lowMagnitude, lowDuration );
 	}
 }
 

@@ -199,6 +199,11 @@ namespace DoomLib
 	static float							low;
 	static int								lowDuration;
 
+	static float							highTrigger;
+	static int								highDurationTrigger;
+	static float							lowTrigger;
+	static int								lowDurationTrigger;
+
 	void * (*Z_Malloc)( unsigned size, int tag, void* user ) = NULL;
 	void	(*Z_Free)(void* user) = NULL;
 	void 	(*Z_FreeTag)(int lowtag );
@@ -710,15 +715,23 @@ void DoomLib::RunSound() {
 }
 
 void DoomLib::SetRumble(float high, int highDuration, float low, int lowDuration) {
-	DoomLib::high = high;
+	DoomLib::high = high * USHRT_MAX;
 	DoomLib::highDuration = highDuration;
-	DoomLib::low = low;
+	DoomLib::low = low * USHRT_MAX;
 	DoomLib::lowDuration = lowDuration;
+}
+
+void DoomLib::SetRumbleTrigger(float high, int highDuration, float low, int lowDuration) {
+	DoomLib::highTrigger = high * USHRT_MAX;
+	DoomLib::highDurationTrigger = highDuration;
+	DoomLib::lowTrigger = low * USHRT_MAX;
+	DoomLib::lowDurationTrigger = lowDuration;
 }
 
 void DoomLib::ApplyRumble() {
 	if (idLib::joystick && in_joystickRumble.GetBool()) {
 		Sys_SetRumble(session->GetSignInManager().GetMasterLocalUser()->GetInputDevice(), low, high);
+		Sys_SetRumbleTriggers(session->GetSignInManager().GetMasterLocalUser()->GetInputDevice(), lowTrigger, highTrigger);
 		highDuration--;
 		lowDuration--;
 		if (highDuration <= 0) {
@@ -726,6 +739,14 @@ void DoomLib::ApplyRumble() {
 		}
 		if (lowDuration <= 0) {
 			low = 0;
+		}
+		highDurationTrigger--;
+		lowDurationTrigger--;
+		if (highDurationTrigger <= 0) {
+			highTrigger = 0;
+		}
+		if (lowDurationTrigger <= 0) {
+			lowTrigger = 0;
 		}
 	}
 }

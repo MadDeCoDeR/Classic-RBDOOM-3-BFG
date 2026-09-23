@@ -52,6 +52,9 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../renderer/RenderCommon.h"
 #include <string>
 
+#ifdef USE_SDL_WIN32
+#include <SDL3/SDL.h>
+#endif
 idCVar Win32Vars_t::sys_arch( "sys_arch", "", CVAR_SYSTEM | CVAR_INIT, "" );
 idCVar Win32Vars_t::sys_cpustring( "sys_cpustring", "detect", CVAR_SYSTEM | CVAR_INIT, "" );
 idCVar Win32Vars_t::in_mouse( "in_mouse", "1", CVAR_SYSTEM | CVAR_BOOL, "enable mouse input" );
@@ -337,7 +340,7 @@ void Sys_Quit() {
 	ExitProcess( 0 );
 #endif
 }
-
+#ifndef USE_SDL_WIN32
 /*
 ==============
 Sys_ChangeTitle
@@ -346,7 +349,7 @@ Sys_ChangeTitle
 void Sys_ChangeTitle(const char* string) {
 	SetWindowText(win32.hWnd, const_cast<LPCSTR>(string));
 }
-
+#endif
 
 /*
 ==============
@@ -702,7 +705,7 @@ int Sys_ListFiles( const char *directory, const char *extension, idStrList &list
 	return list.Num();
 }
 
-
+#ifndef USE_SDL_WIN32
 /*
 ================
 Sys_GetClipboardData
@@ -765,7 +768,7 @@ void Sys_SetClipboardData( const char *string ) {
 	// close Clipboard
 	CloseClipboard();
 }
-
+#endif
 /*
 ========================
 ExecOutputFn
@@ -1043,7 +1046,7 @@ EVENT LOOP
 
 #define	MAX_QUED_EVENTS		256
 #define	MASK_QUED_EVENTS	( MAX_QUED_EVENTS - 1 )
-
+#ifndef USE_SDL_WIN32
 sysEvent_t	eventQue[MAX_QUED_EVENTS];
 int			eventHead = 0;
 int			eventTail = 0;
@@ -1077,6 +1080,7 @@ void Sys_QueEvent( sysEventType_t type, int value, int value2, int ptrLength, vo
 	ev->evPtr = ptr;
 	ev->inputDevice = inputDeviceNum;
 }
+#endif
 
 /*
 =============
@@ -1107,6 +1111,7 @@ void Sys_PumpEvents() {
 	}
 }
 
+#ifndef USE_SDL_WIN32
 /*
 ================
 Sys_GenerateEvents
@@ -1170,6 +1175,7 @@ sysEvent_t Sys_GetEvent() {
 
 	return ev;
 }
+#endif
 
 //================================================================
 
@@ -1353,10 +1359,12 @@ void Sys_Init() {
 		if ( win32.cpuid & CPUID_HTT ) {
 			string += "HTT & ";
 		}
+#ifndef USE_SDL_WIN32
 		string.StripTrailing( " & " );
 		string.StripTrailing( " with " );
 		string += "\nCPU Name: ";
 		string += Sys_GetCPUName();
+#endif
 		win32.sys_cpustring.SetString( string );
 	} else {
 		common->Printf( "forcing CPU type to " );
@@ -1396,8 +1404,23 @@ void Sys_Init() {
 	if ( ( win32.cpuid & CPUID_SSE2 ) == 0 ) {
 		common->Error( "SSE2 not supported!" );
 	}
-
+#ifndef USE_SDL_WIN32
 	win32.g_Joystick.Init();
+#else
+	//GK: Use ONLY either XInput driver (Win Vista - 8.1) or Windows.Gaming.Input driver (Win10 or newer)
+	SDL_SetHint(SDL_HINT_JOYSTICK_DIRECTINPUT, "0");
+	SDL_SetHint(SDL_HINT_XINPUT_ENABLED, IsWindows10OrGreater() ? "0" : "1");
+	SDL_SetHint(SDL_HINT_JOYSTICK_WGI, IsWindows10OrGreater() ? "1" : "0");
+	SDL_SetHint(SDL_HINT_JOYSTICK_RAWINPUT, "0");
+	SDL_SetHint(SDL_HINT_JOYSTICK_RAWINPUT_CORRELATE_XINPUT, "0");
+	SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI, "0");
+	SDL_SetHint(SDL_HINT_JOYSTICK_GAMEINPUT, "0");
+	if (!SDL_WasInit(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
+	{
+		if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
+			common->FatalError("Error while initializing SDL: %s", SDL_GetError());
+	}
+#endif
 }
 
 /*
@@ -1616,9 +1639,9 @@ WinMain
 ==================
 */
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ) {
-
+#ifndef USE_SDL_WIN32
 	const HCURSOR hcurSave = ::SetCursor( LoadCursor( 0, IDC_WAIT ) );
-
+#endif
 	Sys_SetPhysicalWorkMemory( 192 << 20, 1024 << 20 );
 
 	Sys_GetCurrentMemoryStatus( exeLaunchMemoryStats );
@@ -1683,10 +1706,11 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	SetThreadAffinityMask( GetCurrentThread(), 1 );
 #endif
 
+#ifndef USE_SDL_WIN32
 	::SetCursor( hcurSave );
 
 	::SetFocus( win32.hWnd );
-
+#endif
     // main game loop
 	while( 1 ) {
 

@@ -27,8 +27,8 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
+#include "precompiled.h"
 #pragma hdrstop
-#include "../../idlib/precompiled.h"
 
 // DG: SDL_*.h somehow needs the following functions, so #undef those silly
 //     "don't use" #defines from Str.h
@@ -59,11 +59,19 @@ Sys_GetClockTicks
 double Sys_GetClockTicks()
 {
 	// RB begin
+#if defined(_WIN64)
+
+	LARGE_INTEGER li;
+
+	QueryPerformanceCounter(&li);
+	return (double)li.LowPart + (double)0xFFFFFFFF * li.HighPart;
+
+#else
+
 #if defined(_MSC_VER)
 	unsigned long lo, hi;
-	
-	__asm
-	{
+
+	__asm {
 		push ebx
 		xor eax, eax
 		cpuid
@@ -72,11 +80,11 @@ double Sys_GetClockTicks()
 		mov hi, edx
 		pop ebx
 	}
-	return ( double ) lo + ( double ) 0xFFFFFFFF * hi;
-	
+	return (double)lo + (double)0xFFFFFFFF * hi;
+
 #elif defined(__GNUC__) && defined( __i386__ )
 	unsigned long lo, hi;
-	
+
 	__asm__ __volatile__(
 		"push %%ebx\n"			\
 		"xor %%eax,%%eax\n"		\
@@ -85,10 +93,12 @@ double Sys_GetClockTicks()
 		"mov %%eax,%0\n"			\
 		"mov %%edx,%1\n"			\
 		"pop %%ebx\n"
-		: "=r"( lo ), "=r"( hi ) );
-	return ( double ) lo + ( double ) 0xFFFFFFFF * hi;
+		: "=r"(lo), "=r"(hi));
+	return (double)lo + (double)0xFFFFFFFF * hi;
 #else
 #error unsupported CPU
+#endif
+
 #endif
 	// RB end
 }
@@ -137,7 +147,11 @@ double Sys_ClockTicksPerSecond()
 			RegCloseKey( hKey );
 			if( ret == ERROR_SUCCESS )
 			{
-				ticks = ( double )( ( unsigned long )ProcSpeed ) * 1000000;
+#ifdef _WIN64
+				ticks = (double)((unsigned long long)ProcSpeed) * 1000000;
+#else
+				ticks = (double)((unsigned long)ProcSpeed) * 1000000;
+#endif
 			}
 		}
 	}
@@ -171,7 +185,7 @@ numCPUPackages		- the total number of packages (physical processors)
 void Sys_CPUCount( int& numLogicalCPUCores, int& numPhysicalCPUCores, int& numCPUPackages )
 {
 	numPhysicalCPUCores = 1;
-	numLogicalCPUCores = SDL_GetCPUCount();
+	numLogicalCPUCores = SDL_GetNumLogicalCPUCores();
 	numCPUPackages = 1;
 }
 #endif
@@ -215,12 +229,10 @@ cpuid_t Sys_GetCPUId()
 	}
 	
 	// check for Streaming SIMD Extensions 3 aka Prescott's New Instructions
-#if 0 //SDL_VERSION_ATLEAST(2,0,0)
 	if( SDL_HasSSE3() )
 	{
 		flags |= CPUID_SSE3;
 	}
-#endif
 	
 	/*
 	// check for Hyper-Threading Technology
