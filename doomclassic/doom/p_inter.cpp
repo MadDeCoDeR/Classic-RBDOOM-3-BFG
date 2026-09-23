@@ -1103,7 +1103,7 @@ P_DamageMobj
 	}
 	if (source != NULL) {
 		if ((source->player || target-> player) && !::g->demoplayback)
-			DoomLib::SetRumble(idMath::ClampInt(0, UINT16_MAX, damage * 50000), 10, idMath::ClampInt(0, UINT16_MAX, damage * 5000), 10);
+			DoomLib::SetRumble(idMath::ClampInt(0, UINT16_MAX, (damage * (UINT16_MAX / 2))/ UINT16_MAX), 10, idMath::ClampInt(0, UINT16_MAX, (damage * (UINT16_MAX / 4)) / UINT16_MAX), 10);
 	}
 
 	if ( target->flags & MF_SKULLFLY )
