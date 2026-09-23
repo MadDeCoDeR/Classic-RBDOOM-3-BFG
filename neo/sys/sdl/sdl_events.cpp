@@ -1,4 +1,4 @@
-/*
+﻿/*
 ===========================================================================
 
 Doom 3 GPL Source Code
@@ -30,10 +30,11 @@ If you have questions concerning this license or the applicable additional terms
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
+#include "precompiled.h"
+#pragma hdrstop
 
 // DG: SDL.h somehow needs the following functions, so #undef those silly
-//     "don't use" #defines from Str.h
+//"don't use" #defines from Str.h
 #undef strncmp
 #undef strcasecmp
 #undef vsnprintf
@@ -42,7 +43,11 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "renderer/RenderCommon.h"
 #include "sdl_local.h"
+#ifndef _WIN32
 #include "../posix/posix_public.h"
+#else
+#include "../win32/win_local.h"
+#endif
 #include "../common/localuser.h"
 #include "../../framework/Common.h"
 
@@ -239,7 +244,6 @@ Sys_InitInput
 */
 void Sys_InitInput()
 {
-	int numJoysticks, i;
 	
 	kbd_polls.SetGranularity( 256 );
 	mouse_polls.SetGranularity( 256 );
@@ -543,8 +547,10 @@ void SDL_Poll()
 			{
 				int w = ev.window.data1;
 				int h = ev.window.data2;
-				r_windowWidth.SetInteger(w);
-				r_windowHeight.SetInteger(h);
+				if (r_fullscreen.GetInteger() == 0) {
+					r_windowWidth.SetInteger(w);
+					r_windowHeight.SetInteger(h);
+				}
 
 				glConfig.nativeScreenWidth = w;
 				glConfig.nativeScreenHeight = h;
@@ -556,8 +562,10 @@ void SDL_Poll()
 			{
 				int x = ev.window.data1;
 				int y = ev.window.data2;
-				r_windowX.SetInteger(x);
-				r_windowY.SetInteger(y);
+				if (r_fullscreen.GetInteger() == 0) {
+					r_windowX.SetInteger(x);
+					r_windowY.SetInteger(y);
+				}
 				cmdSystem->BufferCommandText(CMD_EXEC_APPEND, "vid_restart\n");
 				break;
 			}
@@ -600,9 +608,9 @@ void SDL_Poll()
 			// DG: ctrl-g to un-grab mouse - yeah, left ctrl shoots, then just use right ctrl :)
 			if (ev.key.key == SDLK_G && (ev.key.mod & SDL_KMOD_CTRL) > 0)
 			{
-				bool grab = cvarSystem->GetCVarBool("in_nograb");
+				bool grab = SDL_GetWindowMouseGrab(window);
 				grab = !grab;
-				cvarSystem->SetCVarBool("in_nograb", grab);
+				Sys_GrabMouseCursor(grab);
 				continue; // handle next event
 			}
 			// DG end
@@ -610,7 +618,6 @@ void SDL_Poll()
 			// fall through
 		case SDL_EVENT_KEY_UP:
 		{
-			bool isChar;
 
 			// DG: special case for SDL_SCANCODE_GRAVE - the console key under Esc
 			if (ev.key.scancode == SDL_SCANCODE_GRAVE)
@@ -800,23 +807,23 @@ void SDL_Poll()
 		case SDL_EVENT_KEYMAP_CHANGED:
 			continue;
 				
-			case SDL_EVENT_QUIT:
-				PushConsoleEvent( "quit" );
-				Sys_QueEvent(no_more_events.evType, no_more_events.evValue, no_more_events.evValue2, no_more_events.evPtrLength, no_more_events.evPtr, 0); // don't handle next event, just quit.
-				break;
-			case SDL_EVENT_USER:
-				switch( ev.user.code )
-				{
-					case SE_CONSOLE:
-						Sys_QueEvent(SE_CONSOLE, 0, 0, ( intptr_t )ev.user.data1, ev.user.data2, 0);
-						break;
-					default:
-						common->Warning( "unknown user event %u", ev.user.code );
-				}
-				continue; // just handle next event
-			default:
-				//common->Warning( "unknown event %u", ev.type ); //GK: We don't have to log everything
-				continue; // just handle next event
+		case SDL_EVENT_QUIT:
+			PushConsoleEvent( "quit" );
+			Sys_QueEvent(no_more_events.evType, no_more_events.evValue, no_more_events.evValue2, no_more_events.evPtrLength, no_more_events.evPtr, 0); // don't handle next event, just quit.
+			break;
+		case SDL_EVENT_USER:
+			switch( ev.user.code )
+			{
+				case SE_CONSOLE:
+					Sys_QueEvent(SE_CONSOLE, 0, 0, ( intptr_t )ev.user.data1, ev.user.data2, 0);
+					break;
+				default:
+					common->Warning( "unknown user event %u", ev.user.code );
+			}
+			continue; // just handle next event
+		default:
+			//common->Warning( "unknown event %u", ev.type ); //GK: We don't have to log everything
+			continue; // just handle next event
 		}
 	}
 	Sys_QueEvent(no_more_events.evType, no_more_events.evValue, no_more_events.evValue2, no_more_events.evPtrLength, no_more_events.evPtr, 0);
@@ -850,7 +857,6 @@ Sys_ClearEvents
 */
 void Sys_ClearEvents()
 {
-	SDL_Event ev;
 	eventHead = eventTail = 0;
 	
 	SDL_FlushEvents(SDL_EVENT_FIRST, SDL_EVENT_LAST);
@@ -869,7 +875,11 @@ Sys_GenerateEvents
 */
 void Sys_GenerateEvents()
 {
+#ifndef _WIN32
 	char* s = Posix_ConsoleInput();
+#else
+	char* s = Sys_ConsoleInput();
+#endif
 	
 	if( s )
 		PushConsoleEvent( s );
@@ -990,7 +1000,20 @@ void Sys_SetRumble( int device, int low, int hi )
 	//It doesn't affect the game's performance (Remember NO SDL_Delay)
 
 	if (gcontroller[device] != nullptr) {
-		SDL_RumbleGamepad(gcontroller[device], idMath::ClampInt( 0, 65535, low ), idMath::ClampInt( 0, 65535, hi ), 1000);
+		SDL_RumbleGamepad(gcontroller[device], idMath::ClampInt(0, 65535, low), idMath::ClampInt(0, 65535, hi), 1000);
+	}
+}
+
+void Sys_SetRumbleTriggers(int device, int low, int hi)
+{
+	//GK: This is the code for the rumble effect by using the new SDL_RumbleGamepad.
+	//It doesn't affect the game's performance (Remember NO SDL_Delay)
+
+	if (gcontroller[device] != nullptr) {
+		if (!SDL_RumbleGamepadTriggers(gcontroller[device], idMath::ClampInt(0, 65535, low), idMath::ClampInt(0, 65535, hi), 1000)) {
+			//GK: Fallback if the controller doesn't support impulse triggers
+			SDL_RumbleGamepad(gcontroller[device], idMath::ClampInt(0, 65535, low), idMath::ClampInt(0, 65535, hi), 1000);
+		}
 	}
 }
 
@@ -1204,7 +1227,7 @@ void JoystickSamplingThread(void* data){
 		reverseControllerMap.clear();
 		count = 4; //GK: Clean time
 	}
-	for( uint32 i = 0; i < count; i++ )
+	for( int i = 0; i < count; i++ )
 	{
 		if( SDL_IsGamepad( controllers[i] ) )
 		{

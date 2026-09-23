@@ -184,6 +184,10 @@
         "USE_OPENXR": {
           "type": "BOOL",
           "value": "OFF"
+        },
+        "USE_SDL_WIN32": {
+          "type": "BOOL",
+          "value": "ON"
         }
       }
     },
