@@ -486,15 +486,18 @@ static bool SetScreenParmsFullscreen( glimpParms_t parms )
 	SDL_DisplayMode** displayModes = SDL_GetFullscreenDisplayModes(displayIdx, &modeCount);
 	int wDiff = INT32_MAX;
 	int hDiff = INT32_MAX;
+	int rDiff = INT32_MAX;
 	for (int i = 0; i < modeCount; i++) {
 		int nwDiff = abs(displayModes[i]->w - parms.width);
 		int nhDiff = abs(displayModes[i]->h - parms.height);
-		if (nwDiff < wDiff || nhDiff < hDiff) {
+		int nrDiff = abs(displayModes[i]->refresh_rate - parms.displayHz);
+		if (nwDiff < wDiff || nhDiff < hDiff || nrDiff < rDiff) {
 			wDiff = nwDiff;
-			hDiff = hDiff;
+			hDiff = nhDiff;
+			rDiff = nrDiff;
 			m = displayModes[i];
 		}
-		if (wDiff == 0 || hDiff == 0) {
+		if (wDiff == 0 || hDiff == 0 || rDiff == 0) {
 			m = displayModes[i];
 			break;
 		}
