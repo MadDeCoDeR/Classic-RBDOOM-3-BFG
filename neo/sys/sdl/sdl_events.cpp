@@ -61,8 +61,9 @@ extern idCVar r_windowHeight;
 extern idCVar com_emergencyexit;
 // DG end
 SDL_Thread* joyThread = nullptr;
-//GK: This function will run as a thread in order to capture when a joystick is connected or disconnected
-void JoystickSamplingThread( void* data );
+//GK: This functions will register any newly connected gamepad and remove any connected one.
+void registerGamePad(SDL_GamepadDeviceEvent event);
+void removeGamePad(SDL_GamepadDeviceEvent event);
 //GK End
 
 const char* kbdNames[] =
@@ -140,7 +141,7 @@ static int numEvents = 0;
 int joyAxis[MAX_JOYSTICKS][6];
 SDL_Joystick* joy = NULL;
 static SDL_Gamepad* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
-static int registeredControllers = 0;
+static int registeredControllers = -1;
 static bool joyThreadKill = false;
 int SDL_joystick_has_hat = 0;
 bool buttonStates[MAX_JOYSTICKS][K_LAST_KEY];	// For keeping track of button up/down events
@@ -257,9 +258,6 @@ void Sys_InitInput()
 	memset( &joystick_polls, 0, sizeof(joystick_polls) );
 	
 	in_keyboard.SetModified();
-	//GK: Insted of initializing only once the joystick run a thread that will allow the dynamic connection/disconnection of it
-	joyThread = SDL_CreateThread((SDL_ThreadFunction)JoystickSamplingThread,"Joystic",NULL);
-	//GK:End
 	while(eventHead - eventTail < MAX_QUED_EVENTS) {
 		Sys_GenerateEvents();
 	}
@@ -767,8 +765,6 @@ void SDL_Poll()
 		case SDL_EVENT_JOYSTICK_HAT_MOTION:
 		case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
 		case SDL_EVENT_JOYSTICK_BUTTON_UP:
-		case SDL_EVENT_JOYSTICK_ADDED:
-		case SDL_EVENT_JOYSTICK_REMOVED:
 		case SDL_EVENT_JOYSTICK_UPDATE_COMPLETE:
 		case SDL_EVENT_GAMEPAD_UPDATE_COMPLETE:
 			// Avoid 'unknown event' spam
@@ -801,8 +797,18 @@ void SDL_Poll()
 		case SDL_EVENT_GAMEPAD_BUTTON_UP:
 			current[reverseControllerMap[ev.gbutton.which]].buttons[ev.gbutton.button] = (ev.gbutton.down == true ? 1 : 0);
 			break;
-		//GK: Steam Deck Hack: For some reason Steam Deck spams these two events
+		
 		case SDL_EVENT_GAMEPAD_ADDED:
+		case SDL_EVENT_JOYSTICK_ADDED: {
+			registerGamePad(ev.gdevice);
+			break;
+		}
+		case SDL_EVENT_GAMEPAD_REMOVED:
+		case SDL_EVENT_JOYSTICK_REMOVED: {
+			removeGamePad(ev.gdevice);
+			break;
+		}
+		//GK: Steam Deck Hack: For some reason Steam Deck spams these two events
 		case SDL_EVENT_GAMEPAD_REMAPPED:
 		case SDL_EVENT_KEYMAP_CHANGED:
 			continue;
@@ -1178,108 +1184,44 @@ bool Sys_hasConnectedController() {
 	return hasConnected;
 }
 
-//GK: This is the controller state detection thread. It can check whenever a controller is connected or not.
-//Most of the console outputs have been disabled since this thread runs from the begining of the game and never stops.
-static int	threadTimeDeltas[256];
-static int	threadPacket[256];
-static int	threadCount;
-static int	defaultAvailable;
-
-
-void JoystickSamplingThread(void* data){
-
-	static int prevTime = 0;
-	static uint64 nextCheck[MAX_JOYSTICKS] = { 0 };
-	const uint64 waitTime = 5000;// 000; // poll every 5 seconds to see if a controller was connected
-	while(1){
-		if (joyThreadKill) {
-			for(int i = 0; i < MAX_JOYSTICKS; i++) {
-				if(gcontroller[i]){
-					SDL_CloseGamepad(gcontroller[i]);
-				}
-				gcontroller[i]=NULL;
-			}
-			break;
-		}
-		int	now = Sys_Microseconds();
-		int	delta;
-		if( prevTime == 0 )
-		{
-			delta = 4000;
-		}
-		else
-		{
-			delta = now - prevTime;
-		}
-		prevTime = now;
-		threadTimeDeltas[threadCount & 255] = delta;
-		threadCount++;
-		if(now>=nextCheck[0]){ //GK: Similar to the windows thread
+void registerGamePad(SDL_GamepadDeviceEvent event) {
 	SDL_Gamepad* controller = NULL;
-	int inactive = 0;
-	int available = -1;
-	bool alreadyConnected = false;
-	int count = 0;
-	SDL_JoystickID* controllers = SDL_GetGamepads(&count);
-	SDL_free(controllers);
-	controllers = SDL_GetGamepads(&count); //SDL 3 Weird quirk. It needs to query joystick twice in order to work
-	if (count == 0) {
-		reverseControllerMap.clear();
-		count = 4; //GK: Clean time
+	//GK: Avoid duplicate events.
+	if (reverseControllerMap.find(event.which) != reverseControllerMap.end()) {
+		return;
 	}
-	for( int i = 0; i < count; i++ )
+	controller = SDL_OpenGamepad( event.which );
+	if( controller )
 	{
-		if( SDL_IsGamepad( controllers[i] ) )
-		{
-			if (!gcontroller[i]) {
-				controller = SDL_OpenGamepad( controllers[i] );
-				if( controller )
-				{
-					if (available < 0) {
-						available = i;
-					}
-					reverseControllerMap.insert(std::make_pair(controllers[i], i));
-					nextCheck[0]=0; //GK: Like the Windows thread constantly checking for the controller state once it's connected
-					idLib::Printf("Controller Connected: %s\n", SDL_GetGamepadName(controller));
-					gcontroller[i]=controller;
-					
-				} else {
-					common->Warning("Error Initializing controller: %s\n", SDL_GetError());
-				}
-			} else {
-				alreadyConnected = true;
-				continue;
-				//common->Printf( "GameController %i name: %s\n", i, SDL_GameControllerName( controller ) );
-				//common->Printf( "GameController %i is mapped as \"%s\".\n", i, SDL_GameControllerMapping( controller ) );
-			}
-		}else{
-			inactive++;
-					if(gcontroller[i]){
-						SDL_CloseGamepad(gcontroller[i]);
-					}
-					gcontroller[i]=NULL;
-					nextCheck[0] = now + waitTime;
-					continue;
-		}
-	}
-	SDL_free(controllers);
-	if (!alreadyConnected) {
+		registeredControllers++;
+		reverseControllerMap.insert(std::make_pair(event.which, registeredControllers));
+		idLib::Printf("Controller Connected: %s\n", SDL_GetGamepadName(controller));
+		gcontroller[registeredControllers] = controller;
 		//GK: Enable controller layout if there is one controller connected
-		registeredControllers = 4-inactive;
-		if (registeredControllers > 0) {
-			if (session->GetSignInManager().GetMasterLocalUser() != NULL) {
-				idLocalUserWin* user = dynamic_cast<idLocalUserWin*>(session->GetSignInManager().GetMasterLocalUser());
-				user->SetInputDevice(available);
-			}
-			else {
-				defaultAvailable = available;
-			}
+		if (session->GetSignInManager().GetMasterLocalUser() != NULL) {
+			idLocalUserWin* user = dynamic_cast<idLocalUserWin*>(session->GetSignInManager().GetMasterLocalUser());
+			user->SetInputDevice(registeredControllers);
 		}
+	} else {
+		idLib::Printf("Error Initializing controller: %s\n", SDL_GetError());
 	}
-	/*idLib::joystick = inactive >= 4 ? false : true;*/
-		}else{
-			continue;
-		}
-		SDL_Delay(10);
+		
+}
+
+void removeGamePad(SDL_GamepadDeviceEvent event) {
+	//GK: Avoid duplicate events.
+	if (reverseControllerMap.find(event.which) == reverseControllerMap.end()) {
+		return;
 	}
+	registeredControllers--;
+	int index = reverseControllerMap[event.which];
+	reverseControllerMap.erase(event.which);
+	idLib::Printf("Controller Disconnected: %s\n", SDL_GetGamepadName(gcontroller[index]));
+	SDL_CloseGamepad(gcontroller[index]);
+	gcontroller[index]=NULL;
+	if (session->GetSignInManager().GetMasterLocalUser() != NULL) {
+		idLocalUserWin* user = dynamic_cast<idLocalUserWin*>(session->GetSignInManager().GetMasterLocalUser());
+		user->SetInputDevice(-1);
+	}
+	
 }
