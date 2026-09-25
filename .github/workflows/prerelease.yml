@@ -34,7 +34,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Get run Id
       id: run_id
-      run: echo "run_id=$(gh run list --workflow 'CMake Mock' --limit 1 --status completed | awk '{print $13}')" >> $GITHUB_OUTPUT
+      run: echo "run_id=$(gh run list --workflow 'CMake Mock' --limit 1 --status success | awk '{print $13}')" >> $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Get log messages
