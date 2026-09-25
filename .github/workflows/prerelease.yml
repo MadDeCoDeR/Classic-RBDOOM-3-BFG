@@ -36,7 +36,7 @@ jobs:
       id: run_id
       #GK: A perfectly (in)sane double run of the command, because it's soooo stable (sarcasm)
       run: |
-        echo "run_id=$(gh run list --workflow 'CMake Mock' --status success |  awk 'NR==1{print $13|"sort -nrk15 "}'" >> $GITHUB_OUTPUT
+        echo "run_id=$(gh run list --workflow 'CMake Mock' --status success |  awk 'NR==1{print $13|"sort -nrk15 "}'"
         echo "run_id=$(gh run list --workflow 'CMake Mock' --status success |  awk 'NR==1{print $13|"sort -nrk15 "}'" >> $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
