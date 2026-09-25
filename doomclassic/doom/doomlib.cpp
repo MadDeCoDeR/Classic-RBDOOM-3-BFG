@@ -715,37 +715,37 @@ void DoomLib::RunSound() {
 }
 
 void DoomLib::SetRumble(float high, int highDuration, float low, int lowDuration) {
-	DoomLib::high = high * USHRT_MAX;
-	DoomLib::highDuration = highDuration;
-	DoomLib::low = low * USHRT_MAX;
-	DoomLib::lowDuration = lowDuration;
+	DoomLib::high = (high * 0.5f) * USHRT_MAX;
+	DoomLib::highDuration = Sys_Milliseconds() + highDuration;
+	DoomLib::low = (low * 0.5f) * USHRT_MAX;
+	DoomLib::lowDuration = Sys_Milliseconds() + lowDuration;
 }
 
 void DoomLib::SetRumbleTrigger(float high, int highDuration, float low, int lowDuration) {
-	DoomLib::highTrigger = high * USHRT_MAX;
-	DoomLib::highDurationTrigger = highDuration;
-	DoomLib::lowTrigger = low * USHRT_MAX;
-	DoomLib::lowDurationTrigger = lowDuration;
+	DoomLib::highTrigger = (high * 0.5f) * USHRT_MAX;
+	DoomLib::highDurationTrigger = Sys_Milliseconds() + highDuration;
+	DoomLib::lowTrigger = (low * 0.5f) * USHRT_MAX;
+	DoomLib::lowDurationTrigger = Sys_Milliseconds() + lowDuration;
 }
 
 void DoomLib::ApplyRumble() {
 	if (idLib::joystick && in_joystickRumble.GetBool()) {
 		Sys_SetRumble(session->GetSignInManager().GetMasterLocalUser()->GetInputDevice(), low, high);
 		Sys_SetRumbleTriggers(session->GetSignInManager().GetMasterLocalUser()->GetInputDevice(), lowTrigger, highTrigger);
-		highDuration--;
-		lowDuration--;
-		if (highDuration <= 0) {
+		if (Sys_Milliseconds() > highDuration) {
+			highDuration = 0;
 			high = 0;
 		}
-		if (lowDuration <= 0) {
+		if (Sys_Milliseconds() > lowDuration) {
+			lowDuration = 0;
 			low = 0;
 		}
-		highDurationTrigger--;
-		lowDurationTrigger--;
-		if (highDurationTrigger <= 0) {
+		if (Sys_Milliseconds() > highDurationTrigger) {
+			highDurationTrigger = 0;
 			highTrigger = 0;
 		}
-		if (lowDurationTrigger <= 0) {
+		if (Sys_Milliseconds() > lowDurationTrigger) {
+			lowDurationTrigger = 0;
 			lowTrigger = 0;
 		}
 	}
