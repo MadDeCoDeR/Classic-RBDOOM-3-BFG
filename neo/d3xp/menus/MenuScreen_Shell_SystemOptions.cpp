@@ -732,8 +732,8 @@ bool idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsDataCh
 			r_windowY.SetInteger(0);
 		}
 		else {
-			r_windowX.SetInteger(originalScreenXpos);
-			r_windowY.SetInteger(originalScreenYpos);
+			r_windowX.SetInteger(originalScreenXpos ? originalScreenXpos: 5);
+			r_windowY.SetInteger(originalScreenYpos ? originalScreenYpos : 25);
 		}
 		resetVideo = true;
 		return true;

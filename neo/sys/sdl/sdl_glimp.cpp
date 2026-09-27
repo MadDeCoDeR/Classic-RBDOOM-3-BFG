@@ -168,11 +168,6 @@ bool GLimp_Init( glimpParms_t parms )
 	// DG: make window resizable
 	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_MOUSE_GRABBED;
 	// DG end
-	
-	if( parms.fullScreen )
-		flags |= SDL_WINDOW_FULLSCREEN;
-	else if (parms.fullScreen < 0)
-		flags |= SDL_WINDOW_BORDERLESS;
 		
 	int colorbits = 24;
 	int depthbits = 24;
@@ -290,44 +285,14 @@ bool GLimp_Init( glimpParms_t parms )
 		}
 		// RB end
 		
-		// DG: set display num for fullscreen
-		int windowPos = SDL_WINDOWPOS_UNDEFINED;
-		int windowPosY = SDL_WINDOWPOS_UNDEFINED;
-		if( parms.fullScreen > 0 )
-		{
-			int count = 0;
-			SDL_DisplayID* displays = SDL_GetDisplays(&count);
-			if( displays == 0 || parms.fullScreen > count )
-			{
-				common->Warning( "Couldn't set display to num %i because we only have %i displays",
-								 parms.fullScreen, count );
-			}
-			else
-			{
-				// -1 because SDL starts counting displays at 0, while parms.fullScreen starts at 1
-				SDL_DisplayID displayID = displays[parms.fullScreen - 1];
-				windowPos = SDL_WINDOWPOS_UNDEFINED_DISPLAY( ( displayID ) );
-				windowPosY = SDL_WINDOWPOS_UNDEFINED_DISPLAY( ( displayID ) );
-			}
-			SDL_free(displays);
-		} else if (parms.fullScreen == 0) {
-			windowPos = parms.x;
-			windowPosY = parms.y;
-		}
-		// TODO: if parms.fullScreen == -1 there should be a borderless window spanning multiple displays
-		/*
-		 * NOTE that this implicitly handles parms.fullScreen == -2 (from r_fullscreen -2) meaning
-		 * "do fullscreen, but I don't care on what monitor", at least on my box it's the monitor with
-		 * the mouse cursor.
-		 */
-		
-		
+
+		//GK: Create a dummy window right now in order to initialize SDL_Window, in the end call GLimp_SetScreenParms to apply the expected settings
 		 SDL_PropertiesID props = SDL_CreateProperties();
     	 SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, ENGINE_NAME);
-    	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, windowPos);
-    	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, windowPosY);
-    	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, parms.width);
-    	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, parms.height);
+    	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, 250);
+    	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, 250);
+    	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, 860);
+    	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, 600);
     	 // For window flags you should use separate window creation properties,
     	 // but for easier migration from SDL2 you can use the following:
     	 SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER, flags);
@@ -421,6 +386,8 @@ bool GLimp_Init( glimpParms_t parms )
 	SDL_HideCursor();
 	// DG end
 	SDL_SetWindowMouseGrab(window, true);
+	//GK: Properly apply screen parms
+	GLimp_SetScreenParms(parms);
 	return true;
 }
 /*
@@ -543,7 +510,7 @@ static bool SetScreenParmsWindowed( glimpParms_t parms )
 	
 	
 	// if we're currently in fullscreen mode, we need to disable that
-	if( SDL_GetWindowFlags( window ) & SDL_WINDOW_FULLSCREEN || SDL_GetWindowFlags(window) & SDL_WINDOW_BORDERLESS)
+	if( SDL_GetWindowFlags( window ) & SDL_WINDOW_FULLSCREEN)
 	{
 		if( !SDL_SetWindowFullscreen( window, false ) )
 		{
@@ -554,6 +521,7 @@ static bool SetScreenParmsWindowed( glimpParms_t parms )
 	}
 	SDL_SetWindowSize( window, parms.width, parms.height );
 	SDL_SetWindowPosition( window, parms.x, parms.y );
+	SDL_SetWindowBordered(window, parms.fullScreen == 0);
 	return true;
 }
 
@@ -564,20 +532,15 @@ GLimp_SetScreenParms
 */
 bool GLimp_SetScreenParms( glimpParms_t parms )
 {
-	if( parms.fullScreen > 0 || parms.fullScreen < 0 )
+	if( parms.fullScreen > 0 )
 	{
 		if( !SetScreenParmsFullscreen( parms ) )
 			return false;
 	}
-	else if( parms.fullScreen == 0 ) // windowed mode
+	else if( parms.fullScreen <= 0 ) // windowed mode + Borderless mode
 	{
 		if( !SetScreenParmsWindowed( parms ) )
 			return false;
-	}
-	else
-	{
-		common->Warning( "GLimp_SetScreenParms: fullScreen -1 (borderless window for multiple displays) currently unsupported!" );
-		return false;
 	}
 	SDL_SyncWindow(window);
 	
