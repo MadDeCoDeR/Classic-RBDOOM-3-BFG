@@ -601,7 +601,7 @@ bool idDeclParticle::Parse( const char* text, const int textLength, bool allowBi
 	}
 	
 	// don't calculate bounds or write binary files for defaulted ( non-existent ) particles in resource builds
-	if( fileSystem->UsingResourceFiles() )
+	if( fileSystem->UsingResourceFiles() && binaryLoadParticles.GetBool() )
 	{
 		bounds = idBounds( vec3_origin ).Expand( 8.0f );
 		return true;

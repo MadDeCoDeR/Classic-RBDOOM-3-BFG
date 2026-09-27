@@ -53,6 +53,18 @@ void idRenderModelPrt::InitFromFile( const char* fileName )
 {
 	name = fileName;
 	particleSystem = static_cast<const idDeclParticle*>( declManager->FindType( DECL_PARTICLE, fileName ) );
+	//#modified-fva; BEGIN
+	hasInteractingSurfaces = false;
+	if (particleSystem) {
+		for (int i = 0; i < particleSystem->stages.Num(); i++) {
+			const idMaterial* material = particleSystem->stages[i]->material;
+			if (material && material->ReceivesLighting()) {
+				hasInteractingSurfaces = true;
+				break;
+			}
+		}
+	}
+	//#modified-fva; END
 }
 
 /*
@@ -235,6 +247,9 @@ idRenderModel* idRenderModelPrt::InstantiateDynamicModel( const struct renderEnt
 			
 			g.age = g.frac * stage->particleLife;
 			
+			if (!idStr::Cmp(name, "hh_telesoul.prt")) {
+				common->Printf("Break me\n");
+			}
 			// if the particle doesn't get drawn because it is faded out or beyond a kill region, don't increment the verts
 			numVerts += stage->CreateParticle( &g, verts + numVerts );
 		}

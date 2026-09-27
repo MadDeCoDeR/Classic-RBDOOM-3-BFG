@@ -368,7 +368,7 @@ public:
 	};
 	virtual bool				ModelHasInteractingSurfaces() const
 	{
-		return false;
+		return hasInteractingSurfaces;
 	};
 	virtual bool				ModelHasShadowCastingSurfaces() const
 	{
