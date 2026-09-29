@@ -52,6 +52,7 @@ If you have questions concerning this license or the applicable additional terms
 // flashstate, muzzle flash
 //
 weaponinfo_t	weaponinfo[NUMWEAPONS];
+weaponimpulse_t	weaponimpulse[NUMWEAPONS];
 void initWeapons() {
 	weaponinfo_t	tweaponinfo[NUMWEAPONS] =
 	{
@@ -156,6 +157,55 @@ void initWeapons() {
 		},
 	};
 	memcpy(weaponinfo, tweaponinfo, sizeof(tweaponinfo));
+	weaponimpulse_t	tweaponimpulse[NUMWEAPONS] =
+	{
+		{
+			// fist
+			0.3f, 50, 0.6f, 100,
+			0.0f, 0, 0.0f, 0
+		},
+		{
+			// pistol
+			0.6f, 80, 0.4f, 120,
+			0.0f, 0, 0.0f, 0
+		},
+		{
+			// shotgun
+			1.0f, 120, 10.9f, 250,
+			0.0f, 0, 0.0f, 0
+		},
+		{
+			// chaingun
+			1.0f, 100, 0.9f, 250,
+			0.0f, 0, 0.0f, 0
+		},
+		{
+			// missile launcher
+			1.0f, 500, 0.9f, 750,
+			0.0f, 0, 0.0f, 0
+		},
+		{
+			// plasma rifle
+			0.7f, 25, 0.5f, 75,
+			0.0f, 0, 0.0f, 0
+		},
+		{
+			// bfg 9000
+			1.0f, 750, 1.0f, 750,
+			0.0f, 0, 0.0f, 0
+		},
+		{
+			// chainsaw
+			1.0f, 100, 0.9f, 250,
+			0.2f, 100, 0.05f, 250
+		},
+		{
+			// super shotgun
+			2.0f, 220, 20.9f, 350,
+			0.0f, 0, 0.0f, 0
+		},
+	};
+	memcpy(weaponimpulse, tweaponimpulse, sizeof(tweaponimpulse));
 }
 
 
