@@ -49,6 +49,19 @@ typedef struct
     int     clipAmmo;
 } weaponinfo_t;
 
+
+typedef struct
+{
+    float   rightTrigger;
+    int     rightTriggerDuration;
+    float   leftTrigger;
+    int     leftTriggerDuration;
+    float   constRightTrigger;
+    int     constRightTriggerDuration;
+    float   constLeftTrigger;
+    int     constLeftTriggerDuration;
+}weaponimpulse_t;
+
 typedef enum
 {
     WPF_NOTHRUST	= 0x001,
@@ -61,6 +74,7 @@ typedef enum
 
 //GK: No more constant variable
 extern  /*const*/ weaponinfo_t    weaponinfo[NUMWEAPONS];
+extern  /*const*/ weaponimpulse_t weaponimpulse[NUMWEAPONS];
 void initWeapons();
 //void resetWeapons();
 #endif

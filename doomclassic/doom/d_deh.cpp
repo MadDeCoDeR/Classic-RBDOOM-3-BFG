@@ -416,7 +416,7 @@ dehbits mobfl[] = {
 };
 
 int checkstate(char* text) {
-	const char* stable[13] = {
+	const char* stable[14] = {
 		"Thing",
 		"Frame",
 		"Text",
@@ -429,10 +429,11 @@ int checkstate(char* text) {
 		"Sound",
 		"Misc",
 		"[SPRITES]",
-		"[SOUNDS]"
+		"[SOUNDS]",
+		"WeaponImpulse"
 	};
 	if (text != NULL) {
-		for (int i = 0; i < 13; i++) {
+		for (int i = 0; i < 14; i++) {
 			if (!idStr::Icmp(text, stable[i])) {
 				return i + 1;
 			}
@@ -601,6 +602,33 @@ void setWeapon(int pos, char* varname, int varval) {
 					*wvars[i].ival = varval;
 				}
 				
+				return;
+			}
+		}
+	}
+}
+
+void setWeaponImpulse(int pos, char* varname, float varval) {
+	dehobj wivars[8] = {
+		{"Left Trigger ",MAXINT,NULL, NULL, NULL, &weaponimpulse[pos].leftTrigger},
+		{"Left Trigger Duration ",MAXINT,NULL,&weaponimpulse[pos].leftTriggerDuration},
+		{"Right Trigger ",MAXINT,NULL, NULL, NULL, &weaponimpulse[pos].rightTrigger},
+		{"Right Trigger Duration ",MAXINT,NULL,&weaponimpulse[pos].rightTriggerDuration},
+		{"Const Left Trigger ",MAXINT,NULL, NULL, NULL, &weaponimpulse[pos].constLeftTrigger},
+		{"Const Left Trigger Duration ",MAXINT,NULL,&weaponimpulse[pos].constLeftTriggerDuration},
+		{"Const Right Trigger ", MAXINT, NULL, NULL, NULL, &weaponimpulse[pos].constRightTrigger},
+		{"Const Right Trigger Duration ", MAXINT, NULL, &weaponimpulse[pos].constRightTriggerDuration}
+	};
+	for (int i = 0; i < 8; i++) {
+		if (!idStr::Icmp(varname, wivars[i].name)) {
+			if (varval < wivars[i].limit) {
+				if (i % 2) {
+					*wivars[i].ival = varval;
+				}
+				else {
+					*wivars[i].fval = varval;
+				}
+
 				return;
 			}
 		}
@@ -969,6 +997,7 @@ void parsetext(char* text) {
 	int statepos = 0;
 	int varval = 0;
 	int varval2 = -1;
+	float fvarval = 0.0f;
 	char eq = '=';
 	std::string vartext = "";
 	for (uint i = 0; i < linedtext.size(); i++) {
@@ -978,7 +1007,7 @@ void parsetext(char* text) {
 			varname = strtok(strdup(linedtext[i].c_str()), "=");
 			std::string tv3 = strtok(NULL, "=");
 			if (!tv3.empty()) {
-				if (state != 6 && state != 9 && state != 12 && state != 13) {
+				if (state != 6 && state != 9 && state != 12 && state != 13 && state != 14) {
 					varval = atoi(tv3.c_str());
 					if ((state == 1 || state == 4 || state == 2)&& (!idStr::Icmp(varname, "Bits ") || !idStr::Icmp(varname, "MBF21 Bits ")) && varval == 0) {
 						varval = Generateflags(strdup(tv3.c_str()));
@@ -986,6 +1015,9 @@ void parsetext(char* text) {
 				}
 				else if (state == 6 || state == 12 || state == 13) {
 					varfunc = strdup(tv3.c_str());
+				}
+				else if (state == 14) {
+					fvarval = atof(tv3.c_str());
 				}
 				else {
 					vartext += strdup(tv3.c_str());
@@ -1044,6 +1076,9 @@ void parsetext(char* text) {
 				break;
 			case 13:
 				setSoundName(varname, varfunc);
+				break;
+			case 14:
+				setWeaponImpulse(statepos, varname, fvarval);
 				break;
 			}
 
