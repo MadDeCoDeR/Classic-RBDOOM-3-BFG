@@ -369,7 +369,7 @@ A_WeaponReady
 	}
 
 	if ((weaponimpulse[player->readyweapon].constLeftTrigger > 0.0f || weaponimpulse[player->readyweapon].constRightTrigger > 0.0f) &&  !::g->demoplayback) {
-		DoomLib::SetRumbleTrigger(0.2f, 100, 0.05f, 250);
+		DoomLib::SetRumbleTrigger(weaponimpulse[player->readyweapon].constLeftTrigger, weaponimpulse[player->readyweapon].constLeftTriggerDuration, weaponimpulse[player->readyweapon].constRightTrigger, weaponimpulse[player->readyweapon].constRightTriggerDuration);
 	}
 
 	// check for change
@@ -573,7 +573,7 @@ A_Punch
 	}
 	P_LineAttack (player->mo, angle, player->mo->info->meleeRange, slope, damage);
 	if (!::g->demoplayback) {
-		DoomLib::SetRumbleTrigger(weaponimpulse[wp_fist].leftTrigger, weaponimpulse[wp_fist].constLeftTriggerDuration, weaponimpulse[wp_fist].rightTrigger, weaponimpulse[wp_fist].rightTriggerDuration);
+		DoomLib::SetRumbleTrigger(weaponimpulse[wp_fist].leftTrigger, weaponimpulse[wp_fist].leftTriggerDuration, weaponimpulse[wp_fist].rightTrigger, weaponimpulse[wp_fist].rightTriggerDuration);
 	}
 	// turn to face target
 	if (::g->linetarget)
@@ -613,7 +613,7 @@ A_Saw
 	}
 	P_LineAttack (player->mo, angle, player->mo->info->meleeRange+1, slope, damage);
 	if (!::g->demoplayback) {
-		DoomLib::SetRumbleTrigger(weaponimpulse[wp_chainsaw].leftTrigger, weaponimpulse[wp_chainsaw].constLeftTriggerDuration, weaponimpulse[wp_chainsaw].rightTrigger, weaponimpulse[wp_chainsaw].rightTriggerDuration);
+		DoomLib::SetRumbleTrigger(weaponimpulse[wp_chainsaw].leftTrigger, weaponimpulse[wp_chainsaw].leftTriggerDuration, weaponimpulse[wp_chainsaw].rightTrigger, weaponimpulse[wp_chainsaw].rightTriggerDuration);
 	}
 	if (!::g->linetarget)
 	{
@@ -658,7 +658,7 @@ A_FireMissile
 		player->ammo[weaponinfo[player->readyweapon].ammo] -= weaponinfo[player->readyweapon].clipAmmo;
 	}
 	if (!::g->demoplayback) {
-		DoomLib::SetRumbleTrigger(weaponimpulse[wp_missile].leftTrigger, weaponimpulse[wp_missile].constLeftTriggerDuration, weaponimpulse[wp_missile].rightTrigger, weaponimpulse[wp_missile].rightTriggerDuration);
+		DoomLib::SetRumbleTrigger(weaponimpulse[wp_missile].leftTrigger, weaponimpulse[wp_missile].leftTriggerDuration, weaponimpulse[wp_missile].rightTrigger, weaponimpulse[wp_missile].rightTriggerDuration);
 	}
 	P_SpawnPlayerMissile (player->mo, MT_ROCKET);
 
@@ -680,7 +680,7 @@ A_FireBFG
 		player->ammo[weaponinfo[player->readyweapon].ammo] -= weaponinfo[player->readyweapon].clipAmmo;
 	}
 	if (!::g->demoplayback) {
-		DoomLib::SetRumbleTrigger(weaponimpulse[wp_bfg].leftTrigger, weaponimpulse[wp_bfg].constLeftTriggerDuration, weaponimpulse[wp_bfg].rightTrigger, weaponimpulse[wp_bfg].rightTriggerDuration);
+		DoomLib::SetRumbleTrigger(weaponimpulse[wp_bfg].leftTrigger, weaponimpulse[wp_bfg].leftTriggerDuration, weaponimpulse[wp_bfg].rightTrigger, weaponimpulse[wp_bfg].rightTriggerDuration);
 	}
 	P_SpawnPlayerMissile (player->mo, MT_BFG);
 	if (!player->inBFGStates) {
@@ -709,7 +709,7 @@ A_FirePlasma
 		ps_flash,
 		(weaponinfo[player->readyweapon].flashstate+(P_Random ()&1)) );
 	if (!::g->demoplayback) {
-		DoomLib::SetRumbleTrigger(weaponimpulse[wp_plasma].leftTrigger, weaponimpulse[wp_plasma].constLeftTriggerDuration, weaponimpulse[wp_plasma].rightTrigger, weaponimpulse[wp_plasma].rightTriggerDuration);
+		DoomLib::SetRumbleTrigger(weaponimpulse[wp_plasma].leftTrigger, weaponimpulse[wp_plasma].leftTriggerDuration, weaponimpulse[wp_plasma].rightTrigger, weaponimpulse[wp_plasma].rightTriggerDuration);
 	}
 	P_SpawnPlayerMissile (player->mo, MT_PLASMA);
 
@@ -795,7 +795,7 @@ A_FirePistol
 		ps_flash,
 		weaponinfo[player->readyweapon].flashstate);
 	if (!::g->demoplayback) {
-		DoomLib::SetRumbleTrigger(weaponimpulse[wp_pistol].leftTrigger, weaponimpulse[wp_pistol].constLeftTriggerDuration, weaponimpulse[wp_pistol].rightTrigger, weaponimpulse[wp_pistol].rightTriggerDuration);
+		DoomLib::SetRumbleTrigger(weaponimpulse[wp_pistol].leftTrigger, weaponimpulse[wp_pistol].leftTriggerDuration, weaponimpulse[wp_pistol].rightTrigger, weaponimpulse[wp_pistol].rightTriggerDuration);
 	}
 	P_BulletSlope (player->mo);
 	P_GunShot (player->mo, !player->refire);
@@ -827,7 +827,7 @@ A_FireShotgun
 		ps_flash,
 		weaponinfo[player->readyweapon].flashstate);
 	if (!::g->demoplayback) {
-		DoomLib::SetRumbleTrigger(weaponimpulse[wp_shotgun].leftTrigger, weaponimpulse[wp_shotgun].constLeftTriggerDuration, weaponimpulse[wp_shotgun].rightTrigger, weaponimpulse[wp_shotgun].rightTriggerDuration);
+		DoomLib::SetRumbleTrigger(weaponimpulse[wp_shotgun].leftTrigger, weaponimpulse[wp_shotgun].leftTriggerDuration, weaponimpulse[wp_shotgun].rightTrigger, weaponimpulse[wp_shotgun].rightTriggerDuration);
 	}
 	P_BulletSlope (player->mo);
 
@@ -865,7 +865,7 @@ A_FireShotgun2
 		ps_flash,
 		weaponinfo[player->readyweapon].flashstate);
 	if (!::g->demoplayback) {
-		DoomLib::SetRumbleTrigger(weaponimpulse[wp_supershotgun].leftTrigger, weaponimpulse[wp_supershotgun].constLeftTriggerDuration, weaponimpulse[wp_supershotgun].rightTrigger, weaponimpulse[wp_supershotgun].rightTriggerDuration);
+		DoomLib::SetRumbleTrigger(weaponimpulse[wp_supershotgun].leftTrigger, weaponimpulse[wp_supershotgun].leftTriggerDuration, weaponimpulse[wp_supershotgun].rightTrigger, weaponimpulse[wp_supershotgun].rightTriggerDuration);
 	}
 	P_BulletSlope (player->mo);
 
@@ -911,7 +911,7 @@ A_FireCGun
 		+ psp->state
 		- &::g->states[S_CHAIN1] ));
 	if (!::g->demoplayback) {
-		DoomLib::SetRumbleTrigger(weaponimpulse[wp_chaingun].leftTrigger, weaponimpulse[wp_chaingun].constLeftTriggerDuration, weaponimpulse[wp_chaingun].rightTrigger, weaponimpulse[wp_chaingun].rightTriggerDuration);
+		DoomLib::SetRumbleTrigger(weaponimpulse[wp_chaingun].leftTrigger, weaponimpulse[wp_chaingun].leftTriggerDuration, weaponimpulse[wp_chaingun].rightTrigger, weaponimpulse[wp_chaingun].rightTriggerDuration);
 	}
 	P_BulletSlope (player->mo);
 
@@ -1024,7 +1024,7 @@ void A_WeaponProjectile(player_t* player,
 	if (!mo)
 		return;
 	if (!::g->demoplayback) {
-		DoomLib::SetRumbleTrigger(weaponimpulse[player->readyweapon].leftTrigger, weaponimpulse[player->readyweapon].constLeftTriggerDuration, weaponimpulse[player->readyweapon].rightTrigger, weaponimpulse[player->readyweapon].rightTriggerDuration);
+		DoomLib::SetRumbleTrigger(weaponimpulse[player->readyweapon].leftTrigger, weaponimpulse[player->readyweapon].leftTriggerDuration, weaponimpulse[player->readyweapon].rightTrigger, weaponimpulse[player->readyweapon].rightTriggerDuration);
 	}
 	// adjust angle
 	mo->angle += (unsigned int)(((int64_t)angle << FRACBITS) / 360);
@@ -1085,7 +1085,7 @@ void A_WeaponBulletAttack(player_t* player,
 			MISSILERANGE,
 			slope, damage);
 		if (!::g->demoplayback) {
-			DoomLib::SetRumbleTrigger(weaponimpulse[player->readyweapon].leftTrigger, weaponimpulse[player->readyweapon].constLeftTriggerDuration, weaponimpulse[player->readyweapon].rightTrigger, weaponimpulse[player->readyweapon].rightTriggerDuration);
+			DoomLib::SetRumbleTrigger(weaponimpulse[player->readyweapon].leftTrigger, weaponimpulse[player->readyweapon].leftTriggerDuration, weaponimpulse[player->readyweapon].rightTrigger, weaponimpulse[player->readyweapon].rightTriggerDuration);
 		}
 	}
 }
