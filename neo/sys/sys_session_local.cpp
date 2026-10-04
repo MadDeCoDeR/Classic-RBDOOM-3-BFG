@@ -61,7 +61,7 @@ idCVar net_testPartyMemberConnectFail( "net_testPartyMemberConnectFail", "-1", C
 idCVar net_offlineTransitionThreshold( "net_offlineTransitionThreshold", "1000", CVAR_INTEGER, "Time, in milliseconds, to wait before kicking back to the main menu when a profile losses backend connection during an online game" );
 
 idCVar net_port( "net_port", "27015", CVAR_INTEGER | CVAR_NOCHEAT, "host port number" ); // Port to host when using dedicated servers, port to broadcast on when looking for a dedicated server to connect to
-idCVar net_headlessServer( "net_headlessServer", "0", CVAR_BOOL, "toggle to automatically host a game and allow peer[0] to control menus" );
+idCVar net_headlessServer( "net_headlessServer", "0", CVAR_BOOL | CVAR_ARCHIVE, "toggle to automatically host a game and allow peer[0] to control menus" );
 
 const char* idSessionLocal::stateToString[ NUM_STATES ] =
 {
@@ -4607,13 +4607,7 @@ void idSessionLocal::ListServersCommon()
 	
 	GetPort();
 	// Send the query as a broadcast
-	int startTimeSeconds = Sys_Milliseconds() / 1000;
-	int endTimeSeconds = Sys_Milliseconds() / 1000;
-	while(endTimeSeconds - startTimeSeconds < 10) {
 	GetPartyLobby().SendConnectionLess( address, idLobby::OOB_MATCH_QUERY, msg.GetReadData(), msg.GetSize() );
-		Sys_Sleep(100);
-		endTimeSeconds = Sys_Milliseconds() / 1000;
-	}
 }
 
 /*
