@@ -73,6 +73,11 @@
 	"#str_00183" "OPTIONS VIDÉO"
 	"#str_02170" "Personnaliser les paramètres vidéo"
 	"#str_swf_cc" "Sous-titres"
+	"#str_swf_create_private" "Démarrer la partie"
+	"#str_swf_create_desc" "Installer et lancer une partie"
+	"#str_swf_pwf" "Trouver des halls"
+	"#str_swf_pwf_desc" "Trouvez des salons pour d'autres joueurs dans votre réseau"
+	"#str_swf_pwf_heading" "CHERCHEUR DE HALL"
 // 	"#str_swf_custom_game" "Nom du mod"
 // 	"#str_swf_start_map" "Première carte à charger"
 }

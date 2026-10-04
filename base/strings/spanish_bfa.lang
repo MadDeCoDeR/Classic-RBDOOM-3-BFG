@@ -73,6 +73,11 @@
 	"#str_00183" "OPCIONES DE VÍDEO"
 	"#str_02170" "Personalizar configuración de vídeo"
 	"#str_swf_cc" "Subtítulos"
+	"#str_swf_create_private" "Iniciar partida"
+	"#str_swf_create_desc" "Preparar y Empezar un Juego"
+	"#str_swf_pwf" "Buscar vestíbulos"
+	"#str_swf_pwf_desc" "Busca lobbies para otros jugadores en tu red"
+	"#str_swf_pwf_heading" "BUSCADOR DE VESTÍBULO"
 // 	"#str_swf_custom_game" "Nombre del mod"
 // 	"#str_swf_start_map" "Primer mapa para cargar"
 }
