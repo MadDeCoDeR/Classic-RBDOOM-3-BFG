@@ -4607,7 +4607,13 @@ void idSessionLocal::ListServersCommon()
 	
 	GetPort();
 	// Send the query as a broadcast
+	int startTimeSeconds = Sys_Milliseconds() / 1000;
+	int endTimeSeconds = Sys_Milliseconds() / 1000;
+	while(endTimeSeconds - startTimeSeconds < 10) {
 	GetPartyLobby().SendConnectionLess( address, idLobby::OOB_MATCH_QUERY, msg.GetReadData(), msg.GetSize() );
+		Sys_Sleep(100);
+		endTimeSeconds = Sys_Milliseconds() / 1000;
+	}
 }
 
 /*
@@ -4674,7 +4680,7 @@ void idSessionLocal::HandleDedicatedServerQueryRequest( lobbyAddress_t& remoteAd
 	if( canJoin )
 	{
 		serverInfo_t serverInfo;
-		serverInfo.joinable = ( session->GetState() >= idSession::LOADING );
+		serverInfo.joinable = ( session->GetState() >= idSession::PARTY_LOBBY );
 		
 		if( !net_headlessServer.GetBool() )
 		{
