@@ -73,6 +73,11 @@
 	"#str_00183" "OPZIONI VIDEO"
 	"#str_02170" "Personalizza impostazioni video"
 	"#str_swf_cc" "Sottotitoli"
+	"#str_swf_create_private" "Inizia il gioco"
+	"#str_swf_create_desc" "Prepara e Inizia una Partita"
+	"#str_swf_pwf" "Trova lobby"
+	"#str_swf_pwf_desc" "Trova lobby per altri giocatori nella tua rete"
+	"#str_swf_pwf_heading" "CERCATORE DI ATRIO"
 // 	"#str_swf_custom_game" "Nome mod"
 // 	"#str_swf_start_map" "Prima mappa da caricare"
 }

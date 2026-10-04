@@ -176,10 +176,11 @@ void idMenuScreen_Shell_GameLobby::Update()
 			option.Append( "#str_swf_invite_only" );	// Toggle privacy
 			menuOptions.Append( option );
 			option.Clear();
-			
+#if 0
 			option.Append( "#str_swf_invite_friends" );	// Invite Friends
 			menuOptions.Append( option );
 			option.Clear();
+#endif
 			
 			idMenuWidget_Button* buttonWidget = NULL;
 			int index = 0;
@@ -207,6 +208,7 @@ void idMenuScreen_Shell_GameLobby::Update()
 				buttonWidget->SetDescription( "#str_swf_toggle_privacy_desc" );
 			}
 			index++;
+#if 0
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, GAME_CMD_INVITE, 3 );
 			buttonWidget = dynamic_cast< idMenuWidget_Button* >( &options->GetChildByIndex( index ) );
@@ -215,13 +217,14 @@ void idMenuScreen_Shell_GameLobby::Update()
 				buttonWidget->SetDescription( "#str_swf_invite_desc" );
 			}
 			index++;
+#endif
 			
 			options->SetListData( menuOptions );
 			
 		}
 		else if( session->GetActivePlatformLobbyBase().IsPeer() )
 		{
-		
+#if 0
 			if( !isPeer )
 			{
 			
@@ -244,7 +247,7 @@ void idMenuScreen_Shell_GameLobby::Update()
 				
 				options->SetListData( menuOptions );
 			}
-			
+#endif
 			isPeer = true;
 			isHost = false;
 		}
@@ -327,7 +330,7 @@ void idMenuScreen_Shell_GameLobby::ShowScreen( const mainMenuTransition_t transi
 	{
 		menuOptions.Clear();
 		idList< idStr > option;
-		
+#if 0
 		if( options != NULL )
 		{
 			option.Append( "#str_swf_invite_friends" );	// Invite Friends
@@ -345,7 +348,7 @@ void idMenuScreen_Shell_GameLobby::ShowScreen( const mainMenuTransition_t transi
 			
 			options->SetListData( menuOptions );
 		}
-		
+#endif
 		longCountdown = Sys_Milliseconds() + WAIT_START_TIME_LONG;
 		longCountRemaining = longCountdown;
 		shortCountdown = Sys_Milliseconds() + WAIT_START_TIME_SHORT;
@@ -809,12 +812,14 @@ void idMenuScreen_Shell_GameLobby::UpdateLobby()
 			}
 			else if( menuOptions.Num() > 0 )
 			{
+#if 0
 				if( menuOptions[ menuOptions.Num() - 1 ][0] != "#str_swf_invite_friends" )
 				{
 					menuOptions[ menuOptions.Num() - 1 ][0] = "#str_swf_invite_friends";	// invite Xbox LIVE party
 					options->SetListData( menuOptions );
 					options->Update();
 				}
+#endif
 			}
 		}
 	}

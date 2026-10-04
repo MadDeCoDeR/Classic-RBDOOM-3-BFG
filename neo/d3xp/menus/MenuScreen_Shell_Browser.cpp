@@ -284,7 +284,7 @@ void idMenuScreen_Shell_GameBrowser::OnServerListReady()
 	for( int i = 0; i < session->NumServers(); ++i )
 	{
 		const serverInfo_t* const server = session->ServerInfo( i );
-		if( server != NULL && server->joinable )
+		if( server != NULL && server->joinable && idStr::Cmp(server->serverName.c_str(), session->GetLocalUserName(0)))
 		{
 			idPair< serverInfo_t, int >& serverPair = servers.Alloc();
 			serverPair.first = *server;

@@ -233,9 +233,11 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 			menuOptions.Append( option );
 			option.Clear();
 #endif
+#if 0
 			option.Append( "#str_swf_invite_friends_upper" );	// settings
 			menuOptions.Append( option );
 			option.Clear();
+#endif
 			option.Append( "#str_swf_leave_game" );	// leave game
 			menuOptions.Append( option );
 			
@@ -259,6 +261,7 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 			}
 			index++;
 #endif
+#if 0
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_INVITE_FRIENDS );
 			buttonWidget = dynamic_cast< idMenuWidget_Button* >( &options->GetChildByIndex( index ) );
@@ -267,6 +270,7 @@ void idMenuScreen_Shell_Pause::ShowScreen( const mainMenuTransition_t transition
 				buttonWidget->SetDescription( "#str_swf_invite_desc" );
 			}
 			index++;
+#endif
 			options->GetChildByIndex( index ).ClearEventActions();
 			options->GetChildByIndex( index ).AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, PAUSE_CMD_LEAVE );
 			buttonWidget = dynamic_cast< idMenuWidget_Button* >( &options->GetChildByIndex( index ) );
