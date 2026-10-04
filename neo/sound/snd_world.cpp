@@ -51,6 +51,7 @@ idCVar s_volume_self( "s_volume_self", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume i
 idCVar s_volume_ui("s_volume_ui", "0", CVAR_ARCHIVE | CVAR_FLOAT, "volume in dB for ui");
 idCVar s_useEAX( "s_useEAX", "1", CVAR_ARCHIVE | CVAR_BOOL, "Set if you want to use EAX audio (efx files required)");
 idCVar s_useCC( "s_useCC", "1", CVAR_ARCHIVE | CVAR_BOOL, "Set if you want to use Subtitles (ccsript files are required)");
+idCVar s_debugEAX("s_debugEAX", "0", CVAR_BOOL, "Set if you want to check debug logs fro EAX");
 extern idCVar s_noSound;
 
 extern void WriteDeclCache( idDemoFile* f, int demoCategory, int demoCode, declType_t  declType );
@@ -73,7 +74,9 @@ idSoundWorldLocal::idSoundWorldLocal()
 	listener.pos.Zero();
 	listener.id = -1;
 	listener.area = 0;
+	listener.name = idStr("default");
 	EAXarea = -1;
+	EAXareaName = idStr("default");
 	shakeAmp = 0.0f;
 	currentCushionDB = DB_SILENCE;
 	
@@ -191,8 +194,9 @@ void idSoundWorldLocal::PlaceListener( const idVec3& origin, const idMat3& axis,
 	listener.axis = axis;
 	listener.pos = origin;
 	listener.id = id;
-	listener.name = locationName;
-	
+	listener.name = idStr(locationName);
+	listener.name.ToLower();
+
 	if( renderWorld )
 	{
 		listener.area = renderWorld->PointInArea( origin );	// where are we?
@@ -358,23 +362,37 @@ void idSoundWorldLocal::Update()
 	if (soundSystemLocal.efxloaded) {
 		int EnvironmentID = -1;
 		idSoundEffect* effect = NULL;
-		if (EAXarea != listener.area) {
+		if (EAXarea != listener.area || idStr::Cmp(listener.name.c_str(), EAXareaName.c_str())) {
 			idStr defaultStr("default");
 			idStr listenerAreaStr(listener.area);
-			soundSystemLocal.EFXDatabase.FindEffect(listenerAreaStr, &effect, &EnvironmentID);
+			if (s_debugEAX.GetBool()) {
+				common->Printf("EAX DEBUG: Trying to find effect for area: %s or %s\n", listenerAreaStr.c_str(), listener.name.c_str());
+			}
+			soundSystemLocal.EFXDatabase.FindEffect(listener.name, &effect, &EnvironmentID);
 			if (!effect)
-				soundSystemLocal.EFXDatabase.FindEffect(listener.name, &effect, &EnvironmentID);
+				soundSystemLocal.EFXDatabase.FindEffect(listenerAreaStr, &effect, &EnvironmentID);
 			if (!effect)
 				soundSystemLocal.EFXDatabase.FindEffect(defaultStr, &effect, &EnvironmentID);
+
+			if (s_debugEAX.GetBool()) {
+				if (effect != NULL) {
+					common->Printf("EAX DEBUG: Found effect: %s\n", effect->name.c_str());
+				}
+				else {
+					common->Printf("EAX DEBUG: Found No effect\n");
+				}
+			}
 		}
 		else {
 			EnvironmentID = listener.id;
 		}
+		
 		// only update if change in settings 
 		if (listener.id != EnvironmentID) {
 			soundSystemLocal.hardware->UpdateEAXEffect(effect);
 			if (soundSystemLocal.hardware->IsReverbSupported()) {
 				EAXarea = listener.area;
+				EAXareaName = idStr(listener.name.c_str());
 			}
 			listener.id = EnvironmentID;
 		}
@@ -836,14 +854,14 @@ void idSoundWorldLocal::ResolveOrigin( const int stackDepth, const soundPortalTr
 	soundPortalTrace_t newStack;
 	newStack.portalArea = soundArea;
 	newStack.prevStack = prevStack;
-	
+
 	int numPortals = renderWorld->NumPortalsInArea( soundArea );
 	for( int p = 0; p < numPortals; p++ )
 	{
 		exitPortal_t re = renderWorld->GetPortal( soundArea, p );
-		
+
 		float occlusionDistance = 0;
-		
+
 		// air blocking windows will block sound like closed doors
 		if( ( re.blockingBits & ( PS_BLOCK_VIEW | PS_BLOCK_AIR ) ) )
 		{
@@ -851,14 +869,14 @@ void idSoundWorldLocal::ResolveOrigin( const int stackDepth, const soundPortalTr
 			// continue;
 			occlusionDistance = s_doorDistanceAdd.GetFloat();
 		}
-		
+
 		// what area are we about to go look at
 		int otherArea = re.areas[0];
 		if( re.areas[0] == soundArea )
 		{
 			otherArea = re.areas[1];
 		}
-		
+
 		// if this area is already in our portal chain, don't bother looking into it
 		const soundPortalTrace_t* prev;
 		for( prev = prevStack ; prev ; prev = prev->prevStack )
@@ -872,13 +890,13 @@ void idSoundWorldLocal::ResolveOrigin( const int stackDepth, const soundPortalTr
 		{
 			continue;
 		}
-		
+
 		// pick a point on the portal to serve as our virtual sound origin
 		idVec3	source;
-		
+
 		idPlane	pl;
 		re.w->GetPlane( pl );
-		
+
 		float	scale;
 		idVec3	dir = listener.pos - soundOrigin;
 		if( !pl.RayIntersection( soundOrigin, dir, scale ) )
@@ -888,33 +906,33 @@ void idSoundWorldLocal::ResolveOrigin( const int stackDepth, const soundPortalTr
 		else
 		{
 			source = soundOrigin + scale * dir;
-			
+
 			// if this point isn't inside the portal edges, slide it in
 			for( int i = 0 ; i < re.w->GetNumPoints() ; i++ )
 			{
 				int j = ( i + 1 ) % re.w->GetNumPoints();
 				idVec3	edgeDir = ( *( re.w ) )[j].ToVec3() - ( *( re.w ) )[i].ToVec3();
 				idVec3	edgeNormal;
-				
+
 				edgeNormal.Cross( pl.Normal(), edgeDir );
-				
+
 				idVec3	fromVert = source - ( *( re.w ) )[j].ToVec3();
-				
+
 				float d = edgeNormal * fromVert;
 				if( d > 0 )
 				{
 					// move it in
 					float div = edgeNormal.Normalize();
 					d /= div;
-					
+
 					source -= d * edgeNormal;
 				}
 			}
 		}
-		
+
 		idVec3 tlen = source - soundOrigin;
 		float tlenLength = tlen.LengthFast();
-		
+
 		ResolveOrigin( stackDepth + 1, &newStack, otherArea, dist + tlenLength + occlusionDistance, source, def );
 	}
 }
