@@ -357,6 +357,7 @@ idSessionLocalWin::CancelListServers
 */
 void idSessionLocalWin::CancelListServers()
 {
+	dedicatedServerSearch->Clear();
 }
 
 /*
@@ -386,6 +387,13 @@ idSessionLocalWin::ConnectToServer
 */
 void idSessionLocalWin::ConnectToServer( int i )
 {
+	Cancel();
+	
+	if( signInManager->GetMasterLocalUser() == NULL )
+	{
+		signInManager->RegisterLocalUser( 0 );
+	}
+	
 	lobbyConnectInfo_t serverAddr;
 	dedicatedServerSearch->GetAddrAtIndex(serverAddr.netAddr, i);
 
@@ -575,6 +583,16 @@ idSessionLocalWin::EnumerateDownloadableContent
 */
 void idSessionLocalWin::EnumerateDownloadableContent()
 {
+	if (::op) {
+		int dlcs = ::op->openDLC()->CountDLCs();
+		for (int i = 0; i < dlcs; i++) {
+			OpenContent opDlc = ::op->openDLC()->GetDLCByIndex(i);
+			contentData_t dlc = {};
+			dlc.dlcID = atoi(opDlc.id);
+			dlc.displayName = idStr(opDlc.name);
+			downloadedContent.Insert(dlc);
+		}
+	}
 }
 
 /*

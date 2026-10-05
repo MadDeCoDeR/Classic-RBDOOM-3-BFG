@@ -37,22 +37,6 @@ enum browserCommand_t
 
 static const int NUM_SERVER_LIST_ITEMS = 10;
 
-class ListServersThread: public idSysThread {
-
-	public:
-		ListServersThread(idMenuScreen_Shell_GameBrowser* menuScreen) {
-			this->menuScreen = menuScreen;
-		}
-		virtual int			Run()
-		{
-			session->ListServers( MakeCallback( menuScreen, &idMenuScreen_Shell_GameBrowser::OnServerListReady ) );
-			return 0;
-		}
-	private:
-		idMenuScreen_Shell_GameBrowser* menuScreen;
-};
-ListServersThread* listServersThread;
-
 /*
 ================================================
 idPair is is a template class Container composed of two objects, which can be of
@@ -211,7 +195,6 @@ void idMenuScreen_Shell_GameBrowser::ShowScreen( const mainMenuTransition_t tran
 	mgr->HidePacifier();
 	
 	idMenuScreen::ShowScreen( transitionType );
-	listServersThread = new ListServersThread(this);
 	UpdateServerList();
 }
 
@@ -230,8 +213,7 @@ void idMenuScreen_Shell_GameBrowser::HideScreen( const mainMenuTransition_t tran
 	
 	mgr->HidePacifier();
 	
-	listServersThread->StopThread();
-	delete(listServersThread);
+	session->CancelListServers();
 	
 	idMenuScreen::HideScreen( transitionType );
 }
@@ -261,7 +243,7 @@ void idMenuScreen_Shell_GameBrowser::UpdateServerList()
 	// then gets called after that.
 	mgr->ShowPacifier( "#str_online_mpstatus_searching" );
 	
-	listServersThread->StartThread("NET_SERVER_LISTING", CORE_ANY);
+	session->ListServers( MakeCallback( this, &idMenuScreen_Shell_GameBrowser::OnServerListReady ) );
 }
 
 /*
