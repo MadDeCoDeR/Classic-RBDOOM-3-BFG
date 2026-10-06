@@ -160,6 +160,19 @@ net_interface	netint[MAX_INTERFACES];
 
 /*
 ========================
+NET_ErrorCode
+========================
+*/
+int NET_ErrorCode() {
+#ifndef _WIN32
+	return errno;
+#else // _WIN32
+	return WSAGetLastError();
+#endif
+}
+
+/*
+========================
 NET_ErrorString
 ========================
 */
@@ -852,7 +865,11 @@ void Net_SendUDPPacket( int netSocket, int length, const void* data, const netad
 		
 		// NOTE: EWOULDBLOCK used to be silently ignored,
 		// but that means the packet will be dropped so I don't feel it's a good thing to ignore
-		idLib::Printf( "UDP sendto error - packet dropped: %s\n", NET_ErrorString() );
+		char msgbuf[256];
+		Sys_ParseError(NET_ErrorCode(), msgbuf, 256);
+		/*char callstack[5000];
+		Sys_GetCallStack(callstack);*/
+		idLib::Printf( "UDP sendto error - packet dropped: %s\n", msgbuf);
 	}
 }
 
