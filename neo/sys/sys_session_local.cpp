@@ -4674,7 +4674,7 @@ void idSessionLocal::HandleDedicatedServerQueryRequest( lobbyAddress_t& remoteAd
 	if( canJoin )
 	{
 		serverInfo_t serverInfo;
-		serverInfo.joinable = ( session->GetState() >= idSession::PARTY_LOBBY );
+		serverInfo.joinable = ( session->GetState() >= idSession::GAME_LOBBY );
 		
 		if( !net_headlessServer.GetBool() )
 		{
