@@ -30,19 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "Precompiled.h"
 #include "globaldata.h"
 
-
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <string>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <errno.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <sys/ioctl.h>
-
 #include "i_system.h"
 #include "d_event.h"
 #include "d_net.h"
