@@ -343,7 +343,7 @@ SOCKET			insocket;
 int		sendsocket;
 int			insocket;
 #endif
-struct	sockaddr_in	sendaddress[MAXNETNODES];
+netadr_t	sendaddress[MAXNETNODES];
 int     dmtime;
 // i_net_xbox.vars end // 
 //  i_system.vars begin // 
