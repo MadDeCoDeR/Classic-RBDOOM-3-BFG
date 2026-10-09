@@ -1009,11 +1009,6 @@ list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/
 list(REMOVE_ITEM DOOMCLASSIC_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/s_efx.h)
 list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_sound_win32.cpp)
 list(REMOVE_ITEM DOOMCLASSIC_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_sound_win32.h)
-if(NOT MSVC)
-list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_net_win32.cpp)
-elseif(MSVC)
-list(REMOVE_ITEM DOOMCLASSIC_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../doomclassic/doom/i_net_unix.cpp)
-endif()
 
 file(GLOB TIMIDITY_INCLUDES libs/timidity/*.h)
 file(GLOB TIMIDITY_SOURCES libs/timidity/*.cpp)
