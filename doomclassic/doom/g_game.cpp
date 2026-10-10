@@ -250,7 +250,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, idUserCmdMgr * userCmdMgr, int newTics )
 
 	ticcmd_t*	base;
 
-	if (::g->demoplayback || ::g->demorecording) {
+	if (::g->demoplayback || ::g->demorecording || ::g->netgame) {
 		com_engineHz_denominator = 100LL * TICRATE;
 		com_engineHz_latched = TICRATE;
 		
