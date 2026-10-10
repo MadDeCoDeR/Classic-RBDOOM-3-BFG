@@ -258,7 +258,12 @@ void PacketGet (void)//GK:Restored source code from the vanilla DOOM source code
 
 static int I_TrySetupNetwork(void) //GK:Manualy init winsock
 {
-		return 1;
+	UDP.bytesRead = 0;
+	UDP.bytesWritten = 0;
+	UDP.packetsRead = 0;
+	UDP.packetsWritten = 0;
+	UDP.SetSilent(false);
+	return 1;
 }
 
 //
@@ -335,6 +340,9 @@ void I_InitNetwork (void)
 				break;
 
 			Sys_StringToNetAdr(::g->myargv[i], &::g->sendaddress[::g->doomcom.numnodes], true);
+			if (::g->sendaddress[::g->doomcom.numnodes].port == 0) {
+				::g->sendaddress[::g->doomcom.numnodes].port = DOOMPORT;
+			}
 #if 0
 			::g->sendaddress[::g->doomcom.numnodes].sin_family = AF_INET;
 			::g->sendaddress[::g->doomcom.numnodes].sin_port = htons(DOOMPORT);
