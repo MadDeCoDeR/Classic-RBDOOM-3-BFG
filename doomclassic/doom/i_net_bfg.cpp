@@ -174,7 +174,7 @@ void PacketSend (void)//GK:Restored source code from the vanilla DOOM source cod
 		sw.cmds[c].buttons = ::g->netbuffer->cmds[c].buttons;
 	}
 
-	UDP.SendPacket(::g->sendaddress[::g->doomcom.remotenode], &sw, sizeof(sw));
+	UDP.SendPacket(::g->sendaddress[::g->doomcom.remotenode], &sw, ::g->doomcom.datalength);
 	//printf ("sending %i\n",gametic);
 #if 0
 	c = sendto(::g->sendsocket, (char *)&sw, ::g->doomcom.datalength
@@ -199,7 +199,8 @@ void PacketGet (void)//GK:Restored source code from the vanilla DOOM source code
 	netadr_t	fromaddress;
 	int			fromlen;
 	doomdata_t		sw;
-
+	int prevBufferSize = 0;
+	prevBufferSize = UDP.bytesRead;
 	c = UDP.GetPacket(fromaddress, &sw, fromlen, sizeof(sw));
 #if 0
 	fromlen = sizeof(fromaddress);
@@ -207,14 +208,16 @@ void PacketGet (void)//GK:Restored source code from the vanilla DOOM source code
 		, (struct sockaddr *)&fromaddress,(socklen_t*) &fromlen);
 	//GK:do similar to vanilla check ups using winsock
 #endif
-	if (c < 0)
+	if (c == false)
 	{
-		int err = GetLastSocketError();
+		/*int err = GetLastSocketError();
 		if (err != EWOULDBLOCK)
-			I_Error("GetPacket: %s", strerror(err));
+			I_Error("GetPacket: %s", strerror(err));*/
 		::g->doomcom.remotenode = -1;		// no packet
 		return;
 	}
+
+	c = UDP.bytesRead - prevBufferSize;
 
 	{
 		static int first = 1;
