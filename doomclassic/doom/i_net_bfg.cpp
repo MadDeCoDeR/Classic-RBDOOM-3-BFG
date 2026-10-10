@@ -169,6 +169,7 @@ void PacketSend (void)//GK:Restored source code from the vanilla DOOM source cod
 		sw.cmds[c].forwardmove = ::g->netbuffer->cmds[c].forwardmove;
 		sw.cmds[c].sidemove = ::g->netbuffer->cmds[c].sidemove;
 		sw.cmds[c].angleturn = htons(::g->netbuffer->cmds[c].angleturn);
+		sw.cmds[c].angleview = htons(::g->netbuffer->cmds[c].angleview);
 		sw.cmds[c].consistancy = htons(::g->netbuffer->cmds[c].consistancy);
 		//sw.cmds[c].chatchar = netbuffer->cmds[c].chatchar;
 		sw.cmds[c].buttons = ::g->netbuffer->cmds[c].buttons;
@@ -228,7 +229,7 @@ void PacketGet (void)//GK:Restored source code from the vanilla DOOM source code
 
 	// find remote node number
 	for (i = 0; i< ::g->doomcom.numnodes; i++)
-		if (!idStr::Cmp(idStr(fromaddress.ip), idStr(::g->sendaddress[i].ip)))
+		if (fromaddress.ip[0] == ::g->sendaddress[i].ip[0] && fromaddress.ip[1] == ::g->sendaddress[i].ip[1] && fromaddress.ip[2] == ::g->sendaddress[i].ip[2] && fromaddress.ip[3] == ::g->sendaddress[i].ip[3])
 			break;
 
 	if (i == ::g->doomcom.numnodes)
@@ -253,6 +254,7 @@ void PacketGet (void)//GK:Restored source code from the vanilla DOOM source code
 		::g->netbuffer->cmds[c].forwardmove = sw.cmds[c].forwardmove;
 		::g->netbuffer->cmds[c].sidemove = sw.cmds[c].sidemove;
 		::g->netbuffer->cmds[c].angleturn = ntohs(sw.cmds[c].angleturn);
+		::g->netbuffer->cmds[c].angleview = ntohs(sw.cmds[c].angleview);
 		::g->netbuffer->cmds[c].consistancy = ntohs(sw.cmds[c].consistancy);
 		//netbuffer->cmds[c].chatchar = sw.cmds[c].chatchar;
 		::g->netbuffer->cmds[c].buttons = sw.cmds[c].buttons;
