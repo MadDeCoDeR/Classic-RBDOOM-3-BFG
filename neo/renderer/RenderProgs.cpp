@@ -181,6 +181,8 @@ void idRenderProgManager::Init()
 		// RB begin
 		{ BUILTIN_DEBUG_SHADOWMAP, "debug_shadowmap.vfp", "", 0, false, SHADER_STAGE_DEFAULT, LAYOUT_DRAW_VERT },
 		// RB end
+
+		{ BUILTIN_CLASSIC, "classic.vfp", "_SRGB", IDBIT( USE_SRGB ), false, SHADER_STAGE_DEFAULT, LAYOUT_DRAW_VERT }, //GK: Classic DOOM Screen Shader. Keep it with sRGB in order to keep accurate colors on both HDR or not
 	};
 	int numBuiltins = sizeof( builtins ) / sizeof( builtins[0] );
 	

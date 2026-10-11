@@ -598,7 +598,12 @@ public:
 		BindShader_Builtin( BUILTIN_DEBUG_SHADOWMAP );
 	}
 	// RB end
-	
+	//GK: Begin
+	void	BindShader_Classic( )
+	{
+		BindShader_Builtin( BUILTIN_CLASSIC );
+	}
+	//GK: End
 	// the joints buffer should only be bound for vertex programs that use joints
 	bool		ShaderUsesJoints() const
 	{
@@ -722,6 +727,8 @@ private:
 		BUILTIN_MOTION_BLUR,
 		
 		BUILTIN_DEBUG_SHADOWMAP,
+
+		BUILTIN_CLASSIC,
 		
 		MAX_BUILTINS
 	};

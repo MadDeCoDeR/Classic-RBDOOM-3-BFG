@@ -83,7 +83,7 @@ idCVar timescale( "timescale", "1", CVAR_SYSTEM | CVAR_FLOAT, "Number of game fr
 
 extern idCVar in_joystickRumble;
 extern idCVar r_aspectcorrect; //GK: also here
-extern idCVar r_clblurry;
+extern idCVar r_useClShader;
 extern idCVar in_photomode;
 extern idCVar stereoRender_enable;
 extern idCVar cl_inGUI;

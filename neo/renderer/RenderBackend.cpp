@@ -3816,7 +3816,10 @@ int idRenderBackend::DrawShaderPasses( const drawSurf_t* const* const drawSurfs,
 			
 			renderLog.OpenBlock( "Old Shader Stage" );
 			GL_Color( color );
-			
+			//GK: On Classic DOOM apply it's own builtin shader if the user want to, otherwise apply the shader that was applied in the first place (vertex_color)
+			if (pStage->texture.image && r_useClShader.GetBool() && !idStr::Cmp(pStage->texture.image->GetName(), "_doomClassic")) {
+				renderProgManager.BindShader_Classic();
+			} else
 			if( surf->space->isGuiSurface )
 			{
 				// Force gui surfaces to always be SVC_MODULATE
@@ -5469,6 +5472,13 @@ void idRenderBackend::DrawViewInternal( const viewDef_t* _viewDef, const int ste
 		{
 			guiScreenOffset = stereoEye * _viewDef->renderView.stereoScreenSeparation;
 		}
+		//GK: Set rpWindowCoord to the Virtual resolution for Classic DOOM Screen Shaders
+		float windowCoordParm[4];
+		windowCoordParm[0] = 1.0f / renderSystem->GetVirtualWidth();
+		windowCoordParm[1] = 1.0f / renderSystem->GetVirtualHeight();
+		windowCoordParm[2] = renderSystem->GetVirtualWidth();
+		windowCoordParm[3] = renderSystem->GetVirtualHeight();
+		SetFragmentParm( RENDERPARM_WINDOWCOORD, windowCoordParm ); // rpWindowCoord
 		processed = DrawShaderPasses( drawSurfs, numDrawSurfs, guiScreenOffset, stereoEye );
 		renderLog.CloseMainBlock();
 	}
