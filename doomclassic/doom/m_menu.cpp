@@ -98,7 +98,7 @@ extern idCVar cl_jump;
 extern idCVar cl_showStats;
 
 extern idCVar cl_cursor;
-extern idCVar r_clblurry;
+extern idCVar r_useClShader;
 extern idCVar cl_engineHz_interp;
 extern idCVar cl_engineHz;
 extern idCVar in_joyjpn;
@@ -2114,7 +2114,7 @@ void M_Refresh(int choice) {
 }
 
 void M_Blurry(int choice) {
-	r_clblurry.SetBool(!r_clblurry.GetBool());
+	r_useClShader.SetBool(!r_useClShader.GetBool());
 }
 
 void M_AdvGr(int choice) {

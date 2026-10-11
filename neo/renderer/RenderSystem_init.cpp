@@ -294,7 +294,7 @@ idCVar r_exposure( "r_exposure", "1", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_FLOAT,
 idCVar r_aspect("r_aspect", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "0 = original, 1 = streched"); //GK: Special cvar for classic DOOM aspect ratio
 idCVar r_aspectcorrect("r_aspectcorrect", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL|CVAR_INIT, "0 = original, 1 = corrected"); //GK: Special cvar for classic DOOM aspect ratio correction
 idCVar r_clight("r_clight", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER | CVAR_INIT, "0 = original, 1 = Dark, 2 = Bright"); //GK: Special cvar for classic DOOM Light
-idCVar r_clblurry("r_clblurry", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL | CVAR_INIT, "Enables/Disbles Classic DOOM Blurry effects");//GK: Useless since the new Rendering Code of 1.2.0
+idCVar r_useClShader("r_useClShader", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL | CVAR_INIT, "Enables/Disbles Classic DOOM's Screen Shader");//GK: Useless since the new Rendering Code of 1.2.0
 extern idCVar swf_cursorDPI;
 extern idCVar cl_HUD;
 extern idCVar cl_ScreenSize;
