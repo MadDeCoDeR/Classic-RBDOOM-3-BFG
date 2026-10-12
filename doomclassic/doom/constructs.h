@@ -500,14 +500,15 @@ menu_t  temp_ResDef = {
 };
 memcpy(&::g->ResDef, &temp_ResDef, sizeof(temp_ResDef));
 
-menuitem_t temp_AdvGMenu[2] = {
+menuitem_t temp_AdvGMenu[3] = {
 {1,"M_LGT", M_Light,'l'},//GK: Allow the player to switch lighting mode
-{ 1,"M_FUSS", M_Fuss,'f' }
+{ 1,"M_FUSS", M_Fuss,'f' },
+{ 1,"M_SHADER", M_Shader,'s' }
 
 };
 memcpy(::g->AdvGMenu, temp_AdvGMenu, sizeof(temp_AdvGMenu));
 menu_t  temp_AdvGDef = {
-	2,
+	3,
 	&::g->VideoDef,
 	::g->AdvGMenu,
 	M_DrawAdvG,

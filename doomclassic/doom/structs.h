@@ -236,6 +236,7 @@ typedef enum
 {
 	light, //GK: Use this value for light modes
 	fuzz,
+	shader,
 	advg_end
 } advG_e;
 typedef enum

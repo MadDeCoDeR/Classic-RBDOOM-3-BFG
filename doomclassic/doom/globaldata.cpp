@@ -65,7 +65,7 @@ void M_Sync(int choice);
 void M_SetRes(int choice);
 void M_Refresh(int choice);
 void M_Framerate(int choice);
-void M_Blurry(int choice);
+void M_Shader(int choice);
 void M_AdvGr(int choice);
 void M_ChangeSensitivity(int choice);
 void M_SfxVol(int choice);
