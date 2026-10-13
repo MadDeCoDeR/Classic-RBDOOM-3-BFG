@@ -1102,7 +1102,7 @@ P_DamageMobj
 			}
 	}
 	if (source != NULL) {
-		if ((source->player || target-> player) && !::g->demoplayback)
+		if ((source->player || target-> player) && (source == ::g->players[::g->consoleplayer].mo || target == ::g->players[::g->consoleplayer].mo) && !::g->demoplayback)
 			DoomLib::SetRumble(idMath::ClampInt(0, UINT16_MAX, (damage * (UINT16_MAX * 4))/ UINT16_MAX), 100 * (damage / 10.0f), idMath::ClampInt(0, UINT16_MAX, (damage * (UINT16_MAX * 2)) / UINT16_MAX), 100 * (damage / 5.0f));
 	}
 
