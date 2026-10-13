@@ -95,7 +95,7 @@ void P_SetPsprite(player_t* player, int position, int stnum);
 //
 void	P_PlayerThink (player_t* player);
 void	P_CircleWeapons(player_t* player, int nextPrevWeapon);
-
+bool    P_IsShooterPlayer(mobj_t* mo);
 
 //
 // P_MOBJ
