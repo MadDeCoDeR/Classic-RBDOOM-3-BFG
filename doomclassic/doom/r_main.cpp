@@ -935,7 +935,7 @@ void R_SetupFrame (player_t* player)
 	// get the vertical mouse
 	// position and shear the view based on that
 	extern angle_t GetViewAngle2();
-	if (cl_freelook.GetBool() && !::g->demorecording && !::g->demoplayback && ::g->gamestate != GS_DEMOLEVEL && !::g->mouselock) {
+	if (cl_freelook.GetBool() && !::g->demorecording && !::g->demoplayback && !::g->netgame && ::g->gamestate != GS_DEMOLEVEL && !::g->mouselock) {
 		::g->mouseposy = (int)GetViewAngle2() >> ANGLETOFINESHIFT;
 	}
 	else {

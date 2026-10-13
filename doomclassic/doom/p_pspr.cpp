@@ -566,7 +566,7 @@ A_Punch
 	angle += (P_Random()-P_Random())<<18;
 	slope = P_AimLineAttack (player->mo, angle, player->mo->info->meleeRange);
 	//GK: Move puffs up and down based on player's view
-	if (cl_freelook.GetBool() && !::g->demorecording && !::g->demoplayback && ::g->gamestate != GS_DEMOLEVEL && !::g->mouselock)
+	if (cl_freelook.GetBool() && !::g->demorecording && !::g->demoplayback && !::g->netgame && ::g->gamestate != GS_DEMOLEVEL && !::g->mouselock)
 	{
 		angle -= 2 << 26;
 		slope = -(((::g->mouseposy) << FRACBITS) / (::g->SCREENHEIGHT - (127 * (::g->GLOBAL_IMAGE_SCALER/ 3.0f))));
@@ -606,7 +606,7 @@ A_Saw
 	// use meleerange + 1 se the puff doesn't skip the flash
 	slope = P_AimLineAttack (player->mo, angle, player->mo->info->meleeRange+1);
 	//GK: Move puffs up and down based on player's view
-	if (cl_freelook.GetBool() && !::g->demorecording && ::g->gamestate != GS_DEMOLEVEL && !::g->mouselock)
+	if (cl_freelook.GetBool() && !::g->demorecording && !::g->netgame && ::g->gamestate != GS_DEMOLEVEL && !::g->mouselock)
 	{
 		angle -= 2 << 26;
 		slope = -(((::g->mouseposy) << FRACBITS) / (::g->SCREENHEIGHT - (127 * (::g->GLOBAL_IMAGE_SCALER/ 3.0f))));
@@ -745,7 +745,7 @@ void P_BulletSlope (mobj_t*	mo)
 		}
 	}
 	//GK: Move puffs up and down based on player's view
-	if (cl_freelook.GetBool() && !::g->demoplayback && !::g->demorecording && P_IsShooterPlayer(mo) && !::g->mouselock)
+	if (cl_freelook.GetBool() && !::g->demoplayback && !::g->demorecording && !::g->netgame && P_IsShooterPlayer(mo) && !::g->mouselock)
 	{
 		if ((game->GetCVarBool("aa_targetAimAssistEnable") && !::g->linetarget) || !game->GetCVarBool("aa_targetAimAssistEnable")) {
 			::g->bulletslope = -(((::g->mouseposy) << FRACBITS) / (::g->SCREENHEIGHT - (127 * (::g->GLOBAL_IMAGE_SCALER/ 3.0f))));
