@@ -631,5 +631,14 @@ void P_CircleWeapons(player_t* player, int nextPrevWeapon) {
 	
 }
 
+bool    P_IsShooterPlayer(mobj_t* mo) {
+		for(int i = 0; i < ::g->doomcom.numplayers; i++) {
+			if (mo == ::g->players[i].mo) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 
