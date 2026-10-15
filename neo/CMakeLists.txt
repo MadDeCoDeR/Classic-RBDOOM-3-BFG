@@ -1052,7 +1052,7 @@ set(WIN32_RESOURCES
 #else()
 #	list(APPEND WIN32_RESOURCES sys/win32/rc/doom_nomfc.rc)
 #endif()
-
+list(APPEND WIN32_RESOURCES sys/win32/rc/DoomBFA.exe.manifest)
 
 file(GLOB POSIX_INCLUDES sys/posix/*.h)
 file(GLOB POSIX_SOURCES sys/posix/*.cpp)
@@ -1678,7 +1678,6 @@ if(MSVC)
 	set_source_files_properties( ${SHADERS} PROPERTIES VS_TOOL_OVERRIDE "None" )
 
 	list(APPEND RBDOOM3_SOURCES ${WIN32_RESOURCES})
-	list(APPEND RBDOOM3_SOURCES DoomBFA.exe.manifest)
 	add_library(external ${LIB_INCLUDES} ${LIB_SOURCES})
 	target_compile_options(external PRIVATE /WX- /W3 /sdl-)
 	add_custom_target(shaders SOURCES ${SHADERS} DEPENDS copy_shaders)
