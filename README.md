@@ -92,8 +92,6 @@ Note that Doom 3 BFG Edition is available on:
 
 - Steam store: http://store.steampowered.com/app/208200/
 - GOG store: https://www.gog.com/game/doom_3_bfg_edition
-- Bethesda.net store: https://bethesda.net/en/store/product/DO3CBFPCBG01
-- Bethesda.net store (2019): https://bethesda.net/en/store/product/DO3GNGPCBG01
 - Epic Game Store (2019): https://store.epicgames.com/en-US/p/doom-3
 - Windows Store (2019): https://www.xbox.com/en-us/games/store/doom-3/9nsl68d814gc
 
@@ -285,7 +283,7 @@ C) Compiling Project
 
 A) Installing Additional Requirements
 --------------------------------------
-1. Installing XAudio 2.9 (for Windows 7, 8 & 8.1 users ONLY)
+1. Installing XAudio 2.9 (for Windows 7, 8 & 8.1 users ONLY) (DEPRICATED)
 
 	- Download the NuGet package of XAudio 2.9 Redist from here: https://www.nuget.org/packages/Microsoft.XAudio2.Redist/
 	- Rename file extension to zip
@@ -380,7 +378,7 @@ and extract it to the directory on your own Doom 3 BFG directory (/path/to/Doom3
 	- Create a folder named master inside the Game's base/wads folder
 	- Copy and paste all the 20 Master Level wads inside the master folder (from the previous step)
 
-4. XAudio2 backend on Windows
+4. XAudio2 backend on Windows (DEPRECATED)
 
 	- Copy the text with the brackets from the neo/xaudio29redist.txt to neo/vcpkg.json (each entry is separated with comma)
 	- On CMakePresets.json in the windows-base configuration change the value of USE_XAUDIO2_PACKAGE from OFF to ON
@@ -408,17 +406,17 @@ and extract it to the directory on your own Doom 3 BFG directory (/path/to/Doom3
 
 - Flexible build system using CMake
 
-- Linux support (32 and 64 bit)
+- Linux support (64 bit)
 
 - Win64 support
 
 - OS X support (untested on this fork)
 
-- OpenAL Soft sound backend primarily developed for Linux but works on Windows as well
+- OpenAL Soft sound backend
 
 - Bink video support through FFmpeg
 
-- PNG image support
+- PNG & JPEG image support
 
 - Soft shadows using PCF hardware shadow mapping
 
