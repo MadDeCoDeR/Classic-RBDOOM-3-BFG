@@ -51,7 +51,7 @@ If you have questions concerning this license or the applicable additional terms
 idCVar r_waylandcompat( "r_waylandcompat", "0", CVAR_SYSTEM | CVAR_NOCHEAT | CVAR_ARCHIVE, "wayland compatible framebuffer" );
 
 // RB: only relevant if using SDL 2.0
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(_WIN32)
 // only core profile is supported on OS X
 idCVar r_useOpenGL32( "r_useOpenGL32", "2", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #elif defined(__linux__)
@@ -675,7 +675,41 @@ DumpAllDisplayDevices
 */
 void DumpAllDisplayDevices()
 {
-	common->DPrintf( "TODO: DumpAllDisplayDevices\n" );
+	common->Printf("\n");
+	int videoDriverCount = SDL_GetNumVideoDrivers();
+	idStr currentVideoDriver = idStr(SDL_GetCurrentVideoDriver());
+	common->Printf("Video Drivers\n");
+	common->Printf("-------------\n");
+	for (int i = 0; i < videoDriverCount; i++) {
+		idStr videoDriver = idStr(SDL_GetVideoDriver(i));
+		bool isCurrent = videoDriver == currentVideoDriver;
+		common->Printf("%s\t%s\n", (isCurrent ? "*" : " "), videoDriver.c_str());
+	}
+	common->Printf("-------------\n");
+	int displayCount = 0;
+	SDL_DisplayID* displayIds = SDL_GetDisplays(&displayCount);
+	common->Printf("Display Devices\n");
+	common->Printf("-------------\n");
+	for (int i = 0; i < displayCount; i++) {
+		SDL_DisplayID displayId = displayIds[i];
+		common->Printf("%i: %s\n", (i + 1), SDL_GetDisplayName(displayId));
+		common->Printf("--------------------------\n");
+		const SDL_DisplayMode* currentDisplayMode = SDL_GetCurrentDisplayMode(displayId);
+		int modeCount = 0;
+		SDL_DisplayMode** displayModes = SDL_GetFullscreenDisplayModes(displayId, &modeCount);
+		for (int j = 0; j < modeCount; j++) {
+			SDL_DisplayMode* displayMode = displayModes[j];
+			if (displayMode->h < 720) {
+				continue;
+			}
+			const SDL_PixelFormatDetails* pfd = SDL_GetPixelFormatDetails(displayMode->format);
+			bool isCurrent = displayMode->format == currentDisplayMode->format && displayMode->w == currentDisplayMode->w && displayMode->h == currentDisplayMode->h && displayMode->refresh_rate == currentDisplayMode->refresh_rate;
+			common->Printf("%s\tWidth:%i Height:%i Refresh Rate:%3.2fHz bpp:%i-bit\n", (isCurrent ? "*" : " "), displayMode->w, displayMode->h, displayMode->refresh_rate, pfd->bits_per_pixel);
+		}
+
+	}
+	common->Printf("-------------\n");
+	common->Printf("\n");
 }
 
 
