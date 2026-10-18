@@ -295,10 +295,10 @@ static void R_CheckPortableExtensions()
 		glConfig.textureCompressionAvailable = GLEW_ARB_texture_compression != 0 && GLEW_EXT_texture_compression_s3tc != 0;
 	}
 	// GL_EXT_texture_filter_anisotropic
-	glConfig.anisotropicFilterAvailable = GLEW_EXT_texture_filter_anisotropic != 0;
+	glConfig.anisotropicFilterAvailable = (glConfig.glVersion > 4.5) ? GLEW_ARB_texture_filter_anisotropic != 0 : GLEW_EXT_texture_filter_anisotropic != 0;
 	if( glConfig.anisotropicFilterAvailable )
 	{
-		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &glConfig.maxTextureAnisotropy );
+		glGetFloatv((glConfig.glVersion > 4.5) ? GL_MAX_TEXTURE_MAX_ANISOTROPY : GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &glConfig.maxTextureAnisotropy );
 		common->Printf( "   maxTextureAnisotropy: %f\n", glConfig.maxTextureAnisotropy );
 	}
 	else
@@ -1487,9 +1487,8 @@ void idRenderBackend::CheckCVars()
 		{
 			if( globalImages->images[i] )
 			{
-				if (!glConfig.directStateAccess) {
-					globalImages->images[i]->Bind();
-				}
+				//GK: It sucks but some textures needs to be bound when altering their parameters (so much for DSA)
+				globalImages->images[i]->Bind();
 				globalImages->images[i]->SetTexParameters();
 			}
 		}
