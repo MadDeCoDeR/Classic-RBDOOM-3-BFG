@@ -130,13 +130,13 @@ void idMenuScreen_Shell_AdvancedGraphics::Initialize( idMenuHandler* data )
 	control->AddEventAction( WIDGET_EVENT_PRESS ).Set( WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedGraphics::ADV_FIELD_FPPE );
 	options->AddChild( control );
 	
-	control = new(TAG_SWF) idMenuWidget_ControlButton();
+/*	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_TEXT);
 	control->SetLabel("#str_ssgi");	// SSGI
 	control->SetDataSource(&advData, idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSGI);
 	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedGraphics::ADV_FIELD_SSGI);
-	options->AddChild(control);
+	options->AddChild(control);*/
 
 	control = new(TAG_SWF) idMenuWidget_ControlButton();
 	control->SetOptionType(OPTION_SLIDER_TEXT);
@@ -144,6 +144,14 @@ void idMenuScreen_Shell_AdvancedGraphics::Initialize( idMenuHandler* data )
 	control->SetDataSource(&advData, idMenuDataSource_AdvancedGraphics::ADV_FIELD_HALF_LIGHT);
 	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedGraphics::ADV_FIELD_HALF_LIGHT);
+	options->AddChild(control);
+
+	control = new(TAG_SWF) idMenuWidget_ControlButton();
+	control->SetOptionType(OPTION_SLIDER_BAR);
+	control->SetLabel("#str_swf_lodbias");
+	control->SetDataSource(&advData, idMenuDataSource_AdvancedGraphics::ADV_FIELD_LODBIAS);
+	control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
+	control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_AdvancedGraphics::ADV_FIELD_LODBIAS);
 	options->AddChild(control);
 	
 	options->AddEventAction( WIDGET_EVENT_SCROLL_DOWN ).Set( new( TAG_SWF ) idWidgetActionHandler( options, WIDGET_ACTION_EVENT_SCROLL_DOWN_START_REPEATER, WIDGET_EVENT_SCROLL_DOWN ) );
@@ -517,14 +525,22 @@ void idMenuScreen_Shell_AdvancedGraphics::idMenuDataSource_AdvancedGraphics::Adj
 			r_useFilmicPostProcessEffects.SetBool(AdjustOption(r_useFilmicPostProcessEffects.GetBool(), genericValues, genericNumValues, adjustAmount));
 			break;
 		}
-		case ADV_FIELD_SSGI:
+		/*case ADV_FIELD_SSGI:
 		{
 			r_useSSGI.SetBool(AdjustOption(r_useSSGI.GetBool(), genericValues, genericNumValues, adjustAmount));
 			break;
-		}
+		}*/
 		case ADV_FIELD_HALF_LIGHT:
 		{
 			r_useHalfLambertLighting.SetBool(AdjustOption(r_useHalfLambertLighting.GetBool(), genericValues, genericNumValues, adjustAmount));
+			break;
+		}
+		case ADV_FIELD_LODBIAS:
+		{
+			const float percent = LinearAdjust(r_lodBias.GetFloat(), -1.0f, 1.0f, 0.0f, 100.0f);
+			const float adjusted = percent + (float)adjustAmount * 5.0f;
+			const float clamped = idMath::ClampFloat(0.0f, 100.0f, adjusted);
+			r_lodBias.SetFloat(LinearAdjust(clamped, 0.0f, 100.0f, -1.0f, 1.0f));
 			break;
 		}
 	}
@@ -590,10 +606,12 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedGraphics::idMenuDataSource_AdvancedGra
 		{
 			return r_useFilmicPostProcessEffects.GetBool() ? "#str_swf_enabled" : "#str_swf_disabled";
 		}
-		case ADV_FIELD_SSGI:
-			return r_useSSGI.GetBool() ? "#str_swf_enabled" : "#str_swf_disabled";
+		/*case ADV_FIELD_SSGI:
+			return r_useSSGI.GetBool() ? "#str_swf_enabled" : "#str_swf_disabled";*/
 		case ADV_FIELD_HALF_LIGHT:
 			return r_useHalfLambertLighting.GetBool() ? "#str_swf_enabled" : "#str_swf_disabled";
+		case ADV_FIELD_LODBIAS:
+			return LinearAdjust( r_lodBias.GetFloat(), -1.0f, 1.0f, 0.0f, 100.0f );
 	}
 	return false;
 }

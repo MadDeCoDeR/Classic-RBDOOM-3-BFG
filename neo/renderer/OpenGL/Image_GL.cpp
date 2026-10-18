@@ -582,7 +582,7 @@ void idImage::SetTexParametersLegacy() {
 		{
 			glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 		}
-		glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameterf(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		break;
 	case TF_LINEAR:
 		glTexParameterf(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -733,8 +733,11 @@ void idImage::SetTextureParameters() {
 		glTextureParameterf(texnum, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		break;
 	case TF_NEAREST:
-	case TF_NEAREST_MIPMAP:
 		glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTextureParameterf(texnum, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		break;
+	case TF_NEAREST_MIPMAP:
+		glTextureParameterf(texnum, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 		glTextureParameterf(texnum, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		break;
 	default:
@@ -755,23 +758,22 @@ void idImage::SetTextureParameters() {
 			{
 				aniso = 0;
 			}
-			glTextureParameterf(texnum, (glConfig.glVersion == 4.6) ? GL_TEXTURE_MAX_ANISOTROPY : GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
+			glTextureParameterf(texnum, (glConfig.glVersion > 4.5) ? GL_TEXTURE_MAX_ANISOTROPY : GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
 		}
 		else
 		{
-			glTextureParameterf(texnum, (glConfig.glVersion == 4.6) ? GL_TEXTURE_MAX_ANISOTROPY : GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+			glTextureParameterf(texnum, (glConfig.glVersion > 4.5) ? GL_TEXTURE_MAX_ANISOTROPY : GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
 		}
 	}
 
-	// RB: disabled use of unreliable extension that can make the game look worse
-	/*
-	if( glConfig.textureLODBiasAvailable && ( usage != TD_FONT ) )
+	// GK: Restore it because why not. So far on AMD it seems to affect the texture quality from a distance to the player's view
+	
+	if (glConfig.textureLODBiasAvailable && (usage != TD_FONT))
 	{
 		// use a blurring LOD bias in combination with high anisotropy to fix our aliasing grate textures...
-		glTextureParameterf( texnum, (glConfig.glVersion == 4.6) ? GL_TEXTURE_LOD_BIAS : GL_TEXTURE_LOD_BIAS_EXT, r_lodBias.GetFloat() );
+		glTextureParameterf(texnum, (glConfig.glVersion > 4.5) ? GL_TEXTURE_LOD_BIAS : GL_TEXTURE_LOD_BIAS_EXT, r_lodBias.GetFloat());
 	}
-	*/
-	// RB end
+	// GK: End
 
 	// set the wrap/clamp modes
 	switch (repeat)
@@ -807,7 +809,7 @@ void idImage::SetTextureParameters() {
 	// RB: added shadow compare parameters for shadow map textures
 	if (opts.format == FMT_SHADOW_ARRAY)
 	{
-		//glTexParameteri( target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+		//glTextureParameteri( texnum, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 		glTextureParameteri(texnum, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 		glTextureParameteri(texnum, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 	}
