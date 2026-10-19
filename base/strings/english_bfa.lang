@@ -78,6 +78,7 @@
 	"#str_swf_pwf" "Find Lobbies"
 	"#str_swf_pwf_desc" "Find Lobbies for other players in your network"
 	"#str_swf_pwf_heading" "LOBBY FINDER"
+	"#str_swf_lodbias" "Texture Distance LOD"
 //	"#str_swf_custom_game"	"Mod Name"
 //	"#str_swf_start_map"	"First Map to load"
 }

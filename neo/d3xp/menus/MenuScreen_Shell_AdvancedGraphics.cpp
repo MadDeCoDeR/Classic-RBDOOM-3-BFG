@@ -420,6 +420,7 @@ void idMenuScreen_Shell_AdvancedGraphics::idMenuDataSource_AdvancedGraphics::Loa
 	originalSSGI = r_useSSGI.GetInteger();
 	originalColor = r_useHalfLambertLighting.GetInteger();
 	originalShadowMapLod = r_shadowMapLodScale.GetFloat();
+	originalLodBias = r_lodBias.GetFloat();
 }
 
 /*
@@ -537,10 +538,10 @@ void idMenuScreen_Shell_AdvancedGraphics::idMenuDataSource_AdvancedGraphics::Adj
 		}
 		case ADV_FIELD_LODBIAS:
 		{
-			const float percent = LinearAdjust(r_lodBias.GetFloat(), -1.0f, 1.0f, 0.0f, 100.0f);
-			const float adjusted = percent + (float)adjustAmount * 5.0f;
+			const float percent = LinearAdjust(r_lodBias.GetFloat(), 2.0f, -2.0f, 0.0f, 100.0f);
+			const float adjusted = percent + (float)adjustAmount * 2.5f;
 			const float clamped = idMath::ClampFloat(0.0f, 100.0f, adjusted);
-			r_lodBias.SetFloat(LinearAdjust(clamped, 0.0f, 100.0f, -1.0f, 1.0f));
+			r_lodBias.SetFloat(LinearAdjust(clamped, 0.0f, 100.0f, 2.0f, -2.0f));
 			break;
 		}
 	}
@@ -611,7 +612,7 @@ idSWFScriptVar idMenuScreen_Shell_AdvancedGraphics::idMenuDataSource_AdvancedGra
 		case ADV_FIELD_HALF_LIGHT:
 			return r_useHalfLambertLighting.GetBool() ? "#str_swf_enabled" : "#str_swf_disabled";
 		case ADV_FIELD_LODBIAS:
-			return LinearAdjust( r_lodBias.GetFloat(), -1.0f, 1.0f, 0.0f, 100.0f );
+			return LinearAdjust( r_lodBias.GetFloat(), 2.0f, -2.0f, 0.0f, 100.0f );
 	}
 	return false;
 }
@@ -655,6 +656,10 @@ bool idMenuScreen_Shell_AdvancedGraphics::idMenuDataSource_AdvancedGraphics::IsD
 	if (originalColor != r_useHalfLambertLighting.GetInteger())
 	{
 		resetVideo = true;
+		return true;
+	}
+	if( originalLodBias != r_lodBias.GetFloat())
+	{
 		return true;
 	}
 	return false;

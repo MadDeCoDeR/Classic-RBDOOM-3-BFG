@@ -1800,6 +1800,7 @@ public:
 		int originalSSGI;
 		int originalColor;
 		float originalShadowMapLod;
+		float originalLodBias;
 
 		int AdjustOption(int currentValue, const int values[], int numValues, int adjustment);
 		float LinearAdjust(float input, float currentMin, float currentMax, float desiredMin, float desiredMax) const;
