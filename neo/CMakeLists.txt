@@ -1680,13 +1680,16 @@ if(MSVC)
 	list(APPEND RBDOOM3_SOURCES ${WIN32_RESOURCES})
 	add_library(external ${LIB_INCLUDES} ${LIB_SOURCES})
 	target_compile_options(external PRIVATE /WX- /W3 /sdl-)
-	add_custom_target(shaders SOURCES ${SHADERS} DEPENDS copy_shaders)
+	add_custom_target(shaders SOURCES ${SHADERS} DEPENDS copy_shaders_and_strings)
 	set_target_properties(shaders PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/PropertySheet.props")
 	add_custom_command(
-        OUTPUT copy_shaders
+        OUTPUT copy_shaders_and_strings
         COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${CMAKE_CURRENT_SOURCE_DIR}/../base/renderprogs
                 \"$(Working_directory)/base/renderprogs\"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${CMAKE_CURRENT_SOURCE_DIR}/../base/strings
+                \"$(Working_directory)/base/strings\"
 		DEPENDS
 			always_rebuild)
 	add_custom_command(

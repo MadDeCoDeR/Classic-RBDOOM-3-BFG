@@ -34,9 +34,9 @@
             }
         },
         {
-            "label": "Install Shaders",
+            "label": "Install Shaders and Strings",
             "type": "shell",
-            "command": "cp -r -u -v ${workspaceRoot}/base/renderprogs/* ./base/renderprogs",
+            "command": "mkdir -p ./base/renderprogs && cp -r -u -v ${workspaceRoot}/base/renderprogs/* ./base/renderprogs && mkdir -p ./base/strings && cp -r -u -v ${workspaceRoot}/base/strings/* ./base/strings",
             "options": {
                 "cwd": "/absolute/path/to/game/directory/",
             },

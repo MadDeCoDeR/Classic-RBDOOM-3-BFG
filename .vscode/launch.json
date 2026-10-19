@@ -26,7 +26,7 @@
                 "loadAll": true,
                 "exceptionList": ""
             },
-            "preLaunchTask": "Install Shaders",
+            "preLaunchTask": "Install Shaders and Strings",
             
         }
     ]
