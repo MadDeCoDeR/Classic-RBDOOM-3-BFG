@@ -78,6 +78,7 @@
 	"#str_swf_pwf" "Trouver des halls"
 	"#str_swf_pwf_desc" "Trouvez des salons pour d'autres joueurs dans votre réseau"
 	"#str_swf_pwf_heading" "CHERCHEUR DE HALL"
+	"#str_swf_lodbias" "LOD de distance de texture"
 // 	"#str_swf_custom_game" "Nom du mod"
 // 	"#str_swf_start_map" "Première carte à charger"
 }

@@ -78,6 +78,7 @@
 	"#str_swf_pwf" "Buscar vestíbulos"
 	"#str_swf_pwf_desc" "Busca lobbies para otros jugadores en tu red"
 	"#str_swf_pwf_heading" "BUSCADOR DE VESTÍBULO"
+	"#str_swf_lodbias" "Distancia de textura LOD"
 // 	"#str_swf_custom_game" "Nombre del mod"
 // 	"#str_swf_start_map" "Primer mapa para cargar"
 }
