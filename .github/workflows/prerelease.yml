@@ -23,10 +23,10 @@ jobs:
       uses: ./.github/workflows/cmake_cache_windows_x64.yml
       with: 
         build_type: retail
-  windows-32-bit-cache:
-      uses: ./.github/workflows/cmake_cache_windows_x86.yml
-      with: 
-        build_type: retail
+  # windows-32-bit-cache:
+  #     uses: ./.github/workflows/cmake_cache_windows_x86.yml
+  #     with: 
+  #       build_type: retail
   make-release:
     # needs: [ linux-build, windows-build, windows-32-bit-build ]
     runs-on: ubuntu-latest

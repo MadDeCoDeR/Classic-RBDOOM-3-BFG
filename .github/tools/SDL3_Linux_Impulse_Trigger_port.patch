@@ -1,0 +1,12 @@
+diff --git a/ports/sdl3/portfile.cmake b/ports/sdl3/portfile.cmake
+index 0f96b6432a..612d252458 100644
+--- a/ports/sdl3/portfile.cmake
++++ b/ports/sdl3/portfile.cmake
+@@ -6,6 +6,7 @@ vcpkg_from_github(
+     HEAD_REF main
+     PATCHES
+         fix-freebsd.patch
++        linux_impulse_triggers.patch
+ )
+ 
+ string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" SDL_STATIC)

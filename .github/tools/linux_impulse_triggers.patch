@@ -1,0 +1,222 @@
+diff --git a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
+index 4eacef4f3..29de72a1e 100644
+--- a/src/joystick/SDL_joystick.c
++++ b/src/joystick/SDL_joystick.c
+@@ -2311,6 +2311,9 @@ bool SDL_RumbleJoystickTriggers(SDL_Joystick *joystick, Uint16 left_rumble, Uint
+ 
+             if ((left_rumble || right_rumble) && duration_ms) {
+                 joystick->trigger_rumble_expiration = SDL_GetTicks() + SDL_min(duration_ms, SDL_MAX_RUMBLE_DURATION_MS);
++                if (!joystick->trigger_rumble_expiration) {
++                    joystick->trigger_rumble_expiration = 1;
++                }
+             } else {
+                 joystick->trigger_rumble_expiration = 0;
+                 joystick->trigger_rumble_resend = 0;
+diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
+index 1c3cdf916..abb3454e6 100644
+--- a/src/joystick/linux/SDL_sysjoystick.c
++++ b/src/joystick/linux/SDL_sysjoystick.c
+@@ -1650,6 +1650,7 @@ static bool LINUX_JoystickRumble(SDL_Joystick *joystick, Uint16 low_frequency_ru
+ 
+         effect->type = FF_RUMBLE;
+         effect->replay.length = SDL_MAX_RUMBLE_DURATION_MS;
++        effect->direction = 0x0000;
+         effect->u.rumble.strong_magnitude = low_frequency_rumble;
+         effect->u.rumble.weak_magnitude = high_frequency_rumble;
+     } else if (joystick->hwdata->ff_sine) {
+@@ -1684,7 +1685,45 @@ static bool LINUX_JoystickRumble(SDL_Joystick *joystick, Uint16 low_frequency_ru
+ 
+ static bool LINUX_JoystickRumbleTriggers(SDL_Joystick *joystick, Uint16 left_rumble, Uint16 right_rumble)
+ {
+-    return SDL_Unsupported();
++    struct input_event event;
++
++    SDL_AssertJoysticksLocked();
++    if (joystick->hwdata->ff_rumble) {
++        struct ff_effect *effect = &joystick->hwdata->effect;
++
++        effect->type = FF_RUMBLE;
++        effect->replay.length = SDL_MAX_RUMBLE_DURATION_MS;
++        effect->direction = 0x8000;
++        effect->u.rumble.strong_magnitude = left_rumble == 0 ? 1 : left_rumble;
++        effect->u.rumble.weak_magnitude = right_rumble == 0 ? 1 : right_rumble;
++    } else if (joystick->hwdata->ff_sine) {
++        /* Scale and average the two rumble strengths */
++        Sint16 magnitude = (Sint16)(((left_rumble / 2) + (right_rumble / 2)) / 2);
++        struct ff_effect *effect = &joystick->hwdata->effect;
++
++        effect->type = FF_PERIODIC;
++        effect->replay.length = SDL_MAX_RUMBLE_DURATION_MS;
++        effect->u.periodic.waveform = FF_SINE;
++        effect->u.periodic.magnitude = magnitude;
++    } else {
++        return SDL_Unsupported();
++    }
++
++    if (ioctl(joystick->hwdata->fd, EVIOCSFF, &joystick->hwdata->effect) < 0) {
++        /* The kernel may have lost this effect, try to allocate a new one */
++        joystick->hwdata->effect.id = -1;
++        if (ioctl(joystick->hwdata->fd, EVIOCSFF, &joystick->hwdata->effect) < 0) {
++            return SDL_SetError("Couldn't update rumble effect: %s", strerror(errno));
++        }
++    }
++
++    event.type = EV_FF;
++    event.code = joystick->hwdata->effect.id;
++    event.value = 1;
++    if (write(joystick->hwdata->fd, &event, sizeof(event)) < 0) {
++        return SDL_SetError("Couldn't start rumble effect: %s", strerror(errno));
++    }
++    return true;
+ }
+ 
+ static bool LINUX_JoystickSetLED(SDL_Joystick *joystick, Uint8 red, Uint8 green, Uint8 blue)
+diff --git a/test/testrumble.c b/test/testrumble.c
+index 0fda1f28e..219094075 100644
+--- a/test/testrumble.c
++++ b/test/testrumble.c
+@@ -26,7 +26,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ #include <SDL3/SDL_main.h>
+ #include <SDL3/SDL_test.h>
+ 
+-static SDL_Haptic *haptic;
++static SDL_Gamepad *gamepad;
+ 
+ /**
+  * The entry point of this force feedback demo.
+@@ -39,8 +39,8 @@ int main(int argc, char **argv)
+     char *name = NULL;
+     int index;
+     SDLTest_CommonState *state;
+-    SDL_HapticID *haptics;
+-    int num_haptics;
++    SDL_JoystickID *gamepads;
++    int num_gamepads;
+ 
+     /* Initialize test framework */
+     state = SDLTest_CommonCreateState(argv, 0);
+@@ -82,12 +82,12 @@ int main(int argc, char **argv)
+     }
+ 
+     /* Initialize the force feedbackness */
+-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC);
+-    haptics = SDL_GetHaptics(&num_haptics);
+-    SDL_Log("%d Haptic devices detected.", num_haptics);
+-    if (num_haptics == 0) {
+-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No Haptic devices found!");
+-        SDL_free(haptics);
++    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD);
++    gamepads = SDL_GetGamepads(&num_gamepads);
++    SDL_Log("%d Gamepad devices detected.", num_gamepads);
++    if (num_gamepads == 0) {
++        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "No Gamepad devices found!");
++        SDL_free(gamepads);
+         return 1;
+     }
+ 
+@@ -95,66 +95,80 @@ int main(int argc, char **argv)
+     if (!name) {
+         i = (index != -1) ? index : 0;
+ 
+-        if (i >= num_haptics) {
++        if (i >= num_gamepads) {
+             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Index out of range, aborting.");
+-            SDL_free(haptics);
++            SDL_free(gamepads);
+             return 1;
+         }
+     }
+     /* Try to find matching device */
+     else {
+-        for (i = 0; i < num_haptics; i++) {
+-            if (SDL_strstr(SDL_GetHapticNameForID(haptics[i]), name) != NULL) {
++        for (i = 0; i < num_gamepads; i++) {
++            if (SDL_strstr(SDL_GetGamepadNameForID(gamepads[i]), name) != NULL) {
+                 break;
+             }
+         }
+ 
+-        if (i >= num_haptics) {
++        if (i >= num_gamepads) {
+             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to find device matching '%s', aborting.", name);
+-            SDL_free(haptics);
++            SDL_free(gamepads);
+             return 1;
+         }
+     }
+ 
+-    haptic = SDL_OpenHaptic(haptics[i]);
+-    if (!haptic) {
+-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create the haptic device: %s", SDL_GetError());
+-        SDL_free(haptics);
++    gamepad = SDL_OpenGamepad(gamepads[i]);
++    if (!gamepad) {
++        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Unable to create the Gamepad device: %s", SDL_GetError());
++        SDL_free(gamepads);
+         return 1;
+     }
+-    SDL_Log("Device: %s", SDL_GetHapticName(haptic));
+-    SDL_free(haptics);
++    SDL_Log("Device: %s", SDL_GetGamepadName(gamepad));
++    SDL_free(gamepads);
+ 
+     /* We only want force feedback errors. */
+     SDL_ClearError();
+ 
+-    if (!SDL_HapticRumbleSupported(haptic)) {
+-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Rumble not supported!");
+-        return 1;
+-    }
+-    if (!SDL_InitHapticRumble(haptic)) {
+-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to initialize rumble: %s", SDL_GetError());
+-        return 1;
+-    }
+     SDL_Log("Playing 2 second rumble at 0.5 magnitude.");
+-    if (!SDL_PlayHapticRumble(haptic, 0.5, 5000)) {
++    if (!SDL_RumbleGamepad(gamepad, (0.5 * UINT16_MAX), (0.5 * UINT16_MAX), 5000)) {
+         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to play rumble: %s", SDL_GetError());
+         return 1;
+     }
+     SDL_Delay(2000);
+     SDL_Log("Stopping rumble.");
+-    SDL_StopHapticRumble(haptic);
++    SDL_RumbleGamepad(gamepad, (0.0 * UINT16_MAX), (0.0 * UINT16_MAX), 5000);
+     SDL_Delay(2000);
+     SDL_Log("Playing 2 second rumble at 0.3 magnitude.");
+-    if (!SDL_PlayHapticRumble(haptic, 0.3f, 5000)) {
++    if (!SDL_RumbleGamepad(gamepad, (0.3 * UINT16_MAX), (0.3 * UINT16_MAX), 5000)) {
+         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to play rumble: %s", SDL_GetError());
+         return 1;
+     }
+     SDL_Delay(2000);
++    SDL_Log("Stopping rumble.");
++    SDL_RumbleGamepad(gamepad, (0.0 * UINT16_MAX), (0.0 * UINT16_MAX), 5000);
++    SDL_Delay(2000);
++    SDL_Log("Playing 2 second impulse trigger rumble at 0.5 magnitude.");
++    SDL_GetError();
++    if (!SDL_RumbleGamepadTriggers(gamepad, (0.5 * UINT16_MAX), (0.5 * UINT16_MAX), 5000)) {
++        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to play impulse trigger rumble: %s", SDL_GetError());
++        return 1;
++    }
++    SDL_Delay(2000);
++    SDL_Log("Stopping rumble.");
++    SDL_RumbleGamepadTriggers(gamepad, (0.0 * UINT16_MAX), (0.0 * UINT16_MAX), 5000);
++    SDL_Delay(2000);
++    SDL_Log("Playing 2 second impulse trigger rumble at 0.3 magnitude.");
++    SDL_GetError();
++    if (!SDL_RumbleGamepadTriggers(gamepad, (0.3 * UINT16_MAX), (0.3 * UINT16_MAX), 5000)) {
++        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to play impulse trigger rumble: %s", SDL_GetError());
++        return 1;
++    }
++    SDL_Delay(2000);
++    SDL_Log("Stopping rumble.");
++    SDL_RumbleGamepadTriggers(gamepad, (0.0 * UINT16_MAX), (0.0 * UINT16_MAX), 5000);
+ 
+     /* Quit */
+-    if (haptic) {
+-        SDL_CloseHaptic(haptic);
++    if (gamepad) {
++        SDL_CloseGamepad(gamepad);
+     }
+ 
+     SDL_Quit();
