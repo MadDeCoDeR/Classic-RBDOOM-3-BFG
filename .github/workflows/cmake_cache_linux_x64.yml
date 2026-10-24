@@ -19,6 +19,13 @@ jobs:
             submodules: recursive
             ref: master
     
+        - name: Patch SDL3
+          id: step1f
+          run: |
+            cd vcpkg
+            cp -u ../.github/tools/linux_impulse_triggers.patch ./ports/sdl3/linux_impulse_triggers.patch
+            git apply ../.github/tools/SDL3_Linux_Impulse_Trigger_port.patch
+            
         - name: Cache linux vcpkg
           id: step5
           uses: actions/cache@v4

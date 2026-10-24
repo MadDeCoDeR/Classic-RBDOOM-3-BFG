@@ -715,16 +715,16 @@ void DoomLib::RunSound() {
 }
 
 void DoomLib::SetRumble(float high, int highDuration, float low, int lowDuration) {
-	DoomLib::high = (high * 0.5f) * USHRT_MAX;
+	DoomLib::high = idMath::Ftoi(high * 65535.0f);
 	DoomLib::highDuration = Sys_Milliseconds() + std::clamp(highDuration, 0, 1000);
-	DoomLib::low = (low * 0.5f) * USHRT_MAX;
+	DoomLib::low = idMath::Ftoi(low * 65535.0f);
 	DoomLib::lowDuration = Sys_Milliseconds() + std::clamp(lowDuration, 0, 1000);
 }
 
 void DoomLib::SetRumbleTrigger(float high, int highDuration, float low, int lowDuration) {
-	DoomLib::highTrigger = (high * 0.5f) * USHRT_MAX;
+	DoomLib::highTrigger = idMath::Ftoi(high * 65535.0f);
 	DoomLib::highDurationTrigger = Sys_Milliseconds() + std::clamp(highDuration, 0, 1000);
-	DoomLib::lowTrigger = (low * 0.5f) * USHRT_MAX;
+	DoomLib::lowTrigger = idMath::Ftoi(low * 65535.0f);
 	DoomLib::lowDurationTrigger = Sys_Milliseconds() + std::clamp(lowDuration, 0, 1000);
 }
 
