@@ -44,6 +44,7 @@ idCVar r_skipShaderPasses( "r_skipShaderPasses", "0", CVAR_RENDERER | CVAR_BOOL,
 idCVar r_skipInteractionFastPath( "r_skipInteractionFastPath", "1", CVAR_RENDERER | CVAR_BOOL, "" );
 idCVar r_useLightStencilSelect( "r_useLightStencilSelect", "0", CVAR_RENDERER | CVAR_BOOL, "use stencil select pass" );
 
+idCVar r_clShaderScaler("r_clShaderScaler", "2.0f", CVAR_RENDERER | CVAR_FLOAT, "set resolution scale factor for Classic DOOM's screen shader");
 //extern idCVar stereoRender_swapEyes;
 
 
@@ -5474,10 +5475,12 @@ void idRenderBackend::DrawViewInternal( const viewDef_t* _viewDef, const int ste
 		}
 		//GK: Set rpWindowCoord to the Virtual resolution for Classic DOOM Screen Shaders
 		float windowCoordParm[4];
-		windowCoordParm[0] = 1.0f / renderSystem->GetVirtualWidth();
-		windowCoordParm[1] = 1.0f / renderSystem->GetVirtualHeight();
-		windowCoordParm[2] = renderSystem->GetVirtualWidth();
-		windowCoordParm[3] = renderSystem->GetVirtualHeight();
+		float clSWidth = 320.0f * r_clShaderScaler.GetFloat();
+		float clSHeight = 240.0f * r_clShaderScaler.GetFloat();
+		windowCoordParm[0] = 1.0f / clSWidth;
+		windowCoordParm[1] = 1.0f / clSHeight;
+		windowCoordParm[2] = clSWidth;
+		windowCoordParm[3] = clSHeight;
 		SetFragmentParm( RENDERPARM_WINDOWCOORD, windowCoordParm ); // rpWindowCoord
 		processed = DrawShaderPasses( drawSurfs, numDrawSurfs, guiScreenOffset, stereoEye );
 		renderLog.CloseMainBlock();
