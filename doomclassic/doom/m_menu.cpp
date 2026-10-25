@@ -1905,7 +1905,7 @@ void M_DrawAdvG(void) {
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(lightNames[reallight], PU_CACHE_SHARED), W_GetNumForName(lightNames[reallight])), false);
 	V_DrawPatchDirect(::g->AdvGDef.x + 145, ::g->AdvGDef.y + LINEHEIGHT * (fuzz), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[fuzzeffect], PU_CACHE_SHARED), W_GetNumForName(msgNames[fuzzeffect])), false);
-	V_DrawPatchDirect(::g->AdvGDef.x + 95, ::g->AdvGDef.y + LINEHEIGHT * (shader), 0,
+	V_DrawPatchDirect(::g->AdvGDef.x + 188, ::g->AdvGDef.y + LINEHEIGHT * (shader), 0,
 		/*(patch_t*)*/img2lmp(W_CacheLumpName(msgNames[useShader], PU_CACHE_SHARED), W_GetNumForName(msgNames[useShader])), false);
 }
 
