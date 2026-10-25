@@ -1219,9 +1219,5 @@ void removeGamePad(SDL_GamepadDeviceEvent event) {
 	idLib::Printf("Controller Disconnected: %s\n", SDL_GetGamepadName(gcontroller[index]));
 	SDL_CloseGamepad(gcontroller[index]);
 	gcontroller[index]=NULL;
-	if (session->GetSignInManager().GetMasterLocalUser() != NULL) {
-		idLocalUserWin* user = dynamic_cast<idLocalUserWin*>(session->GetSignInManager().GetMasterLocalUser());
-		user->SetInputDevice(-1);
-	}
 	
 }
