@@ -53,12 +53,12 @@ idCVar r_waylandcompat( "r_waylandcompat", "0", CVAR_SYSTEM | CVAR_NOCHEAT | CVA
 // RB: only relevant if using SDL 2.0
 #if defined(__APPLE__) || defined(_WIN32)
 // only core profile is supported on OS X
-idCVar r_useOpenGL32( "r_useOpenGL32", "2", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
+idCVar r_useOpenGL32( "r_useOpenGL32", "2", CVAR_INTEGER, "0 = OpenGL 3.x (compatibility profile if it uses 3.2 or newer), 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #elif defined(__linux__)
 // Linux open source drivers suck //GK: So as it seems some mesa drivers might not support one of the two texture compression extensions that are required, in that case keep it to compatibility profile
-idCVar r_useOpenGL32( "r_useOpenGL32", "1", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
+idCVar r_useOpenGL32( "r_useOpenGL32", "1", CVAR_INTEGER, "0 = OpenGL 3.x (compatibility profile if it uses 3.2 or newer), 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #else
-idCVar r_useOpenGL32( "r_useOpenGL32", "1", CVAR_INTEGER, "0 = OpenGL 3.x, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
+idCVar r_useOpenGL32( "r_useOpenGL32", "0", CVAR_INTEGER, "0 = OpenGL 3.x (compatibility profile if it uses 3.2 or newer), 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #endif
 // RB end
 
@@ -253,35 +253,27 @@ bool GLimp_Init( glimpParms_t parms )
 		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, parms.multiSamples ? 1 : 0 );
 		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, parms.multiSamples );
 		
-		// RB begin
-		if( r_useOpenGL32.GetInteger() > 0 )
-		{
-			int major = 3;
-			int minor = 3;
-			if (r_useOpenGL32.GetInteger() == 1) {
-				SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY );
-			} else {
-				SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-			}
-			GLimp_GetSupportedVersion(&major, &minor);
-			if (major < 3 || major == 3 && minor < 3) {
-				common->FatalError("GLimp_Init: OpenGL version is not supported!\n");
-			}
-			glConfig.driverType = GLDRV_OPENGL32_COMPATIBILITY_PROFILE;
-			
-			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, major );
-			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, minor );
-			
-			
-			if( r_debugContext.GetBool() )
-			{
-				SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG );
-			}
+		SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+		SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
+
+		int major = 3;
+		int minor = r_useOpenGL32.GetInteger() > 0 ? 2 : 0;
+		int acceptableMinor = minor;
+		GLimp_GetSupportedVersion(&major, &minor);
+		if (major < 3 || major == 3 && minor <= acceptableMinor) {
+			common->FatalError("GLimp_Init: OpenGL version is not supported!\n");
 		}
-		
-		if( r_useOpenGL32.GetInteger() > 1 )
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
+
+		if (r_debugContext.GetBool() && major == 4 && minor >= 3)
 		{
-			glConfig.driverType = GLDRV_OPENGL32_CORE_PROFILE;
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+		}
+		// RB begin
+		if (major > 3 || (major == 3 && minor >= 2)) {
+			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, r_useOpenGL32.GetInteger() == 2 ? SDL_GL_CONTEXT_PROFILE_CORE : SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+			glConfig.driverType = r_useOpenGL32.GetInteger() == 2 ? GLDRV_OPENGL32_CORE_PROFILE : GLDRV_OPENGL32_COMPATIBILITY_PROFILE;
 		}
 		// RB end
 		
