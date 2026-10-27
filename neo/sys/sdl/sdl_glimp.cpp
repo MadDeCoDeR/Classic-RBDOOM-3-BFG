@@ -51,12 +51,9 @@ If you have questions concerning this license or the applicable additional terms
 idCVar r_waylandcompat( "r_waylandcompat", "0", CVAR_SYSTEM | CVAR_NOCHEAT | CVAR_ARCHIVE, "wayland compatible framebuffer" );
 
 // RB: only relevant if using SDL 2.0
-#if defined(__APPLE__) || defined(_WIN32)
+#if defined(__APPLE__) || defined(_WIN32) || defined(__linux__)
 // only core profile is supported on OS X
 idCVar r_useOpenGL32( "r_useOpenGL32", "2", CVAR_INTEGER, "0 = OpenGL 3.x (compatibility profile if it uses 3.2 or newer), 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
-#elif defined(__linux__)
-// Linux open source drivers suck //GK: So as it seems some mesa drivers might not support one of the two texture compression extensions that are required, in that case keep it to compatibility profile
-idCVar r_useOpenGL32( "r_useOpenGL32", "1", CVAR_INTEGER, "0 = OpenGL 3.x (compatibility profile if it uses 3.2 or newer), 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #else
 idCVar r_useOpenGL32( "r_useOpenGL32", "0", CVAR_INTEGER, "0 = OpenGL 3.x (compatibility profile if it uses 3.2 or newer), 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 #endif
@@ -93,21 +90,7 @@ GLimp_PreInit
 
 void GLimp_PreInit() // DG: added this function for SDL compatibility
 {
-#ifdef __unix__
-	if (SDL_GetCurrentVideoDriver() != "wayland") { //GK: On Linux avoid x11 as much as possible. Since SDL2 is statically linked with Wayland extension enforce it
-		bool hasWayland = false;
-		int driversNum = SDL_GetNumVideoDrivers();
-		for (int wi = 0; wi < driversNum; wi++) {
-			if (SDL_GetVideoDriver(wi) == "wayland") {
-				hasWayland = true;
-				break;
-			}
-		}
-		if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
-			common->FatalError("SDL Error: %s\n", SDL_GetError());
-		}
-	}
-#endif
+	// GK: not needed on this platform anymore, so just do nothing
 }
 
 /*
@@ -127,10 +110,9 @@ void GLimp_GetSupportedVersion(int* major, int* minor) {
 	if (window != NULL) {
 		context = SDL_GL_CreateContext( window );
 		if (context != NULL) {
-			idStr version_string = idStr(( const char* )glGetString( GL_VERSION )).SubStr(0, 3);
-			idList<idStr> version_array = version_string.Split(".");
-			*major = atoi(version_array[0].c_str());
-			*minor = atoi(version_array[1].c_str());
+			int gladResult = gladLoadGL((GLADloadfunc) SDL_GL_GetProcAddress);
+			*major = GLAD_VERSION_MAJOR(gladResult);
+			*minor = GLAD_VERSION_MINOR(gladResult);
 			SDL_GL_DestroyContext(context);
 			context = NULL;
 		}
@@ -291,12 +273,22 @@ bool GLimp_Init( glimpParms_t parms )
      	 window = SDL_CreateWindowWithProperties(props);
     	 SDL_DestroyProperties(props);
 		// DG end
+		if (!window) {
+			common->FatalError("SDL: Failed to create Window with error Message: %s\n", SDL_GetError());
+		}
 		
 		context = SDL_GL_CreateContext( window );
 		
-		if( !window )
+		if( !context )
 		{
-			common->DPrintf( "Couldn't set GL mode %d/%d/%d: %s",
+			common->DPrintf( "Couldn't set GL mode %d/%d/%d: %s\n",
+							 channelcolorbits, tdepthbits, tstencilbits, SDL_GetError() );
+			continue;
+		}
+
+		bool result = SDL_GL_MakeCurrent(window, context);
+		if (!result) {
+			common->DPrintf( "Couldn't make GL context: %s\n",
 							 channelcolorbits, tdepthbits, tstencilbits, SDL_GetError() );
 			continue;
 		}
@@ -359,19 +351,11 @@ bool GLimp_Init( glimpParms_t parms )
 		return false;
 	}
 	
-#ifdef __APPLE__
-	glewExperimental = GL_TRUE;
-#endif
-	
-	GLenum glewResult = glewInit();
-	if( GLEW_OK != glewResult )
+	int gladResult = gladLoadGL((GLADloadfunc) SDL_GL_GetProcAddress);
+	if( !gladResult )
 	{
-		// glewInit failed, something is seriously wrong
-		common->Printf( "^3GLimp_Init() - GLEW could not load OpenGL subsystem: %s", glewGetErrorString( glewResult ) );
-	}
-	else
-	{
-		common->Printf( "Using GLEW %s\n", glewGetString( GLEW_VERSION ) );
+		// gladLoadGL failed, something is seriously wrong
+		common->FatalError( "^3GLimp_Init() - GLAD could not load OpenGL subsystem" );
 	}
 	
 	// DG: disable cursor, we have two cursors in menu (because mouse isn't grabbed in menu)

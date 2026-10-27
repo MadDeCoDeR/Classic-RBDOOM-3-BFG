@@ -34,7 +34,7 @@ If you have questions concerning this license or the applicable additional terms
 
 // RB: replaced QGL with GLEW
 #if !defined(USE_VULKAN)
-#include "../../libs/glew/include/GL/wglew.h" // windows OpenGL extensions
+#include "../../libs/glad/include/glad/wgl.h" // windows OpenGL extensions
 #endif
 // RB end
 

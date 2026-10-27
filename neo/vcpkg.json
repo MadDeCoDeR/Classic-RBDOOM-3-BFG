@@ -16,10 +16,6 @@
       "name": "openal-soft",
       "platform": "!linux"
     },
-    {
-      "name": "glew",
-      "platform": "!linux"
-    },
     "rapidjson",
     {
       "name": "sdl3",
