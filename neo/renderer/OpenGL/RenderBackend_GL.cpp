@@ -235,7 +235,7 @@ static void R_PrintExtensionStatus(bool extBool, const char* extName) {
 R_CheckPortableExtensions
 ==================
 */
-// RB: replaced QGL with GLEW
+// GK: replaced GLEW with GLAD
 static void R_CheckPortableExtensions()
 {
 	glConfig.glVersion = atof( glConfig.version_string );
@@ -281,7 +281,7 @@ static void R_CheckPortableExtensions()
 	}
 	else
 	{
-		glConfig.multitextureAvailable = GLEW_ARB_multitexture != 0;
+		glConfig.multitextureAvailable = GLAD_GL_ARB_multisample != 0;
 	}
 	
 	// GL_ARB_texture_compression + GL_S3_s3tc
@@ -292,10 +292,13 @@ static void R_CheckPortableExtensions()
 	}
 	else
 	{
-		glConfig.textureCompressionAvailable = GLEW_ARB_texture_compression != 0 && GLEW_EXT_texture_compression_s3tc != 0;
+		//GK: Newer MESA drivers do support s3tc. But in their core profile they no longer support ARB_texture_compression (regression I guess?). So if the profile is core just give a blank true
+		bool hasTextureCompression = glConfig.driverType == GLDRV_OPENGL32_COMPATIBILITY_PROFILE ? GLAD_GL_ARB_texture_compression != 0 : true;
+		bool hasS3TC = GLAD_GL_EXT_texture_compression_s3tc != 0;
+		glConfig.textureCompressionAvailable = hasTextureCompression && hasS3TC;
 	}
 	// GL_EXT_texture_filter_anisotropic
-	glConfig.anisotropicFilterAvailable = (glConfig.glVersion > 4.5) ? GLEW_ARB_texture_filter_anisotropic != 0 : GLEW_EXT_texture_filter_anisotropic != 0;
+	glConfig.anisotropicFilterAvailable = (glConfig.glVersion > 4.5) ? GLAD_GL_ARB_texture_filter_anisotropic != 0 : GLAD_GL_EXT_texture_filter_anisotropic != 0;
 	if( glConfig.anisotropicFilterAvailable )
 	{
 		glGetFloatv((glConfig.glVersion > 4.5) ? GL_MAX_TEXTURE_MAX_ANISOTROPY : GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &glConfig.maxTextureAnisotropy );
@@ -308,23 +311,23 @@ static void R_CheckPortableExtensions()
 	
 	// GL_ARB_direct_state_access
 	//GK: Use the core direct State Access intead (what purpose the EXT has?)
-	glConfig.directStateAccess = (r_useOpenGLDSA.GetInteger() < 0) ? GLEW_ARB_direct_state_access != 0 && glConfig.glVersion >= 4.5 : r_useOpenGLDSA.GetBool();
+	glConfig.directStateAccess = (r_useOpenGLDSA.GetInteger() < 0) ? GLAD_GL_ARB_direct_state_access != 0 && glConfig.glVersion >= 4.5 : r_useOpenGLDSA.GetBool();
 
 	R_PrintExtensionStatus(glConfig.directStateAccess, "GL_ARB_direct_state_access");
 	
 	// GL_EXT_texture_lod_bias
 	// The actual extension is broken as specificed, storing the state in the texture unit instead
 	// of the texture object.  The behavior in GL 1.4 is the behavior we use.
-	glConfig.textureLODBiasAvailable = ( glConfig.glVersion >= 1.4 || GLEW_EXT_texture_lod_bias != 0 );
+	glConfig.textureLODBiasAvailable = ( glConfig.glVersion >= 1.4 || GLAD_GL_EXT_texture_lod_bias != 0 );
 	R_PrintExtensionStatus(glConfig.textureLODBiasAvailable, "GL_EXT_texture_lod_bias");
 	
 	// GL_ARB_seamless_cube_map
-	glConfig.seamlessCubeMapAvailable = GLEW_ARB_seamless_cube_map != 0;
+	glConfig.seamlessCubeMapAvailable = GLAD_GL_ARB_seamless_cube_map != 0;
 	R_PrintExtensionStatus(glConfig.seamlessCubeMapAvailable, "GL_ARB_seamless_cube_map");
 	r_useSeamlessCubeMap.SetModified();		// the CheckCvars() next frame will enable / disable it
 	
 	// GL_ARB_framebuffer_sRGB
-	glConfig.sRGBFramebufferAvailable = GLEW_ARB_framebuffer_sRGB != 0;
+	glConfig.sRGBFramebufferAvailable = GLAD_GL_ARB_framebuffer_sRGB != 0;
 	r_useSRGB.SetModified();		// the CheckCvars() next frame will enable / disable it
 	
 	// GL_ARB_vertex_buffer_object
@@ -334,7 +337,7 @@ static void R_CheckPortableExtensions()
 	}
 	else
 	{
-		glConfig.vertexBufferObjectAvailable = GLEW_ARB_vertex_buffer_object != 0;
+		glConfig.vertexBufferObjectAvailable = GLAD_GL_ARB_vertex_buffer_object != 0;
 	}
 	
 	// GL_ARB_map_buffer_range, map a section of a buffer object's data store
@@ -344,7 +347,7 @@ static void R_CheckPortableExtensions()
 	//}
 	//else
 	{
-		glConfig.mapBufferRangeAvailable = GLEW_ARB_map_buffer_range != 0;
+		glConfig.mapBufferRangeAvailable = GLAD_GL_ARB_map_buffer_range != 0;
 	}
 	
 	// GL_ARB_vertex_array_object
@@ -354,14 +357,14 @@ static void R_CheckPortableExtensions()
 	//}
 	//else
 	{
-		glConfig.vertexArrayObjectAvailable = GLEW_ARB_vertex_array_object != 0;
+		glConfig.vertexArrayObjectAvailable = GLAD_GL_ARB_vertex_array_object != 0;
 	}
 	
 	// GL_ARB_draw_elements_base_vertex
-	glConfig.drawElementsBaseVertexAvailable = GLEW_ARB_draw_elements_base_vertex != 0;
+	glConfig.drawElementsBaseVertexAvailable = GLAD_GL_ARB_draw_elements_base_vertex != 0;
 	
 	// GL_ARB_vertex_program / GL_ARB_fragment_program
-	glConfig.fragmentProgramAvailable = GLEW_ARB_fragment_program != 0;
+	glConfig.fragmentProgramAvailable = glConfig.driverType == GLDRV_OPENGL32_CORE_PROFILE ? GLAD_GL_ARB_fragment_shader != 0 : GLAD_GL_ARB_fragment_program != 0; //GK: MESA Core profile has depricated GL_ARB_fragment_program, so use GL_ARB_fragment_shader in it's place
 	if( glConfig.fragmentProgramAvailable )
 	{
 		//glGetInteger64v( GL_MAX_TEXTURE_COORDS, ( GLint64* )&glConfig.maxTextureCoords ); //DEPRECATED
@@ -372,7 +375,7 @@ static void R_CheckPortableExtensions()
 	glConfig.glslAvailable = ( glConfig.glVersion >= 2.0f );
 	
 	// GL_ARB_uniform_buffer_object
-	glConfig.uniformBufferAvailable = GLEW_ARB_uniform_buffer_object != 0;
+	glConfig.uniformBufferAvailable = GLAD_GL_ARB_uniform_buffer_object != 0;
 	if( glConfig.uniformBufferAvailable )
 	{
 		glGetIntegerv( GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, ( GLint* )&glConfig.uniformBufferOffsetAlignment );
@@ -385,29 +388,29 @@ static void R_CheckPortableExtensions()
 	glConfig.gpuSkinningAvailable = glConfig.uniformBufferAvailable && ( glConfig.driverType == GLDRV_OPENGL3X || glConfig.driverType == GLDRV_OPENGL32_CORE_PROFILE || glConfig.driverType == GLDRV_OPENGL32_COMPATIBILITY_PROFILE );
 	
 	// ATI_separate_stencil / OpenGL 2.0 separate stencil
-	glConfig.twoSidedStencilAvailable = ( glConfig.glVersion >= 2.0f ) || GLEW_ATI_separate_stencil != 0;
+	glConfig.twoSidedStencilAvailable = ( glConfig.glVersion >= 2.0f ) || GLAD_GL_ATI_separate_stencil != 0;
 	
 	// GL_EXT_depth_bounds_test
-	glConfig.depthBoundsTestAvailable = GLEW_EXT_depth_bounds_test != 0;
+	glConfig.depthBoundsTestAvailable = GLAD_GL_EXT_depth_bounds_test != 0;
 	
 	// GL_ARB_sync
-	glConfig.syncAvailable = GLEW_ARB_sync &&
+	glConfig.syncAvailable = GLAD_GL_ARB_sync &&
 							 // as of 5/24/2012 (driver version 15.26.12.64.2761) sync objects
 							 // do not appear to work for the Intel HD 4000 graphics
 							 ( glConfig.vendor != VENDOR_INTEL || r_skipIntelWorkarounds.GetBool() );
 							 
 	// GL_ARB_occlusion_query
-	glConfig.occlusionQueryAvailable = GLEW_ARB_occlusion_query != 0;
+	glConfig.occlusionQueryAvailable = GLAD_GL_ARB_occlusion_query != 0;
 	
 	// GL_ARB_timer_query
-	glConfig.timerQueryAvailable = ( GLEW_ARB_timer_query != 0 || GLEW_EXT_timer_query != 0 ) && ( glConfig.vendor != VENDOR_INTEL || r_skipIntelWorkarounds.GetBool() ) && glConfig.driverType != GLDRV_OPENGL_MESA;
+	glConfig.timerQueryAvailable = ( GLAD_GL_ARB_timer_query != 0 || GLAD_GL_EXT_timer_query != 0 ) && ( glConfig.vendor != VENDOR_INTEL || r_skipIntelWorkarounds.GetBool() ) && glConfig.driverType != GLDRV_OPENGL_MESA;
 	
 	// GREMEDY_string_marker
-	glConfig.gremedyStringMarkerAvailable = GLEW_GREMEDY_string_marker != 0;
+	glConfig.gremedyStringMarkerAvailable = GLAD_GL_GREMEDY_string_marker != 0;
 	R_PrintExtensionStatus(glConfig.gremedyStringMarkerAvailable, "GL_GREMEDY_string_marker");
 	
 	// GL_ARB_framebuffer_object
-	glConfig.framebufferObjectAvailable = GLEW_ARB_framebuffer_object != 0;
+	glConfig.framebufferObjectAvailable = GLAD_GL_ARB_framebuffer_object != 0;
 	R_PrintExtensionStatus(glConfig.framebufferObjectAvailable, "GL_ARB_framebuffer_object");
 	if( glConfig.framebufferObjectAvailable )
 	{
@@ -416,11 +419,11 @@ static void R_CheckPortableExtensions()
 	}
 	
 	// GL_EXT_framebuffer_blit
-	glConfig.framebufferBlitAvailable = GLEW_EXT_framebuffer_blit != 0;
+	glConfig.framebufferBlitAvailable = GLAD_GL_EXT_framebuffer_blit != 0;
 	R_PrintExtensionStatus(glConfig.framebufferBlitAvailable, "GL_EXT_framebuffer_blit");
 	
 	// GL_ARB_debug_output
-	glConfig.debugOutputAvailable = GLEW_ARB_debug_output != 0 && glConfig.glVersion >= 4.3;
+	glConfig.debugOutputAvailable = GLAD_GL_ARB_debug_output != 0 && glConfig.glVersion >= 4.3;
 	if( glConfig.debugOutputAvailable )
 	{
 		if( r_debugContext.GetInteger() >= 1 )

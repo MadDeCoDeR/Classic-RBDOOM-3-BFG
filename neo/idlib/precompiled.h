@@ -104,7 +104,8 @@ const uint32 NUM_FRAME_DATA	= 2;
 #include "../renderer/Vulkan/qvk.h"
 #else
 // RB: replaced QGL with GLEW
-#include <GL/glew.h>
+//#include <GL/glew.h>
+#include <glad/gl.h>
 // RB end
 #endif
 #include "../renderer/Cinematic.h"
