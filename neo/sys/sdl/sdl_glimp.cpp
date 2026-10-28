@@ -357,7 +357,8 @@ bool GLimp_Init( glimpParms_t parms )
 		// gladLoadGL failed, something is seriously wrong
 		common->FatalError( "^3GLimp_Init() - GLAD could not load OpenGL subsystem" );
 	}
-	
+	idStr windowDriver = idStr(SDL_GetCurrentVideoDriver());
+	common->Printf("SDL Video Driver: %s\n", windowDriver.c_str());
 	// DG: disable cursor, we have two cursors in menu (because mouse isn't grabbed in menu)
 	SDL_HideCursor();
 	// DG end
