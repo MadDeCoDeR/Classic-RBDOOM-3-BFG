@@ -60,7 +60,6 @@ extern idCVar r_windowWidth;
 extern idCVar r_windowHeight;
 extern idCVar com_emergencyexit;
 // DG end
-SDL_Thread* joyThread = nullptr;
 //GK: This functions will register any newly connected gamepad and remove any connected one.
 void registerGamePad(SDL_GamepadDeviceEvent event);
 void removeGamePad(SDL_GamepadDeviceEvent event);
@@ -142,7 +141,6 @@ int joyAxis[MAX_JOYSTICKS][6];
 SDL_Joystick* joy = NULL;
 static SDL_Gamepad* gcontroller[MAX_JOYSTICKS] = {NULL}; //GK: Keep the SDL_Controller global in order to free the SDL_Controller when it's get disconnected
 static int registeredControllers = -1;
-static bool joyThreadKill = false;
 int SDL_joystick_has_hat = 0;
 bool buttonStates[MAX_JOYSTICKS][K_LAST_KEY];	// For keeping track of button up/down events
 extern SDL_Window* window;
@@ -157,6 +155,8 @@ int			eventTail = 0;
 
 #include "sdl2_scancode_mappings.h"
 #include <map>
+
+static std::map<SDL_JoystickID, int> reverseControllerMap;
 
 static int SDLScanCodeToKeyNum( SDL_Scancode sc )
 {
@@ -273,12 +273,16 @@ void Sys_ShutdownInput()
 {
 	kbd_polls.Clear();
 	mouse_polls.Clear();
-	joyThreadKill = true;
-	SDL_WaitThread(joyThread, NULL);
+	reverseControllerMap.clear();
+	registeredControllers = -1;
 	
 	for (int i = 0; i < MAX_JOYSTICKS; i++) {
 		memset( &buttonStates[i], 0, sizeof( buttonStates[i] ) );
 		memset( &joyAxis[i], 0, sizeof( joyAxis[i] ) );
+		if (gcontroller[i] != NULL) {
+			SDL_CloseGamepad(gcontroller[i]);
+			gcontroller[i] = NULL;
+		}
 	}
 	memset( &current, 0, sizeof(joyState) );
 	memset( &old, 0, sizeof(joyState) );
@@ -383,7 +387,6 @@ void Sys_GrabMouseCursor( bool grabIt )
 	GLimp_GrabInput( flags );
 }
 
-static std::map<SDL_JoystickID, int> reverseControllerMap;
 /*
 ================
 Sys_QueEvent
