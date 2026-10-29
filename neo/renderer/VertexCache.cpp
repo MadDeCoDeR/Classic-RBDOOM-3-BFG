@@ -156,6 +156,9 @@ void idVertexCache::Shutdown()
 		frameData[i].indexBuffer.FreeBufferObject();
 		frameData[i].jointBuffer.FreeBufferObject();
 	}
+	staticData.vertexBuffer.FreeBufferObject();
+	staticData.indexBuffer.FreeBufferObject();
+	staticData.jointBuffer.FreeBufferObject();
 }
 
 /*

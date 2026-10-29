@@ -3040,6 +3040,13 @@ void idRenderBackend::DBG_RenderDebugTools( drawSurf_t** drawSurfs, int numDrawS
 		DBG_ShowLines();
 		return;
 	}
+
+	//GK: Avoid those debug function with core profile on Linux
+#ifdef __linux__
+	if (glConfig.driverType == GLDRV_OPENGL32_CORE_PROFILE) {
+		return;
+	}
+#endif
 	
 	renderLog.OpenMainBlock( MRB_DRAW_DEBUG_TOOLS );
 	RENDERLOG_PRINTF( "---------- RB_RenderDebugTools ----------\n" );
