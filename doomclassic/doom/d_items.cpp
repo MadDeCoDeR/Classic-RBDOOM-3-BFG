@@ -159,31 +159,31 @@ void initWeapons() {
 	memcpy(weaponinfo, tweaponinfo, sizeof(tweaponinfo));
 	weaponimpulse_t	tweaponimpulse[NUMWEAPONS] =
 	{{
-		0.0f, 0, 0.0f, 0, 0.0f, 0, 0.0f, 0
+		0.0f, 0, 0.0f, 0, 0.0f, 0, 0.0f, 0 //wp_fist
 	},
 	{
-		0.0f, 0, 0.0f, 0, 0.0f, 0, 0.0f, 0
+		0.5f, 250, 1.0f, 150, 0.0f, 0, 0.0f, 0 //wp_pistol
 	},
 	{
-		0.0f, 0, 0.0f, 0, 0.0f, 0, 0.0f, 0
+		0.5f, 250, 1.0f, 350, 0.0f, 0, 0.0f, 0 //wp_shotgun
 	},
 	{
-		0.0f, 0, 0.0f, 0, 0.0f, 0, 0.0f, 0
+		0.5f, 250, 1.0f, 150, 0.0f, 0, 0.0f, 0 //wp_chaingun
 	},
 	{
-		0.0f, 0, 0.0f, 0, 0.0f, 0, 0.0f, 0
+		1.5f, 250, 1.0f, 350, 0.0f, 0, 0.0f, 0 //wp_missile
 	},
 	{
-		0.0f, 0, 0.0f, 0, 0.0f, 0, 0.0f, 0
+		0.5f, 250, 1.0f, 150, 0.0f, 0, 0.0f, 0 //wp_plasma
 	},
 	{
-		0.0f, 0, 0.0f, 0, 0.0f, 0, 0.0f, 0
+		1.5f, 250, 1.0f, 400, 0.0f, 0, 0.0f, 0 //wp_bfg
 	},
 	{
-		0.0f, 0, 0.0f, 0, 0.0f, 0, 0.0f, 0
+		1.0f, 250, 0.0f, 0, 0.0f, 0, 0.4f, 150 //wp_chainsaw
 	},
 	{
-		0.0f, 0, 0.0f, 0, 0.0f, 0, 0.0f, 0
+		1.0f, 250, 1.0f, 350, 0.0f, 0, 0.0f, 0 //wp_supershotgun
 	}
 	};
 	memcpy(weaponimpulse, tweaponimpulse, sizeof(tweaponimpulse));
