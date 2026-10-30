@@ -4,6 +4,59 @@ Thank you for downloading DOOM-BFA.
 
 _______________________________________
 
+30 Octomber 2026 - DOOM-BFA 1.4.4
+_______________________________________
+
+[Classic DOOM]
+
+- Revert P_FindSectorFromLineTag to it's original logic (fixes issue with later levels in Plutonia Expiriment)
+
+- Fix and improve Multiplayer by using DOOM 3's idUDP class
+
+- Fix corshair hit frame decay
+
+- Improve Damage based rumble effects
+
+- Add a new DEHACKED extension for Weapon Impulse trigger effects (see https://github.com/MadDeCoDeR/Classic-RBDOOM-3-BFG/wiki/A11.-DEHACKED-Extensions#weaponimpulse)
+
+- Add screen shader that can be enables in Video Settings -> Adv Graphics (The name of the shader files are classic.vs & classic.ps)
+
+[DOOM 3]
+
+- Fix Sound Settings repeated auto adjustment bug
+
+- Complete rework of the Multiplayer menu
+
+- Add player lobby discoverability over LAN
+
+- Allow the "connect" command to be used and fix minor networking issue
+
+- Fix issue with interactive materials not rendering particles (using code from Cst-DOOM-3-BFG)
+
+- Use area name first for EAX audio area detection
+
+- Restore, rename and Texture LOD BIAS to Texture Distance LOD and moved it to the graphics settings (hide SSGI)
+
+[Engine]
+
+- Replace Win32 windowing, event and input systems with SDL3
+
+- Add support For Impulse Triggers (Requires Windows 10 or newer and for Linux is recommended to use the following driver: https://github.com/MadDeCoDeR/xone/tree/impulse_trigger)
+
+- Fix how screen parameters (fullscreen, borderless, windowed) are applied on SDL
+
+- Replace the joystick detection thread with SDL events
+
+- Add a basic application manifest for better Windows Version detection
+
+- Increase default max aniso filtering from 8 to 16
+
+- Improve how the cvar r_useOpenGL32 is used and allow the minimum version of OpenGL to be 3.0
+
+- Replace GLEW with GLAD and fix missing extension errors when using MESA drivers on Core Profile
+
+_______________________________________
+
 27 July 2026 - DOOM-BFA 1.4.3
 _______________________________________
 
