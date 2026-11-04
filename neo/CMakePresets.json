@@ -50,6 +50,14 @@
         "ALL_STATIC": {
           "type": "BOOL",
           "value": "ON"
+        },
+        "USE_SDL_WIN32": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "USE_OPENXR": {
+          "type": "BOOL",
+          "value": "OFF"
         }
       },
       "environment": {
@@ -116,13 +124,7 @@
       "name": "windows-x64-2022",
       "displayName": "VS2022: 64-bit Windows",
       "inherits": "windows-x64-base",
-      "generator": "Visual Studio 17",
-      "cacheVariables": {
-        "USE_OPENXR": {
-          "type": "BOOL",
-          "value": "OFF"
-        }
-      }
+      "generator": "Visual Studio 17"
     },
     {
       "name": "windows-x64-2022-fools",
@@ -179,29 +181,13 @@
       "name": "windows-x64-2026",
       "displayName": "VS2026: 64-bit Windows",
       "inherits": "windows-x64-base",
-      "generator": "Visual Studio 18",
-      "cacheVariables": {
-        "USE_OPENXR": {
-          "type": "BOOL",
-          "value": "OFF"
-        },
-        "USE_SDL_WIN32": {
-          "type": "BOOL",
-          "value": "ON"
-        }
-      }
+      "generator": "Visual Studio 18"
     },
     {
       "name": "windows-x86-2026",
       "displayName": "VS2026: 32-bit Windows",
       "inherits": "windows-x86-base",
-      "generator": "Visual Studio 18",
-      "cacheVariables": {
-        "USE_SDL_WIN32": {
-          "type": "BOOL",
-          "value": "ON"
-        }
-      }
+      "generator": "Visual Studio 18"
     },
     {
       "name": "linux-base",
