@@ -660,7 +660,6 @@ patch_t* STB2lmp(unsigned char* buffer, int size) {
 	of.flush();
 	of.close();
 #endif
-	Z_Free(buffer);
 	free(patch);
 	patch = NULL;
 	return GetPreloaded();
