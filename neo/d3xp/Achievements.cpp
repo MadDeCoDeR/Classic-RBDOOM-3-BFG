@@ -834,6 +834,7 @@ CONSOLE_COMMAND( AchievementsList, "Lists achievements and status", NULL )
 		idLib::Printf( "Must be signed in\n" );
 		return;
 	}
+#ifndef GAME_DLL
 	//idPlayerProfile* profile = user->GetProfile();
 	idList<const char*> achNames;
 	int index = 0;
@@ -857,6 +858,7 @@ CONSOLE_COMMAND( AchievementsList, "Lists achievements and status", NULL )
 		}
 		break;
 	}
+#endif
 	/*idArray<bool, 66> achievementState;
 	bool achievementStateValid = session->GetAchievementSystem().GetAchievementState( user, achievementState );
 	
