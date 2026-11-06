@@ -1451,7 +1451,7 @@ public:
 			//SYSTEM_FIELD_LODBIAS,
 			// RB end
 			SYSTEM_FIELD_BRIGHTNESS,
-			SYSTEM_FIELD_VOLUME,
+			//SYSTEM_FIELD_VOLUME,
 			MAX_SYSTEM_FIELDS
 		};
 		
@@ -1661,6 +1661,7 @@ private:
 	idMenuWidget_DynamicList* 	options;
 	idMenuDataSource_SoundSettings	soundData;
 	idMenuWidget_Button*			btnBack;
+	int 							maxOptions;
 	
 };
 

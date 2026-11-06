@@ -302,7 +302,10 @@ bool idMenuScreen_Shell_Gamepad::HandleAction( idWidgetAction& action, const idW
 			{
 				selectionIndex = parms[0].ToInteger();
 			}
-			
+			if (selectionIndex > 0) {
+				int optionDiff = idMenuDataSource_GamepadSettings::MAX_GAMEPAD_FIELDS - options->GetChildren().Num();
+				selectionIndex = idMath::ClampInt(0, options->GetChildren().Num() - 1, selectionIndex - optionDiff);
+			}
 			if( selectionIndex != options->GetFocusIndex() )
 			{
 				options->SetViewIndex( options->GetViewOffset() + selectionIndex );

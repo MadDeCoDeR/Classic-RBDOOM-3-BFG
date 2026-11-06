@@ -350,7 +350,10 @@ bool idMenuScreen_Shell_SystemOptions::HandleAction( idWidgetAction& action, con
 			{
 				selectionIndex = parms[0].ToInteger();
 			}
-			
+			if (selectionIndex > 2) {
+				int optionDiff = idMenuDataSource_SystemSettings::MAX_SYSTEM_FIELDS - options->GetChildren().Num();
+				selectionIndex = idMath::ClampInt(0, options->GetChildren().Num() - 1, 2 + (selectionIndex - (2 + optionDiff)));
+			}
 			if( options && selectionIndex != options->GetFocusIndex() )
 			{
 				options->SetViewIndex( options->GetViewOffset() + selectionIndex );

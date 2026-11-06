@@ -310,18 +310,20 @@ bool idMenuScreen_Shell_AdvancedOptions::HandleAction( idWidgetAction& action, c
 			}
 			
 			int selectionIndex = options->GetFocusIndex();
-			if (selectionIndex <= 3) {
-				if (parms.Num() > 0)
-				{
-					selectionIndex = parms[0].ToInteger();
-				}
-
-				if (options && selectionIndex != options->GetFocusIndex())
-				{
-					options->SetViewIndex(options->GetViewOffset() + selectionIndex);
-					options->SetFocusIndex(selectionIndex);
-				}
+			if (parms.Num() > 0)
+			{
+				selectionIndex = parms[0].ToInteger();
 			}
+			if (selectionIndex > 3) {
+				int optionDiff = (idMenuDataSource_AdvancedSettings::MAX_ADVANCED_FIELDS - 1) - options->GetChildren().Num();
+				selectionIndex = idMath::ClampInt(0, options->GetChildren().Num() - 1, 3 + (selectionIndex - (3 + optionDiff)));
+			}
+			if (options && selectionIndex != options->GetFocusIndex())
+			{
+				options->SetViewIndex(options->GetViewOffset() + selectionIndex);
+				options->SetFocusIndex(selectionIndex);
+			}
+			
 			advData.AdjustField( parms[0].ToInteger(), 1 );
 			options->Update();
 			

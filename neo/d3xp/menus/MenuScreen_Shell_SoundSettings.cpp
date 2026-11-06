@@ -58,6 +58,8 @@ void idMenuScreen_Shell_SoundOptions::Initialize( idMenuHandler* data )
 	}
 	
 	SetSpritePath( "menuSystemOptions" );
+
+	maxOptions = idMenuDataSource_SoundSettings::MAX_SOUND_FIELDS;
 	
 	options = new( TAG_SWF ) idMenuWidget_DynamicList();
 	options->SetNumVisibleOptions( NUM_SOUND_OPTIONS_OPTIONS );
@@ -141,6 +143,8 @@ void idMenuScreen_Shell_SoundOptions::Initialize( idMenuHandler* data )
 		control->SetupEvents(DEFAULT_REPEAT_TIME, options->GetChildren().Num());
 		control->AddEventAction(WIDGET_EVENT_PRESS).Set(WIDGET_ACTION_COMMAND, idMenuDataSource_SoundSettings::SOUND_FIELD_CC);
 		options->AddChild(control);
+	} else {
+		maxOptions--;
 	}
 
 
@@ -318,16 +322,21 @@ bool idMenuScreen_Shell_SoundOptions::HandleAction( idWidgetAction& action, cons
 			}
 			
 			int selectionIndex = options->GetFocusIndex();
-			if( parms.Num() > 0 )
+			if (parms.Num() > 0)
 			{
 				selectionIndex = parms[0].ToInteger();
 			}
-			
-			if( options && selectionIndex != options->GetFocusIndex() )
-			{
-				options->SetViewIndex( options->GetViewOffset() + selectionIndex );
-				options->SetFocusIndex( selectionIndex );
+			if (selectionIndex > 5) {
+				int optionDiff = maxOptions - options->GetChildren().Num();
+				selectionIndex = idMath::ClampInt(0, options->GetChildren().Num() - 1, 5 + (selectionIndex - (5 + optionDiff)));
 			}
+
+			if (options && selectionIndex != options->GetFocusIndex())
+			{
+				options->SetViewIndex(options->GetViewOffset() + selectionIndex);
+				options->SetFocusIndex(selectionIndex);
+			}
+			
 			
 
 			soundData.AdjustField( parms[0].ToInteger(), 1 );

@@ -300,7 +300,10 @@ bool idMenuScreen_Shell_Settings::HandleAction( idWidgetAction& action, const id
 				{
 					selectionIndex = parms[0].ToInteger();
 				}
-				
+				if (selectionIndex > 3) {
+					int optionDiff = 7 - options->GetChildren().Num();
+					selectionIndex = idMath::ClampInt(0, options->GetChildren().Num() - 1, 3 + (selectionIndex - (3 + optionDiff)));
+				}
 				if( options->GetFocusIndex() != selectionIndex )
 				{
 					options->SetFocusIndex( selectionIndex );
