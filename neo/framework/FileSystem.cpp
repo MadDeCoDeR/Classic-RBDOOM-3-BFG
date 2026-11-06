@@ -3950,10 +3950,10 @@ sysFolder_t idFileSystemLocal::IsFolder( const char* relativePath, const char* b
 
 	sysFolder_t res = Sys_IsFolder( RelativePathToOSPath( relativePath, basePath ) );
 	if (res == FOLDER_ERROR) {
-		char oldgamePath[256];
-		sprintf(oldgamePath, "%s", gameFolder.c_str());
+		//char oldgamePath[256];
+		//sprintf(oldgamePath, "%s", gameFolder.c_str());
 		for (int i = 0; i < searchPaths.Num(); i++) {
-			if (searchPaths[i].gamedir != oldgamePath) {
+			if (searchPaths[i].gamedir != gameFolder) {
 				//gameFolder = searchPaths[i].gamedir;
 				res = Sys_IsFolder(RelativePathToOSPath(relativePath, basePath, searchPaths[i].gamedir));
 				/*if (res != FOLDER_ERROR) {

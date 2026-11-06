@@ -352,7 +352,10 @@ bool idMenuScreen_Shell_AdvancedGraphics::HandleAction( idWidgetAction& action, 
 			{
 				selectionIndex = parms[0].ToInteger();
 			}
-			
+			if (selectionIndex > 3) {
+				int optionDiff = idMenuDataSource_AdvancedGraphics::MAX_ADVANCED_FIELDS - options->GetChildren().Num();
+				selectionIndex = idMath::ClampInt(0, options->GetChildren().Num() - 1, 3 + (selectionIndex - (3 + optionDiff)));
+			}
 			if( options && selectionIndex != options->GetFocusIndex() )
 			{
 				options->SetViewIndex( options->GetViewOffset() + selectionIndex );

@@ -838,5 +838,5 @@ bool idSoundSystemLocal::SupportsReverbs() {
 bool idSoundSystemLocal::HasSubtitles() {
 	idStr folderPath = idStr("cc/");
 	folderPath += sys_lang.GetString();
-	return fileSystem->IsFolder(folderPath);
+	return fileSystem->IsFolder(folderPath) == 1;
 }
