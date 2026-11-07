@@ -1450,24 +1450,24 @@ if(MSVC)
 	#		Xinput
 	#		)
 	#elseif(WINRT AND NOT OPENAL)
-	if (USE_SYSTEM_DX)
-		set(DirectX_LIBRARIES
-			dinput8
-			#dsound
-			dxguid
-			#dxerr
-			Xinput9_1_0 #GK: Win7 backwards compatibility
-			)
-		if(USE_XAUDIO2)
-			list(APPEND DirectX_LIBRARIES xaudio2.lib)
+		if (USE_SYSTEM_DX)
+			set(DirectX_LIBRARIES
+				dinput8
+				#dsound
+				dxguid
+				#dxerr
+				Xinput9_1_0 #GK: Win7 backwards compatibility
+				)
+			if(USE_XAUDIO2)
+				list(APPEND DirectX_LIBRARIES xaudio2.lib)
+			endif()
+			if (USE_DXGI)
+				list(APPEND DirectX_LIBRARIES dxgi d3d11)
+			endif()
+		else()
+			find_package(DirectX REQUIRED)
+			include_directories(${DirectX_INCLUDE_DIR})
 		endif()
-		if (USE_DXGI)
-			list(APPEND DirectX_LIBRARIES dxgi d3d11)
-		endif()
-	else()
-		find_package(DirectX REQUIRED)
-		include_directories(${DirectX_INCLUDE_DIR})
-	endif()
 	
 	if(USE_VULKAN)
 		list(APPEND RBDOOM3_INCLUDES ${RENDERER_VULKAN_INCLUDES})
@@ -1732,6 +1732,18 @@ if(MSVC)
 					   $<TARGET_FILE_DIR:DoomBFA>/OpenAL32.dll
 					   COMMENT "Copy OpenAL dll")
 	endif(NOT OPENAL_FOUND)
+
+	if (USE_SDL_WIN32)
+		add_custom_command(TARGET DoomBFA
+					   PRE_LINK
+					   COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/zs.lib 
+					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/zlib.lib 
+					   COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/zsd.lib 
+					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/zlibd.lib
+					   )
+	endif(USE_SDL_WIN32)
 		
 	add_dependencies(DoomBFA idlib external shaders)
 	target_link_libraries(DoomBFA
