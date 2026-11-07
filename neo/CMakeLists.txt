@@ -369,9 +369,7 @@ endif(USE_SYSTEM_ZLIB)
 if (ZLIB_FOUND)
     include_directories(${ZLIB_INCLUDE_DIRS})
 	if (MSVC AND ALL_STATIC)
-		set(ZLIB_LIBRARY
-		optimized "vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/zlib"
-		debug "vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/zlibd")
+		set(ZLIB_LIBRARY ZLIB::ZLIB)
 	else()
 		set(ZLIB_LIBRARY ${ZLIB_LIBRARIES})
 	endif()
@@ -1732,18 +1730,6 @@ if(MSVC)
 					   $<TARGET_FILE_DIR:DoomBFA>/OpenAL32.dll
 					   COMMENT "Copy OpenAL dll")
 	endif(NOT OPENAL_FOUND)
-
-	if (USE_SDL_WIN32)
-		add_custom_command(TARGET DoomBFA
-					   PRE_LINK
-					   COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/zs.lib 
-					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/zlib.lib 
-					   COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/zsd.lib 
-					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/zlibd.lib
-					   )
-	endif(USE_SDL_WIN32)
 		
 	add_dependencies(DoomBFA idlib external shaders)
 	target_link_libraries(DoomBFA
