@@ -457,12 +457,25 @@ void CleanVector(std::vector<T*> myVector) {
 	}
 }
 
+template<class T>
+void ClearVector(std::vector<T*> myVector) {
+	for (size_t i = 0; i < myVector.size(); i++) {
+		if (myVector[i] != NULL) {
+			void* val = myVector[i];
+			myVector[i] = NULL;
+			free((T*)val);
+		}
+	}
+}
+
 void DoomLib::CloseGame() {
 	common->Printf("Reseting Dehacked Patches...\n");
 	::g->cpind = 0;
 	for (uint i = 0; i < ::g->cpatch.size(); i++) {
-		free(::g->cpatch[i]);
-		::g->cpatch[i] = NULL;
+		if (::g->cpatch[i] != NULL) {
+			free(::g->cpatch[i]);
+			::g->cpatch[i] = NULL;
+		}
 	}
 	//GK: Make sure the other game wont start with reverb
 //#ifdef USE_OPENAL
@@ -533,7 +546,7 @@ void DoomLib::Shutdown() {
 		glob->drawsegs.clear();
 		CleanVector(glob->sprites);
 		glob->vissprites.clear();
-		CleanVector(glob->cpatch);
+		ClearVector(glob->cpatch);
 		glob->visplanes.clear();
 		CleanVector(glob->reverbs);
 		glob->sector_list.clear();

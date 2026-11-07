@@ -749,8 +749,10 @@ void W_FreeWadFiles() {
 	if (::g->gamemode == commercial) {
 		I_Printf("Reseting Dehacked Patches...\n");
 		for (uint i = 0; i < ::g->cpatch.size(); i++) {
-			free(::g->cpatch[i]);
-			::g->cpatch[i] = NULL;
+			if (::g->cpatch[i] != NULL) {
+				free(::g->cpatch[i]);
+				::g->cpatch[i] = NULL;
+			}
 		}
 		ResetSfx();
 		resetValues();
