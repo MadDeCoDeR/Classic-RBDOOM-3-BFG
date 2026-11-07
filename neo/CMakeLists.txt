@@ -1733,6 +1733,18 @@ if(MSVC)
 					   COMMENT "Copy OpenAL dll")
 	endif(NOT OPENAL_FOUND)
 		
+	if (USE_SDL_WIN32)
+		add_custom_command(TARGET DoomBFA
+					   PRE_LINK
+					   COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/zs.lib 
+					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/lib/zlib.lib 
+					   COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/zsd.lib 
+					   ${CMAKE_BINARY_DIR}/vcpkg_installed/${CPU_ARCH}-windows-static-md/debug/lib/zlibd.lib
+					   )
+	endif(NOT OPENAL_FOUND)
+		
 	add_dependencies(DoomBFA idlib external shaders)
 	target_link_libraries(DoomBFA
 		idlib
