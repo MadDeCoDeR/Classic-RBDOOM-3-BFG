@@ -276,7 +276,7 @@ void setMapNum() {
 				::g->map = ::g->clusters[::g->gameepisode - 1].startmap + map;
 			}
 			else {
-				::g->map = 0;
+				::g->map = 1;
 			}
 		}
 	} else {
@@ -538,6 +538,9 @@ void parseexptext(char* text) {
 				if (t != NULL) {
 					if (atoi(t + 3)) {
 						val1 = atoi(t + 3) - 1;
+						if (atoi(t + 1)) {
+							episodecount = atoi(t + 1) - 1;
+						}
 				}
 				else {
 						val1 = atoi(t) - 1;
