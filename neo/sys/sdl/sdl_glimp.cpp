@@ -319,12 +319,6 @@ bool GLimp_Init( glimpParms_t parms )
 
 		 glConfig.swapControlTearAvailable = SDL_GL_SetSwapInterval(-1);
 		 r_swapInterval.SetModified();
-			
-		// RB begin
-		SDL_GetWindowSizeInPixels( window, &glConfig.nativeScreenWidth, &glConfig.nativeScreenHeight );
-		// RB end
-		
-		glConfig.isFullscreen = ( SDL_GetWindowFlags( window ) & SDL_WINDOW_FULLSCREEN ) == SDL_WINDOW_FULLSCREEN;
 		
 		common->Printf( "Using %d color bits, %d depth, %d stencil display\n",
 						channelcolorbits, tdepthbits, tstencilbits );
@@ -332,15 +326,7 @@ bool GLimp_Init( glimpParms_t parms )
 		glConfig.colorBits = tcolorbits;
 		glConfig.depthBits = tdepthbits;
 		glConfig.stencilBits = tstencilbits;
-		
-		// RB begin
-		glConfig.displayFrequency = parms.displayHz;
-		glConfig.isStereoPixelFormat = parms.stereo;
-		glConfig.multisamples = parms.multiSamples;
 		glConfig.pixelAspect = 1.0f;	// FIXME: some monitor modes may be distorted
-		// should side-by-side stereo modes be consider aspect 0.5?
-		swf_cursorDPI.SetFloat(SDL_GetWindowDisplayScale(window));
-		// RB end
 		
 		break;
 	}
@@ -441,7 +427,7 @@ static bool SetScreenParmsFullscreen( glimpParms_t parms )
 			rDiff = nrDiff;
 			m = displayModes[i];
 		}
-		if (wDiff == 0 || hDiff == 0 || rDiff == 0) {
+		if (wDiff == 0 && hDiff == 0 && rDiff == 0) {
 			m = displayModes[i];
 			break;
 		}
@@ -456,7 +442,7 @@ static bool SetScreenParmsFullscreen( glimpParms_t parms )
 	// }
 
 	// if we're currently not in fullscreen mode, we need to switch to fullscreen
-	//if( SDL_GetWindowFullscreenMode(window) == NULL)
+	if (!(SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN))
 	{
 		if( !SDL_SetWindowFullscreen( window, true ) )
 		{
