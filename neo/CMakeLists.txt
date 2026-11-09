@@ -516,11 +516,12 @@ if (USE_OPENXR)
 	set(XR_RUNTIME_JSON "$ENV{XR_RUNTIME_JSON}")
 	include(FetchContent)
 	set(BUILD_TESTS OFF)
-	set(BUILD_API_LAYERS ON)
+	set(BUILD_API_LAYERS OFF)
+	set(DYNAMIC_LOADER OFF)
 	FetchContent_Declare(
 		OpenXR
-		URL_HASH MD5=A8DE805EE5C34C180A5B630EBD816850
-		URL https://github.com/KhronosGroup/OpenXR-SDK-Source/archive/refs/tags/release-1.1.43.tar.gz
+		URL_HASH MD5=9DB7D36346F5B167CE5F52EB75A155FC
+		URL https://github.com/KhronosGroup/OpenXR-SDK/archive/refs/tags/release-1.1.65.tar.gz
 		SOURCE_DIR
 		../neo/libs/openxr
 	)
@@ -1754,7 +1755,7 @@ if(MSVC)
 		${CMAKE_DL_LIBS}
 		)
 		if (USE_OPENXR)
-			target_link_libraries(DoomBFA openxr-gfxwrapper openxr_loader)
+			target_link_libraries(DoomBFA openxr_loader)
 		endif()
 		if (USE_SDL_WIN32)
 			target_link_libraries(DoomBFA ${SDLx_LIBRARY})
@@ -1969,10 +1970,7 @@ else()
 			)
 		if (USE_OPENXR) 
 	        target_compile_options(openxr_loader PRIVATE "-Wno-error")
-			target_compile_options(XrApiLayer_api_dump PRIVATE "-Wno-error")
-			target_compile_options(XrApiLayer_core_validation PRIVATE "-Wno-error")
-			target_compile_options(openxr-gfxwrapper PRIVATE "-Wno-error")
-			target_link_libraries(DoomBFA openxr-gfxwrapper openxr_loader)
+			target_link_libraries(DoomBFA openxr_loader)
 		endif()
 	endif()
 	

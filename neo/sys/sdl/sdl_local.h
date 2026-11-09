@@ -37,11 +37,17 @@ const int GRAB_SETSTATE		= ( 1 << 3 );
 
 #ifdef USE_OPENXR
 #define XR_USE_GRAPHICS_API_OPENGL
+#ifdef _WIN32
+#define XR_USE_PLATFORM_WIN32
+#endif
+#ifdef __linux__
 #define XR_USE_PLATFORM_WAYLAND
 #ifndef XR_USE_PLATFORM_XLIB
 #define XR_USE_PLATFORM_XLIB
 #endif
+
 #include <GL/glx.h>
+#endif
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
 #endif
@@ -51,8 +57,13 @@ void GLimp_GrabInput( int flags );
 char*	Sys_ConsoleInput();
 
 #ifdef USE_OPENXR
+#ifdef __linux__
 static XrGraphicsBindingOpenGLXlibKHR x11Binding {};
 static XrGraphicsBindingOpenGLWaylandKHR waylandBinding {};
+#endif
+#ifdef _WIN32
+static XrGraphicsBindingOpenGLWin32KHR win32Binding{};
+#endif
 void* GetOpenXRGraphicsBinding();
 #endif
 
