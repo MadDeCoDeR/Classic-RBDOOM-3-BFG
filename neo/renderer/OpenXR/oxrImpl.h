@@ -29,11 +29,9 @@
 #include <stdlib.h>
 #include "renderer/RenderCommon.h"
 #include <functional>
-#ifdef _WIN32
+#if defined(_WIN32) && !defined(USE_SDL_WIN32)
 #include "sys/win32/win_local.h"
-#include "gfxwrapper_opengl.h"
 #else
-#include "gfxwrapper_opengl.h"
 #include "sys/sdl/sdl_local.h"
 #endif
 

@@ -854,6 +854,7 @@ Sys_ChangeTitle
 void* GetOpenXRGraphicsBinding()
 {
 	idStr videoDriver = idStr(SDL_GetCurrentVideoDriver());
+#ifdef __linux__
 	if (!idStr::Icmp(videoDriver, "x11")) {
 			x11Binding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR};
 			x11Binding.xDisplay = (Display *)SDL_GetPointerProperty(SDL_GetWindowProperties(window), SDL_PROP_WINDOW_X11_DISPLAY_POINTER, NULL);
@@ -873,6 +874,15 @@ void* GetOpenXRGraphicsBinding()
 			waylandBinding.display = (struct wl_display *)SDL_GetPointerProperty(SDL_GetWindowProperties(window), SDL_PROP_WINDOW_WAYLAND_DISPLAY_POINTER, NULL);
 			return &waylandBinding;
 		}
+#endif
+#ifdef _WIN32
+		if (!idStr::Icmp(videoDriver, "windows")) {
+			win32Binding = { XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR };
+			win32Binding.hDC = (HDC)SDL_GetPointerProperty(SDL_GetWindowProperties(window), SDL_PROP_WINDOW_WIN32_HDC_POINTER, NULL);
+			win32Binding.hGLRC = (HGLRC)SDL_GL_GetCurrentContext();
+			return &win32Binding;
+		}
+#endif
 	return NULL;
 }
 #endif
