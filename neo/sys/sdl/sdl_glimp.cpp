@@ -427,7 +427,7 @@ static bool SetScreenParmsFullscreen( glimpParms_t parms )
 			rDiff = nrDiff;
 			m = displayModes[i];
 		}
-		if (wDiff == 0 || hDiff == 0 || rDiff == 0) {
+		if (wDiff == 0 && hDiff == 0 && rDiff == 0) {
 			m = displayModes[i];
 			break;
 		}
