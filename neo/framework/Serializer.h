@@ -70,7 +70,7 @@ If you have questions concerning this license or the applicable additional terms
 }												\
 
 //#define ENABLE_SERIALIZE_CHECKPOINTS
-//#define SERIALIZE_SANITYCHECK
+#define SERIALIZE_SANITYCHECK
 //#define SERIALIZE_NO_QUANT
 
 #define SERIALIZE_CHECKPOINT( ser )			\
