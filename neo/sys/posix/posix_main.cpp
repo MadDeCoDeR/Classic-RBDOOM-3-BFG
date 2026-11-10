@@ -899,7 +899,13 @@ Posix_EarlyInit/Posix_LateInit is better
   and also it needs all the flags for proper setup (without SDL_INIT_GAMECONTROLLER latest versions cause performance degregation when using a controller)
  */
 void Sys_Init() {
+#ifdef __linux__
+#ifdef USE_OPENXR
+	SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "x11"); //GK: According to documentation there is no support for wayland with OpenGL
+#else
 	SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "wayland,x11");
+#endif
+#endif
 	if( !SDL_WasInit( SDL_INIT_VIDEO | SDL_INIT_GAMEPAD) )
 	{
 		if( !SDL_Init( SDL_INIT_VIDEO | SDL_INIT_GAMEPAD ) )

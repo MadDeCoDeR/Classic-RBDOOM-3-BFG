@@ -738,6 +738,17 @@ bool Net_WaitForData( int netSocket, int timeout )
 	return true;
 }
 
+
+/*
+========================
+Net_NullifyPacket
+========================
+*/
+void Net_NullifyPacket(char*data, int size) {
+	for (int i = 0; i < size; i++) {
+		data[i] = 0;
+	}
+}
 /*
 ========================
 Net_GetUDPPacket
@@ -804,6 +815,7 @@ bool Net_GetUDPPacket( int netSocket, netadr_t& net_from, char* data, int& size,
 	if( ret > maxSize )
 	{
 		idLib::Printf( "Net_GetUDPPacket: oversize packet from %s\n", Sys_NetAdrToString( net_from ) );
+		Net_NullifyPacket(data, ret);
 		return false;
 	}
 	
