@@ -586,8 +586,8 @@ void idRenderBackend::Init()
 		}
 		idLib::Printf("\n");
 	}
-	if (glslVersion < 3.0f) { //GK: GLSL Version HACK. After GLSL 1.50 (GL 3.2) GLSL and GL Versions come in sync so there is no GLSL 3.00 but there is 3.00 es
-		idLib::FatalError("System doesn't support minimum required OpenGL Version 3.3 or OpenGL ES 3.0");
+	if (glslVersion < 1.5f) { //GK: GLSL Version HACK. After GLSL 1.50 (GL 3.2) GLSL and GL Versions come in sync so there is no GLSL 3.00 but there is 3.00 es
+		idLib::FatalError("System doesn't support minimum required OpenGL Version 3.2 or OpenGL ES 3.0");
 	}
 	if (r_oldGLSLVersion.GetFloat() != glslVersion) {
 		idFileList* listOfGLSLProgs = fileSystem->ListFilesTree("renderprogs/glsl", "*");
