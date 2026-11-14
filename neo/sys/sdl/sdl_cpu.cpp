@@ -144,14 +144,14 @@ public:
 				break;
 			}
 			if (strstr(propertyName, "vendor_id")) {
-				if (propertyValue == "AuthenticAMD") {
+				if (strstr(propertyValue, "AuthenticAMD")) {
 					isAMD_ = true;
 				} else
-				if (propertyValue == "GenuineIntel") {
+				if (strstr(propertyValue, "GenuineIntel")) {
 					isIntel_ = true;
 				}
 			}
-			if (strstr(propertyName, "model_name")) {
+			if (strstr(propertyName, "model name")) {
 				brand_ = propertyValue;
 			}
 
@@ -335,7 +335,7 @@ cpuid_t Sys_GetCPUId()
 	if (CPU_Rep.isAMD_) {
 		flags = CPUID_AMD;
 	}
-	else {
+	else if (CPU_Rep.isIntel_){
 		flags = CPUID_INTEL;
 	}
 
