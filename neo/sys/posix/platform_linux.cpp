@@ -85,7 +85,7 @@ Sys_GetProcessorId
 */
 cpuid_t Sys_GetProcessorId()
 {
-	return CPUID_GENERIC;
+	return cpuid;
 }
 
 /*
@@ -95,7 +95,7 @@ Sys_GetProcessorString
 */
 const char* Sys_GetProcessorString()
 {
-	return "generic";
+	return sys_cpustring.c_str();
 }
 
 /*

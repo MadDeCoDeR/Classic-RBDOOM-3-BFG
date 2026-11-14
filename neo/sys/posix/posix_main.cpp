@@ -899,6 +899,48 @@ Posix_EarlyInit/Posix_LateInit is better
   and also it needs all the flags for proper setup (without SDL_INIT_GAMECONTROLLER latest versions cause performance degregation when using a controller)
  */
 void Sys_Init() {
+	idStr string;
+
+		common->Printf( "%1.0f MHz ", Sys_ClockTicksPerSecond() / 1000000.0f );
+
+		cpuid = Sys_GetCPUId();
+
+		string.Clear();
+
+		if ( cpuid & CPUID_AMD ) {
+			string += "AMD CPU";
+		} else if ( cpuid & CPUID_INTEL ) {
+			string += "Intel CPU";
+		} else if ( cpuid & CPUID_UNSUPPORTED ) {
+			string += "unsupported CPU";
+		} else {
+			string += "generic CPU";
+		}
+
+		string += " with ";
+		if ( cpuid & CPUID_MMX ) {
+			string += "MMX & ";
+		}
+		if ( cpuid & CPUID_3DNOW ) {
+			string += "3DNow! & ";
+		}
+		if ( cpuid & CPUID_SSE ) {
+			string += "SSE & ";
+		}
+		if ( cpuid & CPUID_SSE2 ) {
+            string += "SSE2 & ";
+		}
+		if ( cpuid & CPUID_SSE3 ) {
+			string += "SSE3 & ";
+		}
+		if ( cpuid & CPUID_HTT ) {
+			string += "HTT & ";
+		}
+		string.StripTrailing( " & " );
+		string.StripTrailing( " with " );
+		string += "\nCPU Name: ";
+		string += Sys_GetCPUName();
+		sys_cpustring = string;
 #ifdef __linux__
 #ifdef USE_OPENXR
 	SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "x11"); //GK: According to documentation there is no support for wayland with OpenGL

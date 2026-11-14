@@ -1359,12 +1359,10 @@ void Sys_Init() {
 		if ( win32.cpuid & CPUID_HTT ) {
 			string += "HTT & ";
 		}
-#ifndef USE_SDL_WIN32
 		string.StripTrailing( " & " );
 		string.StripTrailing( " with " );
 		string += "\nCPU Name: ";
 		string += Sys_GetCPUName();
-#endif
 		win32.sys_cpustring.SetString( string );
 	} else {
 		common->Printf( "forcing CPU type to " );

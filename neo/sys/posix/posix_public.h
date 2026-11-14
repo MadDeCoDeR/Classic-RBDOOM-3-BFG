@@ -61,6 +61,14 @@ char*		Posix_ConsoleInput();
 
 double 		MeasureClockTicks();
 
+static cpuid_t			cpuid;
+static idStr			sys_cpustring;
+
+cpuid_t	Sys_GetCPUId();
+
+const char*	Sys_GetCPUName();
+
+
 #ifdef __APPLE__
 enum clk_id_t { CLOCK_REALTIME, CLOCK_MONOTONIC, CLOCK_MONOTONIC_RAW };
 int clock_gettime( clk_id_t clock, struct timespec* tp );
