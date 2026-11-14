@@ -116,9 +116,7 @@ public:
 	
 };
 //GK: End
-#endif // _WIN32
-
-#ifdef __linux__
+#elifdef __linux__
 class idCPUInfo {
 public:
 	idCPUInfo()
@@ -157,6 +155,21 @@ public:
 
 		}
 	   };
+
+	std::string vendor_;
+	std::string brand_;
+	bool isIntel_;
+	bool isAMD_;
+};
+#else
+class idCPUInfo {
+public:
+	idCPUInfo()
+	:  isIntel_{ false },
+	   isAMD_{ false },
+	   vendor_{ "Generic" },
+	   brand_{ "Generic CPU" }
+	   {};
 
 	std::string vendor_;
 	std::string brand_;
