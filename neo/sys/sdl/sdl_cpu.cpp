@@ -116,7 +116,7 @@ public:
 	
 };
 //GK: End
-#elifdef __linux__
+#elif __linux__
 class idCPUInfo {
 public:
 	idCPUInfo()
