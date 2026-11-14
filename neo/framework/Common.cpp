@@ -62,10 +62,10 @@ If you have questions concerning this license or the applicable additional terms
 
 struct version_s
 {
-	/*version_s()
+	version_s()
 	{
-		sprintf( string, "%s.%d%s %s %s %s", common->IsNewDOOM3() ? NEW_CONSOLE_NAME : CONSOLE_NAME, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__ );
-	}*/
+		sprintf( string, "%s.%d%s %s %s %s", ENGINE_NAME, BUILD_NUMBER, BUILD_DEBUG, BUILD_STRING, __DATE__, __TIME__ );
+	}
 	char	string[256];
 } version;
 

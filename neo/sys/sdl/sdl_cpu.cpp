@@ -37,6 +37,148 @@ If you have questions concerning this license or the applicable additional terms
 #undef vsnprintf
 // DG end
 #include <SDL3/SDL_cpuinfo.h>
+#include <string>
+#ifdef _WIN32
+#include <array>
+#include <vector>
+#include <bitset>
+//GK: Direct copy from https://docs.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex?view=msvc-170 trimmed down to ONLY Retrieve Vendor ID and Brand Name
+
+class idCPUInfo
+{
+public:
+	idCPUInfo()
+		:
+		isIntel_{ false },
+		isAMD_{ false }
+	{
+		//int cpuInfo[4] = {-1};
+		std::array<int, 4> cpui;
+		std::vector<std::array<int, 4>> data_;
+		std::vector<std::array<int, 4>> extdata_;
+		int nIds_ = 0;
+		int nExIds_ = 0;
+		// Calling __cpuid with 0x0 as the function_id argument
+		// gets the number of the highest valid function ID.
+		__cpuid(cpui.data(), 0);
+		nIds_ = cpui[0];
+
+		for (int i = 0; i <= nIds_; ++i)
+		{
+			__cpuidex(cpui.data(), i, 0);
+			data_.push_back(cpui);
+		}
+
+		// Capture vendor string
+		char vendor[0x20];
+		memset(vendor, 0, sizeof(vendor));
+		*reinterpret_cast<int*>(vendor) = data_[0][1];
+		*reinterpret_cast<int*>(vendor + 4) = data_[0][3];
+		*reinterpret_cast<int*>(vendor + 8) = data_[0][2];
+		vendor_ = vendor;
+		if (vendor_ == "GenuineIntel")
+		{
+			isIntel_ = true;
+		}
+		else if (vendor_ == "AuthenticAMD")
+		{
+			isAMD_ = true;
+		}
+
+		// Calling __cpuid with 0x80000000 as the function_id argument
+		// gets the number of the highest valid extended ID.
+		__cpuid(cpui.data(), 0x80000000);
+		nExIds_ = cpui[0];
+
+		char brand[0x40];
+		memset(brand, 0, sizeof(brand));
+
+		for (int i = 0x80000000; i <= nExIds_; ++i)
+		{
+			__cpuidex(cpui.data(), i, 0);
+			extdata_.push_back(cpui);
+		}
+
+		// Interpret CPU brand string if reported
+		if (nExIds_ >= 0x80000004)
+		{
+			memcpy(brand, extdata_[2].data(), sizeof(cpui));
+			memcpy(brand + 16, extdata_[3].data(), sizeof(cpui));
+			memcpy(brand + 32, extdata_[4].data(), sizeof(cpui));
+			brand_ = brand;
+		}
+	};
+
+	std::string vendor_;
+	std::string brand_;
+	bool isIntel_;
+	bool isAMD_;
+	
+};
+//GK: End
+#elif __linux__
+class idCPUInfo {
+public:
+	idCPUInfo()
+	:  isIntel_{ false },
+	   isAMD_{ false }{
+
+		FILE* fd;
+
+		fd = fopen("/proc/cpuinfo", "r");
+		if (fd == NULL) {
+			return;
+		}
+		int processor = 0;
+		size_t size = 0;
+		char* line = NULL;
+		while(getline(&line, &size, fd) > 0) {
+			char* propertyName =  strtok(line, ":");
+			char* propertyValue = strtok(NULL, ":") + 1;
+			if (strstr(propertyName, "processor")) {
+				processor = atoi(propertyValue);
+			}
+			if (processor > 0) {
+				break;
+			}
+			if (strstr(propertyName, "vendor_id")) {
+				if (strstr(propertyValue, "AuthenticAMD")) {
+					isAMD_ = true;
+				} else
+				if (strstr(propertyValue, "GenuineIntel")) {
+					isIntel_ = true;
+				}
+			}
+			if (strstr(propertyName, "model name")) {
+				brand_ = propertyValue;
+			}
+
+		}
+	   };
+
+	std::string vendor_;
+	std::string brand_;
+	bool isIntel_;
+	bool isAMD_;
+};
+#else
+class idCPUInfo {
+public:
+	idCPUInfo()
+	:  isIntel_{ false },
+	   isAMD_{ false },
+	   vendor_{ "Generic" },
+	   brand_{ "Generic CPU" }
+	   {};
+
+	std::string vendor_;
+	std::string brand_;
+	bool isIntel_;
+	bool isAMD_;
+};
+#endif
+
+const idCPUInfo CPU_Rep;
 
 
 #pragma warning(disable:4740)	// warning C4740: flow in or out of inline asm code suppresses global optimization
@@ -202,6 +344,14 @@ cpuid_t Sys_GetCPUId()
 	// check for an AMD
 	flags = CPUID_GENERIC;
 	
+	// check for an AMD
+	if (CPU_Rep.isAMD_) {
+		flags = CPUID_AMD;
+	}
+	else if (CPU_Rep.isIntel_){
+		flags = CPUID_INTEL;
+	}
+
 	// check for Multi Media Extensions
 	if( SDL_HasMMX() )
 	{
@@ -233,7 +383,11 @@ cpuid_t Sys_GetCPUId()
 	{
 		flags |= CPUID_SSE3;
 	}
-	
+
+	if (SDL_HasAltiVec())
+	{
+		flags |= CPUID_ALTIVEC;
+	}
 	/*
 	// check for Hyper-Threading Technology
 	if( HasHTT() )
@@ -257,6 +411,16 @@ cpuid_t Sys_GetCPUId()
 	return ( cpuid_t )flags;
 }
 
+
+/*
+================
+Sys_GetCPUIName
+================
+*/
+const char* Sys_GetCPUName()
+{
+	return CPU_Rep.brand_.c_str();
+}
 
 /*
 ===============================================================================
