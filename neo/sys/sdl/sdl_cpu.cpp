@@ -152,8 +152,9 @@ public:
 			if (strstr(propertyName, "model name")) {
 				brand_ = propertyValue;
 			}
-
 		}
+		free(line);
+		fclose(fd);
 	   };
 
 	std::string vendor_;
