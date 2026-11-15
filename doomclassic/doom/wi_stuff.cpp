@@ -61,6 +61,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "wi_stuff.h"
 
+#include "d_exp.h"
+
 
 //
 // Data needed to add patches to full screen intermission pics.
@@ -361,6 +363,67 @@ WI_drawOnLnode
     }
 }
 
+int GetNextXWinterFrame(xwinterlayeranim_t		xanim) {
+	int res = 0;
+	for (int f = 0; f < 10; f++) {
+		xwinterlayeranimframe_t frame = xanim.frames[f];
+		if (frame.type == INVALID) {
+			continue;
+		}
+		if (f > ::g->frameInUse) {
+			res = f;
+			break;
+		}
+	}
+	return res;
+}
+
+void
+WI_drawXinterFrame
+(xwinterlayeranim_t		xanim)
+{
+	int		left;
+	int		top;
+	int		right;
+	int		bottom;
+
+	for (int i = 0; i < 2; i++) {
+		for (int f = 0; f < 10; f++) {
+			xwinterlayeranimframe_t frame = xanim.frames[f];
+			if (frame.type == INVALID) {
+				continue;
+			}
+			patch_t* framePatch = img2lmp(W_CacheLumpName(frame.image, PU_CACHE_SHARED), W_GetNumForName(frame.image));
+
+			left = xanim.x - SHORT(framePatch->leftoffset);
+			top = xanim.y - SHORT(framePatch->topoffset);
+			right = left + SHORT(framePatch->width);
+			bottom = top + SHORT(framePatch->height);
+
+			switch (frame.type) {
+			case STATIC: {
+				V_DrawPatch(xanim.x + ::g->wi_anim_offset, xanim.y,
+					FB, framePatch, ::g->wi_anim_aspect);
+				break;
+			}
+			case ANIMATED: {
+				if (::g->accumulatedFrameTime <= frame.duration && ::g->frameInUse == f) {
+					V_DrawPatch(xanim.x + ::g->wi_anim_offset, xanim.y,
+						FB, framePatch, ::g->wi_anim_aspect);
+				}
+				else {
+					::g->lastFrameTime = Sys_Milliseconds() / 1000.0f;
+					::g->accumulatedFrameTime = 0;
+					::g->frameInUse = GetNextXWinterFrame(xanim);
+				}
+				break;
+			}
+			}
+
+		}
+	}
+}
+
 
 
 void WI_initAnimatedBack(void)
@@ -617,6 +680,12 @@ void WI_initShowNextLoc(void)
     ::g->acceleratestage = 0;
     ::g->cnt = SHOWNEXTLOCDELAY * TICRATE;
 
+	if (::g->xwinter != NULL) {
+		::g->frameInUse = 0;
+		::g->lastFrameTime = Sys_Milliseconds() / 1000.0f;
+		::g->accumulatedFrameTime = 0;
+	}
+
     WI_initAnimatedBack();
 
 	DoomLib::ActivateGame();
@@ -630,7 +699,14 @@ void WI_updateShowNextLoc(void)
 		WI_initNoState();
 		DoomLib::ShowXToContinue( false );
 	} else {
-		::g->snl_pointeron = (::g->cnt & 31) < 20;
+		if (::g->xwinter != NULL) {
+			float currentTime = Sys_Milliseconds() / 1000.0f;
+			float timeDelta = currentTime - ::g->lastFrameTime;
+			::g->accumulatedFrameTime += timeDelta;
+		}
+		else {
+			::g->snl_pointeron = (::g->cnt & 31) < 20;
+		}
 	}
 }
 
@@ -710,6 +786,27 @@ void WI_drawShowNextLoc(void)
 		
 	}
 
+	if (::g->xwinter != NULL) {
+		last = ::g->wbs->last + 1;
+		if (::g->wbs->last == 0 && ::g->wbs->epsd > 0) {
+			last = ::g->clusters[::g->wbs->epsd].startmap;
+		}
+		for (int l = 0; l < 2; l++) {
+			for (int a = 0; a < 33; a++) {
+
+				xwinterlayeranim_t xanim = ::g->xwinter->layers[l].anims[a];
+				
+				if (xanim.conditions[0].condition == EXITTING && xanim.conditions[0].param <= last) {
+					WI_drawXinterFrame(xanim);
+				}
+				if (xanim.conditions[0].condition == ENTERING && xanim.conditions[0].param == (::g->wbs->next + 1)) {
+					WI_drawXinterFrame(xanim);
+				}
+
+			}
+		}
+	}
+
 	if (::g->gamemission == pack_custom) { //GK:Custom expansion related stuff
 		int nmap = ::g->wbs->next;
 		if (::g->gamemode == retail) {
@@ -723,6 +820,8 @@ void WI_drawShowNextLoc(void)
 			return;
 		}
 	}
+
+	
     // draws which level you are entering..
     if ( (::g->gamemode != commercial)
 	 || ::g->wbs->next != 30)
@@ -1416,7 +1515,7 @@ void WI_updateStats(void)
 				// need to do this again if they buy it
 				localCalculateAchievements(false);
 
-				if (::g->gamemode == commercial) {
+				if (::g->gamemode == commercial && (::g->gamemission == pack_custom && ::g->xwinter == NULL)) {
 					WI_initNoState();
 				}
 				else{
@@ -1521,7 +1620,7 @@ void WI_Ticker(void)
 	else
 	  S_ChangeMusic(mus_inter, true); 
     }
-	if (::g->gamemission == pack_custom) {
+	if (::g->gamemission == pack_custom || ::g->xwinter != NULL) {
 		S_ChangeMusic(::g->intermusic, true);
 	}
 
@@ -1571,6 +1670,18 @@ void WI_loadData(void)
 		strcpy(name, ::g->clusters[::g->wbs->epsd].interpic);
 	}
 
+	if (::g->gamemission == pack_custom && (::g->gamemode == retail || ::g->episodicExpansion) && (::g->clusters.size() && ::g->clusters[::g->wbs->epsd].interpic) && ::g->xwinterMap.size() > 0) {
+		idStr lumpName = idStr(::g->clusters[::g->wbs->epsd].interpic);
+		std::vector<std::unique_ptr<xwinter_t>>::iterator resIt = std::find_if(::g->xwinterMap.begin(), ::g->xwinterMap.end(), [lumpName](std::unique_ptr<xwinter_t>& xwinter) {
+			return xwinter->fileName == lumpName;
+			});
+		if (resIt != ::g->xwinterMap.end()) {
+			::g->xwinter = resIt->get();
+			strcpy(name, ::g->xwinter->bgimage);
+			SetInterMusic(::g->xwinter->music);
+		}
+	}
+
 	// background
 	::g->bg = /*(patch_t*)*/img2lmp(W_CacheLumpName(name, PU_WI_BACK), W_GetNumForName(name));
 	int offsets = ::g->bg->width > ORIGINAL_WIDTH ? abs(::g->bg->width - ::g->renderingWidth) / 2 : 0;
@@ -1578,7 +1689,8 @@ void WI_loadData(void)
 
 	//GK: Rewritten for scalling
 	int minorOffset = (::g->gamemode == retail && ::g->wbs->epsd > 0) ? 9 : 10;
-	::g->wi_anim_offset = (::g->bg->width > ORIGINAL_WIDTH && ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER) ? (abs(::g->bg->width - ::g->renderingWidth)/3.0f) + minorOffset: 0;
+	int patchWidth = abs(::g->bg->width - ::g->renderingWidth) != 0 ? ::g->bg->width : ORIGINAL_WIDTH;
+	::g->wi_anim_offset = (::g->bg->width > ORIGINAL_WIDTH && ::g->ASPECT_IMAGE_SCALER > ::g->GLOBAL_IMAGE_SCALER) ? (abs(patchWidth - ::g->renderingWidth)/3.0f) + minorOffset: 0;
 	::g->wi_anim_aspect = ::g->bg->width > ORIGINAL_WIDTH;
 
 
@@ -1780,6 +1892,8 @@ void WI_unloadData(void)
 		}
 	}
 	::g->bg = NULL;	
+
+	::g->xwinter = NULL;
 }
 
 void WI_Drawer (void)

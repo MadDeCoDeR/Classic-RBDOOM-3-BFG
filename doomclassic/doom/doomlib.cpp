@@ -560,6 +560,7 @@ void DoomLib::Shutdown() {
 			free(glob->mapthings);
 		}
 		glob->trackMaps.clear();
+		glob->xwinterMap.clear();
 		// De-allocate the zone memory (never happened in original doom, until quit)
 		if(glob->mainzone) {
 			free(glob->mainzone);

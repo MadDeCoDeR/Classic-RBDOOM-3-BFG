@@ -2644,7 +2644,7 @@ idStr idStr::SubStr(ID_INT start, ID_INT end) const
 	}
 	//This is how many characters we want to take (+1 for null termination)
 	ID_INT tmpLen = end - start;
-	char tmpBuffer[4086];
+	char tmpBuffer[8172];
 	strncpy(tmpBuffer, data + start, tmpLen);
 	tmpBuffer[tmpLen] = '\0';
 	return va("%s", tmpBuffer);

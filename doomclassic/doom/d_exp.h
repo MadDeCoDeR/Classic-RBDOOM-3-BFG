@@ -34,4 +34,6 @@ void setMapNum();
 
 char* getFinalText(char* value);
 
+void SetInterMusic(char* name);
+
 #endif

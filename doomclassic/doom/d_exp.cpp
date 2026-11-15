@@ -1258,6 +1258,22 @@ void setCluster(int pos, char* name, char*value, char* option, int linepos, std:
 	}*/
 }
 
+void SetInterMusic(char* name) {
+	for (int i = 1; i < 1024; i++) {
+		char* musname = name + 2;
+		if (::g->S_music[i].name == NULL) {
+			::g->totalmus++;
+			::g->S_music[i].name = musname;
+			::g->intermusic = i;
+			return;
+		}
+		if (!idStr::Icmp(musname, ::g->S_music[i].name)) {
+			::g->intermusic = i;
+			return;
+		}
+	}
+}
+
 void setExpData(char* name, char* value) {
 	if (!idStr::Icmp(name,"clearepisodes")) {
 		::g->EpiDef.numitems = 0;
@@ -1266,19 +1282,7 @@ void setExpData(char* name, char* value) {
 		return;
 	}
 	if (!idStr::Icmp(name, "intermusic")) {
-		for (int i = 1; i < 1024; i++) {
-			char* musname = value + 2;
-			if (::g->S_music[i].name == NULL) {
-				::g->totalmus++;
-				::g->S_music[i].name = musname;
-				::g->intermusic = i;
-				return;
-			}
-			if (!idStr::Icmp(musname, ::g->S_music[i].name)) {
-				::g->intermusic = i;
-				return;
-			}
-		}
+		SetInterMusic(value);
 	}
 }
 

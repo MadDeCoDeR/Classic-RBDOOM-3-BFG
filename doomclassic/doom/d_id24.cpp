@@ -368,3 +368,59 @@ void ReadTrackMap(int lump)
 	}
 	free(text);
 }
+
+void MapToXWinterMap(const char* json, const char* fileName) {
+	std::map<std::string, idStr> jObj = RetrieveFlatJsonObj(json);
+	idStr lumpName = idStr(fileName);
+	std::vector<std::unique_ptr<xwinter_t>>::iterator resIt = std::find_if(::g->xwinterMap.begin(), ::g->xwinterMap.end(), [lumpName](std::unique_ptr<xwinter_t>& xwinter) {
+		return xwinter->fileName == lumpName;
+		});
+	if (resIt == ::g->xwinterMap.end()) {
+		::g->xwinterMap.push_back(std::make_unique<xwinter_t>());
+		::g->xwinterMap[::g->xwinterMap.size() - 1].get()->fileName = idStr(fileName);
+		resIt = std::find_if(::g->xwinterMap.begin(), ::g->xwinterMap.end(), [lumpName](std::unique_ptr<xwinter_t>& xwinter) {
+			return xwinter->fileName == lumpName;
+			});
+	}
+	
+	xwinter_t* xwinter = resIt->get();
+	xwinter->music = strdup(jObj["music"].c_str());
+	xwinter->bgimage = strdup(jObj["backgroundimage"].c_str());
+	std::vector<std::map<std::string, idStr>> jLayers = RetrieveJsonObjArray(strdup(jObj["layers"].c_str()));
+	for (int i = 0; i < jLayers.size(); i++) {
+		std::vector<std::map<std::string, idStr>> jAnims = RetrieveJsonObjArray(strdup(jLayers[i]["anims"].c_str()));
+		for (int j = 0; j < jAnims.size(); j++) {
+			xwinter->layers[i].anims[j].x = atoi(jAnims[j]["x"].c_str());
+			xwinter->layers[i].anims[j].y = atoi(jAnims[j]["y"].c_str());
+			std::vector<std::map<std::string, idStr>> jConditions = RetrieveJsonObjArray(strdup(jAnims[j]["conditions"].c_str()));
+			for (int c = 0; c < jConditions.size(); c++) {
+				xwinter->layers[i].anims[j].conditions[c].condition = static_cast<xwinteranimcondition_e>(atoi(jConditions[c]["condition"].c_str()));
+				xwinter->layers[i].anims[j].conditions[c].param = atoi(jConditions[c]["param"].c_str());
+			}
+			std::vector<std::map<std::string, idStr>> jFrames = RetrieveJsonObjArray(strdup(jAnims[j]["frames"].c_str()));
+			for (int f = 0; f < jFrames.size(); f++) {
+				xwinter->layers[i].anims[j].frames[f].image = strdup(jFrames[f]["image"].c_str());
+				xwinter->layers[i].anims[j].frames[f].type = static_cast<xwinterframetype_e>(atoi(jFrames[f]["type"].c_str()));
+				xwinter->layers[i].anims[j].frames[f].duration = atof(jFrames[f]["duration"].c_str());
+				xwinter->layers[i].anims[j].frames[f].maxDuration = atof(jFrames[f]["maxduration"].c_str());
+			}
+		}
+	}
+
+}
+
+void ReadXWinTer(int lump, const char* fileName)
+{
+	//Allocate necessary storage for the SkyDef file
+	char* text = (char*)malloc(W_LumpLength(lump) + 1);
+	//Sanity Check. Set last character to ending 0
+	text[W_LumpLength(lump)] = '\0';
+	//Load the SkyDef file to the text buffer
+	W_ReadLump(lump, text);
+
+	idStr xwinterJson = RetrieveFromJsonPath("/data", text);
+	if (xwinterJson.Cmpn("null", 4)) {
+		MapToXWinterMap(xwinterJson.c_str(), fileName);
+	}
+	free(text);
+}

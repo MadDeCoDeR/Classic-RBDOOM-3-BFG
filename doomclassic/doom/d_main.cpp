@@ -83,6 +83,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "d_exp.h"
 #include "d_deh.h"
 #include "d_id24.h"
+#include <map>
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -1000,6 +1001,21 @@ void D_DoomMain(void)
 			if (trackInfos[i] >= prev && trackInfos[i] < W_GetLumpCount()) {
 				prev = trackInfos[i];
 				ReadTrackMap(trackInfos[i]);
+			}
+		}
+	}
+
+	for (int i = 0; i < 10; i++) {
+		idStr lumpName = idStr("XWINTER") + i;
+		idList<int> xwinters = W_GetNumsForName(lumpName.c_str());
+		if (xwinters[0] >= 0) {
+
+			int prev = 0;
+			for (int j = 0; j < xwinters.Num(); j++) {
+				if (xwinters[j] >= prev && xwinters[j] < W_GetLumpCount()) {
+					prev = xwinters[j];
+					ReadXWinTer(xwinters[j], lumpName.c_str());
+				}
 			}
 		}
 	}

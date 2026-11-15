@@ -1196,6 +1196,14 @@ byte finalFireBuffer[FIRESKY_HEIGHT];//Rendering buffer for the fire Sky (only o
 
 std::vector<std::unique_ptr<trackmap_t>> trackMaps;
 
+std::vector<std::unique_ptr<xwinter_t>> xwinterMap;
+
+xwinter_t* xwinter;
+
+int frameInUse;
+float lastFrameTime;
+float accumulatedFrameTime;
+
 int compatibility; //GK: Values: 0 = Vanilla, 1 = MBF21
 
 bool eventSkip; //GK: The menu ATE the EVENT
