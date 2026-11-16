@@ -1999,3 +1999,11 @@ bool W_IsGameWAD(const char* filename)
 	handle->Read(&header, sizeof(header));
 	return !idStr::Cmpn(header.identification, "IWAD", 4);
 }
+
+patch_t* W_GetGraphic(const char* lumpname, int tag) {
+	return img2lmp(W_CacheLumpName(lumpname, tag), W_GetNumForName(lumpname));
+}
+
+patch_t* W_GetGraphicFromNum(int lump, int tag) {
+	return img2lmp(W_CacheLumpNum(lump, tag), lump);
+}

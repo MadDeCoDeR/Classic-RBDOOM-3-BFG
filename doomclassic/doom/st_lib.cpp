@@ -59,7 +59,7 @@ extern idCVar cl_HUD;
 
 void STlib_init(void)
 {
-    ::g->sttminus = /*(patch_t *)*/ img2lmp(W_CacheLumpName("STTMINUS", PU_STATUS_FRONT), W_GetNumForName("STTMINUS"));
+    ::g->sttminus = /*(patch_t *)*/ W_GetGraphic("STTMINUS", PU_STATUS_FRONT);
 }
 
 

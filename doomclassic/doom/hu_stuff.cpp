@@ -342,7 +342,7 @@ void HU_Init(void)
 	for (i=0;i<HU_FONTSIZE;i++)
 	{
 		sprintf(buffer, "STCFN%.3d", j++);
-		::g->hu_font[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(buffer, PU_FONT), W_GetNumForName(buffer));
+		::g->hu_font[i] = /*(patch_t *)*/ W_GetGraphic(buffer, PU_FONT);
 	}
 	
 	HU_UpdateGlyphs();
@@ -553,7 +553,7 @@ void HU_UpdateGlyphs(void)
 	{
 		char joysuffix = in_joylayout.GetBool() ? 'P' : 'X';
 		sprintf(buffer, "STJOY%c%.2d", joysuffix, i + 1);
-		::g->hu_glyph[i] = /*(patch_t *)*/ img2lmp(W_CacheLumpName(buffer, PU_FONT), W_GetNumForName(buffer));
+		::g->hu_glyph[i] = /*(patch_t *)*/ W_GetGraphic(buffer, PU_FONT);
 	}
 }
 

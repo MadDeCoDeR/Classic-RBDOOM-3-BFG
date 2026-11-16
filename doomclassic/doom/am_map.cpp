@@ -399,7 +399,7 @@ void AM_loadPics(void)
 	for (i=0;i<10;i++)
 	{
 		sprintf(namebuf, "AMMNUM%d", i);
-		::g->marknums[i] = /*(patch_t*)*/img2lmp(W_CacheLumpName(namebuf, PU_CACHE_SHARED), W_GetNumForName(namebuf));
+		::g->marknums[i] = /*(patch_t*)*/W_GetGraphic(namebuf, PU_CACHE_SHARED);
 	}
 
 }

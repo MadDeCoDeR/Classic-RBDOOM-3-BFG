@@ -472,8 +472,8 @@ R_DrawVisSprite
 	fixed_t		baseclip;
 	
 	
-   // patch = /*(patch_t*)*/img2lmp(W_CacheLumpNum (vis->patch+::g->firstspritelump, PU_CACHE_SHARED));
-	patch = img2lmp(W_CacheLumpNum(vis->patch + ::g->firstspritelump, PU_CACHE_SHARED),vis->patch + ::g->firstspritelump);
+   // patch = /*(patch_t*)*/W_GetGraphicFromNum (vis->patch+::g->firstspritelump, PU_CACHE_SHARED));
+	patch = W_GetGraphicFromNum(vis->patch + ::g->firstspritelump, PU_CACHE_SHARED);
 	::g->texnum = vis->patch;  //GK:Get the pointer to the sprite in order to get it's height
     ::g->dc_colormap = vis->colormap;
 	::g->usesprite = true;//GK:SPRITE

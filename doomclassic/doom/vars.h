@@ -1204,6 +1204,8 @@ int frameInUse;
 float lastFrameTime;
 float accumulatedFrameTime;
 
+std::vector<std::unique_ptr<xwinterframecache_t>> xwinterFrameCache;
+
 int compatibility; //GK: Values: 0 = Vanilla, 1 = MBF21
 
 bool eventSkip; //GK: The menu ATE the EVENT

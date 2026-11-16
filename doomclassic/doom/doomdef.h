@@ -448,5 +448,10 @@ typedef struct xwinter_s {
     char* bgimage;
     xwinterlayer_t layers[10];
 } xwinter_t;
+
+typedef struct xwinterframecache_s {
+    idStr lumpName;
+    void* patch;
+} xwinterframecache_t;
 #endif          // __DOOMDEF__
 
