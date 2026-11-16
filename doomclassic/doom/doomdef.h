@@ -407,5 +407,52 @@ typedef struct trackmap_s {
     float Volume;
 } trackmap_t;
 
+typedef enum {
+    INVALID = 0,
+    STATIC = 1,
+    ANIMATED = 2
+} xwinterframetype_e;
+
+typedef enum {
+    RESERVED = 1,
+    ENTERING = 2,
+    EXITTING = 3
+} xwinteranimcondition_e;
+
+typedef struct xwinterlayeranimframe_s {
+    char* image;
+    float duration;
+    float maxDuration;
+    xwinterframetype_e type;
+    bool render;
+} xwinterlayeranimframe_t;
+
+typedef struct xwinterlayercondition_s {
+    xwinteranimcondition_e condition;
+    int param;
+} xwinterlayercondition_t;
+
+typedef struct xwinterlayeranim_s {
+    int x;
+    int y;
+    xwinterlayercondition_t conditions[10];
+    xwinterlayeranimframe_t frames[10];
+} xwinterlayeranim_t;
+
+typedef struct xwinterlayer_s {
+    xwinterlayeranim_t anims[33];
+} xwinterlayer_t;
+
+typedef struct xwinter_s {
+    idStr fileName;
+    char* music;
+    char* bgimage;
+    xwinterlayer_t layers[10];
+} xwinter_t;
+
+typedef struct xwinterframecache_s {
+    idStr lumpName;
+    void* patch;
+} xwinterframecache_t;
 #endif          // __DOOMDEF__
 

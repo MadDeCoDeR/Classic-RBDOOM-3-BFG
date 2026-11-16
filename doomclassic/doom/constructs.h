@@ -985,3 +985,5 @@ memcpy( ::g->S_music, temp_S_music, sizeof(temp_S_music) );
 	::g->lastFireTime = 0;
 
 	::g->customSkyIndex = -1;
+
+	::g->xwinter = NULL;

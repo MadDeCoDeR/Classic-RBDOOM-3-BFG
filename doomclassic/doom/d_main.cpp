@@ -83,6 +83,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "d_exp.h"
 #include "d_deh.h"
 #include "d_id24.h"
+#include <map>
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -313,7 +314,7 @@ void D_Display (void)
 		else
 			y = ::g->viewwindowy+4;
 		V_DrawPatchDirect(::g->viewwindowx+(ORIGINAL_WIDTH-68)/2,
-			y,0,img2lmp((patch_t*)W_CacheLumpName ("M_PAUSE", PU_CACHE_SHARED),W_GetNumForName("M_PAUSE")), false);
+			y,0,W_GetGraphic ("M_PAUSE", PU_CACHE_SHARED), false);
 	}
 
 
@@ -408,7 +409,7 @@ void D_PageTicker (void)
 void D_PageDrawer (void)
 {
 	//GK: Wide TITLEPIC image supprt
-	patch_t* image = img2lmp(W_CacheLumpName(::g->pagename, PU_CACHE_SHARED), W_GetNumForName(::g->pagename));
+	patch_t* image = W_GetGraphic(::g->pagename, PU_CACHE_SHARED);
 	int offsets = image->width > ORIGINAL_WIDTH ? abs(image->width - ::g->renderingWidth) / 2 : 0;
 	V_DrawPatch (0,0, 0, /*(patch_t*)*/image, image->width > ORIGINAL_WIDTH, offsets, offsets);
 }
@@ -1000,6 +1001,21 @@ void D_DoomMain(void)
 			if (trackInfos[i] >= prev && trackInfos[i] < W_GetLumpCount()) {
 				prev = trackInfos[i];
 				ReadTrackMap(trackInfos[i]);
+			}
+		}
+	}
+
+	for (int i = 0; i < 10; i++) {
+		idStr lumpName = idStr("XWINTER") + i;
+		idList<int> xwinters = W_GetNumsForName(lumpName.c_str());
+		if (xwinters[0] >= 0) {
+
+			int prev = 0;
+			for (int j = 0; j < xwinters.Num(); j++) {
+				if (xwinters[j] >= prev && xwinters[j] < W_GetLumpCount()) {
+					prev = xwinters[j];
+					ReadXWinTer(xwinters[j], lumpName.c_str());
+				}
 			}
 		}
 	}

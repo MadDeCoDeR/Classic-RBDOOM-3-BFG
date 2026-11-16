@@ -38,6 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <sys/stat.h>
 #include <vector>
 #include <string>
+#include "r_defs.h"
 //
 //
 // TYPES
@@ -111,5 +112,7 @@ char* W_GetNameForNum(int lump);
 int W_GetLumpCount();
 bool W_IsGameWAD(const char* filename);
 void W_LoadLumpFromFile(const char* filename, const char* lumpName);
+patch_t* W_GetGraphic(const char* lumpname, int tag);
+patch_t* W_GetGraphicFromNum(int lump, int tag);
 #endif
 

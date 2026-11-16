@@ -31,5 +31,6 @@
 
 void	ReadSkyDef(int lump);
 void    ReadTrackMap(int lump);
+void	ReadXWinTer(int lump, const char* fileName);
 
 #endif

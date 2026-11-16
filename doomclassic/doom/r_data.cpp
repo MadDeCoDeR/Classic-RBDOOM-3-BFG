@@ -220,7 +220,7 @@ void R_GenerateComposite (int texnum)
 		--i >=0;
 		 patch++)
 	{
-		realpatch = /*(patch_t*)*/img2lmp(W_CacheLumpNum(patch->patch, PU_CACHE_SHARED),patch->patch);
+		realpatch = /*(patch_t*)*/W_GetGraphicFromNum(patch->patch, PU_CACHE_SHARED);
 		x1 = patch->originx;
 		x2 = x1 + SHORT(realpatch->width);
 		const int *cofs = realpatch->columnofs - x1;
@@ -349,7 +349,7 @@ void R_GenerateLookup (int texnum)
 		--i >=0;)
 	{
 		int pat = patch->patch;
-		realpatch = /*(patch_t*)*/img2lmp(W_CacheLumpNum(pat, PU_CACHE_SHARED), pat);
+		realpatch = /*(patch_t*)*/W_GetGraphicFromNum(pat, PU_CACHE_SHARED);
 		x1 = patch++->originx;
 		x2 = x1 + SHORT(realpatch->width);
 		const int *cofs = realpatch->columnofs - x1;
@@ -388,7 +388,7 @@ void R_GenerateLookup (int texnum)
       for (i = texture->patchcount, patch = texture->patches; --i >= 0;)
 	{
 	  int pat = patch->patch;
-	  realpatch = img2lmp(W_CacheLumpNum(pat, PU_CACHE_SHARED), pat);
+	  realpatch = W_GetGraphicFromNum(pat, PU_CACHE_SHARED);
 	  x, x1 = patch++->originx, x2 = x1 + SHORT(realpatch->width);
 	  const int *cofs = realpatch->columnofs - x1;
 	  
@@ -474,7 +474,7 @@ R_GetColumn
     ofs = ::g->s_texturecolumnofs[tex][col];
     
     // if (lump > 0)
-	// return (byte *)img2lmp(W_CacheLumpNum(lump, PU_CACHE_SHARED), lump)+ ofs;
+	// return (byte *)W_GetGraphicFromNum(lump, PU_CACHE_SHARED)+ ofs;
 
     if (!::g->s_texturecomposite[tex])
 	R_GenerateComposite (tex);
@@ -928,7 +928,7 @@ void R_InitSpriteLumps (void)
     {
 	if (!(i&127))
 	    I_Printf (".");
-	patch = /*(patch_t*)*/img2lmp(W_CacheLumpNum (::g->firstspritelump+i, PU_CACHE_SHARED),::g->firstspritelump + i);
+	patch = /*(patch_t*)*/W_GetGraphicFromNum (::g->firstspritelump+i, PU_CACHE_SHARED);
 	if (patch) {
 		::g->spriteheight[i] = SHORT(patch->height);//GK:Get the sprite height
 		::g->spritewidth[i] = SHORT(patch->width)<<FRACBITS;

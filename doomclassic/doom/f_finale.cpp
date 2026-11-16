@@ -1001,7 +1001,7 @@ void F_CastDrawer (void)
     patch_t*		patch;
 
 	if (::g->castcredit) {
-		patch_t* image1 = img2lmp(W_CacheLumpName("CREDIT", PU_CACHE_SHARED), W_GetNumForName("CREDIT"));
+		patch_t* image1 = W_GetGraphic("CREDIT", PU_CACHE_SHARED);
 		int offsets1 = image1->width > ORIGINAL_WIDTH ? abs(image1->width - ::g->renderingWidth) / 2 : 0;
 		V_DrawPatch(0, 0, 0, /*(patch_t*)*/image1, image1->width > ORIGINAL_WIDTH, offsets1, offsets1);
 		return;
@@ -1011,7 +1011,7 @@ void F_CastDrawer (void)
 		return;
     
     // erase the entire screen to a background
-	patch_t* image2 = img2lmp(W_CacheLumpName(finaleflat[11], PU_CACHE_SHARED), W_GetNumForName(finaleflat[11]));
+	patch_t* image2 = W_GetGraphic(finaleflat[11], PU_CACHE_SHARED);
 	int offsets2 = image2->width > ORIGINAL_WIDTH ? abs(image2->width - ::g->renderingWidth) / 2 : 0;
     V_DrawPatch (0,0,0, /*(patch_t*)*/image2, image2->width > ORIGINAL_WIDTH, offsets2, offsets2);
 
@@ -1023,7 +1023,7 @@ void F_CastDrawer (void)
     lump = sprframe->lump[0];
     flip = (qboolean)sprframe->flip[0];
 			
-    patch =  /*(patch_t*)*/img2lmp(W_CacheLumpNum (lump+::g->firstspritelump, PU_CACHE_SHARED),lump + ::g->firstspritelump);
+    patch =  /*(patch_t*)*/W_GetGraphicFromNum (lump+::g->firstspritelump, PU_CACHE_SHARED);
     if (flip)
 		V_DrawPatchFlipped (160,170,0,patch);
     else
@@ -1084,8 +1084,8 @@ void F_BunnyScroll (void)
     char	name[16];
     int		stage;
 		
-    p1 =  /*(patch_t*)*/img2lmp(W_CacheLumpName ("PFUB2", PU_FINALE), W_GetNumForName("PFUB2"));
-    p2 =  /*(patch_t*)*/img2lmp(W_CacheLumpName ("PFUB1", PU_FINALE), W_GetNumForName("PFUB1"));
+    p1 =  /*(patch_t*)*/W_GetGraphic ("PFUB2", PU_FINALE);
+    p2 =  /*(patch_t*)*/W_GetGraphic ("PFUB1", PU_FINALE);
 
     V_MarkRect (0, 0, ::g->SCREENWIDTH, ::g->SCREENHEIGHT);
 	
@@ -1108,7 +1108,7 @@ void F_BunnyScroll (void)
     if (::g->finalecount < 1180)
     {
 	V_DrawPatch ((ORIGINAL_WIDTH-13*8)/2,
-		     (ORIGINAL_HEIGHT-8*8)/2,0,  /*(patch_t*)*/img2lmp(W_CacheLumpName ("END0",PU_CACHE_SHARED), W_GetNumForName("END0")), false);
+		     (ORIGINAL_HEIGHT-8*8)/2,0,  /*(patch_t*)*/W_GetGraphic ("END0",PU_CACHE_SHARED), false);
 	::g->laststage = 0;
 	return;
     }
@@ -1123,7 +1123,7 @@ void F_BunnyScroll (void)
     }
 	
     sprintf (name,"END%i",stage);
-    V_DrawPatch ((ORIGINAL_WIDTH-13*8)/2, (ORIGINAL_HEIGHT-8*8)/2,0,  /*(patch_t*)*/img2lmp(W_CacheLumpName (name,PU_CACHE_SHARED), W_GetNumForName(name)), false);
+    V_DrawPatch ((ORIGINAL_WIDTH-13*8)/2, (ORIGINAL_HEIGHT-8*8)/2,0,  /*(patch_t*)*/W_GetGraphic (name,PU_CACHE_SHARED), false);
 }
 
 
@@ -1150,18 +1150,18 @@ void F_Drawer (void)
 	{
 	  case 1:
 	    if ( ::g->gamemode == retail || ::g->episodicExpansion) {
-			patch_t* image1 = img2lmp(W_CacheLumpName("CREDIT", PU_CACHE_SHARED), W_GetNumForName("CREDIT"));
+			patch_t* image1 = W_GetGraphic("CREDIT", PU_CACHE_SHARED);
 			int offsets1 = image1->width > ORIGINAL_WIDTH ? abs(image1->width - ::g->renderingWidth) / 2 : 0;
 	      	V_DrawPatch (0,0,0, image1, image1->width > ORIGINAL_WIDTH, offsets1, offsets1);
 		}
 	    else {
-			patch_t* image2 = img2lmp(W_CacheLumpName("HELP2", PU_CACHE_SHARED), W_GetNumForName("HELP2"));
+			patch_t* image2 = W_GetGraphic("HELP2", PU_CACHE_SHARED);
 			int offsets2 = image2->width > ORIGINAL_WIDTH ? abs(image2->width - ::g->renderingWidth) / 2 : 0;
 	      	V_DrawPatch (0,0,0, image2, image2->width > ORIGINAL_WIDTH, offsets2, offsets2);
 		}
 	    break;
 	  case 2: {
-	  	patch_t* image3 = img2lmp(W_CacheLumpName("VICTORY2", PU_CACHE_SHARED), W_GetNumForName("VICTORY2"));
+	  	patch_t* image3 = W_GetGraphic("VICTORY2", PU_CACHE_SHARED);
 		int offsets3 = image3->width > ORIGINAL_WIDTH ? abs(image3->width - ::g->renderingWidth) / 2 : 0;
 	    V_DrawPatch(0,0,0, image3, image3->width > ORIGINAL_WIDTH, offsets3, offsets3);
 	    break;
@@ -1170,7 +1170,7 @@ void F_Drawer (void)
 	    F_BunnyScroll ();
 	    break;
 	  case 4:
-	  	patch_t* image4 = img2lmp(W_CacheLumpName("ENDPIC", PU_CACHE_SHARED), W_GetNumForName("ENDPIC"));
+	  	patch_t* image4 = W_GetGraphic("ENDPIC", PU_CACHE_SHARED);
 		int offsets4 = image4->width > ORIGINAL_WIDTH ? abs(image4->width - ::g->renderingWidth) / 2 : 0;
 	    V_DrawPatch (0,0,0, image4, image4->width > ORIGINAL_WIDTH, offsets4, offsets4);
 	    break;
