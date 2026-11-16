@@ -363,21 +363,6 @@ WI_drawOnLnode
     }
 }
 
-int GetNextXWinterFrame(xwinterlayeranim_t		xanim) {
-	int res = 0;
-	for (int f = 0; f < 10; f++) {
-		xwinterlayeranimframe_t frame = xanim.frames[f];
-		if (frame.type == INVALID) {
-			continue;
-		}
-		if (f > ::g->frameInUse) {
-			res = f;
-			break;
-		}
-	}
-	return res;
-}
-
 void
 WI_drawXinterFrame
 (xwinterlayeranim_t		xanim)
@@ -387,52 +372,45 @@ WI_drawXinterFrame
 	int		right;
 	int		bottom;
 	patch_t* framePatch;
+	for (int f = 0; f < 10; f++) {
+		xwinterlayeranimframe_t frame = xanim.frames[f];
+		if (frame.type == INVALID) {
+			continue;
+		}
+		idStr frameImage = idStr(frame.image);
+		std::vector<std::unique_ptr<xwinterframecache_t>>::iterator resIt = std::find_if(::g->xwinterFrameCache.begin(), ::g->xwinterFrameCache.end(), [frameImage](std::unique_ptr<xwinterframecache_t>& xframe) {
+			return xframe->lumpName == frameImage;
+		});
+		if (resIt != ::g->xwinterFrameCache.end()) {
+			framePatch = (patch_t*)resIt->get()->patch;
+		} else {
+			I_Printf("Failed to retrieve frame image from cache\n");
+			return;
+		}
+		
 
-	for (int i = 0; i < 2; i++) {
-		for (int f = 0; f < 10; f++) {
-			xwinterlayeranimframe_t frame = xanim.frames[f];
-			if (frame.type == INVALID) {
-				continue;
-			}
-			idStr frameImage = idStr(frame.image);
-			std::vector<std::unique_ptr<xwinterframecache_t>>::iterator resIt = std::find_if(::g->xwinterFrameCache.begin(), ::g->xwinterFrameCache.end(), [frameImage](std::unique_ptr<xwinterframecache_t>& xframe) {
-				return xframe->lumpName == frameImage;
-			});
-			if (resIt != ::g->xwinterFrameCache.end()) {
-				framePatch = (patch_t*)resIt->get()->patch;
-			} else {
-				I_Printf("Failed to retrieve frame image from cache\n");
-				return;
-			}
-			
+		left = xanim.x - SHORT(framePatch->leftoffset);
+		top = xanim.y - SHORT(framePatch->topoffset);
+		right = left + SHORT(framePatch->width);
+		bottom = top + SHORT(framePatch->height);
 
-			left = xanim.x - SHORT(framePatch->leftoffset);
-			top = xanim.y - SHORT(framePatch->topoffset);
-			right = left + SHORT(framePatch->width);
-			bottom = top + SHORT(framePatch->height);
-
-			switch (frame.type) {
-			case STATIC: {
+		switch (frame.type) {
+		case STATIC: {
+			V_DrawPatch(xanim.x + ::g->wi_anim_offset, xanim.y,
+				FB, framePatch, ::g->wi_anim_aspect);
+			break;
+		}
+		case ANIMATED: {
+			if (frame.render) {
 				V_DrawPatch(xanim.x + ::g->wi_anim_offset, xanim.y,
 					FB, framePatch, ::g->wi_anim_aspect);
-				break;
 			}
-			case ANIMATED: {
-				if (::g->accumulatedFrameTime <= frame.duration && ::g->frameInUse == f) {
-					V_DrawPatch(xanim.x + ::g->wi_anim_offset, xanim.y,
-						FB, framePatch, ::g->wi_anim_aspect);
-				}
-				else {
-					::g->lastFireTime = Sys_Milliseconds() / 1000.0f;
-					::g->accumulatedFrameTime = 0;
-					::g->frameInUse = GetNextXWinterFrame(xanim);
-				}
-				break;
-			}
-			}
-
+			break;
 		}
+		}
+
 	}
+	
 }
 
 
@@ -683,6 +661,19 @@ void WI_updateNoState(void) {
 	DoomLib::ActivateGame();
 }
 
+void WI_initXWinterAnimated(void) {
+	::g->lastFrameTime = Sys_Milliseconds() / 1000.0f;
+	for (int l = 0; l < 10; l++) {
+		for (int a = 0; a < 33; a++) {
+			for (int f = 0; f < 10; f++) {
+				if (::g->xwinter->layers[l].anims[a].frames[f].type != ANIMATED) {
+					continue;
+				}
+				::g->xwinter->layers[l].anims[a].frames[f].render = f == 0;
+			}
+		}
+	}
+}
 
 
 void WI_initShowNextLoc(void)
@@ -692,14 +683,50 @@ void WI_initShowNextLoc(void)
     ::g->cnt = SHOWNEXTLOCDELAY * TICRATE;
 
 	if (::g->xwinter != NULL) {
-		::g->frameInUse = 0;
-		::g->lastFrameTime = Sys_Milliseconds() / 1000.0f;
-		::g->accumulatedFrameTime = 0;
+		WI_initXWinterAnimated();
 	}
 
     WI_initAnimatedBack();
 
 	DoomLib::ActivateGame();
+}
+
+int GetNextXWinterFrame(xwinterlayeranim_t		xanim, int currentFrame) {
+	int res = 0;
+	for (int f = 0; f < 10; f++) {
+		xwinterlayeranimframe_t frame = xanim.frames[f];
+		if (frame.type != ANIMATED) {
+			continue;
+		}
+		if (f > currentFrame) {
+			res = f;
+			break;
+		}
+	}
+	return res;
+}
+
+void WI_updateXwinterAnimated(void) {
+	float currentTime = Sys_Milliseconds() / 1000.0f;
+	float timeDelta = currentTime - ::g->lastFrameTime;
+	for (int l = 0; l < 10; l++) {
+		for (int a = 0; a < 33; a++) {
+			int nextFrame = 0;
+			for (int f = 0; f < 10; f++) {
+				if (::g->xwinter->layers[l].anims[a].frames[f].type != ANIMATED) {
+					continue;
+				}
+				xwinterlayeranimframe_t frame = ::g->xwinter->layers[l].anims[a].frames[f];
+				if (frame.render && timeDelta >= frame.duration) {
+					::g->xwinter->layers[l].anims[a].frames[f].render = false;
+					::g->lastFrameTime = currentTime;
+					nextFrame = GetNextXWinterFrame(::g->xwinter->layers[l].anims[a], f);
+					::g->xwinter->layers[l].anims[a].frames[nextFrame].render = true;
+					break;
+				}
+			}
+		}
+	}
 }
 
 void WI_updateShowNextLoc(void)
@@ -710,15 +737,12 @@ void WI_updateShowNextLoc(void)
 		WI_initNoState();
 		DoomLib::ShowXToContinue( false );
 	} else {
-		if (::g->xwinter != NULL) {
-			float currentTime = Sys_Milliseconds() / 1000.0f;
-			float timeDelta = currentTime - ::g->lastFrameTime;
-			::g->accumulatedFrameTime = timeDelta;
-		}
-		else {
-			::g->snl_pointeron = (::g->cnt & 31) < 20;
-		}
+		::g->snl_pointeron = (::g->cnt & 31) < 20;
 	}
+
+	if (::g->xwinter != NULL) {
+			WI_updateXwinterAnimated();
+		}
 }
 
 void WI_drawShowNextLoc(void)
@@ -802,7 +826,11 @@ void WI_drawShowNextLoc(void)
 		if (::g->wbs->last == 0 && ::g->wbs->epsd > 0) {
 			last = ::g->clusters[::g->wbs->epsd].startmap;
 		}
-		for (int l = 0; l < 2; l++) {
+		if (::g->wbs->didsecret) {
+			last = -1;
+			::g->wbs->didsecret = false;
+		}
+		for (int l = 0; l < 10; l++) {
 			for (int a = 0; a < 33; a++) {
 
 				xwinterlayeranim_t xanim = ::g->xwinter->layers[l].anims[a];

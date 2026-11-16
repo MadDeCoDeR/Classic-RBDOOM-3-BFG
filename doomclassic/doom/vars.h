@@ -1200,9 +1200,7 @@ std::vector<std::unique_ptr<xwinter_t>> xwinterMap;
 
 xwinter_t* xwinter;
 
-int frameInUse;
 float lastFrameTime;
-float accumulatedFrameTime;
 
 std::vector<std::unique_ptr<xwinterframecache_t>> xwinterFrameCache;
 

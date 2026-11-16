@@ -403,6 +403,7 @@ void MapToXWinterMap(const char* json, const char* fileName) {
 				xwinter->layers[i].anims[j].frames[f].type = static_cast<xwinterframetype_e>(atoi(jFrames[f]["type"].c_str()));
 				xwinter->layers[i].anims[j].frames[f].duration = atof(jFrames[f]["duration"].c_str());
 				xwinter->layers[i].anims[j].frames[f].maxDuration = atof(jFrames[f]["maxduration"].c_str());
+				xwinter->layers[i].anims[j].frames[f].render = f == 0;
 			}
 		}
 	}

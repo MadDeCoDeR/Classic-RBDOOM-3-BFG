@@ -424,6 +424,7 @@ typedef struct xwinterlayeranimframe_s {
     float duration;
     float maxDuration;
     xwinterframetype_e type;
+    bool render;
 } xwinterlayeranimframe_t;
 
 typedef struct xwinterlayercondition_s {
