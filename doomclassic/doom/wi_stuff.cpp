@@ -826,16 +826,12 @@ void WI_drawShowNextLoc(void)
 		if (::g->wbs->last == 0 && ::g->wbs->epsd > 0) {
 			last = ::g->clusters[::g->wbs->epsd].startmap;
 		}
-		if (::g->wbs->didsecret) {
-			last = -1;
-			::g->wbs->didsecret = false;
-		}
 		for (int l = 0; l < 10; l++) {
 			for (int a = 0; a < 33; a++) {
 
 				xwinterlayeranim_t xanim = ::g->xwinter->layers[l].anims[a];
 				
-				if (xanim.conditions[0].condition == EXITTING && xanim.conditions[0].param <= last) {
+				if (xanim.conditions[0].condition == EXITTING && (xanim.conditions[0].param <= last || (::g->wbs->didsecret && xanim.conditions[0].param == ::g->wbs->didsecret))) {
 					WI_drawXinterFrame(xanim);
 				}
 				if (xanim.conditions[0].condition == ENTERING && xanim.conditions[0].param == (::g->wbs->next + 1)) {

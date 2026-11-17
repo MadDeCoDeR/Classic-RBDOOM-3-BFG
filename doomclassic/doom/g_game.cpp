@@ -1371,6 +1371,17 @@ void FindNextMap(int map,bool issecret = false) {
 	}
 }
 
+void ResetSecretMap(int map) {
+	if (::g->maps[map].secretmap > 0) {
+		if (idStr::Cmp(::g->maps[map].secretmapname, "")) {
+			::g->maps[map].secretmap = -1;
+		}
+		else {
+			::g->maps[map].secretmap++;
+		}
+	}
+}
+
 void G_DoCompleted (void) 
 { 
 	int             i; 
@@ -1410,6 +1421,16 @@ void G_DoCompleted (void)
 		}
 	}
 
+	//GK: xwinter renders splats and "you are here" on the screen. Since the secret level can be anywhere check if it's completed and like with DOOM 1 mark the didsecret
+	if (::g->gamemission == pack_custom && ::g->episodicExpansion && (::g->maps.size() && ::g->clusters.size())) {
+		int previousMap = ((::g->maps[::g->map - 1].nextmap - 1) - (::g->clusters[::g->gameepisode - 1].startmap - 1)) - 1;
+		FindNextMap(previousMap, true);
+		if (::g->maps[previousMap].secretmap > 0 && ::g->maps[previousMap].secretmap == (::g->map - 1)) {
+			for (i = 0; i < MAXPLAYERS; i++)
+				::g->players[i].didsecret = ::g->map; //GK: Kinda nasty hack, keep the secret level map index in didsecret, in order to use it if we have xwinter active
+		}
+		ResetSecretMap(previousMap);
+	}
 	::g->wminfo.didsecret = ::g->players[::g->consoleplayer].didsecret; 
 	::g->wminfo.epsd = ::g->gameepisode -1; 
 	::g->wminfo.last = ::g->gamemission == pack_custom && (::g->gamemode == retail || ::g->episodicExpansion) && (::g->maps.size() && ::g->clusters.size()) ? ((::g->maps[::g->map - 1].nextmap - 1) - (::g->clusters[::g->gameepisode - 1].startmap - 1)) - 1 : ::g->gamemap - 1;
@@ -1443,6 +1464,7 @@ void G_DoCompleted (void)
 				FindNextMap(::g->gamemap - 1, true);
 					if (::g->maps[::g->gamemap-1].secretmap) {
 						::g->wminfo.next = ::g->maps[::g->gamemap-1].secretmap;
+						ResetSecretMap(::g->gamemap - 1);
 					}
 				
 			}
@@ -1513,6 +1535,7 @@ void G_DoCompleted (void)
 				if (::g->secretexit) {
 					FindNextMap(::g->map - 1, true);
 					::g->wminfo.next = ::g->maps[::g->map - 1].secretmap - (::g->clusters[::g->gameepisode - 1].startmap - 1);
+					ResetSecretMap(::g->map - 1);
 				}
 				else {
 					//FindNextMap(::g->map - 1);
