@@ -47,9 +47,6 @@ If you have questions concerning this license or the applicable additional terms
 
 //idCVar in_nograb( "in_nograb", "0", CVAR_SYSTEM | CVAR_NOCHEAT, "prevents input grabbing" );
 
-// RB: FIXME this shit. We need the OpenGL alpha channel for advanced rendering effects
-idCVar r_waylandcompat( "r_waylandcompat", "0", CVAR_SYSTEM | CVAR_NOCHEAT | CVAR_ARCHIVE, "wayland compatible framebuffer" );
-
 // RB: only relevant if using SDL 2.0
 #if defined(__APPLE__) || defined(_WIN32) || defined(__linux__)
 // only core profile is supported on OS X
@@ -103,7 +100,6 @@ GLimp_GetSupportedVersion
  in order to retrieve it from the system and use it acordingly later with other flags and attributes
  */
 void GLimp_GetSupportedVersion(int* major, int* minor) {
-	
 	window = SDL_CreateWindow(ENGINE_NAME,
 							0, 0, SDL_WINDOW_OPENGL );
 	// DG end
@@ -151,114 +147,61 @@ bool GLimp_Init( glimpParms_t parms )
 	Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_MOUSE_GRABBED;
 	// DG end
 		
-	int colorbits = 24;
+	//GK: Preffered Pixel Format
+	int colorbits = 8;
 	int depthbits = 24;
 	int stencilbits = 8;
-	
-	for( int i = 0; i < 16; i++ )
+
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+	SDL_GL_SetAttribute(SDL_GL_STEREO, parms.stereo ? 1 : 0);
+
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, parms.multiSamples ? 1 : 0);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, parms.multiSamples);
+
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
+
+	int major = 3;
+	int minor = r_useOpenGL32.GetInteger() > 0 ? 2 : 0;
+	int acceptableMinor = minor;
+	GLimp_GetSupportedVersion(&major, &minor);
+	if (major < 3 || major == 3 && minor <= acceptableMinor) {
+		common->FatalError("GLimp_Init: OpenGL version is not supported!\n");
+	}
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
+
+	if (r_debugContext.GetBool() && major == 4 && minor >= 3)
 	{
-		// 0 - default
-		// 1 - minus colorbits
-		// 2 - minus depthbits
-		// 3 - minus stencil
-		if( ( i % 4 ) == 0 && i )
-		{
-			// one pass, reduce
-			switch( i / 4 )
-			{
-				case 2 :
-					if( colorbits == 24 )
-						colorbits = 16;
-					break;
-				case 1 :
-					if( depthbits == 24 )
-						depthbits = 16;
-					else if( depthbits == 16 )
-						depthbits = 8;
-				case 3 :
-					if( stencilbits == 24 )
-						stencilbits = 16;
-					else if( stencilbits == 16 )
-						stencilbits = 8;
-			}
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+	}
+	// RB begin
+	if (major > 3 || (major == 3 && minor >= 2)) {
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, r_useOpenGL32.GetInteger() == 2 ? SDL_GL_CONTEXT_PROFILE_CORE : SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+		glConfig.driverType = r_useOpenGL32.GetInteger() == 2 ? GLDRV_OPENGL32_CORE_PROFILE : GLDRV_OPENGL32_COMPATIBILITY_PROFILE;
+	}
+	// RB end
+	
+	for( int i = 0; i < 4; i++ )
+	{
+		if (i >= 1) {
+			depthbits = 16;
 		}
-		
-		int tcolorbits = colorbits;
-		int tdepthbits = depthbits;
-		int tstencilbits = stencilbits;
-		
-		if( ( i % 4 ) == 3 )
-		{
-			// reduce colorbits
-			if( tcolorbits == 24 )
-				tcolorbits = 16;
+		if (i >= 2) {
+			stencilbits = 0;
 		}
-		
-		if( ( i % 4 ) == 2 )
-		{
-			// reduce depthbits
-			if( tdepthbits == 24 )
-				tdepthbits = 16;
-			else if( tdepthbits == 16 )
-				tdepthbits = 8;
+		if (i >= 3) {
+			colorbits = 4;
 		}
-		
-		if( ( i % 4 ) == 1 )
-		{
-			// reduce stencilbits
-			if( tstencilbits == 24 )
-				tstencilbits = 16;
-			else if( tstencilbits == 16 )
-				tstencilbits = 8;
-			else
-				tstencilbits = 0;
-		}
-		
-		int channelcolorbits = 4;
-		if( tcolorbits == 24 )
-			channelcolorbits = 8;
 			
-		SDL_GL_SetAttribute( SDL_GL_RED_SIZE, channelcolorbits );
-		SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, channelcolorbits );
-		SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, channelcolorbits );
-		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, tdepthbits );
-		SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, tstencilbits );
+		SDL_GL_SetAttribute( SDL_GL_RED_SIZE, colorbits );
+		SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, colorbits);
+		SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, colorbits);
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, colorbits);
 		
-		if( r_waylandcompat.GetBool() )
-			SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 0 );
-		else
-			SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, channelcolorbits );
-			
-		SDL_GL_SetAttribute( SDL_GL_STEREO, parms.stereo ? 1 : 0 );
-		
-		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, parms.multiSamples ? 1 : 0 );
-		SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, parms.multiSamples );
-		
-		SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
-		SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, 1);
-
-		int major = 3;
-		int minor = r_useOpenGL32.GetInteger() > 0 ? 2 : 0;
-		int acceptableMinor = minor;
-		GLimp_GetSupportedVersion(&major, &minor);
-		if (major < 3 || major == 3 && minor <= acceptableMinor) {
-			common->FatalError("GLimp_Init: OpenGL version is not supported!\n");
-		}
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
-
-		if (r_debugContext.GetBool() && major == 4 && minor >= 3)
-		{
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-		}
-		// RB begin
-		if (major > 3 || (major == 3 && minor >= 2)) {
-			SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, r_useOpenGL32.GetInteger() == 2 ? SDL_GL_CONTEXT_PROFILE_CORE : SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-			glConfig.driverType = r_useOpenGL32.GetInteger() == 2 ? GLDRV_OPENGL32_CORE_PROFILE : GLDRV_OPENGL32_COMPATIBILITY_PROFILE;
-		}
-		// RB end
-		
+		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, depthbits);
+		SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, stencilbits );
 
 		//GK: Create a dummy window right now in order to initialize SDL_Window, in the end call GLimp_SetScreenParms to apply the expected settings
 		 SDL_PropertiesID props = SDL_CreateProperties();
@@ -274,7 +217,8 @@ bool GLimp_Init( glimpParms_t parms )
     	 SDL_DestroyProperties(props);
 		// DG end
 		if (!window) {
-			common->FatalError("SDL: Failed to create Window with error Message: %s\n", SDL_GetError());
+			common->DPrintf("Couldn't make Window with GL Mode %d/%d/%d: %s", colorbits, depthbits, stencilbits, SDL_GetError());
+			continue;
 		}
 		
 		context = SDL_GL_CreateContext( window );
@@ -282,50 +226,23 @@ bool GLimp_Init( glimpParms_t parms )
 		if( !context )
 		{
 			common->DPrintf( "Couldn't set GL mode %d/%d/%d: %s\n",
-							 channelcolorbits, tdepthbits, tstencilbits, SDL_GetError() );
+				colorbits, depthbits, stencilbits, SDL_GetError() );
 			continue;
 		}
 
 		bool result = SDL_GL_MakeCurrent(window, context);
 		if (!result) {
 			common->DPrintf( "Couldn't make GL context: %s\n",
-							 channelcolorbits, tdepthbits, tstencilbits, SDL_GetError() );
+							 colorbits, depthbits, stencilbits, SDL_GetError() );
 			continue;
 		}
-
-		Uint32 rmask, gmask, bmask, amask;
-		SDL_PixelFormat format;
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    	int shift = (doom_icon.bytes_per_pixel == 3) ? 8 : 0;
-    	rmask = 0xff000000 >> shift;
-    	gmask = 0x00ff0000 >> shift;
-    	bmask = 0x0000ff00 >> shift;
-    	amask = 0x000000ff >> shift;
-		format = SDL_PIXELFORMAT_RGBA8888;
-#else // little endian, like x86
-    	rmask = 0x000000ff;
-    	gmask = 0x0000ff00;
-    	bmask = 0x00ff0000;
-    	amask = (doom_icon.bytes_per_pixel == 3) ? 0 : 0xff000000;
-		format = SDL_PIXELFORMAT_ABGR8888;
-#endif
-		SDL_Surface* surf = SDL_CreateSurfaceFrom(doom_icon.width, doom_icon.height, format, (void*)doom_icon.pixel_data, doom_icon.width * 4);
-#if 0
-		SDL_Surface* surf = SDL_CreateRGBSurfaceFrom((void*)doom_icon.pixel_data, doom_icon.width, doom_icon.height,
-		 doom_icon.bytes_per_pixel * 8, doom_icon.bytes_per_pixel * doom_icon.width, rmask, gmask, bmask, amask);
-#endif
-
-		 SDL_SetWindowIcon(window, surf);
-
-		 glConfig.swapControlTearAvailable = SDL_GL_SetSwapInterval(-1);
-		 r_swapInterval.SetModified();
 		
 		common->Printf( "Using %d color bits, %d depth, %d stencil display\n",
-						channelcolorbits, tdepthbits, tstencilbits );
+						colorbits, depthbits, stencilbits );
 						
-		glConfig.colorBits = tcolorbits;
-		glConfig.depthBits = tdepthbits;
-		glConfig.stencilBits = tstencilbits;
+		glConfig.colorBits = colorbits;
+		glConfig.depthBits = depthbits;
+		glConfig.stencilBits = stencilbits;
 		glConfig.pixelAspect = 1.0f;	// FIXME: some monitor modes may be distorted
 		
 		break;
@@ -333,9 +250,36 @@ bool GLimp_Init( glimpParms_t parms )
 	
 	if( !window )
 	{
-		common->Printf( "No usable GL mode found: %s", SDL_GetError() );
+		common->DPrintf("SDL: Failed to create Window with error Message: %s\n", SDL_GetError());
 		return false;
 	}
+
+	Uint32 rmask, gmask, bmask, amask;
+	SDL_PixelFormat format;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	int shift = (doom_icon.bytes_per_pixel == 3) ? 8 : 0;
+	rmask = 0xff000000 >> shift;
+	gmask = 0x00ff0000 >> shift;
+	bmask = 0x0000ff00 >> shift;
+	amask = 0x000000ff >> shift;
+	format = SDL_PIXELFORMAT_RGBA8888;
+#else // little endian, like x86
+	rmask = 0x000000ff;
+	gmask = 0x0000ff00;
+	bmask = 0x00ff0000;
+	amask = (doom_icon.bytes_per_pixel == 3) ? 0 : 0xff000000;
+	format = SDL_PIXELFORMAT_ABGR8888;
+#endif
+	SDL_Surface* surf = SDL_CreateSurfaceFrom(doom_icon.width, doom_icon.height, format, (void*)doom_icon.pixel_data, doom_icon.width * 4);
+#if 0
+	SDL_Surface* surf = SDL_CreateRGBSurfaceFrom((void*)doom_icon.pixel_data, doom_icon.width, doom_icon.height,
+		doom_icon.bytes_per_pixel * 8, doom_icon.bytes_per_pixel * doom_icon.width, rmask, gmask, bmask, amask);
+#endif
+
+	SDL_SetWindowIcon(window, surf);
+
+	glConfig.swapControlTearAvailable = SDL_GL_SetSwapInterval(-1);
+	r_swapInterval.SetModified();
 	
 	int gladResult = gladLoadGL((GLADloadfunc) SDL_GL_GetProcAddress);
 	if( !gladResult )
