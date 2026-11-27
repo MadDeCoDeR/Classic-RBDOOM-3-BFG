@@ -32,7 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 const static int NUM_GAME_OPTIONS_OPTIONS = 8;
 
 const float MIN_FOV = 80.0f;
-const float MAX_FOV = 100.0f;
+const float MAX_FOV = 130.0f; //GK: Expand your FOV
 
 const float MIN_FOV_GUN = 3.0f;
 const float MAX_FOV_GUN = 0.0f;
