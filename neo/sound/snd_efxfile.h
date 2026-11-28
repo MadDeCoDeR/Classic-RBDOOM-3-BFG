@@ -32,7 +32,7 @@ GK: I guess that will do
 #include "precompiled.h"
 //#ifdef USE_OPENAL
 #include <AL/efx.h>
-#include <AL/efx-creative.h>
+//#include <AL/efx-creative.h>
 #include <AL/efx-presets.h>
 //#endif
 
